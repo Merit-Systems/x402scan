@@ -41,7 +41,9 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
 
   const [hoveredTabIndex, setHoveredTabIndex] = useState<number | null>(null);
   const hoveredRect =
-    buttonRefs[hoveredTabIndex ?? -1]?.getBoundingClientRect();
+    hoveredTabIndex !== null && buttonRefs[hoveredTabIndex]
+      ? buttonRefs[hoveredTabIndex]?.getBoundingClientRect()
+      : undefined;
 
   return (
     <div className="w-full max-w-full overflow-x-auto overflow-y-hidden border-b px-2 md:px-6 pt-2.5 sticky top-0 z-10 bg-card no-scrollbar">
@@ -62,8 +64,12 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
                 onMouseEnter={() => setHoveredTabIndex(index)}
                 onMouseLeave={() => setHoveredTabIndex(null)}
                 ref={el => {
-                  if (el) {
-                    buttonRefs[index] = el;
+                  if (buttonRefs[index] !== el) {
+                    setButtonRefs(prev => {
+                      const newRefs = [...prev];
+                      newRefs[index] = el;
+                      return newRefs;
+                    });
                   }
                 }}
                 prefetch={false}
