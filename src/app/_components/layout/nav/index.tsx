@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 
 import { ExternalLink } from 'lucide-react';
 
@@ -29,10 +30,18 @@ export const Nav = <T extends string>({
   layoutId = 'nav-underline',
 }: Props<T>) => {
   const buttonRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const { scrollY } = useScroll();
 
   const paddingLeft = useTransform(scrollY, [0, 56], [0, 36]);
+
+  useEffect(() => {
+    setIsNavigating(false);
+  }, [pathname]);
 
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -76,6 +85,17 @@ export const Nav = <T extends string>({
                 className="z-11"
                 onMouseEnter={() => setHoveredTabIndex(index)}
                 onMouseLeave={() => setHoveredTabIndex(null)}
+                onClick={e => {
+                  if (isNavigating) {
+                    e.preventDefault();
+                    return;
+                  }
+                  setIsNavigating(true);
+                  e.preventDefault();
+                  startTransition(() => {
+                    router.push(tab.href);
+                  });
+                }}
                 ref={el => {
                   buttonRefs.current[index] = el;
                 }}
