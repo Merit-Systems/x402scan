@@ -28,26 +28,35 @@ export const Nav = <T extends string>({
   tabs,
   layoutId = 'nav-underline',
 }: Props<T>) => {
-  const [buttonRefs, setButtonRefs] = useState<Array<HTMLAnchorElement | null>>(
-    []
-  );
+  const buttonRefs = useRef<Array<HTMLAnchorElement | null>>([]);
 
   const { scrollY } = useScroll();
 
   const paddingLeft = useTransform(scrollY, [0, 56], [0, 36]);
 
-  useEffect(() => {
-    setButtonRefs(prev => prev.slice(0, tabs.length));
-  }, [tabs.length]);
-
   const navRef = useRef<HTMLDivElement>(null);
-  const navRect = navRef.current?.getBoundingClientRect();
 
   const [hoveredTabIndex, setHoveredTabIndex] = useState<number | null>(null);
-  const hoveredRect =
-    hoveredTabIndex !== null && buttonRefs[hoveredTabIndex]
-      ? buttonRefs[hoveredTabIndex]?.getBoundingClientRect()
-      : undefined;
+  const [hoveredRect, setHoveredRect] = useState<DOMRect | undefined>(
+    undefined
+  );
+  const [navRect, setNavRect] = useState<DOMRect | undefined>(undefined);
+
+  useEffect(() => {
+    if (hoveredTabIndex !== null && buttonRefs.current[hoveredTabIndex]) {
+      setHoveredRect(
+        buttonRefs.current[hoveredTabIndex]?.getBoundingClientRect()
+      );
+    } else {
+      setHoveredRect(undefined);
+    }
+  }, [hoveredTabIndex]);
+
+  useEffect(() => {
+    if (navRef.current) {
+      setNavRect(navRef.current.getBoundingClientRect());
+    }
+  }, []);
 
   return (
     <div className="w-full max-w-full overflow-x-auto overflow-y-hidden border-b px-2 md:px-6 pt-2.5 sticky top-0 z-10 bg-card no-scrollbar">
@@ -68,13 +77,7 @@ export const Nav = <T extends string>({
                 onMouseEnter={() => setHoveredTabIndex(index)}
                 onMouseLeave={() => setHoveredTabIndex(null)}
                 ref={el => {
-                  if (buttonRefs[index] !== el) {
-                    setButtonRefs(prev => {
-                      const newRefs = [...prev];
-                      newRefs[index] = el;
-                      return newRefs;
-                    });
-                  }
+                  buttonRefs.current[index] = el;
                 }}
                 prefetch={false}
               >
