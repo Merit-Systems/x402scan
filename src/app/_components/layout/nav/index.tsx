@@ -32,7 +32,7 @@ export const Nav = <T extends string>({
   const buttonRefs = useRef<Array<HTMLAnchorElement | null>>([]);
   const router = useRouter();
   const pathname = usePathname();
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
   const [isNavigating, setIsNavigating] = useState(false);
 
   const { scrollY } = useScroll();
