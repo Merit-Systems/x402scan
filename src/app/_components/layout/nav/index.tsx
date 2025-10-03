@@ -21,9 +21,13 @@ interface Tab<T extends string> {
 
 interface Props<T extends string = string> {
   tabs: Tab<T>[];
+  layoutId?: string;
 }
 
-export const Nav = <T extends string>({ tabs }: Props<T>) => {
+export const Nav = <T extends string>({
+  tabs,
+  layoutId = 'nav-underline',
+}: Props<T>) => {
   const [buttonRefs, setButtonRefs] = useState<Array<HTMLAnchorElement | null>>(
     []
   );
@@ -74,7 +78,11 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
                 }}
                 prefetch={false}
               >
-                <MotionTab href={tab.href} subRoutes={tab.subRoutes}>
+                <MotionTab
+                  href={tab.href}
+                  subRoutes={tab.subRoutes}
+                  layoutId={layoutId}
+                >
                   <span className="flex items-center gap-1 whitespace-nowrap">
                     {tab.label}
                     {tab.external && <ExternalLink className="size-4" />}

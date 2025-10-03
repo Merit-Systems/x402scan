@@ -8,6 +8,7 @@ export default function HomeLayout({
   return (
     <div className="flex flex-col flex-1">
       <Nav
+        layoutId="home-nav-underline"
         tabs={[
           {
             label: 'Overview',

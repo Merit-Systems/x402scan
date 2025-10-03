@@ -8,6 +8,7 @@ export default async function RecipientLayout({
   return (
     <div className="flex flex-col flex-1">
       <Nav
+        layoutId="recipient-nav-underline"
         tabs={[
           {
             label: 'Overview',

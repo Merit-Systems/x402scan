@@ -10,10 +10,11 @@ interface Props {
   href: string;
   children: React.ReactNode;
   subRoutes?: string[];
+  layoutId: string;
 }
 
 export const MotionTab = forwardRef<HTMLLIElement, Props>(
-  ({ href, children, subRoutes }, ref) => {
+  ({ href, children, subRoutes, layoutId }, ref) => {
     const pathname = usePathname();
 
     const isSelected =
@@ -32,8 +33,7 @@ export const MotionTab = forwardRef<HTMLLIElement, Props>(
         {isSelected ? (
           <motion.div
             className="absolute bottom-[-1px] right-0 left-0 h-[2px] bg-primary rounded-full z-10"
-            layoutId="underline"
-            id="underline"
+            layoutId={layoutId}
             transition={{
               type: 'tween',
               ease: 'easeOut',
