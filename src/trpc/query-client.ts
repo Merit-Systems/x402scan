@@ -15,6 +15,9 @@ export const createQueryClient = () =>
         retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
         refetchOnWindowFocus: false,
         refetchOnMount: false,
+        // Critical: Set a network timeout to prevent infinite hangs
+        networkMode: 'offlineFirst',
+        gcTime: 5 * 60 * 1000, // 5 minutes
       },
       dehydrate: {
         serializeData: SuperJSON.serialize,
@@ -24,6 +27,9 @@ export const createQueryClient = () =>
       },
       hydrate: {
         deserializeData: SuperJSON.deserialize,
+      },
+      mutations: {
+        networkMode: 'offlineFirst',
       },
     },
   });

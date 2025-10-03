@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 import {
   httpBatchStreamLink,
@@ -35,7 +36,14 @@ const getQueryClient = () => {
 export const api = createTRPCReact<AppRouter>();
 
 export function TRPCReactProvider(props: { children: React.ReactNode }) {
-  const queryClient = getQueryClient();
+  // Memoize queryClient to avoid recreating on every render
+  const [queryClient] = useState(() => getQueryClient());
+  const pathname = usePathname();
+
+  // Cancel all pending queries on navigation to prevent deadlocks
+  useEffect(() => {
+    queryClient.cancelQueries();
+  }, [pathname, queryClient]);
 
   const [trpcClient] = useState(() =>
     api.createClient({
