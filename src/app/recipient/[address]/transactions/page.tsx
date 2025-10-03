@@ -14,6 +14,8 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 
+export const dynamic = 'force-dynamic';
+
 export default async function TransactionsPage({
   params,
 }: PageProps<'/recipient/[address]/transactions'>) {

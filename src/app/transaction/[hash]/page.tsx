@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { TransactionGraphic } from './_components/graphic';
 import { TransactionDetails } from './_components/details';
 
+export const dynamic = 'force-dynamic';
+
 export default async function TransactionPage({
   params,
 }: PageProps<'/transaction/[hash]'>) {

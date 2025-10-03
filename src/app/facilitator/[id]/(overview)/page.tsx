@@ -13,6 +13,8 @@ import {
 
 import { facilitatorIdMap } from '@/lib/facilitators';
 
+export const dynamic = 'force-dynamic';
+
 export default async function FacilitatorPage({
   params,
 }: PageProps<'/facilitator/[id]'>) {

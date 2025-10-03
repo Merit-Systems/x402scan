@@ -4,6 +4,8 @@ import { getBazaarMethod } from '@/app/_components/resource-executor/utils';
 import { api, HydrateClient } from '@/trpc/server';
 import { OriginCard } from './_components/origin';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ResourcesPage({
   params,
 }: PageProps<'/recipient/[address]/resources'>) {
