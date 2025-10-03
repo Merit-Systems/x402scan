@@ -42,7 +42,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 
   // Cancel all pending queries on navigation to prevent deadlocks
   useEffect(() => {
-    queryClient.cancelQueries();
+    void queryClient.cancelQueries();
   }, [pathname, queryClient]);
 
   const [trpcClient] = useState(() =>
