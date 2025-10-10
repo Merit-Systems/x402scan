@@ -129,8 +129,7 @@ export const AddOnChainResourceDialog = () => {
         <DialogHeader className="bg-muted border-b p-4">
           <DialogTitle>Add Resource On-Chain</DialogTitle>
           <DialogDescription>
-            Enter a resource URL to fetch metadata and register it on the
-            blockchain registry.
+            Enter a resource URL to fetch metadata and register it on-chain.
           </DialogDescription>
         </DialogHeader>
 
@@ -157,7 +156,7 @@ export const AddOnChainResourceDialog = () => {
                 <p className="mt-1">{walletMismatchError}</p>
               </div>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               We&apos;ll automatically fetch the x402 metadata and register it
               on-chain using your connected wallet address.
             </p>
