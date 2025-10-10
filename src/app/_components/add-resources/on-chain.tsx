@@ -73,10 +73,7 @@ export const AddOnChainResourceDialog = () => {
   } = api.resources.register.useMutation({
     onSuccess: data => {
       console.log('data', data);
-      // Extract URL components
-      const url = new URL(data.resource.resource);
-      const scheme = url.protocol.replace(':', '');
-
+      
       // Parse maxAmountRequired from formatted string (e.g., "$0.01") to USDC smallest unit
       const parseDollarAmount = (formatted: string): string => {
         // Remove dollar sign, commas, and spaces
@@ -90,7 +87,7 @@ export const AddOnChainResourceDialog = () => {
       // Pre-fill form with fetched metadata
       setFormData(prev => ({
         ...prev,
-        scheme,
+        scheme: data.accepts.scheme ?? '',
         resource: data.resource.resource,
         description: data.accepts.description ?? '',
         mimeType: data.accepts.mimeType ?? 'application/json',
@@ -99,6 +96,7 @@ export const AddOnChainResourceDialog = () => {
           : '',
         maxAmountRequired: parseDollarAmount(data.accepts.maxAmountRequired),
         maxTimeoutSeconds: data.accepts.maxTimeoutSeconds ?? 0,
+        asset: (data.accepts.asset as Address) ?? ('' as Address),
         network: data.accepts.network.replace('_', '-'),
         extra: data.accepts.extra
           ? typeof data.accepts.extra === 'string'
