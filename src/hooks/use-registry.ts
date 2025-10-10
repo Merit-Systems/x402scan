@@ -1,8 +1,8 @@
 import { useWriteContract } from 'wagmi';
-import { REGISTRY_ABI } from './registry-abi';
+import { REGISTRY_ABI } from '../app/on-chain/registry-abi';
 import { useCallback } from 'react';
-import type { Resource } from './types';
-import { REGISTRY_ADDRESS } from './constants';
+import type { Resource } from '../app/on-chain/types';
+import { REGISTRY_ADDRESS } from '../app/on-chain/constants';
 
 export const useAddResource = () => {
   const { writeContractAsync } = useWriteContract();

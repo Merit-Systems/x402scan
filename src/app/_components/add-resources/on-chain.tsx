@@ -19,7 +19,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import { useAddResource } from '@/hooks/on-chain/use-registry';
+import { useAddResource } from '@/hooks/use-registry';
 import { api } from '@/trpc/client';
 
 export const AddOnChainResourceDialog = () => {
