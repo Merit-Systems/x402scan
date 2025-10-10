@@ -9,6 +9,7 @@ export const useAddResource = () => {
 
   const addResource = useCallback(
     async (resource: Resource) => {
+      console.log('Adding resource', resource);
       await writeContractAsync({
         address: REGISTRY_ADDRESS,
         abi: REGISTRY_ABI,
