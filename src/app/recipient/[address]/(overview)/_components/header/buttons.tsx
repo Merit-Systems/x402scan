@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { AddResourcesDialog } from '@/app/_components/add-resources';
+import {
+  AddOnChainResourceDialog,
+  AddResourcesDialog,
+} from '@/app/_components/add-resources';
 
 interface Props {
   hasOrigins: boolean;
@@ -23,6 +26,7 @@ export const HeaderButtons: React.FC<Props> = ({ hasOrigins, address }) => {
           </Button>
         </Link>
       )}
+      <AddOnChainResourceDialog />
       <AddResourcesDialog />
     </ButtonsContainer>
   );
