@@ -70,7 +70,7 @@ export const AddOnChainResourceDialog = () => {
         outputSchema: data.accepts.outputSchema
           ? JSON.stringify(data.accepts.outputSchema)
           : '',
-        payTo: address,
+        payTo: data.accepts.payTo as Address,
         maxTimeoutSeconds: data.accepts.maxTimeoutSeconds ?? 0,
         asset: (data.accepts.asset as Address) ?? ('' as Address),
         extra: data.accepts.extra
