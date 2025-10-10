@@ -27,6 +27,7 @@ export const AddOnChainResourceDialog = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [resourceUrl, setResourceUrl] = useState('');
   const [isPending, setIsPending] = useState(false);
+  const [walletMismatchError, setWalletMismatchError] = useState<string | null>(null);
 
   const { addResource } = useAddResource();
   const { mutateAsync: fetchMetadata } = api.resources.register.useMutation();
@@ -51,6 +52,7 @@ export const AddOnChainResourceDialog = () => {
     }
 
     setIsPending(true);
+    setWalletMismatchError(null);
 
     try {
       // Step 1: Fetch metadata and register off-chain
@@ -58,6 +60,16 @@ export const AddOnChainResourceDialog = () => {
         url: resourceUrl,
         headers: {},
       });
+
+      // Check if connected wallet matches payTo address
+      const payToAddress = (data.accepts.payTo as Address).toLowerCase();
+      if (address.toLowerCase() !== payToAddress) {
+        setWalletMismatchError(
+          `This resource expects payment to ${data.accepts.payTo}, but your connected wallet is ${address}. Please connect the correct wallet.`
+        );
+        setIsPending(false);
+        return;
+      }
 
       // Step 2: Add to on-chain registry
       await addResource({
@@ -83,6 +95,7 @@ export const AddOnChainResourceDialog = () => {
       toast.success('Resource added to on-chain registry successfully');
       setIsOpen(false);
       setResourceUrl('');
+      setWalletMismatchError(null);
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -96,7 +109,16 @@ export const AddOnChainResourceDialog = () => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog 
+      open={isOpen} 
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          setWalletMismatchError(null);
+          setResourceUrl('');
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="size-4" />
@@ -119,12 +141,21 @@ export const AddOnChainResourceDialog = () => {
               type="text"
               placeholder="https://example.com/api/resource"
               value={resourceUrl}
-              onChange={e => setResourceUrl(e.target.value)}
+              onChange={e => {
+                setResourceUrl(e.target.value);
+                setWalletMismatchError(null);
+              }}
             />
             {!address && (
               <p className="text-xs text-amber-600">
                 ⚠️ Connect your wallet to continue
               </p>
+            )}
+            {walletMismatchError && (
+              <div className="text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded-md p-3 mt-1">
+                <p className="font-medium">❌ Wallet Mismatch</p>
+                <p className="mt-1">{walletMismatchError}</p>
+              </div>
             )}
             <p className="text-xs text-muted-foreground">
               We&apos;ll automatically fetch the x402 metadata and register it
