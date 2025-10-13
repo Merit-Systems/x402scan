@@ -3,26 +3,15 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 
-import { ThemeProvider } from 'next-themes';
-
 import { RootProvider } from 'fumadocs-ui/provider/next';
 
 import { Toaster } from '@/components/ui/sonner';
-
-import { CDPHooksProvider } from './(app)/_contexts/cdp';
-import { SearchProvider } from './(app)/_contexts/search/provider';
-import { WagmiProvider } from './(app)/_contexts/wagmi';
-import { PostHogProvider } from './(app)/_contexts/posthog';
-
-import { TRPCReactProvider } from '@/trpc/client';
 
 import { env } from '@/env';
 
 import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
-import { SessionProvider } from 'next-auth/react';
-import { Header } from './(app)/_components/layout/header';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -103,10 +92,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
-  children,
-  breadcrumbs,
-}: LayoutProps<'/'>) {
+export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -116,31 +102,7 @@ export default function RootLayout({
           <Toaster />
           <SpeedInsights />
           <Analytics />
-          <SessionProvider>
-            <TRPCReactProvider>
-              <SearchProvider>
-                <CDPHooksProvider>
-                  <WagmiProvider>
-                    <PostHogProvider>
-                      <ThemeProvider
-                        attribute="class"
-                        defaultTheme="light"
-                        storageKey="x402scan-theme"
-                        enableSystem={true}
-                      >
-                        <div className="min-h-screen flex flex-col relative">
-                          <Header breadcrumbs={breadcrumbs} />
-                          <div className="bg-background flex-1 flex flex-col">
-                            {children}
-                          </div>
-                        </div>
-                      </ThemeProvider>
-                    </PostHogProvider>
-                  </WagmiProvider>
-                </CDPHooksProvider>
-              </SearchProvider>
-            </TRPCReactProvider>
-          </SessionProvider>
+          {children}
         </RootProvider>
       </body>
     </html>
