@@ -1,6 +1,6 @@
 import { Background, ReactFlow } from '@xyflow/react';
 
-import type { Edge, EdgeTypes, Node, NodeTypes } from '@xyflow/react';
+import type { Edge, EdgeTypes, Node, NodeTypes, Viewport } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
 
@@ -8,16 +8,20 @@ interface Props {
   nodes?: Node[];
   edges?: Edge[];
   height?: number;
+  width?: number;
   nodeTypes?: NodeTypes;
   edgeTypes?: EdgeTypes;
+  defaultViewport?: Viewport;
 }
 
 export const Graph = ({
   nodes = [],
   edges = [],
   height = 300,
+  width,
   nodeTypes,
   edgeTypes,
+  defaultViewport,
 }: Props) => {
   return (
     <div
@@ -28,6 +32,7 @@ export const Graph = ({
         nodes={nodes}
         edges={edges}
         height={height}
+        width={width}
         fitView
         proOptions={{ hideAttribution: true }}
         panOnScroll={false}
@@ -40,9 +45,9 @@ export const Graph = ({
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitViewOptions={{
-          padding: 0.1,
-          nodes,
+          padding: 0.05,
         }}
+        defaultViewport={defaultViewport}
       >
         <Background />
       </ReactFlow>

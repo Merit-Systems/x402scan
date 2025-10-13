@@ -7,6 +7,11 @@ export const ActorNode: React.FC<NodeProps<ActorNodeType>> = ({ data }) => {
     <>
       <Card className="flex items-center gap-2 p-2 justify-center h-full relative">
         <span className="text-lg font-bold font-mono">{data.name}</span>
+        <Handle
+          type="source"
+          position={Position.Bottom}
+          className="-translate-y-1/2 absolute opacity-0 w-0 h-0"
+        />
       </Card>
     </>
   );

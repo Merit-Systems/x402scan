@@ -1,13 +1,14 @@
 'use client';
 
-import type { Node } from '@xyflow/react';
-import { MarkerType, Position, type Edge } from '@xyflow/react';
+import { MarkerType, type Edge } from '@xyflow/react';
 
 import { Graph } from '../graph';
 
 import { SequenceNodeType } from './node-types/types';
 
-import type { MessageNode, SinkNode } from './node-types/types';
+import type { ActorNode, MessageNode, SinkNode } from './node-types/types';
+import { sequenceDiagramNodeTypes } from './node-types';
+import { sequenceDiagramEdgeTypes } from './edge-types';
 import { SequenceEdgeType, type MessageEdge } from './edge-types/types';
 
 interface Props {
@@ -34,27 +35,16 @@ export const SequenceDiagram: React.FC<Props> = ({
   messageHeight = 25,
   messageSpacing = 25,
 }) => {
-  const actorNodes: Node[] = actors.map((actor, index) => ({
+  const actorNodes: ActorNode[] = actors.map((actor, index) => ({
     id: actor,
     position: { x: index * itemWidth + index * itemSpacing, y: 0 },
-    data: { label: actor },
+    data: { name: actor },
     height: itemHeight,
     width: itemWidth,
     type: SequenceNodeType.Actor,
-    handles: [
-      {
-        type: 'source',
-        position: Position.Bottom,
-        x: itemWidth / 2,
-        y: itemHeight,
-        style: {
-          opacity: 0,
-        },
-      },
-    ],
   }));
 
-  const sinkNodes: Node[] = actors.map((actor, index) => ({
+  const sinkNodes: SinkNode[] = actors.map((actor, index) => ({
     id: `sink-${actor}`,
     position: {
       x: index * itemWidth + index * itemSpacing,
@@ -66,14 +56,7 @@ export const SequenceDiagram: React.FC<Props> = ({
     data: {},
     height: 1,
     width: itemWidth,
-    handles: [
-      {
-        type: 'target',
-        position: Position.Top,
-        x: itemWidth / 2,
-        y: 0,
-      },
-    ],
+    type: SequenceNodeType.Sink,
   }));
 
   const messageNodes: MessageNode[] = messages
@@ -90,7 +73,8 @@ export const SequenceDiagram: React.FC<Props> = ({
           id: `${message.sender}-${index}`,
           position: {
             x:
-              actorNodes.find(node => node.id === message.sender)!.position.x -
+              actorNodes.find(node => node.data.name === message.sender)!
+                .position.x -
               itemWidth / 2,
             y: y,
           },
@@ -101,8 +85,8 @@ export const SequenceDiagram: React.FC<Props> = ({
           id: `${message.receiver}-${index}`,
           position: {
             x:
-              actorNodes.find(node => node.id === message.receiver)!.position
-                .x +
+              actorNodes.find(node => node.data.name === message.receiver)!
+                .position.x +
               itemWidth / 2,
             y,
           },
@@ -140,8 +124,9 @@ export const SequenceDiagram: React.FC<Props> = ({
       nodes={[...actorNodes, ...messageNodes, ...sinkNodes]}
       edges={[...sinkEdges, ...messageEdges]}
       height={itemHeight + messages.length * (messageHeight + messageSpacing)}
-      // nodeTypes={sequenceDiagramNodeTypes}
-      // edgeTypes={sequenceDiagramEdgeTypes}
+      width={(itemWidth + itemSpacing) * actors.length - itemSpacing / 2}
+      nodeTypes={sequenceDiagramNodeTypes}
+      edgeTypes={sequenceDiagramEdgeTypes}
     />
   );
 };
