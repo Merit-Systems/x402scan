@@ -19,6 +19,7 @@ export function baseOptions(): BaseLayoutProps {
         </div>
       ),
     },
+    githubUrl: 'https://github.com/Merit-Systems/x402scan',
     links: [
       {
         url: 'https://github.com/Merit-Systems/x402scan',
