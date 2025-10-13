@@ -9,7 +9,11 @@ import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { LoadingOverallStatsCard, OverallStatsCard } from './card';
 
 import { getPercentageFromBigInt } from '@/lib/utils';
-import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
+import {
+  convertTokenAmount,
+  formatCount,
+  formatTokenAmount,
+} from '@/lib/token';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { ActivityTimeframe } from '@/types/timeframes';
@@ -51,11 +55,7 @@ export const OverallCharts = () => {
     <>
       <OverallStatsCard
         title="Transactions"
-        value={overallStats.total_transactions.toLocaleString(undefined, {
-          notation: 'compact',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2,
-        })}
+        value={formatCount(overallStats.total_transactions)}
         percentageChange={
           timeframe === ActivityTimeframe.AllTime
             ? undefined
@@ -115,11 +115,7 @@ export const OverallCharts = () => {
       />
       <OverallStatsCard
         title="Buyers"
-        value={overallStats.unique_buyers.toLocaleString(undefined, {
-          notation: 'compact',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2,
-        })}
+        value={formatCount(overallStats.unique_buyers)}
         percentageChange={
           timeframe === ActivityTimeframe.AllTime
             ? undefined
@@ -148,11 +144,7 @@ export const OverallCharts = () => {
       />
       <OverallStatsCard
         title="Sellers"
-        value={overallStats.unique_sellers.toLocaleString(undefined, {
-          notation: 'compact',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        })}
+        value={formatCount(overallStats.unique_sellers)}
         percentageChange={
           timeframe === ActivityTimeframe.AllTime
             ? undefined

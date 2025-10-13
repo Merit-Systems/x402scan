@@ -1,4 +1,4 @@
-import type { USDCAmount } from './cdp/numeric-types';
+import type { CountValue, USDCAmount } from './cdp/numeric-types';
 import { formatCurrency } from './utils';
 
 export const convertTokenAmount = (amount: bigint | string, decimals = 6) => {
@@ -24,4 +24,17 @@ export const formatTokenAmount = (
 ) => {
   const amountBigInt = typeof amount === 'string' ? BigInt(amount) : amount;
   return formatCurrency(Number(convertTokenAmount(amountBigInt, decimals)));
+};
+
+export const formatCount = (
+  count: string | number | CountValue,
+  options?: Intl.NumberFormatOptions
+): string => {
+  const countNumber = typeof count === 'string' ? Number(count) : count;
+  return countNumber.toLocaleString(undefined, {
+    ...options,
+    notation: 'compact',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
 };

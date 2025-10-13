@@ -7,7 +7,7 @@ import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { Seller, SellerSkeleton } from '@/app/_components/seller';
 import { Facilitators } from '@/app/_components/facilitator';
 
-import { formatTokenAmount } from '@/lib/token';
+import { formatCount, formatTokenAmount } from '@/lib/token';
 import { formatCompactAgo } from '@/lib/utils';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -52,11 +52,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
-        {row.original.tx_count.toLocaleString(undefined, {
-          notation: 'compact',
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 0,
-        })}
+        {formatCount(row.original.tx_count)}
       </div>
     ),
     size: 100, // Fixed width for transaction count
@@ -98,11 +94,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
-        {row.original.unique_buyers.toLocaleString(undefined, {
-          notation: 'compact',
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 0,
-        })}
+        {formatCount(row.original.unique_buyers)}
       </div>
     ),
     size: 100, // Fixed width for buyers count
