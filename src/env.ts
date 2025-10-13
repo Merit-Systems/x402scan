@@ -11,7 +11,8 @@ export const env = createEnv({
     ECHO_APP_ID: z.string().optional(),
     HIDE_TRPC_LOGS: z.coerce.boolean().optional(),
     GITHUB_TOKEN: z.string().optional(),
-    CRON_SECRET: process.env.NODE_ENV === 'development'
+    CRON_SECRET:
+      process.env.NODE_ENV === 'development'
         ? z.string().optional()
         : z.string(),
   },
