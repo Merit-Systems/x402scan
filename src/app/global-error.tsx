@@ -1,6 +1,6 @@
 'use client';
 
-import { ErrorCard } from './_components/error/card';
+import { ErrorCard } from './(app)/_components/error/card';
 
 import type { Metadata } from 'next';
 import type { NextErrorProps } from '@/types/next-error';

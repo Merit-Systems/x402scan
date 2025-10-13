@@ -1,4 +1,4 @@
-import { NotFoundCard } from './_components/error/card';
+import { NotFoundCard } from './(app)/_components/error/card';
 
 import type { Metadata } from 'next';
 

@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "dev": "pnpm next:dev & wait-on http://localhost:3000 && pnpm sync:resources",
-    "next:dev": "next dev --turbopack",
+    "dev": "next dev --turbopack",
     "build": "prisma migrate deploy && next build --turbopack",
     "start": "next start",
     "lint": "eslint",

@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { subMonths, differenceInSeconds, subSeconds } from 'date-fns';
 import { api } from '@/trpc/server';
-import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
-import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
+import { defaultSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/default';
+import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
 
 import type { NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';

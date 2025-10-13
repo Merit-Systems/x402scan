@@ -7,22 +7,12 @@ import { ThemeProvider } from 'next-themes';
 
 import { RootProvider } from 'fumadocs-ui/provider/next';
 
-import Link from 'next/link';
-import Image from 'next/image';
-
-import { Button } from '@/components/ui/button';
-import { Logo } from '@/components/logo';
-import { AnimatedThemeToggler } from '@/components/magicui/animated-theme-toggler';
 import { Toaster } from '@/components/ui/sonner';
 
-import { LogoContainer } from './_components/layout/logo';
-import { NavbarSearchButton } from './_components/layout/navbar/search';
-import { NavbarAuthButton } from './_components/layout/navbar/auth-button';
-
-import { CDPHooksProvider } from './_contexts/cdp';
-import { SearchProvider } from './_contexts/search/provider';
-import { WagmiProvider } from './_contexts/wagmi';
-import { PostHogProvider } from './_contexts/posthog';
+import { CDPHooksProvider } from './(app)/_contexts/cdp';
+import { SearchProvider } from './(app)/_contexts/search/provider';
+import { WagmiProvider } from './(app)/_contexts/wagmi';
+import { PostHogProvider } from './(app)/_contexts/posthog';
 
 import { TRPCReactProvider } from '@/trpc/client';
 
@@ -32,6 +22,7 @@ import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
+import { Header } from './(app)/_components/layout/header';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -138,40 +129,7 @@ export default function RootLayout({
                         enableSystem={true}
                       >
                         <div className="min-h-screen flex flex-col relative">
-                          <LogoContainer>
-                            <Link href="/" prefetch={false}>
-                              <Logo className="size-full aspect-square" />
-                            </Link>
-                          </LogoContainer>
-                          <header className="w-full flex flex-col pt-4 justify-center bg-card">
-                            <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
-                              <div className="pl-8 md:pl-8 flex items-center gap-2 md:gap-3">
-                                {breadcrumbs}
-                              </div>
-                              <div className="flex items-center gap-1 md:gap-2">
-                                <NavbarSearchButton />
-                                <NavbarAuthButton />
-                                <a
-                                  href="https://github.com/Merit-Systems/x402scan"
-                                  target="_blank"
-                                >
-                                  <Button variant="outline" size={'navbar'}>
-                                    <Image
-                                      src="/github.png"
-                                      alt="GitHub"
-                                      width={16}
-                                      height={16}
-                                      className="size-4"
-                                    />
-                                    <span className="hidden md:block">
-                                      Contribute
-                                    </span>
-                                  </Button>
-                                </a>
-                                <AnimatedThemeToggler />
-                              </div>
-                            </div>
-                          </header>
+                          <Header breadcrumbs={breadcrumbs} />
                           <div className="bg-background flex-1 flex flex-col">
                             {children}
                           </div>
