@@ -36,7 +36,7 @@ export const Header: React.FC<Props> = ({ breadcrumbs }) => {
                   alt="GitHub"
                   width={16}
                   height={16}
-                  className="size-4"
+                  className="size-4 dark:invert"
                 />
                 <span className="hidden md:block">Contribute</span>
               </Button>
