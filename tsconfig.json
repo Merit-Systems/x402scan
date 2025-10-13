@@ -28,8 +28,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "trigger.config.ts",
-    "next.config.mjs",
-    "content/docs/x402-overview.mdx"
+    "next.config.mjs"
   ],
   "exclude": ["node_modules"]
 }
