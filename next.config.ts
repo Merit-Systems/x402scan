@@ -1,4 +1,11 @@
+import { createMDX } from 'fumadocs-mdx/next';
+
 import type { NextConfig } from 'next';
+
+const withMDX = createMDX({
+  configPath: 'source.config.ts',
+  outDir: '.source',
+});
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
@@ -26,4 +33,4 @@ const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
 };
 
-export default nextConfig;
+export default withMDX(nextConfig);
