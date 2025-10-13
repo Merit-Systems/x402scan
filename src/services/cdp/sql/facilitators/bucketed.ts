@@ -5,6 +5,12 @@ import { runBaseSqlQuery } from '../query';
 import { baseQuerySchema, formatDateForSql } from '../lib';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { facilitators } from '@/lib/facilitators';
+import {
+  usdcAmountSchema,
+  countValueSchema,
+  type USDCAmount,
+  type CountValue,
+} from '@/lib/cdp/numeric-types';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   startDate: z
@@ -28,10 +34,10 @@ const getBucketedFacilitatorsStatisticsUncached = async (
   const { startDate, endDate, numBuckets, tokens } = parseResult.data;
   const outputSchema = z.object({
     bucket_start: z.coerce.date(),
-    total_transactions: z.coerce.number(),
-    total_amount: z.coerce.number(),
-    unique_buyers: z.coerce.number(),
-    unique_sellers: z.coerce.number(),
+    total_transactions: countValueSchema,
+    total_amount: usdcAmountSchema,
+    unique_buyers: countValueSchema,
+    unique_sellers: countValueSchema,
     facilitator_name: z.enum(['Unknown', ...facilitators.map(f => f.name)]),
   });
 
@@ -116,10 +122,10 @@ ORDER BY bucket_start ASC;
       facilitators: Record<
         string,
         {
-          total_transactions: number;
-          total_amount: number;
-          unique_buyers: number;
-          unique_sellers: number;
+          total_transactions: CountValue;
+          total_amount: USDCAmount;
+          unique_buyers: CountValue;
+          unique_sellers: CountValue;
         }
       >;
     }[]

@@ -13,6 +13,7 @@ import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
+import { usdcAmountSchema } from '@/lib/cdp/numeric-types';
 
 const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 
@@ -33,7 +34,7 @@ const outputSchema = z.array(
   z.object({
     sender: ethereumAddressSchema,
     recipient: ethereumAddressSchema,
-    amount: z.coerce.number(),
+    amount: usdcAmountSchema,
     token_address: ethereumAddressSchema,
     transaction_from: facilitatorAddressSchema,
     transaction_hash: ethereumHashSchema,
