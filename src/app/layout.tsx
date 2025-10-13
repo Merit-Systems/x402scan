@@ -5,6 +5,8 @@ import { Analytics } from '@vercel/analytics/next';
 
 import { ThemeProvider } from 'next-themes';
 
+import { RootProvider } from 'fumadocs-ui/provider/next';
+
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -119,67 +121,69 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Toaster />
-        <SpeedInsights />
-        <Analytics />
-        <SessionProvider>
-          <TRPCReactProvider>
-            <SearchProvider>
-              <CDPHooksProvider>
-                <WagmiProvider>
-                  <PostHogProvider>
-                    <ThemeProvider
-                      attribute="class"
-                      defaultTheme="light"
-                      storageKey="x402scan-theme"
-                      enableSystem={true}
-                    >
-                      <div className="min-h-screen flex flex-col relative">
-                        <LogoContainer>
-                          <Link href="/" prefetch={false}>
-                            <Logo className="size-full aspect-square" />
-                          </Link>
-                        </LogoContainer>
-                        <header className="w-full flex flex-col pt-4 justify-center bg-card">
-                          <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
-                            <div className="pl-8 md:pl-8 flex items-center gap-2 md:gap-3">
-                              {breadcrumbs}
+        <RootProvider>
+          <Toaster />
+          <SpeedInsights />
+          <Analytics />
+          <SessionProvider>
+            <TRPCReactProvider>
+              <SearchProvider>
+                <CDPHooksProvider>
+                  <WagmiProvider>
+                    <PostHogProvider>
+                      <ThemeProvider
+                        attribute="class"
+                        defaultTheme="light"
+                        storageKey="x402scan-theme"
+                        enableSystem={true}
+                      >
+                        <div className="min-h-screen flex flex-col relative">
+                          <LogoContainer>
+                            <Link href="/" prefetch={false}>
+                              <Logo className="size-full aspect-square" />
+                            </Link>
+                          </LogoContainer>
+                          <header className="w-full flex flex-col pt-4 justify-center bg-card">
+                            <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
+                              <div className="pl-8 md:pl-8 flex items-center gap-2 md:gap-3">
+                                {breadcrumbs}
+                              </div>
+                              <div className="flex items-center gap-1 md:gap-2">
+                                <NavbarSearchButton />
+                                <NavbarAuthButton />
+                                <a
+                                  href="https://github.com/Merit-Systems/x402scan"
+                                  target="_blank"
+                                >
+                                  <Button variant="outline" size={'navbar'}>
+                                    <Image
+                                      src="/github.png"
+                                      alt="GitHub"
+                                      width={16}
+                                      height={16}
+                                      className="size-4"
+                                    />
+                                    <span className="hidden md:block">
+                                      Contribute
+                                    </span>
+                                  </Button>
+                                </a>
+                                <AnimatedThemeToggler />
+                              </div>
                             </div>
-                            <div className="flex items-center gap-1 md:gap-2">
-                              <NavbarSearchButton />
-                              <NavbarAuthButton />
-                              <a
-                                href="https://github.com/Merit-Systems/x402scan"
-                                target="_blank"
-                              >
-                                <Button variant="outline" size={'navbar'}>
-                                  <Image
-                                    src="/github.png"
-                                    alt="GitHub"
-                                    width={16}
-                                    height={16}
-                                    className="size-4"
-                                  />
-                                  <span className="hidden md:block">
-                                    Contribute
-                                  </span>
-                                </Button>
-                              </a>
-                              <AnimatedThemeToggler />
-                            </div>
+                          </header>
+                          <div className="bg-background flex-1 flex flex-col">
+                            {children}
                           </div>
-                        </header>
-                        <div className="bg-background flex-1 flex flex-col">
-                          {children}
                         </div>
-                      </div>
-                    </ThemeProvider>
-                  </PostHogProvider>
-                </WagmiProvider>
-              </CDPHooksProvider>
-            </SearchProvider>
-          </TRPCReactProvider>
-        </SessionProvider>
+                      </ThemeProvider>
+                    </PostHogProvider>
+                  </WagmiProvider>
+                </CDPHooksProvider>
+              </SearchProvider>
+            </TRPCReactProvider>
+          </SessionProvider>
+        </RootProvider>
       </body>
     </html>
   );
