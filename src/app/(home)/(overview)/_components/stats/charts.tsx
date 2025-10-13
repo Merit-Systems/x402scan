@@ -42,12 +42,12 @@ export const OverallCharts = () => {
     buyers: number;
     sellers: number;
   }>[] = bucketedStats.map(stat => ({
-    transactions: stat.total_transactions,
+    transactions: Number(stat.total_transactions),
     totalAmount: parseFloat(
       convertTokenAmount(BigInt(stat.total_amount)).toString()
     ),
-    buyers: stat.unique_buyers,
-    sellers: stat.unique_sellers,
+    buyers: Number(stat.unique_buyers),
+    sellers: Number(stat.unique_sellers),
     timestamp: stat.bucket_start.toISOString(),
   }));
 

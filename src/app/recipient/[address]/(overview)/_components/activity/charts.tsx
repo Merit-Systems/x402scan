@@ -43,12 +43,12 @@ export const ActivityCharts: React.FC<Props> = ({ address }) => {
     unique_sellers: number;
   }>[] = useMemo(() => {
     return bucketedStats.map(({ bucket_start, ...rest }) => ({
-      total_transactions: rest.total_transactions,
+      total_transactions: Number(rest.total_transactions),
       total_amount: parseFloat(
         convertTokenAmount(BigInt(rest.total_amount)).toString()
       ),
-      unique_buyers: rest.unique_buyers,
-      unique_sellers: rest.unique_sellers,
+      unique_buyers: Number(rest.unique_buyers),
+      unique_sellers: Number(rest.unique_sellers),
       timestamp: format(bucket_start, 'MMM dd HH:mm yyyy'),
     }));
   }, [bucketedStats]);
