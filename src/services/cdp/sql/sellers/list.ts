@@ -3,6 +3,7 @@ import z from 'zod';
 import { runBaseSqlQuery } from '../query';
 import { ethereumAddressSchema, facilitatorAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
+import { usdcAmountSchema, countValueSchema } from '@/lib/cdp/numeric-types';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
 import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
@@ -42,10 +43,10 @@ const listTopSellersUncached = async (
     z.object({
       recipient: ethereumAddressSchema,
       facilitators: z.array(facilitatorAddressSchema),
-      tx_count: z.coerce.number(),
-      total_amount: z.coerce.number(),
+      tx_count: countValueSchema,
+      total_amount: usdcAmountSchema,
       latest_block_timestamp: z.coerce.date(),
-      unique_buyers: z.coerce.number(),
+      unique_buyers: countValueSchema,
     })
   );
 

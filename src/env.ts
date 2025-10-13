@@ -11,10 +11,7 @@ export const env = createEnv({
     ECHO_APP_ID: z.string().optional(),
     HIDE_TRPC_LOGS: z.coerce.boolean().optional(),
     GITHUB_TOKEN: z.string().optional(),
-    CRON_SECRET:
-      process.env.NEXT_PUBLIC_NODE_ENV === 'development'
-        ? z.string().optional()
-        : z.string(),
+    CRON_SECRET: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.url().default('http://localhost:3000'),

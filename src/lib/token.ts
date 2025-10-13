@@ -1,8 +1,11 @@
+import type { USDCAmount } from './cdp/numeric-types';
 import { formatCurrency } from './utils';
 
-export const convertTokenAmount = (amount: bigint, decimals = 6) => {
+export const convertTokenAmount = (amount: bigint | string, decimals = 6) => {
+  const amountBigInt = typeof amount === 'string' ? BigInt(amount) : amount;
+
   // Convert to string, then use string manipulation to preserve precision
-  const amountStr = amount.toString();
+  const amountStr = amountBigInt.toString();
 
   if (amountStr.length <= decimals) {
     // Amount is less than 1 token (e.g., 500000 -> 0.5)
@@ -15,6 +18,10 @@ export const convertTokenAmount = (amount: bigint, decimals = 6) => {
   }
 };
 
-export const formatTokenAmount = (amount: bigint, decimals = 6) => {
-  return formatCurrency(Number(convertTokenAmount(amount, decimals)));
+export const formatTokenAmount = (
+  amount: bigint | string | USDCAmount,
+  decimals = 6
+) => {
+  const amountBigInt = typeof amount === 'string' ? BigInt(amount) : amount;
+  return formatCurrency(Number(convertTokenAmount(amountBigInt, decimals)));
 };

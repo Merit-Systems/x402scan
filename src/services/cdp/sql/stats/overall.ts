@@ -5,6 +5,12 @@ import { runBaseSqlQuery } from '../query';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { baseQuerySchema, formatDateForSql } from '../lib';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
+import {
+  usdcAmountSchema,
+  countValueSchema,
+  type USDCAmount,
+  type CountValue,
+} from '@/lib/cdp/numeric-types';
 
 export const overallStatisticsInputSchema = baseQuerySchema.extend({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -22,10 +28,10 @@ const getOverallStatisticsUncached = async (
   const { addresses, startDate, endDate, facilitators, tokens } =
     parseResult.data;
   const outputSchema = z.object({
-    total_transactions: z.coerce.number(),
-    total_amount: z.coerce.number(),
-    unique_buyers: z.coerce.number(),
-    unique_sellers: z.coerce.number(),
+    total_transactions: countValueSchema,
+    total_amount: usdcAmountSchema,
+    unique_buyers: countValueSchema,
+    unique_sellers: countValueSchema,
     latest_block_timestamp: z.coerce.date(),
   });
 
@@ -56,10 +62,10 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
 
   if (!result || result.length === 0) {
     return {
-      total_transactions: 0,
-      total_amount: 0,
-      unique_buyers: 0,
-      unique_sellers: 0,
+      total_transactions: '0' as CountValue,
+      total_amount: '0' as USDCAmount,
+      unique_buyers: '0' as CountValue,
+      unique_sellers: '0' as CountValue,
       latest_block_timestamp: new Date(),
     };
   }
