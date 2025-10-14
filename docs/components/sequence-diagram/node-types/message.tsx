@@ -7,7 +7,7 @@ export const MessageNode: React.FC<NodeProps<MessageNodeType>> = ({ data }) => {
       <div />
       <Handle
         type={data.isSource ? 'source' : 'target'}
-        position={data.isSource ? Position.Right : Position.Left}
+        position={Position.Bottom}
       />
     </>
   );

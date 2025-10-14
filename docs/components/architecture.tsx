@@ -8,7 +8,7 @@ export const Architecture = () => {
         {
           sender: 'Client',
           receiver: 'Server',
-          message: 'POST /protected/resource',
+          message: 'Fetch /protected/resource',
         },
         {
           sender: 'Server',
@@ -33,7 +33,7 @@ export const Architecture = () => {
         },
         {
           sender: 'Facilitator',
-          receiver: 'Client',
+          receiver: 'Server',
           message: 'Payment Settled',
         },
         {

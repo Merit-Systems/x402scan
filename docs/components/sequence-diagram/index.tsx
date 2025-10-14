@@ -1,6 +1,6 @@
 'use client';
 
-import { MarkerType, type Edge } from '@xyflow/react';
+import { MarkerType, Position, type Edge } from '@xyflow/react';
 
 import { Graph } from '../graph';
 
@@ -8,8 +8,8 @@ import { SequenceNodeType } from './node-types/types';
 
 import type { ActorNode, MessageNode, SinkNode } from './node-types/types';
 import { sequenceDiagramNodeTypes } from './node-types';
-import { sequenceDiagramEdgeTypes } from './edge-types';
-import { SequenceEdgeType, type MessageEdge } from './edge-types/types';
+
+import './styles.css';
 
 interface Props {
   actors: string[];
@@ -37,11 +37,19 @@ export const SequenceDiagram: React.FC<Props> = ({
 }) => {
   const actorNodes: ActorNode[] = actors.map((actor, index) => ({
     id: actor,
-    position: { x: index * itemWidth + index * itemSpacing, y: 0 },
+    position: { x: index * (itemWidth + itemSpacing), y: 0 },
     data: { name: actor },
     height: itemHeight,
     width: itemWidth,
     type: SequenceNodeType.Actor,
+    handles: [
+      {
+        type: 'source',
+        position: Position.Bottom,
+        x: itemWidth / 2,
+        y: itemHeight,
+      },
+    ],
   }));
 
   const sinkNodes: SinkNode[] = actors.map((actor, index) => ({
@@ -54,9 +62,17 @@ export const SequenceDiagram: React.FC<Props> = ({
         messages.length * (messageHeight + messageSpacing),
     },
     data: {},
-    height: 1,
+    height: 0,
     width: itemWidth,
     type: SequenceNodeType.Sink,
+    handles: [
+      {
+        type: 'target',
+        position: Position.Top,
+        x: itemWidth / 2,
+        y: 0,
+      },
+    ],
   }));
 
   const messageNodes: MessageNode[] = messages
@@ -72,26 +88,38 @@ export const SequenceDiagram: React.FC<Props> = ({
         {
           id: `${message.sender}-${index}`,
           position: {
-            x:
-              actorNodes.find(node => node.data.name === message.sender)!
-                .position.x -
-              itemWidth / 2,
+            x: actorNodes.find(node => node.data.name === message.sender)!
+              .position.x,
             y: y,
           },
           data: { isSource: true },
           ...commonProps,
+          handles: [
+            {
+              type: 'source' as const,
+              position: Position.Bottom,
+              x: itemWidth / 2,
+              y: messageHeight / 2,
+            },
+          ],
         },
         {
           id: `${message.receiver}-${index}`,
           position: {
-            x:
-              actorNodes.find(node => node.data.name === message.receiver)!
-                .position.x +
-              itemWidth / 2,
+            x: actorNodes.find(node => node.data.name === message.receiver)!
+              .position.x,
             y,
           },
           data: { isSource: false },
           ...commonProps,
+          handles: [
+            {
+              type: 'target' as const,
+              position: Position.Bottom,
+              x: itemWidth / 2,
+              y: messageHeight / 2,
+            },
+          ],
         },
       ];
     })
@@ -104,12 +132,10 @@ export const SequenceDiagram: React.FC<Props> = ({
     data: { label: actor },
   }));
 
-  const messageEdges: MessageEdge[] = messages.map((message, index) => ({
+  const messageEdges: Edge[] = messages.map((message, index) => ({
     id: `${message.sender}-${message.receiver}-${index}`,
     source: `${message.sender}-${index}`,
     target: `${message.receiver}-${index}`,
-    data: { label: message.message },
-    type: SequenceEdgeType.MessageEdge,
     animated: true,
     markerEnd: {
       type: MarkerType.ArrowClosed,
@@ -117,16 +143,30 @@ export const SequenceDiagram: React.FC<Props> = ({
       width: 20,
       height: 20,
     },
+    label: `${index + 1}) ${message.message}`,
+    labelStyle: {
+      fontSize: 12,
+      fontWeight: 'bold',
+      fontFamily: 'monospace',
+      padding: 4,
+    },
+    labelBgStyle: {
+      fill: 'var(--card)',
+      stroke: 'var(--border)',
+    },
   }));
 
   return (
     <Graph
       nodes={[...actorNodes, ...messageNodes, ...sinkNodes]}
       edges={[...sinkEdges, ...messageEdges]}
-      height={itemHeight + messages.length * (messageHeight + messageSpacing)}
-      width={(itemWidth + itemSpacing) * actors.length - itemSpacing / 2}
+      height={
+        itemHeight +
+        messages.length * (messageHeight + messageSpacing) +
+        itemHeight
+      }
+      width={(itemWidth + itemSpacing) * actors.length - itemSpacing}
       nodeTypes={sequenceDiagramNodeTypes}
-      edgeTypes={sequenceDiagramEdgeTypes}
     />
   );
 };

@@ -13,9 +13,9 @@ export const MessageEdge: React.FC<EdgeProps<MessageEdgeType>> = ({
   ...rest
 }) => {
   const [edgePath, labelX, labelY] = getStraightPath({
-    sourceX,
+    sourceX: sourceX,
     sourceY,
-    targetX,
+    targetX: sourceX > targetX ? targetX + 5 : targetX,
     targetY,
   });
 
