@@ -1,9 +1,16 @@
+'use client';
+
+import { Server, ShieldCheck, User } from 'lucide-react';
 import { SequenceDiagram } from './sequence-diagram';
 
 export const Architecture = () => {
   return (
     <SequenceDiagram
-      actors={['Client', 'Server', 'Facilitator']}
+      actors={[
+        { name: 'Client', Icon: User },
+        { name: 'Server', Icon: Server },
+        { name: 'Facilitator', Icon: ShieldCheck },
+      ]}
       messages={[
         {
           sender: 'Client',
@@ -13,33 +20,37 @@ export const Architecture = () => {
         {
           sender: 'Server',
           receiver: 'Client',
-          message: '402: Payment Required',
-        },
-        { sender: 'Client', receiver: 'Server', message: 'X-PAYMENT_HEADER' },
-        {
-          sender: 'Server',
-          receiver: 'Facilitator',
-          message: 'Verify Payment',
+          message: '402 + Payment Instructions',
         },
         {
-          sender: 'Facilitator',
+          sender: 'Client',
           receiver: 'Server',
-          message: 'Signature Valid',
+          message: 'Fetch + X-PAYMENT_HEADER',
         },
         {
           sender: 'Server',
           receiver: 'Facilitator',
-          message: 'Settle Payment',
+          message: 'POST /verify',
         },
         {
           sender: 'Facilitator',
           receiver: 'Server',
-          message: 'Payment Settled',
+          message: '200: Signature Valid',
+        },
+        {
+          sender: 'Server',
+          receiver: 'Facilitator',
+          message: 'POST /settle',
+        },
+        {
+          sender: 'Facilitator',
+          receiver: 'Server',
+          message: '200: Payment Settled',
         },
         {
           sender: 'Server',
           receiver: 'Client',
-          message: 'Protected Resource',
+          message: '200: Protected Resource',
         },
       ]}
     />

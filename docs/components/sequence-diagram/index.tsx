@@ -6,13 +6,22 @@ import { Graph } from '../graph';
 
 import { SequenceNodeType } from './node-types/types';
 
-import type { ActorNode, MessageNode, SinkNode } from './node-types/types';
 import { sequenceDiagramNodeTypes } from './node-types';
+
+import { sequenceDiagramEdgeTypes } from './edge-types';
+import { SequenceEdgeType } from './edge-types/types';
+
+import type {
+  ActorData,
+  ActorNode,
+  MessageNode,
+  SinkNode,
+} from './node-types/types';
 
 import './styles.css';
 
 interface Props {
-  actors: string[];
+  actors: ActorData[];
   messages: {
     sender: string;
     receiver: string;
@@ -36,9 +45,9 @@ export const SequenceDiagram: React.FC<Props> = ({
   messageSpacing = 25,
 }) => {
   const actorNodes: ActorNode[] = actors.map((actor, index) => ({
-    id: actor,
+    id: actor.name,
     position: { x: index * (itemWidth + itemSpacing), y: 0 },
-    data: { name: actor },
+    data: actor,
     height: itemHeight,
     width: itemWidth,
     type: SequenceNodeType.Actor,
@@ -53,7 +62,7 @@ export const SequenceDiagram: React.FC<Props> = ({
   }));
 
   const sinkNodes: SinkNode[] = actors.map((actor, index) => ({
-    id: `sink-${actor}`,
+    id: `sink-${actor.name}`,
     position: {
       x: index * itemWidth + index * itemSpacing,
       y:
@@ -126,10 +135,10 @@ export const SequenceDiagram: React.FC<Props> = ({
     .flat();
 
   const sinkEdges: Edge[] = actors.map(actor => ({
-    id: `sink-${actor}`,
-    source: actor,
-    target: `sink-${actor}`,
-    data: { label: actor },
+    id: `sink-${actor.name}`,
+    source: actor.name,
+    target: `sink-${actor.name}`,
+    type: SequenceEdgeType.SinkEdge,
   }));
 
   const messageEdges: Edge[] = messages.map((message, index) => ({
@@ -143,17 +152,8 @@ export const SequenceDiagram: React.FC<Props> = ({
       width: 20,
       height: 20,
     },
-    label: `${index + 1}) ${message.message}`,
-    labelStyle: {
-      fontSize: 12,
-      fontWeight: 'bold',
-      fontFamily: 'monospace',
-      padding: 4,
-    },
-    labelBgStyle: {
-      fill: 'var(--card)',
-      stroke: 'var(--border)',
-    },
+    data: { label: `${message.message}`, index: index + 1 },
+    type: SequenceEdgeType.MessageEdge,
   }));
 
   return (
@@ -167,6 +167,7 @@ export const SequenceDiagram: React.FC<Props> = ({
       }
       width={(itemWidth + itemSpacing) * actors.length - itemSpacing}
       nodeTypes={sequenceDiagramNodeTypes}
+      edgeTypes={sequenceDiagramEdgeTypes}
     />
   );
 };

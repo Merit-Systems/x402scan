@@ -8,6 +8,8 @@ import { AnimatedThemeToggler } from '@/components/magicui/animated-theme-toggle
 import { LogoContainer } from './logo';
 import { NavbarSearchButton } from './search';
 import { NavbarAuthButton } from './auth-button';
+import { Book } from 'lucide-react';
+import type { Route } from 'next';
 
 interface Props {
   breadcrumbs: React.ReactNode;
@@ -29,8 +31,13 @@ export const Header: React.FC<Props> = ({ breadcrumbs }) => {
           <div className="flex items-center gap-1 md:gap-2">
             <NavbarSearchButton />
             <NavbarAuthButton />
+            <Link href={'/docs' as Route} prefetch={false}>
+              <Button variant="outline" size={'icon'}>
+                <Book className="size-4" />
+              </Button>
+            </Link>
             <a href="https://github.com/Merit-Systems/x402scan" target="_blank">
-              <Button variant="outline" size={'navbar'}>
+              <Button variant="outline" size={'icon'}>
                 <Image
                   src="/github.png"
                   alt="GitHub"
@@ -38,7 +45,6 @@ export const Header: React.FC<Props> = ({ breadcrumbs }) => {
                   height={16}
                   className="size-4 dark:invert"
                 />
-                <span className="hidden md:block">Contribute</span>
               </Button>
             </a>
             <AnimatedThemeToggler />

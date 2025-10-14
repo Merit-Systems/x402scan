@@ -1,11 +1,16 @@
 ---
-title: x402
+title: x402 Overview
 description: How the x402 protocol works
 ---
 
 import { Architecture } from '../components/architecture';
+import { TypeTable } from 'fumadocs-ui/components/type-table';
 
 ## Architecture
+
+The x402 protocol is a new open payment protocol developed by Coinbase that enables instant, automatic stablecoin payments directly over HTTP.
+
+The following sequence diagram illustrates the typicaly workflow of an x402 transaction.
 
 <Architecture />
 
@@ -16,3 +21,102 @@ There are three main players in an x402 workflow:
 - **Client**: The entity that is making a request to access a paid resource
 - **Server**: The entity that is hosting a paid resource
 - **Facilitator**: The entity that verifies a client's payment and settles the payment to the server
+
+## Workflow
+
+1. The **client** makes a request to the **server**, typically **without a payment header**.
+2. The **server** returns a 402 Payment Required response with instructions on how to pay.
+3. The **client** constructs a payment signature and makes the same request with the payment header.
+4. The **server** requests the **facilitator** to verify the payment via the `POST /verify` endpoint.
+5. The **facilitator** verifies the payment and returns a 200 OK response. If the payment is not valid, the **facilitator** returns an error
+6. The **server** settles the payment to the **client** via the `POST /settle` endpoint.
+7. The **facilitator** confirms settlement to the **server**.
+8. The **server** returns the protected resource to the **client**.
+
+## x402 response
+
+When a **cleint** requests a protected resource without a `X-PAYMENT_HEADER` header, the **server** returns a 402 Payment Required response with instructions on how to pay:
+
+<TypeTable
+  type={{
+    x402Version: {
+      type: 'number',
+      description: 'The version of the x402 protocol',
+      required: true,
+    },
+    error: {
+      type: 'string',
+      description: 'The error message',
+      required: false,
+    },
+    accepts: {
+      type: 'Array<Accepts>',
+      description: 'The payment methods accepted by the server',
+      required: false,
+    },
+  }}
+/>
+
+The `Accepts` type is defined as follows:
+
+<TypeTable
+  type={{
+    scheme: {
+      type: 'string',
+      description:
+        'The payment method scheme (currently only "exact" is supported)',
+      required: true,
+    },
+    network: {
+      type: 'string',
+      description: 'The payment network (e.g. "base")',
+      required: true,
+    },
+    maxAmountRequired: {
+      type: 'string',
+      description: 'The maximum amount required to pay in atomic units',
+      required: true,
+    },
+    resource: {
+      type: 'string',
+      description: 'The URI of the resource to pay for',
+      required: true,
+    },
+    description: {
+      type: 'string',
+      description: 'The description of the resource',
+      required: true,
+    },
+    mimeType: {
+      type: 'string',
+      description: 'The MIME type of the resource',
+      required: true,
+    },
+    payTo: {
+      type: 'string',
+      description:
+        'The address to pay to (e.g. "0x1234567890123456789012345678901234567890")',
+      required: true,
+    },
+    maxTimeoutSeconds: {
+      type: 'number',
+      description: 'The maximum timeout in seconds',
+      required: true,
+    },
+    asset: {
+      type: 'string',
+      description: 'The asset to pay with (e.g. address of the USDC contract)',
+      required: true,
+    },
+    outputSchema: {
+      type: 'object',
+      description: 'The output schema of the resource',
+      required: false,
+    },
+    extra: {
+      type: 'object',
+      description: 'Additional custom data the provider wants to include',
+      required: false,
+    },
+  }}
+/>

@@ -7,6 +7,7 @@ import type { Edge, EdgeTypes, Node, NodeTypes, Viewport } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 
 interface Props {
   nodes?: Node[];
@@ -34,8 +35,8 @@ export const Graph = ({
   }, []);
 
   return (
-    <div
-      className="w-full border rounded-md shadow-sm relative"
+    <Card
+      className="w-full relative"
       style={{
         aspectRatio: width !== undefined ? width / height : undefined,
       }}
@@ -68,6 +69,6 @@ export const Graph = ({
       >
         <Background />
       </ReactFlow>
-    </div>
+    </Card>
   );
 };

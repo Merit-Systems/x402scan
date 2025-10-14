@@ -13,9 +13,9 @@ export const MessageEdge: React.FC<EdgeProps<MessageEdgeType>> = ({
   ...rest
 }) => {
   const [edgePath, labelX, labelY] = getStraightPath({
-    sourceX: sourceX,
+    sourceX,
     sourceY,
-    targetX: sourceX > targetX ? targetX + 5 : targetX,
+    targetX,
     targetY,
   });
 
@@ -30,16 +30,20 @@ export const MessageEdge: React.FC<EdgeProps<MessageEdgeType>> = ({
         labelStyle={labelStyle}
         markerStart={markerStart}
         markerEnd={markerEnd}
+        className="stroke-primary!"
       />
       <EdgeLabelRenderer>
         <span
-          className="text-sm font-medium bg-card rounded-md px-2 py-1 border"
+          className="text-xs font-bold bg-card rounded-md px-2 py-1 border font-mono flex gap-2"
           style={{
             position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
           }}
         >
-          {data?.label}
+          <span className="border border-primary rounded-full size-4 text-primary flex items-center justify-center">
+            {data?.index}
+          </span>
+          <span>{data?.label}</span>
         </span>
       </EdgeLabelRenderer>
     </>
