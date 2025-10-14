@@ -1,13 +1,16 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import { Background, ReactFlow } from '@xyflow/react';
+
+import { Loader2 } from 'lucide-react';
+
+import { Card } from '@/components/ui/card';
 
 import type { Edge, EdgeTypes, Node, NodeTypes, Viewport } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
-import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 
 interface Props {
   nodes?: Node[];

@@ -1,7 +1,7 @@
 'use client';
 
 import { Server, ShieldCheck, User } from 'lucide-react';
-import { SequenceDiagram } from './sequence-diagram';
+import { SequenceDiagram } from '../../src/components/xyflow/sequence-diagram';
 
 export const Architecture = () => {
   return (

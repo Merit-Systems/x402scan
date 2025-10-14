@@ -1,0 +1,19 @@
+---
+title: Architecture
+description: How we structure our database and queries
+---
+
+import { DatabaseSchema } from '../../components/database-schema';
+
+## Database Schema
+
+We maintain a database of resources, payment schemes, and resource origins to provide semantic labels to x402 transactions.
+
+<DatabaseSchema />
+
+## Ingestion Pipeline
+
+Our data is populated from two sources:
+
+1. Sync from facilitators that support the `/discovery/resources` endpoint every minute
+2. Fetch resources provided by users from the [Register Resources](https://x402.xyz/resources/register) page. Read more about registering resources [here](https://x402.xyz/resources/register).

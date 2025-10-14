@@ -3,9 +3,11 @@
   "description": "Explore the future of agentic commerce",
   "pages": [
     "---Overview---",
-    "index",
-    "x402",
-    "---x402scan Core---",
-    "taxonomy"
+    "(overview)/index",
+    "(overview)/x402",
+    "---Core---",
+    "(core)/architecture",
+    "(core)/facilitators",
+    "---Contributing---"
   ]
 }

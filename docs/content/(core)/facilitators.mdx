@@ -1,0 +1,54 @@
+---
+title: Facilitators
+description: Which facilitators we track and analyze
+---
+
+import Image from 'next/image';
+import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
+import { Addresses } from '@/components/ui/address';
+
+import { facilitators } from '@/lib/facilitators';
+
+## Overview
+
+Facilitators are the entities that process x402 transactions. They are responsible for validating and forwarding transactions to the network.
+
+## Supported Facilitators
+
+We currently support {facilitators.length} facilitators:
+
+{
+
+<div className="flex flex-col gap-2">
+{facilitators.map(facilitator => (
+
+<div
+  key={facilitator.id}
+  className="flex items-center justify-between gap-2 border rounded-md p-2"
+>
+  <div className="flex items-center gap-2">
+    <Image
+      src={facilitator.image}
+      alt={facilitator.name}
+      width={32}
+      height={32}
+      className="my-0!"
+    />
+    <div className="flex flex-col">
+      <p className="text-lg font-bold my-0!">{facilitator.name}</p>
+      <Addresses addresses={facilitator.addresses} />
+    </div>
+  </div>
+  <Link href={facilitator.link} target="_blank">
+    <Button variant="outline">Learn More</Button>
+  </Link>
+</div>
+))}
+</div>
+}
+
+## Adding Facilitators
+
+If you run a facilitator and want to be added to the list, please open a PR to add your facilitator to the [facilitators](https://github.com/Merit-Systems/x402scan/blob/main/src/lib/facilitators.ts) file.
