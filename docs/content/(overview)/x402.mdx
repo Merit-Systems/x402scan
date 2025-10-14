@@ -37,86 +37,24 @@ There are three main players in an x402 workflow:
 
 When a **cleint** requests a protected resource without a `X-PAYMENT_HEADER` header, the **server** returns a 402 Payment Required response with instructions on how to pay:
 
-<TypeTable
-  type={{
-    x402Version: {
-      type: 'number',
-      description: 'The version of the x402 protocol',
-      required: true,
-    },
-    error: {
-      type: 'string',
-      description: 'The error message',
-      required: false,
-    },
-    accepts: {
-      type: 'Array<Accepts>',
-      description: 'The payment methods accepted by the server',
-      required: false,
-    },
-  }}
-/>
+```ts
+type X402Response = {
+  x402Version: number;
+  error?: string;
+  accepts?: Accepts[];
+};
 
-The `Accepts` type is defined as follows:
-
-<TypeTable
-  type={{
-    scheme: {
-      type: 'string',
-      description:
-        'The payment method scheme (currently only "exact" is supported)',
-      required: true,
-    },
-    network: {
-      type: 'string',
-      description: 'The payment network (e.g. "base")',
-      required: true,
-    },
-    maxAmountRequired: {
-      type: 'string',
-      description: 'The maximum amount required to pay in atomic units',
-      required: true,
-    },
-    resource: {
-      type: 'string',
-      description: 'The URI of the resource to pay for',
-      required: true,
-    },
-    description: {
-      type: 'string',
-      description: 'The description of the resource',
-      required: true,
-    },
-    mimeType: {
-      type: 'string',
-      description: 'The MIME type of the resource',
-      required: true,
-    },
-    payTo: {
-      type: 'string',
-      description:
-        'The address to pay to (e.g. "0x1234567890123456789012345678901234567890")',
-      required: true,
-    },
-    maxTimeoutSeconds: {
-      type: 'number',
-      description: 'The maximum timeout in seconds',
-      required: true,
-    },
-    asset: {
-      type: 'string',
-      description: 'The asset to pay with (e.g. address of the USDC contract)',
-      required: true,
-    },
-    outputSchema: {
-      type: 'object',
-      description: 'The output schema of the resource',
-      required: false,
-    },
-    extra: {
-      type: 'object',
-      description: 'Additional custom data the provider wants to include',
-      required: false,
-    },
-  }}
-/>
+type Accepts = {
+  scheme: string;
+  network: string;
+  maxAmountRequired: string;
+  resource: string;
+  description: string;
+  mimeType: string;
+  payTo: string;
+  maxTimeoutSeconds: number;
+  asset: string;
+  outputSchema?: object;
+  extra?: object;
+};
+```

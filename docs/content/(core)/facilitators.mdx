@@ -15,6 +15,10 @@ import { facilitators } from '@/lib/facilitators';
 
 Facilitators are the entities that process x402 transactions. They are responsible for validating and forwarding transactions to the network.
 
+## How We Use Facilitators
+
+Currently, the only way to indentify "x402 transactions" is to query `Transfer(address,address,uint256)` events submitted by the facilitators.
+
 ## Supported Facilitators
 
 We currently support {facilitators.length} facilitators:
@@ -34,10 +38,10 @@ We currently support {facilitators.length} facilitators:
       alt={facilitator.name}
       width={32}
       height={32}
-      className="my-0!"
+      className="my-0! rounded-md"
     />
     <div className="flex flex-col">
-      <p className="text-lg font-bold my-0!">{facilitator.name}</p>
+      <p className="font-bold my-0!">{facilitator.name}</p>
       <Addresses addresses={facilitator.addresses} />
     </div>
   </div>

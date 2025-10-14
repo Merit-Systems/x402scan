@@ -52,6 +52,8 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
     ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
   `;
 
+  console.log(sql);
+
   const result = await runBaseSqlQuery(sql, z.array(outputSchema));
 
   if (!result || result.length === 0) {

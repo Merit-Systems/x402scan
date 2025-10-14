@@ -20,7 +20,7 @@ const DatabaseSchemaNodeHeader = ({
   children,
 }: DatabaseSchemaNodeHeaderProps) => {
   return (
-    <BaseNodeHeader className="rounded-tl-md rounded-tr-md bg-secondary p-2 text-center text-sm text-muted-foreground m-0!">
+    <BaseNodeHeader className="rounded-tl-md rounded-tr-md bg-primary p-2 text-center text-sm text-white m-0!">
       <span className="my-0 text-lg font-bold">{children}</span>
     </BaseNodeHeader>
   );
@@ -83,7 +83,7 @@ const DatabaseSchemaBaseNode = ({
 export const DatabaseSchemaEntityNode = memo(
   ({ data }: NodeProps<DatabaseSchemaEntityNodeType>) => {
     return (
-      <DatabaseSchemaBaseNode className="p-0 flex flex-col">
+      <DatabaseSchemaBaseNode className="p-0 flex flex-col border-primary cursor-default">
         <DatabaseSchemaNodeHeader>{data.label}</DatabaseSchemaNodeHeader>
         <DatabaseSchemaNodeBody>
           {data.schema.map(entry => (

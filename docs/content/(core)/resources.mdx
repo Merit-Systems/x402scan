@@ -1,0 +1,84 @@
+---
+title: Resources
+description: Protected services available on x402
+---
+
+import Image from 'next/image';
+import { TypeTable } from 'fumadocs-ui/components/type-table';
+
+import { Card } from '@/components/ui/card';
+
+## Overview
+
+**Resources** are endpoints protected by x402 that can be invoked by clients. Some examples include:
+
+- A search API endpoint
+- An agent that fixes bugs on a GitHub repository
+- An OCR service that extracts text and images from a PDF
+
+## Resource x402 Response
+
+When a resource is invoked without a payment header, it returns a 402 Payment Required response with instructions on how to pay.
+
+The response spec defined by the x402 protocol is listed in the [x402 Overview](/docs/x402#x402-response) page.
+
+## Adding Resources
+
+<Card className="border rounded-md overflow-hidden">
+  <video controls width="100%" className="my-0!">
+    <source src="/docs/add-resource.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+</Card>
+
+If an x402 resource you know if is not listed on x402scan, you can register it [here](https://x402.xyz/resources/register).
+
+When you register a resource, we will ping the endpoint and validate the response.
+
+### Listed Resources
+
+For the resource to be listed on the dashboard, it must provide a valid x402 response as listed above.
+
+### Invokable Resources
+
+For the resource to be available for use, it must provide a valid enhanced output schema as listed below.
+
+## Enhanced Output Schema
+
+The x402 spec leaves the `outputSchema` field open-ended and does not enforce a schema.
+
+We enforce a stricter schema to allow users to invoke resources from within the app:
+
+<div className="border rounded-md overflow-hidden p-0!">
+  <Image
+    src="/docs/resource.png"
+    alt="Enhanced Output Schema"
+    width={1200}
+    height={630}
+    className="my-0!"
+  />
+</div>
+
+The schema we enforce for `response.accepts[number].outputSchema` is defined as follows:
+
+```ts
+type EnhancedOutputSchema = {
+  input: {
+    type: 'http';
+    method: 'GET' | 'POST';
+    bodyType?: 'json';
+    queryParams?: Record<string, FieldDef>;
+    bodyFields?: Record<string, FieldDef>;
+    headerFields?: Record<string, FieldDef>;
+  };
+  output?: Record<string, any>;
+};
+
+type FieldDef = {
+  type?: string;
+  required?: boolean | string[];
+  description?: string;
+  enum?: string[];
+  properties?: Record<string, FieldDef>; // for nested objects
+};
+```

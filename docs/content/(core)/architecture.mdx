@@ -13,7 +13,41 @@ We maintain a database of resources, payment schemes, and resource origins to pr
 
 ## Ingestion Pipeline
 
-Our data is populated from two sources:
+Our database is populated in two ways:
 
-1. Sync from facilitators that support the `/discovery/resources` endpoint every minute
+1. By syncing from facilitators that support the `/discovery/resources` endpoint
 2. Fetch resources provided by users from the [Register Resources](https://x402.xyz/resources/register) page. Read more about registering resources [here](https://x402.xyz/resources/register).
+
+## Queries
+
+x402scan currently relies on the [CDP SQL API](https://docs.cdp.coinbase.com/x402/welcome) for all queries. They allow arbitrary SQL queries over indexed Base/Base Sepolia events, allowing us to make aggregate queries with sub-second latency.
+
+All of our queries are available [here](https://github.com/Merit-Systems/x402scan/tree/main/src/services/cdp/sql).
+
+### Example
+
+To fetch the overall statistics for a period of time, we use the following query:
+
+```sql
+SELECT
+    COUNT(*) AS total_transactions,
+    SUM(parameters['value']::UInt256) AS total_amount,
+    COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
+    COUNT(DISTINCT parameters['to']::String) AS unique_sellers,
+    max(block_timestamp) AS latest_block_timestamp
+FROM base.events
+WHERE event_signature = 'Transfer(address,address,uint256)'
+    AND address IN ('0x833589fcd6edb6e08f4c7c32d4f71b54bda02913')
+    AND transaction_from IN (
+        '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6',
+        '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec',
+        '0xc6699d2aada6c36dfea5c248dd70f9cb0235cb63',
+        '0x222c4367a2950f3b53af260e111fc3060b0983ff'
+    )
+    AND block_timestamp >= '2025-09-14 17:55:08.735'
+    AND block_timestamp <= '2025-10-14 17:55:08.735'
+```
+
+### Adding Queries
+
+Interested in making a new query? Feel free to open a PR to add it to our [SQL API services](https://github.com/Merit-Systems/x402scan/tree/main/src/services/cdp/sql).
