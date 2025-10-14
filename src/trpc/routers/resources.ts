@@ -1,8 +1,6 @@
 import z from 'zod';
 import z3 from 'zod3';
 
-import { TRPCError } from '@trpc/server';
-
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { scrapeOriginData } from '@/services/scraper';
@@ -64,6 +62,11 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
+      let parseErrorData: {
+        parseErrors: string[];
+        data: unknown;
+      } | null = null;
+
       for (const method of [Methods.GET, Methods.POST]) {
         // ping resource
         const response = await fetch(input.url, {
@@ -88,7 +91,13 @@ export const resourcesRouter = createTRPCRouter({
           })
           .safeParse(data);
         if (!baseX402ParsedResponse.success) {
-          console.error(baseX402ParsedResponse.error);
+          console.error(baseX402ParsedResponse.error.issues);
+          parseErrorData = {
+            parseErrors: baseX402ParsedResponse.error.issues.map(
+              issue => `${issue.path.join('.')}: ${issue.message}`
+            ),
+            data,
+          };
           continue;
         }
 
@@ -140,28 +149,42 @@ export const resourcesRouter = createTRPCRouter({
         }
 
         // parse the response
+        let enhancedParseWarnings: string[] | null = null;
         const parsedResponse = parseX402Response(data);
         if (parsedResponse.success) {
           await upsertResourceResponse(
             resource.resource.id,
             parsedResponse.data
           );
+        } else {
+          enhancedParseWarnings = parsedResponse.errors;
         }
 
         return {
-          ...resource,
+          error: false as const,
+          resource,
           accepts: {
             ...resource.accepts,
             maxAmountRequired: formatTokenAmount(
               resource.accepts.maxAmountRequired
             ),
           },
+          enhancedParseWarnings,
+          response: data,
         };
       }
 
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: 'Resource did not respond with a valid x402 response',
-      });
+      if (parseErrorData) {
+        return {
+          error: true as const,
+          type: 'parseErrors' as const,
+          parseErrorData,
+        };
+      }
+
+      return {
+        error: true as const,
+        type: 'no402' as const,
+      };
     }),
 });

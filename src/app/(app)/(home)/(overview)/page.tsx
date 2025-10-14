@@ -8,9 +8,9 @@ import { LatestTransactions } from './_components/latest-transactions';
 import { TopFacilitators } from './_components/top-facilitators';
 import { Logo } from '@/components/logo';
 import { Banner } from './_components/banner';
-import { AddResourcesDialog } from '@/app/(app)/_components/add-resources';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function Home() {
   return (
@@ -32,7 +32,7 @@ export default async function Home() {
         </div>
         <div className="flex flex-col md:flex-row items-center gap-2">
           <SearchButton />
-          <AddResourcesDialog>
+          <Link href="/resources/register" className="w-full md:w-fit">
             <Button
               variant="turbo"
               className="shrink-0 w-full md:w-fit px-4"
@@ -41,7 +41,7 @@ export default async function Home() {
               <Plus className="size-4" />
               Register Resource
             </Button>
-          </AddResourcesDialog>
+          </Link>
         </div>
       </HeadingContainer>
       <Body>

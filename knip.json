@@ -10,7 +10,9 @@
     "@trigger.dev/build",
     "tailwindcss",
     "postcss",
-    "@trigger.dev/sdk"
+    "@trigger.dev/sdk",
+    "shiki",
+    "@shikijs/*"
   ],
   "ignore": [
     "/scripts/**",
