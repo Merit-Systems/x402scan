@@ -197,3 +197,57 @@ export const searchOrigins = async (
     take: limit,
   });
 };
+
+export const searchOriginsAdvanced = async (
+  input: z.input<typeof searchOriginsSchema>
+) => {
+  const { search, limit } = searchOriginsSchema.parse(input);
+  const searchLower = search.toLowerCase();
+  
+  return await prisma.resourceOrigin.findMany({
+    where: {
+      OR: [
+        {
+          origin: {
+            contains: searchLower,
+            mode: 'insensitive',
+          },
+        },
+        {
+          title: {
+            contains: searchLower,
+            mode: 'insensitive',
+          },
+        },
+        {
+          description: {
+            contains: searchLower,
+            mode: 'insensitive',
+          },
+        },
+        {
+          resources: {
+            some: {
+              resource: {
+                contains: searchLower,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+      ],
+    },
+    include: {
+      resources: {
+        include: {
+          accepts: {
+            select: {
+              payTo: true,
+            },
+          },
+        },
+      },
+    },
+    take: limit,
+  });
+};

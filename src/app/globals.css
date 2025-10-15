@@ -361,6 +361,17 @@
       box-shadow: 0 0 0 var(--pulse-size) var(--pulse-color);
     }
   }
+
+  @keyframes slide-up-from-origin {
+    from {
+      top: var(--start-y);
+      opacity: 0.8;
+    }
+    to {
+      top: 2rem;
+      opacity: 1;
+    }
+  }
 }
 
 .no-scrollbar {

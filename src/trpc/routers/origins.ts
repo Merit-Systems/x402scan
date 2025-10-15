@@ -9,6 +9,7 @@ import {
   listOriginsWithResources,
   listOriginsWithResourcesByAddress,
   searchOrigins,
+  searchOriginsAdvanced,
   searchOriginsSchema,
 } from '@/services/db/origin';
 import {
@@ -46,5 +47,10 @@ export const originsRouter = createTRPCRouter({
     .input(searchOriginsSchema)
     .query(async ({ input }) => {
       return await searchOrigins(input);
+    }),
+  searchAdvanced: publicProcedure
+    .input(searchOriginsSchema)
+    .query(async ({ input }) => {
+      return await searchOriginsAdvanced(input);
     }),
 });

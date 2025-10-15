@@ -122,45 +122,54 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
           )}
           {(origins?.length ?? 0) > 0 && (
             <CommandGroup heading="Origins">
-              {origins?.map(origin => (
-                <CommandItem
-                  key={origin.id}
-                  value={origin.origin}
-                  onSelect={() =>
-                    handleSelect(
-                      `/recipient/${origin.resources[0].accepts[0].payTo}/resources`
-                    )
-                  }
-                >
-                  <Origin
-                    origin={origin}
-                    addresses={Array.from(
-                      new Set(
-                        origin.resources.flatMap(resource =>
-                          resource.accepts.map(accept => accept.payTo)
-                        )
+              {origins?.map(origin => {
+                const addresses = Array.from(
+                  new Set(
+                    origin.resources?.flatMap(resource =>
+                      resource.accepts?.map(accept => accept.payTo)
+                    ) ?? []
+                  )
+                );
+                const firstAddress = origin.resources?.[0]?.accepts?.[0]?.payTo;
+                
+                return (
+                  <CommandItem
+                    key={origin.id}
+                    value={origin.origin}
+                    onSelect={() =>
+                      handleSelect(
+                        `/recipient/${firstAddress ?? addresses[0]}/resources`
                       )
-                    )}
-                  />
-                </CommandItem>
-              ))}
+                    }
+                  >
+                    <Origin
+                      origin={origin}
+                      addresses={addresses}
+                    />
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           )}
           {(resources?.length ?? 0) > 0 && (
             <CommandGroup heading="Resources">
-              {resources?.map(resource => (
-                <CommandItem
-                  key={resource.id}
-                  value={resource.resource}
-                  onSelect={() =>
-                    handleSelect(
-                      `/recipient/${resource.accepts[0].payTo}/resources`
-                    )
-                  }
-                >
-                  <Resource resource={resource} />
-                </CommandItem>
-              ))}
+              {resources?.map(resource => {
+                const firstAccept = resource.accepts?.[0]?.payTo;
+                
+                return firstAccept ? (
+                  <CommandItem
+                    key={resource.id}
+                    value={resource.resource}
+                    onSelect={() =>
+                      handleSelect(
+                        `/recipient/${firstAccept}/resources`
+                      )
+                    }
+                  >
+                    <Resource resource={resource} />
+                  </CommandItem>
+                ) : null;
+              })}
             </CommandGroup>
           )}
         </CommandList>
