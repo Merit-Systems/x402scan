@@ -63,18 +63,18 @@ export const Carousel: React.FC<CarouselProps> = ({
           <Button
             variant="outline"
             size="icon"
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 size-8"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 size-9 shadow-md hover:shadow-lg transition-shadow backdrop-blur-sm bg-background/95"
             onClick={scrollPrev}
           >
-            <ChevronLeft className="size-4" />
+            <ChevronLeft className="size-5" />
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 size-8"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 size-9 shadow-md hover:shadow-lg transition-shadow backdrop-blur-sm bg-background/95"
             onClick={scrollNext}
           >
-            <ChevronRight className="size-4" />
+            <ChevronRight className="size-5" />
           </Button>
         </>
       )}
