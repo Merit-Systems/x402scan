@@ -1,5 +1,6 @@
 // Export all chain adapters
 export { BaseAdapter } from './base';
+export { TonAdapter } from './ton';
 
 // TODO: Export additional adapters as they're implemented
 // export { AvalancheAdapter } from './avalanche';

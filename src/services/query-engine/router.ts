@@ -20,6 +20,11 @@ export class QueryRouter {
     this.adapters.set('base', new BaseAdapter('base'));
     this.adapters.set('base_sepolia', new BaseAdapter('base_sepolia'));
 
+    // TON adapters
+    const { TonAdapter } = require('./adapters/ton');
+    this.adapters.set('ton', new TonAdapter('ton'));
+    this.adapters.set('ton_testnet', new TonAdapter('ton_testnet'));
+
     // TODO: Add other chain adapters as they're implemented
     // this.adapters.set('avalanche', new AvalancheAdapter());
     // this.adapters.set('solana', new SolanaAdapter());
