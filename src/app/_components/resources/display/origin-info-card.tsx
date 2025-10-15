@@ -4,18 +4,21 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Favicon } from '@/components/favicon';
-import { Server, Link2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Server } from 'lucide-react';
 import { Address } from '@/components/ui/address';
+import { cn } from '@/lib/utils';
+import { OriginCard } from './origin-card';
 
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
   origins: RouterOutputs['origins']['list']['withResources']['byAddress'];
   address: string;
+  selectedOriginId?: string;
+  onOriginSelect?: (originId: string) => void;
 }
 
-export const OriginInfoCard: React.FC<Props> = ({ origins, address }) => {
+export const OriginInfoCard: React.FC<Props> = ({ origins, address, selectedOriginId, onOriginSelect }) => {
   const totalResources = origins.reduce((acc, origin) => acc + origin.resources.length, 0);
   
   return (
@@ -50,54 +53,49 @@ export const OriginInfoCard: React.FC<Props> = ({ origins, address }) => {
       {origins.length > 0 && (
         <CardContent className="pt-0">
           <div className="space-y-4">
-            {/* Primary origin details if single origin */}
+            {/* Single origin display */}
             {origins.length === 1 && (
-              <div className="space-y-2">
-                {origins[0].title && (
-                  <div>
-                    <h3 className="font-medium">{origins[0].title}</h3>
-                  </div>
-                )}
-                {origins[0].description && (
-                  <p className="text-sm text-muted-foreground line-clamp-3">
-                    {origins[0].description}
-                  </p>
-                )}
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => window.open(origins[0].origin, '_blank')}
-                  >
-                    <Link2 className="size-3 mr-1" />
-                    Visit Origin
-                  </Button>
-                </div>
-              </div>
+              <OriginCard origin={origins[0]} />
             )}
             
             {/* Multiple origins summary */}
             {origins.length > 1 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {origins.slice(0, 6).map((origin) => (
-                  <div
-                    key={origin.id}
-                    className="flex items-center gap-2 p-2 rounded-md bg-muted/50"
-                  >
-                    <Favicon url={origin.favicon} className="size-4" />
-                    <span className="text-xs truncate">
-                      {new URL(origin.origin).hostname}
-                    </span>
-                    <Badge variant="outline" className="text-xs ml-auto">
-                      {origin.resources.length}
-                    </Badge>
-                  </div>
-                ))}
-                {origins.length > 6 && (
-                  <div className="flex items-center justify-center p-2 rounded-md bg-muted/50 text-xs text-muted-foreground">
-                    +{origins.length - 6} more
-                  </div>
-                )}
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {origins.map((origin) => {
+                    const isSelected = selectedOriginId === origin.id;
+                    return (
+                      <button
+                        key={origin.id}
+                        onClick={() => onOriginSelect?.(origin.id)}
+                        className={cn(
+                          "flex items-center gap-2 p-2 rounded-md transition-colors text-left",
+                          isSelected 
+                            ? "bg-foreground text-background shadow-sm" 
+                            : "bg-muted/50 hover:bg-muted"
+                        )}
+                      >
+                        <Favicon url={origin.favicon} className="size-4" />
+                        <span className="text-xs truncate">
+                          {new URL(origin.origin).hostname}
+                        </span>
+                        <Badge 
+                          variant={isSelected ? "secondary" : "outline"} 
+                          className="text-xs ml-auto"
+                        >
+                          {origin.resources.length}
+                        </Badge>
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {selectedOriginId && (() => {
+                  const selectedOrigin = origins.find(o => o.id === selectedOriginId);
+                  if (!selectedOrigin) return null;
+                  
+                  return <OriginCard origin={selectedOrigin} />;
+                })()}
               </div>
             )}
           </div>

@@ -1,18 +1,23 @@
 import { Body, Heading } from '../../_components/layout/page-utils';
 import { api } from '@/trpc/server';
-import { FeaturedCarousel } from '@/app/_components/resources/display/featured-carousel';
-import { AppStoreGrid } from '@/app/_components/resources/display/app-store-grid';
+import { OriginCarousel } from '@/app/_components/resources/display/origin-carousel';
+import { OriginsTable } from '@/app/_components/resources/display/origins-table';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default async function ResourcesPage() {
-  const resources = await api.origins.list.withResources.all();
-  
-  // Select featured resources (first 6 with most resources)
-  const featuredOrigins = resources
-    .sort((a, b) => b.resources.length - a.resources.length)
-    .slice(0, 6);
+  const [
+    allResources,
+    mostPopularAllTime,
+    mostPopularThisWeek,
+    newestOrigins
+  ] = await Promise.all([
+    api.origins.list.withResources.all(),
+    api.origins.featured.mostPopularAllTime(),
+    api.origins.featured.mostPopularThisWeek(),
+    api.origins.featured.newest(),
+  ]);
 
   return (
     <div>
@@ -28,15 +33,28 @@ export default async function ResourcesPage() {
           </Link>
         }
       />
-      <Body className="space-y-8">
-        {featuredOrigins.length > 0 && (
-          <FeaturedCarousel featuredOrigins={featuredOrigins} />
-        )}
+      <Body className="space-y-5">
+        <OriginCarousel 
+          title="Most Popular All Time" 
+          origins={mostPopularAllTime}
+          featured
+        />
         
-        <div>
-          <h2 className="text-xl font-semibold mb-4">All Origins</h2>
-          <AppStoreGrid origins={resources} />
-        </div>
+        <OriginCarousel 
+          title="Trending This Week" 
+          origins={mostPopularThisWeek}
+          compact
+          autoplay={false}
+        />
+        
+        <OriginCarousel 
+          title="Newest Origins" 
+          origins={newestOrigins}
+          compact
+          autoplay={false}
+        />
+        
+        <OriginsTable origins={allResources} />
       </Body>
     </div>
   );

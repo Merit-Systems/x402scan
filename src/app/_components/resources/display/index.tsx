@@ -1,8 +1,10 @@
 export { Carousel } from './carousel';
 export { OriginAppCard } from './origin-app-card';
-export { AppStoreGrid } from './app-store-grid';
-export { FeaturedCarousel } from './featured-carousel';
+export { OriginCard } from './origin-card';
+export { OriginCarousel } from './origin-carousel';
 export { ResourcesTable } from './resources-table';
 export { ResourceDetailModal } from './resource-detail-modal';
 export { OriginInfoCard } from './origin-info-card';
 export { ResourcesContainer } from './resources-container';
+export { OriginsTable } from './origins-table';
+export { ResourcesWithOrigins } from './resources-with-origins';

@@ -11,12 +11,14 @@ interface CarouselProps {
   children: React.ReactNode[];
   className?: string;
   autoplay?: boolean;
+  compact?: boolean;
 }
 
 export const Carousel: React.FC<CarouselProps> = ({
   children,
   className,
   autoplay = true,
+  compact = false,
 }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { 
@@ -41,7 +43,15 @@ export const Carousel: React.FC<CarouselProps> = ({
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
           {children.map((child, index) => (
-            <div key={index} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33%] pl-4 first:pl-0">
+            <div 
+              key={index} 
+              className={cn(
+                'pl-4 first:pl-0',
+                compact 
+                  ? 'flex-[0_0_100%] md:flex-[0_0_33%] lg:flex-[0_0_25%]'
+                  : 'flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33%]'
+              )}
+            >
               {child}
             </div>
           ))}

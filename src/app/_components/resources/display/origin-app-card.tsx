@@ -17,12 +17,14 @@ interface Props {
   };
   className?: string;
   featured?: boolean;
+  compact?: boolean;
 }
 
 export const OriginAppCard: React.FC<Props> = ({ 
   origin, 
   className,
-  featured = false 
+  featured = false,
+  compact = false
 }) => {
   const hostname = new URL(origin.origin).hostname;
   // Get the first payTo address from the first resource for routing
@@ -38,7 +40,7 @@ export const OriginAppCard: React.FC<Props> = ({
         {/* Header Image or Placeholder */}
         <div className={cn(
           'relative bg-gradient-to-br from-muted to-muted/80 flex items-center justify-center',
-          featured ? 'h-32' : 'h-24'
+          featured ? 'h-24' : compact ? 'h-20' : 'h-20'
         )}>
           {origin.ogImages.length > 0 ? (
             <img
@@ -51,22 +53,22 @@ export const OriginAppCard: React.FC<Props> = ({
               <Favicon 
                 url={origin.favicon} 
                 className={cn(
-                  featured ? 'size-12' : 'size-8'
+                  featured ? 'size-10' : compact ? 'size-7' : 'size-8'
                 )}
               />
             </div>
           )}
           
           {featured && (
-            <Badge className="absolute top-2 right-2 text-xs">
+            <Badge className="absolute top-1.5 right-1.5 text-xs">
               Featured
             </Badge>
           )}
         </div>
 
-        <CardHeader className="pb-2">
+        <CardHeader className={cn(compact ? 'pb-1.5 pt-3' : 'pb-2 pt-4')}>
           <div className="flex items-center gap-2">
-            <Favicon url={origin.favicon} className="size-5" />
+            <Favicon url={origin.favicon} className={compact ? 'size-4' : 'size-5'} />
             <CardTitle className={cn(
               'line-clamp-1 group-hover:text-primary transition-colors',
               featured ? 'text-base' : 'text-sm'
@@ -75,20 +77,20 @@ export const OriginAppCard: React.FC<Props> = ({
             </CardTitle>
           </div>
           
-          {origin.title && (
-            <CardDescription className="line-clamp-2 text-xs">
+          {origin.title && !compact && (
+            <CardDescription className="line-clamp-1 text-xs">
               {origin.title}
             </CardDescription>
           )}
         </CardHeader>
 
-        <CardContent className="pt-0">
+        <CardContent className={cn(compact ? 'pt-0 pb-3.5' : 'pt-0 pb-4')}>
           <div className="flex items-center justify-between">
             <Badge variant="secondary" className="text-xs">
               {origin.resources.length} resource{origin.resources.length !== 1 ? 's' : ''}
             </Badge>
             
-            {origin.description && (
+            {origin.description && !compact && (
               <p className="text-xs text-muted-foreground/60 line-clamp-1 flex-1 ml-2">
                 {origin.description}
               </p>

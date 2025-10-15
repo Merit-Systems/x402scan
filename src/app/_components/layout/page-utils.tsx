@@ -20,12 +20,12 @@ export const Heading: React.FC<HeadingProps> = ({
   actions,
 }) => {
   return (
-    <HeadingContainer className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div className="flex items-center gap-4 shrink-0 flex-1">
+    <HeadingContainer className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div className="flex items-center gap-3 shrink-0 flex-1">
         {icon}
-        <div className="flex flex-col gap-1 md:gap-3 text-left">
+        <div className="flex flex-col gap-1 md:gap-2 text-left">
           {typeof title === 'string' ? (
-            <h1 className="text-2xl md:text-4xl font-bold font-mono">
+            <h1 className="text-2xl md:text-3xl font-bold font-mono">
               {title}
             </h1>
           ) : (
@@ -33,7 +33,7 @@ export const Heading: React.FC<HeadingProps> = ({
           )}
           {description &&
             (typeof description === 'string' ? (
-              <p className="text-muted-foreground/80 text-sm md:text-base">
+              <p className="text-muted-foreground/80 text-sm">
                 {description}
               </p>
             ) : (
@@ -57,7 +57,7 @@ export const HeadingContainer = ({
     <>
       <div
         className={cn(
-          'max-w-full md:max-w-6xl w-full px-2 pb-6 md:pb-8 mx-auto',
+          'max-w-full md:max-w-6xl w-full px-2 pb-4 md:pb-5 mx-auto',
           className
         )}
       >
@@ -77,7 +77,7 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
   return (
     <div
       className={cn(
-        'flex flex-col gap-8 max-w-6xl w-full mx-auto py-8 px-2',
+        'flex flex-col gap-8 max-w-6xl w-full mx-auto py-5 px-2',
         className
       )}
     >

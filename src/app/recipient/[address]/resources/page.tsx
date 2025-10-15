@@ -1,6 +1,5 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { OriginInfoCard } from '@/app/_components/resources/display/origin-info-card';
-import { ResourcesContainer } from '@/app/_components/resources/display';
+import { ResourcesWithOrigins } from '@/app/_components/resources/display';
 
 import { api, HydrateClient } from '@/trpc/server';
 
@@ -19,8 +18,10 @@ export default async function ResourcesPage({
         description="Interactive x402 resources provided by this address"
       />
       <Body className="space-y-6">
-        <OriginInfoCard origins={originsWithResources} address={address} />
-        <ResourcesContainer originsWithResources={originsWithResources} />
+        <ResourcesWithOrigins 
+          originsWithResources={originsWithResources} 
+          address={address} 
+        />
       </Body>
     </HydrateClient>
   );

@@ -8,6 +8,7 @@ interface Props {
   title: string;
   origins: RouterOutputs['origins']['list']['withResources']['all'];
   featured?: boolean;
+  compact?: boolean;
   autoplay?: boolean;
 }
 
@@ -15,19 +16,21 @@ export const OriginCarousel: React.FC<Props> = ({
   title, 
   origins, 
   featured = false,
+  compact = false,
   autoplay = true 
 }) => {
   if (origins.length === 0) return null;
 
   return (
     <div className="w-full">
-      <h2 className="text-xl font-semibold mb-4">{title}</h2>
-      <Carousel autoplay={autoplay}>
+      <h2 className="text-lg font-semibold mb-3">{title}</h2>
+      <Carousel autoplay={autoplay} compact={compact}>
         {origins.map((origin) => (
           <OriginAppCard 
             key={origin.id} 
             origin={origin}
             featured={featured}
+            compact={compact}
             className="mr-4"
           />
         ))}
