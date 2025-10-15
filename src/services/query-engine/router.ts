@@ -25,6 +25,11 @@ export class QueryRouter {
     this.adapters.set('ton', new TonAdapter('ton'));
     this.adapters.set('ton_testnet', new TonAdapter('ton_testnet'));
 
+    // Solana adapters
+    const { SolanaAdapter } = require('./adapters/solana');
+    this.adapters.set('solana', new SolanaAdapter('solana'));
+    this.adapters.set('solana_devnet', new SolanaAdapter('solana_devnet'));
+
     // TODO: Add other chain adapters as they're implemented
     // this.adapters.set('avalanche', new AvalancheAdapter());
     // this.adapters.set('solana', new SolanaAdapter());
