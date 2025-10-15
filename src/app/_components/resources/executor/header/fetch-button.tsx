@@ -5,8 +5,13 @@ import { Loader2, Play, Wallet } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
 import { useResourceFetch } from '../contexts/fetch/hook';
 import { WalletDialog } from '@/app/_components/wallet/dialog';
+import { cn } from '@/lib/utils';
 
-export const FetchButton = () => {
+interface Props {
+  className?: string;
+}
+
+export const FetchButton: React.FC<Props> = ({ className }) => {
   const { data: walletClient, isLoading: isLoadingWalletClient } =
     useWalletClient();
   const { isInitialized } = useIsInitialized();
@@ -17,7 +22,7 @@ export const FetchButton = () => {
   if (!walletClient) {
     return (
       <WalletDialog>
-        <Button variant="ghost" size="sm" className="size-fit p-0 md:px-1">
+        <Button variant="ghost" size="sm" className={cn('size-fit p-0 md:px-1', className)}>
           <Wallet className="size-4" />
           Connect Wallet
         </Button>
@@ -29,7 +34,7 @@ export const FetchButton = () => {
     <Button
       variant="primaryGhost"
       size="sm"
-      className="size-fit p-0 md:px-1"
+      className={cn('size-fit p-0 md:px-1', className)}
       disabled={
         isPending ||
         !allRequiredFieldsFilled ||

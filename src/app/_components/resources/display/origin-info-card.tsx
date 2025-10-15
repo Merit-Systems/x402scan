@@ -4,8 +4,9 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Favicon } from '@/components/favicon';
-import { Globe, Server, Link2 } from 'lucide-react';
+import { Server, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Address } from '@/components/ui/address';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -41,9 +42,7 @@ export const OriginInfoCard: React.FC<Props> = ({ origins, address }) => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">
-              {address.slice(0, 6)}...{address.slice(-4)}
-            </Badge>
+            <Address address={address} />
           </div>
         </div>
       </CardHeader>

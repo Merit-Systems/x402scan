@@ -2,13 +2,12 @@
 
 import React from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { ResourceExecutor } from '../executor';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { DrawerResourceExecutor } from '../executor/drawer-executor';
 import { getBazaarMethod } from '../executor/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
@@ -29,25 +28,24 @@ export const ResourceDetailModal: React.FC<Props> = ({
   const bazaarMethod = getBazaarMethod(resource.accepts[0].outputSchema);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
-        <DialogHeader>
-          <DialogTitle className="line-clamp-1">
-            {resource.resource}
-          </DialogTitle>
-          <DialogDescription className="line-clamp-2">
-            {resource.accepts[0]?.description || 'x402 Resource'}
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="mt-4">
-          <ResourceExecutor
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="flex flex-col overflow-hidden sm:max-w-2xl w-full">
+        <SheetHeader className="space-y-4 pb-4">
+          <div className="flex items-start justify-between gap-4">
+            <SheetTitle className="text-xl font-semibold break-words pr-8">
+              Resource Details
+            </SheetTitle>
+          </div>
+        </SheetHeader>
+
+        <div className="flex-1 overflow-y-auto min-h-0 -mx-6 px-6">
+          <DrawerResourceExecutor
             resource={resource}
             response={resource.data}
             bazaarMethod={bazaarMethod}
           />
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };

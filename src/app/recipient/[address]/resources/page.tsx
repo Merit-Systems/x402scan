@@ -1,6 +1,6 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { OriginInfoCard } from '@/app/_components/resources/display/origin-info-card';
-import { ResourcesContainer } from '@/app/_components/resources/display/resources-container';
+import { ResourcesContainer } from '@/app/_components/resources/display';
 
 import { api, HydrateClient } from '@/trpc/server';
 
