@@ -37,7 +37,7 @@ export default async function ResourcesPage() {
       />
       <Body className="space-y-5">
         <ResourceSearchBar popularOrigins={mostPopularAllTime.items} />
-        
+
         <OriginCarousel
           title="Most Popular This Month"
           origins={mostPopularAllTime.items}

@@ -8,7 +8,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
-  origins: RouterOutputs['origins']['search'] | RouterOutputs['origins']['list']['aggregated']['items'];
+  origins:
+    | RouterOutputs['origins']['search']
+    | RouterOutputs['origins']['list']['aggregated']['items'];
   isLoading: boolean;
   searchTerm: string;
   onClose: () => void;
@@ -50,10 +52,9 @@ export const SearchResultsTable: React.FC<Props> = ({
       <div className="w-[80vw] h-screen flex items-center justify-center">
         <div className="text-center max-w-md mx-auto">
           <p className="text-muted-foreground text-lg">
-            {showPopular 
-              ? "No popular resources available" 
-              : `No resources found matching "${searchTerm}"`
-            }
+            {showPopular
+              ? 'No popular resources available'
+              : `No resources found matching "${searchTerm}"`}
           </p>
           {!showPopular && (
             <p className="text-sm text-muted-foreground mt-2">
@@ -69,18 +70,17 @@ export const SearchResultsTable: React.FC<Props> = ({
     <div className="w-[80vw] h-screen overflow-y-auto px-4 pb-8 no-scrollbar">
       <div className="mb-4">
         <h3 className="text-sm font-medium text-muted-foreground">
-          {showPopular 
-            ? `Most Popular This Month (${origins.length} resource${origins.length !== 1 ? 's' : ''})` 
-            : `Found ${origins.length} result${origins.length !== 1 ? 's' : ''}`
-          }
+          {showPopular
+            ? `Most Popular This Month (${origins.length} resource${origins.length !== 1 ? 's' : ''})`
+            : `Found ${origins.length} result${origins.length !== 1 ? 's' : ''}`}
         </h3>
       </div>
       <div className="space-y-4">
-        {origins.map((item) => {
+        {origins.map(item => {
           // Handle both aggregated and search result structures
           const origin = 'origins' in item ? item.origins[0] : item;
           if (!origin) return null;
-          
+
           const hostname = new URL(origin.origin).hostname;
           const recipientAddress = origin.resources[0]?.accepts[0]?.payTo;
 
@@ -132,4 +132,3 @@ export const SearchResultsTable: React.FC<Props> = ({
     </div>
   );
 };
-

@@ -203,7 +203,7 @@ export const searchOriginsAdvanced = async (
 ) => {
   const { search, limit } = searchOriginsSchema.parse(input);
   const searchLower = search.toLowerCase();
-  
+
   return await prisma.resourceOrigin.findMany({
     where: {
       OR: [

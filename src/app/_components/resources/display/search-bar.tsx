@@ -11,22 +11,25 @@ interface ResourceSearchBarProps {
   popularOrigins?: RouterOutputs['origins']['list']['aggregated']['items'];
 }
 
-export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({ popularOrigins = [] }) => {
+export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({
+  popularOrigins = [],
+}) => {
   const [isFocused, setIsFocused] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [startY, setStartY] = useState<number>(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { data: searchResults, isLoading } = api.origins.searchAdvanced.useQuery(
-    {
-      search: searchTerm,
-      limit: 20,
-    },
-    {
-      enabled: searchTerm.length > 0 && isFocused,
-    }
-  );
+  const { data: searchResults, isLoading } =
+    api.origins.searchAdvanced.useQuery(
+      {
+        search: searchTerm,
+        limit: 20,
+      },
+      {
+        enabled: searchTerm.length > 0 && isFocused,
+      }
+    );
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -87,12 +90,12 @@ export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({ popularOri
         )}
         style={
           isFocused && startY > 0
-            ? {
+            ? ({
                 animationName: 'slide-up-from-origin',
                 animationDuration: '0.5s',
                 animationTimingFunction: 'ease-in-out',
                 '--start-y': `${startY - 32}px`,
-              } as React.CSSProperties
+              } as React.CSSProperties)
             : undefined
         }
       >
@@ -142,4 +145,3 @@ export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({ popularOri
     </>
   );
 };
-
