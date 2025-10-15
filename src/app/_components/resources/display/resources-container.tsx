@@ -14,8 +14,13 @@ interface Props {
 
 type ResourceType = Props['originsWithResources'][0]['resources'][0];
 
-export const ResourcesContainer: React.FC<Props> = ({ originsWithResources, selectedOriginId }) => {
-  const [selectedResource, setSelectedResource] = useState<ResourceType | null>(null);
+export const ResourcesContainer: React.FC<Props> = ({
+  originsWithResources,
+  selectedOriginId,
+}) => {
+  const [selectedResource, setSelectedResource] = useState<ResourceType | null>(
+    null
+  );
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleResourceSelect = (resource: ResourceType) => {
@@ -36,8 +41,9 @@ export const ResourcesContainer: React.FC<Props> = ({ originsWithResources, sele
   }
 
   // Find the origin to display (either selected or first one)
-  const displayOrigin = selectedOriginId 
-    ? originsWithResources.find(o => o.id === selectedOriginId) || originsWithResources[0]
+  const displayOrigin = selectedOriginId
+    ? (originsWithResources.find(o => o.id === selectedOriginId) ??
+      originsWithResources[0])
     : originsWithResources[0];
 
   return (
@@ -46,7 +52,7 @@ export const ResourcesContainer: React.FC<Props> = ({ originsWithResources, sele
         resources={displayOrigin.resources}
         onResourceSelect={handleResourceSelect}
       />
-      
+
       <ResourceDetailModal
         resource={selectedResource}
         open={modalOpen}

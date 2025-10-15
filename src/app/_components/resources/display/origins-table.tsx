@@ -2,14 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -31,12 +24,18 @@ export const OriginsTable: React.FC<Props> = ({ origins, className }) => {
     if (!searchTerm.trim()) return origins;
 
     const lowerSearch = searchTerm.toLowerCase();
-    return origins.filter((origin) => {
+    return origins.filter(origin => {
       const hostname = new URL(origin.origin).hostname;
       const matchesHostname = hostname.toLowerCase().includes(lowerSearch);
       const matchesTitle = origin.title?.toLowerCase().includes(lowerSearch);
-      const matchesDescription = origin.description?.toLowerCase().includes(lowerSearch);
-      return matchesHostname || matchesTitle || matchesDescription;
+      const matchesDescription = origin.description
+        ?.toLowerCase()
+        .includes(lowerSearch);
+      return (
+        matchesHostname ||
+        (matchesTitle ?? false) ||
+        (matchesDescription ?? false)
+      );
     });
   }, [origins, searchTerm]);
 
@@ -57,7 +56,7 @@ export const OriginsTable: React.FC<Props> = ({ origins, className }) => {
           <Input
             placeholder="Search origins..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="pl-9 bg-background"
           />
         </div>
@@ -67,15 +66,18 @@ export const OriginsTable: React.FC<Props> = ({ origins, className }) => {
           <TableBody>
             {filteredOrigins.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                <TableCell
+                  colSpan={4}
+                  className="text-center py-8 text-muted-foreground"
+                >
                   No origins found matching &quot;{searchTerm}&quot;
                 </TableCell>
               </TableRow>
             ) : (
-              filteredOrigins.map((origin) => {
+              filteredOrigins.map(origin => {
                 const hostname = new URL(origin.origin).hostname;
                 const recipientAddress = origin.resources[0]?.accepts[0]?.payTo;
-                
+
                 return (
                   <TableRow
                     key={origin.id}
@@ -85,13 +87,17 @@ export const OriginsTable: React.FC<Props> = ({ origins, className }) => {
                       <Favicon url={origin.favicon} className="size-8" />
                     </TableCell>
                     <TableCell className="py-4 w-[60%]">
-                      <Link 
-                        href={recipientAddress ? `/recipient/${recipientAddress}/resources` : '#'}
+                      <Link
+                        href={
+                          recipientAddress
+                            ? `/recipient/${recipientAddress}/resources`
+                            : '#'
+                        }
                         className="hover:text-primary transition-colors block"
                       >
                         <div className="flex flex-col gap-1.5">
                           <div className="font-medium line-clamp-1">
-                            {origin.title || hostname}
+                            {origin.title ?? hostname}
                           </div>
                           {origin.description && (
                             <div className="text-sm text-muted-foreground text-wrap">
@@ -108,7 +114,8 @@ export const OriginsTable: React.FC<Props> = ({ origins, className }) => {
                     </TableCell>
                     <TableCell className="py-4 w-[130px] text-right">
                       <Badge variant="secondary" className="text-xs">
-                        {origin.resources.length} resource{origin.resources.length !== 1 ? 's' : ''}
+                        {origin.resources.length} resource
+                        {origin.resources.length !== 1 ? 's' : ''}
                       </Badge>
                     </TableCell>
                   </TableRow>
@@ -121,4 +128,3 @@ export const OriginsTable: React.FC<Props> = ({ origins, className }) => {
     </Card>
   );
 };
-

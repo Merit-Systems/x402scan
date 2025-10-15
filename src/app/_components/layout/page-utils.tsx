@@ -33,9 +33,7 @@ export const Heading: React.FC<HeadingProps> = ({
           )}
           {description &&
             (typeof description === 'string' ? (
-              <p className="text-muted-foreground/80 text-sm">
-                {description}
-              </p>
+              <p className="text-muted-foreground/80 text-sm">{description}</p>
             ) : (
               description
             ))}

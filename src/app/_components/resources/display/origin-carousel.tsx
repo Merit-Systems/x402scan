@@ -4,20 +4,24 @@ import { OriginAppCard } from './origin-app-card';
 
 import type { RouterOutputs } from '@/trpc/client';
 
+type BazaarItem = RouterOutputs['sellers']['list']['bazaar']['items'][number];
+type AggregatedItem =
+  RouterOutputs['origins']['list']['aggregated']['items'][number];
+
 interface Props {
   title: string;
-  origins: RouterOutputs['sellers']['list']['bazaar']['items'];
+  origins: BazaarItem[] | AggregatedItem[];
   featured?: boolean;
   compact?: boolean;
   autoplay?: boolean;
 }
 
-export const OriginCarousel: React.FC<Props> = ({ 
-  title, 
-  origins, 
+export const OriginCarousel: React.FC<Props> = ({
+  title,
+  origins,
   featured = false,
   compact = false,
-  autoplay = true 
+  autoplay = true,
 }) => {
   if (origins.length === 0) return null;
 
@@ -25,9 +29,9 @@ export const OriginCarousel: React.FC<Props> = ({
     <div className="w-full">
       <h2 className="text-lg font-semibold mb-3">{title}</h2>
       <Carousel autoplay={autoplay} compact={compact}>
-        {origins.map((item) => (
-          <OriginAppCard 
-            key={item.origins[0]?.id ?? item.recipients[0]} 
+        {origins.map(item => (
+          <OriginAppCard
+            key={item.origins[0]?.id ?? item.recipients[0]}
             origin={item}
             featured={featured}
             compact={compact}

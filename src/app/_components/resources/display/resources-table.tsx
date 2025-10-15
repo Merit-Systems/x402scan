@@ -1,14 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,10 +27,12 @@ export const ResourcesTable: React.FC<Props> = ({
     if (!searchTerm.trim()) return resources;
 
     const lowerSearch = searchTerm.toLowerCase();
-    return resources.filter((resource) => {
+    return resources.filter(resource => {
       const accept = resource.accepts[0];
       const matchesUrl = resource.resource.toLowerCase().includes(lowerSearch);
-      const matchesDescription = accept?.description?.toLowerCase().includes(lowerSearch);
+      const matchesDescription = accept?.description
+        ?.toLowerCase()
+        .includes(lowerSearch);
       return matchesUrl || matchesDescription;
     });
   }, [resources, searchTerm]);
@@ -45,7 +40,9 @@ export const ResourcesTable: React.FC<Props> = ({
   if (resources.length === 0) {
     return (
       <Card className={cn('p-8 text-center', className)}>
-        <p className="text-muted-foreground">No resources available for this origin.</p>
+        <p className="text-muted-foreground">
+          No resources available for this origin.
+        </p>
       </Card>
     );
   }
@@ -59,7 +56,7 @@ export const ResourcesTable: React.FC<Props> = ({
           <Input
             placeholder="Search resources..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="pl-9 bg-background"
           />
         </div>
@@ -69,12 +66,15 @@ export const ResourcesTable: React.FC<Props> = ({
           <TableBody>
             {filteredResources.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={2} className="text-center py-8 text-muted-foreground">
+                <TableCell
+                  colSpan={2}
+                  className="text-center py-8 text-muted-foreground"
+                >
                   No resources found matching &quot;{searchTerm}&quot;
                 </TableCell>
               </TableRow>
             ) : (
-              filteredResources.map((resource) => {
+              filteredResources.map(resource => {
                 const accept = resource.accepts[0]; // Get first accept for display
                 return (
                   <TableRow
@@ -93,14 +93,14 @@ export const ResourcesTable: React.FC<Props> = ({
                           </div>
                         )}
                       </div>
-                    </TableCell>            
+                    </TableCell>
                     <TableCell className="w-[100px]">
                       <div className="flex items-center gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
                           className="size-7"
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             onResourceSelect(resource);
                           }}
@@ -111,7 +111,7 @@ export const ResourcesTable: React.FC<Props> = ({
                           variant="ghost"
                           size="icon"
                           className="size-7"
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             window.open(resource.resource, '_blank');
                           }}

@@ -1,5 +1,9 @@
 import { ethereumAddressSchema } from '@/lib/schemas';
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import {
+  createTRPCRouter,
+  publicProcedure,
+  infiniteQueryProcedure,
+} from '../trpc';
 import {
   listOriginsByAddress,
   listOriginsWithResources,
@@ -7,6 +11,11 @@ import {
   searchOrigins,
   searchOriginsSchema,
 } from '@/services/db/origin';
+import {
+  aggregateOrigins,
+  aggregateOriginsInputSchema,
+} from '@/services/aggregator/origin-traffic';
+import z from 'zod';
 
 export const originsRouter = createTRPCRouter({
   list: {
@@ -26,6 +35,12 @@ export const originsRouter = createTRPCRouter({
           return await listOriginsWithResourcesByAddress(input);
         }),
     },
+
+    aggregated: infiniteQueryProcedure(z.bigint())
+      .input(aggregateOriginsInputSchema)
+      .query(async ({ input, ctx: { pagination } }) => {
+        return await aggregateOrigins(input, pagination);
+      }),
   },
   search: publicProcedure
     .input(searchOriginsSchema)

@@ -102,7 +102,7 @@ export const DrawerResourceExecutor: React.FC<Props> = ({
   );
 };
 
-function DrawerForm({}: {}) {
+function DrawerForm() {
   const {
     queryFields,
     bodyFields,
@@ -283,4 +283,3 @@ function ResourceFetchWrapper({
     </ResourceFetchProvider>
   );
 }
-

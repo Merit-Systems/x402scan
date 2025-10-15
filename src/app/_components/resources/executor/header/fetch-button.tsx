@@ -22,7 +22,11 @@ export const FetchButton: React.FC<Props> = ({ className }) => {
   if (!walletClient) {
     return (
       <WalletDialog>
-        <Button variant="ghost" size="sm" className={cn('size-fit p-0 md:px-1', className)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn('size-fit p-0 md:px-1', className)}
+        >
           <Wallet className="size-4" />
           Connect Wallet
         </Button>

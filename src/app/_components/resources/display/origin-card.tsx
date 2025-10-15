@@ -1,7 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Favicon } from '@/components/favicon';
 import { Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,14 +21,18 @@ interface Props {
 
 export const OriginCard: React.FC<Props> = ({ origin }) => {
   return (
-    <Card>   
+    <Card>
       <CardContent className="space-y-2 pt-2">
-        <CardHeader className="flex-row items-center gap-2"> 
+        <CardHeader className="flex-row items-center gap-2">
           <Favicon url={origin.favicon} className="size-4 mt-1.5" />
-          <CardTitle>{origin.title ?? new URL(origin.origin).hostname}</CardTitle>
+          <CardTitle>
+            {origin.title ?? new URL(origin.origin).hostname}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <CardDescription>{origin.description ?? 'No description'}</CardDescription>
+          <CardDescription>
+            {origin.description ?? 'No description'}
+          </CardDescription>
         </CardContent>
         <CardFooter className="flex items-end gap-2 justify-end">
           <Button
@@ -37,4 +48,3 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
     </Card>
   );
 };
-

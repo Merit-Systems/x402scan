@@ -5,24 +5,18 @@ import { OriginsTable } from '@/app/_components/resources/display/origins-table'
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { subWeeks } from 'date-fns';
+import { subMonths } from 'date-fns';
 
 export default async function ResourcesPage() {
-  const [
-    allResources,
-    mostPopularAllTime,
-    mostPopularThisWeek,
-  ] = await Promise.all([
+  const [allResources, mostPopularAllTime] = await Promise.all([
     api.origins.list.withResources.all(),
-    api.sellers.list.bazaar({
-      limit: 10,
+    api.origins.list.aggregated({
       sorting: { id: 'tx_count', desc: true },
-    }),
-    api.sellers.list.bazaar({
-      limit: 10,
-      startDate: subWeeks(new Date(), 1),
+      startDate: subMonths(new Date(), 1),
+      limit: 6,
       endDate: new Date(),
-      sorting: { id: 'tx_count', desc: true },
+      aggregateBy: 'tx_count',
+      hasOgImage: true,
     }),
   ]);
 
@@ -41,18 +35,11 @@ export default async function ResourcesPage() {
         }
       />
       <Body className="space-y-5">
-        <OriginCarousel 
-          title="Most Popular All Time" 
+        <OriginCarousel
+          title="Most Popular This Month"
           origins={mostPopularAllTime.items}
         />
-        
-        <OriginCarousel 
-          title="Trending This Week" 
-          origins={mostPopularThisWeek.items}
-          compact
-          autoplay={false}
-        />
-        
+
         <OriginsTable origins={allResources} />
       </Body>
     </div>

@@ -21,7 +21,7 @@ export const Carousel: React.FC<CarouselProps> = ({
   compact = false,
 }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { 
+    {
       loop: true,
       align: 'start',
       skipSnaps: false,
@@ -43,11 +43,11 @@ export const Carousel: React.FC<CarouselProps> = ({
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
           {children.map((child, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={cn(
                 'pl-4 first:pl-0',
-                compact 
+                compact
                   ? 'flex-[0_0_100%] md:flex-[0_0_33%] lg:flex-[0_0_25%]'
                   : 'flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33%]'
               )}
@@ -57,7 +57,7 @@ export const Carousel: React.FC<CarouselProps> = ({
           ))}
         </div>
       </div>
-      
+
       {children.length > 1 && (
         <>
           <Button

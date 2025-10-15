@@ -11,24 +11,26 @@ interface Props {
   address: string;
 }
 
-export const ResourcesWithOrigins: React.FC<Props> = ({ originsWithResources, address }) => {
+export const ResourcesWithOrigins: React.FC<Props> = ({
+  originsWithResources,
+  address,
+}) => {
   const [selectedOriginId, setSelectedOriginId] = useState<string>(
     originsWithResources[0]?.id || ''
   );
 
   return (
     <>
-      <OriginInfoCard 
-        origins={originsWithResources} 
+      <OriginInfoCard
+        origins={originsWithResources}
         address={address}
         selectedOriginId={selectedOriginId}
         onOriginSelect={setSelectedOriginId}
       />
-      <ResourcesContainer 
+      <ResourcesContainer
         originsWithResources={originsWithResources}
         selectedOriginId={selectedOriginId}
       />
     </>
   );
 };
-

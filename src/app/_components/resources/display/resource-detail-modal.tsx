@@ -13,7 +13,9 @@ import { getBazaarMethod } from '../executor/utils';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
-  resource: RouterOutputs['origins']['list']['withResources']['byAddress'][0]['resources'][0] | null;
+  resource:
+    | RouterOutputs['origins']['list']['withResources']['byAddress'][0]['resources'][0]
+    | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
