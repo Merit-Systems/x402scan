@@ -27,7 +27,7 @@ export const ResourceDetailModal: React.FC<Props> = ({
 }) => {
   if (!resource) return null;
 
-  const bazaarMethod = getBazaarMethod(resource.accepts[0].outputSchema);
+  const bazaarMethod = getBazaarMethod(resource.accepts[0]?.outputSchema);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
