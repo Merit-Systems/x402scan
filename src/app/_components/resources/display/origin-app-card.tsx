@@ -2,33 +2,35 @@ import React from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Favicon } from '@/components/favicon';
+import { Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Addresses } from '@/components/ui/address';
 
-import type { OgImage, ResourceOrigin } from '@prisma/client';
+import type { RouterOutputs } from '@/trpc/client';
+
+type BazaarItem = RouterOutputs['sellers']['list']['bazaar']['items'][number];
 
 interface Props {
-  origin: ResourceOrigin & {
-    ogImages: OgImage[];
-    resources: { 
-      id: string;
-      accepts: { payTo: string }[];
-    }[];
-  };
+  origin: BazaarItem;
   className?: string;
   featured?: boolean;
   compact?: boolean;
 }
 
 export const OriginAppCard: React.FC<Props> = ({ 
-  origin, 
+  origin: bazaarItem, 
   className,
   featured = false,
   compact = false
 }) => {
+  const origins = bazaarItem.origins;
+  const addresses = bazaarItem.recipients;
+  
+  if (!origins || origins.length === 0) return null;
+
+  const origin = origins[0];
   const hostname = new URL(origin.origin).hostname;
-  // Get the first payTo address from the first resource for routing
-  const recipientAddress = origin.resources[0]?.accepts[0]?.payTo;
+  const recipientAddress = addresses[0];
   
   return (
     <Link href={recipientAddress ? `/recipient/${recipientAddress}/resources` : '#'}>
@@ -40,24 +42,23 @@ export const OriginAppCard: React.FC<Props> = ({
         {/* Header Image or Placeholder */}
         <div className={cn(
           'relative bg-gradient-to-br from-muted to-muted/80 flex items-center justify-center',
-          featured ? 'h-24' : compact ? 'h-20' : 'h-20'
+          featured ? 'h-24' : compact ? 'h-20' : 'h-24'
         )}>
-          {origin.ogImages.length > 0 ? (
-            <img
-              src={origin.ogImages[0].url}
-              alt={origin.ogImages[0].title ?? ''}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex items-center justify-center">
-              <Favicon 
-                url={origin.favicon} 
+          <div className="flex items-center justify-center">
+            {origin.favicon ? (
+              <img 
+                src={origin.favicon} 
+                alt="Favicon"
                 className={cn(
                   featured ? 'size-10' : compact ? 'size-7' : 'size-8'
                 )}
               />
-            </div>
-          )}
+            ) : (
+              <Globe className={cn(
+                featured ? 'size-10' : compact ? 'size-7' : 'size-8'
+              )} />
+            )}
+          </div>
           
           {featured && (
             <Badge className="absolute top-1.5 right-1.5 text-xs">
@@ -68,9 +69,13 @@ export const OriginAppCard: React.FC<Props> = ({
 
         <CardHeader className={cn(compact ? 'pb-1.5 pt-3' : 'pb-2 pt-4')}>
           <div className="flex items-center gap-2">
-            <Favicon url={origin.favicon} className={compact ? 'size-4' : 'size-5'} />
+            {origin.favicon ? (
+              <img src={origin.favicon} alt="Favicon" className={compact ? 'size-4' : 'size-5'} />
+            ) : (
+              <Globe className={compact ? 'size-4' : 'size-5'} />
+            )}
             <CardTitle className={cn(
-              'line-clamp-1 group-hover:text-primary transition-colors',
+              'line-clamp-1 group-hover:text-primary transition-colors font-mono',
               featured ? 'text-base' : 'text-sm'
             )}>
               {hostname}
@@ -85,13 +90,17 @@ export const OriginAppCard: React.FC<Props> = ({
         </CardHeader>
 
         <CardContent className={cn(compact ? 'pt-0 pb-3.5' : 'pt-0 pb-4')}>
-          <div className="flex items-center justify-between">
-            <Badge variant="secondary" className="text-xs">
-              {origin.resources.length} resource{origin.resources.length !== 1 ? 's' : ''}
-            </Badge>
+          <div className="space-y-2">
+            {addresses.length > 0 && (
+              <Addresses 
+                addresses={addresses} 
+                className="border-none p-0 text-[10px] md:text-xs"
+                hideTooltip
+              />
+            )}
             
             {origin.description && !compact && (
-              <p className="text-xs text-muted-foreground/60 line-clamp-1 flex-1 ml-2">
+              <p className="text-xs text-muted-foreground/60 line-clamp-2">
                 {origin.description}
               </p>
             )}

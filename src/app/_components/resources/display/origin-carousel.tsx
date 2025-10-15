@@ -6,7 +6,7 @@ import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
   title: string;
-  origins: RouterOutputs['origins']['list']['withResources']['all'];
+  origins: RouterOutputs['sellers']['list']['bazaar']['items'];
   featured?: boolean;
   compact?: boolean;
   autoplay?: boolean;
@@ -25,10 +25,10 @@ export const OriginCarousel: React.FC<Props> = ({
     <div className="w-full">
       <h2 className="text-lg font-semibold mb-3">{title}</h2>
       <Carousel autoplay={autoplay} compact={compact}>
-        {origins.map((origin) => (
+        {origins.map((item) => (
           <OriginAppCard 
-            key={origin.id} 
-            origin={origin}
+            key={item.origins[0]?.id ?? item.recipients[0]} 
+            origin={item}
             featured={featured}
             compact={compact}
             className="mr-4"

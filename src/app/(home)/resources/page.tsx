@@ -5,18 +5,25 @@ import { OriginsTable } from '@/app/_components/resources/display/origins-table'
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { subWeeks } from 'date-fns';
 
 export default async function ResourcesPage() {
   const [
     allResources,
     mostPopularAllTime,
     mostPopularThisWeek,
-    newestOrigins
   ] = await Promise.all([
     api.origins.list.withResources.all(),
-    api.origins.featured.mostPopularAllTime(),
-    api.origins.featured.mostPopularThisWeek(),
-    api.origins.featured.newest(),
+    api.sellers.list.bazaar({
+      limit: 10,
+      sorting: { id: 'tx_count', desc: true },
+    }),
+    api.sellers.list.bazaar({
+      limit: 10,
+      startDate: subWeeks(new Date(), 1),
+      endDate: new Date(),
+      sorting: { id: 'tx_count', desc: true },
+    }),
   ]);
 
   return (
@@ -36,20 +43,12 @@ export default async function ResourcesPage() {
       <Body className="space-y-5">
         <OriginCarousel 
           title="Most Popular All Time" 
-          origins={mostPopularAllTime}
-          featured
+          origins={mostPopularAllTime.items}
         />
         
         <OriginCarousel 
           title="Trending This Week" 
-          origins={mostPopularThisWeek}
-          compact
-          autoplay={false}
-        />
-        
-        <OriginCarousel 
-          title="Newest Origins" 
-          origins={newestOrigins}
+          origins={mostPopularThisWeek.items}
           compact
           autoplay={false}
         />
