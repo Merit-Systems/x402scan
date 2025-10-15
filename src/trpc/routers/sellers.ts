@@ -3,7 +3,7 @@ import z from 'zod';
 import {
   listTopSellers,
   listTopSellersInputSchema,
-} from '@/services/cdp/sql/sellers/list';
+} from '@/services/indexer/sellers/list';
 import { getAcceptsAddresses } from '@/services/db/accepts';
 import type { FacilitatorAddress } from '@/lib/facilitators';
 import type { Address } from 'viem';

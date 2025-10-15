@@ -1,12 +1,12 @@
 import {
   listTopFacilitators,
   listTopFacilitatorsInputSchema,
-} from '@/services/cdp/sql/facilitators/list';
+} from '@/services/indexer/facilitators/list';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import {
   bucketedStatisticsInputSchema,
   getBucketedFacilitatorsStatistics,
-} from '@/services/cdp/sql/facilitators/bucketed';
+} from '@/services/indexer/facilitators/bucketed';
 
 export const facilitatorsRouter = createTRPCRouter({
   list: publicProcedure

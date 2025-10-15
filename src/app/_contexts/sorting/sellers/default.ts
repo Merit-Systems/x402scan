@@ -1,4 +1,4 @@
-import type { SellerSortId } from '@/services/cdp/sql/sellers/list';
+import type { SellerSortId } from '@/services/indexer/sellers/list';
 
 import type { SortType } from '../base/types';
 

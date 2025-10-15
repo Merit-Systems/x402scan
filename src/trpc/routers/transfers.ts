@@ -1,12 +1,12 @@
 import {
   getFacilitatorTransfer,
   getFacilitatorTransferInputSchema,
-} from '@/services/cdp/sql/transfers/get';
+} from '@/services/indexer/transfers/get';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import {
   listFacilitatorTransfersInputSchema,
   listFacilitatorTransfers,
-} from '@/services/cdp/sql/transfers/list';
+} from '@/services/indexer/transfers/list';
 
 export const transfersRouter = createTRPCRouter({
   get: publicProcedure
