@@ -7,7 +7,7 @@ import { Favicon } from '@/components/favicon';
 import { Server } from 'lucide-react';
 import { Address } from '@/components/ui/address';
 import { cn } from '@/lib/utils';
-import { OriginCard } from "@/app/recipient/[address]/resources/_components/origin-card";
+import { OriginCard } from '@/app/recipient/[address]/resources/_components/origin-card';
 
 import type { RouterOutputs } from '@/trpc/client';
 
