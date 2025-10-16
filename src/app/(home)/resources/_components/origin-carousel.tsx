@@ -43,7 +43,11 @@ export const OriginCarousel: React.FC<Props> = ({
           {origins.map(item => (
             <CarouselItem
               key={item.origins[0]?.id ?? item.recipients[0]}
-              className={compact ? 'md:basis-1/3 lg:basis-1/4' : 'md:basis-1/2 lg:basis-1/3'}
+              className={
+                compact
+                  ? 'md:basis-1/3 lg:basis-1/4'
+                  : 'md:basis-1/2 lg:basis-1/3'
+              }
             >
               <OriginAppCard
                 origin={item}
