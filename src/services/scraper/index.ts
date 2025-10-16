@@ -1,6 +1,7 @@
 import type { OgObject } from 'open-graph-scraper/types';
 import { scrapeMetadata } from './metadata';
 import { scrapeOg } from './og';
+import { getFaviconUrl } from '@/lib/favicon';
 
 export const scrapeOriginData = async (inputOrigin: string) => {
   let origin = inputOrigin;
@@ -23,6 +24,34 @@ export const scrapeOriginData = async (inputOrigin: string) => {
       )
     ) {
       og = await scrapeOg(origin);
+    } else {
+      if (og?.favicon) {
+        const faviconUrl = getFaviconUrl(og.favicon, inputOrigin);
+
+        try {
+          const res = await fetch(faviconUrl);
+          if (res.status !== 200) {
+            // try to get a favicon from the base origin
+            const ogResponse = await scrapeOg(origin);
+
+            if (ogResponse?.favicon) {
+              try {
+                const baseFaviconResponse = await fetch(
+                  getFaviconUrl(ogResponse.favicon, origin)
+                );
+                if (baseFaviconResponse.status === 200) {
+                  og = {
+                    ...og,
+                    favicon: getFaviconUrl(ogResponse.favicon, origin),
+                  };
+                }
+              } catch {}
+            }
+          }
+        } catch {
+          // do nothing
+        }
+      }
     }
 
     if (

@@ -14,6 +14,7 @@ import type { AcceptsNetwork } from '@prisma/client';
 import { x402ResponseSchema } from 'x402/types';
 import { upsertResourceResponse } from '@/services/db/resource-responses';
 import { formatTokenAmount } from './token';
+import { getFaviconUrl } from './favicon';
 
 export const registerResource = async (url: string, data: unknown) => {
   // Strip the query params from the incoming URL
@@ -59,11 +60,7 @@ export const registerResource = async (url: string, data: unknown) => {
     origin: origin,
     title: metadata?.title ?? og?.ogTitle,
     description: metadata?.description ?? og?.ogDescription,
-    favicon:
-      og?.favicon &&
-      (og.favicon.startsWith('/')
-        ? scrapedOrigin.replace(/\/$/, '') + og.favicon
-        : og.favicon),
+    favicon: og?.favicon ? getFaviconUrl(og.favicon, scrapedOrigin) : undefined,
     ogImages:
       og?.ogImage?.map(image => ({
         url: image.url,
