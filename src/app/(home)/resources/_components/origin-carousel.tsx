@@ -1,5 +1,11 @@
 import React from 'react';
-import { Carousel } from './carousel';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 import { OriginAppCard } from './origin-app-card';
 
 import type { RouterOutputs } from '@/trpc/client';
@@ -13,7 +19,6 @@ interface Props {
   origins: BazaarItem[] | AggregatedItem[];
   featured?: boolean;
   compact?: boolean;
-  autoplay?: boolean;
 }
 
 export const OriginCarousel: React.FC<Props> = ({
@@ -21,23 +26,35 @@ export const OriginCarousel: React.FC<Props> = ({
   origins,
   featured = false,
   compact = false,
-  autoplay = true,
 }) => {
   if (origins.length === 0) return null;
 
   return (
     <div className="w-full">
       <h2 className="text-lg font-semibold mb-3">{title}</h2>
-      <Carousel autoplay={autoplay} compact={compact}>
-        {origins.map(item => (
-          <OriginAppCard
-            key={item.origins[0]?.id ?? item.recipients[0]}
-            origin={item}
-            featured={featured}
-            compact={compact}
-            className="mr-4"
-          />
-        ))}
+      <Carousel
+        opts={{
+          align: 'start',
+          loop: true,
+        }}
+        className="w-full"
+      >
+        <CarouselContent>
+          {origins.map(item => (
+            <CarouselItem
+              key={item.origins[0]?.id ?? item.recipients[0]}
+              className={compact ? 'md:basis-1/3 lg:basis-1/4' : 'md:basis-1/2 lg:basis-1/3'}
+            >
+              <OriginAppCard
+                origin={item}
+                featured={featured}
+                compact={compact}
+              />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
       </Carousel>
     </div>
   );
