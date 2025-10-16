@@ -63,11 +63,14 @@ export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({
   };
 
   const handleFocus = () => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      setStartY(rect.top);
-    }
-    setIsFocused(true);
+    const rect = containerRef.current?.getBoundingClientRect();
+    const y = rect?.top ?? 0;
+
+    // Batch state updates to avoid multiple renders
+    requestAnimationFrame(() => {
+      setStartY(y);
+      setIsFocused(true);
+    });
   };
 
   return (
@@ -75,7 +78,7 @@ export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({
       {/* Backdrop blur */}
       {isFocused && (
         <div
-          className="fixed inset-0 bg-background/50 backdrop-blur-md z-40 transition-all duration-300 ease-in-out"
+          className="fixed inset-0 bg-background/50 backdrop-blur-xl z-40 transition-all duration-[1500ms] ease-in-out"
           onClick={handleClose}
         />
       )}
@@ -92,7 +95,7 @@ export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({
           isFocused && startY > 0
             ? ({
                 animationName: 'slide-up-from-origin',
-                animationDuration: '0.5s',
+                animationDuration: '800ms',
                 animationTimingFunction: 'ease-in-out',
                 '--start-y': `${startY - 32}px`,
               } as React.CSSProperties)
@@ -102,7 +105,7 @@ export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({
         <div className="relative">
           <Search
             className={cn(
-              'absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-all duration-300',
+              'absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-all duration-1000',
               isFocused ? 'size-5' : 'size-4'
             )}
           />
@@ -113,9 +116,9 @@ export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({
             onChange={e => setSearchTerm(e.target.value)}
             onFocus={handleFocus}
             className={cn(
-              'transition-all duration-500 ease-in-out',
+              'transition-all duration-1000 ease-in-out border-2',
               isFocused
-                ? 'h-14 text-lg pl-12 pr-12 shadow-2xl border-2'
+                ? 'h-14 text-lg pl-12 pr-12 shadow-2xl'
                 : 'h-12 pl-10 pr-4'
             )}
           />
@@ -131,7 +134,7 @@ export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({
 
         {/* Search results */}
         {isFocused && (
-          <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-1000">
             <SearchResultsTable
               origins={searchTerm ? (searchResults ?? []) : popularOrigins}
               isLoading={isLoading && searchTerm.length > 0}
