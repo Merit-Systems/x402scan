@@ -30,6 +30,10 @@ export default function HomeLayout({
             label: 'Ecosystem',
             href: '/ecosystem',
           },
+          {
+            label: 'Chat',
+            href: '/chat',
+          },
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>

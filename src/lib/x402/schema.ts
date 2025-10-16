@@ -34,9 +34,9 @@ const EnhancedOutputSchema = z3.object({
     bodyFields: true,
     headerFields: true,
   }).extend({
+    headerFields: z3.record(FieldDefSchema).optional(),
     queryParams: z3.record(FieldDefSchema).optional(),
     bodyFields: z3.record(FieldDefSchema).optional(),
-    headerFields: z3.record(FieldDefSchema).optional(),
   }),
   output: z3.record(z3.string(), z3.any()).optional(),
 });
