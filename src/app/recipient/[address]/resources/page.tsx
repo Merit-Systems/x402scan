@@ -1,5 +1,5 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { ResourcesWithOrigins } from '@/app/_components/resources/display/resources-with-origins';
+import { ResourcesWithOrigins } from '@/app/recipient/[address]/resources/_components/resources-with-origins';
 
 import { api, HydrateClient } from '@/trpc/server';
 

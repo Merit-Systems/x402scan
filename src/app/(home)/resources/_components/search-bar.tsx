@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { api, type RouterOutputs } from '@/trpc/client';
-import { SearchResultsTable } from '@/app/_components/resources/display/search-results-table';
+import { SearchResultsTable } from '@/app/(home)/resources/_components/search-results-table';
 
 interface ResourceSearchBarProps {
   popularOrigins?: RouterOutputs['origins']['list']['aggregated']['items'];

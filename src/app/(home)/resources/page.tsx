@@ -1,8 +1,8 @@
 import { Body, Heading } from '../../_components/layout/page-utils';
 import { api } from '@/trpc/server';
-import { OriginCarousel } from '@/app/_components/resources/display/origin-carousel';
-import { OriginsTable } from '@/app/_components/resources/display/origins-table';
-import { ResourceSearchBar } from '@/app/_components/resources/display/search-bar';
+import { OriginCarousel } from '@/app/(home)/resources/_components/origin-carousel';
+import { OriginsTable } from '@/app/(home)/resources/_components/origins-table';
+import { ResourceSearchBar } from '@/app/(home)/resources/_components/search-bar';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';

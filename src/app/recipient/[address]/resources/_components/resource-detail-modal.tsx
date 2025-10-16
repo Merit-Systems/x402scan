@@ -7,8 +7,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { DrawerResourceExecutor } from '../executor/drawer-executor';
-import { getBazaarMethod } from '../executor/utils';
+import { DrawerResourceExecutor } from './executor/drawer-executor';
+import { getBazaarMethod } from './executor/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
 
