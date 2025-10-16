@@ -19,6 +19,7 @@ export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({
   const [startY, setStartY] = useState<number>(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const MAGIC_OFFSET_NUMBER = 5;
 
   const { data: searchResults, isLoading } =
     api.origins.searchAdvanced.useQuery(
@@ -64,7 +65,7 @@ export const ResourceSearchBar: React.FC<ResourceSearchBarProps> = ({
 
   const handleFocus = () => {
     const rect = containerRef.current?.getBoundingClientRect();
-    const y = rect?.top ?? 0;
+    const y = (rect?.bottom ?? 0) - MAGIC_OFFSET_NUMBER;
 
     // Batch state updates to avoid multiple renders
     requestAnimationFrame(() => {
