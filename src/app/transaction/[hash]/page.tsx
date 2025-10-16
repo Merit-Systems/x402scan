@@ -32,7 +32,7 @@ export default async function TransactionPage({
           buyerAddress={transfer.sender}
           facilitatorAddress={transaction.from_address}
           sellerAddress={transfer.recipient}
-          amount={transfer.amount}
+          amount={BigInt(transfer.amount)}
         />
         <TransactionDetails transaction={transaction} transfer={transfer} />
       </Body>

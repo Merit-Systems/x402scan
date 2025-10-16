@@ -3,6 +3,7 @@ import z from 'zod';
 import { runBaseSqlQuery } from '../query';
 
 import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
+import { usdcAmountSchema } from '@/lib/cdp/numeric-types';
 import { baseQuerySchema } from '../lib';
 
 export const getFacilitatorTransferInputSchema = baseQuerySchema.extend({
@@ -13,7 +14,7 @@ const outputSchema = z.array(
   z.object({
     sender: ethereumAddressSchema,
     recipient: ethereumAddressSchema,
-    amount: z.coerce.bigint(),
+    amount: usdcAmountSchema,
     token_address: ethereumAddressSchema,
     transaction_hash: ethereumHashSchema,
     block_timestamp: z.coerce.date(),

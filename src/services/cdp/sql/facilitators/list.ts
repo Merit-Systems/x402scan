@@ -6,6 +6,7 @@ import z from 'zod';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { USDC_ADDRESS } from '@/lib/utils';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+import { usdcAmountSchema, countValueSchema } from '@/lib/cdp/numeric-types';
 
 const listTopFacilitatorsSortIds = [
   'tx_count',
@@ -80,10 +81,10 @@ LIMIT ${limit + 1}`;
     sql,
     z.array(
       z.object({
-        unique_sellers: z.coerce.number(),
-        unique_buyers: z.coerce.number(),
-        tx_count: z.coerce.number(),
-        total_amount: z.coerce.number(),
+        unique_sellers: countValueSchema,
+        unique_buyers: countValueSchema,
+        tx_count: countValueSchema,
+        total_amount: usdcAmountSchema,
         latest_block_timestamp: z.coerce.date(),
         facilitator_name: z.string().transform(v => v as FacilitatorName),
       })

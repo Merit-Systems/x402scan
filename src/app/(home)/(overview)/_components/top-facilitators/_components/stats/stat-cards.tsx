@@ -3,7 +3,7 @@ import { ArrowLeftRight, Calendar, DollarSign, Users } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import type { LucideIcon } from 'lucide-react';
-import { formatTokenAmount } from '@/lib/token';
+import { formatCount, formatTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -25,22 +25,10 @@ const statsData: Stat[] = [
 
 export const StatsCards: React.FC<Props> = async ({ stats }) => {
   const values = [
-    stats.tx_count.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-      notation: 'compact',
-    }),
+    formatCount(stats.tx_count),
     formatTokenAmount(BigInt(stats.total_amount)),
-    stats.unique_buyers.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-      notation: 'compact',
-    }),
-    stats.unique_sellers.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-      notation: 'compact',
-    }),
+    formatCount(stats.unique_buyers),
+    formatCount(stats.unique_sellers),
   ];
 
   return statsData.map((stat, index) => (

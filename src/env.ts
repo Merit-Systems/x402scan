@@ -12,7 +12,7 @@ export const env = createEnv({
     HIDE_TRPC_LOGS: z.coerce.boolean().optional(),
     GITHUB_TOKEN: z.string().optional(),
     CRON_SECRET:
-      process.env.NEXT_PUBLIC_NODE_ENV === 'development'
+      process.env.NODE_ENV === 'development'
         ? z.string().optional()
         : z.string(),
   },
