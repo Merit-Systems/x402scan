@@ -1,5 +1,6 @@
 import { Address } from '@/components/ui/address';
 import { Favicon } from '@/components/favicon';
+import { safeGetHostname, safeParseUrl } from '@/lib/url';
 
 import type { Accepts, ResourceOrigin, Resources } from '@prisma/client';
 
@@ -11,12 +12,16 @@ interface Props {
 }
 
 export const Resource: React.FC<Props> = ({ resource }) => {
+  const hostname = safeGetHostname(resource.origin.origin);
+  const resourceUrl = safeParseUrl(resource.resource);
+  const pathname = resourceUrl?.pathname ?? '';
+  
   return (
     <ResourceContainer
       Icon={({ className }) => (
         <Favicon url={resource.origin.favicon} className={className} />
       )}
-      title={`${new URL(resource.origin.origin).hostname}${new URL(resource.resource).pathname}`}
+      title={`${hostname}${pathname}`}
       address={
         <Address
           address={resource.accepts[0].payTo}

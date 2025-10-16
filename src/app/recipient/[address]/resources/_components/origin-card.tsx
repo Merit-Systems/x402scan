@@ -12,6 +12,7 @@ import {
 import { Favicon } from '@/components/favicon';
 import { Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { safeGetHostname } from '@/lib/url';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -26,7 +27,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
         <CardHeader className="flex-row items-center gap-2">
           <Favicon url={origin.favicon} className="size-4 mt-1.5" />
           <CardTitle>
-            {origin.title ?? new URL(origin.origin).hostname}
+            {origin.title ?? safeGetHostname(origin.origin)}
           </CardTitle>
         </CardHeader>
         <CardContent>

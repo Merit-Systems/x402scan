@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Address, Addresses } from '@/components/ui/address';
 
 import { cn } from '@/lib/utils';
+import { safeGetHostname } from '@/lib/url';
 
 import type { ResourceOrigin } from '@prisma/client';
 import type { Address as ViemAddress } from 'viem';
@@ -47,7 +48,7 @@ export const Origins: React.FC<Props> = ({
             <Globe className={className} />
           )
         }
-        title={new URL(origin.origin).hostname}
+        title={safeGetHostname(origin.origin)}
         address={
           addresses.length === 0 ? null : addresses.length === 1 ? (
             <Address address={addresses[0]} disableCopy={disableCopy} />
@@ -76,7 +77,7 @@ export const Origins: React.FC<Props> = ({
             <ul className="list-disc list-inside">
               {origins.map(origin => (
                 <li key={origin.id}>
-                  {origin.title ?? new URL(origin.origin).hostname}
+                  {origin.title ?? safeGetHostname(origin.origin)}
                 </li>
               ))}
             </ul>
@@ -115,7 +116,7 @@ export const Origin: React.FC<OriginProps> = ({
           <Globe className={className} />
         )
       }
-      title={new URL(origin.origin).hostname}
+      title={safeGetHostname(origin.origin)}
       address={
         <Addresses
           addresses={addresses}
