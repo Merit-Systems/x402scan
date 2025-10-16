@@ -25,6 +25,9 @@ export const Origins: React.FC<Props> = ({
   addresses,
   disableCopy,
 }) => {
+  const resolveOriginLabel = (origin: ResourceOrigin) =>
+    origin.title ?? new URL(origin.origin).hostname;
+
   if (!origins || origins.length === 0) {
     if (addresses.length === 0) {
       return null;
@@ -37,6 +40,7 @@ export const Origins: React.FC<Props> = ({
 
   if (origins.length === 1) {
     const origin = origins[0];
+    const originLabel = resolveOriginLabel(origin);
     return (
       <OriginsContainer
         Icon={({ className }) =>
@@ -47,7 +51,7 @@ export const Origins: React.FC<Props> = ({
             <Globe className={className} />
           )
         }
-        title={new URL(origin.origin).hostname}
+        title={originLabel}
         address={
           addresses.length === 0 ? null : addresses.length === 1 ? (
             <Address address={addresses[0]} disableCopy={disableCopy} />
@@ -59,13 +63,19 @@ export const Origins: React.FC<Props> = ({
     );
   }
 
+  const primaryOrigin = origins[0];
+  const primaryLabel = resolveOriginLabel(primaryOrigin);
+  const additionalCount = origins.length - 1;
+  const displayLabel =
+    additionalCount > 0 ? `${primaryLabel} (+${additionalCount})` : primaryLabel;
+
   return (
     <OriginsContainer
       Icon={({ className }) => <Server className={className} />}
       title={
         <Tooltip>
           <TooltipTrigger className="cursor-pointer hover:bg-muted hover:text-muted-foreground rounded-md transition-colors">
-            {origins.length} servers
+            {displayLabel}
           </TooltipTrigger>
           <TooltipContent className="max-w-sm flex flex-col gap-1">
             <p>
@@ -75,9 +85,7 @@ export const Origins: React.FC<Props> = ({
             </p>
             <ul className="list-disc list-inside">
               {origins.map(origin => (
-                <li key={origin.id}>
-                  {origin.title ?? new URL(origin.origin).hostname}
-                </li>
+                <li key={origin.id}>{resolveOriginLabel(origin)}</li>
               ))}
             </ul>
           </TooltipContent>
