@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "dev": "pnpm next:dev & wait-on http://localhost:3000 && pnpm sync:resources",
+    "dev": "pnpm next:dev",
     "next:dev": "next dev --turbopack",
     "build": "prisma migrate deploy && next build --turbopack",
     "start": "next start",
@@ -39,12 +39,14 @@
     "@octokit/rest": "^22.0.0",
     "@prisma/adapter-neon": "^6.16.3",
     "@prisma/client": "^6.16.2",
+    "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-popover": "^1.1.15",
-    "@radix-ui/react-scroll-area": "^1.2.10",
+    "@radix-ui/react-progress": "^1.1.7",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
@@ -65,6 +67,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "cookies-next": "^6.1.0",
     "date-fns": "^4.1.0",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "html-metadata-parser": "^2.0.4",
@@ -80,7 +83,6 @@
     "react-day-picker": "^9.11.0",
     "react-dom": "19.1.0",
     "react-error-boundary": "^6.0.0",
-    "react-syntax-highlighter": "^15.6.6",
     "recharts": "2.15.4",
     "server-only": "^0.0.1",
     "shiki": "^3.13.0",
@@ -91,6 +93,7 @@
     "tailwind-merge": "^3.3.1",
     "use-stick-to-bottom": "^1.1.1",
     "uuid": "^13.0.0",
+    "vaul": "^1.1.2",
     "viem": "^2.37.9",
     "wagmi": "^2.17.5",
     "ws": "^8.18.3",
@@ -106,7 +109,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/react-syntax-highlighter": "^15.5.13",
     "@types/ws": "^8.18.1",
     "@vitest/ui": "^3.2.4",
     "dotenv": "^17.2.3",
@@ -122,8 +124,6 @@
     "tw-animate-css": "^1.4.0",
     "typescript": "^5",
     "typescript-eslint": "^8.44.1",
-    "vitest": "^3.2.4",
-    "wait-on": "^9.0.1"
-  },
-  "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab"
+    "vitest": "^3.2.4"
+  }
 }

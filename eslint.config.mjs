@@ -39,8 +39,6 @@ export default defineConfig(
         { argsIgnorePattern: '^_' },
       ],
       '@typescript-eslint/require-await': 'off',
-      '@typescript-eslint/unbound-method': 'off',
-      '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-misused-promises': [
         'error',
         { checksVoidReturn: { attributes: false } },

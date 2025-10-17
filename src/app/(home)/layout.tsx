@@ -14,6 +14,17 @@ export default function HomeLayout({
             href: '/',
           },
           {
+            label: 'Composer',
+            href: '/chat',
+            subRoutes: ['/chat/'],
+            isNew: true,
+          },
+          {
+            label: 'Resources',
+            href: '/resources',
+            subRoutes: ['/resources/register'],
+          },
+          {
             label: 'Transactions',
             href: '/transactions',
           },
@@ -22,17 +33,8 @@ export default function HomeLayout({
             href: '/facilitators',
           },
           {
-            label: 'Resources',
-            href: '/resources',
-            subRoutes: ['/resources/register'],
-          },
-          {
             label: 'Ecosystem',
             href: '/ecosystem',
-          },
-          {
-            label: 'Chat',
-            href: '/chat',
           },
         ]}
       />

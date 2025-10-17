@@ -89,7 +89,7 @@ export const MoneyInput: React.FC<Props> = ({
     >
       <div
         className={cn(
-          'bg-foreground/10 flex aspect-square size-12 h-full items-center justify-center text-lg opacity-60',
+          'bg-foreground/10 flex aspect-square size-10 h-full items-center justify-center text-lg opacity-60 shrink-0',
           prefixClassName,
           hideDollarSign && 'hidden'
         )}

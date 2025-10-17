@@ -32,9 +32,6 @@ export function fetchWithX402Payment(
       ...((init?.headers as Record<string, string>) || {}),
     };
 
-    delete headers.Authorization;
-    delete headers.authorization;
-
     const response = await fetch(input, {
       ...init,
       headers,

@@ -28,7 +28,7 @@ const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
   )
 );
 
-const EnhancedOutputSchema = z3.object({
+export const enhancedOutputSchema = z3.object({
   input: HTTPRequestStructureSchema.omit({
     queryParams: true,
     bodyFields: true,
@@ -38,10 +38,14 @@ const EnhancedOutputSchema = z3.object({
     queryParams: z3.record(FieldDefSchema).optional(),
     bodyFields: z3.record(FieldDefSchema).optional(),
   }),
-  output: z3.record(z3.string(), z3.any()).optional(),
+  output: z3.record(z3.string(), z3.any()).optional().nullable(),
 });
 
-export type EnhancedOutputSchema = z3.infer<typeof EnhancedOutputSchema>;
+export type EnhancedOutputSchema = z3.infer<typeof enhancedOutputSchema>;
+
+export const enhancedAcceptsSchema = PaymentRequirementsSchema.extend({
+  outputSchema: enhancedOutputSchema.optional(),
+});
 
 const EnhancedX402ResponseSchema = x402ResponseSchema
   .omit({
@@ -50,13 +54,7 @@ const EnhancedX402ResponseSchema = x402ResponseSchema
   })
   .extend({
     error: z3.string().optional(), // Accept any error string
-    accepts: z3
-      .array(
-        PaymentRequirementsSchema.extend({
-          outputSchema: EnhancedOutputSchema.optional(),
-        })
-      )
-      .optional(),
+    accepts: z3.array(enhancedAcceptsSchema).optional(),
   });
 
 // Types

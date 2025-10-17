@@ -1,29 +1,24 @@
-import type { Prisma } from '@prisma/client';
+import { z } from 'zod';
+
 import { prisma } from './client';
 
-// Chat CRUD operations
+import type { Prisma } from '@prisma/client';
+
 export const createChat = async (data: Prisma.ChatCreateInput) => {
   return await prisma.chat.create({
-    data,
+    data: data,
     include: {
       messages: true,
     },
   });
 };
 
-export const getChatById = async (id: string) => {
+export const getChat = async (id: string, userId: string) => {
   return await prisma.chat.findUnique({
-    where: { id },
+    where: { id, OR: [{ userId }, { visibility: 'public' }] },
     include: {
       messages: {
         orderBy: { createdAt: 'asc' },
-      },
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
       },
     },
   });
@@ -42,16 +37,26 @@ export const getChatsByUserId = async (userId: string) => {
   });
 };
 
-export const updateChat = async (id: string, data: Prisma.ChatUpdateInput) => {
+export const updateChatSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1).max(255).optional(),
+  visibility: z.enum(['public', 'private']).optional(),
+});
+
+export const updateChat = async (
+  userId: string,
+  updateChatData: z.infer<typeof updateChatSchema>
+) => {
+  const { id, ...data } = updateChatSchema.parse(updateChatData);
   return await prisma.chat.update({
-    where: { id },
+    where: { id, userId },
     data,
   });
 };
 
-export const deleteChat = async (id: string) => {
+export const deleteChat = async (id: string, userId: string) => {
   return await prisma.chat.delete({
-    where: { id },
+    where: { id, userId },
   });
 };
 

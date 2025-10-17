@@ -16,6 +16,7 @@ import {
 } from '@/services/cdp/onramp/create-onramp-session';
 
 import { SessionStatus } from '@prisma/client';
+import { getWalletAddressFromUserId } from '@/services/cdp/server-wallet';
 
 export const onrampSessionsRouter = createTRPCRouter({
   get: protectedProcedure
@@ -24,11 +25,15 @@ export const onrampSessionsRouter = createTRPCRouter({
         id: z.string(),
       })
     )
-    .query(async ({ input: { id } }) => {
+    .query(async ({ input: { id }, ctx }) => {
       const onrampSession = await getOnrampSessionByToken(id);
 
       if (!onrampSession) {
         throw new TRPCError({ code: 'NOT_FOUND' });
+      }
+
+      if (onrampSession.userId !== ctx.session.user.id) {
+        throw new TRPCError({ code: 'FORBIDDEN' });
       }
 
       if (
@@ -60,7 +65,14 @@ export const onrampSessionsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createOnrampUrlParamsSchema)
     .mutation(async ({ ctx, input }) => {
-      const { token, url } = await createOnrampUrl(ctx.session.user.id, input);
+      const account = ctx.session.user.accounts.find(
+        account => account.type === 'siwe'
+      );
+      if (!account) {
+        throw new TRPCError({ code: 'NOT_FOUND' });
+      }
+      const address = account.providerAccountId;
+      const { token, url } = await createOnrampUrl(address, input);
       await createOnrampSession({
         token,
         amount: input.amount,
@@ -68,4 +80,22 @@ export const onrampSessionsRouter = createTRPCRouter({
       });
       return url;
     }),
+
+  serverWallet: {
+    create: protectedProcedure
+      .input(createOnrampUrlParamsSchema)
+      .mutation(async ({ ctx, input }) => {
+        const address = await getWalletAddressFromUserId(ctx.session.user.id);
+        if (!address) {
+          throw new TRPCError({ code: 'NOT_FOUND' });
+        }
+        const { token, url } = await createOnrampUrl(address, input);
+        await createOnrampSession({
+          token,
+          amount: input.amount,
+          userId: ctx.session.user.id,
+        });
+        return url;
+      }),
+  },
 });

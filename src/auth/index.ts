@@ -1,90 +1,87 @@
 import { cache } from 'react';
 
 import NextAuth from 'next-auth';
+import { encode as defaultEncode } from 'next-auth/jwt';
+
 import { PrismaAdapter } from '@auth/prisma-adapter';
+import { v4 as uuid } from 'uuid';
 
 import { prisma } from '../services/db/client';
 import { providers } from './providers';
 
 import type { DefaultSession } from 'next-auth';
-import type { Role } from '@prisma/client';
-import {
-  getEchoAccountByUserId,
-  updateEchoAccountByUserId,
-} from '@/services/db/user';
-import { addSeconds, getUnixTime } from 'date-fns';
-
-import { v4 as uuid } from 'uuid';
-import { encode as defaultEncode } from 'next-auth/jwt';
+import type { Account, Role } from '@prisma/client';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
       role: Role;
+      accounts: Account[];
     } & DefaultSession['user'];
+  }
+
+  interface AdapterUser {
+    id: string;
+    email: string | null;
+    role: Role;
+    accounts: Account[];
   }
 
   interface User {
     id?: string;
     email?: string | null;
+    accounts: Account[];
   }
 }
 
 const { handlers, auth: uncachedAuth } = NextAuth({
   providers,
-  adapter: PrismaAdapter(prisma),
+  adapter: {
+    ...PrismaAdapter(prisma),
+    getUser: async id => {
+      const user = await prisma.user.findUnique({
+        where: { id },
+        include: { accounts: true },
+      });
+      if (!user) {
+        return null;
+      }
+      return {
+        ...user,
+        email: user?.email ?? '',
+      };
+    },
+    getSessionAndUser: async sessionToken => {
+      const session = await prisma.session.findUnique({
+        where: { sessionToken },
+        include: { user: true },
+      });
+      if (!session) {
+        return null;
+      }
+      const user = await prisma.user.findUnique({
+        where: { id: session.userId },
+        include: { accounts: true },
+      });
+      if (!user) {
+        return null;
+      }
+      return {
+        session,
+        user: {
+          ...user,
+          email: user.email ?? '',
+        },
+      };
+    },
+  },
   trustHost: true,
   callbacks: {
-    session: async ({ session, user }) => {
-      if (!user.id) {
-        return session;
-      }
-
-      // Handle Echo token refresh
-      const account = await getEchoAccountByUserId(user.id);
-      if (account?.expires_at && account.expires_at * 1000 < Date.now()) {
-        // If the access token has expired, try to refresh it
-        try {
-          const response = await fetch(
-            'https://staging-echo.merit.systems/api/oauth/token',
-            {
-              method: 'POST',
-              body: new URLSearchParams({
-                grant_type: 'refresh_token',
-                refresh_token: account.refresh_token ?? '',
-              }),
-            }
-          );
-
-          const tokensOrError = (await response.json()) as unknown;
-
-          if (!response.ok) throw tokensOrError;
-
-          const newTokens = tokensOrError as {
-            access_token: string;
-            expires_in: number;
-            refresh_token: string;
-          };
-
-          await updateEchoAccountByUserId(account.providerAccountId, {
-            access_token: newTokens.access_token,
-            expires_at: getUnixTime(
-              addSeconds(new Date(), newTokens.expires_in)
-            ),
-            refresh_token: newTokens.refresh_token,
-          });
-        } catch (error) {
-          console.error('Error refreshing access_token', error);
-        }
-      }
-
+    async session({ session, user }) {
       return {
         ...session,
-        user: {
-          ...session.user,
-          id: user.id,
-        },
+        user: user,
       };
     },
     async jwt({ token, account }) {

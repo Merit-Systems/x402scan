@@ -8,6 +8,12 @@ export const infiniteQuerySchema = <T>(cursorType: z.ZodType<T>) =>
     limit: z.number().optional().default(100),
   });
 
+export const paginatedQuerySchema = () =>
+  z.object({
+    skip: z.number().optional().default(0),
+    limit: z.number().optional().default(100),
+  });
+
 interface ToPaginatedResponseParams<T> {
   items: T[];
   limit: number;

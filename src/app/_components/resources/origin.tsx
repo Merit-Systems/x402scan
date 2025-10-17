@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { Favicon } from '@/components/favicon';
+import { Favicon } from '@/app/_components/favicon';
 
 import { cn } from '@/lib/utils';
 

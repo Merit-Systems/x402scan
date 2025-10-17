@@ -85,6 +85,13 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   return next({ ctx: { ...ctx, session: ctx.session } });
 });
 
+export const adminProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.session?.user || ctx.session.user.role !== 'admin') {
+    throw new TRPCError({ code: 'FORBIDDEN' });
+  }
+  return next({ ctx: { ...ctx, session: ctx.session } });
+});
+
 export const infiniteQueryProcedure = <T>(cursorType: z.ZodType<T>) =>
   t.procedure
     .input(infiniteQuerySchema(cursorType))

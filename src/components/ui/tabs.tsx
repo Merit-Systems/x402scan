@@ -41,12 +41,12 @@ const TabsList = React.forwardRef<
 TabsList.displayName = TabsPrimitive.List.displayName;
 
 const tabsTriggerVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap gap-2 px-3 py-1.5 text-sm font-medium transition-all outline-none disabled:pointer-events-none disabled:opacity-50 group',
+  'inline-flex items-center justify-center whitespace-nowrap gap-2 px-3 py-1.5 text-sm font-medium transition-all outline-none disabled:pointer-events-none disabled:opacity-50 group cursor-pointer',
   {
     variants: {
       variant: {
         default:
-          'rounded-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 shadow-sm dark:ring-offset-background dark:focus-visible:ring-ring',
+          'rounded-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:ring-offset-background dark:focus-visible:ring-ring',
         underline: [
           'relative text-muted-foreground',
           "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-transparent after:content-['']",
@@ -72,7 +72,7 @@ const tabsTriggerVariants = cva(
         variant: 'default',
         color: 'primary',
         className:
-          'data-[state=active]:bg-primary data-[state=active]:text-primary-foreground dark:data-[state=active]:bg-primary dark:data-[state=active]:text-primary-foreground',
+          'data-[state=active]:bg-background data-[state=active]:text-foreground dark:data-[state=active]:bg-background dark:data-[state=active]:text-foreground',
       },
       {
         variant: 'default',

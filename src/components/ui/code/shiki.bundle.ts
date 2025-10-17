@@ -30,6 +30,7 @@ const bundledLanguages = {
   jsx: () => import('@shikijs/langs/jsx'),
   tsx: () => import('@shikijs/langs/tsx'),
   shell: () => import('@shikijs/langs/shell'),
+  json: () => import('@shikijs/langs/json'),
 } as Record<BundledLanguage, DynamicImportLanguageRegistration>;
 
 const bundledThemes = {

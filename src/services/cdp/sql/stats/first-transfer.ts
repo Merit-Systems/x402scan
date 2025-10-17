@@ -27,7 +27,7 @@ export const getFirstTransferTimestamp = async (
         AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
         AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
         ${
-          addresses
+          addresses && addresses.length > 0
             ? `AND parameters['to']::String IN (${addresses
                 .map(a => `'${a}'`)
                 .join(', ')})`

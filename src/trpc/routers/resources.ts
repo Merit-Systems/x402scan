@@ -1,35 +1,44 @@
 import z from 'zod';
-import z3 from 'zod3';
 
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
-import { scrapeOriginData } from '@/services/scraper';
 import {
+  getResource,
   getResourceByAddress,
   listResources,
+  listResourcesWithPagination,
   searchResources,
   searchResourcesSchema,
-  upsertResource,
 } from '@/services/db/resources';
-import { upsertOrigin } from '@/services/db/origin';
-import { upsertResourceResponse } from '@/services/db/resource-responses';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
-import type { EnhancedOutputSchema } from '@/lib/x402/schema';
-import { parseX402Response } from '@/lib/x402/schema';
-import { formatTokenAmount } from '@/lib/token';
-import { getOriginFromUrl } from '@/lib/url';
 
 import { Methods } from '@/types/x402';
 
-import type { AcceptsNetwork } from '@prisma/client';
-import { x402ResponseSchema } from 'x402/types';
+import { registerResource } from '@/lib/resources';
+import { paginatedQuerySchema } from '@/lib/pagination';
+import { TRPCError } from '@trpc/server';
 
 export const resourcesRouter = createTRPCRouter({
+  get: publicProcedure.input(z.string()).query(async ({ input }) => {
+    const resource = await getResource(input);
+    if (!resource) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Resource not found',
+      });
+    }
+    return resource;
+  }),
   list: {
     all: publicProcedure.query(async () => {
       return await listResources();
     }),
+    paginated: publicProcedure
+      .input(paginatedQuerySchema())
+      .query(async ({ input }) => {
+        return await listResourcesWithPagination(input);
+      }),
     byAddress: publicProcedure
       .input(ethereumAddressSchema)
       .query(async ({ input }) => {
@@ -82,108 +91,39 @@ export const resourcesRouter = createTRPCRouter({
 
         const data = (await response.json()) as unknown;
 
-        const baseX402ParsedResponse = x402ResponseSchema
-          .omit({
-            error: true,
-          })
-          .extend({
-            error: z3.string().optional(),
-          })
-          .safeParse(data);
-        if (!baseX402ParsedResponse.success) {
-          console.error(baseX402ParsedResponse.error.issues);
-          parseErrorData = {
-            parseErrors: baseX402ParsedResponse.error.issues.map(
-              issue => `${issue.path.join('.')}: ${issue.message}`
-            ),
-            data,
-          };
-          continue;
+        const result = await registerResource(input.url.toString(), data);
+
+        if (result.success === false) {
+          if (result.error.type === 'parseResponse') {
+            parseErrorData = {
+              data: result.data,
+              parseErrors: result.error.parseErrors,
+            };
+            continue;
+          } else {
+            return result;
+          }
         }
 
-        const origin = getOriginFromUrl(input.url);
-
-        const {
-          og,
-          metadata,
-          origin: scrapedOrigin,
-        } = await scrapeOriginData(origin);
-
-        await upsertOrigin({
-          origin: origin,
-          title: metadata?.title ?? og?.ogTitle,
-          description: metadata?.description ?? og?.ogDescription,
-          favicon:
-            og?.favicon &&
-            (og.favicon.startsWith('/')
-              ? scrapedOrigin.replace(/\/$/, '') + og.favicon
-              : og.favicon),
-          ogImages:
-            og?.ogImage?.map(image => ({
-              url: image.url,
-              height: image.height,
-              width: image.width,
-              title: og.ogTitle,
-              description: og.ogDescription,
-            })) ?? [],
-        });
-
-        // upsert the resource
-        const resource = await upsertResource({
-          resource: input.url.toString(),
-          type: 'http',
-          x402Version: baseX402ParsedResponse.data.x402Version,
-          lastUpdated: new Date(),
-          accepts:
-            baseX402ParsedResponse.data.accepts?.map(accept => ({
-              ...accept,
-              network: accept.network.replace('-', '_') as AcceptsNetwork,
-              maxAmountRequired: accept.maxAmountRequired,
-              outputSchema: accept.outputSchema as EnhancedOutputSchema,
-              extra: accept.extra,
-            })) ?? [],
-        });
-
-        if (!resource) {
-          continue;
-        }
-
-        // parse the response
-        let enhancedParseWarnings: string[] | null = null;
-        const parsedResponse = parseX402Response(data);
-        if (parsedResponse.success) {
-          await upsertResourceResponse(
-            resource.resource.id,
-            parsedResponse.data
-          );
-        } else {
-          enhancedParseWarnings = parsedResponse.errors;
-        }
-
-        return {
-          error: false as const,
-          resource,
-          accepts: {
-            ...resource.accepts,
-            maxAmountRequired: formatTokenAmount(
-              resource.accepts.maxAmountRequired
-            ),
-          },
-          enhancedParseWarnings,
-          response: data,
-        };
+        return result;
       }
 
       if (parseErrorData) {
         return {
-          error: true as const,
-          type: 'parseErrors' as const,
-          parseErrorData,
+          success: false as const,
+          data: parseErrorData.data,
+          error: {
+            type: 'parseErrors' as const,
+            parseErrors: parseErrorData.parseErrors,
+          },
         };
       }
 
       return {
-        error: true as const,
+        success: false as const,
+        error: {
+          type: 'no402' as const,
+        },
         type: 'no402' as const,
       };
     }),

@@ -1,34 +1,45 @@
-export const PROXY_ENDPOINT = '/api/proxy-402' as const;
-const TARGET_HEADER = 'x-proxy-target' as const;
+import { env } from '@/env';
 
-export const createFetchWithProxyHeader = (targetUrl: string) => {
-  return async (input: RequestInfo | URL, requestInit?: RequestInit) => {
-    const headers = new Headers(requestInit?.headers);
-    headers.set(TARGET_HEADER, targetUrl);
+const PROXY_ENDPOINT = '/api/proxy' as const;
 
-    const { method = 'GET', ...restInit } = requestInit ?? {};
-    const normalizedMethod = method.toString().toUpperCase();
+export const fetchWithProxy = async (
+  input: URL | RequestInfo,
+  requestInit?: RequestInit
+) => {
+  let url: string;
+  if (input instanceof Request) {
+    url = input.url;
+  } else {
+    url = input.toString();
+  }
+  const proxyUrl = new URL(PROXY_ENDPOINT, env.NEXT_PUBLIC_APP_URL);
+  proxyUrl.searchParams.set('url', encodeURIComponent(url));
+  proxyUrl.searchParams.set('share_data', 'true');
 
-    // Auto-add Content-Type for requests with body
-    if (
-      normalizedMethod !== 'GET' &&
-      normalizedMethod !== 'HEAD' &&
-      restInit.body
-    ) {
-      headers.set('Content-Type', 'application/json');
-    }
+  const { method = 'GET', ...restInit } = requestInit ?? {};
+  const normalizedMethod = method.toString().toUpperCase();
 
-    // Clear body for GET/HEAD requests
-    const finalInit: RequestInit = {
-      ...restInit,
-      method: normalizedMethod,
-      headers,
-    };
+  const headers = new Headers(requestInit?.headers);
 
-    if (normalizedMethod === 'GET' || normalizedMethod === 'HEAD') {
-      finalInit.body = undefined;
-    }
+  // Auto-add Content-Type for requests with body
+  if (
+    normalizedMethod !== 'GET' &&
+    normalizedMethod !== 'HEAD' &&
+    restInit.body
+  ) {
+    headers.set('Content-Type', 'application/json');
+  }
 
-    return fetch(input, finalInit);
+  // Clear body for GET/HEAD requests
+  const finalInit: RequestInit = {
+    ...restInit,
+    method: normalizedMethod,
+    headers,
   };
+
+  if (normalizedMethod === 'GET' || normalizedMethod === 'HEAD') {
+    finalInit.body = undefined;
+  }
+
+  return fetch(proxyUrl.toString(), finalInit);
 };

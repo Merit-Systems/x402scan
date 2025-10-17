@@ -61,7 +61,7 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
     AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
     AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
     ${
-      addresses
+      addresses && addresses.length > 0
         ? `AND recipient IN (${addresses.map(a => `'${a}'`).join(', ')})`
         : ''
     }

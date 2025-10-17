@@ -6,8 +6,9 @@ import {
   getAgentConfigurationsByUserId,
   updateAgentConfiguration,
   deleteAgentConfiguration,
+  createAgentConfigurationSchema,
+  updateAgentConfigurationSchema,
 } from '@/services/db/agent-config';
-import { Visibility } from '@prisma/client';
 
 export const agentConfigurationsRouter = createTRPCRouter({
   // Get all agent configurations for the current user
@@ -19,10 +20,13 @@ export const agentConfigurationsRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const config = await getAgentConfigurationById(input.id);
+      const config = await getAgentConfigurationById(
+        input.id,
+        ctx.session.user.id
+      );
 
       // Ensure user owns this configuration
-      if (!config || config.userId !== ctx.session.user.id) {
+      if (!config || config.ownerId !== ctx.session.user.id) {
         throw new Error('Configuration not found or access denied');
       }
 
@@ -31,70 +35,22 @@ export const agentConfigurationsRouter = createTRPCRouter({
 
   // Create a new agent configuration
   create: protectedProcedure
-    .input(
-      z.object({
-        model: z.string().min(1),
-        tools: z.array(z.string()),
-        systemPrompt: z.string().min(1),
-        visibility: z.nativeEnum(Visibility).optional().default('private'),
-      })
-    )
+    .input(createAgentConfigurationSchema)
     .mutation(async ({ input, ctx }) => {
-      return await createAgentConfiguration({
-        model: input.model,
-        tools: input.tools,
-        systemPrompt: input.systemPrompt,
-        visibility: input.visibility,
-        user: {
-          connect: { id: ctx.session.user.id },
-        },
-      });
+      return await createAgentConfiguration(ctx.session.user.id, input);
     }),
 
   // Update an existing agent configuration
   update: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        model: z.string().min(1).optional(),
-        tools: z.array(z.string()).optional(),
-        systemPrompt: z.string().min(1).optional(),
-        visibility: z.nativeEnum(Visibility).optional(),
-      })
-    )
+    .input(updateAgentConfigurationSchema)
     .mutation(async ({ input, ctx }) => {
-      // Verify ownership
-      const existingConfig = await getAgentConfigurationById(input.id);
-      if (!existingConfig || existingConfig.userId !== ctx.session.user.id) {
-        throw new Error('Configuration not found or access denied');
-      }
-
-      const updateData: {
-        model?: string;
-        tools?: string[];
-        systemPrompt?: string;
-        visibility?: Visibility;
-      } = {};
-      
-      if (input.model !== undefined) updateData.model = input.model;
-      if (input.tools !== undefined) updateData.tools = input.tools;
-      if (input.systemPrompt !== undefined) updateData.systemPrompt = input.systemPrompt;
-      if (input.visibility !== undefined) updateData.visibility = input.visibility;
-
-      return await updateAgentConfiguration(input.id, updateData);
+      return await updateAgentConfiguration(ctx.session.user.id, input);
     }),
 
   // Delete an agent configuration
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      // Verify ownership
-      const existingConfig = await getAgentConfigurationById(input.id);
-      if (!existingConfig || existingConfig.userId !== ctx.session.user.id) {
-        throw new Error('Configuration not found or access denied');
-      }
-
-      return await deleteAgentConfiguration(input.id);
+      return await deleteAgentConfiguration(input.id, ctx.session.user.id);
     }),
 });
-

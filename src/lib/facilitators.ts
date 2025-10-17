@@ -45,11 +45,21 @@ const aurraCloudFacilitator = {
   color: 'var(--color-yellow-600)',
 } satisfies Facilitator;
 
+const thirdwebFacilitator = {
+  id: 'thirdweb',
+  name: 'Thirdweb' as const,
+  image: '/thirdweb.png',
+  link: 'https://portal.thirdweb.com/payments/x402/facilitator',
+  addresses: ['0x758D2532FF6A304D1A0c2FdF46264590E4Ef0637'],
+  color: 'var(--color-blue-600)',
+} satisfies Facilitator;
+
 export const facilitators = [
   coinbaseFacilitator,
   x402rsFacilitator,
   payAiFacilitator,
   aurraCloudFacilitator,
+  thirdwebFacilitator,
 ] satisfies Facilitator[];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];

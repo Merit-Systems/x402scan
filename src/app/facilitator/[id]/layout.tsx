@@ -5,6 +5,7 @@ export default async function RecipientLayout({
   children,
 }: LayoutProps<'/facilitator/[id]'>) {
   const { id } = await params;
+
   return (
     <div className="flex flex-col flex-1">
       <Nav

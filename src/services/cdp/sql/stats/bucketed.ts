@@ -59,7 +59,7 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
     AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
     AND parameters['value']::UInt256 < 1000000000
     ${
-      addresses
+      addresses && addresses.length > 0
         ? `AND parameters['to']::String IN (${addresses
             .map(a => `'${a}'`)
             .join(', ')})`

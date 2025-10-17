@@ -1,3 +1,5 @@
+'use client';
+
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { useCurrentUser } from '@coinbase/cdp-hooks';
 import { useAccount } from 'wagmi';

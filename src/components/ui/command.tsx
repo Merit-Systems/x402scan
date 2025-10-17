@@ -89,17 +89,31 @@ function CommandInput({
 
 function CommandList({
   className,
+  children,
+  gradientClassName,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.List>) {
+}: React.ComponentProps<typeof CommandPrimitive.List> & {
+  gradientClassName?: string;
+}) {
   return (
-    <CommandPrimitive.List
-      data-slot="command-list"
-      className={cn(
-        'max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto',
-        className
-      )}
-      {...props}
-    />
+    <div className="relative">
+      <CommandPrimitive.List
+        data-slot="command-list"
+        className={cn(
+          'relative max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto pb-4',
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </CommandPrimitive.List>
+      <div
+        className={cn(
+          'from-background absolute right-0 bottom-0 left-0 h-4 bg-gradient-to-t to-transparent',
+          gradientClassName
+        )}
+      />
+    </div>
   );
 }
 
@@ -148,6 +162,7 @@ function CommandItem({
 }
 
 export {
+  Command,
   CommandDialog,
   CommandInput,
   CommandList,
