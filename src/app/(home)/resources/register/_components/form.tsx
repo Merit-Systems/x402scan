@@ -16,6 +16,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { safeGetHostname } from '@/lib/url';
 
 import { api } from '@/trpc/client';
 
@@ -109,7 +110,7 @@ export const RegisterResourceForm = () => {
                   />
                   <h1 className="font-bold flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
                     {data.resource.origin.title ??
-                      new URL(data.resource.origin.origin).hostname}
+                      safeGetHostname(data.resource.origin.origin)}
                   </h1>
                 </div>
                 <p className="text-lg text-primary font-bold">

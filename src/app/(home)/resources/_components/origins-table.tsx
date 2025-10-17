@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
 import { Favicon } from '@/components/favicon';
 import { cn } from '@/lib/utils';
+import { safeGetHostname } from '@/lib/url';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -25,7 +26,7 @@ export const OriginsTable: React.FC<Props> = ({ origins, className }) => {
 
     const lowerSearch = searchTerm.toLowerCase();
     return origins.filter(origin => {
-      const hostname = new URL(origin.origin).hostname;
+      const hostname = safeGetHostname(origin.origin);
       const matchesHostname = hostname.toLowerCase().includes(lowerSearch);
       const matchesTitle = origin.title?.toLowerCase().includes(lowerSearch);
       const matchesDescription = origin.description
@@ -75,7 +76,7 @@ export const OriginsTable: React.FC<Props> = ({ origins, className }) => {
               </TableRow>
             ) : (
               filteredOrigins.map(origin => {
-                const hostname = new URL(origin.origin).hostname;
+                const hostname = safeGetHostname(origin.origin);
                 const recipientAddress = origin.resources[0]?.accepts[0]?.payTo;
 
                 return (

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Favicon } from '@/components/favicon';
 import { Skeleton } from '@/components/ui/skeleton';
+import { safeGetHostname } from '@/lib/url';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
@@ -81,7 +82,7 @@ export const SearchResultsTable: React.FC<Props> = ({
           const origin = 'origins' in item ? item.origins[0] : item;
           if (!origin) return null;
 
-          const hostname = new URL(origin.origin).hostname;
+          const hostname = safeGetHostname(origin.origin);
           const recipientAddress = origin.resources[0]?.accepts[0]?.payTo;
 
           return (

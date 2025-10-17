@@ -7,6 +7,7 @@ import { Favicon } from '@/components/favicon';
 import { Server } from 'lucide-react';
 import { Address } from '@/components/ui/address';
 import { cn } from '@/lib/utils';
+import { safeGetHostname } from '@/lib/url';
 import { OriginCard } from '@/app/recipient/[address]/resources/_components/origin-card';
 
 import type { RouterOutputs } from '@/trpc/client';
@@ -45,7 +46,7 @@ export const OriginInfoCard: React.FC<Props> = ({
               {origins.length === 0
                 ? 'No Origins Found'
                 : origins.length === 1
-                  ? new URL(origins[0].origin).hostname
+                  ? safeGetHostname(origins[0].origin)
                   : `${origins.length} Origins`}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -84,7 +85,7 @@ export const OriginInfoCard: React.FC<Props> = ({
                       >
                         <Favicon url={origin.favicon} className="size-4" />
                         <span className="text-xs truncate">
-                          {new URL(origin.origin).hostname}
+                          {safeGetHostname(origin.origin)}
                         </span>
                         <Badge
                           variant={isSelected ? 'secondary' : 'outline'}

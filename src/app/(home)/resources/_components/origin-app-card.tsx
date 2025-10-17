@@ -11,6 +11,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { safeGetHostname } from '@/lib/url';
 import { Addresses } from '@/components/ui/address';
 
 import type { RouterOutputs } from '@/trpc/client';
@@ -39,7 +40,7 @@ export const OriginAppCard: React.FC<Props> = ({
   if (!origins || origins.length === 0) return null;
 
   const origin = origins[0];
-  const hostname = new URL(origin.origin).hostname;
+  const hostname = safeGetHostname(origin.origin);
   const recipientAddress = addresses[0];
 
   // Check if origin has ogImages (only available in AggregatedItem)
