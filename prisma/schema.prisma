@@ -100,6 +100,8 @@ enum AcceptsNetwork {
   iotex
   solana_devnet
   solana
+  ton
+  ton_testnet
 }
 
 model Accepts {
