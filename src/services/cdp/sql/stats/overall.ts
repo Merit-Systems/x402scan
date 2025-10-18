@@ -30,7 +30,7 @@ const getOverallStatisticsUncached = async (
   });
 
   const sql = `SELECT
-    COUNT(*) AS total_transactions,
+    COUNT(DISTINCT transaction_hash) AS total_transactions,
     SUM(parameters['value']::UInt256) AS total_amount,
     COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
     COUNT(DISTINCT parameters['to']::String) AS unique_sellers,

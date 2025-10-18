@@ -51,7 +51,7 @@ const listTopSellersUncached = async (
 
   const sql = `SELECT 
     parameters['to']::String AS recipient, 
-    COUNT(*) AS tx_count, 
+    COUNT(DISTINCT transaction_hash) AS tx_count, 
     SUM(parameters['value']::UInt256) AS total_amount,
     max(block_timestamp) AS latest_block_timestamp,
     COUNT(DISTINCT parameters['from']::String) AS unique_buyers,

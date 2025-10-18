@@ -37,7 +37,7 @@ const listTopFacilitatorsUncached = async (
   const sql = `SELECT 
     COUNT(DISTINCT parameters['to']::String) AS unique_sellers,
     COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
-    COUNT(*) AS tx_count, 
+    COUNT(DISTINCT transaction_hash) AS tx_count, 
     SUM(parameters['value']::UInt256) AS total_amount,
     max(block_timestamp) AS latest_block_timestamp,
     CASE
