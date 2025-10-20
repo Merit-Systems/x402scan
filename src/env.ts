@@ -5,16 +5,17 @@ export const env = createEnv({
   server: {
     POSTGRES_PRISMA_URL: z.url(),
     POSTGRES_URL_NON_POOLING: z.url(),
+    TRANSFERS_DB_URL: z.url(),
     CDP_API_KEY_NAME: z.string(),
     CDP_API_KEY_ID: z.string(),
     CDP_API_KEY_SECRET: z.string(),
     ECHO_APP_ID: z.string().optional(),
     HIDE_TRPC_LOGS: z.coerce.boolean().optional(),
     GITHUB_TOKEN: z.string().optional(),
-    CRON_SECRET:
-      process.env.NEXT_PUBLIC_NODE_ENV === 'development'
-        ? z.string().optional()
-        : z.string(),
+    // CRON_SECRET:
+    //   process.env.NEXT_PUBLIC_NODE_ENV === 'development'
+    //     ? z.string().optional()
+    //     : z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.url().default('http://localhost:3000'),

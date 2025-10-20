@@ -1,18 +1,12 @@
 import z from 'zod';
 
-import { runBaseSqlQuery } from '../query';
-
-import {
-  ethereumAddressSchema,
-  ethereumHashSchema,
-  facilitatorAddressSchema,
-} from '@/lib/schemas';
-import { toPaginatedResponse } from '@/lib/pagination';
-import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
+import { ethereumAddressSchema } from '@/lib/schemas';
+import { baseQuerySchema, sortingSchema } from '../lib';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
+import { listTransfers } from '@/services/db/transfers';
 
 const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 
@@ -28,19 +22,6 @@ export const listFacilitatorTransfersInputSchema = baseQuerySchema.extend({
     desc: true,
   }),
 });
-
-const outputSchema = z.array(
-  z.object({
-    sender: ethereumAddressSchema,
-    recipient: ethereumAddressSchema,
-    amount: z.coerce.number(),
-    token_address: ethereumAddressSchema,
-    transaction_from: facilitatorAddressSchema,
-    transaction_hash: ethereumHashSchema,
-    block_timestamp: z.coerce.date(),
-    log_index: z.number(),
-  })
-);
 
 const listFacilitatorTransfersUncached = async (
   input: z.input<typeof listFacilitatorTransfersInputSchema>
@@ -60,30 +41,32 @@ const listFacilitatorTransfersUncached = async (
     sorting,
   } = parseResult.data;
 
-  const sql = `SELECT
-  parameters['from']::String AS sender,
-  parameters['to']::String AS recipient,
-  parameters['value']::UInt256 AS amount,
-  transaction_from,
-  address AS token_address,
-  transaction_hash,
-  block_timestamp,
-  log_index
-FROM base.events
-WHERE event_signature = 'Transfer(address,address,uint256)'
-  AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
-  AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
-  ${recipient ? `AND recipient = '${recipient}'` : ''}
-  ${startDate ? `AND block_timestamp > '${formatDateForSql(startDate)}'` : ''}
-  ${endDate ? `AND block_timestamp < '${formatDateForSql(endDate)}'` : ''}
-ORDER BY ${sorting.id} ${sorting.desc ? 'DESC' : 'ASC'}
-LIMIT ${limit + 1};`;
-  const result = await runBaseSqlQuery(sql, outputSchema);
-
-  return toPaginatedResponse({
-    items: result ?? [],
+  // Use Prisma query instead of CDP
+  const result = await listTransfers({
+    recipient,
+    facilitatorIds: facilitators,
+    tokenAddresses: tokens,
+    startDate,
+    endDate,
     limit,
+    sortBy: sorting.id as 'block_timestamp' | 'amount',
+    sortDesc: sorting.desc,
   });
+
+  // Map Prisma results to expected format
+  return {
+    ...result,
+    items: result.items.map(transfer => ({
+      sender: transfer.sender,
+      recipient: transfer.recipient,
+      amount: transfer.amount,
+      token_address: transfer.address,
+      transaction_from: transfer.transaction_from,
+      transaction_hash: transfer.tx_hash,
+      block_timestamp: transfer.block_timestamp,
+      log_index: 0,
+    })),
+  };
 };
 
 export const listFacilitatorTransfers = createCachedPaginatedQuery({
