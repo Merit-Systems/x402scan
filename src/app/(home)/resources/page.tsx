@@ -2,7 +2,6 @@ import { Body, Heading } from '../../_components/layout/page-utils';
 import { api } from '@/trpc/server';
 import { OriginCarousel } from '@/app/(home)/resources/_components/origin-carousel';
 import { OriginsTable } from '@/app/(home)/resources/_components/origins-table';
-import { ResourceSearchBar } from '@/app/(home)/resources/_components/search-bar';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -36,8 +35,6 @@ export default async function ResourcesPage() {
         }
       />
       <Body className="space-y-5">
-        <ResourceSearchBar popularOrigins={mostPopularAllTime.items} />
-
         <OriginCarousel
           title="Most Popular This Month"
           origins={mostPopularAllTime.items}
