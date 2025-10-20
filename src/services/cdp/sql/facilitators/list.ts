@@ -1,11 +1,10 @@
-import type { FacilitatorName } from '@/lib/facilitators';
 import { facilitatorNameMap, facilitators } from '@/lib/facilitators';
-import { runBaseSqlQuery } from '../query';
-import { formatDateForSql, sortingSchema } from '../lib';
+import { sortingSchema } from '../lib';
 import z from 'zod';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { USDC_ADDRESS } from '@/lib/utils';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+import { listTopFacilitators as listTopFacilitatorsFromDb } from '@/services/db/transfers';
 
 const listTopFacilitatorsSortIds = [
   'tx_count',
@@ -34,72 +33,38 @@ const listTopFacilitatorsUncached = async (
   const { startDate, endDate, limit, sorting, tokens } =
     listTopFacilitatorsInputSchema.parse(input);
 
-  const sql = `SELECT 
-    COUNT(DISTINCT parameters['to']::String) AS unique_sellers,
-    COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
-    COUNT(*) AS tx_count, 
-    SUM(parameters['value']::UInt256) AS total_amount,
-    max(block_timestamp) AS latest_block_timestamp,
-    CASE
-    ${facilitators
-      .map(
-        f =>
-          `WHEN transaction_from IN (${f.addresses
-            .map(a => `'${a}'`)
-            .join(', ')}) THEN '${f.name}'`
-      )
-      .join('\n        ')}
-    ELSE 'Unknown'
-    END AS facilitator_name
-FROM base.events 
-WHERE event_signature = 'Transfer(address,address,uint256)'
-    AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
-    AND transaction_from IN (${facilitators
-      .flatMap(f => f.addresses)
-      .map(a => `'${a}'`)
-      .join(', ')})
-    ${
-      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ''
-    }
-    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
-GROUP BY 
-    CASE
-    ${facilitators
-      .map(
-        f =>
-          `WHEN transaction_from IN (${f.addresses
-            .map(a => `'${a}'`)
-            .join(', ')}) THEN '${f.name}'`
-      )
-      .join('\n        ')}
-    ELSE 'Unknown'
-    END
-ORDER BY ${sorting.id} ${sorting.desc ? 'DESC' : 'ASC'} 
-LIMIT ${limit + 1}`;
-  const result = await runBaseSqlQuery(
-    sql,
-    z.array(
-      z.object({
-        unique_sellers: z.coerce.number(),
-        unique_buyers: z.coerce.number(),
-        tx_count: z.coerce.number(),
-        total_amount: z.coerce.number(),
-        latest_block_timestamp: z.coerce.date(),
-        facilitator_name: z.string().transform(v => v as FacilitatorName),
-      })
-    )
-  );
+  const results = await listTopFacilitatorsFromDb({
+    tokenAddresses: tokens,
+    startDate,
+    endDate,
+    limit,
+    sortBy: sorting.id as 'tx_count' | 'total_amount' | 'latest_block_timestamp' | 'unique_buyers' | 'unique_sellers',
+    sortDesc: sorting.desc,
+  });
 
-  if (!result) {
-    return [];
-  }
+  // Sort results
+  type SortableResult = typeof results[number];
+  const sortKey = sorting.id as keyof SortableResult;
+  results.sort((a, b) => {
+    const aVal = a[sortKey];
+    const bVal = b[sortKey];
+    const comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+    return sorting.desc ? -comparison : comparison;
+  });
 
-  return result
-    .map(r => ({
-      ...r,
-      facilitator: facilitatorNameMap.get(r.facilitator_name)!,
-    }))
-    .slice(0, limit);
+  // Map facilitator IDs to names and return limited results
+  return results
+    .slice(0, limit)
+    .map(r => {
+      const facilitator = facilitators.find(f => 
+        f.addresses.some(addr => addr.toLowerCase() === r.facilitator_id.toLowerCase())
+      );
+      return {
+        ...r,
+        facilitator_name: facilitator?.name ?? ('Unknown' as const),
+        facilitator: facilitator ?? facilitatorNameMap.get('Coinbase')!,
+      };
+    });
 };
 
 export const listTopFacilitators = createCachedArrayQuery({
