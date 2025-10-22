@@ -5,6 +5,12 @@ import { runBaseSqlQuery } from '../query';
 import { baseQuerySchema, formatDateForSql } from '../lib';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+import {
+  usdcAmountSchema,
+  countValueSchema,
+  type USDCAmount,
+  type CountValue,
+} from '@/lib/cdp/numeric-types';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -30,10 +36,10 @@ const getBucketedStatisticsUncached = async (
     parseResult.data;
   const outputSchema = z.object({
     bucket_start: z.coerce.date(),
-    total_transactions: z.coerce.number(),
-    total_amount: z.coerce.number(),
-    unique_buyers: z.coerce.number(),
-    unique_sellers: z.coerce.number(),
+    total_transactions: countValueSchema,
+    total_amount: usdcAmountSchema,
+    unique_buyers: countValueSchema,
+    unique_sellers: countValueSchema,
   });
 
   // Calculate bucket size in seconds for consistent alignment
@@ -111,10 +117,10 @@ ORDER BY bucket_start ASC;
       // Add zero values for missing periods
       completeTimeSeries.push({
         bucket_start: bucketStart,
-        total_transactions: 0,
-        total_amount: 0,
-        unique_buyers: 0,
-        unique_sellers: 0,
+        total_transactions: '0' as CountValue,
+        total_amount: '0' as USDCAmount,
+        unique_buyers: '0' as CountValue,
+        unique_sellers: '0' as CountValue,
       });
     }
   }

@@ -54,9 +54,9 @@ export const sellersRouter = createTRPCRouter({
           if (existing) {
             // Aggregate stats
             existing.recipients.push(item.recipient);
-            existing.tx_count += item.tx_count;
-            existing.total_amount += item.total_amount;
-            existing.unique_buyers += item.unique_buyers;
+            existing.tx_count += Number(item.tx_count);
+            existing.total_amount += Number(item.total_amount);
+            existing.unique_buyers += Number(item.unique_buyers);
             // Keep the latest timestamp
             if (item.latest_block_timestamp > existing.latest_block_timestamp) {
               existing.latest_block_timestamp = item.latest_block_timestamp;
@@ -73,10 +73,10 @@ export const sellersRouter = createTRPCRouter({
               origins,
               recipients: [item.recipient],
               facilitators: [...item.facilitators],
-              tx_count: item.tx_count,
-              total_amount: item.total_amount,
+              tx_count: Number(item.tx_count),
+              total_amount: Number(item.total_amount),
               latest_block_timestamp: item.latest_block_timestamp,
-              unique_buyers: item.unique_buyers,
+              unique_buyers: Number(item.unique_buyers),
             });
           }
         }
