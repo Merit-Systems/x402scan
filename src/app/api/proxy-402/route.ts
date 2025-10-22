@@ -16,7 +16,7 @@ const REQUEST_HEADER_BLOCKLIST = new Set([
 
 const rateLimit = new Ratelimit({
   redis: kv,
-  limiter: Ratelimit.slidingWindow(5, '1m'),
+  limiter: Ratelimit.slidingWindow(100, '1m'),
 });
 
 async function proxy(request: NextRequest) {
