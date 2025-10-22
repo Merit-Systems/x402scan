@@ -213,6 +213,14 @@ export const ecosystemItems: EcosystemItem[] = [
     websiteUrl: 'https://www.tip.md/documentation?tab=mcp-server',
     category: 'Services/Endpoints',
   },
+    {
+    name: 'Trails',
+    description:
+      'Chain Abstraction Payment SDK to enable users to pay in any token from any chain and automatically settle in a supported token or chain from a given facilitator.',
+    logoUrl: 'https://pub-dc89be64e317442b832bec22d3d12052.r2.dev/trails__logo_black%20700px.png',
+    websiteUrl: 'https://docs.trails.build/examples/x402',
+    category: 'Client-Side Integrations',
+  },
   {
     name: 'x402 Example Gallery',
     description:
