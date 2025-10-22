@@ -1,3 +1,5 @@
+import { Ratelimit } from '@upstash/ratelimit';
+import { kv } from '@vercel/kv';
 import { NextResponse, type NextRequest } from 'next/server';
 
 const TARGET_HEADER = 'x-proxy-target';
@@ -12,7 +14,21 @@ const REQUEST_HEADER_BLOCKLIST = new Set([
   TARGET_HEADER,
 ]);
 
+const rateLimit = new Ratelimit({
+  redis: kv,
+  limiter: Ratelimit.slidingWindow(5, '1m'),
+});
+
 async function proxy(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') ?? 'anonymous';
+  const { success } = await rateLimit.limit(`proxy_402_${ip}`);
+
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Too many requests, please try again later.' },
+      { status: 429 }
+    );
+  }
   const targetValue = request.headers.get(TARGET_HEADER);
 
   if (!targetValue) {
