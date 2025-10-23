@@ -113,6 +113,7 @@ export const GET = async (request: NextRequest) => {
         } catch (error) {
           console.error('Failed to process origin', {
             origin,
+            error: error instanceof Error ? error.message : 'Unknown error',
             durationMs: Date.now() - originStart,
           });
           return { origin, success: false, error };

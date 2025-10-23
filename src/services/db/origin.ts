@@ -3,6 +3,7 @@ import { prisma } from './client';
 
 import { z } from 'zod';
 import { parseX402Response } from '@/lib/x402/schema';
+import { optionalChainSchema } from '@/lib/schemas';
 
 const ogImageSchema = z.object({
   url: z.url(),
@@ -95,13 +96,20 @@ export const listOriginsByAddress = async (address: string) => {
   });
 };
 
-export const listOriginsWithResources = async () => {
+export const listOriginsWithResourcesSchema = z.object({
+  chain: optionalChainSchema,
+});
+
+export const listOriginsWithResources = async (
+  input: z.infer<typeof listOriginsWithResourcesSchema>
+) => {
   const origins = await listOriginsWithResourcesInternal({
     resources: {
       some: {
         response: {
           isNot: null,
         },
+        ...(input.chain ? { accepts: { some: { network: input.chain } } } : {}),
       },
     },
   });
