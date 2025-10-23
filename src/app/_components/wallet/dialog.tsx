@@ -5,11 +5,8 @@ import type { Addresses } from './display';
 import { DisplayWalletDialogContent } from './display';
 import { ConnectWalletDialogContent } from './connect';
 import { useSearchParams } from 'next/navigation';
-import { useWallet } from '@solana/wallet-adapter-react';
-
-import { useWalletAccountTransactionSendingSigner } from '@solana/react';
-import { wrapFetchWithSolanaPayment } from '@/lib/x402/solana/fetch-with-payment';
-import type { Address } from '@solana/kit';
+import { useSolana } from '@/app/_contexts/solana';
+import { PublicKey } from '@solana/web3.js';
 
 interface Props {
   children: React.ReactNode;
@@ -19,35 +16,27 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
   const searchParams = useSearchParams();
 
   const { address } = useAccount();
-  const { wallet, signTransaction, publicKey } = useWallet();
-
-  useWalletAccountTransactionSendingSigner();
-
-  const fetchWithSolanpPayment = wrapFetchWithSolanaPayment(
-    fetch,
-    publicKey?.toBase58() as Address,
-    signTransaction
-  );
+  const { selectedAccount } = useSolana();
 
   const { currentUser } = useCurrentUser();
 
   let addresses: Addresses | undefined = undefined;
-  if (address && wallet?.adapter.publicKey) {
+  if (address && selectedAccount?.address) {
     addresses = {
       evm: address,
-      svm: wallet.adapter.publicKey,
+      svm: new PublicKey(selectedAccount.publicKey),
     };
   }
-  if (address && !wallet?.adapter.publicKey) {
+  if (address && !selectedAccount?.address) {
     addresses = {
       evm: address,
       svm: undefined,
     };
   }
-  if (!address && wallet?.adapter.publicKey) {
+  if (!address && selectedAccount?.address) {
     addresses = {
       evm: undefined,
-      svm: wallet.adapter.publicKey,
+      svm: new PublicKey(selectedAccount.publicKey),
     };
   }
 

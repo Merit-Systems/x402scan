@@ -1,12 +1,12 @@
 import { PaymentRequirementsSchema } from 'x402/types';
 import type { PaymentRequirementsSelector } from 'x402/client';
 import { selectPaymentRequirements } from 'x402/client';
-import type { TransactionSendingSigner } from '@solana/kit';
+import type { TransactionModifyingSigner } from '@solana/kit';
 import { createPaymentHeader } from './create-payment-header';
 
 export function wrapFetchWithSolanaPayment(
   fetch: typeof globalThis.fetch,
-  signer: TransactionSendingSigner,
+  signer: TransactionModifyingSigner,
   maxValue = BigInt(0.1 * 10 ** 6), // Default to 0.10 USDC
   paymentRequirementsSelector: PaymentRequirementsSelector = selectPaymentRequirements
 ) {
@@ -35,11 +35,15 @@ export function wrapFetchWithSolanaPayment(
       throw new Error('Payment amount exceeds maximum allowed');
     }
 
+    console.log(selectedPaymentRequirements);
+
     const paymentHeader = await createPaymentHeader(
       signer,
       x402Version,
       selectedPaymentRequirements
     );
+
+    console.log(paymentHeader);
 
     if (!init) {
       throw new Error('Missing fetch request configuration');

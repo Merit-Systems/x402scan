@@ -2,7 +2,7 @@ import type {
   Address,
   TransactionSigner,
   Instruction,
-  TransactionSendingSigner,
+  TransactionModifyingSigner,
 } from '@solana/kit';
 import {
   pipe,
@@ -14,7 +14,7 @@ import {
   getBase64EncodedWireTransaction,
   fetchEncodedAccount,
   createSolanaRpc,
-  partiallySignTransactionMessageWithSigners,
+  compileTransaction,
 } from '@solana/kit';
 
 // import type { X402Config } from '../../../types/config';
@@ -34,7 +34,9 @@ import {
 import { encodePayment } from './encode-payment';
 import type { PaymentPayload, PaymentRequirements } from 'x402/types';
 
-const rpc = createSolanaRpc('https://api.mainnet-beta.solana.com');
+const rpc = createSolanaRpc(
+  'https://mainnet.helius-rpc.com/?api-key=392489b6-e53c-48b4-9cb9-128b099bfab6'
+);
 /**
  * Creates and encodes a payment header for the given client and payment requirements.
  *
@@ -45,7 +47,7 @@ const rpc = createSolanaRpc('https://api.mainnet-beta.solana.com');
  * @returns A promise that resolves to a base64 encoded payment header string
  */
 export async function createPaymentHeader(
-  signer: TransactionSendingSigner,
+  signer: TransactionModifyingSigner,
   x402Version: number,
   paymentRequirements: PaymentRequirements
 ): Promise<string> {
@@ -67,16 +69,29 @@ export async function createPaymentHeader(
  * @returns A promise that resolves to a payment payload containing a base64 encoded solana token transfer tx
  */
 export async function createAndSignPayment(
-  signer: TransactionSendingSigner,
+  signer: TransactionModifyingSigner,
   x402Version: number,
   paymentRequirements: PaymentRequirements
 ): Promise<PaymentPayload> {
+  console.log(signer);
   const transactionMessage = await createTransferTransactionMessage(
     signer,
     paymentRequirements
   );
-  const signedTransaction =
-    await partiallySignTransactionMessageWithSigners(transactionMessage);
+
+  console.log(transactionMessage);
+
+  // Explicitly sign with the wallet signer - this will trigger the wallet popup
+  const compiledTransaction = compileTransaction(transactionMessage);
+  const [signedTransaction] = await signer.modifyAndSignTransactions([
+    {
+      messageBytes: compiledTransaction.messageBytes,
+      signatures: compiledTransaction.signatures,
+    },
+  ]);
+
+  console.log(signedTransaction);
+
   const base64EncodedWireTransaction =
     getBase64EncodedWireTransaction(signedTransaction);
 
@@ -100,7 +115,7 @@ export async function createAndSignPayment(
  * @returns A promise that resolves to the transaction message with the transfer instruction
  */
 async function createTransferTransactionMessage(
-  signer: TransactionSendingSigner,
+  signer: TransactionModifyingSigner,
   paymentRequirements: PaymentRequirements
 ) {
   // create the transfer instruction
@@ -118,9 +133,18 @@ async function createTransferTransactionMessage(
     tx => appendTransactionMessageInstructions(transferInstructions, tx)
   );
 
+  console.log();
+
   // estimate the compute budget limit (gas limit)
   const estimateComputeUnitLimit = estimateComputeUnitLimitFactory({ rpc });
-  const estimatedUnits = await estimateComputeUnitLimit(txToSimulate);
+  const estimatedUnits = await estimateComputeUnitLimit(txToSimulate).catch(
+    e => {
+      console.log(e.cause);
+      throw e;
+    }
+  );
+
+  console.log(estimatedUnits);
 
   // finalize the transaction message by adding the compute budget limit and blockhash
   const { value: latestBlockhash } = await rpc.getLatestBlockhash().send();
@@ -148,7 +172,7 @@ async function createTransferTransactionMessage(
  * @returns A promise that resolves to the create ATA (if needed) and transfer instruction
  */
 async function createAtaAndTransferInstructions(
-  signer: TransactionSendingSigner,
+  signer: TransactionModifyingSigner,
   paymentRequirements: PaymentRequirements
 ): Promise<Instruction[]> {
   const { asset } = paymentRequirements;
@@ -229,7 +253,7 @@ async function createAtaInstructionOrUndefined(
   // if the ATA does not exist, return an instruction to create it
   if (!maybeAccount.exists) {
     return getCreateAssociatedTokenInstruction({
-      payer: paymentRequirements.extra?.feePayer as TransactionSigner<string>,
+      payer: paymentRequirements.extra?.feePayer as TransactionSigner,
       ata: destinationATAAddress,
       owner: payTo as Address,
       mint: asset as Address,
@@ -253,7 +277,7 @@ async function createAtaInstructionOrUndefined(
  * @returns A promise that resolves to the transfer instruction
  */
 async function createTransferInstruction(
-  signer: TransactionSendingSigner,
+  signer: TransactionModifyingSigner,
   paymentRequirements: PaymentRequirements,
   decimals: number,
   tokenProgramAddress: Address
@@ -277,7 +301,7 @@ async function createTransferInstruction(
       source: sourceATA,
       mint: asset as Address,
       destination: destinationATA,
-      authority: signer.address,
+      authority: signer,
       amount: BigInt(amount),
       decimals: decimals,
     },

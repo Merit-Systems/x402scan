@@ -122,6 +122,12 @@ importers:
       '@vercel/speed-insights':
         specifier: ^1.2.0
         version: 1.2.0(next@15.5.4(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+      '@wallet-standard/core':
+        specifier: ^1.1.1
+        version: 1.1.1
+      '@wallet-standard/react':
+        specifier: ^1.0.1
+        version: 1.0.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       autonumeric:
         specifier: ^4.10.9
         version: 4.10.9
@@ -4108,8 +4114,23 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
+  '@wallet-standard/experimental-features@0.2.0':
+    resolution: {integrity: sha512-B6fBLgouurN3IAoqhh8/1Mm33IAWIErQXVyvMcyBJM+elOD6zkNDUjew5QMG19qCbJ+ZiZUZmdOUC5PxxWw69w==}
+    engines: {node: '>=16'}
+
   '@wallet-standard/features@1.1.0':
     resolution: {integrity: sha512-hiEivWNztx73s+7iLxsuD1sOJ28xtRix58W7Xnz4XzzA/pF0+aicnWgjOdA10doVDEDZdUuZCIIqG96SFNlDUg==}
+    engines: {node: '>=16'}
+
+  '@wallet-standard/react-core@1.0.1':
+    resolution: {integrity: sha512-g+vZaLlAGlYMwZEoKsmjjI5qz1D8P3FF1aqiI3WLooWOVk55Nszbpk01QCbIFdIMF0UDhxia2FU667TCv509iw==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@wallet-standard/react@1.0.1':
+    resolution: {integrity: sha512-StpPv234R94MmJCCUZurQvQSsX6Xe1eOd2lNgwVonvSVdPqCNVS/haVpdrBMx0wX1Ut24X77qyBLP7SGxK5OUg==}
     engines: {node: '>=16'}
 
   '@wallet-standard/ui-compare@1.0.1':
@@ -14546,9 +14567,32 @@ snapshots:
       chalk: 5.6.2
       commander: 13.1.0
 
+  '@wallet-standard/experimental-features@0.2.0':
+    dependencies:
+      '@wallet-standard/base': 1.1.0
+
   '@wallet-standard/features@1.1.0':
     dependencies:
       '@wallet-standard/base': 1.1.0
+
+  '@wallet-standard/react-core@1.0.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@wallet-standard/app': 1.1.0
+      '@wallet-standard/base': 1.1.0
+      '@wallet-standard/errors': 0.1.1
+      '@wallet-standard/experimental-features': 0.2.0
+      '@wallet-standard/features': 1.1.0
+      '@wallet-standard/ui': 1.0.1
+      '@wallet-standard/ui-registry': 1.0.1
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@wallet-standard/react@1.0.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@wallet-standard/react-core': 1.0.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+    transitivePeerDependencies:
+      - react
+      - react-dom
 
   '@wallet-standard/ui-compare@1.0.1':
     dependencies:
@@ -18054,7 +18098,7 @@ snapshots:
       inherits: 2.0.4
       readable-stream: 2.3.8
       safe-buffer: 5.2.1
-      to-buffer: 1.2.1
+      to-buffer: 1.2.2
 
   hash.js@1.1.7:
     dependencies:

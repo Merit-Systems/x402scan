@@ -5,16 +5,18 @@ import { Loader2, Play, Wallet } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
 import { useResourceFetch } from '../contexts/fetch/hook';
 import { WalletDialog } from '@/app/_components/wallet/dialog';
+import { useSolana } from '@/app/_contexts/solana';
 
 export const FetchButton = () => {
   const { data: walletClient, isLoading: isLoadingWalletClient } =
     useWalletClient();
   const { isInitialized } = useIsInitialized();
+  const { selectedAccount } = useSolana();
+  const fetch = useResourceFetch();
 
-  const { execute, isPending, allRequiredFieldsFilled, maxAmountRequired } =
-    useResourceFetch();
+  const isConnected = !!walletClient || !!selectedAccount;
 
-  if (!walletClient) {
+  if (!isConnected || !fetch) {
     return (
       <WalletDialog>
         <Button variant="ghost" size="sm" className="size-fit p-0 md:px-1">
@@ -31,17 +33,17 @@ export const FetchButton = () => {
       size="sm"
       className="size-fit p-0 md:px-1"
       disabled={
-        isPending ||
-        !allRequiredFieldsFilled ||
+        fetch.isPending ||
+        !fetch.allRequiredFieldsFilled ||
         isLoadingWalletClient ||
         !isInitialized ||
-        !walletClient
+        !isConnected
       }
-      onClick={() => execute()}
+      onClick={() => fetch.execute()}
     >
-      {isLoadingWalletClient || !isInitialized || !walletClient ? (
+      {isLoadingWalletClient || !isInitialized || !isConnected ? (
         <Loader2 className="size-4 animate-spin" />
-      ) : isPending ? (
+      ) : fetch.isPending ? (
         <>
           <Loader2 className="size-4 animate-spin" />
           Fetching
@@ -50,7 +52,7 @@ export const FetchButton = () => {
         <>
           <Play className="size-4" />
           Fetch
-          <span>{formatTokenAmount(maxAmountRequired)}</span>
+          <span>{formatTokenAmount(fetch.maxAmountRequired)}</span>
         </>
       )}
     </Button>

@@ -12,6 +12,7 @@ import { ResourceFetchProvider } from './contexts/fetch/provider';
 import type { Methods } from '@/types/x402';
 import type { Resources } from '@prisma/client';
 import type { ParsedX402Response } from '@/lib/x402/schema';
+import { useSolana } from '@/app/_contexts/solana';
 
 interface Props {
   resource: Resources;
@@ -57,6 +58,10 @@ function ResourceFetchWrapper({
   bazaarMethod: Methods;
   resource: string;
 }) {
+  const { selectedAccount } = useSolana();
+
+  if (!selectedAccount) return null;
+
   if (!response) return children;
 
   const accept = response?.accepts?.[0];

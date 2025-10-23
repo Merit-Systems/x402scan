@@ -7,7 +7,11 @@ import {
   PROXY_ENDPOINT,
 } from '@/lib/x402/proxy-fetch';
 
+import { useWalletAccountTransactionSigner } from '@solana/react';
+
 import type { UseMutationOptions } from '@tanstack/react-query';
+import { useSolana } from '@/app/_contexts/solana';
+import { wrapFetchWithSolanaPayment } from '@/lib/x402/solana/fetch-with-payment';
 
 export const useX402Fetch = <TData = unknown>(
   targetUrl: string,
@@ -19,14 +23,21 @@ export const useX402Fetch = <TData = unknown>(
     chainId: 8453,
   });
 
+  const { selectedAccount } = useSolana();
+
+  const signer = useWalletAccountTransactionSigner(
+    selectedAccount!,
+    'solana:mainnet'
+  );
+
   return useMutation({
     mutationFn: async () => {
-      if (!walletClient) throw new Error('Wallet client not available');
+      // if (!walletClient) throw new Error('Wallet client not available');
 
       const fetchWithProxyHeader = createFetchWithProxyHeader(targetUrl);
-      const fetchWithPayment = wrapFetchWithPayment(
+      const fetchWithPayment = wrapFetchWithSolanaPayment(
         fetchWithProxyHeader,
-        walletClient as unknown as Parameters<typeof wrapFetchWithPayment>[1],
+        signer,
         1000000000000n
       );
 

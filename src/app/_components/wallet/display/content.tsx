@@ -20,7 +20,6 @@ import { Loader2 } from 'lucide-react';
 import type { User } from '@coinbase/cdp-hooks';
 import type { Address } from 'viem';
 import type { PublicKey } from '@solana/web3.js';
-import { useWallet } from '@solana/wallet-adapter-react';
 
 interface Props {
   address: Address | PublicKey;
@@ -31,8 +30,6 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
   const { data: balance, isLoading } = useBalance();
 
   const { isConnected: isConnectedEvm } = useAccount();
-
-  const { wallet: walletSolana } = useWallet();
 
   const { disconnectAsync: disconnectEvm } = useDisconnect();
 
@@ -49,9 +46,6 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
       } else {
         if (isConnectedEvm) {
           await disconnectEvm();
-        }
-        if (walletSolana) {
-          await walletSolana.adapter.disconnect();
         }
       }
       if (session) {

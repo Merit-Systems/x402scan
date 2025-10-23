@@ -1,21 +1,11 @@
+import { useSolana } from '@/app/_contexts/solana';
 import { Button } from '@/components/ui/button';
-import type { Wallet } from '@solana/wallet-adapter-react';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useCallback } from 'react';
+import type { UiWallet } from '@wallet-standard/react';
+import { useConnect } from '@wallet-standard/react';
+import { toast } from 'sonner';
 
 export const ConnectEOASolanaForm = () => {
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { wallets, select } = useWallet();
-
-  const onConnect = useCallback(
-    async (wallet: Wallet) => {
-      if (!wallet.adapter.connected) {
-        await wallet.adapter.connect();
-      }
-      void select(wallet.adapter.name);
-    },
-    [select]
-  );
+  const { wallets } = useSolana();
 
   if (wallets.length === 0) {
     return null;
@@ -24,10 +14,43 @@ export const ConnectEOASolanaForm = () => {
   return (
     <div className="flex flex-col gap-2">
       {wallets.map(wallet => (
-        <Button key={wallet.adapter.name} onClick={() => onConnect(wallet)}>
-          {wallet.adapter.name}
-        </Button>
+        <ConnectEOASolanaButton
+          key={wallet.name}
+          wallet={wallet}
+          onConnect={() => {
+            toast.success(`Connected to ${wallet.name}`);
+          }}
+        />
       ))}
     </div>
   );
+};
+
+const ConnectEOASolanaButton = ({
+  wallet,
+  onConnect,
+}: {
+  wallet: UiWallet;
+  onConnect: () => void;
+}) => {
+  const { setWalletAndAccount } = useSolana();
+  const [isConnecting, connect] = useConnect(wallet);
+
+  const handleConnect = async () => {
+    if (isConnecting) return;
+
+    try {
+      const accounts = await connect();
+
+      if (accounts && accounts.length > 0) {
+        const account = accounts[0];
+        setWalletAndAccount(wallet, account);
+        onConnect();
+      }
+    } catch (err) {
+      console.error(`Failed to connect ${wallet.name}:`, err);
+    }
+  };
+
+  return <Button onClick={handleConnect}>{wallet.name}</Button>;
 };
