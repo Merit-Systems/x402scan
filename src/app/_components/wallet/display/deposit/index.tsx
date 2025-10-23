@@ -4,9 +4,10 @@ import { Send } from './send';
 import { Onramp } from './onramp';
 
 import type { Address } from 'viem';
+import type { PublicKey } from '@solana/web3.js';
 
 interface Props {
-  address: Address;
+  address: Address | PublicKey;
 }
 
 export const Deposit: React.FC<Props> = ({ address }) => {

@@ -6,7 +6,11 @@ import type { Connector } from 'wagmi';
 import { useConnect } from 'wagmi';
 import { base } from 'wagmi/chains';
 
-export const ConnectEOAForm = ({ connectors }: { connectors: Connector[] }) => {
+export const ConnectEOAEVMForm = ({
+  connectors,
+}: {
+  connectors: Connector[];
+}) => {
   return (
     <div className="flex flex-col gap-2">
       {connectors.map(connector => (

@@ -12,6 +12,7 @@ interface Props {
 export const ResourcesByOrigin: React.FC<Props> = ({
   originsWithResources,
 }) => {
+  console.log(originsWithResources);
   return (
     <div>
       {originsWithResources.map((origin, index) => (

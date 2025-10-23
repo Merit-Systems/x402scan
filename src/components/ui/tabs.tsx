@@ -58,8 +58,8 @@ const tabsTriggerVariants = cva(
         ],
         ghost: [
           'relative text-muted-foreground',
-          'hover:text-secondary',
-          'data-[state=active]:text-secondary',
+          'hover:text-primary',
+          'data-[state=active]:text-primary',
         ],
       },
       color: {

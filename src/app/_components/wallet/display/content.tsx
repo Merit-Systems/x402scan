@@ -6,6 +6,7 @@ import {
   useSignOut,
 } from '@coinbase/cdp-hooks';
 import { signOut, useSession } from 'next-auth/react';
+import { useAccount, useDisconnect } from 'wagmi';
 
 import { Button } from '@/components/ui/button';
 
@@ -18,15 +19,22 @@ import { Loader2 } from 'lucide-react';
 
 import type { User } from '@coinbase/cdp-hooks';
 import type { Address } from 'viem';
-import { useDisconnect } from 'wagmi';
+import type { PublicKey } from '@solana/web3.js';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 interface Props {
-  address: Address;
+  address: Address | PublicKey;
   user?: User;
 }
 
 export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
   const { data: balance, isLoading } = useBalance();
+
+  const { isConnected: isConnectedEvm } = useAccount();
+
+  const { wallet: walletSolana } = useWallet();
+
+  const { disconnectAsync: disconnectEvm } = useDisconnect();
 
   const { data: session, status } = useSession();
 
@@ -34,14 +42,17 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
   const { currentUser } = useCurrentUser();
   const { signOut: signOutWallet } = useSignOut();
 
-  const { disconnectAsync } = useDisconnect();
-
   const { mutateAsync: handleSignOut, isPending: isSigningOut } = useMutation({
     mutationFn: async () => {
       if (isInitialized && currentUser) {
         await signOutWallet();
       } else {
-        await disconnectAsync();
+        if (isConnectedEvm) {
+          await disconnectEvm();
+        }
+        if (walletSolana) {
+          await walletSolana.adapter.disconnect();
+        }
       }
       if (session) {
         await signOut();
@@ -64,7 +75,10 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
       <ItemContainer
         label="Address"
         value={
-          <CopyCode code={address} toastMessage="Address copied to clipboard" />
+          <CopyCode
+            code={address.toString()}
+            toastMessage="Address copied to clipboard"
+          />
         }
       />
       {user?.authenticationMethods.email?.email && (

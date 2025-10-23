@@ -74,7 +74,7 @@ const NoSessionContent = () => {
           </>
         )}
       </Button>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-muted-foreground text-center">
         Please sign a message to verify you own this wallet before you use the
         Onramp.
       </p>
