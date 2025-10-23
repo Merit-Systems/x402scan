@@ -25,18 +25,16 @@ interface Props {
   chain?: Chain;
 }
 
-export const TopServers = async ({ chain }: Props) => {
+export const KnownSellers: React.FC<Props> = ({ chain }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
-  await Promise.all([
-    api.sellers.list.bazaar.prefetch({
-      chain,
-      startDate,
-      endDate,
-      sorting: defaultSellersSorting,
-    }),
-  ]);
+  void api.sellers.list.bazaar.prefetch({
+    chain,
+    startDate,
+    endDate,
+    sorting: defaultSellersSorting,
+  });
 
   return (
     <HydrateClient>

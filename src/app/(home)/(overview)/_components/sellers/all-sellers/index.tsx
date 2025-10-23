@@ -21,13 +21,13 @@ interface Props {
   chain?: Chain;
 }
 
-export const AllSellers: React.FC<Props> = async ({ chain }) => {
+export const AllSellers: React.FC<Props> = ({ chain }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
   const limit = 100;
 
-  await api.sellers.list.all.prefetch({
+  void api.sellers.list.all.prefetch({
     chain,
     sorting: defaultSellersSorting,
     limit,

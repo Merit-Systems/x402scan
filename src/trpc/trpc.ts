@@ -7,7 +7,7 @@ import { auth } from '@/auth';
 
 import { infiniteQuerySchema } from '@/lib/pagination';
 
-import type z from 'zod';
+import z from 'zod';
 import type { Session } from 'next-auth';
 import { env } from '@/env';
 
@@ -42,7 +42,7 @@ const t = initTRPC.context<Context>().create({
       data: {
         ...shape.data,
         zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+          error.cause instanceof ZodError ? z.treeifyError(error.cause) : null,
       },
     };
   },

@@ -15,17 +15,15 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
     ? facilitators.flatMap(f => f.addresses[chain] ?? [])
     : facilitatorAddresses;
 
-  // Prefetch all data including chart data for each facilitator
-  await Promise.all([
-    api.stats.getOverallStatistics.prefetch({ chain }),
-    api.facilitators.list.prefetch({ chain, limit: 3 }),
-    ...chainFacilitators.map(address =>
-      api.stats.getBucketedStatistics.prefetch({
+  void api.stats.getOverallStatistics.prefetch({ chain });
+  void api.facilitators.list.prefetch({ chain, limit: 3 });
+  chainFacilitators.forEach(
+    address =>
+      void api.stats.getBucketedStatistics.prefetch({
         numBuckets: 48,
         facilitators: [address],
       })
-    ),
-  ]);
+  );
 
   return (
     <HydrateClient>
