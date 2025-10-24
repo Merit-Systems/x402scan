@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CardContent } from '@/components/ui/card';
@@ -10,6 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { ChevronDown } from 'lucide-react';
 
 import { useResourceFetch } from './contexts/fetch/hook';
 import type { FieldDefinition } from '@/types/x402';
@@ -33,8 +40,19 @@ export function Form({ x402Response }: Props) {
     error,
   } = useResourceFetch();
 
+  const [optionalOpen, setOptionalOpen] = useState(false);
+
   const hasQueryFields = queryFields.length > 0;
   const hasBodyFields = bodyFields.length > 0;
+
+  // Separate required and optional fields
+  const requiredQueryFields = queryFields.filter(field => field.required);
+  const optionalQueryFields = queryFields.filter(field => !field.required);
+  const requiredBodyFields = bodyFields.filter(field => field.required);
+  const optionalBodyFields = bodyFields.filter(field => !field.required);
+
+  const hasRequiredFields = requiredQueryFields.length > 0 || requiredBodyFields.length > 0;
+  const hasOptionalFields = optionalQueryFields.length > 0 || optionalBodyFields.length > 0;
 
   return (
     <CardContent className="flex flex-col gap-4 p-4 border-t">
@@ -46,15 +64,21 @@ export function Form({ x402Response }: Props) {
         </div>
       ) : (
         <div className="space-y-4">
-          {hasQueryFields && (
+          {/* Required Parameters Section */}
+          {hasRequiredFields && (
             <div className="space-y-3">
-              {queryFields.map(field => (
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold">Required Parameters</h3>
+                <span className="text-xs bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
+                  {requiredQueryFields.length + requiredBodyFields.length}
+                </span>
+              </div>
+              
+              {requiredQueryFields.map(field => (
                 <div key={`query-${field.name}`} className="space-y-1">
                   <Label htmlFor={`query-${field.name}`}>
                     {field.name}
-                    {field.required ? (
-                      <span className="text-destructive">*</span>
-                    ) : null}
+                    <span className="text-destructive ml-1">*</span>
                   </Label>
                   <FieldInput
                     field={field}
@@ -69,21 +93,12 @@ export function Form({ x402Response }: Props) {
                   )}
                 </div>
               ))}
-            </div>
-          )}
 
-          {hasBodyFields && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                Body Parameters
-              </h3>
-              {bodyFields.map(field => (
+              {requiredBodyFields.map(field => (
                 <div key={`body-${field.name}`} className="space-y-1">
                   <Label htmlFor={`body-${field.name}`}>
                     {field.name}
-                    {field.required ? (
-                      <span className="text-destructive">*</span>
-                    ) : null}
+                    <span className="text-destructive ml-1">*</span>
                   </Label>
                   <FieldInput
                     field={field}
@@ -99,6 +114,65 @@ export function Form({ x402Response }: Props) {
                 </div>
               ))}
             </div>
+          )}
+
+          {/* Optional Parameters Section - Collapsible */}
+          {hasOptionalFields && (
+            <Collapsible open={optionalOpen} onOpenChange={setOptionalOpen}>
+              <CollapsibleTrigger className="flex items-center gap-2 w-full hover:text-primary transition-colors">
+                <ChevronDown
+                  className={`size-4 transition-transform ${
+                    optionalOpen ? 'rotate-180' : ''
+                  }`}
+                />
+                <h3 className="text-sm font-medium text-muted-foreground">
+                  Optional Parameters
+                </h3>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
+                  {optionalQueryFields.length + optionalBodyFields.length}
+                </span>
+              </CollapsibleTrigger>
+              
+              <CollapsibleContent className="space-y-3 mt-3">
+                {optionalQueryFields.map(field => (
+                  <div key={`query-${field.name}`} className="space-y-1">
+                    <Label htmlFor={`query-${field.name}`} className="text-muted-foreground">
+                      {field.name}
+                    </Label>
+                    <FieldInput
+                      field={field}
+                      value={queryValues[field.name] ?? field.default ?? ''}
+                      onChange={value => handleQueryChange(field.name, value)}
+                      prefix="query"
+                    />
+                    {field.description && (
+                      <p className="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+                {optionalBodyFields.map(field => (
+                  <div key={`body-${field.name}`} className="space-y-1">
+                    <Label htmlFor={`body-${field.name}`} className="text-muted-foreground">
+                      {field.name}
+                    </Label>
+                    <FieldInput
+                      field={field}
+                      value={bodyValues[field.name] ?? field.default ?? ''}
+                      onChange={value => handleBodyChange(field.name, value)}
+                      prefix="body"
+                    />
+                    {field.description && (
+                      <p className="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </CollapsibleContent>
+            </Collapsible>
           )}
         </div>
       )}
