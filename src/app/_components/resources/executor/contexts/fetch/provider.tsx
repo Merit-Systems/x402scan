@@ -61,6 +61,27 @@ export const ResourceFetchProvider: React.FC<Props> = ({
     return queryFilled && bodyFilled;
   }, [queryFields, bodyFields, queryValues, bodyValues]);
 
+  const missingRequiredFields = useMemo(() => {
+    const requiredQuery = queryFields.filter(field => field.required);
+    const requiredBody = bodyFields.filter(field => field.required);
+
+    const missing: string[] = [];
+
+    requiredQuery.forEach(field => {
+      if (!queryValues[field.name] || queryValues[field.name].trim().length === 0) {
+        missing.push(field.name);
+      }
+    });
+
+    requiredBody.forEach(field => {
+      if (!bodyValues[field.name] || bodyValues[field.name].trim().length === 0) {
+        missing.push(field.name);
+      }
+    });
+
+    return missing;
+  }, [queryFields, bodyFields, queryValues, bodyValues]);
+
   const queryEntries = Object.entries(queryValues).reduce<
     Array<[string, string]>
   >((acc, [key, value]) => {
@@ -114,6 +135,7 @@ export const ResourceFetchProvider: React.FC<Props> = ({
         handleQueryChange,
         handleBodyChange,
         allRequiredFieldsFilled,
+        missingRequiredFields,
         execute,
         isPending,
         error: error?.message ?? null,
