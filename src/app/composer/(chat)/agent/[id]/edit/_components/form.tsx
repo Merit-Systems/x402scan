@@ -278,7 +278,6 @@ export const AgentForm: React.FC<Props> = ({
             name="starterPrompts"
             defaultValue={defaultValues?.starterPrompts ?? ['']}
             render={({ field }) => {
-              console.log(field.value);
               const prompts: string[] = field.value ?? [];
               return (
                 <>

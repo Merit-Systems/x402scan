@@ -20,8 +20,6 @@ export const FetchButton: React.FC<Props> = ({ chains }) => {
   const { execute, isPending, allRequiredFieldsFilled, maxAmountRequired } =
     useResourceFetch();
 
-  console.log('chains', chains);
-
   const includesBase = chains.includes(Chain.BASE);
 
   if (!walletClient) {
