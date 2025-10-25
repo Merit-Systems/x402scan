@@ -26,7 +26,7 @@ export const TooltipContent = <T extends Record<string, number>>({
             <TooltipRow
               {...row}
               key={row.key as string}
-              value={row.getValue(data[row.key])}
+              value={row.getValue(data[row.key], data)}
             />
           ))}
       </div>

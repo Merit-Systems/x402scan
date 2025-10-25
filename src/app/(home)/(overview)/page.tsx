@@ -1,55 +1,46 @@
-import { Body, HeadingContainer } from '../../_components/layout/page-utils';
+import { Body } from '../../_components/layout/page-utils';
 
-import { SearchButton } from './_components/search-button';
-import { AllSellers } from './_components/sellers/all-sellers';
+import { HomeHeading } from './_components/heading';
 import { OverallStats } from './_components/stats';
-import { TopServers } from './_components/sellers/known-sellers';
-import { LatestTransactions } from './_components/latest-transactions';
+import {
+  TopServers,
+  LoadingTopServers,
+} from './_components/sellers/known-sellers';
 import { TopFacilitators } from './_components/top-facilitators';
-import { Logo } from '@/components/logo';
-import { Banner } from './_components/banner';
-import { AddResourcesDialog } from '@/app/_components/add-resources';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import {
+  LatestTransactions,
+  LoadingLatestTransactions,
+} from './_components/latest-transactions';
+import {
+  AllSellers,
+  LoadingAllSellers,
+} from './_components/sellers/all-sellers';
+import { ComposerCallout } from './_components/composer-callout';
+import { getChain } from '@/app/_lib/chain';
+import { Suspense } from 'react';
+import { LoadingTopFacilitators } from './_components/top-facilitators/loading';
+import { env } from '@/env';
 
-export default async function Home() {
+export default async function Home({ searchParams }: PageProps<'/'>) {
+  const chain = await searchParams.then(params => getChain(params.chain));
   return (
     <div>
-      <div className="-mt-6 md:-mt-8 mb-6 md:mb-8">
-        <Banner />
-      </div>
-      <HeadingContainer className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <Logo className="size-8" />
-            <h1 className="text-2xl md:text-4xl font-bold font-mono">
-              x402scan
-            </h1>
-          </div>
-          <p className="text-muted-foreground text-sm">
-            The x402 analytics dashboard and block explorer
-          </p>
-        </div>
-        <div className="flex flex-col md:flex-row items-center gap-2">
-          <SearchButton />
-          <AddResourcesDialog>
-            <Button
-              variant="turbo"
-              className="shrink-0 w-full md:w-fit px-4"
-              size="lg"
-            >
-              <Plus className="size-4" />
-              Register Resource
-            </Button>
-          </AddResourcesDialog>
-        </div>
-      </HeadingContainer>
+      <HomeHeading />
       <Body>
-        <OverallStats />
-        <TopServers />
-        <TopFacilitators />
-        <LatestTransactions />
-        <AllSellers />
+        {env.NEXT_PUBLIC_ENABLE_COMPOSER === 'true' && <ComposerCallout />}
+        <OverallStats chain={chain} />
+        <Suspense fallback={<LoadingTopServers />}>
+          <TopServers chain={chain} />
+        </Suspense>
+        <Suspense fallback={<LoadingTopFacilitators />}>
+          <TopFacilitators chain={chain} />
+        </Suspense>
+        <Suspense fallback={<LoadingLatestTransactions />}>
+          <LatestTransactions chain={chain} />
+        </Suspense>
+        <Suspense fallback={<LoadingAllSellers />}>
+          <AllSellers chain={chain} />
+        </Suspense>
       </Body>
     </div>
   );

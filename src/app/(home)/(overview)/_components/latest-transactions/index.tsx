@@ -7,20 +7,29 @@ import {
 } from '@/app/(home)/_components/transactions';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
-import { Section } from '../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { subMonths } from 'date-fns';
+import { subDays } from 'date-fns';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
+import type { Chain } from '@/types/chain';
 
-export const LatestTransactions = async () => {
+interface Props {
+  chain?: Chain;
+}
+
+export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
   const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
-  const limit = 100;
+  const startDate = subDays(endDate, 1);
+  const pageSize = 10;
 
-  await api.transfers.list.prefetch({
-    limit,
+  await api.public.transfers.list.prefetch({
+    chain,
+    pagination: {
+      page_size: pageSize,
+      page: 0,
+    },
     sorting: defaultTransfersSorting,
     startDate,
     endDate,
@@ -33,11 +42,11 @@ export const LatestTransactions = async () => {
           initialEndDate={endDate}
           initialStartDate={startDate}
           creationDate={firstTransfer}
-          initialTimeframe={ActivityTimeframe.ThirtyDays}
+          initialTimeframe={ActivityTimeframe.OneDay}
         >
           <LatestTransactionsTableContainer>
             <Suspense fallback={<LoadingLatestTransactionsTable />}>
-              <LatestTransactionsTable limit={limit} />
+              <LatestTransactionsTable pageSize={pageSize} />
             </Suspense>
           </LatestTransactionsTableContainer>
         </TimeRangeProvider>

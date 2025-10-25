@@ -87,7 +87,7 @@ const OnrampContent = () => {
     mutate: createOnrampSession,
     isPending: isCreatingOnrampSession,
     isSuccess: isCreatedOnrampSession,
-  } = api.onrampSessions.create.useMutation({
+  } = api.user.onrampSessions.create.useMutation({
     onSuccess: url => {
       window.location.href = url;
     },

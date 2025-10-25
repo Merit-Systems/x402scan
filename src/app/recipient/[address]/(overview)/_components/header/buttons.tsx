@@ -1,11 +1,9 @@
-import { TestTubeDiagonal } from 'lucide-react';
+import { Plus, TestTubeDiagonal } from 'lucide-react';
 
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-
-import { AddResourcesDialog } from '@/app/_components/add-resources';
 
 interface Props {
   hasOrigins: boolean;
@@ -23,7 +21,12 @@ export const HeaderButtons: React.FC<Props> = ({ hasOrigins, address }) => {
           </Button>
         </Link>
       )}
-      <AddResourcesDialog />
+      <Link href="/resources/register">
+        <Button variant="outline">
+          <Plus className="size-4" />
+          Register Resource
+        </Button>
+      </Link>
     </ButtonsContainer>
   );
 };

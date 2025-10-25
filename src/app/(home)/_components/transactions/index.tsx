@@ -4,15 +4,11 @@ import { columns } from './columns';
 import { Table } from './table';
 
 interface Props {
-  limit: number;
-  pageSize?: number;
+  pageSize: number;
 }
 
-export const LatestTransactionsTable: React.FC<Props> = ({
-  limit,
-  pageSize,
-}) => {
-  return <Table limit={limit} pageSize={pageSize} />;
+export const LatestTransactionsTable: React.FC<Props> = ({ pageSize }) => {
+  return <Table pageSize={pageSize} />;
 };
 
 export const LoadingLatestTransactionsTable = ({

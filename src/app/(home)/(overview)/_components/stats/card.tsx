@@ -57,7 +57,12 @@ export const OverallStatsCard = <T extends Record<string, number>>({
             >
               <p>
                 {percentageChange >= 0 ? '+' : ''}
-                {percentageChange.toFixed(2)}%
+                {percentageChange.toLocaleString(undefined, {
+                  notation: 'compact',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 1,
+                })}
+                %
               </p>
 
               {percentageChange > 0 ? (

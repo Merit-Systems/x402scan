@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
 
 /**
  * Global cache duration in minutes
@@ -25,10 +26,7 @@ const roundDateToInterval = (date?: Date): string | undefined => {
 /**
  * Serialize dates in an object to ISO strings for JSON serialization
  */
-const serializeDates = <T extends Record<string, unknown>>(
-  obj: T,
-  dateKeys: (keyof T)[]
-): T => {
+const serializeDates = <T>(obj: T, dateKeys: (keyof T)[]): T => {
   const result = { ...obj };
   for (const key of dateKeys) {
     if (result[key] instanceof Date) {
@@ -42,10 +40,7 @@ const serializeDates = <T extends Record<string, unknown>>(
 /**
  * Deserialize ISO strings back to Date objects
  */
-const deserializeDates = <T extends Record<string, unknown>>(
-  obj: T,
-  dateKeys: (keyof T)[]
-): T => {
+const deserializeDates = <T>(obj: T, dateKeys: (keyof T)[]): T => {
   const result = { ...obj };
   for (const key of dateKeys) {
     if (typeof result[key] === 'string') {
@@ -59,21 +54,21 @@ const deserializeDates = <T extends Record<string, unknown>>(
 /**
  * Core cached query wrapper with custom serialization/deserialization
  */
-const createCachedQueryBase = <TInput, TOutput>(config: {
-  queryFn: (input: TInput) => Promise<TOutput>;
+const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
+  queryFn: (...args: TInput) => Promise<TOutput>;
   cacheKeyPrefix: string;
-  createCacheKey: (input: TInput) => string;
+  createCacheKey: (...args: TInput) => string;
   serialize: (data: TOutput) => TOutput;
   deserialize: (data: TOutput) => TOutput;
   revalidate?: number;
   tags?: string[];
 }) => {
-  return async (input: TInput): Promise<TOutput> => {
-    const cacheKey = config.createCacheKey(input);
+  return async (...args: TInput): Promise<TOutput> => {
+    const cacheKey = config.createCacheKey(...args);
 
     const result = await unstable_cache(
       async () => {
-        const data = await config.queryFn(input);
+        const data = await config.queryFn(...args);
         return config.serialize(data);
       },
       [config.cacheKeyPrefix, cacheKey],
@@ -90,13 +85,10 @@ const createCachedQueryBase = <TInput, TOutput>(config: {
 /**
  * Generic cached query wrapper for single items with dates
  */
-export const createCachedQuery = <
-  TInput,
-  TOutput extends Record<string, unknown>,
->(config: {
-  queryFn: (input: TInput) => Promise<TOutput>;
+export const createCachedQuery = <TInput extends unknown[], TOutput>(config: {
+  queryFn: (...args: TInput) => Promise<TOutput>;
   cacheKeyPrefix: string;
-  createCacheKey: (input: TInput) => string;
+  createCacheKey: (...args: TInput) => string;
   dateFields: (keyof TOutput)[];
   revalidate?: number;
   tags?: string[];
@@ -112,12 +104,12 @@ export const createCachedQuery = <
  * Generic cached query wrapper for arrays of items with dates
  */
 export const createCachedArrayQuery = <
-  TInput,
-  TItem extends Record<string, unknown>,
+  TInput extends unknown[],
+  TItem,
 >(config: {
-  queryFn: (input: TInput) => Promise<TItem[]>;
+  queryFn: (...args: TInput) => Promise<TItem[]>;
   cacheKeyPrefix: string;
-  createCacheKey: (input: TInput) => string;
+  createCacheKey: (...args: TInput) => string;
   dateFields: (keyof TItem)[];
   revalidate?: number;
   tags?: string[];
@@ -137,9 +129,11 @@ export const createCachedArrayQuery = <
 export const createCachedPaginatedQuery = <
   TInput,
   TItem extends Record<string, unknown>,
-  TPaginated extends { items: TItem[] },
 >(config: {
-  queryFn: (input: TInput) => Promise<TPaginated>;
+  queryFn: (
+    input: TInput,
+    pagination: PaginatedQueryParams
+  ) => Promise<PaginatedResponse<TItem>>;
   cacheKeyPrefix: string;
   createCacheKey: (input: TInput) => string;
   dateFields: (keyof TItem)[];
@@ -156,6 +150,12 @@ export const createCachedPaginatedQuery = <
       ...data,
       items: data.items.map(item => deserializeDates(item, config.dateFields)),
     }),
+    createCacheKey: (input, pagination) =>
+      config.createCacheKey({
+        ...input,
+        page: pagination.page,
+        page_size: pagination.page_size,
+      }),
   });
 };
 
@@ -179,10 +179,25 @@ export const createStandardCacheKey = (
       // Sort arrays for consistent keys
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       normalized[key] = [...value].sort();
+    } else if (typeof value === 'object' && value !== null) {
+      // Recursively normalize nested objects
+      normalized[key] = createStandardCacheKey(
+        value as Record<string, unknown>
+      );
     } else {
       normalized[key] = value;
     }
   }
 
-  return JSON.stringify(normalized);
+  return JSON.stringify(
+    Object.keys(normalized)
+      .sort()
+      .reduce(
+        (obj, key) => {
+          obj[key] = normalized[key];
+          return obj;
+        },
+        {} as Record<string, unknown>
+      )
+  );
 };

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useWriteContract } from 'wagmi';
 import { useCallback, useState } from 'react';
 import { ethereumAddressSchema } from '@/lib/schemas';
+import type { Address } from 'viem';
 import { erc20Abi, parseUnits } from 'viem';
 import { USDC_ADDRESS } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -13,8 +14,13 @@ import { useBalance } from '@/app/_hooks/use-balance';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEthBalance } from '@/app/_hooks/use-eth-balance';
+import { Chain } from '@/types/chain';
 
-export const Withdraw: React.FC = () => {
+interface Props {
+  accountAddress: Address;
+}
+
+export const Withdraw: React.FC<Props> = () => {
   const [amount, setAmount] = useState(0);
   const [address, setAddress] = useState('');
 
@@ -45,7 +51,7 @@ export const Withdraw: React.FC = () => {
     const parsedAddress = parseResult.data;
     writeContract(
       {
-        address: USDC_ADDRESS,
+        address: USDC_ADDRESS[Chain.BASE] as `0x${string}`,
         abi: erc20Abi,
         functionName: 'transfer',
         args: [parsedAddress, parseUnits(amount.toString(), 6)],
@@ -79,15 +85,17 @@ export const Withdraw: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="gap-1 flex items-center">
-        <Image
-          src="/coinbase.png"
-          alt="Base"
-          height={16}
-          width={16}
-          className="size-4 inline-block mr-1 rounded-full"
-        />
-        <span className="font-bold text-sm">Send USDC on Base</span>
+      <div className="gap-1 flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <Image
+            src="/coinbase.png"
+            alt="Base"
+            height={16}
+            width={16}
+            className="size-4 inline-block mr-1 rounded-full"
+          />
+          <span className="font-bold text-sm">Send USDC on Base</span>
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex justify-between">

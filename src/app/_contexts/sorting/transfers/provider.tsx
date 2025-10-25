@@ -1,7 +1,7 @@
 import { SortingProvider } from '../base/provider';
 import { TransfersSortingContext } from './context';
 
-import type { TransfersSortId } from '@/services/cdp/sql/transfers/list';
+import type { TransfersSortId } from '@/services/transfers/transfers/list';
 import type { SortType } from '../base/types';
 
 export const TransfersSortingProvider = ({

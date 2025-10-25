@@ -1,8 +1,6 @@
 import z from 'zod';
 import z3 from 'zod3';
 
-import { TRPCError } from '@trpc/server';
-
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { scrapeOriginData } from '@/services/scraper';
@@ -12,13 +10,16 @@ import {
   searchResources,
   searchResourcesSchema,
   upsertResource,
-} from '@/services/db/resources';
-import { upsertOrigin } from '@/services/db/origin';
-import { upsertResourceResponse } from '@/services/db/resource-responses';
+} from '@/services/db/resources/resource';
+import { upsertOrigin } from '@/services/db/resources/origin';
+import { upsertResourceResponse } from '@/services/db/resources/response';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
-import type { EnhancedOutputSchema } from '@/lib/x402/schema';
-import { parseX402Response } from '@/lib/x402/schema';
+import { mixedAddressSchema } from '@/lib/schemas';
+import {
+  EnhancedPaymentRequirementsSchema,
+  parseX402Response,
+  type EnhancedPaymentRequirements,
+} from '@/lib/x402/schema';
 import { formatTokenAmount } from '@/lib/token';
 import { getOriginFromUrl } from '@/lib/url';
 
@@ -26,6 +27,8 @@ import { Methods } from '@/types/x402';
 
 import type { AcceptsNetwork } from '@prisma/client';
 import { x402ResponseSchema } from 'x402/types';
+import { getFaviconUrl } from '@/lib/favicon';
+import type { ImageObject } from 'open-graph-scraper/types';
 
 export const resourcesRouter = createTRPCRouter({
   list: {
@@ -33,7 +36,7 @@ export const resourcesRouter = createTRPCRouter({
       return await listResources();
     }),
     byAddress: publicProcedure
-      .input(ethereumAddressSchema)
+      .input(mixedAddressSchema)
       .query(async ({ input }) => {
         return await listResources({
           accepts: {
@@ -45,7 +48,7 @@ export const resourcesRouter = createTRPCRouter({
       }),
   },
   getResourceByAddress: publicProcedure
-    .input(ethereumAddressSchema)
+    .input(mixedAddressSchema)
     .query(async ({ input }) => {
       return await getResourceByAddress(input);
     }),
@@ -64,6 +67,11 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
+      let parseErrorData: {
+        parseErrors: string[];
+        data: unknown;
+      } | null = null;
+
       for (const method of [Methods.GET, Methods.POST]) {
         // ping resource
         const response = await fetch(input.url, {
@@ -85,10 +93,17 @@ export const resourcesRouter = createTRPCRouter({
           })
           .extend({
             error: z3.string().optional(),
+            accepts: z3.array(EnhancedPaymentRequirementsSchema).optional(),
           })
           .safeParse(data);
         if (!baseX402ParsedResponse.success) {
-          console.error(baseX402ParsedResponse.error);
+          console.error(baseX402ParsedResponse.error.issues);
+          parseErrorData = {
+            parseErrors: baseX402ParsedResponse.error.issues.map(
+              issue => `${issue.path.join('.')}: ${issue.message}`
+            ),
+            data,
+          };
           continue;
         }
 
@@ -104,13 +119,11 @@ export const resourcesRouter = createTRPCRouter({
           origin: origin,
           title: metadata?.title ?? og?.ogTitle,
           description: metadata?.description ?? og?.ogDescription,
-          favicon:
-            og?.favicon &&
-            (og.favicon.startsWith('/')
-              ? scrapedOrigin.replace(/\/$/, '') + og.favicon
-              : og.favicon),
+          favicon: og?.favicon
+            ? getFaviconUrl(og.favicon, scrapedOrigin)
+            : undefined,
           ogImages:
-            og?.ogImage?.map(image => ({
+            og?.ogImage?.map((image: ImageObject) => ({
               url: image.url,
               height: image.height,
               width: image.width,
@@ -120,19 +133,22 @@ export const resourcesRouter = createTRPCRouter({
         });
 
         // upsert the resource
+        const accepts = baseX402ParsedResponse.data.accepts ?? [];
         const resource = await upsertResource({
           resource: input.url.toString(),
           type: 'http',
           x402Version: baseX402ParsedResponse.data.x402Version,
           lastUpdated: new Date(),
-          accepts:
-            baseX402ParsedResponse.data.accepts?.map(accept => ({
-              ...accept,
-              network: accept.network.replace('-', '_') as AcceptsNetwork,
-              maxAmountRequired: accept.maxAmountRequired,
-              outputSchema: accept.outputSchema as EnhancedOutputSchema,
-              extra: accept.extra,
-            })) ?? [],
+          accepts: accepts.map((accept: EnhancedPaymentRequirements) => ({
+            ...accept,
+            network: (accept.network as string).replace(
+              '-',
+              '_'
+            ) as AcceptsNetwork,
+            maxAmountRequired: accept.maxAmountRequired,
+            outputSchema: accept.outputSchema!,
+            extra: accept.extra,
+          })),
         });
 
         if (!resource) {
@@ -140,28 +156,40 @@ export const resourcesRouter = createTRPCRouter({
         }
 
         // parse the response
+        let enhancedParseWarnings: string[] | null = null;
         const parsedResponse = parseX402Response(data);
         if (parsedResponse.success) {
           await upsertResourceResponse(
             resource.resource.id,
             parsedResponse.data
           );
+        } else {
+          enhancedParseWarnings = parsedResponse.errors;
         }
 
         return {
-          ...resource,
-          accepts: {
-            ...resource.accepts,
-            maxAmountRequired: formatTokenAmount(
-              resource.accepts.maxAmountRequired
-            ),
-          },
+          error: false as const,
+          resource,
+          accepts: resource.accepts.map(accept => ({
+            ...accept,
+            maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
+          })),
+          enhancedParseWarnings,
+          response: data,
         };
       }
 
-      throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: 'Resource did not respond with a valid x402 response',
-      });
+      if (parseErrorData) {
+        return {
+          error: true as const,
+          type: 'parseErrors' as const,
+          parseErrorData,
+        };
+      }
+
+      return {
+        error: true as const,
+        type: 'no402' as const,
+      };
     }),
 });

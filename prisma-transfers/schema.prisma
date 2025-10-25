@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client-transfers"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("TRANSFERS_DB_URL")
+}
+
+model TransferEvent {
+  id                String   @id @default(uuid())
+  address           String   // The contract address (token address)
+  transaction_from  String   // The address that submitted the transaction
+  sender            String   // The address sending tokens (buying resources)
+  recipient         String   // The address receiving tokens (selling resources)
+  amount            Float    // The number of tokens sent from sender → recipient
+  block_timestamp   DateTime // The timestamp of the block
+  tx_hash           String   // The transaction hash
+  chain             String   // The chain of the event
+  provider          String   // The provider we get the data from
+  decimals          Int      // The number of decimals for the token
+  facilitator_id    String   // The facilitator ID
+
+  @@index([tx_hash])
+  @@index([sender])
+  @@index([recipient])
+  @@index([facilitator_id])
+  @@index([block_timestamp])
+  @@index([transaction_from])
+  @@map("TransferEvent")
+}

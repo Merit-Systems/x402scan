@@ -1,12 +1,18 @@
 import { useIsInitialized } from '@coinbase/cdp-hooks';
 import { useWalletClient } from 'wagmi';
 import { Button } from '@/components/ui/button';
-import { Loader2, Play, Wallet } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
 import { useResourceFetch } from '../contexts/fetch/hook';
 import { WalletDialog } from '@/app/_components/wallet/dialog';
+import { Chain } from '@/types/chain';
+import { Chains } from '@/app/_components/chains';
 
-export const FetchButton = () => {
+interface Props {
+  chains: Chain[];
+}
+
+export const FetchButton: React.FC<Props> = ({ chains }) => {
   const { data: walletClient, isLoading: isLoadingWalletClient } =
     useWalletClient();
   const { isInitialized } = useIsInitialized();
@@ -14,11 +20,22 @@ export const FetchButton = () => {
   const { execute, isPending, allRequiredFieldsFilled, maxAmountRequired } =
     useResourceFetch();
 
+  console.log('chains', chains);
+
+  const includesBase = chains.includes(Chain.BASE);
+
   if (!walletClient) {
     return (
       <WalletDialog>
-        <Button variant="ghost" size="sm" className="size-fit p-0 md:px-1">
-          <Wallet className="size-4" />
+        <Button
+          variant="outline"
+          size="lg"
+          className="w-full"
+          onClick={e => {
+            e.stopPropagation();
+          }}
+        >
+          <Chains chains={chains} />
           Connect Wallet
         </Button>
       </WalletDialog>
@@ -27,19 +44,22 @@ export const FetchButton = () => {
 
   return (
     <Button
-      variant="primaryGhost"
-      size="sm"
-      className="size-fit p-0 md:px-1"
+      variant="primaryOutline"
+      size="lg"
+      className="w-full"
       disabled={
         isPending ||
         !allRequiredFieldsFilled ||
         isLoadingWalletClient ||
         !isInitialized ||
-        !walletClient
+        !walletClient ||
+        !includesBase
       }
       onClick={() => execute()}
     >
-      {isLoadingWalletClient || !isInitialized || !walletClient ? (
+      {!includesBase ? (
+        <p className="text-xs">Solana Support Coming Soon</p>
+      ) : isLoadingWalletClient || !isInitialized || !walletClient ? (
         <Loader2 className="size-4 animate-spin" />
       ) : isPending ? (
         <>
@@ -48,7 +68,7 @@ export const FetchButton = () => {
         </>
       ) : (
         <>
-          <Play className="size-4" />
+          <Chains chains={chains} />
           Fetch
           <span>{formatTokenAmount(maxAmountRequired)}</span>
         </>

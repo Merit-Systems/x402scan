@@ -11,18 +11,27 @@ import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/prov
 import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { getChain } from '@/app/_lib/chain';
 
-export default async function TransactionsPage() {
-  const limit = 150;
+export default async function TransactionsPage({
+  searchParams,
+}: PageProps<'/transactions'>) {
+  const chain = await searchParams.then(params => getChain(params.chain));
+
+  const pageSize = 15;
 
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
-  await api.transfers.list.prefetch({
-    limit,
+  await api.public.transfers.list.prefetch({
     startDate,
     endDate,
     sorting: defaultTransfersSorting,
+    chain,
+    pagination: {
+      page_size: pageSize,
+      page: 0,
+    },
   });
 
   return (
@@ -40,9 +49,11 @@ export default async function TransactionsPage() {
           />
           <Body>
             <Suspense
-              fallback={<LoadingLatestTransactionsTable loadingRowCount={15} />}
+              fallback={
+                <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
+              }
             >
-              <LatestTransactionsTable limit={limit} pageSize={15} />
+              <LatestTransactionsTable pageSize={pageSize} />
             </Suspense>
           </Body>
         </TimeRangeProvider>

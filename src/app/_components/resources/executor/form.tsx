@@ -14,6 +14,8 @@ import {
 import { useResourceFetch } from './contexts/fetch/hook';
 import type { FieldDefinition } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
+import { FetchButton } from './header/fetch-button';
+import { Chain } from '@/types/chain';
 
 interface Props {
   x402Response: ParsedX402Response;
@@ -36,11 +38,6 @@ export function Form({ x402Response }: Props) {
 
   return (
     <CardContent className="flex flex-col gap-4 p-4 border-t">
-      {x402Response?.accepts?.[0]?.description && (
-        <h3 className="text-sm font-medium text-muted-foreground">
-          {x402Response.accepts[0].description}
-        </h3>
-      )}
       {!hasQueryFields && !hasBodyFields ? (
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
@@ -105,6 +102,16 @@ export function Form({ x402Response }: Props) {
           )}
         </div>
       )}
+
+      <FetchButton
+        chains={
+          (x402Response.accepts
+            ?.map(accept => accept.network)
+            .filter(network =>
+              Object.values(Chain).includes(network as Chain)
+            ) ?? []) as Chain[]
+        }
+      />
 
       {/* Error and response display - always visible */}
       {error && (

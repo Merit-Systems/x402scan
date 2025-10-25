@@ -44,16 +44,22 @@ export const Activity: React.FC<Props> = async ({ address }) => {
   const startDate = subDays(endDate, 7);
 
   const [firstTransferTimestamp] = await Promise.all([
-    api.stats.getFirstTransferTimestamp({
-      addresses: [address],
+    api.public.stats.firstTransferTimestamp({
+      recipients: {
+        include: [address],
+      },
     }),
-    api.stats.getBucketedStatistics.prefetch({
-      addresses: [address],
+    api.public.stats.bucketed({
+      recipients: {
+        include: [address],
+      },
       startDate,
       endDate,
     }),
-    api.stats.getOverallStatistics.prefetch({
-      addresses: [address],
+    api.public.stats.overall({
+      recipients: {
+        include: [address],
+      },
       startDate,
       endDate,
     }),

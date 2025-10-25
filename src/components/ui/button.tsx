@@ -18,6 +18,9 @@ export const buttonVariants = cva(
           'border border-primary text-primary bg-transparent shadow-xs hover:bg-primary/20',
         destructiveOutline:
           'border border-destructive text-destructive bg-transparent shadow-xs hover:bg-destructive/20',
+        warning: 'bg-yellow-600 text-white shadow-xs hover:bg-yellow-600/90',
+        warningOutline:
+          'border border-yellow-600 text-yellow-600 bg-transparent shadow-xs hover:bg-yellow-600/20',
         secondary:
           'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
         ghost:

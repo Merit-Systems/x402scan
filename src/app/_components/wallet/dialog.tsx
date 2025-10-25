@@ -1,3 +1,5 @@
+'use client';
+
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { useCurrentUser } from '@coinbase/cdp-hooks';
 import { useAccount } from 'wagmi';
@@ -20,7 +22,7 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
     <Dialog defaultOpen={searchParams.get('onramp') === 'true'}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
-        className="p-0 overflow-hidden sm:max-w-sm"
+        className="p-0 overflow-hidden sm:max-w-md"
         showCloseButton={false}
       >
         {address ? (

@@ -25,23 +25,6 @@ const handler = (req: NextRequest) =>
         );
       }
     },
-    responseMeta(opts) {
-      const { errors, type } = opts;
-      const allOk = errors.length === 0;
-      const isQuery = type === 'query';
-
-      // Cache all successful query requests for 60 seconds
-      // Using both max-age (for browser/local) and s-maxage (for CDN)
-      if (allOk && isQuery) {
-        return {
-          headers: {
-            'cache-control':
-              'public, max-age=60, s-maxage=60, stale-while-revalidate=60',
-          },
-        };
-      }
-      return {};
-    },
   });
 
 export { handler as GET, handler as POST };

@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 
-import { subMonths } from 'date-fns';
+import { subDays } from 'date-fns';
 
-import { Section } from '../../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 
 import { KnownSellersTable, LoadingKnownSellersTable } from './table';
 
@@ -17,20 +17,27 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
+import { ErrorBoundary } from 'react-error-boundary';
 
-export const TopServers = async () => {
+import type { Chain } from '@/types/chain';
+
+interface Props {
+  chain?: Chain;
+}
+
+export const TopServers = async ({ chain }: Props) => {
   const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const startDate = subDays(endDate, 1);
 
   await Promise.all([
-    api.sellers.list.bazaar.prefetch({
+    api.public.sellers.list.bazaar.prefetch({
+      chain,
+      pagination: {
+        page_size: 100,
+      },
       startDate,
       endDate,
       sorting: defaultSellersSorting,
-    }),
-    api.stats.bazaar.overallStatistics.prefetch({
-      startDate,
-      endDate,
     }),
   ]);
 
@@ -41,12 +48,18 @@ export const TopServers = async () => {
           creationDate={firstTransfer}
           initialEndDate={endDate}
           initialStartDate={startDate}
-          initialTimeframe={ActivityTimeframe.ThirtyDays}
+          initialTimeframe={ActivityTimeframe.OneDay}
         >
           <TopServersContainer>
-            <Suspense fallback={<LoadingKnownSellersTable />}>
-              <KnownSellersTable />
-            </Suspense>
+            <ErrorBoundary
+              fallback={
+                <p>There was an error loading the known sellers data</p>
+              }
+            >
+              <Suspense fallback={<LoadingKnownSellersTable />}>
+                <KnownSellersTable />
+              </Suspense>
+            </ErrorBoundary>
           </TopServersContainer>
         </TimeRangeProvider>
       </SellersSortingProvider>

@@ -14,7 +14,7 @@ export const SearchButton = () => {
   return <SearchButtonContent onClick={() => setIsOpen(true)} />;
 };
 
-export const SearchButtonContent = ({ onClick }: { onClick?: () => void }) => {
+const SearchButtonContent = ({ onClick }: { onClick?: () => void }) => {
   return (
     <Button
       size="lg"

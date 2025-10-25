@@ -1,7 +1,7 @@
 import { SortingProvider } from '../base/provider';
 import { FacilitatorsSortingContext } from './context';
 
-import type { FacilitatorsSortId } from '@/services/cdp/sql/facilitators/list';
+import type { FacilitatorsSortId } from '@/services/transfers/facilitators/list';
 import type { SortType } from '../base/types';
 
 export const FacilitatorsSortingProvider = ({

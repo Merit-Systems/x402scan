@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, DollarSign, Hash, Server, User } from 'lucide-react';
+import { Calendar, DollarSign, Globe, Hash, Server, User } from 'lucide-react';
 
 import Link from 'next/link';
 
@@ -19,8 +19,9 @@ import { formatTokenAmount } from '@/lib/token';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { TransfersSortingContext } from '@/app/_contexts/sorting/transfers/context';
+import { Chains } from '@/app/_components/chains';
 
-type ColumnType = RouterOutputs['transfers']['list']['items'][number];
+type ColumnType = RouterOutputs['public']['transfers']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
@@ -77,17 +78,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     accessorKey: 'transaction_hash',
     header: () => <HeaderCell Icon={Hash} label="Hash" className="mx-auto" />,
     cell: ({ row }) => (
-      <Link
-        href={`/transaction/${row.original.transaction_hash}`}
-        prefetch={false}
-      >
-        <Address
-          address={row.original.transaction_hash}
-          className="text-xs block text-center"
-          disableCopy
-          hideTooltip
-        />
-      </Link>
+      <Address
+        address={row.original.tx_hash}
+        className="text-xs block text-center"
+        disableCopy
+        hideTooltip
+      />
     ),
     size: 150,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
@@ -114,13 +110,26 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
+    accessorKey: 'chains',
+    header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
+    cell: ({ row }) => (
+      <Chains
+        chains={[row.original.chain]}
+        iconClassName="size-4"
+        className="mx-auto justify-center"
+      />
+    ),
+    size: 100,
+    loading: () => <Skeleton className="size-4 mx-auto" />,
+  },
+  {
     accessorKey: 'facilitator',
     header: () => (
       <HeaderCell Icon={Server} label="Facilitator" className="mx-auto" />
     ),
     cell: ({ row }) => (
       <Facilitator
-        address={row.original.transaction_from}
+        id={row.original.facilitator_id}
         className="mx-auto justify-center"
       />
     ),

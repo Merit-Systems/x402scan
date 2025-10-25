@@ -7,7 +7,7 @@ import { LatestTransactionsTable } from '../../../_components/transactions/table
 
 import { api, HydrateClient } from '@/trpc/server';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { Section } from '@/app/(home)/(overview)/_components/utils';
+import { Section } from '@/app/_components/layout/page-utils';
 import { subMonths } from 'date-fns';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
@@ -22,13 +22,21 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
+  const pageSize = 10;
   const [firstTransfer] = await Promise.all([
-    api.stats.getFirstTransferTimestamp({
-      addresses: [address],
+    api.public.stats.firstTransferTimestamp({
+      recipients: {
+        include: [address],
+      },
     }),
-    api.transfers.list.prefetch({
-      limit: 100,
-      recipient: address,
+    api.public.transfers.list.prefetch({
+      pagination: {
+        page_size: pageSize,
+        page: 0,
+      },
+      recipients: {
+        include: [address],
+      },
       startDate,
       endDate,
       sorting: defaultTransfersSorting,
@@ -46,11 +54,7 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
         <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
           <LatestTransactionsTableContainer>
             <Suspense fallback={<LoadingLatestTransactionsTable />}>
-              <LatestTransactionsTable
-                address={address}
-                limit={100}
-                pageSize={10}
-              />
+              <LatestTransactionsTable address={address} pageSize={pageSize} />
             </Suspense>
           </LatestTransactionsTableContainer>
         </TransfersSortingProvider>

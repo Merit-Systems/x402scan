@@ -11,12 +11,13 @@ import { Logo } from '@/components/logo';
 import { EmbeddedWalletContent } from './content';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowDown, ArrowUp, Wallet } from 'lucide-react';
+import { ArrowDown, ArrowUp, Key, Wallet } from 'lucide-react';
 import { Deposit } from './deposit';
 import { Withdraw } from './withdraw';
 
 import type { Address } from 'viem';
 import type { User } from '@coinbase/cdp-hooks';
+import { ExportWallet } from './export-wallet';
 
 interface Props {
   address: Address;
@@ -47,8 +48,8 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
               </DialogDescription>
             </div>
           </div>
-          <TabsList className="w-full h-fit">
-            <div className="h-[34px] border-b w-4" />
+          <TabsList className="w-full h-fit overflow-x-auto justify-start no-scrollbar">
+            <div className="h-[34px] border-b w-2 shrink-0" />
             <TabsTrigger
               value="wallet"
               variant="github"
@@ -70,7 +71,16 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
             >
               <ArrowUp className="size-4" /> Withdraw
             </TabsTrigger>
-            <div className="h-[34px] border-b flex-1" />
+            {user && (
+              <TabsTrigger
+                value="export"
+                variant="github"
+                className="data-[state=active]:bg-background"
+              >
+                <Key className="size-4" /> Export
+              </TabsTrigger>
+            )}
+            <div className="h-[34px] border-b flex-1 min-w-2" />
           </TabsList>
         </DialogHeader>
 
@@ -90,8 +100,16 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
           value="withdraw"
           className="px-4 w-full overflow-hidden mt-0"
         >
-          <Withdraw />
+          <Withdraw accountAddress={address} />
         </TabsContent>
+        {user && (
+          <TabsContent
+            value="export"
+            className="px-4 w-full overflow-hidden mt-0"
+          >
+            <ExportWallet accountAddress={address} />
+          </TabsContent>
+        )}
       </Tabs>
       <DialogFooter className="bg-muted border-t p-4">
         <p className="text-xs text-muted-foreground text-center">

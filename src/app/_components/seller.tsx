@@ -7,10 +7,10 @@ import { Address } from '@/components/ui/address';
 import { Origins } from '@/app/_components/origins';
 import { api } from '@/trpc/client';
 import { cn } from '@/lib/utils';
-import type { Address as ViemAddress } from 'viem';
+import type { MixedAddress } from '@/types/address';
 
 interface Props {
-  address: ViemAddress;
+  address: MixedAddress;
   disableCopy?: boolean;
   addressClassName?: string;
 }
@@ -20,12 +20,22 @@ export const Seller: React.FC<Props> = ({
   addressClassName,
   disableCopy,
 }) => {
-  const { data: origins, isLoading } = api.origins.list.byAddress.useQuery(
-    address,
+  const {
+    data: origins,
+    isLoading,
+    error,
+  } = api.public.origins.list.origins.useQuery(
+    {
+      address,
+    },
     {
       enabled: !!address,
     }
   );
+
+  if (error) {
+    console.log(address);
+  }
 
   if (isLoading) {
     return <SellerSkeleton />;
@@ -35,7 +45,7 @@ export const Seller: React.FC<Props> = ({
     return (
       <Address
         address={address}
-        className={cn('text-xs md:text-sm font-medium', addressClassName)}
+        className={cn('text-xs font-medium', addressClassName)}
         disableCopy={disableCopy}
       />
     );

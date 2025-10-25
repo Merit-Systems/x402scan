@@ -4,11 +4,15 @@ import { api } from '@/trpc/server';
 import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 
-/**
- * Cache warming endpoint for homepage queries
- * Should be called every 5 minutes via cron to keep cache fresh
- */
-export async function GET() {
+import type { NextRequest } from 'next/server';
+import { checkCronSecret } from '@/lib/cron';
+
+export async function GET(request: NextRequest) {
+  const cronCheck = checkCronSecret(request);
+  if (cronCheck) {
+    return cronCheck;
+  }
+
   try {
     const endDate = new Date();
     const startDate = subMonths(endDate, 1);
@@ -17,13 +21,13 @@ export async function GET() {
     // Warm all homepage caches in parallel - using the same tRPC calls as the homepage
     await Promise.all([
       // Overall Stats - current period
-      api.stats.getOverallStatistics({
+      api.public.stats.overall({
         startDate,
         endDate,
       }),
 
       // Overall Stats - previous period (for comparison)
-      api.stats.getOverallStatistics({
+      api.public.stats.overall({
         startDate: subSeconds(
           startDate,
           differenceInSeconds(endDate, startDate)
@@ -32,38 +36,50 @@ export async function GET() {
       }),
 
       // Bucketed Statistics - for charts
-      api.stats.getBucketedStatistics({
+      api.public.stats.bucketed({
         startDate,
         endDate,
         numBuckets: 32,
       }),
 
       // Top Facilitators - all time, no date filters
-      api.facilitators.list({}),
+      api.public.facilitators.list({
+        pagination: {
+          page_size: 3,
+        },
+      }),
 
       // Top Servers (Bazaar) - list
-      api.sellers.list.bazaar({
+      api.public.sellers.list.bazaar({
+        pagination: {
+          page_size: 100,
+        },
         startDate,
         endDate,
         sorting: defaultSellersSorting,
       }),
 
       // Top Servers (Bazaar) - overall stats
-      api.stats.bazaar.overallStatistics({
+      api.public.stats.bazaar.overall({
         startDate,
         endDate,
       }),
 
       // Latest Transactions
-      api.transfers.list({
-        limit,
+      api.public.transfers.list({
+        pagination: {
+          page_size: limit,
+        },
         sorting: defaultTransfersSorting,
         startDate,
         endDate,
       }),
 
       // All Sellers
-      api.sellers.list.all({
+      api.public.sellers.list.all({
+        pagination: {
+          page_size: 100,
+        },
         startDate,
         endDate,
         sorting: defaultSellersSorting,

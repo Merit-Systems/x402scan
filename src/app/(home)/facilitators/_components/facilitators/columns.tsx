@@ -4,6 +4,7 @@ import {
   ArrowLeftRight,
   Calendar,
   DollarSign,
+  Globe,
   Server,
   User,
 } from 'lucide-react';
@@ -22,8 +23,10 @@ import { formatTokenAmount } from '@/lib/token';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
+import { Chains } from '@/app/_components/chains';
 
-type ColumnType = RouterOutputs['facilitators']['list'][number];
+type ColumnType =
+  RouterOutputs['public']['facilitators']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
@@ -33,7 +36,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <Link
-        href={`/facilitator/${row.original.facilitator.id}`}
+        href={`/facilitator/${row.original.facilitator_id}`}
         prefetch={false}
         className="flex items-center gap-1"
       >
@@ -59,6 +62,19 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         <Skeleton className="size-2 rounded-full" />
       </div>
     ),
+  },
+  {
+    accessorKey: 'chains',
+    header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
+    cell: ({ row }) => (
+      <Chains
+        chains={row.original.chains}
+        iconClassName="size-4"
+        className="mx-auto justify-center"
+      />
+    ),
+    size: 100,
+    loading: () => <Skeleton className="size-4 mx-auto" />,
   },
   {
     accessorKey: 'transactions',

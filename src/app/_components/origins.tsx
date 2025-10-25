@@ -1,4 +1,4 @@
-import { Globe, Server } from 'lucide-react';
+import { Globe } from 'lucide-react';
 
 import {
   Tooltip,
@@ -6,16 +6,17 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
-
 import { Address, Addresses } from '@/components/ui/address';
+
+import { Favicon } from '@/app/_components/favicon';
 
 import { cn } from '@/lib/utils';
 
 import type { ResourceOrigin } from '@prisma/client';
-import type { Address as ViemAddress } from 'viem';
+import type { MixedAddress } from '@/types/address';
 
 interface Props {
-  addresses: ViemAddress[];
+  addresses: MixedAddress[];
   origins: ResourceOrigin[];
   disableCopy?: boolean;
 }
@@ -39,15 +40,12 @@ export const Origins: React.FC<Props> = ({
     const origin = origins[0];
     return (
       <OriginsContainer
-        Icon={({ className }) =>
-          origin.favicon ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={origin.favicon} alt="Favicon" className={className} />
-          ) : (
-            <Globe className={className} />
-          )
+        Icon={({ className }) => (
+          <Favicon url={origin.favicon} className={className} />
+        )}
+        title={
+          <span className="truncate">{new URL(origin.origin).hostname}</span>
         }
-        title={new URL(origin.origin).hostname}
         address={
           addresses.length === 0 ? null : addresses.length === 1 ? (
             <Address address={addresses[0]} disableCopy={disableCopy} />
@@ -61,27 +59,38 @@ export const Origins: React.FC<Props> = ({
 
   return (
     <OriginsContainer
-      Icon={({ className }) => <Server className={className} />}
+      Icon={({ className }) => (
+        <Favicon
+          url={origins.find(origin => origin.favicon)?.favicon ?? null}
+          className={className}
+          Fallback={Globe}
+        />
+      )}
       title={
-        <Tooltip>
-          <TooltipTrigger className="cursor-pointer hover:bg-muted hover:text-muted-foreground rounded-md transition-colors">
-            {origins.length} servers
-          </TooltipTrigger>
-          <TooltipContent className="max-w-sm flex flex-col gap-1">
-            <p>
-              Addresses can be associated with multiple servers.
-              <br />
-              This address is associated with the following servers:
-            </p>
-            <ul className="list-disc list-inside">
-              {origins.map(origin => (
-                <li key={origin.id}>
-                  {origin.title ?? new URL(origin.origin).hostname}
-                </li>
-              ))}
-            </ul>
-          </TooltipContent>
-        </Tooltip>
+        <div className="flex items-center gap-2 overflow-hidden flex-1 w-0">
+          <span className="truncate">
+            {new URL(origins[0].origin).hostname}
+          </span>
+          <Tooltip>
+            <TooltipTrigger className="cursor-pointer hover:bg-muted text-muted-foreground hover:text-foreground rounded-md transition-colors text-xs font-mono shrink-0">
+              +{origins.length - 1} more
+            </TooltipTrigger>
+            <TooltipContent className="max-w-sm flex flex-col gap-1">
+              <p>
+                Addresses can be associated with multiple servers.
+                <br />
+                This address is associated with the following servers:
+              </p>
+              <ul className="list-disc list-inside">
+                {origins.slice(1).map(origin => (
+                  <li key={origin.id}>
+                    {origin.title ?? new URL(origin.origin).hostname}
+                  </li>
+                ))}
+              </ul>
+            </TooltipContent>
+          </Tooltip>
+        </div>
       }
       address={
         addresses.length === 0 ? null : addresses.length === 1 ? (
@@ -151,7 +160,7 @@ const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
     <div className="flex items-center gap-2 w-full overflow-hidden">
       <Icon className="size-6" />
       <div className="flex-1 overflow-hidden">
-        <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap">
+        <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full flex">
           {title}
         </div>
         <div>{address}</div>

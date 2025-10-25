@@ -14,18 +14,26 @@ import { FacilitatorStats, LoadingFacilitatorStats } from './stats';
 
 import type { Facilitator } from '@/lib/facilitators';
 import type { RouterOutputs } from '@/trpc/client';
+import type { ChartData } from '@/components/ui/charts/chart/types';
+import { useChain } from '@/app/_contexts/chain/hook';
 
 interface Props {
   facilitator: Facilitator;
-  stats: NonNullable<RouterOutputs['facilitators']['list']>[number];
-  overallStats: NonNullable<RouterOutputs['stats']['getOverallStatistics']>;
+  stats: RouterOutputs['public']['facilitators']['list']['items'][number];
+  overallStats: NonNullable<RouterOutputs['public']['stats']['overall']>;
+  chartData: ChartData<{
+    total_transactions: number;
+  }>[];
 }
 
-export const FacilitatorCard: React.FC<Props> = async ({
+export const FacilitatorCard: React.FC<Props> = ({
   facilitator,
   stats,
   overallStats,
+  chartData,
 }) => {
+  const { chain } = useChain();
+
   return (
     <Link href={`/facilitator/${facilitator.id}`} prefetch={false}>
       <Card className="grid grid-cols-1 md:grid-cols-7 hover:border-primary hover:bg-card/80 transition-colors">
@@ -41,13 +49,17 @@ export const FacilitatorCard: React.FC<Props> = async ({
                 {facilitator.name}
               </h1>
               <Addresses
-                addresses={facilitator.addresses}
+                addresses={
+                  chain
+                    ? (facilitator.addresses[chain] ?? [])
+                    : Object.values(facilitator.addresses).flat()
+                }
                 className="text-xs leading-none"
               />
             </div>
           </div>
           <FacilitatorChart
-            facilitator={facilitator}
+            chartData={chartData}
             total_transactions={Number(overallStats.total_transactions)}
           />
         </div>

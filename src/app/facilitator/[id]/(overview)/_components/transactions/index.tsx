@@ -1,32 +1,42 @@
 import { Suspense } from 'react';
 
+import { subMonths } from 'date-fns';
+
 import { DataTable } from '@/components/ui/data-table';
+
+import { Section } from '@/app/_components/layout/page-utils';
+
+import { RangeSelector } from '@/app/_contexts/time-range/component';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 
 import { columns } from '../../../_components/transactions/columns';
 import { LatestTransactionsTable } from '../../../_components/transactions/table';
 
 import { api, HydrateClient } from '@/trpc/server';
-import { subMonths } from 'date-fns';
+
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
-import { Section } from '@/app/(home)/(overview)/_components/utils';
-import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+
 import { firstTransfer } from '@/services/facilitator/constants';
+
 import { ActivityTimeframe } from '@/types/timeframes';
-import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 
 interface Props {
-  addresses: string[];
+  facilitatorId: string;
 }
 
-export const LatestTransactions: React.FC<Props> = async ({ addresses }) => {
+export const LatestTransactions: React.FC<Props> = async ({
+  facilitatorId,
+}) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
-  const limit = 100;
+  const pageSize = 10;
 
-  await api.transfers.list.prefetch({
-    limit,
-    facilitators: addresses,
+  await api.public.transfers.list.prefetch({
+    pagination: {
+      page_size: pageSize,
+    },
+    facilitatorIds: [facilitatorId],
     startDate,
     endDate,
     sorting: defaultTransfersSorting,
@@ -44,9 +54,8 @@ export const LatestTransactions: React.FC<Props> = async ({ addresses }) => {
           <LatestTransactionsTableContainer>
             <Suspense fallback={<LoadingLatestTransactionsTable />}>
               <LatestTransactionsTable
-                addresses={addresses}
-                limit={limit}
-                pageSize={10}
+                facilitatorId={facilitatorId}
+                pageSize={pageSize}
               />
             </Suspense>
           </LatestTransactionsTableContainer>

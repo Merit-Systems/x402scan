@@ -1,4 +1,5 @@
 import {
+  ChainIdToNetwork,
   HTTPRequestStructureSchema,
   PaymentRequirementsSchema,
   x402ResponseSchema,
@@ -28,20 +29,60 @@ const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
   )
 );
 
-const EnhancedOutputSchema = z3.object({
+export const enhancedOutputSchema = z3.object({
   input: HTTPRequestStructureSchema.omit({
     queryParams: true,
     bodyFields: true,
     headerFields: true,
   }).extend({
+    headerFields: z3.record(FieldDefSchema).optional(),
     queryParams: z3.record(FieldDefSchema).optional(),
     bodyFields: z3.record(FieldDefSchema).optional(),
-    headerFields: z3.record(FieldDefSchema).optional(),
   }),
-  output: z3.record(z3.string(), z3.any()).optional(),
+  output: z3.record(z3.string(), z3.any()).optional().nullable(),
 });
 
-export type EnhancedOutputSchema = z3.infer<typeof EnhancedOutputSchema>;
+export type EnhancedOutputSchema = z3.infer<typeof enhancedOutputSchema>;
+
+export const enhancedAcceptsSchema = PaymentRequirementsSchema.extend({
+  outputSchema: enhancedOutputSchema.optional(),
+});
+
+const namedNetwork = z3.enum([
+  'base-sepolia',
+  'avalanche-fuji',
+  'base',
+  'sei',
+  'sei-testnet',
+  'avalanche',
+  'iotex',
+  'solana-devnet',
+  'solana',
+]);
+
+const EnhancedNetworkSchema = z3.union([
+  namedNetwork,
+  z3
+    .string()
+    .refine(
+      v =>
+        v.startsWith('eip155:') && !!ChainIdToNetwork[Number(v.split(':')[1])],
+      { message: 'Invalid network' }
+    )
+    .transform(v => ChainIdToNetwork[Number(v.split(':')[1])]),
+]);
+
+type EnhancedNetworkSchema = z3.infer<typeof EnhancedNetworkSchema>;
+
+export const EnhancedPaymentRequirementsSchema =
+  PaymentRequirementsSchema.extend({
+    network: EnhancedNetworkSchema,
+    outputSchema: enhancedOutputSchema.optional(),
+  });
+
+export type EnhancedPaymentRequirements = z3.infer<
+  typeof EnhancedPaymentRequirementsSchema
+>;
 
 const EnhancedX402ResponseSchema = x402ResponseSchema
   .omit({
@@ -50,13 +91,7 @@ const EnhancedX402ResponseSchema = x402ResponseSchema
   })
   .extend({
     error: z3.string().optional(), // Accept any error string
-    accepts: z3
-      .array(
-        PaymentRequirementsSchema.extend({
-          outputSchema: EnhancedOutputSchema.optional(),
-        })
-      )
-      .optional(),
+    accepts: z3.array(EnhancedPaymentRequirementsSchema).optional(),
   });
 
 // Types

@@ -3,6 +3,18 @@
     {
       "path": "/api/cron/warm-cache",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/resources/ping",
+      "schedule": "*/1 * * * *"
+    },
+    {
+      "path": "/api/resources/sync",
+      "schedule": "*/1 * * * *"
+    },
+    {
+      "path": "/api/resources/label",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

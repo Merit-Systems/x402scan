@@ -1,15 +1,15 @@
 import superjson from 'superjson';
-import { ZodError } from 'zod';
+import z, { ZodError } from 'zod';
 
 import { initTRPC, TRPCError } from '@trpc/server';
 
 import { auth } from '@/auth';
 
-import { infiniteQuerySchema } from '@/lib/pagination';
+import { paginatedQuerySchema } from '@/lib/pagination';
 
-import type z from 'zod';
-import type { Session } from 'next-auth';
 import { env } from '@/env';
+
+import type { Session } from 'next-auth';
 
 /**
  * Context that is passed to all TRPC procedures
@@ -85,14 +85,24 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   return next({ ctx: { ...ctx, session: ctx.session } });
 });
 
-export const infiniteQueryProcedure = <T>(cursorType: z.ZodType<T>) =>
-  t.procedure
-    .input(infiniteQuerySchema(cursorType))
-    .use(async ({ ctx, next, input }) => {
-      return next({
-        ctx: {
-          ...ctx,
-          pagination: input,
-        },
-      });
+export const adminProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.session?.user || ctx.session.user.role !== 'admin') {
+    throw new TRPCError({ code: 'FORBIDDEN' });
+  }
+  return next({ ctx: { ...ctx, session: ctx.session } });
+});
+
+export const paginatedProcedure = t.procedure
+  .input(
+    z
+      .object({ pagination: paginatedQuerySchema })
+      .default({ pagination: { page: 0, page_size: 100 } })
+  )
+  .use(async ({ ctx, next, input: { pagination } }) => {
+    return next({
+      ctx: {
+        ...ctx,
+        pagination,
+      },
     });
+  });

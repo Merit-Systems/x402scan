@@ -9,6 +9,8 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  type RowSelectionState,
+  type OnChangeFn,
 } from '@tanstack/react-table';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,7 +27,7 @@ import { Button } from '@/components/ui/button';
 
 import { cn } from '@/lib/utils';
 
-import type { ColumnDef } from '@tanstack/react-table';
+import type { ColumnDef, Row } from '@tanstack/react-table';
 import type { Route } from 'next';
 
 export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
@@ -39,29 +41,60 @@ interface DataTableProps<TData, TValue, AppRoute extends string> {
   columns: ExtendedColumnDef<TData, TValue>[];
   data: TData[];
   href?: (data: TData) => Route<AppRoute>;
+  onRowClick?: (row: Row<TData>) => void;
   isLoading?: boolean;
   loadingRowCount?: number;
   pageSize?: number;
+  page?: number;
+  onPageChange?: (page: number) => void;
+  totalPages?: number;
+  hasNextPage?: boolean;
+  enableRowSelection?: boolean;
+  rowSelection?: RowSelectionState;
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>;
+  getRowId?: (row: TData, index: number) => string;
 }
 
 export function DataTable<TData, TValue, AppRoute extends string>({
   columns,
   data,
   href,
+  onRowClick,
   isLoading = false,
   loadingRowCount = 5,
   pageSize = 10,
+  page,
+  onPageChange,
+  hasNextPage,
+  totalPages,
+  enableRowSelection = false,
+  rowSelection,
+  onRowSelectionChange,
+  getRowId,
 }: DataTableProps<TData, TValue, AppRoute>) {
+  const isServerSidePagination =
+    page !== undefined && onPageChange !== undefined;
+
   const table = useReactTable({
     data: isLoading ? (Array(loadingRowCount).fill(null) as TData[]) : data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: isServerSidePagination
+      ? undefined
+      : getPaginationRowModel(),
     initialState: {
       pagination: {
         pageSize,
       },
     },
+    manualPagination: isServerSidePagination,
+    pageCount: isServerSidePagination ? -1 : undefined,
+    enableRowSelection,
+    state: {
+      rowSelection: rowSelection ?? {},
+    },
+    onRowSelectionChange: onRowSelectionChange,
+    getRowId: getRowId,
   });
 
   const router = useRouter();
@@ -121,9 +154,11 @@ export function DataTable<TData, TValue, AppRoute extends string>({
                       ? () => {
                           router.push(href(row.original));
                         }
-                      : undefined
+                      : onRowClick
+                        ? () => onRowClick(row)
+                        : undefined
                   }
-                  className={cn(href && 'cursor-pointer')}
+                  className={cn((href ?? onRowClick) && 'cursor-pointer')}
                 >
                   {row.getVisibleCells().map(cell => (
                     <TableCell
@@ -155,8 +190,16 @@ export function DataTable<TData, TValue, AppRoute extends string>({
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          onClick={() => {
+            if (isServerSidePagination && onPageChange) {
+              onPageChange(page - 1);
+            } else {
+              table.previousPage();
+            }
+          }}
+          disabled={
+            isServerSidePagination ? page === 0 : !table.getCanPreviousPage()
+          }
           className="size-fit md:size-fit p-1"
         >
           <ChevronLeft className="size-4" />
@@ -165,16 +208,26 @@ export function DataTable<TData, TValue, AppRoute extends string>({
           <Skeleton className="h-4 w-20" />
         ) : (
           <p className="text-xs text-muted-foreground">
-            {`Page ${
-              table.getState().pagination.pageIndex + 1
-            } of ${table.getPageCount()}`}
+            {isServerSidePagination
+              ? `Page ${page + 1}${totalPages ? ` of ${totalPages.toLocaleString()}` : ''}`
+              : `Page ${table.getState().pagination.pageIndex + 1} of ${table.getPageCount()}`}
           </p>
         )}
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
+          onClick={() => {
+            if (isServerSidePagination && onPageChange) {
+              onPageChange(page + 1);
+            } else {
+              table.nextPage();
+            }
+          }}
+          disabled={
+            isServerSidePagination
+              ? hasNextPage === false
+              : !table.getCanNextPage()
+          }
           className="size-fit md:size-fit p-1"
         >
           <ChevronRight className="size-4" />

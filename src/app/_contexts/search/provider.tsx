@@ -21,7 +21,7 @@ import { Resource } from '@/app/_components/resource';
 
 import { api } from '@/trpc/client';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 
 import type { Route } from 'next';
 
@@ -42,26 +42,19 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
     return () => document.removeEventListener('keydown', down);
   }, []);
 
+  const input = {
+    search,
+    limit: 3,
+  };
+
+  const options = {
+    enabled: isOpen && search.length > 0,
+  };
+
   const { data: origins, isLoading: isLoadingOrigins } =
-    api.origins.search.useQuery(
-      {
-        search,
-        limit: 3,
-      },
-      {
-        enabled: isOpen && search.length > 0,
-      }
-    );
+    api.public.origins.search.useQuery(input, options);
   const { data: resources, isLoading: isLoadingResources } =
-    api.resources.search.useQuery(
-      {
-        search,
-        limit: 3,
-      },
-      {
-        enabled: isOpen && search.length > 0,
-      }
-    );
+    api.public.resources.search.useQuery(input, options);
 
   const handleSelect = <T extends string>(route: Route<T>) => {
     router.push(route);
@@ -75,6 +68,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
         open={isOpen}
         onOpenChange={setIsOpen}
         shouldFilter={false}
+        className="top-[20%] translate-y-0"
       >
         <CommandInput
           placeholder="Search for an address, origin, or resource..."
@@ -100,7 +94,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
               </>
             )}
           </CommandEmpty>
-          {ethereumAddressSchema.safeParse(search).success && (
+          {mixedAddressSchema.safeParse(search).success && (
             <>
               <CommandGroup heading="Server Addresses">
                 <CommandItem

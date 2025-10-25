@@ -1,5 +1,6 @@
 import { useAccount, useBalance as useBalanceWagmi } from 'wagmi';
 import { base } from 'viem/chains';
+import { formatEther } from 'viem';
 
 export const useEthBalance = () => {
   const { address } = useAccount();
@@ -11,8 +12,6 @@ export const useEthBalance = () => {
 
   return {
     ...result,
-    data: result.data
-      ? Number(result.data.value) / 10 ** result.data.decimals
-      : undefined,
+    data: result.data ? parseFloat(formatEther(result.data.value)) : undefined,
   };
 };

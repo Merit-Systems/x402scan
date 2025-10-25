@@ -1,3 +1,4 @@
+import { CdpError } from './error';
 import { generateCdpJwt } from './generate-jwt';
 import { cdpFetchSchema } from './schema';
 
@@ -30,10 +31,11 @@ export const cdpFetch = async <T>(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `Failed to ${requestMethod} ${requestPath} from ${requestHost}: ${errorText}`
-    );
+    const message = `Failed to ${requestMethod} ${requestPath} from ${requestHost}: ${response.status}`;
+    console.error(message);
+    throw new CdpError(message, {
+      status: response.status,
+    });
   }
   return outputSchema.parse(await response.json());
 };

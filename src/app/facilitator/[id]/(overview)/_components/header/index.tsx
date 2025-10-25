@@ -36,7 +36,7 @@ export const HeaderCard: React.FC<Props> = async ({ facilitator }) => {
             </h1>
             <p className={cn('break-words line-clamp-2')}>
               <Addresses
-                addresses={facilitator.addresses}
+                addresses={Object.values(facilitator.addresses).flat()}
                 className="border-none p-0 text-sm"
                 side="bottom"
               />
@@ -46,7 +46,7 @@ export const HeaderCard: React.FC<Props> = async ({ facilitator }) => {
         </div>
         <div className="col-span-2">
           <Suspense fallback={<LoadingOverallRecipientStats />}>
-            <OverallRecipientStats addresses={facilitator.addresses} />
+            <OverallRecipientStats id={facilitator.id} />
           </Suspense>
         </div>
       </div>
