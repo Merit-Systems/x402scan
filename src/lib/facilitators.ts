@@ -97,6 +97,17 @@ const daydreamsFacilitator = {
   color: 'var(--color-yellow-600)',
 } satisfies Facilitator;
 
+const codeNutFacilitator: Facilitator = {
+  id: 'codenut',
+  name: 'CodeNut' as const,
+  image: '/codenut.png',
+  link: 'https://https://docs.codenut.ai/guides/x402-facilitator',
+  addresses: {
+    [Chain.BASE]: ['0x8d8Fa42584a727488eeb0E29405AD794a105bb9b'],
+  },
+  color: 'var(--color-blue-600)',
+};
+
 export const facilitators: Facilitator[] = [
   coinbaseFacilitator,
   x402rsFacilitator,
@@ -105,6 +116,7 @@ export const facilitators: Facilitator[] = [
   thirdwebFacilitator,
   corbitsFacilitator,
   daydreamsFacilitator,
+  codeNutFacilitator,
 ];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];
