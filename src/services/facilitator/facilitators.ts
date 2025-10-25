@@ -10,8 +10,13 @@ const thirdwebFacilitator: FacilitatorConfig = {
   url: 'https://api.thirdweb.com/v1/payments/x402',
 };
 
+const codeNutFacilitator: FacilitatorConfig = {
+  url: 'https://pay.codenut.ai/facilitator',
+};
+
 export const facilitators: FacilitatorConfig[] = [
   baseFacilitator,
   payAiFacilitator,
   thirdwebFacilitator,
+  codeNutFacilitator,
 ];
