@@ -25,11 +25,6 @@ export default function HomeLayout({
               ]
             : []),
           {
-            label: 'Resources',
-            href: '/resources',
-            subRoutes: ['/resources/register'],
-          },
-          {
             label: 'Transactions',
             href: '/transactions',
           },
