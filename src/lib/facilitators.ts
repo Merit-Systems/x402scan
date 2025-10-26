@@ -29,7 +29,14 @@ const x402rsFacilitator: Facilitator = {
   image: '/x402rs.png',
   link: 'https://x402.rs',
   addresses: {
-    [Chain.BASE]: ['0xd8dfc729cbd05381647eb5540d756f4f8ad63eec'],
+    [Chain.BASE]: [
+      '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec',
+      '0x97D38AA5dE015245DCCa76305b53ABe6DA25F6a5',
+      '0x0168f80e035eA68B191FAf9Bfc12778C87d92008',
+      '0x5E437bEE4321DB862ac57085Ea5eb97199C0CCC5',
+      '0xC19829B32324f116Ee7F80D193f99E445968499A',
+      '0x76eEe8f0AcAbD6B49f1CC4E9656A0C8892F3332E'
+    ],
   },
   color: 'var(--color-orange-600)',
 };
