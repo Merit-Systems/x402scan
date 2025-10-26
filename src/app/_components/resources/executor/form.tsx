@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -10,6 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 import { useResourceFetch } from './contexts/fetch/hook';
 import type { FieldDefinition } from '@/types/x402';
@@ -47,58 +55,23 @@ export function Form({ x402Response }: Props) {
       ) : (
         <div className="space-y-4">
           {hasQueryFields && (
-            <div className="space-y-3">
-              {queryFields.map(field => (
-                <div key={`query-${field.name}`} className="space-y-1">
-                  <Label htmlFor={`query-${field.name}`}>
-                    {field.name}
-                    {field.required ? (
-                      <span className="text-destructive">*</span>
-                    ) : null}
-                  </Label>
-                  <FieldInput
-                    field={field}
-                    value={queryValues[field.name] ?? field.default ?? ''}
-                    onChange={value => handleQueryChange(field.name, value)}
-                    prefix="query"
-                  />
-                  {field.description && (
-                    <p className="text-xs text-muted-foreground">
-                      {field.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+            <FieldSection
+              title="Query Parameters"
+              fields={queryFields}
+              values={queryValues}
+              onChange={handleQueryChange}
+              prefix="query"
+            />
           )}
 
           {hasBodyFields && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                Body Parameters
-              </h3>
-              {bodyFields.map(field => (
-                <div key={`body-${field.name}`} className="space-y-1">
-                  <Label htmlFor={`body-${field.name}`}>
-                    {field.name}
-                    {field.required ? (
-                      <span className="text-destructive">*</span>
-                    ) : null}
-                  </Label>
-                  <FieldInput
-                    field={field}
-                    value={bodyValues[field.name] ?? field.default ?? ''}
-                    onChange={value => handleBodyChange(field.name, value)}
-                    prefix="body"
-                  />
-                  {field.description && (
-                    <p className="text-xs text-muted-foreground">
-                      {field.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+            <FieldSection
+              title="Body Parameters"
+              fields={bodyFields}
+              values={bodyValues}
+              onChange={handleBodyChange}
+              prefix="body"
+            />
           )}
         </div>
       )}
@@ -124,6 +97,115 @@ export function Form({ x402Response }: Props) {
         </pre>
       )}
     </CardContent>
+  );
+}
+
+interface FieldSectionProps {
+  title: string;
+  fields: FieldDefinition[];
+  values: Record<string, string>;
+  onChange: (name: string, value: string) => void;
+  prefix: string;
+}
+
+function FieldSection({
+  title,
+  fields,
+  values,
+  onChange,
+  prefix,
+}: FieldSectionProps) {
+  const [showOptional, setShowOptional] = useState(false);
+
+  // Sort fields: required first, then optional
+  const requiredFields = fields.filter(field => field.required);
+  const optionalFields = fields.filter(field => !field.required);
+
+  const hasRequired = requiredFields.length > 0;
+  const hasOptional = optionalFields.length > 0;
+
+
+  return (
+    <div className="space-y-3">
+      {hasRequired && (
+        <>
+          <h3 className="text-sm font-medium">
+            {title}
+            <span className="ml-1 text-xs text-muted-foreground">
+              (Required)
+            </span>
+          </h3>
+          {requiredFields.map(field => (
+            <FieldRow
+              key={`${prefix}-${field.name}`}
+              field={field}
+              value={values[field.name] ?? field.default ?? ''}
+              onChange={value => onChange(field.name, value)}
+              prefix={prefix}
+            />
+          ))}
+        </>
+      )}
+
+      {hasOptional && (
+        <Collapsible open={showOptional} onOpenChange={setShowOptional}>
+          <CollapsibleTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex w-full items-center justify-between p-2 h-auto hover:bg-muted/50"
+            >
+              <span className="text-sm font-medium text-muted-foreground">
+                Optional Parameters ({optionalFields.length})
+              </span>
+              {showOptional ? (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              )}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-3 pt-2">
+            {optionalFields.map(field => (
+              <FieldRow
+                key={`${prefix}-${field.name}`}
+                field={field}
+                value={values[field.name] ?? field.default ?? ''}
+                onChange={value => onChange(field.name, value)}
+                prefix={prefix}
+              />
+            ))}
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+    </div>
+  );
+}
+
+interface FieldRowProps {
+  field: FieldDefinition;
+  value: string;
+  onChange: (value: string) => void;
+  prefix: string;
+}
+
+function FieldRow({ field, value, onChange, prefix }: FieldRowProps) {
+  return (
+    <div className="space-y-1">
+      <Label htmlFor={`${prefix}-${field.name}`} className="text-sm">
+        {field.name}
+        {field.required && <span className="text-destructive ml-1">*</span>}
+      </Label>
+      <FieldInput
+        field={field}
+        value={value}
+        onChange={onChange}
+        prefix={prefix}
+      />
+      {field.description && (
+        <p className="text-xs text-muted-foreground">{field.description}</p>
+      )}
+    </div>
   );
 }
 
