@@ -127,14 +127,16 @@ function FieldSection({
 
   return (
     <div className="space-y-3">
+      <h3 className="text-sm font-medium">
+        {title}
+        {hasRequired && (
+          <span className="ml-1 text-xs text-muted-foreground">
+            (Required)
+          </span>
+        )}
+      </h3>
       {hasRequired && (
         <>
-          <h3 className="text-sm font-medium">
-            {title}
-            <span className="ml-1 text-xs text-muted-foreground">
-              (Required)
-            </span>
-          </h3>
           {requiredFields.map(field => (
             <FieldRow
               key={`${prefix}-${field.name}`}
