@@ -97,11 +97,21 @@ const daydreamsFacilitator = {
   color: 'var(--color-yellow-600)',
 } satisfies Facilitator;
 
-export const facilitators: Facilitator[] = [
+const meridianFacilitator = {
+  id: 'meridian',
+  name: 'Meridian' as const,
+  image: '/meridian.png',
+  link: 'https://mrdn.finance',
+  addresses: ['0x3210d7b21bFE1083c9dddbe17e8F947C9029a584'],
+  color: 'var(--color-emerald-500)',
+} satisfies Facilitator;
+
+export const facilitators = [
   coinbaseFacilitator,
   x402rsFacilitator,
   payAiFacilitator,
   aurraCloudFacilitator,
+  meridianFacilitator,
   thirdwebFacilitator,
   corbitsFacilitator,
   daydreamsFacilitator,
