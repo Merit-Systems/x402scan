@@ -97,6 +97,20 @@ const daydreamsFacilitator = {
   color: 'var(--color-yellow-600)',
 } satisfies Facilitator;
 
+const solidusFacilitator = {
+  id: 'solidus',
+  name: 'Solidus' as const,
+  image: '/solidus.png',
+  link: 'https://soliduspay.xyz',
+  addresses: {
+    [Chain.SOLANA]: [
+      'payhYxSdAh3PvMSNiNYZW7UZYyYchkCo9YKpVCu5zyE' as SolanaAddress,
+    ],
+  },
+  color: 'var(--color-orange-600)',
+} satisfies Facilitator;
+
+
 export const facilitators: Facilitator[] = [
   coinbaseFacilitator,
   x402rsFacilitator,
@@ -105,6 +119,7 @@ export const facilitators: Facilitator[] = [
   thirdwebFacilitator,
   corbitsFacilitator,
   daydreamsFacilitator,
+  solidusFacilitator,
 ];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];
