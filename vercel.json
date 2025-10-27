@@ -15,6 +15,10 @@
     {
       "path": "/api/resources/label",
       "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/admin/wallets",
+      "schedule": "*/10 * * * *"
     }
   ]
 }

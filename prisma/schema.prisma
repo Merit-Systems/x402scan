@@ -386,3 +386,19 @@ model UserAcknowledgement {
 
   @@map("UserAcknowledgement")
 }
+
+model WalletSnapshot {
+  id                 String   @id @default(uuid())
+  accountName        String?
+  accountAddress     String
+  network            String
+  usdcBalance        BigInt   @default(0)
+  usdcBalanceDecimal Decimal  @default(0) @db.Decimal(30, 6)
+  hasBalance         Boolean  @default(false)
+  rawAccountData     Json?
+  createdAt          DateTime @default(now())
+
+  @@index([accountAddress])
+  @@index([createdAt])
+  @@map("WalletSnapshot")
+}
