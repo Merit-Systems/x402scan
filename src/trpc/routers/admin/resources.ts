@@ -30,6 +30,7 @@ import {
   deleteExcludedResourceByResourceId,
   searchResourcesForExcludes,
 } from '@/services/db/resources/excludes';
+import { snapshot } from 'node:test';
 
 export const adminResourcesRouter = createTRPCRouter({
   tags: {
@@ -128,5 +129,8 @@ export const adminResourcesRouter = createTRPCRouter({
       .mutation(async ({ input }) => {
         return await deleteExcludedResourceByResourceId(input.resourceId);
       }),
+  },
+  walletSnapshots: {
+    list: adminProcedure
   },
 });
