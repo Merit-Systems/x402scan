@@ -61,6 +61,14 @@ export const ecosystemItems: EcosystemItem[] = [
     category: 'Ecosystem Infrastructure & Tooling',
   },
   {
+    name: 'Ethy AI',
+    description:
+      'Ethy AI is an autonomous trading assistant that orchestrates multi-agent flows via x402 and Virtuals ACP—delivering technical analysis, yield optimization, and automated execution. Providing TA and signals services through public API with x402 payment.',
+    logoUrl: 'https://chat.ethyai.app/img/ethy_icon_200.png',
+    websiteUrl: 'https://ethyai.app?utm_source=x402_website&utm_medium=ecosystem',
+    category: 'Services/Endpoints',
+  },
+  {
     name: 'Firecrawl',
     description:
       'Firecrawl is a web scraping API that allows you to turn websites into LLM-ready data.',
