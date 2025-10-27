@@ -108,6 +108,17 @@ const openX402Facilitator: Facilitator = {
   color: 'var(--color-blue-600)',
 };
 
+const defibudX402Facilitator: Facilitator = {
+  id: 'defibudx402',
+  name: 'DefiBud' as const,
+  image: '/defibud.png',
+  link: 'https://facilitator.defibud.xyz',
+  addresses: {
+    [Chain.BASE]: ['0xE3200439fC19944d2F75B1aAE0A513b1CfBb9901'],
+  },
+  color: 'var(--color-blue-600)',
+};
+
 export const facilitators: Facilitator[] = [
   coinbaseFacilitator,
   x402rsFacilitator,
@@ -117,6 +128,7 @@ export const facilitators: Facilitator[] = [
   corbitsFacilitator,
   daydreamsFacilitator,
   openX402Facilitator,
+  defibudX402Facilitator
 ];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];
