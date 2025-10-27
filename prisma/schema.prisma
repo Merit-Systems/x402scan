@@ -113,6 +113,8 @@ enum AcceptsNetwork {
   solana
   polygon
   optimism
+  hashkey
+  hashkey_testnet
 }
 
 model Accepts {
