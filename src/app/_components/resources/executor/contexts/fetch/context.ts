@@ -10,6 +10,7 @@ interface ResourceFetchContextType {
   handleQueryChange: (name: string, value: string) => void;
   handleBodyChange: (name: string, value: string) => void;
   allRequiredFieldsFilled: boolean;
+  missingRequiredFields: string[];
   execute: () => void;
   isPending: boolean;
   error: string | null;
