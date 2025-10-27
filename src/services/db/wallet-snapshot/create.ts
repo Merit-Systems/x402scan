@@ -1,32 +1,20 @@
 import { prisma } from "@/services/db/client";
-import type { WalletSnapshot } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
-export interface CreateWalletSnapshotInput {
-  accountName?: string | null;
+export interface WalletSnapshotInput {
+  accountName: string;
   accountAddress: string;
-  network: string;
-  usdcBalance: bigint;
-  usdcBalanceDecimal: number;
-  hasBalance: boolean;
-  rawAccountData?: any;
+  amount: bigint;
 }
 
 /**
- * Creates a new wallet snapshot record in the database
+ * Batch creates wallet snapshot records in the database in a single transaction
  */
-export async function createWalletSnapshot(
-  input: CreateWalletSnapshotInput
-): Promise<WalletSnapshot> {
-  return prisma.walletSnapshot.create({
-    data: {
-      accountName: input.accountName,
-      accountAddress: input.accountAddress,
-      network: input.network,
-      usdcBalance: input.usdcBalance,
-      usdcBalanceDecimal: input.usdcBalanceDecimal,
-      hasBalance: input.hasBalance,
-      rawAccountData: input.rawAccountData,
-    },
+export async function createWalletSnapshots(
+  snapshots: WalletSnapshotInput[]
+): Promise<Prisma.BatchPayload> {
+  return prisma.walletSnapshot.createMany({
+    data: snapshots,
   });
 }
 

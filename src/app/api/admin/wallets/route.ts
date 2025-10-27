@@ -1,56 +1,63 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { checkCronSecret } from '@/lib/cron';
-import type { Prisma } from '@prisma/client';
 import { CdpClient } from "@coinbase/cdp-sdk";
-import { createWalletSnapshot } from "@/services/db/wallet-snapshot/create";
+import { createWalletSnapshots, type WalletSnapshotInput } from "@/services/db/wallet-snapshot/create";
 
 const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as `0x${string}`;
-const NETWORK = "base"; // Base mainnet
-
-interface WalletSnapshot {
-    accountName: string;
-    accountAddress: string;
-    amount: bigint;
-}
+const NETWORK = "base";
 
 export const GET = async (request: NextRequest) => {
-    const cronCheck = checkCronSecret(request);
-    if (cronCheck) {
-        return cronCheck;
+  const cronCheck = checkCronSecret(request);
+  if (cronCheck) {
+    return cronCheck;
+  }
+
+  const cdp = new CdpClient();
+  const snapshots: WalletSnapshotInput[] = [];
+
+  try {
+    let response = await cdp.evm.listAccounts();
+
+    while (true) {
+      for (const account of response.accounts) {
+        try {
+          const balanceResult = await account.listTokenBalances({ network: NETWORK as any });
+          const usdcBalance = balanceResult.balances.find((b: any) => 
+            b.token?.contractAddress?.toLowerCase() === USDC_TOKEN_ADDRESS.toLowerCase()
+          );
+
+          if (usdcBalance && usdcBalance.amount && usdcBalance.amount.amount > 0n) {
+            snapshots.push({
+              accountName: account.name,
+              accountAddress: account.address,
+              amount: usdcBalance.amount.amount,
+            });
+          }
+        } catch (error) {
+          console.error('Error listing token balances for account:', account.address, ':', error);
+          continue;
+        }
       }
-      const cdp = new CdpClient();
-      const snapshots: WalletSnapshot[] = [];
-      try {
-        let response = await cdp.evm.listAccounts();
-        while (true) {
-            // Iterate over accounts
-            for (const account of response.accounts) {
-                try {
-                const balanceResult = await account.listTokenBalances({ network: NETWORK as any });
-                const usdcBalance = balanceResult.balances.find((b: any) => 
-                    b.token?.contractAddress?.toLowerCase() === USDC_TOKEN_ADDRESS.toLowerCase()
-                  );
-                  if (usdcBalance && usdcBalance.amount && usdcBalance.amount.amount > 0n) {
-                    const amount = usdcBalance.amount.amount;
-                    snapshots.push({
-                        accountName: account.name,
-                        accountAddress: account.address,
-                        amount: amount,
-                    });
-                  }
-                } catch (error) {
-                    console.error('Error listing token balances for account:', account.address, ':', error);
-                    continue;
-                }
-            }
-            if (!response.nextPageToken) break;
+      if (!response.nextPageToken) break;
+
       response = await cdp.evm.listAccounts({
         pageToken: response.nextPageToken
       });
-        }
+    }
+    // Process snapshots in batches of 100
+    for (let i = 0; i < snapshots.length; i += 100) {
+      const batch = snapshots.slice(i, i + 100);
+      try {
+        await createWalletSnapshots(batch);
       } catch (error) {
-        console.error('Error listing accounts:', error);
-        return NextResponse.json({ error: 'Failed to list accounts' }, { status: 500 });
+        console.error('Error creating wallet snapshots batch:', error);
+        continue;
       }
-      return NextResponse.json({ success: true });
-} 
+    }
+
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    console.error('Error listing accounts:', error);
+    return NextResponse.json({ error: 'Failed to list accounts' }, { status: 500 });
+  }
+}
