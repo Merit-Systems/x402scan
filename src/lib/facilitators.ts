@@ -108,6 +108,17 @@ const openX402Facilitator: Facilitator = {
   color: 'var(--color-blue-600)',
 };
 
+const scanaiFacilitator: Facilitator = {
+  id: 'scanai',
+  name: 'ScanAI X402' as const,
+  image: '/scanai.svg',
+  link: 'www.scanai.ai',
+  addresses: {
+    [Chain.BASE]: ['0x9128338a5Dd4Ad0f7887F8389F1Ace4631870563'],
+  },
+  color: 'var(--color-orange-600)',
+};
+
 export const facilitators: Facilitator[] = [
   coinbaseFacilitator,
   x402rsFacilitator,
@@ -117,6 +128,7 @@ export const facilitators: Facilitator[] = [
   corbitsFacilitator,
   daydreamsFacilitator,
   openX402Facilitator,
+  scanaiFacilitator,
 ];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];
