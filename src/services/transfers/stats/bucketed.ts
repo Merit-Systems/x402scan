@@ -1,25 +1,12 @@
 import z from 'zod';
-import { subMonths } from 'date-fns';
 import { Prisma } from '@prisma/client';
 
-import { baseQuerySchema } from '../lib';
-import { mixedAddressSchema } from '@/lib/schemas';
+import { baseBucketedQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/db/transfers-client';
+import { queryRaw } from '@/services/transfers/client';
+import { transfersWhereClause } from '../query-utils';
 
-export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
-  addresses: z.array(mixedAddressSchema).optional(),
-  startDate: z
-    .date()
-    .optional()
-    .default(() => subMonths(new Date(), 1)),
-  endDate: z
-    .date()
-    .optional()
-    .default(() => new Date()),
-  numBuckets: z.number().optional().default(48),
-  facilitators: z.array(mixedAddressSchema).optional(),
-});
+export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
 const bucketedResultSchema = z.array(
   z.object({
@@ -34,8 +21,7 @@ const bucketedResultSchema = z.array(
 const getBucketedStatisticsUncached = async (
   input: z.infer<typeof bucketedStatisticsInputSchema>
 ) => {
-  const { addresses, startDate, endDate, numBuckets, facilitators, chain } =
-    input;
+  const { startDate, endDate, numBuckets } = input;
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(
@@ -63,12 +49,7 @@ const getBucketedStatisticsUncached = async (
         COUNT(DISTINCT t.sender)::int AS unique_buyers,
         COUNT(DISTINCT t.recipient)::int AS unique_sellers
       FROM "TransferEvent" t
-      WHERE 1=1
-        ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-        ${facilitators ? Prisma.sql`AND t.transaction_from = ANY(${facilitators}::text[])` : Prisma.empty}
-        ${addresses ? Prisma.sql`AND t.recipient = ANY(${addresses}::text[])` : Prisma.empty}
-        ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
-        ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
+      ${transfersWhereClause(input)}
         AND t.amount < 1000000000
       GROUP BY bucket_start
     )

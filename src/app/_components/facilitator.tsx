@@ -1,22 +1,19 @@
 import Image from 'next/image';
 
-import { Address } from '@/components/ui/address';
-import { facilitatorAddressMap } from '@/lib/facilitators';
+import { facilitatorIdMap } from '@/lib/facilitators';
 
 import { cn } from '@/lib/utils';
 
-import type { MixedAddress } from '@/types/address';
-
 interface Props {
-  address: MixedAddress;
+  id: string;
   className?: string;
 }
 
-export const Facilitator: React.FC<Props> = ({ address, className }) => {
-  const facilitator = facilitatorAddressMap.get(address);
+export const Facilitator: React.FC<Props> = ({ id, className }) => {
+  const facilitator = facilitatorIdMap.get(id);
 
   if (!facilitator) {
-    return <Address address={address} className={className} />;
+    return null;
   }
 
   return (
@@ -28,35 +25,34 @@ export const Facilitator: React.FC<Props> = ({ address, className }) => {
         height={16}
         className="rounded-md"
       />
-      <p className="text-[10px] md:text-xs font-semibold">{facilitator.name}</p>
     </div>
   );
 };
 
 interface FacilitatorsProps {
-  addresses: MixedAddress[];
+  ids: string[];
   className?: string;
 }
 
 export const Facilitators: React.FC<FacilitatorsProps> = ({
-  addresses,
+  ids,
   className,
 }) => {
-  if (addresses.length === 1) {
-    return <Facilitator address={addresses[0]} className={className} />;
+  if (ids.length === 1) {
+    return <Facilitator id={ids[0]} className={className} />;
   }
 
   return (
     <div className={cn('flex items-center gap-1', className)}>
       <div className="flex items-center gap-0.5">
-        {addresses.map(address => {
-          const facilitator = facilitatorAddressMap.get(address);
+        {ids.map(id => {
+          const facilitator = facilitatorIdMap.get(id);
           if (!facilitator) {
             return null;
           }
           return (
             <Image
-              key={address}
+              key={id}
               src={facilitator.image}
               alt={facilitator.name}
               width={16}
@@ -66,9 +62,6 @@ export const Facilitators: React.FC<FacilitatorsProps> = ({
           );
         })}
       </div>
-      <p className="text-[10px] md:text-xs font-semibold">
-        {addresses.length} facilitators
-      </p>
     </div>
   );
 };

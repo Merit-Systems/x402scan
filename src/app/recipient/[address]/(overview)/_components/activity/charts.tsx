@@ -18,14 +18,18 @@ interface Props {
 export const ActivityCharts: React.FC<Props> = ({ address }) => {
   const { startDate, endDate } = useTimeRangeContext();
 
-  const [overallStats] = api.stats.getOverallStatistics.useSuspenseQuery({
-    addresses: [address],
+  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
+    recipients: {
+      include: [address],
+    },
     startDate,
     endDate,
   });
-  const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery(
+  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery(
     {
-      addresses: [address],
+      recipients: {
+        include: [address],
+      },
       startDate,
       endDate,
     },

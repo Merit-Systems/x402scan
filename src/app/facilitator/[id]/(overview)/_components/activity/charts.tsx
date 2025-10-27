@@ -12,20 +12,20 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 
 interface Props {
-  addresses: string[];
+  facilitatorId: string;
 }
 
-export const ActivityCharts: React.FC<Props> = ({ addresses }) => {
+export const ActivityCharts: React.FC<Props> = ({ facilitatorId }) => {
   const { startDate, endDate } = useTimeRangeContext();
 
-  const [overallStats] = api.stats.getOverallStatistics.useSuspenseQuery({
-    facilitators: addresses,
+  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
+    facilitatorIds: [facilitatorId],
     startDate,
     endDate,
   });
-  const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery(
+  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery(
     {
-      facilitators: addresses,
+      facilitatorIds: [facilitatorId],
       startDate,
       endDate,
     },

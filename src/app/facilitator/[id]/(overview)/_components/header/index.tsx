@@ -46,9 +46,7 @@ export const HeaderCard: React.FC<Props> = async ({ facilitator }) => {
         </div>
         <div className="col-span-2">
           <Suspense fallback={<LoadingOverallRecipientStats />}>
-            <OverallRecipientStats
-              addresses={Object.values(facilitator.addresses).flat()}
-            />
+            <OverallRecipientStats id={facilitator.id} />
           </Suspense>
         </div>
       </div>

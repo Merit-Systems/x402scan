@@ -1,4 +1,5 @@
-import { Section } from '../utils';
+import { Section } from '@/app/_components/layout/page-utils';
+
 import { LoadingFacilitatorCard } from './_components/card';
 
 export const LoadingTopFacilitators = () => {

@@ -17,6 +17,7 @@ interface Tab<T extends string> {
   href: Route<T>;
   subRoutes?: string[];
   external?: boolean;
+  isNew?: boolean;
 }
 
 interface Props<T extends string = string> {
@@ -70,9 +71,14 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
                 prefetch={false}
               >
                 <MotionTab href={tab.href} subRoutes={tab.subRoutes}>
-                  <span className="flex items-center gap-1 whitespace-nowrap">
+                  <span className="flex items-center gap-2 whitespace-nowrap">
                     {tab.label}
                     {tab.external && <ExternalLink className="size-4" />}
+                    {tab.isNew && (
+                      <span className="text-xs bg-primary/20 border-primary text-primary border px-1.5 rounded-md">
+                        New
+                      </span>
+                    )}
                   </span>
                 </MotionTab>
               </Link>

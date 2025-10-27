@@ -1,5 +1,6 @@
 export enum ActivityTimeframe {
   OneDay = 1,
+  ThreeDays = 3,
   SevenDays = 7,
   FifteenDays = 15,
   ThirtyDays = 30,

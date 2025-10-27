@@ -12,7 +12,8 @@
     "postcss",
     "@trigger.dev/sdk",
     "shiki",
-    "@shikijs/*"
+    "@shikijs/*",
+    "redis"
   ],
   "ignore": [
     "/scripts/**",

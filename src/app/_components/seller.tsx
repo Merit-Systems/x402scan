@@ -24,7 +24,7 @@ export const Seller: React.FC<Props> = ({
     data: origins,
     isLoading,
     error,
-  } = api.origins.list.origins.useQuery(
+  } = api.public.origins.list.origins.useQuery(
     {
       address,
     },

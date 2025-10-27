@@ -51,3 +51,11 @@ export const NotFoundCard: React.FC<ErrorComponentProps> = ({
 }) => {
   return <ErrorCard title={title} description={description} {...rest} />;
 };
+
+export const ForbiddenCard: React.FC<ErrorComponentProps> = ({
+  title = 'Forbidden',
+  description = 'You are not authorized to access this resource.',
+  ...rest
+}) => {
+  return <ErrorCard title={title} description={description} {...rest} />;
+};

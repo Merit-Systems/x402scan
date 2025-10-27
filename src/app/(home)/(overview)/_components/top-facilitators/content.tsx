@@ -2,7 +2,7 @@
 
 import { api } from '@/trpc/client';
 import { useChain } from '@/app/_contexts/chain/hook';
-import { Section } from '../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 import { FacilitatorCard } from './_components/card';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import type { RouterOutputs } from '@/trpc/client';
@@ -11,13 +11,15 @@ import { cn } from '@/lib/utils';
 export const TopFacilitatorsContent = () => {
   const { chain } = useChain();
 
-  const [overallStats] = api.stats.getOverallStatistics.useSuspenseQuery({
+  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
     chain,
   });
 
-  const [facilitatorsData] = api.facilitators.list.useSuspenseQuery({
+  const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
     chain,
-    limit: 3,
+    pagination: {
+      page_size: 3,
+    },
   });
 
   return (
@@ -30,13 +32,17 @@ export const TopFacilitatorsContent = () => {
       <div
         className={cn(
           `grid grid-cols-1 gap-4`,
-          facilitatorsData.length < 2 ? 'md:grid-cols-1' : 'md:grid-cols-2',
-          facilitatorsData.length < 3 ? 'md:grid-cols-2' : 'md:grid-cols-3'
+          facilitatorsData.items.length < 2
+            ? 'md:grid-cols-1'
+            : 'md:grid-cols-2',
+          facilitatorsData.items.length < 3
+            ? 'md:grid-cols-2'
+            : 'md:grid-cols-3'
         )}
       >
-        {facilitatorsData.map(stats => (
+        {facilitatorsData.items.map(stats => (
           <FacilitatorCardWithChart
-            key={stats.facilitator.id}
+            key={stats.facilitator_id}
             stats={stats}
             overallStats={overallStats}
           />
@@ -47,8 +53,8 @@ export const TopFacilitatorsContent = () => {
 };
 
 interface FacilitatorCardWithChartProps {
-  stats: NonNullable<RouterOutputs['facilitators']['list']>[number];
-  overallStats: NonNullable<RouterOutputs['stats']['getOverallStatistics']>;
+  stats: RouterOutputs['public']['facilitators']['list']['items'][number];
+  overallStats: NonNullable<RouterOutputs['public']['stats']['overall']>;
 }
 
 const FacilitatorCardWithChart: React.FC<FacilitatorCardWithChartProps> = ({
@@ -57,12 +63,10 @@ const FacilitatorCardWithChart: React.FC<FacilitatorCardWithChartProps> = ({
 }) => {
   const { chain } = useChain();
 
-  const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery({
+  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
     chain,
     numBuckets: 48,
-    facilitators: chain
-      ? stats.facilitator.addresses[chain]
-      : Object.values(stats.facilitator.addresses).flat(),
+    facilitatorIds: [stats.facilitator_id],
   });
 
   const chartData: ChartData<{

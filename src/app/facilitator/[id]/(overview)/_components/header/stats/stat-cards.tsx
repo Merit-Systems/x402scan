@@ -8,7 +8,7 @@ import type { LucideIcon } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
 
 interface Props {
-  addresses: string[];
+  id: string;
 }
 
 interface Stat {
@@ -23,9 +23,9 @@ const stats: Stat[] = [
   { title: 'Sellers', Icon: Server },
 ];
 
-export const StatsCards: React.FC<Props> = async ({ addresses }) => {
-  const overallStats = await api.stats.getOverallStatistics({
-    facilitators: addresses,
+export const StatsCards: React.FC<Props> = async ({ id }) => {
+  const overallStats = await api.public.stats.overall({
+    facilitatorIds: [id],
   });
 
   const values = [

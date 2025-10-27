@@ -7,7 +7,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { columns } from './columns';
 import { useFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/hook';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
-import { facilitators } from '@/lib/facilitators';
+import { facilitatorAddresses } from '@/lib/facilitators';
 import { useChain } from '@/app/_contexts/chain/hook';
 
 export const FacilitatorsTable: React.FC = () => {
@@ -15,7 +15,10 @@ export const FacilitatorsTable: React.FC = () => {
   const { startDate, endDate } = useTimeRangeContext();
   const { chain } = useChain();
 
-  const [facilitators] = api.facilitators.list.useSuspenseQuery({
+  const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
+    pagination: {
+      page_size: facilitatorAddresses.length,
+    },
     sorting,
     startDate,
     endDate,
@@ -25,8 +28,8 @@ export const FacilitatorsTable: React.FC = () => {
   return (
     <DataTable
       columns={columns}
-      data={facilitators}
-      pageSize={facilitators.length}
+      data={facilitatorsData.items}
+      pageSize={facilitatorAddresses.length}
     />
   );
 };
@@ -37,7 +40,7 @@ export const LoadingFacilitatorsTable = () => {
       columns={columns}
       data={[]}
       isLoading
-      loadingRowCount={facilitators.length}
+      loadingRowCount={facilitatorAddresses.length}
     />
   );
 };

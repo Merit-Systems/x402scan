@@ -13,7 +13,7 @@ export default async function ResourcesPage({
 }: PageProps<'/resources'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  await api.origins.list.withResources.prefetch({ chain });
+  await api.public.origins.list.withResources.prefetch({ chain });
 
   return (
     <HydrateClient>

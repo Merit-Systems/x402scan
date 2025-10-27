@@ -18,7 +18,8 @@ import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/
 import Link from 'next/link';
 import { Chains } from '@/app/_components/chains';
 
-type ColumnType = RouterOutputs['sellers']['list']['all']['items'][number];
+type ColumnType =
+  RouterOutputs['public']['sellers']['list']['all']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
@@ -150,7 +151,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <Facilitators
-        addresses={row.original.facilitators}
+        ids={row.original.facilitator_ids}
         className="mx-auto justify-center"
       />
     ),

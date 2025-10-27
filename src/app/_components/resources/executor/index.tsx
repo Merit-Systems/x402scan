@@ -12,7 +12,12 @@ import { ResourceFetchProvider } from './contexts/fetch/provider';
 import type { Methods } from '@/types/x402';
 import type { Resources } from '@prisma/client';
 import type { ParsedX402Response } from '@/lib/x402/schema';
-import { AccordionContent, AccordionTrigger } from '@/components/ui/accordion';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionContent,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { ChevronDownIcon } from 'lucide-react';
 
 interface Props {
@@ -34,21 +39,25 @@ export const ResourceExecutor: React.FC<Props> = ({
       bazaarMethod={bazaarMethod}
       resource={resource.resource}
     >
-      <Card className={cn(className, 'overflow-hidden')}>
-        <AccordionTrigger asChild>
-          <CardHeader className="bg-muted w-full flex flex-row items-center justify-between space-y-0 p-0 hover:border-primary transition-colors px-4 py-2 gap-4">
-            <Header
-              resource={resource}
-              method={bazaarMethod}
-              response={response}
-            />
-            <ChevronDownIcon className="size-4" />
-          </CardHeader>
-        </AccordionTrigger>
-        <AccordionContent className="pb-0">
-          <Form x402Response={response} />
-        </AccordionContent>
-      </Card>
+      <Accordion type="single" collapsible>
+        <AccordionItem value="resource">
+          <Card className={cn(className, 'overflow-hidden')}>
+            <AccordionTrigger asChild>
+              <CardHeader className="bg-muted w-full flex flex-row items-center justify-between space-y-0 p-0 hover:border-primary transition-colors px-4 py-2 gap-4">
+                <Header
+                  resource={resource}
+                  method={bazaarMethod}
+                  response={response}
+                />
+                <ChevronDownIcon className="size-4" />
+              </CardHeader>
+            </AccordionTrigger>
+            <AccordionContent className="pb-0">
+              <Form x402Response={response} />
+            </AccordionContent>
+          </Card>
+        </AccordionItem>
+      </Accordion>
     </ResourceFetchWrapper>
   );
 };

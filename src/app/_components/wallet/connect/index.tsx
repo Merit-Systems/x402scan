@@ -6,10 +6,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Logo } from '@/components/logo';
-import { ConnectEmbeddedWalletForm } from './embedded';
-import { Separator } from '@/components/ui/separator';
 import { useConnect } from 'wagmi';
-import { ConnectEOAForm } from './eoa';
+import { ConnectWalletForm } from './form';
 
 export const ConnectWalletDialogContent = () => {
   const { connectors } = useConnect();
@@ -33,18 +31,7 @@ export const ConnectWalletDialogContent = () => {
           </DialogDescription>
         </div>
       </DialogHeader>
-      {filteredConnectors.length > 0 && (
-        <>
-          <ConnectEOAForm connectors={filteredConnectors} />
-          <div className="flex items-center gap-2">
-            <Separator className="flex-1" />
-            <p className="text-muted-foreground text-xs">or</p>
-            <Separator className="flex-1" />
-          </div>
-        </>
-      )}
-
-      <ConnectEmbeddedWalletForm />
+      <ConnectWalletForm />
     </div>
   );
 };

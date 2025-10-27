@@ -21,6 +21,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
   margin = { top: 0, right: 0, left: 0, bottom: 0 },
   yAxes,
   dataMax = 'dataMax',
+  stackOffset,
 }: ChartProps<T> & { type: 'bar' | 'area' | 'line' | 'composed' }) => {
   const getContainer = () => {
     switch (type) {
@@ -41,7 +42,12 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <Container data={data} margin={margin} style={{ cursor: 'pointer' }}>
+      <Container
+        data={data}
+        margin={margin}
+        style={{ cursor: 'pointer' }}
+        stackOffset={stackOffset}
+      >
         <XAxis
           tickLine={false}
           tick={false}

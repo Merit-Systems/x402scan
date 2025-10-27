@@ -4,114 +4,90 @@ import { Prisma } from '@prisma/client';
 import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
-import type { infiniteQuerySchema } from '@/lib/pagination';
-import { baseQuerySchema, sortingSchema } from '../lib';
+import { baseListQuerySchema } from '../schemas';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
-import { queryRaw } from '@/services/db/transfers-client';
+import { queryRaw } from '@/services/transfers/client';
+import { transfersWhereClause } from '../query-utils';
+import { paginationClause } from '@/lib/pagination';
 
-const sellerSortIds = [
+import type { paginatedQuerySchema } from '@/lib/pagination';
+
+const SELLERS_SORT_IDS = [
   'tx_count',
   'total_amount',
   'latest_block_timestamp',
   'unique_buyers',
 ] as const;
 
-export type SellerSortId = (typeof sellerSortIds)[number];
+export type SellerSortId = (typeof SELLERS_SORT_IDS)[number];
 
-export const listTopSellersInputSchema = baseQuerySchema.extend({
-  sorting: sortingSchema(sellerSortIds),
-  addresses: z.array(mixedAddressSchema).optional(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
-  facilitators: z.array(mixedAddressSchema).optional(),
+export const listTopSellersInputSchema = baseListQuerySchema({
+  sortIds: SELLERS_SORT_IDS,
+  defaultSortId: 'tx_count',
 });
 
 const listTopSellersUncached = async (
   input: z.infer<typeof listTopSellersInputSchema>,
-  pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
+  pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
-  const { sorting, addresses, startDate, endDate, facilitators, chain } = input;
-  const { limit } = pagination;
+  const { sorting } = input;
 
-  const orderByMap: Record<SellerSortId, string> = {
-    tx_count: 'tx_count',
-    total_amount: 'total_amount',
-    latest_block_timestamp: 'latest_block_timestamp',
-    unique_buyers: 'unique_buyers',
-  };
-  const orderByField = orderByMap[sorting.id as SellerSortId];
-  const orderDirection = sorting.desc ? 'DESC' : 'ASC';
-
-  const sql = Prisma.sql`
-    SELECT 
-      recipient,
-      ARRAY_AGG(DISTINCT transaction_from) as facilitators,
-      COUNT(*)::bigint as tx_count,
-      SUM(amount)::bigint as total_amount,
-      MAX(block_timestamp) as latest_block_timestamp,
-      COUNT(DISTINCT sender)::bigint as unique_buyers,
-      ARRAY_AGG(DISTINCT chain) as chains
-    FROM "TransferEvent"
-    WHERE 1=1
-      ${chain ? Prisma.sql`AND chain = ${chain}` : Prisma.empty}
-      ${facilitators ? Prisma.sql`AND transaction_from = ANY(${facilitators})` : Prisma.empty}
-      ${addresses ? Prisma.sql`AND recipient = ANY(${addresses})` : Prisma.empty}
-      ${startDate ? Prisma.sql`AND block_timestamp >= ${startDate}` : Prisma.empty}
-      ${endDate ? Prisma.sql`AND block_timestamp <= ${endDate}` : Prisma.empty}
-    GROUP BY recipient
-    ORDER BY ${Prisma.raw(orderByField)} ${Prisma.raw(orderDirection)}
-    LIMIT ${limit + 1}
-  `;
-
-  const rawResults = await queryRaw(
-    sql,
-    z.array(
-      z.object({
-        recipient: mixedAddressSchema,
-        facilitators: z.array(mixedAddressSchema),
-        tx_count: z.bigint(),
-        total_amount: z.bigint(),
-        latest_block_timestamp: z.date(),
-        unique_buyers: z.bigint(),
-        chains: z.array(chainSchema),
-      })
-    )
-  );
-
-  const formattedResults = rawResults.map(row => ({
-    ...row,
-    tx_count: Number(row.tx_count),
-    total_amount: Number(row.total_amount),
-    latest_block_timestamp: row.latest_block_timestamp,
-    unique_buyers: Number(row.unique_buyers),
-  }));
+  const [count, items] = await Promise.all([
+    queryRaw(
+      Prisma.sql`
+        SELECT COUNT(DISTINCT t.recipient)::integer AS count
+        FROM "TransferEvent" t
+        ${transfersWhereClause(input)}
+      `,
+      z.array(
+        z.object({
+          count: z.number(),
+        })
+      )
+    ).then(result => result[0]?.count ?? 0),
+    queryRaw(
+      Prisma.sql`
+      SELECT 
+        t.recipient,
+        ARRAY_AGG(DISTINCT t.facilitator_id) as facilitator_ids,
+        COUNT(*)::integer as tx_count,
+        SUM(t.amount)::float as total_amount,
+        MAX(t.block_timestamp) as latest_block_timestamp,
+        COUNT(DISTINCT t.sender)::integer as unique_buyers,
+        ARRAY_AGG(DISTINCT t.chain) as chains
+      FROM "TransferEvent" t
+      ${transfersWhereClause(input)}
+      GROUP BY t.recipient
+      ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.raw('DESC') : Prisma.raw('ASC')}
+      ${paginationClause(pagination)}`,
+      z.array(
+        z.object({
+          recipient: mixedAddressSchema,
+          facilitator_ids: z.array(z.string()),
+          tx_count: z.number(),
+          total_amount: z.number(),
+          latest_block_timestamp: z.date(),
+          unique_buyers: z.number(),
+          chains: z.array(chainSchema),
+        })
+      )
+    ),
+  ]);
 
   return toPaginatedResponse({
-    items: formattedResults,
-    limit,
+    items,
+    total_count: count,
+    ...pagination,
   });
 };
 
-const _listTopSellersCached = createCachedPaginatedQuery({
-  queryFn: ({
-    input,
-    pagination,
-  }: {
-    input: z.infer<typeof listTopSellersInputSchema>;
-    pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>;
-  }) => listTopSellersUncached(input, pagination),
+export const listTopSellers = createCachedPaginatedQuery({
+  queryFn: listTopSellersUncached,
   cacheKeyPrefix: 'sellers-list',
-  createCacheKey: ({ input, pagination }) =>
-    createStandardCacheKey({ ...input, limit: pagination.limit }),
+  createCacheKey: createStandardCacheKey,
   dateFields: ['latest_block_timestamp'],
-
   tags: ['sellers'],
 });
-
-export const listTopSellers = async (
-  input: z.infer<typeof listTopSellersInputSchema>,
-  pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
-) => _listTopSellersCached({ input, pagination });

@@ -10,8 +10,13 @@ const thirdwebFacilitator: FacilitatorConfig = {
   url: 'https://api.thirdweb.com/v1/payments/x402',
 };
 
+const aurraCloudFacilitator: FacilitatorConfig = {
+  url: 'https://x402-facilitator.aurracloud.com',
+};
+
 export const facilitators: FacilitatorConfig[] = [
   baseFacilitator,
   payAiFacilitator,
   thirdwebFacilitator,
+  aurraCloudFacilitator,
 ];

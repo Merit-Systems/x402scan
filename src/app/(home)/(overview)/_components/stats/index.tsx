@@ -2,9 +2,9 @@ import React, { Suspense } from 'react';
 
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { differenceInSeconds, subMonths, subSeconds } from 'date-fns';
+import { differenceInSeconds, subDays, subSeconds } from 'date-fns';
 
-import { Section } from '../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 
 import { OverallCharts, LoadingOverallCharts } from './charts';
 
@@ -26,20 +26,20 @@ interface Props {
 
 export const OverallStats = async ({ chain }: Props) => {
   const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const startDate = subDays(endDate, 1);
 
   await Promise.all([
-    api.stats.getOverallStatistics.prefetch({
+    api.public.stats.overall.prefetch({
       startDate,
       endDate,
       chain,
     }),
-    api.stats.getOverallStatistics.prefetch({
+    api.public.stats.overall.prefetch({
       startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
       endDate: startDate,
       chain,
     }),
-    api.stats.getBucketedStatistics.prefetch({
+    api.public.stats.bucketed.prefetch({
       startDate,
       endDate,
       numBuckets: 32,
@@ -51,7 +51,7 @@ export const OverallStats = async ({ chain }: Props) => {
     <HydrateClient>
       <TimeRangeProvider
         initialEndDate={endDate}
-        initialTimeframe={ActivityTimeframe.ThirtyDays}
+        initialTimeframe={ActivityTimeframe.OneDay}
         initialStartDate={startDate}
         creationDate={firstTransfer}
       >

@@ -19,7 +19,7 @@ import {
 
 import { api } from '@/trpc/client';
 
-import { Favicon } from '@/components/favicon';
+import { Favicon } from '@/app/_components/favicon';
 import {
   Card,
   CardContent,
@@ -56,22 +56,24 @@ export const RegisterResourceForm = () => {
     isPending,
     data,
     reset,
-  } = api.resources.register.useMutation({
+  } = api.public.resources.register.useMutation({
     onSuccess: data => {
       if (data.error) {
         toast.error('Failed to add resource');
         return;
       }
-      void utils.resources.list.invalidate();
-      void utils.origins.list.withResources.invalidate();
+      void utils.public.resources.list.invalidate();
+      void utils.public.origins.list.withResources.invalidate();
       for (const accept of data.accepts) {
-        void utils.resources.getResourceByAddress.invalidate(accept.payTo);
-        void utils.origins.list.withResources.invalidate({
+        void utils.public.resources.getResourceByAddress.invalidate(
+          accept.payTo
+        );
+        void utils.public.origins.list.withResources.invalidate({
           address: accept.payTo,
           chain: getChain(accept.network),
         });
       }
-      void utils.sellers.list.bazaar.invalidate();
+      void utils.public.sellers.list.bazaar.invalidate();
       if (data.enhancedParseWarnings) {
         toast.warning(
           'Resource added successfully, but is not available for use'
@@ -136,7 +138,7 @@ export const RegisterResourceForm = () => {
                     </div>
                   </div>
                   <Dialog>
-                    <DialogTrigger>
+                    <DialogTrigger asChild>
                       <Button variant="ghost">
                         <Eye className="size-4" />
                         See Response
@@ -244,31 +246,32 @@ export const RegisterResourceForm = () => {
                 </div>
               </CollapsibleContent>
             </Collapsible>
-            {data?.error && (
+            {data?.success === false && (
               <div>
                 <div className="flex flex-col gap-1 bg-red-600/10 rounded-md border-red-600/60 border">
                   <div
                     className={cn(
                       'flex justify-between items-center gap-2 p-4',
-                      data.parseErrorData && 'border-b border-b-red-600/60'
+                      data.error.type === 'parseErrors' &&
+                        'border-b border-b-red-600/60'
                     )}
                   >
                     <div className={cn('flex items-center gap-2')}>
                       <AlertTriangle className="size-6 text-red-600" />
                       <div>
                         <h2 className="font-semibold">
-                          {data.type === 'parseErrors'
+                          {data.error.type === 'parseErrors'
                             ? 'Invalid x402 Response'
                             : 'No 402 Response'}
                         </h2>
                         <p className="text-sm text-muted-foreground">
-                          {data.type === 'parseErrors'
+                          {data.error.type === 'parseErrors'
                             ? 'The route responded with a 402, but the response body was not properly typed.'
                             : 'The route did not respond with a 402.'}
                         </p>
                       </div>
                     </div>
-                    {data.parseErrorData && (
+                    {data.error.type === 'parseErrors' && (
                       <Dialog>
                         <DialogTrigger>
                           <Button variant="ghost">
@@ -285,16 +288,16 @@ export const RegisterResourceForm = () => {
                             </DialogDescription>
                           </DialogHeader>
                           <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-4 rounded-md max-h-48 overflow-auto">
-                            {JSON.stringify(data.parseErrorData.data, null, 2)}
+                            {JSON.stringify(data.data, null, 2)}
                           </pre>
                         </DialogContent>
                       </Dialog>
                     )}
                   </div>
 
-                  {data.parseErrorData && (
+                  {data.error.type === 'parseErrors' && (
                     <ul className="list-disc list-inside text-sm text-muted-foreground p-4">
-                      {data.parseErrorData.parseErrors.map(warning => (
+                      {data.error.parseErrors.map(warning => (
                         <li key={warning}>{warning}</li>
                       ))}
                     </ul>

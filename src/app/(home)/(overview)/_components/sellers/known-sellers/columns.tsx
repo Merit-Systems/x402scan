@@ -28,7 +28,8 @@ import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/context';
 import { Chains } from '@/app/_components/chains';
 
-type ColumnType = RouterOutputs['sellers']['list']['bazaar']['items'][number];
+type ColumnType =
+  RouterOutputs['public']['sellers']['list']['bazaar']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
@@ -170,7 +171,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <Facilitators
-        addresses={row.original.facilitators}
+        ids={row.original.facilitators}
         className="mx-auto justify-center"
       />
     ),

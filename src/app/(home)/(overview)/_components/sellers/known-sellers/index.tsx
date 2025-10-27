@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 
-import { subMonths } from 'date-fns';
+import { subDays } from 'date-fns';
 
-import { Section } from '../../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 
 import { KnownSellersTable, LoadingKnownSellersTable } from './table';
 
@@ -27,11 +27,14 @@ interface Props {
 
 export const TopServers = async ({ chain }: Props) => {
   const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const startDate = subDays(endDate, 1);
 
   await Promise.all([
-    api.sellers.list.bazaar.prefetch({
+    api.public.sellers.list.bazaar.prefetch({
       chain,
+      pagination: {
+        page_size: 100,
+      },
       startDate,
       endDate,
       sorting: defaultSellersSorting,
@@ -45,7 +48,7 @@ export const TopServers = async ({ chain }: Props) => {
           creationDate={firstTransfer}
           initialEndDate={endDate}
           initialStartDate={startDate}
-          initialTimeframe={ActivityTimeframe.ThirtyDays}
+          initialTimeframe={ActivityTimeframe.OneDay}
         >
           <TopServersContainer>
             <ErrorBoundary

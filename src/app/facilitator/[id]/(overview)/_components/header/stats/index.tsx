@@ -2,13 +2,13 @@ import { cn } from '@/lib/utils';
 import { LoadingStatsCards, StatsCards } from './stat-cards';
 
 interface Props {
-  addresses: string[];
+  id: string;
 }
 
-export const OverallRecipientStats: React.FC<Props> = ({ addresses }) => {
+export const OverallRecipientStats: React.FC<Props> = ({ id }) => {
   return (
     <OverallStatsContainer>
-      <StatsCards addresses={addresses} />
+      <StatsCards id={id} />
     </OverallStatsContainer>
   );
 };

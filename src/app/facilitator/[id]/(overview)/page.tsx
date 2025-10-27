@@ -27,12 +27,10 @@ export default async function FacilitatorPage({
         <HeaderCard facilitator={facilitator} />
       </Suspense>
       <Suspense fallback={<LoadingActivity />}>
-        <Activity addresses={Object.values(facilitator.addresses).flat()} />
+        <Activity facilitatorId={id} />
       </Suspense>
       <Suspense fallback={<LoadingLatestTransactions />}>
-        <LatestTransactions
-          addresses={Object.values(facilitator.addresses).flat()}
-        />
+        <LatestTransactions facilitatorId={id} />
       </Suspense>
     </Body>
   );

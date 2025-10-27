@@ -17,12 +17,12 @@ export default async function ResourcesPage({
   const { address } = await params;
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  const origins = await api.origins.list.origins({
+  const origins = await api.public.origins.list.origins({
     chain,
     address,
   });
 
-  await api.origins.list.withResources.prefetch({ chain, address });
+  await api.public.origins.list.withResources.prefetch({ chain, address });
 
   return (
     <HydrateClient>

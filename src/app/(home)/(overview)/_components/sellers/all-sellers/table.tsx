@@ -8,16 +8,22 @@ import { columns } from './columns';
 import { useSellersSorting } from '../../../../../_contexts/sorting/sellers/hook';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { useChain } from '@/app/_contexts/chain/hook';
+import { useState } from 'react';
 
 export const AllSellersTable = () => {
   const { sorting } = useSellersSorting();
   const { startDate, endDate } = useTimeRangeContext();
   const { chain } = useChain();
 
-  const [topSellers] = api.sellers.list.all.useSuspenseQuery({
+  const [page, setPage] = useState(0);
+  const pageSize = 10;
+  const [topSellers] = api.public.sellers.list.all.useSuspenseQuery({
     chain,
     sorting,
-    limit: 100,
+    pagination: {
+      page_size: pageSize,
+      page,
+    },
     startDate,
     endDate,
   });
@@ -27,6 +33,11 @@ export const AllSellersTable = () => {
       columns={columns}
       data={topSellers.items}
       href={data => `/recipient/${data.recipient}`}
+      page={page}
+      onPageChange={setPage}
+      pageSize={pageSize}
+      totalPages={topSellers.total_pages}
+      hasNextPage={topSellers.hasNextPage}
     />
   );
 };

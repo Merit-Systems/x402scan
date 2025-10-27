@@ -51,15 +51,10 @@ export const OnrampSessionDialog: React.FC = () => {
     isLoading: isLoadingSession,
     isError: isErrorSession,
     refetch: refetchSession,
-  } = api.onrampSessions.get.useQuery(
-    {
-      id: sessionToken ?? '',
-    },
-    {
-      enabled: !!sessionToken && !isError,
-      refetchInterval: !isCompleted ? 1000 : false,
-    }
-  );
+  } = api.user.onrampSessions.get.useQuery(sessionToken ?? '', {
+    enabled: !!sessionToken && !isError,
+    refetchInterval: !isCompleted ? 1000 : false,
+  });
 
   useEffect(() => {
     if (isErrorSession) {

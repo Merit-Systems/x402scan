@@ -42,26 +42,19 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
     return () => document.removeEventListener('keydown', down);
   }, []);
 
+  const input = {
+    search,
+    limit: 3,
+  };
+
+  const options = {
+    enabled: isOpen && search.length > 0,
+  };
+
   const { data: origins, isLoading: isLoadingOrigins } =
-    api.origins.search.useQuery(
-      {
-        search,
-        limit: 3,
-      },
-      {
-        enabled: isOpen && search.length > 0,
-      }
-    );
+    api.public.origins.search.useQuery(input, options);
   const { data: resources, isLoading: isLoadingResources } =
-    api.resources.search.useQuery(
-      {
-        search,
-        limit: 3,
-      },
-      {
-        enabled: isOpen && search.length > 0,
-      }
-    );
+    api.public.resources.search.useQuery(input, options);
 
   const handleSelect = <T extends string>(route: Route<T>) => {
     router.push(route);

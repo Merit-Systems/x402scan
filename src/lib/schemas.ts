@@ -14,6 +14,11 @@ export const ethereumHashSchema = z
   .regex(/^0x[a-fA-F0-9]{64}$/, 'Invalid transaction hash')
   .transform(hash => hash.toLowerCase() as Hash);
 
+export const sortingSchema = (sortIds: string[] | readonly string[]) =>
+  z.object({
+    id: z.enum(sortIds),
+    desc: z.boolean(),
+  });
 // Add a Solana address schema
 const solanaAddressSchema = z
   .string()

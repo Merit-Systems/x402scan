@@ -14,18 +14,23 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(uuid())
   name          String?
-  email         String    @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  role           Role            @default(user)
-  accounts       Account[]
-  sessions       Session[]
-  onrampSessions OnrampSession[]
+  role                    Role                     @default(user)
+  accounts                Account[]
+  sessions                Session[]
+  onrampSessions          OnrampSession[]
+  serverWallets           ServerWallet[]
+  chats                   Chat[]
+  agentConfigurations     AgentConfiguration[]
+  agentConfigurationUsers AgentConfigurationUser[]
+  UserAcknowledgement     UserAcknowledgement?
 }
 
 model Account {
@@ -44,7 +49,7 @@ model Account {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([provider, providerAccountId])
 }
@@ -53,7 +58,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -81,9 +86,15 @@ model Resources {
 
   originId String
 
-  accepts Accepts[]
-  response ResourceResponse?
-  origin ResourceOrigin @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
+  accepts                     Accepts[]
+  response                    ResourceResponse?
+  invocations                 ResourceInvocation[]
+  origin                      ResourceOrigin               @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
+  agentConfigurationResources AgentConfigurationResource[]
+  tags                        ResourcesTags[]
+  requestMetadata             ResourceRequestMetadata?
+  toolCalls                   ToolCall[]
+  excluded                    ExcludedResource?
 }
 
 enum AcceptsScheme {
@@ -151,11 +162,43 @@ model ResourceOrigin {
 }
 
 model ResourceResponse {
-  id          String  @id @default(uuid())
-  resourceId  String  @unique
-  response    Json
+  id         String @id @default(uuid())
+  resourceId String @unique
+  response   Json
 
   resource Resources @relation(fields: [resourceId], references: [id])
+}
+
+model ResourceInvocation {
+  id                  String   @id @default(uuid())
+  resourceId          String?
+  statusCode          Int
+  duration            Int
+  statusText          String
+  method              String
+  url                 String
+  requestContentType  String
+  responseContentType String
+  responseHeaders     Json?
+  responseBody        Json?
+  requestHeaders      Json?
+  requestBody         Json?
+  createdAt           DateTime @default(now())
+
+  resource Resources? @relation(fields: [resourceId], references: [id])
+}
+
+model ResourceRequestMetadata {
+  id          String @id @default(uuid())
+  resourceId  String @unique
+  headers     Json
+  body        Json
+  queryParams Json
+  inputSchema Json
+
+  resource Resources @relation(fields: [resourceId], references: [id])
+
+  @@map("ResourceRequestMetadata")
 }
 
 model OgImage {
@@ -173,20 +216,173 @@ model OgImage {
 }
 
 model OnrampSession {
-  id            String   @id @default(uuid())
-  token         String   @unique
-  amount        Int
-  userId        String
-  date          DateTime @default(now())
-  txHash        String?  @unique
-  failureReason String?
-  status SessionStatus @default(ONRAMP_TRANSACTION_STATUS_IN_PROGRESS)
+  id             String        @id @default(uuid())
+  token          String        @unique
+  amount         Int
+  userId         String
+  date           DateTime      @default(now())
+  txHash         String?       @unique
+  failureReason  String?
+  serverWalletId String?
+  status         SessionStatus @default(ONRAMP_TRANSACTION_STATUS_IN_PROGRESS)
 
-  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serverWallet ServerWallet? @relation(fields: [serverWalletId], references: [id], onDelete: Cascade)
 }
 
 enum SessionStatus {
   ONRAMP_TRANSACTION_STATUS_IN_PROGRESS
   ONRAMP_TRANSACTION_STATUS_SUCCESS
   ONRAMP_TRANSACTION_STATUS_FAILED
+}
+
+enum ServerWalletType {
+  CHAT
+  AGENT
+}
+
+model ServerWallet {
+  id         String           @id @default(uuid())
+  userId     String
+  walletName String           @unique
+  type       ServerWalletType @default(CHAT)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  onrampSessions OnrampSession[]
+}
+
+enum Visibility {
+  public
+  private
+}
+
+model Chat {
+  id                       String     @id @default(uuid())
+  createdAt                DateTime   @default(now())
+  title                    String
+  userId                   String
+  visibility               Visibility @default(private)
+  lastContext              Json?
+  userAgentConfigurationId String?
+  activeStreamId           String?
+
+  user                   User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages               Message[]
+  userAgentConfiguration AgentConfigurationUser? @relation(fields: [userAgentConfigurationId], references: [id], onDelete: Cascade)
+  toolCalls              ToolCall[]
+
+  @@map("Chat")
+}
+
+model Message {
+  id          String   @id @default(uuid()) @map("Message")
+  chatId      String
+  role        String
+  parts       Json
+  attachments Json
+  createdAt   DateTime @default(now())
+
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("Message")
+}
+
+model ToolCall {
+  id         String    @id @default(uuid())
+  resourceId String
+  createdAt  DateTime  @default(now())
+  chatId     String
+  resource   Resources @relation(fields: [resourceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  chat       Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model AgentConfiguration {
+  id             String     @id @default(uuid())
+  ownerId        String
+  name           String
+  model          String?
+  description    String?
+  image          String?
+  systemPrompt   String
+  starterPrompts String[]   @default([])
+  visibility     Visibility @default(private)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  owner     User                         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  users     AgentConfigurationUser[]
+  resources AgentConfigurationResource[]
+
+  @@map("AgentConfiguration")
+}
+
+model AgentConfigurationResource {
+  id                   String @id @default(uuid())
+  resourceId           String
+  agentConfigurationId String
+
+  resource           Resources          @relation(fields: [resourceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("AgentConfigurationResource")
+}
+
+model AgentConfigurationUser {
+  id                   String @id @default(uuid())
+  userId               String
+  agentConfigurationId String
+
+  joinedAt DateTime @default(now())
+
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  chats              Chat[]
+
+  @@unique([userId, agentConfigurationId])
+  @@map("AgentUser")
+}
+
+model Tag {
+  id            String          @id @default(uuid())
+  name          String          @unique
+  color         String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  resourcesTags ResourcesTags[]
+
+  @@map("Tag")
+}
+
+model ResourcesTags {
+  id         String   @id @default(uuid())
+  resourceId String
+  tagId      String
+  assignedAt DateTime @default(now())
+
+  resource Resources @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  tag      Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([resourceId, tagId])
+  @@map("ResourcesTags")
+}
+
+model ExcludedResource {
+  id         String @id @default(uuid())
+  resourceId String @unique
+
+  resource Resources @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@map("ExcludedResource")
+}
+
+model UserAcknowledgement {
+  id                     String   @id @default(uuid())
+  userId                 String   @unique
+  acknowledgedComposerAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("UserAcknowledgement")
 }

@@ -20,7 +20,7 @@ interface Props {
 }
 
 export const HeaderCard: React.FC<Props> = async ({ address }) => {
-  const origins = await api.origins.list.origins({
+  const origins = await api.public.origins.list.origins({
     address,
   });
 

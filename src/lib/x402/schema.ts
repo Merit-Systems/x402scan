@@ -29,20 +29,24 @@ const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
   )
 );
 
-const EnhancedOutputSchema = z3.object({
+export const enhancedOutputSchema = z3.object({
   input: HTTPRequestStructureSchema.omit({
     queryParams: true,
     bodyFields: true,
     headerFields: true,
   }).extend({
+    headerFields: z3.record(FieldDefSchema).optional(),
     queryParams: z3.record(FieldDefSchema).optional(),
     bodyFields: z3.record(FieldDefSchema).optional(),
-    headerFields: z3.record(FieldDefSchema).optional(),
   }),
   output: z3.record(z3.string(), z3.any()).optional().nullable(),
 });
 
-export type EnhancedOutputSchema = z3.infer<typeof EnhancedOutputSchema>;
+export type EnhancedOutputSchema = z3.infer<typeof enhancedOutputSchema>;
+
+export const enhancedAcceptsSchema = PaymentRequirementsSchema.extend({
+  outputSchema: enhancedOutputSchema.optional(),
+});
 
 const namedNetwork = z3.enum([
   'base-sepolia',
@@ -68,13 +72,15 @@ const EnhancedNetworkSchema = z3.union([
     .transform(v => ChainIdToNetwork[Number(v.split(':')[1])]),
 ]);
 
+type EnhancedNetworkSchema = z3.infer<typeof EnhancedNetworkSchema>;
+
 export const EnhancedPaymentRequirementsSchema =
   PaymentRequirementsSchema.extend({
     network: EnhancedNetworkSchema,
-    outputSchema: EnhancedOutputSchema.optional(),
+    outputSchema: enhancedOutputSchema.optional(),
   });
 
-export type EnhancedPaymentRequirementsSchema = z3.infer<
+export type EnhancedPaymentRequirements = z3.infer<
   typeof EnhancedPaymentRequirementsSchema
 >;
 

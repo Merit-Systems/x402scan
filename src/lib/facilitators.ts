@@ -35,7 +35,7 @@ const x402rsFacilitator: Facilitator = {
 };
 
 const payAiFacilitator: Facilitator = {
-  id: 'payai',
+  id: 'payAI',
   name: 'PayAI' as const,
   image: '/payai.png',
   link: 'https://payai.network',
@@ -83,6 +83,31 @@ const corbitsFacilitator: Facilitator = {
   color: 'var(--color-orange-600)',
 };
 
+const daydreamsFacilitator = {
+  id: 'daydreams',
+  name: 'Daydreams' as const,
+  image: '/router-logo-small.png',
+  link: 'https://facilitator.daydreams.systems',
+  addresses: {
+    [Chain.BASE]: ['0x279e08f711182c79Ba6d09669127a426228a4653'],
+    [Chain.SOLANA]: [
+      'DuQ4jFMmVABWGxabYHFkGzdyeJgS1hp4wrRuCtsJgT9a' as SolanaAddress,
+    ],
+  },
+  color: 'var(--color-yellow-600)',
+} satisfies Facilitator;
+
+const openX402Facilitator: Facilitator = {
+  id: 'openx402',
+  name: 'Open X402' as const,
+  image: '/openx402.png',
+  link: 'https://open.x402.host',
+  addresses: {
+    [Chain.BASE]: ['0x97316fa4730bc7d3b295234f8e4d04a0a4c093e8'],
+  },
+  color: 'var(--color-blue-600)',
+};
+
 export const facilitators: Facilitator[] = [
   coinbaseFacilitator,
   x402rsFacilitator,
@@ -90,10 +115,11 @@ export const facilitators: Facilitator[] = [
   aurraCloudFacilitator,
   thirdwebFacilitator,
   corbitsFacilitator,
+  daydreamsFacilitator,
+  openX402Facilitator,
 ];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];
-export type FacilitatorName = (typeof facilitators)[number]['name'];
 
 export const facilitatorIdMap = new Map<FacilitatorId, Facilitator>(
   facilitators.map(f => [f.id, f])
@@ -103,12 +129,4 @@ export const facilitatorAddresses = facilitators.flatMap(f =>
   Object.values(f.addresses)
     .flat()
     .map(address => mixedAddressSchema.parse(address))
-);
-
-export const facilitatorAddressMap = new Map<MixedAddress, Facilitator>(
-  facilitators.flatMap(f =>
-    Object.values(f.addresses)
-      .flat()
-      .map(address => [address, f] as const)
-  )
 );

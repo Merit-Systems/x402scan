@@ -18,7 +18,7 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import type { Chain } from '@/types/chain';
 
 interface Props {
-  addresses: string[];
+  facilitatorId: string;
   chain?: Chain;
 }
 
@@ -40,21 +40,21 @@ const ActivityContainer = ({
   );
 };
 
-export const Activity: React.FC<Props> = async ({ addresses }) => {
+export const Activity: React.FC<Props> = async ({ facilitatorId }) => {
   const endDate = new Date();
   const startDate = subDays(endDate, 7);
 
   const [firstTransferTimestamp] = await Promise.all([
-    api.stats.getFirstTransferTimestamp({
-      facilitators: addresses,
+    api.public.stats.firstTransferTimestamp({
+      facilitatorIds: [facilitatorId],
     }),
-    api.stats.getBucketedStatistics.prefetch({
-      facilitators: addresses,
+    api.public.stats.bucketed.prefetch({
+      facilitatorIds: [facilitatorId],
       startDate,
       endDate,
     }),
-    api.stats.getOverallStatistics.prefetch({
-      facilitators: addresses,
+    api.public.stats.overall.prefetch({
+      facilitatorIds: [facilitatorId],
       startDate,
       endDate,
     }),
@@ -73,7 +73,7 @@ export const Activity: React.FC<Props> = async ({ addresses }) => {
             fallback={<p>There was an error loading the activity data</p>}
           >
             <Suspense fallback={<LoadingActivityCharts />}>
-              <ActivityCharts addresses={addresses} />
+              <ActivityCharts facilitatorId={facilitatorId} />
             </Suspense>
           </ErrorBoundary>
         </ActivityContainer>

@@ -1,9 +1,9 @@
-import { listResources } from '@/services/db/resources';
+import { listResources } from '@/services/db/resources/resource';
 
 import { parseX402Response } from '@/lib/x402/schema';
 import { checkCronSecret } from '@/lib/cron';
 import { NextResponse, type NextRequest } from 'next/server';
-import { upsertResourceResponse } from '@/services/db/resource-responses';
+import { upsertResourceResponse } from '@/services/db/resources/response';
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);

@@ -10,6 +10,7 @@ export const createOnrampUrlParamsSchema = z.object({
   defaultNetwork: z.literal('base').default('base'),
   defaultAsset: z.literal('USDC').default('USDC'),
   fiatCurrency: z.literal('USD').default('USD'),
+  tokenKey: z.string().default('onramp_token'),
 });
 
 export const createOnrampUrl = async (
@@ -23,6 +24,7 @@ export const createOnrampUrl = async (
     defaultAsset,
     fiatCurrency,
     redirect,
+    tokenKey,
   } = createOnrampUrlParamsSchema.parse(input);
 
   const address = ethereumAddressSchema.parse(addressInput);
@@ -50,7 +52,7 @@ export const createOnrampUrl = async (
   );
 
   const redirectUrl = new URL(redirect);
-  redirectUrl.searchParams.set('onramp_token', token);
+  redirectUrl.searchParams.set(tokenKey, token);
 
   const searchParams = new URLSearchParams({
     sessionToken: token,

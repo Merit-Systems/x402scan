@@ -3,15 +3,15 @@ import { NextResponse } from 'next/server';
 import { scrapeOriginData } from '@/services/scraper';
 import { facilitators } from '@/services/facilitator/facilitators';
 import { listAllFacilitatorResources } from '@/services/facilitator/list-resources';
-import { upsertOrigin } from '@/services/db/origin';
-import { upsertResource } from '@/services/db/resources';
+import { upsertOrigin } from '@/services/db/resources/origin';
+import { upsertResource } from '@/services/db/resources/resource';
 
 import { checkCronSecret } from '@/lib/cron';
 import { getOriginFromUrl } from '@/lib/url';
 
 import type { AcceptsNetwork } from '@prisma/client';
 import type z from 'zod';
-import type { upsertResourceSchema } from '@/services/db/resources';
+import type { upsertResourceSchema } from '@/services/db/resources/resource';
 import type { NextRequest } from 'next/server';
 
 export const GET = async (request: NextRequest) => {

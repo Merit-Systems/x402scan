@@ -25,7 +25,8 @@ import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { Chains } from '@/app/_components/chains';
 
-type ColumnType = RouterOutputs['facilitators']['list'][number];
+type ColumnType =
+  RouterOutputs['public']['facilitators']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
@@ -35,7 +36,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <Link
-        href={`/facilitator/${row.original.facilitator.id}`}
+        href={`/facilitator/${row.original.facilitator_id}`}
         prefetch={false}
         className="flex items-center gap-1"
       >

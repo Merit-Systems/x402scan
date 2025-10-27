@@ -19,17 +19,24 @@ export default async function TransactionsPage({
 }: PageProps<'/recipient/[address]/transactions'>) {
   const { address } = await params;
 
-  const limit = 150;
+  const pageSize = 15;
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
   const [firstTransfer] = await Promise.all([
-    api.stats.getFirstTransferTimestamp({
-      addresses: [address],
+    api.public.stats.firstTransferTimestamp({
+      recipients: {
+        include: [address],
+      },
     }),
-    api.transfers.list.prefetch({
-      limit,
-      recipient: address,
+    api.public.transfers.list.prefetch({
+      pagination: {
+        page_size: pageSize,
+        page: 0,
+      },
+      recipients: {
+        include: [address],
+      },
       startDate,
       endDate,
       sorting: defaultTransfersSorting,
@@ -53,11 +60,7 @@ export default async function TransactionsPage({
             <Suspense
               fallback={<LoadingLatestTransactionsTable loadingRowCount={15} />}
             >
-              <LatestTransactionsTable
-                address={address}
-                limit={limit}
-                pageSize={15}
-              />
+              <LatestTransactionsTable address={address} pageSize={pageSize} />
             </Suspense>
           </Body>
         </TransfersSortingProvider>

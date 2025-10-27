@@ -10,14 +10,15 @@ import {
   searchResources,
   searchResourcesSchema,
   upsertResource,
-} from '@/services/db/resources';
-import { upsertOrigin } from '@/services/db/origin';
-import { upsertResourceResponse } from '@/services/db/resource-responses';
+} from '@/services/db/resources/resource';
+import { upsertOrigin } from '@/services/db/resources/origin';
+import { upsertResourceResponse } from '@/services/db/resources/response';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 import {
   EnhancedPaymentRequirementsSchema,
   parseX402Response,
+  type EnhancedPaymentRequirements,
 } from '@/lib/x402/schema';
 import { formatTokenAmount } from '@/lib/token';
 import { getOriginFromUrl } from '@/lib/url';
@@ -27,6 +28,7 @@ import { Methods } from '@/types/x402';
 import type { AcceptsNetwork } from '@prisma/client';
 import { x402ResponseSchema } from 'x402/types';
 import { getFaviconUrl } from '@/lib/favicon';
+import type { ImageObject } from 'open-graph-scraper/types';
 
 export const resourcesRouter = createTRPCRouter({
   list: {
@@ -121,7 +123,7 @@ export const resourcesRouter = createTRPCRouter({
             ? getFaviconUrl(og.favicon, scrapedOrigin)
             : undefined,
           ogImages:
-            og?.ogImage?.map(image => ({
+            og?.ogImage?.map((image: ImageObject) => ({
               url: image.url,
               height: image.height,
               width: image.width,
@@ -131,19 +133,22 @@ export const resourcesRouter = createTRPCRouter({
         });
 
         // upsert the resource
+        const accepts = baseX402ParsedResponse.data.accepts ?? [];
         const resource = await upsertResource({
           resource: input.url.toString(),
           type: 'http',
           x402Version: baseX402ParsedResponse.data.x402Version,
           lastUpdated: new Date(),
-          accepts:
-            baseX402ParsedResponse.data.accepts?.map(accept => ({
-              ...accept,
-              network: accept.network.replace('-', '_') as AcceptsNetwork,
-              maxAmountRequired: accept.maxAmountRequired,
-              outputSchema: accept.outputSchema!,
-              extra: accept.extra,
-            })) ?? [],
+          accepts: accepts.map((accept: EnhancedPaymentRequirements) => ({
+            ...accept,
+            network: (accept.network as string).replace(
+              '-',
+              '_'
+            ) as AcceptsNetwork,
+            maxAmountRequired: accept.maxAmountRequired,
+            outputSchema: accept.outputSchema!,
+            extra: accept.extra,
+          })),
         });
 
         if (!resource) {

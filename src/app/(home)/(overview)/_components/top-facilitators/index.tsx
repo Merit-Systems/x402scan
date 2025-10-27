@@ -17,12 +17,18 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
 
   // Prefetch all data including chart data for each facilitator
   await Promise.all([
-    api.stats.getOverallStatistics.prefetch({ chain }),
-    api.facilitators.list.prefetch({ chain, limit: 3 }),
-    ...chainFacilitators.map(address =>
-      api.stats.getBucketedStatistics.prefetch({
+    api.public.stats.overall.prefetch({ chain }),
+    api.public.facilitators.list.prefetch({
+      chain,
+      pagination: {
+        page_size: chainFacilitators.length,
+      },
+    }),
+    ...chainFacilitators.map(id =>
+      api.public.stats.bucketed.prefetch({
         numBuckets: 48,
-        facilitators: [address],
+        facilitatorIds: [id],
+        chain,
       })
     ),
   ]);

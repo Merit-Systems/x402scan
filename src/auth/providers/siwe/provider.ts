@@ -9,6 +9,7 @@ import {
   SIWE_PROVIDER_NAME,
   SIWE_STATEMENT,
 } from './constants';
+import { auth } from '@/auth';
 
 const siweCredentialsSchema = z.object({
   message: z.string().transform((val: string) => {
@@ -45,25 +46,74 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
         nonce: message.nonce,
       });
 
-      const email = parseResult.data.email ?? address;
+      const email = parseResult.data.email;
 
-      const user = await prisma.user.findUnique({
-        where: {
-          email,
-        },
-      });
+      const session = await auth();
 
-      if (user) {
+      if (session) {
+        // link account to user
+        const { user } = await prisma.account.upsert({
+          where: {
+            provider_providerAccountId: {
+              provider: SIWE_PROVIDER_ID,
+              providerAccountId: address,
+            },
+          },
+          update: {
+            userId: session.user.id,
+          },
+          create: {
+            type: 'siwe',
+            userId: session.user.id,
+            provider: SIWE_PROVIDER_ID,
+            providerAccountId: address,
+          },
+          include: {
+            user: {
+              include: {
+                accounts: true,
+              },
+            },
+          },
+        });
+
+        return user;
+      } else {
+        const user = await prisma.user.findFirst({
+          where: {
+            accounts: {
+              some: {
+                provider: SIWE_PROVIDER_ID,
+                providerAccountId: address,
+              },
+            },
+          },
+          include: {
+            accounts: true,
+          },
+        });
+
+        // no user, create a user and an account
+        if (!user) {
+          return await prisma.user.create({
+            data: {
+              email,
+              accounts: {
+                create: {
+                  type: 'siwe',
+                  provider: SIWE_PROVIDER_ID,
+                  providerAccountId: address,
+                },
+              },
+            },
+            include: {
+              accounts: true,
+            },
+          });
+        }
+
         return user;
       }
-
-      return prisma.user.create({
-        data: {
-          id: siwe.address,
-          email,
-          name: siwe.address,
-        },
-      });
     },
     ...options,
   });

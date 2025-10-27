@@ -6,26 +6,27 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { LoadingMultiCharts, MultiCharts } from '@/components/ui/charts/multi';
 import { facilitators } from '@/lib/facilitators';
 
-import type { FacilitatorName } from '@/lib/facilitators';
 import { formatTokenAmount } from '@/lib/token';
+import { createTab } from '@/lib/charts';
 import { api } from '@/trpc/client';
 
-type FacilitatorKey = `${FacilitatorName}-${'transactions' | 'amount'}`;
+type FacilitatorKey = `${string}-${'transactions' | 'amount'}`;
 
 export const FacilitatorsChart = () => {
   const { chain } = useChain();
   const { startDate, endDate } = useTimeRangeContext();
 
   const [bucketedFacilitatorData] =
-    api.facilitators.bucketedStatistics.useSuspenseQuery({
+    api.public.facilitators.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,
       startDate,
       endDate,
       chain,
     });
-  const [overallData] = api.stats.getOverallStatistics.useSuspenseQuery({
+  const [overallData] = api.public.stats.overall.useSuspenseQuery({
     startDate,
     endDate,
+    chain,
   });
 
   const chartData: ChartData<Record<FacilitatorKey, number>>[] =
@@ -41,60 +42,56 @@ export const FacilitatorsChart = () => {
       ),
     }));
 
+  const getValueHandler = (
+    data: number,
+    id: string,
+    allData: Record<FacilitatorKey, number>
+  ) => {
+    const total = facilitators.reduce(
+      (sum, facilitator) =>
+        sum + (allData[`${facilitator.id}-${id}` as FacilitatorKey] || 0),
+      0
+    );
+    const percentage = total > 0 ? (data / total) * 100 : 0;
+    return `${percentage.toFixed(1)}%`;
+  };
+
   return (
-    <MultiCharts
-      chartData={chartData}
-      tabs={[
-        {
-          trigger: {
+    <div className="flex flex-col gap-4">
+      <MultiCharts
+        chartData={chartData}
+        tabs={[
+          createTab<
+            Record<FacilitatorKey, number>,
+            (typeof facilitators)[number]
+          >({
             label: 'Transactions',
-            value: 'transactions',
             amount: overallData.total_transactions.toLocaleString(),
-          },
-          items: {
-            type: 'bar',
-            bars: facilitators.toReversed().map(f => ({
-              dataKey: `${f.name}-transactions` as FacilitatorKey,
-              name: f.name,
-              color: f.color,
-            })),
-            solid: true,
-          },
-          tooltipRows: facilitators.map(f => ({
-            key: `${f.name}-transactions` as FacilitatorKey,
-            label: f.name,
-            getValue: (data: number) => data.toLocaleString(),
-            labelClassName: 'text-xs font-mono',
-            valueClassName: 'text-xs font-mono',
-            dotColor: f.color,
-          })),
-        },
-        {
-          trigger: {
+            items: facilitators,
+            getValue: (
+              data: number,
+              dataType: string,
+              allData: Record<FacilitatorKey, number>
+            ) => getValueHandler(data, dataType, allData),
+            getKey: f => f.id,
+          }),
+          createTab<
+            Record<FacilitatorKey, number>,
+            (typeof facilitators)[number]
+          >({
             label: 'Amount',
-            value: 'amount',
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
-          },
-          items: {
-            type: 'bar',
-            bars: facilitators.toReversed().map(f => ({
-              dataKey: `${f.name}-amount` as FacilitatorKey,
-              name: f.name,
-              color: f.color,
-            })),
-            solid: true,
-          },
-          tooltipRows: facilitators.map(f => ({
-            key: `${f.name}-amount` as FacilitatorKey,
-            label: f.name,
-            getValue: (data: number) => formatTokenAmount(BigInt(data)),
-            labelClassName: 'text-xs font-mono',
-            valueClassName: 'text-xs font-mono',
-            dotColor: f.color,
-          })),
-        },
-      ]}
-    />
+            items: facilitators,
+            getValue: (
+              data: number,
+              dataType: string,
+              allData: Record<FacilitatorKey, number>
+            ) => getValueHandler(data, dataType, allData),
+            getKey: f => f.id,
+          }),
+        ]}
+      />
+    </div>
   );
 };
 

@@ -33,10 +33,10 @@ const onrampTransactionSchema = z.object({
     'FIAT_WALLET',
     'CRYPTO_WALLET',
   ]),
-  tx_hash: ethereumHashSchema,
-  transaction_id: z.string(),
+  tx_hash: ethereumHashSchema.nullable().optional(),
+  transaction_id: z.string().nullable().optional(),
   wallet_address: ethereumAddressSchema,
-  contract_address: z.string(),
+  contract_address: z.string().nullable().optional(),
   type: z.enum([
     'ONRAMP_TRANSACTION_TYPE_BUY_AND_SEND',
     'ONRAMP_TRANSACTION_TYPE_SEND',
@@ -53,6 +53,7 @@ export const getOnrampTransactions = async (partnerUserRef: string) => {
     {
       requestPath: `/onramp/v1/buy/user/${partnerUserRef}/transactions`,
       requestMethod: 'GET',
+      requestHost: 'api.developer.coinbase.com',
     },
     z.object({
       transactions: z.array(onrampTransactionSchema),
