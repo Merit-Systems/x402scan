@@ -24,6 +24,10 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
             label: 'Excluded Resources',
             href: '/admin/excludes',
           },
+          {
+            label: 'Wallets',
+            href: '/admin/wallets',
+          },
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>
