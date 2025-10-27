@@ -1,7 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { checkCronSecret } from '@/lib/cron';
 import { CdpClient } from "@coinbase/cdp-sdk";
-import { createWalletSnapshots, type WalletSnapshotInput } from "@/services/db/wallet-snapshot/create";
+import { createWalletSnapshots } from "@/services/db/wallet-snapshot/create";
+import type { z } from "zod";
+import type { walletSnapshotInputSchema } from "@/services/db/wallet-snapshot/create";
 
 const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as `0x${string}`;
 const NETWORK = "base";
@@ -13,7 +15,7 @@ export const GET = async (request: NextRequest) => {
   }
 
   const cdp = new CdpClient();
-  const snapshots: WalletSnapshotInput[] = [];
+  const snapshots: z.infer<typeof walletSnapshotInputSchema>[] = [];
 
   try {
     let response = await cdp.evm.listAccounts();
@@ -28,7 +30,7 @@ export const GET = async (request: NextRequest) => {
 
           if (usdcBalance && usdcBalance.amount && usdcBalance.amount.amount > 0n) {
             snapshots.push({
-              accountName: account.name,
+              accountName: account.name ?? account.address,
               accountAddress: account.address,
               amount: usdcBalance.amount.amount,
             });
@@ -48,7 +50,7 @@ export const GET = async (request: NextRequest) => {
     for (let i = 0; i < snapshots.length; i += 100) {
       const batch = snapshots.slice(i, i + 100);
       try {
-        await createWalletSnapshots(batch);
+        await createWalletSnapshots({ snapshots: batch });
       } catch (error) {
         console.error('Error creating wallet snapshots batch:', error);
         continue;

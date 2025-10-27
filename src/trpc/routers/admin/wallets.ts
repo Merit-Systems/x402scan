@@ -1,16 +1,14 @@
-import { z } from 'zod';
 import { createTRPCRouter, adminProcedure } from '../../trpc';
-import { getWalletSnapshotAggregates } from '@/services/db/wallet-snapshot/aggregate';
+import { 
+  getWalletSnapshotAggregates,
+  getWalletSnapshotAggregatesSchema 
+} from '@/services/db/wallet-snapshot/aggregate';
 
 export const adminWalletsRouter = createTRPCRouter({
   aggregates: adminProcedure
-    .input(
-      z.object({
-        days: z.number().int().positive().default(7),
-      })
-    )
+    .input(getWalletSnapshotAggregatesSchema.default({ days: 7 }))
     .query(async ({ input }) => {
-      const aggregates = await getWalletSnapshotAggregates(input.days);
+      const aggregates = await getWalletSnapshotAggregates(input);
       
       // Convert bigint to string for JSON serialization
       return aggregates.map((agg) => ({
