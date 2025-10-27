@@ -231,6 +231,13 @@ export const ecosystemItems: EcosystemItem[] = [
     category: 'Ecosystem Infrastructure & Tooling',
   },
   {
+    name: 'x402-sovereign',
+    description: 'Open-source library that lets you self-host your own x402 facilitator trivially.',
+    logoUrl: '/x402-sovereign.png',
+    websiteUrl: 'https://github.com/dhaiwat10/x402-sovereign',
+    category: 'Ecosystem Infrastructure & Tooling',
+  },
+  {
     name: 'Zyte API',
     description:
       'Zyte API is a unified Web Scraping API for unblocking, browser rendering and extraction.',
