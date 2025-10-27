@@ -29,6 +29,19 @@ interface Props {
 }
 
 export function Form({ x402Response }: Props) {
+  const {
+    queryFields,
+    bodyFields,
+    queryValues,
+    bodyValues,
+    handleQueryChange,
+    handleBodyChange,
+    response,
+    error,
+  } = useResourceFetch();
+  
+  const [optionalOpen, setOptionalOpen] = useState(false);
+
   const accept = x402Response?.accepts?.[0];
   const inputSchema = accept?.outputSchema?.input;
 
@@ -41,19 +54,6 @@ export function Form({ x402Response }: Props) {
       </CardContent>
     );
   }
-
-  const {
-    queryFields,
-    bodyFields,
-    queryValues,
-    bodyValues,
-    handleQueryChange,
-    handleBodyChange,
-    response,
-    error,
-  } = useResourceFetch();
-
-  const [optionalOpen, setOptionalOpen] = useState(false);
 
   const hasQueryFields = queryFields.length > 0;
   const hasBodyFields = bodyFields.length > 0;
