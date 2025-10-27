@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure } from '../../trpc';
+import { createTRPCRouter, adminProcedure } from '../../trpc';
 import { getWalletSnapshotAggregates } from '@/services/db/wallet-snapshot/aggregate';
 
 export const adminWalletsRouter = createTRPCRouter({
-  aggregates: protectedProcedure
+  aggregates: adminProcedure
     .input(
       z.object({
         days: z.number().int().positive().default(7),
