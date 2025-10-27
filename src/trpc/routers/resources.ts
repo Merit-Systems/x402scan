@@ -71,21 +71,21 @@ export const resourcesRouter = createTRPCRouter({
       } | null = null;
 
       for (const method of [Methods.GET, Methods.POST]) {
-        // ping resource
-        const response = await fetch(input.url, {
-          method,
-          headers: input.headers,
-          body: input.body ? JSON.stringify(input.body) : undefined,
-        });
+        try {
+          const response = await fetch(input.url, {
+            method,
+            headers: input.headers,
+            body: input.body ? JSON.stringify(input.body) : undefined,
+          });
 
-        // if it doesn't respond with a 402, return error
-        if (response.status !== 402) {
-          continue;
-        }
+          // if it doesn't respond with a 402, return error
+          if (response.status !== 402) {
+            continue;
+          }
 
-        const data = (await response.json()) as unknown;
+          const data = (await response.json()) as unknown;
 
-        const baseX402ParsedResponse = x402ResponseSchema
+          const baseX402ParsedResponse = x402ResponseSchema
           .omit({
             error: true,
           })
@@ -95,7 +95,7 @@ export const resourcesRouter = createTRPCRouter({
           })
           .safeParse(data);
         if (!baseX402ParsedResponse.success) {
-          console.error(baseX402ParsedResponse.error.issues);
+          console.error('Schema validation failed:', baseX402ParsedResponse.error.issues);
           parseErrorData = {
             parseErrors: baseX402ParsedResponse.error.issues.map(
               issue => `${issue.path.join('.')}: ${issue.message}`
@@ -172,6 +172,10 @@ export const resourcesRouter = createTRPCRouter({
           enhancedParseWarnings,
           response: data,
         };
+        } catch (error) {
+          console.error(`Error during ${method} request:`, error);
+          throw error;
+        }
       }
 
       if (parseErrorData) {

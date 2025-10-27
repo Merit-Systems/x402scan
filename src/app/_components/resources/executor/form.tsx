@@ -29,6 +29,19 @@ interface Props {
 }
 
 export function Form({ x402Response }: Props) {
+  const accept = x402Response?.accepts?.[0];
+  const inputSchema = accept?.outputSchema?.input;
+
+  if (!x402Response || !accept || !inputSchema) {
+    return (
+      <CardContent className="flex flex-col gap-4 p-4 border-t">
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">No input parameters required.</p>
+        </div>
+      </CardContent>
+    );
+  }
+
   const {
     queryFields,
     bodyFields,

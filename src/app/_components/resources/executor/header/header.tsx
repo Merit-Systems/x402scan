@@ -24,7 +24,7 @@ export const Header: React.FC<Props> = ({ resource, method, response }) => {
         </div>
       </div>
       <p className="text-xs text-muted-foreground">
-        {response.accepts && response.accepts.length > 0
+        {response?.accepts && response.accepts.length > 0
           ? response.accepts[0].description
           : null}
       </p>

@@ -20,10 +20,9 @@ export const OriginCard: React.FC<Props> = ({
   numResources,
   onClick,
 }) => {
+  const ogImages = origin.ogImages ?? [];
   const hasMetadata =
-    origin.title !== null ||
-    origin.description !== null ||
-    origin.ogImages.length > 0;
+    origin.title !== null || origin.description !== null || ogImages.length > 0;
 
   return (
     <Card
@@ -70,14 +69,10 @@ export const OriginCard: React.FC<Props> = ({
           </CardContent>
         )}
       </div>
-      {origin.ogImages.length > 0 && (
+      {ogImages.length > 0 && (
         <div className="border-l hidden md:flex items-center justify-center bg-muted p-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={origin.ogImages[0].url}
-            alt={origin.ogImages[0].title ?? ''}
-            className="rounded-md max-h-24"
-          />
+          <img src={ogImages[0].url} alt={ogImages[0].title ?? ''} className="rounded-md max-h-24" />
         </div>
       )}
     </Card>
