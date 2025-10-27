@@ -5,6 +5,7 @@ const NETWORK_COLORS: Record<Chain, string> = {
   [Chain.SOLANA]: 'hsl(271, 100%, 71%)',
   [Chain.POLYGON]: 'hsl(272, 55%, 50%)',
   [Chain.OPTIMISM]: 'hsl(0, 91%, 71%)',
+  [Chain.HASHKEY]: 'hsl(303, 100.00%, 50.00%)', // Cyan/teal color for HashKey Chain
 };
 
 export const networks = Object.values(Chain).map(chain => ({
