@@ -24,13 +24,6 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
         page_size: chainFacilitators.length,
       },
     }),
-    ...chainFacilitators.map(id =>
-      api.public.stats.bucketed.prefetch({
-        numBuckets: 48,
-        facilitatorIds: [id],
-        chain,
-      })
-    ),
   ]);
 
   return (

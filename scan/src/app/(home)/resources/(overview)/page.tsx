@@ -16,14 +16,14 @@ import { ServersCharts } from './_components/charts';
 
 export default async function MarketplacePage() {
   const endDate = new Date();
-  const startDate = subDays(endDate, ActivityTimeframe.SevenDays);
+  const startDate = subDays(endDate, ActivityTimeframe.OneDay);
 
   return (
     <TimeRangeProvider
       creationDate={firstTransfer}
       initialStartDate={startDate}
       initialEndDate={endDate}
-      initialTimeframe={ActivityTimeframe.SevenDays}
+      initialTimeframe={ActivityTimeframe.OneDay}
     >
       <Heading
         title="Marketplace"

@@ -69,7 +69,7 @@ async function executeBitqueryRequest(
 ): Promise<TransferEventData[]> {
   const headers = new Headers();
   headers.append('Content-Type', 'application/json');
-  headers.append('Authorization', `Bearer ${process.env.BITQUERY_API_KEY}`);
+  headers.append('Authorization', `Bearer ${process.env.BITQUERY_API_KEY!}`);
 
   const rawQuery = JSON.stringify({ query });
 

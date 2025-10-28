@@ -1,7 +1,8 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { cdpConfig } from './config';
+
+import dynamic from 'next/dynamic';
 
 const CDPHooksProviderBase = dynamic(
   () => import('@coinbase/cdp-hooks').then(mod => mod.CDPHooksProvider),
