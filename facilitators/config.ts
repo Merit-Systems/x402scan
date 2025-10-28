@@ -204,7 +204,7 @@ const _FACILITATORS = validateUniqueFacilitators([
       ],
       [Chain.SOLANA]: [
         {
-          address: 'kE5xbxMDwmJUpfmG1CxYHepd5XvxeqxbwbgV43L83U',
+          address: '1kE5xbxMDwmJUpfmG1CxYHepd5XvxeqxbwbgV43L83U',
           token: USDC_SOLANA_TOKEN,
           syncStartDate: new Date('2025-10-16'),
           enabled: true,
