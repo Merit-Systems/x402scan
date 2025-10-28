@@ -31,6 +31,7 @@ function buildQuery(
           signer: {
             in: ${JSON.stringify(facilitatorConfig.address)}
           }
+          currency: {is: ${JSON.stringify(facilitatorConfig.token.address)}}
         ) {
           block {
             timestamp {
