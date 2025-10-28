@@ -112,7 +112,7 @@ const scanaiFacilitator: Facilitator = {
   id: 'scanai',
   name: 'ScanAI X402' as const,
   image: '/scanai.svg',
-  link: 'www.scanai.ai',
+  link: 'https://www.scanai.ai',
   addresses: {
     [Chain.BASE]: ['0x9128338a5Dd4Ad0f7887F8389F1Ace4631870563'],
   },
