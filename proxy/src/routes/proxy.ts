@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
+import { insertResourceInvocation } from '../db/clickhouse';
+import { randomUUID } from 'crypto';
 
 const RESPONSE_HEADER_BLOCKLIST = new Set([
   'content-encoding',
@@ -151,6 +153,11 @@ async function proxyHandler(c: Context) {
           })();
 
           const shareData = c.req.query('share_data') === 'true';
+          const requestBody = shareData ? await extractRequestBody(clonedRequest) : undefined;
+          const requestHeaders = shareData ? Object.fromEntries(clonedRequest.headers) : undefined;
+          const responseBody = shareData ? await extractResponseBody(clonedUpstreamResponse) : undefined;
+          const responseHeaders = shareData ? Object.fromEntries(clonedUpstreamResponse.headers) : undefined;
+
           const data = {
             statusCode: clonedUpstreamResponse.status,
             statusText: clonedUpstreamResponse.statusText,
@@ -162,16 +169,32 @@ async function proxyHandler(c: Context) {
               clonedUpstreamResponse.headers.get('content-type') ?? '',
             ...(shareData
               ? {
-                  requestBody: await extractRequestBody(clonedRequest),
-                  requestHeaders: Object.fromEntries(clonedRequest.headers),
-                  responseBody: await extractResponseBody(clonedUpstreamResponse),
-                  responseHeaders: Object.fromEntries(
-                    clonedUpstreamResponse.headers
-                  ),
+                  requestBody,
+                  requestHeaders,
+                  responseBody,
+                  responseHeaders,
                 }
               : {}),
           };
           console.log('[Proxy Data]', { cleanedTargetUrl, data });
+
+          // Insert into ClickHouse (non-blocking, fire-and-forget)
+          insertResourceInvocation({
+            id: randomUUID(),
+            resourceId: null, // TODO: lookup resourceId by URL if needed
+            statusCode: clonedUpstreamResponse.status,
+            duration: fetchDuration,
+            statusText: clonedUpstreamResponse.statusText,
+            method,
+            url: targetUrl.toString(),
+            requestContentType: clonedRequest.headers.get('content-type') ?? '',
+            responseContentType: clonedUpstreamResponse.headers.get('content-type') ?? '',
+            responseHeaders,
+            responseBody,
+            requestHeaders,
+            requestBody,
+            createdAt: new Date(),
+          });
         }
       } catch (error) {
         console.error('[Proxy After Error]', {

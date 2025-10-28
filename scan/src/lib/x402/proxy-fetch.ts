@@ -12,7 +12,9 @@ export const fetchWithProxy = async (
   } else {
     url = input.toString();
   }
-  const proxyUrl = new URL(PROXY_ENDPOINT, env.NEXT_PUBLIC_APP_URL);
+  console.log('env.NEXT_PUBLIC_PROXY_URL', env.NEXT_PUBLIC_PROXY_URL);
+  const proxyUrl = new URL(PROXY_ENDPOINT, env.NEXT_PUBLIC_PROXY_URL);
+  console.log('proxyUrl', proxyUrl);
   proxyUrl.searchParams.set('url', encodeURIComponent(url));
   proxyUrl.searchParams.set('share_data', 'true');
 
