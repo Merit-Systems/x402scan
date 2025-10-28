@@ -16,9 +16,9 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
 
   const { address, status } = useAccount();
 
-  console.log(status);
-
   const { currentUser } = useCurrentUser();
+
+  const resolvedAddress = address ?? currentUser?.evmAccounts?.[0];
 
   return (
     <Dialog defaultOpen={searchParams.get('onramp') === 'true'}>
@@ -27,9 +27,9 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
         className="p-0 overflow-hidden sm:max-w-md"
         showCloseButton={false}
       >
-        {address ? (
+        {resolvedAddress ? (
           <DisplayWalletDialogContent
-            address={address}
+            address={resolvedAddress}
             user={currentUser ?? undefined}
             defaultTab={
               searchParams.get('onramp') === 'true' ? 'deposit' : 'wallet'

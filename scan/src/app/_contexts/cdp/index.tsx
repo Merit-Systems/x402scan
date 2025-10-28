@@ -6,7 +6,9 @@ import dynamic from 'next/dynamic';
 
 const CDPHooksProviderBase = dynamic(
   () => import('@coinbase/cdp-hooks').then(mod => mod.CDPHooksProvider),
-  { ssr: false }
+  {
+    ssr: false,
+  }
 );
 
 interface Props {
