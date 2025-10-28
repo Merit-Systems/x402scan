@@ -26,7 +26,7 @@ export default async function FacilitatorsPage({
   const chain = await searchParams.then(params => getChain(params.chain));
 
   const endDate = new Date();
-  const startDate = subDays(endDate, ActivityTimeframe.ThirtyDays);
+  const startDate = subDays(endDate, ActivityTimeframe.OneDay);
 
   await Promise.all([
     api.public.facilitators.bucketedStatistics.prefetch({
@@ -56,7 +56,7 @@ export default async function FacilitatorsPage({
         creationDate={firstTransfer}
         initialStartDate={startDate}
         initialEndDate={endDate}
-        initialTimeframe={ActivityTimeframe.ThirtyDays}
+        initialTimeframe={ActivityTimeframe.OneDay}
       >
         <FacilitatorsSortingProvider
           initialSorting={defaultFacilitatorsSorting}
