@@ -11,10 +11,7 @@ import { Button } from '@/components/ui/button';
 
 import { api } from '@/trpc/client';
 import { useSession } from 'next-auth/react';
-import { useAccount, useSignMessage } from 'wagmi';
-import { signInWithEthereum } from '@/auth/providers/siwe/sign-in';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { useSignIn } from '@/app/_hooks/use-sign-in';
 
 export const Onramp = () => {
   const { data: session, status } = useSession();
@@ -41,35 +38,13 @@ export const Onramp = () => {
 };
 
 const NoSessionContent = () => {
-  const { address } = useAccount();
-
-  const { signMessageAsync } = useSignMessage();
-
-  const { mutate: handleVerify, isPending } = useMutation({
-    mutationFn: () => {
-      return signInWithEthereum({
-        address: address!,
-        chainId: 8453,
-        signMessage: message => signMessageAsync({ message }),
-        redirectTo: `${window.location.href}?onramp=true`,
-      });
-    },
-    onError: error => {
-      console.error(error);
-      toast.error('Failed to verify wallet');
-    },
-    onSuccess: () => {
-      toast.success('Wallet verified');
-    },
+  const { signIn, isPending } = useSignIn({
+    isOnramp: true,
   });
 
   return (
     <div className="flex flex-col gap-2">
-      <Button
-        variant="turbo"
-        onClick={() => handleVerify()}
-        disabled={isPending}
-      >
+      <Button variant="turbo" onClick={() => signIn()} disabled={isPending}>
         {isPending ? (
           <>
             <Loader2 className="size-4 animate-spin" />
