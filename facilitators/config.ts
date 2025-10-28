@@ -210,6 +210,14 @@ const _FACILITATORS = validateUniqueFacilitators([
           enabled: true,
         },
       ],
+      [Chain.POLYGON]: [
+        {
+          address: '0x97316fa4730bc7d3b295234f8e4d04a0a4c093e8',
+          token: USDC_POLYGON_TOKEN,
+          syncStartDate: new Date('2025-04-01'),
+          enabled: false,
+        },
+      ],
     },
   },
 ] as const);
