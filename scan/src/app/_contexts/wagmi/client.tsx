@@ -4,11 +4,11 @@ import { createConfig, http, WagmiProvider as WagmiProviderBase } from 'wagmi';
 
 import { baseWagmiConfig } from './config';
 
-import type { State } from 'wagmi';
-import { useState } from 'react';
 import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
 import { cdpConfig } from '../cdp/config';
 import { base } from 'wagmi/chains';
+
+import type { State } from 'wagmi';
 
 interface Props {
   children: React.ReactNode;

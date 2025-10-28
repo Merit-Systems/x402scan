@@ -1,6 +1,5 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { cdpConfig } from './config';
 
 import { CDPHooksProvider as CDPHooksProviderBase } from '@coinbase/cdp-hooks';
