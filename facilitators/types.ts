@@ -77,23 +77,40 @@ export enum Chain {
   SOLANA = 'solana',
 }
 
-export interface FacilitatorConfig {
-  address: string;
+export type EvmAddress = Lowercase<`0x${string}`>;
+export type SolanaAddress = string; // Solana addresses are base58, validated at runtime
+
+export interface EvmFacilitatorConfig {
+  address: EvmAddress;
   token: Token;
   syncStartDate: Date;
   enabled: boolean;
 }
 
+export interface SolanaFacilitatorConfig {
+  address: SolanaAddress;
+  token: Token;
+  syncStartDate: Date;
+  enabled: boolean;
+}
+
+export type FacilitatorConfig = EvmFacilitatorConfig | SolanaFacilitatorConfig;
+
 type Url = `http://${string}` | `https://${string}`;
 type ImagePath = `/${string}`;
+type CssVariable = `var(--${string})`;
 
 export interface Facilitator {
   id: string;
   name: string;
   image: ImagePath;
   link: Url;
-  color: string;
-  addresses: Partial<Record<Chain, FacilitatorConfig[]>>;
+  color: CssVariable;
+  addresses: {
+    [Chain.BASE]?: EvmFacilitatorConfig[];
+    [Chain.POLYGON]?: EvmFacilitatorConfig[];
+    [Chain.SOLANA]?: SolanaFacilitatorConfig[];
+  };
 }
 
 export interface Token {
