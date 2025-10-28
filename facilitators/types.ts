@@ -84,11 +84,14 @@ export interface FacilitatorConfig {
   enabled: boolean;
 }
 
+type Url = `http://${string}` | `https://${string}`;
+type ImagePath = `/${string}`;
+
 export interface Facilitator {
   id: string;
   name: string;
-  image: string;
-  link: string;
+  image: ImagePath;
+  link: Url;
   color: string;
   addresses: Partial<Record<Chain, FacilitatorConfig[]>>;
 }
