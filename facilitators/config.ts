@@ -89,7 +89,25 @@ const _FACILITATORS = validateUniqueFacilitators([
           enabled: true,
         },
         {
+          address: '0x76eEe8f0AcAbD6B49f1CC4E9656A0C8892F3332E',
+          token: USDC_BASE_TOKEN,
+          syncStartDate: new Date('2025-10-20'),
+          enabled: true,
+        },
+        {
           address: '0x97D38AA5dE015245DCCa76305b53ABE6DA25F6a5',
+          token: USDC_BASE_TOKEN,
+          syncStartDate: new Date('2025-10-20'),
+          enabled: true,
+        },
+        {
+          address: '0x0168f80e035eA68B191FAf9Bfc12778C87d92008',
+          token: USDC_BASE_TOKEN,
+          syncStartDate: new Date('2025-10-20'),
+          enabled: true,
+        },
+        {
+          address: '0x0168f80e035eA68B191FAf9Bfc12778C87d92008',
           token: USDC_BASE_TOKEN,
           syncStartDate: new Date('2025-10-20'),
           enabled: true,
