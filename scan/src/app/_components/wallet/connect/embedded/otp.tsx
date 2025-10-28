@@ -20,6 +20,7 @@ import {
 import { Label } from '@/components/ui/label';
 
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   flowId: string;
@@ -28,6 +29,8 @@ interface Props {
 
 export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
   const [otp, setOtp] = useState('');
+
+  const router = useRouter();
 
   const { verifyEmailOTP } = useVerifyEmailOTP();
 
@@ -45,6 +48,7 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
     },
     onSuccess: () => {
       toast.success('Signed in successfully');
+      router.refresh();
     },
     onError: () => {
       toast.error('OTP verification failed');
