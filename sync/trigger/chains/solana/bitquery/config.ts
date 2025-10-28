@@ -10,7 +10,6 @@ import {
   FacilitatorConfig,
 } from '../../../types';
 import { FACILITATORS_BY_CHAIN } from '@facilitators/config';
-import { logger } from '@trigger.dev/sdk/v3';
 
 function buildQuery(
   config: SyncConfig,
@@ -67,8 +66,6 @@ function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  logger.log(`[${config.chain}] Transform response: ${JSON.stringify(data)}`);
-
   const transfers = (data as { solana: { sent: BitQueryTransferRow[] } }).solana.sent;
 
   return transfers.map(transfer => ({
@@ -93,7 +90,7 @@ export const solanaChainConfig: SyncConfig = {
   provider: QueryProvider.BITQUERY,
   apiUrl: 'https://graphql.bitquery.io',
   paginationStrategy: PaginationStrategy.OFFSET,
-  limit: 20_000,
+  limit: 10_000, // NOTE(shafu): more than that and bitquery 503
   facilitators: FACILITATORS_BY_CHAIN(Chain.SOLANA),
   buildQuery,
   transformResponse,
