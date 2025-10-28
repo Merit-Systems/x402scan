@@ -15,7 +15,7 @@ interface TimeRangeContextType {
 export const TimeRangeContext = createContext<TimeRangeContextType>({
   startDate: new Date(),
   endDate: new Date(),
-  timeframe: ActivityTimeframe.SevenDays,
+  timeframe: ActivityTimeframe.OneDay,
   selectTimeframe: () => {
     void 0;
   },
