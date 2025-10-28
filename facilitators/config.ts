@@ -183,7 +183,7 @@ const _FACILITATORS = validateUniqueFacilitators([
   },
   {
     id: 'openx402',
-    name: 'Open X402',
+    name: 'OpenX402',
     image: '/openx402.png',
     link: 'https://open.x402.host',
     color: 'var(--color-blue-100)',
@@ -193,6 +193,14 @@ const _FACILITATORS = validateUniqueFacilitators([
           address: '0x97316fa4730bc7d3b295234f8e4d04a0a4c093e8',
           token: USDC_BASE_TOKEN,
           syncStartDate: new Date('2025-10-25'),
+          enabled: true,
+        },
+      ],
+      [Chain.SOLANA]: [
+        {
+          address: 'kE5xbxMDwmJUpfmG1CxYHepd5XvxeqxbwbgV43L83U',
+          token: USDC_SOLANA_TOKEN,
+          syncStartDate: new Date('2025-10-26'),
           enabled: true,
         },
       ],
