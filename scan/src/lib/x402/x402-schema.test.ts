@@ -214,11 +214,13 @@ describe('parseX402Response with normalized schemas', () => {
       // Verify input schema structure
       expect(inputSchema).toBeDefined();
       expect(inputSchema?.bodyType).toBe('json');
-      const messagesField = inputSchema?.bodyFields?.messages as {
-        type: string;
-        description: string;
-        items: unknown;
-      } | undefined;
+      const messagesField = inputSchema?.bodyFields?.messages as
+        | {
+            type: string;
+            description: string;
+            items: unknown;
+          }
+        | undefined;
       expect(messagesField).toBeDefined();
       expect(messagesField?.type).toBe('array');
       expect(messagesField?.description).toBe(
@@ -226,14 +228,19 @@ describe('parseX402Response with normalized schemas', () => {
       );
 
       // Verify nested items with properties
-      const messagesItems = messagesField?.items as {
-        type: string;
-        properties: Record<string, {
-          type: string;
-          enum?: string[];
-          description?: string;
-        }>;
-      } | undefined;
+      const messagesItems = messagesField?.items as
+        | {
+            type: string;
+            properties: Record<
+              string,
+              {
+                type: string;
+                enum?: string[];
+                description?: string;
+              }
+            >;
+          }
+        | undefined;
       expect(messagesItems).toBeDefined();
       expect(messagesItems?.type).toBe('object');
       expect(messagesItems?.properties).toBeDefined();
@@ -252,16 +259,18 @@ describe('parseX402Response with normalized schemas', () => {
       expect(contentProperty?.description).toBe('The message content');
 
       // Verify output schema structure
-      const typedOutputSchema = outputSchema as {
-        status?: { type: string };
-        error?: { type: string };
-        data?: {
-          type: string;
-          properties?: {
-            text?: { type: string };
-          };
-        };
-      } | undefined;
+      const typedOutputSchema = outputSchema as
+        | {
+            status?: { type: string };
+            error?: { type: string };
+            data?: {
+              type: string;
+              properties?: {
+                text?: { type: string };
+              };
+            };
+          }
+        | undefined;
       expect(typedOutputSchema).toBeDefined();
       expect(typedOutputSchema?.status?.type).toBe('number');
       expect(typedOutputSchema?.error?.type).toBe('string');
