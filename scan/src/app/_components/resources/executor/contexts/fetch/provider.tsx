@@ -34,14 +34,18 @@ export const ResourceFetchProvider: React.FC<Props> = ({
     [inputSchema]
   );
 
-  const [queryValues, setQueryValues] = useState<Record<string, string>>({});
-  const [bodyValues, setBodyValues] = useState<Record<string, string>>({});
+  const [queryValues, setQueryValues] = useState<
+    Record<string, string | unknown[]>
+  >({});
+  const [bodyValues, setBodyValues] = useState<
+    Record<string, string | unknown[]>
+  >({});
 
-  const handleQueryChange = (name: string, value: string) => {
+  const handleQueryChange = (name: string, value: string | unknown[]) => {
     setQueryValues(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleBodyChange = (name: string, value: string) => {
+  const handleBodyChange = (name: string, value: string | unknown[]) => {
     setBodyValues(prev => ({ ...prev, [name]: value }));
   };
 
@@ -49,14 +53,16 @@ export const ResourceFetchProvider: React.FC<Props> = ({
     const requiredQuery = queryFields.filter(field => field.required);
     const requiredBody = bodyFields.filter(field => field.required);
 
-    const queryFilled = requiredQuery.every(
-      field =>
-        queryValues[field.name] && queryValues[field.name].trim().length > 0
-    );
-    const bodyFilled = requiredBody.every(
-      field =>
-        bodyValues[field.name] && bodyValues[field.name].trim().length > 0
-    );
+    const queryFilled = requiredQuery.every(field => {
+      const value = queryValues[field.name];
+      if (Array.isArray(value)) return value.length > 0;
+      return value && typeof value === 'string' && value.trim().length > 0;
+    });
+    const bodyFilled = requiredBody.every(field => {
+      const value = bodyValues[field.name];
+      if (Array.isArray(value)) return value.length > 0;
+      return value && typeof value === 'string' && value.trim().length > 0;
+    });
 
     return queryFilled && bodyFilled;
   }, [queryFields, bodyFields, queryValues, bodyValues]);
@@ -64,10 +70,13 @@ export const ResourceFetchProvider: React.FC<Props> = ({
   const queryEntries = Object.entries(queryValues).reduce<
     Array<[string, string]>
   >((acc, [key, value]) => {
-    const trimmed = value.trim();
-    if (trimmed.length > 0) {
-      acc.push([key, trimmed]);
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (trimmed.length > 0) {
+        acc.push([key, trimmed]);
+      }
     }
+    // Arrays in query params are not typical, but skip them
     return acc;
   }, []);
 
@@ -80,11 +89,17 @@ export const ResourceFetchProvider: React.FC<Props> = ({
   }, [resource, queryEntries]);
 
   const bodyEntries = Object.entries(bodyValues).reduce<
-    Array<[string, string]>
+    Array<[string, string | unknown[]]>
   >((acc, [key, value]) => {
-    const trimmed = value.trim();
-    if (trimmed.length > 0) {
-      acc.push([key, trimmed]);
+    if (Array.isArray(value)) {
+      if (value.length > 0) {
+        acc.push([key, value]);
+      }
+    } else if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (trimmed.length > 0) {
+        acc.push([key, trimmed]);
+      }
     }
     return acc;
   }, []);
@@ -177,8 +192,34 @@ function expandFields(
         ? field.required
         : (parentRequired?.includes(name) ?? false);
 
-    // Handle object type with properties - expand recursively
+    // Handle array type with items - preserve items schema
     if (
+      fieldType === 'array' &&
+      field.items &&
+      typeof field.items === 'object'
+    ) {
+      const items = field.items as Record<string, unknown>;
+      fields.push({
+        name: fullName,
+        type: fieldType,
+        description: fieldDescription,
+        required: isFieldRequired,
+        enum: fieldEnum,
+        default: fieldDefault,
+        items: {
+          type: typeof items.type === 'string' ? items.type : undefined,
+          properties:
+            typeof items.properties === 'object' && items.properties !== null
+              ? (items.properties as Record<string, unknown>)
+              : undefined,
+          required: Array.isArray(items.required)
+            ? (items.required as string[])
+            : undefined,
+        },
+      } satisfies FieldDefinition);
+    }
+    // Handle object type with properties - expand recursively
+    else if (
       fieldType === 'object' &&
       field.properties &&
       typeof field.properties === 'object'
@@ -209,11 +250,17 @@ function expandFields(
 }
 
 function reconstructNestedObject(
-  flatObject: Record<string, string>
+  flatObject: Record<string, string | unknown[]>
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(flatObject)) {
+    // Arrays are already structured correctly, just assign them
+    if (Array.isArray(value)) {
+      result[key] = value;
+      continue;
+    }
+
     const parts = key.split('.');
     let current = result;
 

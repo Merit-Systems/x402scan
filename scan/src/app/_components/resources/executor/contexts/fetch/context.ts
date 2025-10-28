@@ -3,12 +3,12 @@ import { createContext } from 'react';
 import type { FieldDefinition } from '@/types/x402';
 
 interface ResourceFetchContextType {
-  queryValues: Record<string, string>;
-  bodyValues: Record<string, string>;
+  queryValues: Record<string, string | unknown[]>;
+  bodyValues: Record<string, string | unknown[]>;
   queryFields: FieldDefinition[];
   bodyFields: FieldDefinition[];
-  handleQueryChange: (name: string, value: string) => void;
-  handleBodyChange: (name: string, value: string) => void;
+  handleQueryChange: (name: string, value: string | unknown[]) => void;
+  handleBodyChange: (name: string, value: string | unknown[]) => void;
   allRequiredFieldsFilled: boolean;
   execute: () => void;
   isPending: boolean;

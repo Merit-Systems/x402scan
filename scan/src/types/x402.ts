@@ -13,4 +13,9 @@ export type FieldDefinition = {
   required?: boolean;
   enum?: string[];
   default?: string;
+  items?: {
+    type?: string;
+    properties?: Record<string, unknown>;
+    required?: string[];
+  };
 };
