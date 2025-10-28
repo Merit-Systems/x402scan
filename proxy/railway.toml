@@ -1,6 +1,6 @@
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "proxy/Dockerfile.railway"
+dockerfilePath = "Dockerfile.railway"
 
 [deploy]
 startCommand = "pnpm start"
