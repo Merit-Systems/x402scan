@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -6,8 +7,17 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Code } from '@/components/ui/code';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
-export const OutputSchema = () => {
+export const OutputSchema = ({
+  collapsible = false,
+}: {
+  collapsible?: boolean;
+}) => {
   return (
     <Card className="">
       <CardHeader className="border-b">
@@ -19,9 +29,24 @@ export const OutputSchema = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-4">
-        <div className="bg-muted rounded-md">
-          <Code value={schema} lang="ts" />
-        </div>
+        {collapsible ? (
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="px-0">
+                Show schema
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2">
+              <div className="bg-muted rounded-md">
+                <Code value={schema} lang="ts" />
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        ) : (
+          <div className="bg-muted rounded-md">
+            <Code value={schema} lang="ts" />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
