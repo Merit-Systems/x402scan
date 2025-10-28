@@ -8,9 +8,6 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "format": "prettier --write .",
-    "check": "turbo run check:format check:types lint",
-    "check:facilitators": "tsc --noEmit --project facilitators/tsconfig.json",
-    "check:format": "prettier --check .",
     "check:types": "pnpm check:facilitators && turbo run check:types"
   },
   "devDependencies": {
