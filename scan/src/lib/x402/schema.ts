@@ -25,6 +25,7 @@ const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
       description: z3.string().optional(),
       enum: z3.array(z3.string()).optional(),
       properties: z3.record(z3.lazy(() => FieldDefSchema)).optional(),
+      items: z3.lazy(() => FieldDefSchema).optional(),
     })
   )
 );

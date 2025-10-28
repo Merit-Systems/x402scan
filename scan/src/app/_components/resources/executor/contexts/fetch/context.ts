@@ -1,14 +1,14 @@
 import { createContext } from 'react';
 
-import type { FieldDefinition } from '@/types/x402';
+import type { FieldDefinition, FieldValue } from '@/types/x402';
 
 interface ResourceFetchContextType {
-  queryValues: Record<string, string>;
-  bodyValues: Record<string, string>;
+  queryValues: Record<string, FieldValue>;
+  bodyValues: Record<string, FieldValue>;
   queryFields: FieldDefinition[];
   bodyFields: FieldDefinition[];
-  handleQueryChange: (name: string, value: string) => void;
-  handleBodyChange: (name: string, value: string) => void;
+  handleQueryChange: (name: string, value: FieldValue) => void;
+  handleBodyChange: (name: string, value: FieldValue) => void;
   allRequiredFieldsFilled: boolean;
   execute: () => void;
   isPending: boolean;

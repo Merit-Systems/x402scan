@@ -6,6 +6,8 @@ export enum Methods {
   PATCH = 'PATCH',
 }
 
+export type FieldValue = string | unknown[];
+
 export type FieldDefinition = {
   name: string;
   type?: string;
@@ -13,4 +15,9 @@ export type FieldDefinition = {
   required?: boolean;
   enum?: string[];
   default?: string;
+  items?: {
+    type?: string;
+    properties?: Record<string, unknown>;
+    required?: string[];
+  };
 };
