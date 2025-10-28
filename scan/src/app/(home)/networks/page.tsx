@@ -19,7 +19,7 @@ export default async function NetworksPage({
   const chain = await searchParams.then(params => getChain(params.chain));
 
   const endDate = new Date();
-  const startDate = subDays(endDate, ActivityTimeframe.ThirtyDays);
+  const startDate = subDays(endDate, ActivityTimeframe.OneDay);
 
   await Promise.all([
     api.networks.bucketedStatistics.prefetch({
@@ -46,7 +46,7 @@ export default async function NetworksPage({
         creationDate={firstTransfer}
         initialStartDate={startDate}
         initialEndDate={endDate}
-        initialTimeframe={ActivityTimeframe.ThirtyDays}
+        initialTimeframe={ActivityTimeframe.OneDay}
       >
         <NetworksSortingProvider initialSorting={defaultNetworksSorting}>
           <Heading
