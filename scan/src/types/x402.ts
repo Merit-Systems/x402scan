@@ -6,6 +6,8 @@ export enum Methods {
   PATCH = 'PATCH',
 }
 
+export type FieldValue = string | unknown[];
+
 export type FieldDefinition = {
   name: string;
   type?: string;

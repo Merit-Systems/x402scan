@@ -5,7 +5,7 @@ import { ResourceFetchContext } from './context';
 import { useX402Fetch } from '@/app/_hooks/x402/use-fetch';
 
 import type { ParsedX402Response } from '@/lib/x402/schema';
-import type { FieldDefinition, Methods } from '@/types/x402';
+import type { FieldDefinition, FieldValue, Methods } from '@/types/x402';
 
 type Accept = NonNullable<ParsedX402Response['accepts']>[number];
 
@@ -34,18 +34,16 @@ export const ResourceFetchProvider: React.FC<Props> = ({
     [inputSchema]
   );
 
-  const [queryValues, setQueryValues] = useState<
-    Record<string, string | unknown[]>
-  >({});
-  const [bodyValues, setBodyValues] = useState<
-    Record<string, string | unknown[]>
-  >({});
+  const [queryValues, setQueryValues] = useState<Record<string, FieldValue>>(
+    {}
+  );
+  const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>({});
 
-  const handleQueryChange = (name: string, value: string | unknown[]) => {
+  const handleQueryChange = (name: string, value: FieldValue) => {
     setQueryValues(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleBodyChange = (name: string, value: string | unknown[]) => {
+  const handleBodyChange = (name: string, value: FieldValue) => {
     setBodyValues(prev => ({ ...prev, [name]: value }));
   };
 
@@ -55,30 +53,33 @@ export const ResourceFetchProvider: React.FC<Props> = ({
 
     const queryFilled = requiredQuery.every(field => {
       const value = queryValues[field.name];
-      if (Array.isArray(value)) return value.length > 0;
-      return value && typeof value === 'string' && value.trim().length > 0;
+      return value && isValidFieldValue(value);
     });
     const bodyFilled = requiredBody.every(field => {
       const value = bodyValues[field.name];
-      if (Array.isArray(value)) return value.length > 0;
-      return value && typeof value === 'string' && value.trim().length > 0;
+      return value && isValidFieldValue(value);
     });
 
     return queryFilled && bodyFilled;
   }, [queryFields, bodyFields, queryValues, bodyValues]);
 
-  const queryEntries = Object.entries(queryValues).reduce<
-    Array<[string, string]>
-  >((acc, [key, value]) => {
-    if (typeof value === 'string') {
-      const trimmed = value.trim();
-      if (trimmed.length > 0) {
-        acc.push([key, trimmed]);
-      }
-    }
-    // Arrays in query params are not typical, but skip them
-    return acc;
-  }, []);
+  const queryEntries = useMemo(
+    () =>
+      Object.entries(queryValues).reduce<Array<[string, string]>>(
+        (acc, [key, value]) => {
+          if (typeof value === 'string') {
+            const trimmed = value.trim();
+            if (trimmed.length > 0) {
+              acc.push([key, trimmed]);
+            }
+          }
+          // Arrays in query params are not typical, but skip them
+          return acc;
+        },
+        []
+      ),
+    [queryValues]
+  );
 
   // Build URL with query parameters
   const targetUrl = useMemo(() => {
@@ -88,21 +89,26 @@ export const ResourceFetchProvider: React.FC<Props> = ({
     return `${resource}${separator}${searchParams.toString()}`;
   }, [resource, queryEntries]);
 
-  const bodyEntries = Object.entries(bodyValues).reduce<
-    Array<[string, string | unknown[]]>
-  >((acc, [key, value]) => {
-    if (Array.isArray(value)) {
-      if (value.length > 0) {
-        acc.push([key, value]);
-      }
-    } else if (typeof value === 'string') {
-      const trimmed = value.trim();
-      if (trimmed.length > 0) {
-        acc.push([key, trimmed]);
-      }
-    }
-    return acc;
-  }, []);
+  const bodyEntries = useMemo(
+    () =>
+      Object.entries(bodyValues).reduce<Array<[string, FieldValue]>>(
+        (acc, [key, value]) => {
+          if (Array.isArray(value)) {
+            if (value.length > 0) {
+              acc.push([key, value]);
+            }
+          } else if (typeof value === 'string') {
+            const trimmed = value.trim();
+            if (trimmed.length > 0) {
+              acc.push([key, trimmed]);
+            }
+          }
+          return acc;
+        },
+        []
+      ),
+    [bodyValues]
+  );
 
   const reconstructedBody = reconstructNestedObject(
     Object.fromEntries(bodyEntries)
@@ -249,8 +255,15 @@ function expandFields(
   return fields;
 }
 
+function isValidFieldValue(value: FieldValue): boolean {
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
 function reconstructNestedObject(
-  flatObject: Record<string, string | unknown[]>
+  flatObject: Record<string, FieldValue>
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 

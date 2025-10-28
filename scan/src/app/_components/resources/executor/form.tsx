@@ -14,10 +14,17 @@ import {
 import { Plus, X } from 'lucide-react';
 
 import { useResourceFetch } from './contexts/fetch/hook';
-import type { FieldDefinition } from '@/types/x402';
+import type { FieldDefinition, FieldValue } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 import { FetchButton } from './header/fetch-button';
 import { Chain } from '@/types/chain';
+
+interface PropertyDefinition {
+  type: string;
+  description?: string;
+  enum?: string[];
+  isRequired: boolean;
+}
 
 interface Props {
   x402Response: ParsedX402Response;
@@ -123,6 +130,76 @@ export function Form({ x402Response }: Props) {
   );
 }
 
+function parsePropertyDefinition(
+  propDef: unknown,
+  propName: string,
+  itemsRequired: string[]
+): PropertyDefinition {
+  const propField = propDef as Record<string, unknown>;
+  return {
+    type: typeof propField.type === 'string' ? propField.type : 'string',
+    description:
+      typeof propField.description === 'string'
+        ? propField.description
+        : undefined,
+    enum: Array.isArray(propField.enum)
+      ? (propField.enum as string[])
+      : undefined,
+    isRequired: itemsRequired.includes(propName),
+  };
+}
+
+function PropertyFieldInput({
+  propName,
+  propDef,
+  value,
+  onChange,
+  fieldId,
+  showLabel = true,
+}: {
+  propName: string;
+  propDef: PropertyDefinition;
+  value: string;
+  onChange: (value: string) => void;
+  fieldId: string;
+  showLabel?: boolean;
+}) {
+  return (
+    <div className="space-y-1">
+      {showLabel && (
+        <Label htmlFor={fieldId} className="text-xs">
+          {propName}
+          {propDef.isRequired && <span className="text-destructive">*</span>}
+        </Label>
+      )}
+      {propDef.enum && propDef.enum.length > 0 ? (
+        <Select value={value} onValueChange={onChange}>
+          <SelectTrigger id={fieldId} className="w-full h-8">
+            <SelectValue
+              placeholder={propDef.description ?? `Select ${propName}`}
+            />
+          </SelectTrigger>
+          <SelectContent>
+            {propDef.enum.map(option => (
+              <SelectItem key={option} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : (
+        <Input
+          id={fieldId}
+          className="h-8"
+          placeholder={propDef.description ?? propDef.type}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+        />
+      )}
+    </div>
+  );
+}
+
 function ArrayFieldInput({
   field,
   value,
@@ -182,71 +259,20 @@ function ArrayFieldInput({
           <div className="flex-1 space-y-2">
             {itemsProperties ? (
               // Render object properties
-              Object.entries(itemsProperties).map(([propName, propDef]) => {
-                const propField = propDef as Record<string, unknown>;
-                const propType =
-                  typeof propField.type === 'string'
-                    ? propField.type
-                    : 'string';
-                const propDescription =
-                  typeof propField.description === 'string'
-                    ? propField.description
-                    : undefined;
-                const propEnum = Array.isArray(propField.enum)
-                  ? (propField.enum as string[])
-                  : undefined;
-                const isRequired = itemsRequired.includes(propName);
-
-                return (
-                  <div key={propName} className="space-y-1">
-                    <Label
-                      htmlFor={`${prefix}-${field.name}-${index}-${propName}`}
-                      className="text-xs"
-                    >
-                      {propName}
-                      {isRequired && (
-                        <span className="text-destructive">*</span>
-                      )}
-                    </Label>
-                    {propEnum && propEnum.length > 0 ? (
-                      <Select
-                        value={(item as Record<string, string>)[propName] ?? ''}
-                        onValueChange={val =>
-                          updateItemField(index, propName, val)
-                        }
-                      >
-                        <SelectTrigger
-                          id={`${prefix}-${field.name}-${index}-${propName}`}
-                          className="w-full h-8"
-                        >
-                          <SelectValue
-                            placeholder={
-                              propDescription ?? `Select ${propName}`
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {propEnum.map(option => (
-                            <SelectItem key={option} value={option}>
-                              {option}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <Input
-                        id={`${prefix}-${field.name}-${index}-${propName}`}
-                        className="h-8"
-                        placeholder={propDescription ?? propType}
-                        value={(item as Record<string, string>)[propName] ?? ''}
-                        onChange={e =>
-                          updateItemField(index, propName, e.target.value)
-                        }
-                      />
-                    )}
-                  </div>
-                );
-              })
+              Object.entries(itemsProperties).map(([propName, propDef]) => (
+                <PropertyFieldInput
+                  key={propName}
+                  propName={propName}
+                  propDef={parsePropertyDefinition(
+                    propDef,
+                    propName,
+                    itemsRequired
+                  )}
+                  value={(item as Record<string, string>)[propName] ?? ''}
+                  onChange={val => updateItemField(index, propName, val)}
+                  fieldId={`${prefix}-${field.name}-${index}-${propName}`}
+                />
+              ))
             ) : (
               // Simple string array
               <Input
@@ -289,8 +315,8 @@ function FieldInput({
   prefix,
 }: {
   field: FieldDefinition;
-  value: string | unknown[];
-  onChange: (value: string | unknown[]) => void;
+  value: FieldValue;
+  onChange: (value: FieldValue) => void;
   prefix: string;
 }) {
   const fieldId = `${prefix}-${field.name}`;
@@ -307,37 +333,21 @@ function FieldInput({
     );
   }
 
-  // Ensure value is string for non-array fields
-  const stringValue = typeof value === 'string' ? value : '';
-
-  // If field has enum options, render a Select dropdown
-  if (field.enum && field.enum.length > 0) {
-    return (
-      <Select value={stringValue} onValueChange={onChange}>
-        <SelectTrigger id={fieldId} className="w-full">
-          <SelectValue
-            placeholder={field.description ?? `Select ${field.name}`}
-          />
-        </SelectTrigger>
-        <SelectContent>
-          {field.enum.map(option => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    );
-  }
-
-  // Default to regular input
+  // Delegate to PropertyFieldInput for non-array fields
+  // Label is already rendered by the parent Form component
   return (
-    <Input
-      id={fieldId}
-      placeholder={field.description ?? field.type ?? 'Value'}
-      value={stringValue}
-      onChange={event => onChange(event.target.value)}
-      aria-required={field.required}
+    <PropertyFieldInput
+      propName={field.name}
+      propDef={{
+        type: field.type ?? 'string',
+        description: field.description,
+        enum: field.enum,
+        isRequired: field.required ?? false,
+      }}
+      value={typeof value === 'string' ? value : ''}
+      onChange={onChange}
+      fieldId={fieldId}
+      showLabel={false}
     />
   );
 }
