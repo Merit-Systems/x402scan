@@ -2,8 +2,8 @@ import 'dotenv/config';
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
-import { registerProxyRouter } from './routes/proxy';
-import { initClickHouseTable } from './db/clickhouse';
+import { registerProxyRouter } from './routes/proxy.js';
+import { initClickHouseTable } from './db/clickhouse.js';
 
 const app = new Hono();
 

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { insertResourceInvocation } from '../db/clickhouse';
+import { insertResourceInvocation } from '../db/clickhouse.js';
 import { randomUUID } from 'crypto';
 
 const RESPONSE_HEADER_BLOCKLIST = new Set([
