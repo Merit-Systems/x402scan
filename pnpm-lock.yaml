@@ -21,14 +21,14 @@ importers:
         specifier: ^2.10.0
         version: 2.11.1(@prisma/client@6.17.1(prisma@6.18.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))
       '@coinbase/cdp-hooks':
-        specifier: ^0.0.51
-        version: 0.0.51(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(react@19.1.0)
+        specifier: ^0.0.42
+        version: 0.0.42(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(react@19.1.0)
       '@coinbase/cdp-sdk':
         specifier: ^1.38.3
         version: 1.38.4(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@coinbase/cdp-wagmi':
-        specifier: ^0.0.51
-        version: 0.0.51(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@tanstack/react-query@5.90.5(react@19.1.0))(react@19.1.0)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(wagmi@2.18.2(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(zod@4.1.12))
+        specifier: ^0.0.42
+        version: 0.0.42(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@tanstack/react-query@5.90.5(react@19.1.0))(react@19.1.0)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(wagmi@2.18.2(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(zod@4.1.12))
       '@coinbase/x402':
         specifier: ^0.6.4
         version: 0.6.6(@solana/sysvars@3.0.3(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -909,12 +909,6 @@ packages:
       '@coinbase/cdp-core': ^0.0.42
       react: '>=18.2.0'
 
-  '@coinbase/cdp-hooks@0.0.51':
-    resolution: {integrity: sha512-5LsbD64Jp3c/LDDUw2flhlOwbBL7MyRnlLHvAAHh8uPr2tCWRT+23e5pIE9Azh/icrkAf7by/POXsr6wLaywQw==}
-    peerDependencies:
-      '@coinbase/cdp-core': ^0.0.51
-      react: '>=18.2.0'
-
   '@coinbase/cdp-sdk@1.38.4':
     resolution: {integrity: sha512-xVvfluaGt0NxNmjElP3C1yI6KnsGwihabdXj+qNtjjsSmd/Ha2V3gAiCyNrrYOqIORn4mpC2jgu2fUFEDaMpaw==}
 
@@ -922,15 +916,6 @@ packages:
     resolution: {integrity: sha512-3SgeuG9XjJp3nsDJZp0jhSqTLNIiNyGIuQ5dzKd3Da2BRiSp3JE+YiXVUedAs/yplfLecvCIiwYPkHzuoqH1fw==}
     peerDependencies:
       '@coinbase/cdp-core': ^0.0.42
-      '@tanstack/react-query': ^5.0.0
-      react: '>=18.2.0'
-      viem: ^2.33.0
-      wagmi: ^2.16.0
-
-  '@coinbase/cdp-wagmi@0.0.51':
-    resolution: {integrity: sha512-dOrs70hX4O3bpkN4Rurmvce3zjmmMZwDe/rBQ3v2qZ9XOhY7PAon7Q/tbvPzb/Q5iRPolnewPaC252mA2R4L8w==}
-    peerDependencies:
-      '@coinbase/cdp-core': ^0.0.51
       '@tanstack/react-query': ^5.0.0
       react: '>=18.2.0'
       viem: ^2.33.0
@@ -9483,14 +9468,14 @@ snapshots:
       - utf-8-validate
       - zod
 
+  '@coinbase/cdp-hooks@0.0.42(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(react@19.1.0)':
+    dependencies:
+      '@coinbase/cdp-core': 0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
+      react: 19.1.0
+
   '@coinbase/cdp-hooks@0.0.42(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(react@19.1.0)':
     dependencies:
       '@coinbase/cdp-core': 0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
-      react: 19.1.0
-
-  '@coinbase/cdp-hooks@0.0.51(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(react@19.1.0)':
-    dependencies:
-      '@coinbase/cdp-core': 0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
       react: 19.1.0
 
   '@coinbase/cdp-sdk@1.38.4(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
@@ -9516,17 +9501,17 @@ snapshots:
       - utf-8-validate
       - ws
 
-  '@coinbase/cdp-wagmi@0.0.42(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@tanstack/react-query@5.90.5(react@19.1.0))(react@19.1.0)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(wagmi@2.18.2(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(zod@4.1.12))':
+  '@coinbase/cdp-wagmi@0.0.42(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@tanstack/react-query@5.90.5(react@19.1.0))(react@19.1.0)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(wagmi@2.18.2(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(zod@4.1.12))':
     dependencies:
-      '@coinbase/cdp-core': 0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
+      '@coinbase/cdp-core': 0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
       '@tanstack/react-query': 5.90.5(react@19.1.0)
       react: 19.1.0
       viem: 2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12)
       wagmi: 2.18.2(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(zod@4.1.12)
 
-  '@coinbase/cdp-wagmi@0.0.51(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@tanstack/react-query@5.90.5(react@19.1.0))(react@19.1.0)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(wagmi@2.18.2(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(zod@4.1.12))':
+  '@coinbase/cdp-wagmi@0.0.42(@coinbase/cdp-core@0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@tanstack/react-query@5.90.5(react@19.1.0))(react@19.1.0)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(wagmi@2.18.2(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(zod@4.1.12))':
     dependencies:
-      '@coinbase/cdp-core': 0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
+      '@coinbase/cdp-core': 0.0.42(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
       '@tanstack/react-query': 5.90.5(react@19.1.0)
       react: 19.1.0
       viem: 2.38.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12)
@@ -10811,7 +10796,7 @@ snapshots:
       '@opentelemetry/core': 2.0.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/instrumentation': 0.203.0(@opentelemetry/api@1.9.0)(supports-color@10.2.2)
       '@opentelemetry/sdk-trace-web': 2.0.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions': 1.36.0
+      '@opentelemetry/semantic-conventions': 1.37.0
     transitivePeerDependencies:
       - supports-color
 
@@ -10916,7 +10901,7 @@ snapshots:
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 2.0.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions': 1.36.0
+      '@opentelemetry/semantic-conventions': 1.37.0
 
   '@opentelemetry/sdk-logs@0.203.0(@opentelemetry/api@1.9.0)':
     dependencies:
