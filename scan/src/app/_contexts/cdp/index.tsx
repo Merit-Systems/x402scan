@@ -2,7 +2,12 @@
 
 import { cdpConfig } from './config';
 
-import { CDPHooksProvider as CDPHooksProviderBase } from '@coinbase/cdp-hooks';
+import dynamic from 'next/dynamic';
+
+const CDPHooksProviderBase = dynamic(
+  () => import('@coinbase/cdp-hooks').then(mod => mod.CDPHooksProvider),
+  { ssr: false }
+);
 
 interface Props {
   children: React.ReactNode;
