@@ -147,16 +147,15 @@ async function fetchWithOffset(
 
     return { totalFetched: results.length };
   }
-  
+
   if (config.provider === QueryProvider.CDP) {
-    // Add CDP offset pagination
     let offset = 0;
     let totalFetched = 0;
     let hasMore = true;
 
     while (hasMore) {
       logger.log(`[${config.chain}] Fetching CDP with offset: ${offset}`);
-      
+
       const results = await fetchCDP(
         config,
         facilitator,
@@ -167,7 +166,7 @@ async function fetchWithOffset(
       );
 
       totalFetched += results.length;
-      
+
       if (onBatchFetched && results.length > 0) {
         await onBatchFetched(results);
       }

@@ -45,7 +45,8 @@ const _FACILITATORS = validateUniqueFacilitators([
           token: USDC_BASE_TOKEN,
           syncStartDate: new Date('2025-10-05'),
           enabled: true,
-        },{
+        },
+        {
           address: '0xb70c4fe126de09bd292fe3d1e40c6d264ca6a52a',
           token: USDC_BASE_TOKEN,
           syncStartDate: new Date('2025-10-27'),

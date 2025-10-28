@@ -19,7 +19,13 @@ export async function fetchCDP(
     `[${config.chain}] Fetching CDP data from ${since.toISOString()} to ${now.toISOString()}`
   );
 
-  const query = config.buildQuery(config, facilitatorConfig, since, now, offset);
+  const query = config.buildQuery(
+    config,
+    facilitatorConfig,
+    since,
+    now,
+    offset
+  );
   const rows = await runCdpSqlQuery(query);
 
   return config.transformResponse(rows, config, facilitator, facilitatorConfig);
