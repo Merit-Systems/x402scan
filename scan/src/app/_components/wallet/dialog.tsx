@@ -14,7 +14,7 @@ interface Props {
 export const WalletDialog: React.FC<Props> = ({ children }) => {
   const searchParams = useSearchParams();
 
-  const { address, status } = useAccount();
+  const { address } = useAccount();
 
   const { currentUser } = useCurrentUser();
 
