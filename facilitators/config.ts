@@ -192,7 +192,13 @@ const _FACILITATORS = validateUniqueFacilitators([
         {
           address: '0x97316fa4730bc7d3b295234f8e4d04a0a4c093e8',
           token: USDC_BASE_TOKEN,
-          syncStartDate: new Date('2025-10-25'),
+          syncStartDate: new Date('2025-10-24'),
+          enabled: true,
+        },
+        {
+          address: '0x97db9b5291a218fc77198c285cefdc943ef74917',
+          token: USDC_BASE_TOKEN,
+          syncStartDate: new Date('2025-10-24'),
           enabled: true,
         },
       ],
@@ -200,7 +206,7 @@ const _FACILITATORS = validateUniqueFacilitators([
         {
           address: 'kE5xbxMDwmJUpfmG1CxYHepd5XvxeqxbwbgV43L83U',
           token: USDC_SOLANA_TOKEN,
-          syncStartDate: new Date('2025-10-26'),
+          syncStartDate: new Date('2025-10-24'),
           enabled: true,
         },
       ],
