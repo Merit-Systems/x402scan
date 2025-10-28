@@ -34,6 +34,14 @@ export const HeaderCard: React.FC<Props> = async ({ origin }) => {
             <h1 className="text-xl md:text-3xl font-bold break-words line-clamp-2">
               {origin.title ?? new URL(origin.origin).hostname}
             </h1>
+            <a
+              href={origin.origin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-bold font-mono text-muted-foreground hover:underline break-all"
+            >
+              {origin.origin}
+            </a>
             <p
               className={cn(
                 'break-words line-clamp-2 text-sm md:text-base',
@@ -74,6 +82,7 @@ export const LoadingHeaderCard = () => {
         <div className="flex flex-col gap-4 p-4 pt-8 md:pt-10 col-span-5">
           <div className="">
             <Skeleton className="w-36 h-[30px] my-[3px]" />
+            <Skeleton className="w-48 h-[14px] my-[2px]" />
             <Skeleton className="w-64 h-[16px] my-[4px]" />
           </div>
           <LoadingHeaderButtons />
