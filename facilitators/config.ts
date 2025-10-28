@@ -46,11 +46,11 @@ const _FACILITATORS = validateUniqueFacilitators([
           syncStartDate: new Date('2025-10-05'),
           enabled: true,
         },{
-          address: '0xB70C4Fe126dE09bD292FE3d1e40c6D264Ca6A52A',
+          address: '0xb70c4fe126de09bd292fe3d1e40c6d264ca6a52a',
           token: USDC_BASE_TOKEN,
           syncStartDate: new Date('2025-10-27'),
           enabled: true,
-        }
+        },
       ],
     },
   },
