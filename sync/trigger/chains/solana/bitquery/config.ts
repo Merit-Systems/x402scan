@@ -10,6 +10,7 @@ import {
   FacilitatorConfig,
 } from '../../../types';
 import { FACILITATORS_BY_CHAIN } from '@facilitators/config';
+import { logger } from '@trigger.dev/sdk/v3';
 
 function buildQuery(
   config: SyncConfig,
@@ -66,7 +67,11 @@ function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  return (data as BitQueryTransferRow[]).map(transfer => ({
+  logger.log(`[${config.chain}] Transform response: ${JSON.stringify(data)}`);
+
+  const transfers = (data as { solana: { sent: BitQueryTransferRow[] } }).solana.sent;
+
+  return transfers.map(transfer => ({
     address: transfer.currency.address,
     transaction_from: transfer.transaction.feePayer,
     sender: transfer.sender.address,
