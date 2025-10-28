@@ -25,19 +25,15 @@ const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
   },
 });
 
-const getClientConfig = () =>
-  createConfig({
-    ...baseWagmiConfig,
-    chains: baseWagmiConfig.chains,
-    connectors: [...baseWagmiConfig.connectors, cdpEmbeddedWalletConnector],
-  });
+const config = createConfig({
+  ...baseWagmiConfig,
+  connectors: [...baseWagmiConfig.connectors, cdpEmbeddedWalletConnector],
+});
 
 export const WagmiProviderClient: React.FC<Props> = ({
   children,
   initialState,
 }) => {
-  const [config] = useState(() => getClientConfig());
-
   return (
     <WagmiProviderBase config={config} initialState={initialState}>
       {children}
