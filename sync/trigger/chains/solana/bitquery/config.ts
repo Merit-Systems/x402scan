@@ -67,7 +67,8 @@ function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  const transfers = (data as { solana: { sent: BitQueryTransferRow[] } }).solana.sent;
+  const transfers = (data as { solana: { sent: BitQueryTransferRow[] } }).solana
+    .sent;
 
   return transfers.map(transfer => ({
     address: transfer.currency.address,
