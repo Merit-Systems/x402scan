@@ -100,7 +100,7 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
           </p>
         )}
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-4">
         <Button
           onClick={() => verifyOTP({ flowId, otp })}
           disabled={isVerifyingOTP || verifyOTPSuccess || otp.length !== 6}
@@ -116,8 +116,12 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
             'Verify OTP'
           )}
         </Button>
-        <Button onClick={handleReset} variant="ghost" disabled={isVerifyingOTP}>
-          Back
+        <Button
+          onClick={handleReset}
+          variant="outline"
+          disabled={isVerifyingOTP}
+        >
+          Use a Different Email
         </Button>
       </div>
     </div>

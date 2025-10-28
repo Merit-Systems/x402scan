@@ -4,11 +4,11 @@ import { createConfig, http, WagmiProvider as WagmiProviderBase } from 'wagmi';
 
 import { baseWagmiConfig } from './config';
 
-import type { State } from 'wagmi';
-import { useState } from 'react';
 import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
 import { cdpConfig } from '../cdp/config';
 import { base } from 'wagmi/chains';
+
+import type { State } from 'wagmi';
 
 interface Props {
   children: React.ReactNode;
@@ -25,19 +25,15 @@ const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
   },
 });
 
-const getClientConfig = () =>
-  createConfig({
-    ...baseWagmiConfig,
-    chains: baseWagmiConfig.chains,
-    connectors: [...baseWagmiConfig.connectors, cdpEmbeddedWalletConnector],
-  });
+const config = createConfig({
+  ...baseWagmiConfig,
+  connectors: [...baseWagmiConfig.connectors, cdpEmbeddedWalletConnector],
+});
 
 export const WagmiProviderClient: React.FC<Props> = ({
   children,
   initialState,
 }) => {
-  const [config] = useState(() => getClientConfig());
-
   return (
     <WagmiProviderBase config={config} initialState={initialState}>
       {children}

@@ -45,7 +45,7 @@ export const FacilitatorCard: React.FC<Props> = ({
               fallback={<Server className="size-8" />}
             />
             <div className="flex flex-col h-fit gap-1">
-              <h1 className="text-lg font-bold break-words leading-none">
+              <h1 className="text-lg font-bold wrap-break-words leading-none">
                 {facilitator.name}
               </h1>
               <Addresses
