@@ -94,7 +94,8 @@ async function fetchWithWindow(
         facilitator,
         facilitatorConfig,
         currentStart,
-        currentEnd
+        currentEnd,
+        0
       );
     }
 
@@ -131,23 +132,57 @@ async function fetchWithOffset(
   now: Date,
   onBatchFetched?: (batch: TransferEventData[]) => Promise<void>
 ): Promise<{ totalFetched: number }> {
-  if (config.provider !== QueryProvider.BITQUERY) {
-    throw new Error(
-      `Offset pagination only supported for Bitquery, not ${config.provider}`
+  if (config.provider === QueryProvider.BITQUERY) {
+    const results = await fetchWithOffsetPagination(
+      config,
+      facilitator,
+      facilitatorConfig,
+      since,
+      now
     );
+
+    if (onBatchFetched && results.length > 0) {
+      await onBatchFetched(results);
+    }
+
+    return { totalFetched: results.length };
+  }
+  
+  if (config.provider === QueryProvider.CDP) {
+    // Add CDP offset pagination
+    let offset = 0;
+    let totalFetched = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      logger.log(`[${config.chain}] Fetching CDP with offset: ${offset}`);
+      
+      const results = await fetchCDP(
+        config,
+        facilitator,
+        facilitatorConfig,
+        since,
+        now,
+        offset
+      );
+
+      totalFetched += results.length;
+      
+      if (onBatchFetched && results.length > 0) {
+        await onBatchFetched(results);
+      }
+
+      if (results.length < config.limit) {
+        hasMore = false;
+      } else {
+        offset += config.limit;
+      }
+    }
+
+    return { totalFetched };
   }
 
-  const results = await fetchWithOffsetPagination(
-    config,
-    facilitator,
-    facilitatorConfig,
-    since,
-    now
+  throw new Error(
+    `Offset pagination only supported for Bitquery and CDP, not ${config.provider}`
   );
-
-  if (onBatchFetched && results.length > 0) {
-    await onBatchFetched(results);
-  }
-
-  return { totalFetched: results.length };
 }

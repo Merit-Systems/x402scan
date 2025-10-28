@@ -12,13 +12,14 @@ export async function fetchCDP(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig,
   since: Date,
-  now: Date
+  now: Date,
+  offset: number
 ): Promise<TransferEventData[]> {
   logger.log(
     `[${config.chain}] Fetching CDP data from ${since.toISOString()} to ${now.toISOString()}`
   );
 
-  const query = config.buildQuery(config, facilitatorConfig, since, now);
+  const query = config.buildQuery(config, facilitatorConfig, since, now, offset);
   const rows = await runCdpSqlQuery(query);
 
   return config.transformResponse(rows, config, facilitator, facilitatorConfig);
