@@ -8,7 +8,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "format": "prettier --write .",
-    "check:types": "pnpm check:facilitators && turbo run check:types"
+    "check:facilitators": "tsc --noEmit --project facilitators/tsconfig.json"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.46.2",
