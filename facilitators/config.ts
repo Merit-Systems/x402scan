@@ -229,7 +229,7 @@ export const FACILITATORS: Facilitator[] =
 
 export const FACILITATORS_BY_CHAIN = function (chain: Chain) {
   return FACILITATORS.filter(f => f.addresses[chain]);
-};
+}，
 {
   id: 'basehope',
   name: 'Basehope',
@@ -254,4 +254,4 @@ export const FACILITATORS_BY_CHAIN = function (chain: Chain) {
       },
     ],
   },
-},
+};
