@@ -42,6 +42,8 @@ import { Label } from '@/components/ui/label';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 import { parseX402Response } from '@/lib/x402/schema';
 import { Methods } from '@/types/x402';
+import { Checklist } from './checklist';
+import { DebugCards } from './debug-cards';
 
 type TestResult = {
   ok: boolean;
@@ -238,10 +240,6 @@ export const TestEndpointForm = () => {
 
   return (
     <>
-      {/* Collapsible schema reference */}
-      {/* <div className="mt-2">
-        <OutputSchemaCard collapsible />
-      </div> */}
       <Card>
         <CardHeader>
           <CardTitle>Test Endpoint</CardTitle>
@@ -350,7 +348,21 @@ export const TestEndpointForm = () => {
 
       {preview && (
         <div className="mt-6">
-          <Accordion type="single" collapsible>
+          {/* Simple checklist above the resource preview header */}
+          {hasTested && (
+            <div className="mb-4">
+              <Checklist
+                preview={preview}
+                getPair={lastGet}
+                postPair={lastPost}
+              />
+            </div>
+          )}
+
+          <h3 className="mt-2 mb-2 text-base font-semibold text-foreground">
+            Resource Preview
+          </h3>
+          <Accordion type="single" collapsible defaultValue="dev-origin">
             <AccordionItem value="dev-origin" className="border-b-0">
               <AccordionTrigger asChild>
                 <button className="w-full text-left">
@@ -382,13 +394,20 @@ export const TestEndpointForm = () => {
                 </button>
               </AccordionTrigger>
               <AccordionContent className="pb-0">
+                <DebugCards getPair={lastGet} postPair={lastPost} />
+
                 {parsedResources.length > 0 && (
                   <div className="pl-4">
                     <Accordion type="multiple" className="border-b-0">
                       {parsedResources.map((entry, idx) => (
                         <ResourceExecutor
                           key={idx}
-                          resource={{ id: `dev-${idx}`, resource: url } as unknown as any}
+                          resource={
+                            {
+                              id: `dev-${idx}`,
+                              resource: url,
+                            } as unknown as any
+                          }
                           tags={[]}
                           response={entry.data}
                           bazaarMethod={
@@ -413,8 +432,12 @@ export const TestEndpointForm = () => {
                     <div className="pl-4">
                       <Card className="mt-4 border-yellow-600/60">
                         <CardHeader>
-                          <CardTitle className="text-sm">No x402 resources found at this path</CardTitle>
-                          <CardDescription>Showing debug responses for GET and POST.</CardDescription>
+                          <CardTitle className="text-sm">
+                            No x402 resources found at this path
+                          </CardTitle>
+                          <CardDescription>
+                            Showing debug responses for GET and POST.
+                          </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                           {lastGet && (
@@ -429,19 +452,31 @@ export const TestEndpointForm = () => {
                                   </DialogTrigger>
                                   <DialogContent>
                                     <DialogHeader>
-                                      <DialogTitle>GET Response Body</DialogTitle>
-                                      <DialogDescription>Raw response.</DialogDescription>
+                                      <DialogTitle>
+                                        GET Response Body
+                                      </DialogTitle>
+                                      <DialogDescription>
+                                        Raw response.
+                                      </DialogDescription>
                                     </DialogHeader>
                                     <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-4 rounded-md max-h-72 overflow-auto">
                                       {typeof lastGet.result.body === 'string'
                                         ? lastGet.result.body
-                                        : JSON.stringify(lastGet.result.body, null, 2)}
+                                        : JSON.stringify(
+                                            lastGet.result.body,
+                                            null,
+                                            2
+                                          )}
                                     </pre>
                                   </DialogContent>
                                 </Dialog>
                               </div>
                               <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-3 rounded-md max-h-60 overflow-auto mt-2">
-                                {JSON.stringify(lastGet.result.headers, null, 2)}
+                                {JSON.stringify(
+                                  lastGet.result.headers,
+                                  null,
+                                  2
+                                )}
                               </pre>
                             </div>
                           )}
@@ -457,19 +492,31 @@ export const TestEndpointForm = () => {
                                   </DialogTrigger>
                                   <DialogContent>
                                     <DialogHeader>
-                                      <DialogTitle>POST Response Body</DialogTitle>
-                                      <DialogDescription>Raw response.</DialogDescription>
+                                      <DialogTitle>
+                                        POST Response Body
+                                      </DialogTitle>
+                                      <DialogDescription>
+                                        Raw response.
+                                      </DialogDescription>
                                     </DialogHeader>
                                     <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-4 rounded-md max-h-72 overflow-auto">
                                       {typeof lastPost.result.body === 'string'
                                         ? lastPost.result.body
-                                        : JSON.stringify(lastPost.result.body, null, 2)}
+                                        : JSON.stringify(
+                                            lastPost.result.body,
+                                            null,
+                                            2
+                                          )}
                                     </pre>
                                   </DialogContent>
                                 </Dialog>
                               </div>
                               <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-3 rounded-md max-h-60 overflow-auto mt-2">
-                                {JSON.stringify(lastPost.result.headers, null, 2)}
+                                {JSON.stringify(
+                                  lastPost.result.headers,
+                                  null,
+                                  2
+                                )}
                               </pre>
                             </div>
                           )}
@@ -604,10 +651,6 @@ export const TestEndpointForm = () => {
           </Accordion>
         </div>
       )}
-
-      {/* Resource executors are rendered inside the accordion above */}
-
-      {/* Bottom-level warning removed; now rendered within origin panel */}
     </>
   );
 };
