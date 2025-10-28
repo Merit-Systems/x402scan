@@ -66,8 +66,7 @@ Thumbs.db
 .gitignore
 .gitattributes
 
-# Docker (don't copy other Dockerfiles)
-Dockerfile
+# Docker (don't copy other Dockerfiles into the image)
 proxy/Dockerfile
 
 # Generated files

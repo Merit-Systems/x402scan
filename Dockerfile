@@ -7,6 +7,9 @@ WORKDIR /app
 # Install pnpm globally
 RUN npm install -g pnpm
 
+# Set CI environment variable for pnpm (required for non-TTY environments)
+ENV CI=true
+
 # Declare build arguments for environment variables needed during build
 ARG NODE_ENV
 ARG PORT
@@ -46,7 +49,8 @@ RUN pnpm install
 WORKDIR /app/proxy
 RUN pnpm build
 
-# Install production dependencies only
+# Install production dependencies only (CI env var already set)
+WORKDIR /app/proxy
 RUN pnpm install --prod
 
 # Expose the port that the proxy runs on
