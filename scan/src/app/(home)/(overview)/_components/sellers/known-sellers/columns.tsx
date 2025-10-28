@@ -7,6 +7,7 @@ import {
   DollarSign,
   Globe,
   Server,
+  Shield,
   Users,
 } from 'lucide-react';
 
@@ -16,6 +17,7 @@ import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
 
 import { Origins, OriginsSkeleton } from '@/app/_components/origins';
 import { Facilitators } from '@/app/_components/facilitator';
+import { TScore } from '@/app/_components/tscore';
 
 import { formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
@@ -170,6 +172,17 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         ids={row.original.facilitators}
         className="mx-auto justify-center"
       />
+    ),
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
+    accessorKey: 'tscore',
+    header: () => (
+      <HeaderCell Icon={Shield} label="tScore" className="mx-auto" />
+    ),
+    cell: ({ row }) => (
+      <TScore origin={row.original.origins[0]?.origin ?? ''} />
     ),
     size: 100,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
