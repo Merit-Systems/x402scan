@@ -78,7 +78,7 @@ export enum Chain {
 }
 
 export type EvmAddress = Lowercase<`0x${string}`>;
-export type SolanaAddress = string; // Solana addresses are base58, validated at runtime
+export type SolanaAddress = string;
 
 export interface EvmFacilitatorConfig {
   address: EvmAddress;
