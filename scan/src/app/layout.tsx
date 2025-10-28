@@ -149,7 +149,7 @@ export default async function RootLayout({
                           </LogoContainer>
                           <header className="w-full flex flex-col pt-4 justify-center bg-card">
                             <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
-                              <div className="pl-8 md:pl-8 flex items-center gap-2 md:gap-3">
+                              <div className="pl-8 md:pl-8 flex items-center gap-2 md:gap-3 min-w-0 flex-1">
                                 {breadcrumbs}
                               </div>
                               <div className="flex items-center gap-1 md:gap-2">
