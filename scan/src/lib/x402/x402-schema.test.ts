@@ -214,37 +214,59 @@ describe('parseX402Response with normalized schemas', () => {
       // Verify input schema structure
       expect(inputSchema).toBeDefined();
       expect(inputSchema?.bodyType).toBe('json');
-      expect(inputSchema?.bodyFields?.messages).toBeDefined();
-      expect(inputSchema?.bodyFields?.messages.type).toBe('array');
-      expect(inputSchema?.bodyFields?.messages.description).toBe(
+      const messagesField = inputSchema?.bodyFields?.messages as {
+        type: string;
+        description: string;
+        items: unknown;
+      } | undefined;
+      expect(messagesField).toBeDefined();
+      expect(messagesField?.type).toBe('array');
+      expect(messagesField?.description).toBe(
         'Array of conversation messages with role and content'
       );
 
       // Verify nested items with properties
-      const messagesItems = inputSchema?.bodyFields?.messages.items;
+      const messagesItems = messagesField?.items as {
+        type: string;
+        properties: Record<string, {
+          type: string;
+          enum?: string[];
+          description?: string;
+        }>;
+      } | undefined;
       expect(messagesItems).toBeDefined();
       expect(messagesItems?.type).toBe('object');
       expect(messagesItems?.properties).toBeDefined();
 
       // Verify role property with enum
-      const roleProperty = messagesItems?.properties?.role;
+      const roleProperty = messagesItems?.properties.role;
       expect(roleProperty).toBeDefined();
       expect(roleProperty?.type).toBe('string');
       expect(roleProperty?.enum).toEqual(['user', 'assistant']);
       expect(roleProperty?.description).toBe('The role of the message sender');
 
       // Verify content property
-      const contentProperty = messagesItems?.properties?.content;
+      const contentProperty = messagesItems?.properties.content;
       expect(contentProperty).toBeDefined();
       expect(contentProperty?.type).toBe('string');
       expect(contentProperty?.description).toBe('The message content');
 
       // Verify output schema structure
-      expect(outputSchema).toBeDefined();
-      expect(outputSchema?.status?.type).toBe('number');
-      expect(outputSchema?.error?.type).toBe('string');
-      expect(outputSchema?.data?.type).toBe('object');
-      expect(outputSchema?.data?.properties?.text?.type).toBe('string');
+      const typedOutputSchema = outputSchema as {
+        status?: { type: string };
+        error?: { type: string };
+        data?: {
+          type: string;
+          properties?: {
+            text?: { type: string };
+          };
+        };
+      } | undefined;
+      expect(typedOutputSchema).toBeDefined();
+      expect(typedOutputSchema?.status?.type).toBe('number');
+      expect(typedOutputSchema?.error?.type).toBe('string');
+      expect(typedOutputSchema?.data?.type).toBe('object');
+      expect(typedOutputSchema?.data?.properties?.text?.type).toBe('string');
     }
   });
 });
