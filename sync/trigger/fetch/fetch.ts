@@ -148,6 +148,7 @@ async function fetchWithOffset(
     return { totalFetched: results.length };
   }
 
+  // TODO(shafu): refactor this
   if (config.provider === QueryProvider.CDP) {
     let offset = 0;
     let totalFetched = 0;
