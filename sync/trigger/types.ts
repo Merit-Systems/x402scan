@@ -61,6 +61,7 @@ export type SyncConfig = QueryConfig & {
   maxDurationInSeconds: number;
   facilitators: Facilitator[];
   limit: number;
+  enabled: boolean;
 };
 
 export interface EvmChainConfig {
@@ -69,6 +70,7 @@ export interface EvmChainConfig {
   network: string;
   chain: string;
   facilitators: Facilitator[];
+  enabled: boolean;
 }
 
 export enum Chain {

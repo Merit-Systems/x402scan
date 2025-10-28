@@ -4,6 +4,10 @@ import { Chain, SyncConfig } from './types';
 import { fetchTransfers } from './fetch/fetch';
 
 export function createChainSyncTask(syncConfig: SyncConfig) {
+  if (!syncConfig.enabled) {
+    return;
+  }
+
   return schedules.task({
     id: syncConfig.chain + '-sync-transfers-' + syncConfig.provider,
     cron: syncConfig.cron,
