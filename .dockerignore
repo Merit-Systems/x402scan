@@ -1,0 +1,19 @@
+# Ignore everything by default
+**
+
+# Allow workspace files
+!pnpm-workspace.yaml
+!pnpm-lock.yaml
+!package.json
+!tsconfig.base.json
+
+# Allow proxy directory
+!proxy/
+
+# But ignore proxy dependencies and build artifacts
+proxy/node_modules/
+proxy/dist/
+proxy/.env
+proxy/.env.*
+!proxy/.env.example
+

@@ -1,0 +1,56 @@
+# Dockerfile.railway - Builds only the proxy from the monorepo
+FROM node:20-alpine AS base
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Builder stage - build the proxy
+FROM base AS builder
+
+WORKDIR /app
+
+# Copy workspace root files
+COPY pnpm-workspace.yaml ./
+COPY pnpm-lock.yaml ./
+COPY package.json ./
+COPY tsconfig.base.json* ./
+
+# Copy proxy package
+COPY proxy ./proxy
+
+# Install dependencies for the entire workspace
+RUN pnpm install --frozen-lockfile
+
+# Build the proxy
+WORKDIR /app/proxy
+RUN pnpm build
+
+# Runner stage - production image
+FROM base AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copy workspace root files
+COPY pnpm-workspace.yaml ./
+COPY package.json ./
+
+# Copy proxy package.json
+COPY proxy/package.json ./proxy/
+
+# Install production dependencies
+RUN pnpm install --prod --frozen-lockfile --filter @x402/proxy
+
+# Copy built proxy
+COPY --from=builder /app/proxy/dist ./proxy/dist
+
+# Set working directory to proxy
+WORKDIR /app/proxy
+
+# Expose port
+EXPOSE 6969
+
+# Start the proxy server
+CMD ["pnpm", "start"]
+

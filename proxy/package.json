@@ -2,10 +2,13 @@
   "name": "@x402/proxy",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "docker:build": "docker build -t x402-proxy .",
+    "docker:run": "docker run -p 6969:6969 --env-file .env x402-proxy"
   },
   "dependencies": {
     "hono": "^4.6.14",
