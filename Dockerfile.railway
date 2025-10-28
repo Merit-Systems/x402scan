@@ -1,54 +1,55 @@
-# Dockerfile.railway - Builds only the proxy from the monorepo
-FROM node:20-alpine AS base
+# Use Node.js 20 as the base image
+FROM node:20-alpine
 
-# Install pnpm
-RUN npm install -g pnpm
-
-# Builder stage - build the proxy
-FROM base AS builder
-
+# Set working directory
 WORKDIR /app
 
-# Copy workspace root files
-COPY pnpm-workspace.yaml ./
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Declare build arguments for environment variables needed during build
+ARG NODE_ENV
+ARG PORT
+ARG CLICKHOUSE_HOST
+ARG CLICKHOUSE_USER
+ARG CLICKHOUSE_PASSWORD
+ARG CLICKHOUSE_DATABASE
+
+# Set environment variables from build arguments
+ENV NODE_ENV=$NODE_ENV
+ENV PORT=$PORT
+ENV CLICKHOUSE_HOST=$CLICKHOUSE_HOST
+ENV CLICKHOUSE_USER=$CLICKHOUSE_USER
+ENV CLICKHOUSE_PASSWORD=$CLICKHOUSE_PASSWORD
+ENV CLICKHOUSE_DATABASE=$CLICKHOUSE_DATABASE
+
+# Install system dependencies
+RUN apk add --no-cache \
+    bash \
+    git \
+    openssh-client
+
+# Copy pnpm workspace and lock files for dependency installation
 COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
 COPY package.json ./
-COPY tsconfig.base.json* ./
+COPY tsconfig.base.json ./
 
-# Copy proxy package
-COPY proxy ./proxy
+# Copy proxy package files
+COPY proxy/ ./proxy/
 
-# Install dependencies for the entire workspace
-RUN pnpm install --frozen-lockfile
+# Install all workspace dependencies
+WORKDIR /app
+RUN pnpm install
 
 # Build the proxy
 WORKDIR /app/proxy
 RUN pnpm build
 
-# Runner stage - production image
-FROM base AS runner
+# Install production dependencies only
+RUN pnpm install --prod
 
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-# Copy workspace root files
-COPY pnpm-workspace.yaml ./
-COPY package.json ./
-
-# Copy proxy package.json
-COPY proxy/package.json ./proxy/
-
-# Install production dependencies
-RUN pnpm install --prod --frozen-lockfile --filter @x402/proxy
-
-# Copy built proxy
-COPY --from=builder /app/proxy/dist ./proxy/dist
-
-# Set working directory to proxy
-WORKDIR /app/proxy
-
-# Expose port
+# Expose the port that the proxy runs on
 EXPOSE 6969
 
 # Start the proxy server
