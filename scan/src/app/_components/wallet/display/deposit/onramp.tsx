@@ -14,6 +14,7 @@ import { useSession } from 'next-auth/react';
 import { useAccount, useSignMessage } from 'wagmi';
 import { signInWithEthereum } from '@/auth/providers/siwe/sign-in';
 import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export const Onramp = () => {
   const { data: session, status } = useSession();
@@ -52,6 +53,13 @@ const NoSessionContent = () => {
         signMessage: message => signMessageAsync({ message }),
         redirectTo: `${window.location.href}?onramp=true`,
       });
+    },
+    onError: error => {
+      console.error(error);
+      toast.error('Failed to verify wallet');
+    },
+    onSuccess: () => {
+      toast.success('Wallet verified');
     },
   });
 
