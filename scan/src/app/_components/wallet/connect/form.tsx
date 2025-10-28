@@ -1,16 +1,18 @@
 import { Mail } from 'lucide-react';
 
 import { ConnectEOAForm } from './eoa';
-import { ConnectEmbeddedWalletForm } from './embedded';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useConnect } from 'wagmi';
 import { useState } from 'react';
 
+import { ConnectEmbeddedWalletEmail } from './embedded/email';
+import { ConnectEmbeddedWalletOAuth } from './embedded/oauth';
+
 export const ConnectWalletForm = () => {
   const { connectors } = useConnect();
 
-  const [isEmbeddedWallet, setIsEmbeddedWallet] = useState(false);
+  const [isEmailFlow, setIsEmailFlow] = useState(false);
 
   const filteredConnectors = connectors.filter(
     connector =>
@@ -20,7 +22,7 @@ export const ConnectWalletForm = () => {
 
   return (
     <>
-      {filteredConnectors.length > 0 && !isEmbeddedWallet && (
+      {filteredConnectors.length > 0 && !isEmailFlow && (
         <>
           <ConnectEOAForm
             connectors={filteredConnectors}
@@ -35,20 +37,23 @@ export const ConnectWalletForm = () => {
           </div>
         </>
       )}
-      {filteredConnectors.length === 0 || isEmbeddedWallet ? (
-        <ConnectEmbeddedWalletForm />
+      {filteredConnectors.length === 0 || isEmailFlow ? (
+        <ConnectEmbeddedWalletEmail />
       ) : (
-        <Button
-          onClick={() => setIsEmbeddedWallet(true)}
-          className="w-full h-12 md:h-12"
-          variant="outline"
-        >
-          <Mail className="size-4" />
-          Continue with Email
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button
+            onClick={() => setIsEmailFlow(true)}
+            className="w-full h-12 md:h-12"
+            variant="outline"
+          >
+            <Mail className="size-4" />
+            Continue with Email
+          </Button>
+          <ConnectEmbeddedWalletOAuth />
+        </div>
       )}
-      {isEmbeddedWallet && filteredConnectors.length > 0 && (
-        <Button onClick={() => setIsEmbeddedWallet(false)} variant="ghost">
+      {isEmailFlow && filteredConnectors.length > 0 && (
+        <Button onClick={() => setIsEmailFlow(false)} variant="ghost">
           Back
         </Button>
       )}
