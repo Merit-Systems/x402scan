@@ -19,4 +19,5 @@ export const solanaBigQueryConfig: SyncConfig = {
   facilitators: FACILITATORS_BY_CHAIN(Chain.SOLANA),
   buildQuery,
   transformResponse,
+  enabled: false,
 };

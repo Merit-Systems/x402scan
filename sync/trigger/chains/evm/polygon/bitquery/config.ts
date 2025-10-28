@@ -8,4 +8,5 @@ export const polygonChainConfig = createEvmChainConfig({
   network: 'polygon',
   chain: 'matic',
   facilitators: FACILITATORS_BY_CHAIN(Chain.POLYGON),
+  enabled: false,
 });
