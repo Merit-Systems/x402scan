@@ -230,3 +230,28 @@ export const FACILITATORS: Facilitator[] =
 export const FACILITATORS_BY_CHAIN = function (chain: Chain) {
   return FACILITATORS.filter(f => f.addresses[chain]);
 };
+{
+  id: 'basehope',
+  name: 'Basehope',
+  image: '/basehope.png',
+  link: 'https://chordotonal-submedian-raisa.ngrok-free.dev/',
+  color: 'var(--color-blue-600)',
+  addresses: {
+    [Chain.BASE]: [
+      {
+        address: '0x040c5dc002c89e4bf5aad6e194867d2bf60d3865',
+        token: USDC_BASE_TOKEN,
+        syncStartDate: new Date('2024-10-29'),
+        enabled: true,
+      },
+    ],
+    [Chain.BASE_SEPOLIA]: [
+      {
+        address: '0x040c5dc002c89e4bf5aad6e194867d2bf60d3865',
+        token: USDC_BASE_SEPOLIA_TOKEN,
+        syncStartDate: new Date('2024-10-29'),
+        enabled: true,
+      },
+    ],
+  },
+},
