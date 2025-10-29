@@ -72,27 +72,39 @@ export async function insertResourceInvocation(data: ProxyLogData) {
   try {
     await clickhouse.insert({
       table: 'resource_invocations',
-      values: [{
-        id: data.id,
-        resource_id: data.resourceId,
-        status_code: data.statusCode,
-        duration: data.duration,
-        status_text: data.statusText,
-        method: data.method,
-        url: data.url,
-        request_content_type: data.requestContentType,
-        response_content_type: data.responseContentType,
-        response_headers: data.responseHeaders ? JSON.stringify(data.responseHeaders) : null,
-        response_body: data.responseBody ? JSON.stringify(data.responseBody) : null,
-        request_headers: data.requestHeaders ? JSON.stringify(data.requestHeaders) : null,
-        request_body: data.requestBody ? JSON.stringify(data.requestBody) : null,
-        created_at: data.createdAt,
-      }],
+      values: [
+        {
+          id: data.id,
+          resource_id: data.resourceId,
+          status_code: data.statusCode,
+          duration: data.duration,
+          status_text: data.statusText,
+          method: data.method,
+          url: data.url,
+          request_content_type: data.requestContentType,
+          response_content_type: data.responseContentType,
+          response_headers: data.responseHeaders
+            ? JSON.stringify(data.responseHeaders)
+            : null,
+          response_body: data.responseBody
+            ? JSON.stringify(data.responseBody)
+            : null,
+          request_headers: data.requestHeaders
+            ? JSON.stringify(data.requestHeaders)
+            : null,
+          request_body: data.requestBody
+            ? JSON.stringify(data.requestBody)
+            : null,
+          created_at: data.createdAt,
+        },
+      ],
       format: 'JSONEachRow',
     });
   } catch (error) {
-    console.error('Failed to insert resource invocation into ClickHouse:', error);
+    console.error(
+      'Failed to insert resource invocation into ClickHouse:',
+      error
+    );
     // Don't throw - we don't want to break the proxy if ClickHouse is down
   }
 }
-
