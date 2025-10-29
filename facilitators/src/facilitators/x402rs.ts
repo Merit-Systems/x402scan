@@ -1,7 +1,11 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_BASE_TOKEN, USDC_POLYGON_TOKEN } from '../lib/constants';
+import { Network, Facilitator, FacilitatorConfig } from '../types';
+import { USDC_BASE_TOKEN, USDC_POLYGON_TOKEN } from '../constants';
 
-export const x402rs = {
+export const x402rs: FacilitatorConfig = {
+  url: 'https://facilitator.x402.rs',
+};
+
+export const x402rsFacilitator = {
   id: 'x402rs',
   metadata: {
     name: 'X402rs',
@@ -9,17 +13,15 @@ export const x402rs = {
     docsUrl: 'https://x402.rs',
     color: 'var(--color-blue-400)',
   },
-  config: {
-    url: 'https://facilitator.x402.rs',
-  },
+  config: x402rs,
   addresses: {
-    [Chain.POLYGON]: [
+    [Network.POLYGON]: [
       {
         address: '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec',
         tokens: [USDC_POLYGON_TOKEN],
       },
     ],
-    [Chain.BASE]: [
+    [Network.BASE]: [
       {
         address: '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec',
         tokens: [USDC_BASE_TOKEN],

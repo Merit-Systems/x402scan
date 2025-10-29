@@ -1,4 +1,4 @@
-import type { Token } from '../types';
+import type { Token } from './types';
 
 export const USDC_MULTIPLIER = 1_000_000;
 export const DEFAULT_CONTRACT_ADDRESS =

@@ -12,9 +12,9 @@ import type z from 'zod';
 import type { upsertResourceSchema } from '@/services/db/resources/resource';
 import type { NextRequest } from 'next/server';
 import {
-  DISCOVERABLE_FACILITATORS,
+  discoverableFacilitators,
   listAllFacilitatorResources,
-} from 'facilitators';
+} from 'facilitators/discovery';
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);
@@ -27,16 +27,14 @@ export const GET = async (request: NextRequest) => {
     console.log('Fetching facilitator resources');
     const resources = (
       await Promise.all(
-        DISCOVERABLE_FACILITATORS.map(facilitator =>
-          listAllFacilitatorResources(facilitator.discoveryConfig!).catch(
-            error => {
-              console.error('Failed to fetch facilitator resources', {
-                facilitator: facilitator.discoveryConfig!.url,
-                error: error instanceof Error ? error.message : 'Unknown error',
-              });
-              return [];
-            }
-          )
+        discoverableFacilitators.map(facilitator =>
+          listAllFacilitatorResources(facilitator).catch(error => {
+            console.error('Failed to fetch facilitator resources', {
+              facilitator: facilitator.url,
+              error: error instanceof Error ? error.message : 'Unknown error',
+            });
+            return [];
+          })
         )
       )
     ).flat();
