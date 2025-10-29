@@ -1,6 +1,6 @@
 {
   "name": "facilitators",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "x402 facilitator configuration and validation utilities",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -37,9 +37,10 @@
   ],
   "author": "",
   "license": "MIT",
+  "homepage": "https://github.com/merit-systems/x402scan/tree/main/facilitators",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/x402-leaderboard.git",
+    "url": "https://github.com/merit-systems/x402scan.git",
     "directory": "facilitators"
   },
   "devDependencies": {

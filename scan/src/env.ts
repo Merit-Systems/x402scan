@@ -37,6 +37,7 @@ export const env = createEnv({
               ? `https://${process.env.VERCEL_BRANCH_URL}`
               : 'http://localhost:3000')
       ),
+    NEXT_PUBLIC_PROXY_URL: z.url(),
     NEXT_PUBLIC_NODE_ENV: z
       .enum(['development', 'production'])
       .default('development'),
@@ -54,6 +55,7 @@ export const env = createEnv({
         : process.env.VERCEL_ENV === 'preview'
           ? `https://${process.env.VERCEL_BRANCH_URL}`
           : 'http://localhost:3000'),
+    NEXT_PUBLIC_PROXY_URL: process.env.NEXT_PUBLIC_PROXY_URL,
     NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV ?? 'development',
     NEXT_PUBLIC_CDP_PROJECT_ID: process.env.NEXT_PUBLIC_CDP_PROJECT_ID,
     NEXT_PUBLIC_CDP_APP_ID: process.env.NEXT_PUBLIC_CDP_APP_ID,

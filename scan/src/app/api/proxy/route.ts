@@ -100,7 +100,14 @@ async function proxy(request: NextRequest) {
         const upstreamX402Response =
           (await clonedUpstreamResponse.json()) as unknown;
         console.log('upstreamX402Response', upstreamX402Response);
-        await registerResource(targetUrl.toString(), upstreamX402Response);
+        const isDev =
+          request.nextUrl.searchParams.get('dev') === 'true' ||
+          request.nextUrl.searchParams.has('dev');
+        if (!isDev) {
+          await registerResource(targetUrl.toString(), upstreamX402Response);
+        } else {
+          console.log('[Proxy] Dev flag set; skipping resource registration');
+        }
       } else {
         const cleanedTargetUrl = (() => {
           const urlObj = new URL(targetUrl.toString());
