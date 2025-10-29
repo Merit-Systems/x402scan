@@ -1,7 +1,7 @@
 import {
   DEFAULT_CONTRACT_ADDRESS,
   USDC_MULTIPLIER,
-} from '@facilitators/constants';
+} from '@/trigger/lib/constants';
 import {
   SyncConfig,
   EvmChainConfig,
