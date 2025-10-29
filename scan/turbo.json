@@ -1,7 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
-  "globalEnv": ["NODE_ENV", "GITHUB_TOKEN", "CRON_SECRET"],
   "tasks": {
     "dev": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
