@@ -5,8 +5,8 @@ import {
   Chain,
 } from '@/trigger/types';
 import { buildQuery, transformResponse } from './query';
-import { ONE_DAY_IN_MS, ONE_MINUTE_IN_SECONDS } from '@facilitators/constants';
-import { FACILITATORS_BY_CHAIN } from '@facilitators/config';
+import { ONE_DAY_IN_MS, ONE_MINUTE_IN_SECONDS } from '@/trigger/lib/constants';
+import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 
 export const solanaBigQueryConfig: SyncConfig = {
   cron: '0 * * * *',

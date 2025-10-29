@@ -1,7 +1,7 @@
-import { ONE_MINUTE_IN_SECONDS } from '@facilitators/constants';
+import { ONE_MINUTE_IN_SECONDS } from '@/trigger/lib/constants';
 import { SyncConfig, PaginationStrategy, QueryProvider } from '@/trigger/types';
 import { buildQuery, transformResponse } from './query';
-import { FACILITATORS_BY_CHAIN } from '@facilitators/config';
+import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 import { Chain } from '@/trigger/types';
 
 export const baseCdpConfig: SyncConfig = {

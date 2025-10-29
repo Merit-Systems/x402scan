@@ -1,4 +1,4 @@
-import { FACILITATORS_BY_CHAIN } from '@facilitators/config';
+import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 import {
   SyncConfig,
   PaginationStrategy,
@@ -6,7 +6,7 @@ import {
   Chain,
 } from '@/trigger/types';
 import { buildQuery, transformResponse } from './query';
-import { ONE_DAY_IN_MS } from '@facilitators/constants';
+import { ONE_DAY_IN_MS } from '@/trigger/lib/constants';
 
 export const polygonBigQueryConfig: SyncConfig = {
   cron: '*/30 * * * *',

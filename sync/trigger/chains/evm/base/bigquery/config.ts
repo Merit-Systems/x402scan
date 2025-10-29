@@ -1,4 +1,4 @@
-import { FACILITATORS_BY_CHAIN } from '@facilitators/config';
+import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 import { createEvmChainConfig } from '@/trigger/fetch/bitquery/query';
 import { Chain } from '@/trigger/types';
 

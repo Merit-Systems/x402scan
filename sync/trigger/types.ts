@@ -1,18 +1,17 @@
-import {
-  Network,
-  type SyncFacilitatorConfig,
-  type Token,
-} from '@facilitators/types';
+import { Network, type Token } from 'facilitators/types';
 
-export {
-  Network as Chain,
-  type SyncFacilitatorConfig as FacilitatorConfig,
-  type Token,
-};
+export { Network, type Token };
+
+export interface FacilitatorConfig {
+  address: string;
+  token: Token;
+  syncStartDate: Date;
+  enabled: boolean;
+}
 
 export interface Facilitator {
   id: string;
-  addresses: Partial<Record<Network, SyncFacilitatorConfig[]>>;
+  addresses: Partial<Record<Network, FacilitatorConfig[]>>;
 }
 
 export interface TransferEventData {
@@ -48,7 +47,7 @@ interface BaseQueryConfig {
   apiUrl?: string;
   buildQuery: (
     config: SyncConfig,
-    facilitatorConfig: SyncFacilitatorConfig,
+    facilitatorConfig: FacilitatorConfig,
     since: Date,
     now: Date,
     offset?: number
@@ -57,7 +56,7 @@ interface BaseQueryConfig {
     data: unknown,
     config: SyncConfig,
     facilitator: Facilitator,
-    facilitatorConfig: SyncFacilitatorConfig
+    facilitatorConfig: FacilitatorConfig
   ) => TransferEventData[] | Promise<TransferEventData[]>;
 }
 

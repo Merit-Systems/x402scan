@@ -21,12 +21,14 @@ export const coinbaseFacilitator = {
       {
         address: '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6',
         tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-05-05'),
       },
     ],
     [Network.SOLANA]: [
       {
         address: 'L54zkaPQFeTn1UsEqieEXBqWrPShiaZEPD7mS5WXfQg',
         tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-24'),
       },
     ],
   },
