@@ -5,7 +5,7 @@ import {
   BigQueryTransferRow,
   FacilitatorConfig,
 } from '@/trigger/types';
-import { USDC_MULTIPLIER, USDC_SOLANA } from '@facilitators/constants';
+import { USDC_MULTIPLIER, USDC_SOLANA } from '@/trigger/lib/constants';
 import { getAccount } from '@solana/spl-token';
 import { Connection, PublicKey } from '@solana/web3.js';
 import Bottleneck from 'bottleneck';

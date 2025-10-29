@@ -17,6 +17,7 @@ export const corbits = {
       {
         address: 'AepWpq3GQwL8CeKMtZyKtKPa7W91Coygh3ropAJapVdU',
         tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-09-21'),
       },
     ],
   },

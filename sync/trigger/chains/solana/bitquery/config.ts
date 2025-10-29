@@ -1,4 +1,4 @@
-import { USDC_MULTIPLIER } from '@facilitators/constants';
+import { USDC_MULTIPLIER } from '@/trigger/lib/constants';
 import {
   SyncConfig,
   Facilitator,
@@ -9,7 +9,7 @@ import {
   BitQueryTransferRow,
   FacilitatorConfig,
 } from '../../../types';
-import { FACILITATORS_BY_CHAIN } from '@facilitators/config';
+import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 
 function buildQuery(
   config: SyncConfig,

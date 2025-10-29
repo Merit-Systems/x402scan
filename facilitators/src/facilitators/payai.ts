@@ -20,12 +20,14 @@ export const payai = {
       {
         address: '2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4',
         tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-07-01'),
       },
     ],
     [Chain.BASE]: [
       {
         address: '0xc6699d2aada6c36dfea5c248dd70f9cb0235cb63',
         tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-05-18'),
       },
     ],
   },
