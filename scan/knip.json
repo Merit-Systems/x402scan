@@ -7,16 +7,10 @@
   "ignoreDependencies": [
     "eslint-config-next",
     "tw-animate-css",
-    "@trigger.dev/build",
     "tailwindcss",
     "postcss",
-    "@trigger.dev/sdk",
     "redis"
   ],
-  "ignore": [
-    "/scripts/**",
-    "trigger.config.ts",
-    "src/components/ui/charts/chart/**"
-  ],
+  "ignore": ["/scripts/**", "src/components/ui/charts/chart/**"],
   "ignoreWorkspaces": []
 }
