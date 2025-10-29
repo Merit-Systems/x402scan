@@ -19,6 +19,7 @@ const chainMap: Record<FacilitatorsChain, Chain> = {
 export const facilitators: Facilitator[] = RAW_FACILITATORS.map(f => ({
   id: f.id,
   ...f.metadata,
+  image: `/${f.metadata.image.split('/').pop()}`,
   addresses: Object.entries(f.addresses).reduce(
     (acc, [chain, configs]) => {
       const scanChain = chainMap[chain as FacilitatorsChain];
