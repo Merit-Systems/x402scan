@@ -1,0 +1,48 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "globalEnv": ["NODE_ENV", "GITHUB_TOKEN", "CRON_SECRET"],
+  "tasks": {
+    "dev": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": [
+        "POSTGRES_*",
+        "CDP_*",
+        "HIDE_TRPC_LOGS",
+        "GITHUB_TOKEN",
+        "CRON_SECRET",
+        "FREEPIK_API_KEY",
+        "BLOB_READ_WRITE_TOKEN",
+        "FREE_TIER_WALLET_NAME",
+        "TRANSFERS_DB_*",
+        "REDIS_URL",
+        "LMNR_PROJECT_API_KEY",
+        "NODE_ENV",
+        "NEXT_RUNTIME"
+      ]
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": [
+        "POSTGRES_*",
+        "CDP_*",
+        "HIDE_TRPC_LOGS",
+        "GITHUB_TOKEN",
+        "CRON_SECRET",
+        "FREEPIK_API_KEY",
+        "BLOB_READ_WRITE_TOKEN",
+        "FREE_TIER_WALLET_NAME",
+        "TRANSFERS_DB_*",
+        "REDIS_URL",
+        "LMNR_PROJECT_API_KEY",
+        "NODE_ENV",
+        "NEXT_RUNTIME"
+      ]
+    },
+    "lint": {
+      "env": ["CRON_SECRET", "GITHUB_TOKEN", "NODE_ENV", "NEXT_RUNTIME"]
+    }
+  }
+}
