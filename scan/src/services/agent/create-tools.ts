@@ -135,7 +135,7 @@ export async function createX402AITools({
               )(
                 new URL(
                   `/api/proxy?url=${encodeURIComponent(url)}&share_data=true`,
-                  env.NEXT_PUBLIC_APP_URL
+                  env.NEXT_PUBLIC_PROXY_URL
                 ),
                 requestInit
               );
