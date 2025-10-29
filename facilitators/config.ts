@@ -52,6 +52,14 @@ const _FACILITATORS = validateUniqueFacilitators([
           enabled: true,
         },
       ],
+      [Chain.SOLANA]: [
+        {
+          address: '8x8CzkTHTYkW18frrTR7HdCV6fsjenvcykJAXWvoPQW',
+          token: USDC_SOLANA_TOKEN,
+          syncStartDate: new Date('2025-10-28'),
+          enabled: true,
+        },
+      ],
     },
   },
   {
