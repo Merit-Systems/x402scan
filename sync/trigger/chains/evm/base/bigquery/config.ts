@@ -8,4 +8,5 @@ export const baseChainConfig = createEvmChainConfig({
   network: 'base',
   chain: 'base',
   facilitators: FACILITATORS_BY_CHAIN(Chain.BASE),
+  enabled: false,
 });
