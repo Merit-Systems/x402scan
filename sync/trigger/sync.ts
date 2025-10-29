@@ -42,7 +42,7 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
               facilitatorConfig.syncStartDate;
 
             logger.log(
-              `[${syncConfig.chain}] Syncing ${facilitator.id} from ${since.toISOString()} to ${now.toISOString()}`
+              `[${syncConfig.chain}] Syncing ${facilitator.id}:${facilitatorConfig.address} from ${since.toISOString()} to ${now.toISOString()}`
             );
 
             let totalSaved = 0;

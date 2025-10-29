@@ -122,7 +122,6 @@ export const upsertResource = async (
               scheme: baseAccepts.scheme,
               network: baseAccepts.network as AcceptsNetwork,
             },
-            payTo: baseAccepts.payTo,
           },
           create: {
             resourceId: resource.id,

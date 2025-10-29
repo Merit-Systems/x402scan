@@ -16,8 +16,10 @@ import { Plus, X } from 'lucide-react';
 import { useResourceFetch } from './contexts/fetch/hook';
 import type { FieldDefinition, FieldValue } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
+import type { JsonValue } from '@/components/ai-elements/json-viewer';
 import { FetchButton } from './header/fetch-button';
 import { Chain } from '@/types/chain';
+import { JsonViewer } from '@/components/ai-elements/json-viewer';
 
 interface PropertyDefinition {
   type: string;
@@ -121,9 +123,15 @@ export function Form({ x402Response }: Props) {
         <p className="text-xs text-red-600 bg-red-50 p-3 rounded-md">{error}</p>
       )}
 
-      {response !== undefined && (
-        <pre className="max-h-60 overflow-auto rounded-md bg-muted p-3 text-xs">
-          {JSON.stringify(response, null, 2)}
+      {response && (
+        <pre className="max-h-60 overflow-auto rounded-md bg-muted text-xs">
+          {response.type === 'json' ? (
+            <JsonViewer data={response.data as JsonValue} />
+          ) : (
+            <pre className="max-h-60 overflow-auto rounded-md bg-muted p-3 text-xs">
+              {JSON.stringify(response.data, null, 2)}
+            </pre>
+          )}
         </pre>
       )}
     </CardContent>

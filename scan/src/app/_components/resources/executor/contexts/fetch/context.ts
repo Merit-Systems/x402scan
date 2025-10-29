@@ -1,6 +1,7 @@
 import { createContext } from 'react';
 
 import type { FieldDefinition, FieldValue } from '@/types/x402';
+import type { X402FetchResponse } from '@/app/_hooks/x402/use-fetch';
 
 interface ResourceFetchContextType {
   queryValues: Record<string, FieldValue>;
@@ -13,7 +14,7 @@ interface ResourceFetchContextType {
   execute: () => void;
   isPending: boolean;
   error: string | null;
-  response: unknown;
+  response: X402FetchResponse<unknown> | undefined;
   maxAmountRequired: bigint;
 }
 
