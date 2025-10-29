@@ -237,12 +237,10 @@ export const TestEndpointForm = () => {
         </form>
       </Card>
 
-      {(getQuery.isFetching ||
-        postQuery.isFetching ||
-        previewQuery.isFetching ||
-        Boolean(getQuery.data ?? postQuery.data ?? previewQuery.data)) && (
-        <Checklist preview={preview} getPair={getPair} postPair={postPair} />
-      )}
+      {!isLoading &&
+        Boolean(getQuery.data ?? postQuery.data ?? previewQuery.data) && (
+          <Checklist preview={preview} getPair={getPair} postPair={postPair} />
+        )}
 
       {!getQuery.isFetching &&
         !postQuery.isFetching &&
