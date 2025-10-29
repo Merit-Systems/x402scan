@@ -18,24 +18,38 @@ function convertAddressConfig(
   facilitatorAddress: FacilitatorAddress,
   chain: Chain
 ): FacilitatorConfig[] {
-  return facilitatorAddress.tokens.map((token: Token) => ({
-    address: facilitatorAddress.address,
-    token,
-    syncStartDate: getSyncStartDate(chain, facilitatorAddress.address),
-    enabled: true,
-  }));
+  try {
+    const syncStartDate = getSyncStartDate(chain, facilitatorAddress.address);
+    return facilitatorAddress.tokens.map((token: Token) => ({
+      address: facilitatorAddress.address,
+      token,
+      syncStartDate,
+      enabled: true,
+    }));
+  } catch {
+    return [];
+  }
 }
 
-function convertFacilitator(raw: RawFacilitator): Facilitator {
+function convertFacilitator(raw: RawFacilitator): Facilitator | null {
   const addresses: Partial<Record<Chain, FacilitatorConfig[]>> = {};
 
   for (const [chain, facilitatorAddresses] of Object.entries(raw.addresses)) {
     const mappedChain = chainMap[chain as FacilitatorsChain];
     if (mappedChain) {
-      addresses[mappedChain] = facilitatorAddresses.flatMap(addr =>
+      const configs = facilitatorAddresses.flatMap(addr =>
         convertAddressConfig(addr, mappedChain)
       );
+      // Only add the chain if there are configs for it
+      if (configs.length > 0) {
+        addresses[mappedChain] = configs;
+      }
     }
+  }
+
+  // Only include facilitator if it has at least one address configured for sync
+  if (Object.keys(addresses).length === 0) {
+    return null;
   }
 
   return {
@@ -44,8 +58,9 @@ function convertFacilitator(raw: RawFacilitator): Facilitator {
   };
 }
 
-export const FACILITATORS: Facilitator[] =
-  RAW_FACILITATORS.map(convertFacilitator);
+export const FACILITATORS: Facilitator[] = RAW_FACILITATORS.map(
+  convertFacilitator
+).filter((f): f is Facilitator => f !== null);
 
 export function FACILITATORS_BY_CHAIN(chain: Chain): Facilitator[] {
   return FACILITATORS.map(f => ({
