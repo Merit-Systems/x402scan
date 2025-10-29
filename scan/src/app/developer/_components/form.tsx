@@ -1,7 +1,7 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { ChevronDown, Plus, X } from 'lucide-react';
 
@@ -45,7 +45,6 @@ export const TestEndpointForm = () => {
   const [submittedHeaders, setSubmittedHeaders] = useState<
     { name: string; value: string }[]
   >([]);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const isValidUrl = useMemo(
     () => z.string().url().safeParse(url).success,
@@ -67,8 +66,10 @@ export const TestEndpointForm = () => {
   const previewQuery = usePreviewQuery(submittedUrl);
 
   const onTest = async () => {
-    if (!isValidUrl) return;
-    // Cancel any in-flight queries to avoid stale updates
+    const isLoading =
+      getQuery.isFetching || postQuery.isFetching || previewQuery.isFetching;
+    if (!isValidUrl || isLoading) return;
+    // Ensure any previous run is stopped
     await queryClient.cancelQueries({
       predicate: q =>
         Array.isArray(q.queryKey) &&
@@ -77,11 +78,7 @@ export const TestEndpointForm = () => {
     });
     // Commit current inputs to submitted state so queries use stable keys
     setSubmittedUrl(url);
-    setSubmittedHeaders(headers);
-    setHasSubmitted(true);
-    void getQuery.refetch();
-    void postQuery.refetch();
-    void previewQuery.refetch();
+    setSubmittedHeaders(headers.map(h => ({ name: h.name, value: h.value })));
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,24 +86,13 @@ export const TestEndpointForm = () => {
     void onTest();
   };
 
-  // Derived UI state
-  const hasTested =
-    hasSubmitted &&
-    (getQuery.isFetched || postQuery.isFetched || previewQuery.isFetched);
-  const getPair = useMemo(
-    () =>
-      getQuery.data
-        ? { result: getQuery.data.result, parsed: getQuery.data.parsed }
-        : null,
-    [getQuery.data]
-  );
-  const postPair = useMemo(
-    () =>
-      postQuery.data
-        ? { result: postQuery.data.result, parsed: postQuery.data.parsed }
-        : null,
-    [postQuery.data]
-  );
+  // Direct query-derived pairs
+  const getPair = getQuery.data
+    ? { result: getQuery.data.result, parsed: getQuery.data.parsed }
+    : null;
+  const postPair = postQuery.data
+    ? { result: postQuery.data.result, parsed: postQuery.data.parsed }
+    : null;
   const parsedResources = useMemo(() => {
     const list: { method: Methods; data: ParsedX402Response }[] = [];
     if (getQuery.data?.parsed.success && getQuery.data.info.hasInputSchema) {
@@ -118,6 +104,17 @@ export const TestEndpointForm = () => {
     return list;
   }, [getQuery.data, postQuery.data]);
   const preview: PreviewData = previewQuery.data?.preview ?? null;
+  const isLoading =
+    getQuery.isFetching || postQuery.isFetching || previewQuery.isFetching;
+
+  // After inputs are committed, fire queries for this run
+  useEffect(() => {
+    if (!submittedUrl) return;
+    void getQuery.refetch();
+    void postQuery.refetch();
+    void previewQuery.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submittedUrl, submittedHeadersInit]);
 
   // No persistence; show nothing while fetching
 
@@ -220,20 +217,21 @@ export const TestEndpointForm = () => {
             <Button
               type="submit"
               variant="turbo"
-              disabled={
-                getQuery.isFetching || postQuery.isFetching || !isValidUrl
-              }
+              disabled={isLoading || !isValidUrl}
               className="w-full"
             >
-              {getQuery.isFetching || postQuery.isFetching
-                ? 'Testing...'
-                : 'Test Endpoint'}
+              {isLoading ? 'Testing...' : 'Test Endpoint'}
             </Button>
           </CardFooter>
         </form>
       </Card>
 
-      {hasTested && (
+      {(getQuery.isFetching ||
+        postQuery.isFetching ||
+        previewQuery.isFetching ||
+        getQuery.data ||
+        postQuery.data ||
+        previewQuery.data) && (
         <Checklist preview={preview} getPair={getPair} postPair={postPair} />
       )}
 
