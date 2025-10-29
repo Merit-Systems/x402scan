@@ -154,10 +154,18 @@ async function proxyHandler(c: Context) {
           })();
 
           const shareData = c.req.query('share_data') === 'true';
-          const requestBody = shareData ? await extractRequestBody(clonedRequest) : undefined;
-          const requestHeaders = shareData ? Object.fromEntries(clonedRequest.headers) : undefined;
-          const responseBody = shareData ? await extractResponseBody(clonedUpstreamResponse) : undefined;
-          const responseHeaders = shareData ? Object.fromEntries(clonedUpstreamResponse.headers) : undefined;
+          const requestBody = shareData
+            ? await extractRequestBody(clonedRequest)
+            : undefined;
+          const requestHeaders = shareData
+            ? Object.fromEntries(clonedRequest.headers)
+            : undefined;
+          const responseBody = shareData
+            ? await extractResponseBody(clonedUpstreamResponse)
+            : undefined;
+          const responseHeaders = shareData
+            ? Object.fromEntries(clonedUpstreamResponse.headers)
+            : undefined;
 
           const data = {
             statusCode: clonedUpstreamResponse.status,
@@ -189,7 +197,8 @@ async function proxyHandler(c: Context) {
             method,
             url: targetUrl.toString(),
             requestContentType: clonedRequest.headers.get('content-type') ?? '',
-            responseContentType: clonedUpstreamResponse.headers.get('content-type') ?? '',
+            responseContentType:
+              clonedUpstreamResponse.headers.get('content-type') ?? '',
             responseHeaders,
             responseBody,
             requestHeaders,
