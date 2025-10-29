@@ -252,7 +252,7 @@ const _FACILITATORS = validateUniqueFacilitators([
         {
           address: '0x73b2b8df52fbe7c40fe78db52e3dffdd5db5ad07',
           token: USDC_BASE_TOKEN,
-          syncStartDate: new Date('2025-10-16'),
+          syncStartDate: new Date('2025-10-29'),
           enabled: true,
         },
       ],
