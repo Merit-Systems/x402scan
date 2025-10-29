@@ -1,4 +1,4 @@
-import { Facilitator } from './types';
+import { Facilitator } from '../types';
 
 // NOTE(shafu): CHAT GPT GENERATED crap, don't ask me how it works
 
@@ -45,7 +45,7 @@ type FindDuplicateAddressToken<
   : never;
 
 export function validateUniqueFacilitators<
-  const T extends readonly Facilitator[],
+  const T extends readonly Facilitator<any>[],
 >(
   facilitators: FindDuplicateId<T> extends never
     ? FindDuplicateAddressToken<T> extends never

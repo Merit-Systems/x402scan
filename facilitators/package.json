@@ -1,0 +1,58 @@
+{
+  "name": "facilitators",
+  "version": "0.0.2",
+  "description": "x402 facilitator configuration and validation utilities",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.mjs",
+      "require": "./dist/types.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "postinstall": "pnpm run build",
+    "prepublishOnly": "pnpm run build",
+    "check:types": "tsc --noEmit"
+  },
+  "keywords": [
+    "x402",
+    "facilitator",
+    "blockchain",
+    "payments",
+    "web3"
+  ],
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://github.com/merit-systems/x402scan/tree/main/facilitators",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/merit-systems/x402scan.git",
+    "directory": "facilitators"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@coinbase/x402": "^0.6.6",
+    "thirdweb": "^5.110.5",
+    "x402": "^0.6.6"
+  }
+}

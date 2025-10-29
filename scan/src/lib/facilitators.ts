@@ -1,16 +1,13 @@
-import { Chain as FacilitatorsChain } from '../../../facilitators/types';
-import { FACILITATORS as RAW_FACILITATORS } from '../../../facilitators/config';
+import type { FacilitatorMetadata } from 'facilitators/types';
+import { Chain as FacilitatorsChain } from 'facilitators/types';
+import { FACILITATORS as RAW_FACILITATORS } from 'facilitators';
 import { Chain } from '@/types/chain';
 import type { MixedAddress } from '@/types/address';
 import { mixedAddressSchema } from './schemas';
 
-export type Facilitator = {
+export type Facilitator = FacilitatorMetadata & {
   id: string;
-  name: string;
-  image: string;
-  link: string;
   addresses: Partial<Record<Chain, MixedAddress[]>>;
-  color: string;
 };
 
 const chainMap: Record<FacilitatorsChain, Chain> = {
@@ -21,10 +18,8 @@ const chainMap: Record<FacilitatorsChain, Chain> = {
 
 export const facilitators: Facilitator[] = RAW_FACILITATORS.map(f => ({
   id: f.id,
-  name: f.name,
-  image: f.image,
-  link: f.link,
-  color: f.color,
+  ...f.metadata,
+  image: `/${f.metadata.image.split('/').pop()}`,
   addresses: Object.entries(f.addresses).reduce(
     (acc, [chain, configs]) => {
       const scanChain = chainMap[chain as FacilitatorsChain];

@@ -1,5 +1,5 @@
 {
-  "name": "@x402/scan",
+  "name": "x402scan",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -78,6 +78,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "embla-carousel-wheel-gestures": "^8.1.0",
+    "facilitators": "workspace:*",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "html-metadata-parser": "^2.0.4",
     "input-otp": "^1.4.2",
