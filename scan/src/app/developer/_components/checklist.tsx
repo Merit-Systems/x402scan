@@ -55,19 +55,18 @@ export function Checklist({
   const p = postPair;
 
   const analyze = (parsed: ReturnType<typeof parseX402Response>) => {
-    if (!parsed || !parsed.success)
+    if (!parsed?.success)
       return { hasAccepts: false, hasInput: false, hasOutput: false };
     const acc = parsed.data.accepts ?? [];
+    const firstAcc = acc[0];
     return {
       hasAccepts: acc.length > 0,
-      hasInput: Boolean(acc[0]?.outputSchema?.input),
-      hasOutput: acc[0]?.outputSchema?.hasOwnProperty('output')
-        ? acc[0]?.outputSchema?.output !== undefined
-        : false,
+      hasInput: Boolean(firstAcc?.outputSchema?.input),
+      hasOutput: firstAcc?.outputSchema?.output !== undefined,
     };
   };
-  const gInfo = g?.parsed && g.parsed.success ? analyze(g.parsed) : undefined;
-  const pInfo = p?.parsed && p.parsed.success ? analyze(p.parsed) : undefined;
+  const gInfo = g?.parsed?.success ? analyze(g.parsed) : undefined;
+  const pInfo = p?.parsed?.success ? analyze(p.parsed) : undefined;
 
   const Icon = ({ ok, message }: { ok?: boolean; message?: string }) =>
     ok === undefined ? (
@@ -111,20 +110,17 @@ export function Checklist({
   );
 
   const joinErrors = (errors?: string[]) =>
-    errors && errors.length ? errors.join('\n') : undefined;
+    errors?.length ? errors.join('\n') : undefined;
 
   const buildSchemaMessage = (
     pair: ParsedPair,
     which: 'input' | 'output' | 'both'
   ) => {
-    if (!pair) return undefined;
-    if (!pair.parsed) return undefined;
+    if (!pair?.parsed) return undefined;
     if (pair.parsed.success === false) return joinErrors(pair.parsed.errors);
-    const acc = (pair.parsed.data.accepts ?? [])[0];
+    const acc = pair.parsed.data.accepts?.[0];
     const hasInput = Boolean(acc?.outputSchema?.input);
-    const hasOutput = acc?.outputSchema?.hasOwnProperty('output')
-      ? acc?.outputSchema?.output !== undefined
-      : false;
+    const hasOutput = acc?.outputSchema?.output !== undefined;
     if (which === 'input')
       return hasInput ? undefined : 'Missing outputSchema.input';
     if (which === 'output')
@@ -162,30 +158,46 @@ export function Checklist({
             </TableRow>
             <Row
               label="Returns 402"
-              gOk={g ? g.result.status === 402 : undefined}
-              pOk={p ? p.result.status === 402 : undefined}
+              gOk={
+                g?.result?.status === 402 ? true : g?.result ? false : undefined
+              }
+              pOk={
+                p?.result?.status === 402 ? true : p?.result ? false : undefined
+              }
               gMsg={
-                g && g.result.status !== 402
+                g?.result && g.result.status !== 402
                   ? `${g.result.status} ${g.result.statusText}`
                   : undefined
               }
               pMsg={
-                p && p.result.status !== 402
+                p?.result && p.result.status !== 402
                   ? `${p.result.status} ${p.result.statusText}`
                   : undefined
               }
             />
             <Row
               label="x402 parses"
-              gOk={g ? g.parsed.success === true : undefined}
-              pOk={p ? p.parsed.success === true : undefined}
+              gOk={
+                g?.parsed?.success === true
+                  ? true
+                  : g?.parsed
+                    ? false
+                    : undefined
+              }
+              pOk={
+                p?.parsed?.success === true
+                  ? true
+                  : p?.parsed
+                    ? false
+                    : undefined
+              }
               gMsg={
-                g && g.parsed.success === false
+                g?.parsed?.success === false
                   ? joinErrors(g.parsed.errors)
                   : undefined
               }
               pMsg={
-                p && p.parsed.success === false
+                p?.parsed?.success === false
                   ? joinErrors(p.parsed.errors)
                   : undefined
               }
@@ -197,8 +209,8 @@ export function Checklist({
               (pInfo?.hasOutput ?? undefined) ? (
               <Row
                 label="Valid schema"
-                gOk={gInfo ? gInfo.hasInput : undefined}
-                pOk={pInfo ? pInfo.hasInput : undefined}
+                gOk={gInfo?.hasInput}
+                pOk={pInfo?.hasInput}
                 gMsg={buildSchemaMessage(g, 'both')}
                 pMsg={buildSchemaMessage(p, 'both')}
               />
@@ -206,15 +218,15 @@ export function Checklist({
               <>
                 <Row
                   label="Valid input schema"
-                  gOk={gInfo ? gInfo.hasInput : undefined}
-                  pOk={pInfo ? pInfo.hasInput : undefined}
+                  gOk={gInfo?.hasInput}
+                  pOk={pInfo?.hasInput}
                   gMsg={buildSchemaMessage(g, 'input')}
                   pMsg={buildSchemaMessage(p, 'input')}
                 />
                 <Row
                   label="Valid output schema"
-                  gOk={gInfo ? gInfo.hasOutput : undefined}
-                  pOk={pInfo ? pInfo.hasOutput : undefined}
+                  gOk={gInfo?.hasOutput}
+                  pOk={pInfo?.hasOutput}
                   gMsg={buildSchemaMessage(g, 'output')}
                   pMsg={buildSchemaMessage(p, 'output')}
                 />
@@ -232,18 +244,18 @@ export function Checklist({
             </TableRow>
             <Row
               label="OG image"
-              gOk={Boolean(preview?.ogImages?.[0]?.url)}
-              pOk={Boolean(preview?.ogImages?.[0]?.url)}
+              gOk={!!preview?.ogImages?.[0]?.url}
+              pOk={!!preview?.ogImages?.[0]?.url}
             />
             <Row
               label="OG description"
-              gOk={Boolean(preview?.description)}
-              pOk={Boolean(preview?.description)}
+              gOk={!!preview?.description}
+              pOk={!!preview?.description}
             />
             <Row
               label="Favicon"
-              gOk={Boolean(preview?.favicon)}
-              pOk={Boolean(preview?.favicon)}
+              gOk={!!preview?.favicon}
+              pOk={!!preview?.favicon}
             />
           </TableBody>
         </Table>

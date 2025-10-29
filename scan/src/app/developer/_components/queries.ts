@@ -1,5 +1,6 @@
 'use client';
 
+import { api, type RouterOutputs } from '@/trpc/client';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { parseX402Response } from '@/lib/x402/schema';
@@ -12,19 +13,12 @@ export type TestResult = {
   body: unknown;
 };
 
-export type PreviewData = {
-  title: string | null;
-  description: string | null;
-  favicon: string | null;
-  ogImages: { url: string | null }[];
-  origin: string;
-} | null;
+// Use tRPC-inferred type instead of defining a new type below.
 
 function analyzeParsed(
   parsed: ReturnType<typeof parseX402Response> | null | undefined
 ): { hasAccepts: boolean; hasInputSchema: boolean } {
-  if (!parsed || !parsed.success)
-    return { hasAccepts: false, hasInputSchema: false };
+  if (!parsed?.success) return { hasAccepts: false, hasInputSchema: false };
   const accepts = parsed.data.accepts ?? [];
   const hasAccepts = accepts.length > 0;
   const hasInputSchema = Boolean(accepts[0]?.outputSchema?.input);
@@ -104,53 +98,9 @@ export function useTestQuery(
   });
 }
 
-export function usePreviewQuery(url: string): UseQueryResult<
-  {
-    ok: boolean;
-    status: number;
-    body: any;
-    preview: PreviewData;
-  } | null,
-  Error
-> {
-  return useQuery<
-    { ok: boolean; status: number; body: any } | null,
-    Error,
-    { ok: boolean; status: number; body: any; preview: PreviewData } | null
-  >({
-    queryKey: ['developer-preview', url],
-    enabled: false,
-    queryFn: async ({ signal }) => {
-      const resp = await fetch(
-        `/api/developer/preview?url=${encodeURIComponent(url)}`,
-        { signal }
-      );
-      const text = await resp.text();
-      let body: any = null;
-      try {
-        body = text ? JSON.parse(text) : null;
-      } catch {
-        body = text;
-      }
-      return { ok: resp.ok, status: resp.status, body } as {
-        ok: boolean;
-        status: number;
-        body: any;
-      };
-    },
-    select: data => {
-      if (!data) return null;
-      const body = data.body;
-      const preview: PreviewData =
-        body && typeof body === 'object'
-          ? ((body.preview as PreviewData) ?? null)
-          : null;
-      return { ...data, preview } as {
-        ok: boolean;
-        status: number;
-        body: any;
-        preview: PreviewData;
-      };
-    },
-  });
+export type PreviewResult = RouterOutputs['developer']['preview'];
+export type PreviewData = PreviewResult['preview'] | null;
+
+export function usePreviewQuery(url: string) {
+  return api.developer.preview.useQuery({ url }, { enabled: false });
 }

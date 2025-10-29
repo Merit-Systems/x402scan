@@ -33,8 +33,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 import { Methods } from '@/types/x402';
+import type { OgImage, ResourceOrigin, Resources } from '@prisma/client';
 import { Checklist } from './checklist';
-import { DebugCards } from './debug-cards';
 import { usePreviewQuery, useTestQuery, type PreviewData } from './queries';
 
 export const TestEndpointForm = () => {
@@ -229,9 +229,7 @@ export const TestEndpointForm = () => {
       {(getQuery.isFetching ||
         postQuery.isFetching ||
         previewQuery.isFetching ||
-        getQuery.data ||
-        postQuery.data ||
-        previewQuery.data) && (
+        Boolean(getQuery.data ?? postQuery.data ?? previewQuery.data)) && (
         <Checklist preview={preview} getPair={getPair} postPair={postPair} />
       )}
 
@@ -252,44 +250,47 @@ export const TestEndpointForm = () => {
                 <AccordionTrigger asChild>
                   <button className="w-full text-left">
                     <OriginCard
-                      origin={
-                        {
-                          id: 'dev',
-                          origin:
-                            preview?.origin ??
-                            (() => {
-                              try {
-                                return new URL(submittedUrl).origin;
-                              } catch {
-                                return '';
-                              }
-                            })(),
-                          title: preview?.title ?? null,
-                          description: preview?.description ?? null,
-                          favicon: preview?.favicon ?? null,
-                          ogImages: (preview?.ogImages ?? [])
-                            .filter(img => !!img?.url)
-                            .map(img => ({
-                              id: 'dev',
-                              url: img?.url ?? '',
-                              title: preview?.title ?? null,
-                              description: preview?.description ?? null,
-                              width: null as unknown as number,
-                              height: null as unknown as number,
-                              originId: 'dev',
-                              createdAt: new Date(),
-                              updatedAt: new Date(),
-                            })),
-                          createdAt: new Date(),
-                          updatedAt: new Date(),
-                        } as any
-                      }
+                      origin={(() => {
+                        const computedOrigin = (() => {
+                          if (preview?.origin) return preview.origin;
+                          try {
+                            return new URL(submittedUrl).origin;
+                          } catch {
+                            return '';
+                          }
+                        })();
+                        const ogImages: OgImage[] = (preview?.ogImages ?? [])
+                          .filter(img => !!img?.url)
+                          .map((img, i) => ({
+                            id: `dev-${i}`,
+                            url: img?.url ?? '',
+                            title: preview?.title ?? null,
+                            description: preview?.description ?? null,
+                            width: null,
+                            height: null,
+                            originId: 'dev',
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                          }));
+                        const origin: ResourceOrigin & { ogImages: OgImage[] } =
+                          {
+                            id: 'dev',
+                            origin: computedOrigin,
+                            title: preview?.title ?? null,
+                            description: preview?.description ?? null,
+                            favicon: preview?.favicon ?? null,
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                            ogImages,
+                          };
+                        return origin;
+                      })()}
                       numResources={parsedResources.length}
                     />
                   </button>
                 </AccordionTrigger>
                 <AccordionContent className="pb-0">
-                  <DebugCards getPair={getPair} postPair={postPair} />
+                  {/* <DebugCards getPair={getPair} postPair={postPair} /> */}
 
                   {parsedResources.length > 0 && (
                     <div className="pl-4">
@@ -297,16 +298,22 @@ export const TestEndpointForm = () => {
                         {parsedResources.map((entry, idx) => (
                           <ResourceExecutor
                             key={idx}
-                            resource={
-                              {
+                            resource={(() => {
+                              const res: Resources = {
                                 id: `dev-${idx}`,
                                 resource: submittedUrl,
-                              } as unknown as any
-                            }
+                                type: 'http',
+                                x402Version: 1,
+                                lastUpdated: new Date(),
+                                metadata: null,
+                                originId: 'dev',
+                              };
+                              return res;
+                            })()}
                             tags={[]}
                             response={entry.data}
                             bazaarMethod={
-                              (entry.data.accepts?.[0]?.outputSchema?.input.method?.toUpperCase?.() as Methods) ||
+                              (entry.data.accepts?.[0]?.outputSchema?.input.method?.toUpperCase?.() as Methods) ??
                               entry.method
                             }
                             hideOrigin
