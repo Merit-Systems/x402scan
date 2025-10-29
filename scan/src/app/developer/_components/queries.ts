@@ -1,0 +1,156 @@
+'use client';
+
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+
+import { parseX402Response } from '@/lib/x402/schema';
+
+export type TestResult = {
+  ok: boolean;
+  status: number;
+  statusText: string;
+  headers: Record<string, string>;
+  body: unknown;
+};
+
+export type PreviewData = {
+  title: string | null;
+  description: string | null;
+  favicon: string | null;
+  ogImages: { url: string | null }[];
+  origin: string;
+} | null;
+
+function analyzeParsed(
+  parsed: ReturnType<typeof parseX402Response> | null | undefined
+): { hasAccepts: boolean; hasInputSchema: boolean } {
+  if (!parsed || !parsed.success)
+    return { hasAccepts: false, hasInputSchema: false };
+  const accepts = parsed.data.accepts ?? [];
+  const hasAccepts = accepts.length > 0;
+  const hasInputSchema = Boolean(accepts[0]?.outputSchema?.input);
+  return { hasAccepts, hasInputSchema };
+}
+
+function buildProxyUrl(method: 'GET' | 'POST', url: string) {
+  const share = method === 'GET' ? 'true' : 'false';
+  return `/api/proxy?url=${encodeURIComponent(url)}&share_data=${share}&dev=true`;
+}
+
+export function useTestQuery(
+  method: 'GET' | 'POST',
+  url: string,
+  headersInit: HeadersInit
+): UseQueryResult<
+  {
+    result: TestResult;
+    parsed: ReturnType<typeof parseX402Response>;
+    info: { hasAccepts: boolean; hasInputSchema: boolean };
+  } | null,
+  Error
+> {
+  return useQuery<
+    { result: TestResult } | null,
+    Error,
+    {
+      result: TestResult;
+      parsed: ReturnType<typeof parseX402Response>;
+      info: { hasAccepts: boolean; hasInputSchema: boolean };
+    } | null
+  >({
+    queryKey: ['developer-test', method, url, headersInit],
+    enabled: false,
+    queryFn: async ({ signal }) => {
+      const proxied = buildProxyUrl(method, url);
+      const response = await fetch(proxied, {
+        method,
+        headers:
+          method === 'POST'
+            ? { ...headersInit, 'Content-Type': 'application/json' }
+            : headersInit,
+        body: method === 'POST' ? '{}' : undefined,
+        mode: 'cors',
+        redirect: 'follow',
+        signal,
+      });
+      const text = await response.text();
+      let body: unknown = null;
+      try {
+        body = text ? JSON.parse(text) : null;
+      } catch {
+        body = text;
+      }
+      const hdrs: Record<string, string> = {};
+      response.headers.forEach((v, k) => (hdrs[k] = v));
+      return {
+        result: {
+          ok: response.ok,
+          status: response.status,
+          statusText: response.statusText,
+          headers: hdrs,
+          body,
+        },
+      } as { result: TestResult };
+    },
+    select: data => {
+      if (!data) return null;
+      const parsed = parseX402Response(data.result.body);
+      const info = analyzeParsed(parsed);
+      return { ...data, parsed, info } as {
+        result: TestResult;
+        parsed: ReturnType<typeof parseX402Response>;
+        info: { hasAccepts: boolean; hasInputSchema: boolean };
+      };
+    },
+  });
+}
+
+export function usePreviewQuery(url: string): UseQueryResult<
+  {
+    ok: boolean;
+    status: number;
+    body: any;
+    preview: PreviewData;
+  } | null,
+  Error
+> {
+  return useQuery<
+    { ok: boolean; status: number; body: any } | null,
+    Error,
+    { ok: boolean; status: number; body: any; preview: PreviewData } | null
+  >({
+    queryKey: ['developer-preview', url],
+    enabled: false,
+    queryFn: async ({ signal }) => {
+      const resp = await fetch(
+        `/api/developer/preview?url=${encodeURIComponent(url)}`,
+        { signal }
+      );
+      const text = await resp.text();
+      let body: any = null;
+      try {
+        body = text ? JSON.parse(text) : null;
+      } catch {
+        body = text;
+      }
+      return { ok: resp.ok, status: resp.status, body } as {
+        ok: boolean;
+        status: number;
+        body: any;
+      };
+    },
+    select: data => {
+      if (!data) return null;
+      const body = data.body;
+      const preview: PreviewData =
+        body && typeof body === 'object'
+          ? ((body.preview as PreviewData) ?? null)
+          : null;
+      return { ...data, preview } as {
+        ok: boolean;
+        status: number;
+        body: any;
+        preview: PreviewData;
+      };
+    },
+  });
+}
