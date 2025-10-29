@@ -5,7 +5,7 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { parseX402Response } from '@/lib/x402/schema';
 
-export type TestResult = {
+type TestResult = {
   ok: boolean;
   status: number;
   statusText: string;
@@ -98,8 +98,8 @@ export function useTestQuery(
   });
 }
 
-export type PreviewResult = RouterOutputs['developer']['preview'];
-export type PreviewData = PreviewResult['preview'] | null;
+type PreviewResult = RouterOutputs['developer']['preview'];
+type PreviewData = PreviewResult['preview'] | null;
 
 export function usePreviewQuery(url: string) {
   return api.developer.preview.useQuery({ url }, { enabled: false });

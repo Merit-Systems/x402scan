@@ -21,7 +21,7 @@ import {
 import { parseX402Response } from '@/lib/x402/schema';
 import { CheckCircle, Minus, XCircle } from 'lucide-react';
 
-export type TestResult = {
+type TestResult = {
   ok: boolean;
   status: number;
   statusText: string;
@@ -29,12 +29,12 @@ export type TestResult = {
   body: unknown;
 };
 
-export type ParsedPair = {
+type ParsedPair = {
   result: TestResult;
   parsed: ReturnType<typeof parseX402Response>;
 } | null;
 
-export type PreviewData = {
+type PreviewData = {
   title: string | null;
   description: string | null;
   favicon: string | null;
