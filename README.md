@@ -21,7 +21,7 @@ x402 API resources can be be purchased just-in-time without a prior relationship
 
 x402scan lets you explore the ecosystem of x402 servers, see their transaction volumes and directly access their resources through an embedded wallet.
 
-## Monorepo Structure
+## Monorepo Structure 
 
 This is a pnpm monorepo with the following workspaces:
 
