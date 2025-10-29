@@ -18,7 +18,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { parseX402Response } from '@/lib/x402/schema';
+import { type parseX402Response } from '@/lib/x402/schema';
 import { CheckCircle, Minus, XCircle } from 'lucide-react';
 
 type TestResult = {
