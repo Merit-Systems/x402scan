@@ -51,7 +51,7 @@ export function EditTagModal({
 
   const utils = api.useUtils();
 
-  const { data: allTags = [] } = api.public.resources.tags.list.useQuery();
+  const { data: allTags = [] } = api.public.resources.tags.list.useQuery({ filterTags: [] });
   const { data: resourceTags = [] } =
     api.public.resources.tags.getByResource.useQuery(resourceId, {
       enabled: open,

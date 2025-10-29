@@ -69,6 +69,7 @@ export const ResourceTable = () => {
         />
         <ControlMenu
           selectedResources={selectedResources}
+          selectedTagIds={selectedTagIds}
           onSuccess={() => setRowSelection({})}
         />
       </div>
