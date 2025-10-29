@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import Link from 'next/link';
 
@@ -12,26 +12,17 @@ import { Avatar } from '@/components/ui/avatar';
 import { FacilitatorChart, LoadingFacilitatorChart } from './chart';
 import { FacilitatorStats, LoadingFacilitatorStats } from './stats';
 
+import { useChain } from '@/app/_contexts/chain/hook';
+
 import type { Facilitator } from '@/lib/facilitators';
 import type { RouterOutputs } from '@/trpc/client';
-import type { ChartData } from '@/components/ui/charts/chart/types';
-import { useChain } from '@/app/_contexts/chain/hook';
 
 interface Props {
   facilitator: Facilitator;
   stats: RouterOutputs['public']['facilitators']['list']['items'][number];
-  overallStats: NonNullable<RouterOutputs['public']['stats']['overall']>;
-  chartData: ChartData<{
-    total_transactions: number;
-  }>[];
 }
 
-export const FacilitatorCard: React.FC<Props> = ({
-  facilitator,
-  stats,
-  overallStats,
-  chartData,
-}) => {
+export const FacilitatorCard: React.FC<Props> = ({ facilitator, stats }) => {
   const { chain } = useChain();
 
   return (
@@ -58,10 +49,9 @@ export const FacilitatorCard: React.FC<Props> = ({
               />
             </div>
           </div>
-          <FacilitatorChart
-            chartData={chartData}
-            total_transactions={Number(overallStats.total_transactions)}
-          />
+          <Suspense fallback={<LoadingFacilitatorChart />}>
+            <FacilitatorChart facilitatorId={stats.facilitator_id} />
+          </Suspense>
         </div>
         <div className="col-span-2">
           <FacilitatorStats stats={stats} />
