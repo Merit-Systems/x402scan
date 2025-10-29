@@ -23,6 +23,7 @@ import { dexter } from './dexter';
 import { daydreams } from './daydreams';
 import { mogami } from './mogami';
 import { openx402 } from './openx402';
+import { f402104 } from './402104';
 
 // Combine all facilitators into an array
 const _FACILITATORS = validateUniqueFacilitators([
@@ -36,6 +37,7 @@ const _FACILITATORS = validateUniqueFacilitators([
   daydreams,
   mogami,
   openx402,
+  f402104,
 ]);
 
 export const FACILITATORS: Facilitator[] =
