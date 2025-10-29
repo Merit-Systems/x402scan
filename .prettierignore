@@ -1,0 +1,32 @@
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Node modules
+node_modules/
+**/node_modules/**
+
+# Build outputs
+.next/
+**/.next/**
+dist/
+**/dist/**
+build/
+**/build/**
+
+# Generated files
+generated/
+**/generated/**
+
+# Coverage reports
+coverage/
+**/coverage/**
+
+# TypeScript build info
+*.tsbuildinfo
+**/*.tsbuildinfo
+
+# Turbo
+.turbo/
+**/.turbo/**
