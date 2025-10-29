@@ -19,4 +19,5 @@ export const polygonBigQueryConfig: SyncConfig = {
   facilitators: FACILITATORS_BY_CHAIN(Chain.POLYGON),
   buildQuery,
   transformResponse,
+  enabled: false,
 };

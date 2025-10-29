@@ -11,7 +11,8 @@ export function buildQuery(
   config: SyncConfig,
   facilitatorConfig: FacilitatorConfig,
   since: Date,
-  now: Date
+  now: Date,
+  offset?: number
 ): string {
   return `
     SELECT
@@ -30,7 +31,8 @@ export function buildQuery(
       AND block_timestamp >= '${formatDateForSql(since)}'
       AND block_timestamp < '${formatDateForSql(now)}'
     ORDER BY block_timestamp DESC
-    LIMIT ${config.limit};
+    LIMIT ${config.limit}
+    OFFSET ${offset};
   `;
 }
 

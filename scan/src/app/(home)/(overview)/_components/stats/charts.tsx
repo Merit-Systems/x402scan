@@ -33,6 +33,7 @@ export const OverallCharts = () => {
     numBuckets: 32,
     startDate,
     endDate,
+    chain,
   });
 
   const chartData: ChartData<{

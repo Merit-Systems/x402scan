@@ -11,6 +11,7 @@ const rawBodies = [
   `{"x402Version":1,"error":"X-PAYMENT header is required","accepts":[{"scheme":"exact","network":"base","maxAmountRequired":"100000","resource":"https://true-cast-agent.vercel.app/api/trueCast","description":"TrueCast API - News aggregator and fact-checking service grounded by prediction markets. Real-time data sources include Perplexity, X AI, Tavily, Neynar, Pyth, DeFiLlama, Truemarkets, Zerion, Allora and more.","mimeType":"application/json","payTo":"0xa8c1a5D3C372C65c04f91f87a43F549619A9483f","maxTimeoutSeconds":300,"asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","outputSchema":{"input":{"type":"http","method":"POST","discoverable":true,"bodyType":"json","bodyFields":{"prompt":{"type":"string","description":"The statement, claim, or question to fact-check and verify","required":true},"castHash":{"type":"string","description":"Optional Farcaster cast hash for context-specific verification"},"storeToPinata":{"type":"boolean","description":"Whether to store the response to IPFS via Pinata (default: false)"},"runGuardrail":{"type":"boolean","description":"Whether to run AWS Bedrock Guardrails validation (default: false)"}}},"output":{"type":"object","properties":{"query":{"type":"string","description":"The original user query that was processed"},"reply":{"type":"string","description":"The fact-checked response with analysis and conclusions"},"assessment":{"type":"string","enum":["TRUE","FALSE","PARTIALLY_TRUE","UNVERIFIABLE","MARKET_SENTIMENT"],"description":"The final truth assessment of the query"},"confidenceScore":{"type":"number","minimum":0,"maximum":100,"description":"Confidence level in the assessment (0-100)"},"data_sources":{"type":"array","description":"Information from data sources used in verification","items":{"type":"object","properties":{"name":{"type":"string","description":"Name of the data source"},"prompt":{"type":"string","description":"Prompt sent to this data source"},"reply":{"type":"string","description":"Response from this data source"},"source":{"type":"string","description":"Source URL or identifier"}}}},"metadata":{"type":"object","properties":{"timestamp":{"type":"string","description":"ISO timestamp of processing"},"promptType":{"type":"string","description":"Categorized type of the prompt"},"needsExternalData":{"type":"boolean","description":"Whether external data was needed"},"sourcesUsed":{"type":"array","items":{"type":"string"},"description":"Names of data sources used"},"totalSources":{"type":"number","description":"Total number of data sources queried"},"processingTimeSec":{"type":"number","description":"Time taken to process in seconds"}}},"ipfs":{"type":"object","description":"IPFS storage information (if storeToPinata was true)","properties":{"hash":{"type":"string","description":"IPFS hash of stored response"},"gatewayUrl":{"type":"string","description":"Public gateway URL for the stored response"},"network":{"type":"string","enum":["public","private"],"description":"IPFS network used"},"paymentResponse":{"type":"object","description":"Payment transaction details if x402 was used","properties":{"network":{"type":"string"},"payer":{"type":"string"},"success":{"type":"boolean"},"transaction":{"type":"string"}}}}},"guardrail":{"type":"object","description":"AWS Bedrock Guardrails validation results (if runGuardrail was true)","properties":{"input":{"type":"object","description":"Input validation results"},"output":{"type":"object","description":"Output validation results"}}}},"required":["query","reply","assessment","confidenceScore","metadata"]}},"extra":{"name":"USD Coin","version":"2"}}]}`,
   `{"x402Version":1,"error":"X-PAYMENT header is required","accepts":[{"scheme":"exact","network":"base","maxAmountRequired":"1000000","resource":"https://www.remixme.xyz/api/generate/custom","description":"Custom remix video generation with profile picture","mimeType":"application/json","payTo":"0x37ffc90BDb5B0c3aCF8beCCCe4AA7e7d74ab38Ba","maxTimeoutSeconds":300,"asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","outputSchema":{"input":{"type":"http","method":"POST","bodyType":"json","bodyFields":{"prompt":"string","walletAddress":"string","pfpUrl":"string","farcasterId":"number"}}},"extra":{"name":"USD Coin","version":"2"}}]}`,
   `{"x402Version":1,"error":"X-PAYMENT header is required","accepts":[{"scheme":"exact","network":"base","maxAmountRequired":"500000","resource":"https://www.remixme.xyz/api/generate/daily","description":"Daily remix video generation with profile picture","mimeType":"application/json","payTo":"0x37ffc90BDb5B0c3aCF8beCCCe4AA7e7d74ab38Ba","maxTimeoutSeconds":300,"asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","outputSchema":{"input":{"type":"http","method":"POST","bodyType":"json","bodyFields":{"walletAddress":"string","pfpUrl":"string","farcasterId":"number"}}},"extra":{"name":"USD Coin","version":"2"}}]}`,
+  `{"x402Version":1,"error":"X-PAYMENT header is required","accepts":[{"scheme":"exact","network":"base","maxAmountRequired":"2000000","resource":"http://api.aixbt.tech/v1/agents/indigo","description":"Find what's gaining traction before the rest of the market catches on.","mimeType":"","payTo":"0x8E4B195c14f20e1Ba4C40234F471E1781f293b45","maxTimeoutSeconds":60,"asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","outputSchema":{"input":{"type":"http","method":"POST","discoverable":true,"bodyType":"json","bodyFields":{"messages":{"type":"array","description":"Array of conversation messages with role and content","items":{"type":"object","properties":{"role":{"type":"string","enum":["user","assistant"],"description":"The role of the message sender"},"content":{"type":"string","description":"The message content"}},"required":["role","content"]},"minItems":1}}},"output":{"status":{"type":"number","description":"HTTP status code"},"error":{"type":"string","description":"Error message if request failed"},"data":{"type":"object","properties":{"text":{"type":"string","description":"Response text from the Indigo agent"}},"required":["text"]}}},"extra":{"name":"USD Coin","version":"2"}}]}`,
 ];
 
 describe('parseX402Response', () => {
@@ -198,6 +199,83 @@ describe('parseX402Response with normalized schemas', () => {
       expect(inputSchema.bodyFields?.body).toEqual({ type: 'test' });
       expect(inputSchema.bodyType).toBe('json');
       expect(inputSchema.headerFields?.auth).toEqual({ type: 'bearer' });
+    }
+  });
+
+  it('should handle aixbt Indigo agent with nested array items schema', () => {
+    const response = JSON.parse(rawBodies[8]) as unknown;
+    const result = parseX402Response(response);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
+      const outputSchema = result.data.accepts?.[0]?.outputSchema?.output;
+
+      // Verify input schema structure
+      expect(inputSchema).toBeDefined();
+      expect(inputSchema?.bodyType).toBe('json');
+      const messagesField = inputSchema?.bodyFields?.messages as
+        | {
+            type: string;
+            description: string;
+            items: unknown;
+          }
+        | undefined;
+      expect(messagesField).toBeDefined();
+      expect(messagesField?.type).toBe('array');
+      expect(messagesField?.description).toBe(
+        'Array of conversation messages with role and content'
+      );
+
+      // Verify nested items with properties
+      const messagesItems = messagesField?.items as
+        | {
+            type: string;
+            properties: Record<
+              string,
+              {
+                type: string;
+                enum?: string[];
+                description?: string;
+              }
+            >;
+          }
+        | undefined;
+      expect(messagesItems).toBeDefined();
+      expect(messagesItems?.type).toBe('object');
+      expect(messagesItems?.properties).toBeDefined();
+
+      // Verify role property with enum
+      const roleProperty = messagesItems?.properties.role;
+      expect(roleProperty).toBeDefined();
+      expect(roleProperty?.type).toBe('string');
+      expect(roleProperty?.enum).toEqual(['user', 'assistant']);
+      expect(roleProperty?.description).toBe('The role of the message sender');
+
+      // Verify content property
+      const contentProperty = messagesItems?.properties.content;
+      expect(contentProperty).toBeDefined();
+      expect(contentProperty?.type).toBe('string');
+      expect(contentProperty?.description).toBe('The message content');
+
+      // Verify output schema structure
+      const typedOutputSchema = outputSchema as
+        | {
+            status?: { type: string };
+            error?: { type: string };
+            data?: {
+              type: string;
+              properties?: {
+                text?: { type: string };
+              };
+            };
+          }
+        | undefined;
+      expect(typedOutputSchema).toBeDefined();
+      expect(typedOutputSchema?.status?.type).toBe('number');
+      expect(typedOutputSchema?.error?.type).toBe('string');
+      expect(typedOutputSchema?.data?.type).toBe('object');
+      expect(typedOutputSchema?.data?.properties?.text?.type).toBe('string');
     }
   });
 });

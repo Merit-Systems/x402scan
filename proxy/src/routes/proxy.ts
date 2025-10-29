@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { insertResourceInvocation } from '../db/clickhouse';
+import { insertResourceInvocation } from '../db/clickhouse.js';
 import { randomUUID } from 'crypto';
 
 const RESPONSE_HEADER_BLOCKLIST = new Set([
@@ -91,6 +91,8 @@ async function proxyHandler(c: Context) {
   let body: ArrayBuffer | undefined;
   let requestBodySize = 0;
 
+  const clonedRequest = c.req.raw.clone();
+
   if (method !== 'GET' && method !== 'HEAD') {
     const requestBody = await c.req.arrayBuffer();
     body = requestBody;
@@ -134,7 +136,6 @@ async function proxyHandler(c: Context) {
     responseHeaders.set('url', targetUrl.toString());
 
     const clonedUpstreamResponse = upstreamResponse.clone();
-    const clonedRequest = c.req.raw.clone();
 
     // Handle response asynchronously (similar to Next.js 'after')
     (async () => {

@@ -71,7 +71,7 @@ const TooltipRow = <T extends Record<string, number>, K extends keyof T>({
 const TooltipDate = ({ date }: { date: Date }) => {
   return (
     <div className="flex justify-between items-center w-full gap-4 bg-muted p-2">
-      <p className="font-medium text-xs">{format(date, 'MMM d, yyyy')}</p>
+      <p className="font-medium text-xs">{format(date, 'MMM d H:mm a')}</p>
     </div>
   );
 };

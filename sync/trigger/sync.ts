@@ -4,6 +4,10 @@ import { Chain, SyncConfig } from './types';
 import { fetchTransfers } from './fetch/fetch';
 
 export function createChainSyncTask(syncConfig: SyncConfig) {
+  if (!syncConfig.enabled) {
+    return;
+  }
+
   return schedules.task({
     id: syncConfig.chain + '-sync-transfers-' + syncConfig.provider,
     cron: syncConfig.cron,
@@ -38,7 +42,7 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
               facilitatorConfig.syncStartDate;
 
             logger.log(
-              `[${syncConfig.chain}] Syncing ${facilitator.id} from ${since.toISOString()} to ${now.toISOString()}`
+              `[${syncConfig.chain}] Syncing ${facilitator.id}:${facilitatorConfig.address} from ${since.toISOString()} to ${now.toISOString()}`
             );
 
             let totalSaved = 0;

@@ -41,11 +41,11 @@ export const Breadcrumb = <T extends string>({
       aria-disabled={disabled}
       prefetch={false}
     >
-      <div className="flex items-center gap-2 cursor-pointer">
+      <div className="flex items-center gap-2 cursor-pointer min-w-0">
         {(Fallback !== null || image !== null) && (
           <Avatar
             className={cn(
-              'rounded-md overflow-hidden bg-card size-5',
+              'rounded-md overflow-hidden bg-card size-5 flex-shrink-0',
               mobileHideImage && 'hidden md:block'
             )}
           >
@@ -67,7 +67,7 @@ export const Breadcrumb = <T extends string>({
 
         <p
           className={cn(
-            'font-semibold text-sm font-mono md:text-base',
+            'font-semibold text-sm font-mono md:text-base truncate min-w-0',
             textClassName,
             mobileHideText && 'hidden md:block'
           )}

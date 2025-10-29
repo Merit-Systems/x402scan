@@ -31,7 +31,7 @@ export default async function OriginLayout({
         name={origin.title ?? new URL(origin.origin).hostname}
         Fallback={Wallet}
         mobileHideText
-        className="hidden md:block"
+        className="hidden md:block min-w-0"
       />
       {children}
     </>

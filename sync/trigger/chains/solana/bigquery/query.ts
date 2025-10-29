@@ -89,18 +89,16 @@ export async function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): Promise<TransferEventData[]> {
-  const connection = new Connection(
-    process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com'
-  );
+  const connection = new Connection(process.env.SOLANA_RPC_URL!);
 
   const ownerCache = new Map<string, string>();
 
   const limiter = new Bottleneck({
-    reservoir: 2,
-    reservoirRefreshAmount: 2,
+    reservoir: 150,
+    reservoirRefreshAmount: 150,
     reservoirRefreshInterval: 1000,
-    minTime: 500,
-    maxConcurrent: 1,
+    minTime: 7,
+    maxConcurrent: 10,
   });
 
   const results = await Promise.all(

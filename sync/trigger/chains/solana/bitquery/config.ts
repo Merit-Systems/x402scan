@@ -31,6 +31,7 @@ function buildQuery(
           signer: {
             in: ${JSON.stringify(facilitatorConfig.address)}
           }
+          currency: {is: ${JSON.stringify(facilitatorConfig.token.address)}}
         ) {
           block {
             timestamp {
@@ -66,7 +67,10 @@ function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  return (data as BitQueryTransferRow[]).map(transfer => ({
+  const transfers = (data as { solana: { sent: BitQueryTransferRow[] } }).solana
+    .sent;
+
+  return transfers.map(transfer => ({
     address: transfer.currency.address,
     transaction_from: transfer.transaction.feePayer,
     sender: transfer.sender.address,
@@ -82,14 +86,15 @@ function transformResponse(
 }
 
 export const solanaChainConfig: SyncConfig = {
-  cron: '*/30 * * * *',
+  cron: '0 0 * * *',
   maxDurationInSeconds: 300,
   chain: 'solana',
   provider: QueryProvider.BITQUERY,
   apiUrl: 'https://graphql.bitquery.io',
   paginationStrategy: PaginationStrategy.OFFSET,
-  limit: 20_000,
+  limit: 10_000, // NOTE(shafu): more than that and bitquery 503
   facilitators: FACILITATORS_BY_CHAIN(Chain.SOLANA),
   buildQuery,
   transformResponse,
+  enabled: true,
 };
