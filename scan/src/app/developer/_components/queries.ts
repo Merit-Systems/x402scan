@@ -5,7 +5,7 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { parseX402Response } from '@/lib/x402/schema';
 
-type TestResult = {
+export type TestResult = {
   ok: boolean;
   status: number;
   statusText: string;
@@ -14,6 +14,8 @@ type TestResult = {
 };
 
 // Use tRPC-inferred type instead of defining a new type below.
+export type PreviewResult = RouterOutputs['developer']['preview'];
+export type PreviewData = PreviewResult['preview'] | null;
 
 function analyzeParsed(
   parsed: ReturnType<typeof parseX402Response> | null | undefined
@@ -97,9 +99,6 @@ export function useTestQuery(
     },
   });
 }
-
-type PreviewResult = RouterOutputs['developer']['preview'];
-type PreviewData = PreviewResult['preview'] | null;
 
 export function usePreviewQuery(url: string) {
   return api.developer.preview.useQuery({ url }, { enabled: false });

@@ -55,20 +55,12 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
         initialTimeframe={ActivityTimeframe.OneDay}
       >
         <FacilitatorsSection>
-          <Suspense fallback={<LoadingTopFacilitators />}>
+          <Suspense fallback={<LoadingTopFacilitatorsContent />}>
             <TopFacilitatorsContent />
           </Suspense>
         </FacilitatorsSection>
       </TimeRangeProvider>
     </HydrateClient>
-  );
-};
-
-const LoadingTopFacilitators = () => {
-  return (
-    <FacilitatorsSection>
-      <LoadingTopFacilitatorsContent />
-    </FacilitatorsSection>
   );
 };
 

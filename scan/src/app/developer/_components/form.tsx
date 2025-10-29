@@ -35,7 +35,12 @@ import type { ParsedX402Response } from '@/lib/x402/schema';
 import { Methods } from '@/types/x402';
 import type { OgImage, ResourceOrigin, Resources } from '@prisma/client';
 import { Checklist } from './checklist';
-import { usePreviewQuery, useTestQuery, type PreviewData } from './queries';
+import {
+  usePreviewQuery,
+  useTestQuery,
+  type PreviewData,
+  type PreviewResult,
+} from './queries';
 
 export const TestEndpointForm = () => {
   const queryClient = useQueryClient();
@@ -106,6 +111,7 @@ export const TestEndpointForm = () => {
   const preview: PreviewData = previewQuery.data?.preview ?? null;
   const isLoading =
     getQuery.isFetching || postQuery.isFetching || previewQuery.isFetching;
+  const submittedOrigin = submittedUrl ? new URL(submittedUrl).origin : '';
 
   // After inputs are committed, fire queries for this run
   useEffect(() => {
@@ -251,19 +257,23 @@ export const TestEndpointForm = () => {
                   <button className="w-full text-left">
                     <OriginCard
                       origin={(() => {
-                        const computedOrigin = (() => {
-                          if (preview?.origin) return preview.origin;
-                          try {
-                            return new URL(submittedUrl).origin;
-                          } catch {
-                            return '';
-                          }
-                        })();
-                        const ogImages: OgImage[] = (preview?.ogImages ?? [])
-                          .filter(img => !!img?.url)
-                          .map((img, i) => ({
+                        const computedOrigin =
+                          preview?.origin ?? submittedOrigin;
+                        const sourceImages = Array.isArray(preview?.ogImages)
+                          ? preview.ogImages
+                          : [];
+                        const filtered = sourceImages.filter(
+                          (
+                            img
+                          ): img is NonNullable<
+                            PreviewResult['preview']
+                          >['ogImages'][number] & { url: string } =>
+                            typeof img?.url === 'string' && img.url.length > 0
+                        );
+                        const ogImages: OgImage[] = filtered.map(
+                          (img, i: number) => ({
                             id: `dev-${i}`,
-                            url: img?.url ?? '',
+                            url: img.url,
                             title: preview?.title ?? null,
                             description: preview?.description ?? null,
                             width: null,
@@ -271,7 +281,8 @@ export const TestEndpointForm = () => {
                             originId: 'dev',
                             createdAt: new Date(),
                             updatedAt: new Date(),
-                          }));
+                          })
+                        );
                         const origin: ResourceOrigin & { ogImages: OgImage[] } =
                           {
                             id: 'dev',
