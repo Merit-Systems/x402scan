@@ -21,8 +21,6 @@
     "check:types": "next typegen && tsc --noEmit",
     "check:knip": "knip",
     "check:format": "prettier --check .",
-    "trigger:dev": "trigger dev",
-    "trigger:deploy": "trigger deploy",
     "test": "vitest",
     "test:run": "vitest run",
     "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts"
