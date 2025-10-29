@@ -1,4 +1,4 @@
-import { Facilitator } from './types';
+import { Facilitator } from '../types';
 
 // NOTE(shafu): CHAT GPT GENERATED crap, don't ask me how it works
 
