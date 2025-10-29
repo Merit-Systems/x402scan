@@ -33,6 +33,7 @@ export const thirdweb = {
       {
         address: '0x80c08de1a05df2bd633cf520754e40fde3c794d3',
         tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-07'),
       },
     ],
   },

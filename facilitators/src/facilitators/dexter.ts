@@ -17,6 +17,7 @@ export const dexter = {
       {
         address: 'DEXVS3su4dZQWTvvPnLDJLRK1CeeKG6K3QqdzthgAkNV',
         tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-26'),
       },
     ],
   },

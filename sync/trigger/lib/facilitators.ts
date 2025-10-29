@@ -6,7 +6,6 @@ import type {
 } from '@facilitators/src/types';
 import { Chain as FacilitatorsChain } from '@facilitators/src/types';
 import type { Facilitator, FacilitatorConfig, Chain } from '../types';
-import { getSyncStartDate } from '../config';
 
 const chainMap: Record<FacilitatorsChain, Chain> = {
   [FacilitatorsChain.BASE]: FacilitatorsChain.BASE,
@@ -18,17 +17,12 @@ function convertAddressConfig(
   facilitatorAddress: FacilitatorAddress,
   chain: Chain
 ): FacilitatorConfig[] {
-  try {
-    const syncStartDate = getSyncStartDate(chain, facilitatorAddress.address);
-    return facilitatorAddress.tokens.map((token: Token) => ({
-      address: facilitatorAddress.address,
-      token,
-      syncStartDate,
-      enabled: true,
-    }));
-  } catch {
-    return [];
-  }
+  return facilitatorAddress.tokens.map((token: Token) => ({
+    address: facilitatorAddress.address,
+    token,
+    syncStartDate: facilitatorAddress.dateOfFirstTransaction,
+    enabled: true,
+  }));
 }
 
 function convertFacilitator(raw: RawFacilitator): Facilitator | null {

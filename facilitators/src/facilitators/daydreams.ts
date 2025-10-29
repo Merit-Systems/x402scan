@@ -17,12 +17,14 @@ export const daydreams = {
       {
         address: '0x279e08f711182c79Ba6d09669127a426228a4653',
         tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-16'),
       },
     ],
     [Chain.SOLANA]: [
       {
         address: 'DuQ4jFMmVABWGxabYHFkGzdyeJgS1hp4wrRuCtsJgT9a',
         tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-16'),
       },
     ],
   },

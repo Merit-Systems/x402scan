@@ -17,6 +17,7 @@ export const mogami = {
       {
         address: '0xfe0920a0a7f0f8a1ec689146c30c3bbef439bf8a',
         tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-24'),
       },
     ],
   },

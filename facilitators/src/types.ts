@@ -22,6 +22,7 @@ export interface FacilitatorMetadata {
 export interface FacilitatorAddress {
   address: string;
   tokens: Token[];
+  dateOfFirstTransaction: Date;
 }
 
 export interface Token {
