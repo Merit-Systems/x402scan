@@ -2,7 +2,6 @@
 
 import { api, type RouterOutputs } from '@/trpc/client';
 
-// Use tRPC-inferred type instead of defining a new type below.
 export type PreviewResult = RouterOutputs['developer']['preview'];
 export type PreviewData = PreviewResult['preview'] | null;
 
