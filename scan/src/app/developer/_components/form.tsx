@@ -33,8 +33,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 import { Methods } from '@/types/x402';
-import type { OgImage, ResourceOrigin, Resources } from '@prisma/client';
+import type { OgImage, ResourceOrigin } from '@prisma/client';
 import { Checklist } from './checklist';
+import {
+  createDummyOgImage,
+  createDummyResourceOrigin,
+  createDummyResources,
+} from './dummy';
 import {
   usePreviewQuery,
   useTestQuery,
@@ -271,29 +276,26 @@ export const TestEndpointForm = () => {
                             typeof img?.url === 'string' && img.url.length > 0
                         );
                         const ogImages: OgImage[] = filtered.map(
-                          (img, i: number) => ({
-                            id: `dev-${i}`,
-                            url: img.url,
-                            title: preview?.title ?? null,
-                            description: preview?.description ?? null,
-                            width: null,
-                            height: null,
-                            originId: 'dev',
-                            createdAt: new Date(),
-                            updatedAt: new Date(),
-                          })
+                          (img, i: number) =>
+                            createDummyOgImage({
+                              id: `dev-${i}`,
+                              originId: 'dev',
+                              url: img.url,
+                              title: preview?.title ?? null,
+                              description: preview?.description ?? null,
+                              width: null,
+                              height: null,
+                            })
                         );
                         const origin: ResourceOrigin & { ogImages: OgImage[] } =
-                          {
+                          createDummyResourceOrigin({
                             id: 'dev',
                             origin: computedOrigin,
                             title: preview?.title ?? null,
                             description: preview?.description ?? null,
                             favicon: preview?.favicon ?? null,
-                            createdAt: new Date(),
-                            updatedAt: new Date(),
                             ogImages,
-                          };
+                          });
                         return origin;
                       })()}
                       numResources={parsedResources.length}
@@ -309,18 +311,12 @@ export const TestEndpointForm = () => {
                         {parsedResources.map((entry, idx) => (
                           <ResourceExecutor
                             key={idx}
-                            resource={(() => {
-                              const res: Resources = {
-                                id: `dev-${idx}`,
-                                resource: submittedUrl,
-                                type: 'http',
-                                x402Version: 1,
-                                lastUpdated: new Date(),
-                                metadata: null,
-                                originId: 'dev',
-                              };
-                              return res;
-                            })()}
+                            resource={createDummyResources({
+                              id: `dev-${idx}`,
+                              resource: submittedUrl,
+                              x402Version: 1,
+                              originId: 'dev',
+                            })}
                             tags={[]}
                             response={entry.data}
                             bazaarMethod={

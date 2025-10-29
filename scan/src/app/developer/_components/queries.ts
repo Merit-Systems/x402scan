@@ -5,7 +5,7 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { parseX402Response } from '@/lib/x402/schema';
 
-export type TestResult = {
+type TestResult = {
   ok: boolean;
   status: number;
   statusText: string;
