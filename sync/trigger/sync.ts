@@ -12,6 +12,7 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
     id: syncConfig.chain + '-sync-transfers-' + syncConfig.provider,
     cron: syncConfig.cron,
     maxDuration: syncConfig.maxDurationInSeconds,
+    machine: syncConfig.machine,
     run: async () => {
       try {
         const now = new Date();

@@ -97,4 +97,5 @@ export const solanaChainConfig: SyncConfig = {
   buildQuery,
   transformResponse,
   enabled: true,
+  machine: 'medium-1x',
 };

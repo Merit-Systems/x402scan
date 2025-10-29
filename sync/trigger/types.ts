@@ -62,6 +62,7 @@ export type SyncConfig = QueryConfig & {
   facilitators: Facilitator[];
   limit: number;
   enabled: boolean;
+  machine: 'small-1x' | 'medium-1x' | 'large-2x';
 };
 
 export interface EvmChainConfig {

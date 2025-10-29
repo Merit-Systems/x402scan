@@ -16,4 +16,5 @@ export const baseCdpConfig: SyncConfig = {
   buildQuery,
   transformResponse,
   enabled: true,
+  machine: 'medium-1x',
 };

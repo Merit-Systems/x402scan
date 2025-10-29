@@ -91,5 +91,6 @@ export function createEvmChainConfig(params: EvmChainConfig): SyncConfig {
     transformResponse,
     maxDurationInSeconds: 300,
     limit: 20_000,
+    machine: 'medium-1x',
   };
 }

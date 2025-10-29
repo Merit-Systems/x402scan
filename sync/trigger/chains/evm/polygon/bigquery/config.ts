@@ -20,4 +20,5 @@ export const polygonBigQueryConfig: SyncConfig = {
   buildQuery,
   transformResponse,
   enabled: false,
+  machine: 'medium-1x',
 };
