@@ -4,12 +4,17 @@ import { CreateAgentForm } from '../../_components/new-agent/form';
 import { auth } from '@/auth';
 import z from 'zod';
 
+const initialResourceIdsSchema = z
+  .union([z.uuid(), z.array(z.uuid())])
+  .transform(value => (Array.isArray(value) ? value : [value]))
+  .default([]);
+
 export default async function NewAgentPage({
   searchParams,
 }: PageProps<'/composer/agents/new'>) {
   const { resources } = await searchParams;
 
-  const initialResourceIds = z.array(z.uuid()).default([]).safeParse(resources);
+  const initialResourceIds = initialResourceIdsSchema.safeParse(resources);
 
   const session = await auth();
 

@@ -10,8 +10,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Globe } from 'lucide-react';
+import { Globe, Plus } from 'lucide-react';
 import { useState } from 'react';
+import { TELEGRAM_SUPPORT_LINK } from './constants';
 
 export const ChainSelector = () => {
   const { chain, setChain } = useChain();
@@ -70,6 +71,14 @@ export const ChainSelector = () => {
             {CHAIN_LABELS[value]}
           </Button>
         ))}
+        <Button
+          className="w-full"
+          variant="ghost"
+          onClick={() => window.open(TELEGRAM_SUPPORT_LINK, '_blank')}
+        >
+          <Plus className="size-4" />
+          Add Chain
+        </Button>
       </PopoverContent>
     </Popover>
   );
