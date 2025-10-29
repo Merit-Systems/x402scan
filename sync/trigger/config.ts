@@ -23,11 +23,11 @@ export const SYNC_START_DATES: Record<Chain, Record<string, Date>> = {
     '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec': new Date('2025-04-01'), // X402rs
   },
   [Chain.SOLANA]: {
-    L54zkaPQFeTn1UsEqieEXBqWrPShiaZEPD7mS5WXfQg: new Date('2025-10-24'), // Coinbase
+    'L54zkaPQFeTn1UsEqieEXBqWrPShiaZEPD7mS5WXfQg': new Date('2025-10-24'), // Coinbase
     '2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4': new Date('2025-07-01'), // PayAI
-    AepWpq3GQwL8CeKMtZyKtKPa7W91Coygh3ropAJapVdU: new Date('2025-09-21'), // Corbits
-    DEXVS3su4dZQWTvvPnLDJLRK1CeeKG6K3QqdzthgAkNV: new Date('2025-10-26'), // Dexter
-    DuQ4jFMmVABWGxabYHFkGzdyeJgS1hp4wrRuCtsJgT9a: new Date('2025-10-16'), // Daydreams
+    'AepWpq3GQwL8CeKMtZyKtKPa7W91Coygh3ropAJapVdU': new Date('2025-09-21'), // Corbits
+    'DEXVS3su4dZQWTvvPnLDJLRK1CeeKG6K3QqdzthgAkNV': new Date('2025-10-26'), // Dexter
+    'DuQ4jFMmVABWGxabYHFkGzdyeJgS1hp4wrRuCtsJgT9a': new Date('2025-10-16'), // Daydreams
     '5xvht4fYDs99yprfm4UeuHSLxMBRpotfBtUCQqM3oDNG': new Date('2025-10-16'), // OpenX402
   },
 };
