@@ -1,5 +1,6 @@
 import {
   USDC_BASE_TOKEN,
+  USDC_BSC_TOKEN,
   USDC_POLYGON_TOKEN,
   USDC_SOLANA_TOKEN,
 } from './constants';
@@ -236,6 +237,23 @@ const _FACILITATORS = validateUniqueFacilitators([
           address: '5xvht4fYDs99yprfm4UeuHSLxMBRpotfBtUCQqM3oDNG',
           token: USDC_SOLANA_TOKEN,
           syncStartDate: new Date('2025-10-16'),
+          enabled: true,
+        },
+      ],
+    },
+  },
+  {
+    id: 'bsc-x402',
+    name: 'BSC X402',
+    image: '/bscx402.png',
+    link: 'https://facilitator.termix.ai/',
+    color: 'var(--color-pink-600)',
+    addresses: {
+      [Chain.BSC]: [
+        {
+          address: '0x8a637A36417C74d97F68a75989d8dcE14bF3e812',
+          token: USDC_BSC_TOKEN,
+          syncStartDate: new Date('2025-10-30'),
           enabled: true,
         },
       ],
