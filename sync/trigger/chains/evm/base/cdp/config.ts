@@ -1,4 +1,4 @@
-import { ONE_DAY_IN_MS, ONE_MINUTE_IN_SECONDS } from '@facilitators/constants';
+import { ONE_MINUTE_IN_SECONDS } from '@facilitators/constants';
 import { SyncConfig, PaginationStrategy, QueryProvider } from '@/trigger/types';
 import { buildQuery, transformResponse } from './query';
 import { FACILITATORS_BY_CHAIN } from '@facilitators/config';
