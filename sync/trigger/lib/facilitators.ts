@@ -18,8 +18,6 @@ function convertAddressConfig(
   facilitatorAddress: FacilitatorAddress,
   chain: Chain
 ): FacilitatorConfig[] {
-  // Each FacilitatorAddress has an address and multiple tokens
-  // We need to create a FacilitatorConfig for each token
   return facilitatorAddress.tokens.map((token: Token) => ({
     address: facilitatorAddress.address,
     token,
