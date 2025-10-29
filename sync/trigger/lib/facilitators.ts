@@ -1,21 +1,20 @@
-import { FACILITATORS as RAW_FACILITATORS } from 'facilitators';
+import { allFacilitators } from 'facilitators/lists';
 import type {
   Facilitator as RawFacilitator,
   FacilitatorAddress,
   Token,
 } from 'facilitators/types';
-import { Chain as FacilitatorsChain } from 'facilitators/types';
-import type { Facilitator, FacilitatorConfig, Chain } from '../types';
+import { Network as FacilitatorsNetwork } from 'facilitators/types';
+import { Facilitator, FacilitatorConfig, Network } from '../types';
 
-const chainMap: Record<FacilitatorsChain, Chain> = {
-  [FacilitatorsChain.BASE]: FacilitatorsChain.BASE,
-  [FacilitatorsChain.POLYGON]: FacilitatorsChain.POLYGON,
-  [FacilitatorsChain.SOLANA]: FacilitatorsChain.SOLANA,
+const chainMap: Record<FacilitatorsNetwork, Network> = {
+  [FacilitatorsNetwork.BASE]: Network.BASE,
+  [FacilitatorsNetwork.POLYGON]: Network.POLYGON,
+  [FacilitatorsNetwork.SOLANA]: Network.SOLANA,
 };
 
 function convertAddressConfig(
-  facilitatorAddress: FacilitatorAddress,
-  chain: Chain
+  facilitatorAddress: FacilitatorAddress
 ): FacilitatorConfig[] {
   return facilitatorAddress.tokens.map((token: Token) => ({
     address: facilitatorAddress.address,
@@ -26,13 +25,13 @@ function convertAddressConfig(
 }
 
 function convertFacilitator(raw: RawFacilitator): Facilitator | null {
-  const addresses: Partial<Record<Chain, FacilitatorConfig[]>> = {};
+  const addresses: Partial<Record<Network, FacilitatorConfig[]>> = {};
 
   for (const [chain, facilitatorAddresses] of Object.entries(raw.addresses)) {
-    const mappedChain = chainMap[chain as FacilitatorsChain];
+    const mappedChain = chainMap[chain as FacilitatorsNetwork];
     if (mappedChain) {
       const configs = facilitatorAddresses.flatMap(addr =>
-        convertAddressConfig(addr, mappedChain)
+        convertAddressConfig(addr)
       );
       if (configs.length > 0) {
         addresses[mappedChain] = configs;
@@ -51,23 +50,19 @@ function convertFacilitator(raw: RawFacilitator): Facilitator | null {
   };
 }
 
-export const FACILITATORS: Facilitator[] = RAW_FACILITATORS.map(
-  convertFacilitator
-).filter((f): f is Facilitator => f !== null);
+export const FACILITATORS: Facilitator[] = allFacilitators
+  .map(convertFacilitator)
+  .filter((f): f is Facilitator => f !== null);
 
-export function FACILITATORS_BY_CHAIN(chain: Chain): Facilitator[] {
+export function FACILITATORS_BY_CHAIN(network: Network): Facilitator[] {
   return FACILITATORS.map(f => ({
     id: f.id,
     addresses: {
-      [chain]: f.addresses[chain] || [],
+      [network]: f.addresses[network] || [],
     },
-  })).filter(f => f.addresses[chain]?.length);
+  })).filter(f => f.addresses[network]?.length);
 }
 
-export const BASE_FACILITATORS = FACILITATORS_BY_CHAIN(FacilitatorsChain.BASE);
-export const POLYGON_FACILITATORS = FACILITATORS_BY_CHAIN(
-  FacilitatorsChain.POLYGON
-);
-export const SOLANA_FACILITATORS = FACILITATORS_BY_CHAIN(
-  FacilitatorsChain.SOLANA
-);
+export const BASE_FACILITATORS = FACILITATORS_BY_CHAIN(Network.BASE);
+export const POLYGON_FACILITATORS = FACILITATORS_BY_CHAIN(Network.POLYGON);
+export const SOLANA_FACILITATORS = FACILITATORS_BY_CHAIN(Network.SOLANA);
