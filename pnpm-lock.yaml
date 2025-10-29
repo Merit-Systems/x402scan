@@ -440,6 +440,9 @@ importers:
       bottleneck:
         specifier: ^2.19.5
         version: 2.19.5
+      facilitators:
+        specifier: workspace:*
+        version: link:../facilitators
       p-limit:
         specifier: ^7.2.0
         version: 7.2.0

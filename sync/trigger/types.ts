@@ -1,4 +1,4 @@
-import { Chain, type Token } from '@facilitators/types';
+import { Chain, type Token } from 'facilitators/types';
 
 export { Chain, type Token };
 

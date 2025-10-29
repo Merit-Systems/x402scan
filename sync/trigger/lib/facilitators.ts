@@ -1,10 +1,10 @@
-import { FACILITATORS as RAW_FACILITATORS } from '@facilitators/src/facilitators';
+import { FACILITATORS as RAW_FACILITATORS } from 'facilitators';
 import type {
   Facilitator as RawFacilitator,
   FacilitatorAddress,
   Token,
-} from '@facilitators/src/types';
-import { Chain as FacilitatorsChain } from '@facilitators/src/types';
+} from 'facilitators/types';
+import { Chain as FacilitatorsChain } from 'facilitators/types';
 import type { Facilitator, FacilitatorConfig, Chain } from '../types';
 
 const chainMap: Record<FacilitatorsChain, Chain> = {
