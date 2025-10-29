@@ -6,7 +6,10 @@ import {
   TopServers,
   LoadingTopServers,
 } from './_components/sellers/known-sellers';
-import { TopFacilitators } from './_components/top-facilitators';
+import {
+  TopFacilitators,
+  LoadingTopFacilitators,
+} from './_components/top-facilitators';
 import {
   LatestTransactions,
   LoadingLatestTransactions,
@@ -18,7 +21,6 @@ import {
 import { ComposerCallout } from './_components/composer-callout';
 import { getChain } from '@/app/_lib/chain';
 import { Suspense } from 'react';
-import { LoadingTopFacilitators } from './_components/top-facilitators/loading';
 import { env } from '@/env';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
