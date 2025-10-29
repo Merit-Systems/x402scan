@@ -25,8 +25,7 @@
     "trigger:deploy": "trigger deploy",
     "test": "vitest",
     "test:run": "vitest run",
-    "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts",
-    "sync:resources": "curl -X GET http://localhost:3000/api/resources/sync && curl -X GET http://localhost:3000/api/resources/ping"
+    "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.52",
@@ -66,7 +65,6 @@
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tanstack/react-query": "^5.90.2",
     "@tanstack/react-table": "^8.21.3",
-    "@trigger.dev/sdk": "^4.0.4",
     "@trpc/client": "^11.5.1",
     "@trpc/react-query": "^11.5.1",
     "@trpc/server": "^11.5.1",
@@ -130,7 +128,7 @@
     "@types/ws": "^8.18.1",
     "@vitest/ui": "^3.2.4",
     "dotenv": "^17.2.3",
-    "eslint": "^9",
+    "eslint": "^9.38.0",
     "eslint-config-next": "15.5.4",
     "eslint-config-prettier": "^10.1.8",
     "knip": "^5.64.0",

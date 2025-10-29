@@ -4,42 +4,113 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "inputs": ["$TURBO_DEFAULT$", ".env"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": [
+        "POSTGRES_PRISMA_URL",
+        "POSTGRES_URL_NON_POOLING",
+        "CDP_API_KEY_NAME",
+        "CDP_API_KEY_ID",
+        "CDP_API_KEY_SECRET",
+        "CDP_WALLET_SECRET",
+        "ECHO_APP_ID",
+        "HIDE_TRPC_LOGS",
+        "GITHUB_TOKEN",
+        "CRON_SECRET",
+        "FREEPIK_API_KEY",
+        "BLOB_READ_WRITE_TOKEN",
+        "FREE_TIER_WALLET_NAME",
+        "TRANSFERS_DB_URL",
+        "TRANSFERS_DB_URL_REPLICA_1",
+        "TRANSFERS_DB_URL_REPLICA_2",
+        "TRANSFERS_DB_URL_REPLICA_3",
+        "TRANSFERS_DB_URL_REPLICA_4",
+        "TRANSFERS_DB_URL_REPLICA_5",
+        "REDIS_URL",
+        "VERCEL_ENV",
+        "VERCEL_PROJECT_PRODUCTION_URL",
+        "VERCEL_BRANCH_URL",
+        "NODE_ENV",
+        "DATABASE_URL",
+        "SOLANA_RPC_URL",
+        "GOOGLE_CLOUD_CREDENTIALS",
+        "BITQUERY_API_KEY",
+        "NEXT_RUNTIME",
+        "LMNR_PROJECT_API_KEY"
+      ]
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": [
+        "POSTGRES_PRISMA_URL",
+        "POSTGRES_URL_NON_POOLING",
+        "CDP_API_KEY_NAME",
+        "CDP_API_KEY_ID",
+        "CDP_API_KEY_SECRET",
+        "CDP_WALLET_SECRET",
+        "ECHO_APP_ID",
+        "HIDE_TRPC_LOGS",
+        "GITHUB_TOKEN",
+        "CRON_SECRET",
+        "FREEPIK_API_KEY",
+        "BLOB_READ_WRITE_TOKEN",
+        "FREE_TIER_WALLET_NAME",
+        "TRANSFERS_DB_URL",
+        "TRANSFERS_DB_URL_REPLICA_1",
+        "TRANSFERS_DB_URL_REPLICA_2",
+        "TRANSFERS_DB_URL_REPLICA_3",
+        "TRANSFERS_DB_URL_REPLICA_4",
+        "TRANSFERS_DB_URL_REPLICA_5",
+        "REDIS_URL",
+        "VERCEL_ENV",
+        "VERCEL_PROJECT_PRODUCTION_URL",
+        "VERCEL_BRANCH_URL",
+        "NODE_ENV",
+        "DATABASE_URL",
+        "SOLANA_RPC_URL",
+        "GOOGLE_CLOUD_CREDENTIALS",
+        "BITQUERY_API_KEY",
+        "NEXT_RUNTIME",
+        "LMNR_PROJECT_API_KEY"
+      ]
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "env": [
+        "POSTGRES_PRISMA_URL",
+        "POSTGRES_URL_NON_POOLING",
+        "CDP_API_KEY_NAME",
+        "CDP_API_KEY_ID",
+        "CDP_API_KEY_SECRET",
+        "CDP_WALLET_SECRET",
+        "ECHO_APP_ID",
+        "HIDE_TRPC_LOGS",
+        "GITHUB_TOKEN",
+        "CRON_SECRET",
+        "FREEPIK_API_KEY",
+        "BLOB_READ_WRITE_TOKEN",
+        "FREE_TIER_WALLET_NAME",
+        "TRANSFERS_DB_URL",
+        "TRANSFERS_DB_URL_REPLICA_1",
+        "TRANSFERS_DB_URL_REPLICA_2",
+        "TRANSFERS_DB_URL_REPLICA_3",
+        "TRANSFERS_DB_URL_REPLICA_4",
+        "TRANSFERS_DB_URL_REPLICA_5",
+        "REDIS_URL",
+        "VERCEL_ENV",
+        "VERCEL_PROJECT_PRODUCTION_URL",
+        "VERCEL_BRANCH_URL",
+        "NODE_ENV",
+        "DATABASE_URL",
+        "SOLANA_RPC_URL",
+        "GOOGLE_CLOUD_CREDENTIALS",
+        "BITQUERY_API_KEY",
+        "NEXT_RUNTIME",
+        "LMNR_PROJECT_API_KEY"
+      ]
     },
     "format": {
-      "cache": false
-    },
-    "check:types": {
-      "dependsOn": ["^build"],
-      "outputs": []
-    },
-    "check:format": {
-      "cache": false
-    },
-    "db:generate": {
-      "cache": false
-    },
-    "db:push": {
-      "cache": false
-    },
-    "db:migrate:dev": {
-      "cache": false
-    },
-    "db:migrate:prod": {
-      "cache": false
-    },
-    "trigger:dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "trigger:deploy": {
       "cache": false
     }
   }
