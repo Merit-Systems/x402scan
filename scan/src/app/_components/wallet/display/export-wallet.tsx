@@ -181,10 +181,10 @@ export const ExportWallet: React.FC<Props> = ({ accountAddress }) => {
           <span className="font-bold text-sm">Export Wallet</span>
         </div>
       </div>
-      <div className="bg-yellow-600/10 border border-yellow-600/20 rounded-lg p-4 flex items-start gap-3">
-        <AlertTriangle className="size-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+      <div className="bg-red-600/10 border border-red/20 rounded-lg p-4 flex items-start gap-3">
+        <AlertTriangle className="size-5 text-red-600 flex-shrink-0 mt-0.5" />
         <div className="flex flex-col gap-2">
-          <p className="text-sm font-semibold text-yellow-600">
+          <p className="text-sm font-semibold text-red-600">
             Warning: Keep your keys safe
           </p>
           <p className="text-xs text-muted-foreground">
