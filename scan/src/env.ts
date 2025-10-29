@@ -38,7 +38,7 @@ export const env = createEnv({
               ? `https://${process.env.VERCEL_BRANCH_URL}`
               : 'http://localhost:3000')
       ),
-    NEXT_PUBLIC_PROXY_URL: z.url().optional(),
+    NEXT_PUBLIC_PROXY_URL: z.url(),
     NEXT_PUBLIC_NODE_ENV: z
       .enum(['development', 'production'])
       .default('development'),
