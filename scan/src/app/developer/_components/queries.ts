@@ -11,8 +11,8 @@ function headersInitToRecord(headersInit: HeadersInit): Record<string, string> {
     headersInit.forEach((v, k) => (out[k] = v));
   } else if (Array.isArray(headersInit)) {
     for (const [k, v] of headersInit) out[k] = v;
-  } else if (headersInit) {
-    Object.assign(out, headersInit as Record<string, string>);
+  } else if (headersInit && typeof headersInit === 'object') {
+    Object.assign(out, headersInit);
   }
   return out;
 }

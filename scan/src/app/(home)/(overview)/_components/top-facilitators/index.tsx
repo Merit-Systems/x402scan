@@ -64,6 +64,14 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
   );
 };
 
+export const LoadingTopFacilitators = () => {
+  return (
+    <FacilitatorsSection>
+      <LoadingTopFacilitatorsContent />
+    </FacilitatorsSection>
+  );
+};
+
 const FacilitatorsSection = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section
