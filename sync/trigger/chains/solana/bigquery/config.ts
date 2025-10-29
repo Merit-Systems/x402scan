@@ -20,4 +20,5 @@ export const solanaBigQueryConfig: SyncConfig = {
   buildQuery,
   transformResponse,
   enabled: false,
+  machine: 'small-1x',
 };

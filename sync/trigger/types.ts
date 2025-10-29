@@ -1,3 +1,12 @@
+import { Chain, type FacilitatorConfig, type Token } from '@facilitators/types';
+
+export { Chain, type FacilitatorConfig, type Token };
+
+export interface Facilitator {
+  id: string;
+  addresses: Partial<Record<Chain, FacilitatorConfig[]>>;
+}
+
 export interface TransferEventData {
   address: string;
   transaction_from: string;
@@ -62,6 +71,7 @@ export type SyncConfig = QueryConfig & {
   facilitators: Facilitator[];
   limit: number;
   enabled: boolean;
+  machine: 'small-1x' | 'medium-1x' | 'large-2x';
 };
 
 export interface EvmChainConfig {
@@ -71,30 +81,6 @@ export interface EvmChainConfig {
   chain: string;
   facilitators: Facilitator[];
   enabled: boolean;
-}
-
-export enum Chain {
-  BASE = 'base',
-  POLYGON = 'polygon',
-  SOLANA = 'solana',
-}
-
-export interface FacilitatorConfig {
-  address: string;
-  token: Token;
-  syncStartDate: Date;
-  enabled: boolean;
-}
-
-export interface Facilitator {
-  id: string;
-  addresses: Partial<Record<Chain, FacilitatorConfig[]>>;
-}
-
-export interface Token {
-  address: string;
-  decimals: number;
-  symbol: string;
 }
 
 export interface CdpTransferRow {

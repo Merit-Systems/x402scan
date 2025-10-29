@@ -12,6 +12,7 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
     id: syncConfig.chain + '-sync-transfers-' + syncConfig.provider,
     cron: syncConfig.cron,
     maxDuration: syncConfig.maxDurationInSeconds,
+    machine: syncConfig.machine,
     run: async () => {
       try {
         const now = new Date();
@@ -42,7 +43,7 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
               facilitatorConfig.syncStartDate;
 
             logger.log(
-              `[${syncConfig.chain}] Syncing ${facilitator.id} from ${since.toISOString()} to ${now.toISOString()}`
+              `[${syncConfig.chain}] Syncing ${facilitator.id}:${facilitatorConfig.address} from ${since.toISOString()} to ${now.toISOString()}`
             );
 
             let totalSaved = 0;
