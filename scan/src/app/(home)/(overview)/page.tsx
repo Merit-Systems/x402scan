@@ -8,7 +8,7 @@ import {
 } from './_components/sellers/known-sellers';
 import {
   TopFacilitators,
-  LoadingTopFacilitators
+  LoadingTopFacilitators,
 } from './_components/top-facilitators';
 import {
   LatestTransactions,
