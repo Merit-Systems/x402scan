@@ -11,7 +11,7 @@ export const baseCdpConfig: SyncConfig = {
   provider: QueryProvider.CDP,
   apiUrl: 'api.cdp.coinbase.com',
   paginationStrategy: PaginationStrategy.OFFSET,
-  limit: 100_000, // NOTE(shafu): 20_000 is not enough
+  limit: 100_000, // NOTE(shafu): 100k is the CDP limit
   facilitators: FACILITATORS_BY_CHAIN(Chain.BASE),
   buildQuery,
   transformResponse,
