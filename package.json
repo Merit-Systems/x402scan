@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build --filter=@x402/scan",
+    "build": "turbo run build --filter=@x402/scan --env-mode=loose",
     "lint": "turbo run lint",
     "format": "prettier --write .",
     "check:facilitators": "tsc --noEmit --project facilitators/tsconfig.json"

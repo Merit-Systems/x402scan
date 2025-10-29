@@ -7,7 +7,6 @@
   "ignoreDependencies": [
     "eslint-config-next",
     "tw-animate-css",
-    "@trigger.dev/build",
     "tailwindcss",
     "postcss",
     "redis"
