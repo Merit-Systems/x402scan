@@ -9,7 +9,7 @@ export interface Facilitator<Props = void> {
   metadata: FacilitatorMetadata;
   config: FacilitatorConfigProp<Props>;
   addresses: Partial<Record<Chain, FacilitatorAddress[]>>;
-  discoveryConfig?: FacilitatorConfigProp<Props>;
+  discoveryConfig?: FacilitatorConfig;
 }
 
 export interface FacilitatorMetadata {

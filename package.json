@@ -5,10 +5,9 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build --filter=@x402/scan",
+    "build": "turbo run build --filter=!x402sync",
     "lint": "turbo run lint",
-    "format": "prettier --write .",
-    "check:facilitators": "tsc --noEmit --project facilitators/tsconfig.json"
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.46.2",

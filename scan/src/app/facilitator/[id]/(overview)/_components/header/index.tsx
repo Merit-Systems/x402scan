@@ -42,7 +42,7 @@ export const HeaderCard: React.FC<Props> = async ({ facilitator }) => {
               />
             </p>
           </div>
-          <HeaderButtons link={facilitator.link} />
+          <HeaderButtons link={facilitator.docsUrl} />
         </div>
         <div className="col-span-2">
           <Suspense fallback={<LoadingOverallRecipientStats />}>

@@ -104,6 +104,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+        working-directory: facilitators
 
       - name: Check Facilitators
-        run: pnpm check:facilitators
+        run: pnpm check:types
+        working-directory: facilitators

@@ -11,8 +11,11 @@ export {
   mogami,
   openx402,
   FACILITATORS,
+  DISCOVERABLE_FACILITATORS,
   FACILITATORS_BY_CHAIN,
   BASE_FACILITATORS,
   POLYGON_FACILITATORS,
   SOLANA_FACILITATORS,
 } from './facilitators';
+
+export { listAllFacilitatorResources } from './list';

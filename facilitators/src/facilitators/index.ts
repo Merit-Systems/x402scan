@@ -41,6 +41,10 @@ const _FACILITATORS = validateUniqueFacilitators([
 export const FACILITATORS: Facilitator[] =
   _FACILITATORS as unknown as Facilitator[];
 
+export const DISCOVERABLE_FACILITATORS = FACILITATORS.filter(
+  f => !!f.discoveryConfig
+);
+
 export const FACILITATORS_BY_CHAIN = function (chain: Chain) {
   return FACILITATORS.filter(f => f.addresses[chain]);
 };

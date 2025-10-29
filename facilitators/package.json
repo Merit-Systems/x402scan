@@ -24,8 +24,9 @@
   ],
   "scripts": {
     "build": "tsup",
+    "postinstall": "pnpm run build",
     "prepublishOnly": "pnpm run build",
-    "typecheck": "tsc --noEmit"
+    "check:types": "tsc --noEmit"
   },
   "keywords": [
     "x402",
