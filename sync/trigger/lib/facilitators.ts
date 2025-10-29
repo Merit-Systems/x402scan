@@ -40,14 +40,13 @@ function convertFacilitator(raw: RawFacilitator): Facilitator | null {
       const configs = facilitatorAddresses.flatMap(addr =>
         convertAddressConfig(addr, mappedChain)
       );
-      // Only add the chain if there are configs for it
       if (configs.length > 0) {
         addresses[mappedChain] = configs;
       }
     }
   }
 
-  // Only include facilitator if it has at least one address configured for sync
+  // NOTE(shafu): Only include facilitator if it has at least one address configured for sync
   if (Object.keys(addresses).length === 0) {
     return null;
   }
