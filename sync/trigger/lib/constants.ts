@@ -1,4 +1,3 @@
-// Re-export constants from facilitators package
 export const USDC_MULTIPLIER = 1_000_000;
 export const DEFAULT_CONTRACT_ADDRESS =
   '0x0000000000000000000000000000000000000000';
