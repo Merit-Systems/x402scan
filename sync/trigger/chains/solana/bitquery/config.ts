@@ -86,7 +86,7 @@ function transformResponse(
 }
 
 export const solanaChainConfig: SyncConfig = {
-  cron: '0 0 * * *',
+  cron: '0 * * * *',
   maxDurationInSeconds: 300,
   chain: 'solana',
   provider: QueryProvider.BITQUERY,
@@ -97,4 +97,5 @@ export const solanaChainConfig: SyncConfig = {
   buildQuery,
   transformResponse,
   enabled: true,
+  machine: 'medium-1x',
 };
