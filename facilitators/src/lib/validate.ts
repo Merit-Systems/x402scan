@@ -45,7 +45,7 @@ type FindDuplicateAddressToken<
   : never;
 
 export function validateUniqueFacilitators<
-  const T extends readonly Facilitator[],
+  const T extends readonly Facilitator<any>[],
 >(
   facilitators: FindDuplicateId<T> extends never
     ? FindDuplicateAddressToken<T> extends never

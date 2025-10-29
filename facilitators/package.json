@@ -47,5 +47,10 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@coinbase/x402": "^0.6.6",
+    "thirdweb": "^5.110.5",
+    "x402": "^0.6.6"
   }
 }

@@ -1,27 +1,37 @@
-export enum Chain {
-  BASE = 'base',
-  POLYGON = 'polygon',
-  SOLANA = 'solana',
-}
+import type { FacilitatorConfig } from 'x402/types';
 
-export interface FacilitatorConfig {
-  address: string;
-  token: Token;
-  syncStartDate: Date;
-  enabled: boolean;
-}
+type FacilitatorConfigProp<Props = void> =
+  | FacilitatorConfig
+  | ((requirements: Props) => FacilitatorConfig);
 
-export interface Facilitator {
+export interface Facilitator<Props = void> {
   id: string;
+  metadata: FacilitatorMetadata;
+  config: FacilitatorConfigProp<Props>;
+  addresses: Partial<Record<Chain, FacilitatorAddress[]>>;
+  discoveryConfig?: FacilitatorConfigProp<Props>;
+}
+
+export interface FacilitatorMetadata {
   name: string;
   image: string;
-  link: string;
+  docsUrl: string;
   color: string;
-  addresses: Partial<Record<Chain, FacilitatorConfig[]>>;
+}
+
+export interface FacilitatorAddress {
+  address: string;
+  tokens: Token[];
 }
 
 export interface Token {
   address: string;
   decimals: number;
   symbol: string;
+}
+
+export enum Chain {
+  BASE = 'base',
+  POLYGON = 'polygon',
+  SOLANA = 'solana',
 }

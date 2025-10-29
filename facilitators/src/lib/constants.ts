@@ -1,3 +1,5 @@
+import type { Token } from '../types';
+
 export const USDC_MULTIPLIER = 1_000_000;
 export const DEFAULT_CONTRACT_ADDRESS =
   '0x0000000000000000000000000000000000000000';
@@ -13,19 +15,19 @@ export const TRANSFER_TOPIC =
 export const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 export const ONE_MINUTE_IN_SECONDS = 60;
 
-export const USDC_BASE_TOKEN = {
+export const USDC_BASE_TOKEN: Token = {
   address: USDC_BASE,
   decimals: USDC_DECIMALS,
   symbol: 'USDC',
 };
 
-export const USDC_SOLANA_TOKEN = {
+export const USDC_SOLANA_TOKEN: Token = {
   address: USDC_SOLANA,
   decimals: USDC_DECIMALS,
   symbol: 'USDC',
 };
 
-export const USDC_POLYGON_TOKEN = {
+export const USDC_POLYGON_TOKEN: Token = {
   address: USDC_POLYGON,
   decimals: USDC_DECIMALS,
   symbol: 'USDC',
