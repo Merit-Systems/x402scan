@@ -23,7 +23,7 @@ export function buildQuery(
       block_timestamp,
       parameters['value']::UInt256 AS amount,
       log_index
-    FROM base.events
+    FROM bsc.events
     WHERE event_signature = '${TRANSFER_EVENT_SIG}'
       AND address = '${facilitatorConfig.token.address.toLowerCase()}'
       AND transaction_from = '${facilitatorConfig.address.toLowerCase()}'
