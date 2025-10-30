@@ -9,7 +9,8 @@ import {
   daydreamsFacilitator,
   mogamiFacilitator,
   openx402Facilitator,
-  f402104Facilitator, xechoFacilitator,
+  f402104Facilitator,
+  xechoFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
