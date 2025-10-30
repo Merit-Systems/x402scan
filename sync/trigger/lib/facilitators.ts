@@ -1,10 +1,10 @@
-import { allFacilitators } from 'facilitators/lists';
+import { allFacilitators } from 'facilitators';
 import type {
   Facilitator as RawFacilitator,
   FacilitatorAddress,
   Token,
-} from 'facilitators/types';
-import { Network as FacilitatorsNetwork } from 'facilitators/types';
+} from 'facilitators';
+import { Network as FacilitatorsNetwork } from 'facilitators';
 import { Facilitator, FacilitatorConfig, Network } from '../types';
 
 const chainMap: Record<FacilitatorsNetwork, Network> = {

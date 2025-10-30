@@ -5,7 +5,7 @@ import {
   PaginationStrategy,
   QueryProvider,
   TransferEventData,
-  Chain,
+  Network,
   BitQueryTransferRow,
   FacilitatorConfig,
 } from '../../../types';
@@ -93,7 +93,7 @@ export const solanaChainConfig: SyncConfig = {
   apiUrl: 'https://graphql.bitquery.io',
   paginationStrategy: PaginationStrategy.OFFSET,
   limit: 10_000, // NOTE(shafu): more than that and bitquery 503
-  facilitators: FACILITATORS_BY_CHAIN(Chain.SOLANA),
+  facilitators: FACILITATORS_BY_CHAIN(Network.SOLANA),
   buildQuery,
   transformResponse,
   enabled: true,

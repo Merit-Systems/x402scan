@@ -3,7 +3,7 @@ import {
   SyncConfig,
   PaginationStrategy,
   QueryProvider,
-  Chain,
+  Network,
 } from '@/trigger/types';
 import { buildQuery, transformResponse } from './query';
 import { ONE_DAY_IN_MS } from '@/trigger/lib/constants';
@@ -16,7 +16,7 @@ export const polygonBigQueryConfig: SyncConfig = {
   paginationStrategy: PaginationStrategy.TIME_WINDOW,
   timeWindowInMs: ONE_DAY_IN_MS * 7,
   limit: 20_000,
-  facilitators: FACILITATORS_BY_CHAIN(Chain.POLYGON),
+  facilitators: FACILITATORS_BY_CHAIN(Network.POLYGON),
   buildQuery,
   transformResponse,
   enabled: false,

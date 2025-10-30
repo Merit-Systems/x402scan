@@ -2,7 +2,7 @@ import {
   SyncConfig,
   PaginationStrategy,
   QueryProvider,
-  Chain,
+  Network,
 } from '@/trigger/types';
 import { buildQuery, transformResponse } from './query';
 import { ONE_DAY_IN_MS, ONE_MINUTE_IN_SECONDS } from '@/trigger/lib/constants';
@@ -16,7 +16,7 @@ export const solanaBigQueryConfig: SyncConfig = {
   paginationStrategy: PaginationStrategy.TIME_WINDOW,
   timeWindowInMs: ONE_DAY_IN_MS * 30,
   limit: 35_000, // NOTE(shafu): solana could be a lot more!
-  facilitators: FACILITATORS_BY_CHAIN(Chain.SOLANA),
+  facilitators: FACILITATORS_BY_CHAIN(Network.SOLANA),
   buildQuery,
   transformResponse,
   enabled: false,

@@ -1,4 +1,4 @@
-import { Network, type Token } from 'facilitators/types';
+import { Network, type Token } from 'facilitators';
 
 export { Network, type Token };
 
