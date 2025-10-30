@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build --filter=!x402sync",
+    "build": "turbo run build --filter=!x402sync --filter=!*.example",
     "lint": "turbo run lint",
     "format": "prettier --write ."
   },

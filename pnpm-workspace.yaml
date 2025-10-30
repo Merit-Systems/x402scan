@@ -4,3 +4,4 @@ packages:
   - 'proxy'
   - 'packages/*'
   - 'facilitators'
+  - 'examples/servers/*'
