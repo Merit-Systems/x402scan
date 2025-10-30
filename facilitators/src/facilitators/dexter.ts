@@ -1,5 +1,7 @@
-import { Network, Facilitator, FacilitatorConfig } from '../types';
+import { Network } from '../types';
 import { USDC_SOLANA_TOKEN } from '../constants';
+
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const dexter: FacilitatorConfig = {
   url: 'https://facilitator.dexter.cash',
@@ -11,7 +13,7 @@ export const dexterFacilitator = {
     name: 'Dexter',
     image: 'https://x402scan.com/dexter.svg',
     docsUrl: 'https://facilitator.dexter.cash',
-    color: 'var(--color-orange-600)',
+    color: '#DD903A',
   },
   config: dexter,
   addresses: {

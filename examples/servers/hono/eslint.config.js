@@ -13,6 +13,10 @@ export default [
     files: ["**/*.ts"],
     languageOptions: {
       parser: tsParser,
+      parserOptions: {
+        project: "./tsconfig.json",
+        tsconfigRootDir: import.meta.dirname,
+      },
       sourceType: "module",
       ecmaVersion: 2020,
       globals: {

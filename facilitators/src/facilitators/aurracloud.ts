@@ -1,10 +1,11 @@
-import {
-  Network,
+import { Network } from '../types';
+import { USDC_BASE_TOKEN } from '../constants';
+
+import type {
   Facilitator,
   FacilitatorConfig,
   FacilitatorConfigConstructor,
 } from '../types';
-import { USDC_BASE_TOKEN } from '../constants';
 
 interface AurraCloudProps {
   apiKey: string;
@@ -26,7 +27,7 @@ export const aurracloudFacilitator = {
     name: 'AurraCloud',
     image: 'https://x402scan.com/aurracloud.png',
     docsUrl: 'https://x402-facilitator.aurracloud.com',
-    color: 'var(--color-gray-600)',
+    color: '#878787',
   },
   config: aurracloud,
   discoveryConfig: aurracloudDiscovery,

@@ -1,5 +1,7 @@
-import { Network, Facilitator, FacilitatorConfig } from '../types';
+import { Network } from '../types';
 import { USDC_BASE_TOKEN } from '../constants';
+
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const mogami: FacilitatorConfig = {
   url: 'https://facilitator.mogami.tech/',
@@ -11,7 +13,7 @@ export const mogamiFacilitator = {
     name: 'Mogami',
     image: 'https://x402scan.com/mogami.png',
     docsUrl: 'https://mogami.tech/',
-    color: 'var(--color-green-600)',
+    color: '#3A9E75',
   },
   config: mogami,
   addresses: {

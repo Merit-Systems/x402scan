@@ -1,7 +1,9 @@
-import { Network, Facilitator, FacilitatorConfig } from '../types';
+import { facilitator } from '@coinbase/x402';
+
+import { Network } from '../types';
 import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
-import { facilitator } from '@coinbase/x402';
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const coinbase: FacilitatorConfig = facilitator;
 export const coinbaseDiscovery: FacilitatorConfig = facilitator;
@@ -12,7 +14,7 @@ export const coinbaseFacilitator = {
     name: 'Coinbase',
     image: 'https://x402scan.com/coinbase.png',
     docsUrl: 'https://docs.cdp.coinbase.com/x402/welcome',
-    color: 'var(--color-primary)',
+    color: '#2563EB',
   },
   config: coinbase,
   discoveryConfig: coinbaseDiscovery,

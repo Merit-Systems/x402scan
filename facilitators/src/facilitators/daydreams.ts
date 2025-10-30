@@ -1,6 +1,7 @@
-import { Network, Facilitator, FacilitatorConfig } from '../types';
-
+import { Network } from '../types';
 import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
+
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const daydreams: FacilitatorConfig = {
   url: 'https://facilitator.daydreams.systems',
@@ -12,7 +13,7 @@ export const daydreamsFacilitator = {
     name: 'Daydreams',
     image: 'https://x402scan.com/router-logo-small.png',
     docsUrl: 'https://facilitator.daydreams.systems',
-    color: 'var(--color-yellow-600)',
+    color: '#D4A62A',
   },
   config: daydreams,
   addresses: {

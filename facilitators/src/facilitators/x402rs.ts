@@ -1,5 +1,7 @@
-import { Network, Facilitator, FacilitatorConfig } from '../types';
+import { Network } from '../types';
 import { USDC_BASE_TOKEN, USDC_POLYGON_TOKEN } from '../constants';
+
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const x402rs: FacilitatorConfig = {
   url: 'https://facilitator.x402.rs',
@@ -11,7 +13,7 @@ export const x402rsFacilitator = {
     name: 'X402rs',
     image: 'https://x402scan.com/x402rs.png',
     docsUrl: 'https://x402.rs',
-    color: 'var(--color-blue-400)',
+    color: '#93AEFF',
   },
   config: x402rs,
   addresses: {
