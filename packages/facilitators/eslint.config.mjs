@@ -1,7 +1,8 @@
-import tseslint from 'typescript-eslint';
 import { defineConfig } from 'eslint/config';
+import tseslint from 'typescript-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
-import { baseConfig } from '../eslint.config.base.mjs';
+
+import { baseConfig } from '../../eslint.config.base.mjs';
 
 export default defineConfig(
   ...baseConfig,

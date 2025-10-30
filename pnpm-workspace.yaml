@@ -1,7 +1,7 @@
 packages:
-  - 'scan'
-  - 'sync'
-  - 'proxy'
+  - 'apps/*'
+  - 'sync/*'
   - 'packages/*'
-  - 'facilitators'
-  - 'examples/servers/*'
+  - 'examples'
+  - 'examples/*'
+  - 'examples/**/*'
