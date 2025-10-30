@@ -259,6 +259,23 @@ const _FACILITATORS = validateUniqueFacilitators([
       ],
     },
   },
+  {
+    id: 'ultravioletadao',
+    name: 'Ultravioleta DAO',
+    image: '/ultravioletadao.png',
+    link: 'https://facilitator.ultravioletadao.xyz',
+    color: 'var(--color-purple-600)',
+    addresses: {
+      [Chain.BASE]: [
+        {
+          address: '0x103040545AC5031A11E8C03dd11324C7333a13C7',
+          token: USDC_BASE_TOKEN,
+          syncStartDate: new Date('2025-10-27'),
+          enabled: true,
+        },
+      ],
+    },
+  },
 ] as const);
 
 export const FACILITATORS: Facilitator[] =
