@@ -259,6 +259,23 @@ const _FACILITATORS = validateUniqueFacilitators([
       ],
     },
   },
+  {
+    id: 'xecho-facilitator',
+    name: 'xEcho Facilitator',
+    image: '/xecho.png',
+    link: 'https://www.xechoai.xyz/',
+    color: 'var(--color-blue-600)',
+    addresses: {
+      [Chain.BASE]: [
+        {
+          address: '0x3be45f576696a2fd5a93c1330cd19f1607ab311d',
+          token: USDC_BASE_TOKEN,
+          syncStartDate: new Date('2025-10-16'),
+          enabled: true,
+        },
+      ],
+    },
+  }
 ] as const);
 
 export const FACILITATORS: Facilitator[] =
