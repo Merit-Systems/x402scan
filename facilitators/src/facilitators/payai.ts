@@ -7,7 +7,9 @@ export const payai: FacilitatorConfig = {
   url: 'https://facilitator.payai.network',
 };
 
-export const payaiDiscovery = payai;
+export const payaiDiscovery: FacilitatorConfig = {
+  url: 'https://facilitator.payai.network',
+};
 
 export const payaiFacilitator = {
   id: 'payAI',

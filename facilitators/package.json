@@ -37,7 +37,8 @@
     "postinstall": "pnpm run build",
     "prepublishOnly": "pnpm run build",
     "check:types": "tsc --noEmit",
-    "lint": "eslint"
+    "lint": "eslint",
+    "knip": "knip"
   },
   "keywords": [
     "x402",
@@ -55,7 +56,6 @@
     "directory": "facilitators"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "knip": "^5.66.4",
