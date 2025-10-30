@@ -2,6 +2,7 @@ export enum Chain {
   BASE = 'base',
   POLYGON = 'polygon',
   SOLANA = 'solana',
+  BSC = 'bsc',
 }
 
 export interface FacilitatorConfig {

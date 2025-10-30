@@ -1,8 +1,4 @@
-import {
-  USDC_BASE_TOKEN,
-  USDC_POLYGON_TOKEN,
-  USDC_SOLANA_TOKEN,
-} from './constants';
+import { USDC_BASE_TOKEN, USDC_BSC_TOKEN, USDC_POLYGON_TOKEN, USDC_SOLANA_TOKEN } from './constants';
 import { Chain, Facilitator } from './types';
 import { validateUniqueFacilitators } from './validate';
 
@@ -259,6 +255,23 @@ const _FACILITATORS = validateUniqueFacilitators([
       ],
     },
   },
+  {
+    id: 'aeon',
+    name: 'aeon',
+    image: '/aeon.ico',
+    link: '',
+    color: 'var(--color-yellow-600)',
+    addresses: {
+      [Chain.BSC]: [
+        {
+          address: '0xa0a35e76e4476bd62fe452899af7aea6d1b20ab7',
+          token: USDC_BSC_TOKEN,
+          syncStartDate: new Date('2025-10-30'),
+          enabled: true,
+        },
+      ],
+    },
+  }
 ] as const);
 
 export const FACILITATORS: Facilitator[] =
