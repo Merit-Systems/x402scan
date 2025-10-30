@@ -1,5 +1,7 @@
-import { Network, Facilitator, FacilitatorConfig } from '../types';
+import { Network } from '../types';
 import { USDC_SOLANA_TOKEN } from '../constants';
+
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const corbits: FacilitatorConfig = {
   url: 'https://facilitator.corbits.dev',

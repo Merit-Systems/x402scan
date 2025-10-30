@@ -37,7 +37,7 @@
     "postinstall": "pnpm run build",
     "prepublishOnly": "pnpm run build",
     "check:types": "tsc --noEmit",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint"
   },
   "keywords": [
     "x402",
@@ -55,9 +55,13 @@
     "directory": "facilitators"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
     "knip": "^5.66.4",
     "tsup": "^8.0.0",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "typescript-eslint": "^8.44.1"
   },
   "engines": {
     "node": ">=18.0.0"

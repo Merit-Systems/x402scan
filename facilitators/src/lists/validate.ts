@@ -1,4 +1,4 @@
-import { Facilitator } from '../types';
+import type { Facilitator } from '../types';
 
 // NOTE(shafu): CHAT GPT GENERATED crap, don't ask me how it works
 
@@ -25,7 +25,7 @@ type ExtractAddressTokenPairs<F extends Facilitator> =
       ?
           | `${F['id']}:${C & string}:${A['address']}:${A['token']['address']}`
           | ExtractAddressTokenPairs<
-              { id: F['id']; addresses: { [K in C]: RestAddrs } } & Facilitator
+              { id: F['id']; addresses: Record<C, RestAddrs> } & Facilitator
             >
       : never
     : never;
@@ -45,6 +45,7 @@ type FindDuplicateAddressToken<
   : never;
 
 export function validateUniqueFacilitators<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const T extends readonly Facilitator<any>[],
 >(
   facilitators: FindDuplicateId<T> extends never

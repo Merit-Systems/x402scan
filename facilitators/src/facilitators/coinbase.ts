@@ -1,7 +1,9 @@
-import { Network, Facilitator, FacilitatorConfig } from '../types';
+import { facilitator } from '@coinbase/x402';
+
+import { Network } from '../types';
 import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
-import { facilitator } from '@coinbase/x402';
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const coinbase: FacilitatorConfig = facilitator;
 export const coinbaseDiscovery: FacilitatorConfig = facilitator;

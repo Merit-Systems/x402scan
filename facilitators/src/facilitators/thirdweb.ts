@@ -1,14 +1,14 @@
-import {
-  Network,
+import { createFacilitator } from '@thirdweb-dev/nexus';
+
+import { Network } from '../types';
+import { USDC_BASE_TOKEN } from '../constants';
+
+import type { ThirdwebX402FacilitatorConfig } from '@thirdweb-dev/nexus';
+import type {
   Facilitator,
   FacilitatorConfig,
   FacilitatorConfigConstructor,
 } from '../types';
-import { USDC_BASE_TOKEN } from '../constants';
-import {
-  ThirdwebX402FacilitatorConfig,
-  createFacilitator,
-} from '@thirdweb-dev/nexus';
 
 export const thirdweb: FacilitatorConfigConstructor<ThirdwebX402FacilitatorConfig> =
   createFacilitator;

@@ -13,7 +13,7 @@ import {
 
 import { validateUniqueFacilitators } from './validate';
 
-import { Facilitator } from '../types';
+import type { Facilitator } from '../types';
 
 const FACILITATORS = validateUniqueFacilitators([
   coinbaseFacilitator,

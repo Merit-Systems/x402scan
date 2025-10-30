@@ -1,10 +1,11 @@
-import {
-  Network,
+import { Network } from '../types';
+import { USDC_BASE_TOKEN } from '../constants';
+
+import type {
   Facilitator,
   FacilitatorConfig,
   FacilitatorConfigConstructor,
 } from '../types';
-import { USDC_BASE_TOKEN } from '../constants';
 
 interface AurraCloudProps {
   apiKey: string;

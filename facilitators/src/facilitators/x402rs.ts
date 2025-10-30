@@ -1,5 +1,7 @@
-import { Network, Facilitator, FacilitatorConfig } from '../types';
+import { Network } from '../types';
 import { USDC_BASE_TOKEN, USDC_POLYGON_TOKEN } from '../constants';
+
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const x402rs: FacilitatorConfig = {
   url: 'https://facilitator.x402.rs',

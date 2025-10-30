@@ -1,6 +1,7 @@
-import { Network, Facilitator } from '../types';
+import { Network } from '../types';
 import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
-import { FacilitatorConfig } from 'x402/types';
+
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const payai: FacilitatorConfig = {
   url: 'https://facilitator.payai.network',
