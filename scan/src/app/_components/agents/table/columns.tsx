@@ -69,11 +69,9 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     size: 125,
     loading: () => (
-      <LoadingFavicons
-        count={2}
-        iconContainerClassName="size-5"
-        containerClassName="mx-auto"
-      />
+      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground font-medium">
+        <LoadingFavicons count={2} iconContainerClassName="size-5" />
+      </div>
     ),
   },
   {
