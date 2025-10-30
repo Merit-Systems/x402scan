@@ -1,5 +1,10 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_BASE_TOKEN } from '../lib/constants';
+import {
+  Network,
+  Facilitator,
+  FacilitatorConfig,
+  FacilitatorConfigConstructor,
+} from '../types';
+import { USDC_BASE_TOKEN } from '../constants';
 import { createThirdwebClient } from 'thirdweb';
 import { facilitator } from 'thirdweb/x402';
 
@@ -8,7 +13,23 @@ interface ThirdwebProps {
   serverWalletAddress: string;
 }
 
-export const thirdweb = {
+export const thirdweb: FacilitatorConfigConstructor<ThirdwebProps> = ({
+  secretKey,
+  serverWalletAddress,
+}) => {
+  const client = createThirdwebClient({
+    secretKey,
+  });
+  return facilitator({
+    client,
+    serverWalletAddress,
+  });
+};
+export const thirdwebDiscovery: FacilitatorConfig = {
+  url: 'https://api.thirdweb.com/v1/payments/x402',
+};
+
+export const thirdwebFacilitator = {
   id: 'thirdweb',
   metadata: {
     name: 'thirdweb',
@@ -16,20 +37,12 @@ export const thirdweb = {
     docsUrl: 'https://portal.thirdweb.com/payments/x402/facilitator',
     color: 'var(--color-pink-600)',
   },
-  config: ({ secretKey, serverWalletAddress }) => {
-    const client = createThirdwebClient({
-      secretKey,
-    });
-    return facilitator({
-      client,
-      serverWalletAddress,
-    });
-  },
+  config: thirdweb,
   discoveryConfig: {
     url: 'https://api.thirdweb.com/v1/payments/x402',
   },
   addresses: {
-    [Chain.BASE]: [
+    [Network.BASE]: [
       {
         address: '0x80c08de1a05df2bd633cf520754e40fde3c794d3',
         tokens: [USDC_BASE_TOKEN],

@@ -1,4 +1,4 @@
-import type { Token } from '../types';
+import type { Token } from './types';
 
 export const USDC_DECIMALS = 6;
 

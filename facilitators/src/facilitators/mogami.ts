@@ -1,7 +1,11 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_BASE_TOKEN } from '../lib/constants';
+import { Network, Facilitator, FacilitatorConfig } from '../types';
+import { USDC_BASE_TOKEN } from '../constants';
 
-export const mogami = {
+export const mogami: FacilitatorConfig = {
+  url: 'https://facilitator.mogami.tech/',
+};
+
+export const mogamiFacilitator = {
   id: 'mogami',
   metadata: {
     name: 'Mogami',
@@ -9,11 +13,9 @@ export const mogami = {
     docsUrl: 'https://mogami.tech/',
     color: 'var(--color-green-600)',
   },
-  config: {
-    url: 'https://facilitator.mogami.tech/',
-  },
+  config: mogami,
   addresses: {
-    [Chain.BASE]: [
+    [Network.BASE]: [
       {
         address: '0xfe0920a0a7f0f8a1ec689146c30c3bbef439bf8a',
         tokens: [USDC_BASE_TOKEN],

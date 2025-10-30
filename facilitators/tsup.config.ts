@@ -4,6 +4,8 @@ export default defineConfig({
   entry: {
     index: 'src/index.ts',
     types: 'src/types.ts',
+    discovery: 'src/discovery/index.ts',
+    lists: 'src/lists/index.ts',
   },
   format: ['cjs', 'esm'],
   dts: true,
