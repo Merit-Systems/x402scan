@@ -20,4 +20,6 @@ export {
   mogamiFacilitator,
   openx402,
   openx402Facilitator,
+  f402104,
+  f402104Facilitator,
 } from './facilitators';

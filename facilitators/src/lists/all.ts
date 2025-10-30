@@ -9,6 +9,7 @@ import {
   daydreamsFacilitator,
   mogamiFacilitator,
   openx402Facilitator,
+  f402104Facilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -26,6 +27,7 @@ const FACILITATORS = validateUniqueFacilitators([
   daydreamsFacilitator,
   mogamiFacilitator,
   openx402Facilitator,
+  f402104Facilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =

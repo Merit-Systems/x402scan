@@ -1,8 +1,13 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_BASE_TOKEN } from '../lib/constants';
+import { Network } from '../types';
+import { USDC_BASE_TOKEN } from '../constants';
 
+import type { Facilitator, FacilitatorConfig } from '../types';
 
-export const f402104 = {
+export const f402104: FacilitatorConfig = {
+  url: 'https://x402.load.network',
+};
+
+export const f402104Facilitator = {
   id: '402104',
   metadata: {
     name: '402104',
@@ -14,7 +19,7 @@ export const f402104 = {
     url: 'https://x402.load.network',
   },
   addresses: {
-    [Chain.BASE]: [
+    [Network.BASE]: [
       {
         address: '0x73b2b8df52fbe7c40fe78db52e3dffdd5db5ad07',
         tokens: [USDC_BASE_TOKEN],
@@ -23,4 +28,3 @@ export const f402104 = {
     ],
   },
 } as const satisfies Facilitator;
-
