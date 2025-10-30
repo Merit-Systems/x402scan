@@ -259,6 +259,23 @@ const _FACILITATORS = validateUniqueFacilitators([
       ],
     },
   },
+  {
+    id: 'ainalyst',
+    name: 'AInalyst',
+    image: '/ainalyst.png',
+    link: 'https://facilitator.ainalyst-api.xyz',
+    color: 'var(--color-purple-200)',
+    addresses: {
+      [Chain.BASE]: [
+        {
+          address: '0x109f3d0ff7ea61b03df26ca7ef0c41765d85ee0b',
+          token: USDC_BASE_TOKEN,
+          syncStartDate: new Date('2025-10-29'),
+          enabled: true,
+        },
+      ],
+    },
+  },
 ] as const);
 
 export const FACILITATORS: Facilitator[] =
