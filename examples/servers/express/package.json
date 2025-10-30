@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx index.ts",
+    "start": "node dist/index.js",
+    "build": "tsup index.ts --format esm,cjs --dts",
     "format": "prettier -c .prettierrc --write \"**/*.{ts,js,cjs,json,md}\"",
     "format:check": "prettier -c .prettierrc --check \"**/*.{ts,js,cjs,json,md}\"",
     "lint": "eslint . --ext .ts --fix",
