@@ -9,6 +9,7 @@ import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
 import { prisma } from '../client';
 
 const agentsSortingIds = [
+  'score',
   'message_count',
   'tool_call_count',
   'user_count',
@@ -19,10 +20,12 @@ const agentsSortingIds = [
 export type AgentSortId = (typeof agentsSortingIds)[number];
 
 export const listTopAgentConfigurationsSchema = z.object({
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
   userId: z.string().optional(),
   originId: z.string().optional(),
   sorting: sortingSchema(agentsSortingIds).default({
-    id: 'message_count',
+    id: 'score',
     desc: true,
   }),
 });
@@ -31,7 +34,7 @@ export const listTopAgentConfigurations = async (
   input: z.infer<typeof listTopAgentConfigurationsSchema>,
   pagination: PaginatedQueryParams
 ) => {
-  const { sorting, userId, originId } = input;
+  const { sorting, userId, originId, startDate, endDate } = input;
 
   const [count, items] = await Promise.all([
     prisma.agentConfiguration.count({
@@ -52,10 +55,11 @@ export const listTopAgentConfigurations = async (
         ac."systemPrompt",
         ac.visibility,
         ac."createdAt",
-        COUNT(DISTINCT au."userId") AS user_count,
+        COALESCE(u.user_count, 0) AS user_count,
         COUNT(DISTINCT ch.id) AS chat_count,
         COALESCE(m.message_count, 0) AS message_count,
         COALESCE(tc.tool_call_count, 0) AS tool_call_count,
+        (COALESCE(m.message_count, 0) * COALESCE(tc.tool_call_count, 0) * COALESCE(u.user_count, 0)) AS score,
         -- JSON aggregate of tools/resources with origin favicon and id
         COALESCE(
           JSON_AGG(
@@ -70,11 +74,25 @@ export const listTopAgentConfigurations = async (
       LEFT JOIN "AgentUser" au ON au."agentConfigurationId" = ac.id
       LEFT JOIN "Chat" ch ON ch."userAgentConfigurationId" = au.id
       LEFT JOIN (
+        SELECT acu."agentConfigurationId", COUNT(DISTINCT acu."userId") AS user_count
+        FROM "Chat" c
+        LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
+        LEFT JOIN "Message" m ON c.id = m."chatId"
+        WHERE c."userAgentConfigurationId" IS NOT NULL
+          AND m.role = 'assistant'
+          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate}` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate}` : Prisma.sql``}
+        GROUP BY acu."agentConfigurationId"
+      ) u ON u."agentConfigurationId" = ac.id
+      LEFT JOIN (
         SELECT acu."agentConfigurationId", COUNT(m."Message") AS message_count
         FROM "Chat" c
         LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
         LEFT JOIN "Message" m ON c.id = m."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
+          AND m.role = 'assistant'
+          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate}` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate}` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) m ON m."agentConfigurationId" = ac.id
       LEFT JOIN (
@@ -83,6 +101,8 @@ export const listTopAgentConfigurations = async (
         LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
         LEFT JOIN "ToolCall" tc ON c.id = tc."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
+          ${startDate ? Prisma.sql`AND tc."createdAt" >= ${startDate}` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND tc."createdAt" <= ${endDate}` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) tc ON tc."agentConfigurationId" = ac.id
       -- Join to tools/resources related to the AgentConfiguration
@@ -105,19 +125,8 @@ export const listTopAgentConfigurations = async (
             : Prisma.sql``
         }
       GROUP BY 
-        ac.id, ac.name, ac.description, ac.image, ac."systemPrompt", ac.visibility, ac."createdAt", m.message_count, tc.tool_call_count
-      ORDER BY 
-        ${
-          sorting.id === 'message_count'
-            ? Prisma.sql`message_count`
-            : sorting.id === 'tool_call_count'
-              ? Prisma.sql`tool_call_count`
-              : sorting.id === 'user_count'
-                ? Prisma.sql`user_count`
-                : sorting.id === 'chat_count'
-                  ? Prisma.sql`chat_count`
-                  : Prisma.sql`createdAt`
-        } ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
+        ac.id, ac.name, ac.description, ac.image, ac."systemPrompt", ac.visibility, ac."createdAt", u.user_count, m.message_count, tc.tool_call_count
+      ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
       ${paginationClause(pagination)}
     `,
       z.array(
@@ -133,6 +142,7 @@ export const listTopAgentConfigurations = async (
           chat_count: z.bigint(),
           message_count: z.bigint(),
           tool_call_count: z.bigint(),
+          score: z.bigint(),
           resources: z.array(
             z.object({
               id: z.string(),

@@ -11,6 +11,7 @@ import { api } from '@/trpc/client';
 import { useAgentsSorting } from '@/app/_contexts/sorting/agents/hook';
 
 import type { RouterInputs } from '@/trpc/client';
+import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
 interface Props {
   input: Omit<
@@ -18,9 +19,15 @@ interface Props {
     'sorting' | 'pagination'
   >;
   limit?: number;
+  useTimeRange?: boolean;
 }
 
-export const AgentsTable: React.FC<Props> = ({ input, limit = 10 }) => {
+export const AgentsTable: React.FC<Props> = ({
+  input,
+  limit = 10,
+  useTimeRange = false,
+}) => {
+  const { startDate, endDate } = useTimeRangeContext();
   const { sorting } = useAgentsSorting();
 
   const [page, setPage] = useState(0);
@@ -31,6 +38,7 @@ export const AgentsTable: React.FC<Props> = ({ input, limit = 10 }) => {
       page,
       page_size: limit,
     },
+    ...(useTimeRange ? { startDate, endDate } : {}),
   });
 
   return (

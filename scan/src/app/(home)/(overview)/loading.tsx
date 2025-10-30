@@ -8,6 +8,7 @@ import { LoadingTopFacilitators } from './_components/top-facilitators';
 import { LoadingOverallStats } from './_components/stats';
 import { LoadingAllSellers } from './_components/sellers/all-sellers';
 import { env } from '@/env';
+import { LoadingTopAgents } from './_components/top-agents';
 
 export default function LoadingOverview() {
   return (
@@ -18,6 +19,7 @@ export default function LoadingOverview() {
         <LoadingOverallStats />
         <LoadingTopServers />
         <LoadingTopFacilitators />
+        <LoadingTopAgents />
         <LoadingLatestTransactions />
         <LoadingAllSellers />
       </Body>

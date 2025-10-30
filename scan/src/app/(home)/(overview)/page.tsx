@@ -22,6 +22,7 @@ import { ComposerCallout } from './_components/composer-callout';
 import { getChain } from '@/app/_lib/chain';
 import { Suspense } from 'react';
 import { env } from '@/env';
+import { TopAgents } from './_components/top-agents';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
@@ -37,6 +38,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
         <Suspense fallback={<LoadingTopFacilitators />}>
           <TopFacilitators chain={chain} />
         </Suspense>
+        <TopAgents />
         <Suspense fallback={<LoadingLatestTransactions />}>
           <LatestTransactions chain={chain} />
         </Suspense>
