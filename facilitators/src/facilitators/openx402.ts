@@ -1,5 +1,7 @@
-import { Network, Facilitator, FacilitatorConfig } from '../types';
+import { Network } from '../types';
 import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
+
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const openx402: FacilitatorConfig = {
   url: 'https://open.x402.host',
@@ -11,7 +13,7 @@ export const openx402Facilitator = {
     name: 'OpenX402',
     image: 'https://x402scan.com/openx402.png',
     docsUrl: 'https://open.x402.host',
-    color: 'var(--color-blue-100)',
+    color: '#E8EFFE',
   },
   config: openx402,
   addresses: {

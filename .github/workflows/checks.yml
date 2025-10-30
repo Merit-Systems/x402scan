@@ -106,6 +106,14 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: facilitators
 
-      - name: Check Facilitators
+      - name: Check types
         run: pnpm check:types
+        working-directory: facilitators
+
+      - name: Check lint
+        run: pnpm lint
+        working-directory: facilitators
+
+      - name: Check knip
+        run: pnpm knip
         working-directory: facilitators

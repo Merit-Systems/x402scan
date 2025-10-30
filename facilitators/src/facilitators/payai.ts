@@ -1,12 +1,15 @@
-import { Network, Facilitator } from '../types';
+import { Network } from '../types';
 import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
-import { FacilitatorConfig } from 'x402/types';
+
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const payai: FacilitatorConfig = {
   url: 'https://facilitator.payai.network',
 };
 
-export const payaiDiscovery = payai;
+export const payaiDiscovery: FacilitatorConfig = {
+  url: 'https://facilitator.payai.network',
+};
 
 export const payaiFacilitator = {
   id: 'payAI',
@@ -14,7 +17,7 @@ export const payaiFacilitator = {
     name: 'PayAI',
     image: 'https://x402scan.com/payai.png',
     docsUrl: 'https://payai.network',
-    color: 'var(--color-purple-600)',
+    color: '#9F3EC9',
   },
   config: payai,
   discoveryConfig: payaiDiscovery,
