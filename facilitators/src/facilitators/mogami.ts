@@ -13,7 +13,7 @@ export const mogamiFacilitator = {
     name: 'Mogami',
     image: 'https://x402scan.com/mogami.png',
     docsUrl: 'https://mogami.tech/',
-    color: 'var(--color-green-600)',
+    color: '#3A9E75',
   },
   config: mogami,
   addresses: {

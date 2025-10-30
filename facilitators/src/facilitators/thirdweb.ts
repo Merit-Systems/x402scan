@@ -23,7 +23,7 @@ export const thirdwebFacilitator = {
     name: 'thirdweb',
     image: 'https://x402scan.com/thirdweb.png',
     docsUrl: 'https://portal.thirdweb.com/payments/x402/facilitator',
-    color: 'var(--color-pink-600)',
+    color: '#E91E8C',
   },
   config: thirdweb,
   discoveryConfig: {

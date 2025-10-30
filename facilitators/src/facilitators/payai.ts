@@ -17,7 +17,7 @@ export const payaiFacilitator = {
     name: 'PayAI',
     image: 'https://x402scan.com/payai.png',
     docsUrl: 'https://payai.network',
-    color: 'var(--color-purple-600)',
+    color: '#9F3EC9',
   },
   config: payai,
   discoveryConfig: payaiDiscovery,

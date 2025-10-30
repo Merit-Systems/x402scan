@@ -13,7 +13,7 @@ export const dexterFacilitator = {
     name: 'Dexter',
     image: 'https://x402scan.com/dexter.svg',
     docsUrl: 'https://facilitator.dexter.cash',
-    color: 'var(--color-orange-600)',
+    color: '#DD903A',
   },
   config: dexter,
   addresses: {

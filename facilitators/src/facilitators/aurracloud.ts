@@ -27,7 +27,7 @@ export const aurracloudFacilitator = {
     name: 'AurraCloud',
     image: 'https://x402scan.com/aurracloud.png',
     docsUrl: 'https://x402-facilitator.aurracloud.com',
-    color: 'var(--color-gray-600)',
+    color: '#878787',
   },
   config: aurracloud,
   discoveryConfig: aurracloudDiscovery,

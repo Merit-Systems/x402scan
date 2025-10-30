@@ -13,7 +13,7 @@ export const corbitsFacilitator = {
     name: 'Corbits',
     image: 'https://x402scan.com/corbits.png',
     docsUrl: 'https://corbits.dev',
-    color: 'var(--color-orange-600)',
+    color: '#DD903A',
   },
   config: corbits,
   addresses: {

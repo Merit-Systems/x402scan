@@ -13,7 +13,7 @@ export const openx402Facilitator = {
     name: 'OpenX402',
     image: 'https://x402scan.com/openx402.png',
     docsUrl: 'https://open.x402.host',
-    color: 'var(--color-blue-100)',
+    color: '#E8EFFE',
   },
   config: openx402,
   addresses: {

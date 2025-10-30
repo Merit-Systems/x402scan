@@ -13,7 +13,7 @@ export const x402rsFacilitator = {
     name: 'X402rs',
     image: 'https://x402scan.com/x402rs.png',
     docsUrl: 'https://x402.rs',
-    color: 'var(--color-blue-400)',
+    color: '#93AEFF',
   },
   config: x402rs,
   addresses: {

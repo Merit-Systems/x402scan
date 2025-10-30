@@ -14,7 +14,7 @@ export const coinbaseFacilitator = {
     name: 'Coinbase',
     image: 'https://x402scan.com/coinbase.png',
     docsUrl: 'https://docs.cdp.coinbase.com/x402/welcome',
-    color: 'var(--color-primary)',
+    color: '#2563EB',
   },
   config: coinbase,
   discoveryConfig: coinbaseDiscovery,

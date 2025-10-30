@@ -13,7 +13,7 @@ export const daydreamsFacilitator = {
     name: 'Daydreams',
     image: 'https://x402scan.com/router-logo-small.png',
     docsUrl: 'https://facilitator.daydreams.systems',
-    color: 'var(--color-yellow-600)',
+    color: '#D4A62A',
   },
   config: daydreams,
   addresses: {
