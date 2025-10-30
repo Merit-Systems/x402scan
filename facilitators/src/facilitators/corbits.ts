@@ -1,19 +1,23 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_SOLANA_TOKEN } from '../lib/constants';
+import { Network } from '../types';
+import { USDC_SOLANA_TOKEN } from '../constants';
 
-export const corbits = {
+import type { Facilitator, FacilitatorConfig } from '../types';
+
+export const corbits: FacilitatorConfig = {
+  url: 'https://facilitator.corbits.dev',
+};
+
+export const corbitsFacilitator = {
   id: 'corbits',
   metadata: {
     name: 'Corbits',
     image: 'https://x402scan.com/corbits.png',
     docsUrl: 'https://corbits.dev',
-    color: 'var(--color-orange-600)',
+    color: '#DD903A',
   },
-  config: {
-    url: 'https://facilitator.corbits.dev',
-  },
+  config: corbits,
   addresses: {
-    [Chain.SOLANA]: [
+    [Network.SOLANA]: [
       {
         address: 'AepWpq3GQwL8CeKMtZyKtKPa7W91Coygh3ropAJapVdU',
         tokens: [USDC_SOLANA_TOKEN],

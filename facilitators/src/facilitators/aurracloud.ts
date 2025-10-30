@@ -1,26 +1,38 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_BASE_TOKEN } from '../lib/constants';
+import { Network } from '../types';
+import { USDC_BASE_TOKEN } from '../constants';
 
-interface AurraCloudRequirements {
+import type {
+  Facilitator,
+  FacilitatorConfig,
+  FacilitatorConfigConstructor,
+} from '../types';
+
+interface AurraCloudProps {
   apiKey: string;
 }
 
-export const aurracloud = {
+export const aurracloud: FacilitatorConfigConstructor<AurraCloudProps> = ({
+  apiKey,
+}) => ({
+  url: `https://x402-facilitator.aurracloud.com/api/v1/${apiKey}`,
+});
+
+export const aurracloudDiscovery: FacilitatorConfig = {
+  url: 'https://x402-facilitator.aurracloud.com',
+};
+
+export const aurracloudFacilitator = {
   id: 'aurracloud',
   metadata: {
     name: 'AurraCloud',
     image: 'https://x402scan.com/aurracloud.png',
     docsUrl: 'https://x402-facilitator.aurracloud.com',
-    color: 'var(--color-gray-600)',
+    color: '#878787',
   },
-  config: ({ apiKey }) => ({
-    url: `https://x402-facilitator.aurracloud.com/api/v1/${apiKey}`,
-  }),
-  discoveryConfig: {
-    url: 'https://x402-facilitator.aurracloud.com',
-  },
+  config: aurracloud,
+  discoveryConfig: aurracloudDiscovery,
   addresses: {
-    [Chain.BASE]: [
+    [Network.BASE]: [
       {
         address: '0x222c4367a2950f3b53af260e111fc3060b0983ff',
         tokens: [USDC_BASE_TOKEN],
@@ -33,4 +45,4 @@ export const aurracloud = {
       },
     ],
   },
-} as const satisfies Facilitator<AurraCloudRequirements>;
+} as const satisfies Facilitator<AurraCloudProps>;

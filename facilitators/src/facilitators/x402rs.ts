@@ -1,26 +1,30 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_BASE_TOKEN, USDC_POLYGON_TOKEN } from '../lib/constants';
+import { Network } from '../types';
+import { USDC_BASE_TOKEN, USDC_POLYGON_TOKEN } from '../constants';
 
-export const x402rs = {
+import type { Facilitator, FacilitatorConfig } from '../types';
+
+export const x402rs: FacilitatorConfig = {
+  url: 'https://facilitator.x402.rs',
+};
+
+export const x402rsFacilitator = {
   id: 'x402rs',
   metadata: {
     name: 'X402rs',
     image: 'https://x402scan.com/x402rs.png',
     docsUrl: 'https://x402.rs',
-    color: 'var(--color-blue-400)',
+    color: '#93AEFF',
   },
-  config: {
-    url: 'https://facilitator.x402.rs',
-  },
+  config: x402rs,
   addresses: {
-    [Chain.POLYGON]: [
+    [Network.POLYGON]: [
       {
         address: '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec',
         tokens: [USDC_POLYGON_TOKEN],
         dateOfFirstTransaction: new Date('2025-04-01'),
       },
     ],
-    [Chain.BASE]: [
+    [Network.BASE]: [
       {
         address: '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec',
         tokens: [USDC_BASE_TOKEN],

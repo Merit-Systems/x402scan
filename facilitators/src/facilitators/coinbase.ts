@@ -1,27 +1,32 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../lib/constants';
-
 import { facilitator } from '@coinbase/x402';
 
-export const coinbase = {
+import { Network } from '../types';
+import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
+
+import type { Facilitator, FacilitatorConfig } from '../types';
+
+export const coinbase: FacilitatorConfig = facilitator;
+export const coinbaseDiscovery: FacilitatorConfig = facilitator;
+
+export const coinbaseFacilitator = {
   id: 'coinbase',
   metadata: {
     name: 'Coinbase',
     image: 'https://x402scan.com/coinbase.png',
     docsUrl: 'https://docs.cdp.coinbase.com/x402/welcome',
-    color: 'var(--color-primary)',
+    color: '#2563EB',
   },
-  config: facilitator,
-  discoveryConfig: facilitator,
+  config: coinbase,
+  discoveryConfig: coinbaseDiscovery,
   addresses: {
-    [Chain.BASE]: [
+    [Network.BASE]: [
       {
         address: '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-05-05'),
       },
     ],
-    [Chain.SOLANA]: [
+    [Network.SOLANA]: [
       {
         address: 'L54zkaPQFeTn1UsEqieEXBqWrPShiaZEPD7mS5WXfQg',
         tokens: [USDC_SOLANA_TOKEN],

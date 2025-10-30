@@ -1,14 +1,19 @@
 import type { FacilitatorConfig } from 'x402/types';
 
+export type { FacilitatorConfig } from 'x402/types';
+export type FacilitatorConfigConstructor<Props = void> = (
+  requirements: Props
+) => FacilitatorConfig;
+
 type FacilitatorConfigProp<Props = void> =
   | FacilitatorConfig
-  | ((requirements: Props) => FacilitatorConfig);
+  | FacilitatorConfigConstructor<Props>;
 
 export interface Facilitator<Props = void> {
   id: string;
   metadata: FacilitatorMetadata;
   config: FacilitatorConfigProp<Props>;
-  addresses: Partial<Record<Chain, FacilitatorAddress[]>>;
+  addresses: Partial<Record<Network, FacilitatorAddress[]>>;
   discoveryConfig?: FacilitatorConfig;
 }
 
@@ -31,7 +36,7 @@ export interface Token {
   symbol: string;
 }
 
-export enum Chain {
+export enum Network {
   BASE = 'base',
   POLYGON = 'polygon',
   SOLANA = 'solana',

@@ -1,19 +1,23 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_SOLANA_TOKEN } from '../lib/constants';
+import { Network } from '../types';
+import { USDC_SOLANA_TOKEN } from '../constants';
 
-export const dexter = {
+import type { Facilitator, FacilitatorConfig } from '../types';
+
+export const dexter: FacilitatorConfig = {
+  url: 'https://facilitator.dexter.cash',
+};
+
+export const dexterFacilitator = {
   id: 'dexter',
   metadata: {
     name: 'Dexter',
     image: 'https://x402scan.com/dexter.svg',
     docsUrl: 'https://facilitator.dexter.cash',
-    color: 'var(--color-orange-600)',
+    color: '#DD903A',
   },
-  config: {
-    url: 'https://facilitator.dexter.cash',
-  },
+  config: dexter,
   addresses: {
-    [Chain.SOLANA]: [
+    [Network.SOLANA]: [
       {
         address: 'DEXVS3su4dZQWTvvPnLDJLRK1CeeKG6K3QqdzthgAkNV',
         tokens: [USDC_SOLANA_TOKEN],

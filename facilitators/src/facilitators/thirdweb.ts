@@ -1,35 +1,36 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_BASE_TOKEN } from '../lib/constants';
-import { createThirdwebClient } from 'thirdweb';
-import { facilitator } from 'thirdweb/x402';
+import { createFacilitator } from '@thirdweb-dev/nexus';
 
-interface ThirdwebProps {
-  secretKey: string;
-  serverWalletAddress: string;
-}
+import { Network } from '../types';
+import { USDC_BASE_TOKEN } from '../constants';
 
-export const thirdweb = {
+import type { ThirdwebX402FacilitatorConfig } from '@thirdweb-dev/nexus';
+import type {
+  Facilitator,
+  FacilitatorConfig,
+  FacilitatorConfigConstructor,
+} from '../types';
+
+export const thirdweb: FacilitatorConfigConstructor<ThirdwebX402FacilitatorConfig> =
+  createFacilitator;
+
+export const thirdwebDiscovery: FacilitatorConfig = {
+  url: 'https://nexus-api.thirdweb.com',
+};
+
+export const thirdwebFacilitator = {
   id: 'thirdweb',
   metadata: {
-    name: 'thirdweb',
+    name: 'Thirdweb',
     image: 'https://x402scan.com/thirdweb.png',
-    docsUrl: 'https://portal.thirdweb.com/payments/x402/facilitator',
-    color: 'var(--color-pink-600)',
+    docsUrl: 'https://nexus.thirdweb.com/docs/facilitator',
+    color: '#E91E8C',
   },
-  config: ({ secretKey, serverWalletAddress }) => {
-    const client = createThirdwebClient({
-      secretKey,
-    });
-    return facilitator({
-      client,
-      serverWalletAddress,
-    });
-  },
+  config: thirdweb,
   discoveryConfig: {
     url: 'https://api.thirdweb.com/v1/payments/x402',
   },
   addresses: {
-    [Chain.BASE]: [
+    [Network.BASE]: [
       {
         address: '0x80c08de1a05df2bd633cf520754e40fde3c794d3',
         tokens: [USDC_BASE_TOKEN],
@@ -37,4 +38,4 @@ export const thirdweb = {
       },
     ],
   },
-} as const satisfies Facilitator<ThirdwebProps>;
+} as const satisfies Facilitator<ThirdwebX402FacilitatorConfig>;

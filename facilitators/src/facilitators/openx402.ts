@@ -1,19 +1,23 @@
-import { Chain, Facilitator } from '../types';
-import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../lib/constants';
+import { Network } from '../types';
+import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
-export const openx402 = {
+import type { Facilitator, FacilitatorConfig } from '../types';
+
+export const openx402: FacilitatorConfig = {
+  url: 'https://open.x402.host',
+};
+
+export const openx402Facilitator = {
   id: 'openx402',
   metadata: {
     name: 'OpenX402',
     image: 'https://x402scan.com/openx402.png',
     docsUrl: 'https://open.x402.host',
-    color: 'var(--color-blue-100)',
+    color: '#E8EFFE',
   },
-  config: {
-    url: 'https://open.x402.host',
-  },
+  config: openx402,
   addresses: {
-    [Chain.BASE]: [
+    [Network.BASE]: [
       {
         address: '0x97316fa4730bc7d3b295234f8e4d04a0a4c093e8',
         tokens: [USDC_BASE_TOKEN],
@@ -25,7 +29,7 @@ export const openx402 = {
         dateOfFirstTransaction: new Date('2025-10-16'),
       },
     ],
-    [Chain.SOLANA]: [
+    [Network.SOLANA]: [
       {
         address: '5xvht4fYDs99yprfm4UeuHSLxMBRpotfBtUCQqM3oDNG',
         tokens: [USDC_SOLANA_TOKEN],
