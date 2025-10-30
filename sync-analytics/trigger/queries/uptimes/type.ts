@@ -5,4 +5,16 @@ export type Uptime = {
   uptime_6h_pct: number;
   uptime_24h_pct: number;
   uptime_all_time_pct: number;
+  p50_1h_ms: number;
+  p90_1h_ms: number;
+  p99_1h_ms: number;
+  p50_6h_ms: number;
+  p90_6h_ms: number;
+  p99_6h_ms: number;
+  p50_24h_ms: number;
+  p90_24h_ms: number;
+  p99_24h_ms: number;
+  p50_all_time_ms: number;
+  p90_all_time_ms: number;
+  p99_all_time_ms: number;
 };

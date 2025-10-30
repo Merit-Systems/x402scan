@@ -10,29 +10,18 @@ export async function persistUptimes(data: unknown) {
 
       logger.log('Fetched uptimes from analytics', { count: uptimes.length });
 
-      await Promise.all(
-        uptimes.map(uptime =>
-          db.uptime.upsert({
-            where: { url: uptime.url },
-            update: {
-              totalCount24h: parseInt(uptime.total_count_24h.toString()),
-              uptime1hPct: uptime.uptime_1h_pct,
-              uptime6hPct: uptime.uptime_6h_pct,
-              uptime24hPct: uptime.uptime_24h_pct,
-              uptimeAllTimePct: uptime.uptime_all_time_pct,
-              updatedAt: new Date(),
-            },
-            create: {
-              url: uptime.url,
-              totalCount24h: parseInt(uptime.total_count_24h.toString()),
-              uptime1hPct: uptime.uptime_1h_pct,
-              uptime6hPct: uptime.uptime_6h_pct,
-              uptime24hPct: uptime.uptime_24h_pct,
-              uptimeAllTimePct: uptime.uptime_all_time_pct,
-            },
-          })
-        )
-      );
+    await db.uptime.createMany({
+      data: uptimes.map(uptime => ({
+        url: uptime.url,
+        totalCount24h: parseInt(uptime.total_count_24h.toString()),
+        uptime1hPct: uptime.uptime_1h_pct,
+        uptime6hPct: uptime.uptime_6h_pct,
+        uptime24hPct: uptime.uptime_24h_pct,
+        uptimeAllTimePct: uptime.uptime_all_time_pct,
+      })),
+      skipDuplicates: true,
+    });
+
     } catch (error) {
       logger.error('Error in uptimes sync task:', {
         error: String(error),

@@ -1,5 +1,3 @@
-// Per-URL total count and uptime percentages (1h / 6h / 24h / all-time)
-// Definition: uptime = 100 * 2xx / (2xx + 5xx), ignoring 4xx
 export const UPTIME_QUERY = `
 SELECT
     url,
@@ -38,7 +36,25 @@ SELECT
         NULL,
         100.0 * COUNTIf(status_code BETWEEN 200 AND 299)
         / (COUNTIf(status_code BETWEEN 200 AND 299) + COUNTIf(status_code >= 500))
-    ), 2) AS uptime_all_time_pct
+    ), 2) AS uptime_all_time_pct,
+
+    /* latency percentiles from duration (ms) */
+    quantileTimingIf(0.50)(duration, created_at >= now() - toIntervalHour(1))  AS p50_1h_ms,
+    quantileTimingIf(0.90)(duration, created_at >= now() - toIntervalHour(1))  AS p90_1h_ms,
+    quantileTimingIf(0.99)(duration, created_at >= now() - toIntervalHour(1))  AS p99_1h_ms,
+
+    quantileTimingIf(0.50)(duration, created_at >= now() - toIntervalHour(6))  AS p50_6h_ms,
+    quantileTimingIf(0.90)(duration, created_at >= now() - toIntervalHour(6))  AS p90_6h_ms,
+    quantileTimingIf(0.99)(duration, created_at >= now() - toIntervalHour(6))  AS p99_6h_ms,
+
+    quantileTimingIf(0.50)(duration, created_at >= now() - toIntervalHour(24)) AS p50_24h_ms,
+    quantileTimingIf(0.90)(duration, created_at >= now() - toIntervalHour(24)) AS p90_24h_ms,
+    quantileTimingIf(0.99)(duration, created_at >= now() - toIntervalHour(24)) AS p99_24h_ms,
+
+    /* all time */
+    quantileTiming(0.50)(duration) AS p50_all_time_ms,
+    quantileTiming(0.90)(duration) AS p90_all_time_ms,
+    quantileTiming(0.99)(duration) AS p99_all_time_ms
 
 FROM resource_invocations
 GROUP BY url
