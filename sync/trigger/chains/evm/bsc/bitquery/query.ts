@@ -1,6 +1,6 @@
 import {
   DEFAULT_CONTRACT_ADDRESS,
-  USDC_MULTIPLIER,
+  USDC_BSC_DECIMALS,
 } from '@facilitators/constants';
 import {
   SyncConfig,
@@ -67,7 +67,7 @@ export function transformResponse(
     transaction_from: item.Transaction.From,
     sender: item.Transfer.Sender,
     recipient: item.Transfer.Receiver,
-    amount: Math.round(parseFloat(item.Transfer.Amount) * USDC_MULTIPLIER),
+    amount: Math.round(parseFloat(item.Transfer.Amount) * Math.pow(10, USDC_BSC_DECIMALS)),
     block_timestamp: new Date(item.Block.Time),
     tx_hash: item.Transaction.Hash,
     chain: config.chain,
