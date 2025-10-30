@@ -1,25 +1,4 @@
-// Configuration and individual facilitators
-export {
-  coinbase,
-  coinbaseFacilitator,
-  aurracloud,
-  aurracloudFacilitator,
-  thirdweb,
-  thirdwebFacilitator,
-  x402rs,
-  x402rsFacilitator,
-  payai,
-  payaiFacilitator,
-  corbits,
-  corbitsFacilitator,
-  dexter,
-  dexterFacilitator,
-  daydreams,
-  daydreamsFacilitator,
-  mogami,
-  mogamiFacilitator,
-  openx402,
-  openx402Facilitator,
-  f402104,
-  f402104Facilitator,
-} from './facilitators';
+export * from './facilitators';
+export * from './lists';
+export * from './discovery';
+export * from './types';

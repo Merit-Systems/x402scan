@@ -10,21 +10,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.mjs",
-      "require": "./dist/types.js"
-    },
-    "./discovery": {
-      "types": "./dist/discovery.d.ts",
-      "import": "./dist/discovery.mjs",
-      "require": "./dist/discovery.js"
-    },
-    "./lists": {
-      "types": "./dist/lists.d.ts",
-      "import": "./dist/lists.mjs",
-      "require": "./dist/lists.js"
     }
   },
   "files": [

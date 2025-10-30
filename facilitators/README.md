@@ -2,7 +2,7 @@
 
 # facilitators
 
-The `facilitators` package offers a unified, drop-in configuration for all supported x402 facilitators
+The `facilitators` package offers a unified, drop-in configuration for all x402 facilitators
 
 ## Installation
 
@@ -43,10 +43,7 @@ This is useful for building agents that search for tools.
 ### Discovery API
 
 ```typescript
-import {
-  coinbaseDiscovery,
-  listAllFacilitatorResources,
-} from 'facilitators/discovery';
+import { coinbaseDiscovery, listAllFacilitatorResources } from 'facilitators';
 
 // List all resources from a facilitator
 const resources = await listAllFacilitatorResources(coinbaseDiscovery);
@@ -69,7 +66,7 @@ The package also exports a list of all facilitators that support discovery:
 import {
   discoverableFacilitators,
   listAllFacilitatorResources,
-} from 'facilitators/discovery';
+} from 'facilitators';
 
 await Promise.all(
   discoverableFacilitators.map(facilitator =>
