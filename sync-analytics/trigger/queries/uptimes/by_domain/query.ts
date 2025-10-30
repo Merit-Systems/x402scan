@@ -1,9 +1,15 @@
-export const UPTIME_QUERY = `
+export const UPTIME_BY_DOMAIN_QUERY = `
 SELECT
-    url,
+    /* extract domain name from url */
+    replaceRegexpOne(url, '^https?://([^/]+).*', '\\1') AS domain,
 
+    /* total counts */
+    COUNTIf(created_at >= now() - toIntervalHour(1))  AS total_count_1h,
+    COUNTIf(created_at >= now() - toIntervalHour(6))  AS total_count_6h,
     COUNTIf(created_at >= now() - toIntervalHour(24)) AS total_count_24h,
+    COUNT(*)                                          AS total_count_all_time,
 
+    /* uptime percentages */
     round(if(
         (COUNTIf(status_code BETWEEN 200 AND 299 AND created_at >= now() - toIntervalHour(1))
        + COUNTIf(status_code >= 500 AND created_at >= now() - toIntervalHour(1))) = 0,
@@ -51,12 +57,11 @@ SELECT
     quantileTimingIf(0.90)(duration, created_at >= now() - toIntervalHour(24)) AS p90_24h_ms,
     quantileTimingIf(0.99)(duration, created_at >= now() - toIntervalHour(24)) AS p99_24h_ms,
 
-    /* all time */
-    quantileTiming(0.50)(duration) AS p50_all_time_ms,
-    quantileTiming(0.90)(duration) AS p90_all_time_ms,
-    quantileTiming(0.99)(duration) AS p99_all_time_ms
+    quantileTiming(0.50)(duration) AS p50_all_ms,
+    quantileTiming(0.90)(duration) AS p90_all_ms,
+    quantileTiming(0.99)(duration) AS p99_all_ms
 
 FROM resource_invocations
-GROUP BY url
-ORDER BY total_count_24h DESC, url ASC;
+GROUP BY domain
+ORDER BY total_count_24h DESC, domain ASC;
 `;

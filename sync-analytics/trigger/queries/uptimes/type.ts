@@ -1,6 +1,9 @@
 export type Uptime = {
   url: string;
+  total_count_1h: number;
+  total_count_6h: number;
   total_count_24h: number;
+  total_count_all_time: number;
   uptime_1h_pct: number;
   uptime_6h_pct: number;
   uptime_24h_pct: number;
