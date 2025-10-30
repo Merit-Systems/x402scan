@@ -1,7 +1,6 @@
 import { logger, schedules } from '@trigger.dev/sdk/v3';
 import { createClient } from '@clickhouse/client';
 
-// Sync data from ClickHouse
 export const syncClickhouseTask = schedules.task({
   id: 'sync-clickhouse-resource-invocations',
   // Run every hour
@@ -11,14 +10,12 @@ export const syncClickhouseTask = schedules.task({
     try {
       logger.log('Starting ClickHouse sync task', { timestamp: new Date() });
 
-      // Initialize ClickHouse client
       const clickhouse = createClient({
         url: process.env.CLICKHOUSE_URL,
         username: process.env.CLICKHOUSE_USER,
         password: process.env.CLICKHOUSE_PASSWORD,
       });
 
-      // Query resource invocations
       const resultSet = await clickhouse.query({
         query: 'SELECT * FROM resource_invocations LIMIT 10',
         format: 'JSONEachRow',
