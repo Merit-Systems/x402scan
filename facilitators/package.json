@@ -1,6 +1,6 @@
 {
   "name": "facilitators",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "x402 facilitator configuration and validation utilities",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

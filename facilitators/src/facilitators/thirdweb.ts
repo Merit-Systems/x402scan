@@ -26,9 +26,7 @@ export const thirdwebFacilitator = {
     color: '#E91E8C',
   },
   config: thirdweb,
-  discoveryConfig: {
-    url: 'https://api.thirdweb.com/v1/payments/x402',
-  },
+  discoveryConfig: thirdwebDiscovery,
   addresses: {
     [Network.BASE]: [
       {

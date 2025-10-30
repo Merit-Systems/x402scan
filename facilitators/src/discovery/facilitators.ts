@@ -1,7 +1,17 @@
-import { allFacilitators } from '../lists/all';
+import {
+  aurracloudFacilitator,
+  coinbaseFacilitator,
+  thirdwebFacilitator,
+  payaiFacilitator,
+} from '../facilitators';
 
-import type { FacilitatorConfig } from 'x402/types';
+const facilitatorsWithDiscovery = [
+  coinbaseFacilitator,
+  aurracloudFacilitator,
+  thirdwebFacilitator,
+  payaiFacilitator,
+];
 
-export const discoverableFacilitators = allFacilitators
-  .map(f => f.discoveryConfig)
-  .filter(Boolean) as FacilitatorConfig[];
+export const discoverableFacilitators = facilitatorsWithDiscovery.map(
+  f => f.discoveryConfig
+);
