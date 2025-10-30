@@ -57,11 +57,9 @@ export const registerResource = async (url: string, data: unknown) => {
     origin: origin,
     title: metadata?.title ?? og?.ogTitle,
     description: metadata?.description ?? og?.ogDescription,
-    favicon:
-      og?.favicon &&
-      (og.favicon.startsWith('/')
-        ? scrapedOrigin.replace(/\/$/, '') + og.favicon
-        : og.favicon),
+    favicon: og?.favicon
+      ? new URL(og.favicon, scrapedOrigin).toString()
+      : undefined,
     ogImages:
       og?.ogImage?.map(image => ({
         url: image.url,
