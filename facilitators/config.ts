@@ -259,6 +259,23 @@ const _FACILITATORS = validateUniqueFacilitators([
       ],
     },
   },
+  {
+    id: '402104',
+    name: '402104',
+    image: '/402104.png',
+    link: 'https://x402.load.network',
+    color: 'var(--color-blue-600)',
+    addresses: {
+      [Chain.BASE]: [
+        {
+          address: '0x73b2b8df52fbe7c40fe78db52e3dffdd5db5ad07',
+          token: USDC_BASE_TOKEN,
+          syncStartDate: new Date('2025-10-29'),
+          enabled: true,
+        },
+      ],
+    },
+  },
 ] as const);
 
 export const FACILITATORS: Facilitator[] =
