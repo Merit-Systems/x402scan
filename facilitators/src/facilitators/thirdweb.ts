@@ -14,15 +14,15 @@ export const thirdweb: FacilitatorConfigConstructor<ThirdwebX402FacilitatorConfi
   createFacilitator;
 
 export const thirdwebDiscovery: FacilitatorConfig = {
-  url: 'https://api.thirdweb.com/v1/payments/x402',
+  url: 'https://nexus-api.thirdweb.com',
 };
 
 export const thirdwebFacilitator = {
   id: 'thirdweb',
   metadata: {
-    name: 'thirdweb',
+    name: 'Thirdweb',
     image: 'https://x402scan.com/thirdweb.png',
-    docsUrl: 'https://portal.thirdweb.com/payments/x402/facilitator',
+    docsUrl: 'https://nexus.thirdweb.com/docs/facilitator',
     color: '#E91E8C',
   },
   config: thirdweb,

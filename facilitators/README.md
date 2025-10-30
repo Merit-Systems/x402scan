@@ -16,15 +16,21 @@ pnpm add facilitators
 
 ## Quick Start
 
-### Minimal Express Server Example
+### Minimal Example
 
 ```typescript
-import { coinbase } from 'facilitators';
+import { coinbase, thirdweb } from 'facilitators';
 
 paymentMiddleware(
   address,
   resources,
   coinbase // easily interchange any facilitator
+);
+
+paymentMiddleware(
+  address,
+  resources,
+  thirdweb // easily interchange any facilitator
 );
 ```
 
@@ -55,7 +61,9 @@ The following facilitators currently support resource discovery:
 - **thirdweb** - Web3 development platform
 - **PayAI** - AI-payment infrastructure
 
-The package also exports a list of all facilitators that support discovery
+### Enumerate All Discoverable Facilitators
+
+The package also exports a list of all facilitators that support discovery:
 
 ```typescript
 import {
@@ -105,14 +113,13 @@ import {
 // Facilitators requiring setup
 import { aurracloud, thirdweb } from 'facilitators';
 
-// Use with setup
-const facilitator = aurracloud({
+aurracloud({
   apiKey: process.env.AURRACLOUD_API_KEY,
 });
 
-const thirdwebFacilitator = thirdweb({
-  secretKey: process.env.THIRDWEB_SECRET_KEY,
-  serverWalletAddress: process.env.SERVER_WALLET,
+thirdweb({
+  walletSecret: process.env.THIRDWEB_NEXUS_SECRET_KEY,
+  walletAddress: process.env.SERVER_WALLET,
 });
 ```
 
@@ -128,7 +135,7 @@ console.log(coinbaseFacilitator);
 //     name: 'Coinbase',
 //     image: 'https://x402scan.com/coinbase.png',
 //     docsUrl: 'https://docs.cdp.coinbase.com/x402/welcome',
-//     color: 'var(--color-primary)'
+//     color: '#2563EB'
 //   },
 //   config: { ... },
 //   addresses: { base: [...], solana: [...] },
