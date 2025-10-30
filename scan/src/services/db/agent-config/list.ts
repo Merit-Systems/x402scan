@@ -59,7 +59,7 @@ export const listTopAgentConfigurations = async (
         COUNT(DISTINCT ch.id) AS chat_count,
         COALESCE(m.message_count, 0) AS message_count,
         COALESCE(tc.tool_call_count, 0) AS tool_call_count,
-        (COALESCE(m.message_count, 0) * COALESCE(tc.tool_call_count, 0) * COALESCE(u.user_count, 0)) AS score,
+        (GREATEST(COALESCE(m.message_count, 0), 1) * GREATEST(COALESCE(tc.tool_call_count, 0), 1) * GREATEST(COALESCE(u.user_count, 0), 1)) AS score,
         -- JSON aggregate of tools/resources with origin favicon and id
         COALESCE(
           JSON_AGG(
