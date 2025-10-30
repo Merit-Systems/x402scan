@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import express from "express";
 import { paymentMiddleware, type SolanaAddress } from "x402-express";
 
-import { daydreams } from "facilitators";
+import { coinbase } from "facilitators";
 
 config();
 
@@ -45,7 +45,7 @@ app.use(
         network: "base-sepolia",
       },
     },
-    daydreams,
+    coinbase,
   ),
 );
 
