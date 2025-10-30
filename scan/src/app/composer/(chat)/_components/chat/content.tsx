@@ -29,6 +29,7 @@ import type { LanguageModel } from './input/model-select/types';
 import { languageModels } from './input/model-select/models';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Suggestion, Suggestions } from '@/components/ai-elements/suggestion';
+import { DefaultChatTransport } from 'ai';
 
 interface Props {
   id: string;
@@ -62,14 +63,12 @@ export const ChatContent: React.FC<Props> = ({
   });
   const hasBalance = (usdcBalance ?? 0) > 0 || freeTierUsage?.hasFreeTier;
 
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, regenerate, error } = useChat({
     messages: initialMessages ? convertToUIMessages(initialMessages) : [],
     resume: true,
     id,
-    generateId: () => id,
     onError: error => {
       toast.error(error.message);
-      // could also open the deposit dialog here
     },
     onFinish: ({ messages }) => {
       if (messages.length > 0) {
@@ -87,6 +86,20 @@ export const ChatContent: React.FC<Props> = ({
         }, 3000);
       }
     },
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+      prepareSendMessagesRequest({ messages }) {
+        return {
+          body: {
+            chatId: id,
+            model: `${model.provider}/${model.modelId}`,
+            message: messages[messages.length - 1],
+            resourceIds: selectedResources.map(resource => resource.id),
+            agentConfigurationId: agentConfig?.id,
+          },
+        };
+      },
+    }),
   });
 
   const [input, setInput] = useState('');
@@ -110,18 +123,7 @@ export const ChatContent: React.FC<Props> = ({
       toast.error('Please enter a message');
       return;
     }
-    void sendMessage(
-      { text },
-      {
-        body: {
-          chatId: id,
-          model: `${model.provider}/${model.modelId}`,
-          messages,
-          resourceIds: selectedResources.map(resource => resource.id),
-          agentConfigurationId: agentConfig?.id,
-        },
-      }
-    );
+    void sendMessage({ text });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -158,6 +160,8 @@ export const ChatContent: React.FC<Props> = ({
         messages={messages}
         status={status}
         model={model.name}
+        error={error}
+        onRegenerate={regenerate}
         emptyState={
           agentConfig
             ? {
