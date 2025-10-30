@@ -43,6 +43,9 @@ next-env.d.ts
 # Trigger.dev
 .trigger/
 
+# Turbo
+.turbo/
+
 # Prisma generated
 **/generated/prisma/
 scan/src/generated/prisma/
@@ -63,3 +66,6 @@ scan/bun.lock
 # OS
 .DS_Store
 Thumbs.db
+
+.pnpm-store
+

@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'sync/**'
-      - 'facilitators/**'
+      - 'packages/facilitators/**'
       - 'pnpm-lock.yaml'
       - '.github/workflows/deploy-sync.yml'
 
@@ -27,17 +27,16 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: pnpm --filter sync db:generate
+        working-directory: ./sync/transfers
+        run: pnpm db:generate
 
       - name: Deploy to Trigger.dev
+        working-directory: ./sync/transfers
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
-        run: |
-          pnpm --filter sync trigger:deploy
+        run: pnpm trigger:deploy
