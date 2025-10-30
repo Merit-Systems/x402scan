@@ -1,6 +1,8 @@
+![X402 Facilitators](assets/banner.gif)
+
 # facilitators
 
-Configuration and validation utilities for X402 payment facilitators across multiple blockchain networks.
+The `facilitators` package offers a unified, drop-in configuration for all supported x402 facilitators
 
 ## Installation
 
@@ -12,306 +14,208 @@ yarn add facilitators
 pnpm add facilitators
 ```
 
-## Usage
+## Quick Start
 
-### Import Facilitator Configuration
+### Minimal Express Server Example
 
 ```typescript
-import { FACILITATORS, FACILITATORS_BY_CHAIN, Chain } from 'facilitators';
+import { coinbase } from 'facilitators';
 
-// Get all facilitators
-console.log(FACILITATORS);
-
-// Get facilitators by chain
-const baseFacilitators = FACILITATORS_BY_CHAIN(Chain.BASE);
-const solanaFacilitators = FACILITATORS_BY_CHAIN(Chain.SOLANA);
+paymentMiddleware(
+  address,
+  resources,
+  coinbase // easily interchange any facilitator
+);
 ```
+
+## Resource Discovery
+
+Some facilitators support **discovery** - the ability to list all x402-protected resources they're facilitating.
+
+This is useful for building agents that search for tools.
+
+### Discovery API
+
+```typescript
+import {
+  coinbaseDiscovery,
+  listAllFacilitatorResources,
+} from 'facilitators/discovery';
+
+// List all resources from a facilitator
+const resources = await listAllFacilitatorResources(coinbaseDiscovery);
+```
+
+### Facilitators Supporting Discovery
+
+The following facilitators currently support resource discovery:
+
+- **Coinbase** - Enterprise-grade facilitator with SDK
+- **AurraCloud** - Infrastructure-focused facilitator
+- **thirdweb** - Web3 development platform
+- **PayAI** - AI-payment infrastructure
+
+The package also exports a list of all facilitators that support discovery
+
+```typescript
+import {
+  discoverableFacilitators,
+  listAllFacilitatorResources,
+} from 'facilitators/discovery';
+
+await Promise.all(
+  discoverableFacilitators.map(facilitator =>
+    listAllFacilitatorResources(facilitator)
+  )
+);
+```
+
+## Available Facilitators
+
+This package includes pre-configured integrations for the following X402 facilitators:
+
+| Facilitator    | Networks      | Discovery | Setup Required                 |
+| -------------- | ------------- | --------- | ------------------------------ |
+| **Coinbase**   | BASE, SOLANA  | ✅ Yes    | No - uses `@coinbase/x402` SDK |
+| **AurraCloud** | BASE          | ✅ Yes    | Yes - API key                  |
+| **thirdweb**   | BASE          | ✅ Yes    | Yes - Secret key & wallet      |
+| **PayAI**      | BASE, SOLANA  | ✅ Yes    | No                             |
+| **Daydreams**  | BASE, SOLANA  | No        | No                             |
+| **X402rs**     | BASE, POLYGON | No        | No                             |
+| **Corbits**    | SOLANA        | No        | No                             |
+| **Dexter**     | SOLANA        | No        | No                             |
+| **Mogami**     | BASE          | No        | No                             |
+| **OpenX402**   | BASE, SOLANA  | No        | No                             |
 
 ### Import Individual Facilitators
 
 ```typescript
-import { coinbase, thirdweb, payai } from 'facilitators';
-
-console.log(coinbase);
-// {
-//   id: 'coinbase',
-//   name: 'Coinbase',
-//   image: 'https://x402scan.com/coinbase.png',
-//   link: 'https://docs.cdp.coinbase.com/x402/welcome',
-//   color: 'var(--color-primary)',
-//   addresses: { ... }
-// }
-```
-
-### Types (Separate Import)
-
-You can import types separately from the runtime code:
-
-```typescript
-import type {
-  Facilitator,
-  FacilitatorConfig,
-  Token,
-  Chain,
-} from 'facilitators/types';
-
-// Or import from the main package
-import type { Facilitator, Chain } from 'facilitators';
-```
-
-#### Type Definitions
-
-```typescript
-// Chain enum
-enum Chain {
-  BASE = 'base',
-  POLYGON = 'polygon',
-  SOLANA = 'solana',
-}
-
-// Facilitator configuration
-interface FacilitatorConfig {
-  address: string;
-  token: Token;
-  syncStartDate: Date;
-  enabled: boolean;
-}
-
-// Facilitator details
-interface Facilitator {
-  id: string;
-  name: string;
-  image: string;
-  link: string;
-  color: string;
-  addresses: Partial<Record<Chain, FacilitatorConfig[]>>;
-}
-
-// Token configuration
-interface Token {
-  address: string;
-  decimals: number;
-  symbol: string;
-}
-```
-
-### Constants
-
-```typescript
-import {
-  USDC_BASE,
-  USDC_POLYGON,
-  USDC_SOLANA,
-  USDC_DECIMALS,
-  USDC_MULTIPLIER,
-  USDC_BASE_TOKEN,
-  USDC_SOLANA_TOKEN,
-  USDC_POLYGON_TOKEN,
-} from 'facilitators';
-
-// Token addresses and configuration
-console.log(USDC_BASE_TOKEN);
-// { address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', decimals: 6, symbol: 'USDC' }
-```
-
-### Validation
-
-```typescript
-import { validateUniqueFacilitators } from 'facilitators';
-import type { Facilitator } from 'facilitators/types';
-
-// Validate facilitator configuration at compile time
-const facilitators = validateUniqueFacilitators([
-  {
-    id: 'my-facilitator',
-    name: 'My Facilitator',
-    // ... configuration
-  } as Facilitator,
-]);
-```
-
-## Package Structure
-
-```
-facilitators/
-├── src/
-│   ├── facilitators/       # Individual facilitator files
-│   │   ├── coinbase.ts
-│   │   ├── aurracloud.ts
-│   │   ├── thirdweb.ts
-│   │   ├── x402rs.ts
-│   │   ├── payai.ts
-│   │   ├── corbits.ts
-│   │   ├── dexter.ts
-│   │   ├── daydreams.ts
-│   │   ├── mogami.ts
-│   │   ├── openx402.ts
-│   │   └── index.ts        # Combines all facilitators
-│   ├── types.ts            # Type definitions
-│   ├── config.ts           # Re-exports from facilitators/
-│   ├── constants.ts        # Constants (USDC addresses, etc.)
-│   ├── validate.ts         # Validation utilities
-│   └── index.ts            # Main exports
-├── index.ts                # Package entry point
-├── types.ts                # Types-only entry point
-└── dist/                   # Built files (generated)
-```
-
-## Exports
-
-The package provides multiple export options:
-
-- **`facilitators`** - Main export with all runtime code and types
-- **`facilitators/types`** - Types-only export for better tree-shaking
-
-### Available Exports
-
-```typescript
-// Collections
-import { FACILITATORS, FACILITATORS_BY_CHAIN } from 'facilitators';
-
-// Individual facilitators
+// Simple facilitators (no setup)
 import {
   coinbase,
-  aurracloud,
-  thirdweb,
-  x402rs,
   payai,
+  daydreams,
+  x402rs,
   corbits,
   dexter,
-  daydreams,
   mogami,
   openx402,
 } from 'facilitators';
 
-// Constants
-import {
-  USDC_BASE,
-  USDC_POLYGON,
-  USDC_SOLANA,
-  USDC_DECIMALS,
-  USDC_MULTIPLIER,
-  USDC_BASE_TOKEN,
-  USDC_SOLANA_TOKEN,
-  USDC_POLYGON_TOKEN,
-  DEFAULT_CONTRACT_ADDRESS,
-  TRANSFER_EVENT_SIG,
-  TRANSFER_TOPIC,
-  ONE_DAY_IN_MS,
-  ONE_MINUTE_IN_SECONDS,
-} from 'facilitators';
+// Facilitators requiring setup
+import { aurracloud, thirdweb } from 'facilitators';
 
-// Utilities
-import { validateUniqueFacilitators } from 'facilitators';
+// Use with setup
+const facilitator = aurracloud({
+  apiKey: process.env.AURRACLOUD_API_KEY,
+});
 
-// Types
-import type {
-  Chain,
-  Facilitator,
-  FacilitatorConfig,
-  Token,
-} from 'facilitators';
-// or
-import type {
-  Chain,
-  Facilitator,
-  FacilitatorConfig,
-  Token,
-} from 'facilitators/types';
+const thirdwebFacilitator = thirdweb({
+  secretKey: process.env.THIRDWEB_SECRET_KEY,
+  serverWalletAddress: process.env.SERVER_WALLET,
+});
 ```
 
-## Supported Facilitators
-
-This package includes configuration for the following X402 facilitators:
-
-- **Coinbase** - BASE, SOLANA
-- **AurraCloud** - BASE
-- **thirdweb** - BASE
-- **X402rs** - BASE, POLYGON
-- **PayAI** - BASE, SOLANA
-- **Corbits** - SOLANA
-- **Dexter** - SOLANA
-- **Daydreams** - BASE, SOLANA
-- **Mogami** - BASE
-- **OpenX402** - BASE, SOLANA
-
-## Supported Chains
-
-- **Base** (Layer 2 Ethereum)
-- **Polygon** (Ethereum sidechain)
-- **Solana**
-
-## Adding New Facilitators
-
-To add a new facilitator:
-
-1. Create a new file in `src/facilitators/` (e.g., `newfacilitator.ts`)
-2. Export the facilitator configuration
-3. Add the import and export to `src/facilitators/index.ts`
-
-Example:
+### Access Facilitator Metadata
 
 ```typescript
-// src/facilitators/newfacilitator.ts
-import { Chain, Facilitator } from '../types';
-import { USDC_BASE_TOKEN } from '../constants';
+import { coinbaseFacilitator, payaiFacilitator } from 'facilitators';
 
-export const newfacilitator: Facilitator = {
-  id: 'newfacilitator',
-  name: 'New Facilitator',
-  image: 'https://x402scan.com/newfacilitator.png',
-  link: 'https://newfacilitator.com',
-  color: 'var(--color-blue-500)',
-  addresses: {
-    [Chain.BASE]: [
-      {
-        address: '0x...',
-        token: USDC_BASE_TOKEN,
-        syncStartDate: new Date('2025-01-01'),
-        enabled: true,
-      },
-    ],
-  },
+console.log(coinbaseFacilitator);
+// {
+//   id: 'coinbase',
+//   metadata: {
+//     name: 'Coinbase',
+//     image: 'https://x402scan.com/coinbase.png',
+//     docsUrl: 'https://docs.cdp.coinbase.com/x402/welcome',
+//     color: 'var(--color-primary)'
+//   },
+//   config: { ... },
+//   addresses: { base: [...], solana: [...] },
+//   discoveryConfig: { ... }
+// }
+```
+
+## Types
+
+### `Facilitator<Props>`
+
+Represents a complete facilitator with configuration and metadata:
+
+```typescript
+interface Facilitator<Props = void> {
+  id: string; // Unique identifier
+  metadata: FacilitatorMetadata; // Display info (name, image, docs)
+  config: FacilitatorConfig | FacilitatorConfigConstructor<Props>;
+  addresses: Partial<Record<Network, FacilitatorAddress[]>>;
+  discoveryConfig?: FacilitatorConfig; // For resource discovery
+}
+```
+
+### `FacilitatorConfig`
+
+Configuration passed to X402 middleware for payment verification:
+
+```typescript
+// From 'x402/types'
+type FacilitatorConfig = {
+  url: string; // Facilitator API endpoint
 };
 ```
 
-Then update `src/facilitators/index.ts`:
+### `FacilitatorConfigConstructor<Props>`
+
+For facilitators requiring initialization parameters:
 
 ```typescript
-import { newfacilitator } from './newfacilitator';
-export { newfacilitator } from './newfacilitator';
-
-export const FACILITATORS: Facilitator[] = [
-  // ... existing facilitators
-  newfacilitator,
-];
+type FacilitatorConfigConstructor<Props = void> = (
+  requirements: Props
+) => FacilitatorConfig;
 ```
 
-## Development
+**Example - Simple facilitator (no setup required):**
 
-```bash
-# Install dependencies
-pnpm install
+```typescript
+import { payai } from 'facilitators';
 
-# Build the package
-pnpm build
-
-# Type check
-pnpm typecheck
+// Use directly - just a URL configuration
+paymentMiddleware(address, resources, payai);
 ```
 
-## Publishing
+**Example - Facilitator with required props:**
 
-```bash
-# Bump version
-npm version patch|minor|major
+```typescript
+import { aurracloud } from 'facilitators';
 
-# Publish to npm
-npm publish
+// Must call with required props first
+paymentMiddleware(
+  address,
+  resources,
+  aurracloud({ apiKey: process.env.AURRACLOUD_API_KEY })
+);
 ```
 
-See [PUBLISHING.md](./PUBLISHING.md) for detailed publishing instructions.
+### `FacilitatorMetadata`
 
-## License
+Display information for UIs:
 
-MIT
+```typescript
+interface FacilitatorMetadata {
+  name: string; // Display name
+  image: string; // Logo URL
+  docsUrl: string; // Documentation link
+  color: string; // Brand color
+}
+```
+
+### `Network`
+
+Supported blockchain networks:
+
+```typescript
+enum Network {
+  BASE = 'base',
+  POLYGON = 'polygon',
+  SOLANA = 'solana',
+}
+```
