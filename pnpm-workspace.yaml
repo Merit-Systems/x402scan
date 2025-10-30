@@ -1,6 +1,7 @@
 packages:
   - 'scan'
   - 'sync'
+  - 'sync-analytics'
   - 'proxy'
   - 'packages/*'
   - 'facilitators'
