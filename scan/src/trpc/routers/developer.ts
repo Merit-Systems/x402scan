@@ -25,9 +25,7 @@ export const developerRouter = createTRPCRouter({
       const title = metadata?.title ?? og?.ogTitle ?? null;
       const description = metadata?.description ?? og?.ogDescription ?? null;
       const favicon = og?.favicon
-        ? og.favicon.startsWith('/')
-          ? scrapedOrigin.replace(/\/$/, '') + og.favicon
-          : og.favicon
+        ? new URL(og.favicon, scrapedOrigin).toString()
         : null;
       const ogImages = (og?.ogImage ?? []).map(image => ({
         url: image.url,
