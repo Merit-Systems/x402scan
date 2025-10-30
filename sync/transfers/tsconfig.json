@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -8,16 +8,14 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@/*": ["./*"],
-      "@facilitators/*": ["../facilitators/*"]
+      "@/*": ["./*"]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "trigger.config.ts",
-    "../facilitators/**/*.ts"
+    "trigger.config.ts"
   ],
   "exclude": ["node_modules"]
 }
