@@ -258,8 +258,8 @@ const _FACILITATORS = validateUniqueFacilitators([
   {
     id: 'aeon',
     name: 'aeon',
-    image: '/aeon.ico',
-    link: '',
+    image: '/aeon.png',
+    link: 'https://aeon.xyz/',
     color: 'var(--color-yellow-600)',
     addresses: {
       [Chain.BSC]: [
