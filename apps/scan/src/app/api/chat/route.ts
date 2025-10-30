@@ -5,10 +5,10 @@ import { z } from 'zod';
 import {
   APICallError,
   convertToModelMessages,
+  generateId,
   generateText,
   stepCountIs,
   streamText,
-  generateId,
 } from 'ai';
 
 import { createResumableStreamContext } from 'resumable-stream';
@@ -25,24 +25,24 @@ import { createX402AITools } from '@/services/agent/create-tools';
 
 import { messageSchema } from '@/lib/message-schema';
 
-import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
 import { ChatSDKError } from '@/lib/errors';
+import { freeTierConfig } from '@/lib/free-tier';
+import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
+import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
 import {
   getUserMessageCount,
   getUserToolCallCount,
 } from '@/services/db/user/chat';
-import { freeTierConfig } from '@/lib/free-tier';
-import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
 
-import type { NextRequest } from 'next/server';
-import type { LanguageModel, UIMessage } from 'ai';
+import { env } from '@/env';
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
+import type { LanguageModel, UIMessage } from 'ai';
+import type { NextRequest } from 'next/server';
 import {
   agentSystemPrompt,
   baseSystemPrompt,
   freeTierSystemPrompt,
 } from './system-prompt';
-import { env } from '@/env';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -88,7 +88,11 @@ export async function POST(request: NextRequest) {
     return new ChatSDKError('not_found:chat').toResponse();
   }
   const signer = toAccount(wallet);
-  const openai = createX402OpenAI(signer, env.NEXT_PUBLIC_PROXY_URL);
+  const openai = createX402OpenAI(
+    signer,
+    env.NEXT_PUBLIC_PROXY_URL +
+      '/api/proxy?url=https://echo.router.merit.systems'
+  );
 
   const lastMessage = messages[messages.length - 1];
 
