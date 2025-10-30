@@ -386,3 +386,17 @@ model UserAcknowledgement {
 
   @@map("UserAcknowledgement")
 }
+
+model Uptime {
+  id                  String   @id @default(uuid())
+  url                 String   @unique
+  totalCount24h       Int
+  uptime1hPct         Float?
+  uptime6hPct         Float?
+  uptime24hPct        Float?
+  uptimeAllTimePct    Float?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("Uptime")
+}

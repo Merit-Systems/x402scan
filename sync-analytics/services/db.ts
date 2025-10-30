@@ -1,3 +1,10 @@
-// Re-export the Prisma client from the scan workspace
-// This allows sync-analytics to write to the scan database
-export { db } from '@scan/lib/db';
+// Prisma client for sync-analytics to write to the scan database
+import { PrismaClient } from '@prisma/client';
+
+const globalForPrisma = global as unknown as {
+  prisma: PrismaClient;
+};
+
+export const db = globalForPrisma.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db;
