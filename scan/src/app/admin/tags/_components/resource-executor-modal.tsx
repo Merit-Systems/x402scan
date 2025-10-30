@@ -11,6 +11,7 @@ import { ResourceExecutor } from '@/app/_components/resources/executor';
 import { parseX402Response } from '@/lib/x402/schema';
 import { Loader2 } from 'lucide-react';
 import { getBazaarMethod } from '@/app/_components/resources/executor/utils';
+import { Accordion } from '@/components/ui/accordion';
 
 interface ResourceExecutorModalProps {
   open: boolean;
@@ -85,13 +86,15 @@ export function ResourceExecutorModal({
             {resource.resource}
           </DialogTitle>
         </DialogHeader>
-        <ResourceExecutor
-          resource={resource}
-          tags={resource.tags.map(tag => tag.tag)}
-          bazaarMethod={getBazaarMethod(resource.accepts[0].outputSchema)}
-          response={parsedResponse.data}
-          className="bg-transparent"
-        />
+        <Accordion type="multiple" defaultValue={[resource.id]}>
+          <ResourceExecutor
+            resource={resource}
+            tags={resource.tags.map(tag => tag.tag)}
+            bazaarMethod={getBazaarMethod(resource.accepts[0].outputSchema)}
+            response={parsedResponse.data}
+            className="bg-transparent"
+          />
+        </Accordion>
       </DialogContent>
     </Dialog>
   );

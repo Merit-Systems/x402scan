@@ -1,5 +1,6 @@
 import { prisma } from '@/services/db/client';
 import { z } from 'zod';
+import { MAIN_TAGS } from '@/services/labeling/main-tags';
 
 export const createTagSchema = z.object({
   name: z.string().min(1),
@@ -12,14 +13,18 @@ export const createTag = async (data: z.infer<typeof createTagSchema>) => {
   });
 };
 
-export const listTags = async () => {
+export const listTagsSchema = z.object({
+  filterTags: z.array(z.string()).default([]),
+});
+
+export const listTags = async (data: z.infer<typeof listTagsSchema>) => {
   return await prisma.tag.findMany({
     orderBy: {
       name: 'asc',
     },
     where: {
       name: {
-        not: 'Crypto',
+        notIn: data.filterTags,
       },
     },
     include: {
@@ -107,6 +112,45 @@ export const deleteResourceTag = async (tagId: string) => {
     },
     include: {
       resourcesTags: true,
+    },
+  });
+};
+
+export const removeSubTagsFromTag = async (tagId: string) => {
+  // Find all resources that have this tag
+  const resourcesWithTag = await prisma.resourcesTags.findMany({
+    where: {
+      tagId,
+    },
+    select: {
+      resourceId: true,
+    },
+  });
+
+  const resourceIds = resourcesWithTag.map(rt => rt.resourceId);
+
+  // Delete all tag associations from these resources EXCEPT for the specified tag
+  return await prisma.resourcesTags.deleteMany({
+    where: {
+      resourceId: {
+        in: resourceIds,
+      },
+      tagId: {
+        not: tagId,
+      },
+    },
+  });
+};
+
+export const unassignAllSubTags = async () => {
+  const mainTagNames = Object.keys(MAIN_TAGS);
+
+  // Delete all tags (and their assignments via cascade) that are NOT main categories
+  return await prisma.tag.deleteMany({
+    where: {
+      name: {
+        notIn: mainTagNames,
+      },
     },
   });
 };

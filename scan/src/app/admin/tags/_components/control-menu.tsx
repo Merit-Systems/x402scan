@@ -19,17 +19,25 @@ type Resource =
 
 interface ControlMenuProps {
   selectedResources?: Resource[];
+  selectedTagIds?: string[];
   onSuccess?: () => void;
 }
 
 export const ControlMenu = ({
   selectedResources = [],
+  selectedTagIds = [],
   onSuccess,
 }: ControlMenuProps) => {
   const utils = api.useUtils();
   const [confirmDialogOpen, setConfirmDialogOpen] = useState<
-    'selected' | 'all' | null
+    'selected' | 'all' | 'removeSubTags' | 'unassignAllSubTags' | null
   >(null);
+
+  const { data: tags } = api.public.resources.tags.list.useQuery();
+  const selectedTag =
+    selectedTagIds.length === 1
+      ? tags?.find(tag => tag.id === selectedTagIds[0])
+      : null;
 
   const unassignAllFromAllMutation =
     api.admin.resources.tags.unassignAllFromAll.useMutation({
@@ -54,6 +62,31 @@ export const ControlMenu = ({
     },
   });
 
+  const removeSubTagsMutation =
+    api.admin.resources.tags.removeSubTags.useMutation({
+      onSuccess: () => {
+        toast.success('Sub-tags removed successfully');
+        void utils.public.resources.list.paginated.invalidate();
+        onSuccess?.();
+      },
+      onError: error => {
+        toast.error(`Failed to remove sub-tags: ${error.message}`);
+      },
+    });
+
+  const unassignAllSubTagsMutation =
+    api.admin.resources.tags.unassignAllSubTags.useMutation({
+      onSuccess: () => {
+        toast.success('All sub-tags removed, only main categories remain');
+        void utils.public.resources.list.paginated.invalidate();
+        void utils.public.resources.tags.list.invalidate();
+        onSuccess?.();
+      },
+      onError: error => {
+        toast.error(`Failed to remove sub-tags: ${error.message}`);
+      },
+    });
+
   const handleUnassignAllFromAll = () => {
     unassignAllFromAllMutation.mutate();
     setConfirmDialogOpen(null);
@@ -66,7 +99,20 @@ export const ControlMenu = ({
     setConfirmDialogOpen(null);
   };
 
+  const handleRemoveSubTags = () => {
+    if (selectedTagIds.length === 1) {
+      removeSubTagsMutation.mutate(selectedTagIds[0]!);
+    }
+    setConfirmDialogOpen(null);
+  };
+
+  const handleUnassignAllSubTags = () => {
+    unassignAllSubTagsMutation.mutate();
+    setConfirmDialogOpen(null);
+  };
+
   const hasSelection = selectedResources.length > 0;
+  const hasExactlyOneTag = selectedTagIds.length === 1;
 
   return (
     <>
@@ -88,6 +134,33 @@ export const ControlMenu = ({
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
+            disabled={!hasExactlyOneTag || removeSubTagsMutation.isPending}
+            onSelect={() => setConfirmDialogOpen('removeSubTags')}
+          >
+            {selectedTag ? (
+              <div className="flex items-center gap-2">
+                <span>Remove Sub-tags from</span>
+                <div
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: selectedTag.color }}
+                />
+                <span className="font-medium">{selectedTag.name}</span>
+              </div>
+            ) : (
+              'Remove Sub-tags from Selected Tag'
+            )}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            disabled={unassignAllSubTagsMutation.isPending}
+            onSelect={() => setConfirmDialogOpen('unassignAllSubTags')}
+          >
+            Delete All Sub-tags (Keep Main Categories)
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
             disabled={unassignAllFromAllMutation.isPending}
             onSelect={() => setConfirmDialogOpen('all')}
           >
@@ -103,6 +176,30 @@ export const ControlMenu = ({
         description={`Are you sure you want to unassign all tags from ${selectedResources.length} selected resource(s)? This action cannot be undone.`}
         confirmLabel="Unassign"
         onConfirm={handleUnassignFromSelected}
+        variant="destructive"
+      />
+
+      <ConfirmDialog
+        open={confirmDialogOpen === 'removeSubTags'}
+        onOpenChange={open => !open && setConfirmDialogOpen(null)}
+        title="Remove Sub-tags from Selected Tag"
+        description={
+          selectedTag
+            ? `Are you sure you want to remove all OTHER tags from resources that have "${selectedTag.name}"? Only "${selectedTag.name}" will remain on those resources. This action cannot be undone.`
+            : 'Are you sure you want to remove all OTHER tags from resources that have the selected tag? Only the selected tag will remain on those resources. This action cannot be undone.'
+        }
+        confirmLabel="Remove Sub-tags"
+        onConfirm={handleRemoveSubTags}
+        variant="destructive"
+      />
+
+      <ConfirmDialog
+        open={confirmDialogOpen === 'unassignAllSubTags'}
+        onOpenChange={open => !open && setConfirmDialogOpen(null)}
+        title="Delete All Sub-tags (Keep Main Categories)"
+        description="Are you sure you want to DELETE all tags from the database EXCEPT the main categories (Search, AI, Crypto, Trading, Utility, Random)? All sub-tags and their assignments will be permanently removed. This action cannot be undone."
+        confirmLabel="Delete Sub-tags"
+        onConfirm={handleUnassignAllSubTags}
         variant="destructive"
       />
 

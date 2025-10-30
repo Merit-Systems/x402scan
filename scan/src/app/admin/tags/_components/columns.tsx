@@ -74,13 +74,13 @@ export const createColumns = (
     loading: () => <Skeleton className="h-4 w-32 mx-auto" />,
   },
   {
-    accessorKey: 'invocations',
+    accessorKey: 'toolCalls',
     header: () => (
-      <HeaderCell Icon={Hash} label="Invocations" className="mx-auto" />
+      <HeaderCell Icon={Hash} label="# Tool Calls" className="mx-auto" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
-        {row.original._count.invocations}
+        {row.original._count.toolCalls}
       </div>
     ),
     size: 100,

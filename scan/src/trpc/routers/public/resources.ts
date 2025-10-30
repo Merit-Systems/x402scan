@@ -23,7 +23,11 @@ import { Methods } from '@/types/x402';
 
 import { registerResource } from '@/lib/resources';
 import { TRPCError } from '@trpc/server';
-import { listResourceTags, listTags } from '@/services/db/resources/tag';
+import {
+  listResourceTags,
+  listTags,
+  listTagsSchema,
+} from '@/services/db/resources/tag';
 
 import type { Prisma } from '@prisma/client';
 
@@ -159,8 +163,8 @@ export const resourcesRouter = createTRPCRouter({
       };
     }),
   tags: {
-    list: publicProcedure.query(async () => {
-      return await listTags();
+    list: publicProcedure.input(listTagsSchema.optional()).query(async ({ input }) => {
+      return await listTags(input ?? { filterTags: [] });
     }),
 
     getByResource: publicProcedure.input(z.uuid()).query(async ({ input }) => {

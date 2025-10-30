@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
-import { listResourcesWithPagination } from '@/services/db/resources/resource';
-import { labelingPass } from '@/services/labeling/label';
+import { labelingPass } from '@/services/labeling/initial-label';
+import { iterateResourcesBatched } from '@/services/labeling/helpers';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/services/db/client';
 import { z } from 'zod';
@@ -10,36 +10,6 @@ import { v4 } from 'uuid';
 const resourceLabelingPayloadSchema = z.object({
   resourceIds: z.array(z.string()).optional(),
 });
-
-async function* iterateResourcesBatched(
-  batchSize: number,
-  where?: Prisma.ResourcesWhereInput
-) {
-  let page = 0;
-  let hasMore = true;
-
-  while (hasMore) {
-    const { items, hasNextPage } = await listResourcesWithPagination(
-      { page, page_size: batchSize },
-      where
-    );
-
-    console.info('Fetched batch', {
-      page,
-      itemsCount: items.length,
-      hasNextPage,
-    });
-
-    if (items.length === 0) {
-      break;
-    }
-
-    yield items;
-
-    hasMore = hasNextPage;
-    page++;
-  }
-}
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);

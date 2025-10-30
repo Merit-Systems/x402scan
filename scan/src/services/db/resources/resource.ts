@@ -213,12 +213,12 @@ export const listResourcesWithPagination = async (
         _count: {
           select: {
             tags: true,
-            invocations: true,
+            toolCalls: true,
           },
         },
       },
       orderBy: {
-        invocations: {
+        toolCalls: {
           _count: 'desc',
         },
       },
