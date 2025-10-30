@@ -118,7 +118,7 @@ export const LoadingFavicons = ({
         return (
           <Skeleton
             key={index}
-            className={cn(iconContainerClassName, {
+            className={cn('rounded-full', iconContainerClassName, {
               '-mt-2': orientation === 'vertical',
               '-ml-2': orientation === 'horizontal',
             })}

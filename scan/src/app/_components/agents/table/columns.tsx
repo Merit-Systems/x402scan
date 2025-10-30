@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Bolt,
   Bot,
   CircleDot,
   MessageSquare,
@@ -68,8 +69,34 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     size: 125,
     loading: () => (
-      <LoadingFavicons count={2} iconContainerClassName="size-5" />
+      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground font-medium">
+        <LoadingFavicons count={2} iconContainerClassName="size-5" />
+      </div>
     ),
+  },
+  {
+    accessorKey: 'score',
+    header: () => (
+      <HeaderCell
+        Icon={Bolt}
+        label="Score"
+        className="mx-auto"
+        sorting={{
+          sortContext: AgentsSortingContext,
+          sortKey: 'score',
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center font-mono text-xs">
+        {Math.cbrt(Number(row.original.score)).toLocaleString(undefined, {
+          notation: 'compact',
+          maximumFractionDigits: 2,
+          minimumFractionDigits: 2,
+        })}
+      </div>
+    ),
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
     accessorKey: 'message_count',
@@ -96,6 +123,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     size: 125, // Fixed width for transaction count
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
+
   {
     accessorKey: 'tool_calls',
     header: () => (
