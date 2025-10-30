@@ -37,7 +37,10 @@
         "REDIS_URL",
         "LMNR_PROJECT_API_KEY",
         "NODE_ENV",
-        "NEXT_RUNTIME"
+        "NEXT_RUNTIME",
+        "AUTH_SECRET",
+        "OPENAI_API_KEY",
+        "DATABASE_URL"
       ]
     },
     "lint": {
