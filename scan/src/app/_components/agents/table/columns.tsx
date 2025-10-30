@@ -91,10 +91,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
-        {row.original.score.toLocaleString(undefined, {
+        {Math.cbrt(Number(row.original.score)).toLocaleString(undefined, {
           notation: 'compact',
           maximumFractionDigits: 2,
-          minimumFractionDigits: 0,
+          minimumFractionDigits: 2,
         })}
       </div>
     ),
