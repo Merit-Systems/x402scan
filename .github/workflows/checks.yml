@@ -26,23 +26,23 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        working-directory: scan
+        working-directory: apps/scan
         run: pnpm db:generate
 
       - name: Check Formatting
-        working-directory: scan
+        working-directory: apps/scan
         run: pnpm check:format
 
       - name: Check Knip
-        working-directory: scan
+        working-directory: apps/scan
         run: pnpm check:knip
 
       - name: Check Types
-        working-directory: scan
+        working-directory: apps/scan
         run: pnpm check:types
 
       - name: Check Lint
-        working-directory: scan
+        working-directory: apps/scan
         run: pnpm lint
 
   check-sync:
@@ -66,23 +66,23 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        working-directory: sync
+        working-directory: sync/transfers
         run: pnpm db:generate
 
       - name: Check Formatting
-        working-directory: sync
+        working-directory: sync/transfers
         run: pnpm check:format
 
       - name: Check Knip
-        working-directory: sync
+        working-directory: sync/transfers
         run: pnpm knip
 
       - name: Check Types
-        working-directory: sync
+        working-directory: sync/transfers
         run: pnpm check:types
 
       - name: Check Lint
-        working-directory: sync
+        working-directory: sync/transfers
         run: pnpm lint
 
   check-facilitators:
@@ -104,16 +104,16 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: facilitators
+        working-directory: packages/facilitators
 
       - name: Check types
         run: pnpm check:types
-        working-directory: facilitators
+        working-directory: packages/facilitators
 
       - name: Check lint
         run: pnpm lint
-        working-directory: facilitators
+        working-directory: packages/facilitators
 
       - name: Check knip
         run: pnpm knip
-        working-directory: facilitators
+        working-directory: packages/facilitators
