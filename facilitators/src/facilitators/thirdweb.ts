@@ -5,26 +5,14 @@ import {
   FacilitatorConfigConstructor,
 } from '../types';
 import { USDC_BASE_TOKEN } from '../constants';
-import { createThirdwebClient } from 'thirdweb';
-import { facilitator } from 'thirdweb/x402';
+import {
+  ThirdwebX402FacilitatorConfig,
+  createFacilitator,
+} from '@thirdweb-dev/nexus';
 
-interface ThirdwebProps {
-  secretKey: string;
-  serverWalletAddress: string;
-}
+export const thirdweb: FacilitatorConfigConstructor<ThirdwebX402FacilitatorConfig> =
+  createFacilitator;
 
-export const thirdweb: FacilitatorConfigConstructor<ThirdwebProps> = ({
-  secretKey,
-  serverWalletAddress,
-}) => {
-  const client = createThirdwebClient({
-    secretKey,
-  });
-  return facilitator({
-    client,
-    serverWalletAddress,
-  });
-};
 export const thirdwebDiscovery: FacilitatorConfig = {
   url: 'https://api.thirdweb.com/v1/payments/x402',
 };
@@ -50,4 +38,4 @@ export const thirdwebFacilitator = {
       },
     ],
   },
-} as const satisfies Facilitator<ThirdwebProps>;
+} as const satisfies Facilitator<ThirdwebX402FacilitatorConfig>;
