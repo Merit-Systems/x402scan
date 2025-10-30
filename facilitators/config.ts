@@ -106,7 +106,7 @@ const _FACILITATORS = validateUniqueFacilitators([
     addresses: {
       [Chain.BASE]: [
         {
-          address: '0xE3200439fC19944d2F75B1aAE0A513b1CfBb9901',
+          address: '0xe3200439fc19944d2f75b1aae0a513b1cfbb9901',
           token: USDC_BASE_TOKEN,
           syncStartDate: new Date('2025-10-24'),
           enabled: true,
