@@ -21,26 +21,29 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: pnpm --filter scan db:generate
+        working-directory: scan
+        run: pnpm db:generate
 
       - name: Check Formatting
-        run: pnpm --filter scan check:format
+        working-directory: scan
+        run: pnpm check:format
 
       - name: Check Knip
-        run: pnpm --filter scan check:knip
+        working-directory: scan
+        run: pnpm check:knip
 
       - name: Check Types
-        run: pnpm --filter scan check:types
+        working-directory: scan
+        run: pnpm check:types
 
       - name: Check Lint
-        run: pnpm --filter scan lint
+        working-directory: scan
+        run: pnpm lint
 
   check-sync:
     name: Check Sync Workspace
@@ -58,26 +61,29 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: pnpm --filter sync db:generate
+        working-directory: sync
+        run: pnpm db:generate
 
       - name: Check Formatting
-        run: pnpm --filter sync check:format
+        working-directory: sync
+        run: pnpm check:format
 
       - name: Check Knip
-        run: pnpm --filter sync knip
+        working-directory: sync
+        run: pnpm knip
 
       - name: Check Types
-        run: pnpm --filter sync check:types
+        working-directory: sync
+        run: pnpm check:types
 
       - name: Check Lint
-        run: pnpm --filter sync lint
+        working-directory: sync
+        run: pnpm lint
 
   check-facilitators:
     name: Check Facilitators
@@ -95,11 +101,19 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+        working-directory: facilitators
 
-      - name: Check Facilitators
-        run: pnpm check:facilitators
+      - name: Check types
+        run: pnpm check:types
+        working-directory: facilitators
+
+      - name: Check lint
+        run: pnpm lint
+        working-directory: facilitators
+
+      - name: Check knip
+        run: pnpm knip
+        working-directory: facilitators

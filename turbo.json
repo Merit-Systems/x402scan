@@ -1,0 +1,29 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "env": ["CRON_SECRET", "GITHUB_TOKEN", "NODE_ENV", "NEXT_RUNTIME"]
+    },
+    "format": {
+      "cache": false
+    }
+  },
+  "globalEnv": [],
+  "globalPassThroughEnv": [
+    "NODE_ENV",
+    "VERCEL_ENV",
+    "VERCEL_PROJECT_PRODUCTION_URL",
+    "VERCEL_BRANCH_URL"
+  ]
+}

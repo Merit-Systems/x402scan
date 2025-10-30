@@ -3,7 +3,7 @@ import {
   USDC_MULTIPLIER,
   USDC_POLYGON,
   TRANSFER_TOPIC,
-} from '@facilitators/constants';
+} from '@/trigger/lib/constants';
 import {
   SyncConfig,
   TransferEventData,

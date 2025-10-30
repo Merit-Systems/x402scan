@@ -1,6 +1,6 @@
 import { createManyTransferEvents, getTransferEvents } from '@/db/services';
 import { logger, schedules } from '@trigger.dev/sdk/v3';
-import { Chain, SyncConfig } from './types';
+import { Network, SyncConfig } from './types';
 import { fetchTransfers } from './fetch/fetch';
 
 export function createChainSyncTask(syncConfig: SyncConfig) {
@@ -19,7 +19,7 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
 
         for (const facilitator of syncConfig.facilitators) {
           for (const facilitatorConfig of facilitator.addresses[
-            syncConfig.chain as Chain
+            syncConfig.chain as Network
           ] ?? []) {
             if (!facilitatorConfig.enabled) {
               logger.log(

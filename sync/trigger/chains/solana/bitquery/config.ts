@@ -1,15 +1,15 @@
-import { USDC_MULTIPLIER } from '@facilitators/constants';
+import { USDC_MULTIPLIER } from '@/trigger/lib/constants';
 import {
   SyncConfig,
   Facilitator,
   PaginationStrategy,
   QueryProvider,
   TransferEventData,
-  Chain,
+  Network,
   BitQueryTransferRow,
   FacilitatorConfig,
 } from '../../../types';
-import { FACILITATORS_BY_CHAIN } from '@facilitators/config';
+import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 
 function buildQuery(
   config: SyncConfig,
@@ -93,7 +93,7 @@ export const solanaChainConfig: SyncConfig = {
   apiUrl: 'https://graphql.bitquery.io',
   paginationStrategy: PaginationStrategy.OFFSET,
   limit: 10_000, // NOTE(shafu): more than that and bitquery 503
-  facilitators: FACILITATORS_BY_CHAIN(Chain.SOLANA),
+  facilitators: FACILITATORS_BY_CHAIN(Network.SOLANA),
   buildQuery,
   transformResponse,
   enabled: true,

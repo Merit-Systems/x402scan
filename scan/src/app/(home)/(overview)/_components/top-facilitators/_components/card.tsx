@@ -45,7 +45,7 @@ export const FacilitatorCard: React.FC<Props> = ({ facilitator, stats }) => {
                     ? (facilitator.addresses[chain] ?? [])
                     : Object.values(facilitator.addresses).flat()
                 }
-                className="text-xs leading-none text-left"
+                className="text-xs leading-none text-left w-fit"
               />
             </div>
           </div>

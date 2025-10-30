@@ -11,6 +11,7 @@ export default [
         ecmaVersion: 2020,
         sourceType: 'module',
         project: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },

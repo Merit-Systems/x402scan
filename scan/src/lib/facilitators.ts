@@ -1,33 +1,30 @@
-import { Chain as FacilitatorsChain } from '../../../facilitators/types';
-import { FACILITATORS as RAW_FACILITATORS } from '../../../facilitators/config';
-import { Chain } from '@/types/chain';
-import type { MixedAddress } from '@/types/address';
+import { allFacilitators, Network as FacilitatorsNetwork } from 'facilitators';
+
 import { mixedAddressSchema } from './schemas';
 
-export type Facilitator = {
+import { Chain } from '@/types/chain';
+
+import type { FacilitatorMetadata } from 'facilitators';
+import type { MixedAddress } from '@/types/address';
+
+export type Facilitator = FacilitatorMetadata & {
   id: string;
-  name: string;
-  image: string;
-  link: string;
   addresses: Partial<Record<Chain, MixedAddress[]>>;
-  color: string;
 };
 
-const chainMap: Record<FacilitatorsChain, Chain> = {
-  [FacilitatorsChain.BASE]: Chain.BASE,
-  [FacilitatorsChain.POLYGON]: Chain.POLYGON,
-  [FacilitatorsChain.SOLANA]: Chain.SOLANA,
+const chainMap: Record<FacilitatorsNetwork, Chain> = {
+  [FacilitatorsNetwork.BASE]: Chain.BASE,
+  [FacilitatorsNetwork.POLYGON]: Chain.POLYGON,
+  [FacilitatorsNetwork.SOLANA]: Chain.SOLANA,
 };
 
-export const facilitators: Facilitator[] = RAW_FACILITATORS.map(f => ({
+export const facilitators: Facilitator[] = allFacilitators.map(f => ({
   id: f.id,
-  name: f.name,
-  image: f.image,
-  link: f.link,
-  color: f.color,
+  ...f.metadata,
+  image: `/${f.metadata.image.split('/').pop()}`,
   addresses: Object.entries(f.addresses).reduce(
-    (acc, [chain, configs]) => {
-      const scanChain = chainMap[chain as FacilitatorsChain];
+    (acc, [network, configs]) => {
+      const scanChain = chainMap[network as FacilitatorsNetwork];
       acc[scanChain] = configs.map(c => c.address as MixedAddress);
       return acc;
     },
