@@ -91,6 +91,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Dexter**     | SOLANA        | No        | No                             |
 | **Mogami**     | BASE          | No        | No                             |
 | **OpenX402**   | BASE, SOLANA  | No        | No                             |
+| **CodeNut**    | BASE          | No        | No                             |
 
 ### Import Individual Facilitators
 
@@ -105,6 +106,7 @@ import {
   dexter,
   mogami,
   openx402,
+  codenut,
 } from 'facilitators';
 
 // Facilitators requiring setup
