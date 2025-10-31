@@ -21,7 +21,7 @@ export const ainalystFacilitator = {
       {
         address: '0x109f3d0ff7ea61b03df26ca7ef0c41765d85ee0b',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-10-29'),
+        dateOfFirstTransaction: new Date('2025-10-28'),
       },
     ],
   },
