@@ -42,6 +42,7 @@ import {
   baseSystemPrompt,
   freeTierSystemPrompt,
 } from './system-prompt';
+import { env } from '@/env';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
     return new ChatSDKError('not_found:chat').toResponse();
   }
   const signer = toAccount(wallet);
-  const openai = createX402OpenAI(signer);
+  const openai = createX402OpenAI(signer, undefined, env.ECHO_APP_ID);
 
   const lastMessage = messages[messages.length - 1];
 
