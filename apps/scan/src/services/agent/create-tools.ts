@@ -49,13 +49,6 @@ export async function createX402AITools({
         if (!parsedAccept.success) {
           continue;
         }
-        if (
-          maxAmount &&
-          BigInt(parsedAccept.data.maxAmountRequired) >
-            BigInt(parseUnits(String(maxAmount), 6))
-        ) {
-          continue;
-        }
         const urlParts = new URL(resource.resource);
         const toolName = urlParts.pathname
           .split('/')
@@ -81,6 +74,16 @@ export async function createX402AITools({
               ? parametersSchema
               : z.object({ continue: z.boolean() }),
           execute: async (params: z.infer<typeof parametersSchema>) => {
+            if (
+              maxAmount &&
+              BigInt(parsedAccept.data.maxAmountRequired) >
+                BigInt(parseUnits(String(maxAmount), 6))
+            ) {
+              throw new Error(
+                `Tool requires ${parsedAccept.data.maxAmountRequired} but max amount is ${maxAmount}`
+              );
+            }
+
             let url = resource.resource;
             const requestInit: RequestInit = { method };
 
