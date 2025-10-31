@@ -221,9 +221,6 @@ export async function POST(request: NextRequest) {
     stopWhen: stepCountIs(50),
     tools,
     maxOutputTokens: 10000,
-    onChunk: chunk => {
-      console.log('chunk', chunk);
-    },
   });
 
   return result.toUIMessageStreamResponse({
