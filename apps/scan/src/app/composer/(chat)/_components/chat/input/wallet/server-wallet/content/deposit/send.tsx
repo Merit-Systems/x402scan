@@ -9,7 +9,6 @@ import { useWriteContract } from 'wagmi';
 import { toast } from 'sonner';
 import { erc20Abi, parseUnits } from 'viem';
 
-import { MoneyInput } from '@/components/ui/money-input';
 import { Button } from '@/components/ui/button';
 
 import { useEthBalance } from '@/app/_hooks/use-eth-balance';
@@ -21,6 +20,8 @@ import type { Address } from 'viem';
 import { api } from '@/trpc/client';
 import { base } from 'viem/chains';
 import { Chain } from '@/types/chain';
+import { TokenInput } from '@/components/ui/token/token-input';
+import { BASE_USDC } from '@/lib/tokens/usdc';
 
 interface Props {
   address: Address;
@@ -80,13 +81,13 @@ export const Send: React.FC<Props> = ({ address, onSuccess }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <MoneyInput
-        setAmount={setAmount}
+      <TokenInput
+        onChange={setAmount}
         placeholder="0.00"
         inputClassName="placeholder:text-muted-foreground/60"
         isBalanceMax
-        showMaxButton
-        decimalPlaces={6}
+        selectedToken={BASE_USDC}
+        label="Fund from Connected Wallet"
       />
       <Button
         variant="turbo"

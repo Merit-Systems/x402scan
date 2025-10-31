@@ -13,11 +13,14 @@ import { LoadingMessage, Message } from './message';
 import type { ChatStatus } from 'ai';
 import type { UIMessage } from '@ai-sdk/react';
 import { AnimatedShinyText } from '@/components/magicui/animated-shiny-text';
+import { ErrorState } from './error';
 
 interface MessagesProps {
   messages: UIMessage[];
   status: ChatStatus;
   model: string;
+  onRegenerate: () => void;
+  errorMessage?: string;
   emptyState?: EmptyStateProps;
 }
 
@@ -25,6 +28,8 @@ export const Messages: React.FC<MessagesProps> = ({
   messages,
   status,
   model,
+  errorMessage,
+  onRegenerate,
   emptyState,
 }) => {
   return (
@@ -47,6 +52,9 @@ export const Messages: React.FC<MessagesProps> = ({
                     Calling {model} with x402...
                   </AnimatedShinyText>
                 ))}
+            {errorMessage !== undefined && (
+              <ErrorState message={errorMessage} onRegenerate={onRegenerate} />
+            )}
           </ConversationContent>
           <ConversationScrollButton />
         </>
