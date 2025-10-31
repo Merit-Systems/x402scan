@@ -11,7 +11,7 @@ export const mfloFacilitator = {
   id: 'mflo',
   metadata: {
     name: 'Mflo',
-    image: '/mflo.png',
+    image: '/mflo.svg',
     docsUrl: 'https://docs.mflo.ai',
     color: '#5A6B4A',
   },
