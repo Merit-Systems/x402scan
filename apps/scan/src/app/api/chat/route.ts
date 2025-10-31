@@ -217,7 +217,7 @@ export async function POST(request: NextRequest) {
   const result = streamText({
     model: openai.chat(model),
     messages: convertToModelMessages(messages),
-    // system: await getSystemPrompt(),
+    system: await getSystemPrompt(),
     stopWhen: stepCountIs(50),
     tools,
     maxOutputTokens: 10000,
