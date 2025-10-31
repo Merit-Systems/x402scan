@@ -88,7 +88,11 @@ export async function POST(request: NextRequest) {
     return new ChatSDKError('not_found:chat').toResponse();
   }
   const signer = toAccount(wallet);
-  const openai = createX402OpenAI(signer, undefined, env.ECHO_APP_ID);
+  const openai = createX402OpenAI({
+    walletClient: signer,
+    baseRouterUrl: env.ECHO_PROXY_URL,
+    echoAppId: env.ECHO_APP_ID,
+  });
 
   const lastMessage = messages[messages.length - 1];
 
