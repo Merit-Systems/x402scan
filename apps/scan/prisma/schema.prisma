@@ -413,7 +413,7 @@ model ResourceDomainMetrics {
   p50_7dMs            Int?
   p50_15dMs           Int?
   p50_30dMs           Int?
-  p50AllMs            Int?
+  p50AllTimeMs        Int?
   p90_1hMs            Int?
   p90_6hMs            Int?
   p90_24hMs           Int?
@@ -421,7 +421,7 @@ model ResourceDomainMetrics {
   p90_7dMs            Int?
   p90_15dMs           Int?
   p90_30dMs           Int?
-  p90AllMs            Int?
+  p90AllTimeMs        Int?
   p99_1hMs            Int?
   p99_6hMs            Int?
   p99_24hMs           Int?
@@ -429,11 +429,11 @@ model ResourceDomainMetrics {
   p99_7dMs            Int?
   p99_15dMs           Int?
   p99_30dMs           Int?
-  p99AllMs            Int?
+  p99AllTimeMs        Int?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  @@map("DomainMetrics")
+  @@map("ResourceDomainMetrics")
 }
 
 model ResourceUrlMetrics {
@@ -462,7 +462,7 @@ model ResourceUrlMetrics {
   p50_7dMs            Int?
   p50_15dMs           Int?
   p50_30dMs           Int?
-  p50AllMs            Int?
+  p50AllTimeMs        Int?
   p90_1hMs            Int?
   p90_6hMs            Int?
   p90_24hMs           Int?
@@ -470,7 +470,7 @@ model ResourceUrlMetrics {
   p90_7dMs            Int?
   p90_15dMs           Int?
   p90_30dMs           Int?
-  p90AllMs            Int?
+  p90AllTimeMs        Int?
   p99_1hMs            Int?
   p99_6hMs            Int?
   p99_24hMs           Int?
@@ -478,9 +478,9 @@ model ResourceUrlMetrics {
   p99_7dMs            Int?
   p99_15dMs           Int?
   p99_30dMs           Int?
-  p99AllMs            Int?
+  p99AllTimeMs        Int?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  @@map("UrlMetrics")
+  @@map("ResourceUrlMetrics")
 }
