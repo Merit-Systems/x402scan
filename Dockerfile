@@ -39,18 +39,18 @@ COPY package.json ./
 COPY tsconfig.base.json ./
 
 # Copy proxy package files
-COPY proxy/ ./proxy/
+COPY apps/proxy/ ./apps/proxy/
 
 # Install all workspace dependencies
 WORKDIR /app
 RUN pnpm install
 
 # Build the proxy
-WORKDIR /app/proxy
+WORKDIR /app/apps/proxy
 RUN pnpm build
 
 # Install production dependencies only (CI env var already set)
-WORKDIR /app/proxy
+WORKDIR /app/apps/proxy
 RUN pnpm install --prod
 
 # Expose the port that the proxy runs on
@@ -58,4 +58,3 @@ EXPOSE 6969
 
 # Start the proxy server
 CMD ["pnpm", "start"]
-

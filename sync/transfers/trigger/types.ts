@@ -1,6 +1,6 @@
-import { Chain, type Token } from '@facilitators/types';
+import { Network, type Token } from 'facilitators';
 
-export { Chain, type Token };
+export { Network, type Token };
 
 export interface FacilitatorConfig {
   address: string;
@@ -11,7 +11,7 @@ export interface FacilitatorConfig {
 
 export interface Facilitator {
   id: string;
-  addresses: Partial<Record<Chain, FacilitatorConfig[]>>;
+  addresses: Partial<Record<Network, FacilitatorConfig[]>>;
 }
 
 export interface TransferEventData {
