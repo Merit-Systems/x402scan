@@ -115,6 +115,7 @@ export const ChatContent: React.FC<Props> = ({
               selectedResources={selectedResources}
               onSelectResource={onSelectResource}
               status={status}
+              errorMessage={errorMessage}
             />
           </div>
         </div>

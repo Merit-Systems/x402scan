@@ -17,6 +17,7 @@ import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { ResourceRequestMetadata } from '@prisma/client';
 import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
+import { ChatSDKError } from '@/lib/errors';
 
 interface CreateX402AIToolsParams {
   resourceIds: string[];
@@ -79,8 +80,9 @@ export async function createX402AITools({
               BigInt(parsedAccept.data.maxAmountRequired) >
                 BigInt(parseUnits(String(maxAmount), 6))
             ) {
-              throw new Error(
-                `Tool requires ${parsedAccept.data.maxAmountRequired} but max amount is ${maxAmount}`
+              throw new ChatSDKError(
+                'payment_required:chat',
+                `The maximum amount per tool call on free tier is ${maxAmount}. You can fund your agent to increase the maximum amount per tool call.`
               );
             }
 

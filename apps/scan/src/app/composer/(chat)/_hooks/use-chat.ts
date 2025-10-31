@@ -106,6 +106,14 @@ export const useChat = ({
       : undefined);
 
   const sendChatMessage = (text: string) => {
+    if (status !== 'ready') {
+      toast.error('Please wait for the chat to be ready');
+      return;
+    }
+    if (!!errorMessage) {
+      toast.error(errorMessage);
+      return;
+    }
     if (!hasBalance) {
       toast.error('Please fund your wallet to continue');
       return;
@@ -115,12 +123,12 @@ export const useChat = ({
       return;
     }
     void sendMessage({ text });
+    setInput('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     sendChatMessage(input);
-    setInput('');
   };
 
   const handleSetModel = (model: LanguageModel) => {

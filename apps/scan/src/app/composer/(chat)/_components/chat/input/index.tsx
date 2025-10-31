@@ -31,6 +31,7 @@ interface Props {
   selectedResources: SelectedResource[];
   onSelectResource: (resource: SelectedResource) => void;
   status: ChatStatus;
+  errorMessage: string | undefined;
 }
 
 export const PromptInputSection: React.FC<Props> = ({
@@ -41,6 +42,8 @@ export const PromptInputSection: React.FC<Props> = ({
   setModel,
   selectedResources,
   onSelectResource,
+  status,
+  errorMessage,
 }) => {
   const { data: session } = useSession();
 
@@ -83,7 +86,9 @@ export const PromptInputSection: React.FC<Props> = ({
           <WalletButton />
         </PromptInputTools>
         <PromptInputSubmit
-          disabled={!input || !hasBalance}
+          disabled={
+            !input || !hasBalance || status !== 'ready' || !!errorMessage
+          }
           className="size-8 md:size-8"
         />
       </PromptInputToolbar>

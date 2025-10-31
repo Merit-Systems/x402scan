@@ -14,6 +14,8 @@ interface Props {
   part: ToolUIPart;
 }
 export const ToolPart: React.FC<Props> = ({ part }) => {
+  console.log('part', part);
+
   const resourceId = part.type.slice(5);
   const { data: resource, isLoading: isResourceLoading } =
     api.public.resources.get.useQuery(resourceId, {
