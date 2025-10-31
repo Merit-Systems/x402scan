@@ -49,7 +49,12 @@ export const Onboarding = () => {
   }, [setStep]);
 
   return (
-    <AlertDialog open={!hasUserAcknowledgedComposer}>
+    <AlertDialog
+      open={
+        hasUserAcknowledgedComposer !== undefined &&
+        !hasUserAcknowledgedComposer
+      }
+    >
       <AlertDialogContent className="p-0 overflow-hidden gap-0">
         <AlertDialogHeader className="bg-muted border-b p-4 gap-4">
           <div className="flex flex-col gap-1">

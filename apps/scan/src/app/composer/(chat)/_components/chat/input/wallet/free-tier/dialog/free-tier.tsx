@@ -1,3 +1,4 @@
+import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import {
   DialogDescription,
@@ -21,14 +22,17 @@ export const FreeTierDialogContent: React.FC<Props> = ({
   return (
     <>
       <DialogHeader className="border-b bg-muted p-4">
-        <DialogTitle>Sponsored x402 Usage</DialogTitle>
+        <div className="flex flex-row items-center gap-2">
+          <Logo className="size-4" />
+          <DialogTitle>Sponsored x402 Usage</DialogTitle>
+        </div>
         <DialogDescription className="text-xs font-mono">
           We are sponsoring your agent for {freeTierConfig.numMessages} messages
           and {freeTierConfig.numToolCalls} tool calls so you can try out x402
           inference and tools.
         </DialogDescription>
       </DialogHeader>
-      <div className="flex flex-col gap-2 px-4 ">
+      <div className="flex flex-col gap-4 px-4">
         <ItemContainer
           label="Messages"
           value={`${numMessages} / ${freeTierConfig.numMessages} used`}
@@ -65,8 +69,8 @@ const ItemContainer: React.FC<ItemContainerProps> = ({
 }) => {
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-sm font-medium">{label}</p>
-      <p className="bg-muted rounded-md border p-2 font-mono">{value}</p>
+      <p className="text-sm font-medium font-mono">{label}</p>
+      <p className="bg-muted rounded-md border p-2">{value}</p>
       {description && (
         <p className="text-muted-foreground text-xs">{description}</p>
       )}

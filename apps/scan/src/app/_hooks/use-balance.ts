@@ -1,15 +1,23 @@
-import { USDC_ADDRESS } from '@/lib/utils';
-import { useAccount, useBalance as useBalanceWagmi } from 'wagmi';
-import { base } from 'viem/chains';
-import { Chain } from '@/types/chain';
+import {
+  useAccount,
+  UseBalanceParameters,
+  useBalance as useBalanceWagmi,
+} from 'wagmi';
+import { CHAIN_ID } from '@/types/chain';
+import { Token } from '@/types/token';
+import { BASE_USDC } from '@/lib/tokens/usdc';
 
-export const useBalance = () => {
+export const useBalance = (
+  token: Token = BASE_USDC,
+  query?: UseBalanceParameters['query']
+) => {
   const { address } = useAccount();
 
   const result = useBalanceWagmi({
     address: address ?? undefined,
-    token: USDC_ADDRESS[Chain.BASE] as `0x${string}`,
-    chainId: base.id,
+    token: token.address as `0x${string}`,
+    chainId: CHAIN_ID[token.chain],
+    query,
   });
 
   return {

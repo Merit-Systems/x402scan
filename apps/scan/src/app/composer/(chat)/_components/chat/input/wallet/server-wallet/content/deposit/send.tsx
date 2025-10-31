@@ -2,14 +2,13 @@
 
 import React, { useState } from 'react';
 
-import { Check, Loader2, Wallet } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 
 import { useWriteContract } from 'wagmi';
 
 import { toast } from 'sonner';
 import { erc20Abi, parseUnits } from 'viem';
 
-import { MoneyInput } from '@/components/ui/money-input';
 import { Button } from '@/components/ui/button';
 
 import { useEthBalance } from '@/app/_hooks/use-eth-balance';
@@ -21,7 +20,8 @@ import type { Address } from 'viem';
 import { api } from '@/trpc/client';
 import { base } from 'viem/chains';
 import { Chain } from '@/types/chain';
-import { Skeleton } from '@/components/ui/skeleton';
+import { TokenInput } from '@/components/ui/token/token-input';
+import { BASE_USDC } from '@/lib/tokens/usdc';
 
 interface Props {
   address: Address;
@@ -42,7 +42,6 @@ export const Send: React.FC<Props> = ({ address, onSuccess }) => {
     isSuccess: isSent,
     reset: resetSending,
   } = useWriteContract();
-  const { data: usdcBalance, isLoading: isUsdcBalanceLoading } = useBalance();
 
   const utils = api.useUtils();
 
@@ -82,34 +81,14 @@ export const Send: React.FC<Props> = ({ address, onSuccess }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-1.5 text-xs">
-        <p className="text-xs">
-          Send USDC from your connected wallet to your agent&apos;s server
-          wallet.
-        </p>
-        <div className="flex items-center gap-1 text-muted-foreground">
-          {isUsdcBalanceLoading ? (
-            <Skeleton className="h-3 w-8" />
-          ) : (
-            <span className="text-xs">
-              {usdcBalance?.toLocaleString(undefined, {
-                maximumFractionDigits: 2,
-                minimumFractionDigits: 2,
-                notation: 'compact',
-              })}{' '}
-              USDC
-            </span>
-          )}
-          <Wallet className="size-2.5" />
-        </div>
-      </div>
-      <MoneyInput
-        setAmount={setAmount}
+      <TokenInput
+        onChange={setAmount}
+        onTokenChange={() => {}}
         placeholder="0.00"
         inputClassName="placeholder:text-muted-foreground/60"
         isBalanceMax
-        showMaxButton
-        decimalPlaces={6}
+        selectedToken={BASE_USDC}
+        label="Send from Connected Wallet"
       />
       <Button
         variant="turbo"
