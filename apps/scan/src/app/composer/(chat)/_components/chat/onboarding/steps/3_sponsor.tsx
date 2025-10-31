@@ -1,13 +1,14 @@
 import { Logo } from '@/components/logo';
 import { AnimatedBeam, Circle } from '@/components/magicui/animated-beam';
 import { cn } from '@/lib/utils';
-import { MessagesSquare, Server, User } from 'lucide-react';
+import { Bot, MessagesSquare, Server, User } from 'lucide-react';
 import { useRef } from 'react';
 
 export const SponsorStep = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const walletRef = useRef<HTMLDivElement>(null);
   const botRef = useRef<HTMLDivElement>(null);
+  const x402scanRef = useRef<HTMLDivElement>(null);
   const server1Ref = useRef<HTMLDivElement>(null);
   const server2Ref = useRef<HTMLDivElement>(null);
 
@@ -23,7 +24,13 @@ export const SponsorStep = () => {
         <Circle ref={walletRef} className={circleClassName}>
           <User className={iconClassName} />
         </Circle>
-        <Circle ref={botRef} className={cn(circleClassName, 'border-primary')}>
+        <Circle ref={botRef} className={circleClassName}>
+          <Bot className={iconClassName} />
+        </Circle>
+        <Circle
+          ref={x402scanRef}
+          className={cn(circleClassName, 'border-primary')}
+        >
           <Logo className={iconClassName} />
         </Circle>
         <div className="flex flex-col gap-2">
@@ -42,14 +49,20 @@ export const SponsorStep = () => {
         {...beamProps}
       />
       <AnimatedBeam
+        fromRef={botRef}
+        toRef={x402scanRef}
+        containerRef={containerRef}
+        {...beamProps}
+      />
+      <AnimatedBeam
         fromRef={server1Ref}
-        toRef={botRef}
+        toRef={x402scanRef}
         containerRef={containerRef}
         {...beamProps}
       />
       <AnimatedBeam
         fromRef={server2Ref}
-        toRef={botRef}
+        toRef={x402scanRef}
         containerRef={containerRef}
         {...beamProps}
       />

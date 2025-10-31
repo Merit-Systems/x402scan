@@ -32,8 +32,8 @@ export const FundStep = () => {
           <Image
             src="/usdc.png"
             alt="USDC"
-            width={24}
-            height={24}
+            width={60}
+            height={60}
             className={cn(iconClassName, 'size-8 md:size-12')}
           />
         </Circle>

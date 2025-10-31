@@ -34,7 +34,7 @@ export const steps: OnboardingStep[] = [
   {
     icon: <DollarSign className="size-4" />,
     component: <FundStep />,
-    heading: 'You Will Then Need to Fund Your Agent',
+    heading: 'After Your Free Trial, You Will Need to Fund Your Agent',
     description:
       "After you've used your free credits, you will need to add USDC to your Composer Wallet",
   },

@@ -87,7 +87,7 @@ export const Send: React.FC<Props> = ({ address, onSuccess }) => {
         inputClassName="placeholder:text-muted-foreground/60"
         isBalanceMax
         selectedToken={BASE_USDC}
-        label="Send from Connected Wallet"
+        label="Fund from Connected Wallet"
       />
       <Button
         variant="turbo"
