@@ -13,7 +13,7 @@ export const xechoFacilitator = {
     name: 'xecho',
     image: '/xecho.png',
     docsUrl: 'https://www.xechoai.xyz',
-    color: 'var(--color-blue-600)',
+    color: '#134E4A',
   },
   config: {
     url: 'https://www.xechoai.xyz',
@@ -23,7 +23,7 @@ export const xechoFacilitator = {
       {
         address: '0x3be45f576696a2fd5a93c1330cd19f1607ab311d',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-10-16'),
+        dateOfFirstTransaction: new Date('2025-10-30'),
       },
     ],
   },
