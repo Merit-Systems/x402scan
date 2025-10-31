@@ -11,7 +11,7 @@ export const ainalystFacilitator = {
   id: 'ainalyst',
   metadata: {
     name: 'AInalyst',
-    image: 'https://facilitator.ainalyst-api.xyz/ainalyst.png',
+    image: 'https://x402scan.com/ainalyst.png',
     docsUrl: 'https://facilitator.ainalyst-api.xyz',
     color: 'var(--color-purple-200)',
   },
