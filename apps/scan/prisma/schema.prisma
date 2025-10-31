@@ -387,16 +387,100 @@ model UserAcknowledgement {
   @@map("UserAcknowledgement")
 }
 
-model Uptime {
+model ResourceDomainMetrics {
   id                  String   @id @default(uuid())
-  url                 String   @unique
-  totalCount24h       Int
+  domain              String   @unique
+  totalCount1h        Int?
+  totalCount6h        Int?
+  totalCount24h       Int?
+  totalCount3d        Int?
+  totalCount7d        Int?
+  totalCount15d       Int?
+  totalCount30d       Int?
+  totalCountAllTime   Int?
   uptime1hPct         Float?
   uptime6hPct         Float?
   uptime24hPct        Float?
+  uptime3dPct         Float?
+  uptime7dPct         Float?
+  uptime15dPct        Float?
+  uptime30dPct        Float?
   uptimeAllTimePct    Float?
+  p50_1hMs            Int?
+  p50_6hMs            Int?
+  p50_24hMs           Int?
+  p50_3dMs            Int?
+  p50_7dMs            Int?
+  p50_15dMs           Int?
+  p50_30dMs           Int?
+  p50AllMs            Int?
+  p90_1hMs            Int?
+  p90_6hMs            Int?
+  p90_24hMs           Int?
+  p90_3dMs            Int?
+  p90_7dMs            Int?
+  p90_15dMs           Int?
+  p90_30dMs           Int?
+  p90AllMs            Int?
+  p99_1hMs            Int?
+  p99_6hMs            Int?
+  p99_24hMs           Int?
+  p99_3dMs            Int?
+  p99_7dMs            Int?
+  p99_15dMs           Int?
+  p99_30dMs           Int?
+  p99AllMs            Int?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  @@map("Uptime")
+  @@map("DomainMetrics")
+}
+
+model ResourceUrlMetrics {
+  id                  String   @id @default(uuid())
+  url                 String   @unique
+  totalCount1h        Int?
+  totalCount6h        Int?
+  totalCount24h       Int?
+  totalCount3d        Int?
+  totalCount7d        Int?
+  totalCount15d       Int?
+  totalCount30d       Int?
+  totalCountAllTime   Int?
+  uptime1hPct         Float?
+  uptime6hPct         Float?
+  uptime24hPct        Float?
+  uptime3dPct         Float?
+  uptime7dPct         Float?
+  uptime15dPct        Float?
+  uptime30dPct        Float?
+  uptimeAllTimePct    Float?
+  p50_1hMs            Int?
+  p50_6hMs            Int?
+  p50_24hMs           Int?
+  p50_3dMs            Int?
+  p50_7dMs            Int?
+  p50_15dMs           Int?
+  p50_30dMs           Int?
+  p50AllMs            Int?
+  p90_1hMs            Int?
+  p90_6hMs            Int?
+  p90_24hMs           Int?
+  p90_3dMs            Int?
+  p90_7dMs            Int?
+  p90_15dMs           Int?
+  p90_30dMs           Int?
+  p90AllMs            Int?
+  p99_1hMs            Int?
+  p99_6hMs            Int?
+  p99_24hMs           Int?
+  p99_3dMs            Int?
+  p99_7dMs            Int?
+  p99_15dMs           Int?
+  p99_30dMs           Int?
+  p99AllMs            Int?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("UrlMetrics")
 }
