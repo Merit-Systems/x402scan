@@ -1,4 +1,5 @@
 import tseslint from 'typescript-eslint';
+import turboConfig from 'eslint-config-turbo/flat';
 
 // Shared ESLint configuration for all workspaces
 export const baseConfig = [
@@ -11,6 +12,7 @@ export const baseConfig = [
       'generated/**',
     ],
   },
+  ...turboConfig,
   ...tseslint.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx'],

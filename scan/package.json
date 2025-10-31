@@ -1,5 +1,5 @@
 {
-  "name": "@x402/scan",
+  "name": "x402scan",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -23,17 +23,15 @@
     "check:format": "prettier --check .",
     "test": "vitest",
     "test:run": "vitest run",
-    "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts",
-    "sync:resources": "curl -X GET http://localhost:3000/api/resources/sync && curl -X GET http://localhost:3000/api/resources/ping"
+    "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.52",
     "@ai-sdk/react": "^2.0.68",
     "@auth/prisma-adapter": "^2.7.4",
-    "@coinbase/cdp-hooks": "^0.0.42",
-    "@coinbase/cdp-sdk": "^1.38.3",
-    "@coinbase/cdp-wagmi": "^0.0.42",
-    "@coinbase/x402": "^0.6.4",
+    "@coinbase/cdp-hooks": "^0.0.52",
+    "@coinbase/cdp-sdk": "^1.38.4",
+    "@coinbase/cdp-wagmi": "^0.0.52",
     "@hookform/resolvers": "^5.2.2",
     "@lmnr-ai/lmnr": "^0.7.4",
     "@merit-systems/ai-x402": "^0.1.0",
@@ -79,6 +77,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "embla-carousel-wheel-gestures": "^8.1.0",
+    "facilitators": "workspace:*",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "html-metadata-parser": "^2.0.4",
     "input-otp": "^1.4.2",
@@ -126,7 +125,7 @@
     "@types/ws": "^8.18.1",
     "@vitest/ui": "^3.2.4",
     "dotenv": "^17.2.3",
-    "eslint": "^9",
+    "eslint": "^9.38.0",
     "eslint-config-next": "15.5.4",
     "eslint-config-prettier": "^10.1.8",
     "knip": "^5.64.0",

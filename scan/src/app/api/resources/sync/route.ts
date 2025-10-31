@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 
 import { scrapeOriginData } from '@/services/scraper';
-import { facilitators } from '@/services/facilitator/facilitators';
-import { listAllFacilitatorResources } from '@/services/facilitator/list-resources';
 import { upsertOrigin } from '@/services/db/resources/origin';
 import { upsertResource } from '@/services/db/resources/resource';
 
@@ -13,6 +11,10 @@ import type { AcceptsNetwork } from '@prisma/client';
 import type z from 'zod';
 import type { upsertResourceSchema } from '@/services/db/resources/resource';
 import type { NextRequest } from 'next/server';
+import {
+  discoverableFacilitators,
+  listAllFacilitatorResources,
+} from 'facilitators';
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);
@@ -25,7 +27,7 @@ export const GET = async (request: NextRequest) => {
     console.log('Fetching facilitator resources');
     const resources = (
       await Promise.all(
-        facilitators.map(facilitator =>
+        discoverableFacilitators.map(facilitator =>
           listAllFacilitatorResources(facilitator).catch(error => {
             console.error('Failed to fetch facilitator resources', {
               facilitator: facilitator.url,

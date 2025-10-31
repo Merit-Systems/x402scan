@@ -1,8 +1,8 @@
-import { ONE_MINUTE_IN_SECONDS } from '@facilitators/constants';
+import { ONE_MINUTE_IN_SECONDS } from '@/trigger/lib/constants';
 import { SyncConfig, PaginationStrategy, QueryProvider } from '@/trigger/types';
 import { buildQuery, transformResponse } from './query';
-import { FACILITATORS_BY_CHAIN } from '@facilitators/config';
-import { Chain } from '@/trigger/types';
+import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
+import { Network } from '@/trigger/types';
 
 export const baseCdpConfig: SyncConfig = {
   cron: '*/30 * * * *',
@@ -12,7 +12,7 @@ export const baseCdpConfig: SyncConfig = {
   apiUrl: 'api.cdp.coinbase.com',
   paginationStrategy: PaginationStrategy.OFFSET,
   limit: 100_000, // NOTE(shafu): 100k is the CDP limit
-  facilitators: FACILITATORS_BY_CHAIN(Chain.BASE),
+  facilitators: FACILITATORS_BY_CHAIN(Network.BASE),
   buildQuery,
   transformResponse,
   enabled: true,

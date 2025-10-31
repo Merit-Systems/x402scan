@@ -9,7 +9,8 @@
     "tw-animate-css",
     "tailwindcss",
     "postcss",
-    "redis"
+    "redis",
+    "facilitators"
   ],
   "ignore": ["/scripts/**", "src/components/ui/charts/chart/**"],
   "ignoreWorkspaces": []

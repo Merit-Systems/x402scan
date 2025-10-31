@@ -3,3 +3,5 @@ packages:
   - 'sync'
   - 'proxy'
   - 'packages/*'
+  - 'facilitators'
+  - 'examples/servers/*'

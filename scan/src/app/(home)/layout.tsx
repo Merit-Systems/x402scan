@@ -1,4 +1,5 @@
 import { Nav } from '../_components/layout/nav';
+import { Footer } from '../_components/layout/footer';
 
 export default function HomeLayout({
   children,
@@ -43,6 +44,7 @@ export default function HomeLayout({
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>
+      <Footer />
     </div>
   );
 }
