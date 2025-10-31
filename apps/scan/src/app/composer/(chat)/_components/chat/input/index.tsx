@@ -66,9 +66,11 @@ export const PromptInputSection: React.FC<Props> = ({
         value={input}
         disabled={!hasBalance}
         placeholder={
-          !isLoading && !hasBalance
-            ? 'Add funds to your agent to continue'
-            : undefined
+          session
+            ? !isLoading && !hasBalance
+              ? 'Add funds to your agent to continue'
+              : undefined
+            : 'Sign in to use the composer'
         }
       />
       <PromptInputToolbar>

@@ -21,7 +21,7 @@ import type { Address } from 'viem';
 import { useEffect, useState } from 'react';
 import { OnrampSessionDialog } from './content/onramp-session-dialog';
 import { useSearchParams } from 'next/navigation';
-import { Acknowledgement } from './acknowledgement';
+import { Acknowledgement } from '../../../onboarding/acknowledgement';
 import { WalletExport } from './content/export';
 
 interface Props {

@@ -13,16 +13,14 @@ import { LoadingMessage, Message } from './message';
 import type { ChatStatus } from 'ai';
 import type { UIMessage } from '@ai-sdk/react';
 import { AnimatedShinyText } from '@/components/magicui/animated-shiny-text';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircleIcon, RefreshCwIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ErrorState } from './error';
 
 interface MessagesProps {
   messages: UIMessage[];
   status: ChatStatus;
   model: string;
-  error?: Error;
-  onRegenerate?: () => void;
+  onRegenerate: () => void;
+  errorMessage?: string;
   emptyState?: EmptyStateProps;
 }
 
@@ -30,11 +28,10 @@ export const Messages: React.FC<MessagesProps> = ({
   messages,
   status,
   model,
-  error,
+  errorMessage,
   onRegenerate,
   emptyState,
 }) => {
-  console.log(messages);
   return (
     <Conversation className="h-full w-full">
       {messages.length > 0 ? (
@@ -55,26 +52,8 @@ export const Messages: React.FC<MessagesProps> = ({
                     Calling {model} with x402...
                   </AnimatedShinyText>
                 ))}
-            {(error !== undefined ||
-              (status === 'ready' &&
-                messages.length > 0 &&
-                messages[messages.length - 1].role === 'user')) && (
-              <Alert
-                variant="destructive"
-                className="w-fit ml-auto flex items-center gap-2 bg-transparent"
-              >
-                <AlertCircleIcon className="size-6!" />
-                <div>
-                  <AlertTitle className="text-lg font-bold">Error</AlertTitle>
-                  <AlertDescription>
-                    {error?.message ??
-                      'You need to regenerate the message to continue.'}
-                  </AlertDescription>
-                </div>
-                <Button variant="outline" size="icon" onClick={onRegenerate}>
-                  <RefreshCwIcon className="size-3" />
-                </Button>
-              </Alert>
+            {errorMessage !== undefined && (
+              <ErrorState message={errorMessage} onRegenerate={onRegenerate} />
             )}
           </ConversationContent>
           <ConversationScrollButton />

@@ -52,8 +52,8 @@ export const Acknowledgement = () => {
             Do not add any funds you are not willing to lose.
           </p>
           <p className="text-sm">
-            Composer agents run in a server that has full control over funds
-            added to the agent&apos;s server wallet.
+            Composer wallets run in a server that has full control over funds
+            added to them
           </p>
           <p className="text-sm font-semibold">
             You must acknowledge that you understand before proceeding.

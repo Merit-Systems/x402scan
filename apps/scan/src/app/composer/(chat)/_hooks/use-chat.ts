@@ -1,0 +1,155 @@
+import { convertToUIMessages } from '@/lib/utils';
+import { api, RouterOutputs } from '@/trpc/client';
+import { useChat as useAiChat } from '@ai-sdk/react';
+import { Message } from '@prisma/client';
+import { DefaultChatTransport } from 'ai';
+import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
+import { ChatConfig, SelectedResource } from '../_types/chat-config';
+import { LanguageModel } from '../_components/chat/input/model-select/types';
+import { useState } from 'react';
+import { languageModels } from '../_components/chat/input/model-select/models';
+import { clientCookieUtils } from '../chat/_lib/cookies/client';
+
+interface Props {
+  id: string;
+  initialMessages: Message[];
+  agentConfig?: RouterOutputs['public']['agents']['get'];
+  isReadOnly?: boolean;
+  initialConfig?: ChatConfig;
+}
+
+export const useChat = ({
+  id,
+  initialMessages,
+  agentConfig,
+  isReadOnly,
+  initialConfig,
+}: Props) => {
+  const utils = api.useUtils();
+
+  const { data: session } = useSession();
+
+  const { data: usdcBalance } = api.user.serverWallet.usdcBaseBalance.useQuery(
+    undefined,
+    {
+      enabled: !!session,
+    }
+  );
+  const { data: freeTierUsage } = api.user.freeTier.usage.useQuery(undefined, {
+    enabled: !!session,
+  });
+  const hasBalance = (usdcBalance ?? 0) > 0 || freeTierUsage?.hasFreeTier;
+
+  const { messages, sendMessage, status, regenerate, error } = useAiChat({
+    messages: initialMessages ? convertToUIMessages(initialMessages) : [],
+    resume: true,
+    id,
+    onError: ({ message }) => toast.error(message),
+    onFinish: ({ messages }) => {
+      if (messages.length > 0) {
+        window.history.replaceState(
+          {},
+          '',
+          agentConfig
+            ? `/composer/agent/${agentConfig.id}/chat/${id}`
+            : `/composer/chat/${id}`
+        );
+        void utils.user.chats.list.invalidate();
+        void utils.user.freeTier.usage.invalidate();
+        setTimeout(() => {
+          void utils.user.serverWallet.usdcBaseBalance.invalidate();
+        }, 3000);
+      }
+    },
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+      prepareSendMessagesRequest({ messages }) {
+        return {
+          body: {
+            chatId: id,
+            model: `${model.provider}/${model.modelId}`,
+            message: messages[messages.length - 1],
+            resourceIds: selectedResources.map(resource => resource.id),
+            agentConfigurationId: agentConfig?.id,
+          },
+        };
+      },
+    }),
+  });
+
+  const [input, setInput] = useState('');
+  const [model, setModel] = useState<LanguageModel>(
+    initialConfig?.model
+      ? (languageModels.find(
+          model => `${model.provider}/${model.modelId}` === initialConfig.model
+        ) ?? languageModels[0])
+      : languageModels[0]
+  );
+  const [selectedResources, setSelectedResources] = useState<
+    SelectedResource[]
+  >(initialConfig?.resources ?? []);
+
+  const errorMessage =
+    error?.message ??
+    (status === 'ready' &&
+    messages.length > 0 &&
+    messages[messages.length - 1].role === 'user'
+      ? 'The last message failed. Please regenerate the message to continue.'
+      : undefined);
+
+  const sendChatMessage = (text: string) => {
+    if (!hasBalance) {
+      toast.error('Please fund your wallet to continue');
+      return;
+    }
+    if (!text.trim()) {
+      toast.error('Please enter a message');
+      return;
+    }
+    void sendMessage({ text });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendChatMessage(input);
+    setInput('');
+  };
+
+  const handleSetModel = (model: LanguageModel) => {
+    setModel(model);
+    void clientCookieUtils.setSelectedChatModel(
+      `${model.provider}/${model.modelId}`
+    );
+  };
+
+  const onSelectResource = (resource: SelectedResource) => {
+    const newResources = [...selectedResources];
+    const existingIndex = newResources.findIndex(r => r.id === resource.id);
+    if (existingIndex !== -1) {
+      newResources.splice(existingIndex, 1);
+    } else {
+      newResources.push(resource);
+    }
+    setSelectedResources(newResources);
+    if (!agentConfig) {
+      clientCookieUtils.setResources(newResources);
+    }
+  };
+
+  return {
+    messages,
+    sendMessage,
+    status,
+    regenerate,
+    errorMessage,
+    sendChatMessage,
+    handleSubmit,
+    handleSetModel,
+    onSelectResource,
+    model,
+    selectedResources,
+    input,
+    setInput,
+  };
+};

@@ -43,6 +43,7 @@ import {
   baseSystemPrompt,
   freeTierSystemPrompt,
 } from './system-prompt';
+import { api } from '@/trpc/server';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -59,11 +60,6 @@ export async function POST(request: NextRequest) {
     return new ChatSDKError('unauthorized:chat').toResponse();
   }
 
-  const [messageCount, toolCallCount] = await Promise.all([
-    getUserMessageCount(session.user.id),
-    getUserToolCallCount(session.user.id),
-  ]);
-
   const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
@@ -76,9 +72,22 @@ export async function POST(request: NextRequest) {
 
   let chat = await getChat(chatId, session.user.id);
 
-  const isFreeTier =
-    messageCount < freeTierConfig.numMessages &&
-    toolCallCount < freeTierConfig.numToolCalls;
+  const balance = await api.user.serverWallet.usdcBaseBalance();
+
+  let isFreeTier: boolean;
+
+  if (balance === 0) {
+    const [messageCount, toolCallCount] = await Promise.all([
+      getUserMessageCount(session.user.id),
+      getUserToolCallCount(session.user.id),
+    ]);
+
+    isFreeTier =
+      messageCount < freeTierConfig.numMessages &&
+      toolCallCount < freeTierConfig.numToolCalls;
+  } else {
+    isFreeTier = false;
+  }
 
   const wallet = isFreeTier
     ? await getFreeTierWallet()

@@ -7,6 +7,7 @@ export type EmptyStateProps = {
   title?: string;
   description?: string;
   icon?: React.ReactNode;
+  button?: React.ReactNode;
 };
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
@@ -17,12 +18,14 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       <Logo className="size-8 md:size-12" />
     </Card>
   ),
+  button,
 }) => {
   return (
     <ConversationEmptyState
       icon={icon}
       title={title}
       description={description}
+      button={button}
     />
   );
 };
