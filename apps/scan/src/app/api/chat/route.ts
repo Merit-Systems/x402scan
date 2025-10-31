@@ -252,6 +252,9 @@ export async function POST(request: NextRequest) {
           return new ChatSDKError('payment_required:chat').message;
         }
       }
+      if (error instanceof ChatSDKError) {
+        return error.message;
+      }
       return new ChatSDKError('bad_request:chat').message;
     },
     async consumeSseStream({ stream }) {
