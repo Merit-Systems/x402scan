@@ -15,20 +15,22 @@ export const TooltipContent = <T extends Record<string, number>>({
   data,
   rows,
 }: Props<T>) => {
+  const sortedRows = rows
+    .filter(row => row.key in data)
+    .sort((a, b) => data[b.key] - data[a.key]); // Sort by value descending
+
   return (
     <Card className="min-w-32 overflow-hidden">
       <TooltipDate date={new Date(data.timestamp)} />
       <Separator />
       <div className="py-2">
-        {rows
-          .filter(row => row.key in data)
-          .map(row => (
-            <TooltipRow
-              {...row}
-              key={row.key as string}
-              value={row.getValue(data[row.key], data)}
-            />
-          ))}
+        {sortedRows.map(row => (
+          <TooltipRow
+            {...row}
+            key={row.key as string}
+            value={row.getValue(data[row.key], data)}
+          />
+        ))}
       </div>
     </Card>
   );
