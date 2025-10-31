@@ -1,5 +1,5 @@
 import { Network } from '../types';
-import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN, USDC_POLYGON_TOKEN } from '../constants';
+import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
 import type { Facilitator, FacilitatorConfig } from '../types';
 
@@ -53,18 +53,6 @@ export const payaiFacilitator = {
       {
         address: '0xe575fA51af90957d66FaB6d63355F1eD021b887b',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-10-29'),
-      },
-    ],
-    [Network.POLYGON]: [
-      {
-        address: '0xc6699d2aada6c36dfea5c248dd70f9cb0235cb63',
-        tokens: [USDC_POLYGON_TOKEN],
-        dateOfFirstTransaction: new Date('2025-09-25'),
-      },
-      {
-        address: '0xB2Bd29925CBbCEA7628279c91945Ca5B98bf371B',
-        tokens: [USDC_POLYGON_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
     ]
