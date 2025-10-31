@@ -1,4 +1,8 @@
+import { useEffect, useState } from 'react';
+
 import { AlertCircle, ArrowDown, ArrowUp, Key, Wallet } from 'lucide-react';
+
+import { useSearchParams } from 'next/navigation';
 
 import {
   Dialog,
@@ -9,20 +13,19 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { Logo } from '@/components/logo';
 
 import { WalletDisplay } from './content/display';
 import { Send } from './content/send';
 import { Deposit } from './content/deposit';
+import { WalletExport } from './content/export';
 
 import { api } from '@/trpc/client';
 
-import type { Address } from 'viem';
-import { useEffect, useState } from 'react';
 import { OnrampSessionDialog } from './content/onramp-session-dialog';
-import { useSearchParams } from 'next/navigation';
-import { Acknowledgement } from '../../../onboarding/acknowledgement';
-import { WalletExport } from './content/export';
+
+import type { Address } from 'viem';
 
 interface Props {
   children: React.ReactNode;
@@ -58,7 +61,6 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
 
   return (
     <>
-      <Acknowledgement />
       <OnrampSessionDialog />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild disabled={!hasUserAcknowledgedComposer}>
@@ -80,7 +82,7 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
                 <Logo className="size-8" />
                 <div className="flex flex-col gap-2">
                   <DialogTitle className="text-primary text-xl">
-                    Your Server Wallet
+                    Your Composer Wallet
                   </DialogTitle>
                   <DialogDescription className="hidden">
                     This is your wallet.
