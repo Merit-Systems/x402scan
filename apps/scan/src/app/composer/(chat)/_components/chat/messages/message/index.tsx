@@ -25,6 +25,10 @@ interface Props {
 }
 
 export const Message: React.FC<Props> = ({ message, status, isLast }) => {
+  if (message.parts.length === 0) {
+    return null;
+  }
+
   return (
     <BaseMessage from={message.role}>
       {message.role === 'assistant' &&

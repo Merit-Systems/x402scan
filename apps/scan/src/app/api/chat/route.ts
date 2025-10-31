@@ -9,6 +9,7 @@ import {
   stepCountIs,
   streamText,
   generateId,
+  createIdGenerator,
 } from 'ai';
 
 import { createResumableStreamContext } from 'resumable-stream';
@@ -43,11 +44,13 @@ import {
   freeTierSystemPrompt,
 } from './system-prompt';
 import { env } from '@/env';
+import { api } from '@/trpc/server';
+
 
 const bodySchema = z.object({
   model: z.string(),
   resourceIds: z.array(z.uuid()),
-  messages: z.array(messageSchema),
+  message: messageSchema,
   chatId: z.string(),
   agentConfigurationId: z.uuid().optional(),
 });
@@ -59,11 +62,6 @@ export async function POST(request: NextRequest) {
     return new ChatSDKError('unauthorized:chat').toResponse();
   }
 
-  const [messageCount, toolCallCount] = await Promise.all([
-    getUserMessageCount(session.user.id),
-    getUserToolCallCount(session.user.id),
-  ]);
-
   const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
@@ -71,14 +69,27 @@ export async function POST(request: NextRequest) {
     return new ChatSDKError('bad_request:chat').toResponse();
   }
 
-  const { model, resourceIds, messages, chatId, agentConfigurationId } =
+  const { model, resourceIds, message, chatId, agentConfigurationId } =
     requestBody.data;
 
-  const chat = await getChat(chatId, session.user.id);
+  let chat = await getChat(chatId, session.user.id);
 
-  const isFreeTier =
-    messageCount < freeTierConfig.numMessages &&
-    toolCallCount < freeTierConfig.numToolCalls;
+  const balance = await api.user.serverWallet.usdcBaseBalance();
+
+  let isFreeTier: boolean;
+
+  if (balance === 0) {
+    const [messageCount, toolCallCount] = await Promise.all([
+      getUserMessageCount(session.user.id),
+      getUserToolCallCount(session.user.id),
+    ]);
+
+    isFreeTier =
+      messageCount < freeTierConfig.numMessages &&
+      toolCallCount < freeTierConfig.numToolCalls;
+  } else {
+    isFreeTier = false;
+  }
 
   const wallet = isFreeTier
     ? await getFreeTierWallet()
@@ -94,7 +105,7 @@ export async function POST(request: NextRequest) {
     echoAppId: env.ECHO_APP_ID,
   });
 
-  const lastMessage = messages[messages.length - 1];
+  const lastMessage = message;
 
   if (!chat) {
     // Start title generation in parallel (don't await)
@@ -104,7 +115,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Create chat with temporary title immediately
-    await createChat({
+    chat = await createChat({
       id: chatId,
       title: 'New Chat', // Temporary title
       user: {
@@ -127,12 +138,11 @@ export async function POST(request: NextRequest) {
           }
         : undefined,
       messages: {
-        createMany: {
-          data: messages.map(message => ({
-            role: message.role,
-            parts: JSON.stringify(message.parts),
-            attachments: {},
-          })),
+        create: {
+          id: message.id,
+          role: message.role,
+          parts: JSON.stringify(message.parts),
+          attachments: {},
         },
       },
     });
@@ -144,12 +154,12 @@ export async function POST(request: NextRequest) {
           await updateChat(session.user.id, chatId, {
             title: generatedTitle,
           });
-        } catch (error) {
-          console.error('Failed to update chat title:', error);
+        } catch {
+          console.error('Failed to update chat title:');
         }
       })
-      .catch((error: unknown) => {
-        console.error('Failed to generate chat title:', error);
+      .catch(() => {
+        console.error('Failed to generate chat title:');
       });
   } else {
     if (chat.userId !== session.user.id) {
@@ -159,13 +169,21 @@ export async function POST(request: NextRequest) {
     await updateChat(session.user.id, chatId, {
       activeStreamId: null,
       messages: {
-        deleteMany: {},
-        createMany: {
-          data: messages.map(message => ({
+        upsert: {
+          where: {
+            id: message.id,
+          },
+          create: {
+            id: message.id,
             role: message.role,
             parts: JSON.stringify(message.parts),
             attachments: {},
-          })),
+          },
+          update: {
+            role: message.role,
+            parts: JSON.stringify(message.parts),
+            attachments: {},
+          },
         },
       },
     });
@@ -194,6 +212,14 @@ export async function POST(request: NextRequest) {
     return isFreeTier ? freeTierSystemPrompt : baseSystemPrompt;
   };
 
+  const messages = z.array(messageSchema).parse([
+    ...chat.messages.map(({ parts, ...rest }) => ({
+      parts: JSON.parse(parts as string) as unknown,
+      ...rest,
+    })),
+    message,
+  ]);
+
   const result = streamText({
     model: openai.chat(model),
     messages: convertToModelMessages(messages),
@@ -205,26 +231,32 @@ export async function POST(request: NextRequest) {
 
   return result.toUIMessageStreamResponse({
     originalMessages: messages,
-    generateMessageId: generateId,
-    onFinish: async ({ messages }) => {
-      await updateChat(session.user.id, chatId, {
-        messages: {
-          deleteMany: {},
-          createMany: {
-            data: messages.map(message => ({
-              role: message.role,
-              parts: JSON.stringify(message.parts),
+    generateMessageId: createIdGenerator({
+      prefix: 'msg',
+      size: 16,
+    }),
+    onFinish: async ({ responseMessage }) => {
+      if (responseMessage.parts.length > 0) {
+        await updateChat(session.user.id, chatId, {
+          messages: {
+            create: {
+              id: responseMessage.id,
+              role: responseMessage.role,
+              parts: JSON.stringify(responseMessage.parts),
               attachments: {},
-            })),
+            },
           },
-        },
-      });
+        });
+      }
     },
     onError: error => {
       if (error instanceof APICallError) {
         if (error.statusCode === 402) {
           return new ChatSDKError('payment_required:chat').message;
         }
+      }
+      if (error instanceof ChatSDKError) {
+        return error.message;
       }
       return new ChatSDKError('bad_request:chat').message;
     },
@@ -273,8 +305,8 @@ async function generateTitleFromUserMessage({
     });
 
     return title;
-  } catch (error) {
-    console.error('Error generating title:', error);
+  } catch {
+    console.error('Error generating title:');
     throw new ChatSDKError('server:chat');
   }
 }

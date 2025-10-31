@@ -1,34 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-
 import Image from 'next/image';
 
 import { Bot } from 'lucide-react';
-
-import { useChat } from '@ai-sdk/react';
-
-import { toast } from 'sonner';
 
 import { Card } from '@/components/ui/card';
 
 import { EmptyMessages, LoadingMessages, Messages } from './messages';
 import { LoadingPromptInputSection, PromptInputSection } from './input';
 
-import { api } from '@/trpc/client';
-
-import { convertToUIMessages } from '@/lib/utils';
-
-import { useSession } from 'next-auth/react';
-import { clientCookieUtils } from '../../chat/_lib/cookies/client';
-
 import type { Message } from '@prisma/client';
-import type { ChatConfig, SelectedResource } from '../../_types/chat-config';
+import type { ChatConfig } from '../../_types/chat-config';
 import type { RouterOutputs } from '@/trpc/client';
-import type { LanguageModel } from './input/model-select/types';
-import { languageModels } from './input/model-select/models';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Suggestion, Suggestions } from '@/components/ai-elements/suggestion';
+import { useChat } from '../../_hooks/use-chat';
 
 interface Props {
   id: string;
@@ -44,112 +30,27 @@ export const ChatContent: React.FC<Props> = ({
   isReadOnly,
   initialMessages,
   initialConfig,
-  storeConfig,
   agentConfig,
 }) => {
-  const utils = api.useUtils();
-
-  const { data: session } = useSession();
-
-  const { data: usdcBalance } = api.user.serverWallet.usdcBaseBalance.useQuery(
-    undefined,
-    {
-      enabled: !!session,
-    }
-  );
-  const { data: freeTierUsage } = api.user.freeTier.usage.useQuery(undefined, {
-    enabled: !!session,
-  });
-  const hasBalance = (usdcBalance ?? 0) > 0 || freeTierUsage?.hasFreeTier;
-
-  const { messages, sendMessage, status } = useChat({
-    messages: initialMessages ? convertToUIMessages(initialMessages) : [],
-    resume: true,
+  const {
+    messages,
+    status,
+    regenerate,
+    errorMessage,
+    sendChatMessage,
+    handleSubmit,
+    handleSetModel,
+    onSelectResource,
+    model,
+    selectedResources,
+    input,
+    setInput,
+  } = useChat({
     id,
-    generateId: () => id,
-    onError: error => {
-      toast.error(error.message);
-      // could also open the deposit dialog here
-    },
-    onFinish: ({ messages }) => {
-      if (messages.length > 0) {
-        window.history.replaceState(
-          {},
-          '',
-          agentConfig
-            ? `/composer/agent/${agentConfig.id}/chat/${id}`
-            : `/composer/chat/${id}`
-        );
-        void utils.user.chats.list.invalidate();
-        void utils.user.freeTier.usage.invalidate();
-        setTimeout(() => {
-          void utils.user.serverWallet.usdcBaseBalance.invalidate();
-        }, 3000);
-      }
-    },
+    initialMessages,
+    initialConfig,
+    agentConfig,
   });
-
-  const [input, setInput] = useState('');
-  const [model, setModel] = useState<LanguageModel>(
-    initialConfig?.model
-      ? (languageModels.find(
-          model => `${model.provider}/${model.modelId}` === initialConfig.model
-        ) ?? languageModels[0])
-      : languageModels[0]
-  );
-  const [selectedResources, setSelectedResources] = useState<
-    SelectedResource[]
-  >(initialConfig?.resources ?? []);
-
-  const sendChatMessage = (text: string) => {
-    if (!hasBalance) {
-      toast.error('Please fund your wallet to continue');
-      return;
-    }
-    if (!text.trim()) {
-      toast.error('Please enter a message');
-      return;
-    }
-    void sendMessage(
-      { text },
-      {
-        body: {
-          chatId: id,
-          model: `${model.provider}/${model.modelId}`,
-          messages,
-          resourceIds: selectedResources.map(resource => resource.id),
-          agentConfigurationId: agentConfig?.id,
-        },
-      }
-    );
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendChatMessage(input);
-    setInput('');
-  };
-
-  const handleSetModel = (model: LanguageModel) => {
-    setModel(model);
-    void clientCookieUtils.setSelectedChatModel(
-      `${model.provider}/${model.modelId}`
-    );
-  };
-
-  const onSelectResource = (resource: SelectedResource) => {
-    const newResources = [...selectedResources];
-    const existingIndex = newResources.findIndex(r => r.id === resource.id);
-    if (existingIndex !== -1) {
-      newResources.splice(existingIndex, 1);
-    } else {
-      newResources.push(resource);
-    }
-    setSelectedResources(newResources);
-    if (storeConfig) {
-      clientCookieUtils.setResources(newResources);
-    }
-  };
 
   return (
     <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
@@ -158,6 +59,8 @@ export const ChatContent: React.FC<Props> = ({
         messages={messages}
         status={status}
         model={model.name}
+        errorMessage={errorMessage}
+        onRegenerate={regenerate}
         emptyState={
           agentConfig
             ? {
@@ -183,6 +86,7 @@ export const ChatContent: React.FC<Props> = ({
             : undefined
         }
       />
+
       {!isReadOnly && (
         <div className="pb-2 md:pb-4">
           <div className="mx-auto max-w-4xl px-2 flex flex-col">
@@ -211,6 +115,7 @@ export const ChatContent: React.FC<Props> = ({
               selectedResources={selectedResources}
               onSelectResource={onSelectResource}
               status={status}
+              errorMessage={errorMessage}
             />
           </div>
         </div>
