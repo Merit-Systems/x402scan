@@ -1,3 +1,5 @@
+# NOTE: DELETE THIS TEMPLATE IF YOU ARE NOT ADDING A NEW FACILITATOR
+
 # Add Facilitator
 
 ## Summary
@@ -16,3 +18,4 @@
 - [ ] `dateOfFirstTransaction` is correct and matches on-chain history
 - [ ] Facilitator has **at least 10 USDC transfers**
 - [ ] Added image to `apps/scan/public`
+- [ ] Make sure we support that chain
