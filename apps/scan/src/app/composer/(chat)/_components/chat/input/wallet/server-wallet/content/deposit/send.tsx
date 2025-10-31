@@ -83,7 +83,6 @@ export const Send: React.FC<Props> = ({ address, onSuccess }) => {
     <div className="flex flex-col gap-2">
       <TokenInput
         onChange={setAmount}
-        onTokenChange={() => {}}
         placeholder="0.00"
         inputClassName="placeholder:text-muted-foreground/60"
         isBalanceMax

@@ -1,27 +1,28 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import AutoNumeric from 'autonumeric';
-import { Check, ChevronDown, Wallet } from 'lucide-react';
-import Image from 'next/image';
+import { Wallet } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { Loading } from '@/components/ui/loading';
+
+import { TokenSelect } from './token-select';
+
+import { useBalance } from '@/app/_hooks/use-balance';
 
 import { cn } from '@/lib/utils';
-import { Token } from '@/types/token';
 import { BASE_USDC } from '@/lib/tokens/usdc';
-import { useBalance } from '@/app/_hooks/use-balance';
-import { CHAIN_ICONS } from '@/types/chain';
-import { Loading } from '../loading';
-import { TokenSelect } from './token-select';
-import { Skeleton } from '../skeleton';
+
+import type { Token } from '@/types/token';
 
 interface Props
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   onChange: (value: number) => void;
   label: string;
-  value?: number;
   selectedToken: Token;
   onTokenChange?: (token: Token) => void;
   tokens?: Token[];
@@ -31,7 +32,6 @@ interface Props
 }
 
 export const TokenInput: React.FC<Props> = ({
-  value,
   onChange,
   selectedToken = BASE_USDC,
   onTokenChange,

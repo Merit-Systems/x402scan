@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
@@ -17,11 +19,11 @@ import {
   CommandList,
 } from '@/components/ui/command';
 
-import { Token } from '@/types/token';
-import { ButtonProps } from '../button';
 import { CHAIN_ICONS } from '@/types/chain';
 import { Check, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+
+import type { ButtonProps } from '../button';
+import type { Token } from '@/types/token';
 
 interface Props extends Omit<ButtonProps, 'children'> {
   selectedToken: Token;

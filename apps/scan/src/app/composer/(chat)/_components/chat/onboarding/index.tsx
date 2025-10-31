@@ -26,7 +26,7 @@ export const Onboarding = () => {
   const { mutate: acknowledgeComposerOnboarding } =
     api.user.acknowledgements.upsert.useMutation({
       onSuccess: () => {
-        utils.user.acknowledgements.hasAcknowledged.invalidate();
+        void utils.user.acknowledgements.hasAcknowledged.invalidate();
       },
       onError: () => {
         toast.error('There was an error finishing the onboarding process');
@@ -42,7 +42,7 @@ export const Onboarding = () => {
     } else {
       setStep(prev => prev + 1);
     }
-  }, [setStep, steps.length, step]);
+  }, [setStep, step, acknowledgeComposerOnboarding]);
 
   const onPrevious = useCallback(() => {
     setStep(prev => prev - 1);

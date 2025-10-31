@@ -1,11 +1,10 @@
-import {
-  useAccount,
-  UseBalanceParameters,
-  useBalance as useBalanceWagmi,
-} from 'wagmi';
+import { useAccount, useBalance as useBalanceWagmi } from 'wagmi';
+
 import { CHAIN_ID } from '@/types/chain';
-import { Token } from '@/types/token';
 import { BASE_USDC } from '@/lib/tokens/usdc';
+
+import type { Token } from '@/types/token';
+import type { UseBalanceParameters } from 'wagmi';
 
 export const useBalance = (
   token: Token = BASE_USDC,

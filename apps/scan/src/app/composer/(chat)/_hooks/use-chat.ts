@@ -1,21 +1,29 @@
-import { convertToUIMessages } from '@/lib/utils';
-import { api, RouterOutputs } from '@/trpc/client';
-import { useChat as useAiChat } from '@ai-sdk/react';
-import { Message } from '@prisma/client';
-import { DefaultChatTransport } from 'ai';
-import { useSession } from 'next-auth/react';
-import { toast } from 'sonner';
-import { ChatConfig, SelectedResource } from '../_types/chat-config';
-import { LanguageModel } from '../_components/chat/input/model-select/types';
 import { useState } from 'react';
+
+import { DefaultChatTransport } from 'ai';
+import { useChat as useAiChat } from '@ai-sdk/react';
+
+import { useSession } from 'next-auth/react';
+
+import { toast } from 'sonner';
+
+import { api } from '@/trpc/client';
+
 import { languageModels } from '../_components/chat/input/model-select/models';
+
 import { clientCookieUtils } from '../chat/_lib/cookies/client';
+
+import { convertToUIMessages } from '@/lib/utils';
+
+import type { RouterOutputs } from '@/trpc/client';
+import type { ChatConfig, SelectedResource } from '../_types/chat-config';
+import type { LanguageModel } from '../_components/chat/input/model-select/types';
+import type { Message } from '@prisma/client';
 
 interface Props {
   id: string;
   initialMessages: Message[];
   agentConfig?: RouterOutputs['public']['agents']['get'];
-  isReadOnly?: boolean;
   initialConfig?: ChatConfig;
 }
 
@@ -23,7 +31,6 @@ export const useChat = ({
   id,
   initialMessages,
   agentConfig,
-  isReadOnly,
   initialConfig,
 }: Props) => {
   const utils = api.useUtils();

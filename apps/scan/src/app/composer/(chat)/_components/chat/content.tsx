@@ -15,16 +15,6 @@ import type { RouterOutputs } from '@/trpc/client';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Suggestion, Suggestions } from '@/components/ai-elements/suggestion';
 import { useChat } from '../../_hooks/use-chat';
-import { ConnectDialog } from './auth';
-
-type UserState =
-  | {
-      isSignedIn: true;
-      hasUserAcknowledgedComposer: boolean;
-    }
-  | {
-      isSignedIn: false;
-    };
 
 interface Props {
   id: string;
@@ -58,7 +48,6 @@ export const ChatContent: React.FC<Props> = ({
   } = useChat({
     id,
     initialMessages,
-    isReadOnly,
     initialConfig,
     agentConfig,
   });

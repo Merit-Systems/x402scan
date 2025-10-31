@@ -4,7 +4,6 @@ import { FreeTierButton } from './free-tier';
 import { ServerWalletButton } from './server-wallet';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { Acknowledgement } from '../../onboarding/acknowledgement';
 
 export const WalletButton = () => {
   const { data: session } = useSession();
@@ -37,7 +36,10 @@ export const WalletButton = () => {
     return <LoadingWalletButton />;
   }
 
-  if (freeTierUsage?.hasFreeTier || showFreeTier) {
+  if (
+    (freeTierUsage?.hasFreeTier || showFreeTier) &&
+    (usdcBalance ?? 0) === 0
+  ) {
     return <FreeTierButton hideFreeTierButton={() => setShowFreeTier(false)} />;
   }
 

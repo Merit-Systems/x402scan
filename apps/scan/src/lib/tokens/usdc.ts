@@ -1,8 +1,10 @@
-import { Chain } from '@/types/chain';
-import { Token } from '@/types/token';
 import { USDC_ADDRESS } from '../utils';
 
-export const usdc = (chain: Chain): Token => ({
+import { Chain } from '@/types/chain';
+
+import type { Token } from '@/types/token';
+
+const usdc = (chain: Chain): Token => ({
   symbol: 'USDC',
   name: 'USD Coin',
   icon: '/usdc.png',
@@ -12,5 +14,3 @@ export const usdc = (chain: Chain): Token => ({
 });
 
 export const BASE_USDC = usdc(Chain.BASE);
-export const SOLANA_USDC = usdc(Chain.SOLANA);
-export const POLYGON_USDC = usdc(Chain.POLYGON);

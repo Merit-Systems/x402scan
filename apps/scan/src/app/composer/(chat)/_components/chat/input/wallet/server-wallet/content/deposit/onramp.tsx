@@ -4,7 +4,6 @@ import { useCallback, useState } from 'react';
 
 import { Check, Loader2 } from 'lucide-react';
 
-import { MoneyInput } from '@/components/ui/money-input';
 import { Button } from '@/components/ui/button';
 
 import { api } from '@/trpc/client';

@@ -1,6 +1,6 @@
 import { AnimatedBeam, Circle } from '@/components/magicui/animated-beam';
 import { cn } from '@/lib/utils';
-import { Bot, MessagesSquare, Server, User, Wallet } from 'lucide-react';
+import { Bot, MessagesSquare, Server, User } from 'lucide-react';
 import { useRef } from 'react';
 
 export const ResourcesStep = () => {

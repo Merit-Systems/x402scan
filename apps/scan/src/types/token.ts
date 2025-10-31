@@ -1,5 +1,5 @@
-import { MixedAddress } from './address';
-import { Chain } from './chain';
+import type { MixedAddress } from './address';
+import type { Chain } from './chain';
 
 export type Token = {
   symbol: string;
