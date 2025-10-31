@@ -46,7 +46,6 @@ import {
 import { env } from '@/env';
 import { api } from '@/trpc/server';
 
-
 const bodySchema = z.object({
   model: z.string(),
   resourceIds: z.array(z.uuid()),
