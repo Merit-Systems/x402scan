@@ -19,3 +19,4 @@
 - [ ] Facilitator has **at least 10 USDC transfers**
 - [ ] Added image to `apps/scan/public`
 - [ ] Make sure we support that chain
+- [ ] Make sure all EVM addresses are lowercase
