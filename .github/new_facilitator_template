@@ -14,5 +14,5 @@
 - [ ] Chose a **new unique color** not used by other facilitators
 - [ ] Updated `README.md` with a one-line entry under Facilitators
 - [ ] `dateOfFirstTransaction` is correct and matches on-chain history
-- [ ] Facilitator has **at least 10 USDC transfers** on supported networks
+- [ ] Facilitator has **at least 10 USDC transfers**
 - [ ] Added image to `apps/scan/public`
