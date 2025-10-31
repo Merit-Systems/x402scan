@@ -389,7 +389,7 @@ model UserAcknowledgement {
 
 model ResourceDomainMetrics {
   id                  String   @id @default(uuid())
-  domain              String   @unique
+  domain              String
   totalCount1h        Int?
   totalCount6h        Int?
   totalCount24h       Int?
@@ -434,11 +434,13 @@ model ResourceDomainMetrics {
   updatedAt           DateTime @updatedAt
 
   @@map("ResourceDomainMetrics")
+  @@index([domain])
+  @@index([domain, createdAt])
 }
 
 model ResourceUrlMetrics {
   id                  String   @id @default(uuid())
-  url                 String   @unique
+  url                 String
   totalCount1h        Int?
   totalCount6h        Int?
   totalCount24h       Int?
@@ -483,4 +485,6 @@ model ResourceUrlMetrics {
   updatedAt           DateTime @updatedAt
 
   @@map("ResourceUrlMetrics")
+  @@index([url])
+  @@index([url, createdAt])
 }
