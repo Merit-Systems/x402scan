@@ -8,6 +8,7 @@ import {
   dexterFacilitator,
   daydreamsFacilitator,
   mogamiFacilitator,
+  mfloFacilitator,
   openx402Facilitator,
   f402104Facilitator,
 } from '../facilitators';
@@ -26,6 +27,7 @@ const FACILITATORS = validateUniqueFacilitators([
   dexterFacilitator,
   daydreamsFacilitator,
   mogamiFacilitator,
+  mfloFacilitator,
   openx402Facilitator,
   f402104Facilitator,
 ]);
