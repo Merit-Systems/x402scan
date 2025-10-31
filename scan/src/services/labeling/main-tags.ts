@@ -7,6 +7,7 @@ export const MAIN_TAGS = {
     'Any tool which performs a utility function, such as running code or performing a service. Utility would include memory, cache store, fetching the weather, etc.',
   Random:
     'Any tool which does something lighthearted or fun, such as a joke or a meme generator.',
+  Testing: "Any resource which is hosted at a test server endpoint such as vercel or heroku."
 } as const;
 
 export type MainTag = keyof typeof MAIN_TAGS;
