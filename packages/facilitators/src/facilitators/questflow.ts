@@ -25,7 +25,7 @@ export const questflow: FacilitatorConfigConstructor<QuestflowProps> = ({
       },
       supported: {
         Authorization: `Bearer ${apiKey}`,
-      }
+      },
     };
   },
 });
@@ -47,52 +47,52 @@ export const questflowFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0x724eFaFb051F17Ae824aFcDf3C0368AE312da264'.toLowerCase(),
+        address: '0x724efafb051f17ae824afcdf3c0368ae312da264',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0xa9A54eF09Fc8B86Bc747CEC6EF8D6E81c38c6180'.toLowerCase(),
+        address: '0xa9a54ef09fc8b86bc747cec6ef8d6e81c38c6180',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0x4638BC811C93bf5e60deEd32325E93505f681576'.toLowerCase(),
+        address: '0x4638bc811c93bf5e60deed32325e93505f681576',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0xD7D91a42DFAdD906C5B9cCdE7226d28251e4Cd0F'.toLowerCase(),
+        address: '0xd7d91a42dfadd906c5b9ccde7226d28251e4cd0f',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0x4544b535938b67d2A410a98A7e3b0f8F68921cA7'.toLowerCase(),
+        address: '0x4544b535938b67d2a410a98a7e3b0f8f68921ca7',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0x59e8014A3b884392fbb679fe461DA07b18c1Ff81'.toLowerCase(),
+        address: '0x59e8014a3b884392fbb679fe461da07b18c1ff81',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0xE6123E6b389751C5F7E9349F3d626B105C1fe618'.toLowerCase(),
+        address: '0xe6123e6b389751c5f7e9349f3d626b105c1fe618',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0xf70e7Cb30b132FAb2A0a5e80D41861aA133Ea21B'.toLowerCase(),
+        address: '0xf70e7cb30b132fab2a0a5e80d41861aa133ea21b',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0x90dA501FDBeC74BB0549100967eB221fEd79c99b'.toLowerCase(),
+        address: '0x90da501fdbec74bb0549100967eb221fed79c99b',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0xCE7819f0B0B871733c933d1F486533BAb95Ec47B'.toLowerCase(),
+        address: '0xce7819f0b0b871733c933d1f486533bab95ec47b',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },

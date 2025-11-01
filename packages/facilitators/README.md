@@ -91,7 +91,8 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Dexter**     | SOLANA        | No        | No                             |
 | **Mogami**     | BASE          | No        | No                             |
 | **OpenX402**   | BASE, SOLANA  | No        | No                             |
-| **Questflow**  | ALL EVM CHAINS| ✅ Yes    | Yes - API key                  |
+| **Questflow**  | BASE          | ✅ Yes    | Yes - API key                  |
+| **xEcho**      | BASE          | No        | No                             |
 
 ### Import Individual Facilitators
 
@@ -107,6 +108,7 @@ import {
   mogami,
   openx402,
   questflow,
+  xecho,
 } from 'facilitators';
 
 // Facilitators requiring setup
