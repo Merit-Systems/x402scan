@@ -1,20 +1,21 @@
 import {
+  anyspendFacilitator,
   aurracloudFacilitator,
+  codenutFacilitator,
   coinbaseFacilitator,
-  thirdwebFacilitator,
-  x402rsFacilitator,
-  payaiFacilitator,
   corbitsFacilitator,
-  dexterFacilitator,
   daydreamsFacilitator,
+  dexterFacilitator,
+  f402104Facilitator,
   mogamiFacilitator,
   openx402Facilitator,
-  f402104Facilitator,
+  payaiFacilitator,
   questflowFacilitator,
-  xechoFacilitator,
-  codenutFacilitator,
+  thirdwebFacilitator,
   ultravioletadaoFacilitator,
   virtualsFacilitator,
+  x402rsFacilitator,
+  xechoFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -38,6 +39,7 @@ const FACILITATORS = validateUniqueFacilitators([
   codenutFacilitator,
   ultravioletadaoFacilitator,
   virtualsFacilitator,
+  anyspendFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =
