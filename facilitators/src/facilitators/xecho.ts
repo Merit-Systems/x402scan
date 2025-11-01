@@ -10,7 +10,7 @@ export const xecho: FacilitatorConfig = {
 export const xechoFacilitator = {
   id: 'xecho',
   metadata: {
-    name: 'xecho',
+    name: 'xEcho',
     image: '/xecho.png',
     docsUrl: 'https://www.xechoai.xyz',
     color: '#134E4A',
