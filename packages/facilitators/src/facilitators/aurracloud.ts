@@ -1,5 +1,5 @@
 import { Network } from '../types';
-import { USDC_BASE_TOKEN } from '../constants';
+import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
 import type {
   Facilitator,
@@ -46,6 +46,13 @@ export const aurracloudFacilitator = {
         address: '0xd348e724e0ef36291a28dfeccf692399b0e179f8',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
+      },
+    ],
+    [Network.SOLANA]: [
+      {
+        address: '8x8CzkTHTYkW18frrTR7HdCV6fsjenvcykJAXWvoPQW',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-30'),
       },
     ],
   },
