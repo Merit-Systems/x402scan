@@ -74,6 +74,9 @@ export const upsertResource = async (
   const supportedAccepts = baseResource.accepts.filter(accept =>
     SUPPORTED_CHAINS.includes(accept.network as Chain)
   );
+  const unsupportedAccepts = baseResource.accepts.filter(
+    accept => !SUPPORTED_CHAINS.includes(accept.network as Chain)
+  );
   const originStr = getOriginFromUrl(baseResource.resource);
   return await prisma.$transaction(async tx => {
     const { origin, ...resource } = await tx.resources.upsert({
@@ -155,6 +158,7 @@ export const upsertResource = async (
       resource,
       accepts,
       origin,
+      unsupportedAccepts,
     };
   });
 };
