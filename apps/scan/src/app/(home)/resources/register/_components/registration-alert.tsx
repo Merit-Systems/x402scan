@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { AlertTriangle, Info } from 'lucide-react';
 
 type RegistrationAlertProps = {
   registeredCount: number;

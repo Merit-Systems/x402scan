@@ -46,6 +46,8 @@ import {
   type PreviewData,
   type PreviewResult,
 } from './queries';
+import { AcceptsBreakdownTable } from '@/app/(home)/resources/register/_components/accepts-breakdown-table';
+import { SUPPORTED_CHAINS, type Chain } from '@/types/chain';
 
 export const TestEndpointForm = () => {
   const queryClient = useQueryClient();
@@ -97,12 +99,20 @@ export const TestEndpointForm = () => {
   };
 
   // Direct query-derived pairs
-  const getPair = getQuery.data
-    ? { result: getQuery.data.result, parsed: getQuery.data.parsed }
-    : null;
-  const postPair = postQuery.data
-    ? { result: postQuery.data.result, parsed: postQuery.data.parsed }
-    : null;
+  const getPair = useMemo(
+    () =>
+      getQuery.data
+        ? { result: getQuery.data.result, parsed: getQuery.data.parsed }
+        : null,
+    [getQuery.data]
+  );
+  const postPair = useMemo(
+    () =>
+      postQuery.data
+        ? { result: postQuery.data.result, parsed: postQuery.data.parsed }
+        : null,
+    [postQuery.data]
+  );
   const parsedResources = useMemo(() => {
     const list: { method: Methods; data: ParsedX402Response }[] = [];
     if (getQuery.data?.parsed.success && getQuery.data.info.hasInputSchema) {
@@ -117,6 +127,38 @@ export const TestEndpointForm = () => {
   const isLoading =
     getQuery.isFetching || postQuery.isFetching || previewQuery.isFetching;
   const submittedOrigin = submittedUrl ? new URL(submittedUrl).origin : '';
+
+  // Process accepts from both GET and POST
+  const acceptsData = useMemo(() => {
+    const allAccepts: Array<{
+      network: string;
+      payTo: string;
+      asset: string;
+      method: 'GET' | 'POST';
+      isSupported: boolean;
+    }> = [];
+
+    [
+      { pair: getPair, method: 'GET' as const },
+      { pair: postPair, method: 'POST' as const },
+    ].forEach(({ pair, method }) => {
+      if (pair?.parsed?.success) {
+        const accepts = pair.parsed.data.accepts ?? [];
+        accepts.forEach(accept => {
+          const network = accept.network.replace('-', '_');
+          allAccepts.push({
+            network,
+            payTo: accept.payTo,
+            asset: accept.asset,
+            method,
+            isSupported: SUPPORTED_CHAINS.includes(network as Chain),
+          });
+        });
+      }
+    });
+
+    return allAccepts;
+  }, [getPair, postPair]);
 
   // After inputs are committed, fire queries for this run
   useEffect(() => {
@@ -241,6 +283,25 @@ export const TestEndpointForm = () => {
         Boolean(getQuery.data ?? postQuery.data ?? previewQuery.data) && (
           <Checklist preview={preview} getPair={getPair} postPair={postPair} />
         )}
+
+      {!isLoading && acceptsData.length > 0 && (
+        <Card>
+          <CardHeader className="py-3">
+            <CardTitle className="text-sm">Payment Addresses</CardTitle>
+            <CardDescription>
+              Networks and addresses from your 402 response
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="py-2">
+            <AcceptsBreakdownTable accepts={acceptsData} />
+            {acceptsData.some(a => !a.isSupported) && (
+              <p className="text-xs text-muted-foreground mt-3 px-2">
+                Only Base and Solana networks are currently supported for registration.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {!getQuery.isFetching &&
         !postQuery.isFetching &&
