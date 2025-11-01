@@ -308,7 +308,7 @@ export const Circle = forwardRef<
     <Card
       ref={ref}
       className={cn(
-        'bg-card z-10 flex items-center justify-center rounded-full border-2 p-2 shadow-sm',
+        'bg-card z-10 flex items-center justify-center rounded-full border-2 p-2',
         className
       )}
     >

@@ -1,11 +1,13 @@
 import { ChatContent } from './content';
-import { ConnectDialog } from './auth/dialog';
+import { ConnectDialog } from './auth';
+import { Onboarding } from './onboarding';
 
 import { serverCookieUtils } from '../../chat/_lib/cookies/server';
 
+import { auth } from '@/auth';
+
 import type { Message } from '@prisma/client';
 import type { RouterOutputs } from '@/trpc/client';
-import { auth } from '@/auth';
 
 interface Props {
   id: string;
@@ -58,6 +60,7 @@ export const Chat: React.FC<Props> = async ({
         agentConfig={agentConfig}
       />
       {!session && <ConnectDialog agentConfig={agentConfig} />}
+      {session && <Onboarding />}
     </>
   );
 };
