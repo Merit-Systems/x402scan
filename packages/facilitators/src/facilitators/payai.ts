@@ -36,22 +36,22 @@ export const payaiFacilitator = {
         dateOfFirstTransaction: new Date('2025-05-18'),
       },
       {
-        address: '0xB2Bd29925CBbCEA7628279c91945Ca5B98bf371B',
+        address: '0xb2bd29925cbbcea7628279c91945ca5b98bf371b',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0x25659315106580ce2A787CeeC5efB2d347B539C9',
+        address: '0x25659315106580ce2a787ceec5efb2d347b539c9',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0xB8F41cB13b1f213da1E94E1b742ec1323235C48F',
+        address: '0xb8f41cb13b1f213da1e94e1b742ec1323235c48f',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
       {
-        address: '0xe575fA51af90957d66FaB6d63355F1eD021b887b',
+        address: '0xe575fa51af90957d66fab6d63355f1ed021b887b',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
