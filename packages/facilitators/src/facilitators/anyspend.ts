@@ -24,7 +24,7 @@ export const anyspendFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0x179761D9EEd0F0d1599330CC94B0926e68aE87F1',
+        address: '0x179761d9eed0f0d1599330cc94b0926e68ae87f1',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-31'),
       },
