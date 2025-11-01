@@ -116,5 +116,23 @@ export const registerResource = async (url: string, data: unknown) => {
     })),
     enhancedParseWarnings,
     response: data,
+    registrationDetails: {
+      providedAccepts: baseX402ParsedResponse.data.accepts ?? [],
+      supportedAccepts: resource.accepts,
+      unsupportedAccepts: resource.unsupportedAccepts,
+      originMetadata: {
+        title: metadata?.title ?? og?.ogTitle ?? null,
+        description: metadata?.description ?? og?.ogDescription ?? null,
+        favicon: og?.favicon
+          ? new URL(og.favicon, scrapedOrigin).toString()
+          : null,
+        ogImages:
+          og?.ogImage?.map(image => ({
+            url: image.url,
+            height: image.height,
+            width: image.width,
+          })) ?? [],
+      },
+    },
   };
 };

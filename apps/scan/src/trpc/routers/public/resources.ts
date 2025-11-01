@@ -136,7 +136,10 @@ export const resourcesRouter = createTRPCRouter({
           }
         }
 
-        return result;
+        return {
+          ...result,
+          methodUsed: method,
+        };
       }
 
       if (parseErrorData) {
