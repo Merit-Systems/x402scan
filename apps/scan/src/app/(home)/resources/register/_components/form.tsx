@@ -76,10 +76,25 @@ export const RegisterResourceForm = () => {
       void utils.public.sellers.bazaar.list.invalidate();
       if (data.enhancedParseWarnings) {
         toast.warning(
-          'Resource added successfully, but is not available for use'
+          'Resource added successfully, but is not available for use',
+          {
+            action: {
+              label: 'View Server',
+              onClick: () => {
+                window.location.href = `/server/${data.resource.origin.id}`;
+              },
+            },
+          }
         );
       } else {
-        toast.success('Resource added successfully');
+        toast.success('Resource added successfully', {
+          action: {
+            label: 'View Server',
+            onClick: () => {
+              window.location.href = `/server/${data.resource.origin.id}`;
+            },
+          },
+        });
       }
     },
     onError: () => {
