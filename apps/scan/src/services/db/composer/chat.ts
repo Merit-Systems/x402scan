@@ -9,6 +9,11 @@ export const createChat = async (data: Prisma.ChatCreateInput) => {
     data: data,
     include: {
       messages: true,
+      userAgentConfiguration: {
+        select: {
+          agentConfigurationId: true,
+        },
+      },
     },
   });
 };

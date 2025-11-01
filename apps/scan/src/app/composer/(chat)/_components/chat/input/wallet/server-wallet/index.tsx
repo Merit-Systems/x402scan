@@ -3,9 +3,9 @@ import { useSession } from 'next-auth/react';
 import { Loading } from '@/components/ui/loading';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { LoadingWalletButton, WalletButton } from './button';
+import { LoadingWalletButton, WalletButton } from '../button';
 
-import { WalletDialog } from '../../../wallet/dialog';
+import { WalletDialog } from './dialog';
 
 import { api } from '@/trpc/client';
 

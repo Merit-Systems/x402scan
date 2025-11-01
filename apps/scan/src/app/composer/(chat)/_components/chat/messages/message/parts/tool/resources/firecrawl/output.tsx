@@ -7,6 +7,7 @@ import type { OutputComponent } from '../types';
 
 import z from 'zod';
 import { ChevronDownIcon } from 'lucide-react';
+import { ToolOutput } from '@/components/ai-elements/tool';
 
 const firecrawlOutputSchema = z.object({
   success: z.literal(true),
@@ -31,7 +32,7 @@ export const FirecrawlOutput: OutputComponent = ({ output, errorText }) => {
   const parseResult = firecrawlOutputSchema.safeParse(output);
 
   if (!parseResult.success) {
-    return <p>Error parsing output</p>;
+    return <ToolOutput output={JSON.stringify(output)} errorText={errorText} />;
   }
 
   return (

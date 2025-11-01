@@ -70,7 +70,7 @@ function AlertDialogHeader({
   return (
     <div
       data-slot="alert-dialog-header"
-      className={cn('flex flex-col gap-2 text-center sm:text-left', className)}
+      className={cn('flex flex-col gap-2', className)}
       {...props}
     />
   );
@@ -112,7 +112,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={cn('text-muted-foreground text-sm', className)}
+      className={cn('text-muted-foreground text-xs md:text-sm', className)}
       {...props}
     />
   );
