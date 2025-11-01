@@ -106,6 +106,7 @@ import {
   dexter,
   mogami,
   openx402,
+  xecho,
 } from 'facilitators';
 
 // Facilitators requiring setup
