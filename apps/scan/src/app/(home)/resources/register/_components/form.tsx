@@ -173,12 +173,12 @@ export const RegisterResourceForm = () => {
               defaultValue={(() => {
                 const hasErrors =
                   // No accepts registered
-                  (data.registrationDetails?.supportedAccepts.length === 0) ||
+                  data.registrationDetails?.supportedAccepts.length === 0 ||
                   // Enhanced schema failed
                   !!data.enhancedParseWarnings ||
                   // No metadata scraped
-                  !data.registrationDetails?.originMetadata?.title &&
-                  !data.registrationDetails?.originMetadata?.description;
+                  (!data.registrationDetails?.originMetadata?.title &&
+                    !data.registrationDetails?.originMetadata?.description);
 
                 const hasFilteredAccepts =
                   data.registrationDetails &&
@@ -209,12 +209,10 @@ export const RegisterResourceForm = () => {
                         : false
                     }
                     hasEnhancedSchema={!data.enhancedParseWarnings}
-                    hasOriginMetadata={
-                      Boolean(
-                        data.registrationDetails?.originMetadata?.title ??
-                          data.registrationDetails?.originMetadata?.description
-                      )
-                    }
+                    hasOriginMetadata={Boolean(
+                      data.registrationDetails?.originMetadata?.title ??
+                        data.registrationDetails?.originMetadata?.description
+                    )}
                   />
                 </AccordionContent>
               </AccordionItem>
@@ -235,13 +233,11 @@ export const RegisterResourceForm = () => {
                       <AcceptsBreakdownTable
                         accepts={[
                           ...data.registrationDetails.supportedAccepts.map(
-                            (
-                              accept: {
-                                network: string;
-                                payTo: string;
-                                asset: string;
-                              }
-                            ) => ({
+                            (accept: {
+                              network: string;
+                              payTo: string;
+                              asset: string;
+                            }) => ({
                               network: accept.network,
                               payTo: accept.payTo,
                               asset: accept.asset,
@@ -249,13 +245,11 @@ export const RegisterResourceForm = () => {
                             })
                           ),
                           ...data.registrationDetails.unsupportedAccepts.map(
-                            (
-                              accept: {
-                                network: string;
-                                payTo: string;
-                                asset: string;
-                              }
-                            ) => ({
+                            (accept: {
+                              network: string;
+                              payTo: string;
+                              asset: string;
+                            }) => ({
                               network: accept.network,
                               payTo: accept.payTo,
                               asset: accept.asset,

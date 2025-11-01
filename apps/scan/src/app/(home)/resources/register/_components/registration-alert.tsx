@@ -22,7 +22,8 @@ export function RegistrationAlert({
               Resource won&apos;t appear in search
             </h3>
             <p className="text-sm text-red-800 dark:text-red-200">
-              Only Base and Solana networks are supported. Add accepts for these networks to make your resource discoverable.
+              Only Base and Solana networks are supported. Add accepts for these
+              networks to make your resource discoverable.
             </p>
           </div>
         </div>
@@ -43,9 +44,10 @@ export function RegistrationAlert({
             <div className="text-sm space-y-1.5 text-yellow-800 dark:text-yellow-200">
               <p>
                 {registeredCount} of {totalCount} payment address
-                {totalCount > 1 ? 'es were' : ' was'} registered. {filteredCount}{' '}
-                {filteredCount > 1 ? 'were' : 'was'} filtered out because{' '}
-                {filteredCount > 1 ? 'they use' : 'it uses'} unsupported networks.
+                {totalCount > 1 ? 'es were' : ' was'} registered.{' '}
+                {filteredCount} {filteredCount > 1 ? 'were' : 'was'} filtered
+                out because {filteredCount > 1 ? 'they use' : 'it uses'}{' '}
+                unsupported networks.
               </p>
               <p className="text-xs opacity-80">
                 Only Base and Solana are supported.

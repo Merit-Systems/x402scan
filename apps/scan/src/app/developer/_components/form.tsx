@@ -145,13 +145,12 @@ export const TestEndpointForm = () => {
       if (pair?.parsed?.success) {
         const accepts = pair.parsed.data.accepts ?? [];
         accepts.forEach(accept => {
-          const network = accept.network.replace('-', '_');
           allAccepts.push({
-            network,
+            network: accept.network,
             payTo: accept.payTo,
             asset: accept.asset,
             method,
-            isSupported: SUPPORTED_CHAINS.includes(network as Chain),
+            isSupported: SUPPORTED_CHAINS.includes(accept.network as Chain),
           });
         });
       }
@@ -292,13 +291,8 @@ export const TestEndpointForm = () => {
               Networks and addresses from your 402 response
             </CardDescription>
           </CardHeader>
-          <CardContent className="py-2">
+          <CardContent className="p-4">
             <AcceptsBreakdownTable accepts={acceptsData} />
-            {acceptsData.some(a => !a.isSupported) && (
-              <p className="text-xs text-muted-foreground mt-3 px-2">
-                Only Base and Solana networks are currently supported for registration.
-              </p>
-            )}
           </CardContent>
         </Card>
       )}

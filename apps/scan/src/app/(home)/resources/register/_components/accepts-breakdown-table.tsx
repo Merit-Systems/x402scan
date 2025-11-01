@@ -12,7 +12,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { CheckCircle, XCircle } from 'lucide-react';
-import { CHAIN_LABELS, type Chain } from '@/types/chain';
 
 type AcceptStatus = {
   network: string;
@@ -30,20 +29,6 @@ export function AcceptsBreakdownTable({
   if (accepts.length === 0) {
     return null;
   }
-
-  // Helper to format network names (convert base_sepolia -> Base Sepolia)
-  const formatNetworkName = (network: string): string => {
-    // Check if it's a known chain first
-    const chainKey = network.toLowerCase() as Chain;
-    if (CHAIN_LABELS[chainKey]) {
-      return CHAIN_LABELS[chainKey];
-    }
-    // Fallback: capitalize and replace underscores
-    return network
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
 
   return (
     <div className="rounded-md border overflow-hidden">
@@ -66,14 +51,24 @@ export function AcceptsBreakdownTable({
                     <span className="text-xs font-medium">Registered</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 text-red-600 dark:text-red-500">
-                    <XCircle className="size-4 shrink-0" />
-                    <span className="text-xs font-medium">Filtered</span>
-                  </div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-2 text-red-600 dark:text-red-500 cursor-help">
+                        <XCircle className="size-4 shrink-0" />
+                        <span className="text-xs font-medium">Filtered</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">
+                        Only Base and Solana networks are currently supported
+                        for registration
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
                 )}
               </TableCell>
               <TableCell className="font-medium py-3">
-                {formatNetworkName(accept.network)}
+                {accept.network}
               </TableCell>
               <TableCell className="font-mono text-xs py-3">
                 <Tooltip>
