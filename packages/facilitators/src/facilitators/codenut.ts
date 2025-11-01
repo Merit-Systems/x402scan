@@ -21,7 +21,7 @@ export const codenutFacilitator = {
       {
         address: '0x8d8Fa42584a727488eeb0E29405AD794a105bb9b',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-10-31'),
+        dateOfFirstTransaction: new Date('2025-10-13'),
       },
       {
         address: '0x87aF99356d774312B73018b3B6562e1aE0e018C9',
