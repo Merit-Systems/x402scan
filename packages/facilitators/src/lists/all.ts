@@ -32,7 +32,6 @@ const FACILITATORS = validateUniqueFacilitators([
   f402104Facilitator,
   xechoFacilitator,
   codenutFacilitator,
-  xechoFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =
