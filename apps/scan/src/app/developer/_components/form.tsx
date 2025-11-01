@@ -48,6 +48,8 @@ import {
 } from './queries';
 import { AcceptsBreakdownTable } from '@/app/(home)/resources/register/_components/accepts-breakdown-table';
 import { SUPPORTED_CHAINS, type Chain } from '@/types/chain';
+import { isLocalUrl, extractPort } from '@/lib/url-helpers';
+import { NgrokAlert } from './ngrok-alert';
 
 export const TestEndpointForm = () => {
   const queryClient = useQueryClient();
@@ -62,6 +64,26 @@ export const TestEndpointForm = () => {
     () => z.string().url().safeParse(url).success,
     [url]
   );
+
+  const isLocalhost = useMemo(() => {
+    try {
+      // Try with http:// prefix if no protocol
+      const urlToCheck = url.includes('://') ? url : `http://${url}`;
+      return isLocalUrl(urlToCheck);
+    } catch {
+      return false;
+    }
+  }, [url]);
+
+  const localPort = useMemo(() => {
+    if (!isLocalhost) return null;
+    try {
+      const urlToCheck = url.includes('://') ? url : `http://${url}`;
+      return extractPort(urlToCheck);
+    } catch {
+      return null;
+    }
+  }, [url, isLocalhost]);
 
   const submittedHeadersInit: HeadersInit = useMemo(
     () =>
@@ -191,6 +213,8 @@ export const TestEndpointForm = () => {
                   onChange={e => setUrl(e.target.value)}
                 />
               </div>
+
+              {isLocalhost && <NgrokAlert port={localPort} />}
 
               <Collapsible>
                 <CollapsibleTrigger asChild>
