@@ -28,6 +28,12 @@ export const payaiFacilitator = {
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2025-07-01'),
       },
+      {
+        // Mart.fun treasury address for tracking revenue
+        address: 'AHbUXPpSKGzxkD9L3ynbvcdHVGf6LxhaMRg68hx8DpuJ',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-02'),
+      },
     ],
     [Network.BASE]: [
       {
