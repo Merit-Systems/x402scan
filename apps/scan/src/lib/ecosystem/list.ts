@@ -149,6 +149,14 @@ export const ecosystemItems: EcosystemItem[] = [
     category: 'Ecosystem Infrastructure & Tooling',
   },
   {
+    name: 'Onchain',
+    description:
+      'Onchain is x402\'s Intelligent Intermediary Layer for Aggregating Facilitators.',
+    logoUrl: 'https://www.x402.org/logos/onchain.png',
+    websiteUrl: 'https://onchain.fi',
+    category: 'Services/Endpoints',
+  },
+  {
     name: 'PayAI Facilitator',
     description:
       'Accept x402 payments on all networks including Avalanche, Base, Polygon, Sei, Solana, and more! Get started in less than 1 minute. Supports all tokens. No API Keys required.',
