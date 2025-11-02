@@ -10,6 +10,7 @@ import {
   mogamiFacilitator,
   openx402Facilitator,
   f402104Facilitator,
+  questflowFacilitator,
   xechoFacilitator,
   codenutFacilitator,
 } from '../facilitators';
@@ -30,6 +31,7 @@ const FACILITATORS = validateUniqueFacilitators([
   mogamiFacilitator,
   openx402Facilitator,
   f402104Facilitator,
+  questflowFacilitator,
   xechoFacilitator,
   codenutFacilitator,
 ]);

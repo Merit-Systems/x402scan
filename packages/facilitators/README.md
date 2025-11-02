@@ -91,6 +91,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Dexter**     | SOLANA        | No        | No                             |
 | **Mogami**     | BASE          | No        | No                             |
 | **OpenX402**   | BASE, SOLANA  | No        | No                             |
+| **Questflow**  | BASE          | ✅ Yes    | Yes - API key                  |
 | **xEcho**      | BASE          | No        | No                             |
 | **CodeNut**    | BASE          | No        | No                             |
 
@@ -112,10 +113,14 @@ import {
 } from 'facilitators';
 
 // Facilitators requiring setup
-import { aurracloud, thirdweb } from 'facilitators';
+import { aurracloud, thirdweb, questflow } from 'facilitators';
 
 aurracloud({
   apiKey: process.env.AURRACLOUD_API_KEY,
+});
+
+questflow({
+  apiKey: process.env.QUESTFLOW_API_KEY,
 });
 
 thirdweb({
