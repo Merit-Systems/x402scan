@@ -38,7 +38,7 @@ export const questflowFacilitator = {
   id: 'questflow',
   metadata: {
     name: 'Questflow',
-    image: 'https://assets.questflow.ai/logo.png',
+    image: '/questflow.png',
     docsUrl: 'https://facilitator.questflow.ai',
     color: '#0D9488',
   },
