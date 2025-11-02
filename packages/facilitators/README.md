@@ -108,13 +108,12 @@ import {
   dexter,
   mogami,
   openx402,
-  questflow,
   xecho,
   codenut,
 } from 'facilitators';
 
 // Facilitators requiring setup
-import { aurracloud, thirdweb } from 'facilitators';
+import { aurracloud, thirdweb, questflow } from 'facilitators';
 
 aurracloud({
   apiKey: process.env.AURRACLOUD_API_KEY,
