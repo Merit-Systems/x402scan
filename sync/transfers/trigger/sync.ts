@@ -33,14 +33,15 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
               take: 1,
               where: {
                 chain: syncConfig.chain,
-                transaction_from: facilitatorConfig.address,
+                transaction_from: facilitatorConfig.address.toLowerCase(),
                 provider: syncConfig.provider,
               },
             });
 
-            const since =
-              mostRecentTransfer[0]?.block_timestamp ??
-              facilitatorConfig.syncStartDate;
+            // Start from 1ms after the most recent transfer to avoid re-fetching it
+            const since = mostRecentTransfer[0]?.block_timestamp
+              ? new Date(mostRecentTransfer[0].block_timestamp.getTime() + 1)
+              : facilitatorConfig.syncStartDate;
 
             logger.log(
               `[${syncConfig.chain}] Syncing ${facilitator.id}:${facilitatorConfig.address} from ${since.toISOString()} to ${now.toISOString()}`
