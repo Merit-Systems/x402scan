@@ -93,6 +93,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **OpenX402**   | BASE, SOLANA  | No        | No                             |
 | **Questflow**  | BASE          | ✅ Yes    | Yes - API key                  |
 | **xEcho**      | BASE          | No        | No                             |
+| **CodeNut**    | BASE          | No        | No                             |
 
 ### Import Individual Facilitators
 
@@ -109,6 +110,7 @@ import {
   openx402,
   questflow,
   xecho,
+  codenut,
 } from 'facilitators';
 
 // Facilitators requiring setup

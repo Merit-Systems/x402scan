@@ -12,6 +12,7 @@ import {
   f402104Facilitator,
   questflowFacilitator,
   xechoFacilitator,
+  codenutFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -32,6 +33,7 @@ const FACILITATORS = validateUniqueFacilitators([
   f402104Facilitator,
   questflowFacilitator,
   xechoFacilitator,
+  codenutFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =

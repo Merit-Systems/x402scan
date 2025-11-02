@@ -5,7 +5,7 @@ import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 import { Network } from '@/trigger/types';
 
 export const baseCdpConfig: SyncConfig = {
-  cron: '*/30 * * * *',
+  cron: '*/5 * * * *',
   maxDurationInSeconds: ONE_MINUTE_IN_SECONDS * 10,
   chain: 'base',
   provider: QueryProvider.CDP,
@@ -16,5 +16,5 @@ export const baseCdpConfig: SyncConfig = {
   buildQuery,
   transformResponse,
   enabled: true,
-  machine: 'medium-1x',
+  machine: 'large-2x',
 };
