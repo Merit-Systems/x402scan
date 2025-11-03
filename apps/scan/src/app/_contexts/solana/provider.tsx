@@ -1,10 +1,13 @@
+'use client';
+
 import { useEffect, useState } from 'react';
+
+import { useCdpSolanaStandardWallet } from '@coinbase/cdp-solana-standard-wallet';
 
 import { SolanaWalletContext } from './context';
 
 import type { ReactNode } from 'react';
 import type { ConnectedSolanaWallet } from './context';
-import { useCdpSolanaStandardWallet } from '@coinbase/cdp-solana-standard-wallet';
 
 interface Props {
   children: ReactNode;

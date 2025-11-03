@@ -1,10 +1,13 @@
+import { useState } from 'react';
+
 import { Mail } from 'lucide-react';
 
-import { ConnectEOAForm } from './eoa';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
 import { useConnect } from 'wagmi';
-import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+
+import { ConnectEVMInjectedWallet } from './injected/evm';
 
 import { ConnectEmbeddedWalletEmail } from './embedded/email';
 import { ConnectEmbeddedWalletOAuth } from './embedded/oauth';
@@ -24,7 +27,7 @@ export const ConnectWalletForm = () => {
     <>
       {filteredConnectors.length > 0 && !isEmailFlow && (
         <>
-          <ConnectEOAForm
+          <ConnectEVMInjectedWallet
             connectors={filteredConnectors}
             className="w-full"
             buttonClassName="w-full h-12 md:h-12"

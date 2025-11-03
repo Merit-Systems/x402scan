@@ -29,6 +29,7 @@
     "@ai-sdk/openai": "^2.0.52",
     "@ai-sdk/react": "^2.0.68",
     "@auth/prisma-adapter": "^2.7.4",
+    "@coinbase/cdp-core": "^0.0.55",
     "@coinbase/cdp-hooks": "^0.0.52",
     "@coinbase/cdp-sdk": "^1.38.4",
     "@coinbase/cdp-solana-standard-wallet": "^0.0.54",

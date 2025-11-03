@@ -10,10 +10,10 @@ import Image from 'next/image';
 import type { Address } from 'viem';
 
 interface Props {
-  accountAddress: Address;
+  address: string;
 }
 
-export const ExportWallet: React.FC<Props> = ({ accountAddress }) => {
+export const ExportWallet: React.FC<Props> = ({ address }) => {
   const { exportEvmAccount } = useExportEvmAccount();
   const [isExporting, setIsExporting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -25,7 +25,7 @@ export const ExportWallet: React.FC<Props> = ({ accountAddress }) => {
   };
 
   const handleConfirmedExport = async () => {
-    if (!accountAddress) {
+    if (!address) {
       toast.error('No wallet address found', {
         description: 'Please ensure you are logged in with an embedded wallet.',
       });
@@ -35,7 +35,7 @@ export const ExportWallet: React.FC<Props> = ({ accountAddress }) => {
 
     setIsExporting(true);
     const { privateKey } = await exportEvmAccount({
-      evmAccount: accountAddress,
+      evmAccount: address,
     });
 
     await navigator.clipboard.writeText(privateKey);
@@ -90,7 +90,7 @@ export const ExportWallet: React.FC<Props> = ({ accountAddress }) => {
           </Button>
           <Button
             onClick={handleConfirmedExport}
-            disabled={isExporting || !accountAddress}
+            disabled={isExporting || !address}
             variant="destructive"
             className="flex-1"
           >
@@ -201,7 +201,7 @@ export const ExportWallet: React.FC<Props> = ({ accountAddress }) => {
       <Button
         onClick={handleExportRequest}
         variant="outline"
-        disabled={!accountAddress}
+        disabled={!address}
         className="w-full"
       >
         <Download className="size-4" />

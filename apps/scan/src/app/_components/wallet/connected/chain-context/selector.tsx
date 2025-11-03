@@ -19,6 +19,7 @@ import {
   CHAIN_LABELS,
   CHAIN_ICONS,
 } from '@/types/chain';
+import { ChevronDown } from 'lucide-react';
 
 export const WalletChainSelector = () => {
   const { chain, setChain } = useWalletChain();
@@ -33,7 +34,7 @@ export const WalletChainSelector = () => {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="navbar" className="md:min-w-[120px]">
+        <Button variant="outline" size="sm" className="">
           <Image
             src={CHAIN_ICONS[chain]}
             alt={CHAIN_LABELS[chain]}
@@ -42,6 +43,7 @@ export const WalletChainSelector = () => {
             className="rounded-sm"
           />
           <span className="hidden md:block">{CHAIN_LABELS[chain]}</span>
+          <ChevronDown className="size-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[140px] p-1">

@@ -17,12 +17,12 @@ import { useEthBalance } from '@/app/_hooks/use-eth-balance';
 import { Chain } from '@/types/chain';
 
 interface Props {
-  accountAddress: Address;
+  address: string;
 }
 
-export const Withdraw: React.FC<Props> = () => {
+export const Withdraw: React.FC<Props> = ({ address }) => {
+  const [toAddress, setToAddress] = useState('');
   const [amount, setAmount] = useState(0);
-  const [address, setAddress] = useState('');
 
   const {
     data: ethBalance,
@@ -43,7 +43,7 @@ export const Withdraw: React.FC<Props> = () => {
   } = useWriteContract();
 
   const handleSubmit = useCallback(async () => {
-    const parseResult = ethereumAddressSchema.safeParse(address);
+    const parseResult = ethereumAddressSchema.safeParse(toAddress);
     if (!parseResult.success) {
       toast.error('Invalid address');
       return;
@@ -62,7 +62,7 @@ export const Withdraw: React.FC<Props> = () => {
           void refetchBalance();
           void refetchEthBalance();
           setAmount(0);
-          setAddress('');
+          setToAddress('');
           setTimeout(() => {
             resetSending();
           }, 2000);
@@ -75,7 +75,7 @@ export const Withdraw: React.FC<Props> = () => {
       }
     );
   }, [
-    address,
+    toAddress,
     amount,
     writeContract,
     refetchBalance,
@@ -122,8 +122,8 @@ export const Withdraw: React.FC<Props> = () => {
         <span className="font-medium text-sm">Address</span>
         <Input
           placeholder="0x..."
-          value={address}
-          onChange={e => setAddress(e.target.value)}
+          value={toAddress}
+          onChange={e => setToAddress(e.target.value)}
           className="border-2 shadow-none placeholder:text-muted-foreground/60 font-mono"
         />
       </div>

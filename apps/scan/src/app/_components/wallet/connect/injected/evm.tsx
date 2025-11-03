@@ -1,11 +1,17 @@
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
 import { useCallback } from 'react';
-import { toast } from 'sonner';
-import type { Connector } from 'wagmi';
+
+import { Loader2 } from 'lucide-react';
+
 import { useConnect } from 'wagmi';
 import { base } from 'wagmi/chains';
+
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+
+import { cn } from '@/lib/utils';
+
+import type { Connector } from 'wagmi';
 
 interface Props {
   className?: string;
@@ -14,7 +20,7 @@ interface Props {
   prefix?: string;
 }
 
-export const ConnectEOAForm: React.FC<Props> = ({
+export const ConnectEVMInjectedWallet: React.FC<Props> = ({
   connectors,
   className,
   buttonClassName,
@@ -23,7 +29,7 @@ export const ConnectEOAForm: React.FC<Props> = ({
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       {connectors.map(connector => (
-        <ConnectEOAButton
+        <ConnectEVMInjectedWalletButton
           key={connector.id}
           connector={connector}
           className={buttonClassName}
@@ -34,17 +40,15 @@ export const ConnectEOAForm: React.FC<Props> = ({
   );
 };
 
-interface ConnectEOAButtonProps {
+interface ConnectEVMInjectedWalletButtonProps {
   connector: Connector;
   className?: string;
   prefix?: string;
 }
 
-const ConnectEOAButton: React.FC<ConnectEOAButtonProps> = ({
-  connector,
-  className,
-  prefix,
-}) => {
+const ConnectEVMInjectedWalletButton: React.FC<
+  ConnectEVMInjectedWalletButtonProps
+> = ({ connector, className, prefix }) => {
   const { connectAsync, isPending } = useConnect();
 
   const onConnect = useCallback(

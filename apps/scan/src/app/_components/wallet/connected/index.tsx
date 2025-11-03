@@ -1,5 +1,7 @@
 'use client';
 
+import { ArrowDown, ArrowUp, Key, Wallet } from 'lucide-react';
+
 import {
   DialogHeader,
   DialogTitle,
@@ -7,19 +9,19 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Logo } from '@/components/logo';
-
-import { EmbeddedWalletContent } from './tabs/display';
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowDown, ArrowUp, Key, Wallet } from 'lucide-react';
-import { Deposit } from './tabs/deposit';
-import { Withdraw } from './tabs/withdraw';
 
-import { ExportWallet } from './tabs/export-wallet';
+import { WalletContent } from './tabs/display';
+import { Deposit } from './tabs/deposit';
+
+import { WalletChainSelector } from './chain-context/selector';
 
 import type { User } from '@coinbase/cdp-hooks';
 import type { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
-import { WalletChainSelector } from './chain-context/selector';
+import { useWalletChain } from './chain-context/hook';
+import { ConnectedWalletTabsContent } from './content';
+import { Chain } from '@/types/chain';
+import { ChainNotConnected } from './chain-not-connected/chain-not-connected';
 
 interface Props {
   connectedWallets: ConnectedWallets;
@@ -32,6 +34,8 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
   user,
   defaultTab = 'wallet',
 }) => {
+  const { chain } = useWalletChain();
+
   return (
     <div className="w-full overflow-hidden flex flex-col gap-4">
       <Tabs
@@ -39,9 +43,9 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
         defaultValue={defaultTab}
       >
         <DialogHeader className="gap-2 bg-muted">
-          <div className="flex gap-2 justify-between">
-            <div className="flex flex-row gap-2 items-center p-4">
-              <Logo className="size-8" />
+          <div className="flex gap-2 justify-between p-4">
+            <div className="flex flex-row gap-2 items-center">
+              <Logo className="size-6" />
               <div className="flex flex-col gap-2">
                 <DialogTitle className="text-primary text-xl">
                   Your Wallet
@@ -88,36 +92,23 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
             <div className="h-[34px] border-b flex-1 min-w-2" />
           </TabsList>
         </DialogHeader>
-
-        <TabsContent
-          value="wallet"
-          className="px-4 w-full overflow-hidden mt-0"
-        >
-          <EmbeddedWalletContent
+        {chain === Chain.SOLANA ? (
+          connectedWallets.solanaAddress ? (
+            <ConnectedWalletTabsContent
+              user={user}
+              address={connectedWallets.solanaAddress}
+            />
+          ) : (
+            <ChainNotConnected />
+          )
+        ) : connectedWallets.evmAddress ? (
+          <ConnectedWalletTabsContent
             user={user}
-            connectedWallets={connectedWallets}
+            address={connectedWallets.evmAddress}
           />
-        </TabsContent>
-        <TabsContent
-          value="deposit"
-          className="px-4 w-full overflow-hidden mt-0"
-        >
-          <Deposit connectedWallets={connectedWallets} />
-        </TabsContent>
-        {/* <TabsContent
-          value="withdraw"
-          className="px-4 w-full overflow-hidden mt-0"
-        >
-          <Withdraw accountAddress={address} />
-        </TabsContent>
-        {user && (
-          <TabsContent
-            value="export"
-            className="px-4 w-full overflow-hidden mt-0"
-          >
-            <ExportWallet accountAddress={address} />
-          </TabsContent>
-        )} */}
+        ) : (
+          <ChainNotConnected />
+        )}
       </Tabs>
       <DialogFooter className="bg-muted border-t p-4">
         <p className="text-xs text-muted-foreground text-center">

@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext } from 'react';
 
 import type { UiWalletAccount, UiWallet } from '@wallet-standard/react';

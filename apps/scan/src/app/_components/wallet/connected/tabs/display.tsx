@@ -23,14 +23,11 @@ import type { User } from '@coinbase/cdp-hooks';
 import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 interface Props {
-  connectedWallets: ConnectedWallets;
+  address: string;
   user?: User;
 }
 
-export const EmbeddedWalletContent: React.FC<Props> = ({
-  user,
-  connectedWallets,
-}) => {
+export const WalletContent: React.FC<Props> = ({ user, address }) => {
   const { data: balance, isLoading } = useBalance();
 
   const { data: session, status } = useSession();
@@ -68,44 +65,12 @@ export const EmbeddedWalletContent: React.FC<Props> = ({
           )
         }
       />
-      {connectedWallets.evmAddress ? (
-        <ItemContainer
-          label="Ethereum Address"
-          value={
-            <CopyCode
-              code={connectedWallets.evmAddress}
-              toastMessage="Address copied to clipboard"
-            />
-          }
-        />
-      ) : (
-        <div
-          className={
-            'flex items-center w-full border rounded-md overflow-hidden pl-2 pr-1 py-1 bg-muted'
-          }
-        >
-          Not Connected
-        </div>
-      )}
-      {connectedWallets.solanaAddress ? (
-        <ItemContainer
-          label="Solana Address"
-          value={
-            <CopyCode
-              code={connectedWallets.solanaAddress}
-              toastMessage="Address copied to clipboard"
-            />
-          }
-        />
-      ) : (
-        <div
-          className={
-            'flex items-center w-full border rounded-md overflow-hidden pl-2 pr-1 py-1 bg-muted'
-          }
-        >
-          Not Connected
-        </div>
-      )}
+      <ItemContainer
+        label="Address"
+        value={
+          <CopyCode code={address} toastMessage="Address copied to clipboard" />
+        }
+      />
       {user?.authenticationMethods.email?.email && (
         <AuthenticationMethod
           label="Email"
