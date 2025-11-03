@@ -229,9 +229,7 @@ export async function GET(request: NextRequest) {
 
     // Filter timeframes if requested
     const timeframesToWarm = onlyAllTime
-      ? CACHE_WARMABLE_TIMEFRAMES.filter(
-          tf => tf === ActivityTimeframe.AllTime
-        )
+      ? CACHE_WARMABLE_TIMEFRAMES.filter(tf => tf === ActivityTimeframe.AllTime)
       : CACHE_WARMABLE_TIMEFRAMES;
 
     console.log(
@@ -244,7 +242,7 @@ export async function GET(request: NextRequest) {
 
       // Calculate date range based on timeframe
       // Note: For All Time, we lag firstTransfer by CACHE_DURATION_MINUTES because
-      // the frontend applies this lag when computing relative timeframes. 
+      // the frontend applies this lag when computing relative timeframes.
       const startDate =
         timeframe === ActivityTimeframe.AllTime
           ? subMinutes(firstTransfer, CACHE_DURATION_MINUTES)
