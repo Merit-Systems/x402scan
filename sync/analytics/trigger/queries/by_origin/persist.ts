@@ -9,7 +9,7 @@ export async function persistMetrics(data: unknown) {
 
     logger.log('Fetched metrics from analytics', { count: metrics.length });
 
-    const domainToOriginId = new Map<string, string>();
+    const originMap = new Map<string, string>();
 
     for (const metric of metrics) {
       const origin = await db.resourceOrigin.findFirst({
@@ -26,15 +26,15 @@ export async function persistMetrics(data: unknown) {
       });
 
       if (origin) {
-        domainToOriginId.set(metric.origin, origin.id);
+        originMap.set(metric.origin, origin.id);
       }
     }
 
     const metricsWithOriginId = metrics
       .map(metric => {
-        const originId = domainToOriginId.get(metric.origin);
+        const originId = originMap.get(metric.origin);
         if (!originId) {
-          logger.warn('No ResourceOrigin found for domain', { domain: metric.origin });
+          logger.warn('No ResourceOrigin found for origin', { origin: metric.origin });
           return null;
         }
         return {
