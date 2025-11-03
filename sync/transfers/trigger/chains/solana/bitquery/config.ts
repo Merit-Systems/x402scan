@@ -1,4 +1,7 @@
-import { USDC_MULTIPLIER } from '@/trigger/lib/constants';
+import {
+  ONE_MINUTE_IN_SECONDS,
+  USDC_MULTIPLIER,
+} from '@/trigger/lib/constants';
 import {
   SyncConfig,
   Facilitator,
@@ -86,8 +89,8 @@ function transformResponse(
 }
 
 export const solanaChainConfig: SyncConfig = {
-  cron: '0 * * * *',
-  maxDurationInSeconds: 300,
+  cron: '*/10 * * * *',
+  maxDurationInSeconds: ONE_MINUTE_IN_SECONDS * 10,
   chain: 'solana',
   provider: QueryProvider.BITQUERY,
   apiUrl: 'https://graphql.bitquery.io',
