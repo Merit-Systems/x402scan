@@ -1,5 +1,5 @@
 import { Network } from '../types';
-import { USDC_BASE_TOKEN } from '../constants';
+import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
 import type { Facilitator, FacilitatorConfig } from '../types';
 
@@ -37,6 +37,13 @@ export const codenutFacilitator = {
         address: '0x88E13D4c764a6c840Ce722A0a3765f55A85b327E',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-31'),
+      },
+    ],
+    [Network.SOLANA]: [
+      {
+        address: 'HsozMJWWHNADoZRmhDGKzua6XW6NNfNDdQ4CkE9i5wHt',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-03'),
       },
     ],
   },
