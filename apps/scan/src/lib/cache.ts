@@ -5,8 +5,9 @@ import { getRedisClient } from './redis';
 /**
  * Global cache duration in minutes
  * This should match the interval used for date rounding to prevent cache fragmentation
+ * IMPORTANT: This value must match the cron schedule in vercel.json (/api/cron/warm-cache)
  */
-const CACHE_DURATION_MINUTES = 5;
+export const CACHE_DURATION_MINUTES = 5;
 const CACHE_DURATION_SECONDS = CACHE_DURATION_MINUTES * 60;
 
 /**

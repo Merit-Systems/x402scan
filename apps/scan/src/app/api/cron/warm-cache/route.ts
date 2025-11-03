@@ -9,6 +9,7 @@ import {
 } from '@/types/timeframes';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { facilitatorAddresses } from '@/lib/facilitators';
+import { CACHE_DURATION_MINUTES } from '@/lib/cache';
 
 import type { NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
@@ -220,7 +221,6 @@ export async function GET(request: NextRequest) {
   try {
     const startTime = Date.now();
     const endDate = new Date();
-    const limit = 100;
     const timeframesWarmed: Record<string, number> = {};
 
     console.log(
@@ -262,9 +262,21 @@ export async function GET(request: NextRequest) {
     }
 
     const totalElapsed = Date.now() - startTime;
+    const totalElapsedMinutes = totalElapsed / 1000 / 60;
+
     console.log(
-      `[Cache Warming] Completed all timeframes in ${totalElapsed}ms`
+      `[Cache Warming] Completed all timeframes in ${totalElapsed}ms (${totalElapsedMinutes.toFixed(2)} minutes)`
     );
+
+    // Warn if cache warming took longer than the cache duration
+    const cacheDurationMs = CACHE_DURATION_MINUTES * 60 * 1000;
+    if (totalElapsed > cacheDurationMs) {
+      console.warn(
+        `[Cache Warming] WARNING: Cache warming took ${totalElapsedMinutes.toFixed(2)} minutes, ` +
+          `which exceeds CACHE_DURATION_MINUTES (${CACHE_DURATION_MINUTES} minutes). ` +
+          `This may cause cache misses between warming cycles. Consider optimizing queries or increasing the interval.`
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -273,8 +285,13 @@ export async function GET(request: NextRequest) {
       timeframesWarmed: Object.keys(timeframesWarmed).length,
       timings: {
         total: totalElapsed,
+        totalMinutes: totalElapsedMinutes,
         byTimeframe: timeframesWarmed,
       },
+      warning:
+        totalElapsed > cacheDurationMs
+          ? `Cache warming exceeded ${CACHE_DURATION_MINUTES} minute interval`
+          : undefined,
     });
   } catch (error) {
     console.error('[Cache Warming] Error warming cache:', error);
