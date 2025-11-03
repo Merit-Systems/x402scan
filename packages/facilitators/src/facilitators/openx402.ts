@@ -10,7 +10,7 @@ export const openx402: FacilitatorConfig = {
 export const openx402Facilitator = {
   id: 'openx402',
   metadata: {
-    name: 'OpenX402',
+    name: 'OpenX402.ai',
     image: 'https://x402scan.com/openx402.png',
     docsUrl: 'https://openx402.ai',
     color: '##000000',
