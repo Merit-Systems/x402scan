@@ -32,13 +32,13 @@ function buildQuery(
           }
           amount: {gt: 0}
           signer: {
-            in: ${JSON.stringify(facilitatorConfig.address)}
+            is: ${JSON.stringify(facilitatorConfig.address)}
           }
           currency: {is: ${JSON.stringify(facilitatorConfig.token.address)}}
         ) {
           block {
             timestamp {
-              time(format: "%Y-%m-%d %H:%M:%S")
+              time
             }
             height
           }
@@ -79,13 +79,12 @@ function transformResponse(
     sender: transfer.sender.address,
     recipient: transfer.receiver.address,
     amount: Math.round(parseFloat(transfer.amount) * USDC_MULTIPLIER),
-    block_timestamp: new Date(transfer.block.timestamp.time + 'Z'), // Append 'Z' to parse as UTC
+    block_timestamp: new Date(transfer.block.timestamp.time), // BitQuery returns ISO format with Z
     tx_hash: transfer.transaction.signature,
     chain: config.chain,
     provider: config.provider,
     decimals: facilitatorConfig.token.decimals,
     facilitator_id: facilitator.id,
-    log_index: 0, // TODO(shafu): this breaks batching! we need better db constraints
   }));
 }
 
