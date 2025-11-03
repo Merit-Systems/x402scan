@@ -166,9 +166,11 @@ export const resourcesRouter = createTRPCRouter({
       };
     }),
   tags: {
-    list: publicProcedure.input(listTagsSchema.optional()).query(async ({ input }) => {
-      return await listTags(input ?? { filterTags: [] });
-    }),
+    list: publicProcedure
+      .input(listTagsSchema.optional())
+      .query(async ({ input }) => {
+        return await listTags(input ?? { filterTags: [] });
+      }),
 
     getByResource: publicProcedure.input(z.uuid()).query(async ({ input }) => {
       return await listResourceTags(input);
