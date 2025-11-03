@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "DomainMetrics" (
+CREATE TABLE "DomainMetrics" ( -- Origin (origin id)
     "id" TEXT NOT NULL,
     "domain" TEXT NOT NULL,
     "totalCount1h" INTEGER,
@@ -48,8 +48,12 @@ CREATE TABLE "DomainMetrics" (
     CONSTRAINT "DomainMetrics_pkey" PRIMARY KEY ("id")
 );
 
+-- NOTE: add resource id, prisma create, connect thingy
+-- 200 ranges
+-- 400 ranges
+
 -- CreateTable
-CREATE TABLE "UrlMetrics" (
+CREATE TABLE "UrlMetrics" ( -- Resource
     "id" TEXT NOT NULL,
     "url" TEXT NOT NULL,
     "totalCount1h" INTEGER,
