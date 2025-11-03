@@ -11,6 +11,7 @@ import {
   openx402Facilitator,
   f402104Facilitator,
   xechoFacilitator,
+  defibudFacilitator
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -30,6 +31,7 @@ const FACILITATORS = validateUniqueFacilitators([
   openx402Facilitator,
   f402104Facilitator,
   xechoFacilitator,
+  defibudFacilitator
 ]);
 
 export const allFacilitators: Facilitator[] =
