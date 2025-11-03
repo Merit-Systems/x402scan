@@ -5,7 +5,7 @@ export const ecosystemCategories = [
   'Services/Endpoints',
   'Infrastructure & Tooling',
   'Learning & Community Resources',
-  'Facilitators'
+  'Facilitators',
 ] as const;
 
 export type EcosystemCategory = (typeof ecosystemCategories)[number];
