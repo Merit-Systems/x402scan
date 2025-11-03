@@ -80,7 +80,7 @@ await Promise.all(
 This package includes pre-configured integrations for the following X402 facilitators:
 
 | Facilitator    | Networks      | Discovery | Setup Required                 |
-| -------------- | ------------- | --------- | ------------------------------ |
+|----------------| ------------- | --------- | ------------------------------ |
 | **Coinbase**   | BASE, SOLANA  | ✅ Yes    | No - uses `@coinbase/x402` SDK |
 | **AurraCloud** | BASE          | ✅ Yes    | Yes - API key                  |
 | **thirdweb**   | BASE          | ✅ Yes    | Yes - Secret key & wallet      |
@@ -94,6 +94,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Questflow**  | BASE          | ✅ Yes    | Yes - API key                  |
 | **xEcho**      | BASE          | No        | No                             |
 | **CodeNut**    | BASE          | No        | No                             |
+| **Naven**      | BASE          | No        | No                             |
 
 ### Import Individual Facilitators
 
