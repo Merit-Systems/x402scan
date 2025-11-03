@@ -35,7 +35,7 @@ export async function persistMetrics(data: unknown): Promise<Prisma.BatchPayload
         ...mapMetric(metric),
       };
     })
-    .filter((m): m is NonNullable<typeof m> => m !== null);
+    .filter(m => m !== null);
 
   if (metricsWithResourceId.length === 0) {
     return { count: 0 };

@@ -5,7 +5,7 @@ import { persistMetrics } from './persist';
 export const syncAnalyticsMetricsByUrlTask = createAnalyticsSyncTask({
   name: 'metrics-by-resource',
   cron: '0 * * * *',
-  maxDuration: 1800, // 30 minutes
+  maxDuration: 600, // seconds
   machine: 'small-1x',
   query: METRICS_BY_RESOURCE_QUERY,
   persist: persistMetrics,
