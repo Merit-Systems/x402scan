@@ -85,6 +85,7 @@ function transformResponse(
     provider: config.provider,
     decimals: facilitatorConfig.token.decimals,
     facilitator_id: facilitator.id,
+    log_index: 0, // TODO(shafu): this breaks batching! we need better db constraints
   }));
 }
 
