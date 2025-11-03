@@ -95,6 +95,7 @@ model Resources {
   requestMetadata             ResourceRequestMetadata?
   toolCalls                   ToolCall[]
   excluded                    ExcludedResource?
+  metrics                     ResourceMetrics[]
 }
 
 enum AcceptsScheme {
@@ -159,6 +160,7 @@ model ResourceOrigin {
 
   resources Resources[]
   ogImages  OgImage[]
+  originMetrics OriginMetrics[]
 }
 
 model ResourceResponse {
@@ -387,9 +389,9 @@ model UserAcknowledgement {
   @@map("UserAcknowledgement")
 }
 
-model ResourceDomainMetrics {
+model OriginMetrics {
   id                  String   @id @default(uuid())
-  domain              String
+  originId            String
   totalCount1h        Int?
   totalCount6h        Int?
   totalCount24h       Int?
@@ -461,14 +463,16 @@ model ResourceDomainMetrics {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  @@map("ResourceDomainMetrics")
-  @@index([domain])
-  @@index([domain, createdAt])
+  origin ResourceOrigin @relation(fields: [originId], references: [id], onDelete: Cascade)
+
+  @@map("OriginMetrics")
+  @@index([originId])
+  @@index([originId, createdAt])
 }
 
-model ResourceUrlMetrics {
+model ResourceMetrics {
   id                  String   @id @default(uuid())
-  url                 String
+  resourceId          String
   totalCount1h        Int?
   totalCount6h        Int?
   totalCount24h       Int?
@@ -540,7 +544,9 @@ model ResourceUrlMetrics {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  @@map("ResourceUrlMetrics")
-  @@index([url])
-  @@index([url, createdAt])
+  resource            Resources @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@map("ResourceMetrics")
+  @@index([resourceId])
+  @@index([resourceId, createdAt])
 }
