@@ -43,6 +43,7 @@ export type Metrics = {
   count_2xx_6h: number;
   count_2xx_24h: number;
   count_2xx_3d: number;
+  count_2xx_7d: number;
   count_2xx_15d: number;
   count_2xx_30d: number;
   count_2xx_all_time: number;
@@ -50,6 +51,7 @@ export type Metrics = {
   count_3xx_6h: number;
   count_3xx_24h: number;
   count_3xx_3d: number;
+  count_3xx_7d: number;
   count_3xx_15d: number;
   count_3xx_30d: number;
   count_3xx_all_time: number;
@@ -57,6 +59,7 @@ export type Metrics = {
   count_4xx_6h: number;
   count_4xx_24h: number;
   count_4xx_3d: number;
+  count_4xx_7d: number;
   count_4xx_15d: number;
   count_4xx_30d: number;
   count_4xx_all_time: number;
@@ -64,6 +67,7 @@ export type Metrics = {
   count_5xx_6h: number;
   count_5xx_24h: number;
   count_5xx_3d: number;
+  count_5xx_7d: number;
   count_5xx_15d: number;
   count_5xx_30d: number;
   count_5xx_all_time: number;
