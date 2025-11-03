@@ -58,31 +58,52 @@ If you know of a resource that is not yet listed, you can add it by visiting [ht
 
 ### Add Facilitators
 
-If you know of another facilitator that is not listed, you can add it to [`facilitators/config.ts`](https://github.com/Merit-Systems/x402scan/blob/main/facilitators/config.ts) and the dashboard will automatically update.
+If you know of another facilitator that is not listed, you can add it by following these steps:
 
 To add a new facilitator:
 
-1. Add the facilitator logo to `facilitators/images/`
-2. Add the facilitator configuration to the `_FACILITATORS` array in `facilitators/config.ts`:
+1. Add the facilitator logo to `apps/scan/public/` (e.g., `my-facilitator.png`)
+
+2. Create a new facilitator file in `packages/facilitators/src/facilitators/` (e.g., `my-facilitator.ts`):
 
 ```typescript
-{
+import { Network } from '../types';
+import { USDC_BASE_TOKEN } from '../constants';
+import type { Facilitator, FacilitatorConfig } from '../types';
+
+export const myFacilitator: FacilitatorConfig = {
+  url: 'https://facilitator.my-facilitator.com',
+};
+
+export const myFacilitatorFacilitator = {
   id: 'my-facilitator',
-  name: 'My Facilitator',
-  image: '/my-facilitator.png',
-  link: 'https://my-facilitator.com',
-  color: 'var(--color-blue-600)',
+  metadata: {
+    name: 'My Facilitator',
+    image: 'https://x402scan.com/my-facilitator.png',
+    docsUrl: 'https://my-facilitator.com',
+    color: '#6366F1',
+  },
+  config: myFacilitator,
   addresses: {
-    [Chain.BASE]: [
+    [Network.BASE]: [
       {
         address: '0x...', // Your facilitator address
-        token: USDC_BASE_TOKEN,
-        syncStartDate: new Date('2025-01-01'),
-        enabled: true,
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-01-01'),
       },
     ],
   },
-}
+} as const satisfies Facilitator;
 ```
 
-3. Run `pnpm check:facilitators` to validate your changes
+3. Export it in `packages/facilitators/src/facilitators/index.ts`:
+
+```typescript
+export { myFacilitator, myFacilitatorFacilitator } from './my-facilitator';
+```
+
+4. Add it to the list in `packages/facilitators/src/lists/all.ts`:
+   - Import: `import { myFacilitatorFacilitator } from '../facilitators';`
+   - Add to `FACILITATORS` array: `myFacilitatorFacilitator,`
+
+5. Run `pnpm check:types` to validate your changes

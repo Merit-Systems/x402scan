@@ -12,3 +12,4 @@ export { f402104, f402104Facilitator } from './402104';
 export { questflow, questflowFacilitator } from './questflow';
 export { xecho, xechoFacilitator } from './xecho';
 export { codenut, codenutFacilitator } from './codenut';
+export { altlayer, altlayerFacilitator } from './altlayer';
