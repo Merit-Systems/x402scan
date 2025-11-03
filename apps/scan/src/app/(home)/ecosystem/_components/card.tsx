@@ -46,8 +46,9 @@ const Badge = ({ category }: { category: EcosystemCategory }) => {
   const categoryClassName: Record<EcosystemCategory, string> = {
     'Client-Side Integrations': 'bg-blue-600/10 border-blue-600',
     'Services/Endpoints': 'bg-green-600/10 border-green-600',
-    'Ecosystem Infrastructure & Tooling': 'bg-purple-600/10 border-purple-600',
+    'Infrastructure & Tooling': 'bg-purple-600/10 border-purple-600',
     'Learning & Community Resources': 'bg-orange-600/10 border-orange-600',
+    'Facilitators': 'bg-red-600/10 border-red-600',
   };
 
   return (
