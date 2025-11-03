@@ -2,8 +2,9 @@ import { db } from '@/services/db';
 import { logger } from '@trigger.dev/sdk';
 import { MetricsByOrigin } from '../types';
 import { mapMetric } from '../utils';
+import { Prisma } from '@prisma/client';
 
-export async function persistMetrics(data: unknown) {
+export async function persistMetrics(data: unknown): Promise<Prisma.BatchPayload> {
   const metrics: MetricsByOrigin[] = data as MetricsByOrigin[];
 
   const originToId = new Map<string, string>();
@@ -44,7 +45,7 @@ export async function persistMetrics(data: unknown) {
     .filter(m => m !== null);
 
   if (metricsWithOriginId.length === 0) {
-    return;
+    return { count: 0 };
   }
 
   return await db.resourceOriginMetrics.createMany({

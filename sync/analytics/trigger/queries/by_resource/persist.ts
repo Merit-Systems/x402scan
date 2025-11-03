@@ -2,8 +2,9 @@ import { db } from '@/services/db';
 import { logger } from '@trigger.dev/sdk';
 import { MetricsByResource } from '../types';
 import { mapMetric } from '../utils';
+import { Prisma } from '@prisma/client';
 
-export async function persistMetrics(data: unknown) {
+export async function persistMetrics(data: unknown): Promise<Prisma.BatchPayload> {
   const metrics: MetricsByResource[] = data as MetricsByResource[];
   const resources = metrics.map(m => m.resource);
   const resourcesInDb = await db.resources.findMany({
@@ -37,7 +38,7 @@ export async function persistMetrics(data: unknown) {
     .filter((m): m is NonNullable<typeof m> => m !== null);
 
   if (metricsWithResourceId.length === 0) {
-    return;
+    return { count: 0 };
   }
   return await db.resourceMetrics.createMany({
     data: metricsWithResourceId,
