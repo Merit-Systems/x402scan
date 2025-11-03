@@ -16,16 +16,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useMutation } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 
-import type { User } from '@coinbase/cdp-hooks';
-import type { Address } from 'viem';
 import { useDisconnect } from 'wagmi';
+import { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
+
+import type { User } from '@coinbase/cdp-hooks';
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 interface Props {
-  address: Address;
+  connectedWallets: ConnectedWallets;
   user?: User;
 }
 
-export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
+export const EmbeddedWalletContent: React.FC<Props> = ({
+  user,
+  connectedWallets,
+}) => {
   const { data: balance, isLoading } = useBalance();
 
   const { data: session, status } = useSession();
@@ -33,6 +38,7 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
   const { isInitialized } = useIsInitialized();
   const { currentUser } = useCurrentUser();
   const { signOut: signOutWallet } = useSignOut();
+  const { disconnect } = useSolanaWallet();
 
   const { disconnectAsync } = useDisconnect();
 
@@ -42,6 +48,7 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
         await signOutWallet();
       } else {
         await disconnectAsync();
+        disconnect();
       }
       if (session) {
         await signOut();
@@ -61,12 +68,44 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
           )
         }
       />
-      <ItemContainer
-        label="Address"
-        value={
-          <CopyCode code={address} toastMessage="Address copied to clipboard" />
-        }
-      />
+      {connectedWallets.evmAddress ? (
+        <ItemContainer
+          label="Ethereum Address"
+          value={
+            <CopyCode
+              code={connectedWallets.evmAddress}
+              toastMessage="Address copied to clipboard"
+            />
+          }
+        />
+      ) : (
+        <div
+          className={
+            'flex items-center w-full border rounded-md overflow-hidden pl-2 pr-1 py-1 bg-muted'
+          }
+        >
+          Not Connected
+        </div>
+      )}
+      {connectedWallets.solanaAddress ? (
+        <ItemContainer
+          label="Solana Address"
+          value={
+            <CopyCode
+              code={connectedWallets.solanaAddress}
+              toastMessage="Address copied to clipboard"
+            />
+          }
+        />
+      ) : (
+        <div
+          className={
+            'flex items-center w-full border rounded-md overflow-hidden pl-2 pr-1 py-1 bg-muted'
+          }
+        >
+          Not Connected
+        </div>
+      )}
       {user?.authenticationMethods.email?.email && (
         <AuthenticationMethod
           label="Email"

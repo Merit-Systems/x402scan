@@ -35,6 +35,7 @@ import { ChainSelector } from './_components/layout/navbar/chain-selector';
 import { connection } from 'next/server';
 
 import './globals.css';
+import { SolanaWalletProvider } from './_contexts/solana/provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -134,52 +135,54 @@ export default async function RootLayout({
               <SearchProvider>
                 <CDPHooksProvider>
                   <WagmiProvider>
-                    <PostHogProvider>
-                      <ThemeProvider
-                        attribute="class"
-                        defaultTheme="light"
-                        storageKey="x402scan-theme"
-                        enableSystem={true}
-                      >
-                        <div className="min-h-screen flex flex-col relative">
-                          <LogoContainer>
-                            <Link href="/" prefetch={false}>
-                              <Logo className="size-full aspect-square" />
-                            </Link>
-                          </LogoContainer>
-                          <header className="w-full flex flex-col pt-4 justify-center bg-card">
-                            <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
-                              <div className="pl-8 md:pl-8 flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                                {breadcrumbs}
+                    <SolanaWalletProvider>
+                      <PostHogProvider>
+                        <ThemeProvider
+                          attribute="class"
+                          defaultTheme="light"
+                          storageKey="x402scan-theme"
+                          enableSystem={true}
+                        >
+                          <div className="min-h-screen flex flex-col relative">
+                            <LogoContainer>
+                              <Link href="/" prefetch={false}>
+                                <Logo className="size-full aspect-square" />
+                              </Link>
+                            </LogoContainer>
+                            <header className="w-full flex flex-col pt-4 justify-center bg-card">
+                              <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
+                                <div className="pl-8 md:pl-8 flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                                  {breadcrumbs}
+                                </div>
+                                <div className="flex items-center gap-1 md:gap-2">
+                                  <ChainSelector />
+                                  <NavbarSearchButton />
+                                  <NavbarAuthButton />
+                                  <a
+                                    href="https://github.com/Merit-Systems/x402scan"
+                                    target="_blank"
+                                  >
+                                    <Button variant="outline" size={'icon'}>
+                                      <Image
+                                        src="/github.png"
+                                        alt="GitHub"
+                                        width={16}
+                                        height={16}
+                                        className="size-4"
+                                      />
+                                    </Button>
+                                  </a>
+                                  <AnimatedThemeToggler />
+                                </div>
                               </div>
-                              <div className="flex items-center gap-1 md:gap-2">
-                                <ChainSelector />
-                                <NavbarSearchButton />
-                                <NavbarAuthButton />
-                                <a
-                                  href="https://github.com/Merit-Systems/x402scan"
-                                  target="_blank"
-                                >
-                                  <Button variant="outline" size={'icon'}>
-                                    <Image
-                                      src="/github.png"
-                                      alt="GitHub"
-                                      width={16}
-                                      height={16}
-                                      className="size-4"
-                                    />
-                                  </Button>
-                                </a>
-                                <AnimatedThemeToggler />
-                              </div>
+                            </header>
+                            <div className="bg-background flex-1 flex flex-col">
+                              {children}
                             </div>
-                          </header>
-                          <div className="bg-background flex-1 flex flex-col">
-                            {children}
                           </div>
-                        </div>
-                      </ThemeProvider>
-                    </PostHogProvider>
+                        </ThemeProvider>
+                      </PostHogProvider>
+                    </SolanaWalletProvider>
                   </WagmiProvider>
                 </CDPHooksProvider>
               </SearchProvider>

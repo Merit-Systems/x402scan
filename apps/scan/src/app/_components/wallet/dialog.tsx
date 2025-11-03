@@ -3,9 +3,13 @@
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { useCurrentUser } from '@coinbase/cdp-hooks';
 import { useAccount } from 'wagmi';
-import { DisplayWalletDialogContent } from './display';
+import { DisplayWalletDialogContent } from './connected';
 import { ConnectWalletDialogContent } from './connect';
 import { useSearchParams } from 'next/navigation';
+import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
+import { WalletChainProvider } from './connected/chain-context/provider';
+
+import { useSolanaStandardWallets } from '@coinbase/cdp-solana-standard-wallet';
 
 interface Props {
   children: React.ReactNode;
@@ -14,7 +18,7 @@ interface Props {
 export const WalletDialog: React.FC<Props> = ({ children }) => {
   const searchParams = useSearchParams();
 
-  const { address } = useAccount();
+  const connectedWallets = useConnectedWallets();
 
   const { currentUser } = useCurrentUser();
 
@@ -25,14 +29,16 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
         className="p-0 overflow-hidden sm:max-w-md"
         showCloseButton={false}
       >
-        {address ? (
-          <DisplayWalletDialogContent
-            address={address}
-            user={currentUser ?? undefined}
-            defaultTab={
-              searchParams.get('onramp') === 'true' ? 'deposit' : 'wallet'
-            }
-          />
+        {connectedWallets.isConnected ? (
+          <WalletChainProvider connectedWallets={connectedWallets}>
+            <DisplayWalletDialogContent
+              connectedWallets={connectedWallets}
+              user={currentUser ?? undefined}
+              defaultTab={
+                searchParams.get('onramp') === 'true' ? 'deposit' : 'wallet'
+              }
+            />
+          </WalletChainProvider>
         ) : (
           <ConnectWalletDialogContent />
         )}
