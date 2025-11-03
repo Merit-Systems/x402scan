@@ -151,7 +151,7 @@ export const ecosystemItems: EcosystemItem[] = [
   {
     name: 'Onchain',
     description:
-      'Onchain is x402\'s Intelligent Intermediary Layer for Aggregating Facilitators.',
+      "Onchain is x402's Intelligent Intermediary Layer for Aggregating Facilitators.",
     logoUrl: 'https://www.x402.org/logos/onchain.png',
     websiteUrl: 'https://onchain.fi',
     category: 'Services/Endpoints',
