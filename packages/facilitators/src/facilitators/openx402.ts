@@ -46,17 +46,7 @@ export const openx402Facilitator = {
         address: '0x97316fa4730bc7d3b295234f8e4d04a0a4c093e8',
         tokens: [USDC_POLYGON_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-01'),
-      },
-      {
-        address: '0x97db9b5291a218fc77198c285cefdc943ef74917',
-        tokens: [USDC_POLYGON_TOKEN],
-        dateOfFirstTransaction: new Date('2025-11-01'),
-      },
-      {
-        address: '0x241b91ba395da56B3b6cc816138C20db6c6B37D3',
-        tokens: [USDC_POLYGON_TOKEN],
-        dateOfFirstTransaction: new Date('2025-11-01'),
-      },
+      }
     ],
   },
 } as const satisfies Facilitator;
