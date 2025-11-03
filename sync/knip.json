@@ -1,6 +1,0 @@
-{
-  "entry": ["trigger/**/*.ts", "db/**/*.ts", "trigger.config.ts"],
-  "project": ["**/*.ts"],
-  "ignore": ["generated/**", "node_modules/**"],
-  "ignoreDependencies": ["@prisma/client", "p-limit", "@trigger.dev/build"]
-}

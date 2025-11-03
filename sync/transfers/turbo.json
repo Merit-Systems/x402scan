@@ -1,0 +1,16 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "lint": {
+      "env": [
+        "DATABASE_URL",
+        "SOLANA_RPC_URL",
+        "GOOGLE_CLOUD_CREDENTIALS",
+        "BITQUERY_API_KEY",
+        "CDP_API_KEY_ID",
+        "CDP_API_KEY_SECRET"
+      ]
+    }
+  }
+}
