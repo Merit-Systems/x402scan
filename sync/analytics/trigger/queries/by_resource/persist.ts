@@ -4,7 +4,9 @@ import { MetricsByResource } from '../types';
 import { mapMetric } from '../utils';
 import { Prisma } from '@prisma/client';
 
-export async function persistMetrics(data: unknown): Promise<Prisma.BatchPayload> {
+export async function persistMetrics(
+  data: unknown
+): Promise<Prisma.BatchPayload> {
   const metrics: MetricsByResource[] = data as MetricsByResource[];
   const resources = metrics.map(m => m.resource);
   const resourcesInDb = await db.resources.findMany({
