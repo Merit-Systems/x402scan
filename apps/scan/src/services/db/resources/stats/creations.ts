@@ -1,7 +1,7 @@
 import z from 'zod';
 import { Prisma } from '@prisma/client';
 
-import { resourceBucketedQuerySchema } from './schemas';
+import type { resourceBucketedQuerySchema } from './schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { prisma } from '@/services/db/client';
 

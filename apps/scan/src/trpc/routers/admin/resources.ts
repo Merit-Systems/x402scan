@@ -35,6 +35,8 @@ import {
 import {
   getBucketedResourceCreations,
   getBucketedToolCalls,
+  getBucketedToolCallsByTags,
+  getBucketedToolCallsByResources,
   resourceBucketedQuerySchema,
 } from '@/services/db/resources/stats';
 
@@ -157,6 +159,18 @@ export const adminResourcesRouter = createTRPCRouter({
       .input(resourceBucketedQuerySchema)
       .query(async ({ input }) => {
         return await getBucketedToolCalls(input);
+      }),
+
+    toolCallsByTags: adminProcedure
+      .input(resourceBucketedQuerySchema)
+      .query(async ({ input }) => {
+        return await getBucketedToolCallsByTags(input);
+      }),
+
+    toolCallsByResources: adminProcedure
+      .input(resourceBucketedQuerySchema)
+      .query(async ({ input }) => {
+        return await getBucketedToolCallsByResources(input);
       }),
   },
 });

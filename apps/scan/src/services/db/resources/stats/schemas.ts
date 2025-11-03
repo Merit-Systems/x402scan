@@ -8,4 +8,3 @@ export const resourceBucketedQuerySchema = z.object({
   tagIds: z.array(z.string()).optional(),
 });
 
-export type ResourceBucketedQuery = z.infer<typeof resourceBucketedQuerySchema>;

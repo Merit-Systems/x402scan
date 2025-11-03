@@ -8,5 +8,3 @@ export const MAIN_TAGS = {
   Random:
     'Any tool which does something lighthearted or fun, such as a joke or a meme generator.',
 } as const;
-
-export type MainTag = keyof typeof MAIN_TAGS;

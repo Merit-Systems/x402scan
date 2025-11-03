@@ -1,7 +1,7 @@
 export { getBucketedResourceCreations } from './creations';
-export { getBucketedResourceInvocations } from './invocations';
 export { getBucketedToolCalls } from './tool-calls';
+export { getBucketedToolCallsByTags } from './tool-calls-by-tags';
+export { getBucketedToolCallsByResources } from './tool-calls-by-resources';
 export {
   resourceBucketedQuerySchema,
-  type ResourceBucketedQuery,
 } from './schemas';

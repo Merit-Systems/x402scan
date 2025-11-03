@@ -5,14 +5,20 @@ import type { resourceBucketedQuerySchema } from './schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { prisma } from '@/services/db/client';
 
-const bucketedToolCallsResultSchema = z.array(
+const bucketedToolCallsByResourcesResultSchema = z.array(
   z.object({
     bucket_start: z.date(),
-    total_tool_calls: z.number(),
+    resources: z.record(
+      z.string(),
+      z.object({
+        resource_name: z.string(),
+        total_tool_calls: z.number(),
+      })
+    ),
   })
 );
 
-const getBucketedToolCallsUncached = async (
+const getBucketedToolCallsByResourcesUncached = async (
   input: z.infer<typeof resourceBucketedQuerySchema>
 ) => {
   const { startDate, endDate, numBuckets, tagIds } = input;
@@ -27,11 +33,10 @@ const getBucketedToolCallsUncached = async (
   const tagFilterClause =
     tagIds && tagIds.length > 0
       ? Prisma.sql`
-        AND tc."resourceId" IN (
-          SELECT r.id
-          FROM "Resources" r
-          INNER JOIN "ResourcesTags" rt ON rt."resourceId" = r.id
-          WHERE rt."tagId" IN (${Prisma.join(tagIds)})
+        AND r.id IN (
+          SELECT "resourceId"
+          FROM "ResourcesTags"
+          WHERE "tagId" IN (${Prisma.join(tagIds)})
         )
       `
       : Prisma.empty;
@@ -51,33 +56,54 @@ const getBucketedToolCallsUncached = async (
         to_timestamp(
           floor(extract(epoch from tc."createdAt") / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
         ) AS bucket_start,
+        r.id AS resource_id,
+        r.resource AS resource_name,
         COUNT(*)::int AS total_tool_calls
       FROM "ToolCall" tc
+      INNER JOIN "Resources" r ON tc."resourceId" = r.id
       WHERE tc."createdAt" >= ${startDate}::timestamp
         AND tc."createdAt" <= ${endDate}::timestamp
         ${tagFilterClause}
-      GROUP BY bucket_start
+      GROUP BY bucket_start, r.id, r.resource
     )
     SELECT
       ab.bucket_start,
-      COALESCE(bs.total_tool_calls, 0)::int AS total_tool_calls
+      COALESCE(
+        json_object_agg(
+          bs.resource_id,
+          json_build_object(
+            'resource_name', bs.resource_name,
+            'total_tool_calls', bs.total_tool_calls
+          )
+        ) FILTER (WHERE bs.resource_id IS NOT NULL),
+        '{}'::json
+      ) AS resources
     FROM all_buckets ab
     LEFT JOIN bucket_stats bs ON ab.bucket_start = bs.bucket_start
+    GROUP BY ab.bucket_start
     ORDER BY ab.bucket_start
     LIMIT ${numBuckets}
   `;
 
-  const rawResult =
-    await prisma.$queryRaw<
-      Array<{ bucket_start: Date; total_tool_calls: number }>
-    >(sql);
+  const rawResult = await prisma.$queryRaw<
+    Array<{
+      bucket_start: Date;
+      resources: Record<
+        string,
+        {
+          resource_name: string;
+          total_tool_calls: number;
+        }
+      >;
+    }>
+  >(sql);
 
-  return bucketedToolCallsResultSchema.parse(rawResult);
+  return bucketedToolCallsByResourcesResultSchema.parse(rawResult);
 };
 
-export const getBucketedToolCalls = createCachedArrayQuery({
-  queryFn: getBucketedToolCallsUncached,
-  cacheKeyPrefix: 'bucketed-tool-calls',
+export const getBucketedToolCallsByResources = createCachedArrayQuery({
+  queryFn: getBucketedToolCallsByResourcesUncached,
+  cacheKeyPrefix: 'bucketed-tool-calls-by-resources',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['bucket_start'],
   tags: ['resource-statistics', 'resources', 'tool-calls'],

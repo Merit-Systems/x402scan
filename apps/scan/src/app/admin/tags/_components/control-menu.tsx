@@ -100,8 +100,8 @@ export const ControlMenu = ({
   };
 
   const handleRemoveSubTags = () => {
-    if (selectedTagIds.length === 1) {
-      removeSubTagsMutation.mutate(selectedTagIds[0]!);
+    if (selectedTagIds.length === 1 && selectedTagIds[0]) {
+      removeSubTagsMutation.mutate(selectedTagIds[0]);
     }
     setConfirmDialogOpen(null);
   };
