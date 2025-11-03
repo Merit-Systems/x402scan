@@ -1,6 +1,5 @@
 import { Metrics } from './types';
 
-// Helper function to convert values to numbers, handling both string and number types
 function toNumber(value: number | string | null | undefined): number | undefined {
   if (value === null || value === undefined) {
     return undefined;

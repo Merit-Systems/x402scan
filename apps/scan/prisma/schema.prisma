@@ -389,7 +389,7 @@ model UserAcknowledgement {
   @@map("UserAcknowledgement")
 }
 
-model OriginMetrics {
+model ResourceOriginMetrics {
   id                  String   @id @default(uuid())
   originId            String
   totalCount1h        Int?
@@ -465,7 +465,7 @@ model OriginMetrics {
 
   origin ResourceOrigin @relation(fields: [originId], references: [id], onDelete: Cascade)
 
-  @@map("OriginMetrics")
+  @@map("ResourceOriginMetrics")
   @@index([originId])
   @@index([originId, createdAt])
 }
