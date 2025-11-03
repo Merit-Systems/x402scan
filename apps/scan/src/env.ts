@@ -25,6 +25,7 @@ export const env = createEnv({
     TRANSFERS_DB_URL_REPLICA_4: z.url().optional(),
     TRANSFERS_DB_URL_REPLICA_5: z.url().optional(),
     REDIS_URL: z.string().optional(),
+    SOLANA_RPC_URL: z.url().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z

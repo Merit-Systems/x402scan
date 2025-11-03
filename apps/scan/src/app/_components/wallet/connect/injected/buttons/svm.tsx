@@ -1,15 +1,12 @@
-import { Loader2 } from 'lucide-react';
-
 import { useConnect } from '@wallet-standard/react';
-
-import { Button } from '@/components/ui/button';
 
 import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import { cn } from '@/lib/utils';
 
-import type { UiWallet } from '@wallet-standard/react';
 import { ConnectInjectedWalletButton } from './button';
+
+import type { UiWallet } from '@wallet-standard/react';
 
 interface Props {
   className?: string;
@@ -24,10 +21,6 @@ export const ConnectSVMInjectedWalletButtons: React.FC<Props> = ({
   buttonClassName,
   prefix,
 }) => {
-  console.log(
-    wallets.filter(wallet => wallet.chains.includes(`solana:mainnet`))
-  );
-
   return (
     <div className={cn('flex flex-col gap-2 w-full', className)}>
       {wallets.map(wallet => (

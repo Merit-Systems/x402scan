@@ -15,13 +15,13 @@ export const Send: React.FC<Props> = ({ address }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="gap-1 flex items-center">
+      <div className="gap-2 flex items-center">
         <Image
           src={CHAIN_ICONS[chain]}
           alt={CHAIN_LABELS[chain]}
           height={16}
           width={16}
-          className="size-4 inline-block mr-1"
+          className="size-4 inline-block rounded-full"
         />
         <span className="font-bold text-sm">
           Send USDC on {CHAIN_LABELS[chain]}

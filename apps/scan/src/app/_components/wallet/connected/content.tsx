@@ -1,10 +1,11 @@
 import { TabsContent } from '@/components/ui/tabs';
-import { WalletContent } from './tabs/display';
 
-import type { User } from '@coinbase/cdp-hooks';
 import { Deposit } from './tabs/deposit';
 import { Withdraw } from './tabs/withdraw/withdraw';
 import { ExportWallet } from './tabs/export-wallet';
+import { WalletContent } from './tabs/display';
+
+import type { User } from '@coinbase/cdp-hooks';
 
 interface Props {
   user?: User;

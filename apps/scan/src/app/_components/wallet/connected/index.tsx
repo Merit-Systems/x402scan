@@ -11,7 +11,7 @@ import {
 import { Logo } from '@/components/logo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { WalletContent } from './tabs/display';
+import { WalletContent } from './tabs/display/display';
 import { Deposit } from './tabs/deposit';
 
 import { WalletChainSelector } from '../chain-context/selector';

@@ -20,7 +20,7 @@ export const sortingSchema = (sortIds: string[] | readonly string[]) =>
     desc: z.boolean(),
   });
 // Add a Solana address schema
-const solanaAddressSchema = z
+export const solanaAddressSchema = z
   .string()
   .regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/, 'Invalid Solana address')
   .transform(address => address as SolanaAddress);

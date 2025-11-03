@@ -7,20 +7,23 @@ import {
 } from '@coinbase/cdp-hooks';
 import { signOut, useSession } from 'next-auth/react';
 
+import { useMutation } from '@tanstack/react-query';
+
 import { Button } from '@/components/ui/button';
 
 import { useBalance } from '@/app/_hooks/use-balance';
 
 import { CopyCode } from '@/components/ui/copy-code';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMutation } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 
 import { useDisconnect } from 'wagmi';
-import { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
+
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import type { User } from '@coinbase/cdp-hooks';
-import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+import { AuthenticationMethod, ItemContainer } from './item';
+import { Balance } from './balance';
 
 interface Props {
   address: string;
@@ -28,8 +31,6 @@ interface Props {
 }
 
 export const WalletContent: React.FC<Props> = ({ user, address }) => {
-  const { data: balance, isLoading } = useBalance();
-
   const { data: session, status } = useSession();
 
   const { isInitialized } = useIsInitialized();
@@ -56,21 +57,12 @@ export const WalletContent: React.FC<Props> = ({ user, address }) => {
   return (
     <div className="space-y-4 w-full overflow-hidden">
       <ItemContainer
-        label="Balance"
-        value={
-          isLoading ? (
-            <Skeleton className="h-5 w-16" />
-          ) : (
-            <p className="bg-muted rounded-md border p-2">{balance} USDC</p>
-          )
-        }
-      />
-      <ItemContainer
         label="Address"
         value={
           <CopyCode code={address} toastMessage="Address copied to clipboard" />
         }
       />
+      <Balance address={address} />
       {user?.authenticationMethods.email?.email && (
         <AuthenticationMethod
           label="Email"
@@ -81,6 +73,18 @@ export const WalletContent: React.FC<Props> = ({ user, address }) => {
         <AuthenticationMethod
           label="Phone Number"
           value={user.authenticationMethods.sms.phoneNumber}
+        />
+      )}
+      {user?.authenticationMethods?.google && (
+        <AuthenticationMethod
+          label="Google"
+          value={user.authenticationMethods.google.email ?? 'Unknown Email'}
+        />
+      )}
+      {user?.authenticationMethods?.apple && (
+        <AuthenticationMethod
+          label="Apple"
+          value={user.authenticationMethods.apple.email ?? 'Unknown Email'}
         />
       )}
       <Button
@@ -95,35 +99,5 @@ export const WalletContent: React.FC<Props> = ({ user, address }) => {
         )}
       </Button>
     </div>
-  );
-};
-
-const ItemContainer = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) => {
-  return (
-    <div className="flex flex-col gap-1">
-      <p className="text-sm font-medium font-mono">{label}</p>
-      {value}
-    </div>
-  );
-};
-
-const AuthenticationMethod = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) => {
-  return (
-    <ItemContainer
-      label={label}
-      value={<p className="border rounded-md p-2 bg-muted">{value}</p>}
-    />
   );
 };
