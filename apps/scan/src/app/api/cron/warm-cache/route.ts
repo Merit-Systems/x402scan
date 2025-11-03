@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { subDays, differenceInSeconds, subSeconds } from 'date-fns';
+import { subDays, subMinutes, differenceInSeconds, subSeconds } from 'date-fns';
 import { api } from '@/trpc/server';
 import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
@@ -223,18 +223,31 @@ export async function GET(request: NextRequest) {
     const endDate = new Date();
     const timeframesWarmed: Record<string, number> = {};
 
+    // Optional query param to filter to specific timeframes
+    const { searchParams } = new URL(request.url);
+    const onlyAllTime = searchParams.get('onlyAllTime') === 'true';
+
+    // Filter timeframes if requested
+    const timeframesToWarm = onlyAllTime
+      ? CACHE_WARMABLE_TIMEFRAMES.filter(
+          tf => tf === ActivityTimeframe.AllTime
+        )
+      : CACHE_WARMABLE_TIMEFRAMES;
+
     console.log(
-      `[Cache Warming] Starting cache warm for ${CACHE_WARMABLE_TIMEFRAMES.length} timeframes`
+      `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'}${onlyAllTime ? ' (All Time only)' : ''}`
     );
 
     // Warm each timeframe serially to avoid overwhelming the database
-    for (const timeframe of CACHE_WARMABLE_TIMEFRAMES) {
+    for (const timeframe of timeframesToWarm) {
       const timeframeStartTime = Date.now();
 
       // Calculate date range based on timeframe
+      // Note: For All Time, we lag firstTransfer by CACHE_DURATION_MINUTES because
+      // the frontend applies this lag when computing relative timeframes. 
       const startDate =
         timeframe === ActivityTimeframe.AllTime
-          ? firstTransfer
+          ? subMinutes(firstTransfer, CACHE_DURATION_MINUTES)
           : subDays(endDate, timeframe);
 
       const timeframeName =

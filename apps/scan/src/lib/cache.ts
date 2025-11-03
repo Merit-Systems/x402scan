@@ -3,7 +3,11 @@ import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
 
-const CACHE_DURATION_SECONDS = CACHE_DURATION_MINUTES * 60;
+/**
+ * Redis TTL is 3x the cache duration to provide buffer time.
+ * This ensures cache doesn't expire while the next warming cycle is running.
+ */
+const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 3;
 
 /**
  * Lock timeout in seconds (query should complete within this time)
@@ -143,7 +147,7 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
   return async (...args: TInput): Promise<TOutput> => {
     const cacheKey = config.createCacheKey(...args);
     const fullCacheKey = `${config.cacheKeyPrefix}:${cacheKey}`;
-    const ttl = config.revalidate ?? CACHE_DURATION_SECONDS;
+    const ttl = config.revalidate ?? CACHE_TTL_SECONDS;
 
     // Try Redis first
     const redis = getRedisClient();
