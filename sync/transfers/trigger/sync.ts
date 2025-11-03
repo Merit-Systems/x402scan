@@ -43,7 +43,7 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
 
             // Start from 1ms after the most recent transfer to avoid re-fetching it
             const since = mostRecentTransfer[0]?.block_timestamp
-              ? new Date(mostRecentTransfer[0].block_timestamp.getTime() + 1)
+              ? new Date(mostRecentTransfer[0].block_timestamp.getTime() + 1000)
               : facilitatorConfig.syncStartDate;
 
             logger.log(
