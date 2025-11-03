@@ -79,7 +79,7 @@ function transformResponse(
     sender: transfer.sender.address,
     recipient: transfer.receiver.address,
     amount: Math.round(parseFloat(transfer.amount) * USDC_MULTIPLIER),
-    block_timestamp: new Date(transfer.block.timestamp.time),
+    block_timestamp: new Date(transfer.block.timestamp.time + 'Z'), // Append 'Z' to parse as UTC
     tx_hash: transfer.transaction.signature,
     chain: config.chain,
     provider: config.provider,
