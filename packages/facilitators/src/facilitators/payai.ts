@@ -55,6 +55,6 @@ export const payaiFacilitator = {
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
-    ]
+    ],
   },
 } as const satisfies Facilitator;
