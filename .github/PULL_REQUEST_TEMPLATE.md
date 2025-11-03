@@ -3,6 +3,7 @@
 # Add Facilitator
 
 ## Summary
+
 - Faciliator Name: `<Name>`
 - URL: `<https://...>`
 - Website: `<https://...>`
@@ -10,6 +11,7 @@
 - Short description: `<what the facilitator does in 1 to 2 sentences>`
 
 ## Required changes
+
 - [ ] Added config file at `packages/facilitators/src/facilitators`
 - [ ] Exported in `packages/facilitators/src/facilitators/index.ts`
 - [ ] Appended to `packages/facilitators/src/lists/all.ts`
@@ -19,3 +21,4 @@
 - [ ] Facilitator has **at least 10 USDC transfers**
 - [ ] Added image to `apps/scan/public`
 - [ ] Make sure we support that chain
+- [ ] Make sure all EVM addresses are lowercase

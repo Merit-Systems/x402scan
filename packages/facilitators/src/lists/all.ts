@@ -10,6 +10,9 @@ import {
   mogamiFacilitator,
   openx402Facilitator,
   f402104Facilitator,
+  questflowFacilitator,
+  xechoFacilitator,
+  codenutFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -28,6 +31,9 @@ const FACILITATORS = validateUniqueFacilitators([
   mogamiFacilitator,
   openx402Facilitator,
   f402104Facilitator,
+  questflowFacilitator,
+  xechoFacilitator,
+  codenutFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =

@@ -33,11 +33,13 @@ const ConversationEmptyState = ({
   description = 'Start a conversation to see messages here',
   icon,
   children,
+  button,
   ...props
 }: ComponentProps<'div'> & {
   title?: string;
   description?: string;
   icon?: React.ReactNode;
+  button?: React.ReactNode;
 }) => (
   <div
     className={cn(
@@ -57,6 +59,7 @@ const ConversationEmptyState = ({
             </p>
           )}
         </div>
+        {button}
       </>
     )}
   </div>

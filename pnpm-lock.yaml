@@ -85,8 +85,8 @@ importers:
         specifier: ^0.7.4
         version: 0.7.4
       '@merit-systems/ai-x402':
-        specifier: ^0.1.0
-        version: 0.1.1(@solana/sysvars@3.0.3(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+        specifier: ^0.1.3
+        version: 0.1.3(@solana/sysvars@3.0.3(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@neondatabase/serverless':
         specifier: ^1.0.2
         version: 1.0.2
@@ -669,6 +669,18 @@ packages:
     peerDependencies:
       zod: ^3.25.76 || ^4
 
+  '@ai-sdk/groq@2.0.17':
+    resolution: {integrity: sha512-Oh6Fk988KNvqy4w1crBhBQU8JIkfqhxSiYCbBZFqZSeDsagZ8SHsS2ni9+7pq6e0DR/XGp6fDGDFsm+01kmsmg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4
+
+  '@ai-sdk/openai-compatible@1.0.15':
+    resolution: {integrity: sha512-i4TzohCxuFzBSdRNPa9eNFW6AYDZ5itbxz+rJa2kpNTMYqHgqKPGzet3X6eLIUVntA10icrqhWT+hUhxXZIS9Q==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4
+
   '@ai-sdk/openai@2.0.16':
     resolution: {integrity: sha512-Boe715q4SkSJedFfAtbP0yuo8DmF9iYElAaDH2g4YgqJqqkskIJJx4hlCYGMMk1eMesRrB2NqZvtOeyTZ/u4fA==}
     engines: {node: '>=18'}
@@ -695,6 +707,12 @@ packages:
 
   '@ai-sdk/provider-utils@3.0.4':
     resolution: {integrity: sha512-/3Z6lfUp8r+ewFd9yzHkCmPlMOJUXup2Sx3aoUyrdXLhOmAfHRl6Z4lDbIdV0uvw/QYoBcVLJnvXN7ncYeS3uQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4
+
+  '@ai-sdk/provider-utils@3.0.8':
+    resolution: {integrity: sha512-cDj1iigu7MW2tgAQeBzOiLhjHOUM9vENsgh4oAVitek0d//WdgfPCsKO3euP7m7LyO/j9a1vr/So+BGNdpFXYw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4
@@ -728,6 +746,12 @@ packages:
     peerDependenciesMeta:
       zod:
         optional: true
+
+  '@ai-sdk/xai@2.0.16':
+    resolution: {integrity: sha512-t/Ohnn5OExgXZe+yhlpqOFZoixIXpaSBycWnvWfJ7JrpiNdg4WZEjWH+298zUXvqAT5wZvM93h1Ba4TkoYSyZg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -1718,13 +1742,13 @@ packages:
     resolution: {integrity: sha512-zpyRHnEYQ+HjmMWy5pOsQP/5e36fVOoupfcy0xNxRHhhmSM9LsW/iejZ4EXy/JmjxI+7J9QHQRajGWadINR+6w==}
     hasBin: true
 
-  '@merit-systems/ai-x402@0.1.1':
-    resolution: {integrity: sha512-jj3Cx/B/Z/K8PEUKu7g9zDY9kEFTVf5AusqlR33lQ6rY9uknvGgJ3JuYXBJBN2ZTYO1EvOHRP934FliTXu+jAg==}
+  '@merit-systems/ai-x402@0.1.3':
+    resolution: {integrity: sha512-SbdJTXdpPvhe1d/9A9VXl0iBG+ddjEokbjFH7pk9xmG2yL0wcEV0t77wHvgvYcCm4DqmnCWv7YFWd1AkZuYj6A==}
     peerDependencies:
       react: ^18.0.0
 
-  '@merit-systems/echo-react-sdk@1.0.35':
-    resolution: {integrity: sha512-BAU/tbQiZ+5Uhn6sZ/+f+mynClV9Dj0d+6Vu5QR1imjrFIPDM3I8hteaa7XPFvrZN8EconvS7idXEV1JPrlmTg==}
+  '@merit-systems/echo-react-sdk@1.0.39':
+    resolution: {integrity: sha512-8u8OyBJd5hP+iztTXV4zdG89wM5kFK/4m5pOBeg782yVUTWWhfnpgqNRyEKSuArU292PImr4WDzDEFU/o/gHrg==}
     peerDependencies:
       '@ai-sdk/react': ^2.0.17
       ai: ^5.0.19
@@ -1735,8 +1759,8 @@ packages:
       openai:
         optional: true
 
-  '@merit-systems/echo-typescript-sdk@1.0.19':
-    resolution: {integrity: sha512-M9tnvZHayHH6scwHFQwTtFt5G0nGzXJpWSvWTVoXLMfV/rDCRYbB4q1mVLyQD8fWjznR7pd+z475J9K4xNEeGQ==}
+  '@merit-systems/echo-typescript-sdk@1.0.23':
+    resolution: {integrity: sha512-hSwgb/rFfzZCha8k8oik4FInf4t5RymDkaOiN7BAyDJkS9sJVzLYyDb0OE44g+i1ESGc3DlJ5vbK1V+nVEf8zw==}
 
   '@mermaid-js/parser@0.6.3':
     resolution: {integrity: sha512-lnjOhe7zyHjc+If7yT4zoedx2vo4sHaTmtkl1+or8BRTnCtDmcTpAjpzDSfCZrshM5bCoz0GyidzadJAH1xobA==}
@@ -9852,6 +9876,18 @@ snapshots:
       '@ai-sdk/provider-utils': 3.0.9(zod@4.1.12)
       zod: 4.1.12
 
+  '@ai-sdk/groq@2.0.17(zod@4.1.12)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.8(zod@4.1.12)
+      zod: 4.1.12
+
+  '@ai-sdk/openai-compatible@1.0.15(zod@4.1.12)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.8(zod@4.1.12)
+      zod: 4.1.12
+
   '@ai-sdk/openai@2.0.16(zod@4.1.12)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
@@ -9893,6 +9929,13 @@ snapshots:
       zod: 4.1.12
       zod-to-json-schema: 3.24.6(zod@4.1.12)
 
+  '@ai-sdk/provider-utils@3.0.8(zod@4.1.12)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@standard-schema/spec': 1.0.0
+      eventsource-parser: 3.0.6
+      zod: 4.1.12
+
   '@ai-sdk/provider-utils@3.0.9(zod@4.1.12)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
@@ -9922,6 +9965,13 @@ snapshots:
       swr: 2.3.6(react@19.1.0)
       throttleit: 2.1.0
     optionalDependencies:
+      zod: 4.1.12
+
+  '@ai-sdk/xai@2.0.16(zod@4.1.12)':
+    dependencies:
+      '@ai-sdk/openai-compatible': 1.0.15(zod@4.1.12)
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.8(zod@4.1.12)
       zod: 4.1.12
 
   '@alloc/quick-lru@5.2.0': {}
@@ -10916,11 +10966,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@merit-systems/ai-x402@0.1.1(@solana/sysvars@3.0.3(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
+  '@merit-systems/ai-x402@0.1.3(@solana/sysvars@3.0.3(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
     dependencies:
       '@ai-sdk/openai': 2.0.16(zod@4.1.12)
       '@ai-sdk/react': 2.0.17(react@19.1.0)(zod@4.1.12)
-      '@merit-systems/echo-react-sdk': 1.0.35(@ai-sdk/react@2.0.17(react@19.1.0)(zod@4.1.12))(ai@5.0.47(zod@4.1.12))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(zod@4.1.12)
+      '@merit-systems/echo-react-sdk': 1.0.39(@ai-sdk/react@2.0.17(react@19.1.0)(zod@4.1.12))(ai@5.0.47(zod@4.1.12))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(zod@4.1.12)
       ai: 5.0.47(zod@4.1.12)
       react: 19.1.0
       x402: 0.6.6(@solana/sysvars@3.0.3(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -10966,10 +11016,10 @@ snapshots:
       - utf-8-validate
       - ws
 
-  '@merit-systems/echo-react-sdk@1.0.35(@ai-sdk/react@2.0.17(react@19.1.0)(zod@4.1.12))(ai@5.0.47(zod@4.1.12))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(zod@4.1.12)':
+  '@merit-systems/echo-react-sdk@1.0.39(@ai-sdk/react@2.0.17(react@19.1.0)(zod@4.1.12))(ai@5.0.47(zod@4.1.12))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(zod@4.1.12)':
     dependencies:
       '@ai-sdk/react': 2.0.17(react@19.1.0)(zod@4.1.12)
-      '@merit-systems/echo-typescript-sdk': 1.0.19(zod@4.1.12)
+      '@merit-systems/echo-typescript-sdk': 1.0.23(zod@4.1.12)
       ai: 5.0.47(zod@4.1.12)
       dompurify: 3.3.0
       oidc-client-ts: 3.3.0
@@ -10980,11 +11030,13 @@ snapshots:
     transitivePeerDependencies:
       - zod
 
-  '@merit-systems/echo-typescript-sdk@1.0.19(zod@4.1.12)':
+  '@merit-systems/echo-typescript-sdk@1.0.23(zod@4.1.12)':
     dependencies:
       '@ai-sdk/anthropic': 2.0.17(zod@4.1.12)
       '@ai-sdk/google': 2.0.14(zod@4.1.12)
+      '@ai-sdk/groq': 2.0.17(zod@4.1.12)
       '@ai-sdk/openai': 2.0.32(zod@4.1.12)
+      '@ai-sdk/xai': 2.0.16(zod@4.1.12)
       '@openrouter/ai-sdk-provider': 1.2.0(ai@5.0.47(zod@4.1.12))(zod@4.1.12)
       ai: 5.0.47(zod@4.1.12)
     transitivePeerDependencies:

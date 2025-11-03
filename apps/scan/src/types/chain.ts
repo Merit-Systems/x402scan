@@ -1,3 +1,5 @@
+import { base, optimism, polygon } from 'wagmi/chains';
+
 export enum Chain {
   BASE = 'base',
   SOLANA = 'solana',
@@ -19,4 +21,11 @@ export const CHAIN_ICONS: Record<Chain, string> = {
   [Chain.SOLANA]: '/solana.png',
   [Chain.POLYGON]: '/polygon.png',
   [Chain.OPTIMISM]: '/optimism.png',
+};
+
+export const CHAIN_ID: Record<Chain, number> = {
+  [Chain.BASE]: base.id,
+  [Chain.POLYGON]: polygon.id,
+  [Chain.OPTIMISM]: optimism.id,
+  [Chain.SOLANA]: 0,
 };

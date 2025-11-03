@@ -15,6 +15,11 @@ export const WalletButton = () => {
     }
   );
 
+  const { data: usdcBalance, isLoading: isUsdcBalanceLoading } =
+    api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
+      enabled: !!session,
+    });
+
   const [showFreeTier, setShowFreeTier] = useState(false);
 
   useEffect(() => {
@@ -27,11 +32,14 @@ export const WalletButton = () => {
     return null;
   }
 
-  if (isLoading) {
+  if (isLoading || isUsdcBalanceLoading) {
     return <LoadingWalletButton />;
   }
 
-  if (freeTierUsage?.hasFreeTier || showFreeTier) {
+  if (
+    (freeTierUsage?.hasFreeTier || showFreeTier) &&
+    (usdcBalance ?? 0) === 0
+  ) {
     return <FreeTierButton hideFreeTierButton={() => setShowFreeTier(false)} />;
   }
 
