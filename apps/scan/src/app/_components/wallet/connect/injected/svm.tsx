@@ -63,7 +63,6 @@ const ConnectSVMInjectedWalletButton: React.FC<
 
       const first = connectedAccount[0];
       setConnectedWallet({ account: first, wallet });
-      connect?.(); // Close modal after successful connection
       return connectedAccount;
     } catch (error) {
       console.error('Failed to connect wallet:', error);
