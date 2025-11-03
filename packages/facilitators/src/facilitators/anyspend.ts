@@ -26,14 +26,14 @@ export const anyspendFacilitator = {
       {
         address: '0x179761d9eed0f0d1599330cc94b0926e68ae87f1',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-10-31'),
+        dateOfFirstTransaction: new Date('2025-11-03'),
       },
     ],
     [Network.SOLANA]: [
       {
         address: '34DmdeSbEnng2bmbSj9ActckY49km2HdhiyAwyXZucqP',
         tokens: [USDC_SOLANA_TOKEN],
-        dateOfFirstTransaction: new Date('2025-10-31'),
+        dateOfFirstTransaction: new Date('2025-11-03'),
       },
     ],
   },
