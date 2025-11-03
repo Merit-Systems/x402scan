@@ -47,7 +47,6 @@ export async function persistMetrics(data: unknown): Promise<Prisma.BatchPayload
   if (metricsWithOriginId.length === 0) {
     return { count: 0 };
   }
-
   return await db.resourceOriginMetrics.createMany({
     data: metricsWithOriginId,
   });
