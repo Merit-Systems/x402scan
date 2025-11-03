@@ -69,10 +69,10 @@ export type Metrics = {
   count_5xx_all_time: number;
 };
 
-export type MetricsByUrl = Metrics & {
-  url: string;
+export type MetricsByResource = Metrics & {
+  resource: string;
 }
 
-export type MetricsByDomain = Metrics & {
-  domain: string;
+export type MetricsByOrigin = Metrics & {
+  origin: string;
 }

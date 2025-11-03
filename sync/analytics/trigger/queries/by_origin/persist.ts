@@ -1,11 +1,11 @@
 import { db } from "@/services/db";
 import { logger } from "@trigger.dev/sdk";
-import { MetricsByDomain } from '../types';
+import { MetricsByOrigin } from '../types';
 import { mapMetric } from '../utils';
 
 export async function persistMetrics(data: unknown) {
   try {
-    const metrics: MetricsByDomain[] = data as MetricsByDomain[];
+    const metrics: MetricsByOrigin[] = data as MetricsByOrigin[];
 
     logger.log('Fetched metrics from analytics', { count: metrics.length });
 
@@ -16,7 +16,7 @@ export async function persistMetrics(data: unknown) {
         where: {
           origin: {
             mode: 'insensitive',
-            endsWith: metric.domain,
+            endsWith: metric.origin,
           },
         },
         select: {
@@ -26,15 +26,15 @@ export async function persistMetrics(data: unknown) {
       });
 
       if (origin) {
-        domainToOriginId.set(metric.domain, origin.id);
+        domainToOriginId.set(metric.origin, origin.id);
       }
     }
 
     const metricsWithOriginId = metrics
       .map(metric => {
-        const originId = domainToOriginId.get(metric.domain);
+        const originId = domainToOriginId.get(metric.origin);
         if (!originId) {
-          logger.warn('No ResourceOrigin found for domain', { domain: metric.domain });
+          logger.warn('No ResourceOrigin found for domain', { domain: metric.origin });
           return null;
         }
         return {

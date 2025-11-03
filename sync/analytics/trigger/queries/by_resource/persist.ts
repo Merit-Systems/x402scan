@@ -1,19 +1,19 @@
 import { db } from "@/services/db";
 import { logger } from "@trigger.dev/sdk";
-import { MetricsByUrl } from '../types';
+import { MetricsByResource } from '../types';
 import { mapMetric } from "../utils";
 
 export async function persistMetrics(data: unknown) {
   try {
-    const metrics: MetricsByUrl[] = data as MetricsByUrl[];
+    const metrics: MetricsByResource[] = data as MetricsByResource[];
 
-    logger.log('Fetched metrics by url', { count: metrics.length });
+    logger.log('Fetched metrics by resource', { count: metrics.length });
 
-    const urls = metrics.map(m => m.url);
-    const resources = await db.resources.findMany({
+    const resources = metrics.map(m => m.resource);
+    const resourcesInDb = await db.resources.findMany({
       where: {
         resource: {
-          in: urls,
+          in: resources,
         },
       },
       select: {
@@ -23,14 +23,14 @@ export async function persistMetrics(data: unknown) {
     });
 
     const urlToResourceId = new Map(
-      resources.map(r => [r.resource, r.id])
+      resourcesInDb.map(r => [r.resource, r.id])
     );
 
     const metricsWithResourceId = metrics
       .map(metric => {
-        const resourceId = urlToResourceId.get(metric.url);
+        const resourceId = urlToResourceId.get(metric.resource);
         if (!resourceId) {
-          logger.warn('No Resource found for URL', { url: metric.url });
+          logger.warn('No Resource found for resource', { resource: metric.resource });
           return null;
         }
         return {
