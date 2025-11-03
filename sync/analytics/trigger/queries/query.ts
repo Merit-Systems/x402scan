@@ -1,8 +1,8 @@
 export function buildMetricsQuery(
-    selectExpression: string,
-    groupByField: string
-  ): string {
-    return `
+  selectExpression: string,
+  groupByField: string
+): string {
+  return `
   SELECT
       ${selectExpression},
   
@@ -174,4 +174,4 @@ export function buildMetricsQuery(
   GROUP BY ${groupByField}
   ORDER BY total_count_24h DESC, ${groupByField} ASC;
   `;
-  }
+}

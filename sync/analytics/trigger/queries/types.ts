@@ -75,8 +75,8 @@ export type Metrics = {
 
 export type MetricsByResource = Metrics & {
   resource: string;
-}
+};
 
 export type MetricsByOrigin = Metrics & {
   origin: string;
-}
+};

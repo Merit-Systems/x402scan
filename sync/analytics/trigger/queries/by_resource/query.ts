@@ -1,3 +1,6 @@
-import { buildMetricsQuery } from "../query";
+import { buildMetricsQuery } from '../query';
 
-export const METRICS_BY_RESOURCE_QUERY = buildMetricsQuery("url AS resource", "url");
+export const METRICS_BY_RESOURCE_QUERY = buildMetricsQuery(
+  'url AS resource',
+  'url'
+);

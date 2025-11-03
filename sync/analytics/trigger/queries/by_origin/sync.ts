@@ -10,4 +10,3 @@ export const syncAnalyticsMetricsByDomainTask = createAnalyticsSyncTask({
   query: METRICS_BY_DOMAIN_QUERY,
   persist: persistMetrics,
 });
-

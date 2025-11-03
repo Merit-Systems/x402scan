@@ -436,6 +436,7 @@ model ResourceOriginMetrics {
   count_2xx_6h        Int?
   count_2xx_24h       Int?
   count_2xx_3d        Int?
+  count_2xx_7d        Int?
   count_2xx_15d       Int?
   count_2xx_30d       Int?
   count_2xx_all_time  Int?
@@ -443,6 +444,7 @@ model ResourceOriginMetrics {
   count_3xx_6h        Int?
   count_3xx_24h       Int?
   count_3xx_3d        Int?
+  count_3xx_7d        Int?
   count_3xx_15d       Int?
   count_3xx_30d       Int?
   count_3xx_all_time  Int?
@@ -450,6 +452,7 @@ model ResourceOriginMetrics {
   count_4xx_6h        Int?
   count_4xx_24h       Int?
   count_4xx_3d        Int?
+  count_4xx_7d        Int?
   count_4xx_15d       Int?
   count_4xx_30d       Int?
   count_4xx_all_time  Int?
@@ -457,6 +460,7 @@ model ResourceOriginMetrics {
   count_5xx_6h        Int?
   count_5xx_24h       Int?
   count_5xx_3d        Int?
+  count_5xx_7d        Int?
   count_5xx_15d       Int?
   count_5xx_30d       Int?
   count_5xx_all_time  Int?
@@ -517,6 +521,7 @@ model ResourceMetrics {
   count_2xx_6h        Int?
   count_2xx_24h       Int?
   count_2xx_3d        Int?
+  count_2xx_7d        Int?
   count_2xx_15d       Int?
   count_2xx_30d       Int?
   count_2xx_all_time  Int?
@@ -524,6 +529,7 @@ model ResourceMetrics {
   count_3xx_6h        Int?
   count_3xx_24h       Int?
   count_3xx_3d        Int?
+  count_3xx_7d        Int?
   count_3xx_15d       Int?
   count_3xx_30d       Int?
   count_3xx_all_time  Int?
@@ -531,6 +537,7 @@ model ResourceMetrics {
   count_4xx_6h        Int?
   count_4xx_24h       Int?
   count_4xx_3d        Int?
+  count_4xx_7d        Int?
   count_4xx_15d       Int?
   count_4xx_30d       Int?
   count_4xx_all_time  Int?
@@ -538,6 +545,7 @@ model ResourceMetrics {
   count_5xx_6h        Int?
   count_5xx_24h       Int?
   count_5xx_3d        Int?
+  count_5xx_7d        Int?
   count_5xx_15d       Int?
   count_5xx_30d       Int?
   count_5xx_all_time  Int?
