@@ -9,7 +9,6 @@ export async function persistMetrics(data: unknown) {
 
     logger.log('Fetched metrics by url', { count: metrics.length });
 
-    // Look up all resources to get their IDs
     const urls = metrics.map(m => m.url);
     const resources = await db.resources.findMany({
       where: {
@@ -23,12 +22,10 @@ export async function persistMetrics(data: unknown) {
       },
     });
 
-    // Create a map of url -> resourceId
     const urlToResourceId = new Map(
       resources.map(r => [r.resource, r.id])
     );
 
-    // Filter out metrics for URLs that don't have a Resource yet
     const metricsWithResourceId = metrics
       .map(metric => {
         const resourceId = urlToResourceId.get(metric.url);
