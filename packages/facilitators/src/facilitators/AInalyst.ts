@@ -13,7 +13,7 @@ export const ainalystFacilitator = {
     name: 'AInalyst',
     image: 'https://x402scan.com/ainalyst.png',
     docsUrl: 'https://facilitator.ainalyst-api.xyz',
-    color: 'var(--color-purple-200)',
+    color: '#E9D5FF',
   },
   config: ainalyst,
   addresses: {
