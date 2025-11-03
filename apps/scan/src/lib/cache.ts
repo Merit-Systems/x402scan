@@ -1,13 +1,8 @@
 import { unstable_cache } from 'next/cache';
 import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
 import { getRedisClient } from './redis';
+import { CACHE_DURATION_MINUTES } from './cache-constants';
 
-/**
- * Global cache duration in minutes
- * This should match the interval used for date rounding to prevent cache fragmentation
- * IMPORTANT: This value must match the cron schedule in vercel.json (/api/cron/warm-cache)
- */
-export const CACHE_DURATION_MINUTES = 5;
 const CACHE_DURATION_SECONDS = CACHE_DURATION_MINUTES * 60;
 
 /**

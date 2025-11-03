@@ -9,7 +9,7 @@ import {
 } from '@/types/timeframes';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { facilitatorAddresses } from '@/lib/facilitators';
-import { CACHE_DURATION_MINUTES } from '@/lib/cache';
+import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
 
 import type { NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
