@@ -7,4 +7,3 @@ export const resourceBucketedQuerySchema = z.object({
   numBuckets: z.number().default(48),
   tagIds: z.array(z.string()).optional(),
 });
-
