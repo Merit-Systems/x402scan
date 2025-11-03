@@ -1,6 +1,6 @@
 import { useWallets } from '@wallet-standard/react';
 
-import { ConnectSVMInjectedWallet } from '../../connect/injected/svm';
+import { ConnectSVMInjectedWalletButtons } from '../../connect/injected/buttons/svm';
 
 export const SVMNotConnected = () => {
   const allWallets = useWallets();
@@ -17,5 +17,5 @@ export const SVMNotConnected = () => {
     );
   }
 
-  return <ConnectSVMInjectedWallet wallets={wallets} />;
+  return <ConnectSVMInjectedWalletButtons wallets={wallets} />;
 };

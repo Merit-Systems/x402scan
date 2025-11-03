@@ -1,6 +1,6 @@
 import { useConnect } from 'wagmi';
 
-import { ConnectEVMInjectedWallet } from '../../connect/injected/evm';
+import { ConnectEVMInjectedWalletButtons } from '../../connect/injected/buttons/evm';
 
 export const EVMNotConnected = () => {
   const { connectors } = useConnect();
@@ -19,5 +19,5 @@ export const EVMNotConnected = () => {
     );
   }
 
-  return <ConnectEVMInjectedWallet connectors={filteredConnectors} />;
+  return <ConnectEVMInjectedWalletButtons connectors={filteredConnectors} />;
 };

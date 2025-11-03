@@ -14,11 +14,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { WalletContent } from './tabs/display';
 import { Deposit } from './tabs/deposit';
 
-import { WalletChainSelector } from './chain-context/selector';
+import { WalletChainSelector } from '../chain-context/selector';
 
 import type { User } from '@coinbase/cdp-hooks';
 import type { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
-import { useWalletChain } from './chain-context/hook';
+import { useWalletChain } from '../chain-context/hook';
 import { ConnectedWalletTabsContent } from './content';
 import { Chain } from '@/types/chain';
 import { ChainNotConnected } from './chain-not-connected/chain-not-connected';

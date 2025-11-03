@@ -9,6 +9,7 @@ import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 import { cn } from '@/lib/utils';
 
 import type { UiWallet } from '@wallet-standard/react';
+import { ConnectInjectedWalletButton } from './button';
 
 interface Props {
   className?: string;
@@ -17,7 +18,7 @@ interface Props {
   prefix?: string;
 }
 
-export const ConnectSVMInjectedWallet: React.FC<Props> = ({
+export const ConnectSVMInjectedWalletButtons: React.FC<Props> = ({
   wallets,
   className,
   buttonClassName,
@@ -70,18 +71,13 @@ const ConnectSVMInjectedWalletButton: React.FC<
   };
 
   return (
-    <Button
-      variant="outline"
-      className={cn('w-full', className)}
+    <ConnectInjectedWalletButton
+      className={className}
+      prefix={prefix}
+      icon={wallet.icon}
+      name={wallet.name}
+      isPending={isConnecting}
       onClick={handleConnect}
-      disabled={isConnecting}
-    >
-      {isConnecting ? (
-        <Loader2 className="size-4 animate-spin" />
-      ) : wallet.icon ? (
-        <img src={wallet.icon} alt={wallet.name} className="size-4" />
-      ) : null}
-      {prefix ? `${prefix} ${wallet.name}` : wallet.name}
-    </Button>
+    />
   );
 };

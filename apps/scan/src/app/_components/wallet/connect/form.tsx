@@ -2,45 +2,29 @@ import { useState } from 'react';
 
 import { Mail } from 'lucide-react';
 
-import { useConnect } from 'wagmi';
-
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 
-import { ConnectEVMInjectedWallet } from './injected/evm';
+import { ConnectEVMInjectedWalletForm } from './injected/form/evm';
+import { ConnectSVMInjectedWalletForm } from './injected/form/svm';
 
 import { ConnectEmbeddedWalletEmail } from './embedded/email';
 import { ConnectEmbeddedWalletOAuth } from './embedded/oauth';
+import { useWalletChain } from '../chain-context/hook';
+import { Chain } from '@/types/chain';
 
 export const ConnectWalletForm = () => {
-  const { connectors } = useConnect();
+  const { chain } = useWalletChain();
 
   const [isEmailFlow, setIsEmailFlow] = useState(false);
 
-  const filteredConnectors = connectors.filter(
-    connector =>
-      connector.type === 'injected' &&
-      !['injected', 'cdp-embedded-wallet'].includes(connector.id)
-  );
-
   return (
     <>
-      {filteredConnectors.length > 0 && !isEmailFlow && (
-        <>
-          <ConnectEVMInjectedWallet
-            connectors={filteredConnectors}
-            className="w-full"
-            buttonClassName="w-full h-12 md:h-12"
-            prefix="Connect"
-          />
-          <div className="flex items-center gap-2 w-full">
-            <Separator className="flex-1" />
-            <p className="text-muted-foreground text-xs">or</p>
-            <Separator className="flex-1" />
-          </div>
-        </>
+      {chain === Chain.SOLANA ? (
+        <ConnectSVMInjectedWalletForm />
+      ) : (
+        <ConnectEVMInjectedWalletForm />
       )}
-      {filteredConnectors.length === 0 || isEmailFlow ? (
+      {isEmailFlow ? (
         <ConnectEmbeddedWalletEmail />
       ) : (
         <div className="flex flex-col gap-2">
@@ -55,7 +39,7 @@ export const ConnectWalletForm = () => {
           <ConnectEmbeddedWalletOAuth />
         </div>
       )}
-      {isEmailFlow && filteredConnectors.length > 0 && (
+      {isEmailFlow && (
         <Button onClick={() => setIsEmailFlow(false)} variant="ghost">
           Back
         </Button>

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 import type { Connector } from 'wagmi';
+import { ConnectInjectedWalletButton } from './button';
 
 interface Props {
   className?: string;
@@ -20,14 +21,14 @@ interface Props {
   prefix?: string;
 }
 
-export const ConnectEVMInjectedWallet: React.FC<Props> = ({
+export const ConnectEVMInjectedWalletButtons: React.FC<Props> = ({
   connectors,
   className,
   buttonClassName,
   prefix,
 }) => {
   return (
-    <div className={cn('flex flex-col gap-2', className)}>
+    <div className={cn('flex flex-col gap-2 w-full', className)}>
       {connectors.map(connector => (
         <ConnectEVMInjectedWalletButton
           key={connector.id}
@@ -51,36 +52,28 @@ const ConnectEVMInjectedWalletButton: React.FC<
 > = ({ connector, className, prefix }) => {
   const { connectAsync, isPending } = useConnect();
 
-  const onConnect = useCallback(
-    async (connector: Connector) => {
-      await connectAsync(
-        { connector, chainId: base.id },
-        {
-          onSuccess: () => {
-            void toast.success('Connected to wallet');
-          },
-          onError: error => {
-            void toast.error(error.message);
-          },
-        }
-      );
-    },
-    [connectAsync]
-  );
+  const onConnect = useCallback(async () => {
+    await connectAsync(
+      { connector, chainId: base.id },
+      {
+        onSuccess: () => {
+          void toast.success('Connected to wallet');
+        },
+        onError: error => {
+          void toast.error(error.message);
+        },
+      }
+    );
+  }, [connectAsync]);
 
   return (
-    <Button
-      variant="outline"
-      className={cn('user-message w-full', className)}
-      onClick={() => onConnect(connector)}
-      disabled={isPending}
-    >
-      {connector.icon && !isPending && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={connector.icon} alt={connector.name} className="size-4" />
-      )}
-      {isPending && <Loader2 className="size-4 animate-spin" />}
-      {prefix ? `${prefix} ${connector.name}` : connector.name}
-    </Button>
+    <ConnectInjectedWalletButton
+      className={className}
+      prefix={prefix}
+      icon={connector.icon}
+      name={connector.name}
+      isPending={isPending}
+      onClick={onConnect}
+    />
   );
 };

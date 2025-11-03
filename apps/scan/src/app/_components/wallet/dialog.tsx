@@ -7,7 +7,7 @@ import { DisplayWalletDialogContent } from './connected';
 import { ConnectWalletDialogContent } from './connect';
 import { useSearchParams } from 'next/navigation';
 import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
-import { WalletChainProvider } from './connected/chain-context/provider';
+import { WalletChainProvider } from './chain-context/provider';
 
 import { useSolanaStandardWallets } from '@coinbase/cdp-solana-standard-wallet';
 
@@ -40,7 +40,9 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
             />
           </WalletChainProvider>
         ) : (
-          <ConnectWalletDialogContent />
+          <WalletChainProvider>
+            <ConnectWalletDialogContent />
+          </WalletChainProvider>
         )}
       </DialogContent>
     </Dialog>

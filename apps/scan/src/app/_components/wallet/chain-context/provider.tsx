@@ -4,13 +4,11 @@ import { useState } from 'react';
 import { WalletChainContext } from './context';
 
 import { Chain } from '@/types/chain';
-import { useSearchParams } from 'next/navigation';
-import { getChain } from '@/app/_lib/chain';
 import { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
 interface Props {
   children: React.ReactNode;
-  connectedWallets: ConnectedWallets;
+  connectedWallets?: ConnectedWallets;
 }
 
 export const WalletChainProvider: React.FC<Props> = ({
@@ -18,7 +16,7 @@ export const WalletChainProvider: React.FC<Props> = ({
   connectedWallets,
 }) => {
   const [chain, setChainState] = useState<Chain>(
-    connectedWallets.evmAddress ? Chain.BASE : Chain.SOLANA
+    !connectedWallets || connectedWallets.evmAddress ? Chain.BASE : Chain.SOLANA
   );
 
   const setChain = (chain: Chain) => {
