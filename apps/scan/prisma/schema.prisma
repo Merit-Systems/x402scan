@@ -386,3 +386,14 @@ model UserAcknowledgement {
 
   @@map("UserAcknowledgement")
 }
+
+model WalletSnapshot {
+  accountName    String
+  accountAddress String
+  amount         BigInt   @default(0)
+  timestamp      DateTime @default(now())
+
+  @@id([accountAddress, timestamp])
+  @@index([timestamp])
+  @@map("WalletSnapshot")
+}
