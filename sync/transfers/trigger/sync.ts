@@ -33,7 +33,10 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
               take: 1,
               where: {
                 chain: syncConfig.chain,
-                transaction_from: facilitatorConfig.address.toLowerCase(),
+                transaction_from:
+                  syncConfig.chain === Network.SOLANA
+                    ? facilitatorConfig.address
+                    : facilitatorConfig.address.toLowerCase(),
                 provider: syncConfig.provider,
               },
             });

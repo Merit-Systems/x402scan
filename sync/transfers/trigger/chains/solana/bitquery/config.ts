@@ -75,7 +75,7 @@ function transformResponse(
 
   return transfers.map(transfer => ({
     address: transfer.currency.address,
-    transaction_from: transfer.transaction.feePayer,
+    transaction_from: facilitatorConfig.address,
     sender: transfer.sender.address,
     recipient: transfer.receiver.address,
     amount: Math.round(parseFloat(transfer.amount) * USDC_MULTIPLIER),
