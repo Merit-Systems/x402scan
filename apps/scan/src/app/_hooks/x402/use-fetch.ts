@@ -1,36 +1,20 @@
 import { useMutation } from '@tanstack/react-query';
-import { useWalletClient } from 'wagmi';
-import { wrapFetchWithPayment } from 'x402-fetch';
 
 import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
 
 import type { UseMutationOptions } from '@tanstack/react-query';
-
-export interface X402FetchResponse<TData = unknown> {
-  data: TData | string;
-  type: 'json' | 'text' | 'unknown';
-}
+import type { X402FetchResponse, FetchWithPaymentWrapper } from './types';
 
 export const useX402Fetch = <TData = unknown>(
+  wrapperFn: FetchWithPaymentWrapper,
   targetUrl: string,
   value: bigint,
   init?: RequestInit,
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>
 ) => {
-  const { data: walletClient } = useWalletClient({
-    chainId: 8453,
-  });
-
   return useMutation({
     mutationFn: async () => {
-      if (!walletClient) throw new Error('Wallet client not available');
-
-      const fetchWithPayment = wrapFetchWithPayment(
-        fetchWithProxy,
-        walletClient as unknown as Parameters<typeof wrapFetchWithPayment>[1],
-        value
-      );
-
+      const fetchWithPayment = wrapperFn(fetchWithProxy, value);
       const response = await fetchWithPayment(targetUrl, init);
 
       const contentType = response.headers.get('content-type') ?? '';

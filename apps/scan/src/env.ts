@@ -25,7 +25,6 @@ export const env = createEnv({
     TRANSFERS_DB_URL_REPLICA_4: z.url().optional(),
     TRANSFERS_DB_URL_REPLICA_5: z.url().optional(),
     REDIS_URL: z.string().optional(),
-    SOLANA_RPC_URL: z.url().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
@@ -47,6 +46,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
     NEXT_PUBLIC_ENABLE_COMPOSER: z.string().optional().default('false'),
+    NEXT_PUBLIC_SOLANA_RPC_URL: z.url().optional(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL:
@@ -63,6 +63,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_ENABLE_COMPOSER: process.env.NEXT_PUBLIC_ENABLE_COMPOSER,
+    NEXT_PUBLIC_SOLANA_RPC_URL: process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
   },
   emptyStringAsUndefined: true,
 });
