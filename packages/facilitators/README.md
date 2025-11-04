@@ -92,7 +92,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Mogami**     | BASE          | No        | No                             |
 | **OpenX402**   | BASE, SOLANA  | No        | No                             |
 | **xEcho**      | BASE          | No        | No                             |
-| **CodeNut**    | BASE          | No        | No                             |
+| **CodeNut**    | BASE, SOLANA  | No        | No                             |
 
 ### Import Individual Facilitators
 
