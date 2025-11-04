@@ -9,7 +9,7 @@ export interface ConnectedSolanaWallet {
   wallet: UiWallet;
 }
 
-export interface SolanaWalletContextType {
+interface SolanaWalletContextType {
   connectedWallet: ConnectedSolanaWallet | null;
   setConnectedWallet: (wallet: ConnectedSolanaWallet | null) => void;
   disconnect: () => void;

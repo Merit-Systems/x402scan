@@ -1,15 +1,17 @@
 'use client';
 
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { useSearchParams } from 'next/navigation';
+
 import { useCurrentUser } from '@coinbase/cdp-hooks';
-import { useAccount } from 'wagmi';
+
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+
 import { DisplayWalletDialogContent } from './connected';
 import { ConnectWalletDialogContent } from './connect';
-import { useSearchParams } from 'next/navigation';
-import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
-import { WalletChainProvider } from './chain-context/provider';
 
-import { useSolanaStandardWallets } from '@coinbase/cdp-solana-standard-wallet';
+import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
+
+import { WalletChainProvider } from './chain-context/provider';
 
 interface Props {
   children: React.ReactNode;

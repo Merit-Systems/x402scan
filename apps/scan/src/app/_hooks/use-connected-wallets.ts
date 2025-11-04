@@ -1,8 +1,8 @@
 import { useAccount } from 'wagmi';
 import { useSolanaWallet } from '../_contexts/solana/hook';
-import { EthereumAddress, SolanaAddress } from '@/types/address';
+import type { EthereumAddress, SolanaAddress } from '@/types/address';
 
-export type NotConnectedWallets = {
+type NotConnectedWallets = {
   isConnected: false;
   evmAddress: undefined;
   solanaAddress: undefined;
@@ -35,7 +35,7 @@ export const useConnectedWallets = (): UseConnectedWalletsReturnType => {
   if (address && connectedWallet?.account?.address) {
     return {
       isConnected: true,
-      evmAddress: address as EthereumAddress,
+      evmAddress: address,
       solanaAddress: connectedWallet.account.address as SolanaAddress,
     };
   }
@@ -49,7 +49,7 @@ export const useConnectedWallets = (): UseConnectedWalletsReturnType => {
   if (address && !connectedWallet?.account?.address) {
     return {
       isConnected: true,
-      evmAddress: address as EthereumAddress,
+      evmAddress: address,
       solanaAddress: undefined,
     };
   }

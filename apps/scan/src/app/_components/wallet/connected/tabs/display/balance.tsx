@@ -33,7 +33,7 @@ interface EvmBalanceProps extends Props {
   chain: Chain;
 }
 
-const EvmBalance: React.FC<EvmBalanceProps> = ({ address, chain }) => {
+const EvmBalance: React.FC<EvmBalanceProps> = ({ chain }) => {
   const { data: balance, isLoading } = useBalance(usdc(chain));
 
   return <BalanceItem balance={balance} isLoading={isLoading} />;

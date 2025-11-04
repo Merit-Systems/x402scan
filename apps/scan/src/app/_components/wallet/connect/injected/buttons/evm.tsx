@@ -1,18 +1,15 @@
 import { useCallback } from 'react';
 
-import { Loader2 } from 'lucide-react';
-
 import { useConnect } from 'wagmi';
 import { base } from 'wagmi/chains';
 
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
+import { ConnectInjectedWalletButton } from './button';
 
 import { cn } from '@/lib/utils';
 
 import type { Connector } from 'wagmi';
-import { ConnectInjectedWalletButton } from './button';
 
 interface Props {
   className?: string;
@@ -64,7 +61,7 @@ const ConnectEVMInjectedWalletButton: React.FC<
         },
       }
     );
-  }, [connectAsync]);
+  }, [connectAsync, connector]);
 
   return (
     <ConnectInjectedWalletButton

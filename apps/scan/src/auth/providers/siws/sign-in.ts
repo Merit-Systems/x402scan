@@ -1,22 +1,14 @@
-import { SIWS_PROVIDER_ID } from './constants';
 import { getCsrfToken, signIn } from 'next-auth/react';
-import { useSignMessage } from '@solana/react';
 import {
   getBase58Decoder,
-  getPublicKeyFromAddress,
   getUtf8Encoder,
-  signature,
-  verifySignature,
-  address as toAddress,
-  signatureBytes as toSignatureBytes,
-  isSignature,
-  isSignatureBytes,
   getBase58Encoder,
-  getBase64Encoder,
   getBase64Decoder,
 } from '@solana/kit';
 
-import type { SolanaSignInInput } from '@solana/wallet-standard-features';
+import { SIWS_PROVIDER_ID, SIWS_STATEMENT } from './constants';
+
+import type { useSignMessage } from '@solana/react';
 
 interface SignInWithSolanaOptions {
   address: string;
@@ -33,9 +25,8 @@ export async function signInWithSolana({
   redirectTo,
   isEmbeddedWallet = false,
 }: SignInWithSolanaOptions) {
-  const message = await createSignInData(address);
   const result = await signMessage({
-    message: new Uint8Array(getUtf8Encoder().encode(JSON.stringify(message))),
+    message: new Uint8Array(getUtf8Encoder().encode(SIWS_STATEMENT)),
   });
 
   let signatureString: string;
@@ -48,7 +39,7 @@ export async function signInWithSolana({
   }
 
   await signIn(SIWS_PROVIDER_ID, {
-    message: JSON.stringify(message),
+    message: SIWS_STATEMENT,
     signedMessage: getBase58Decoder().decode(result.signedMessage),
     signature: signatureString,
     address,
@@ -56,27 +47,3 @@ export async function signInWithSolana({
     ...(redirectTo ? { redirectTo } : {}),
   });
 }
-
-const createSignInData = async (
-  address: string
-): Promise<SolanaSignInInput> => {
-  const now: Date = new Date();
-  const uri = window.location.href;
-  const currentUrl = new URL(uri);
-  const domain = currentUrl.host;
-
-  const currentDateTime = now.toISOString();
-
-  const signInData: SolanaSignInInput = {
-    domain,
-    address,
-    statement:
-      'Clicking Sign or Approve only means you have proved this wallet is owned by you. This request will not trigger any blockchain transaction or cost any gas fee.',
-    version: '1',
-    nonce: await getCsrfToken(),
-    chainId: 'mainnet',
-    issuedAt: currentDateTime,
-  };
-
-  return signInData;
-};

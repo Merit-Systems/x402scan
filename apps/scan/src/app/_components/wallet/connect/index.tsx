@@ -6,19 +6,10 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Logo } from '@/components/logo';
-import { useConnect } from 'wagmi';
 import { ConnectWalletForm } from './form';
 import { WalletChainSelector } from '../chain-context/selector';
 
 export const ConnectWalletDialogContent = () => {
-  const { connectors } = useConnect();
-
-  const filteredConnectors = connectors.filter(
-    connector =>
-      connector.type === 'injected' &&
-      !['injected', 'cdp-embedded-wallet'].includes(connector.id)
-  );
-
   return (
     <div className="flex flex-col gap-6 max-w-full">
       <DialogHeader className="gap-2 bg-muted border-b">

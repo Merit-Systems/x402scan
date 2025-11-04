@@ -13,13 +13,10 @@ import {
 
 import { useWalletChain } from './hook';
 
-import {
-  Chain,
-  SUPPORTED_CHAINS,
-  CHAIN_LABELS,
-  CHAIN_ICONS,
-} from '@/types/chain';
+import { SUPPORTED_CHAINS, CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 import { ChevronDown } from 'lucide-react';
+
+import type { Chain } from '@/types/chain';
 
 export const WalletChainSelector = () => {
   const { chain, setChain } = useWalletChain();

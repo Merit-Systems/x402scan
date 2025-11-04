@@ -1,13 +1,7 @@
 import { z } from 'zod';
 
 import { cdpFetch } from '../lib/fetch';
-import {
-  chainSchema,
-  ethereumAddressSchema,
-  mixedAddressSchema,
-  solanaAddressSchema,
-} from '@/lib/schemas';
-import { X } from 'lucide-react';
+import { ethereumAddressSchema, solanaAddressSchema } from '@/lib/schemas';
 import { Chain } from '@/types/chain';
 
 export const createOnrampUrlParamsSchema = z.object({

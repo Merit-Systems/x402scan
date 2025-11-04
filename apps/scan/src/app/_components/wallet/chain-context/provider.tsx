@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { WalletChainContext } from './context';
 
 import { Chain } from '@/types/chain';
-import { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
+
+import type { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
 interface Props {
   children: React.ReactNode;

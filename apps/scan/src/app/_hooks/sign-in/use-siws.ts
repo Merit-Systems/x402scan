@@ -2,11 +2,13 @@
 
 import { useMutation } from '@tanstack/react-query';
 
+import { useSignMessage } from '@solana/react';
+
 import { toast } from 'sonner';
 
-import { useSignMessage } from '@solana/react';
-import { UiWalletAccount } from '@wallet-standard/react';
 import { signInWithSolana } from '@/auth/providers/siws/sign-in';
+
+import type { UiWalletAccount } from '@wallet-standard/react';
 
 interface Props {
   account: UiWalletAccount;

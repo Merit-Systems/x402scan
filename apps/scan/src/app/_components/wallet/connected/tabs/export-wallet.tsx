@@ -1,13 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { useExportEvmAccount } from '@coinbase/cdp-hooks';
+
+import Image from 'next/image';
+
+import { AlertTriangle, Download, Eye, EyeOff, Loader2 } from 'lucide-react';
+
+import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import { CopyCode } from '@/components/ui/copy-code';
-import { AlertTriangle, Download, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import Image from 'next/image';
-import type { Address } from 'viem';
+
+import { useExportEvmAccount } from '@coinbase/cdp-hooks';
 
 interface Props {
   address: string;

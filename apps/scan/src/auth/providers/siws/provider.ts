@@ -1,10 +1,9 @@
+import { z } from 'zod';
+
 import Credentials, {
   type CredentialsConfig,
 } from 'next-auth/providers/credentials';
-import { z } from 'zod';
-import { prisma } from '@/services/db/client';
-import { SIWS_PROVIDER_ID, SIWS_PROVIDER_NAME } from './constants';
-import { auth } from '@/auth';
+
 import {
   address as toAddress,
   getBase58Encoder,
@@ -12,6 +11,12 @@ import {
   signatureBytes,
   verifySignature,
 } from '@solana/kit';
+
+import { prisma } from '@/services/db/client';
+
+import { auth } from '@/auth';
+
+import { SIWS_PROVIDER_ID, SIWS_PROVIDER_NAME } from './constants';
 
 import { solanaAddressSchema } from '@/lib/schemas';
 

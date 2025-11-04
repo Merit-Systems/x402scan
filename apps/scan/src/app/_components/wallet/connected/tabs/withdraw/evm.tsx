@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 import { Check, Loader2 } from 'lucide-react';
 
@@ -87,6 +87,7 @@ export const WithdrawEVM: React.FC<Props> = ({
     refetchBalance,
     refetchEthBalance,
     resetSending,
+    setAmount,
   ]);
 
   return (
@@ -104,6 +105,7 @@ export const WithdrawEVM: React.FC<Props> = ({
           !address ||
           !ethereumAddressSchema.safeParse(address).success ||
           isSending ||
+          isBalanceLoading ||
           !balance ||
           balance < amount ||
           isEthBalanceLoading ||

@@ -1,5 +1,7 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
+
 import {
   useCurrentUser,
   useIsInitialized,
@@ -7,23 +9,19 @@ import {
 } from '@coinbase/cdp-hooks';
 import { signOut, useSession } from 'next-auth/react';
 
+import { useDisconnect } from 'wagmi';
+
 import { useMutation } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
-
-import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
-
 import { CopyCode } from '@/components/ui/copy-code';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2 } from 'lucide-react';
 
-import { useDisconnect } from 'wagmi';
+import { AuthenticationMethod, ItemContainer } from './item';
+import { Balance } from './balance';
 
 import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import type { User } from '@coinbase/cdp-hooks';
-import { AuthenticationMethod, ItemContainer } from './item';
-import { Balance } from './balance';
 
 interface Props {
   address: string;

@@ -9,19 +9,18 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Logo } from '@/components/logo';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { WalletContent } from './tabs/display/display';
-import { Deposit } from './tabs/deposit';
+import { ConnectedWalletTabsContent } from './content';
+import { ChainNotConnected } from './chain-not-connected';
 
 import { WalletChainSelector } from '../chain-context/selector';
 
+import { useWalletChain } from '../chain-context/hook';
+import { Chain } from '@/types/chain';
+
 import type { User } from '@coinbase/cdp-hooks';
 import type { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
-import { useWalletChain } from '../chain-context/hook';
-import { ConnectedWalletTabsContent } from './content';
-import { Chain } from '@/types/chain';
-import { ChainNotConnected } from './chain-not-connected/chain-not-connected';
 
 interface Props {
   connectedWallets: ConnectedWallets;

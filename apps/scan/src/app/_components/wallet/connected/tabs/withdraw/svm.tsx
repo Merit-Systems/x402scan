@@ -17,9 +17,7 @@ import { solanaAddressSchema } from '@/lib/schemas';
 
 import { Chain } from '@/types/chain';
 import {
-  address,
   appendTransactionMessageInstructions,
-  createSolanaRpc,
   createTransactionMessage,
   getBase58Decoder,
   pipe,
@@ -218,7 +216,13 @@ const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
 
       refetchWithBackoff();
     }
-  }, [transactionConfirmation, refetchBalance, refetchNativeBalance]);
+  }, [
+    transactionConfirmation,
+    refetchBalance,
+    refetchNativeBalance,
+    resetSendTransaction,
+    setAmount,
+  ]);
 
   const handleSubmit = useCallback(() => {
     const parseResult = solanaAddressSchema.safeParse(toAddress);
@@ -231,7 +235,7 @@ const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
       recipientAddress: parseResult.data,
       amount,
     });
-  }, [toAddress, amount, address, sendTransaction]);
+  }, [toAddress, amount, sendTransaction]);
 
   return (
     <>

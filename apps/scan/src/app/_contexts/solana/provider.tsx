@@ -22,7 +22,6 @@ export function SolanaWalletProvider({ children }: Props) {
 
   const [connectedWallet, setConnectedWallet] =
     useState<ConnectedSolanaWallet | null>(null);
-  const [hasAttemptedAutoConnect, setHasAttemptedAutoConnect] = useState(false);
 
   const disconnect = useCallback(() => {
     setConnectedWallet(null);
@@ -96,7 +95,7 @@ export function SolanaWalletProvider({ children }: Props) {
         });
       }
     }
-  }, [wallets, hasAttemptedAutoConnect, connectedWallet]);
+  }, [wallets, connectedWallet]);
 
   return (
     <SolanaWalletContext.Provider
