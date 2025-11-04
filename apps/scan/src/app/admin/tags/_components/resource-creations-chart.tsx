@@ -89,7 +89,11 @@ export const ResourceCreationsChart = ({
             stacked={false}
             solid={true}
             margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
-            xAxis={{ show: true, angle: -45, height: 60 }}
+            xAxis={{
+              show: true,
+              angle: -45,
+              height: isLessThan7Days ? 80 : 60,
+            }}
             tooltipRows={[
               {
                 key: 'total_resources',

@@ -179,7 +179,11 @@ export const ResourceToolCallsByResourceChart = ({
             bars={bars}
             height={450}
             stacked={true}
-            xAxis={{ show: true, angle: -45, height: 60 }}
+            xAxis={{
+              show: true,
+              angle: -45,
+              height: isLessThan7Days ? 80 : 60,
+            }}
             tooltipRows={tooltipRows}
           />
         ) : (
