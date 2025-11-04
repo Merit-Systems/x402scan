@@ -27,6 +27,7 @@ export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
 ) => {
   const origin = originSchema.parse(originInput);
+
   return await prisma.resourceOrigin.upsert({
     where: { origin: origin.origin },
     update: {
@@ -34,16 +35,16 @@ export const upsertOrigin = async (
       description: origin.description,
       favicon: origin.favicon,
       ogImages: {
-        connectOrCreate: origin.ogImages.map(
+        deleteMany: {
+          url: { notIn: origin.ogImages.map(i => i.url) },
+        },
+        create: origin.ogImages.map(
           ({ url, height, width, title, description }) => ({
-            where: { url },
-            create: {
-              url,
-              height,
-              width,
-              title,
-              description,
-            },
+            url,
+            height,
+            width,
+            title,
+            description,
           })
         ),
       },
@@ -54,16 +55,13 @@ export const upsertOrigin = async (
       description: origin.description,
       favicon: origin.favicon,
       ogImages: {
-        connectOrCreate: origin.ogImages.map(
+        create: origin.ogImages.map(
           ({ url, height, width, title, description }) => ({
-            where: { url },
-            create: {
-              url,
-              height,
-              width,
-              title,
-              description,
-            },
+            url,
+            height,
+            width,
+            title,
+            description,
           })
         ),
       },
