@@ -79,239 +79,239 @@ async function limitConcurrency(
 }
 
 /**
- * Warm caches for the Homepage
+ * Get cache warming tasks for the Homepage
  */
-async function warmHomePage(startDate: Date, endDate: Date) {
+function getHomePageTasks(
+  startDate: Date,
+  endDate: Date
+): (() => Promise<unknown>)[] {
   const limit = 100;
 
-  await limitConcurrency(
-    [
-      // Overall Stats - current period
-      () =>
-        api.public.stats.overall({
-          startDate,
-          endDate,
-        }),
+  return [
+    // Overall Stats - current period
+    () =>
+      api.public.stats.overall({
+        startDate,
+        endDate,
+      }),
 
-      // Overall Stats - previous period (for comparison)
-      () =>
-        api.public.stats.overall({
-          startDate: subSeconds(
-            startDate,
-            differenceInSeconds(endDate, startDate)
-          ),
-          endDate: startDate,
-        }),
-
-      // Bucketed Statistics - for charts
-      () =>
-        api.public.stats.bucketed({
+    // Overall Stats - previous period (for comparison)
+    () =>
+      api.public.stats.overall({
+        startDate: subSeconds(
           startDate,
-          endDate,
-          numBuckets: 32,
-        }),
+          differenceInSeconds(endDate, startDate)
+        ),
+        endDate: startDate,
+      }),
 
-      // Top Facilitators
-      () =>
-        api.public.facilitators.list({
-          pagination: {
-            page_size: facilitatorAddresses.length,
-          },
-          startDate,
-          endDate,
-        }),
+    // Bucketed Statistics - for charts
+    () =>
+      api.public.stats.bucketed({
+        startDate,
+        endDate,
+        numBuckets: 32,
+      }),
 
-      // Top Servers (Bazaar) - list
-      () =>
-        api.public.sellers.bazaar.list({
-          pagination: {
-            page_size: 100,
-          },
-          startDate,
-          endDate,
-          sorting: defaultSellersSorting,
-        }),
+    // Top Facilitators
+    () =>
+      api.public.facilitators.list({
+        pagination: {
+          page_size: facilitatorAddresses.length,
+        },
+        startDate,
+        endDate,
+      }),
 
-      // Top Servers (Bazaar) - overall stats
-      () =>
-        api.public.stats.bazaar.overall({
-          startDate,
-          endDate,
-        }),
+    // Top Servers (Bazaar) - list
+    () =>
+      api.public.sellers.bazaar.list({
+        pagination: {
+          page_size: 100,
+        },
+        startDate,
+        endDate,
+        sorting: defaultSellersSorting,
+      }),
 
-      // Latest Transactions
-      () =>
-        api.public.transfers.list({
-          pagination: {
-            page_size: limit,
-          },
-          sorting: defaultTransfersSorting,
-          startDate,
-          endDate,
-        }),
+    // Top Servers (Bazaar) - overall stats
+    () =>
+      api.public.stats.bazaar.overall({
+        startDate,
+        endDate,
+      }),
 
-      // All Sellers
-      () =>
-        api.public.sellers.all.list({
-          pagination: {
-            page_size: 100,
-          },
-          startDate,
-          endDate,
-          sorting: defaultSellersSorting,
-        }),
-    ],
-    MAX_CONCURRENT_REQUESTS
-  );
+    // Latest Transactions
+    () =>
+      api.public.transfers.list({
+        pagination: {
+          page_size: limit,
+        },
+        sorting: defaultTransfersSorting,
+        startDate,
+        endDate,
+      }),
+
+    // All Sellers
+    () =>
+      api.public.sellers.all.list({
+        pagination: {
+          page_size: 100,
+        },
+        startDate,
+        endDate,
+        sorting: defaultSellersSorting,
+      }),
+  ];
 }
 
 /**
- * Warm caches for the Networks Page
+ * Get cache warming tasks for the Networks Page
  */
-async function warmNetworksPage(startDate: Date, endDate: Date) {
-  await limitConcurrency(
-    [
-      // Networks bucketed statistics
-      () =>
-        api.networks.bucketedStatistics({
-          numBuckets: 48,
-          startDate,
-          endDate,
-        }),
+function getNetworksPageTasks(
+  startDate: Date,
+  endDate: Date
+): (() => Promise<unknown>)[] {
+  return [
+    // Networks bucketed statistics
+    () =>
+      api.networks.bucketedStatistics({
+        numBuckets: 48,
+        startDate,
+        endDate,
+      }),
 
-      // Networks list
-      () =>
-        api.networks.list({
-          startDate,
-          endDate,
-        }),
+    // Networks list
+    () =>
+      api.networks.list({
+        startDate,
+        endDate,
+      }),
 
-      // Overall stats (shared with homepage)
-      () =>
-        api.public.stats.overall({
-          startDate,
-          endDate,
-        }),
-    ],
-    MAX_CONCURRENT_REQUESTS
-  );
+    // Overall stats (shared with homepage)
+    () =>
+      api.public.stats.overall({
+        startDate,
+        endDate,
+      }),
+  ];
 }
 
 /**
- * Warm caches for the Facilitators Page
+ * Get cache warming tasks for the Facilitators Page
  */
-async function warmFacilitatorsPage(startDate: Date, endDate: Date) {
-  await limitConcurrency(
-    [
-      // Facilitators bucketed statistics
-      () =>
-        api.public.facilitators.bucketedStatistics({
-          numBuckets: 48,
-          startDate,
-          endDate,
-        }),
+function getFacilitatorsPageTasks(
+  startDate: Date,
+  endDate: Date
+): (() => Promise<unknown>)[] {
+  return [
+    // Facilitators bucketed statistics
+    () =>
+      api.public.facilitators.bucketedStatistics({
+        numBuckets: 48,
+        startDate,
+        endDate,
+      }),
 
-      // Facilitators list (shared with homepage)
-      () =>
-        api.public.facilitators.list({
-          pagination: {
-            page_size: facilitatorAddresses.length,
-          },
-          startDate,
-          endDate,
-        }),
+    // Facilitators list (shared with homepage)
+    () =>
+      api.public.facilitators.list({
+        pagination: {
+          page_size: facilitatorAddresses.length,
+        },
+        startDate,
+        endDate,
+      }),
 
-      // Overall stats (shared with homepage)
-      () =>
-        api.public.stats.overall({
-          startDate,
-          endDate,
-        }),
-    ],
-    MAX_CONCURRENT_REQUESTS
-  );
+    // Overall stats (shared with homepage)
+    () =>
+      api.public.stats.overall({
+        startDate,
+        endDate,
+      }),
+  ];
 }
 
 /**
- * Warm caches for the Resources/Marketplace Page
+ * Get cache warming tasks for the Resources/Marketplace Page
  */
-async function warmResourcesPage(startDate: Date, endDate: Date) {
-  await limitConcurrency(
-    [
-      // All Sellers stats
-      () =>
-        api.public.sellers.all.stats.overall({
-          startDate,
-          endDate,
-        }),
+function getResourcesPageTasks(
+  startDate: Date,
+  endDate: Date
+): (() => Promise<unknown>)[] {
+  return [
+    // All Sellers stats
+    () =>
+      api.public.sellers.all.stats.overall({
+        startDate,
+        endDate,
+      }),
 
-      () =>
-        api.public.sellers.all.stats.bucketed({
-          startDate,
-          endDate,
-        }),
+    () =>
+      api.public.sellers.all.stats.bucketed({
+        startDate,
+        endDate,
+      }),
 
-      // Bazaar Sellers stats (overall)
-      () =>
-        api.public.sellers.bazaar.stats.overall({
-          startDate,
-          endDate,
-        }),
+    // Bazaar Sellers stats (overall)
+    () =>
+      api.public.sellers.bazaar.stats.overall({
+        startDate,
+        endDate,
+      }),
 
-      // Bazaar Sellers stats (bucketed)
-      () =>
-        api.public.sellers.bazaar.stats.bucketed({
-          startDate,
-          endDate,
-        }),
+    // Bazaar Sellers stats (bucketed)
+    () =>
+      api.public.sellers.bazaar.stats.bucketed({
+        startDate,
+        endDate,
+      }),
 
-      // Marketplace carousels (5 different tag filters)
-      // Most Used (no tags)
-      () =>
-        api.public.sellers.bazaar.list({
-          pagination: { page_size: 20 },
-          startDate,
-          endDate,
-        }),
+    // Marketplace carousels (5 different tag filters)
+    // Most Used (no tags)
+    () =>
+      api.public.sellers.bazaar.list({
+        pagination: { page_size: 20 },
+        startDate,
+        endDate,
+      }),
 
-      // Search Servers
-      () =>
-        api.public.sellers.bazaar.list({
-          tags: ['Search'],
-          pagination: { page_size: 20 },
-          startDate,
-          endDate,
-        }),
+    // Search Servers
+    () =>
+      api.public.sellers.bazaar.list({
+        tags: ['Search'],
+        pagination: { page_size: 20 },
+        startDate,
+        endDate,
+      }),
 
-      // Crypto Servers
-      () =>
-        api.public.sellers.bazaar.list({
-          tags: ['Crypto'],
-          pagination: { page_size: 20 },
-          startDate,
-          endDate,
-        }),
+    // Crypto Servers
+    () =>
+      api.public.sellers.bazaar.list({
+        tags: ['Crypto'],
+        pagination: { page_size: 20 },
+        startDate,
+        endDate,
+      }),
 
-      // AI Servers (Utility tag)
-      () =>
-        api.public.sellers.bazaar.list({
-          tags: ['Utility'],
-          pagination: { page_size: 20 },
-          startDate,
-          endDate,
-        }),
+    // AI Servers (Utility tag)
+    () =>
+      api.public.sellers.bazaar.list({
+        tags: ['Utility'],
+        pagination: { page_size: 20 },
+        startDate,
+        endDate,
+      }),
 
-      // Trading Servers
-      () =>
-        api.public.sellers.bazaar.list({
-          tags: ['Trading'],
-          pagination: { page_size: 20 },
-          startDate,
-          endDate,
-        }),
-    ],
-    MAX_CONCURRENT_REQUESTS
-  );
+    // Trading Servers
+    () =>
+      api.public.sellers.bazaar.list({
+        tags: ['Trading'],
+        pagination: { page_size: 20 },
+        startDate,
+        endDate,
+      }),
+  ];
 }
 
 export async function GET(request: NextRequest) {
@@ -359,16 +359,16 @@ export async function GET(request: NextRequest) {
 
       console.log(`[Cache Warming] Warming timeframe: ${timeframeName}`);
 
-      // Warm all pages for this timeframe with controlled concurrency
-      await limitConcurrency(
-        [
-          () => warmHomePage(startDate, endDate),
-          () => warmNetworksPage(startDate, endDate),
-          () => warmFacilitatorsPage(startDate, endDate),
-          () => warmResourcesPage(startDate, endDate),
-        ],
-        MAX_CONCURRENT_REQUESTS
-      );
+      // Collect all tasks from all pages
+      const allTasks = [
+        ...getHomePageTasks(startDate, endDate),
+        ...getNetworksPageTasks(startDate, endDate),
+        ...getFacilitatorsPageTasks(startDate, endDate),
+        ...getResourcesPageTasks(startDate, endDate),
+      ];
+
+      // Run all tasks with controlled concurrency
+      await limitConcurrency(allTasks, MAX_CONCURRENT_REQUESTS);
 
       const timeframeElapsed = Date.now() - timeframeStartTime;
       timeframesWarmed[timeframeName] = timeframeElapsed;
