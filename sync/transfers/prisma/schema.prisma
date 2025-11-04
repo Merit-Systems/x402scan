@@ -31,12 +31,12 @@ model TransferEvent {
   log_index         Int?     // EVM: log index from events, Solana: instruction index (parent_index * 1000 + index)
 
   @@unique([tx_hash, log_index, chain], name: "unique_transfer_event")
-  @@index([block_timestamp])
+  @@index([block_timestamp], type: Brin)
   @@index([tx_hash])
   @@index([chain, block_timestamp])
-  @@index([block_timestamp, facilitator_id], map: "TransferEvent_block_timestamp_facilitator_id_idx")
-
-  @@index([chain, block_timestamp, facilitator_id])
+  @@index([facilitator_id, block_timestamp(sort: Desc)])
   @@index([sender])
   @@index([recipient])
+  @@index([sender, block_timestamp])
+  @@index([recipient, block_timestamp])
 }
