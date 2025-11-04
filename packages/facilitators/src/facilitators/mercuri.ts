@@ -17,7 +17,7 @@ export const mercuriFacilitator = {
     name: 'Mercuri Finance',
     image: 'https://www.mercuri.finance/240931790.png',
     docsUrl: 'https://docs.mercuri.finance',
-    color: '#e3ffc1',
+    color: '#95d52b',
   },
   config: mercuri,
   discoveryConfig: mercuriDiscovery,
