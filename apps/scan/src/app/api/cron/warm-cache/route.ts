@@ -15,201 +15,304 @@ import type { NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
 
 /**
+ * Maximum number of concurrent cache warming requests
+ * Helps prevent database connection pool exhaustion
+ */
+const MAX_CONCURRENT_REQUESTS = 10;
+
+/**
+ * Maximum number of retries per task
+ */
+const MAX_RETRIES = 3;
+
+/**
+ * Execute a task with retries
+ */
+async function withRetry<T>(
+  task: () => Promise<T>,
+  maxRetries: number,
+  taskName?: string
+): Promise<T> {
+  let lastError: Error | undefined;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await task();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+
+      if (attempt < maxRetries) {
+        console.warn(
+          `[Cache Warming] ${taskName ? `${taskName}: ` : ''}Attempt ${attempt + 1} failed, retrying... Error: ${lastError.message}`
+        );
+      }
+    }
+  }
+
+  console.error(
+    `[Cache Warming] ${taskName ? `${taskName}: ` : ''}All ${maxRetries + 1} attempts failed. Last error: ${lastError?.message}`
+  );
+  throw lastError;
+}
+
+/**
+ * Execute promises with controlled concurrency
+ */
+async function limitConcurrency(
+  tasks: (() => Promise<unknown>)[],
+  maxConcurrent: number
+): Promise<void> {
+  let index = 0;
+
+  async function runNext(): Promise<void> {
+    while (index < tasks.length) {
+      const taskIndex = index++;
+      await withRetry(tasks[taskIndex], MAX_RETRIES, `Task ${taskIndex + 1}`);
+    }
+  }
+
+  const workers = Array.from(
+    { length: Math.min(maxConcurrent, tasks.length) },
+    () => runNext()
+  );
+
+  await Promise.all(workers);
+}
+
+/**
  * Warm caches for the Homepage
  */
 async function warmHomePage(startDate: Date, endDate: Date) {
   const limit = 100;
 
-  await Promise.all([
-    // Overall Stats - current period
-    api.public.stats.overall({
-      startDate,
-      endDate,
-    }),
+  await limitConcurrency(
+    [
+      // Overall Stats - current period
+      () =>
+        api.public.stats.overall({
+          startDate,
+          endDate,
+        }),
 
-    // Overall Stats - previous period (for comparison)
-    api.public.stats.overall({
-      startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-      endDate: startDate,
-    }),
+      // Overall Stats - previous period (for comparison)
+      () =>
+        api.public.stats.overall({
+          startDate: subSeconds(
+            startDate,
+            differenceInSeconds(endDate, startDate)
+          ),
+          endDate: startDate,
+        }),
 
-    // Bucketed Statistics - for charts
-    api.public.stats.bucketed({
-      startDate,
-      endDate,
-      numBuckets: 32,
-    }),
+      // Bucketed Statistics - for charts
+      () =>
+        api.public.stats.bucketed({
+          startDate,
+          endDate,
+          numBuckets: 32,
+        }),
 
-    // Top Facilitators
-    api.public.facilitators.list({
-      pagination: {
-        page_size: facilitatorAddresses.length,
-      },
-      startDate,
-      endDate,
-    }),
+      // Top Facilitators
+      () =>
+        api.public.facilitators.list({
+          pagination: {
+            page_size: facilitatorAddresses.length,
+          },
+          startDate,
+          endDate,
+        }),
 
-    // Top Servers (Bazaar) - list
-    api.public.sellers.bazaar.list({
-      pagination: {
-        page_size: 100,
-      },
-      startDate,
-      endDate,
-      sorting: defaultSellersSorting,
-    }),
+      // Top Servers (Bazaar) - list
+      () =>
+        api.public.sellers.bazaar.list({
+          pagination: {
+            page_size: 100,
+          },
+          startDate,
+          endDate,
+          sorting: defaultSellersSorting,
+        }),
 
-    // Top Servers (Bazaar) - overall stats
-    api.public.stats.bazaar.overall({
-      startDate,
-      endDate,
-    }),
+      // Top Servers (Bazaar) - overall stats
+      () =>
+        api.public.stats.bazaar.overall({
+          startDate,
+          endDate,
+        }),
 
-    // Latest Transactions
-    api.public.transfers.list({
-      pagination: {
-        page_size: limit,
-      },
-      sorting: defaultTransfersSorting,
-      startDate,
-      endDate,
-    }),
+      // Latest Transactions
+      () =>
+        api.public.transfers.list({
+          pagination: {
+            page_size: limit,
+          },
+          sorting: defaultTransfersSorting,
+          startDate,
+          endDate,
+        }),
 
-    // All Sellers
-    api.public.sellers.all.list({
-      pagination: {
-        page_size: 100,
-      },
-      startDate,
-      endDate,
-      sorting: defaultSellersSorting,
-    }),
-  ]);
+      // All Sellers
+      () =>
+        api.public.sellers.all.list({
+          pagination: {
+            page_size: 100,
+          },
+          startDate,
+          endDate,
+          sorting: defaultSellersSorting,
+        }),
+    ],
+    MAX_CONCURRENT_REQUESTS
+  );
 }
 
 /**
  * Warm caches for the Networks Page
  */
 async function warmNetworksPage(startDate: Date, endDate: Date) {
-  await Promise.all([
-    // Networks bucketed statistics
-    api.networks.bucketedStatistics({
-      numBuckets: 48,
-      startDate,
-      endDate,
-    }),
+  await limitConcurrency(
+    [
+      // Networks bucketed statistics
+      () =>
+        api.networks.bucketedStatistics({
+          numBuckets: 48,
+          startDate,
+          endDate,
+        }),
 
-    // Networks list
-    api.networks.list({
-      startDate,
-      endDate,
-    }),
+      // Networks list
+      () =>
+        api.networks.list({
+          startDate,
+          endDate,
+        }),
 
-    // Overall stats (shared with homepage)
-    api.public.stats.overall({
-      startDate,
-      endDate,
-    }),
-  ]);
+      // Overall stats (shared with homepage)
+      () =>
+        api.public.stats.overall({
+          startDate,
+          endDate,
+        }),
+    ],
+    MAX_CONCURRENT_REQUESTS
+  );
 }
 
 /**
  * Warm caches for the Facilitators Page
  */
 async function warmFacilitatorsPage(startDate: Date, endDate: Date) {
-  await Promise.all([
-    // Facilitators bucketed statistics
-    api.public.facilitators.bucketedStatistics({
-      numBuckets: 48,
-      startDate,
-      endDate,
-    }),
+  await limitConcurrency(
+    [
+      // Facilitators bucketed statistics
+      () =>
+        api.public.facilitators.bucketedStatistics({
+          numBuckets: 48,
+          startDate,
+          endDate,
+        }),
 
-    // Facilitators list (shared with homepage)
-    api.public.facilitators.list({
-      pagination: {
-        page_size: facilitatorAddresses.length,
-      },
-      startDate,
-      endDate,
-    }),
+      // Facilitators list (shared with homepage)
+      () =>
+        api.public.facilitators.list({
+          pagination: {
+            page_size: facilitatorAddresses.length,
+          },
+          startDate,
+          endDate,
+        }),
 
-    // Overall stats (shared with homepage)
-    api.public.stats.overall({
-      startDate,
-      endDate,
-    }),
-  ]);
+      // Overall stats (shared with homepage)
+      () =>
+        api.public.stats.overall({
+          startDate,
+          endDate,
+        }),
+    ],
+    MAX_CONCURRENT_REQUESTS
+  );
 }
 
 /**
  * Warm caches for the Resources/Marketplace Page
  */
 async function warmResourcesPage(startDate: Date, endDate: Date) {
-  await Promise.all([
-    // All Sellers stats
-    api.public.sellers.all.stats.overall({
-      startDate,
-      endDate,
-    }),
+  await limitConcurrency(
+    [
+      // All Sellers stats
+      () =>
+        api.public.sellers.all.stats.overall({
+          startDate,
+          endDate,
+        }),
 
-    api.public.sellers.all.stats.bucketed({
-      startDate,
-      endDate,
-    }),
+      () =>
+        api.public.sellers.all.stats.bucketed({
+          startDate,
+          endDate,
+        }),
 
-    // Bazaar Sellers stats (overall)
-    api.public.sellers.bazaar.stats.overall({
-      startDate,
-      endDate,
-    }),
+      // Bazaar Sellers stats (overall)
+      () =>
+        api.public.sellers.bazaar.stats.overall({
+          startDate,
+          endDate,
+        }),
 
-    // Bazaar Sellers stats (bucketed)
-    api.public.sellers.bazaar.stats.bucketed({
-      startDate,
-      endDate,
-    }),
+      // Bazaar Sellers stats (bucketed)
+      () =>
+        api.public.sellers.bazaar.stats.bucketed({
+          startDate,
+          endDate,
+        }),
 
-    // Marketplace carousels (5 different tag filters)
-    // Most Used (no tags)
-    api.public.sellers.bazaar.list({
-      pagination: { page_size: 20 },
-      startDate,
-      endDate,
-    }),
+      // Marketplace carousels (5 different tag filters)
+      // Most Used (no tags)
+      () =>
+        api.public.sellers.bazaar.list({
+          pagination: { page_size: 20 },
+          startDate,
+          endDate,
+        }),
 
-    // Search Servers
-    api.public.sellers.bazaar.list({
-      tags: ['Search'],
-      pagination: { page_size: 20 },
-      startDate,
-      endDate,
-    }),
+      // Search Servers
+      () =>
+        api.public.sellers.bazaar.list({
+          tags: ['Search'],
+          pagination: { page_size: 20 },
+          startDate,
+          endDate,
+        }),
 
-    // Crypto Servers
-    api.public.sellers.bazaar.list({
-      tags: ['Crypto'],
-      pagination: { page_size: 20 },
-      startDate,
-      endDate,
-    }),
+      // Crypto Servers
+      () =>
+        api.public.sellers.bazaar.list({
+          tags: ['Crypto'],
+          pagination: { page_size: 20 },
+          startDate,
+          endDate,
+        }),
 
-    // AI Servers (Utility tag)
-    api.public.sellers.bazaar.list({
-      tags: ['Utility'],
-      pagination: { page_size: 20 },
-      startDate,
-      endDate,
-    }),
+      // AI Servers (Utility tag)
+      () =>
+        api.public.sellers.bazaar.list({
+          tags: ['Utility'],
+          pagination: { page_size: 20 },
+          startDate,
+          endDate,
+        }),
 
-    // Trading Servers
-    api.public.sellers.bazaar.list({
-      tags: ['Trading'],
-      pagination: { page_size: 20 },
-      startDate,
-      endDate,
-    }),
-  ]);
+      // Trading Servers
+      () =>
+        api.public.sellers.bazaar.list({
+          tags: ['Trading'],
+          pagination: { page_size: 20 },
+          startDate,
+          endDate,
+        }),
+    ],
+    MAX_CONCURRENT_REQUESTS
+  );
 }
 
 export async function GET(request: NextRequest) {
@@ -257,13 +360,16 @@ export async function GET(request: NextRequest) {
 
       console.log(`[Cache Warming] Warming timeframe: ${timeframeName}`);
 
-      // Warm all pages for this timeframe in parallel
-      await Promise.all([
-        warmHomePage(startDate, endDate),
-        warmNetworksPage(startDate, endDate),
-        warmFacilitatorsPage(startDate, endDate),
-        warmResourcesPage(startDate, endDate),
-      ]);
+      // Warm all pages for this timeframe with controlled concurrency
+      await limitConcurrency(
+        [
+          () => warmHomePage(startDate, endDate),
+          () => warmNetworksPage(startDate, endDate),
+          () => warmFacilitatorsPage(startDate, endDate),
+          () => warmResourcesPage(startDate, endDate),
+        ],
+        MAX_CONCURRENT_REQUESTS
+      );
 
       const timeframeElapsed = Date.now() - timeframeStartTime;
       timeframesWarmed[timeframeName] = timeframeElapsed;
