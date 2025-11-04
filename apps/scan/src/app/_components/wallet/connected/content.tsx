@@ -2,7 +2,7 @@ import { TabsContent } from '@/components/ui/tabs';
 
 import { Deposit } from './tabs/deposit';
 import { Withdraw } from './tabs/withdraw';
-import { ExportWallet } from './tabs/export-wallet';
+import { ExportWallet } from './tabs/export';
 import { WalletContent } from './tabs/display';
 
 import type { User } from '@coinbase/cdp-hooks';
