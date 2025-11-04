@@ -3,11 +3,10 @@
 import { createContext } from 'react';
 
 import type { UiWalletAccount, UiWallet } from '@wallet-standard/react';
-import type { Wallet, WalletAccount } from '@wallet-standard/base';
 
 export interface ConnectedSolanaWallet {
-  account: UiWalletAccount | WalletAccount;
-  wallet: UiWallet | Wallet;
+  account: UiWalletAccount;
+  wallet: UiWallet;
 }
 
 export interface SolanaWalletContextType {

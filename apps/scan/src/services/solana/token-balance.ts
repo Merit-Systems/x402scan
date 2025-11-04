@@ -22,14 +22,18 @@ export const getSolanaTokenBalance = async (
 ) => {
   const { ownerAddress, tokenMint } = getSolanaTokenBalanceSchema.parse(input);
 
-  const [usdcTokenAccount] = await findAssociatedTokenPda({
-    mint: address(tokenMint),
-    owner: address(ownerAddress),
-    tokenProgram: TOKEN_PROGRAM_ADDRESS,
-  });
-  const {
-    value: { amount, decimals },
-  } = await solanaRpc.getTokenAccountBalance(usdcTokenAccount).send();
+  try {
+    const [usdcTokenAccount] = await findAssociatedTokenPda({
+      mint: address(tokenMint),
+      owner: address(ownerAddress),
+      tokenProgram: TOKEN_PROGRAM_ADDRESS,
+    });
+    const {
+      value: { amount, decimals },
+    } = await solanaRpc.getTokenAccountBalance(usdcTokenAccount).send();
 
-  return convertTokenAmount(BigInt(amount), decimals);
+    return convertTokenAmount(BigInt(amount), decimals);
+  } catch {
+    return 0;
+  }
 };

@@ -9,7 +9,7 @@ interface Props {
   isOnramp?: boolean;
 }
 
-export const useSignIn = (props?: Props) => {
+export const useSiwe = (props?: Props) => {
   const { address } = useAccount();
 
   const { signMessageAsync } = useSignMessage();

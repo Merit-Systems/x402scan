@@ -42,16 +42,22 @@ export function SolanaWalletProvider({ children }: Props) {
   }, []);
 
   useEffect(() => {
-    if (ready && cdpWallet && !connectedWallet) {
-      const savedWallet = solanaWalletCookies.get();
-      if (savedWallet?.walletName === cdpWallet.name) {
+    if (ready && cdpWallet) {
+      console.log(cdpWallet, wallets);
+      const wallet = wallets.find(
+        wallet =>
+          wallet.features.includes('cdp:') &&
+          wallet.accounts[0].address === cdpWallet.accounts[0].address
+      );
+      console.log(wallet);
+      if (wallet) {
         setConnectedWallet({
-          account: cdpWallet.accounts[0],
-          wallet: cdpWallet,
+          account: wallet.accounts[0],
+          wallet: wallet,
         });
       }
     }
-  }, [ready, cdpWallet, connectedWallet]);
+  }, [ready, cdpWallet, wallets]);
 
   useEffect(() => {
     if (hasAttemptedAutoConnect || connectedWallet) return;

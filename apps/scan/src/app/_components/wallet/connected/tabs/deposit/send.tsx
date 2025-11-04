@@ -27,7 +27,6 @@ export const Send: React.FC<Props> = ({ address }) => {
           Send USDC on {CHAIN_LABELS[chain]}
         </span>
       </div>
-      {}
       <CopyCode code={address} toastMessage="Address copied to clipboard" />
     </div>
   );

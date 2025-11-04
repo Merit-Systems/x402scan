@@ -1,5 +1,5 @@
 import { ConnectWalletForm } from '@/app/_components/wallet/connect/form';
-import { useSignIn } from '@/app/_hooks/use-sign-in';
+import { useSiwe } from '@/app/_hooks/sign-in/use-siwe';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useAccount } from 'wagmi';
@@ -19,7 +19,7 @@ export const ConnectStep = () => {
 };
 
 const Verify = () => {
-  const { signIn, isPending } = useSignIn();
+  const { signIn, isPending } = useSiwe();
 
   return (
     <div className="flex flex-col gap-4 pt-4 ">
