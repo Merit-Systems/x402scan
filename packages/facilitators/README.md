@@ -83,7 +83,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | -------------- | ------------- | --------- | ------------------------------ |
 | **Coinbase**   | BASE, SOLANA  | ✅ Yes    | No - uses `@coinbase/x402` SDK |
 | **AurraCloud** | BASE          | ✅ Yes    | Yes - API key                  |
-| **thirdweb**   | BASE          | ✅ Yes    | Yes - Secret key & wallet      |
+| **thirdweb**   | BASE, POLYGON | ✅ Yes    | Yes - Secret key               |
 | **PayAI**      | BASE, SOLANA  | ✅ Yes    | No                             |
 | **Daydreams**  | BASE, SOLANA  | No        | No                             |
 | **X402rs**     | BASE, POLYGON | No        | No                             |
@@ -124,8 +124,7 @@ questflow({
 });
 
 thirdweb({
-  walletSecret: process.env.THIRDWEB_NEXUS_SECRET_KEY,
-  walletAddress: process.env.SERVER_WALLET,
+  secretKey: process.env.THIRDWEB_SECRET_KEY,
 });
 ```
 
