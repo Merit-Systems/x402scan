@@ -94,6 +94,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Questflow**  | BASE          | ✅ Yes    | Yes - API key                  |
 | **xEcho**      | BASE          | No        | No                             |
 | **CodeNut**    | BASE          | No        | No                             |
+| **Amiko**      | BASE, SOLANA  | No        | No                             |
 
 ### Import Individual Facilitators
 
