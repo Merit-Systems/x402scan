@@ -49,10 +49,9 @@ async function withRetry<T>(
     }
   }
 
-  console.error(
-    `[Cache Warming] ${taskName ? `${taskName}: ` : ''}All ${maxRetries + 1} attempts failed. Last error: ${lastError?.message}`
-  );
-  throw lastError;
+  const errorMessage = `[Cache Warming] ${taskName ? `${taskName}: ` : ''}All ${maxRetries + 1} attempts failed. Last error: ${lastError?.message}`;
+  console.error(errorMessage);
+  throw lastError ?? new Error(errorMessage);
 }
 
 /**
