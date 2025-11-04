@@ -11,7 +11,7 @@ export const navenFacilitator = {
   id: 'naven',
   metadata: {
     name: 'Naven',
-    image: 'https://naven.network/naven-facilitator.png',
+    image: '/naven.png',
     docsUrl: 'https://docs.naven.network/',
     color: '#9def32',
   },
