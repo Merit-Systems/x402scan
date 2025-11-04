@@ -83,7 +83,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | -------------- | ------------- | --------- | ------------------------------ |
 | **Coinbase**   | BASE, SOLANA  | ✅ Yes    | No - uses `@coinbase/x402` SDK |
 | **AurraCloud** | BASE          | ✅ Yes    | Yes - API key                  |
-| **thirdweb**   | BASE, POLYGON | ✅ Yes    | Yes - Secret key & wallet      |
+| **thirdweb**   | BASE, POLYGON | ✅ Yes    | Yes - Secret key               |
 | **PayAI**      | BASE, SOLANA  | ✅ Yes    | No                             |
 | **Daydreams**  | BASE, SOLANA  | No        | No                             |
 | **X402rs**     | BASE, POLYGON | No        | No                             |
