@@ -13,6 +13,7 @@ import {
   listResourcesWithPagination,
   searchResources,
   searchResourcesSchema,
+  type ResourceSortId,
 } from '@/services/db/resources/resource';
 
 import { prisma } from '@/services/db/client';
@@ -50,10 +51,23 @@ export const resourcesRouter = createTRPCRouter({
       .input(
         z.object({
           where: z.custom<Prisma.ResourcesWhereInput>().optional(),
+          sorting: z
+            .object({
+              id: z.enum([
+                'lastUpdated',
+                'toolCalls',
+              ] satisfies ResourceSortId[]),
+              desc: z.boolean(),
+            })
+            .optional(),
         })
       )
       .query(async ({ input, ctx: { pagination } }) => {
-        return await listResourcesWithPagination(pagination, input.where);
+        return await listResourcesWithPagination(
+          pagination,
+          input.where,
+          input.sorting
+        );
       }),
     byAddress: publicProcedure
       .input(mixedAddressSchema)
