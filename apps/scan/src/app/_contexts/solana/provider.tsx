@@ -60,7 +60,6 @@ export function SolanaWalletProvider({ children }: Props) {
     if (connectedWallet) return;
 
     const savedWallet = solanaWalletCookies.get();
-    console.log(savedWallet);
     if (!savedWallet) {
       return;
     }
@@ -68,15 +67,11 @@ export function SolanaWalletProvider({ children }: Props) {
     // Try to find and reconnect to the saved wallet
     const matchingWallet = wallets.find(w => w.name === savedWallet.walletName);
 
-    console.log(matchingWallet);
-
     if (matchingWallet && matchingWallet.accounts.length > 0) {
       // Check if wallet has matching account (some wallets auto-populate accounts)
       const matchingAccount = matchingWallet.accounts.find(
         acc => acc.address === savedWallet.address
       );
-
-      console.log(matchingAccount);
 
       if (matchingAccount) {
         setConnectedWallet({

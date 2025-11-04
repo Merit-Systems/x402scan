@@ -7,15 +7,6 @@ import { Check, Loader2 } from 'lucide-react';
 
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
-
-import { useSolanaWallet } from '@/app/_contexts/solana/hook';
-import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
-
-import { USDC_ADDRESS } from '@/lib/utils';
-import { solanaAddressSchema } from '@/lib/schemas';
-
-import { Chain } from '@/types/chain';
 import {
   appendTransactionMessageInstructions,
   createTransactionMessage,
@@ -32,8 +23,22 @@ import {
   getCreateAssociatedTokenIdempotentInstructionAsync,
 } from '@solana-program/token';
 import { address as solanaAddress } from '@solana/kit';
-import type { UiWalletAccount } from '@wallet-standard/react';
+
+import { Button } from '@/components/ui/button';
+
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
+
 import { api } from '@/trpc/client';
+
+import { solanaRpc } from '@/services/solana/rpc';
+
+import { USDC_ADDRESS } from '@/lib/utils';
+import { solanaAddressSchema } from '@/lib/schemas';
+
+import { Chain } from '@/types/chain';
+
+import type { UiWalletAccount } from '@wallet-standard/react';
 
 interface Props {
   amount: number;
@@ -77,13 +82,6 @@ const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
     'solana:mainnet'
   );
 
-  const { data: latestBlockhash } = api.public.solana.latestBlockhash.useQuery(
-    undefined,
-    {
-      refetchInterval: 10000,
-    }
-  );
-
   const {
     data: usdcBalance,
     isLoading: isUsdcBalanceLoading,
@@ -110,10 +108,6 @@ const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
       recipientAddress: string;
       amount: number;
     }) => {
-      if (!latestBlockhash) {
-        throw new Error('Latest blockhash not found');
-      }
-
       const usdcMint = USDC_ADDRESS[Chain.SOLANA];
       const decimals = 6;
       const amountInRawUnits = BigInt(Math.floor(amount * 10 ** decimals));
@@ -154,6 +148,10 @@ const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
         transferInstruction,
       ];
 
+      const { value: latestBlockhash } = await solanaRpc
+        .getLatestBlockhash()
+        .send();
+
       const transactionMessage = pipe(
         createTransactionMessage({ version: 0 }),
         message =>
@@ -190,7 +188,6 @@ const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
     });
 
   useEffect(() => {
-    console.log(transactionConfirmation);
     if (transactionConfirmation?.confirmationStatus === 'confirmed') {
       setIsConfirmed(true);
 
@@ -252,8 +249,7 @@ const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
           isUsdcBalanceLoading ||
           isLoadingNativeBalance ||
           !nativeBalance ||
-          nativeBalance < 0.0001 ||
-          !latestBlockhash
+          nativeBalance < 0.0001
         }
         onClick={handleSubmit}
       >

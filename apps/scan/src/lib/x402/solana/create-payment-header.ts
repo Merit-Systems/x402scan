@@ -1,9 +1,3 @@
-import type {
-  Address,
-  TransactionSigner,
-  Instruction,
-  TransactionModifyingSigner,
-} from '@solana/kit';
 import {
   pipe,
   createTransactionMessage,
@@ -13,11 +7,8 @@ import {
   prependTransactionMessageInstruction,
   getBase64EncodedWireTransaction,
   fetchEncodedAccount,
-  createSolanaRpc,
   compileTransaction,
 } from '@solana/kit';
-
-// import type { X402Config } from '../../../types/config';
 import {
   fetchMint,
   findAssociatedTokenPda,
@@ -31,11 +22,18 @@ import {
   getSetComputeUnitLimitInstruction,
   setTransactionMessageComputeUnitPrice,
 } from '@solana-program/compute-budget';
-import { encodePayment } from './encode-payment';
-import type { PaymentPayload, PaymentRequirements } from 'x402/types';
-import { env } from '@/env';
 
-const rpc = createSolanaRpc(env.NEXT_PUBLIC_SOLANA_RPC_URL!);
+import { solanaRpc } from '@/services/solana/rpc';
+
+import { encodePayment } from './encode-payment';
+
+import type { PaymentPayload, PaymentRequirements } from 'x402/types';
+import type {
+  Address,
+  TransactionSigner,
+  Instruction,
+  TransactionModifyingSigner,
+} from '@solana/kit';
 
 /**
  * Creates and encodes a payment header for the given client and payment requirements.
@@ -129,7 +127,9 @@ async function createTransferTransactionMessage(
   );
 
   // estimate the compute budget limit (gas limit)
-  const estimateComputeUnitLimit = estimateComputeUnitLimitFactory({ rpc });
+  const estimateComputeUnitLimit = estimateComputeUnitLimitFactory({
+    rpc: solanaRpc,
+  });
   const estimatedUnits = await estimateComputeUnitLimit(txToSimulate).catch(
     e => {
       if (e instanceof Error) {
@@ -141,7 +141,9 @@ async function createTransferTransactionMessage(
   );
 
   // finalize the transaction message by adding the compute budget limit and blockhash
-  const { value: latestBlockhash } = await rpc.getLatestBlockhash().send();
+  const { value: latestBlockhash } = await solanaRpc
+    .getLatestBlockhash()
+    .send();
   const tx = pipe(
     txToSimulate,
     tx =>
@@ -155,23 +157,13 @@ async function createTransferTransactionMessage(
   return tx;
 }
 
-/**
- * Creates a transfer instruction for the given client and payment requirements.
- * This function will determine which transfer instruction to create
- * based on the program that created the token (token-2022 or token).
- *
- * @param client - The signer instance used to create the transfer instruction
- * @param paymentRequirements - The payment requirements
- * @param config - Optional configuration for X402 operations (e.g., custom RPC URLs)
- * @returns A promise that resolves to the create ATA (if needed) and transfer instruction
- */
 async function createAtaAndTransferInstructions(
   signer: TransactionModifyingSigner,
   paymentRequirements: PaymentRequirements
 ): Promise<Instruction[]> {
   const { asset } = paymentRequirements;
 
-  const tokenMint = await fetchMint(rpc, asset as Address);
+  const tokenMint = await fetchMint(solanaRpc, asset as Address);
   const tokenProgramAddress = tokenMint.programAddress;
 
   // validate that the asset was created by a known token program
@@ -242,7 +234,10 @@ async function createAtaInstructionOrUndefined(
   });
 
   // check if the ATA exists
-  const maybeAccount = await fetchEncodedAccount(rpc, destinationATAAddress);
+  const maybeAccount = await fetchEncodedAccount(
+    solanaRpc,
+    destinationATAAddress
+  );
 
   // if the ATA does not exist, return an instruction to create it
   if (!maybeAccount.exists) {

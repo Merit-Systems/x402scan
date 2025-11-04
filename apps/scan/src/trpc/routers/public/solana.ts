@@ -1,13 +1,15 @@
+import z from 'zod';
+
 import {
-  getLatestBlockhash,
   getSolanaNativeBalance,
   getSolanaTokenBalance,
   getSolanaTokenBalanceSchema,
-  getSolanaTransactionConfirmation,
-} from '@/services/solana/token-balance';
+} from '@/services/solana/balance';
+import { getSolanaTransactionConfirmation } from '@/services/solana/transaction';
+
 import { createTRPCRouter, publicProcedure } from '../../trpc';
+
 import { solanaAddressSchema } from '@/lib/schemas';
-import z from 'zod';
 
 export const solanaRouter = createTRPCRouter({
   balance: publicProcedure
@@ -15,10 +17,6 @@ export const solanaRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await getSolanaTokenBalance(input);
     }),
-
-  latestBlockhash: publicProcedure.query(async () => {
-    return await getLatestBlockhash();
-  }),
 
   nativeBalance: publicProcedure
     .input(solanaAddressSchema)

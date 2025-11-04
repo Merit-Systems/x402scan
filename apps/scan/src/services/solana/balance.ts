@@ -1,8 +1,8 @@
 import z from 'zod';
 
-import { address, signature } from '@solana/kit';
+import { address } from '@solana/kit';
 
-import { solanaRpc } from './connection';
+import { solanaRpc } from './rpc';
 
 import { solanaAddressSchema } from '@/lib/schemas';
 import { USDC_ADDRESS } from '@/lib/utils';
@@ -41,14 +41,6 @@ export const getSolanaTokenBalance = async (
   }
 };
 
-export const getLatestBlockhash = async () => {
-  const { value: latestBlockhash } = await solanaRpc
-    .getLatestBlockhash()
-    .send();
-
-  return latestBlockhash;
-};
-
 export const getSolanaNativeBalance = async (
   ownerAddress: z.output<typeof solanaAddressSchema>
 ) => {
@@ -58,11 +50,4 @@ export const getSolanaNativeBalance = async (
   } catch {
     return 0;
   }
-};
-
-export const getSolanaTransactionConfirmation = async (sig: string) => {
-  const {
-    value: [confirmation],
-  } = await solanaRpc.getSignatureStatuses([signature(sig)]).send();
-  return confirmation;
 };

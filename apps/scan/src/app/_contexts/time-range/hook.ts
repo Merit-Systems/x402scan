@@ -30,6 +30,7 @@ export const useTimeRangeContext = () => {
       startDate: subMinutes(context.startDate, CACHE_DURATION_MINUTES),
       endDate: subMinutes(context.endDate, CACHE_DURATION_MINUTES),
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [context.startDate, context.endDate]
   );
 };
