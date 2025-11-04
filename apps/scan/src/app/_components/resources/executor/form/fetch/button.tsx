@@ -68,10 +68,7 @@ export const ConnectWalletButton = forwardRef<
       variant="outline"
       size="lg"
       className="w-full"
-      onClick={e => {
-        e.stopPropagation();
-        if (onClick) onClick();
-      }}
+      onClick={onClick}
     >
       <Chains chains={chains} />
       Connect Wallet
