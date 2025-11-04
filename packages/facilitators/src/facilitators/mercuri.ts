@@ -8,8 +8,8 @@ export const mercuri: FacilitatorConfig = {
 };
 
 export const mercuriDiscovery: FacilitatorConfig = {
-    url: 'https://facilitator.mercuri.finance',
-  };
+  url: 'https://facilitator.mercuri.finance',
+};
 
 export const mercuriFacilitator = {
   id: 'mercuri',
@@ -31,7 +31,7 @@ export const mercuriFacilitator = {
     ],
     [Network.SOLANA]: [
       {
-        address: '2kQPdFFffYhskzSKX9uBYuDSWEuSphgJrVmcrofvVnMk', 
+        address: '2kQPdFFffYhskzSKX9uBYuDSWEuSphgJrVmcrofvVnMk',
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-04'),
       },
