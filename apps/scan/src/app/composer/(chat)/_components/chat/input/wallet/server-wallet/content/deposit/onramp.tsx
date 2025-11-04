@@ -5,10 +5,13 @@ import { useCallback, useState } from 'react';
 import { Check, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { TokenInput } from '@/components/ui/token/token-input';
 
 import { api } from '@/trpc/client';
-import { TokenInput } from '@/components/ui/token/token-input';
+
 import { BASE_USDC } from '@/lib/tokens/usdc';
+
+import { Chain } from '@/types/chain';
 
 export const Onramp = () => {
   const {
@@ -27,6 +30,7 @@ export const Onramp = () => {
     createOnrampSession({
       amount,
       redirect: window.location.href,
+      defaultNetwork: Chain.BASE,
     });
   }, [amount, createOnrampSession]);
 
