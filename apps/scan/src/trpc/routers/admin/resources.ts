@@ -11,6 +11,8 @@ import {
   unassignAllTagsFromResource,
   unassignAllTagsFromAllResources,
   deleteResourceTag,
+  removeSubTagsFromTag,
+  unassignAllSubTags,
 } from '@/services/db/resources/tag';
 import {
   createResourceRequestMetadata,
@@ -30,6 +32,13 @@ import {
   deleteExcludedResourceByResourceId,
   searchResourcesForExcludes,
 } from '@/services/db/resources/excludes';
+import {
+  getBucketedResourceCreations,
+  getBucketedToolCalls,
+  getBucketedToolCallsByTags,
+  getBucketedToolCallsByResources,
+  resourceBucketedQuerySchema,
+} from '@/services/db/resources/stats';
 
 export const adminResourcesRouter = createTRPCRouter({
   tags: {
@@ -66,6 +75,16 @@ export const adminResourcesRouter = createTRPCRouter({
       .mutation(async ({ input }) => {
         return await deleteResourceTag(input);
       }),
+
+    removeSubTags: adminProcedure
+      .input(z.string().uuid())
+      .mutation(async ({ input }) => {
+        return await removeSubTagsFromTag(input);
+      }),
+
+    unassignAllSubTags: adminProcedure.mutation(async () => {
+      return await unassignAllSubTags();
+    }),
   },
   requestMetadata: {
     list: adminProcedure.query(async () => {
@@ -127,6 +146,31 @@ export const adminResourcesRouter = createTRPCRouter({
       .input(z.object({ resourceId: z.uuid() }))
       .mutation(async ({ input }) => {
         return await deleteExcludedResourceByResourceId(input.resourceId);
+      }),
+  },
+  stats: {
+    creations: adminProcedure
+      .input(resourceBucketedQuerySchema)
+      .query(async ({ input }) => {
+        return await getBucketedResourceCreations(input);
+      }),
+
+    toolCalls: adminProcedure
+      .input(resourceBucketedQuerySchema)
+      .query(async ({ input }) => {
+        return await getBucketedToolCalls(input);
+      }),
+
+    toolCallsByTags: adminProcedure
+      .input(resourceBucketedQuerySchema)
+      .query(async ({ input }) => {
+        return await getBucketedToolCallsByTags(input);
+      }),
+
+    toolCallsByResources: adminProcedure
+      .input(resourceBucketedQuerySchema)
+      .query(async ({ input }) => {
+        return await getBucketedToolCallsByResources(input);
       }),
   },
 });
