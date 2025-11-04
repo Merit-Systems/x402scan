@@ -213,6 +213,9 @@ importers:
       '@wallet-standard/react':
         specifier: ^1.0.1
         version: 1.0.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@wallet-standard/ui':
+        specifier: ^1.0.1
+        version: 1.0.1
       ai:
         specifier: ^5.0.68
         version: 5.0.81(zod@4.1.12)

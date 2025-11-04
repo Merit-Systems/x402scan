@@ -12,7 +12,7 @@ import { erc20Abi, parseUnits } from 'viem';
 import { Button } from '@/components/ui/button';
 
 import { useEthBalance } from '@/app/_hooks/use-eth-balance';
-import { useBalance } from '@/app/_hooks/use-balance';
+import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
 
 import { USDC_ADDRESS } from '@/lib/utils';
 

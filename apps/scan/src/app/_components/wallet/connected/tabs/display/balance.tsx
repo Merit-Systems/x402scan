@@ -3,7 +3,7 @@ import { useWalletChain } from '../../../chain-context/hook';
 import { ItemContainer } from './item';
 import { Loading } from '@/components/ui/loading';
 import { api } from '@/trpc/client';
-import { useBalance } from '@/app/_hooks/use-balance';
+import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
 import { usdc } from '@/lib/tokens/usdc';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -55,7 +55,7 @@ const BalanceItem = ({
             value={balance}
             isLoading={isLoading}
             component={value => <p>{value} USDC</p>}
-            loadingComponent={<Skeleton className="h-4 w-16" />}
+            loadingComponent={<Skeleton className="h-6 w-16" />}
           />
         </div>
       }

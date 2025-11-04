@@ -43,13 +43,11 @@ export function SolanaWalletProvider({ children }: Props) {
 
   useEffect(() => {
     if (ready && cdpWallet) {
-      console.log(cdpWallet, wallets);
       const wallet = wallets.find(
         wallet =>
           wallet.features.includes('cdp:') &&
           wallet.accounts[0].address === cdpWallet.accounts[0].address
       );
-      console.log(wallet);
       if (wallet) {
         setConnectedWallet({
           account: wallet.accounts[0],
@@ -60,22 +58,26 @@ export function SolanaWalletProvider({ children }: Props) {
   }, [ready, cdpWallet, wallets]);
 
   useEffect(() => {
-    if (hasAttemptedAutoConnect || connectedWallet) return;
+    if (connectedWallet) return;
 
     const savedWallet = solanaWalletCookies.get();
+    console.log(savedWallet);
     if (!savedWallet) {
-      setHasAttemptedAutoConnect(true);
       return;
     }
 
     // Try to find and reconnect to the saved wallet
     const matchingWallet = wallets.find(w => w.name === savedWallet.walletName);
 
+    console.log(matchingWallet);
+
     if (matchingWallet && matchingWallet.accounts.length > 0) {
       // Check if wallet has matching account (some wallets auto-populate accounts)
       const matchingAccount = matchingWallet.accounts.find(
         acc => acc.address === savedWallet.address
       );
+
+      console.log(matchingAccount);
 
       if (matchingAccount) {
         setConnectedWallet({
@@ -92,17 +94,8 @@ export function SolanaWalletProvider({ children }: Props) {
           walletName: matchingWallet.name,
           address: matchingWallet.accounts[0].address,
         });
-      } else {
-        // Multiple accounts but none match, clear cookie
-        solanaWalletCookies.clear();
       }
-    } else if (!matchingWallet) {
-      // Wallet not found, clear cookie
-      solanaWalletCookies.clear();
     }
-    // If wallet found but no accounts, don't clear cookie yet (user can reconnect manually)
-
-    setHasAttemptedAutoConnect(true);
   }, [wallets, hasAttemptedAutoConnect, connectedWallet]);
 
   return (

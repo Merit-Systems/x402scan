@@ -11,7 +11,7 @@ import { useMutation } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
 
-import { useBalance } from '@/app/_hooks/use-balance';
+import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
 
 import { CopyCode } from '@/components/ui/copy-code';
 import { Skeleton } from '@/components/ui/skeleton';

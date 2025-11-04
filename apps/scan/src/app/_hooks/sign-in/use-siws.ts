@@ -10,11 +10,12 @@ import { signInWithSolana } from '@/auth/providers/siws/sign-in';
 
 interface Props {
   account: UiWalletAccount;
+  isEmbeddedWallet: boolean;
   isOnramp?: boolean;
 }
 
 export const useSiws = (props: Props) => {
-  const { account, isOnramp } = props;
+  const { account, isEmbeddedWallet, isOnramp } = props;
 
   const signMessage = useSignMessage(account);
 
@@ -25,10 +26,11 @@ export const useSiws = (props: Props) => {
       }
       return signInWithSolana({
         address: account.address,
-        signMessage,
+        signMessage: signMessage,
         redirectTo: isOnramp
           ? `${window.location.href}?onramp=true`
           : window.location.href,
+        isEmbeddedWallet,
       });
     },
     onSuccess: () => {

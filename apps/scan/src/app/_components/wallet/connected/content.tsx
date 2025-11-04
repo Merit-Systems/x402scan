@@ -1,7 +1,7 @@
 import { TabsContent } from '@/components/ui/tabs';
 
 import { Deposit } from './tabs/deposit';
-import { Withdraw } from './tabs/withdraw/withdraw';
+import { Withdraw } from './tabs/withdraw';
 import { ExportWallet } from './tabs/export-wallet';
 import { WalletContent } from './tabs/display';
 

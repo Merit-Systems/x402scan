@@ -10,13 +10,25 @@ export const NoSVMSessionContent = () => {
     return null;
   }
 
-  return <SVMSignInContent account={connectedWallet.account} />;
+  return (
+    <SVMSignInContent
+      account={connectedWallet.account}
+      isEmbeddedWallet={connectedWallet.wallet.features.includes('cdp:')}
+    />
+  );
 };
 
-const SVMSignInContent = ({ account }: { account: UiWalletAccount }) => {
+const SVMSignInContent = ({
+  account,
+  isEmbeddedWallet,
+}: {
+  account: UiWalletAccount;
+  isEmbeddedWallet: boolean;
+}) => {
   const { signIn, isPending } = useSiws({
     account,
     isOnramp: true,
+    isEmbeddedWallet,
   });
 
   return <NoSessionContent onSignIn={signIn} isPending={isPending} />;

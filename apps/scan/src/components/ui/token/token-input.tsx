@@ -12,12 +12,14 @@ import { Loading } from '@/components/ui/loading';
 
 import { TokenSelect } from './token-select';
 
-import { useBalance } from '@/app/_hooks/use-balance';
+import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
 
 import { cn } from '@/lib/utils';
 import { BASE_USDC } from '@/lib/tokens/usdc';
 
 import type { Token } from '@/types/token';
+import { Chain } from '@/types/chain';
+import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
 
 interface Props
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
@@ -25,6 +27,7 @@ interface Props
   label: string;
   selectedToken: Token;
   onTokenChange?: (token: Token) => void;
+  chain?: Chain;
   tokens?: Token[];
   className?: string;
   inputClassName?: string;
@@ -37,6 +40,7 @@ export const TokenInput: React.FC<Props> = ({
   onTokenChange,
   tokens = [],
   isBalanceMax = false,
+  chain,
   label,
   className,
   inputClassName,
@@ -45,12 +49,26 @@ export const TokenInput: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const autoNumericRef = useRef<AutoNumeric | null>(null);
 
-  const { data: balance, isLoading: isBalanceLoading } = useBalance(
+  const { data: evmBalance, isLoading: isEvmBalanceLoading } = useBalance(
     selectedToken,
     {
-      enabled: isBalanceMax,
+      enabled: isBalanceMax && chain !== Chain.SOLANA,
     }
   );
+
+  const { data: svmBalance, isLoading: isSolanaBalanceLoading } =
+    useSPLTokenBalance(undefined, isBalanceMax && chain === Chain.SOLANA);
+
+  const { balance, isLoading } =
+    chain === Chain.SOLANA
+      ? {
+          balance: svmBalance,
+          isLoading: isSolanaBalanceLoading,
+        }
+      : {
+          balance: evmBalance,
+          isLoading: isEvmBalanceLoading,
+        };
 
   useEffect(() => {
     if (inputRef.current) {
@@ -157,7 +175,7 @@ export const TokenInput: React.FC<Props> = ({
             <Wallet className="size-3 text-muted-foreground" />
             <Loading
               value={balance}
-              isLoading={isBalanceLoading}
+              isLoading={isLoading}
               component={value => (
                 <div className="text-muted-foreground flex items-center justify-end text-xs">
                   <span>

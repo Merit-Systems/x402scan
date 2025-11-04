@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 
 import { cn } from '@/lib/utils';
 
-import { useBalance } from '@/app/_hooks/use-balance';
+import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   setAmount: (amount: number) => void;

@@ -11,6 +11,9 @@ import {
   signatureBytes as toSignatureBytes,
   isSignature,
   isSignatureBytes,
+  getBase58Encoder,
+  getBase64Encoder,
+  getBase64Decoder,
 } from '@solana/kit';
 
 import type { SolanaSignInInput } from '@solana/wallet-standard-features';
@@ -18,6 +21,7 @@ import type { SolanaSignInInput } from '@solana/wallet-standard-features';
 interface SignInWithSolanaOptions {
   address: string;
   signMessage: ReturnType<typeof useSignMessage>;
+  isEmbeddedWallet: boolean;
   email?: string;
   redirectTo?: string;
 }
@@ -27,42 +31,30 @@ export async function signInWithSolana({
   signMessage,
   email,
   redirectTo,
+  isEmbeddedWallet = false,
 }: SignInWithSolanaOptions) {
   const message = await createSignInData(address);
   const result = await signMessage({
     message: new Uint8Array(getUtf8Encoder().encode(JSON.stringify(message))),
   });
 
-  // Wallet returns 66 bytes with a 2-byte signature type prefix
-  // Trim to 64 bytes to get the raw Ed25519 signature
-  let signatureBytes = result.signature;
-  console.log(signatureBytes.length);
-  if (signatureBytes.length === 66) {
-    signatureBytes = signatureBytes.slice(2);
+  let signatureString: string;
+  if (isEmbeddedWallet) {
+    const signatureStringBase64 = getBase64Decoder().decode(result.signature);
+    const signatureBytes = getBase58Encoder().encode(signatureStringBase64);
+    signatureString = getBase58Decoder().decode(signatureBytes);
+  } else {
+    signatureString = getBase58Decoder().decode(result.signature);
   }
 
-  console.log(isSignatureBytes(signatureBytes));
-
-  // Convert to base58 strings for transmission
-  const signatureString = getBase58Decoder().decode(signatureBytes);
-  const signedMessageString = getBase58Decoder().decode(result.signedMessage);
-
-  console.log(
-    await verifySignature(
-      await getPublicKeyFromAddress(toAddress(address)),
-      toSignatureBytes(signatureBytes),
-      result.signedMessage
-    )
-  );
-
-  // await signIn(SIWS_PROVIDER_ID, {
-  //   message: JSON.stringify(message),
-  //   signedMessage: signedMessageString,
-  //   signature: signatureString,
-  //   address,
-  //   ...(email ? { email } : {}),
-  //   ...(redirectTo ? { redirectTo } : {}),
-  // });
+  await signIn(SIWS_PROVIDER_ID, {
+    message: JSON.stringify(message),
+    signedMessage: getBase58Decoder().decode(result.signedMessage),
+    signature: signatureString,
+    address,
+    ...(email ? { email } : {}),
+    ...(redirectTo ? { redirectTo } : {}),
+  });
 }
 
 const createSignInData = async (
