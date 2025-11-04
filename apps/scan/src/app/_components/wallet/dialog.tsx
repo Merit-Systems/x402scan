@@ -13,11 +13,14 @@ import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
 import { WalletChainProvider } from './chain-context/provider';
 
+import type { Chain } from '@/types/chain';
+
 interface Props {
   children: React.ReactNode;
+  initialChain?: Chain;
 }
 
-export const WalletDialog: React.FC<Props> = ({ children }) => {
+export const WalletDialog: React.FC<Props> = ({ children, initialChain }) => {
   const searchParams = useSearchParams();
 
   const connectedWallets = useConnectedWallets();
@@ -32,7 +35,10 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
         showCloseButton={false}
       >
         {connectedWallets.isConnected ? (
-          <WalletChainProvider connectedWallets={connectedWallets}>
+          <WalletChainProvider
+            connectedWallets={connectedWallets}
+            initialChain={initialChain}
+          >
             <DisplayWalletDialogContent
               connectedWallets={connectedWallets}
               user={currentUser ?? undefined}
@@ -42,7 +48,7 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
             />
           </WalletChainProvider>
         ) : (
-          <WalletChainProvider>
+          <WalletChainProvider initialChain={initialChain}>
             <ConnectWalletDialogContent />
           </WalletChainProvider>
         )}

@@ -10,14 +10,19 @@ import type { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 interface Props {
   children: React.ReactNode;
   connectedWallets?: ConnectedWallets;
+  initialChain?: Chain;
 }
 
 export const WalletChainProvider: React.FC<Props> = ({
   children,
   connectedWallets,
+  initialChain,
 }) => {
   const [chain, setChainState] = useState<Chain>(
-    !connectedWallets || connectedWallets.evmAddress ? Chain.BASE : Chain.SOLANA
+    initialChain ??
+      (!connectedWallets || connectedWallets.evmAddress
+        ? Chain.BASE
+        : Chain.SOLANA)
   );
 
   const setChain = (chain: Chain) => {
