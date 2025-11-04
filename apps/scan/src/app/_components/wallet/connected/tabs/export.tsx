@@ -55,7 +55,7 @@ export const ExportWallet: React.FC<Props> = ({ address }) => {
       await navigator.clipboard.writeText(privateKey);
       return privateKey;
     },
-    onSuccess: privateKey => {
+    onSuccess: () => {
       setIsRevealed(true);
       setShowConfirmation(false);
       toast.success('Private key copied to clipboard', {

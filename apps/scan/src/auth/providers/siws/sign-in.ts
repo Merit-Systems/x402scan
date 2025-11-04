@@ -1,4 +1,4 @@
-import { getCsrfToken, signIn } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import {
   getBase58Decoder,
   getUtf8Encoder,
