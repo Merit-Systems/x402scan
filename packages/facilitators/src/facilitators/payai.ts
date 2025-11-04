@@ -35,6 +35,26 @@ export const payaiFacilitator = {
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-05-18'),
       },
+      {
+        address: '0xb2bd29925cbbcea7628279c91945ca5b98bf371b',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-29'),
+      },
+      {
+        address: '0x25659315106580ce2a787ceec5efb2d347b539c9',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-29'),
+      },
+      {
+        address: '0xb8f41cb13b1f213da1e94e1b742ec1323235c48f',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-29'),
+      },
+      {
+        address: '0xe575fa51af90957d66fab6d63355f1ed021b887b',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-29'),
+      },
     ],
   },
 } as const satisfies Facilitator;

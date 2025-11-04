@@ -83,7 +83,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | -------------- | ------------- | --------- | ------------------------------ |
 | **Coinbase**   | BASE, SOLANA  | ✅ Yes    | No - uses `@coinbase/x402` SDK |
 | **AurraCloud** | BASE          | ✅ Yes    | Yes - API key                  |
-| **thirdweb**   | BASE          | ✅ Yes    | Yes - Secret key & wallet      |
+| **thirdweb**   | BASE, POLYGON | ✅ Yes    | Yes - Secret key               |
 | **PayAI**      | BASE, SOLANA  | ✅ Yes    | No                             |
 | **Daydreams**  | BASE, SOLANA  | No        | No                             |
 | **X402rs**     | BASE, POLYGON | No        | No                             |
@@ -91,6 +91,9 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Dexter**     | SOLANA        | No        | No                             |
 | **Mogami**     | BASE          | No        | No                             |
 | **OpenX402**   | BASE, SOLANA  | No        | No                             |
+| **Questflow**  | BASE          | ✅ Yes    | Yes - API key                  |
+| **xEcho**      | BASE          | No        | No                             |
+| **CodeNut**    | BASE          | No        | No                             |
 
 ### Import Individual Facilitators
 
@@ -105,18 +108,23 @@ import {
   dexter,
   mogami,
   openx402,
+  xecho,
+  codenut,
 } from 'facilitators';
 
 // Facilitators requiring setup
-import { aurracloud, thirdweb } from 'facilitators';
+import { aurracloud, thirdweb, questflow } from 'facilitators';
 
 aurracloud({
   apiKey: process.env.AURRACLOUD_API_KEY,
 });
 
+questflow({
+  apiKey: process.env.QUESTFLOW_API_KEY,
+});
+
 thirdweb({
-  walletSecret: process.env.THIRDWEB_NEXUS_SECRET_KEY,
-  walletAddress: process.env.SERVER_WALLET,
+  secretKey: process.env.THIRDWEB_SECRET_KEY,
 });
 ```
 

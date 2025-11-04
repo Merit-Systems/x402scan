@@ -7,6 +7,8 @@ import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatCompactAgo } from '@/lib/utils';
 
+import { ResourcesSortingContext } from '@/app/_contexts/sorting/resource-tags/context';
+
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -74,13 +76,21 @@ export const createColumns = (
     loading: () => <Skeleton className="h-4 w-32 mx-auto" />,
   },
   {
-    accessorKey: 'invocations',
+    accessorKey: 'toolCalls',
     header: () => (
-      <HeaderCell Icon={Hash} label="Invocations" className="mx-auto" />
+      <HeaderCell
+        Icon={Hash}
+        label="# Tool Calls"
+        className="mx-auto"
+        sorting={{
+          sortContext: ResourcesSortingContext,
+          sortKey: 'toolCalls',
+        }}
+      />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
-        {row.original._count.invocations}
+        {row.original._count.toolCalls}
       </div>
     ),
     size: 100,
@@ -89,7 +99,15 @@ export const createColumns = (
   {
     accessorKey: 'lastUpdated',
     header: () => (
-      <HeaderCell Icon={Calendar} label="Updated" className="mx-auto" />
+      <HeaderCell
+        Icon={Calendar}
+        label="Updated"
+        className="mx-auto"
+        sorting={{
+          sortContext: ResourcesSortingContext,
+          sortKey: 'lastUpdated',
+        }}
+      />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">

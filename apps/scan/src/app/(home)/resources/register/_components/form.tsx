@@ -39,6 +39,15 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { getChain } from '@/app/_lib/chain';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { RegistrationAlert } from './registration-alert';
+import { AcceptsBreakdownTable } from './accepts-breakdown-table';
+import { RegistrationChecklist } from './registration-checklist';
 
 export const RegisterResourceForm = () => {
   const [url, setUrl] = useState('');
@@ -76,10 +85,25 @@ export const RegisterResourceForm = () => {
       void utils.public.sellers.bazaar.list.invalidate();
       if (data.enhancedParseWarnings) {
         toast.warning(
-          'Resource added successfully, but is not available for use'
+          'Resource added successfully, but is not available for use',
+          {
+            action: {
+              label: 'View Server',
+              onClick: () => {
+                window.location.href = `/server/${data.resource.origin.id}`;
+              },
+            },
+          }
         );
       } else {
-        toast.success('Resource added successfully');
+        toast.success('Resource added successfully', {
+          action: {
+            label: 'View Server',
+            onClick: () => {
+              window.location.href = `/server/${data.resource.origin.id}`;
+            },
+          },
+        });
       }
     },
     onError: () => {
@@ -105,66 +129,151 @@ export const RegisterResourceForm = () => {
       </CardHeader>
       <CardContent>
         {data && !data.error ? (
-          <div className="flex flex-col gap-4 overflow-hidden w-full max-w-full">
-            <div className="flex flex-col gap-2 bg-muted p-4 rounded-md">
-              <div className="flex gap-4 justify-between overflow-hidden w-full max-w-full bg-muted rounded-md">
-                <div className="flex items-center gap-2 flex-1 overflow-hidden max-w-full">
-                  <Favicon
-                    url={data.resource.origin.favicon}
-                    className="size-4 rounded-md"
-                  />
-                  <h1 className="font-bold flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
+          <div className="flex flex-col gap-6 overflow-hidden w-full max-w-full">
+            {/* Origin Header Card */}
+            <div className="border rounded-lg p-4 bg-gradient-to-br from-muted/30 to-muted/10">
+              <div className="flex items-start gap-3">
+                <Favicon
+                  url={data.resource.origin.favicon}
+                  className="size-10 rounded-lg border bg-background shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <h2 className="font-bold text-lg mb-1 truncate">
                     {data.resource.origin.title ??
                       new URL(data.resource.origin.origin).hostname}
-                  </h1>
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Resource successfully registered on x402scan
+                  </p>
+                  <Link href={`/server/${data.resource.origin.id}`}>
+                    <Button variant="outline" size="sm">
+                      View Server Page →
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
 
-            {data.enhancedParseWarnings && (
-              <div className="flex flex-col gap-1 bg-yellow-600/10 rounded-md border-yellow-600/60 border">
-                <div className="border-b p-4 border-b-yellow-600/60 flex items-center justify-between gap-2">
-                  <div className="flex flex-row gap-2 items-center">
-                    <AlertTriangle className="size-6 text-yellow-600" />
-                    <div>
-                      <h2 className="font-semibold">
-                        Added with Parse Warnings
-                      </h2>
-                      <p className="text-sm text-muted-foreground">
-                        The resource was added successfully, but is not
-                        available for use because the output schema is not
-                        properly typed.
-                      </p>
-                    </div>
-                  </div>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost">
-                        <Eye className="size-4" />
-                        See Response
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Invalid x402 Response</DialogTitle>
-                        <DialogDescription>
-                          The route responded with a 402, but the response body
-                          was not properly typed.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-4 rounded-md max-h-48 overflow-auto">
-                        {JSON.stringify(data.response, null, 2)}
-                      </pre>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                <ul className="list-disc list-inside text-sm text-muted-foreground p-4">
-                  {data.enhancedParseWarnings.map(warning => (
-                    <li key={warning}>{warning}</li>
-                  ))}
-                </ul>
-              </div>
+            {/* Registration status alert */}
+            {data.registrationDetails && (
+              <RegistrationAlert
+                registeredCount={
+                  data.registrationDetails.supportedAccepts.length
+                }
+                filteredCount={
+                  data.registrationDetails.unsupportedAccepts.length
+                }
+                totalCount={data.registrationDetails.providedAccepts.length}
+              />
             )}
+
+            {/* Detailed breakdown in accordion */}
+            <Accordion
+              type="multiple"
+              defaultValue={(() => {
+                const hasErrors =
+                  // No accepts registered
+                  data.registrationDetails?.supportedAccepts.length === 0 ||
+                  // Enhanced schema failed
+                  !!data.enhancedParseWarnings ||
+                  // No metadata scraped
+                  (!data.registrationDetails?.originMetadata?.title &&
+                    !data.registrationDetails?.originMetadata?.description);
+
+                const hasFilteredAccepts =
+                  data.registrationDetails &&
+                  data.registrationDetails.unsupportedAccepts.length > 0;
+
+                if (hasErrors && hasFilteredAccepts) {
+                  return ['accepts', 'checklist'];
+                } else if (hasErrors) {
+                  return ['checklist'];
+                } else if (hasFilteredAccepts) {
+                  return ['accepts'];
+                }
+                return [];
+              })()}
+              className="w-full"
+            >
+              {/* Registration checklist */}
+              <AccordionItem value="checklist" className="border-b">
+                <AccordionTrigger className="py-3">
+                  <span className="font-semibold">Registration Details</span>
+                </AccordionTrigger>
+                <AccordionContent className="pb-4 pt-2">
+                  <RegistrationChecklist
+                    methodUsed={data.methodUsed}
+                    hasAccepts={
+                      data.registrationDetails
+                        ? data.registrationDetails.supportedAccepts.length > 0
+                        : false
+                    }
+                    hasEnhancedSchema={!data.enhancedParseWarnings}
+                    hasOriginMetadata={Boolean(
+                      data.registrationDetails?.originMetadata?.title ??
+                        data.registrationDetails?.originMetadata?.description
+                    )}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Accepts breakdown section */}
+              {data.registrationDetails &&
+                data.registrationDetails.providedAccepts.length > 0 && (
+                  <AccordionItem value="accepts" className="border-b">
+                    <AccordionTrigger className="py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">Payment Addresses</span>
+                        <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                          {data.registrationDetails.providedAccepts.length}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4 pt-2">
+                      <AcceptsBreakdownTable
+                        accepts={[
+                          ...data.registrationDetails.supportedAccepts.map(
+                            (accept: {
+                              network: string;
+                              payTo: string;
+                              asset: string;
+                            }) => ({
+                              network: accept.network,
+                              payTo: accept.payTo,
+                              asset: accept.asset,
+                              isSupported: true,
+                            })
+                          ),
+                          ...data.registrationDetails.unsupportedAccepts.map(
+                            (accept: {
+                              network: string;
+                              payTo: string;
+                              asset: string;
+                            }) => ({
+                              network: accept.network,
+                              payTo: accept.payTo,
+                              asset: accept.asset,
+                              isSupported: false,
+                            })
+                          ),
+                        ]}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+
+              {/* Raw response viewer */}
+              <AccordionItem value="response" className="border-b">
+                <AccordionTrigger className="py-3">
+                  <span className="font-semibold">Raw 402 Response</span>
+                </AccordionTrigger>
+                <AccordionContent className="pb-4 pt-2">
+                  <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-4 rounded-md max-h-96 overflow-auto">
+                    {JSON.stringify(data.response, null, 2)}
+                  </pre>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         ) : (
           <div className="flex flex-col gap-4">

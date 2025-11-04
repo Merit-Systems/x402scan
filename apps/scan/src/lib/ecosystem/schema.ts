@@ -3,8 +3,9 @@ import z from 'zod';
 export const ecosystemCategories = [
   'Client-Side Integrations',
   'Services/Endpoints',
-  'Ecosystem Infrastructure & Tooling',
+  'Infrastructure & Tooling',
   'Learning & Community Resources',
+  'Facilitators',
 ] as const;
 
 export type EcosystemCategory = (typeof ecosystemCategories)[number];

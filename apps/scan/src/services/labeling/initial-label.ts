@@ -9,6 +9,7 @@ import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 import { getTracer } from '@lmnr-ai/lmnr';
+import { MAIN_TAGS } from './main-tags';
 
 const randomColor = () => {
   return '#' + Math.floor(Math.random() * 16777215).toString(16);
@@ -23,7 +24,12 @@ const labelingSchema = z.object({
   tag: z.string(),
 });
 
-const labelingPrompt = `Your task is to assign reasonable tags to each resource you are given.
+const buildLabelingPrompt = () => {
+  const tagCategories = Object.entries(MAIN_TAGS)
+    .map(([name, description]) => `- ${name}: ${description}`)
+    .join('\n');
+
+  return `Your task is to assign reasonable tags to each resource you are given.
 
 _GUIDELINES_FOR_TAG_ASSIGNMENT_:
 - The tags should be short and concise, one word only.
@@ -31,13 +37,7 @@ _GUIDELINES_FOR_TAG_ASSIGNMENT_:
 
 Tag Categories:
 
-- Search: Any tool which retrieves information.
-- AI: Any tool which offers an AI chat service or agent functionality.
-- Crypto: Any tool related to minting tokens or other crypto assets.
-- Trading: Any tool related to trading or swapping assets.
-- Utility: Any tool which performs a utility function, such as running code or performing a service.
-  Utility would include memory, cache store, fetching the weather, etc.
-- Random: Any tool which does something lighthearted or fun, such as a joke or a meme generator.
+${tagCategories}
 
 _VERY IMPORTANT_:
 - Resources will expose a list of "accept bodies". These are different ways the resource can be invoked.
@@ -56,6 +56,7 @@ To assign tags, you must output the name of the tag you are assigning.
 
 {_CURRENT_AVAILABLE_TAGS_}
 `;
+};
 
 export const labelingPass = async (
   resource: ResourceWithRelations,
@@ -63,7 +64,7 @@ export const labelingPass = async (
     sessionId: string;
   }
 ) => {
-  const tags = await listTags();
+  const tags = await listTags({ filterTags: [] });
   const resourceDescription = `
     RESOURCE DESCRIPTIONS:
     ${resource.accepts.map(accept => `- ${accept.description}`).join('\n')}
@@ -72,7 +73,7 @@ export const labelingPass = async (
     ${JSON.stringify(resource.accepts.map(accept => JSON.stringify(accept.outputSchema, null, 2)))}
     `;
 
-  const prompt = labelingPrompt
+  const prompt = buildLabelingPrompt()
     .replace('{_RESOURCE_URL_}', resource.resource.toString())
     .replace('{_RESOURCE_DESCRIPTIONS_}', resourceDescription)
     .replace(

@@ -43,6 +43,7 @@ import {
   baseSystemPrompt,
   freeTierSystemPrompt,
 } from './system-prompt';
+import { env } from '@/env';
 import { api } from '@/trpc/server';
 
 const bodySchema = z.object({
@@ -97,7 +98,11 @@ export async function POST(request: NextRequest) {
     return new ChatSDKError('not_found:chat').toResponse();
   }
   const signer = toAccount(wallet);
-  const openai = createX402OpenAI(signer);
+  const openai = createX402OpenAI({
+    walletClient: signer,
+    baseRouterUrl: env.ECHO_PROXY_URL,
+    echoAppId: env.ECHO_APP_ID,
+  });
 
   const lastMessage = message;
 

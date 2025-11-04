@@ -8,6 +8,7 @@ import { EditTagModal } from './edit-tag-modal';
 import { ResourceExecutorModal } from './resource-executor-modal';
 import { ControlMenu } from './control-menu';
 import { TagFilter } from './tag-filter';
+import { useResourcesSorting } from '@/app/_contexts/sorting/resource-tags/hook';
 import type { RowSelectionState } from '@tanstack/react-table';
 
 type Resource =
@@ -25,12 +26,14 @@ export const ResourceTable = () => {
   const [page, setPage] = useState(0);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const { sorting } = useResourcesSorting();
 
   const { data, isLoading } = api.public.resources.list.paginated.useQuery({
     pagination: {
       page: page,
       page_size: PAGE_SIZE,
     },
+    sorting,
     where:
       selectedTagIds.length > 0
         ? {
@@ -69,6 +72,7 @@ export const ResourceTable = () => {
         />
         <ControlMenu
           selectedResources={selectedResources}
+          selectedTagIds={selectedTagIds}
           onSuccess={() => setRowSelection({})}
         />
       </div>
