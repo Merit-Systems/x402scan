@@ -24,7 +24,7 @@ export const mercuriFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0x3Ae2Ece687547dDAb575739157Da04019a7e9C8A',
+        address: '0x3ae2ece687547ddab575739157da04019a7e9c8a',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
       },
