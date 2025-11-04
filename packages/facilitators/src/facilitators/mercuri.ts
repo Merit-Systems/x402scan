@@ -26,7 +26,7 @@ export const mercuriFacilitator = {
       {
         address: '0x5AEd85f843496E0e034438a33B66025D8A319359',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-11-04'),
+        dateOfFirstTransaction: new Date('2025-10-29'),
       },
     ],
     [Network.SOLANA]: [
