@@ -16,14 +16,9 @@ export default async function ResourcesPage() {
     return forbidden();
   }
 
-  const endDate = new Date();
-  const startDate = subDays(endDate, ActivityTimeframe.ThirtyDays);
-
   return (
     <TimeRangeProvider
-      creationDate={subDays(endDate, 365)}
-      initialStartDate={startDate}
-      initialEndDate={endDate}
+      creationDate={subDays(new Date(), 365)}
       initialTimeframe={ActivityTimeframe.ThirtyDays}
     >
       <ResourcesSortingProvider initialSorting={defaultResourcesSorting}>

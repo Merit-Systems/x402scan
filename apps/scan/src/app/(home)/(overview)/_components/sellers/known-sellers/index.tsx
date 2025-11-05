@@ -1,7 +1,5 @@
 import { Suspense } from 'react';
 
-import { subDays } from 'date-fns';
-
 import { Section } from '@/app/_components/layout/page-utils';
 
 import { KnownSellersTable, LoadingKnownSellersTable } from './table';
@@ -18,6 +16,7 @@ import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 import { ErrorBoundary } from 'react-error-boundary';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 import type { Chain } from '@/types/chain';
 
@@ -26,8 +25,10 @@ interface Props {
 }
 
 export const TopServers = async ({ chain }: Props) => {
-  const endDate = new Date();
-  const startDate = subDays(endDate, 1);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.OneDay,
+    firstTransfer
+  );
 
   await Promise.all([
     api.public.sellers.bazaar.list.prefetch({
@@ -46,8 +47,6 @@ export const TopServers = async ({ chain }: Props) => {
       <SellersSortingProvider initialSorting={defaultSellersSorting}>
         <TimeRangeProvider
           creationDate={firstTransfer}
-          initialEndDate={endDate}
-          initialStartDate={startDate}
           initialTimeframe={ActivityTimeframe.OneDay}
         >
           <TopServersContainer>
