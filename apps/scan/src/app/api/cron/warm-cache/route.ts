@@ -351,6 +351,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const onlyAllTime = searchParams.get('onlyAllTime') === 'true';
     const pagesParam = searchParams.get('pages'); // e.g., "home,networks"
+    const samMode = searchParams.get('SAM') === 'true';
 
     // Filter timeframes if requested
     const timeframesToWarm = onlyAllTime
@@ -363,6 +364,10 @@ export async function GET(request: NextRequest) {
           .split(',')
           .filter(p => ALL_PAGES.includes(p as WarmablePage)) as WarmablePage[])
       : ALL_PAGES;
+
+    if (samMode) {
+      console.log('[SAM] RUNNING SAM MODE');
+    }
 
     console.log(
       `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'}${onlyAllTime ? ' (All Time only)' : ''} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? '' : 's'}: ${pagesToWarm.join(', ')}`
@@ -394,9 +399,14 @@ export async function GET(request: NextRequest) {
 
       if (pagesToWarm.includes('home')) {
         // Home page with all chain variants
-        allTasks.push(...getHomePageTasks(startDate, endDate)); // All chains
-        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.BASE));
-        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.SOLANA));
+        if (samMode) {
+          // SAM mode: only run first 3 tasks from getHomePageTasks
+          allTasks.push(...getHomePageTasks(startDate, endDate).slice(0, 3));
+        } else {
+          allTasks.push(...getHomePageTasks(startDate, endDate)); // All chains
+          allTasks.push(...getHomePageTasks(startDate, endDate, Chain.BASE));
+          allTasks.push(...getHomePageTasks(startDate, endDate, Chain.SOLANA));
+        }
       }
 
       if (pagesToWarm.includes('networks')) {
