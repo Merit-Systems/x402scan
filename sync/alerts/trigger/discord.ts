@@ -1,9 +1,13 @@
 import type { BalanceCheckResult, DiscordWebhookConfig } from './types';
+import { CURRENCY_CONFIG } from './config';
 
 export async function sendDiscordAlert(
   config: DiscordWebhookConfig,
   balanceResult: BalanceCheckResult
 ): Promise<void> {
+  const { symbol, decimals } = CURRENCY_CONFIG[balanceResult.currency];
+  const currencyName = balanceResult.currency;
+
   const response = await fetch(config.webhookUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -12,8 +16,8 @@ export async function sendDiscordAlert(
       avatar_url: config.avatarUrl,
       embeds: [
         {
-          title: '🚨 Low USDC Balance Alert',
-          description: `Address ${balanceResult.address} has a low USDC balance on Base.`,
+          title: `🚨 Low ${currencyName} Balance Alert`,
+          description: `Address ${balanceResult.address} has a low ${currencyName} balance on Base.`,
           color: 0xff0000,
           fields: [
             {
@@ -23,12 +27,12 @@ export async function sendDiscordAlert(
             },
             {
               name: 'Current Balance',
-              value: `$${parseFloat(balanceResult.balance).toFixed(2)} USDC`,
+              value: `${symbol}${parseFloat(balanceResult.balance).toFixed(decimals)} ${currencyName}`,
               inline: true,
             },
             {
               name: 'Threshold',
-              value: `$${balanceResult.threshold.toFixed(2)} USDC`,
+              value: `${symbol}${balanceResult.threshold.toFixed(decimals)} ${currencyName}`,
               inline: true,
             },
           ],

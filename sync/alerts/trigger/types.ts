@@ -7,9 +7,10 @@ export enum Currency {
 
 export interface BalanceCheckResult {
   address: Address;
-  balance: string; // in USDC (human readable)
+  balance: string;
   isLow: boolean;
   threshold: number;
+  currency: Currency;
 }
 
 export interface DiscordWebhookConfig {
