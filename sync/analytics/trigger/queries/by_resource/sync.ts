@@ -3,7 +3,7 @@ import { createAnalyticsSyncTask } from '@/trigger/sync';
 import { persistMetrics } from './persist';
 
 export const syncAnalyticsMetricsByUrlTask = createAnalyticsSyncTask({
-  name: 'metrics-by-resource',
+  name: 'by-resource',
   cron: '0 * * * *',
   maxDuration: 600, // seconds
   machine: 'small-1x',

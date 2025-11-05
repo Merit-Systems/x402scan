@@ -9,7 +9,7 @@ export function createAnalyticsSyncTask(config: SyncConfig) {
     password: process.env.CLICKHOUSE_PASSWORD,
   });
   return schedules.task({
-    id: 'sync-analytics-' + config.name,
+    id: 'sync-' + config.name,
     cron: config.cron,
     maxDuration: config.maxDuration,
     machine: config.machine,
