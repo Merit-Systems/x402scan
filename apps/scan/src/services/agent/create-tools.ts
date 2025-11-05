@@ -11,7 +11,10 @@ import { fetchWithX402Payment } from './fetch';
 
 import { env } from '@/env';
 
-import { enhancedAcceptsSchema, enhancedOutputSchema } from '@/lib/x402/schema';
+import {
+  EnhancedPaymentRequirementsSchema,
+  enhancedOutputSchema,
+} from '@/lib/x402/schema';
 
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { ResourceRequestMetadata } from '@prisma/client';
@@ -39,14 +42,12 @@ export async function createX402AITools({
   for (const resource of resources) {
     if (resource.accepts) {
       for (const accept of resource.accepts) {
-        const parsedAccept = enhancedAcceptsSchema
-          .extend({
-            outputSchema: enhancedOutputSchema,
-          })
-          .safeParse({
-            ...accept,
-            maxAmountRequired: accept.maxAmountRequired.toString(),
-          });
+        const parsedAccept = EnhancedPaymentRequirementsSchema.extend({
+          outputSchema: enhancedOutputSchema,
+        }).safeParse({
+          ...accept,
+          maxAmountRequired: accept.maxAmountRequired.toString(),
+        });
         if (!parsedAccept.success) {
           continue;
         }
