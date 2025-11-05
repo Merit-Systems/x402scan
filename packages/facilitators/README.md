@@ -44,6 +44,9 @@ import { auto } from 'facilitators';
 paymentMiddleware(address, resources, auto);
 ```
 
+If you are not interested in using the facilitators package, and simply want to hit the facilitator proxy yourself, you can at `https://facilitators.x402scan.com/settle` or `https://facilitators.x402scan.com/verify`. Currently only the settle and verify methods are supported. 
+
+
 ## Resource Discovery
 
 Some facilitators support **discovery** - the ability to list all x402-protected resources they're facilitating.
