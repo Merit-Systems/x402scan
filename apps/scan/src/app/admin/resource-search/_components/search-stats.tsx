@@ -1,8 +1,8 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Database, Code2, Loader2, Filter } from 'lucide-react';
+import { Database, Code2, Loader2, Filter, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { FilterQuestion } from '@/services/resource-search/types';
@@ -28,6 +28,8 @@ const SearchStatsComponent = ({
   className,
   isLoading = false,
 }: SearchStatsProps) => {
+  const [isSqlExpanded, setIsSqlExpanded] = useState(false);
+
   return (
     <div className={cn(className, isLoading && 'opacity-60 transition-opacity')}>
       <div className="space-y-3">
@@ -105,18 +107,31 @@ const SearchStatsComponent = ({
         )}
 
         {sqlCondition && (
-          <Card className="p-3 bg-muted/50">
-            <div className="flex items-start gap-2">
+          <Card className="bg-muted/50">
+            <button
+              onClick={() => setIsSqlExpanded(!isSqlExpanded)}
+              className="w-full p-3 flex items-start gap-2 hover:bg-muted/70 transition-colors"
+            >
+              <ChevronRight
+                className={cn(
+                  'h-4 w-4 text-primary mt-0.5 flex-shrink-0 transition-transform',
+                  isSqlExpanded && 'rotate-90'
+                )}
+              />
               <Database className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-muted-foreground mb-2">
-                  SQL WHERE Clause:
+              <div className="flex-1 min-w-0 text-left">
+                <div className="text-xs font-medium text-muted-foreground">
+                  SQL WHERE Clause
                 </div>
+              </div>
+            </button>
+            {isSqlExpanded && (
+              <div className="px-3 pb-3">
                 <pre className="text-xs text-foreground font-mono bg-background/50 p-2 rounded border overflow-x-auto">
                   {sqlCondition}
                 </pre>
               </div>
-            </div>
+            )}
           </Card>
         )}
       </div>
