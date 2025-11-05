@@ -57,6 +57,7 @@ The following facilitators currently support resource discovery:
 - **AurraCloud** - Infrastructure-focused facilitator
 - **thirdweb** - Web3 development platform
 - **PayAI** - AI-payment infrastructure
+- **Ultravioleta DAO** - Community-driven multichain facilitator
 
 ### Enumerate All Discoverable Facilitators
 
@@ -94,6 +95,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Questflow**  | BASE          | ✅ Yes    | Yes - API key                  |
 | **xEcho**      | BASE          | No        | No                             |
 | **CodeNut**    | BASE          | No        | No                             |
+| **Ultravioleta DAO** | BASE, SOLANA | ✅ Yes    | No                             |
 
 ### Import Individual Facilitators
 
@@ -110,6 +112,7 @@ import {
   openx402,
   xecho,
   codenut,
+  ultravioletadao,
 } from 'facilitators';
 
 // Facilitators requiring setup
