@@ -6,7 +6,6 @@ import {
   FacilitatorsChart,
   LoadingFacilitatorsChart,
 } from './_components/chart';
-import { subDays } from 'date-fns';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/facilitator/constants';
@@ -19,14 +18,17 @@ import { FacilitatorsSortingProvider } from '@/app/_contexts/sorting/facilitator
 import { defaultFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/default';
 import { getChain } from '@/app/_lib/chain';
 import { facilitators } from '@/lib/facilitators';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 export default async function FacilitatorsPage({
   searchParams,
 }: PageProps<'/facilitators'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  const endDate = new Date();
-  const startDate = subDays(endDate, ActivityTimeframe.OneDay);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.OneDay,
+    firstTransfer
+  );
 
   await Promise.all([
     api.public.facilitators.bucketedStatistics.prefetch({
@@ -54,8 +56,6 @@ export default async function FacilitatorsPage({
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransfer}
-        initialStartDate={startDate}
-        initialEndDate={endDate}
         initialTimeframe={ActivityTimeframe.OneDay}
       >
         <FacilitatorsSortingProvider

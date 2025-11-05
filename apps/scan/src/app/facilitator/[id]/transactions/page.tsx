@@ -11,12 +11,12 @@ import {
 
 import { api, HydrateClient } from '@/trpc/server';
 import { facilitatorIdMap } from '@/lib/facilitators';
-import { subMonths } from 'date-fns';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 export default async function TransactionsPage({
   params,
@@ -30,8 +30,10 @@ export default async function TransactionsPage({
   }
 
   const pageSize = 15;
-  const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.ThirtyDays,
+    firstTransfer
+  );
 
   await api.public.transfers.list.prefetch({
     pagination: {
@@ -52,8 +54,6 @@ export default async function TransactionsPage({
       />
       <Body>
         <TimeRangeProvider
-          initialEndDate={endDate}
-          initialStartDate={startDate}
           creationDate={firstTransfer}
           initialTimeframe={ActivityTimeframe.ThirtyDays}
         >
