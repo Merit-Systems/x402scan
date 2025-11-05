@@ -5,17 +5,19 @@ import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
 import {
-  EnhancedPaymentRequirements,
   EnhancedPaymentRequirementsSchema,
   parseX402Response,
 } from '@/lib/x402/schema';
 import { getOriginFromUrl } from '@/lib/url';
 
-import type { AcceptsNetwork } from '@prisma/client';
 import { x402ResponseSchema } from 'x402/types';
 import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
-import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
+import { SUPPORTED_CHAINS } from '@/types/chain';
+
+import type { EnhancedPaymentRequirements } from '@/lib/x402/schema';
+import type { Chain } from '@/types/chain';
+import type { AcceptsNetwork } from '@prisma/client';
 
 export const registerResource = async (url: string, data: unknown) => {
   // Strip the query params from the incoming URL
