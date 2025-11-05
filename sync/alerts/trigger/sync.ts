@@ -25,13 +25,9 @@ export const balanceMonitor = schedules.task({
       .map(addr => addr.trim() as Address);
     const threshold = parseFloat(thresholdString);
 
-    const results = [];
-    let alertsSent = 0;
-
     for (const address of addresses) {
       try {
         const result = await checkUSDCBalance(address, threshold, rpcUrl);
-        results.push(result);
 
         if (result.isLow) {
           await sendDiscordAlert(
@@ -41,23 +37,10 @@ export const balanceMonitor = schedules.task({
             },
             result
           );
-
-          alertsSent++;
         }
       } catch (error) {
-        console.error(`Error checking balance for ${address}:`, error);
+        logger.error(`Error checking balance for ${address}:`, error);
       }
     }
-
-    return {
-      success: true,
-      addressesChecked: addresses.length,
-      alertsSent,
-      results: results.map(r => ({
-        address: r.address,
-        balance: r.balance,
-        isLow: r.isLow,
-      })),
-    };
   },
 });
