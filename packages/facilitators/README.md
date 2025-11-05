@@ -22,7 +22,7 @@ pnpm add facilitators
 import { coinbase, thirdweb } from 'facilitators';
 
 paymentMiddleware(
-  address,`
+  address,
   resources,
   coinbase // easily interchange any facilitator
 );
