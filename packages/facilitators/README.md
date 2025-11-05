@@ -34,6 +34,19 @@ paymentMiddleware(
 );
 ```
 
+## Auto Facilitator
+
+The `auto` facilitator is a proxy that load-balances between other facilitators to guarantee uptime. Simply import and use it directly - no configuration required:
+
+```typescript
+import { auto } from 'facilitators';
+
+paymentMiddleware(address, resources, auto);
+```
+
+If you are not interested in using the facilitators package, and simply want to hit the facilitator proxy yourself, you can at `https://facilitators.x402scan.com/settle` or `https://facilitators.x402scan.com/verify`. Currently only the settle and verify methods are supported. 
+
+
 ## Resource Discovery
 
 Some facilitators support **discovery** - the ability to list all x402-protected resources they're facilitating.
@@ -82,7 +95,8 @@ This package includes pre-configured integrations for the following X402 facilit
 
 | Facilitator    | Networks      | Discovery | Setup Required                 |
 | -------------- | ------------- | --------- | ------------------------------ |
-| **Coinbase**   | BASE, SOLANA  | ✅ Yes    | No - uses `@coinbase/x402` SDK |
+| **Auto**       | BASE          | No        | No                             |
+| **Coinbase**   | BASE, SOLANA  | ✅ Yes    | Yes - Requires CDP API Creds   |
 | **AurraCloud** | BASE          | ✅ Yes    | Yes - API key                  |
 | **thirdweb**   | BASE, POLYGON | ✅ Yes    | Yes - Secret key               |
 | **PayAI**      | BASE, SOLANA  | ✅ Yes    | No                             |
@@ -102,6 +116,7 @@ This package includes pre-configured integrations for the following X402 facilit
 ```typescript
 // Simple facilitators (no setup)
 import {
+  auto,
   coinbase,
   payai,
   daydreams,
