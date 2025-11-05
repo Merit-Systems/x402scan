@@ -16,7 +16,7 @@ export const ConnectWalletForm = () => {
 
   const filteredConnectors = connectors.filter(
     connector =>
-      connector.type === 'injected' &&
+      (connector.type === 'injected' || connector.type === 'baseAccount') &&
       !['injected', 'cdp-embedded-wallet'].includes(connector.id)
   );
 

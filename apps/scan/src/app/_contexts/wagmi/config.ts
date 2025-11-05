@@ -8,6 +8,7 @@ import {
 } from 'wagmi';
 import { base } from 'wagmi/chains';
 import { cdpConfig } from '../cdp/config';
+import { baseAccount } from 'wagmi/connectors';
 
 const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
   cdpConfig,
@@ -19,6 +20,22 @@ const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
   },
 });
 
+const baseAccountConnector = (() => {
+  const connector = baseAccount({
+    appName: 'x402scan',
+    appLogoUrl: 'https://www.x402scan.com/logo.svg',
+  });
+
+  // Wrap the connector to add icon property
+  return (config: Parameters<ReturnType<typeof baseAccount>>[0]) => {
+    const result = connector(config);
+    return {
+      ...result,
+      icon: '/baseAccount.png',
+    };
+  };
+})();
+
 export const wagmiConfig = {
   chains: [base],
   storage: createStorage({
@@ -27,7 +44,7 @@ export const wagmiConfig = {
   transports: {
     [base.id]: http(),
   },
-  connectors: [injected(), cdpEmbeddedWalletConnector],
+  connectors: [injected(), cdpEmbeddedWalletConnector, baseAccountConnector],
   ssr: true,
 } as const;
 
