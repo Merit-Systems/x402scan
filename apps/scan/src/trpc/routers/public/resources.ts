@@ -13,6 +13,7 @@ import {
   listResourcesWithPagination,
   searchResources,
   searchResourcesSchema,
+  type ResourceSortId,
 } from '@/services/db/resources/resource';
 
 import { prisma } from '@/services/db/client';
@@ -23,7 +24,11 @@ import { Methods } from '@/types/x402';
 
 import { registerResource } from '@/lib/resources';
 import { TRPCError } from '@trpc/server';
-import { listResourceTags, listTags } from '@/services/db/resources/tag';
+import {
+  listResourceTags,
+  listTags,
+  listTagsSchema,
+} from '@/services/db/resources/tag';
 
 import type { Prisma } from '@prisma/client';
 
@@ -46,10 +51,23 @@ export const resourcesRouter = createTRPCRouter({
       .input(
         z.object({
           where: z.custom<Prisma.ResourcesWhereInput>().optional(),
+          sorting: z
+            .object({
+              id: z.enum([
+                'lastUpdated',
+                'toolCalls',
+              ] satisfies ResourceSortId[]),
+              desc: z.boolean(),
+            })
+            .optional(),
         })
       )
       .query(async ({ input, ctx: { pagination } }) => {
-        return await listResourcesWithPagination(pagination, input.where);
+        return await listResourcesWithPagination(
+          pagination,
+          input.where,
+          input.sorting
+        );
       }),
     byAddress: publicProcedure
       .input(mixedAddressSchema)
@@ -162,9 +180,11 @@ export const resourcesRouter = createTRPCRouter({
       };
     }),
   tags: {
-    list: publicProcedure.query(async () => {
-      return await listTags();
-    }),
+    list: publicProcedure
+      .input(listTagsSchema.optional())
+      .query(async ({ input }) => {
+        return await listTags(input ?? { filterTags: [] });
+      }),
 
     getByResource: publicProcedure.input(z.uuid()).query(async ({ input }) => {
       return await listResourceTags(input);

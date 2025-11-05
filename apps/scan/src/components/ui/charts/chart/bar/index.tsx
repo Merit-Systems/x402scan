@@ -21,6 +21,7 @@ export const BaseBarChart = <
   margin = { top: 4, right: 6, left: 6, bottom: 0 },
   solid = false,
   stackOffset,
+  xAxis,
 }: BarChartProps<T>) => {
   return (
     <BaseChart
@@ -30,6 +31,7 @@ export const BaseBarChart = <
       tooltipRows={tooltipRows}
       margin={margin}
       stackOffset={stackOffset}
+      xAxis={xAxis}
     >
       {!solid && (
         <defs>
