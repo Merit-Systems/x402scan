@@ -3,7 +3,7 @@ import { Network } from '../types';
 import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const auto: FacilitatorConfig = {
-  url: 'https://facilitators.x402scan.com/',
+  url: 'https://facilitators.x402scan.com',
 };
 
 export const autoFacilitator = {
@@ -11,7 +11,7 @@ export const autoFacilitator = {
   metadata: {
     name: 'Auto',
     image: 'https://x402scan.com/logo.svg',
-    docsUrl: 'https://facilitators.x402scan.com/',
+    docsUrl: 'https://facilitators.x402scan.com',
     color: '#000000',
   },
   config: auto,
