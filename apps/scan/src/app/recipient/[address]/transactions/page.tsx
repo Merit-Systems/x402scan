@@ -13,6 +13,7 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 import { getSSRTimeRange } from '@/lib/time-range';
+import { firstTransfer as systemStart } from '@/services/facilitator/constants';
 
 export default async function TransactionsPage({
   params,
@@ -49,7 +50,7 @@ export default async function TransactionsPage({
   return (
     <HydrateClient>
       <TimeRangeProvider
-        creationDate={firstTransfer ?? startDate}
+        creationDate={firstTransfer ?? systemStart}
         initialTimeframe={ActivityTimeframe.ThirtyDays}
       >
         <TransfersSortingProvider initialSorting={defaultTransfersSorting}>

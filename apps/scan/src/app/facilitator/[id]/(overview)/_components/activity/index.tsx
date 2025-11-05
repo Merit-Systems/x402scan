@@ -16,6 +16,7 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import type { Chain } from '@/types/chain';
 
 import { getSSRTimeRange } from '@/lib/time-range';
+import { firstTransfer as systemStart } from '@/services/facilitator/constants';
 
 interface Props {
   facilitatorId: string;
@@ -49,7 +50,7 @@ export const Activity: React.FC<Props> = async ({ facilitatorId }) => {
 
   const { endDate, startDate } = getSSRTimeRange(
     ActivityTimeframe.SevenDays,
-    firstTransferTimestamp ?? new Date()
+    firstTransferTimestamp ?? systemStart
   );
 
   await Promise.all([
@@ -68,7 +69,7 @@ export const Activity: React.FC<Props> = async ({ facilitatorId }) => {
   return (
     <HydrateClient>
       <TimeRangeProvider
-        creationDate={firstTransferTimestamp ?? startDate}
+        creationDate={firstTransferTimestamp ?? systemStart}
         initialTimeframe={ActivityTimeframe.SevenDays}
       >
         <ActivityContainer>

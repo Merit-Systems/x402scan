@@ -13,6 +13,7 @@ import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 import { getSSRTimeRange } from '@/lib/time-range';
+import { firstTransfer as systemStart } from '@/services/facilitator/constants';
 
 interface Props {
   address: string;
@@ -30,7 +31,7 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
 
   const { endDate, startDate } = getSSRTimeRange(
     ActivityTimeframe.ThirtyDays,
-    firstTransfer ?? new Date()
+    firstTransfer ?? systemStart
   );
 
   await api.public.transfers.list.prefetch({
@@ -49,7 +50,7 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
   return (
     <HydrateClient>
       <TimeRangeProvider
-        creationDate={firstTransfer ?? startDate}
+        creationDate={firstTransfer ?? systemStart}
         initialTimeframe={ActivityTimeframe.ThirtyDays}
       >
         <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
