@@ -15,7 +15,7 @@ import { api, HydrateClient } from '@/trpc/server';
 import { ActivityTimeframe } from '@/types/timeframes';
 import type { Chain } from '@/types/chain';
 
-import { getSSRTimeRange } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 interface Props {
   facilitatorId: string;

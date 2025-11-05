@@ -6,7 +6,7 @@ import { AgentsSortingProvider } from '@/app/_contexts/sorting/agents/provider';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { agentsRelease } from '@/lib/agents';
-import { getSSRTimeRange } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/time-range';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 export const TopAgents = () => {

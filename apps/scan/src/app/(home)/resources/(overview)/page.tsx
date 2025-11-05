@@ -12,7 +12,7 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { ServersCharts } from './_components/charts';
-import { getSSRTimeRange } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 export default async function MarketplacePage() {
   const { endDate, startDate } = getSSRTimeRange(

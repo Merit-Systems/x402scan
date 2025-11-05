@@ -16,7 +16,7 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
-import { getSSRTimeRange } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 export default async function TransactionsPage({
   params,

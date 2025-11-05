@@ -18,7 +18,7 @@ import { FacilitatorsSortingProvider } from '@/app/_contexts/sorting/facilitator
 import { defaultFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/default';
 import { getChain } from '@/app/_lib/chain';
 import { facilitators } from '@/lib/facilitators';
-import { getSSRTimeRange } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 export default async function FacilitatorsPage({
   searchParams,

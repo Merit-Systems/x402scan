@@ -8,7 +8,7 @@ import { ActivityTimeframe } from '@/types/timeframes';
  * This is the single source of truth for converting a timeframe enum into
  * actual start/end dates with the appropriate cache lag for hitting pre-warmed caches.
  *
- * Used by both server-side (getSSRTimeRange) and client-side (TimeRangeProvider).
+ * Used by both server-side (for SSR prefetching) and client-side (TimeRangeProvider).
  *
  * @param timeframe - The activity timeframe to calculate dates for
  * @param creationDate - The earliest possible date (for AllTime timeframe)
@@ -16,12 +16,15 @@ import { ActivityTimeframe } from '@/types/timeframes';
  *
  * @example
  * ```ts
+ * // Server-side usage (SSR prefetching)
  * const { startDate, endDate } = getTimeRangeFromTimeframe(
  *   ActivityTimeframe.OneDay,
  *   firstTransfer
  * );
- * // startDate: now - 15min - 1day
- * // endDate: now - 15min
+ * await api.query.prefetch({ startDate, endDate });
+ *
+ * // Client-side usage (in TimeRangeProvider)
+ * const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe, creationDate);
  * ```
  */
 export function getTimeRangeFromTimeframe(
@@ -51,4 +54,35 @@ export function getTimeRangeFromTimeframe(
   const startDate = subDays(endDate, timeframe);
 
   return { startDate, endDate };
+}
+
+/**
+ * Get the server-side time range for SSR prefetching.
+ *
+ * Alias for getTimeRangeFromTimeframe() - provided for semantic clarity in server components.
+ * Returns dates with cache lag applied to ensure server prefetch queries
+ * use the same lagged times that clients will query, guaranteeing cache hits.
+ *
+ * @param timeframe - The activity timeframe (e.g., ActivityTimeframe.OneDay)
+ * @param creationDate - Required for AllTime timeframe, earliest possible date
+ * @returns Object with startDate and endDate (both lagged for cache alignment)
+ *
+ * @example
+ * ```ts
+ * // 1-day range
+ * const { startDate, endDate } = getSSRTimeRange(ActivityTimeframe.OneDay, firstTransfer);
+ * await api.query.prefetch({ startDate, endDate });
+ *
+ * // 7-day range
+ * const { startDate, endDate } = getSSRTimeRange(ActivityTimeframe.SevenDays, firstTransfer);
+ *
+ * // All-time range
+ * const { startDate, endDate } = getSSRTimeRange(ActivityTimeframe.AllTime, firstTransfer);
+ * ```
+ */
+export function getSSRTimeRange(
+  timeframe: ActivityTimeframe,
+  creationDate: Date
+): { startDate: Date; endDate: Date } {
+  return getTimeRangeFromTimeframe(timeframe, creationDate);
 }

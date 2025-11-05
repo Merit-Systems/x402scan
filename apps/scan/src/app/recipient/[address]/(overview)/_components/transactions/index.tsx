@@ -12,7 +12,7 @@ import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/defau
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
-import { getSSRTimeRange } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 interface Props {
   address: string;

@@ -11,7 +11,7 @@ import { NetworksTable, LoadingNetworksTable } from './_components/networks';
 import { NetworksSortingProvider } from '@/app/_contexts/sorting/networks/provider';
 import { defaultNetworksSorting } from '@/app/_contexts/sorting/networks/default';
 import { getChain } from '@/app/_lib/chain';
-import { getSSRTimeRange } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 export default async function NetworksPage({
   searchParams,

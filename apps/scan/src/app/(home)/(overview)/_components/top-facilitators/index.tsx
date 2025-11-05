@@ -18,7 +18,7 @@ import { facilitatorAddresses, facilitators } from '@/lib/facilitators';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-import { getSSRTimeRange } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 import type { Chain } from '@/types/chain';
 

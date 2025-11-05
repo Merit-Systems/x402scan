@@ -19,7 +19,7 @@ import { api, HydrateClient } from '@/trpc/server';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 import { ErrorBoundary } from 'react-error-boundary';
-import { getSSRTimeRange } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/time-range';
 import type { Chain } from '@/types/chain';
 
 interface Props {
