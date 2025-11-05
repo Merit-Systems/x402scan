@@ -22,7 +22,7 @@ pnpm add facilitators
 import { coinbase, thirdweb } from 'facilitators';
 
 paymentMiddleware(
-  address,
+  address,`
   resources,
   coinbase // easily interchange any facilitator
 );
@@ -32,6 +32,16 @@ paymentMiddleware(
   resources,
   thirdweb // easily interchange any facilitator
 );
+```
+
+## Auto Facilitator
+
+The `auto` facilitator is a proxy that load-balances between other facilitators to guarantee uptime. Simply import and use it directly - no configuration required:
+
+```typescript
+import { auto } from 'facilitators';
+
+paymentMiddleware(address, resources, auto);
 ```
 
 ## Resource Discovery
@@ -81,7 +91,8 @@ This package includes pre-configured integrations for the following X402 facilit
 
 | Facilitator    | Networks      | Discovery | Setup Required                 |
 | -------------- | ------------- | --------- | ------------------------------ |
-| **Coinbase**   | BASE, SOLANA  | ✅ Yes    | No - uses `@coinbase/x402` SDK |
+| **Auto**       | BASE          | No        | No                             |
+| **Coinbase**   | BASE, SOLANA  | ✅ Yes    | Yes - Requires CDP API Creds   |
 | **AurraCloud** | BASE          | ✅ Yes    | Yes - API key                  |
 | **thirdweb**   | BASE          | ✅ Yes    | Yes - Secret key & wallet      |
 | **PayAI**      | BASE, SOLANA  | ✅ Yes    | No                             |
@@ -100,6 +111,7 @@ This package includes pre-configured integrations for the following X402 facilit
 ```typescript
 // Simple facilitators (no setup)
 import {
+  auto,
   coinbase,
   payai,
   daydreams,
