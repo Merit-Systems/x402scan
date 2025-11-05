@@ -12,12 +12,11 @@ import type { UiWalletAccount } from '@wallet-standard/react';
 
 interface Props {
   account: UiWalletAccount;
-  isEmbeddedWallet: boolean;
   isOnramp?: boolean;
 }
 
 export const useSiws = (props: Props) => {
-  const { account, isEmbeddedWallet, isOnramp } = props;
+  const { account, isOnramp } = props;
 
   const signMessage = useSignMessage(account);
 
@@ -32,7 +31,6 @@ export const useSiws = (props: Props) => {
         redirectTo: isOnramp
           ? `${window.location.href}?onramp=true`
           : window.location.href,
-        isEmbeddedWallet,
       });
     },
     onSuccess: () => {
