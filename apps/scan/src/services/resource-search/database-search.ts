@@ -94,14 +94,15 @@ IMPORTANT RULES:
 5. Use ILIKE for case-insensitive text searches
 6. For resource URL searches, use: r.resource ILIKE '%search_term%'
 7. For origin searches, use: ro.origin ILIKE '%search_term%' OR ro.title ILIKE '%search_term%'
-8. If the query is very broad or empty, return: true (which returns all results)
+8. NEVER return just "true" - ALWAYS extract at least 1-3 specific keywords from the query, even if it's broad
 9. Use proper PostgreSQL syntax including double quotes for table/column names
 10. The condition will be inserted directly after WHERE in: SELECT ... FROM "Resources" r LEFT JOIN "ResourceOrigin" ro ON r."originId" = ro.id WHERE <YOUR_CONDITION> ORDER BY ...
 
 Examples:
 - "AI resources" → EXISTS (SELECT 1 FROM "ResourcesTags" rt JOIN "Tag" t ON rt."tagId" = t.id WHERE rt."resourceId" = r.id AND t.name ILIKE '%ai%')
 - "resources from google.com" → ro.origin ILIKE '%google.com%'
-- "image generation" → EXISTS (SELECT 1 FROM "Accepts" a WHERE a."resourceId" = r.id AND a.description ILIKE '%image%' AND a.description ILIKE '%generation%')`;
+- "image generation" → EXISTS (SELECT 1 FROM "Accepts" a WHERE a."resourceId" = r.id AND a.description ILIKE '%image%' AND a.description ILIKE '%generation%')
+- "news from twitter about crypto" → (ro.origin ILIKE '%twitter%' OR ro.title ILIKE '%twitter%') AND (EXISTS (SELECT 1 FROM "Accepts" a WHERE a."resourceId" = r.id AND (a.description ILIKE '%news%' OR a.description ILIKE '%crypto%')))`;
 
   if (previousError) {
     return `${basePrompt}

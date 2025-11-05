@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client';
 import type { SearchResult } from './types';
 
 const keywordExpansionSchema = z.object({
-  keywords: z.array(z.string()).describe('Array of expanded search keywords including the original term, synonyms, and related terms'),
+  keywords: z.array(z.string()).min(1).describe('Array of expanded search keywords including the original term, synonyms, and related terms. MUST contain at least 1 keyword.'),
   explanation: z.string().describe('Brief explanation of the search terms'),
 });
 
@@ -53,7 +53,10 @@ Generate an array of expanded keywords that includes:
 4. Common abbreviations or full forms
 5. Broader and narrower terms
 
-IMPORTANT: Prefer INDIVIDUAL WORDS over long phrases. Each keyword should be a single word or very short term that can match independently.
+IMPORTANT: 
+- Prefer INDIVIDUAL WORDS over long phrases. Each keyword should be a single word or very short term that can match independently.
+- You MUST return at least 1-3 keywords. NEVER return an empty array, even for very broad queries.
+- Extract the most relevant specific terms from the query.
 
 Examples:
 - "T-shirt" → ["shirt", "tee", "top", "clothing", "apparel", "tshirt", "wear", "garment"]
@@ -61,13 +64,15 @@ Examples:
 - "AI" → ["AI", "artificial", "intelligence", "machine", "learning", "ML", "neural", "network", "deep", "model"]
 - "payment API" → ["payment", "pay", "transaction", "purchase", "billing", "API", "endpoint", "service"]
 - "Twitter news" → ["Twitter", "news", "tweet", "post", "updates", "feed", "social", "media", "headlines", "stories"]
+- "news from twitter about crypto" → ["news", "Twitter", "crypto", "cryptocurrency", "bitcoin", "blockchain", "updates", "feed", "tweet", "social"]
 
-Generate 5-10 relevant single words or very short terms. Focus on individual words that can match flexibly.`;
+Generate 5-10 relevant single words or very short terms. Focus on individual words that can match flexibly. Even for very broad queries, extract the core terms.`;
 };
 
 function buildSearchCondition(keywords: string[]): string {
+  // This should never happen due to schema validation, but fail safely
   if (keywords.length === 0) {
-    return 'true';
+    throw new Error('No keywords extracted from query. The AI must provide at least one keyword.');
   }
 
   // Escape single quotes in keywords for SQL safety
