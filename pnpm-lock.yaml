@@ -527,6 +527,40 @@ importers:
         specifier: ^8.44.1
         version: 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
 
+  sync/analytics:
+    dependencies:
+      '@clickhouse/client':
+        specifier: ^1.8.0
+        version: 1.12.1
+      '@prisma/client':
+        specifier: 6.17.1
+        version: 6.17.1(prisma@6.18.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
+      '@trigger.dev/sdk':
+        specifier: 4.0.5
+        version: 4.0.5(ai@5.0.81(zod@3.25.76))(bufferutil@4.0.9)(utf-8-validate@5.0.10)(zod@3.25.76)
+      facilitators:
+        specifier: workspace:*
+        version: link:../../packages/facilitators
+    devDependencies:
+      '@trigger.dev/build':
+        specifier: 4.0.5
+        version: 4.0.5(bufferutil@4.0.9)(supports-color@10.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@typescript-eslint/parser':
+        specifier: ^8.46.2
+        version: 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
+      eslint:
+        specifier: ^9.38.0
+        version: 9.38.0(jiti@2.6.1)
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      trigger.dev:
+        specifier: ^4.0.4
+        version: 4.0.5(bufferutil@4.0.9)(superstruct@2.0.2)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   sync/transfers:
     dependencies:
       '@coinbase/cdp-sdk':
