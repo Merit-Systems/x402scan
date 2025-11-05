@@ -10,6 +10,7 @@ import {
 import { firstTransfer } from '@/services/facilitator/constants';
 import { facilitatorAddresses } from '@/lib/facilitators';
 import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
+import { Chain } from '@/types/chain';
 
 import type { NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
@@ -83,7 +84,8 @@ async function limitConcurrency(
  */
 function getHomePageTasks(
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  chain?: Chain
 ): (() => Promise<unknown>)[] {
   const limit = 100;
 
@@ -93,6 +95,7 @@ function getHomePageTasks(
       api.public.stats.overall({
         startDate,
         endDate,
+        chain,
       }),
 
     // Overall Stats - previous period (for comparison)
@@ -103,6 +106,7 @@ function getHomePageTasks(
           differenceInSeconds(endDate, startDate)
         ),
         endDate: startDate,
+        chain,
       }),
 
     // Bucketed Statistics - for charts
@@ -111,6 +115,7 @@ function getHomePageTasks(
         startDate,
         endDate,
         numBuckets: 32,
+        chain,
       }),
 
     // Top Facilitators
@@ -121,6 +126,7 @@ function getHomePageTasks(
         },
         startDate,
         endDate,
+        chain,
       }),
 
     // Top Servers (Bazaar) - list
@@ -132,6 +138,7 @@ function getHomePageTasks(
         startDate,
         endDate,
         sorting: defaultSellersSorting,
+        chain,
       }),
 
     // Top Servers (Bazaar) - overall stats
@@ -139,6 +146,7 @@ function getHomePageTasks(
       api.public.stats.bazaar.overall({
         startDate,
         endDate,
+        chain,
       }),
 
     // Latest Transactions
@@ -150,6 +158,7 @@ function getHomePageTasks(
         sorting: defaultTransfersSorting,
         startDate,
         endDate,
+        chain,
       }),
 
     // All Sellers
@@ -161,6 +170,7 @@ function getHomePageTasks(
         startDate,
         endDate,
         sorting: defaultSellersSorting,
+        chain,
       }),
   ];
 }
@@ -314,6 +324,18 @@ function getResourcesPageTasks(
   ];
 }
 
+/**
+ * Page types that can be warmed
+ */
+type WarmablePage = 'home' | 'networks' | 'facilitators' | 'resources';
+
+const ALL_PAGES: WarmablePage[] = [
+  'home',
+  'networks',
+  'facilitators',
+  'resources',
+];
+
 export async function GET(request: NextRequest) {
   const cronCheck = checkCronSecret(request);
   if (cronCheck) {
@@ -325,17 +347,25 @@ export async function GET(request: NextRequest) {
     const endDate = new Date();
     const timeframesWarmed: Record<string, number> = {};
 
-    // Optional query param to filter to specific timeframes
+    // Optional query params
     const { searchParams } = new URL(request.url);
     const onlyAllTime = searchParams.get('onlyAllTime') === 'true';
+    const pagesParam = searchParams.get('pages'); // e.g., "home,networks"
 
     // Filter timeframes if requested
     const timeframesToWarm = onlyAllTime
       ? CACHE_WARMABLE_TIMEFRAMES.filter(tf => tf === ActivityTimeframe.AllTime)
       : CACHE_WARMABLE_TIMEFRAMES;
 
+    // Filter pages if requested
+    const pagesToWarm: WarmablePage[] = pagesParam
+      ? (pagesParam
+          .split(',')
+          .filter(p => ALL_PAGES.includes(p as WarmablePage)) as WarmablePage[])
+      : ALL_PAGES;
+
     console.log(
-      `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'}${onlyAllTime ? ' (All Time only)' : ''}`
+      `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'}${onlyAllTime ? ' (All Time only)' : ''} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? '' : 's'}: ${pagesToWarm.join(', ')}`
     );
 
     // Warm each timeframe serially to avoid overwhelming the database
@@ -359,13 +389,27 @@ export async function GET(request: NextRequest) {
 
       console.log(`[Cache Warming] Warming timeframe: ${timeframeName}`);
 
-      // Collect all tasks from all pages
-      const allTasks = [
-        ...getHomePageTasks(startDate, endDate),
-        ...getNetworksPageTasks(startDate, endDate),
-        ...getFacilitatorsPageTasks(startDate, endDate),
-        ...getResourcesPageTasks(startDate, endDate),
-      ];
+      // Collect all tasks from selected pages
+      const allTasks: (() => Promise<unknown>)[] = [];
+
+      if (pagesToWarm.includes('home')) {
+        // Home page with all chain variants
+        allTasks.push(...getHomePageTasks(startDate, endDate)); // All chains
+        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.BASE));
+        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.SOLANA));
+      }
+
+      if (pagesToWarm.includes('networks')) {
+        allTasks.push(...getNetworksPageTasks(startDate, endDate));
+      }
+
+      if (pagesToWarm.includes('facilitators')) {
+        allTasks.push(...getFacilitatorsPageTasks(startDate, endDate));
+      }
+
+      if (pagesToWarm.includes('resources')) {
+        allTasks.push(...getResourcesPageTasks(startDate, endDate));
+      }
 
       // Run all tasks with controlled concurrency
       await limitConcurrency(allTasks, MAX_CONCURRENT_REQUESTS);
