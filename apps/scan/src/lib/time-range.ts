@@ -1,4 +1,4 @@
-import { subDays, subMinutes } from 'date-fns';
+import { subHours, subMinutes } from 'date-fns';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 
@@ -51,7 +51,8 @@ export function getTimeRangeFromTimeframe(
   }
 
   // For all other timeframes, calculate from endDate
-  const startDate = subDays(endDate, timeframe);
+  // Using hours instead of days because of daylight savings.
+  const startDate = subHours(endDate, timeframe * 24);
 
   return { startDate, endDate };
 }
