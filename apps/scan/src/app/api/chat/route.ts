@@ -35,8 +35,6 @@ import {
 import { freeTierConfig } from '@/lib/free-tier';
 import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
 
-import type { NextRequest } from 'next/server';
-import type { LanguageModel, UIMessage } from 'ai';
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
 import {
   agentSystemPrompt,
@@ -45,6 +43,9 @@ import {
 } from './system-prompt';
 import { env } from '@/env';
 import { api } from '@/trpc/server';
+
+import type { NextRequest } from 'next/server';
+import type { LanguageModel, UIMessage } from 'ai';
 
 const bodySchema = z.object({
   model: z.string(),
