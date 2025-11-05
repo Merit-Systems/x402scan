@@ -1,33 +1,22 @@
 import { logger, schedules } from '@trigger.dev/sdk/v3';
-import { checkUSDCBalance } from './balance-checker';
 import { sendDiscordAlert } from './discord';
-import type { Address } from 'viem';
+import { ADDRESSES_CONFIG, CURRENCY_TO_BALANCE_CHECKER } from './config';
 
 export const balanceMonitor = schedules.task({
   id: 'balance-monitor',
   cron: '*/5 * * * *',
   run: async () => {
-    const addressesString = process.env.MONITOR_ADDRESSES;
-    const thresholdString = process.env.MONITOR_THRESHOLD || '10';
-    const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
-    const rpcUrl = process.env.BASE_RPC_URL;
+    const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL!;
+    const rpcUrl = process.env.BASE_RPC_URL!;
 
-    if (!addressesString) {
-      throw new Error('MONITOR_ADDRESSES environment variable is required');
-    }
-
-    if (!discordWebhookUrl) {
-      throw new Error('DISCORD_WEBHOOK_URL environment variable is required');
-    }
-
-    const addresses = addressesString
-      .split(',')
-      .map(addr => addr.trim() as Address);
-    const threshold = parseFloat(thresholdString);
-
-    for (const address of addresses) {
+    for (const config of ADDRESSES_CONFIG) {
       try {
-        const result = await checkUSDCBalance(address, threshold, rpcUrl);
+        const balanceChecker = CURRENCY_TO_BALANCE_CHECKER[config.currency];
+        const result = await balanceChecker(
+          config.address,
+          config.threshold,
+          rpcUrl
+        );
 
         if (result.isLow) {
           await sendDiscordAlert(
@@ -39,7 +28,7 @@ export const balanceMonitor = schedules.task({
           );
         }
       } catch (error) {
-        logger.error(`Error checking balance for ${address}:`, error);
+        logger.error(`Error checking balance for ${config.address}:`, error);
       }
     }
   },

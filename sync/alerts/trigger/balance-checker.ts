@@ -31,3 +31,29 @@ export async function checkUSDCBalance(
     threshold,
   };
 }
+
+export async function checkETHBalance(
+  address: Address,
+  threshold: number = 0.01,
+  rpcUrl?: string
+): Promise<BalanceCheckResult> {
+  const client = createPublicClient({
+    chain: base,
+    transport: http(rpcUrl),
+  });
+
+  const balance = await client.getBalance({
+    address,
+  });
+
+  const balanceInETH = formatUnits(balance, 18);
+  const balanceNumber = parseFloat(balanceInETH);
+  const isLow = balanceNumber < threshold;
+
+  return {
+    address,
+    balance: balanceInETH,
+    isLow,
+    threshold,
+  };
+}
