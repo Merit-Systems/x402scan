@@ -193,10 +193,15 @@ function expandFields(
       typeof field.default === 'string' ? field.default : undefined;
 
     // Determine if this field is required
+    // If field.required is an array, it means nested properties are required,
+    // but the field itself is optional (unless parent says otherwise)
+    // If field.required is undefined, check parent's required array
     const isFieldRequired =
-      typeof field.required === 'boolean'
-        ? field.required
-        : (parentRequired?.includes(name) ?? false);
+      field.required === true
+        ? true
+        : field.required === false
+          ? false
+          : (parentRequired?.includes(name) ?? false);
 
     // Handle array type with items - preserve items schema
     if (
