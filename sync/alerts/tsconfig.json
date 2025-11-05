@@ -11,10 +11,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "trigger.config.ts"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "trigger.config.ts"],
   "exclude": ["node_modules"]
 }

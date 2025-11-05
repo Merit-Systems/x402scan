@@ -5,8 +5,8 @@ import type { Address } from 'viem';
 
 export const balanceMonitor = schedules.task({
   id: 'balance-monitor',
-  cron: '0 * * * *',
-  run: async (payload, { ctx }) => {
+  cron: '*/5 * * * *',
+  run: async () => {
     const addressesString = process.env.MONITOR_ADDRESSES;
     const thresholdString = process.env.MONITOR_THRESHOLD || '10';
     const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
@@ -20,17 +20,17 @@ export const balanceMonitor = schedules.task({
       throw new Error('DISCORD_WEBHOOK_URL environment variable is required');
     }
 
-    const addresses = addressesString.split(',').map((addr) => addr.trim() as Address);
+    const addresses = addressesString
+      .split(',')
+      .map(addr => addr.trim() as Address);
     const threshold = parseFloat(thresholdString);
 
     const results = [];
     let alertsSent = 0;
 
-    // Check each address
     for (const address of addresses) {
       try {
         const result = await checkUSDCBalance(address, threshold, rpcUrl);
-        logger.log('Balance check result:' + JSON.stringify(result));
         results.push(result);
 
         if (result.isLow) {
@@ -53,7 +53,7 @@ export const balanceMonitor = schedules.task({
       success: true,
       addressesChecked: addresses.length,
       alertsSent,
-      results: results.map((r) => ({
+      results: results.map(r => ({
         address: r.address,
         balance: r.balance,
         isLow: r.isLow,
