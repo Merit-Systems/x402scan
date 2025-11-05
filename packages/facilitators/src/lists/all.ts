@@ -13,6 +13,7 @@ import {
   questflowFacilitator,
   xechoFacilitator,
   codenutFacilitator,
+  ultravioletadaoFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -34,6 +35,7 @@ const FACILITATORS = validateUniqueFacilitators([
   questflowFacilitator,
   xechoFacilitator,
   codenutFacilitator,
+  ultravioletadaoFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =
