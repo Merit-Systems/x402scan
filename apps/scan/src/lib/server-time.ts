@@ -1,30 +1,32 @@
-import { subMinutes } from 'date-fns';
-import { CACHE_DURATION_MINUTES } from './cache-constants';
+import type { ActivityTimeframe } from '@/types/timeframes';
+import { getTimeRangeFromTimeframe } from './time-range';
 
 /**
- * Get the server-side range end time with cache lag applied.
+ * Get the server-side time range for SSR prefetching.
  *
- * This ensures server-side prefetch queries use the same lagged time as client queries
- * (via useTimeRangeContext), guaranteeing cache hits on the pre-warmed cache buckets.
+ * Returns dates with cache lag applied to ensure server prefetch queries
+ * use the same lagged times that clients will query, guaranteeing cache hits.
  *
- * Returns both the raw current time (for TimeRangeProvider) and the lagged time (for queries).
- *
- * @returns Object with rawEndDate (current time) and endDate (lagged by CACHE_DURATION_MINUTES)
+ * @param timeframe - The activity timeframe (e.g., ActivityTimeframe.OneDay)
+ * @param creationDate - Required for AllTime timeframe, earliest possible date
+ * @returns Object with startDate and endDate (both lagged for cache alignment)
  *
  * @example
  * ```ts
- * const { rawEndDate, endDate } = getSSRRangeEndTime();
- * const startDate = subDays(endDate, 1);
- *
- * // Use lagged times for prefetch
+ * // 1-day range
+ * const { startDate, endDate } = getSSRTimeRange(ActivityTimeframe.OneDay, firstTransfer);
  * await api.query.prefetch({ startDate, endDate });
  *
- * // Use raw time for TimeRangeProvider
- * <TimeRangeProvider initialEndDate={rawEndDate} initialStartDate={subDays(rawEndDate, 1)} />
+ * // 7-day range
+ * const { startDate, endDate } = getSSRTimeRange(ActivityTimeframe.SevenDays, firstTransfer);
+ *
+ * // All-time range
+ * const { startDate, endDate } = getSSRTimeRange(ActivityTimeframe.AllTime, firstTransfer);
  * ```
  */
-export function getSSRRangeEndTime() {
-  const rawEndDate = new Date();
-  const endDate = subMinutes(rawEndDate, CACHE_DURATION_MINUTES);
-  return { rawEndDate, endDate };
+export function getSSRTimeRange(
+  timeframe: ActivityTimeframe,
+  creationDate: Date
+): { startDate: Date; endDate: Date } {
+  return getTimeRangeFromTimeframe(timeframe, creationDate);
 }

@@ -8,21 +8,17 @@ import { LatestTransactionsTable } from '../../../_components/transactions/table
 import { api, HydrateClient } from '@/trpc/server';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { Section } from '@/app/_components/layout/page-utils';
-import { subMonths } from 'date-fns';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
-import { getSSRRangeEndTime } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/server-time';
 
 interface Props {
   address: string;
 }
 
 export const LatestTransactions: React.FC<Props> = async ({ address }) => {
-  const { rawEndDate, endDate } = getSSRRangeEndTime();
-  const startDate = subMonths(rawEndDate, 1);
-
   const pageSize = 10;
   const [firstTransfer] = await Promise.all([
     api.public.stats.firstTransferTimestamp({
@@ -30,26 +26,30 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
         include: [address],
       },
     }),
-    api.public.transfers.list.prefetch({
-      pagination: {
-        page_size: pageSize,
-        page: 0,
-      },
-      recipients: {
-        include: [address],
-      },
-      startDate,
-      endDate,
-      sorting: defaultTransfersSorting,
-    }),
   ]);
+
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.ThirtyDays,
+    firstTransfer ?? new Date()
+  );
+
+  await api.public.transfers.list.prefetch({
+    pagination: {
+      page_size: pageSize,
+      page: 0,
+    },
+    recipients: {
+      include: [address],
+    },
+    startDate,
+    endDate,
+    sorting: defaultTransfersSorting,
+  });
 
   return (
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransfer ?? startDate}
-        initialEndDate={rawEndDate}
-        initialStartDate={startDate}
         initialTimeframe={ActivityTimeframe.ThirtyDays}
       >
         <TransfersSortingProvider initialSorting={defaultTransfersSorting}>

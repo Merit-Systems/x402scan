@@ -1,50 +1,57 @@
 'use client';
 
-import { useState } from 'react';
-
-import { subDays } from 'date-fns';
+import { useState, useMemo } from 'react';
+import { subMinutes } from 'date-fns';
 
 import { TimeRangeContext } from './context';
-
 import { ActivityTimeframe } from '@/types/timeframes';
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
 
 interface Props {
   children: React.ReactNode;
-  initialTimeframe?: ActivityTimeframe;
-  initialEndDate?: Date;
-  initialStartDate?: Date;
+  initialTimeframe: ActivityTimeframe;
   creationDate: Date;
 }
 
 export const TimeRangeProvider = ({
   children,
   initialTimeframe,
-  initialStartDate,
-  initialEndDate,
   creationDate,
 }: Props) => {
-  const [timeframe, setTimeframe] = useState<ActivityTimeframe>(
-    initialTimeframe ?? ActivityTimeframe.AllTime
-  );
-  const [endDate, setEndDate] = useState<Date>(initialEndDate ?? new Date());
-  const [startDate, setStartDate] = useState<Date>(
-    initialStartDate ?? creationDate
-  );
+  const [timeframe, setTimeframe] =
+    useState<ActivityTimeframe>(initialTimeframe);
+  const [customRange, setCustomRange] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null);
 
-  const selectTimeframe = (timeframe: ActivityTimeframe) => {
-    if (timeframe === ActivityTimeframe.AllTime) {
-      setStartDate(creationDate);
-    } else {
-      setStartDate(subDays(new Date(), timeframe));
+  // Compute dates from timeframe (with cache lag built in)
+  // or use custom range (also with cache lag)
+  const { startDate, endDate } = useMemo((): {
+    startDate: Date;
+    endDate: Date;
+  } => {
+    if (timeframe === ActivityTimeframe.Custom && customRange) {
+      // Apply cache lag to custom dates
+      return {
+        startDate: subMinutes(customRange.start, CACHE_DURATION_MINUTES),
+        endDate: subMinutes(customRange.end, CACHE_DURATION_MINUTES),
+      };
     }
-    setEndDate(new Date());
-    setTimeframe(timeframe);
+
+    // Use shared helper for standard timeframes
+    return getTimeRangeFromTimeframe(timeframe, creationDate);
+  }, [timeframe, customRange, creationDate]);
+
+  const selectTimeframe = (newTimeframe: ActivityTimeframe) => {
+    setTimeframe(newTimeframe);
+    setCustomRange(null); // Clear custom range when switching to preset
   };
 
-  const setCustomTimeframe = (startDate: Date, endDate: Date) => {
-    setStartDate(startDate);
-    setEndDate(endDate);
+  const setCustomTimeframe = (start: Date, end: Date) => {
     setTimeframe(ActivityTimeframe.Custom);
+    setCustomRange({ start, end });
   };
 
   return (

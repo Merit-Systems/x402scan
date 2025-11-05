@@ -2,8 +2,6 @@ import { Suspense } from 'react';
 
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { subDays } from 'date-fns';
-
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -17,7 +15,7 @@ import { api, HydrateClient } from '@/trpc/server';
 import { ActivityTimeframe } from '@/types/timeframes';
 import type { Chain } from '@/types/chain';
 
-import { getSSRRangeEndTime } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/server-time';
 
 interface Props {
   facilitatorId: string;
@@ -43,13 +41,18 @@ const ActivityContainer = ({
 };
 
 export const Activity: React.FC<Props> = async ({ facilitatorId }) => {
-  const { rawEndDate, endDate } = getSSRRangeEndTime();
-  const startDate = subDays(rawEndDate, 7);
-
   const [firstTransferTimestamp] = await Promise.all([
     api.public.stats.firstTransferTimestamp({
       facilitatorIds: [facilitatorId],
     }),
+  ]);
+
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.SevenDays,
+    firstTransferTimestamp ?? new Date()
+  );
+
+  await Promise.all([
     api.public.stats.bucketed.prefetch({
       facilitatorIds: [facilitatorId],
       startDate,
@@ -66,8 +69,6 @@ export const Activity: React.FC<Props> = async ({ facilitatorId }) => {
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransferTimestamp ?? startDate}
-        initialEndDate={rawEndDate}
-        initialStartDate={startDate}
         initialTimeframe={ActivityTimeframe.SevenDays}
       >
         <ActivityContainer>

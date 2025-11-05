@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { differenceInSeconds, subDays, subSeconds } from 'date-fns';
+import { differenceInSeconds, subSeconds } from 'date-fns';
 
 import { Section } from '@/app/_components/layout/page-utils';
 
@@ -18,7 +18,7 @@ import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-import { getSSRRangeEndTime } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/server-time';
 
 import type { Chain } from '@/types/chain';
 
@@ -27,8 +27,10 @@ interface Props {
 }
 
 export const OverallStats = async ({ chain }: Props) => {
-  const { rawEndDate, endDate } = getSSRRangeEndTime();
-  const startDate = subDays(endDate, 1);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.OneDay,
+    firstTransfer
+  );
 
   await Promise.all([
     api.public.stats.overall.prefetch({
@@ -52,9 +54,7 @@ export const OverallStats = async ({ chain }: Props) => {
   return (
     <HydrateClient>
       <TimeRangeProvider
-        initialEndDate={rawEndDate}
         initialTimeframe={ActivityTimeframe.OneDay}
-        initialStartDate={subDays(rawEndDate, 1)}
         creationDate={firstTransfer}
       >
         <ActivityContainer>

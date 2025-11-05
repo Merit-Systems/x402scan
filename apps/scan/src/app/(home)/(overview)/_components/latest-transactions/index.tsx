@@ -9,11 +9,10 @@ import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/defau
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 import { Section } from '@/app/_components/layout/page-utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { subDays } from 'date-fns';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { getSSRRangeEndTime } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/server-time';
 import type { Chain } from '@/types/chain';
 
 interface Props {
@@ -21,8 +20,10 @@ interface Props {
 }
 
 export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
-  const { rawEndDate, endDate } = getSSRRangeEndTime();
-  const startDate = subDays(endDate, 1);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.OneDay,
+    firstTransfer
+  );
   const pageSize = 10;
 
   await api.public.transfers.list.prefetch({
@@ -40,8 +41,6 @@ export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
     <HydrateClient>
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
         <TimeRangeProvider
-          initialEndDate={rawEndDate}
-          initialStartDate={subDays(rawEndDate, 1)}
           creationDate={firstTransfer}
           initialTimeframe={ActivityTimeframe.OneDay}
         >

@@ -12,7 +12,7 @@ const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 3;
 /**
  * Lock timeout in seconds (query should complete within this time)
  */
-const LOCK_TIMEOUT_SECONDS = 30;
+const LOCK_TIMEOUT_SECONDS = 60;
 
 /**
  * Poll interval in milliseconds when waiting for lock
@@ -20,9 +20,11 @@ const LOCK_TIMEOUT_SECONDS = 30;
 const POLL_INTERVAL_MS = 100;
 
 /**
- * Max polling attempts (30 seconds / 100ms = 300)
+ * Max polling attempts (derived from lock timeout and poll interval)
  */
-const MAX_POLL_ATTEMPTS = 300;
+const MAX_POLL_ATTEMPTS = Math.floor(
+  (LOCK_TIMEOUT_SECONDS * 1000) / POLL_INTERVAL_MS
+);
 
 /**
  * Round a date to the nearest cache interval for stable cache keys

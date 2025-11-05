@@ -3,7 +3,6 @@ import { Card } from '@/components/ui/card';
 import { api, HydrateClient } from '@/trpc/server';
 import { Suspense } from 'react';
 import { NetworksChart, LoadingNetworksChart } from './_components/chart';
-import { subDays } from 'date-fns';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/facilitator/constants';
@@ -12,15 +11,17 @@ import { NetworksTable, LoadingNetworksTable } from './_components/networks';
 import { NetworksSortingProvider } from '@/app/_contexts/sorting/networks/provider';
 import { defaultNetworksSorting } from '@/app/_contexts/sorting/networks/default';
 import { getChain } from '@/app/_lib/chain';
-import { getSSRRangeEndTime } from '@/lib/server-time';
+import { getSSRTimeRange } from '@/lib/server-time';
 
 export default async function NetworksPage({
   searchParams,
 }: PageProps<'/networks'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  const { rawEndDate, endDate } = getSSRRangeEndTime();
-  const startDate = subDays(endDate, ActivityTimeframe.OneDay);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.OneDay,
+    firstTransfer
+  );
 
   await Promise.all([
     api.networks.bucketedStatistics.prefetch({
@@ -45,8 +46,6 @@ export default async function NetworksPage({
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransfer}
-        initialStartDate={subDays(rawEndDate, ActivityTimeframe.OneDay)}
-        initialEndDate={rawEndDate}
         initialTimeframe={ActivityTimeframe.OneDay}
       >
         <NetworksSortingProvider initialSorting={defaultNetworksSorting}>
