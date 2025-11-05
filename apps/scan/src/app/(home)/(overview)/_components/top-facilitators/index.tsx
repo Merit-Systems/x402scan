@@ -20,6 +20,8 @@ import { facilitatorAddresses, facilitators } from '@/lib/facilitators';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import { getSSRRangeEndTime } from '@/lib/server-time';
+
 import type { Chain } from '@/types/chain';
 
 interface Props {
@@ -27,7 +29,7 @@ interface Props {
 }
 
 export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
-  const endDate = new Date();
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
   const startDate = subDays(endDate, ActivityTimeframe.OneDay);
 
   const chainFacilitators = chain
@@ -50,8 +52,8 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransfer}
-        initialStartDate={startDate}
-        initialEndDate={endDate}
+        initialStartDate={subDays(rawEndDate, ActivityTimeframe.OneDay)}
+        initialEndDate={rawEndDate}
         initialTimeframe={ActivityTimeframe.OneDay}
       >
         <FacilitatorsSection>

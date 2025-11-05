@@ -13,16 +13,17 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { ServersCharts } from './_components/charts';
+import { getSSRRangeEndTime } from '@/lib/server-time';
 
 export default async function MarketplacePage() {
-  const endDate = new Date();
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
   const startDate = subDays(endDate, ActivityTimeframe.OneDay);
 
   return (
     <TimeRangeProvider
       creationDate={firstTransfer}
-      initialStartDate={startDate}
-      initialEndDate={endDate}
+      initialStartDate={subDays(rawEndDate, ActivityTimeframe.OneDay)}
+      initialEndDate={rawEndDate}
       initialTimeframe={ActivityTimeframe.OneDay}
     >
       <Heading

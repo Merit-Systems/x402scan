@@ -21,6 +21,8 @@ import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import { getSSRRangeEndTime } from '@/lib/server-time';
+
 interface Props {
   facilitatorId: string;
 }
@@ -28,8 +30,8 @@ interface Props {
 export const LatestTransactions: React.FC<Props> = async ({
   facilitatorId,
 }) => {
-  const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
+  const startDate = subMonths(rawEndDate, 1);
   const pageSize = 10;
 
   await api.public.transfers.list.prefetch({
@@ -45,7 +47,7 @@ export const LatestTransactions: React.FC<Props> = async ({
   return (
     <HydrateClient>
       <TimeRangeProvider
-        initialEndDate={endDate}
+        initialEndDate={rawEndDate}
         initialStartDate={startDate}
         creationDate={firstTransfer}
         initialTimeframe={ActivityTimeframe.ThirtyDays}

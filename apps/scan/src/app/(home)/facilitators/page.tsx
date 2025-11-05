@@ -19,13 +19,14 @@ import { FacilitatorsSortingProvider } from '@/app/_contexts/sorting/facilitator
 import { defaultFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/default';
 import { getChain } from '@/app/_lib/chain';
 import { facilitators } from '@/lib/facilitators';
+import { getSSRRangeEndTime } from '@/lib/server-time';
 
 export default async function FacilitatorsPage({
   searchParams,
 }: PageProps<'/facilitators'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  const endDate = new Date();
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
   const startDate = subDays(endDate, ActivityTimeframe.OneDay);
 
   await Promise.all([
@@ -54,8 +55,8 @@ export default async function FacilitatorsPage({
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransfer}
-        initialStartDate={startDate}
-        initialEndDate={endDate}
+        initialStartDate={subDays(rawEndDate, ActivityTimeframe.OneDay)}
+        initialEndDate={rawEndDate}
         initialTimeframe={ActivityTimeframe.OneDay}
       >
         <FacilitatorsSortingProvider

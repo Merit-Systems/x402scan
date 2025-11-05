@@ -18,6 +18,8 @@ import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import { getSSRRangeEndTime } from '@/lib/server-time';
+
 import type { Chain } from '@/types/chain';
 
 interface Props {
@@ -25,7 +27,7 @@ interface Props {
 }
 
 export const OverallStats = async ({ chain }: Props) => {
-  const endDate = new Date();
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
   const startDate = subDays(endDate, 1);
 
   await Promise.all([
@@ -50,9 +52,9 @@ export const OverallStats = async ({ chain }: Props) => {
   return (
     <HydrateClient>
       <TimeRangeProvider
-        initialEndDate={endDate}
+        initialEndDate={rawEndDate}
         initialTimeframe={ActivityTimeframe.OneDay}
-        initialStartDate={startDate}
+        initialStartDate={subDays(rawEndDate, 1)}
         creationDate={firstTransfer}
       >
         <ActivityContainer>

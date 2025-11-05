@@ -18,6 +18,7 @@ import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 import { ErrorBoundary } from 'react-error-boundary';
+import { getSSRRangeEndTime } from '@/lib/server-time';
 
 import type { Chain } from '@/types/chain';
 
@@ -26,7 +27,7 @@ interface Props {
 }
 
 export const TopServers = async ({ chain }: Props) => {
-  const endDate = new Date();
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
   const startDate = subDays(endDate, 1);
 
   await Promise.all([
@@ -46,8 +47,8 @@ export const TopServers = async ({ chain }: Props) => {
       <SellersSortingProvider initialSorting={defaultSellersSorting}>
         <TimeRangeProvider
           creationDate={firstTransfer}
-          initialEndDate={endDate}
-          initialStartDate={startDate}
+          initialEndDate={rawEndDate}
+          initialStartDate={subDays(rawEndDate, 1)}
           initialTimeframe={ActivityTimeframe.OneDay}
         >
           <TopServersContainer>

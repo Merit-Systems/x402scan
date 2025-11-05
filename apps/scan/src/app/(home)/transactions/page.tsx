@@ -12,6 +12,7 @@ import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { getChain } from '@/app/_lib/chain';
+import { getSSRRangeEndTime } from '@/lib/server-time';
 
 export default async function TransactionsPage({
   searchParams,
@@ -20,7 +21,7 @@ export default async function TransactionsPage({
 
   const pageSize = 15;
 
-  const endDate = new Date();
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
   const startDate = subMonths(endDate, 1);
 
   await api.public.transfers.list.prefetch({
@@ -38,8 +39,8 @@ export default async function TransactionsPage({
     <HydrateClient>
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
         <TimeRangeProvider
-          initialEndDate={endDate}
-          initialStartDate={startDate}
+          initialEndDate={rawEndDate}
+          initialStartDate={subMonths(rawEndDate, 1)}
           creationDate={firstTransfer}
           initialTimeframe={ActivityTimeframe.ThirtyDays}
         >

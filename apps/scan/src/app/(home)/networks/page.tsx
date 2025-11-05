@@ -12,13 +12,14 @@ import { NetworksTable, LoadingNetworksTable } from './_components/networks';
 import { NetworksSortingProvider } from '@/app/_contexts/sorting/networks/provider';
 import { defaultNetworksSorting } from '@/app/_contexts/sorting/networks/default';
 import { getChain } from '@/app/_lib/chain';
+import { getSSRRangeEndTime } from '@/lib/server-time';
 
 export default async function NetworksPage({
   searchParams,
 }: PageProps<'/networks'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  const endDate = new Date();
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
   const startDate = subDays(endDate, ActivityTimeframe.OneDay);
 
   await Promise.all([
@@ -44,8 +45,8 @@ export default async function NetworksPage({
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransfer}
-        initialStartDate={startDate}
-        initialEndDate={endDate}
+        initialStartDate={subDays(rawEndDate, ActivityTimeframe.OneDay)}
+        initialEndDate={rawEndDate}
         initialTimeframe={ActivityTimeframe.OneDay}
       >
         <NetworksSortingProvider initialSorting={defaultNetworksSorting}>

@@ -13,6 +13,7 @@ import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/defau
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
+import { getSSRRangeEndTime } from '@/lib/server-time';
 
 export default async function TransactionsPage({
   params,
@@ -20,8 +21,8 @@ export default async function TransactionsPage({
   const { address } = await params;
 
   const pageSize = 15;
-  const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
+  const startDate = subMonths(rawEndDate, 1);
 
   const [firstTransfer] = await Promise.all([
     api.public.stats.firstTransferTimestamp({
@@ -47,7 +48,7 @@ export default async function TransactionsPage({
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransfer ?? startDate}
-        initialEndDate={endDate}
+        initialEndDate={rawEndDate}
         initialStartDate={startDate}
         initialTimeframe={ActivityTimeframe.ThirtyDays}
       >

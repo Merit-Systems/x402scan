@@ -17,6 +17,8 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import { getSSRRangeEndTime } from '@/lib/server-time';
+
 interface Props {
   address: string;
 }
@@ -40,8 +42,8 @@ const ActivityContainer = ({
 };
 
 export const Activity: React.FC<Props> = async ({ address }) => {
-  const endDate = new Date();
-  const startDate = subDays(endDate, 7);
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
+  const startDate = subDays(rawEndDate, 7);
 
   const [firstTransferTimestamp] = await Promise.all([
     api.public.stats.firstTransferTimestamp({
@@ -69,7 +71,7 @@ export const Activity: React.FC<Props> = async ({ address }) => {
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransferTimestamp ?? startDate}
-        initialEndDate={endDate}
+        initialEndDate={rawEndDate}
         initialStartDate={startDate}
         initialTimeframe={ActivityTimeframe.SevenDays}
       >

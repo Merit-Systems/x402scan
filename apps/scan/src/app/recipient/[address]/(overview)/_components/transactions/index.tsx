@@ -13,14 +13,15 @@ import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/defau
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
+import { getSSRRangeEndTime } from '@/lib/server-time';
 
 interface Props {
   address: string;
 }
 
 export const LatestTransactions: React.FC<Props> = async ({ address }) => {
-  const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
+  const startDate = subMonths(rawEndDate, 1);
 
   const pageSize = 10;
   const [firstTransfer] = await Promise.all([
@@ -47,7 +48,7 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransfer ?? startDate}
-        initialEndDate={endDate}
+        initialEndDate={rawEndDate}
         initialStartDate={startDate}
         initialTimeframe={ActivityTimeframe.ThirtyDays}
       >

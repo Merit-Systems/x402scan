@@ -13,6 +13,7 @@ import { subDays } from 'date-fns';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
+import { getSSRRangeEndTime } from '@/lib/server-time';
 import type { Chain } from '@/types/chain';
 
 interface Props {
@@ -20,7 +21,7 @@ interface Props {
 }
 
 export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
-  const endDate = new Date();
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
   const startDate = subDays(endDate, 1);
   const pageSize = 10;
 
@@ -39,8 +40,8 @@ export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
     <HydrateClient>
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
         <TimeRangeProvider
-          initialEndDate={endDate}
-          initialStartDate={startDate}
+          initialEndDate={rawEndDate}
+          initialStartDate={subDays(rawEndDate, 1)}
           creationDate={firstTransfer}
           initialTimeframe={ActivityTimeframe.OneDay}
         >

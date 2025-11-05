@@ -18,9 +18,11 @@ import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import { getSSRRangeEndTime } from '@/lib/server-time';
+
 export const OverallStats = async () => {
-  const endDate = new Date();
-  const startDate = subDays(endDate, 3);
+  const { rawEndDate, endDate } = getSSRRangeEndTime();
+  const startDate = subDays(rawEndDate, 3);
 
   await Promise.all([
     api.public.agents.activity.overall.prefetch({
@@ -37,7 +39,7 @@ export const OverallStats = async () => {
   return (
     <HydrateClient>
       <TimeRangeProvider
-        initialEndDate={endDate}
+        initialEndDate={rawEndDate}
         initialTimeframe={ActivityTimeframe.ThreeDays}
         initialStartDate={startDate}
         creationDate={firstTransfer}
