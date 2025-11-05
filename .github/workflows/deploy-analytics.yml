@@ -1,18 +1,18 @@
-name: Deploy Sync (Transfers) to Trigger.dev (prod)
+name: Deploy Analytics to Trigger.dev (prod)
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'sync/transfers/**'
+      - 'sync/analytics/**'
       - 'packages/facilitators/**'
       - 'pnpm-lock.yaml'
-      - '.github/workflows/deploy-sync.yml'
+      - '.github/workflows/deploy-analytics.yml'
 
 jobs:
   deploy:
-    name: Deploy Transfers to Trigger.dev
+    name: Deploy Analytics to Trigger.dev
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -31,12 +31,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma client
-        working-directory: ./sync/transfers
-        run: pnpm db:generate
-
       - name: Deploy to Trigger.dev
-        working-directory: ./sync/transfers
+        working-directory: ./sync/analytics
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
         run: pnpm trigger:deploy
+
