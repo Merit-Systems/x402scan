@@ -11,8 +11,16 @@ type FieldDef = {
   items?: FieldDef;
 };
 
-function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
+function fieldDefToZodType(
+  fieldDef: FieldDef,
+  parentRequired?: string[]
+): z.ZodTypeAny {
   let zodType: z.ZodTypeAny;
+
+  // Determine the required array for this field
+  const requiredArray = Array.isArray(fieldDef.required)
+    ? fieldDef.required
+    : (parentRequired ?? []);
 
   if (fieldDef.enum) {
     zodType = z.enum(fieldDef.enum as [string, ...string[]]);
@@ -29,7 +37,20 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
         if (fieldDef.properties) {
           const shape: Record<string, z.ZodTypeAny> = {};
           for (const [key, subField] of Object.entries(fieldDef.properties)) {
-            shape[key] = fieldDefToZodType(subField);
+            // Check if this property is in the required array
+            const isRequired = requiredArray.includes(key);
+            // Use the subField's own required array if it exists, otherwise use parent's
+            const subFieldRequired = Array.isArray(subField.required)
+              ? subField.required
+              : requiredArray;
+            let subFieldType = fieldDefToZodType(subField, subFieldRequired);
+
+            // If this property is not required, make it optional
+            if (!isRequired) {
+              subFieldType = subFieldType.optional();
+            }
+
+            shape[key] = subFieldType;
           }
           zodType = z.object(shape);
         } else {
@@ -38,7 +59,8 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
         break;
       case 'array':
         if (fieldDef.items) {
-          zodType = z.array(fieldDefToZodType(fieldDef.items));
+          // Pass the required array to items processing
+          zodType = z.array(fieldDefToZodType(fieldDef.items, requiredArray));
         } else {
           zodType = z.array(z.string());
         }
@@ -52,7 +74,12 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
     zodType = zodType.describe(fieldDef.description);
   }
 
-  if (!fieldDef.required) {
+  // Only make the field optional if required is explicitly false
+  // If required is an array, it's handled above for nested objects
+  if (fieldDef.required === false) {
+    zodType = zodType.optional();
+  } else if (!fieldDef.required && !Array.isArray(fieldDef.required)) {
+    // If required is undefined and not an array, make optional
     zodType = zodType.optional();
   }
 

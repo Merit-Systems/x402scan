@@ -63,7 +63,12 @@ export function Form({ x402Response }: Props) {
                   </Label>
                   <FieldInput
                     field={field}
-                    value={queryValues[field.name] ?? field.default ?? ''}
+                    value={
+                      queryValues[field.name] ??
+                      (field.type === 'object' && field.properties
+                        ? undefined
+                        : (field.default ?? ''))
+                    }
                     onChange={value => handleQueryChange(field.name, value)}
                     prefix="query"
                   />
@@ -92,7 +97,12 @@ export function Form({ x402Response }: Props) {
                   </Label>
                   <FieldInput
                     field={field}
-                    value={bodyValues[field.name] ?? field.default ?? ''}
+                    value={
+                      bodyValues[field.name] ??
+                      (field.type === 'object' && field.properties
+                        ? undefined
+                        : (field.default ?? ''))
+                    }
                     onChange={value => handleBodyChange(field.name, value)}
                     prefix="body"
                   />
@@ -316,6 +326,87 @@ function ArrayFieldInput({
   );
 }
 
+function ObjectFieldInput({
+  field,
+  value,
+  onChange,
+  prefix,
+}: {
+  field: FieldDefinition;
+  value: Record<string, unknown> | undefined;
+  onChange: (value: Record<string, unknown> | undefined) => void;
+  prefix: string;
+}) {
+  const hasValue = value !== undefined && value !== null;
+  const properties = field.properties ?? {};
+  const propertiesRequired = field.propertiesRequired ?? [];
+
+  const updateProperty = (propName: string, propValue: string) => {
+    const newValue = { ...(value ?? {}), [propName]: propValue };
+    onChange(newValue);
+  };
+
+  const removeObject = () => {
+    onChange(undefined);
+  };
+
+  const addObject = () => {
+    const newValue: Record<string, string> = {};
+    Object.keys(properties).forEach(key => {
+      newValue[key] = '';
+    });
+    onChange(newValue);
+  };
+
+  if (!hasValue) {
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="w-full"
+        onClick={addObject}
+      >
+        <Plus className="h-4 w-4 mr-2" />
+        Add {field.name}
+      </Button>
+    );
+  }
+
+  return (
+    <div className="space-y-2 border rounded-md p-3">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-medium">{field.name}</span>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6"
+          onClick={removeObject}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      <div className="space-y-2">
+        {Object.entries(properties).map(([propName, propDef]) => (
+          <PropertyFieldInput
+            key={propName}
+            propName={propName}
+            propDef={parsePropertyDefinition(
+              propDef,
+              propName,
+              propertiesRequired
+            )}
+            value={(value as Record<string, string>)[propName] ?? ''}
+            onChange={val => updateProperty(propName, val)}
+            fieldId={`${prefix}-${field.name}-${propName}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FieldInput({
   field,
   value,
@@ -341,7 +432,25 @@ function FieldInput({
     );
   }
 
-  // Delegate to PropertyFieldInput for non-array fields
+  // Handle object type with properties
+  if (field.type === 'object' && field.properties) {
+    return (
+      <ObjectFieldInput
+        field={field}
+        value={
+          typeof value === 'object' && !Array.isArray(value)
+            ? (value as Record<string, unknown>)
+            : undefined
+        }
+        onChange={
+          onChange as (value: Record<string, unknown> | undefined) => void
+        }
+        prefix={prefix}
+      />
+    );
+  }
+
+  // Delegate to PropertyFieldInput for non-array, non-object fields
   // Label is already rendered by the parent Form component
   return (
     <PropertyFieldInput

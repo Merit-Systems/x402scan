@@ -97,6 +97,9 @@ export const ResourceFetchProvider: React.FC<Props> = ({
             if (value.length > 0) {
               acc.push([key, value]);
             }
+          } else if (typeof value === 'object' && value !== null) {
+            // Objects are already structured correctly
+            acc.push([key, value]);
           } else if (typeof value === 'string') {
             const trimmed = value.trim();
             if (trimmed.length > 0) {
@@ -229,7 +232,7 @@ function expandFields(
         },
       } satisfies FieldDefinition);
     }
-    // Handle object type with properties - expand recursively
+    // Handle object type with properties - expand recursively ONLY if required
     else if (
       fieldType === 'object' &&
       field.properties &&
@@ -238,12 +241,29 @@ function expandFields(
       const objectRequired = Array.isArray(field.required)
         ? field.required
         : [];
-      const expandedFields = expandFields(
-        field.properties as Record<string, unknown>,
-        fullName,
-        objectRequired
-      );
-      fields.push(...expandedFields);
+
+      // If the object itself is required, expand it recursively
+      // Otherwise, keep it as an object field with properties metadata
+      if (isFieldRequired) {
+        const expandedFields = expandFields(
+          field.properties as Record<string, unknown>,
+          fullName,
+          objectRequired
+        );
+        fields.push(...expandedFields);
+      } else {
+        // Optional object - preserve it as a single field with properties metadata
+        fields.push({
+          name: fullName,
+          type: fieldType,
+          description: fieldDescription,
+          required: isFieldRequired,
+          enum: fieldEnum,
+          default: fieldDefault,
+          properties: field.properties as Record<string, unknown>,
+          propertiesRequired: objectRequired,
+        } satisfies FieldDefinition);
+      }
     } else {
       // Regular field or object without properties
       fields.push({
@@ -264,6 +284,15 @@ function isValidFieldValue(value: FieldValue): boolean {
   if (Array.isArray(value)) {
     return value.length > 0;
   }
+  if (typeof value === 'object' && value !== null) {
+    // For objects, check if at least one property has a value
+    return Object.values(value).some(v => {
+      if (typeof v === 'string') {
+        return v.trim().length > 0;
+      }
+      return v !== null && v !== undefined;
+    });
+  }
   return typeof value === 'string' && value.trim().length > 0;
 }
 
@@ -273,8 +302,11 @@ function reconstructNestedObject(
   const result: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(flatObject)) {
-    // Arrays are already structured correctly, just assign them
-    if (Array.isArray(value)) {
+    // Arrays and objects (but not strings) are already structured correctly
+    if (
+      Array.isArray(value) ||
+      (typeof value === 'object' && value !== null && typeof value !== 'string')
+    ) {
       result[key] = value;
       continue;
     }
