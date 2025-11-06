@@ -27,52 +27,51 @@ export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
 ) => {
   const origin = originSchema.parse(originInput);
-  return await prisma.resourceOrigin.upsert({
-    where: { origin: origin.origin },
-    update: {
-      title: origin.title,
-      description: origin.description,
-      favicon: origin.favicon,
-      ogImages: {
-        upsert: origin.ogImages.map(
-          ({ url, height, width, title, description }) => ({
-            where: {
-              url,
-            },
-            create: {
-              url,
-              height,
-              width,
-              title,
-              description,
-            },
-            update: {
-              height,
-              width,
-              title,
-              description,
-            },
-          })
-        ),
+  
+  return await prisma.$transaction(async (tx) => {
+    const upsertedOrigin = await tx.resourceOrigin.upsert({
+      where: { origin: origin.origin },
+      update: {
+        title: origin.title,
+        description: origin.description,
+        favicon: origin.favicon,
       },
-    },
-    create: {
-      origin: origin.origin,
-      title: origin.title,
-      description: origin.description,
-      favicon: origin.favicon,
-      ogImages: {
-        create: origin.ogImages.map(
-          ({ url, height, width, title, description }) => ({
+      create: {
+        origin: origin.origin,
+        title: origin.title,
+        description: origin.description,
+        favicon: origin.favicon,
+      },
+    });
+
+    await Promise.all(
+      origin.ogImages.map(({ url, height, width, title, description }) =>
+        tx.ogImage.upsert({
+          where: {
+            originId_url: {
+              originId: upsertedOrigin.id,
+              url: url,
+            },
+          },
+          update: {
+            height,
+            width,
+            title,
+            description,
+          },
+          create: {
+            originId: upsertedOrigin.id,
             url,
             height,
             width,
             title,
             description,
-          })
-        ),
-      },
-    },
+          },
+        })
+      )
+    );
+
+    return upsertedOrigin;
   });
 };
 
