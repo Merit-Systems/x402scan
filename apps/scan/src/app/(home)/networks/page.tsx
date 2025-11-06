@@ -1,53 +1,47 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { Card } from '@/components/ui/card';
-import { api, HydrateClient } from '@/trpc/server';
 import { Suspense } from 'react';
+
+import { Card } from '@/components/ui/card';
+
+import { Body, Heading } from '@/app/_components/layout/page-utils';
+
 import { NetworksChart, LoadingNetworksChart } from './_components/chart';
+import { NetworksTable, LoadingNetworksTable } from './_components/networks';
+
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
-import { firstTransfer } from '@/services/facilitator/constants';
-import { ActivityTimeframe } from '@/types/timeframes';
-import { NetworksTable, LoadingNetworksTable } from './_components/networks';
 import { NetworksSortingProvider } from '@/app/_contexts/sorting/networks/provider';
 import { defaultNetworksSorting } from '@/app/_contexts/sorting/networks/default';
+
+import { api, HydrateClient } from '@/trpc/server';
+
 import { getChain } from '@/app/_lib/chain';
-import { getSSRTimeRange } from '@/lib/time-range';
+
+import { ActivityTimeframe } from '@/types/timeframes';
 
 export default async function NetworksPage({
   searchParams,
 }: PageProps<'/networks'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.OneDay,
-    firstTransfer
-  );
-
   await Promise.all([
     api.networks.bucketedStatistics.prefetch({
       numBuckets: 48,
-      startDate,
-      endDate,
+      timeframe: ActivityTimeframe.OneDay,
       chain,
     }),
     api.public.stats.overall.prefetch({
-      startDate,
-      endDate,
+      timeframe: ActivityTimeframe.OneDay,
       chain,
     }),
     api.networks.list.prefetch({
-      startDate,
-      endDate,
+      timeframe: ActivityTimeframe.OneDay,
       chain,
     }),
   ]);
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        creationDate={firstTransfer}
-        initialTimeframe={ActivityTimeframe.OneDay}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <NetworksSortingProvider initialSorting={defaultNetworksSorting}>
           <Heading
             title="Networks"

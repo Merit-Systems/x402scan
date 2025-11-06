@@ -9,6 +9,7 @@ import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { useState } from 'react';
 import { OriginOverviewSection } from '../section';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 interface Props {
   originId: string;
@@ -42,7 +43,7 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
         recipients: {
           include: addresses,
         },
-        startDate: firstTransferTimestamp ?? endDate,
+        timeframe: ActivityTimeframe.AllTime,
       },
       {
         enabled: !!metadata && !isFirstTransferTimestampLoading,
@@ -52,7 +53,7 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
     api.public.stats.bucketed.useQuery(
       {
         numBuckets: 48,
-        startDate: firstTransferTimestamp ?? endDate,
+        timeframe: ActivityTimeframe.AllTime,
         recipients: {
           include: addresses,
         },

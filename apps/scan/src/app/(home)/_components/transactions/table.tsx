@@ -1,14 +1,17 @@
 'use client';
 
+import { useState } from 'react';
+
 import { api } from '@/trpc/client';
 
 import { DataTable } from '@/components/ui/data-table';
 
-import { columns } from './columns';
-import { useTransfersSorting } from '@/app/_contexts/sorting/transfers/hook';
-import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { useChain } from '@/app/_contexts/chain/hook';
-import { useState } from 'react';
+import { useTransfersSorting } from '@/app/_contexts/sorting/transfers/hook';
+
+import { columns } from './columns';
+
+import { ActivityTimeframe } from '@/types/timeframes';
 
 interface Props {
   pageSize: number;
@@ -16,7 +19,6 @@ interface Props {
 
 export const Table: React.FC<Props> = ({ pageSize }) => {
   const { sorting } = useTransfersSorting();
-  const { startDate, endDate } = useTimeRangeContext();
   const { chain } = useChain();
 
   const [page, setPage] = useState(0);
@@ -28,8 +30,7 @@ export const Table: React.FC<Props> = ({ pageSize }) => {
       page,
     },
     sorting,
-    startDate,
-    endDate,
+    timeframe: ActivityTimeframe.AllTime,
   });
 
   return (

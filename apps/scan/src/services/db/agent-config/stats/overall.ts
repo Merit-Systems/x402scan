@@ -1,25 +1,25 @@
 import z from 'zod';
 
-import { subMonths, differenceInMilliseconds, getUnixTime } from 'date-fns';
-
-import { queryRaw } from '../../query';
 import { Prisma } from '@prisma/client';
 
+import { differenceInMilliseconds, getUnixTime } from 'date-fns';
+
+import { queryRaw } from '../../query';
+
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+import { timePeriodSchema } from '@/lib/schemas';
+import { agentsRelease } from '@/lib/agents';
+
 export const overallActivityInputSchema = z.object({
-  startDate: z
-    .date()
-    .optional()
-    .default(() => subMonths(new Date(), 1)),
-  endDate: z
-    .date()
-    .optional()
-    .default(() => new Date()),
+  timeframe: timePeriodSchema,
 });
 
-export const getOverallActivity = async (
-  input: z.infer<typeof overallActivityInputSchema>
-) => {
-  const { startDate, endDate } = input;
+export const getOverallActivity = async ({
+  timeframe,
+}: z.infer<typeof overallActivityInputSchema>) => {
+  const { startDate, endDate } = getTimeRangeFromTimeframe({
+    timeframe,
+  });
   const [result] = await queryRaw(
     Prisma.sql`
       SELECT
@@ -46,20 +46,24 @@ export const getOverallActivity = async (
 };
 
 export const overallBucketedActivityInputSchema = z.object({
-  startDate: z.date().optional(),
-  endDate: z
-    .date()
-    .optional()
-    .default(() => new Date()),
+  timeframe: timePeriodSchema,
   numBuckets: z.number().optional().default(48),
 });
 
 export const getOverallBucketedActivity = async (
   input: z.infer<typeof overallBucketedActivityInputSchema>
 ) => {
-  const { endDate, numBuckets } = input;
+  const { timeframe, numBuckets } = input;
 
-  const startDate = input.startDate ?? subMonths(new Date(), 1);
+  const { startDate, endDate } =
+    timeframe === 0
+      ? getTimeRangeFromTimeframe({
+          timeframe: 0,
+          creationDate: agentsRelease,
+        })
+      : getTimeRangeFromTimeframe({
+          timeframe,
+        });
 
   // Calculate bucket size in seconds for consistent alignment using date-fns
   const timeRangeMs = differenceInMilliseconds(endDate, startDate);

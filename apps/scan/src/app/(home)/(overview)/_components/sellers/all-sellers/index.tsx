@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 
+import { ErrorBoundary } from 'react-error-boundary';
+
 import { DataTable } from '@/components/ui/data-table';
 
 import { Section } from '@/app/_components/layout/page-utils';
@@ -13,13 +15,10 @@ import { AllSellersTable } from './table';
 import { SellersSortingProvider } from '../../../../../_contexts/sorting/sellers/provider';
 import { defaultSellersSorting } from '../../../../../_contexts/sorting/sellers/default';
 
-import { firstTransfer } from '@/services/facilitator/constants';
-
 import { api, HydrateClient } from '@/trpc/server';
 
 import { ActivityTimeframe } from '@/types/timeframes';
-import { ErrorBoundary } from 'react-error-boundary';
-import { getSSRTimeRange } from '@/lib/time-range';
+
 import type { Chain } from '@/types/chain';
 
 interface Props {
@@ -27,11 +26,6 @@ interface Props {
 }
 
 export const AllSellers: React.FC<Props> = async ({ chain }) => {
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.OneDay,
-    firstTransfer
-  );
-
   const limit = 100;
 
   await api.public.sellers.all.list.prefetch({
@@ -41,16 +35,12 @@ export const AllSellers: React.FC<Props> = async ({ chain }) => {
       page_size: limit,
       page: 0,
     },
-    startDate,
-    endDate,
+    timeframe: ActivityTimeframe.OneDay,
   });
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        creationDate={firstTransfer}
-        initialTimeframe={ActivityTimeframe.OneDay}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <SellersSortingProvider initialSorting={defaultSellersSorting}>
           <AllSellersContainer>
             <ErrorBoundary

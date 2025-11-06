@@ -1,6 +1,7 @@
 import { Section } from '@/app/_components/layout/page-utils';
 import { api } from '@/trpc/server';
 import { AgentCard } from '../lib/agent-card';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 interface Props {
   userId: string;
@@ -8,6 +9,7 @@ interface Props {
 
 export const YourAgents = async ({ userId }: Props) => {
   const yourAgents = await api.public.agents.list({
+    timeframe: ActivityTimeframe.AllTime,
     pagination: {
       page: 0,
       page_size: 100,

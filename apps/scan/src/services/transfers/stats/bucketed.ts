@@ -5,6 +5,10 @@ import { baseBucketedQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { transfersWhereClause } from '../query-utils';
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+import { ActivityTimeframe } from '@/types/timeframes';
+import { getFirstTransferTimestamp } from './first-transfer';
+import { firstTransfer } from '@/services/facilitator/constants';
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
@@ -21,7 +25,16 @@ const bucketedResultSchema = z.array(
 const getBucketedStatisticsUncached = async (
   input: z.infer<typeof bucketedStatisticsInputSchema>
 ) => {
-  const { startDate, endDate, numBuckets } = input;
+  const { timeframe, numBuckets } = input;
+
+  const { startDate, endDate } =
+    timeframe === 0
+      ? getTimeRangeFromTimeframe({
+          timeframe: 0,
+          creationDate:
+            (await getFirstTransferTimestamp(input)) ?? firstTransfer,
+        })
+      : getTimeRangeFromTimeframe({ timeframe });
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(

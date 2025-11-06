@@ -1,6 +1,8 @@
-import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
-import { subMonths } from 'date-fns';
 import z from 'zod';
+
+import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
+import { ActivityTimeframe } from '@/types/timeframes';
+import { timePeriodSchema } from '@/lib/schemas';
 
 const addressArray = z
   .array(mixedAddressSchema)
@@ -13,8 +15,8 @@ const addressesSchema = z.object({
 
 export const baseQuerySchema = z.object({
   chain: chainSchema.optional(),
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
+  timeframe: timePeriodSchema,
+  offset: z.enum(ActivityTimeframe).optional(),
   senders: addressesSchema.optional(),
   recipients: addressesSchema.optional(),
   facilitatorIds: z.array(z.string()).optional(),
@@ -39,10 +41,6 @@ export const baseListQuerySchema = <T extends readonly string[]>({
       }),
   });
 
-export const baseBucketedQuerySchema = baseQuerySchema
-  .omit({ startDate: true, endDate: true })
-  .extend({
-    startDate: z.date().default(() => subMonths(new Date(), 1)),
-    endDate: z.date().default(() => new Date()),
-    numBuckets: z.number().default(48),
-  });
+export const baseBucketedQuerySchema = baseQuerySchema.extend({
+  numBuckets: z.number().default(48),
+});

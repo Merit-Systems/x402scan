@@ -4,8 +4,11 @@ import { api } from '@/trpc/server';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
-import type { LucideIcon } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
+
+import { ActivityTimeframe } from '@/types/timeframes';
+
+import type { LucideIcon } from 'lucide-react';
 
 interface Props {
   id: string;
@@ -26,6 +29,7 @@ const stats: Stat[] = [
 export const StatsCards: React.FC<Props> = async ({ id }) => {
   const overallStats = await api.public.stats.overall({
     facilitatorIds: [id],
+    timeframe: ActivityTimeframe.AllTime,
   });
 
   const values = [
