@@ -10,4 +10,3 @@ export type ResourceSearchSortId =
 
 export const ResourceSearchSortingContext =
   createSortingContext<ResourceSearchSortId>();
-

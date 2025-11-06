@@ -26,18 +26,20 @@ const ResultsTableComponent = ({
 
   const sortedResults = useMemo(() => {
     const sorted = [...results];
-    
+
     sorted.sort((a, b) => {
       let comparison = 0;
-      
+
       switch (sorting.id) {
         case 'filterMatches': {
-          const aPercent = a.filterAnswers.length > 0 
-            ? a.filterMatches / a.filterAnswers.length 
-            : 0;
-          const bPercent = b.filterAnswers.length > 0 
-            ? b.filterMatches / b.filterAnswers.length 
-            : 0;
+          const aPercent =
+            a.filterAnswers.length > 0
+              ? a.filterMatches / a.filterAnswers.length
+              : 0;
+          const bPercent =
+            b.filterAnswers.length > 0
+              ? b.filterMatches / b.filterAnswers.length
+              : 0;
           comparison = aPercent - bPercent;
           break;
         }
@@ -60,10 +62,10 @@ const ResultsTableComponent = ({
           break;
         }
       }
-      
+
       return sorting.desc ? -comparison : comparison;
     });
-    
+
     return sorted;
   }, [results, sorting]);
 

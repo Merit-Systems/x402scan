@@ -6,4 +6,3 @@ export const defaultResourceSearchSorting: SortType<ResourceSearchSortId> = {
   id: 'filterMatches',
   desc: true,
 };
-

@@ -65,7 +65,10 @@ export const SearchContainer = () => {
             <ResourceSearchSortingProvider
               initialSorting={defaultResourceSearchSorting}
             >
-              <ResultsTable results={data?.results ?? []} isLoading={isLoading} />
+              <ResultsTable
+                results={data?.results ?? []}
+                isLoading={isLoading}
+              />
             </ResourceSearchSortingProvider>
           </Card>
         </div>
