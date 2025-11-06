@@ -21,6 +21,7 @@ import { api } from '@/trpc/client';
 import type { ChatStatus } from 'ai';
 import type { SelectedResource } from '../../../_types/chat-config';
 import type { LanguageModel } from './model-select/types';
+import { Chain } from '@/types/chain';
 
 interface Props {
   input: string;
@@ -48,9 +49,14 @@ export const PromptInputSection: React.FC<Props> = ({
   const { data: session } = useSession();
 
   const { data: usdcBalance, isLoading: isUsdcBalanceLoading } =
-    api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
-      enabled: !!session,
-    });
+    api.user.serverWallet.tokenBalance.useQuery(
+      {
+        chain: Chain.BASE,
+      },
+      {
+        enabled: !!session,
+      }
+    );
   const { data: freeTierUsage, isLoading: isFreeTierUsageLoading } =
     api.user.freeTier.usage.useQuery(undefined, {
       enabled: !!session,

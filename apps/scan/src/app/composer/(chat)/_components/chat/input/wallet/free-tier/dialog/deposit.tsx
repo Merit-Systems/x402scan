@@ -8,6 +8,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { api } from '@/trpc/client';
+import { Chain } from '@/types/chain';
+import { Address } from 'viem';
 
 interface Props {
   setShowFreeTierDialog: () => void;
@@ -17,7 +19,9 @@ export const DepositFreeTierDialogContent: React.FC<Props> = ({
   setShowFreeTierDialog,
 }) => {
   const { data: address, isLoading: isAddressLoading } =
-    api.user.serverWallet.address.useQuery();
+    api.user.serverWallet.address.useQuery({
+      chain: Chain.BASE,
+    });
 
   return (
     <>
@@ -35,7 +39,7 @@ export const DepositFreeTierDialogContent: React.FC<Props> = ({
             No address found.
           </p>
         ) : (
-          <Deposit address={address} />
+          <Deposit address={address as Address} />
         )}
       </div>
       <div className="p-4 bg-muted border-t text-left flex gap-4">

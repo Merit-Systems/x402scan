@@ -61,7 +61,9 @@ export const Send: React.FC<Props> = ({ address, onSuccess }) => {
           void refetchEthBalance();
           for (let i = 0; i < 5; i++) {
             setTimeout(() => {
-              void utils.user.serverWallet.usdcBaseBalance.invalidate();
+              void utils.user.serverWallet.tokenBalance.invalidate({
+                chain: Chain.BASE,
+              });
             }, i * 1000);
           }
           setAmount(0);

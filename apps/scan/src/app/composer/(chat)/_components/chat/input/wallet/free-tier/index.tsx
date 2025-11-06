@@ -3,6 +3,8 @@ import { LoadingWalletButton } from '../button';
 import { OutOfFreeTier } from './out-of-free-tier';
 import { FreeTierDialog } from './dialog';
 import { FreeTierButtonContent } from './button';
+import { Chain } from '@/types/chain';
+import { Address } from 'viem';
 
 interface Props {
   hideFreeTierButton: () => void;
@@ -12,7 +14,9 @@ export const FreeTierButton: React.FC<Props> = ({ hideFreeTierButton }) => {
   const { data: freeTierUsage, isLoading } = api.user.freeTier.usage.useQuery();
 
   const { data: address, isLoading: isAddressLoading } =
-    api.user.serverWallet.address.useQuery();
+    api.user.serverWallet.address.useQuery({
+      chain: Chain.BASE,
+    });
 
   if (isLoading) {
     return <LoadingWalletButton />;
@@ -27,7 +31,7 @@ export const FreeTierButton: React.FC<Props> = ({ hideFreeTierButton }) => {
     }
     return (
       <OutOfFreeTier
-        address={address}
+        address={address as Address}
         hideFreeTierButton={hideFreeTierButton}
       />
     );

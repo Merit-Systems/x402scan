@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { CopyCode } from '@/components/ui/copy-code';
 import { api } from '@/trpc/client';
+import { Chain } from '@/types/chain';
 import { Key } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -14,11 +15,16 @@ export const WalletExport: React.FC = () => {
   } = api.user.serverWallet.export.useMutation();
 
   const handleExport = () => {
-    exportWallet(undefined, {
-      onSuccess: () => {
-        toast.success('Wallet exported');
+    exportWallet(
+      {
+        chain: Chain.BASE,
       },
-    });
+      {
+        onSuccess: () => {
+          toast.success('Wallet exported');
+        },
+      }
+    );
   };
 
   if (exportData) {

@@ -23,7 +23,7 @@ import {
   setTransactionMessageComputeUnitPrice,
 } from '@solana-program/compute-budget';
 
-import { solanaRpc } from '@/services/solana/rpc';
+import { solanaRpc } from '@/services/rpc/solana';
 
 import { encodePayment } from './encode-payment';
 

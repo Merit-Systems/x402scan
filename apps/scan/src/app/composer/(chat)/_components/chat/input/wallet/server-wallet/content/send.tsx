@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/trpc/client';
 import { CopyCode } from '@/components/ui/copy-code';
+import { Chain } from '@/types/chain';
+import { usdc } from '@/lib/tokens/usdc';
 
 export const Send: React.FC = () => {
   const [amount, setAmount] = useState(0);
@@ -17,17 +19,23 @@ export const Send: React.FC = () => {
 
   const utils = api.useUtils();
   const { data: serverWalletAddress, isLoading: isServerWalletAddressLoading } =
-    api.user.serverWallet.address.useQuery();
+    api.user.serverWallet.address.useQuery({
+      chain: Chain.BASE,
+    });
   const { data: ethBalance, isLoading: isEthBalanceLoading } =
-    api.user.serverWallet.ethBaseBalance.useQuery();
+    api.user.serverWallet.nativeBalance.useQuery({
+      chain: Chain.BASE,
+    });
   const { isLoading: isBalanceLoading, data: balance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery();
+    api.user.serverWallet.tokenBalance.useQuery({
+      chain: Chain.BASE,
+    });
 
   const {
-    mutate: sendUsdc,
+    mutate: sendTokens,
     isPending: isSending,
     isSuccess: isSent,
-  } = api.user.serverWallet.sendUSDC.useMutation();
+  } = api.user.serverWallet.sendTokens.useMutation();
 
   const handleSubmit = useCallback(async () => {
     const parseResult = ethereumAddressSchema.safeParse(address);
@@ -36,18 +44,24 @@ export const Send: React.FC = () => {
       return;
     }
     const parsedAddress = parseResult.data;
-    sendUsdc(
+    sendTokens(
       {
         amount,
-        toAddress: parsedAddress,
+        address: parsedAddress,
+        chain: Chain.BASE,
+        token: usdc(Chain.BASE),
       },
       {
         onSuccess: () => {
           toast.success(`${amount} USDC sent`);
           for (let i = 0; i < 5; i++) {
             setTimeout(() => {
-              void utils.user.serverWallet.ethBaseBalance.invalidate();
-              void utils.user.serverWallet.usdcBaseBalance.invalidate();
+              void utils.user.serverWallet.nativeBalance.invalidate({
+                chain: Chain.BASE,
+              });
+              void utils.user.serverWallet.tokenBalance.invalidate({
+                chain: Chain.BASE,
+              });
             }, i * 1000);
           }
           setAmount(0);
@@ -55,7 +69,7 @@ export const Send: React.FC = () => {
         },
       }
     );
-  }, [address, amount, sendUsdc, utils]);
+  }, [address, amount, sendTokens, utils]);
 
   return (
     <div className="flex flex-col gap-4">

@@ -31,7 +31,7 @@ import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
 
 import { api } from '@/trpc/client';
 
-import { solanaRpc } from '@/services/solana/rpc';
+import { solanaRpc } from '@/services/rpc/solana';
 
 import { USDC_ADDRESS } from '@/lib/utils';
 import { solanaAddressSchema } from '@/lib/schemas';

@@ -26,6 +26,7 @@ import { api } from '@/trpc/client';
 import { OnrampSessionDialog } from './content/onramp-session-dialog';
 
 import type { Address } from 'viem';
+import { Chain } from '@/types/chain';
 
 interface Props {
   children: React.ReactNode;
@@ -34,8 +35,9 @@ interface Props {
 
 export const WalletDialog: React.FC<Props> = ({ children, address }) => {
   const searchParams = useSearchParams();
-  const { data: usdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery();
+  const { data: usdcBalance } = api.user.serverWallet.tokenBalance.useQuery({
+    chain: Chain.BASE,
+  });
   const {
     data: hasUserAcknowledgedComposer,
     isLoading: isLoadingHasUserAcknowledgedComposer,

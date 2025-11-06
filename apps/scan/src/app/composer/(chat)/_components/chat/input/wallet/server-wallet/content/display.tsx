@@ -3,6 +3,7 @@
 import { CopyCode } from '@/components/ui/copy-code';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/trpc/client';
+import { Chain } from '@/types/chain';
 
 import type { Address } from 'viem';
 
@@ -12,7 +13,9 @@ interface Props {
 
 export const WalletDisplay: React.FC<Props> = ({ address }) => {
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery();
+    api.user.serverWallet.tokenBalance.useQuery({
+      chain: Chain.BASE,
+    });
 
   return (
     <div className="space-y-4 w-full overflow-hidden">

@@ -24,16 +24,17 @@ import { auth } from '@/auth';
 
 import { createX402AITools } from '@/services/agent/create-tools';
 
-import { messageSchema } from '@/lib/message-schema';
+import { getUserWallets } from '@/services/cdp/server-wallet/user';
+import { freeTierWallets } from '@/services/cdp/server-wallet/free-tier';
 
-import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
 import { ChatSDKError } from '@/lib/errors';
+import { messageSchema } from '@/lib/message-schema';
+import { freeTierConfig } from '@/lib/free-tier';
+
 import {
   getUserMessageCount,
   getUserToolCallCount,
 } from '@/services/db/user/chat';
-import { freeTierConfig } from '@/lib/free-tier';
-import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
 
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
 import {
@@ -43,6 +44,8 @@ import {
 } from './system-prompt';
 import { env } from '@/env';
 import { api } from '@/trpc/server';
+
+import { Chain } from '@/types/chain';
 
 import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
@@ -74,7 +77,9 @@ export async function POST(request: NextRequest) {
 
   let chat = await getChat(chatId, session.user.id);
 
-  const balance = await api.user.serverWallet.usdcBaseBalance();
+  const balance = await api.user.serverWallet.tokenBalance({
+    chain: Chain.BASE,
+  });
 
   let isFreeTier: boolean;
 
@@ -91,16 +96,14 @@ export async function POST(request: NextRequest) {
     isFreeTier = false;
   }
 
-  const wallet = isFreeTier
-    ? await getFreeTierWallet()
-    : await getWalletForUserId(session.user.id).then(wallet => wallet.wallet);
+  const wallets = isFreeTier
+    ? freeTierWallets
+    : (await getUserWallets(session.user.id)).wallets;
 
-  if (!wallet) {
-    return new ChatSDKError('not_found:chat').toResponse();
-  }
-  const signer = toAccount(wallet);
+  const baseSigner = await wallets[Chain.BASE].signer();
+
   const openai = createX402OpenAI({
-    walletClient: signer,
+    walletClient: baseSigner,
     baseRouterUrl: env.ECHO_PROXY_URL,
     echoAppId: env.ECHO_APP_ID,
   });
@@ -191,7 +194,7 @@ export async function POST(request: NextRequest) {
 
   const tools = await createX402AITools({
     resourceIds,
-    walletClient: signer,
+    wallets,
     chatId,
     maxAmount: isFreeTier ? freeTierConfig.maxAmount : undefined,
   });

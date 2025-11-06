@@ -19,6 +19,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import type { ChatConfig, SelectedResource } from '../_types/chat-config';
 import type { LanguageModel } from '../_components/chat/input/model-select/types';
 import type { Message } from '@prisma/client';
+import { Chain } from '@/types/chain';
 
 interface Props {
   id: string;
@@ -37,8 +38,10 @@ export const useChat = ({
 
   const { data: session } = useSession();
 
-  const { data: usdcBalance } = api.user.serverWallet.usdcBaseBalance.useQuery(
-    undefined,
+  const { data: usdcBalance } = api.user.serverWallet.tokenBalance.useQuery(
+    {
+      chain: Chain.BASE,
+    },
     {
       enabled: !!session,
     }
@@ -65,7 +68,9 @@ export const useChat = ({
         void utils.user.chats.list.invalidate();
         void utils.user.freeTier.usage.invalidate();
         setTimeout(() => {
-          void utils.user.serverWallet.usdcBaseBalance.invalidate();
+          void utils.user.serverWallet.tokenBalance.invalidate({
+            chain: Chain.BASE,
+          });
         }, 3000);
       }
     },

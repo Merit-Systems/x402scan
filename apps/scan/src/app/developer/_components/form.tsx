@@ -47,7 +47,7 @@ import {
   type PreviewResult,
 } from './queries';
 import { AcceptsBreakdownTable } from '@/app/(home)/resources/register/_components/accepts-breakdown-table';
-import { SUPPORTED_CHAINS, type Chain } from '@/types/chain';
+import { SUPPORTED_CHAINS, SupportedChain, type Chain } from '@/types/chain';
 import { isLocalUrl, extractPort } from '@/lib/url-helpers';
 import { NgrokAlert } from './ngrok-alert';
 
@@ -172,7 +172,9 @@ export const TestEndpointForm = () => {
             payTo: accept.payTo,
             asset: accept.asset,
             method,
-            isSupported: SUPPORTED_CHAINS.includes(accept.network as Chain),
+            isSupported: SUPPORTED_CHAINS.includes(
+              accept.network as SupportedChain
+            ),
           });
         });
       }

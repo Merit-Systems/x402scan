@@ -4,6 +4,7 @@ import { FreeTierButton } from './free-tier';
 import { ServerWalletButton } from './server-wallet';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { Chain } from '@/types/chain';
 
 export const WalletButton = () => {
   const { data: session } = useSession();
@@ -16,9 +17,14 @@ export const WalletButton = () => {
   );
 
   const { data: usdcBalance, isLoading: isUsdcBalanceLoading } =
-    api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
-      enabled: !!session,
-    });
+    api.user.serverWallet.tokenBalance.useQuery(
+      {
+        chain: Chain.BASE,
+      },
+      {
+        enabled: !!session,
+      }
+    );
 
   const [showFreeTier, setShowFreeTier] = useState(false);
 

@@ -8,19 +8,31 @@ import { LoadingWalletButton, WalletButton } from '../button';
 import { WalletDialog } from './dialog';
 
 import { api } from '@/trpc/client';
+import { Chain } from '@/types/chain';
+import { Address } from 'viem';
 
 export const ServerWalletButton = () => {
   const { data: session } = useSession();
 
   const { data: address, isLoading: isLoadingAddress } =
-    api.user.serverWallet.address.useQuery(undefined, {
-      enabled: !!session,
-    });
+    api.user.serverWallet.address.useQuery(
+      {
+        chain: Chain.BASE,
+      },
+      {
+        enabled: !!session,
+      }
+    );
 
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
-      enabled: !!session,
-    });
+    api.user.serverWallet.tokenBalance.useQuery(
+      {
+        chain: Chain.BASE,
+      },
+      {
+        enabled: !!session,
+      }
+    );
 
   const { isLoading: isLoadingHasUserAcknowledgedComposer } =
     api.user.acknowledgements.hasAcknowledged.useQuery();
@@ -34,7 +46,7 @@ export const ServerWalletButton = () => {
   }
 
   return (
-    <WalletDialog address={address}>
+    <WalletDialog address={address as Address}>
       <WalletButton
         className={
           usdcBalance !== undefined && usdcBalance < 0.1

@@ -21,17 +21,26 @@ import type { ResourceRequestMetadata } from '@prisma/client';
 import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
 import { ChatSDKError } from '@/lib/errors';
+import { TransactionModifyingSigner } from '@solana/kit';
+import { wrapFetchWithSolanaPayment } from '@/lib/x402/solana/fetch-with-payment';
+import { Wallets } from '../cdp/server-wallet/wallets/types';
+import {
+  Chain,
+  SUPPORTED_CHAINS,
+  SupportedChain,
+  SupportedEVMChain,
+} from '@/types/chain';
 
 interface CreateX402AIToolsParams {
   resourceIds: string[];
-  walletClient: Signer;
+  wallets: Wallets;
   chatId: string;
   maxAmount?: number;
 }
 
 export async function createX402AITools({
   resourceIds,
-  walletClient,
+  wallets,
   chatId,
   maxAmount,
 }: CreateX402AIToolsParams): Promise<Record<string, Tool>> {
@@ -133,16 +142,38 @@ export async function createX402AITools({
               }
             }
 
+            const supportedAccepts = resource.accepts.find(accept =>
+              SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+            );
+
+            if (!supportedAccepts) {
+              throw new ChatSDKError(
+                'payment_required:chat',
+                `This resource does not accept USDC on any networks supported by x402scan`
+              );
+            }
+
+            const network = supportedAccepts.network as SupportedChain;
+
+            const fetchWithPayment =
+              network === Chain.SOLANA
+                ? wrapFetchWithSolanaPayment(
+                    fetch,
+                    await wallets[Chain.SOLANA].signer(),
+                    parseUnits(String(maxAmount), 6)
+                  )
+                : fetchWithX402Payment(
+                    fetch,
+                    await wallets[network].signer(),
+                    maxAmount
+                  );
+
             try {
-              const response = await fetchWithX402Payment(
-                fetch,
-                walletClient,
-                maxAmount
-              )(
+              const response = await fetchWithPayment(
                 new URL(
                   `/api/proxy?url=${encodeURIComponent(url)}&share_data=true`,
                   env.NEXT_PUBLIC_PROXY_URL
-                ),
+                ).toString(),
                 requestInit
               );
               void createToolCall({

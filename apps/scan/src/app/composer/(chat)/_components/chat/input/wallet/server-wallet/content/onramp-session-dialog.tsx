@@ -24,6 +24,7 @@ import { SessionStatus, type OnrampSession } from '@prisma/client';
 import { api } from '@/trpc/client';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
+import { Chain } from '@/types/chain';
 
 export const OnrampSessionDialog: React.FC = () => {
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
@@ -71,7 +72,9 @@ export const OnrampSessionDialog: React.FC = () => {
       if (session.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS) {
         for (let i = 0; i < 5; i++) {
           setTimeout(() => {
-            void utils.user.serverWallet.usdcBaseBalance.invalidate();
+            void utils.user.serverWallet.tokenBalance.invalidate({
+              chain: Chain.BASE,
+            });
           }, i * 1000);
         }
         // Clear the URL search params when onramp session is completed
