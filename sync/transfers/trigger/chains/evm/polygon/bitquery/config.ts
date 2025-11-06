@@ -10,7 +10,7 @@ import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 export const polygonChainConfig: SyncConfig = {
   cron: '*/30 * * * *',
   maxDurationInSeconds: 300,
-  chain: 'matic',
+  chain: 'polygon',
   facilitators: FACILITATORS_BY_CHAIN(Network.POLYGON),
   enabled: true,
   apiUrl: 'https://streaming.bitquery.io/graphql',

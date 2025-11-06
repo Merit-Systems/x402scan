@@ -19,7 +19,7 @@ export function buildQuery(
 ): string {
   return `
     {
-      EVM(dataset: realtime, network: ${config.chain}) {
+      EVM(dataset: realtime, network: matic) {
         Transfers(
           limit: {count: ${config.limit}, offset: ${offset || 0}}
           where: {
@@ -63,7 +63,11 @@ export function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  return (data as BitQueryTransferRowStream[]).map(item => ({
+  const transfers =
+    (data as { EVM?: { Transfers?: BitQueryTransferRowStream[] } })?.EVM
+      ?.Transfers || [];
+
+  return (transfers as BitQueryTransferRowStream[]).map(item => ({
     address: item.Transfer.Currency?.SmartContract || DEFAULT_CONTRACT_ADDRESS,
     transaction_from: item.Transaction.From,
     sender: item.Transfer.Sender,
