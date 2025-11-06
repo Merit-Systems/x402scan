@@ -1,5 +1,4 @@
 import {
-  USDC_DECIMALS,
   USDC_MULTIPLIER,
   TRANSFER_TOPIC,
 } from '@/trigger/lib/constants';
