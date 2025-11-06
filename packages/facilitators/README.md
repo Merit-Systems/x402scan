@@ -129,6 +129,7 @@ import {
   xecho,
   codenut,
   ultravioletadao,
+  virtuals
 } from 'facilitators';
 
 // Facilitators requiring setup
