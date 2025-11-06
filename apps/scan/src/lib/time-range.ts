@@ -1,8 +1,8 @@
 import { subHours, subMinutes } from 'date-fns';
 
 import { CACHE_DURATION_MINUTES } from './cache-constants';
-import { timePeriodSchema } from './schemas';
 
+import type { timePeriodSchema } from './schemas';
 import type z from 'zod';
 
 type AllTimeWithCreationProps = {

@@ -39,7 +39,7 @@ export const ResourceToolCallsSummary = ({
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    return timeframe < 7;
+    return Number(timeframe) < 7;
   }, [timeframe]);
 
   // Transform tool calls data for chart

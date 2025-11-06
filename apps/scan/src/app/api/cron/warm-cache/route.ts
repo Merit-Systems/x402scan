@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { subDays, subMinutes, differenceInSeconds, subSeconds } from 'date-fns';
 import { api } from '@/trpc/server';
 import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
@@ -7,7 +6,6 @@ import {
   CACHE_WARMABLE_TIMEFRAMES,
   ActivityTimeframe,
 } from '@/types/timeframes';
-import { firstTransfer } from '@/services/facilitator/constants';
 import { facilitatorAddresses } from '@/lib/facilitators';
 import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
 import { Chain } from '@/types/chain';
@@ -316,7 +314,6 @@ export async function GET(request: NextRequest) {
 
   try {
     const startTime = Date.now();
-    const endDate = new Date();
     const timeframesWarmed: Record<string, number> = {};
 
     // Optional query params
