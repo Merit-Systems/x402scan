@@ -7,13 +7,16 @@ export const balanceMonitor = schedules.task({
   cron: '*/5 * * * *',
   run: async () => {
     for (const monitor of BALANCE_MONITORS) {
-      const balanceChecker = CURRENCY_TO_BALANCE_CHECKER[monitor.currency](
+      const monitorId = monitor.address + ':' + monitor.chain.id;
+      logger.log(`[Checking] ${monitorId}`);
+      const result = await CURRENCY_TO_BALANCE_CHECKER[monitor.currency](
         monitor.address,
         monitor.threshold
       );
-      const result = await balanceChecker;
+      logger.log(`[Balance] ${monitorId}: ${result.balance}`);
       if (result.isLow) {
         await sendDiscordAlert(result);
+        logger.log(`[Alert] sent for ${monitorId}`);
       }
     }
   },
