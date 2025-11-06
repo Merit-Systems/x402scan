@@ -1,7 +1,4 @@
-import {
-  USDC_MULTIPLIER,
-  TRANSFER_TOPIC,
-} from '@/trigger/lib/constants';
+import { USDC_MULTIPLIER, TRANSFER_TOPIC } from '@/trigger/lib/constants';
 import {
   SyncConfig,
   Facilitator,
