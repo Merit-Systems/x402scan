@@ -438,9 +438,7 @@ function FieldInput({
       <ObjectFieldInput
         field={field}
         value={
-          typeof value === 'object' && !Array.isArray(value)
-            ? value
-            : undefined
+          typeof value === 'object' && !Array.isArray(value) ? value : undefined
         }
         onChange={
           onChange as (value: Record<string, unknown> | undefined) => void
