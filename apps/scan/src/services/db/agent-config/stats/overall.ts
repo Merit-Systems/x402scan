@@ -6,8 +6,11 @@ import { differenceInMilliseconds, getUnixTime } from 'date-fns';
 
 import { queryRaw } from '../../query';
 
-import { getTimeRangeFromTimeframe, NonZeroTimeframe } from '@/lib/time-range';
-import { timeframeSchema } from '@/lib/schemas';
+import {
+  getTimeRangeFromTimeframe,
+  getBucketedTimeRangeFromTimeframe,
+} from '@/lib/time-range';
+import { timeframeSchema, timePeriodSchema } from '@/lib/schemas';
 import { agentsRelease } from '@/lib/agents';
 
 export const overallActivityInputSchema = z.object({
@@ -17,9 +20,7 @@ export const overallActivityInputSchema = z.object({
 export const getOverallActivity = async ({
   timeframe,
 }: z.infer<typeof overallActivityInputSchema>) => {
-  const { startDate, endDate } = getTimeRangeFromTimeframe({
-    timeframe,
-  });
+  const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
   const [result] = await queryRaw(
     Prisma.sql`
       SELECT
@@ -46,7 +47,7 @@ export const getOverallActivity = async ({
 };
 
 export const overallBucketedActivityInputSchema = z.object({
-  timeframe: timeframeSchema,
+  timeframe: timePeriodSchema,
   numBuckets: z.number().optional().default(48),
 });
 
@@ -55,15 +56,10 @@ export const getOverallBucketedActivity = async (
 ) => {
   const { timeframe, numBuckets } = input;
 
-  const { startDate, endDate } =
-    timeframe === 0
-      ? getTimeRangeFromTimeframe({
-          timeframe: 0,
-          creationDate: agentsRelease,
-        })
-      : getTimeRangeFromTimeframe({
-          timeframe: timeframe as NonZeroTimeframe,
-        });
+  const { startDate, endDate } = await getBucketedTimeRangeFromTimeframe({
+    period: timeframe,
+    creationDate: agentsRelease,
+  });
 
   // Calculate bucket size in seconds for consistent alignment using date-fns
   const timeRangeMs = differenceInMilliseconds(endDate, startDate);

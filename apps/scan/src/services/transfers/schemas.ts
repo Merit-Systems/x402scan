@@ -1,6 +1,10 @@
 import z from 'zod';
 
-import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
+import {
+  chainSchema,
+  mixedAddressSchema,
+  timePeriodSchema,
+} from '@/lib/schemas';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { timeframeSchema } from '@/lib/schemas';
 
@@ -41,6 +45,9 @@ export const baseListQuerySchema = <T extends readonly string[]>({
       }),
   });
 
-export const baseBucketedQuerySchema = baseQuerySchema.extend({
-  numBuckets: z.number().default(48),
-});
+export const baseBucketedQuerySchema = baseQuerySchema
+  .omit({ timeframe: true })
+  .extend({
+    timeframe: timePeriodSchema,
+    numBuckets: z.number().default(48),
+  });

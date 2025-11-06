@@ -12,9 +12,7 @@ export const sellerStatisticsInputSchema = baseQuerySchema;
 const getOverallSellerStatisticsUncached = async (
   input: z.infer<typeof sellerStatisticsInputSchema>
 ) => {
-  const { startDate, endDate } = getTimeRangeFromTimeframe({
-    timeframe: input.timeframe,
-  });
+  const { startDate, endDate } = getTimeRangeFromTimeframe(input.timeframe);
   const sql = Prisma.sql`
     WITH seller_first_transactions AS (
       SELECT 

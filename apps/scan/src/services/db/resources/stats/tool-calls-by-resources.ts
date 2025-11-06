@@ -4,7 +4,10 @@ import { Prisma } from '@prisma/client';
 import type { resourceBucketedQuerySchema } from './schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { prisma } from '@/services/db/client';
-import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+import {
+  getBucketedTimeRangeFromTimeframe,
+  getTimeRangeFromTimeframe,
+} from '@/lib/time-range';
 import { agentsRelease } from '@/lib/agents';
 
 const bucketedToolCallsByResourcesResultSchema = z.array(
@@ -25,15 +28,10 @@ const getBucketedToolCallsByResourcesUncached = async (
 ) => {
   const { timeframe, numBuckets, tagIds } = input;
 
-  const { startDate, endDate } =
-    timeframe === 0
-      ? getTimeRangeFromTimeframe({
-          timeframe: 0,
-          creationDate: agentsRelease,
-        })
-      : getTimeRangeFromTimeframe({
-          timeframe,
-        });
+  const { startDate, endDate } = await getBucketedTimeRangeFromTimeframe({
+    period: timeframe,
+    creationDate: agentsRelease,
+  });
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(
