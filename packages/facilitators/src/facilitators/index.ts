@@ -1,5 +1,4 @@
 export { f402104, f402104Facilitator } from './402104';
-export { anyspend, anyspendFacilitator } from './anyspend';
 export { aurracloud, aurracloudFacilitator } from './aurracloud';
 export { auto, autoFacilitator } from './auto';
 export { codenut, codenutFacilitator } from './codenut';
@@ -16,3 +15,4 @@ export { ultravioletadao, ultravioletadaoFacilitator } from './ultravioletadao';
 export { virtuals, virtualsFacilitator } from './virtuals';
 export { x402rs, x402rsFacilitator } from './x402rs';
 export { xecho, xechoFacilitator } from './xecho';
+export { anyspend, anyspendFacilitator } from './anyspend';

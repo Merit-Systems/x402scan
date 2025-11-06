@@ -1,14 +1,14 @@
 export {
-  listAllFacilitatorResources,
   listFacilitatorResources,
+  listAllFacilitatorResources,
 } from './list-resources';
 
-export { anyspendDiscovery } from '../facilitators/anyspend';
-export { aurracloudDiscovery } from '../facilitators/aurracloud';
 export { coinbaseDiscovery } from '../facilitators/coinbase';
 export { payaiDiscovery } from '../facilitators/payai';
-export { questflowDiscovery } from '../facilitators/questflow';
+export { aurracloudDiscovery } from '../facilitators/aurracloud';
 export { thirdwebDiscovery } from '../facilitators/thirdweb';
+export { questflowDiscovery } from '../facilitators/questflow';
 export { ultravioletadaoDiscovery } from '../facilitators/ultravioletadao';
+export { anyspendDiscovery } from '../facilitators/anyspend';
 
 export { discoverableFacilitators } from './facilitators';
