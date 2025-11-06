@@ -12,11 +12,11 @@ import type { UiWalletAccount } from '@wallet-standard/react';
 
 interface Props {
   account: UiWalletAccount;
-  isOnramp?: boolean;
+  redirectParams?: Record<string, string>;
 }
 
 export const useSiws = (props: Props) => {
-  const { account, isOnramp } = props;
+  const { account, redirectParams } = props;
 
   const signMessage = useSignMessage(account);
 
@@ -28,8 +28,8 @@ export const useSiws = (props: Props) => {
       return signInWithSolana({
         address: account.address,
         signMessage: signMessage,
-        redirectTo: isOnramp
-          ? `${window.location.href}?onramp=true`
+        redirectTo: redirectParams
+          ? `${window.location.href}?${new URLSearchParams(redirectParams).toString()}`
           : window.location.href,
       });
     },

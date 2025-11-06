@@ -17,10 +17,15 @@ import type { Chain } from '@/types/chain';
 
 interface Props {
   children: React.ReactNode;
-  chain?: Chain;
+  initialChain?: Chain;
+  isFixed?: boolean;
 }
 
-export const WalletDialog: React.FC<Props> = ({ children, chain }) => {
+export const WalletDialog: React.FC<Props> = ({
+  children,
+  initialChain,
+  isFixed,
+}) => {
   const searchParams = useSearchParams();
 
   const connectedWallets = useConnectedWallets();
@@ -37,7 +42,8 @@ export const WalletDialog: React.FC<Props> = ({ children, chain }) => {
         {connectedWallets.isConnected ? (
           <WalletChainProvider
             connectedWallets={connectedWallets}
-            chain={chain}
+            initialChain={(searchParams.get('chain') as Chain) ?? initialChain}
+            isFixed={isFixed}
           >
             <DisplayWalletDialogContent
               connectedWallets={connectedWallets}
@@ -48,7 +54,10 @@ export const WalletDialog: React.FC<Props> = ({ children, chain }) => {
             />
           </WalletChainProvider>
         ) : (
-          <WalletChainProvider chain={chain}>
+          <WalletChainProvider
+            initialChain={(searchParams.get('chain') as Chain) ?? initialChain}
+            isFixed={isFixed}
+          >
             <ConnectWalletDialogContent />
           </WalletChainProvider>
         )}
