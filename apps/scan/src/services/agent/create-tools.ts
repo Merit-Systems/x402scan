@@ -16,20 +16,15 @@ import {
   enhancedOutputSchema,
 } from '@/lib/x402/schema';
 
+import { ChatSDKError } from '@/lib/errors';
+import { wrapFetchWithSolanaPayment } from '@/lib/x402/solana/fetch-with-payment';
+import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
+
+import type { SupportedChain } from '@/types/chain';
+import type { Wallets } from '../cdp/server-wallet/wallets/types';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { ResourceRequestMetadata } from '@prisma/client';
-import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
-import { ChatSDKError } from '@/lib/errors';
-import { TransactionModifyingSigner } from '@solana/kit';
-import { wrapFetchWithSolanaPayment } from '@/lib/x402/solana/fetch-with-payment';
-import { Wallets } from '../cdp/server-wallet/wallets/types';
-import {
-  Chain,
-  SUPPORTED_CHAINS,
-  SupportedChain,
-  SupportedEVMChain,
-} from '@/types/chain';
 
 interface CreateX402AIToolsParams {
   resourceIds: string[];

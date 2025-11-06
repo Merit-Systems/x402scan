@@ -47,9 +47,11 @@ import {
   type PreviewResult,
 } from './queries';
 import { AcceptsBreakdownTable } from '@/app/(home)/resources/register/_components/accepts-breakdown-table';
-import { SUPPORTED_CHAINS, SupportedChain, type Chain } from '@/types/chain';
+import { SUPPORTED_CHAINS } from '@/types/chain';
 import { isLocalUrl, extractPort } from '@/lib/url-helpers';
 import { NgrokAlert } from './ngrok-alert';
+
+import type { SupportedChain } from '@/types/chain';
 
 export const TestEndpointForm = () => {
   const queryClient = useQueryClient();

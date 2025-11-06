@@ -9,7 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { api } from '@/trpc/client';
 import { Chain } from '@/types/chain';
-import { Address } from 'viem';
+
+import type { Address } from 'viem';
 
 interface Props {
   setShowFreeTierDialog: () => void;

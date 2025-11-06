@@ -1,15 +1,16 @@
 import { getBalance, readContract } from 'viem/actions';
 
 import { cdpClient } from '../client';
-import { NetworkServerWallet } from './types';
 
 import { evmRpc } from '@/services/rpc/evm';
 
-import { Address, erc20Abi, formatEther } from 'viem';
+import { erc20Abi, formatEther } from 'viem';
 import { convertTokenAmount } from '@/lib/token';
 import { toAccount } from 'viem/accounts';
 
-import { EvmChain } from '@/types/chain';
+import type { EvmChain } from '@/types/chain';
+import type { Address } from 'viem';
+import type { NetworkServerWallet } from './types';
 
 export const evmServerWallet =
   <T extends EvmChain>(chain: T): NetworkServerWallet<EvmChain> =>

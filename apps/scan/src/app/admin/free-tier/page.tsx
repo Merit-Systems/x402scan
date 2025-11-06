@@ -4,8 +4,10 @@ import { forbidden } from 'next/navigation';
 import { freeTierWallets } from '@/services/cdp/server-wallet/free-tier';
 import { formatCurrency } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CHAIN_LABELS, SUPPORTED_CHAINS, SupportedChain } from '@/types/chain';
+import { CHAIN_LABELS, SUPPORTED_CHAINS } from '@/types/chain';
 import { usdc } from '@/lib/tokens/usdc';
+
+import type { SupportedChain } from '@/types/chain';
 
 export default async function FreeTierWalletPage() {
   const session = await auth();
@@ -22,7 +24,7 @@ export default async function FreeTierWalletPage() {
       />
       <Body>
         {SUPPORTED_CHAINS.map(chain => (
-          <ChainWalletInformation chain={chain} />
+          <ChainWalletInformation chain={chain} key={chain} />
         ))}
       </Body>
     </div>

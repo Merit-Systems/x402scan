@@ -9,7 +9,8 @@ import { WalletDialog } from './dialog';
 
 import { api } from '@/trpc/client';
 import { Chain } from '@/types/chain';
-import { Address } from 'viem';
+
+import type { Address } from 'viem';
 
 export const ServerWalletButton = () => {
   const { data: session } = useSession();

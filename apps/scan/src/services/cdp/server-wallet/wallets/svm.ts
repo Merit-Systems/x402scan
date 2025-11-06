@@ -1,6 +1,5 @@
 import {
   address,
-  TransactionModifyingSigner,
   getBase64EncodedWireTransaction,
   getTransactionCodec,
   getBase64Encoder,
@@ -12,15 +11,16 @@ import {
 import { getCompiledTransactionMessageDecoder } from '@solana/transaction-messages';
 
 import { cdpClient } from '../client';
-import { NetworkServerWallet } from './types';
 
 import {
   getSolanaNativeBalance,
   getSolanaTokenBalance,
 } from '@/services/solana/balance';
-import { SolanaAddress } from '@/types/address';
 
 import type { Chain } from '@/types/chain';
+import type { TransactionModifyingSigner } from '@solana/kit';
+import type { NetworkServerWallet } from './types';
+import type { SolanaAddress } from '@/types/address';
 
 export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
   name: string

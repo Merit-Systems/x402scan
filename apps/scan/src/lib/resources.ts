@@ -16,7 +16,7 @@ import { formatTokenAmount } from './token';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { EnhancedPaymentRequirements } from '@/lib/x402/schema';
-import type { Chain, SupportedChain } from '@/types/chain';
+import type { SupportedChain } from '@/types/chain';
 import type { AcceptsNetwork } from '@prisma/client';
 
 export const registerResource = async (url: string, data: unknown) => {

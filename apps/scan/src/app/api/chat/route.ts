@@ -14,8 +14,6 @@ import {
 
 import { createResumableStreamContext } from 'resumable-stream';
 
-import { toAccount } from 'viem/accounts';
-
 import { createX402OpenAI } from '@merit-systems/ai-x402/server';
 
 import { createChat, getChat, updateChat } from '@/services/db/composer/chat';

@@ -1,10 +1,13 @@
-import { api } from '@/trpc/client';
 import { LoadingWalletButton } from '../button';
 import { OutOfFreeTier } from './out-of-free-tier';
 import { FreeTierDialog } from './dialog';
 import { FreeTierButtonContent } from './button';
+
+import { api } from '@/trpc/client';
+
 import { Chain } from '@/types/chain';
-import { Address } from 'viem';
+
+import type { Address } from 'viem';
 
 interface Props {
   hideFreeTierButton: () => void;

@@ -12,7 +12,7 @@ import { ChainIdToNetwork } from 'x402/types';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { AcceptsNetwork, Prisma } from '@prisma/client';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
-import type { Chain, SupportedChain } from '@/types/chain';
+import type { SupportedChain } from '@/types/chain';
 
 export const upsertResourceSchema = z.object({
   resource: z.string(),

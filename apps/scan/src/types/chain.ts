@@ -14,7 +14,7 @@ export const SUPPORTED_CHAINS = [Chain.BASE, Chain.SOLANA] as const;
 
 export type SupportedChain = (typeof SUPPORTED_CHAINS)[number];
 
-export const SUPPORTED_EVM_CHAINS = [Chain.BASE] as const satisfies EvmChain[];
+const SUPPORTED_EVM_CHAINS = [Chain.BASE] as const satisfies EvmChain[];
 
 export type SupportedEVMChain = (typeof SUPPORTED_EVM_CHAINS)[number];
 

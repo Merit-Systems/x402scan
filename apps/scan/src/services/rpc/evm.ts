@@ -1,6 +1,9 @@
-import { Chain, CHAIN_TO_VIEM_CHAIN, EvmChain } from '@/types/chain';
-import { createPublicClient, http, HttpTransport } from 'viem';
+import { Chain } from '@/types/chain';
+import { createPublicClient, http } from 'viem';
 import { base, optimism, polygon } from 'viem/chains';
+
+import type { HttpTransport } from 'viem';
+import type { CHAIN_TO_VIEM_CHAIN, EvmChain } from '@/types/chain';
 
 type EvmRpc = {
   [K in EvmChain]: ReturnType<

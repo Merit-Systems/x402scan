@@ -1,10 +1,9 @@
 import type { Chain, SupportedChain, SupportedEVMChain } from '@/types/chain';
-import type { Token } from '@/types/token';
 import type { TransactionModifyingSigner } from '@solana/kit';
 import type { Signer } from 'x402-fetch';
-import z from 'zod';
-import { getTokenBalanceSchema, sendTokensSchema } from './schemas';
-import { MixedAddress } from '@/types/address';
+import type z from 'zod';
+import type { getTokenBalanceSchema, sendTokensSchema } from './schemas';
+import type { MixedAddress } from '@/types/address';
 
 export type NetworkServerWallet<T extends Chain> = (name: string) => {
   address: () => Promise<MixedAddress>;

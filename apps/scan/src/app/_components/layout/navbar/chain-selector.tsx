@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useChain } from '../../../_contexts/chain/hook';
-import { Chain, SUPPORTED_CHAINS, SupportedChain } from '@/types/chain';
+import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
 import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +13,8 @@ import {
 import { Globe, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { TELEGRAM_SUPPORT_LINK } from './constants';
+
+import type { SupportedChain } from '@/types/chain';
 
 export const ChainSelector = () => {
   const { chain, setChain } = useChain();
