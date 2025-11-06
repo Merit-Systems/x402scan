@@ -54,16 +54,27 @@ export async function searchResourcesCombined(
       : `Refinement mode: ${refinementMode}`;
 
   if (useLlmFilter) {
-    [
-      dbResults,
-      { questions: filterQuestions, explanation: filterExplanation },
-    ] = await Promise.all([
-      searchFunction(naturalLanguageQuery),
-      generateFilterQuestions(naturalLanguageQuery),
-    ]);
-    console.log(
-      `[Search] Step 1 - Parallel DB search (${queryMode}) + filter generation: ${Date.now() - step1Start}ms (${dbResults.results.length} results, ${filterQuestions.length} questions)`
-    );
+    try {
+      [
+        dbResults,
+        { questions: filterQuestions, explanation: filterExplanation },
+      ] = await Promise.all([
+        searchFunction(naturalLanguageQuery),
+        generateFilterQuestions(naturalLanguageQuery),
+      ]);
+      console.log(
+        `[Search] Step 1 - Parallel DB search (${queryMode}) + filter generation: ${Date.now() - step1Start}ms (${dbResults.results.length} results, ${filterQuestions.length} questions)`
+      );
+    } catch (error) {
+      console.error('[Search] Error in parallel DB search + filter generation:', error);
+      // Fallback: try DB search without filter generation
+      dbResults = await searchFunction(naturalLanguageQuery);
+      filterQuestions = [];
+      filterExplanation = 'Filter generation failed, continuing without filters';
+      console.log(
+        `[Search] Step 1 - DB search (${queryMode}) only (fallback): ${Date.now() - step1Start}ms (${dbResults.results.length} results)`
+      );
+    }
   } else {
     dbResults = await searchFunction(naturalLanguageQuery);
     console.log(
@@ -92,52 +103,85 @@ export async function searchResourcesCombined(
   } else if (refinementMode === 'llm') {
     // LLM filtering only - trust LLM ordering
     const step3Start = Date.now();
-    const results = await applyLLMFilters(enrichedResults, filterQuestions);
-    console.log(
-      `[Search] Step 3 - LLM filter: ${Date.now() - step3Start}ms (${results.length} results)`
-    );
+    try {
+      const results = await applyLLMFilters(enrichedResults, filterQuestions);
+      console.log(
+        `[Search] Step 3 - LLM filter: ${Date.now() - step3Start}ms (${results.length} results)`
+      );
 
-    finalResults = results.map(r => ({
-      ...r,
-      rerankerScore: null,
-      rerankerIndex: null,
-    }));
+      finalResults = results.map(r => ({
+        ...r,
+        rerankerScore: null,
+        rerankerIndex: null,
+      }));
+    } catch (error) {
+      console.error('[Search] LLM filter failed, returning unfiltered results:', error);
+      finalResults = enrichedResults.map(r => ({
+        ...r,
+        filterMatches: 0,
+        filterAnswers: [],
+        rerankerScore: null,
+        rerankerIndex: null,
+      }));
+    }
   } else if (refinementMode === 'reranker') {
     // Reranker only - trust reranker ordering
     const step3Start = Date.now();
-    const results = await rerankSearchResults(
-      enrichedResults,
-      naturalLanguageQuery
-    );
-    console.log(
-      `[Search] Step 3 - Reranker: ${Date.now() - step3Start}ms (${results.length} results)`
-    );
+    try {
+      const results = await rerankSearchResults(
+        enrichedResults,
+        naturalLanguageQuery
+      );
+      console.log(
+        `[Search] Step 3 - Reranker: ${Date.now() - step3Start}ms (${results.length} results)`
+      );
 
-    finalResults = results.map(r => ({
-      ...r,
-      filterMatches: 0,
-      filterAnswers: [],
-    }));
+      finalResults = results.map(r => ({
+        ...r,
+        filterMatches: 0,
+        filterAnswers: [],
+      }));
+    } catch (error) {
+      console.error('[Search] Reranker failed, returning unranked results:', error);
+      finalResults = enrichedResults.map(r => ({
+        ...r,
+        filterMatches: 0,
+        filterAnswers: [],
+        rerankerScore: null,
+        rerankerIndex: null,
+      }));
+    }
   } else {
     // Both LLM and reranker - use reranker for final ordering
     const step3Start = Date.now();
-    const [llmResults, rerankedResults] = await Promise.all([
-      applyLLMFilters(enrichedResults, filterQuestions),
-      rerankSearchResults(enrichedResults, naturalLanguageQuery),
-    ]);
-    console.log(
-      `[Search] Step 3 - Parallel LLM + Reranker: ${Date.now() - step3Start}ms`
-    );
+    try {
+      const [llmResults, rerankedResults] = await Promise.all([
+        applyLLMFilters(enrichedResults, filterQuestions),
+        rerankSearchResults(enrichedResults, naturalLanguageQuery),
+      ]);
+      console.log(
+        `[Search] Step 3 - Parallel LLM + Reranker: ${Date.now() - step3Start}ms`
+      );
 
-    // Use reranker order, but include LLM filter data
-    finalResults = rerankedResults.map(rerankedResult => {
-      const llmResult = llmResults.find(r => r.id === rerankedResult.id);
-      return {
-        ...rerankedResult,
-        filterMatches: llmResult?.filterMatches ?? 0,
-        filterAnswers: llmResult?.filterAnswers ?? [],
-      };
-    });
+      // Use reranker order, but include LLM filter data
+      finalResults = rerankedResults.map(rerankedResult => {
+        const llmResult = llmResults.find(r => r.id === rerankedResult.id);
+        return {
+          ...rerankedResult,
+          filterMatches: llmResult?.filterMatches ?? 0,
+          filterAnswers: llmResult?.filterAnswers ?? [],
+        };
+      });
+    } catch (error) {
+      console.error('[Search] LLM + Reranker failed, returning unrefined results:', error);
+      finalResults = enrichedResults.map(r => ({
+        ...r,
+        filterMatches: 0,
+        filterAnswers: [],
+        rerankerScore: null,
+        rerankerIndex: null,
+      }));
+    }
   }
 
   const totalDuration = Date.now() - startTime;

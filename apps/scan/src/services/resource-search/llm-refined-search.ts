@@ -93,37 +93,63 @@ export async function generateFilterQuestions(
     };
   }
 
-  const result = await generateObject({
-    model: openai('gpt-4.1-nano'),
-    prompt: buildFilterGenerationPrompt(naturalLanguageQuery),
-    schema: filterQuestionsSchema,
-    temperature: 0.3,
-  });
+  try {
+    const result = await generateObject({
+      model: openai('gpt-4.1-nano'),
+      prompt: buildFilterGenerationPrompt(naturalLanguageQuery),
+      schema: filterQuestionsSchema,
+      temperature: 0.3,
+    });
 
-  const questions = result.object.questions.map((q, i) => ({
-    question: q,
-    index: i,
-  }));
+    if (!result.object) {
+      console.warn('[Filter Generation] No object generated, returning empty filters');
+      return {
+        questions: [],
+        explanation: 'Failed to generate filter questions',
+      };
+    }
 
-  return {
-    questions,
-    explanation: result.object.explanation,
-  };
+    const questions = result.object.questions.map((q, i) => ({
+      question: q,
+      index: i,
+    }));
+
+    return {
+      questions,
+      explanation: result.object.explanation,
+    };
+  } catch (error) {
+    console.error('[Filter Generation] Error generating filter questions:', error instanceof Error ? error.message : String(error));
+    return {
+      questions: [],
+      explanation: 'Failed to generate filter questions due to error',
+    };
+  }
 }
 
 async function evaluateResourceAgainstFilter(
   question: string,
   resource: EnrichedSearchResult
 ): Promise<boolean> {
-  const result = await generateObject({
-    model: openai('gpt-4o-mini'),
-    prompt: buildFilterEvaluationPrompt(question, resource),
-    schema: filterEvaluationSchema,
-    temperature: 0.1,
-  });
+  try {
+    const result = await generateObject({
+      model: openai('gpt-4o-mini'),
+      prompt: buildFilterEvaluationPrompt(question, resource),
+      schema: filterEvaluationSchema,
+      temperature: 0.1,
+    });
 
-  // Return the first answer (should only be one)
-  return result.object.answers[0] ?? false;
+    if (!result.object) {
+      console.warn('[Filter Evaluation] No object generated, returning false');
+      return false;
+    }
+
+    // Return the first answer (should only be one)
+    return result.object.answers[0] ?? false;
+  } catch (error) {
+    console.warn('[Filter Evaluation] Error evaluating filter:', error instanceof Error ? error.message : String(error));
+    return false;
+  }
 }
 
 export async function applyLLMFilters(
