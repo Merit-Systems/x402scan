@@ -26,13 +26,20 @@ import { api } from '@/trpc/client';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
+import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
 
 export const OnrampSessionDialog: React.FC = () => {
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
-  const { queryKey: balanceQueryKey } = useBalance();
+  const { queryKey: balanceQueryKey } = useBalance(undefined, {
+    enabled: false,
+  });
+  const { invalidate: invalidateSolanaBalance } = useSPLTokenBalance(
+    undefined,
+    false
+  );
 
   const searchParams = useSearchParams();
 
@@ -68,10 +75,15 @@ export const OnrampSessionDialog: React.FC = () => {
 
       // Invalidate balance query when session is completed
       if (session.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS) {
-        void queryClient.invalidateQueries({ queryKey: balanceQueryKey });
+        for (let i = 0; i < 3; i++) {
+          setTimeout(() => {
+            void queryClient.invalidateQueries({ queryKey: balanceQueryKey });
+            void invalidateSolanaBalance();
+          }, i * 1000);
+        }
       }
     }
-  }, [session, queryClient, balanceQueryKey]);
+  }, [session, queryClient, balanceQueryKey, invalidateSolanaBalance]);
 
   const handleOnOpenChange = (open: boolean) => {
     setIsSessionDialogOpen(open);

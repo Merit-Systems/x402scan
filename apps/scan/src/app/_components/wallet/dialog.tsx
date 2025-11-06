@@ -17,14 +17,18 @@ import type { Chain } from '@/types/chain';
 
 interface Props {
   children: React.ReactNode;
+  initialTab?: 'wallet' | 'deposit' | 'withdraw';
   initialChain?: Chain;
   isFixed?: boolean;
+  watchOnramp?: boolean;
 }
 
 export const WalletDialog: React.FC<Props> = ({
   children,
   initialChain,
+  initialTab = 'wallet',
   isFixed,
+  watchOnramp = false,
 }) => {
   const searchParams = useSearchParams();
 
@@ -33,7 +37,9 @@ export const WalletDialog: React.FC<Props> = ({
   const { currentUser } = useCurrentUser();
 
   return (
-    <Dialog defaultOpen={searchParams.get('onramp') === 'true'}>
+    <Dialog
+      defaultOpen={watchOnramp ? searchParams.get('onramp') === 'true' : false}
+    >
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         className="p-0 overflow-hidden sm:max-w-md"
@@ -49,7 +55,9 @@ export const WalletDialog: React.FC<Props> = ({
               connectedWallets={connectedWallets}
               user={currentUser ?? undefined}
               defaultTab={
-                searchParams.get('onramp') === 'true' ? 'deposit' : 'wallet'
+                watchOnramp && searchParams.get('onramp') === 'true'
+                  ? 'deposit'
+                  : initialTab
               }
             />
           </WalletChainProvider>

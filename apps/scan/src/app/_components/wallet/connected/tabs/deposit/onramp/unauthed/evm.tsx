@@ -1,6 +1,8 @@
-import { useSiwe } from '@/app/_hooks/sign-in/use-siwe';
 import { NoSessionContent } from './component';
-import { Chain } from '@/types/chain';
+
+import { useSiwe } from '@/app/_hooks/sign-in/use-siwe';
+
+import type { Chain } from '@/types/chain';
 
 interface Props {
   chain: Chain;

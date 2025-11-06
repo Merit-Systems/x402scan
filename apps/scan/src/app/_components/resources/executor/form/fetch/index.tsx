@@ -1,5 +1,5 @@
-import { FetchEvm } from './evm';
-import { FetchSvm } from './svm';
+import { FetchEvm } from './chains/evm';
+import { FetchSvm } from './chains/svm';
 
 import { Chain } from '@/types/chain';
 
@@ -19,7 +19,7 @@ export const Fetch: React.FC<Props> = ({
   requestInit,
 }) => {
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {chains.map(chain =>
         chain === Chain.SOLANA ? (
           <FetchSvm
