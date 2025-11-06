@@ -14,3 +14,4 @@ export { questflow, questflowFacilitator } from './questflow';
 export { xecho, xechoFacilitator } from './xecho';
 export { codenut, codenutFacilitator } from './codenut';
 export { ultravioletadao, ultravioletadaoFacilitator } from './ultravioletadao';
+export { ainalyst, ainalystFacilitator } from './ainalyst';
