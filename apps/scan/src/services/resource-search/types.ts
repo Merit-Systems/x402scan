@@ -11,7 +11,7 @@ export interface SearchResult {
   type: string;
   x402Version: number;
   lastUpdated: Date;
-  metadata: any;
+  metadata: unknown;
   origin: {
     id: string;
     origin: string;

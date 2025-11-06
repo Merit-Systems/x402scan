@@ -53,14 +53,14 @@ function buildFilterEvaluationPrompt(
   resource: EnrichedSearchResult
 ): string {
   const resourceContext = {
-    title: resource.origin.title || resource.origin.origin,
-    description: resource.accepts[0]?.description || 'No description',
+    title: resource.origin.title ?? resource.origin.origin,
+    description: resource.accepts[0]?.description ?? 'No description',
     origin: resource.origin.origin,
     tags: resource.tags.map(t => t.name).join(', ') || 'No tags',
     hasRecentUsage: resource.analytics
       ? resource.analytics.totalCalls > 0
       : false,
-    sampleResponse: resource.analytics?.sampleResponseBody || null,
+    sampleResponse: resource.analytics?.sampleResponseBody ?? null,
   };
 
   const responseSection = resourceContext.sampleResponse
@@ -170,23 +170,4 @@ export async function applyLLMFilters(
 
     return 0;
   });
-}
-
-export async function refineSearchWithLLM(
-  results: EnrichedSearchResult[],
-  naturalLanguageQuery: string
-): Promise<{
-  results: FilteredSearchResult[];
-  filterQuestions: FilterQuestion[];
-  filterExplanation: string;
-}> {
-  const { questions, explanation } =
-    await generateFilterQuestions(naturalLanguageQuery);
-  const filteredResults = await applyLLMFilters(results, questions);
-
-  return {
-    results: filteredResults,
-    filterQuestions: questions,
-    filterExplanation: explanation,
-  };
 }

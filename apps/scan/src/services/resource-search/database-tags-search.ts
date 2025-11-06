@@ -251,7 +251,7 @@ async function executeResourceSearch(
       ''
     );
 
-    const rawResults = await prisma.$queryRaw<any[]>(fullSql);
+    const rawResults = await prisma.$queryRaw<unknown[]>(fullSql);
     const results = searchResultsSchema.parse(rawResults);
     return { success: true, results };
   } catch (error) {

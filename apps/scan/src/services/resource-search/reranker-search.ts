@@ -21,9 +21,9 @@ interface JinaRerankerResponse {
  */
 function buildResourceText(resource: EnrichedSearchResult): string {
   const parts = [
-    resource.origin.title || resource.origin.origin,
-    resource.accepts[0]?.description || '',
-    resource.origin.description || '',
+    resource.origin.title ?? resource.origin.origin,
+    resource.accepts[0]?.description ?? '',
+    resource.origin.description ?? '',
     resource.tags.map(t => t.name).join(', '),
     resource.analytics?.sampleResponseBody
       ? `Sample: ${resource.analytics.sampleResponseBody.slice(0, 300)}`

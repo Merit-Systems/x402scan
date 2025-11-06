@@ -14,7 +14,7 @@ export const sqlGenerationSchema = z.object({
     .describe('Brief explanation of what the query searches for'),
 });
 
-export const searchResultSchema = z.object({
+const searchResultSchema = z.object({
   id: z.string(),
   resource: z.string(),
   type: z.string(),
@@ -47,7 +47,7 @@ export const searchResultSchema = z.object({
   toolCallCount: z.number(),
 });
 
-export const searchResultsSchema = z.array(searchResultSchema);
+const searchResultsSchema = z.array(searchResultSchema);
 
 export const buildSearchPrompt = (
   naturalLanguageQuery: string,
@@ -179,12 +179,7 @@ export const searchResourcesWithNaturalLanguage = async (
 
     const { sqlQuery, explanation } = result.object;
 
-    let executionResult:
-      | { success: true; results: SearchResult[] }
-      | { success: false; error: string };
-
-    const rawResults = await executeResourceSearch(sqlQuery);
-    executionResult = rawResults;
+    const executionResult = await executeResourceSearch(sqlQuery);
 
     if (executionResult.success) {
       return {
@@ -293,7 +288,7 @@ export async function executeResourceSearch(
       ''
     );
 
-    const rawResults = await prisma.$queryRaw<any[]>(fullSql);
+    const rawResults = await prisma.$queryRaw<unknown[]>(fullSql);
     const results = searchResultsSchema.parse(rawResults);
     return { success: true, results };
   } catch (error) {

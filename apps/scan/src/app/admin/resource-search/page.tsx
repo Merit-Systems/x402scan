@@ -1,7 +1,7 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { auth } from '@/auth';
 import { forbidden } from 'next/navigation';
-import { SearchContainer } from './_components';
+import { SearchContainer } from './_components/search-container';
 
 export default async function ResourceSearchPage() {
   const session = await auth();
