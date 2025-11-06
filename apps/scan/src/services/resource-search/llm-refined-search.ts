@@ -19,10 +19,12 @@ const filterQuestionsSchema = z.object({
 });
 
 const filterEvaluationSchema = z.object({
-  answers: z
-    .array(z.boolean())
-    .describe('Yes/no answers to each filter question for this resource'),
-  reasoning: z.string().optional().describe('Brief reasoning for the answers'),
+  answer: z
+    .boolean()
+    .describe('Yes/no answer to whether this resource matches the criteria'),
+  reasoning: z
+    .string()
+    .describe('Brief reasoning for the answer'),
 });
 
 function buildFilterGenerationPrompt(naturalLanguageQuery: string): string {
@@ -79,7 +81,10 @@ Resource Information:
 - Has Recent Usage: ${resourceContext.hasRecentUsage ? 'Yes' : 'No'}
 ${responseSection}
 
-Answer yes or no based on whether this resource matches the criteria in the question.
+Provide:
+1. A yes/no answer (answer field) - true if the resource matches the criteria, false otherwise
+2. Brief reasoning (reasoning field) - explain why you answered yes or no
+
 Be strict but fair - only answer yes if there's clear evidence the resource matches.`;
 }
 
@@ -144,8 +149,7 @@ async function evaluateResourceAgainstFilter(
       return false;
     }
 
-    // Return the first answer (should only be one)
-    return result.object.answers[0] ?? false;
+    return result.object.answer;
   } catch (error) {
     console.warn('[Filter Evaluation] Error evaluating filter:', error instanceof Error ? error.message : String(error));
     return false;

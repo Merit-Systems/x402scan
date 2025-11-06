@@ -127,12 +127,16 @@ Error: ${previousError.error}
 
 Please generate a corrected WHERE clause condition that fixes this error. Make sure the syntax is valid PostgreSQL and follows all the rules above.
 
-Generate the corrected WHERE clause condition:`;
+Generate:
+1. A corrected WHERE clause condition (sqlQuery field)
+2. A brief explanation of what the query searches for (explanation field)`;
   }
 
   return `${basePrompt}
 
-Generate the WHERE clause condition:`;
+Generate:
+1. A WHERE clause condition (sqlQuery field)
+2. A brief explanation of what the query searches for (explanation field)`;
 };
 
 export const searchResourcesWithNaturalLanguage = async (
