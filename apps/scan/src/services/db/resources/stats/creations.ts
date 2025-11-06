@@ -3,15 +3,12 @@ import z from 'zod';
 import { Prisma } from '@prisma/client';
 
 import { prisma } from '@/services/db/client';
+import { firstTransfer } from '@/services/facilitator/constants';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import {
-  getBucketedTimeRangeFromTimeframe,
-  getTimeRangeFromTimeframe,
-} from '@/lib/time-range';
+import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
 
 import type { resourceBucketedQuerySchema } from './schemas';
-import { firstTransfer } from '@/services/facilitator/constants';
 
 const bucketedCreationsResultSchema = z.array(
   z.object({

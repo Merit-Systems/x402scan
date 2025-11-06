@@ -1,8 +1,7 @@
 import { subHours } from 'date-fns';
 
-import { timeframeSchema, timePeriodSchema } from './schemas';
-
 import type z from 'zod';
+import type { timeframeSchema, timePeriodSchema } from './schemas';
 
 export function getTimeRangeFromTimeframe(
   timeframe: z.infer<typeof timeframeSchema>
