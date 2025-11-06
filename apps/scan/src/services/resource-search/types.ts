@@ -2,6 +2,7 @@ export interface ResourceAnalytics {
   totalCalls: number;
   avgDuration: number;
   successRate: number;
+  sampleResponseBody: string | null;
 }
 
 export interface SearchResult {
@@ -59,4 +60,4 @@ export interface CombinedRefinedResult extends FilteredSearchResult {
 
 export type RefinementMode = 'none' | 'llm' | 'reranker' | 'both';
 
-export type QueryMode = 'keywords' | 'sql';
+export type QueryMode = 'keywords' | 'sql' | 'sql-parallel';

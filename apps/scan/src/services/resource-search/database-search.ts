@@ -5,12 +5,16 @@ import { prisma } from '@/services/db/client';
 import { Prisma } from '@prisma/client';
 import type { SearchResult } from './types';
 
-const sqlGenerationSchema = z.object({
-  sqlQuery: z.string().describe('The PostgreSQL WHERE clause (without the WHERE keyword)'),
-  explanation: z.string().describe('Brief explanation of what the query searches for'),
+export const sqlGenerationSchema = z.object({
+  sqlQuery: z
+    .string()
+    .describe('The PostgreSQL WHERE clause (without the WHERE keyword)'),
+  explanation: z
+    .string()
+    .describe('Brief explanation of what the query searches for'),
 });
 
-const searchResultSchema = z.object({
+export const searchResultSchema = z.object({
   id: z.string(),
   resource: z.string(),
   type: z.string(),
@@ -24,24 +28,31 @@ const searchResultSchema = z.object({
     description: z.string().nullable(),
     favicon: z.string().nullable(),
   }),
-  accepts: z.array(z.object({
-    id: z.string(),
-    description: z.string(),
-    network: z.string(),
-    maxAmountRequired: z.string(),
-    asset: z.string(),
-  })),
-  tags: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
-    color: z.string(),
-  })),
+  accepts: z.array(
+    z.object({
+      id: z.string(),
+      description: z.string(),
+      network: z.string(),
+      maxAmountRequired: z.string(),
+      asset: z.string(),
+    })
+  ),
+  tags: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      color: z.string(),
+    })
+  ),
   toolCallCount: z.number(),
 });
 
-const searchResultsSchema = z.array(searchResultSchema);
+export const searchResultsSchema = z.array(searchResultSchema);
 
-const buildSearchPrompt = (naturalLanguageQuery: string, previousError?: { sql: string; error: string }) => {
+export const buildSearchPrompt = (
+  naturalLanguageQuery: string,
+  previousError?: { sql: string; error: string }
+) => {
   const basePrompt = `You are an expert SQL query generator for a PostgreSQL database containing API resources.
 
 Database Schema:
@@ -97,12 +108,13 @@ IMPORTANT RULES:
 8. NEVER return just "true" - ALWAYS extract at least 1-3 specific keywords from the query, even if it's broad
 9. Use proper PostgreSQL syntax including double quotes for table/column names
 10. The condition will be inserted directly after WHERE in: SELECT ... FROM "Resources" r LEFT JOIN "ResourceOrigin" ro ON r."originId" = ro.id WHERE <YOUR_CONDITION> ORDER BY ...
+11. PREFER OR over AND when combining multiple search terms to return MORE results - use AND only when the query explicitly requires ALL conditions to match
 
 Examples:
 - "AI resources" → EXISTS (SELECT 1 FROM "ResourcesTags" rt JOIN "Tag" t ON rt."tagId" = t.id WHERE rt."resourceId" = r.id AND t.name ILIKE '%ai%')
 - "resources from google.com" → ro.origin ILIKE '%google.com%'
-- "image generation" → EXISTS (SELECT 1 FROM "Accepts" a WHERE a."resourceId" = r.id AND a.description ILIKE '%image%' AND a.description ILIKE '%generation%')
-- "news from twitter about crypto" → (ro.origin ILIKE '%twitter%' OR ro.title ILIKE '%twitter%') AND (EXISTS (SELECT 1 FROM "Accepts" a WHERE a."resourceId" = r.id AND (a.description ILIKE '%news%' OR a.description ILIKE '%crypto%')))`;
+- "image generation" → EXISTS (SELECT 1 FROM "Accepts" a WHERE a."resourceId" = r.id AND (a.description ILIKE '%image%' OR a.description ILIKE '%generation%'))
+- "news from twitter about crypto" → (ro.origin ILIKE '%twitter%' OR ro.title ILIKE '%twitter%') OR (EXISTS (SELECT 1 FROM "Accepts" a WHERE a."resourceId" = r.id AND (a.description ILIKE '%news%' OR a.description ILIKE '%crypto%')))`;
 
   if (previousError) {
     return `${basePrompt}
@@ -167,8 +179,10 @@ export const searchResourcesWithNaturalLanguage = async (
 
     const { sqlQuery, explanation } = result.object;
 
-    let executionResult: { success: true; results: SearchResult[] } | { success: false; error: string };
-    
+    let executionResult:
+      | { success: true; results: SearchResult[] }
+      | { success: false; error: string };
+
     const rawResults = await executeResourceSearch(sqlQuery);
     executionResult = rawResults;
 
@@ -186,7 +200,10 @@ export const searchResourcesWithNaturalLanguage = async (
       sql: sqlQuery,
       error: executionResult.error,
     };
-    console.log(`SQL execution failed (attempt ${attempt + 1}/${maxRetries}):`, executionResult.error);
+    console.log(
+      `SQL execution failed (attempt ${attempt + 1}/${maxRetries}):`,
+      executionResult.error
+    );
   }
 
   // All retries exhausted
@@ -195,15 +212,17 @@ export const searchResourcesWithNaturalLanguage = async (
   );
 };
 
-async function executeResourceSearch(
+export async function executeResourceSearch(
   whereCondition: string
-): Promise<{ success: true; results: SearchResult[] } | { success: false; error: string }> {
+): Promise<
+  { success: true; results: SearchResult[] } | { success: false; error: string }
+> {
   // WARNING: This uses Prisma.raw for the WHERE condition, which is generated by AI.
   // This is acceptable because:
   // 1. This endpoint is admin-only
   // 2. The AI is instructed to generate safe SQL
   // 3. Results are validated against a schema
-  
+
   try {
     const sql = Prisma.sql`
       SELECT 
@@ -263,13 +282,16 @@ async function executeResourceSearch(
       FROM "Resources" r
       LEFT JOIN "ResourceOrigin" ro ON r."originId" = ro.id
       WHERE `;
-    
+
     // Append the WHERE condition and the rest of the query
-    const fullSql = Prisma.join([
-      sql,
-      Prisma.raw(whereCondition),
-      Prisma.raw(' ORDER BY r."lastUpdated" DESC LIMIT 100')
-    ], '');
+    const fullSql = Prisma.join(
+      [
+        sql,
+        Prisma.raw(whereCondition),
+        Prisma.raw(' ORDER BY r."lastUpdated" DESC LIMIT 100'),
+      ],
+      ''
+    );
 
     const rawResults = await prisma.$queryRaw<any[]>(fullSql);
     const results = searchResultsSchema.parse(rawResults);
@@ -279,4 +301,3 @@ async function executeResourceSearch(
     return { success: false, error: errorMessage };
   }
 }
-

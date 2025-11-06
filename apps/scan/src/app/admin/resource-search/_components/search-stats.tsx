@@ -31,7 +31,9 @@ const SearchStatsComponent = ({
   const [isSqlExpanded, setIsSqlExpanded] = useState(false);
 
   return (
-    <div className={cn(className, isLoading && 'opacity-60 transition-opacity')}>
+    <div
+      className={cn(className, isLoading && 'opacity-60 transition-opacity')}
+    >
       <div className="space-y-3">
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
@@ -41,7 +43,9 @@ const SearchStatsComponent = ({
               <Database className="h-4 w-4 text-muted-foreground" />
             )}
             <span>
-              <span className="font-semibold text-foreground">{totalResults}</span>{' '}
+              <span className="font-semibold text-foreground">
+                {totalResults}
+              </span>{' '}
               {totalResults === 1 ? 'resource' : 'resources'} found
             </span>
           </div>
@@ -75,7 +79,7 @@ const SearchStatsComponent = ({
                   )}
                 </div>
                 <ol className="space-y-1.5 list-decimal list-inside">
-                  {filterQuestions.map((fq) => (
+                  {filterQuestions.map(fq => (
                     <li key={fq.index} className="text-xs text-foreground">
                       {fq.question}
                     </li>
@@ -142,4 +146,3 @@ const SearchStatsComponent = ({
 SearchStatsComponent.displayName = 'SearchStats';
 
 export const SearchStats = memo(SearchStatsComponent);
-

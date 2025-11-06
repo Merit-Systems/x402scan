@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { api } from '@/trpc/client';
 
 type RefinementMode = 'none' | 'llm' | 'reranker' | 'both';
-type QueryMode = 'keywords' | 'sql';
+type QueryMode = 'keywords' | 'sql' | 'sql-parallel';
 
 export const SearchContainer = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,19 +18,22 @@ export const SearchContainer = () => {
 
   const { data, isLoading } = api.admin.resources.search.useQuery(
     { query: searchQuery, refinementMode, queryMode },
-    { 
+    {
       enabled: !!searchQuery.trim(),
     }
   );
 
-  const handleSearch = useCallback((query: string, refinement: RefinementMode, qMode: QueryMode) => {
-    if (query.trim()) {
-      setSearchQuery(query);
-      setRefinementMode(refinement);
-      setQueryMode(qMode);
-      setSearchKey(prev => prev + 1);
-    }
-  }, []);
+  const handleSearch = useCallback(
+    (query: string, refinement: RefinementMode, qMode: QueryMode) => {
+      if (query.trim()) {
+        setSearchQuery(query);
+        setRefinementMode(refinement);
+        setQueryMode(qMode);
+        setSearchKey(prev => prev + 1);
+      }
+    },
+    []
+  );
 
   const hasResults = !!searchQuery.trim();
 
@@ -46,8 +49,8 @@ export const SearchContainer = () => {
 
       {hasResults && (
         <div className="space-y-6" key={searchKey}>
-          <SearchStats 
-            totalResults={data?.totalCount ?? 0} 
+          <SearchStats
+            totalResults={data?.totalCount ?? 0}
             sqlCondition={data?.sqlCondition}
             keywords={data?.keywords}
             explanation={data?.explanation}
@@ -57,14 +60,10 @@ export const SearchContainer = () => {
           />
 
           <Card className="p-8">
-            <ResultsTable
-              results={data?.results ?? []}
-              isLoading={isLoading}
-            />
+            <ResultsTable results={data?.results ?? []} isLoading={isLoading} />
           </Card>
         </div>
       )}
     </div>
   );
 };
-

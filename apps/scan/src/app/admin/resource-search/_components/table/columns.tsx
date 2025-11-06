@@ -42,16 +42,19 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
         matchPercentage === 100
           ? 'bg-green-500/10 text-green-500 border-green-500/20'
           : matchPercentage >= 60
-          ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
-          : matchPercentage >= 40
-          ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
-          : 'bg-red-500/10 text-red-500 border-red-500/20';
+            ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+            : matchPercentage >= 40
+              ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+              : 'bg-red-500/10 text-red-500 border-red-500/20';
 
       return (
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
             <Filter className="h-3.5 w-3.5 text-primary" />
-            <Badge variant="outline" className={`text-xs font-semibold ${badgeColor}`}>
+            <Badge
+              variant="outline"
+              className={`text-xs font-semibold ${badgeColor}`}
+            >
               {filterMatches}/{totalFilters}
             </Badge>
           </div>
@@ -75,9 +78,7 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
         <div className="flex items-center gap-3">
           <Avatar
             src={favicon ?? undefined}
-            fallback={
-              <Globe className="h-4 w-4 text-muted-foreground" />
-            }
+            fallback={<Globe className="h-4 w-4 text-muted-foreground" />}
             className="h-10 w-10 shrink-0"
           />
           <span className="font-medium truncate">{title}</span>
@@ -118,7 +119,10 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
               key={tag.id}
               variant="outline"
               className="text-xs"
-              style={{ borderColor: tag.color, backgroundColor: tag.color + '10' }}
+              style={{
+                borderColor: tag.color,
+                backgroundColor: tag.color + '10',
+              }}
             >
               {tag.name}
             </Badge>
@@ -176,8 +180,8 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
         analytics.successRate >= 0.95
           ? 'text-green-500'
           : analytics.successRate >= 0.8
-          ? 'text-yellow-500'
-          : 'text-red-500';
+            ? 'text-yellow-500'
+            : 'text-red-500';
 
       return (
         <div className="flex flex-col gap-1.5">
@@ -198,4 +202,3 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
     },
   },
 ];
-

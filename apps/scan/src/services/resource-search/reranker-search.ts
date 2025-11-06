@@ -25,8 +25,11 @@ function buildResourceText(resource: EnrichedSearchResult): string {
     resource.accepts[0]?.description || '',
     resource.origin.description || '',
     resource.tags.map(t => t.name).join(', '),
+    resource.analytics?.sampleResponseBody
+      ? `Sample: ${resource.analytics.sampleResponseBody.slice(0, 300)}`
+      : '',
   ].filter(Boolean);
-  
+
   return parts.join(' | ');
 }
 
@@ -69,12 +72,12 @@ export async function rerankSearchResults(
   };
 
   const startTime = Date.now();
-  
+
   const response = await fetch('https://api.jina.ai/v1/rerank', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${env.JINA_API_KEY}`,
+      Authorization: `Bearer ${env.JINA_API_KEY}`,
     },
     body: JSON.stringify(requestBody),
   });
@@ -85,10 +88,12 @@ export async function rerankSearchResults(
     throw new Error(`Jina reranker API error: ${response.status} ${errorText}`);
   }
 
-  const data = await response.json() as JinaRerankerResponse;
+  const data = (await response.json()) as JinaRerankerResponse;
   const duration = Date.now() - startTime;
 
-  console.log(`[Reranker] Reranked ${results.length} results in ${duration}ms (top ${data.results.length})`);
+  console.log(
+    `[Reranker] Reranked ${results.length} results in ${duration}ms (top ${data.results.length})`
+  );
 
   // Create a map of original index to reranker data
   const rerankerMap = new Map<number, { score: number; newIndex: number }>();
@@ -100,28 +105,29 @@ export async function rerankSearchResults(
   });
 
   // Enrich results with reranker scores
-  const rerankedResults: RerankedSearchResult[] = results.map((result, index) => {
-    const rerankerData = rerankerMap.get(index);
-    return {
-      ...result,
-      rerankerScore: rerankerData?.score ?? null,
-      rerankerIndex: rerankerData?.newIndex ?? null,
-    };
-  });
+  const rerankedResults: RerankedSearchResult[] = results.map(
+    (result, index) => {
+      const rerankerData = rerankerMap.get(index);
+      return {
+        ...result,
+        rerankerScore: rerankerData?.score ?? null,
+        rerankerIndex: rerankerData?.newIndex ?? null,
+      };
+    }
+  );
 
   // Sort by reranker score (highest first), then put unranked items at the end
   return rerankedResults.sort((a, b) => {
     // Items with reranker scores come first
     if (a.rerankerScore !== null && b.rerankerScore === null) return -1;
     if (a.rerankerScore === null && b.rerankerScore !== null) return 1;
-    
+
     // Both have scores - sort by score descending
     if (a.rerankerScore !== null && b.rerankerScore !== null) {
       return b.rerankerScore - a.rerankerScore;
     }
-    
+
     // Both are unranked - maintain original order
     return 0;
   });
 }
-

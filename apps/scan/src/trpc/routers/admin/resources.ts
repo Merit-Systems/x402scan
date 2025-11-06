@@ -39,22 +39,22 @@ import {
   getBucketedToolCallsByResources,
   resourceBucketedQuerySchema,
 } from '@/services/db/resources/stats';
-import {
-  searchResourcesCombined,
-} from '@/services/resource-search/combined-search';
+import { searchResourcesCombined } from '@/services/resource-search/combined-search';
 
 const refinementModeSchema = z.enum(['none', 'llm', 'reranker', 'both']);
-const queryModeSchema = z.enum(['keywords', 'sql']);
+const queryModeSchema = z.enum(['keywords', 'sql', 'sql-parallel']);
 
 export const adminResourcesRouter = createTRPCRouter({
   search: adminProcedure
-    .input(z.object({
-      query: z.string(),
-      refinementMode: refinementModeSchema.optional().default('none'),
-      queryMode: queryModeSchema.optional().default('keywords'),
-    }))
+    .input(
+      z.object({
+        query: z.string(),
+        refinementMode: refinementModeSchema.optional().default('none'),
+        queryMode: queryModeSchema.optional().default('keywords'),
+      })
+    )
     .query(async ({ input }) => {
-      return await searchResourcesCombined(input.query, { 
+      return await searchResourcesCombined(input.query, {
         refinementMode: input.refinementMode,
         queryMode: input.queryMode,
       });

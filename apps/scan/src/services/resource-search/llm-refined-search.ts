@@ -1,15 +1,27 @@
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
-import type { EnrichedSearchResult, FilterQuestion, FilteredSearchResult } from './types';
+import type {
+  EnrichedSearchResult,
+  FilterQuestion,
+  FilteredSearchResult,
+} from './types';
 
 const filterQuestionsSchema = z.object({
-  questions: z.array(z.string()).min(3).max(5).describe('3-5 yes/no filter questions to evaluate each resource'),
-  explanation: z.string().describe('Brief explanation of what these filters are checking for'),
+  questions: z
+    .array(z.string())
+    .min(3)
+    .max(5)
+    .describe('3-5 yes/no filter questions to evaluate each resource'),
+  explanation: z
+    .string()
+    .describe('Brief explanation of what these filters are checking for'),
 });
 
 const filterEvaluationSchema = z.object({
-  answers: z.array(z.boolean()).describe('Yes/no answers to each filter question for this resource'),
+  answers: z
+    .array(z.boolean())
+    .describe('Yes/no answers to each filter question for this resource'),
   reasoning: z.string().optional().describe('Brief reasoning for the answers'),
 });
 
@@ -45,8 +57,15 @@ function buildFilterEvaluationPrompt(
     description: resource.accepts[0]?.description || 'No description',
     origin: resource.origin.origin,
     tags: resource.tags.map(t => t.name).join(', ') || 'No tags',
-    hasRecentUsage: resource.analytics ? resource.analytics.totalCalls > 0 : false,
+    hasRecentUsage: resource.analytics
+      ? resource.analytics.totalCalls > 0
+      : false,
+    sampleResponse: resource.analytics?.sampleResponseBody || null,
   };
+
+  const responseSection = resourceContext.sampleResponse
+    ? `- Sample Response: ${resourceContext.sampleResponse.slice(0, 500)}${resourceContext.sampleResponse.length > 500 ? '...' : ''}`
+    : '';
 
   return `Evaluate if this API resource matches the following criteria.
 
@@ -58,6 +77,7 @@ Resource Information:
 - Description: ${resourceContext.description}
 - Tags: ${resourceContext.tags}
 - Has Recent Usage: ${resourceContext.hasRecentUsage ? 'Yes' : 'No'}
+${responseSection}
 
 Answer yes or no based on whether this resource matches the criteria in the question.
 Be strict but fair - only answer yes if there's clear evidence the resource matches.`;
@@ -120,7 +140,7 @@ export async function applyLLMFilters(
 
   // Evaluate each result against all filter questions
   const evaluatedResults = await Promise.all(
-    results.map(async (resource) => {
+    results.map(async resource => {
       const answers = await Promise.all(
         filterQuestions.map(fq =>
           evaluateResourceAgainstFilter(fq.question, resource)
@@ -160,7 +180,8 @@ export async function refineSearchWithLLM(
   filterQuestions: FilterQuestion[];
   filterExplanation: string;
 }> {
-  const { questions, explanation } = await generateFilterQuestions(naturalLanguageQuery);
+  const { questions, explanation } =
+    await generateFilterQuestions(naturalLanguageQuery);
   const filteredResults = await applyLLMFilters(results, questions);
 
   return {
@@ -169,4 +190,3 @@ export async function refineSearchWithLLM(
     filterExplanation: explanation,
   };
 }
-

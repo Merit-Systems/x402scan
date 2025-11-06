@@ -15,10 +15,10 @@ export async function enrichSearchResults(
     return [];
   }
 
-  const urls = results.map((r) => r.resource);
+  const urls = results.map(r => r.resource);
   const analyticsMap = await fetchAnalyticsForUrls(urls);
 
-  return results.map((result) => ({
+  return results.map(result => ({
     ...result,
     analytics: analyticsMap.get(result.resource) ?? null,
   }));
@@ -39,7 +39,8 @@ async function fetchAnalyticsForUrls(
       url,
       count() as total_calls,
       avg(duration) as avg_duration,
-      countIf(status_code >= 200 AND status_code < 300) / count() as success_rate
+      countIf(status_code >= 200 AND status_code < 300) / count() as success_rate,
+      argMaxIf(response_body, created_at, status_code = 200) as sample_response_body
     FROM resource_invocations
     WHERE url IN {urls:Array(String)}
     GROUP BY url
@@ -56,6 +57,7 @@ async function fetchAnalyticsForUrls(
     total_calls: number;
     avg_duration: number;
     success_rate: number;
+    sample_response_body: string | null;
   }>();
 
   const analyticsMap = new Map<string, ResourceAnalytics>();
@@ -65,6 +67,7 @@ async function fetchAnalyticsForUrls(
       totalCalls: row.total_calls,
       avgDuration: row.avg_duration,
       successRate: row.success_rate,
+      sampleResponseBody: row.sample_response_body,
     });
   }
 

@@ -17,7 +17,9 @@ const ResultsTableComponent = ({
   results,
   isLoading = false,
 }: ResultsTableProps) => {
-  const [selectedResourceId, setSelectedResourceId] = useState<string | null>(null);
+  const [selectedResourceId, setSelectedResourceId] = useState<string | null>(
+    null
+  );
   const columns = useMemo(() => createColumns(), []);
 
   const handleRowClick = useCallback((row: Row<FilteredSearchResult>) => {
@@ -70,4 +72,3 @@ const ResultsTableComponent = ({
 ResultsTableComponent.displayName = 'ResultsTable';
 
 export const ResultsTable = memo(ResultsTableComponent);
-

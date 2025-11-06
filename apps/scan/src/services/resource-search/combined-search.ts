@@ -1,6 +1,12 @@
-import type { CombinedRefinedResult, FilterQuestion, RefinementMode, QueryMode } from './types';
+import type {
+  CombinedRefinedResult,
+  FilterQuestion,
+  RefinementMode,
+  QueryMode,
+} from './types';
 import { searchResourcesWithNaturalLanguage as searchWithKeywords } from './database-tags-search';
 import { searchResourcesWithNaturalLanguage as searchWithSQL } from './database-search';
+import { searchResourcesWithNaturalLanguage as searchWithSQLParallel } from './database-search-parallel-retry';
 import { enrichSearchResults } from './clickhouse-search';
 import { generateFilterQuestions, applyLLMFilters } from './llm-refined-search';
 import { rerankSearchResults } from './reranker-search';
@@ -27,29 +33,42 @@ export async function searchResourcesCombined(
   const startTime = Date.now();
   const refinementMode = options?.refinementMode ?? 'none';
   const queryMode = options?.queryMode ?? 'keywords';
-  
+
   const useLlmFilter = refinementMode === 'llm' || refinementMode === 'both';
-  
+
   // Select the appropriate search function based on queryMode
-  const searchFunction = queryMode === 'sql' ? searchWithSQL : searchWithKeywords;
-  
+  const searchFunction =
+    queryMode === 'sql'
+      ? searchWithSQL
+      : queryMode === 'sql-parallel'
+        ? searchWithSQLParallel
+        : searchWithKeywords;
+
   // Step 1: DB search and optionally parallelize with filter question generation
   const step1Start = Date.now();
   let dbResults;
   let filterQuestions: FilterQuestion[] = [];
-  let filterExplanation = refinementMode === 'none' 
-    ? 'No refinement applied' 
-    : `Refinement mode: ${refinementMode}`;
-  
+  let filterExplanation =
+    refinementMode === 'none'
+      ? 'No refinement applied'
+      : `Refinement mode: ${refinementMode}`;
+
   if (useLlmFilter) {
-    [dbResults, { questions: filterQuestions, explanation: filterExplanation }] = await Promise.all([
+    [
+      dbResults,
+      { questions: filterQuestions, explanation: filterExplanation },
+    ] = await Promise.all([
       searchFunction(naturalLanguageQuery),
-      generateFilterQuestions(naturalLanguageQuery)
+      generateFilterQuestions(naturalLanguageQuery),
     ]);
-    console.log(`[Search] Step 1 - Parallel DB search (${queryMode}) + filter generation: ${Date.now() - step1Start}ms (${dbResults.results.length} results, ${filterQuestions.length} questions)`);
+    console.log(
+      `[Search] Step 1 - Parallel DB search (${queryMode}) + filter generation: ${Date.now() - step1Start}ms (${dbResults.results.length} results, ${filterQuestions.length} questions)`
+    );
   } else {
     dbResults = await searchFunction(naturalLanguageQuery);
-    console.log(`[Search] Step 1 - DB search (${queryMode}) only: ${Date.now() - step1Start}ms (${dbResults.results.length} results)`);
+    console.log(
+      `[Search] Step 1 - DB search (${queryMode}) only: ${Date.now() - step1Start}ms (${dbResults.results.length} results)`
+    );
   }
 
   // Step 2: Enrich with ClickHouse analytics
@@ -74,8 +93,10 @@ export async function searchResourcesCombined(
     // LLM filtering only - trust LLM ordering
     const step3Start = Date.now();
     const results = await applyLLMFilters(enrichedResults, filterQuestions);
-    console.log(`[Search] Step 3 - LLM filter: ${Date.now() - step3Start}ms (${results.length} results)`);
-    
+    console.log(
+      `[Search] Step 3 - LLM filter: ${Date.now() - step3Start}ms (${results.length} results)`
+    );
+
     finalResults = results.map(r => ({
       ...r,
       rerankerScore: null,
@@ -84,9 +105,14 @@ export async function searchResourcesCombined(
   } else if (refinementMode === 'reranker') {
     // Reranker only - trust reranker ordering
     const step3Start = Date.now();
-    const results = await rerankSearchResults(enrichedResults, naturalLanguageQuery);
-    console.log(`[Search] Step 3 - Reranker: ${Date.now() - step3Start}ms (${results.length} results)`);
-    
+    const results = await rerankSearchResults(
+      enrichedResults,
+      naturalLanguageQuery
+    );
+    console.log(
+      `[Search] Step 3 - Reranker: ${Date.now() - step3Start}ms (${results.length} results)`
+    );
+
     finalResults = results.map(r => ({
       ...r,
       filterMatches: 0,
@@ -97,12 +123,14 @@ export async function searchResourcesCombined(
     const step3Start = Date.now();
     const [llmResults, rerankedResults] = await Promise.all([
       applyLLMFilters(enrichedResults, filterQuestions),
-      rerankSearchResults(enrichedResults, naturalLanguageQuery)
+      rerankSearchResults(enrichedResults, naturalLanguageQuery),
     ]);
-    console.log(`[Search] Step 3 - Parallel LLM + Reranker: ${Date.now() - step3Start}ms`);
+    console.log(
+      `[Search] Step 3 - Parallel LLM + Reranker: ${Date.now() - step3Start}ms`
+    );
 
     // Use reranker order, but include LLM filter data
-    finalResults = rerankedResults.map((rerankedResult) => {
+    finalResults = rerankedResults.map(rerankedResult => {
       const llmResult = llmResults.find(r => r.id === rerankedResult.id);
       return {
         ...rerankedResult,
@@ -125,4 +153,3 @@ export async function searchResourcesCombined(
     filterExplanation,
   };
 }
-
