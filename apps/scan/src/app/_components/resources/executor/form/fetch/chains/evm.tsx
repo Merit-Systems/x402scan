@@ -2,10 +2,10 @@ import { useWalletClient } from 'wagmi';
 
 import { useIsInitialized } from '@coinbase/cdp-hooks';
 
-import { ConnectWalletState } from '../states/1-connect';
-import { LoadingState } from '../states/2-loading-balance';
-import { AddFundsState } from '../states/3-add-funds';
-import { FetchState } from '../states/4-fetch';
+import { ConnectWalletState } from '../1-connect';
+import { LoadingState } from '../2-loading-balance';
+import { AddFundsState } from '../3-add-funds';
+import { FetchState } from '../4-fetch';
 
 import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
 import { useEvmX402Fetch } from '@/app/_hooks/x402/evm';

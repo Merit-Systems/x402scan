@@ -1,7 +1,7 @@
-import { ConnectWalletState } from '../states/1-connect';
-import { LoadingState } from '../states/2-loading-balance';
-import { AddFundsState } from '../states/3-add-funds';
-import { FetchState } from '../states/4-fetch';
+import { ConnectWalletState } from '../1-connect';
+import { LoadingState } from '../2-loading-balance';
+import { AddFundsState } from '../3-add-funds';
+import { FetchState } from '../4-fetch';
 
 import { useSvmX402Fetch } from '@/app/_hooks/x402/svm';
 import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
