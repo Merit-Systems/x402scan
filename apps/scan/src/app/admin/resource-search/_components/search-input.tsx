@@ -29,7 +29,8 @@ const SearchInputComponent = ({
   isLoading = false,
 }: SearchInputProps) => {
   const [localQuery, setLocalQuery] = useState('');
-  const [refinementMode, setRefinementMode] = useState<RefinementMode>('reranker');
+  const [refinementMode, setRefinementMode] =
+    useState<RefinementMode>('reranker');
   const [queryMode, setQueryMode] = useState<QueryMode>('sql');
 
   const handleSearch = () => {

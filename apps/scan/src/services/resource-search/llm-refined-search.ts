@@ -22,9 +22,7 @@ const filterEvaluationSchema = z.object({
   answer: z
     .boolean()
     .describe('Yes/no answer to whether this resource matches the criteria'),
-  reasoning: z
-    .string()
-    .describe('Brief reasoning for the answer'),
+  reasoning: z.string().describe('Brief reasoning for the answer'),
 });
 
 function buildFilterGenerationPrompt(naturalLanguageQuery: string): string {
@@ -107,7 +105,9 @@ export async function generateFilterQuestions(
     });
 
     if (!result.object) {
-      console.warn('[Filter Generation] No object generated, returning empty filters');
+      console.warn(
+        '[Filter Generation] No object generated, returning empty filters'
+      );
       return {
         questions: [],
         explanation: 'Failed to generate filter questions',
@@ -124,7 +124,10 @@ export async function generateFilterQuestions(
       explanation: result.object.explanation,
     };
   } catch (error) {
-    console.error('[Filter Generation] Error generating filter questions:', error instanceof Error ? error.message : String(error));
+    console.error(
+      '[Filter Generation] Error generating filter questions:',
+      error instanceof Error ? error.message : String(error)
+    );
     return {
       questions: [],
       explanation: 'Failed to generate filter questions due to error',
@@ -151,7 +154,10 @@ async function evaluateResourceAgainstFilter(
 
     return result.object.answer;
   } catch (error) {
-    console.warn('[Filter Evaluation] Error evaluating filter:', error instanceof Error ? error.message : String(error));
+    console.warn(
+      '[Filter Evaluation] Error evaluating filter:',
+      error instanceof Error ? error.message : String(error)
+    );
     return false;
   }
 }

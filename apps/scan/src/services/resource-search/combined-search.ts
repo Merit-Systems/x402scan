@@ -66,11 +66,15 @@ export async function searchResourcesCombined(
         `[Search] Step 1 - Parallel DB search (${queryMode}) + filter generation: ${Date.now() - step1Start}ms (${dbResults.results.length} results, ${filterQuestions.length} questions)`
       );
     } catch (error) {
-      console.error('[Search] Error in parallel DB search + filter generation:', error);
+      console.error(
+        '[Search] Error in parallel DB search + filter generation:',
+        error
+      );
       // Fallback: try DB search without filter generation
       dbResults = await searchFunction(naturalLanguageQuery);
       filterQuestions = [];
-      filterExplanation = 'Filter generation failed, continuing without filters';
+      filterExplanation =
+        'Filter generation failed, continuing without filters';
       console.log(
         `[Search] Step 1 - DB search (${queryMode}) only (fallback): ${Date.now() - step1Start}ms (${dbResults.results.length} results)`
       );
@@ -115,7 +119,10 @@ export async function searchResourcesCombined(
         rerankerIndex: null,
       }));
     } catch (error) {
-      console.error('[Search] LLM filter failed, returning unfiltered results:', error);
+      console.error(
+        '[Search] LLM filter failed, returning unfiltered results:',
+        error
+      );
       finalResults = enrichedResults.map(r => ({
         ...r,
         filterMatches: 0,
@@ -142,7 +149,10 @@ export async function searchResourcesCombined(
         filterAnswers: [],
       }));
     } catch (error) {
-      console.error('[Search] Reranker failed, returning unranked results:', error);
+      console.error(
+        '[Search] Reranker failed, returning unranked results:',
+        error
+      );
       finalResults = enrichedResults.map(r => ({
         ...r,
         filterMatches: 0,
@@ -173,7 +183,10 @@ export async function searchResourcesCombined(
         };
       });
     } catch (error) {
-      console.error('[Search] LLM + Reranker failed, returning unrefined results:', error);
+      console.error(
+        '[Search] LLM + Reranker failed, returning unrefined results:',
+        error
+      );
       finalResults = enrichedResults.map(r => ({
         ...r,
         filterMatches: 0,
