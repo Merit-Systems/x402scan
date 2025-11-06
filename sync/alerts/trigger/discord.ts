@@ -2,18 +2,16 @@ import type { BalanceCheckResult, DiscordWebhookConfig } from './types';
 import { CURRENCY_CONFIG } from './config';
 
 export async function sendDiscordAlert(
-  config: DiscordWebhookConfig,
   balanceResult: BalanceCheckResult
 ): Promise<void> {
   const { symbol, decimals } = CURRENCY_CONFIG[balanceResult.currency];
   const currencyName = balanceResult.currency;
 
-  const response = await fetch(config.webhookUrl, {
+  const response = await fetch(process.env.DISCORD_WEBHOOK_URL!, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      username: config.username || 'x402scan Alerts',
-      avatar_url: config.avatarUrl,
+      username: 'x402scan Balance Monitor',
       embeds: [
         {
           title: `🚨 Low ${currencyName} Balance Alert`,

@@ -5,12 +5,11 @@ import { BalanceCheckResult, Currency } from './types';
 
 export async function checkUSDCBalance(
   address: Address,
-  threshold: number = 10,
-  rpcUrl?: string
+  threshold: number
 ): Promise<BalanceCheckResult> {
   const client = createPublicClient({
     chain: base,
-    transport: http(rpcUrl),
+    transport: http(process.env.BASE_RPC_URL!),
   });
 
   const balance = await client.readContract({
@@ -35,12 +34,11 @@ export async function checkUSDCBalance(
 
 export async function checkETHBalance(
   address: Address,
-  threshold: number = 0.01,
-  rpcUrl?: string
+  threshold: number
 ): Promise<BalanceCheckResult> {
   const client = createPublicClient({
     chain: base,
-    transport: http(rpcUrl),
+    transport: http(process.env.BASE_RPC_URL!),
   });
 
   const balance = await client.getBalance({

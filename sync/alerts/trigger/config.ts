@@ -2,7 +2,7 @@ import { AddressConfig, Currency } from './types';
 import { checkUSDCBalance, checkETHBalance } from './balance-checker';
 import { base } from 'viem/chains';
 
-export const ADDRESSES_CONFIG: AddressConfig[] = [
+export const BALANCE_MONITORS: AddressConfig[] = [
   {
     address: '0xCA9eB08F7e2A162258B9DC9c0A071Aa4E89a2CF9',
     chain: base,
