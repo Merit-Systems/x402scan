@@ -68,7 +68,7 @@ export const ResourceToolCallsByResourceChart = ({
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    return timeframe < 7;
+    return Number(timeframe) < 7;
   }, [timeframe]);
 
   // Transform data for chart

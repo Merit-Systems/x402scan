@@ -38,14 +38,6 @@ const ActivityContainer = ({
 };
 
 export const Activity: React.FC<Props> = async ({ address }) => {
-  const [firstTransferTimestamp] = await Promise.all([
-    api.public.stats.firstTransferTimestamp({
-      recipients: {
-        include: [address],
-      },
-    }),
-  ]);
-
   await Promise.all([
     api.public.stats.bucketed.prefetch({
       recipients: {

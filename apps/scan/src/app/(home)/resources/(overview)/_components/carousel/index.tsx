@@ -4,8 +4,6 @@ import { LoadingOriginsCarouselClient, OriginsCarouselClient } from './client';
 
 import { api, HydrateClient } from '@/trpc/server';
 
-import { ActivityTimeframe } from '@/types/timeframes';
-
 import type { RouterInputs } from '@/trpc/client';
 import type { SectionProps } from '@/app/_components/layout/page-utils';
 import type { LucideIcon } from 'lucide-react';

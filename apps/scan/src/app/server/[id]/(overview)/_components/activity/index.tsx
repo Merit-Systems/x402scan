@@ -1,23 +1,22 @@
 'use client';
 
-import { api } from '@/trpc/client';
+import { OriginOverviewSection } from '../section';
 
 import { LoadingOverallStatsCard, OverallStatsCard } from './card';
 
+import { api } from '@/trpc/client';
+
 import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 
-import type { ChartData } from '@/components/ui/charts/chart/types';
-import { useState } from 'react';
-import { OriginOverviewSection } from '../section';
 import { ActivityTimeframe } from '@/types/timeframes';
+
+import type { ChartData } from '@/components/ui/charts/chart/types';
 
 interface Props {
   originId: string;
 }
 
 export const OriginActivity: React.FC<Props> = ({ originId }) => {
-  const [endDate] = useState(new Date());
-
   const [metadata] = api.public.origins.getMetadata.useSuspenseQuery(originId);
 
   const addresses = Array.from(
@@ -28,15 +27,6 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
     )
   );
 
-  const {
-    data: firstTransferTimestamp,
-    isLoading: isFirstTransferTimestampLoading,
-  } = api.public.stats.firstTransferTimestamp.useQuery({
-    recipients: {
-      include: addresses,
-    },
-  });
-
   const { data: overallStats, isLoading: isOverallStatsLoading } =
     api.public.stats.overall.useQuery(
       {
@@ -46,7 +36,7 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
         timeframe: ActivityTimeframe.AllTime,
       },
       {
-        enabled: !!metadata && !isFirstTransferTimestampLoading,
+        enabled: !!metadata,
       }
     );
   const { data: bucketedStats, isLoading: isBucketedStatsLoading } =
@@ -59,7 +49,7 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
         },
       },
       {
-        enabled: !!metadata && !isFirstTransferTimestampLoading,
+        enabled: !!metadata,
       }
     );
 

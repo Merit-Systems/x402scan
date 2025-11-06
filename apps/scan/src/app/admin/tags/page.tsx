@@ -6,7 +6,6 @@ import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ResourcesSortingProvider } from '@/app/_contexts/sorting/resource-tags/provider';
 import { defaultResourcesSorting } from '@/app/_contexts/sorting/resource-tags/default';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { subDays } from 'date-fns';
 import { auth } from '@/auth';
 import { forbidden } from 'next/navigation';
 

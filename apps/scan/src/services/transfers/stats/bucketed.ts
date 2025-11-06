@@ -1,14 +1,16 @@
 import z from 'zod';
+
 import { Prisma } from '@prisma/client';
 
 import { baseBucketedQuerySchema } from '../schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
 import { transfersWhereClause } from '../query-utils';
-import { getTimeRangeFromTimeframe } from '@/lib/time-range';
-import { ActivityTimeframe } from '@/types/timeframes';
 import { getFirstTransferTimestamp } from './first-transfer';
+
 import { firstTransfer } from '@/services/facilitator/constants';
+import { queryRaw } from '@/services/transfers/client';
+
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
