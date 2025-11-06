@@ -24,5 +24,5 @@ export const CURRENCY_TO_BALANCE_CHECKER = {
 
 export const CURRENCY_CONFIG = {
   [Currency.USDC]: { symbol: '$', decimalsExternal: 2, decimalsInternal: 6 },
-  [Currency.ETH]: { symbol: 'ETH', decimalsExternal: 4, decimalsInternal: 18 },
+  [Currency.ETH]: { symbol: '', decimalsExternal: 4, decimalsInternal: 18 },
 };

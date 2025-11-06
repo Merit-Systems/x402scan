@@ -4,7 +4,7 @@ import { BALANCE_MONITORS, CURRENCY_TO_BALANCE_CHECKER } from './config';
 
 export const balanceMonitor = schedules.task({
   id: 'balance-monitor',
-  cron: '*/5 * * * *',
+  cron: '0 * * * *',
   run: async () => {
     for (const monitor of BALANCE_MONITORS) {
       const monitorId = monitor.address + ':' + monitor.chain.id;
