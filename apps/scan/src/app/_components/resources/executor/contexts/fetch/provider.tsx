@@ -99,7 +99,9 @@ export const ResourceFetchProvider: React.FC<Props> = ({
             }
           } else if (typeof value === 'object' && value !== null) {
             // Objects are already structured correctly
-            acc.push([key, value]);
+            if (isValidFieldValue(value)) {
+              acc.push([key, value]);
+            }
           } else if (typeof value === 'string') {
             const trimmed = value.trim();
             if (trimmed.length > 0) {
