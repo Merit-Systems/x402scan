@@ -4,7 +4,7 @@ import { cdpClient } from '../client';
 
 import { evmRpc } from '@/services/rpc/evm';
 
-import { erc20Abi, formatEther } from 'viem';
+import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
 import { convertTokenAmount } from '@/lib/token';
 import { toAccount } from 'viem/accounts';
 
@@ -49,8 +49,24 @@ export const evmServerWallet =
         });
       },
       signer: async () => toAccount(await getAccount()),
-      sendTokens: async () => {
-        return 'Not implemented';
+      sendTokens: async ({ address, token, amount }) => {
+        const account = await getAccount();
+        const { transactionHash } = await account.sendTransaction({
+          network: 'base',
+          transaction: {
+            to: token.address as Address,
+            value: 0n,
+            data: encodeFunctionData({
+              abi: erc20Abi,
+              functionName: 'transfer',
+              args: [
+                address as Address,
+                parseUnits(amount.toString(), token.decimals),
+              ],
+            }),
+          },
+        });
+        return transactionHash;
       },
     };
   };
