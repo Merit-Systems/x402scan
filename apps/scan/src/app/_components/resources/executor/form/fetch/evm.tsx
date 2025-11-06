@@ -39,8 +39,8 @@ export const FetchEvm: React.FC<Props> = ({
 
   if (!walletClient) {
     return (
-      <WalletDialog initialChain={chain}>
-        <ConnectWalletButton chains={[chain]} />
+      <WalletDialog chain={chain}>
+        <ConnectWalletButton chain={chain} />
       </WalletDialog>
     );
   }

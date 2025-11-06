@@ -54,14 +54,14 @@ export const FetchButton: React.FC<Props> = ({
 };
 
 interface ConnectWalletButtonProps {
-  chains: Chain[];
+  chain: Chain;
   onClick?: () => void;
 }
 
 export const ConnectWalletButton = forwardRef<
   HTMLButtonElement,
   ConnectWalletButtonProps
->(({ chains, onClick }, ref) => {
+>(({ chain, onClick }, ref) => {
   return (
     <Button
       ref={ref}
@@ -70,7 +70,7 @@ export const ConnectWalletButton = forwardRef<
       className="w-full"
       onClick={onClick}
     >
-      <Chains chains={chains} />
+      <Chains chains={[chain]} />
       Connect Wallet
     </Button>
   );

@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { ChevronDown } from 'lucide-react';
+
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
@@ -11,22 +13,37 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
+import { Chain } from '@/app/_components/chains';
+
 import { useWalletChain } from './hook';
 
 import { SUPPORTED_CHAINS, CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
-import { ChevronDown } from 'lucide-react';
 
-import type { Chain } from '@/types/chain';
+export const WalletChain = () => {
+  const { isFixed } = useWalletChain();
 
-export const WalletChainSelector = () => {
+  if (!isFixed) {
+    return <WalletChainSelector />;
+  }
+
+  return <ChainDisplay />;
+};
+
+const ChainDisplay = () => {
+  const { chain } = useWalletChain();
+
+  return (
+    <div className="flex items-center gap-2 font-medium">
+      <Chain chain={chain} iconClassName="size-4" />
+      <span className="hidden md:block">{CHAIN_LABELS[chain]}</span>
+    </div>
+  );
+};
+
+const WalletChainSelector = () => {
   const { chain, setChain } = useWalletChain();
 
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleSelectChain = (chain: Chain) => {
-    setChain(chain);
-    setIsOpen(false);
-  };
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -49,16 +66,13 @@ export const WalletChainSelector = () => {
             key={value}
             variant="ghost"
             className="w-full justify-start gap-2 h-8"
-            onClick={() => handleSelectChain(value)}
+            onClick={() => {
+              setChain(value);
+              setIsOpen(false);
+            }}
             disabled={!SUPPORTED_CHAINS.includes(value)}
           >
-            <Image
-              src={CHAIN_ICONS[value]}
-              alt={CHAIN_LABELS[value]}
-              width={16}
-              height={16}
-              className="rounded-sm"
-            />
+            <Chain chain={value} iconClassName="size-4" />
             {CHAIN_LABELS[value]}
           </Button>
         ))}

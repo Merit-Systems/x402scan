@@ -28,8 +28,8 @@ export const FetchSvm: React.FC<Props> = ({
 
   if (!connectedWallet) {
     return (
-      <WalletDialog initialChain={Chain.SOLANA}>
-        <ConnectWalletButton chains={[Chain.SOLANA]} />
+      <WalletDialog chain={Chain.SOLANA}>
+        <ConnectWalletButton chain={Chain.SOLANA} />
       </WalletDialog>
     );
   }

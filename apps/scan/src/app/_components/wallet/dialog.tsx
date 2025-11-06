@@ -17,10 +17,10 @@ import type { Chain } from '@/types/chain';
 
 interface Props {
   children: React.ReactNode;
-  initialChain?: Chain;
+  chain?: Chain;
 }
 
-export const WalletDialog: React.FC<Props> = ({ children, initialChain }) => {
+export const WalletDialog: React.FC<Props> = ({ children, chain }) => {
   const searchParams = useSearchParams();
 
   const connectedWallets = useConnectedWallets();
@@ -37,7 +37,7 @@ export const WalletDialog: React.FC<Props> = ({ children, initialChain }) => {
         {connectedWallets.isConnected ? (
           <WalletChainProvider
             connectedWallets={connectedWallets}
-            initialChain={initialChain}
+            chain={chain}
           >
             <DisplayWalletDialogContent
               connectedWallets={connectedWallets}
@@ -48,7 +48,7 @@ export const WalletDialog: React.FC<Props> = ({ children, initialChain }) => {
             />
           </WalletChainProvider>
         ) : (
-          <WalletChainProvider initialChain={initialChain}>
+          <WalletChainProvider chain={chain}>
             <ConnectWalletDialogContent />
           </WalletChainProvider>
         )}

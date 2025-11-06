@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Logo } from '@/components/logo';
 import { ConnectWalletForm } from './form';
-import { WalletChainSelector } from '../chain-context/selector';
+import { WalletChain } from '../chain-context/component';
 
 export const ConnectWalletDialogContent = () => {
   return (
@@ -25,7 +25,7 @@ export const ConnectWalletDialogContent = () => {
               </DialogDescription>
             </div>
           </div>
-          <WalletChainSelector />
+          <WalletChain />
         </div>
       </DialogHeader>
       <div className="p-4 pt-0 flex flex-col gap-6">

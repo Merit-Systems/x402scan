@@ -18,23 +18,28 @@ export const Fetch: React.FC<Props> = ({
   targetUrl,
   requestInit,
 }) => {
-  if (chains.includes(Chain.SOLANA)) {
-    return (
-      <FetchSvm
-        allRequiredFieldsFilled={allRequiredFieldsFilled}
-        maxAmountRequired={maxAmountRequired}
-        targetUrl={targetUrl}
-        requestInit={requestInit}
-      />
-    );
-  }
   return (
-    <FetchEvm
-      chain={Chain.BASE}
-      allRequiredFieldsFilled={allRequiredFieldsFilled}
-      maxAmountRequired={maxAmountRequired}
-      targetUrl={targetUrl}
-      requestInit={requestInit}
-    />
+    <div>
+      {chains.map(chain =>
+        chain === Chain.SOLANA ? (
+          <FetchSvm
+            key={chain}
+            allRequiredFieldsFilled={allRequiredFieldsFilled}
+            maxAmountRequired={maxAmountRequired}
+            targetUrl={targetUrl}
+            requestInit={requestInit}
+          />
+        ) : (
+          <FetchEvm
+            key={chain}
+            chain={chain}
+            allRequiredFieldsFilled={allRequiredFieldsFilled}
+            maxAmountRequired={maxAmountRequired}
+            targetUrl={targetUrl}
+            requestInit={requestInit}
+          />
+        )
+      )}
+    </div>
   );
 };
