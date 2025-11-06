@@ -4,10 +4,7 @@ import {
 } from '@/trigger/lib/constants';
 import {
   SyncConfig,
-  EvmChainConfig,
   Facilitator,
-  PaginationStrategy,
-  QueryProvider,
   TransferEventData,
   BitQueryTransferRowStream,
   FacilitatorConfig,
@@ -17,23 +14,24 @@ export function buildQuery(
   config: SyncConfig,
   facilitatorConfig: FacilitatorConfig,
   since: Date,
-  now: Date
+  now: Date,
+  offset?: number
 ): string {
   return `
     {
-      EVM(network: ${config.chain}, dataset: combined) {
+      EVM(dataset: realtime, network: ${config.chain}) {
         Transfers(
-          limit: {count: ${config.limit}}
+          limit: {count: ${config.limit}, offset: ${offset || 0}}
           where: {
             Transaction: {
               From: {in: ${JSON.stringify(facilitatorConfig.address)}}
-              Time: {
-                since: "${since.toISOString()}"
-                till: "${now.toISOString()}"
+            }
+            Transfer: {
+              Currency: {
+                SmartContract: {is: ${JSON.stringify(facilitatorConfig.token.address)}}
               }
             }
           }
-          orderBy: {descending: Block_Number}
         ) {
           Transfer {
             Amount
@@ -78,19 +76,4 @@ export function transformResponse(
     decimals: facilitatorConfig.token.decimals,
     facilitator_id: facilitator.id,
   }));
-}
-
-export function createEvmChainConfig(params: EvmChainConfig): SyncConfig {
-  return {
-    ...params,
-    apiUrl: 'https://streaming.bitquery.io/graphql',
-    paginationStrategy: PaginationStrategy.TIME_WINDOW,
-    provider: QueryProvider.BITQUERY,
-    timeWindowInMs: 7 * 24 * 60 * 60 * 1000, // 1 week
-    buildQuery,
-    transformResponse,
-    maxDurationInSeconds: 300,
-    limit: 20_000,
-    machine: 'medium-1x',
-  };
 }
