@@ -14,6 +14,7 @@ import {
   xechoFacilitator,
   codenutFacilitator,
   ultravioletadaoFacilitator,
+  virtualsFacilitator,
   ainalystFacilitator,
 } from '../facilitators';
 
@@ -37,6 +38,7 @@ const FACILITATORS = validateUniqueFacilitators([
   xechoFacilitator,
   codenutFacilitator,
   ultravioletadaoFacilitator,
+  virtualsFacilitator,
   ainalystFacilitator,
 ]);
 
