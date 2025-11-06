@@ -2,6 +2,7 @@ import { createPublicClient, http, formatUnits, type Address } from 'viem';
 import { base } from 'viem/chains';
 import { USDC_ADDRESS, ERC20_ABI } from './constants';
 import { BalanceCheckResult, Currency } from './types';
+import { CURRENCY_CONFIG } from './config';
 
 export async function checkUSDCBalance(
   address: Address,
@@ -19,7 +20,10 @@ export async function checkUSDCBalance(
     args: [address],
   });
 
-  const balanceInUSDC = formatUnits(balance, 6);
+  const balanceInUSDC = formatUnits(
+    balance,
+    CURRENCY_CONFIG[Currency.USDC].decimalsInternal
+  );
   const balanceNumber = parseFloat(balanceInUSDC);
   const isLow = balanceNumber < threshold;
 
@@ -45,7 +49,10 @@ export async function checkETHBalance(
     address,
   });
 
-  const balanceInETH = formatUnits(balance, 18);
+  const balanceInETH = formatUnits(
+    balance,
+    CURRENCY_CONFIG[Currency.ETH].decimalsInternal
+  );
   const balanceNumber = parseFloat(balanceInETH);
   const isLow = balanceNumber < threshold;
 

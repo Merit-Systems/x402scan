@@ -4,7 +4,7 @@ import { CURRENCY_CONFIG } from './config';
 export async function sendDiscordAlert(
   balanceResult: BalanceCheckResult
 ): Promise<void> {
-  const { symbol, decimals } = CURRENCY_CONFIG[balanceResult.currency];
+  const { symbol, decimalsExternal } = CURRENCY_CONFIG[balanceResult.currency];
   const currencyName = balanceResult.currency;
 
   const response = await fetch(process.env.DISCORD_WEBHOOK_URL!, {
@@ -25,12 +25,12 @@ export async function sendDiscordAlert(
             },
             {
               name: 'Current Balance',
-              value: `${symbol}${parseFloat(balanceResult.balance).toFixed(decimals)} ${currencyName}`,
+              value: `${symbol}${parseFloat(balanceResult.balance).toFixed(decimalsExternal)} ${currencyName}`,
               inline: true,
             },
             {
               name: 'Threshold',
-              value: `${symbol}${balanceResult.threshold.toFixed(decimals)} ${currencyName}`,
+              value: `${symbol}${balanceResult.threshold.toFixed(decimalsExternal)} ${currencyName}`,
               inline: true,
             },
           ],
