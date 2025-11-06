@@ -5,8 +5,7 @@ import { baseBucketedQuerySchema } from '../../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { transfersWhereClause } from '../../query-utils';
-import { getTimeRangeFromTimeframe, NonZeroTimeframe } from '@/lib/time-range';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
 import { getFirstTransferTimestamp } from '../../stats/first-transfer';
 import { firstTransfer } from '@/services/facilitator/constants';
 
@@ -25,14 +24,11 @@ const getBucketedSellerStatisticsUncached = async (
 ) => {
   const { timeframe, numBuckets } = input;
 
-  const { startDate, endDate } =
-    timeframe === ActivityTimeframe.AllTime
-      ? getTimeRangeFromTimeframe({
-          timeframe: 0,
-          creationDate:
-            (await getFirstTransferTimestamp(input)) ?? firstTransfer,
-        })
-      : getTimeRangeFromTimeframe({ timeframe: timeframe as NonZeroTimeframe });
+  const { startDate, endDate } = await getBucketedTimeRangeFromTimeframe({
+    period: timeframe,
+    creationDate: async () =>
+      (await getFirstTransferTimestamp(input)) ?? firstTransfer,
+  });
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(

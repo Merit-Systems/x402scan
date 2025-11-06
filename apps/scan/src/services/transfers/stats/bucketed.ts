@@ -10,7 +10,7 @@ import { firstTransfer } from '@/services/facilitator/constants';
 import { queryRaw } from '@/services/transfers/client';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { getTimeRangeFromTimeframe, NonZeroTimeframe } from '@/lib/time-range';
+import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
@@ -29,14 +29,11 @@ const getBucketedStatisticsUncached = async (
 ) => {
   const { timeframe, numBuckets } = input;
 
-  const { startDate, endDate } =
-    timeframe === 0
-      ? getTimeRangeFromTimeframe({
-          timeframe: 0,
-          creationDate:
-            (await getFirstTransferTimestamp(input)) ?? firstTransfer,
-        })
-      : getTimeRangeFromTimeframe({ timeframe: timeframe as NonZeroTimeframe });
+  const { startDate, endDate } = await getBucketedTimeRangeFromTimeframe({
+    period: timeframe,
+    creationDate: async () =>
+      (await getFirstTransferTimestamp(input)) ?? firstTransfer,
+  });
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(

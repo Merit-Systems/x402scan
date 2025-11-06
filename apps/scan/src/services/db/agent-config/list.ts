@@ -35,9 +35,7 @@ export const listTopAgentConfigurations = async (
   pagination: PaginatedQueryParams
 ) => {
   const { sorting, userId, originId, timeframe } = input;
-  const { startDate, endDate } = getTimeRangeFromTimeframe({
-    timeframe,
-  });
+  const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
 
   const [count, items] = await Promise.all([
     prisma.agentConfiguration.count({

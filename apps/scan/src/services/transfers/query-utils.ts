@@ -11,9 +11,7 @@ export const transfersWhereClause = (
 ) => {
   const { chain, timeframe, senders, recipients, facilitatorIds } = input;
 
-  const { startDate, endDate } = getTimeRangeFromTimeframe({
-    timeframe,
-  });
+  const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
 
   return Prisma.sql`WHERE 1=1
     ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
@@ -48,9 +46,7 @@ export const transfersWhereObject = (
 ): TransfersPrisma.TransferEventWhereInput => {
   const { chain, timeframe, senders, recipients, facilitatorIds } = input;
 
-  const { startDate, endDate } = getTimeRangeFromTimeframe({
-    timeframe,
-  });
+  const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
 
   return {
     chain,
