@@ -3,7 +3,7 @@ import z from 'zod';
 import { queryRaw } from '../query';
 
 import { Prisma } from '@prisma/client';
-import { sortingSchema, timePeriodSchema } from '@/lib/schemas';
+import { sortingSchema, timeframeSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
 import { prisma } from '../client';
@@ -21,7 +21,7 @@ const agentsSortingIds = [
 export type AgentSortId = (typeof agentsSortingIds)[number];
 
 export const listTopAgentConfigurationsSchema = z.object({
-  timeframe: timePeriodSchema,
+  timeframe: timeframeSchema,
   userId: z.string().optional(),
   originId: z.string().optional(),
   sorting: sortingSchema(agentsSortingIds).default({

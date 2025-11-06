@@ -33,12 +33,14 @@ export const mixedAddressSchema = z
 export const chainSchema = z.enum(Chain);
 export const optionalChainSchema = chainSchema.optional();
 
-export const timePeriodSchema = z
+export const timePeriodSchema = z.number().nonnegative();
+
+export const timeframeSchema = z
   .union([
-    z.number(),
+    timePeriodSchema,
     z.object({
-      period: z.number(),
-      offset: z.number().optional(),
+      period: timePeriodSchema,
+      offset: timePeriodSchema.optional(),
     }),
   ])
   .default(0);
