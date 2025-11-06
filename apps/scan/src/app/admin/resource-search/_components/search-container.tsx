@@ -6,6 +6,8 @@ import { ResultsTable } from './table/results-table';
 import { SearchStats } from './search-stats';
 import { Card } from '@/components/ui/card';
 import { api } from '@/trpc/client';
+import { ResourceSearchSortingProvider } from '@/app/_contexts/sorting/resource-search/provider';
+import { defaultResourceSearchSorting } from '@/app/_contexts/sorting/resource-search/default';
 
 type RefinementMode = 'none' | 'llm' | 'reranker' | 'both';
 type QueryMode = 'keywords' | 'sql' | 'sql-parallel';
@@ -60,7 +62,11 @@ export const SearchContainer = () => {
           />
 
           <Card className="p-8">
-            <ResultsTable results={data?.results ?? []} isLoading={isLoading} />
+            <ResourceSearchSortingProvider
+              initialSorting={defaultResourceSearchSorting}
+            >
+              <ResultsTable results={data?.results ?? []} isLoading={isLoading} />
+            </ResourceSearchSortingProvider>
           </Card>
         </div>
       )}

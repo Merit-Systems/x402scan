@@ -3,6 +3,8 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
 import { Globe, TrendingUp, Zap, CheckCircle, Filter } from 'lucide-react';
 import type { FilteredSearchResult } from '@/services/resource-search/types';
+import { HeaderCell } from '@/components/ui/data-table/header-cell';
+import { ResourceSearchSortingContext } from '@/app/_contexts/sorting/resource-search/context';
 
 function formatNumber(num: number): string {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -22,7 +24,17 @@ function formatPercentage(rate: number): string {
 export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
   {
     accessorKey: 'filterMatches',
-    header: 'Match',
+    header: () => (
+      <HeaderCell
+        Icon={Filter}
+        label="Match"
+        className="justify-start"
+        sorting={{
+          sortContext: ResourceSearchSortingContext,
+          sortKey: 'filterMatches',
+        }}
+      />
+    ),
     size: 10,
     cell: ({ row }) => {
       const filterMatches = row.original.filterMatches;
@@ -67,7 +79,17 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
   },
   {
     accessorKey: 'title',
-    header: 'Title',
+    header: () => (
+      <HeaderCell
+        Icon={Globe}
+        label="Title"
+        className="justify-start"
+        sorting={{
+          sortContext: ResourceSearchSortingContext,
+          sortKey: 'title',
+        }}
+      />
+    ),
     size: 25,
     cell: ({ row }) => {
       const origin = row.original.origin;
@@ -138,7 +160,17 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
   },
   {
     accessorKey: 'usage',
-    header: 'Usage',
+    header: () => (
+      <HeaderCell
+        Icon={TrendingUp}
+        label="Usage"
+        className="justify-start"
+        sorting={{
+          sortContext: ResourceSearchSortingContext,
+          sortKey: 'usage',
+        }}
+      />
+    ),
     size: 15,
     cell: ({ row }) => {
       const analytics = row.original.analytics;
@@ -163,7 +195,17 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
   },
   {
     accessorKey: 'performance',
-    header: 'Performance',
+    header: () => (
+      <HeaderCell
+        Icon={Zap}
+        label="Performance"
+        className="justify-start"
+        sorting={{
+          sortContext: ResourceSearchSortingContext,
+          sortKey: 'performance',
+        }}
+      />
+    ),
     size: 15,
     cell: ({ row }) => {
       const analytics = row.original.analytics;
