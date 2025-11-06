@@ -53,7 +53,7 @@ interface ResourceToolCallsByResourceChartProps {
 export const ResourceToolCallsByResourceChart = ({
   selectedTagIds,
 }: ResourceToolCallsByResourceChartProps) => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   // Fetch all resources for labels
   const { data: allResources } = api.public.resources.list.all.useQuery();
@@ -61,18 +61,15 @@ export const ResourceToolCallsByResourceChart = ({
   // Query for tool calls by resources with tag filter
   const { data: toolCallsByResourcesData, isLoading } =
     api.admin.resources.stats.toolCallsByResources.useQuery({
-      startDate,
-      endDate,
+      timeframe,
       numBuckets: 48,
       tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
     });
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    const diffInMs = endDate.getTime() - startDate.getTime();
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-    return diffInDays < 7;
-  }, [startDate, endDate]);
+    return timeframe < 7;
+  }, [timeframe]);
 
   // Transform data for chart
   const chartData = useMemo<ChartData<Record<ResourceKey, number>>[]>(() => {

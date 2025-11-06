@@ -1,9 +1,13 @@
 import z from 'zod';
+
 import { Prisma } from '@prisma/client';
 
-import type { resourceBucketedQuerySchema } from './schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { prisma } from '@/services/db/client';
+
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+
+import type { resourceBucketedQuerySchema } from './schemas';
 
 const bucketedCreationsResultSchema = z.array(
   z.object({
@@ -15,7 +19,11 @@ const bucketedCreationsResultSchema = z.array(
 const getBucketedResourceCreationsUncached = async (
   input: z.infer<typeof resourceBucketedQuerySchema>
 ) => {
-  const { startDate, endDate, numBuckets, tagIds } = input;
+  const { timeframe, numBuckets, tagIds } = input;
+
+  const { startDate, endDate } = getTimeRangeFromTimeframe({
+    timeframe,
+  });
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(

@@ -83,8 +83,7 @@ async function limitConcurrency(
  * Get cache warming tasks for the Homepage
  */
 function getHomePageTasks(
-  startDate: Date,
-  endDate: Date,
+  timeframe: ActivityTimeframe,
   chain?: Chain
 ): (() => Promise<unknown>)[] {
   const limit = 100;
@@ -93,39 +92,34 @@ function getHomePageTasks(
     // Overall Stats - current period
     () =>
       api.public.stats.overall({
-        startDate,
-        endDate,
+        timeframe,
         chain,
       }),
+
+    ...(timeframe !== ActivityTimeframe.AllTime
+      ? [
+          () =>
+            api.public.stats.overall({
+              timeframe: {
+                period: timeframe,
+                offset: timeframe,
+              },
+            }),
+        ]
+      : []),
 
     // Overall Stats - previous period (for comparison)
     () =>
       api.public.stats.overall({
-        startDate: subSeconds(
-          startDate,
-          differenceInSeconds(endDate, startDate)
-        ),
-        endDate: startDate,
+        timeframe,
         chain,
       }),
 
     // Bucketed Statistics - for charts
     () =>
       api.public.stats.bucketed({
-        startDate,
-        endDate,
+        timeframe,
         numBuckets: 32,
-        chain,
-      }),
-
-    // Top Facilitators
-    () =>
-      api.public.facilitators.list({
-        pagination: {
-          page_size: facilitatorAddresses.length,
-        },
-        startDate,
-        endDate,
         chain,
       }),
 
@@ -135,8 +129,7 @@ function getHomePageTasks(
         pagination: {
           page_size: 100,
         },
-        startDate,
-        endDate,
+        timeframe,
         sorting: defaultSellersSorting,
         chain,
       }),
@@ -144,8 +137,7 @@ function getHomePageTasks(
     // Top Servers (Bazaar) - overall stats
     () =>
       api.public.stats.bazaar.overall({
-        startDate,
-        endDate,
+        timeframe,
         chain,
       }),
 
@@ -156,8 +148,7 @@ function getHomePageTasks(
           page_size: limit,
         },
         sorting: defaultTransfersSorting,
-        startDate,
-        endDate,
+        timeframe,
         chain,
       }),
 
@@ -167,8 +158,7 @@ function getHomePageTasks(
         pagination: {
           page_size: 100,
         },
-        startDate,
-        endDate,
+        timeframe,
         sorting: defaultSellersSorting,
         chain,
       }),
@@ -179,30 +169,26 @@ function getHomePageTasks(
  * Get cache warming tasks for the Networks Page
  */
 function getNetworksPageTasks(
-  startDate: Date,
-  endDate: Date
+  timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
     // Networks bucketed statistics
     () =>
       api.networks.bucketedStatistics({
         numBuckets: 48,
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Networks list
     () =>
       api.networks.list({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Overall stats (shared with homepage)
     () =>
       api.public.stats.overall({
-        startDate,
-        endDate,
+        timeframe,
       }),
   ];
 }
@@ -211,16 +197,14 @@ function getNetworksPageTasks(
  * Get cache warming tasks for the Facilitators Page
  */
 function getFacilitatorsPageTasks(
-  startDate: Date,
-  endDate: Date
+  timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
     // Facilitators bucketed statistics
     () =>
       api.public.facilitators.bucketedStatistics({
         numBuckets: 48,
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Facilitators list (shared with homepage)
@@ -229,15 +213,13 @@ function getFacilitatorsPageTasks(
         pagination: {
           page_size: facilitatorAddresses.length,
         },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Overall stats (shared with homepage)
     () =>
       api.public.stats.overall({
-        startDate,
-        endDate,
+        timeframe,
       }),
   ];
 }
@@ -246,35 +228,30 @@ function getFacilitatorsPageTasks(
  * Get cache warming tasks for the Resources/Marketplace Page
  */
 function getResourcesPageTasks(
-  startDate: Date,
-  endDate: Date
+  timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
     // All Sellers stats
     () =>
       api.public.sellers.all.stats.overall({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     () =>
       api.public.sellers.all.stats.bucketed({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Bazaar Sellers stats (overall)
     () =>
       api.public.sellers.bazaar.stats.overall({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Bazaar Sellers stats (bucketed)
     () =>
       api.public.sellers.bazaar.stats.bucketed({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Marketplace carousels (5 different tag filters)
@@ -282,8 +259,7 @@ function getResourcesPageTasks(
     () =>
       api.public.sellers.bazaar.list({
         pagination: { page_size: 20 },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Search Servers
@@ -291,8 +267,7 @@ function getResourcesPageTasks(
       api.public.sellers.bazaar.list({
         tags: ['Search'],
         pagination: { page_size: 20 },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Crypto Servers
@@ -300,8 +275,7 @@ function getResourcesPageTasks(
       api.public.sellers.bazaar.list({
         tags: ['Crypto'],
         pagination: { page_size: 20 },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // AI Servers (Utility tag)
@@ -309,8 +283,7 @@ function getResourcesPageTasks(
       api.public.sellers.bazaar.list({
         tags: ['Utility'],
         pagination: { page_size: 20 },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Trading Servers
@@ -318,8 +291,7 @@ function getResourcesPageTasks(
       api.public.sellers.bazaar.list({
         tags: ['Trading'],
         pagination: { page_size: 20 },
-        startDate,
-        endDate,
+        timeframe,
       }),
   ];
 }
@@ -372,14 +344,6 @@ export async function GET(request: NextRequest) {
     for (const timeframe of timeframesToWarm) {
       const timeframeStartTime = Date.now();
 
-      // Calculate date range based on timeframe
-      // Note: For All Time, we lag firstTransfer by CACHE_DURATION_MINUTES because
-      // the frontend applies this lag when computing relative timeframes.
-      const startDate =
-        timeframe === ActivityTimeframe.AllTime
-          ? subMinutes(firstTransfer, CACHE_DURATION_MINUTES)
-          : subDays(endDate, timeframe);
-
       const timeframeName =
         timeframe === ActivityTimeframe.AllTime
           ? 'All Time'
@@ -394,21 +358,21 @@ export async function GET(request: NextRequest) {
 
       if (pagesToWarm.includes('home')) {
         // Home page with all chain variants
-        allTasks.push(...getHomePageTasks(startDate, endDate)); // All chains
-        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.BASE));
-        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.SOLANA));
+        allTasks.push(...getHomePageTasks(timeframe)); // All chains
+        allTasks.push(...getHomePageTasks(timeframe, Chain.BASE));
+        allTasks.push(...getHomePageTasks(timeframe, Chain.SOLANA));
       }
 
       if (pagesToWarm.includes('networks')) {
-        allTasks.push(...getNetworksPageTasks(startDate, endDate));
+        allTasks.push(...getNetworksPageTasks(timeframe));
       }
 
       if (pagesToWarm.includes('facilitators')) {
-        allTasks.push(...getFacilitatorsPageTasks(startDate, endDate));
+        allTasks.push(...getFacilitatorsPageTasks(timeframe));
       }
 
       if (pagesToWarm.includes('resources')) {
-        allTasks.push(...getResourcesPageTasks(startDate, endDate));
+        allTasks.push(...getResourcesPageTasks(timeframe));
       }
 
       // Run all tasks with controlled concurrency

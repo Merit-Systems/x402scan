@@ -3,18 +3,18 @@
 import { Calendar, DollarSign, Hash, Server, User } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
-
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
-
 import { Address } from '@/components/ui/address';
+
+import { Seller, SellerSkeleton } from '@/app/_components/seller';
+
+import { TransfersSortingContext } from '@/app/_contexts/sorting/transfers/context';
 
 import { formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
-import { Seller, SellerSkeleton } from '@/app/_components/seller';
-import { TransfersSortingContext } from '@/app/_contexts/sorting/transfers/context';
+import type { ExtendedColumnDef } from '@/components/ui/data-table';
 
 type ColumnType = RouterOutputs['public']['transfers']['list']['items'][number];
 

@@ -14,18 +14,16 @@ type NetworkKey = `${Chain}-${'transactions' | 'amount'}`;
 
 export const NetworksChart = () => {
   const { chain } = useChain();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const [bucketedNetworkData] =
     api.networks.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,
-      startDate,
-      endDate,
+      timeframe,
       chain,
     });
   const [overallData] = api.public.stats.overall.useSuspenseQuery({
-    startDate,
-    endDate,
+    timeframe,
     chain,
   });
 

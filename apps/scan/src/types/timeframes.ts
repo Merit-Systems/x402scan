@@ -7,7 +7,6 @@ export enum ActivityTimeframe {
   SixtyDays = 60,
   NinetyDays = 90,
   AllTime = 999999,
-  Custom = 0,
 }
 
 /**

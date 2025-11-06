@@ -8,11 +8,7 @@ import {
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 import { Section } from '@/app/_components/layout/page-utils';
-import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
-import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { getSSRTimeRange } from '@/lib/time-range';
 import type { Chain } from '@/types/chain';
 
 interface Props {
@@ -20,10 +16,6 @@ interface Props {
 }
 
 export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.OneDay,
-    firstTransfer
-  );
   const pageSize = 10;
 
   await api.public.transfers.list.prefetch({
@@ -33,23 +25,17 @@ export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
       page: 0,
     },
     sorting: defaultTransfersSorting,
-    startDate,
-    endDate,
+    timeframe: ActivityTimeframe.AllTime,
   });
 
   return (
     <HydrateClient>
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
-        <TimeRangeProvider
-          creationDate={firstTransfer}
-          initialTimeframe={ActivityTimeframe.OneDay}
-        >
-          <LatestTransactionsTableContainer>
-            <Suspense fallback={<LoadingLatestTransactionsTable />}>
-              <LatestTransactionsTable pageSize={pageSize} />
-            </Suspense>
-          </LatestTransactionsTableContainer>
-        </TimeRangeProvider>
+        <LatestTransactionsTableContainer>
+          <Suspense fallback={<LoadingLatestTransactionsTable />}>
+            <LatestTransactionsTable pageSize={pageSize} />
+          </Suspense>
+        </LatestTransactionsTableContainer>
       </TransfersSortingProvider>
     </HydrateClient>
   );
@@ -72,7 +58,6 @@ const LatestTransactionsTableContainer = ({
     <Section
       title="Transactions"
       description="x402 requests made through known facilitators"
-      actions={<RangeSelector />}
       href="/transactions"
     >
       {children}

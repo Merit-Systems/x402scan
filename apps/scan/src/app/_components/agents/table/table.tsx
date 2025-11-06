@@ -19,15 +19,10 @@ interface Props {
     'sorting' | 'pagination'
   >;
   limit?: number;
-  useTimeRange?: boolean;
 }
 
-export const AgentsTable: React.FC<Props> = ({
-  input,
-  limit = 10,
-  useTimeRange = false,
-}) => {
-  const { startDate, endDate } = useTimeRangeContext();
+export const AgentsTable: React.FC<Props> = ({ input, limit = 10 }) => {
+  const { timeframe } = useTimeRangeContext();
   const { sorting } = useAgentsSorting();
 
   const [page, setPage] = useState(0);
@@ -38,7 +33,7 @@ export const AgentsTable: React.FC<Props> = ({
       page,
       page_size: limit,
     },
-    ...(useTimeRange ? { startDate, endDate } : {}),
+    timeframe,
   });
 
   return (

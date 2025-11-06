@@ -3,10 +3,11 @@ import z from 'zod';
 import { queryRaw } from '../query';
 
 import { Prisma } from '@prisma/client';
-import { sortingSchema } from '@/lib/schemas';
+import { sortingSchema, timePeriodSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
 import { prisma } from '../client';
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 
 const agentsSortingIds = [
   'score',
@@ -20,8 +21,7 @@ const agentsSortingIds = [
 export type AgentSortId = (typeof agentsSortingIds)[number];
 
 export const listTopAgentConfigurationsSchema = z.object({
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
+  timeframe: timePeriodSchema,
   userId: z.string().optional(),
   originId: z.string().optional(),
   sorting: sortingSchema(agentsSortingIds).default({
@@ -34,7 +34,10 @@ export const listTopAgentConfigurations = async (
   input: z.infer<typeof listTopAgentConfigurationsSchema>,
   pagination: PaginatedQueryParams
 ) => {
-  const { sorting, userId, originId, startDate, endDate } = input;
+  const { sorting, userId, originId, timeframe } = input;
+  const { startDate, endDate } = getTimeRangeFromTimeframe({
+    timeframe,
+  });
 
   const [count, items] = await Promise.all([
     prisma.agentConfiguration.count({

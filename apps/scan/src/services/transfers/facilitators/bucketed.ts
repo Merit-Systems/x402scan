@@ -7,13 +7,26 @@ import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { facilitators } from '@/lib/facilitators';
 import { queryRaw } from '@/services/transfers/client';
 import { transfersWhereClause } from '../query-utils';
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+import { ActivityTimeframe } from '@/types/timeframes';
+import { getFirstTransferTimestamp } from '../stats/first-transfer';
+import { firstTransfer } from '@/services/facilitator/constants';
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
 const getBucketedFacilitatorsStatisticsUncached = async (
   input: z.infer<typeof bucketedStatisticsInputSchema>
 ) => {
-  const { startDate, endDate, numBuckets, chain } = input;
+  const { timeframe, numBuckets, chain } = input;
+
+  const { startDate, endDate } =
+    timeframe === 0
+      ? getTimeRangeFromTimeframe({
+          timeframe: 0,
+          creationDate:
+            (await getFirstTransferTimestamp(input)) ?? firstTransfer,
+        })
+      : getTimeRangeFromTimeframe({ timeframe });
 
   const chainFacilitators = chain
     ? facilitators.filter(f => f.addresses[chain] !== undefined)

@@ -16,23 +16,23 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import { useChain } from '@/app/_contexts/chain/hook';
 
 export const OverallCharts = () => {
-  const { startDate, endDate, timeframe } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
   const [overallStats] = api.public.stats.overall.useSuspenseQuery({
     chain,
-    startDate,
-    endDate,
+    timeframe,
   });
   const [previousOverallStats] = api.public.stats.overall.useSuspenseQuery({
     chain,
-    startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-    endDate: startDate,
+    timeframe: {
+      period: timeframe,
+      offset: timeframe,
+    },
   });
   const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
     numBuckets: 32,
-    startDate,
-    endDate,
+    timeframe,
     chain,
   });
 

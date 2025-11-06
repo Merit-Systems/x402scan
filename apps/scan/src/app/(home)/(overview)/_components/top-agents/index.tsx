@@ -6,26 +6,18 @@ import { AgentsSortingProvider } from '@/app/_contexts/sorting/agents/provider';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { agentsRelease } from '@/lib/agents';
-import { getSSRTimeRange } from '@/lib/time-range';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 export const TopAgents = () => {
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.OneDay,
-    agentsRelease
-  );
-
   return (
-    <TimeRangeProvider
-      creationDate={agentsRelease}
-      initialTimeframe={ActivityTimeframe.OneDay}
-    >
+    <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
       <AgentsSortingProvider initialSorting={defaultAgentsSorting}>
         <AgentsContainer>
           <AgentsTable
-            input={{}}
+            input={{
+              timeframe: ActivityTimeframe.OneDay,
+            }}
             limit={10}
-            initialTimeRange={{ startDate, endDate }}
           />
         </AgentsContainer>
       </AgentsSortingProvider>

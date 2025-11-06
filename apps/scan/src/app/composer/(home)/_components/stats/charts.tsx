@@ -9,16 +9,14 @@ import { LoadingOverallStatsCard, OverallStatsCard } from './card';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 
 export const OverallCharts = () => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const [overallStats] = api.public.agents.activity.overall.useSuspenseQuery({
-    startDate,
-    endDate,
+    timeframe,
   });
   const [bucketedStats] = api.public.agents.activity.bucketed.useSuspenseQuery({
     numBuckets: 32,
-    startDate,
-    endDate,
+    timeframe,
   });
 
   const chartData: ChartData<{
