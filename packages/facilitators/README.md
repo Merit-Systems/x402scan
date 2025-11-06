@@ -44,8 +44,7 @@ import { auto } from 'facilitators';
 paymentMiddleware(address, resources, auto);
 ```
 
-If you are not interested in using the facilitators package, and simply want to hit the facilitator proxy yourself, you can at `https://facilitators.x402scan.com/settle` or `https://facilitators.x402scan.com/verify`. Currently only the settle and verify methods are supported. 
-
+If you are not interested in using the facilitators package, and simply want to hit the facilitator proxy yourself, you can at `https://facilitators.x402scan.com/settle` or `https://facilitators.x402scan.com/verify`. Currently only the settle and verify methods are supported.
 
 ## Resource Discovery
 
@@ -93,23 +92,23 @@ await Promise.all(
 
 This package includes pre-configured integrations for the following X402 facilitators:
 
-| Facilitator    | Networks      | Discovery | Setup Required                 |
-| -------------- | ------------- | --------- | ------------------------------ |
-| **Auto**       | BASE          | No        | No                             |
-| **Coinbase**   | BASE, SOLANA  | ✅ Yes    | Yes - Requires CDP API Creds   |
-| **AurraCloud** | BASE          | ✅ Yes    | Yes - API key                  |
-| **thirdweb**   | BASE, POLYGON | ✅ Yes    | Yes - Secret key               |
-| **PayAI**      | BASE, SOLANA  | ✅ Yes    | No                             |
-| **Daydreams**  | BASE, SOLANA  | No        | No                             |
-| **X402rs**     | BASE, POLYGON | No        | No                             |
-| **Corbits**    | SOLANA        | No        | No                             |
-| **Dexter**     | SOLANA        | No        | No                             |
-| **Mogami**     | BASE          | No        | No                             |
-| **OpenX402**   | BASE, SOLANA  | No        | No                             |
-| **Questflow**  | BASE          | ✅ Yes    | Yes - API key                  |
-| **xEcho**      | BASE          | No        | No                             |
-| **CodeNut**    | BASE          | No        | No                             |
-| **Ultravioleta DAO** | BASE, SOLANA | ✅ Yes    | No                             |
+| Facilitator          | Networks      | Discovery | Setup Required               |
+| -------------------- | ------------- | --------- | ---------------------------- |
+| **Auto**             | BASE          | No        | No                           |
+| **Coinbase**         | BASE, SOLANA  | ✅ Yes    | Yes - Requires CDP API Creds |
+| **AurraCloud**       | BASE          | ✅ Yes    | Yes - API key                |
+| **thirdweb**         | BASE, POLYGON | ✅ Yes    | Yes - Secret key             |
+| **PayAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
+| **Daydreams**        | BASE, SOLANA  | No        | No                           |
+| **X402rs**           | BASE, POLYGON | No        | No                           |
+| **Corbits**          | SOLANA        | No        | No                           |
+| **Dexter**           | SOLANA        | No        | No                           |
+| **Mogami**           | BASE          | No        | No                           |
+| **OpenX402**         | BASE, SOLANA  | No        | No                           |
+| **Questflow**        | BASE          | ✅ Yes    | Yes - API key                |
+| **xEcho**            | BASE          | No        | No                           |
+| **CodeNut**          | BASE          | No        | No                           |
+| **Ultravioleta DAO** | BASE, SOLANA  | ✅ Yes    | No                           |
 
 ### Import Individual Facilitators
 

@@ -439,7 +439,7 @@ function FieldInput({
         field={field}
         value={
           typeof value === 'object' && !Array.isArray(value)
-            ? (value as Record<string, unknown>)
+            ? value
             : undefined
         }
         onChange={
