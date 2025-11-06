@@ -2,8 +2,6 @@ import React, { Suspense } from 'react';
 
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { subDays } from 'date-fns';
-
 import { Section } from '@/app/_components/layout/page-utils';
 
 import { OverallCharts, LoadingOverallCharts } from './charts';
@@ -18,9 +16,13 @@ import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import { getSSRTimeRange } from '@/lib/time-range';
+
 export const OverallStats = async () => {
-  const endDate = new Date();
-  const startDate = subDays(endDate, 3);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.ThreeDays,
+    firstTransfer
+  );
 
   await Promise.all([
     api.public.agents.activity.overall.prefetch({
@@ -37,9 +39,7 @@ export const OverallStats = async () => {
   return (
     <HydrateClient>
       <TimeRangeProvider
-        initialEndDate={endDate}
         initialTimeframe={ActivityTimeframe.ThreeDays}
-        initialStartDate={startDate}
         creationDate={firstTransfer}
       >
         <ActivityContainer>

@@ -82,7 +82,7 @@ export const labelingPass = async (
     );
 
   const result = await generateObject({
-    model: openai('gpt-4.1-mini'),
+    model: openai('gpt-4o-mini'),
     prompt,
     schema: labelingSchema,
     temperature: 0.1,
