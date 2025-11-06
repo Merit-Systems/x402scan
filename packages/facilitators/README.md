@@ -130,7 +130,7 @@ import {
   xecho,
   codenut,
   ultravioletadao,
-  virtuals
+  virtuals,
   ainalyst,
 } from 'facilitators';
 
