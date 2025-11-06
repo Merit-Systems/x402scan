@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { timePeriodSchema } from '@/lib/schemas';
+import { timeframeSchema } from '@/lib/schemas';
 
 const addressArray = z
   .array(mixedAddressSchema)
@@ -15,7 +15,7 @@ const addressesSchema = z.object({
 
 export const baseQuerySchema = z.object({
   chain: chainSchema.optional(),
-  timeframe: timePeriodSchema,
+  timeframe: timeframeSchema,
   offset: z.enum(ActivityTimeframe).optional(),
   senders: addressesSchema.optional(),
   recipients: addressesSchema.optional(),

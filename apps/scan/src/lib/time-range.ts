@@ -1,8 +1,6 @@
 import { subHours, subMinutes } from 'date-fns';
 
-import { CACHE_DURATION_MINUTES } from './cache-constants';
-
-import type { timePeriodSchema } from './schemas';
+import type { timeframeSchema } from './schemas';
 import type z from 'zod';
 
 type AllTimeWithCreationProps = {
@@ -15,19 +13,27 @@ type AllTimeWithoutCreationProps = {
   creationDate?: undefined;
 };
 
+export type NonZeroTimeframe = Exclude<number, 0> & { _not_zero: true };
+
+type NonZeroTimeframeProps = {
+  timeframe: NonZeroTimeframe;
+  creationDate?: undefined;
+};
+
 type OtherTimeframeProps = {
-  timeframe: z.infer<typeof timePeriodSchema>;
+  timeframe: z.infer<typeof timeframeSchema>;
   creationDate?: undefined;
 };
 
 type Props =
   | AllTimeWithCreationProps
   | AllTimeWithoutCreationProps
+  | NonZeroTimeframeProps
   | OtherTimeframeProps;
 
 type Return<P extends Props> = P extends
   | AllTimeWithCreationProps
-  | OtherTimeframeProps
+  | NonZeroTimeframeProps
   ? { startDate: Date; endDate: Date }
   : { startDate: undefined; endDate: Date };
 
@@ -39,7 +45,6 @@ export function getTimeRangeFromTimeframe<P extends Props>(
     typeof props.timeframe === 'number' || !props.timeframe.offset
       ? now
       : subHours(now, props.timeframe.offset * 24);
-  subMinutes(now, CACHE_DURATION_MINUTES);
 
   if (props.timeframe === 0) {
     if (props.creationDate !== undefined) {
@@ -64,3 +69,5 @@ export function getTimeRangeFromTimeframe<P extends Props>(
 
   return { startDate, endDate } as Return<P>;
 }
+
+export const 

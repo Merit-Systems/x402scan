@@ -6,12 +6,12 @@ import { differenceInMilliseconds, getUnixTime } from 'date-fns';
 
 import { queryRaw } from '../../query';
 
-import { getTimeRangeFromTimeframe } from '@/lib/time-range';
-import { timePeriodSchema } from '@/lib/schemas';
+import { getTimeRangeFromTimeframe, NonZeroTimeframe } from '@/lib/time-range';
+import { timeframeSchema } from '@/lib/schemas';
 import { agentsRelease } from '@/lib/agents';
 
 export const overallActivityInputSchema = z.object({
-  timeframe: timePeriodSchema,
+  timeframe: timeframeSchema,
 });
 
 export const getOverallActivity = async ({
@@ -46,7 +46,7 @@ export const getOverallActivity = async ({
 };
 
 export const overallBucketedActivityInputSchema = z.object({
-  timeframe: timePeriodSchema,
+  timeframe: timeframeSchema,
   numBuckets: z.number().optional().default(48),
 });
 
@@ -62,7 +62,7 @@ export const getOverallBucketedActivity = async (
           creationDate: agentsRelease,
         })
       : getTimeRangeFromTimeframe({
-          timeframe,
+          timeframe: timeframe as NonZeroTimeframe,
         });
 
   // Calculate bucket size in seconds for consistent alignment using date-fns

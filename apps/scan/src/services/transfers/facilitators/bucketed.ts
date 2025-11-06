@@ -13,7 +13,7 @@ import { queryRaw } from '@/services/transfers/client';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { facilitators } from '@/lib/facilitators';
-import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+import { getTimeRangeFromTimeframe, NonZeroTimeframe } from '@/lib/time-range';
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
@@ -29,7 +29,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
           creationDate:
             (await getFirstTransferTimestamp(input)) ?? firstTransfer,
         })
-      : getTimeRangeFromTimeframe({ timeframe });
+      : getTimeRangeFromTimeframe({ timeframe: timeframe as NonZeroTimeframe });
 
   const chainFacilitators = chain
     ? facilitators.filter(f => f.addresses[chain] !== undefined)
