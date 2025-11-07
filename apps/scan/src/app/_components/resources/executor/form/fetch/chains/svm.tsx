@@ -1,15 +1,19 @@
-import { WalletDialog } from '@/app/_components/wallet/dialog';
-
-import { X402FetchResult } from './result';
-import { ConnectWalletButton, FetchButton } from './button';
+import { ConnectWalletState } from '../1-connect';
+import { LoadingState } from '../2-loading-balance';
+import { AddFundsState } from '../3-add-funds';
+import { FetchState } from '../4-fetch';
 
 import { useSvmX402Fetch } from '@/app/_hooks/x402/svm';
+import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
 
 import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import { Chain } from '@/types/chain';
 
+import { convertTokenAmount } from '@/lib/token';
+
 import type { UiWalletAccount } from '@wallet-standard/react';
+import { useIsInitialized } from '@coinbase/cdp-hooks';
 
 interface Props {
   allRequiredFieldsFilled: boolean;
@@ -26,11 +30,27 @@ export const FetchSvm: React.FC<Props> = ({
 }) => {
   const { connectedWallet } = useSolanaWallet();
 
+  const { data: balance, isLoading: isLoadingBalance } = useSPLTokenBalance();
+
   if (!connectedWallet) {
+    return <ConnectWalletState chain={Chain.SOLANA} />;
+  }
+
+  if (isLoadingBalance) {
     return (
-      <WalletDialog initialChain={Chain.SOLANA}>
-        <ConnectWalletButton chains={[Chain.SOLANA]} />
-      </WalletDialog>
+      <LoadingState
+        chain={Chain.SOLANA}
+        maxAmountRequired={maxAmountRequired}
+      />
+    );
+  }
+
+  if (!balance || balance < convertTokenAmount(maxAmountRequired)) {
+    return (
+      <AddFundsState
+        chain={Chain.SOLANA}
+        maxAmountRequired={maxAmountRequired}
+      />
     );
   }
 
@@ -62,18 +82,18 @@ const FetchContent: React.FC<FetchContentProps> = ({
     isPending,
     error,
   } = useSvmX402Fetch(targetUrl, maxAmountRequired, account, requestInit);
+  const { isInitialized } = useIsInitialized();
 
   return (
-    <>
-      <FetchButton
-        isPending={isPending}
-        allRequiredFieldsFilled={allRequiredFieldsFilled}
-        execute={execute}
-        isLoading={false}
-        chains={[Chain.SOLANA]}
-        maxAmountRequired={maxAmountRequired}
-      />
-      <X402FetchResult error={error} response={response} />
-    </>
+    <FetchState
+      isPending={isPending}
+      allRequiredFieldsFilled={allRequiredFieldsFilled}
+      execute={execute}
+      isLoading={!isInitialized}
+      chains={[Chain.SOLANA]}
+      maxAmountRequired={maxAmountRequired}
+      error={error}
+      response={response}
+    />
   );
 };

@@ -17,10 +17,19 @@ import type { Chain } from '@/types/chain';
 
 interface Props {
   children: React.ReactNode;
+  initialTab?: 'wallet' | 'deposit' | 'withdraw';
   initialChain?: Chain;
+  isFixed?: boolean;
+  watchOnramp?: boolean;
 }
 
-export const WalletDialog: React.FC<Props> = ({ children, initialChain }) => {
+export const WalletDialog: React.FC<Props> = ({
+  children,
+  initialChain,
+  initialTab = 'wallet',
+  isFixed,
+  watchOnramp = false,
+}) => {
   const searchParams = useSearchParams();
 
   const connectedWallets = useConnectedWallets();
@@ -28,7 +37,9 @@ export const WalletDialog: React.FC<Props> = ({ children, initialChain }) => {
   const { currentUser } = useCurrentUser();
 
   return (
-    <Dialog defaultOpen={searchParams.get('onramp') === 'true'}>
+    <Dialog
+      defaultOpen={watchOnramp ? searchParams.get('onramp') === 'true' : false}
+    >
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         className="p-0 overflow-hidden sm:max-w-md"
@@ -37,18 +48,24 @@ export const WalletDialog: React.FC<Props> = ({ children, initialChain }) => {
         {connectedWallets.isConnected ? (
           <WalletChainProvider
             connectedWallets={connectedWallets}
-            initialChain={initialChain}
+            initialChain={(searchParams.get('chain') as Chain) ?? initialChain}
+            isFixed={isFixed}
           >
             <DisplayWalletDialogContent
               connectedWallets={connectedWallets}
               user={currentUser ?? undefined}
               defaultTab={
-                searchParams.get('onramp') === 'true' ? 'deposit' : 'wallet'
+                watchOnramp && searchParams.get('onramp') === 'true'
+                  ? 'deposit'
+                  : initialTab
               }
             />
           </WalletChainProvider>
         ) : (
-          <WalletChainProvider initialChain={initialChain}>
+          <WalletChainProvider
+            initialChain={(searchParams.get('chain') as Chain) ?? initialChain}
+            isFixed={isFixed}
+          >
             <ConnectWalletDialogContent />
           </WalletChainProvider>
         )}

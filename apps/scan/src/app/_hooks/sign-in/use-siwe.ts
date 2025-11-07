@@ -6,7 +6,7 @@ import { signInWithEthereum } from '@/auth/providers/siwe/sign-in';
 import { toast } from 'sonner';
 
 interface Props {
-  isOnramp?: boolean;
+  redirectParams?: Record<string, string>;
 }
 
 export const useSiwe = (props?: Props) => {
@@ -23,8 +23,8 @@ export const useSiwe = (props?: Props) => {
         address: address,
         chainId: 8453,
         signMessage: message => signMessageAsync({ message }),
-        redirectTo: props?.isOnramp
-          ? `${window.location.href}?onramp=true`
+        redirectTo: props?.redirectParams
+          ? `${window.location.href}?${new URLSearchParams(props.redirectParams).toString()}`
           : window.location.href,
       });
     },

@@ -1,5 +1,5 @@
-import { FetchEvm } from './evm';
-import { FetchSvm } from './svm';
+import { FetchEvm } from './chains/evm';
+import { FetchSvm } from './chains/svm';
 
 import { Chain } from '@/types/chain';
 
@@ -18,23 +18,28 @@ export const Fetch: React.FC<Props> = ({
   targetUrl,
   requestInit,
 }) => {
-  if (chains.includes(Chain.SOLANA)) {
-    return (
-      <FetchSvm
-        allRequiredFieldsFilled={allRequiredFieldsFilled}
-        maxAmountRequired={maxAmountRequired}
-        targetUrl={targetUrl}
-        requestInit={requestInit}
-      />
-    );
-  }
   return (
-    <FetchEvm
-      chain={Chain.BASE}
-      allRequiredFieldsFilled={allRequiredFieldsFilled}
-      maxAmountRequired={maxAmountRequired}
-      targetUrl={targetUrl}
-      requestInit={requestInit}
-    />
+    <div className="flex flex-col gap-2">
+      {chains.map(chain =>
+        chain === Chain.SOLANA ? (
+          <FetchSvm
+            key={chain}
+            allRequiredFieldsFilled={allRequiredFieldsFilled}
+            maxAmountRequired={maxAmountRequired}
+            targetUrl={targetUrl}
+            requestInit={requestInit}
+          />
+        ) : (
+          <FetchEvm
+            key={chain}
+            chain={chain}
+            allRequiredFieldsFilled={allRequiredFieldsFilled}
+            maxAmountRequired={maxAmountRequired}
+            targetUrl={targetUrl}
+            requestInit={requestInit}
+          />
+        )
+      )}
+    </div>
   );
 };

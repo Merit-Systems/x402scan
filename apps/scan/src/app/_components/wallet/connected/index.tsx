@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ConnectedWalletTabsContent } from './content';
 import { ChainNotConnected } from './chain-not-connected';
 
-import { WalletChainSelector } from '../chain-context/selector';
+import { WalletChain } from '../chain-context/component';
 
 import { useWalletChain } from '../chain-context/hook';
 import { Chain } from '@/types/chain';
@@ -54,7 +54,7 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
                 </DialogDescription>
               </div>
             </div>
-            <WalletChainSelector />
+            <WalletChain />
           </div>
           <TabsList className="w-full h-fit overflow-x-auto justify-start no-scrollbar">
             <div className="h-[34px] border-b w-2 shrink-0" />

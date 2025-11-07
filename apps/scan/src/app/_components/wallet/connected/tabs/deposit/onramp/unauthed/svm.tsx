@@ -5,6 +5,7 @@ import { useSiws } from '@/app/_hooks/sign-in/use-siws';
 import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import type { UiWalletAccount } from '@wallet-standard/react';
+import { Chain } from '@/types/chain';
 
 export const NoSVMSessionContent = () => {
   const { connectedWallet } = useSolanaWallet();
@@ -19,7 +20,10 @@ export const NoSVMSessionContent = () => {
 const SVMSignInContent = ({ account }: { account: UiWalletAccount }) => {
   const { signIn, isPending } = useSiws({
     account,
-    isOnramp: true,
+    redirectParams: {
+      onramp: 'true',
+      chain: Chain.SOLANA,
+    },
   });
 
   return <NoSessionContent onSignIn={signIn} isPending={isPending} />;

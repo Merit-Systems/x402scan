@@ -1,0 +1,23 @@
+import React from 'react';
+
+import { Button } from '@/components/ui/button';
+
+import { WalletDialog } from '@/app/_components/wallet/dialog';
+import { Chain } from '@/app/_components/chains';
+
+import type { Chain as ChainType } from '@/types/chain';
+
+interface Props {
+  chain: ChainType;
+}
+
+export const ConnectWalletState: React.FC<Props> = ({ chain }) => {
+  return (
+    <WalletDialog initialChain={chain} isFixed>
+      <Button variant="outline" size="lg" className="w-full">
+        <Chain chain={chain} />
+        Connect Wallet
+      </Button>
+    </WalletDialog>
+  );
+};

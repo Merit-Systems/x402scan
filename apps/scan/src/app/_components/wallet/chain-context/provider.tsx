@@ -11,12 +11,14 @@ interface Props {
   children: React.ReactNode;
   connectedWallets?: ConnectedWallets;
   initialChain?: Chain;
+  isFixed?: boolean;
 }
 
 export const WalletChainProvider: React.FC<Props> = ({
   children,
   connectedWallets,
   initialChain,
+  isFixed = false,
 }) => {
   const [chain, setChainState] = useState<Chain>(
     initialChain ??
@@ -30,7 +32,7 @@ export const WalletChainProvider: React.FC<Props> = ({
   };
 
   return (
-    <WalletChainContext.Provider value={{ chain, setChain }}>
+    <WalletChainContext.Provider value={{ chain, setChain, isFixed }}>
       {children}
     </WalletChainContext.Provider>
   );

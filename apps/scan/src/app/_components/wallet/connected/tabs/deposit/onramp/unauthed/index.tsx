@@ -10,5 +10,5 @@ export const UnauthedOnramp = () => {
     return <NoSVMSessionContent />;
   }
 
-  return <NoEVMSessionContent />;
+  return <NoEVMSessionContent chain={chain} />;
 };
