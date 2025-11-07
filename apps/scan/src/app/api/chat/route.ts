@@ -198,16 +198,15 @@ export async function POST(request: NextRequest) {
   const getSystemPrompt = async () => {
     if (agentConfigurationId) {
       const details = await getAgentConfigurationDetails(agentConfigurationId);
-      if (!details) {
-        return basePromptWithWalletDetails(wallet.address);
+      if (details) {
+        return agentSystemPrompt({
+          agentName: details.name,
+          agentDescription: details.description ?? '',
+          systemPrompt: details.systemPrompt,
+          isFreeTier,
+          walletAddress: wallet.address,
+        });
       }
-      return agentSystemPrompt({
-        agentName: details.name,
-        agentDescription: details.description ?? '',
-        systemPrompt: details.systemPrompt,
-        isFreeTier,
-        walletAddress: wallet.address,
-      });
     }
     return isFreeTier
       ? freeTierSystemPrompt
