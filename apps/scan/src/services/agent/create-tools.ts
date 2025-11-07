@@ -14,13 +14,13 @@ import {
   EnhancedPaymentRequirementsSchema,
   enhancedOutputSchema,
 } from '@/lib/x402/schema';
+import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
+import { ChatSDKError } from '@/lib/errors';
 
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { ResourceRequestMetadata } from '@prisma/client';
 import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
-import { ChatSDKError } from '@/lib/errors';
-import { wrapFetchWithPayment } from 'x402-fetch';
 
 interface CreateX402AIToolsParams {
   resourceIds: string[];

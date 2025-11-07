@@ -1,7 +1,8 @@
-import { useX402Fetch } from './use-fetch';
-import { wrapFetchWithPayment } from 'x402-fetch';
-
 import { useWalletAccountTransactionSigner } from '@solana/react';
+
+import { useX402Fetch } from './use-fetch';
+
+import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
 
 import type { UseMutationOptions } from '@tanstack/react-query';
 import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';

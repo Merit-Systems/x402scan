@@ -1,7 +1,8 @@
 import { useWalletClient } from 'wagmi';
-import { wrapFetchWithPayment } from 'x402-fetch';
 
 import { useX402Fetch } from './use-fetch';
+
+import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
 
 import { CHAIN_ID } from '@/types/chain';
 
