@@ -10,7 +10,7 @@ datasource db {
 }
 
 model TransferEvent {
-  id               String   @id @default(uuid())
+  id               String   @default(uuid())
   address          String
   transaction_from String
   sender           String
@@ -24,7 +24,8 @@ model TransferEvent {
   facilitator_id   String
   log_index        Int?
 
-  @@unique([tx_hash, log_index, chain], name: "unique_transfer_event")
+  @@id([block_timestamp, id], map: "transfer_event_pk")
+  @@unique([tx_hash, log_index, chain, block_timestamp])
   @@index([block_timestamp])
   @@index([tx_hash])
   @@index([chain, block_timestamp])
