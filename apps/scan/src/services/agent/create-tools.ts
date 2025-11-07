@@ -7,7 +7,6 @@ import { createToolCall } from '@/services/db/composer/tool-call';
 import { listResourcesForTools } from '@/services/db/resources/resource';
 
 import { inputSchemaToZodSchema } from './utils';
-import { fetchWithX402Payment } from './fetch';
 
 import { env } from '@/env';
 
@@ -21,6 +20,7 @@ import type { ResourceRequestMetadata } from '@prisma/client';
 import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
 import { ChatSDKError } from '@/lib/errors';
+import { wrapFetchWithPayment } from 'x402-fetch';
 
 interface CreateX402AIToolsParams {
   resourceIds: string[];
@@ -134,15 +134,18 @@ export async function createX402AITools({
             }
 
             try {
-              const response = await fetchWithX402Payment(
+              const fetchWithPayment = wrapFetchWithPayment(
                 fetch,
                 walletClient,
                 maxAmount
-              )(
+                  ? BigInt(parseUnits(String(maxAmount), 6))
+                  : resource.accepts[0].maxAmountRequired
+              );
+              const response = await fetchWithPayment(
                 new URL(
                   `/api/proxy?url=${encodeURIComponent(url)}&share_data=true`,
                   env.NEXT_PUBLIC_PROXY_URL
-                ),
+                ).toString(),
                 requestInit
               );
               void createToolCall({
