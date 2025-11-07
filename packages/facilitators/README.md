@@ -105,6 +105,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Corbits**    | SOLANA        | No        | No                             |
 | **Dexter**     | SOLANA        | No        | No                             |
 | **Mogami**     | BASE          | No        | No                             |
+| **AceDataCloud**     | BASE          | No        | No                             |
 | **OpenX402**   | BASE, SOLANA  | No        | No                             |
 | **Questflow**  | BASE          | ✅ Yes    | Yes - API key                  |
 | **xEcho**      | BASE          | No        | No                             |
@@ -129,7 +130,8 @@ import {
   xecho,
   codenut,
   ultravioletadao,
-  virtuals
+  virtuals,
+  acedatacloud
 } from 'facilitators';
 
 // Facilitators requiring setup

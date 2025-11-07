@@ -13,6 +13,7 @@ import {
   questflowFacilitator,
   xechoFacilitator,
   codenutFacilitator,
+  acedatacloudFacilitator,
   ultravioletadaoFacilitator,
   virtualsFacilitator,
 } from '../facilitators';
@@ -29,6 +30,7 @@ const FACILITATORS = validateUniqueFacilitators([
   payaiFacilitator,
   corbitsFacilitator,
   dexterFacilitator,
+  acedatacloudFacilitator,
   daydreamsFacilitator,
   mogamiFacilitator,
   openx402Facilitator,

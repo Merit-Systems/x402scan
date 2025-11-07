@@ -2,6 +2,7 @@ export { auto, autoFacilitator } from './auto';
 export { coinbase, coinbaseFacilitator } from './coinbase';
 export { aurracloud, aurracloudFacilitator } from './aurracloud';
 export { thirdweb, thirdwebFacilitator } from './thirdweb';
+export { acedatacloud, acedatacloudFacilitator } from './acedatacloud';
 export { x402rs, x402rsFacilitator } from './x402rs';
 export { payai, payaiFacilitator } from './payai';
 export { corbits, corbitsFacilitator } from './corbits';
