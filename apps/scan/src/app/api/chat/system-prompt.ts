@@ -20,11 +20,17 @@ If they fund their agent, they will be able to use all of the x402 tools, includ
 
 You are allowed to engage with x402 resources that provide information about tokens.`;
 
+export const basePromptWithWalletDetails = (walletAddress: string) =>
+  `${baseSystemPrompt}
+
+  Your server wallet address is ${walletAddress}.`;
+
 interface AgentSystemPromptProps {
   agentName: string;
   agentDescription: string;
   systemPrompt: string;
   isFreeTier: boolean;
+  walletAddress: string;
 }
 
 export const agentSystemPrompt = ({
@@ -32,6 +38,7 @@ export const agentSystemPrompt = ({
   agentDescription,
   systemPrompt,
   isFreeTier,
-}: AgentSystemPromptProps) => `${isFreeTier ? freeTierSystemPrompt : baseSystemPrompt}
+  walletAddress,
+}: AgentSystemPromptProps) => `${isFreeTier ? freeTierSystemPrompt : basePromptWithWalletDetails(walletAddress)}
 
 Your name is ${agentName} and your description is ${agentDescription}.${systemPrompt ? `\n\nYour system prompt provided by the agent configuration is: ${systemPrompt}.` : ''}`;

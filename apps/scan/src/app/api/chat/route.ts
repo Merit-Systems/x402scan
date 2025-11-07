@@ -40,6 +40,7 @@ import type { LanguageModel, UIMessage } from 'ai';
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
 import {
   agentSystemPrompt,
+  basePromptWithWalletDetails,
   baseSystemPrompt,
   freeTierSystemPrompt,
 } from './system-prompt';
@@ -199,16 +200,19 @@ export async function POST(request: NextRequest) {
     if (agentConfigurationId) {
       const details = await getAgentConfigurationDetails(agentConfigurationId);
       if (!details) {
-        return baseSystemPrompt;
+        return basePromptWithWalletDetails(wallet.address);
       }
       return agentSystemPrompt({
         agentName: details.name,
         agentDescription: details.description ?? '',
         systemPrompt: details.systemPrompt,
         isFreeTier,
+        walletAddress: wallet.address,
       });
     }
-    return isFreeTier ? freeTierSystemPrompt : baseSystemPrompt;
+    return isFreeTier
+      ? freeTierSystemPrompt
+      : basePromptWithWalletDetails(wallet.address);
   };
 
   const messages = z.array(messageSchema).parse([
