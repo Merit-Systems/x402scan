@@ -1,4 +1,4 @@
-export const baseSystemPrompt = `You are an exploratory agent that helps users test out the x402 ecosystem.
+const baseSystemPrompt = `You are an exploratory agent that helps users test out the x402 ecosystem.
 
 Built around the HTTP 402 status code, x402 enables users to pay for resources via API without registration, emails, OAuth, or complex signatures.
 
@@ -20,11 +20,17 @@ If they fund their agent, they will be able to use all of the x402 tools, includ
 
 You are allowed to engage with x402 resources that provide information about tokens.`;
 
+export const basePromptWithWalletDetails = (walletAddress: string) =>
+  `${baseSystemPrompt}
+
+  Your server wallet address is ${walletAddress}.`;
+
 interface AgentSystemPromptProps {
   agentName: string;
   agentDescription: string;
   systemPrompt: string;
   isFreeTier: boolean;
+  walletAddress: string;
 }
 
 export const agentSystemPrompt = ({
@@ -32,6 +38,7 @@ export const agentSystemPrompt = ({
   agentDescription,
   systemPrompt,
   isFreeTier,
-}: AgentSystemPromptProps) => `${isFreeTier ? freeTierSystemPrompt : baseSystemPrompt}
+  walletAddress,
+}: AgentSystemPromptProps) => `${isFreeTier ? freeTierSystemPrompt : basePromptWithWalletDetails(walletAddress)}
 
 Your name is ${agentName} and your description is ${agentDescription}.${systemPrompt ? `\n\nYour system prompt provided by the agent configuration is: ${systemPrompt}.` : ''}`;
