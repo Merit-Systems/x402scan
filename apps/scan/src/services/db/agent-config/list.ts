@@ -81,8 +81,8 @@ export const listTopAgentConfigurations = async (
         LEFT JOIN "Message" m ON c.id = m."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
           AND m.role = 'assistant'
-          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate}` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate}` : Prisma.sql``}
+          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) u ON u."agentConfigurationId" = ac.id
       LEFT JOIN (
@@ -92,8 +92,8 @@ export const listTopAgentConfigurations = async (
         LEFT JOIN "Message" m ON c.id = m."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
           AND m.role = 'assistant'
-          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate}` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate}` : Prisma.sql``}
+          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) m ON m."agentConfigurationId" = ac.id
       LEFT JOIN (
@@ -102,8 +102,8 @@ export const listTopAgentConfigurations = async (
         LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
         LEFT JOIN "ToolCall" tc ON c.id = tc."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
-          ${startDate ? Prisma.sql`AND tc."createdAt" >= ${startDate}` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND tc."createdAt" <= ${endDate}` : Prisma.sql``}
+          ${startDate ? Prisma.sql`AND tc."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND tc."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) tc ON tc."agentConfigurationId" = ac.id
       -- Join to tools/resources related to the AgentConfiguration

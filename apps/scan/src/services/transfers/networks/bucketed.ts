@@ -1,23 +1,15 @@
 import z from 'zod';
-import { subMonths } from 'date-fns';
 import { Prisma } from '@prisma/client';
 
-import { baseQuerySchema } from '../schemas';
+import { baseBucketedQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { Chain } from '@/types/chain';
+import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
+import { getFirstTransferTimestamp } from '../stats/first-transfer';
+import { firstTransfer } from '@/services/facilitator/constants';
 
-export const bucketedNetworksStatisticsInputSchema = baseQuerySchema.extend({
-  startDate: z
-    .date()
-    .optional()
-    .default(() => subMonths(new Date(), 1)),
-  endDate: z
-    .date()
-    .optional()
-    .default(() => new Date()),
-  numBuckets: z.number().optional().default(48),
-});
+export const bucketedNetworksStatisticsInputSchema = baseBucketedQuerySchema;
 
 const bucketedNetworkResultSchema = z.array(
   z.object({
@@ -38,7 +30,13 @@ const bucketedNetworkResultSchema = z.array(
 const getBucketedNetworksStatisticsUncached = async (
   input: z.infer<typeof bucketedNetworksStatisticsInputSchema>
 ) => {
-  const { startDate, endDate, numBuckets, chain } = input;
+  const { timeframe, numBuckets, chain } = input;
+
+  const { startDate, endDate } = await getBucketedTimeRangeFromTimeframe({
+    period: timeframe,
+    creationDate: async () =>
+      (await getFirstTransferTimestamp(input)) ?? firstTransfer,
+  });
 
   // If a specific chain is requested, only include that one, otherwise all chains
   const chains = chain ? [chain] : Object.values(Chain);
@@ -53,9 +51,9 @@ const getBucketedNetworksStatisticsUncached = async (
     WITH all_buckets AS (
       SELECT generate_series(
         to_timestamp(
-          floor(extract(epoch from ${startDate}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
+          floor(extract(epoch from ${startDate.toISOString()}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
         ),
-        ${endDate}::timestamp,
+        ${endDate.toISOString()}::timestamp,
         (${bucketSizeSeconds} || ' seconds')::interval
       ) AS bucket_start
     ),
@@ -68,7 +66,7 @@ const getBucketedNetworksStatisticsUncached = async (
       CROSS JOIN network_list nl
     ),
     bucket_stats AS (
-      SELECT 
+      SELECT
         to_timestamp(
           floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
         ) AS bucket_start,
@@ -81,8 +79,8 @@ const getBucketedNetworksStatisticsUncached = async (
       FROM "TransferEvent" t
       WHERE 1=1
         ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-        ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
-        ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
+        ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate.toISOString()}::timestamp` : Prisma.empty}
+        ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate.toISOString()}::timestamp` : Prisma.empty}
       GROUP BY bucket_start, t.chain
     ),
     combined_stats AS (

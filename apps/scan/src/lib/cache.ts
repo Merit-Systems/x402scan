@@ -2,6 +2,7 @@ import { unstable_cache } from 'next/cache';
 import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
+import { getCacheContext } from './cache-context';
 
 /**
  * Redis TTL is 3x the cache duration to provide buffer time.
@@ -80,7 +81,8 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 async function withRedisCache<T>(
   fullCacheKey: string,
   queryFn: () => Promise<T>,
-  ttlSeconds: number
+  ttlSeconds: number,
+  forceRefresh = false
 ): Promise<T> {
   const redis = getRedisClient();
   if (!redis) {
@@ -89,11 +91,15 @@ async function withRedisCache<T>(
 
   const lockKey = `${fullCacheKey}:lock`;
 
-  // Try to get from cache first
-  const cached = await redis.get(fullCacheKey);
-  if (cached) {
-    console.log(`[Cache] HIT: ${fullCacheKey}`);
-    return JSON.parse(cached) as T;
+  // Try to get from cache first (unless force refresh)
+  if (!forceRefresh) {
+    const cached = await redis.get(fullCacheKey);
+    if (cached) {
+      console.log(`[Cache] HIT: ${fullCacheKey}`);
+      return JSON.parse(cached) as T;
+    }
+  } else {
+    console.log(`[Cache] FORCE REFRESH: ${fullCacheKey}`);
   }
 
   // Try to acquire lock with NX (set if not exists) and EX (expiry)
@@ -147,45 +153,27 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
   tags?: string[];
 }) => {
   return async (...args: TInput): Promise<TOutput> => {
+    // Get cache context from AsyncLocalStorage
+    const cacheContext = getCacheContext();
+
     const cacheKey = config.createCacheKey(...args);
     const fullCacheKey = `${config.cacheKeyPrefix}:${cacheKey}`;
     const ttl = config.revalidate ?? CACHE_TTL_SECONDS;
 
-    // Try Redis first
     const redis = getRedisClient();
-    if (redis) {
-      try {
-        return await withRedisCache(
-          fullCacheKey,
-          async () => {
-            const data = await config.queryFn(...args);
-            return config.serialize(data);
-          },
-          ttl
-        ).then(result => config.deserialize(result));
-      } catch (err) {
-        console.error(
-          '[Cache] Redis error, falling back to unstable_cache:',
-          err
-        );
-        // Fall through to unstable_cache
-      }
+    if (!redis) {
+      throw new Error('Redis client not available');
     }
 
-    // Fallback to Next.js unstable_cache
-    const result = await unstable_cache(
+    return await withRedisCache(
+      fullCacheKey,
       async () => {
         const data = await config.queryFn(...args);
         return config.serialize(data);
       },
-      [config.cacheKeyPrefix, cacheKey],
-      {
-        revalidate: ttl,
-        tags: config.tags,
-      }
-    )();
-
-    return config.deserialize(result);
+      ttl,
+      cacheContext.forceRefresh
+    ).then(result => config.deserialize(result));
   };
 };
 

@@ -17,6 +17,7 @@ import type { Session } from 'next-auth';
 interface Context {
   headers: Headers;
   session: Session | null;
+  forceRefreshCache: boolean;
 }
 
 /**
@@ -25,9 +26,15 @@ interface Context {
 export async function createTRPCContext(headers: Headers): Promise<Context> {
   const session = await auth();
 
+  // Check for cache refresh header (only valid with cron secret)
+  const forceRefreshCache =
+    headers.get('x-cache-refresh') === 'true' &&
+    headers.get('authorization') === `Bearer ${env.CRON_SECRET}`;
+
   return {
     headers,
     session,
+    forceRefreshCache,
   };
 }
 

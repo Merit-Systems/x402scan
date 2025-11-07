@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { api } from '@/trpc/server';
+import { createCacheWarmingApi } from '@/trpc/server';
 import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import {
@@ -12,6 +12,7 @@ import { Chain } from '@/types/chain';
 
 import type { NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
+import { env } from '@/env';
 
 /**
  * Maximum number of concurrent cache warming requests
@@ -81,6 +82,7 @@ async function limitConcurrency(
  * Get cache warming tasks for the Homepage
  */
 function getHomePageTasks(
+  api: ReturnType<typeof createCacheWarmingApi>,
   timeframe: ActivityTimeframe,
   chain?: Chain
 ): (() => Promise<unknown>)[] {
@@ -167,6 +169,7 @@ function getHomePageTasks(
  * Get cache warming tasks for the Networks Page
  */
 function getNetworksPageTasks(
+  api: ReturnType<typeof createCacheWarmingApi>,
   timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
@@ -195,6 +198,7 @@ function getNetworksPageTasks(
  * Get cache warming tasks for the Facilitators Page
  */
 function getFacilitatorsPageTasks(
+  api: ReturnType<typeof createCacheWarmingApi>,
   timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
@@ -226,6 +230,7 @@ function getFacilitatorsPageTasks(
  * Get cache warming tasks for the Resources/Marketplace Page
  */
 function getResourcesPageTasks(
+  api: ReturnType<typeof createCacheWarmingApi>,
   timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
@@ -316,6 +321,9 @@ export async function GET(request: NextRequest) {
     const startTime = Date.now();
     const timeframesWarmed: Record<string, number> = {};
 
+    // Create cache warming API with authenticated headers
+    const api = createCacheWarmingApi(env.CRON_SECRET ?? '');
+
     // Optional query params
     const { searchParams } = new URL(request.url);
     const onlyAllTime = searchParams.get('onlyAllTime') === 'true';
@@ -355,21 +363,21 @@ export async function GET(request: NextRequest) {
 
       if (pagesToWarm.includes('home')) {
         // Home page with all chain variants
-        allTasks.push(...getHomePageTasks(timeframe)); // All chains
-        allTasks.push(...getHomePageTasks(timeframe, Chain.BASE));
-        allTasks.push(...getHomePageTasks(timeframe, Chain.SOLANA));
+        allTasks.push(...getHomePageTasks(api, timeframe)); // All chains
+        allTasks.push(...getHomePageTasks(api, timeframe, Chain.BASE));
+        allTasks.push(...getHomePageTasks(api, timeframe, Chain.SOLANA));
       }
 
       if (pagesToWarm.includes('networks')) {
-        allTasks.push(...getNetworksPageTasks(timeframe));
+        allTasks.push(...getNetworksPageTasks(api, timeframe));
       }
 
       if (pagesToWarm.includes('facilitators')) {
-        allTasks.push(...getFacilitatorsPageTasks(timeframe));
+        allTasks.push(...getFacilitatorsPageTasks(api, timeframe));
       }
 
       if (pagesToWarm.includes('resources')) {
-        allTasks.push(...getResourcesPageTasks(timeframe));
+        allTasks.push(...getResourcesPageTasks(api, timeframe));
       }
 
       // Run all tasks with controlled concurrency
