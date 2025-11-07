@@ -24,10 +24,6 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
             label: 'Excluded Resources',
             href: '/admin/excludes',
           },
-          {
-            label: 'Free Tier Wallet',
-            href: '/admin/free-tier',
-          },
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>

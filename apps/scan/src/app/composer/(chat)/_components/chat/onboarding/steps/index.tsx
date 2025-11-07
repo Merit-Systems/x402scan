@@ -5,8 +5,6 @@ import { ResourcesStep } from './2_resources';
 import { SponsorStep } from './3_sponsor';
 import { FundStep } from './4_fund';
 
-import { freeTierConfig } from '@/lib/free-tier';
-
 import type { OnboardingStep } from './types';
 import { AcknowledgeStep } from './5_acknowledge';
 
@@ -26,15 +24,9 @@ export const steps: OnboardingStep[] = [
       'All LLM and x402 resource requests are paid for by your Composer Wallet.',
   },
   {
-    icon: <HandCoins className="size-4" />,
-    component: <SponsorStep />,
-    heading: 'x402scan Sponsors Your First Messages and Tool Calls',
-    description: `Your first ${freeTierConfig.numMessages} messages and ${freeTierConfig.numToolCalls} tool calls are sponsored by x402scan.`,
-  },
-  {
     icon: <DollarSign className="size-4" />,
     component: <FundStep />,
-    heading: 'After Your Free Trial, You Will Need to Fund Your Agent',
+    heading: 'You Need to Add USDC to Your Composer Wallet',
     description:
       "After you've used your free credits, you will need to add USDC to your Composer Wallet",
   },

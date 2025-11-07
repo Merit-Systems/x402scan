@@ -28,21 +28,11 @@ import { messageSchema } from '@/lib/message-schema';
 
 import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
 import { ChatSDKError } from '@/lib/errors';
-import {
-  getUserMessageCount,
-  getUserToolCallCount,
-} from '@/services/db/user/chat';
-import { freeTierConfig } from '@/lib/free-tier';
-import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
 
 import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
-import {
-  agentSystemPrompt,
-  baseSystemPrompt,
-  freeTierSystemPrompt,
-} from './system-prompt';
+import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
 import { env } from '@/env';
 import { api } from '@/trpc/server';
 
@@ -73,26 +63,9 @@ export async function POST(request: NextRequest) {
 
   let chat = await getChat(chatId, session.user.id);
 
-  const balance = await api.user.serverWallet.usdcBaseBalance();
-
-  let isFreeTier: boolean;
-
-  if (balance === 0) {
-    const [messageCount, toolCallCount] = await Promise.all([
-      getUserMessageCount(session.user.id),
-      getUserToolCallCount(session.user.id),
-    ]);
-
-    isFreeTier =
-      messageCount < freeTierConfig.numMessages &&
-      toolCallCount < freeTierConfig.numToolCalls;
-  } else {
-    isFreeTier = false;
-  }
-
-  const wallet = isFreeTier
-    ? await getFreeTierWallet()
-    : await getWalletForUserId(session.user.id).then(wallet => wallet.wallet);
+  const wallet = await getWalletForUserId(session.user.id).then(
+    wallet => wallet.wallet
+  );
 
   if (!wallet) {
     return new ChatSDKError('not_found:chat').toResponse();
@@ -192,7 +165,6 @@ export async function POST(request: NextRequest) {
     resourceIds,
     walletClient: signer,
     chatId,
-    maxAmount: isFreeTier ? freeTierConfig.maxAmount : undefined,
   });
 
   const getSystemPrompt = async () => {
@@ -205,10 +177,9 @@ export async function POST(request: NextRequest) {
         agentName: details.name,
         agentDescription: details.description ?? '',
         systemPrompt: details.systemPrompt,
-        isFreeTier,
       });
     }
-    return isFreeTier ? freeTierSystemPrompt : baseSystemPrompt;
+    return baseSystemPrompt;
   };
 
   const messages = z.array(messageSchema).parse([
