@@ -6,4 +6,3 @@ export const adminEndUsersRouter = createTRPCRouter({
     return await listAllEndUsers();
   }),
 });
-

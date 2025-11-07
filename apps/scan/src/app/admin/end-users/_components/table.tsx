@@ -59,18 +59,21 @@ const downloadCSV = (csvContent: string, filename: string) => {
 
 export const EndUsersTable = () => {
   const [downloading, setDownloading] = useState(false);
-  
+
   const { data: endUsers, isLoading } = api.admin.endUsers.list.useQuery();
 
   const handleDownloadCSV = () => {
     if (!endUsers || endUsers.length === 0) return;
 
     setDownloading(true);
-    
+
     const csvData = endUsers.map(user => ({
       userId: user.userId,
-      email: user.authenticationMethods.find(m => m.type === 'email')?.email ?? '',
-      phoneNumber: user.authenticationMethods.find(m => m.type === 'sms')?.phoneNumber ?? '',
+      email:
+        user.authenticationMethods.find(m => m.type === 'email')?.email ?? '',
+      phoneNumber:
+        user.authenticationMethods.find(m => m.type === 'sms')?.phoneNumber ??
+        '',
       jwtSub: user.authenticationMethods.find(m => m.type === 'jwt')?.sub ?? '',
       evmAccounts: user.evmAccounts.join('; '),
       evmSmartAccounts: user.evmSmartAccounts.join('; '),
@@ -81,7 +84,7 @@ export const EndUsersTable = () => {
     const csv = convertToCSV(csvData);
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     downloadCSV(csv, `end-users-${timestamp}.csv`);
-    
+
     setDownloading(false);
   };
 
@@ -101,7 +104,7 @@ export const EndUsersTable = () => {
           Download CSV
         </Button>
       </div>
-      
+
       <DataTable
         columns={columns}
         data={endUsers ?? []}
@@ -111,4 +114,3 @@ export const EndUsersTable = () => {
     </div>
   );
 };
-

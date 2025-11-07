@@ -3,7 +3,5 @@ export default function SpendingAnalysisLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>{children}</>
-  );
+  return <>{children}</>;
 }

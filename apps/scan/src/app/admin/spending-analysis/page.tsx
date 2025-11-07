@@ -33,13 +33,17 @@ export default async function ToolSpendingAnalysisPage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="by-wallet">
-            <WalletSpendingSortingProvider initialSorting={defaultWalletSpendingSorting}>
+            <WalletSpendingSortingProvider
+              initialSorting={defaultWalletSpendingSorting}
+            >
               <WalletSpendingTable />
             </WalletSpendingSortingProvider>
           </TabsContent>
 
           <TabsContent value="by-tool">
-            <ToolSpendingSortingProvider initialSorting={defaultToolSpendingSorting}>
+            <ToolSpendingSortingProvider
+              initialSorting={defaultToolSpendingSorting}
+            >
               <ToolSpendingTable />
             </ToolSpendingSortingProvider>
           </TabsContent>

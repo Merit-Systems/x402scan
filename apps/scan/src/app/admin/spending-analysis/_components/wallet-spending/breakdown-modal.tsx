@@ -25,7 +25,6 @@ export const WalletBreakdownModal = ({
   resourceId,
   resourceUrl,
 }: WalletBreakdownModalProps) => {
-
   const { data, isLoading } = api.admin.spending.walletBreakdown.useQuery(
     { resourceId },
     { enabled: open }
@@ -35,10 +34,7 @@ export const WalletBreakdownModal = ({
 
   const breakdown = data ?? [];
   const columns = useMemo(
-    () =>
-      createWalletBreakdownColumns(
-        freeTierWallet?.address
-      ),
+    () => createWalletBreakdownColumns(freeTierWallet?.address),
     [freeTierWallet?.address]
   );
 

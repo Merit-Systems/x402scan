@@ -10,7 +10,11 @@ import type { RouterOutputs } from '@/trpc/client';
 
 type EndUser = RouterOutputs['admin']['endUsers']['list'][number];
 
-const AuthMethodBadge = ({ method }: { method: EndUser['authenticationMethods'][number] }) => {
+const AuthMethodBadge = ({
+  method,
+}: {
+  method: EndUser['authenticationMethods'][number];
+}) => {
   if (method.type === 'email') {
     return (
       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 text-xs">
@@ -183,4 +187,3 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
 ];
-

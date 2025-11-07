@@ -21,4 +21,3 @@ export default async function EndUsersPage() {
     </div>
   );
 }
-

@@ -67,9 +67,8 @@ export const getSpendingByTool = async (
     INNER JOIN "ToolCall" tc ON tc."resourceId" = r.id
   `;
 
-  const countResult = await prisma.$queryRaw<Array<{ total: number }>>(
-    countSql
-  );
+  const countResult =
+    await prisma.$queryRaw<Array<{ total: number }>>(countSql);
   const total_count = countResult[0]?.total ?? 0;
 
   // Get paginated results

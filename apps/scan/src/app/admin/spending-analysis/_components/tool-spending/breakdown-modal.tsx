@@ -26,7 +26,6 @@ export const ToolBreakdownModal = ({
   walletId,
   walletName,
 }: ToolBreakdownModalProps) => {
-
   const { data, isLoading } = api.admin.spending.toolBreakdown.useQuery(
     { walletId },
     { enabled: open }
@@ -35,10 +34,7 @@ export const ToolBreakdownModal = ({
     api.admin.freeTier.getWalletBalances.useQuery();
 
   const breakdown = data ?? [];
-  const columns = useMemo(
-    () => createToolBreakdownColumns(),
-    []
-  );
+  const columns = useMemo(() => createToolBreakdownColumns(), []);
 
   const isFreeTier =
     freeTierWallet?.address &&

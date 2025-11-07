@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  Wallet,
-  Hash,
-  DollarSign,
-  Clock,
-  Eye,
-} from 'lucide-react';
+import { Wallet, Hash, DollarSign, Clock, Eye } from 'lucide-react';
 import { useState } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -91,11 +85,7 @@ export const createWalletBreakdownColumns = (
     {
       accessorKey: 'walletName',
       header: () => (
-        <HeaderCell
-          Icon={Wallet}
-          label="Wallet"
-          className="justify-start"
-        />
+        <HeaderCell Icon={Wallet} label="Wallet" className="justify-start" />
       ),
       cell: ({ row }) => {
         const isFreeTier = Boolean(
@@ -117,11 +107,7 @@ export const createWalletBreakdownColumns = (
     {
       accessorKey: 'toolCalls',
       header: () => (
-        <HeaderCell
-          Icon={Hash}
-          label="Calls"
-          className="mx-auto" 
-        />
+        <HeaderCell Icon={Hash} label="Calls" className="mx-auto" />
       ),
       cell: ({ row }) => (
         <div className="text-center text-xs font-mono">
@@ -168,11 +154,7 @@ export const createWalletBreakdownColumns = (
     {
       accessorKey: 'lastUsedAt',
       header: () => (
-        <HeaderCell
-          Icon={Clock}
-          label="Last Used"
-          className="mx-auto"
-        />
+        <HeaderCell Icon={Clock} label="Last Used" className="mx-auto" />
       ),
       cell: ({ row }) => (
         <div className="text-center text-xs text-muted-foreground">
