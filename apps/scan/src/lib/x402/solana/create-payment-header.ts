@@ -27,7 +27,7 @@ import { solanaRpc } from '@/services/rpc/solana';
 
 import { encodePayment } from './encode-payment';
 
-import type { PaymentPayload, PaymentRequirements } from 'x402/types';
+import type { PaymentRequirements } from 'x402/types';
 import type {
   Address,
   TransactionSigner,
@@ -35,49 +35,18 @@ import type {
   TransactionModifyingSigner,
 } from '@solana/kit';
 
-/**
- * Creates and encodes a payment header for the given client and payment requirements.
- *
- * @param client - The signer instance used to create the payment header
- * @param x402Version - The version of the X402 protocol to use
- * @param paymentRequirements - The payment requirements containing scheme and network information
- * @param config - Optional configuration for X402 operations (e.g., custom RPC URLs)
- * @returns A promise that resolves to a base64 encoded payment header string
- */
 export async function createPaymentHeader(
   signer: TransactionModifyingSigner,
   x402Version: number,
   paymentRequirements: PaymentRequirements
 ): Promise<string> {
-  const paymentPayload = await createAndSignPayment(
-    signer,
-    x402Version,
-    paymentRequirements
-  );
-  return encodePayment(paymentPayload);
-}
-
-/**
- * Creates and signs a payment for the given client and payment requirements.
- *
- * @param client - The signer instance used to create and sign the payment tx
- * @param x402Version - The version of the X402 protocol to use
- * @param paymentRequirements - The payment requirements
- * @param config - Optional configuration for X402 operations (e.g., custom RPC URLs)
- * @returns A promise that resolves to a payment payload containing a base64 encoded solana token transfer tx
- */
-async function createAndSignPayment(
-  signer: TransactionModifyingSigner,
-  x402Version: number,
-  paymentRequirements: PaymentRequirements
-): Promise<PaymentPayload> {
   const transactionMessage = await createTransferTransactionMessage(
     signer,
     paymentRequirements
   );
 
-  // Explicitly sign with the wallet signer - this will trigger the wallet popup
   const compiledTransaction = compileTransaction(transactionMessage);
+
   const [signedTransaction] = await signer.modifyAndSignTransactions([
     {
       messageBytes: compiledTransaction.messageBytes,
@@ -88,25 +57,16 @@ async function createAndSignPayment(
   const base64EncodedWireTransaction =
     getBase64EncodedWireTransaction(signedTransaction);
 
-  // return payment payload
-  return {
+  return encodePayment({
     scheme: paymentRequirements.scheme,
     network: paymentRequirements.network,
     x402Version: x402Version,
     payload: {
       transaction: base64EncodedWireTransaction,
     },
-  } as PaymentPayload;
+  });
 }
 
-/**
- * Creates a transfer transaction message for the given client and payment requirements.
- *
- * @param client - The signer instance used to create the transfer transaction message
- * @param paymentRequirements - The payment requirements
- * @param config - Optional configuration for X402 operations (e.g., custom RPC URLs)
- * @returns A promise that resolves to the transaction message with the transfer instruction
- */
 async function createTransferTransactionMessage(
   signer: TransactionModifyingSigner,
   paymentRequirements: PaymentRequirements
@@ -197,20 +157,6 @@ async function createAtaAndTransferInstructions(
   return instructions;
 }
 
-/**
- * Returns a create ATA instruction for the payTo address if the ATA account does not exist.
- * The create ATA instruction will be paid for by the feePayer in the payment requirements.
- *
- * This function will work for both spl-token and token-2022.
- *
- * Returns undefined if the ATA account already exists.
- *
- * @param paymentRequirements - The payment requirements
- * @param tokenProgramAddress - The address of the token program
- * @param config - Optional configuration for X402 operations (e.g., custom RPC URLs)
- * @returns A promise that resolves to the create ATA instruction or undefined if the ATA account already exists
- * @throws an error if the feePayer is not provided in the payment requirements
- */
 async function createAtaInstructionOrUndefined(
   paymentRequirements: PaymentRequirements,
   tokenProgramAddress: Address
@@ -254,17 +200,6 @@ async function createAtaInstructionOrUndefined(
   return undefined;
 }
 
-/**
- * Creates a transfer instruction for the given client and payment requirements.
- * This function will create a transfer instruction for a token created by either
- * the token program or the token-2022 program.
- *
- * @param client - The signer instance who's tokens will be debited from
- * @param paymentRequirements - The payment requirements
- * @param decimals - The decimals of the token
- * @param tokenProgramAddress - The address of the token program
- * @returns A promise that resolves to the transfer instruction
- */
 async function createTransferInstruction(
   signer: TransactionModifyingSigner,
   paymentRequirements: PaymentRequirements,
