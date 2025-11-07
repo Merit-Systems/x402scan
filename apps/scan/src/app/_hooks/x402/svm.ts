@@ -1,11 +1,13 @@
-import { useX402Fetch } from './use-fetch';
-import { wrapFetchWithSolanaPayment } from '@/lib/x402/solana/fetch-with-payment';
-
 import { useWalletAccountTransactionSigner } from '@solana/react';
+
+import { useX402Fetch } from './use-fetch';
+
+import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
 
 import type { UseMutationOptions } from '@tanstack/react-query';
 import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';
 import type { UiWalletAccount } from '@wallet-standard/react';
+import type { Signer } from 'x402-fetch';
 
 export const useSvmX402Fetch = <TData = unknown>(
   targetUrl: string,
@@ -24,7 +26,7 @@ export const useSvmX402Fetch = <TData = unknown>(
       throw new Error('Solana wallet not available');
     }
 
-    return wrapFetchWithSolanaPayment(baseFetch, transactionSigner, value);
+    return wrapFetchWithPayment(baseFetch, transactionSigner as Signer, value);
   };
 
   return useX402Fetch<TData>(wrapperFn, targetUrl, value, init, options);

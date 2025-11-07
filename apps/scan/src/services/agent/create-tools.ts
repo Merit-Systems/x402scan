@@ -7,7 +7,6 @@ import { createToolCall } from '@/services/db/composer/tool-call';
 import { listResourcesForTools } from '@/services/db/resources/resource';
 
 import { inputSchemaToZodSchema } from './utils';
-import { fetchWithX402Payment } from './fetch';
 
 import { env } from '@/env';
 
@@ -15,9 +14,9 @@ import {
   EnhancedPaymentRequirementsSchema,
   enhancedOutputSchema,
 } from '@/lib/x402/schema';
-
+import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
 import { ChatSDKError } from '@/lib/errors';
-import { wrapFetchWithSolanaPayment } from '@/lib/x402/solana/fetch-with-payment';
+
 import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
@@ -150,20 +149,14 @@ export async function createX402AITools({
 
             const network = supportedAccepts.network as SupportedChain;
 
-            const fetchWithPayment =
-              network === Chain.SOLANA
-                ? wrapFetchWithSolanaPayment(
-                    fetch,
-                    await wallets[Chain.SOLANA].signer(),
-                    parseUnits(String(maxAmount), 6)
-                  )
-                : fetchWithX402Payment(
-                    fetch,
-                    await wallets[network].signer(),
-                    maxAmount
-                  );
-
             try {
+              const fetchWithPayment = wrapFetchWithPayment(
+                fetch,
+                await wallets[network].signer(),
+                maxAmount
+                  ? BigInt(parseUnits(String(maxAmount), 6))
+                  : resource.accepts[0].maxAmountRequired
+              );
               const response = await fetchWithPayment(
                 new URL(
                   `/api/proxy?url=${encodeURIComponent(url)}&share_data=true`,

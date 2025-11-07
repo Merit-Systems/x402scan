@@ -1,5 +1,4 @@
 import type { Chain, SupportedChain, SupportedEVMChain } from '@/types/chain';
-import type { TransactionModifyingSigner } from '@solana/kit';
 import type { Signer } from 'x402-fetch';
 import type z from 'zod';
 import type { getTokenBalanceSchema, sendTokensSchema } from './schemas';
@@ -12,9 +11,7 @@ export type NetworkServerWallet<T extends Chain> = (name: string) => {
   ) => Promise<number>;
   getNativeTokenBalance: () => Promise<number>;
   export: () => Promise<string>;
-  signer: () => Promise<
-    T extends Chain.SOLANA ? TransactionModifyingSigner : Signer
-  >;
+  signer: () => Promise<Signer>;
   sendTokens: (input: z.infer<typeof sendTokensSchema>) => Promise<string>;
 };
 
