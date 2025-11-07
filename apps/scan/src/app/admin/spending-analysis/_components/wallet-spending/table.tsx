@@ -7,20 +7,31 @@ import { api, type RouterOutputs } from '@/trpc/client';
 import { ToolBreakdownModal } from '../tool-spending/breakdown-modal';
 import { useWalletSpendingSorting } from '@/app/_contexts/sorting/wallet-spending/hook';
 
-type WalletSpending = RouterOutputs['admin']['spending']['byWallet'][number];
+type WalletSpending =
+  RouterOutputs['admin']['spending']['byWallet']['items'][number];
 
 type ModalState =
   | { type: 'none' }
   | { type: 'breakdown'; wallet: WalletSpending };
 
+const PAGE_SIZE = 50;
+
 export const WalletSpendingTable = () => {
   const [modalState, setModalState] = useState<ModalState>({ type: 'none' });
+  const [page, setPage] = useState(0);
   const { sorting } = useWalletSpendingSorting();
 
-  const { data, isLoading } = api.admin.spending.byWallet.useQuery({ sorting });
+  const { data, isLoading } = api.admin.spending.byWallet.useQuery({
+    pagination: {
+      page: page,
+      page_size: PAGE_SIZE,
+    },
+    sorting,
+  });
   const { data: freeTierWallet } =
     api.admin.freeTier.getWalletBalances.useQuery();
-  const wallets = data ?? [];
+  const wallets = data?.items ?? [];
+  const hasNextPage = data?.hasNextPage ?? false;
 
   const columns = useMemo(
     () => createColumns(freeTierWallet?.address),
@@ -32,11 +43,14 @@ export const WalletSpendingTable = () => {
       <DataTable
         columns={columns}
         data={wallets}
-        pageSize={50}
+        pageSize={PAGE_SIZE}
         isLoading={isLoading}
         onRowClick={row =>
           setModalState({ type: 'breakdown', wallet: row.original })
         }
+        page={page}
+        onPageChange={setPage}
+        hasNextPage={hasNextPage}
         getRowId={(row, index) => row?.walletId ?? `loading-${index}`}
       />
 

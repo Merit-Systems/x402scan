@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,6 @@ import {
 import { DataTable } from '@/components/ui/data-table';
 import { createWalletBreakdownColumns } from './breakdown-columns';
 import { api } from '@/trpc/client';
-import type { WalletBreakdownSortId } from '@/services/db/spending/by-tool';
 
 interface WalletBreakdownModalProps {
   open: boolean;
@@ -26,16 +25,9 @@ export const WalletBreakdownModal = ({
   resourceId,
   resourceUrl,
 }: WalletBreakdownModalProps) => {
-  const [sorting, setSorting] = useState<{
-    id: WalletBreakdownSortId;
-    desc: boolean;
-  }>({
-    id: 'totalMaxAmount',
-    desc: true,
-  });
 
   const { data, isLoading } = api.admin.spending.walletBreakdown.useQuery(
-    { resourceId, sorting },
+    { resourceId },
     { enabled: open }
   );
   const { data: freeTierWallet } =
@@ -45,11 +37,9 @@ export const WalletBreakdownModal = ({
   const columns = useMemo(
     () =>
       createWalletBreakdownColumns(
-        sorting,
-        setSorting,
         freeTierWallet?.address
       ),
-    [sorting, freeTierWallet?.address]
+    [freeTierWallet?.address]
   );
 
   return (

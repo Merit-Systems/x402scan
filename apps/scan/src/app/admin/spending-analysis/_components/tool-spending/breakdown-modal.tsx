@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,6 @@ import { DataTable } from '@/components/ui/data-table';
 import { Copyable } from '@/components/ui/copyable';
 import { createToolBreakdownColumns } from './breakdown-columns';
 import { api } from '@/trpc/client';
-import type { ToolBreakdownSortId } from '@/services/db/spending/by-wallet';
 
 interface ToolBreakdownModalProps {
   open: boolean;
@@ -27,16 +26,9 @@ export const ToolBreakdownModal = ({
   walletId,
   walletName,
 }: ToolBreakdownModalProps) => {
-  const [sorting, setSorting] = useState<{
-    id: ToolBreakdownSortId;
-    desc: boolean;
-  }>({
-    id: 'totalMaxAmount',
-    desc: true,
-  });
 
   const { data, isLoading } = api.admin.spending.toolBreakdown.useQuery(
-    { walletId, sorting },
+    { walletId },
     { enabled: open }
   );
   const { data: freeTierWallet } =
@@ -44,8 +36,8 @@ export const ToolBreakdownModal = ({
 
   const breakdown = data ?? [];
   const columns = useMemo(
-    () => createToolBreakdownColumns(sorting, setSorting),
-    [sorting]
+    () => createToolBreakdownColumns(),
+    []
   );
 
   const isFreeTier =

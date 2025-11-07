@@ -17,28 +17,31 @@ import {
 } from '@/services/db/spending/by-tool';
 
 import { getWalletAddressFromName } from '@/services/cdp/server-wallet/admin';
+import { paginatedQuerySchema } from '@/lib/pagination';
 
 export const adminSpendingRouter = createTRPCRouter({
   byWallet: adminProcedure
     .input(
-      z
-        .object({
-          sorting: z
-            .object({
-              id: z.enum([
-                'walletName',
-                'totalToolCalls',
-                'uniqueResources',
-                'totalMaxAmount',
-              ] satisfies WalletSpendingSortId[]),
-              desc: z.boolean(),
-            })
-            .optional(),
-        })
-        .optional()
+      z.object({
+        pagination: paginatedQuerySchema.default({
+          page: 0,
+          page_size: 50,
+        }),
+        sorting: z
+          .object({
+            id: z.enum([
+              'walletName',
+              'totalToolCalls',
+              'uniqueResources',
+              'totalMaxAmount',
+            ] satisfies WalletSpendingSortId[]),
+            desc: z.boolean(),
+          })
+          .optional(),
+      })
     )
     .query(async ({ input }) => {
-      return await getSpendingByWallet(input?.sorting);
+      return await getSpendingByWallet(input.pagination, input.sorting);
     }),
 
   toolBreakdown: adminProcedure
@@ -64,25 +67,27 @@ export const adminSpendingRouter = createTRPCRouter({
 
   byTool: adminProcedure
     .input(
-      z
-        .object({
-          sorting: z
-            .object({
-              id: z.enum([
-                'resourceUrl',
-                'totalToolCalls',
-                'uniqueWallets',
-                'totalMaxAmount',
-                'lastUsedAt',
-              ] satisfies ToolSpendingSortId[]),
-              desc: z.boolean(),
-            })
-            .optional(),
-        })
-        .optional()
+      z.object({
+        pagination: paginatedQuerySchema.default({
+          page: 0,
+          page_size: 50,
+        }),
+        sorting: z
+          .object({
+            id: z.enum([
+              'resourceUrl',
+              'totalToolCalls',
+              'uniqueWallets',
+              'totalMaxAmount',
+              'lastUsedAt',
+            ] satisfies ToolSpendingSortId[]),
+            desc: z.boolean(),
+          })
+          .optional(),
+      })
     )
     .query(async ({ input }) => {
-      return await getSpendingByTool(input?.sorting);
+      return await getSpendingByTool(input.pagination, input.sorting);
     }),
 
   walletBreakdown: adminProcedure

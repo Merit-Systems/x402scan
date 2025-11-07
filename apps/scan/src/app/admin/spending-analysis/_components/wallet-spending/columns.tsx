@@ -13,7 +13,8 @@ import { api } from '@/trpc/client';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 
-type WalletSpending = RouterOutputs['admin']['spending']['byWallet'][number];
+type WalletSpending =
+  RouterOutputs['admin']['spending']['byWallet']['items'][number];
 
 const formatAmount = (amount: string) => {
   const numericAmount = BigInt(amount);

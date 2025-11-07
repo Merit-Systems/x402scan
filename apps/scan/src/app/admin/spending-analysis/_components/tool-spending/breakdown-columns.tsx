@@ -1,12 +1,10 @@
-import { Globe, Hash, DollarSign, ArrowDown, ArrowUp } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Globe, Hash, DollarSign } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
-import type { ToolBreakdownSortId } from '@/services/db/spending/by-wallet';
-import type { LucideIcon } from 'lucide-react';
+import { HeaderCell } from '@/components/ui/data-table/header-cell';
 
 type ToolBreakdown =
   RouterOutputs['admin']['spending']['toolBreakdown'][number];
@@ -16,67 +14,16 @@ const formatAmount = (amount: string) => {
   return (Number(numericAmount) / 1e6).toFixed(6);
 };
 
-interface SortableHeaderProps {
-  Icon: LucideIcon;
-  label: string;
-  className?: string;
-  sortId: ToolBreakdownSortId;
-  currentSort: { id: ToolBreakdownSortId; desc: boolean };
-  onSort: (id: ToolBreakdownSortId) => void;
-}
-
-const SortableHeader = ({
-  Icon,
-  label,
-  className,
-  sortId,
-  currentSort,
-  onSort,
-}: SortableHeaderProps) => {
-  const isSorted = currentSort.id === sortId;
-  return (
-    <div
-      className={cn(
-        'flex items-center justify-center gap-1 text-sm text-muted-foreground w-fit cursor-pointer hover:bg-accent rounded-md transition-all',
-        className
-      )}
-      onClick={() => onSort(sortId)}
-    >
-      <Icon className="size-3" />
-      {label}
-      {isSorted ? (
-        currentSort.desc ? (
-          <ArrowDown className="size-3" />
-        ) : (
-          <ArrowUp className="size-3" />
-        )
-      ) : null}
-    </div>
-  );
-};
-
 export const createToolBreakdownColumns = (
-  sorting: { id: ToolBreakdownSortId; desc: boolean },
-  setSorting: (sorting: { id: ToolBreakdownSortId; desc: boolean }) => void
 ): ExtendedColumnDef<ToolBreakdown>[] => {
-  const handleSort = (id: ToolBreakdownSortId) => {
-    setSorting({
-      id,
-      desc: sorting.id === id ? !sorting.desc : true,
-    });
-  };
-
   return [
     {
       accessorKey: 'resourceUrl',
       header: () => (
-        <SortableHeader
+        <HeaderCell
           Icon={Globe}
           label="Tool"
           className="justify-start"
-          sortId="resourceUrl"
-          currentSort={sorting}
-          onSort={handleSort}
         />
       ),
       cell: ({ row }) => (
@@ -90,13 +37,10 @@ export const createToolBreakdownColumns = (
     {
       accessorKey: 'toolCalls',
       header: () => (
-        <SortableHeader
+          <HeaderCell
           Icon={Hash}
           label="Calls"
           className="mx-auto"
-          sortId="toolCalls"
-          currentSort={sorting}
-          onSort={handleSort}
         />
       ),
       cell: ({ row }) => (
@@ -110,13 +54,10 @@ export const createToolBreakdownColumns = (
     {
       accessorKey: 'maxAmountPerCall',
       header: () => (
-        <SortableHeader
+        <HeaderCell
           Icon={DollarSign}
           label="Per Call (USDC)"
           className="mx-auto"
-          sortId="maxAmountPerCall"
-          currentSort={sorting}
-          onSort={handleSort}
         />
       ),
       cell: ({ row }) => (
@@ -130,13 +71,10 @@ export const createToolBreakdownColumns = (
     {
       accessorKey: 'totalMaxAmount',
       header: () => (
-        <SortableHeader
+        <HeaderCell
           Icon={DollarSign}
           label="Total (USDC)"
           className="mx-auto"
-          sortId="totalMaxAmount"
-          currentSort={sorting}
-          onSort={handleSort}
         />
       ),
       cell: ({ row }) => (

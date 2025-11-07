@@ -5,11 +5,8 @@ import {
   Hash,
   DollarSign,
   Clock,
-  ArrowDown,
-  ArrowUp,
   Eye,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,8 +16,7 @@ import { api } from '@/trpc/client';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
-import type { WalletBreakdownSortId } from '@/services/db/spending/by-tool';
-import type { LucideIcon } from 'lucide-react';
+import { HeaderCell } from '@/components/ui/data-table/header-cell';
 
 type WalletBreakdown =
   RouterOutputs['admin']['spending']['walletBreakdown'][number];
@@ -88,68 +84,17 @@ const WalletCell = ({
   );
 };
 
-interface SortableHeaderProps {
-  Icon: LucideIcon;
-  label: string;
-  className?: string;
-  sortId: WalletBreakdownSortId;
-  currentSort: { id: WalletBreakdownSortId; desc: boolean };
-  onSort: (id: WalletBreakdownSortId) => void;
-}
-
-const SortableHeader = ({
-  Icon,
-  label,
-  className,
-  sortId,
-  currentSort,
-  onSort,
-}: SortableHeaderProps) => {
-  const isSorted = currentSort.id === sortId;
-  return (
-    <div
-      className={cn(
-        'flex items-center justify-center gap-1 text-sm text-muted-foreground w-fit cursor-pointer hover:bg-accent rounded-md transition-all',
-        className
-      )}
-      onClick={() => onSort(sortId)}
-    >
-      <Icon className="size-3" />
-      {label}
-      {isSorted ? (
-        currentSort.desc ? (
-          <ArrowDown className="size-3" />
-        ) : (
-          <ArrowUp className="size-3" />
-        )
-      ) : null}
-    </div>
-  );
-};
-
 export const createWalletBreakdownColumns = (
-  sorting: { id: WalletBreakdownSortId; desc: boolean },
-  setSorting: (sorting: { id: WalletBreakdownSortId; desc: boolean }) => void,
   freeTierWalletAddress?: string
 ): ExtendedColumnDef<WalletBreakdown>[] => {
-  const handleSort = (id: WalletBreakdownSortId) => {
-    setSorting({
-      id,
-      desc: sorting.id === id ? !sorting.desc : true,
-    });
-  };
-
   return [
     {
       accessorKey: 'walletName',
       header: () => (
-        <SortableHeader
+        <HeaderCell
           Icon={Wallet}
           label="Wallet"
           className="justify-start"
-          sortId="walletName"
-          currentSort={sorting}
-          onSort={handleSort}
         />
       ),
       cell: ({ row }) => {
@@ -172,13 +117,10 @@ export const createWalletBreakdownColumns = (
     {
       accessorKey: 'toolCalls',
       header: () => (
-        <SortableHeader
+        <HeaderCell
           Icon={Hash}
           label="Calls"
-          className="mx-auto"
-          sortId="toolCalls"
-          currentSort={sorting}
-          onSort={handleSort}
+          className="mx-auto" 
         />
       ),
       cell: ({ row }) => (
@@ -192,13 +134,10 @@ export const createWalletBreakdownColumns = (
     {
       accessorKey: 'maxAmountPerCall',
       header: () => (
-        <SortableHeader
+        <HeaderCell
           Icon={DollarSign}
           label="Per Call (USDC)"
           className="mx-auto"
-          sortId="maxAmountPerCall"
-          currentSort={sorting}
-          onSort={handleSort}
         />
       ),
       cell: ({ row }) => (
@@ -212,13 +151,10 @@ export const createWalletBreakdownColumns = (
     {
       accessorKey: 'totalMaxAmount',
       header: () => (
-        <SortableHeader
+        <HeaderCell
           Icon={DollarSign}
           label="Total (USDC)"
           className="mx-auto"
-          sortId="totalMaxAmount"
-          currentSort={sorting}
-          onSort={handleSort}
         />
       ),
       cell: ({ row }) => (
@@ -232,13 +168,10 @@ export const createWalletBreakdownColumns = (
     {
       accessorKey: 'lastUsedAt',
       header: () => (
-        <SortableHeader
+        <HeaderCell
           Icon={Clock}
           label="Last Used"
           className="mx-auto"
-          sortId="lastUsedAt"
-          currentSort={sorting}
-          onSort={handleSort}
         />
       ),
       cell: ({ row }) => (

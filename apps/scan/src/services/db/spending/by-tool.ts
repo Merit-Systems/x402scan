@@ -1,6 +1,11 @@
 import z from 'zod';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../client';
+import {
+  toPaginatedResponse,
+  paginationClause,
+  type PaginatedQueryParams,
+} from '@/lib/pagination';
 
 const toolSpendingResultSchema = z.array(
   z.object({
@@ -33,10 +38,13 @@ export type ToolSpendingSortId =
   | 'totalMaxAmount'
   | 'lastUsedAt';
 
-export const getSpendingByTool = async (sorting?: {
-  id: ToolSpendingSortId;
-  desc: boolean;
-}) => {
+export const getSpendingByTool = async (
+  pagination: PaginatedQueryParams,
+  sorting?: {
+    id: ToolSpendingSortId;
+    desc: boolean;
+  }
+) => {
   const orderByColumn = sorting?.id ?? 'totalMaxAmount';
   const orderDirection = (sorting?.desc ?? true) ? 'DESC' : 'ASC';
 
@@ -52,8 +60,21 @@ export const getSpendingByTool = async (sorting?: {
     `${orderByMap[orderByColumn]} ${orderDirection}`
   );
 
+  // Get total count first
+  const countSql = Prisma.sql`
+    SELECT COUNT(DISTINCT r.id)::int as "total"
+    FROM "Resources" r
+    INNER JOIN "ToolCall" tc ON tc."resourceId" = r.id
+  `;
+
+  const countResult = await prisma.$queryRaw<Array<{ total: number }>>(
+    countSql
+  );
+  const total_count = countResult[0]?.total ?? 0;
+
+  // Get paginated results
   const sql = Prisma.sql`
-    SELECT 
+    SELECT
       r.id as "resourceId",
       r.resource as "resourceUrl",
       COUNT(DISTINCT tc.id)::int as "totalToolCalls",
@@ -69,6 +90,7 @@ export const getSpendingByTool = async (sorting?: {
     WHERE tc.id IS NOT NULL
     GROUP BY r.id, r.resource
     ORDER BY ${orderByClause}
+    ${paginationClause(pagination)}
   `;
 
   const rawResult = await prisma.$queryRaw<
@@ -82,7 +104,14 @@ export const getSpendingByTool = async (sorting?: {
     }>
   >(sql);
 
-  return toolSpendingResultSchema.parse(rawResult);
+  const items = toolSpendingResultSchema.parse(rawResult);
+
+  return toPaginatedResponse({
+    items,
+    page: pagination.page,
+    page_size: pagination.page_size,
+    total_count,
+  });
 };
 
 export type WalletBreakdownSortId =

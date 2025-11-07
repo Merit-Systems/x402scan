@@ -1,6 +1,11 @@
 import z from 'zod';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../client';
+import {
+  toPaginatedResponse,
+  paginationClause,
+  type PaginatedQueryParams,
+} from '@/lib/pagination';
 
 const walletSpendingResultSchema = z.array(
   z.object({
@@ -30,10 +35,13 @@ export type WalletSpendingSortId =
   | 'uniqueResources'
   | 'totalMaxAmount';
 
-export const getSpendingByWallet = async (sorting?: {
-  id: WalletSpendingSortId;
-  desc: boolean;
-}) => {
+export const getSpendingByWallet = async (
+  pagination: PaginatedQueryParams,
+  sorting?: {
+    id: WalletSpendingSortId;
+    desc: boolean;
+  }
+) => {
   const orderByColumn = sorting?.id ?? 'totalMaxAmount';
   const orderDirection = (sorting?.desc ?? true) ? 'DESC' : 'ASC';
 
@@ -48,8 +56,21 @@ export const getSpendingByWallet = async (sorting?: {
     `${orderByMap[orderByColumn]} ${orderDirection}`
   );
 
+  // Get total count first
+  const countSql = Prisma.sql`
+    SELECT COUNT(DISTINCT sw.id)::int as "total"
+    FROM "ServerWallet" sw
+    INNER JOIN "User" u ON sw."userId" = u.id
+  `;
+
+  const countResult = await prisma.$queryRaw<Array<{ total: number }>>(
+    countSql
+  );
+  const total_count = countResult[0]?.total ?? 0;
+
+  // Get paginated results
   const sql = Prisma.sql`
-    SELECT 
+    SELECT
       sw.id as "walletId",
       sw."walletName" as "walletName",
       COUNT(DISTINCT tc.id)::int as "totalToolCalls",
@@ -63,6 +84,7 @@ export const getSpendingByWallet = async (sorting?: {
     LEFT JOIN "Accepts" a ON a."resourceId" = r.id AND a.network = 'base'
     GROUP BY sw.id, sw."walletName"
     ORDER BY ${orderByClause}
+    ${paginationClause(pagination)}
   `;
 
   const rawResult = await prisma.$queryRaw<
@@ -75,7 +97,14 @@ export const getSpendingByWallet = async (sorting?: {
     }>
   >(sql);
 
-  return walletSpendingResultSchema.parse(rawResult);
+  const items = walletSpendingResultSchema.parse(rawResult);
+
+  return toPaginatedResponse({
+    items,
+    page: pagination.page,
+    page_size: pagination.page_size,
+    total_count,
+  });
 };
 
 export type ToolBreakdownSortId =

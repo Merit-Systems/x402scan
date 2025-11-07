@@ -1,12 +1,16 @@
+'use client';
+
 import { Globe, Hash, DollarSign, Wallet, Clock } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
+import { ToolSpendingSortingContext } from '@/app/_contexts/sorting/tool-spending/context';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 
-type ToolSpending = RouterOutputs['admin']['spending']['byTool'][number];
+type ToolSpending =
+  RouterOutputs['admin']['spending']['byTool']['items'][number];
 
 const formatAmount = (amount: string) => {
   const numericAmount = BigInt(amount);
@@ -29,7 +33,15 @@ export const createToolSpendingColumns =
     {
       accessorKey: 'resourceUrl',
       header: () => (
-        <HeaderCell Icon={Globe} label="Tool" className="justify-start" />
+        <HeaderCell
+          Icon={Globe}
+          label="Tool"
+          className="justify-start"
+          sorting={{
+            sortContext: ToolSpendingSortingContext,
+            sortKey: 'resourceUrl',
+          }}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-xs font-medium truncate max-w-[300px]">
@@ -42,7 +54,15 @@ export const createToolSpendingColumns =
     {
       accessorKey: 'totalToolCalls',
       header: () => (
-        <HeaderCell Icon={Hash} label="Total Calls" className="mx-auto" />
+        <HeaderCell
+          Icon={Hash}
+          label="Total Calls"
+          className="mx-auto"
+          sorting={{
+            sortContext: ToolSpendingSortingContext,
+            sortKey: 'totalToolCalls',
+          }}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-center text-xs font-mono">
@@ -55,7 +75,15 @@ export const createToolSpendingColumns =
     {
       accessorKey: 'uniqueWallets',
       header: () => (
-        <HeaderCell Icon={Wallet} label="Wallets" className="mx-auto" />
+        <HeaderCell
+          Icon={Wallet}
+          label="Wallets"
+          className="mx-auto"
+          sorting={{
+            sortContext: ToolSpendingSortingContext,
+            sortKey: 'uniqueWallets',
+          }}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-center text-xs font-mono">
@@ -72,6 +100,10 @@ export const createToolSpendingColumns =
           Icon={DollarSign}
           label="Total Spend (USDC)"
           className="mx-auto"
+          sorting={{
+            sortContext: ToolSpendingSortingContext,
+            sortKey: 'totalMaxAmount',
+          }}
         />
       ),
       cell: ({ row }) => (
@@ -85,7 +117,15 @@ export const createToolSpendingColumns =
     {
       accessorKey: 'lastUsedAt',
       header: () => (
-        <HeaderCell Icon={Clock} label="Last Used" className="mx-auto" />
+        <HeaderCell
+          Icon={Clock}
+          label="Last Used"
+          className="mx-auto"
+          sorting={{
+            sortContext: ToolSpendingSortingContext,
+            sortKey: 'lastUsedAt',
+          }}
+        />
       ),
       cell: ({ row }) => (
         <div className="text-center text-xs text-muted-foreground">
