@@ -1,4 +1,4 @@
-export const baseSystemPrompt = `You are an exploratory agent that helps users test out the x402 ecosystem.
+const baseSystemPrompt = `You are an exploratory agent that helps users test out the x402 ecosystem.
 
 Built around the HTTP 402 status code, x402 enables users to pay for resources via API without registration, emails, OAuth, or complex signatures.
 

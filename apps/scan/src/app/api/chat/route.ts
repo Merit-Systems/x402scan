@@ -41,7 +41,6 @@ import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
 import {
   agentSystemPrompt,
   basePromptWithWalletDetails,
-  baseSystemPrompt,
   freeTierSystemPrompt,
 } from './system-prompt';
 import { env } from '@/env';
