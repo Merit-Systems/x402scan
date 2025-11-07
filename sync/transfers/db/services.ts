@@ -25,19 +25,6 @@ export async function createManyTransferEvents(
 }
 
 /**
- * Update an existing TransferEvent by ID
- */
-export async function updateTransferEvent(
-  id: string,
-  data: Prisma.TransferEventUpdateInput
-) {
-  return await prisma.transferEvent.update({
-    where: { id },
-    data,
-  });
-}
-
-/**
  * Update many TransferEvents matching a condition
  */
 export async function updateManyTransferEvents(
@@ -47,31 +34,6 @@ export async function updateManyTransferEvents(
   return await prisma.transferEvent.updateMany({
     where,
     data,
-  });
-}
-
-/**
- * Upsert a TransferEvent (update if exists, create if not)
- * Note: Since TransferEvent uses UUID, you'll need to provide a unique identifier
- */
-export async function upsertTransferEvent(
-  id: string,
-  create: Prisma.TransferEventCreateInput,
-  update: Prisma.TransferEventUpdateInput
-) {
-  return await prisma.transferEvent.upsert({
-    where: { id },
-    create,
-    update,
-  });
-}
-
-/**
- * Find a single TransferEvent by ID
- */
-export async function getTransferEventById(id: string) {
-  return await prisma.transferEvent.findUnique({
-    where: { id },
   });
 }
 
@@ -186,15 +148,6 @@ export async function countTransferEvents(
   where?: Prisma.TransferEventWhereInput
 ) {
   return await prisma.transferEvent.count({ where });
-}
-
-/**
- * Delete a TransferEvent by ID
- */
-export async function deleteTransferEvent(id: string) {
-  return await prisma.transferEvent.delete({
-    where: { id },
-  });
 }
 
 /**
