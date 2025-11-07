@@ -3,19 +3,19 @@ import { USDC_BASE_TOKEN } from '../constants';
 import type { Facilitator, FacilitatorConfig, Token } from '../types';
 
 const MAGIC_TOKEN: Token = {
-  address: '0xF1572d1Da5c3CcE14eE5a1c9327d17e9ff0E3f43',
+  address: '0xf1572d1da5c3cce14ee5a1c9327d17e9ff0e3f43',
   decimals: 18,
   symbol: 'MAGIC',
 };
 
 const SMOL_TOKEN: Token = {
-  address: '0xA4Bbac7eD5BdA8Ec71a1aF5ee84d4c5a737bD875',
+  address: '0xa4bbac7ed5bda8ec71a1af5ee84d4c5a737bd875',
   decimals: 18,
   symbol: 'SMOL',
 };
 
 const MIO_TOKEN: Token = {
-  address: '0xE19E7429AB6c1F9dd391FaA88fbb940C7d22f18f',
+  address: '0xe19e7429ab6c1f9dd391faa88fbb940c7d22f18f',
   decimals: 18,
   symbol: 'MIO',
 };
@@ -36,7 +36,7 @@ export const treasureFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0xe07E9cBF9A55D02e3aC356Ed4706353d98c5a618',
+        address: '0xe07e9cbf9a55d02e3ac356ed4706353d98c5a618',
         tokens: [USDC_BASE_TOKEN, MAGIC_TOKEN, SMOL_TOKEN, MIO_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-06'),
       },
