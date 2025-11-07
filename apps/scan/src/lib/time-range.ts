@@ -2,6 +2,10 @@ import { subHours } from 'date-fns';
 
 import type z from 'zod';
 import type { timeframeSchema, timePeriodSchema } from './schemas';
+import { ActivityTimeframe } from '@/types/timeframes';
+
+// x402 launch date (beginning of 2025)
+const X402_LAUNCH_DATE = new Date('2025-01-01T00:00:00Z');
 
 export function getTimeRangeFromTimeframe(
   timeframe: z.infer<typeof timeframeSchema>
@@ -16,12 +20,15 @@ export function getTimeRangeFromTimeframe(
     return { startDate: undefined, endDate };
   }
 
+  // Special case: AllTime means since x402 launch
+  const period = typeof timeframe === 'number' ? timeframe : timeframe.period;
+  if (period === ActivityTimeframe.AllTime) {
+    return { startDate: X402_LAUNCH_DATE, endDate };
+  }
+
   // For all other timeframes, calculate from endDate
   // Using hours instead of days because of daylight savings.
-  const startDate =
-    typeof timeframe === 'number'
-      ? subHours(endDate, timeframe * 24)
-      : subHours(endDate, timeframe.period * 24);
+  const startDate = subHours(endDate, period * 24);
 
   return { startDate, endDate };
 }

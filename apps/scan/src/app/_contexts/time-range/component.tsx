@@ -26,7 +26,7 @@ export const RangeSelector = () => {
         selectTimeframe(Number(value));
       }}
     >
-      <SelectTrigger className="rounded-l-none border border-l-[0.5px] shadow-xs dark:border-input">
+      <SelectTrigger className="border shadow-xs dark:border-input">
         <CalendarDays />
         <span>
           {timeframe === ActivityTimeframe.AllTime
