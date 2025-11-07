@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider      = "prisma-client-js"
   output        = "../generated/prisma"
@@ -16,27 +10,26 @@ datasource db {
 }
 
 model TransferEvent {
-  id                String   @id @default(uuid())
-  address           String   // The contract address
-  transaction_from  String   // The address that submitted the transaction
-  sender            String   // The address sending tokens (buying resources)
-  recipient         String   // The address receiving tokens (selling resources)
-  amount            Float    // The number of tokens sent from sender → recipient
-  block_timestamp   DateTime // The timestamp of the block
-  tx_hash           String   // The transaction hash
-  chain             String   // The chain of the event
-  provider          String   // The provider we get the data from
-  decimals          Int      // The number of decimals for the token
-  facilitator_id    String   // The facilitator ID
-  log_index         Int?     // EVM: log index from events, Solana: instruction index (parent_index * 1000 + index)
+  id               String   @id @default(uuid())
+  address          String
+  transaction_from String
+  sender           String
+  recipient        String
+  amount           Float
+  block_timestamp  DateTime
+  tx_hash          String
+  chain            String
+  provider         String
+  decimals         Int
+  facilitator_id   String
+  log_index        Int?
 
   @@unique([tx_hash, log_index, chain], name: "unique_transfer_event")
   @@index([block_timestamp])
   @@index([tx_hash])
   @@index([chain, block_timestamp])
-  @@index([block_timestamp, facilitator_id], map: "TransferEvent_block_timestamp_facilitator_id_idx")
-
+  @@index([block_timestamp, facilitator_id])
   @@index([chain, block_timestamp, facilitator_id])
-  @@index([sender])
   @@index([recipient])
+  @@index([sender])
 }
