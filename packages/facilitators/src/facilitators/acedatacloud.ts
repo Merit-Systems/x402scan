@@ -19,7 +19,7 @@ export const acedatacloudFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0x5d4f08D5c2bb60703284bc06671Eb680fA41B105',
+        address: '0x302afdd980aaefca3afa8df7222a6002774f6724',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-04'),
       },
