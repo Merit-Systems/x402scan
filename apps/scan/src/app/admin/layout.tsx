@@ -28,6 +28,10 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
             label: 'Free Tier Wallet',
             href: '/admin/free-tier',
           },
+          {
+            label: 'Tool Spending Analysis',
+            href: '/admin/spending-analysis',
+          },
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>

@@ -4,6 +4,7 @@ import { forbidden } from 'next/navigation';
 import { getFreeTierWalletBalances } from '@/services/cdp/server-wallet/free-tier';
 import { formatCurrency } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Copyable } from '@/components/ui/copyable';
 
 export default async function FreeTierWalletPage() {
   const session = await auth();
@@ -27,9 +28,13 @@ export default async function FreeTierWalletPage() {
               <CardTitle>Wallet Address</CardTitle>
             </CardHeader>
             <CardContent>
-              <code className="text-sm bg-muted p-2 rounded block break-all">
+              <Copyable
+                value={balances.address}
+                toastMessage="Wallet address copied"
+                className="text-sm bg-muted p-2 rounded block break-all font-mono"
+              >
                 {balances.address}
-              </code>
+              </Copyable>
             </CardContent>
           </Card>
 
