@@ -144,7 +144,9 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
                   </div>
                 </div>
               )}
-              <Deposit address={address} />
+              <div className="px-4">
+                <Deposit address={address} />
+              </div>
             </TabsContent>
             <TabsContent
               value="send"

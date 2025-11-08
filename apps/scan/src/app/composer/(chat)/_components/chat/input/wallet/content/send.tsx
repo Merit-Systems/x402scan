@@ -1,15 +1,15 @@
 import Image from 'next/image';
 
-import { MoneyInput } from '@/components/ui/money-input';
 import { Button } from '@/components/ui/button';
 import { useCallback, useState } from 'react';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { toast } from 'sonner';
 import { Check, Loader2, Wallet } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/trpc/client';
 import { CopyCode } from '@/components/ui/copy-code';
+import { TokenInput } from '@/components/ui/token/token-input';
+import { BASE_USDC } from '@/lib/tokens/usdc';
 
 export const Send: React.FC = () => {
   const [amount, setAmount] = useState(0);
@@ -69,27 +69,15 @@ export const Send: React.FC = () => {
         />
         <span className="font-bold text-sm">Send USDC on Base</span>
       </div>
-      <div className="flex flex-col gap-1">
-        <div className="flex justify-between">
-          <span className="font-medium text-sm">Amount</span>
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Wallet className="size-2.5" />
-            {isBalanceLoading ? (
-              <Skeleton className="h-3 w-8" />
-            ) : (
-              <span className="text-xs">{balance} USDC</span>
-            )}
-          </div>
-        </div>
-        <MoneyInput
-          setAmount={setAmount}
-          placeholder="0.00"
-          inputClassName="placeholder:text-muted-foreground/60"
-          isBalanceMax
-          showMaxButton
-          decimalPlaces={6}
-        />
-      </div>
+      <TokenInput
+        address={serverWalletAddress}
+        onChange={setAmount}
+        selectedToken={BASE_USDC}
+        label="Amount"
+        placeholder="0.00"
+        inputClassName="placeholder:text-muted-foreground/60"
+        isBalanceMax
+      />
       <div className="flex flex-col gap-1">
         <span className="font-medium text-sm">Address</span>
         <Input

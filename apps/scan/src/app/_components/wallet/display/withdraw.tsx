@@ -1,20 +1,26 @@
+import { useCallback, useState } from 'react';
+
 import Image from 'next/image';
 
-import { MoneyInput } from '@/components/ui/money-input';
-import { Button } from '@/components/ui/button';
-import { useWriteContract } from 'wagmi';
-import { useCallback, useState } from 'react';
-import { ethereumAddressSchema } from '@/lib/schemas';
-import type { Address } from 'viem';
+import { Check, Loader2 } from 'lucide-react';
+
 import { erc20Abi, parseUnits } from 'viem';
-import { USDC_ADDRESS } from '@/lib/utils';
+
 import { toast } from 'sonner';
-import { Check, Loader2, Wallet } from 'lucide-react';
-import { useBalance } from '@/app/_hooks/use-balance';
+
+import { useWriteContract } from 'wagmi';
+
+import { TokenInput } from '@/components/ui/token/token-input';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
+
+import { ethereumAddressSchema } from '@/lib/schemas';
+import { BASE_USDC } from '@/lib/tokens/usdc';
+
+import { useBalance } from '@/app/_hooks/use-balance';
 import { useEthBalance } from '@/app/_hooks/use-eth-balance';
-import { Chain } from '@/types/chain';
+
+import type { Address } from 'viem';
 
 interface Props {
   accountAddress: Address;
@@ -29,11 +35,7 @@ export const Withdraw: React.FC<Props> = () => {
     isLoading: isEthBalanceLoading,
     refetch: refetchEthBalance,
   } = useEthBalance();
-  const {
-    isLoading: isBalanceLoading,
-    data: balance,
-    refetch: refetchBalance,
-  } = useBalance();
+  const { data: balance, refetch: refetchBalance } = useBalance();
 
   const {
     writeContract,
@@ -51,7 +53,7 @@ export const Withdraw: React.FC<Props> = () => {
     const parsedAddress = parseResult.data;
     writeContract(
       {
-        address: USDC_ADDRESS[Chain.BASE] as `0x${string}`,
+        address: BASE_USDC.address as Address,
         abi: erc20Abi,
         functionName: 'transfer',
         args: [parsedAddress, parseUnits(amount.toString(), 6)],
@@ -97,27 +99,13 @@ export const Withdraw: React.FC<Props> = () => {
           <span className="font-bold text-sm">Send USDC on Base</span>
         </div>
       </div>
-      <div className="flex flex-col gap-1">
-        <div className="flex justify-between">
-          <span className="font-medium text-sm">Amount</span>
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Wallet className="size-2.5" />
-            {isBalanceLoading ? (
-              <Skeleton className="h-3 w-8" />
-            ) : (
-              <span className="text-xs">{balance} USDC</span>
-            )}
-          </div>
-        </div>
-        <MoneyInput
-          setAmount={setAmount}
-          placeholder="0.00"
-          inputClassName="placeholder:text-muted-foreground/60"
-          isBalanceMax
-          showMaxButton
-          decimalPlaces={6}
-        />
-      </div>
+      <TokenInput
+        onChange={setAmount}
+        label="Amount"
+        selectedToken={BASE_USDC}
+        inputClassName="placeholder:text-muted-foreground/60"
+        isBalanceMax
+      />
       <div className="flex flex-col gap-1">
         <span className="font-medium text-sm">Address</span>
         <Input

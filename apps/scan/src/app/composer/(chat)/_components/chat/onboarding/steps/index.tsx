@@ -1,14 +1,26 @@
-import { Bot, CheckCircle, DollarSign, HandCoins, Server } from 'lucide-react';
+import {
+  Bot,
+  CheckCircle,
+  DollarSign,
+  MessagesSquare,
+  Server,
+} from 'lucide-react';
 
-import { WalletStep } from './1_wallet';
+import { WalletStep } from './3_wallet';
 import { ResourcesStep } from './2_resources';
-import { SponsorStep } from './3_sponsor';
 import { FundStep } from './4_fund';
 
 import type { OnboardingStep } from './types';
 import { AcknowledgeStep } from './5_acknowledge';
+import { IntroductionStep } from './1_introduction';
 
 export const steps: OnboardingStep[] = [
+  {
+    icon: <MessagesSquare className="size-4" />,
+    component: <IntroductionStep />,
+    heading: 'Composer is an x402 Agent Playground',
+    description: 'You can invoke any x402 resource with any AI model',
+  },
   {
     icon: <Bot className="size-4" />,
     component: <WalletStep />,
@@ -26,9 +38,9 @@ export const steps: OnboardingStep[] = [
   {
     icon: <DollarSign className="size-4" />,
     component: <FundStep />,
-    heading: 'You Need to Add USDC to Your Composer Wallet',
+    heading: 'Your Composer Wallet Needs USDC to Pay for Resources',
     description:
-      "After you've used your free credits, you will need to add USDC to your Composer Wallet",
+      'You can send USDC from your connected wallet or onramp with Coinbase',
   },
   {
     icon: <CheckCircle className="size-4" />,

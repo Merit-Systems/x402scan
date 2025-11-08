@@ -34,7 +34,6 @@ import type { LanguageModel, UIMessage } from 'ai';
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
 import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
 import { env } from '@/env';
-import { api } from '@/trpc/server';
 
 const bodySchema = z.object({
   model: z.string(),
