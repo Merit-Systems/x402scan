@@ -62,7 +62,3 @@ export function FACILITATORS_BY_CHAIN(network: Network): Facilitator[] {
     },
   })).filter(f => f.addresses[network]?.length);
 }
-
-export const BASE_FACILITATORS = FACILITATORS_BY_CHAIN(Network.BASE);
-export const POLYGON_FACILITATORS = FACILITATORS_BY_CHAIN(Network.POLYGON);
-export const SOLANA_FACILITATORS = FACILITATORS_BY_CHAIN(Network.SOLANA);
