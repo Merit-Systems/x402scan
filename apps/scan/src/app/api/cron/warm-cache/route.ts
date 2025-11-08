@@ -338,9 +338,9 @@ export async function GET(request: NextRequest) {
     const chainFilter: Chain | 'all' | undefined = chainParam
       ? chainParam === 'all'
         ? 'all'
-        : chainParam === Chain.BASE
+        : chainParam === (Chain.BASE as string)
           ? Chain.BASE
-          : chainParam === Chain.SOLANA
+          : chainParam === (Chain.SOLANA as string)
             ? Chain.SOLANA
             : undefined
       : undefined;

@@ -22,7 +22,7 @@ export function getTimeRangeFromTimeframe(
 
   // Special case: AllTime means since x402 launch
   const period = typeof timeframe === 'number' ? timeframe : timeframe.period;
-  if (period === ActivityTimeframe.AllTime || period >= 999999) {
+  if (period === (ActivityTimeframe.AllTime as number) || period >= 999999) {
     return { startDate: X402_LAUNCH_DATE, endDate };
   }
 
@@ -59,7 +59,7 @@ export const getBucketedTimeRangeFromTimeframe = async ({
   }
 
   // Special case: AllTime means since first transfer
-  if (period === ActivityTimeframe.AllTime || period >= 999999) {
+  if (period === (ActivityTimeframe.AllTime as number) || period >= 999999) {
     return {
       startDate:
         typeof creationDate === 'function'

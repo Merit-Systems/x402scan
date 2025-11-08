@@ -1,4 +1,3 @@
-import { unstable_cache } from 'next/cache';
 import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
@@ -15,7 +14,7 @@ export interface CacheContext {
  * This ensures cache doesn't expire while the next warming cycle is running.
  */
 // TODO(sragss): With unwramed queries they'll be cached by 45mins.
-const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 3;
+const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 2;
 
 /**
  * Lock timeout in seconds (query should complete within this time)
