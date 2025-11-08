@@ -2,12 +2,19 @@ import { unstable_cache } from 'next/cache';
 import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
-import { getCacheContext } from './cache-context';
+
+/**
+ * Cache context that can be passed from tRPC to control cache behavior
+ */
+export interface CacheContext {
+  isWarmingCache?: boolean;
+}
 
 /**
  * Redis TTL is 3x the cache duration to provide buffer time.
  * This ensures cache doesn't expire while the next warming cycle is running.
  */
+// TODO(sragss): With unwramed queries they'll be cached by 45mins.
 const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 3;
 
 /**
@@ -98,8 +105,6 @@ async function withRedisCache<T>(
       console.log(`[Cache] HIT: ${fullCacheKey}`);
       return JSON.parse(cached) as T;
     }
-  } else {
-    console.log(`[Cache] FORCE REFRESH: ${fullCacheKey}`);
   }
 
   // Try to acquire lock with NX (set if not exists) and EX (expiry)
@@ -113,10 +118,17 @@ async function withRedisCache<T>(
 
   if (lockAcquired === 'OK') {
     // We got the lock - execute query and cache result
-    console.log(`[Cache] MISS: Executing query for ${fullCacheKey}`);
+    if (forceRefresh) {
+      console.log(`[Cache] WARMING: ${fullCacheKey}`);
+    } else {
+      console.log(`[Cache] MISS: Executing query for ${fullCacheKey}`);
+    }
     try {
       const result = await queryFn();
       await redis.setex(fullCacheKey, ttlSeconds, JSON.stringify(result));
+      if (forceRefresh) {
+        console.log(`[Cache] WARMED: ${fullCacheKey}`);
+      }
       return result;
     } finally {
       // Release lock
@@ -124,14 +136,20 @@ async function withRedisCache<T>(
     }
   } else {
     // Someone else has the lock - poll for the cached result
-    console.log(`[Cache] WAIT: Polling for ${fullCacheKey}`);
+    if (forceRefresh) {
+      console.log(`[Cache] WARMING (waiting for lock): ${fullCacheKey}`);
+    } else {
+      console.log(`[Cache] WAIT: Polling for ${fullCacheKey}`);
+    }
     for (let i = 0; i < MAX_POLL_ATTEMPTS; i++) {
       await sleep(POLL_INTERVAL_MS);
       const cached = await redis.get(fullCacheKey);
       if (cached) {
-        console.log(
-          `[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`
-        );
+        if (!forceRefresh) {
+          console.log(
+            `[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`
+          );
+        }
         return JSON.parse(cached) as T;
       }
     }
@@ -152,9 +170,16 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
   revalidate?: number;
   tags?: string[];
 }) => {
-  return async (...args: TInput): Promise<TOutput> => {
-    // Get cache context from AsyncLocalStorage
-    const cacheContext = getCacheContext();
+  return async (...allArgs: [...TInput, CacheContext?]): Promise<TOutput> => {
+    // Extract context from last argument if present
+    const lastArg = allArgs[allArgs.length - 1];
+    const hasContext =
+      lastArg && typeof lastArg === 'object' && 'isWarmingCache' in lastArg;
+
+    const ctx = hasContext ? (lastArg as CacheContext) : {};
+    const args = hasContext
+      ? (allArgs.slice(0, -1) as TInput)
+      : (allArgs as unknown as TInput);
 
     const cacheKey = config.createCacheKey(...args);
     const fullCacheKey = `${config.cacheKeyPrefix}:${cacheKey}`;
@@ -172,7 +197,7 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
         return config.serialize(data);
       },
       ttl,
-      cacheContext.forceRefresh
+      ctx.isWarmingCache
     ).then(result => config.deserialize(result));
   };
 };
