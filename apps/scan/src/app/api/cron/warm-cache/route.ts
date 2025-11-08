@@ -104,16 +104,10 @@ function getHomePageTasks(
                 period: timeframe,
                 offset: timeframe,
               },
+              chain,
             }),
         ]
       : []),
-
-    // Overall Stats - previous period (for comparison)
-    () =>
-      api.public.stats.overall({
-        timeframe,
-        chain,
-      }),
 
     // Bucketed Statistics - for charts
     () =>
@@ -186,11 +180,7 @@ function getNetworksPageTasks(
         timeframe,
       }),
 
-    // Overall stats (shared with homepage)
-    () =>
-      api.public.stats.overall({
-        timeframe,
-      }),
+    // Overall stats already warmed by Home page (all chains variant)
   ];
 }
 
@@ -218,11 +208,7 @@ function getFacilitatorsPageTasks(
         timeframe,
       }),
 
-    // Overall stats (shared with homepage)
-    () =>
-      api.public.stats.overall({
-        timeframe,
-      }),
+    // Overall stats already warmed by Networks page
   ];
 }
 
