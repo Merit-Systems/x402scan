@@ -37,9 +37,7 @@ export function createCacheWarmingApi(cronSecret: string) {
   warmingHeaders.set('x-cache-refresh', 'true');
   warmingHeaders.set('authorization', `Bearer ${cronSecret}`);
 
-  const warmingContext = cache(async () =>
-    createTRPCContext(warmingHeaders)
-  );
+  const warmingContext = cache(async () => createTRPCContext(warmingHeaders));
   const warmingCaller = createCaller(warmingContext);
 
   // Create a proxy that wraps all method calls with cache context
@@ -50,12 +48,16 @@ export function createCacheWarmingApi(cronSecret: string) {
         // Recursively proxy nested objects
         return new Proxy(value, {
           get(nestedTarget, nestedProp) {
-            const nestedValue = nestedTarget[nestedProp as keyof typeof nestedTarget];
+            const nestedValue =
+              nestedTarget[nestedProp as keyof typeof nestedTarget];
             if (typeof nestedValue === 'function') {
               // Wrap function calls with cache context
               return (...args: unknown[]) =>
                 withCacheContext({ forceRefresh: true }, () =>
-                  (nestedValue as (...args: unknown[]) => unknown).apply(nestedTarget, args)
+                  (nestedValue as (...args: unknown[]) => unknown).apply(
+                    nestedTarget,
+                    args
+                  )
                 );
             }
             // If it's another nested object, proxy it too

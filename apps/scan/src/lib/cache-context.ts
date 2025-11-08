@@ -23,9 +23,6 @@ export function getCacheContext(): CacheContext {
 /**
  * Run a function with a specific cache context
  */
-export function withCacheContext<T>(
-  context: CacheContext,
-  fn: () => T
-): T {
+export function withCacheContext<T>(context: CacheContext, fn: () => T): T {
   return cacheContextStorage.run(context, fn);
 }
