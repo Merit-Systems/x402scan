@@ -1,26 +1,26 @@
-  {
-    "name": "x402scan",
-    "version": "1.0.0",
-    "private": true,
-    "packageManager": "pnpm@10.11.0",
-    "scripts": {
-      "dev": "turbo run dev --filter=!*.example",
-      "build": "turbo run build --filter=!x402sync --filter=!*.example",
-      "lint": "turbo run lint",
-      "format": "prettier --write ."
-    },
-    "devDependencies": {
-      "@typescript-eslint/eslint-plugin": "^8.46.2",
-      "@typescript-eslint/parser": "^8.46.2",
-      "eslint-config-turbo": "^2.5.8",
-      "prettier": "^3.6.2",
-      "turbo": "^2.5.1",
-      "typescript": "^5",
-      "typescript-eslint": "^8.46.2"
-    },
-    "pnpm": {
-      "overrides": {
-        "@auth/core": "0.40.0"
-      }
+{
+  "name": "x402scan",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.11.0",
+  "scripts": {
+    "dev": "turbo run dev --filter=!*.example",
+    "build": "turbo run build --filter=!x402sync --filter=!*.example",
+    "lint": "turbo run lint",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "eslint-config-turbo": "^2.5.8",
+    "prettier": "^3.6.2",
+    "turbo": "^2.5.1",
+    "typescript": "^5",
+    "typescript-eslint": "^8.46.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@auth/core": "0.40.0"
     }
   }
+}
