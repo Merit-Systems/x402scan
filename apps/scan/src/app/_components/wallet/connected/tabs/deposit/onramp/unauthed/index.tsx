@@ -1,4 +1,4 @@
-import { useWalletChain } from '@/app/_components/wallet/chain-context/hook';
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 import { Chain } from '@/types/chain';
 import { NoSVMSessionContent } from './svm';
 import { NoEVMSessionContent } from './evm';

@@ -6,6 +6,7 @@ import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogDescription,
+  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
@@ -17,6 +18,8 @@ import { Logo } from '@/components/logo';
 import type { RouterOutputs } from '@/trpc/client';
 import { Verify } from './verify';
 import { ConnectWalletForm } from '@/app/_components/wallet/connect/form';
+import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
+import { Chain } from '@/types/chain';
 
 interface Props {
   agentConfig?: NonNullable<RouterOutputs['public']['agents']['get']>;
@@ -26,40 +29,57 @@ export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
   const { address } = useAccount();
 
   return (
-    <AlertDialog open={true}>
-      <AlertDialogContent className="p-0 overflow-hidden gap-0 sm:max-w-sm">
-        <AlertDialogHeader className="flex flex-row items-center gap-4 space-y-0 bg-muted border-b p-4">
-          {agentConfig?.image ? (
-            <Image
-              src={agentConfig.image}
-              alt={agentConfig.name}
-              width={48}
-              height={48}
-              className="size-12 rounded-full"
-            />
+    <WalletChainProvider initialChain={Chain.BASE} isFixed>
+      <AlertDialog open={true}>
+        <AlertDialogContent className="p-0 overflow-hidden gap-0">
+          <AlertDialogHeader className="flex flex-row items-center gap-4 space-y-0 bg-muted border-b p-4">
+            {agentConfig?.image ? (
+              <Image
+                src={agentConfig.image}
+                alt={agentConfig.name}
+                width={48}
+                height={48}
+                className="size-12 rounded-full"
+              />
+            ) : (
+              <Logo className="size-12" />
+            )}
+            <div>
+              <AlertDialogTitle>
+                {agentConfig
+                  ? `Welcome to ${agentConfig.name}`
+                  : 'Welcome to x402scan Composer'}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-xs font-mono">
+                {agentConfig?.description ??
+                  'Build agents that pay for their inference and invoke resources and pay for them with x402.'}
+              </AlertDialogDescription>
+            </div>
+          </AlertDialogHeader>
+          {address ? (
+            <Verify />
           ) : (
-            <Logo className="size-12" />
+            <div className="p-4 flex flex-col gap-4">
+              <ConnectWalletForm />
+            </div>
           )}
-          <div>
-            <AlertDialogTitle>
-              {agentConfig
-                ? `Welcome to ${agentConfig.name}`
-                : 'Welcome to x402scan Composer'}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-xs font-mono">
-              {agentConfig?.description ??
-                'Build agents that pay for their inference and invoke resources and pay for them with x402.'}
-            </AlertDialogDescription>
-          </div>
-        </AlertDialogHeader>
-        {address ? (
-          <Verify />
-        ) : (
-          <div className="p-4 flex flex-col gap-4">
-            <ConnectWalletForm />
-          </div>
-        )}
-      </AlertDialogContent>
-    </AlertDialog>
+          <AlertDialogFooter className="flex flex-row items-center gap-4 space-y-0 bg-muted border-t p-4">
+            <p className="text-xs font-mono text-center">
+              Composer currenly only supports Base wallets. Track our progress
+              on Solana support{' '}
+              <a
+                href="https://github.com/Merit-Systems/x402scan/pull/320"
+                className="text-primary underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                here
+              </a>
+              .
+            </p>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </WalletChainProvider>
   );
 };

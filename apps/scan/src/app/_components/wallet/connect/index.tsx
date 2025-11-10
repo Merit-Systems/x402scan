@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Logo } from '@/components/logo';
 import { ConnectWalletForm } from './form';
-import { WalletChain } from '../chain-context/component';
+import { WalletChain } from '../../../_contexts/wallet-chain/component';
 
 export const ConnectWalletDialogContent = () => {
   return (

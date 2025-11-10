@@ -26,6 +26,7 @@ import { api } from '@/trpc/client';
 import { OnrampSessionDialog } from './content/onramp-session-dialog';
 
 import type { Address } from 'viem';
+import { useSession } from 'next-auth/react';
 
 interface Props {
   children: React.ReactNode;
@@ -33,6 +34,8 @@ interface Props {
 }
 
 export const WalletDialog: React.FC<Props> = ({ children, address }) => {
+  const { data: session } = useSession({ required: true });
+
   const searchParams = useSearchParams();
   const { data: usdcBalance } =
     api.user.serverWallet.usdcBaseBalance.useQuery();
@@ -42,6 +45,7 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
   } = api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
     refetchOnReconnect: false,
     refetchOnMount: false,
+    enabled: !!session,
   });
 
   const [isOpen, setIsOpen] = useState(false);

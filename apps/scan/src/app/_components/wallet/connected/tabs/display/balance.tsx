@@ -1,5 +1,5 @@
 import { Chain } from '@/types/chain';
-import { useWalletChain } from '../../../chain-context/hook';
+import { useWalletChain } from '../../../../../_contexts/wallet-chain/hook';
 import { ItemContainer } from './item';
 import { Loading } from '@/components/ui/loading';
 import { api } from '@/trpc/client';

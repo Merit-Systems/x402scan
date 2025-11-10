@@ -3,7 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 
 import { CopyCode } from '@/components/ui/copy-code';
-import { useWalletChain } from '../../../chain-context/hook';
+import { useWalletChain } from '../../../../../_contexts/wallet-chain/hook';
 import { CHAIN_ICONS, CHAIN_LABELS } from '@/types/chain';
 
 interface Props {

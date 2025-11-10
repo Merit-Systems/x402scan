@@ -25,7 +25,9 @@ export const WalletButton = () => {
     });
 
   const { isLoading: isLoadingHasUserAcknowledgedComposer } =
-    api.user.acknowledgements.hasAcknowledged.useQuery();
+    api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
+      enabled: !!session,
+    });
 
   if (isLoadingAddress || isLoadingHasUserAcknowledgedComposer) {
     return <LoadingWalletButton />;

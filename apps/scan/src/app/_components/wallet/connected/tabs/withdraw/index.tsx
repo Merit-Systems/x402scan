@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { TokenInput } from '@/components/ui/token/token-input';
 
-import { useWalletChain } from '../../../chain-context/hook';
+import { useWalletChain } from '../../../../../_contexts/wallet-chain/hook';
 
 import { usdc } from '@/lib/tokens/usdc';
 

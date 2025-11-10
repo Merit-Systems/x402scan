@@ -1,4 +1,4 @@
-import { useWalletChain } from '../../chain-context/hook';
+import { useWalletChain } from '../../../../_contexts/wallet-chain/hook';
 
 import { SVMNotConnected } from './svm';
 import { EVMNotConnected } from './evm';

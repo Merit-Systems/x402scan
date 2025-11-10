@@ -11,7 +11,7 @@ import { ConnectWalletDialogContent } from './connect';
 
 import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
-import { WalletChainProvider } from './chain-context/provider';
+import { WalletChainProvider } from '../../_contexts/wallet-chain/provider';
 
 import type { Chain } from '@/types/chain';
 

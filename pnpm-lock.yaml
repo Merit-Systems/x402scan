@@ -73,20 +73,20 @@ importers:
         specifier: ^1.12.1
         version: 1.12.1
       '@coinbase/cdp-core':
-        specifier: ^0.0.57
-        version: 0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
+        specifier: ^0.0.58
+        version: 0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
       '@coinbase/cdp-hooks':
-        specifier: ^0.0.52
-        version: 0.0.52(@coinbase/cdp-core@0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(react@19.1.0)
+        specifier: ^0.0.58
+        version: 0.0.58(@coinbase/cdp-core@0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(react@19.1.0)
       '@coinbase/cdp-sdk':
         specifier: ^1.38.4
         version: 1.38.4(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@coinbase/cdp-solana-standard-wallet':
         specifier: ^0.0.58
-        version: 0.0.58(@coinbase/cdp-core@0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@solana/wallet-standard@1.1.4(@solana/wallet-adapter-base@0.9.27(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(bs58@6.0.0)(react@19.1.0))(@wallet-standard/app@1.1.0)(@wallet-standard/base@1.1.0)(@wallet-standard/features@1.1.0)(@wallet-standard/wallet@1.1.0)(bs58@6.0.0)(react@19.1.0)
+        version: 0.0.58(@coinbase/cdp-core@0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@solana/wallet-standard@1.1.4(@solana/wallet-adapter-base@0.9.27(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(bs58@6.0.0)(react@19.1.0))(@wallet-standard/app@1.1.0)(@wallet-standard/base@1.1.0)(@wallet-standard/features@1.1.0)(@wallet-standard/wallet@1.1.0)(bs58@6.0.0)(react@19.1.0)
       '@coinbase/cdp-wagmi':
         specifier: ^0.0.52
-        version: 0.0.52(@coinbase/cdp-core@0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@tanstack/react-query@5.90.5(react@19.1.0))(react@19.1.0)(viem@2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(wagmi@2.19.1(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@4.1.12))
+        version: 0.0.52(@coinbase/cdp-core@0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@tanstack/react-query@5.90.5(react@19.1.0))(react@19.1.0)(viem@2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(wagmi@2.19.1(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@4.1.12))
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.65.0(react@19.1.0))
@@ -558,10 +558,10 @@ importers:
     dependencies:
       '@trigger.dev/sdk':
         specifier: 4.0.5
-        version: 4.0.5(ai@5.0.81(zod@4.1.12))(bufferutil@4.0.9)(utf-8-validate@5.0.10)(zod@4.1.12)
+        version: 4.0.5(ai@5.0.81(zod@3.25.76))(bufferutil@4.0.9)(utf-8-validate@5.0.10)(zod@3.25.76)
       viem:
         specifier: ^2.21.54
-        version: 2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12)
+        version: 2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
     devDependencies:
       '@trigger.dev/build':
         specifier: 4.0.5
@@ -592,7 +592,7 @@ importers:
         version: 6.17.1(prisma@6.18.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
       '@trigger.dev/sdk':
         specifier: 4.0.5
-        version: 4.0.5(ai@5.0.81(zod@3.25.76))(bufferutil@4.0.9)(utf-8-validate@5.0.10)(zod@3.25.76)
+        version: 4.0.5(ai@5.0.81(zod@4.1.12))(bufferutil@4.0.9)(utf-8-validate@5.0.10)(zod@4.1.12)
       facilitators:
         specifier: workspace:*
         version: link:../../packages/facilitators
@@ -896,11 +896,11 @@ packages:
     resolution: {integrity: sha512-7ORY85rphRazqHzImNXMrh4vsaPrpetFoTWpZYueCO2bbO6PXYDXp/GQ4DgxnGIqbWB/Di1Ai+Xuwq2o7DJ36A==}
     engines: {node: '>=16'}
 
-  '@coinbase/cdp-api-client@0.0.57':
-    resolution: {integrity: sha512-FbOy07e4oUxqihEbb6r0ygqfoyf5961FGHG9KlmrXKwl2tOvJJIEOV1V66ozIOD+rGVhrAdQY36uJ1UzD3dYjA==}
+  '@coinbase/cdp-api-client@0.0.58':
+    resolution: {integrity: sha512-R80s8wAhHGYPQVI1Pe5LYCE36sTu3beK1UD1Ur20rLyT0aINwpqkXWMbcwe//lyTS7QFdjrp1h1yzB/DutWuuQ==}
 
-  '@coinbase/cdp-core@0.0.57':
-    resolution: {integrity: sha512-ndJsmhFfm/64du1sA/12KYiFr3N4J3QCxaT4vjccV+F9vBN3Gjq7DgRpYvXB040GrqhrJ2YbkH3uiDc+2M/8Aw==}
+  '@coinbase/cdp-core@0.0.58':
+    resolution: {integrity: sha512-nfSKoe6IGxb40RcGiU1eX6HOrGAkEFU8EZcIxvpsm/TMvJTEuhs1GFxOotmw7XcOH1+RCmwsfvLQTKEdM/LnvA==}
     peerDependencies:
       '@react-native-async-storage/async-storage': ^2.0.0
       expo-secure-store: ^15.0.0
@@ -913,10 +913,10 @@ packages:
       expo-web-browser:
         optional: true
 
-  '@coinbase/cdp-hooks@0.0.52':
-    resolution: {integrity: sha512-+hLclAtJ8ru3pEa5pOPgpxaaxVQCwEUa9m6cZCZNwZzdDBt5mUMzq51b1Pvhtu73ALwWTZfxNyl5HnnLjr31+Q==}
+  '@coinbase/cdp-hooks@0.0.58':
+    resolution: {integrity: sha512-nHmeX2aSw0TkvLPhFfzQ7PZIlCX93C4em1REedN3zv8xOJOe/wB23iaAT6lhyIIMnu12nNWGWJark/BkOx1/GA==}
     peerDependencies:
-      '@coinbase/cdp-core': ^0.0.52
+      '@coinbase/cdp-core': ^0.0.58
       react: '>=18.2.0'
 
   '@coinbase/cdp-sdk@1.38.4':
@@ -10538,15 +10538,15 @@ snapshots:
     dependencies:
       '@clickhouse/client-common': 1.12.1
 
-  '@coinbase/cdp-api-client@0.0.57':
+  '@coinbase/cdp-api-client@0.0.58':
     dependencies:
       axios: 1.13.1
     transitivePeerDependencies:
       - debug
 
-  '@coinbase/cdp-core@0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)':
+  '@coinbase/cdp-core@0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)':
     dependencies:
-      '@coinbase/cdp-api-client': 0.0.57
+      '@coinbase/cdp-api-client': 0.0.58
       '@solana/web3.js': 1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
       bs58: 6.0.0
       jose: 6.1.0
@@ -10565,9 +10565,9 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@coinbase/cdp-hooks@0.0.52(@coinbase/cdp-core@0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(react@19.1.0)':
+  '@coinbase/cdp-hooks@0.0.58(@coinbase/cdp-core@0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(react@19.1.0)':
     dependencies:
-      '@coinbase/cdp-core': 0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
+      '@coinbase/cdp-core': 0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
       react: 19.1.0
 
   '@coinbase/cdp-sdk@1.38.4(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
@@ -10593,9 +10593,9 @@ snapshots:
       - utf-8-validate
       - ws
 
-  '@coinbase/cdp-solana-standard-wallet@0.0.58(@coinbase/cdp-core@0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@solana/wallet-standard@1.1.4(@solana/wallet-adapter-base@0.9.27(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(bs58@6.0.0)(react@19.1.0))(@wallet-standard/app@1.1.0)(@wallet-standard/base@1.1.0)(@wallet-standard/features@1.1.0)(@wallet-standard/wallet@1.1.0)(bs58@6.0.0)(react@19.1.0)':
+  '@coinbase/cdp-solana-standard-wallet@0.0.58(@coinbase/cdp-core@0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@solana/wallet-standard@1.1.4(@solana/wallet-adapter-base@0.9.27(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(bs58@6.0.0)(react@19.1.0))(@wallet-standard/app@1.1.0)(@wallet-standard/base@1.1.0)(@wallet-standard/features@1.1.0)(@wallet-standard/wallet@1.1.0)(bs58@6.0.0)(react@19.1.0)':
     dependencies:
-      '@coinbase/cdp-core': 0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
+      '@coinbase/cdp-core': 0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
       '@solana/wallet-standard': 1.1.4(@solana/wallet-adapter-base@0.9.27(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)))(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(bs58@6.0.0)(react@19.1.0)
       '@wallet-standard/app': 1.1.0
       '@wallet-standard/base': 1.1.0
@@ -10604,9 +10604,9 @@ snapshots:
       bs58: 6.0.0
       react: 19.1.0
 
-  '@coinbase/cdp-wagmi@0.0.52(@coinbase/cdp-core@0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@tanstack/react-query@5.90.5(react@19.1.0))(react@19.1.0)(viem@2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(wagmi@2.19.1(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@4.1.12))':
+  '@coinbase/cdp-wagmi@0.0.52(@coinbase/cdp-core@0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12))(@tanstack/react-query@5.90.5(react@19.1.0))(react@19.1.0)(viem@2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(wagmi@2.19.1(@tanstack/query-core@5.90.5)(@tanstack/react-query@5.90.5(react@19.1.0))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@4.1.12))':
     dependencies:
-      '@coinbase/cdp-core': 0.0.57(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
+      '@coinbase/cdp-core': 0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
       '@tanstack/react-query': 5.90.5(react@19.1.0)
       react: 19.1.0
       viem: 2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12)
