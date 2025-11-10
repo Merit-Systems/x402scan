@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { WalletDialog } from '@/app/_components/wallet/dialog';
 import { Chain } from '@/app/_components/chains';
 
-import type { Chain as ChainType } from '@/types/chain';
+import type { SupportedChain } from '@/types/chain';
 
 interface Props {
-  chain: ChainType;
+  chain: SupportedChain;
 }
 
 export const ConnectWalletState: React.FC<Props> = ({ chain }) => {

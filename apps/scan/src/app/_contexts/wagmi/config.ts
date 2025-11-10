@@ -32,7 +32,4 @@ export const wagmiConfig = {
   ssr: true,
 } as const;
 
-export const getServerConfig = () =>
-  createConfig({
-    ...wagmiConfig,
-  });
+export const createWagmiConfig = () => createConfig(wagmiConfig);

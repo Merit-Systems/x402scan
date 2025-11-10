@@ -4,6 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Check, Wallet, X } from 'lucide-react';
 
+import Image from 'next/image';
+
+import { useSearchParams } from 'next/navigation';
+
 import { AnimatedBeam, Circle } from '@/components/magicui/animated-beam';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,24 +21,23 @@ import {
 import { Loading } from '@/components/ui/loading';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
+import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-balance';
+
 import { cn, formatCurrency } from '@/lib/utils';
 
 import { SessionStatus, type OnrampSession } from '@prisma/client';
 
-import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/trpc/client';
-import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
-import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
 
 export const OnrampSessionDialog: React.FC = () => {
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
 
-  const queryClient = useQueryClient();
-  const { queryKey: balanceQueryKey } = useBalance(undefined, undefined, {
-    enabled: false,
+  const { invalidate: invalidateEvmBalance } = useEvmTokenBalance({
+    query: {
+      enabled: false,
+    },
   });
   const { invalidate: invalidateSolanaBalance } = useSPLTokenBalance({
     enabled: false,
@@ -76,13 +79,13 @@ export const OnrampSessionDialog: React.FC = () => {
       if (session.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS) {
         for (let i = 0; i < 3; i++) {
           setTimeout(() => {
-            void queryClient.invalidateQueries({ queryKey: balanceQueryKey });
+            void invalidateEvmBalance();
             void invalidateSolanaBalance();
           }, i * 1000);
         }
       }
     }
-  }, [session, queryClient, balanceQueryKey, invalidateSolanaBalance]);
+  }, [session, invalidateEvmBalance, invalidateSolanaBalance]);
 
   const handleOnOpenChange = (open: boolean) => {
     setIsSessionDialogOpen(open);

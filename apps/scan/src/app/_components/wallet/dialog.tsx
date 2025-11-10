@@ -13,12 +13,14 @@ import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
 import { WalletChainProvider } from '../../_contexts/wallet-chain/provider';
 
-import type { Chain } from '@/types/chain';
+import { getChain } from '@/app/_lib/chain';
+
+import type { SupportedChain } from '@/types/chain';
 
 interface Props {
   children: React.ReactNode;
   initialTab?: 'wallet' | 'deposit' | 'withdraw';
-  initialChain?: Chain;
+  initialChain?: SupportedChain;
   isFixed?: boolean;
   watchOnramp?: boolean;
 }
@@ -36,6 +38,8 @@ export const WalletDialog: React.FC<Props> = ({
 
   const { currentUser } = useCurrentUser();
 
+  const initialChainParam = getChain(searchParams.get('chain'));
+
   return (
     <Dialog
       defaultOpen={watchOnramp ? searchParams.get('onramp') === 'true' : false}
@@ -48,7 +52,7 @@ export const WalletDialog: React.FC<Props> = ({
         {connectedWallets.isConnected ? (
           <WalletChainProvider
             connectedWallets={connectedWallets}
-            initialChain={(searchParams.get('chain') as Chain) ?? initialChain}
+            initialChain={initialChainParam ?? initialChain}
             isFixed={isFixed}
           >
             <DisplayWalletDialogContent
@@ -63,7 +67,7 @@ export const WalletDialog: React.FC<Props> = ({
           </WalletChainProvider>
         ) : (
           <WalletChainProvider
-            initialChain={(searchParams.get('chain') as Chain) ?? initialChain}
+            initialChain={initialChainParam ?? initialChain}
             isFixed={isFixed}
           >
             <ConnectWalletDialogContent />

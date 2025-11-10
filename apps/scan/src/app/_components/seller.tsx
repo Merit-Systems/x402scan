@@ -1,14 +1,17 @@
 'use client';
 
-import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { Address } from '@/components/ui/address';
 
 import { Origins } from '@/app/_components/origins';
+
 import { api } from '@/trpc/client';
+
 import { cn } from '@/lib/utils';
+
 import type { MixedAddress } from '@/types/address';
-import Link from 'next/link';
 
 interface Props {
   address: MixedAddress;
@@ -33,10 +36,6 @@ export const Seller: React.FC<Props> = ({
       enabled: !!address,
     }
   );
-
-  if (error) {
-    console.log(address);
-  }
 
   if (isLoading) {
     return <SellerSkeleton />;

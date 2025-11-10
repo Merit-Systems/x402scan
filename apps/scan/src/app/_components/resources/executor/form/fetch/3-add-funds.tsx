@@ -7,10 +7,10 @@ import { Chain } from '@/app/_components/chains';
 
 import { formatTokenAmount } from '@/lib/token';
 
-import type { Chain as ChainType } from '@/types/chain';
+import type { SupportedChain } from '@/types/chain';
 
 interface Props {
-  chain: ChainType;
+  chain: SupportedChain;
   maxAmountRequired: bigint;
 }
 

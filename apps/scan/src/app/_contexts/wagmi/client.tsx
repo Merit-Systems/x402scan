@@ -1,8 +1,8 @@
 'use client';
 
-import { createConfig, WagmiProvider as WagmiProviderBase } from 'wagmi';
+import { WagmiProvider as WagmiProviderBase } from 'wagmi';
 
-import { wagmiConfig } from './config';
+import { createWagmiConfig } from './config';
 
 import type { State } from 'wagmi';
 
@@ -11,14 +11,14 @@ interface Props {
   initialState: State | undefined;
 }
 
-const config = createConfig(wagmiConfig);
+const wagmiConfig = createWagmiConfig();
 
 export const WagmiProviderClient: React.FC<Props> = ({
   children,
   initialState,
 }) => {
   return (
-    <WagmiProviderBase config={config} initialState={initialState}>
+    <WagmiProviderBase config={wagmiConfig} initialState={initialState}>
       {children}
     </WagmiProviderBase>
   );

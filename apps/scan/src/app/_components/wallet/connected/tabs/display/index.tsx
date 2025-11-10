@@ -9,7 +9,7 @@ import {
 } from '@coinbase/cdp-hooks';
 import { signOut, useSession } from 'next-auth/react';
 
-import { useDisconnect } from 'wagmi';
+import { useConnections, useDisconnect } from 'wagmi';
 
 import { useMutation } from '@tanstack/react-query';
 
@@ -36,14 +36,16 @@ export const WalletContent: React.FC<Props> = ({ user, address }) => {
   const { signOut: signOutWallet } = useSignOut();
   const { disconnect } = useSolanaWallet();
 
-  const { disconnectAsync } = useDisconnect();
+  const connections = useConnections();
 
   const { mutateAsync: handleSignOut, isPending: isSigningOut } = useMutation({
     mutationFn: async () => {
       if (isInitialized && currentUser) {
         await signOutWallet();
       } else {
-        await disconnectAsync();
+        await Promise.all(
+          connections.map(connection => connection.connector.disconnect())
+        );
         disconnect();
       }
       if (session) {
@@ -57,7 +59,11 @@ export const WalletContent: React.FC<Props> = ({ user, address }) => {
       <ItemContainer
         label="Address"
         value={
-          <CopyCode code={address} toastMessage="Address copied to clipboard" />
+          <CopyCode
+            code={address}
+            toastMessage="Address copied to clipboard"
+            isLoading={false}
+          />
         }
       />
       <Balance address={address} />

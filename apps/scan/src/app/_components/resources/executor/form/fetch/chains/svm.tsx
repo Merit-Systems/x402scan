@@ -4,7 +4,7 @@ import { AddFundsState } from '../3-add-funds';
 import { FetchState } from '../4-fetch';
 
 import { useSvmX402Fetch } from '@/app/_hooks/x402/svm';
-import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
+import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-balance';
 
 import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 

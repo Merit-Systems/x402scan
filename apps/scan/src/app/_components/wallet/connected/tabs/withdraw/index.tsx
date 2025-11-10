@@ -61,7 +61,6 @@ export const Withdraw: React.FC<Props> = ({ address }) => {
       </div>
       {chain === Chain.BASE ? (
         <WithdrawEVM
-          address={address}
           amount={amount}
           toAddress={toAddress}
           setAmount={setAmount}

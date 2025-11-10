@@ -7,14 +7,15 @@ import { LoadingState } from '../2-loading-balance';
 import { AddFundsState } from '../3-add-funds';
 import { FetchState } from '../4-fetch';
 
-import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
+import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
 import { useEvmX402Fetch } from '@/app/_hooks/x402/evm';
 
-import type { Chain } from '@/types/chain';
 import { convertTokenAmount } from '@/lib/token';
 
+import type { SupportedChain } from '@/types/chain';
+
 interface Props {
-  chain: Chain;
+  chain: SupportedChain;
   allRequiredFieldsFilled: boolean;
   maxAmountRequired: bigint;
   targetUrl: string;
@@ -39,7 +40,7 @@ export const FetchEvm: React.FC<Props> = ({
     error,
   } = useEvmX402Fetch(targetUrl, maxAmountRequired, chain, requestInit);
 
-  const { data: balance, isLoading: isLoadingBalance } = useBalance();
+  const { data: balance, isLoading: isLoadingBalance } = useEvmTokenBalance();
 
   if (!walletClient) {
     return <ConnectWalletState chain={chain} />;

@@ -2,11 +2,11 @@
 
 import { createContext } from 'react';
 
-import type { Chain } from '@/types/chain';
+import type { SupportedChain } from '@/types/chain';
 
 interface WalletChainContextType {
-  chain: Chain;
-  setChain: (chain: Chain) => void;
+  chain: SupportedChain;
+  setChain: (chain: SupportedChain) => void;
   isFixed: boolean;
 }
 
