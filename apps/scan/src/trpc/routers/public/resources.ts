@@ -201,7 +201,9 @@ export const resourcesRouter = createTRPCRouter({
           count_5xx_24h: true,
           count_4xx_24h: true,
           count_2xx_24h: true,
+          p50_24hMs: true,
           p99_24hMs: true,
+          updatedAt: true,
         },
       });
     }),

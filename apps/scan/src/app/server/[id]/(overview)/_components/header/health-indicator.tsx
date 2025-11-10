@@ -16,7 +16,9 @@ type HealthMetrics = Pick<
   | 'count_5xx_24h'
   | 'count_4xx_24h'
   | 'count_2xx_24h'
+  | 'p50_24hMs'
   | 'p99_24hMs'
+  | 'updatedAt'
 >;
 
 interface Props {
@@ -43,11 +45,7 @@ function calculateHealthStatus(metrics?: HealthMetrics | null): HealthStatus {
   const errorRate = total > 0 ? ((errors5xx + errors4xx) / total) * 100 : 0;
   const serverErrorRate = total > 0 ? (errors5xx / total) * 100 : 0;
 
-  if (
-    uptime >= 99 &&
-    errorRate < 5 &&
-    serverErrorRate < 1
-  ) {
+  if (uptime >= 99 && errorRate < 5 && serverErrorRate < 1) {
     return HealthStatus.Healthy;
   }
 
@@ -115,46 +113,73 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>{badge}</TooltipTrigger>
-      <TooltipContent side="bottom" className="max-w-xs">
-        <div className="text-xs">
-          <div className="font-semibold mb-1">Health Status (24h)</div>
+      <TooltipContent side="bottom">
+        <div className="space-y-2">
+          <div className="font-semibold">Health Status (24h)</div>
           {metrics?.totalCount24h && (
-            <div className="space-y-0.5 opacity-80">
-              <div className="flex justify-between gap-4">
-                <span>Requests:</span>
-                <span>{metrics.totalCount24h.toLocaleString()}</span>
+            <>
+              {/* Section 1: Performance Metrics */}
+              <div className="space-y-0.5">
+                {metrics.uptime24hPct !== null && (
+                  <div className="flex justify-between gap-4">
+                    <span>Uptime:</span>
+                    <span>{metrics.uptime24hPct.toFixed(0)}%</span>
+                  </div>
+                )}
+                {metrics.p50_24hMs && (
+                  <div className="flex justify-between gap-4">
+                    <span>P50 Latency:</span>
+                    <span>{(metrics.p50_24hMs / 1000).toFixed(2)}s</span>
+                  </div>
+                )}
+                {metrics.p99_24hMs && (
+                  <div className="flex justify-between gap-4">
+                    <span>P99 Latency:</span>
+                    <span>{(metrics.p99_24hMs / 1000).toFixed(2)}s</span>
+                  </div>
+                )}
               </div>
-              {metrics.uptime24hPct !== null && (
+
+              {/* Divider */}
+              <div className="border-t border-border/50" />
+
+              {/* Section 2: Request Counts */}
+              <div className="space-y-0.5">
                 <div className="flex justify-between gap-4">
-                  <span>Uptime:</span>
-                  <span>{metrics.uptime24hPct.toFixed(0)}%</span>
+                  <span>Total Requests:</span>
+                  <span>{metrics.totalCount24h.toLocaleString()}</span>
                 </div>
-              )}
-              {metrics.p99_24hMs && (
+                {metrics.count_2xx_24h !== null && (
+                  <div className="flex justify-between gap-4">
+                    <span>Success (2xx):</span>
+                    <span>{metrics.count_2xx_24h?.toLocaleString()}</span>
+                  </div>
+                )}
+                {metrics.count_4xx_24h !== null && (
+                  <div className="flex justify-between gap-4">
+                    <span>Client Errors (4xx):</span>
+                    <span>{metrics.count_4xx_24h?.toLocaleString()}</span>
+                  </div>
+                )}
+                {metrics.count_5xx_24h !== null && (
+                  <div className="flex justify-between gap-4">
+                    <span>Server Errors (5xx):</span>
+                    <span>{metrics.count_5xx_24h?.toLocaleString()}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-border/50" />
+
+              {/* Section 3: Last Updated */}
+              <div className="space-y-0.5">
                 <div className="flex justify-between gap-4">
-                  <span>P99 Latency:</span>
-                  <span>{metrics.p99_24hMs}ms</span>
+                  <span>Last Updated:</span>
+                  <span>{new Date(metrics.updatedAt).toLocaleString()}</span>
                 </div>
-              )}
-              {metrics.count_2xx_24h !== null && (
-                <div className="flex justify-between gap-4">
-                  <span>Success:</span>
-                  <span>{metrics.count_2xx_24h?.toLocaleString()}</span>
-                </div>
-              )}
-              {metrics.count_4xx_24h !== null && (
-                <div className="flex justify-between gap-4">
-                  <span>4xx Errors:</span>
-                  <span>{metrics.count_4xx_24h?.toLocaleString()}</span>
-                </div>
-              )}
-              {metrics.count_5xx_24h !== null && (
-                <div className="flex justify-between gap-4">
-                  <span>5xx Errors:</span>
-                  <span>{metrics.count_5xx_24h?.toLocaleString()}</span>
-                </div>
-              )}
-            </div>
+              </div>
+            </>
           )}
         </div>
       </TooltipContent>
