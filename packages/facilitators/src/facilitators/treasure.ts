@@ -1,6 +1,6 @@
 import { Network } from '../types';
 import { USDC_BASE_TOKEN } from '../constants';
-import type { Facilitator, FacilitatorConfig, Token } from '../types';
+import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const treasure: FacilitatorConfig = {
   url: 'https://x402.treasure.lol/facilitator',
