@@ -16,7 +16,6 @@ import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
 
 import { Origins, OriginsSkeleton } from '@/app/_components/origins';
 import { Facilitators } from '@/app/_components/facilitator';
-import { HealthDot } from '@/components/health/health-dot';
 
 import { formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';

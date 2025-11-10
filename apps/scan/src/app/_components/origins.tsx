@@ -75,12 +75,13 @@ export const Origins: React.FC<Props> = ({
         />
       )}
       title={
-        <div className="flex items-center gap-2 overflow-hidden flex-1 w-0">
+        <>
           <Link href={`/server/${origins[0].id}`} prefetch={false}>
             <span className="truncate">
               {new URL(origins[0].origin).hostname}
             </span>
           </Link>
+          {healthMetrics && <HealthDot metrics={healthMetrics} />}
           <Tooltip>
             <TooltipTrigger className="cursor-pointer hover:bg-muted text-muted-foreground hover:text-foreground rounded-md transition-colors text-xs font-mono shrink-0">
               +{origins.length - 1} more
@@ -100,7 +101,7 @@ export const Origins: React.FC<Props> = ({
               </ul>
             </TooltipContent>
           </Tooltip>
-        </div>
+        </>
       }
       address={
         addresses.length === 0 ? null : addresses.length === 1 ? (
@@ -109,7 +110,6 @@ export const Origins: React.FC<Props> = ({
           <Addresses addresses={addresses} disableCopy={disableCopy} />
         )
       }
-      healthMetrics={healthMetrics}
     />
   );
 };
