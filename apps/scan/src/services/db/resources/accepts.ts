@@ -3,7 +3,7 @@ import { prisma } from '../client';
 import { mixedAddressSchema } from '@/lib/schemas';
 
 import type { Chain } from '@/types/chain';
-import type { AcceptsNetwork, ResourceOrigin } from '@prisma/client';
+import type { AcceptsNetwork, Prisma } from '@prisma/client';
 
 interface GetAcceptsAddressesInput {
   chain?: Chain;
@@ -58,6 +58,28 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
     },
   });
 
+  type OriginWithMetrics = Prisma.ResourceOriginGetPayload<{
+    include: {
+      originMetrics: {
+        take: 1;
+        orderBy: {
+          updatedAt: 'desc';
+        };
+        select: {
+          uptime24hPct: true;
+          totalCount24h: true;
+          count_5xx_24h: true;
+          count_4xx_24h: true;
+          count_2xx_24h: true;
+          p50_24hMs: true;
+          p90_24hMs: true;
+          p99_24hMs: true;
+          updatedAt: true;
+        };
+      };
+    };
+  }>;
+
   return accepts
     .filter(accept => mixedAddressSchema.safeParse(accept.payTo).success)
     .reduce(
@@ -77,6 +99,6 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
         }
         return acc;
       },
-      {} as Record<string, Array<ResourceOrigin>>
+      {} as Record<string, Array<OriginWithMetrics>>
     );
 };
