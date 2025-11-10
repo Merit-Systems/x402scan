@@ -39,7 +39,6 @@ function calculateHealthStatus(metrics?: HealthMetrics | null): HealthStatus {
   const total = metrics.totalCount24h ?? 0;
   const errors5xx = metrics.count_5xx_24h ?? 0;
   const errors4xx = metrics.count_4xx_24h ?? 0;
-  const p99Latency = metrics.p99_24hMs ?? 0;
 
   const errorRate = total > 0 ? ((errors5xx + errors4xx) / total) * 100 : 0;
   const serverErrorRate = total > 0 ? (errors5xx / total) * 100 : 0;
@@ -47,8 +46,7 @@ function calculateHealthStatus(metrics?: HealthMetrics | null): HealthStatus {
   if (
     uptime >= 99 &&
     errorRate < 5 &&
-    serverErrorRate < 1 &&
-    p99Latency < 8000
+    serverErrorRate < 1
   ) {
     return HealthStatus.Healthy;
   }
