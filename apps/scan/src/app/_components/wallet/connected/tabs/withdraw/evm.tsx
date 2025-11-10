@@ -22,8 +22,8 @@ export const WithdrawEVM: React.FC<Props> = ({ amount, toAddress }) => {
     isConfirmed,
   } = useEvmSend({
     token: BASE_USDC,
-    addressProp: toAddress,
-    amountProp: amount,
+    address: toAddress,
+    amount,
   });
 
   return (

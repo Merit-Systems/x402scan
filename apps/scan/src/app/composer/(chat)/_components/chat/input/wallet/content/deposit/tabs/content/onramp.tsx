@@ -11,13 +11,13 @@ import { api } from '@/trpc/client';
 
 import { BASE_USDC } from '@/lib/tokens/usdc';
 
-import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
-
 import type { SupportedChain } from '@/types/chain';
 
-export const Onramp = () => {
-  const { chain } = useWalletChain();
+interface Props {
+  chain: SupportedChain;
+}
 
+export const Onramp: React.FC<Props> = ({ chain }) => {
   const {
     mutate: createOnrampSession,
     isPending: isCreatingOnrampSession,
@@ -34,7 +34,7 @@ export const Onramp = () => {
     createOnrampSession({
       amount,
       redirect: window.location.href,
-      defaultNetwork: chain as SupportedChain,
+      defaultNetwork: chain,
     });
   }, [amount, createOnrampSession]);
 

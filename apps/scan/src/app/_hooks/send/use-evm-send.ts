@@ -14,40 +14,51 @@ import { createWagmiConfig, wagmiConfig } from '@/app/_contexts/wagmi/config';
 import { BASE_USDC } from '@/lib/tokens/usdc';
 
 import { useEvmTokenBalance } from '../balance/token/use-evm-token-balance';
-import { useEthBalance } from '../balance/native/use-evm-balance';
+import { useEvmNativeBalance } from '../balance/native/use-evm-balance';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 
 import type { Address, Hash } from 'viem';
 import type { Token } from '@/types/token';
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 
 interface Props {
   token?: Token;
   onSuccess?: () => void;
   toastMessage?: (amount: number) => string;
-  addressProp?: string;
-  amountProp?: number;
+  address?: string;
+  amount?: number;
 }
 
 export const useEvmSend = (props?: Props) => {
+  const { chain } = useWalletChain();
+
   const {
     token = BASE_USDC,
     onSuccess,
     toastMessage,
-    addressProp,
-    amountProp,
+    address: addressProp,
+    amount: amountProp,
   } = props ?? {};
 
-  const [toAddress, setToAddress] = useState<string | undefined>(
-    addressProp ?? undefined
+  const [toAddressState, setToAddress] = useState<string>();
+  const [amountState, setAmount] = useState<number>();
+
+  const toAddress = useMemo(
+    () => addressProp ?? toAddressState,
+    [addressProp, toAddressState]
   );
-  const [amount, setAmount] = useState<number>(amountProp ?? 0);
+
+  const amount = useMemo(
+    () => amountProp ?? amountState,
+    [amountProp, amountState]
+  );
 
   const {
     data: ethBalance,
     isLoading: isEthBalanceLoading,
     invalidate: invalidateEthBalance,
-  } = useEthBalance();
+  } = useEvmNativeBalance({ chain });
   const {
     data: balance,
     isLoading: isBalanceLoading,

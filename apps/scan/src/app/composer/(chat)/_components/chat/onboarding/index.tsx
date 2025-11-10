@@ -17,7 +17,6 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Deposit } from '../input/wallet/content/deposit';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export const Onboarding = () => {
   const utils = api.useUtils();
@@ -37,7 +36,7 @@ export const Onboarding = () => {
 
   const { data: usdcBalance } =
     api.user.serverWallet.usdcBaseBalance.useQuery();
-  const { data: address } = api.user.serverWallet.address.useQuery();
+
   const hasBalance = (usdcBalance ?? 0) > 0;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -120,17 +119,12 @@ export const Onboarding = () => {
                   </h2>
                 </div>
                 <div className="flex-1 flex flex-col justify-center">
-                  {!address ? (
-                    <Skeleton className="h-24 w-full" />
-                  ) : (
-                    <Deposit
-                      address={address}
-                      onSuccess={() => {
-                        setIsOpen(false);
-                        void utils.user.acknowledgements.hasAcknowledged.invalidate();
-                      }}
-                    />
-                  )}
+                  <Deposit
+                    onSuccess={() => {
+                      setIsOpen(false);
+                      void utils.user.acknowledgements.hasAcknowledged.invalidate();
+                    }}
+                  />
                 </div>
               </div>
             )}

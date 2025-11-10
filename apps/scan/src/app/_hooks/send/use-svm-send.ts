@@ -50,9 +50,17 @@ export const useSvmSend = ({
   address: addressProp,
   amount: amountProp,
 }: Props) => {
-  const [amount, setAmount] = useState(amountProp ?? 0);
-  const [toAddress, setToAddress] = useState<string | undefined>(
-    addressProp ?? undefined
+  const [amountState, setAmount] = useState<number>();
+  const [toAddressState, setToAddress] = useState<string>();
+
+  const amount = useMemo(
+    () => amountProp ?? amountState,
+    [amountProp, amountState]
+  );
+
+  const toAddress = useMemo(
+    () => addressProp ?? toAddressState,
+    [addressProp, toAddressState]
   );
 
   const transactionSendingSigner = useWalletAccountTransactionSendingSigner(
@@ -181,6 +189,11 @@ export const useSvmSend = ({
     const parseResult = solanaAddressSchema.safeParse(toAddress);
     if (!parseResult.success) {
       toast.error('Invalid Solana address');
+      return;
+    }
+
+    if (!amount) {
+      toast.error('Amount is required');
       return;
     }
 

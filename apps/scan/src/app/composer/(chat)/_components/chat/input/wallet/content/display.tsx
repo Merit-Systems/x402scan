@@ -1,16 +1,11 @@
 'use client';
 
-import { CopyCode } from '@/components/ui/copy-code';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/trpc/client';
 
-import type { Address } from 'viem';
+import { ComposerWalletAddressCopyCode } from './address';
 
-interface Props {
-  address: Address;
-}
-
-export const WalletDisplay: React.FC<Props> = ({ address }) => {
+export const WalletDisplay: React.FC = () => {
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
     api.user.serverWallet.usdcBaseBalance.useQuery();
 
@@ -30,9 +25,7 @@ export const WalletDisplay: React.FC<Props> = ({ address }) => {
       />
       <ItemContainer
         label="Address"
-        value={
-          <CopyCode code={address} toastMessage="Address copied to clipboard" />
-        }
+        value={<ComposerWalletAddressCopyCode />}
       />
     </div>
   );

@@ -30,10 +30,9 @@ import { useSession } from 'next-auth/react';
 
 interface Props {
   children: React.ReactNode;
-  address: Address;
 }
 
-export const WalletDialog: React.FC<Props> = ({ children, address }) => {
+export const WalletDialog: React.FC<Props> = ({ children }) => {
   const { data: session } = useSession({ required: true });
 
   const searchParams = useSearchParams();
@@ -134,7 +133,7 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
               value="wallet"
               className="px-4 w-full overflow-hidden mt-0 pb-4"
             >
-              <WalletDisplay address={address} />
+              <WalletDisplay />
             </TabsContent>
             <TabsContent
               value="deposit"
@@ -152,7 +151,7 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
                 </div>
               )}
               <div className="px-4">
-                <Deposit address={address} />
+                <Deposit />
               </div>
             </TabsContent>
             <TabsContent

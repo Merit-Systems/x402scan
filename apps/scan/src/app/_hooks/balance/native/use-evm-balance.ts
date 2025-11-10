@@ -7,23 +7,26 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import type { Address } from 'viem';
 import { UseBalanceReturnType } from '../types';
+import { CHAIN_ID, SupportedChain } from '@/types/chain';
 
 interface Props {
   address?: Address;
+  chain: SupportedChain;
 }
 
-export const useEthBalance = (props?: Props): UseBalanceReturnType => {
+export const useEvmNativeBalance = ({
+  chain,
+  address: addressOverride,
+}: Props): UseBalanceReturnType => {
   const queryClient = useQueryClient();
-
-  const { address: addressOverride } = props ?? {};
 
   const { address } = useAccount();
 
-  const addressToQuery = addressOverride ?? address ?? undefined;
+  const addressToQuery = addressOverride ?? address ?? '';
 
   const result = useBalanceWagmi({
-    address: addressToQuery,
-    chainId: base.id,
+    address: addressToQuery as Address,
+    chainId: CHAIN_ID[chain],
   });
 
   return {
