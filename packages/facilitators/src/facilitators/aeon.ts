@@ -3,7 +3,11 @@ import { Network } from '../types';
 import { USDC_BSC_TOKEN } from '../constants';
 
 export const aeon: FacilitatorConfig = {
-  url: 'https://aeon.xyz/',
+  url: 'https://facilitator.aeon.xyz',
+};
+
+export const aeonDiscovery: FacilitatorConfig = {
+  url: 'https://facilitator.aeon.xyz',
 };
 
 export const aeonFacilitator = {
@@ -15,6 +19,7 @@ export const aeonFacilitator = {
     color: '#36D399',
   },
   config: aeon,
+  discoveryConfig: aeonDiscovery,
   addresses: {
     [Network.BSC]: [
       {
