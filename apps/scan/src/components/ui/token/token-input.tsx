@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+
 import AutoNumeric from 'autonumeric';
+
 import { Wallet } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -13,14 +15,15 @@ import { Loading } from '@/components/ui/loading';
 import { TokenSelect } from './token-select';
 
 import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
+import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
 
 import { cn } from '@/lib/utils';
 import { BASE_USDC } from '@/lib/tokens/usdc';
 
-import type { Token } from '@/types/token';
 import { Chain } from '@/types/chain';
-import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
-import { MixedAddress, SolanaAddress } from '@/types/address';
+
+import type { Token } from '@/types/token';
+import type { MixedAddress, SolanaAddress } from '@/types/address';
 
 interface Props
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {

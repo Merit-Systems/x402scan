@@ -1,8 +1,10 @@
+import { useCallback } from 'react';
+
 import { api } from '@/trpc/client';
 
 import { useConnectedWallets } from '../use-connected-wallets';
-import { useCallback } from 'react';
-import { SolanaAddress } from '@/types/address';
+
+import type { SolanaAddress } from '@/types/address';
 
 interface Props {
   tokenMint?: string;

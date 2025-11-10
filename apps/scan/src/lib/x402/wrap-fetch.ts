@@ -1,9 +1,10 @@
 import { env } from '@/env';
-import {
+import { wrapFetchWithPayment as wrapFetchWithPaymentFn } from 'x402-fetch';
+
+import type {
   MultiNetworkSigner,
   PaymentRequirementsSelector,
   Signer,
-  wrapFetchWithPayment as wrapFetchWithPaymentFn,
 } from 'x402-fetch';
 
 export const wrapFetchWithPayment = (
