@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Address, Addresses } from '@/components/ui/address';
 
 import { Favicon } from '@/app/_components/favicon';
-import { HealthDot } from '@/components/health/health-dot';
+import { HealthDot } from '@/components/health/dot';
 
 import { cn } from '@/lib/utils';
 

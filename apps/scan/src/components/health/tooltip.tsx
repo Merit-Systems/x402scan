@@ -9,7 +9,7 @@ interface Props {
 
 const TooltipFooter = () => (
   <div className="text-[10px] text-muted-foreground/60 mt-2 pt-2 border-t border-border/30 text-center">
-    Data collected by the x402scan.com proxy
+    Data collected by <span className="italic">proxy.x402scan.com</span>
   </div>
 );
 

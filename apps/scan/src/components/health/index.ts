@@ -1,6 +1,6 @@
-export { HealthDot } from './health-dot';
-export { HealthBadge } from './health-badge';
-export { HealthIndicator } from './health-indicator';
+export { HealthDot } from './dot';
+export { HealthBadge } from './badge';
+export { HealthIndicator } from './indicator';
 export { calculateHealthStatus } from './utils';
 export {
   HEALTH_CONFIG,

@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/tooltip';
 import { calculateHealthStatus } from './utils';
 import { HEALTH_CONFIG } from './constants';
-import { HealthTooltipContent } from './health-tooltip';
+import { HealthTooltipContent } from './tooltip';
 import { HealthStatus, type HealthMetrics } from './types';
 
 interface Props {
