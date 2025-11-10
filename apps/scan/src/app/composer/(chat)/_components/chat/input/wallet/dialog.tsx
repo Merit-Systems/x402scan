@@ -39,7 +39,10 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
   const {
     data: hasUserAcknowledgedComposer,
     isLoading: isLoadingHasUserAcknowledgedComposer,
-  } = api.user.acknowledgements.hasAcknowledged.useQuery();
+  } = api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
 
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState<'wallet' | 'deposit' | 'send'>('wallet');
@@ -144,7 +147,9 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
                   </div>
                 </div>
               )}
-              <Deposit address={address} />
+              <div className="px-4">
+                <Deposit address={address} />
+              </div>
             </TabsContent>
             <TabsContent
               value="send"

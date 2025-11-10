@@ -4,7 +4,7 @@ import { ETH_ADDRESS, USDC_ADDRESS } from '@/lib/utils';
 import { convertTokenAmount } from '@/lib/token';
 import { Chain } from '@/types/chain';
 
-export const getFreeTierWallet = async () => {
+const getFreeTierWallet = async () => {
   const freeTierWalletName = env.FREE_TIER_WALLET_NAME;
   if (!freeTierWalletName) {
     throw new Error('FREE_TIER_WALLET_NAME is not set');

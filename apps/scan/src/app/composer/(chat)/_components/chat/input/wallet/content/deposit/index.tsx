@@ -40,13 +40,12 @@ export const Deposit: React.FC<Props> = ({ address, onSuccess }) => {
   }, [ethBalance]);
 
   return (
-    <div className="flex flex-col gap-4 px-4">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <span className="font-medium text-sm">Your Agent Wallet Address</span>
         <CopyCode code={address} toastMessage="Address copied to clipboard" />
       </div>
       <div className="flex flex-col gap-1">
-        <span className="font-medium text-sm">Add Funds</span>
         <Tabs
           className="flex flex-col gap-0"
           value={tab ?? ''}
@@ -84,7 +83,7 @@ export const Deposit: React.FC<Props> = ({ address, onSuccess }) => {
               <TabsContent value="send" className="p-1">
                 <Send address={address} onSuccess={onSuccess} />
               </TabsContent>
-              <TabsContent value="onramp">
+              <TabsContent value="onramp" className="p-1">
                 <Onramp />
               </TabsContent>
             </TabsContents>

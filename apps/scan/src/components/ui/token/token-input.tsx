@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { BASE_USDC } from '@/lib/tokens/usdc';
 
 import type { Token } from '@/types/token';
+import type { Address } from 'viem';
 
 interface Props
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
@@ -29,6 +30,7 @@ interface Props
   className?: string;
   inputClassName?: string;
   isBalanceMax?: boolean;
+  address?: Address;
 }
 
 export const TokenInput: React.FC<Props> = ({
@@ -40,6 +42,7 @@ export const TokenInput: React.FC<Props> = ({
   label,
   className,
   inputClassName,
+  address,
   ...props
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,6 +50,7 @@ export const TokenInput: React.FC<Props> = ({
 
   const { data: balance, isLoading: isBalanceLoading } = useBalance(
     selectedToken,
+    address,
     {
       enabled: isBalanceMax,
     }

@@ -31,7 +31,7 @@ export const Onramp = () => {
   }, [amount, createOnrampSession]);
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-2">
       <TokenInput
         onChange={setAmount}
         selectedToken={BASE_USDC}
