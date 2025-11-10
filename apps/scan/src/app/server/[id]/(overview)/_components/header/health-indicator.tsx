@@ -188,6 +188,9 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
               </div>
             </>
           )}
+          <div className="text-[10px] text-muted-foreground/60 mt-2 pt-2 border-t border-border/30 text-center">
+            Data collected by the x402scan.com proxy
+          </div>
         </div>
       </TooltipContent>
     </Tooltip>
