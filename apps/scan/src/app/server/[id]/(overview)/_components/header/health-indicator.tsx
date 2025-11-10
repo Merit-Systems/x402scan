@@ -111,22 +111,40 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
           <div className="font-semibold mb-1">Health Status (24h)</div>
           {metrics?.totalCount24h && (
             <div className="space-y-0.5 opacity-80">
-              <div>Requests: {metrics.totalCount24h.toLocaleString()}</div>
+              <div className="flex justify-between gap-4">
+                <span>Requests:</span>
+                <span>{metrics.totalCount24h.toLocaleString()}</span>
+              </div>
               {metrics.uptime24hPct !== null &&
                 metrics.uptime24hPct !== undefined && (
-                  <div>Uptime: {metrics.uptime24hPct.toFixed(0)}%</div>
+                  <div className="flex justify-between gap-4">
+                    <span>Uptime:</span>
+                    <span>{metrics.uptime24hPct.toFixed(0)}%</span>
+                  </div>
                 )}
               {metrics.p99_24hMs && (
-                <div>P99 Latency: {metrics.p99_24hMs}ms</div>
+                <div className="flex justify-between gap-4">
+                  <span>P99 Latency:</span>
+                  <span>{metrics.p99_24hMs}ms</span>
+                </div>
               )}
               {metrics.count_2xx_24h !== null && (
-                <div>Success: {metrics.count_2xx_24h?.toLocaleString()}</div>
+                <div className="flex justify-between gap-4">
+                  <span>Success:</span>
+                  <span>{metrics.count_2xx_24h?.toLocaleString()}</span>
+                </div>
               )}
               {metrics.count_4xx_24h !== null && (
-                <div>4xx Errors: {metrics.count_4xx_24h?.toLocaleString()}</div>
+                <div className="flex justify-between gap-4">
+                  <span>4xx Errors:</span>
+                  <span>{metrics.count_4xx_24h?.toLocaleString()}</span>
+                </div>
               )}
               {metrics.count_5xx_24h !== null && (
-                <div>5xx Errors: {metrics.count_5xx_24h?.toLocaleString()}</div>
+                <div className="flex justify-between gap-4">
+                  <span>5xx Errors:</span>
+                  <span>{metrics.count_5xx_24h?.toLocaleString()}</span>
+                </div>
               )}
             </div>
           )}
