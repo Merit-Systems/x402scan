@@ -31,17 +31,17 @@ export const heuristFacilitator = {
       {
         address: '0x3f61093f61817b29d9556d3b092e67746af8cdfd',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-11-06'),
+        dateOfFirstTransaction: new Date('2025-11-07'),
       },
       {
-        address: '0x021cc47adeca6673def958e324ca38023b80a5be',
+        address: '0x290d8b8edcafb25042725cb9e78bcac36b8865f8',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-11-06'),
+        dateOfFirstTransaction: new Date('2025-11-07'),
       },
       {
         address: '0x612d72dc8402bba997c61aa82ce718ea23b2df5d',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-11-06'),
+        dateOfFirstTransaction: new Date('2025-11-07'),
       },
       {
         address: '0x1fc230ee3c13d0d520d49360a967dbd1555c8326',
