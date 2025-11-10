@@ -19,27 +19,27 @@ export const heuristFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0xb578b7db22581507D62BdBeb85E06AcD1bE09e11',
+        address: '0xb578b7db22581507d62bdbeb85e06acd1be09e11',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-07'),
       },
       {
-        address: '0x021CC47ADEca6673DEF958e324ca38023b80A5Be',
+        address: '0x021cc47adeca6673def958e324ca38023b80a5be',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-07'),
       },
       {
-        address: '0x3f61093f61817B29d9556D3B092E67746AF8CdFd',
+        address: '0x3f61093f61817b29d9556d3b092e67746af8cdfd',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-06'),
       },
       {
-        address: '0x021CC47ADEca6673DEF958e324ca38023b80A5Be',
+        address: '0x021cc47adeca6673def958e324ca38023b80a5be',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-06'),
       },
       {
-        address: '0x612d72Dc8402bBa997C61aa82ce718Ea23B2DF5D',
+        address: '0x612d72dc8402bba997c61aa82ce718ea23b2df5d',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-06'),
       },
