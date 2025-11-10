@@ -9,7 +9,7 @@ import {
 import { calculateHealthStatus } from './utils';
 import { HEALTH_CONFIG } from './constants';
 import { HealthTooltipContent } from './tooltip';
-import { HealthStatus, type HealthMetrics } from './types';
+import { type HealthMetrics } from './types';
 
 interface Props {
   metrics?: HealthMetrics | null;
@@ -18,10 +18,6 @@ interface Props {
 export const HealthDot: React.FC<Props> = ({ metrics }) => {
   const status = calculateHealthStatus(metrics);
   const { color } = HEALTH_CONFIG[status];
-
-  if (status === HealthStatus.Unknown) {
-    return;
-  }
 
   return (
     <Tooltip>
