@@ -6,7 +6,6 @@ import Image from 'next/image';
 
 import { Check, Loader2, Wallet } from 'lucide-react';
 
-import { MoneyInput } from '@/components/ui/money-input';
 import { Button } from '@/components/ui/button';
 
 import { api } from '@/trpc/client';

@@ -20,6 +20,8 @@ import { Deposit } from '../input/wallet/content/deposit';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const Onboarding = () => {
+  const utils = api.useUtils();
+
   const { data: hasUserAcknowledgedComposer } =
     api.user.acknowledgements.hasAcknowledged.useQuery();
 
@@ -123,7 +125,10 @@ export const Onboarding = () => {
                   ) : (
                     <Deposit
                       address={address}
-                      onSuccess={() => setIsOpen(false)}
+                      onSuccess={() => {
+                        setIsOpen(false);
+                        void utils.user.acknowledgements.hasAcknowledged.invalidate();
+                      }}
                     />
                   )}
                 </div>

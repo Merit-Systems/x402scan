@@ -80,8 +80,6 @@ export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
   return ((Number(current) - Number(previous)) / Number(previous)) * 100;
 };
 
-export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-
 export function convertToUIMessages(messages: Message[]): UIMessage[] {
   return messages.map(message => ({
     id: message.id,

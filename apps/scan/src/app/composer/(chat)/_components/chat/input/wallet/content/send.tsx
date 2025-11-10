@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useCallback, useState } from 'react';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { toast } from 'sonner';
-import { Check, Loader2, Wallet } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { api } from '@/trpc/client';
 import { CopyCode } from '@/components/ui/copy-code';
@@ -20,8 +20,7 @@ export const Send: React.FC = () => {
     api.user.serverWallet.address.useQuery();
   const { data: ethBalance, isLoading: isEthBalanceLoading } =
     api.user.serverWallet.ethBaseBalance.useQuery();
-  const { isLoading: isBalanceLoading, data: balance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery();
+  const { data: balance } = api.user.serverWallet.usdcBaseBalance.useQuery();
 
   const {
     mutate: sendUsdc,

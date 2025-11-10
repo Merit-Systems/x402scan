@@ -39,7 +39,10 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
   const {
     data: hasUserAcknowledgedComposer,
     isLoading: isLoadingHasUserAcknowledgedComposer,
-  } = api.user.acknowledgements.hasAcknowledged.useQuery();
+  } = api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
 
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState<'wallet' | 'deposit' | 'send'>('wallet');

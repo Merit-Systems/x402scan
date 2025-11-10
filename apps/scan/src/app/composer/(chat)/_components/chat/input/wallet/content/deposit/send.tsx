@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 
 import { Check, Loader2 } from 'lucide-react';
 
-import { useWriteContract } from 'wagmi';
+import { createConfig, useWriteContract } from 'wagmi';
+import { waitForTransactionReceipt } from '@wagmi/core';
 
 import { toast } from 'sonner';
 import { erc20Abi, parseUnits } from 'viem';
@@ -22,6 +23,8 @@ import { base } from 'viem/chains';
 import { Chain } from '@/types/chain';
 import { TokenInput } from '@/components/ui/token/token-input';
 import { BASE_USDC } from '@/lib/tokens/usdc';
+import { useQueryClient } from '@tanstack/react-query';
+import { wagmiConfig } from '@/app/_contexts/wagmi/config';
 
 interface Props {
   address: Address;
@@ -29,54 +32,59 @@ interface Props {
 }
 
 export const Send: React.FC<Props> = ({ address, onSuccess }) => {
+  const queryClient = useQueryClient();
+
   const [amount, setAmount] = useState(0);
+  const [isWaitingForReceipt, setIsWaitingForReceipt] = useState(false);
   const {
     data: ethBalance,
     isLoading: isEthBalanceLoading,
-    refetch: refetchEthBalance,
+    queryKey: ethBalanceQueryKey,
   } = useEthBalance();
-  const { data: balance, refetch: refetchBalance } = useBalance();
+  const { data: balance, queryKey: balanceQueryKey } = useBalance();
   const {
-    writeContract,
+    writeContractAsync,
     isPending: isSending,
     isSuccess: isSent,
     reset: resetSending,
-  } = useWriteContract();
+  } = useWriteContract({
+    mutation: {
+      onError: error => {
+        toast.error('Failed to send USDC', {
+          description: error.message,
+        });
+      },
+    },
+  });
 
   const utils = api.useUtils();
 
-  const handleSubmit = () => {
-    writeContract(
-      {
-        address: USDC_ADDRESS[Chain.BASE],
-        abi: erc20Abi,
-        functionName: 'transfer',
-        args: [address, parseUnits(amount.toString(), 6)],
-        chainId: base.id,
-      },
-      {
-        onSuccess: () => {
-          toast.success(`${amount} USDC sent to your server wallet`);
-          void refetchBalance();
-          void refetchEthBalance();
-          for (let i = 0; i < 5; i++) {
-            setTimeout(() => {
-              void utils.user.serverWallet.usdcBaseBalance.invalidate();
-            }, i * 1000);
-          }
-          setAmount(0);
-          setTimeout(() => {
-            resetSending();
-          }, 2000);
-          onSuccess?.();
-        },
-        onError: error => {
-          toast.error('Failed to send USDC', {
-            description: error.message,
-          });
-        },
-      }
-    );
+  const handleSubmit = async () => {
+    const hash = await writeContractAsync({
+      address: USDC_ADDRESS[Chain.BASE],
+      abi: erc20Abi,
+      functionName: 'transfer',
+      args: [address, parseUnits(amount.toString(), 6)],
+      chainId: base.id,
+    });
+    setIsWaitingForReceipt(true);
+    await waitForTransactionReceipt(createConfig(wagmiConfig), {
+      hash,
+      chainId: base.id,
+      confirmations: 2,
+    });
+    setIsWaitingForReceipt(false);
+    toast.success(`${amount} USDC sent to your server wallet`);
+    await utils.user.serverWallet.usdcBaseBalance.invalidate();
+    void queryClient.invalidateQueries({ queryKey: balanceQueryKey });
+    void queryClient.invalidateQueries({ queryKey: ethBalanceQueryKey });
+    setTimeout(() => {
+      onSuccess?.();
+    }, 1000);
+    setAmount(0);
+    setTimeout(() => {
+      resetSending();
+    }, 2000);
   };
 
   return (
@@ -94,6 +102,7 @@ export const Send: React.FC<Props> = ({ address, onSuccess }) => {
         disabled={
           amount === 0 ||
           isSending ||
+          isSent ||
           !balance ||
           balance < amount ||
           isEthBalanceLoading ||
@@ -109,6 +118,11 @@ export const Send: React.FC<Props> = ({ address, onSuccess }) => {
           <>
             <Loader2 className="size-4 animate-spin" />
             Sending...
+          </>
+        ) : isWaitingForReceipt ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Waiting for Confirmation...
           </>
         ) : isSent ? (
           <>

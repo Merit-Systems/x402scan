@@ -81,7 +81,8 @@ const MockTool = ({
   price: number;
 }) => (
   <div className="w-fit rounded-md border bg-muted/50 flex items-center gap-2 p-2 text-xs">
-    <img src={image} className="size-4 rounded-md" />
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src={image} className="size-4 rounded-md" alt={resource} />
     <div className="flex items-center gap-2 w-full overflow-hidden">
       <span className="font-semibold font-mono text-left truncate">
         {resource}
