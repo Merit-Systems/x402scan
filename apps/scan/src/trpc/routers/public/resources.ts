@@ -195,6 +195,7 @@ export const resourcesRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await prisma.resourceMetrics.findFirst({
         where: { resourceId: input.resourceId },
+        orderBy: { updatedAt: 'desc' },
         select: {
           uptime24hPct: true,
           totalCount24h: true,

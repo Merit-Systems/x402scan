@@ -25,6 +25,7 @@ export const HeaderCard: React.FC<Props> = async ({ origin }) => {
     where: {
       originId: origin.id,
     },
+    orderBy: { updatedAt: 'desc' },
     select: {
       uptime24hPct: true,
       totalCount24h: true,
