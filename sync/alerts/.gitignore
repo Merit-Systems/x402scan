@@ -1,0 +1,5 @@
+.env
+.trigger
+node_modules
+dist
+.turbo
