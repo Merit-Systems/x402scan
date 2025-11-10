@@ -9,23 +9,27 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Address, Addresses } from '@/components/ui/address';
 
 import { Favicon } from '@/app/_components/favicon';
+import { HealthDot } from '@/components/health/health-dot';
 
 import { cn } from '@/lib/utils';
 
 import type { ResourceOrigin } from '@prisma/client';
 import type { MixedAddress } from '@/types/address';
+import type { OriginHealthMetrics } from '@/components/health/types';
 import Link from 'next/link';
 
 interface Props {
   addresses: MixedAddress[];
   origins: ResourceOrigin[];
   disableCopy?: boolean;
+  healthMetrics?: OriginHealthMetrics | null;
 }
 
 export const Origins: React.FC<Props> = ({
   origins,
   addresses,
   disableCopy,
+  healthMetrics,
 }) => {
   if (!origins || origins.length === 0) {
     if (addresses.length === 0) {
@@ -55,6 +59,7 @@ export const Origins: React.FC<Props> = ({
               <Addresses addresses={addresses} />
             )
           }
+          healthMetrics={healthMetrics}
         />
       </Link>
     );
@@ -104,6 +109,7 @@ export const Origins: React.FC<Props> = ({
           <Addresses addresses={addresses} disableCopy={disableCopy} />
         )
       }
+      healthMetrics={healthMetrics}
     />
   );
 };
@@ -158,15 +164,22 @@ interface OriginsContainerProps {
   Icon: ({ className }: { className: string }) => React.ReactNode;
   title: React.ReactNode;
   address: React.ReactNode;
+  healthMetrics?: OriginHealthMetrics | null;
 }
 
-const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
+const OriginsContainer = ({
+  Icon,
+  title,
+  address,
+  healthMetrics,
+}: OriginsContainerProps) => {
   return (
     <div className="flex items-center gap-2 w-full overflow-hidden">
       <Icon className="size-6" />
       <div className="flex-1 overflow-hidden">
-        <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full flex">
+        <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full flex items-center gap-2">
           {title}
+          {healthMetrics && <HealthDot metrics={healthMetrics} />}
         </div>
         <div>{address}</div>
       </div>

@@ -16,7 +16,27 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
     include: {
       resourceRel: {
         select: {
-          origin: true,
+          origin: {
+            include: {
+              originMetrics: {
+                take: 1,
+                orderBy: {
+                  updatedAt: 'desc',
+                },
+                select: {
+                  uptime24hPct: true,
+                  totalCount24h: true,
+                  count_5xx_24h: true,
+                  count_4xx_24h: true,
+                  count_2xx_24h: true,
+                  p50_24hMs: true,
+                  p90_24hMs: true,
+                  p99_24hMs: true,
+                  updatedAt: true,
+                },
+              },
+            },
+          },
           _count: true,
           tags: true,
         },

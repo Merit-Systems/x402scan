@@ -16,6 +16,7 @@ import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
 
 import { Origins, OriginsSkeleton } from '@/app/_components/origins';
 import { Facilitators } from '@/app/_components/facilitator';
+import { HealthDot } from '@/components/health/health-dot';
 
 import { formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
@@ -35,13 +36,19 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     header: () => (
       <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
-    cell: ({ row }) => (
-      <Origins
-        origins={row.original.origins}
-        addresses={row.original.recipients}
-        disableCopy
-      />
-    ),
+    cell: ({ row }) => {
+      const healthMetrics = row.original.origins?.[0]?.originMetrics?.[0];
+      return (
+        <div className="flex items-center gap-2">
+          <Origins
+            origins={row.original.origins}
+            addresses={row.original.recipients}
+            disableCopy
+            healthMetrics={healthMetrics}
+          />
+        </div>
+      );
+    },
     size: 225,
     loading: () => <OriginsSkeleton />,
   },
