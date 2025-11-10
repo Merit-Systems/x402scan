@@ -33,13 +33,12 @@ export const OnrampSessionDialog: React.FC = () => {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
 
   const queryClient = useQueryClient();
-  const { queryKey: balanceQueryKey } = useBalance(undefined, {
+  const { queryKey: balanceQueryKey } = useBalance(undefined, undefined, {
     enabled: false,
   });
-  const { invalidate: invalidateSolanaBalance } = useSPLTokenBalance(
-    undefined,
-    false
-  );
+  const { invalidate: invalidateSolanaBalance } = useSPLTokenBalance({
+    enabled: false,
+  });
 
   const searchParams = useSearchParams();
 

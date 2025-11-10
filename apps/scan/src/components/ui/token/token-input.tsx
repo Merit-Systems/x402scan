@@ -20,6 +20,7 @@ import { BASE_USDC } from '@/lib/tokens/usdc';
 import type { Token } from '@/types/token';
 import { Chain } from '@/types/chain';
 import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
+import { MixedAddress, SolanaAddress } from '@/types/address';
 
 interface Props
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
@@ -32,6 +33,7 @@ interface Props
   className?: string;
   inputClassName?: string;
   isBalanceMax?: boolean;
+  address?: MixedAddress;
 }
 
 export const TokenInput: React.FC<Props> = ({
@@ -44,6 +46,7 @@ export const TokenInput: React.FC<Props> = ({
   label,
   className,
   inputClassName,
+  address,
   ...props
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,13 +54,17 @@ export const TokenInput: React.FC<Props> = ({
 
   const { data: evmBalance, isLoading: isEvmBalanceLoading } = useBalance(
     selectedToken,
+    address as `0x${string}` | undefined,
     {
       enabled: isBalanceMax && chain !== Chain.SOLANA,
     }
   );
 
   const { data: svmBalance, isLoading: isSolanaBalanceLoading } =
-    useSPLTokenBalance(undefined, isBalanceMax && chain === Chain.SOLANA);
+    useSPLTokenBalance({
+      enabled: isBalanceMax && chain === Chain.SOLANA,
+      address: address as SolanaAddress | undefined,
+    });
 
   const { balance, isLoading } =
     chain === Chain.SOLANA

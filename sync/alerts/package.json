@@ -1,0 +1,29 @@
+{
+  "name": "x402sync-alerts",
+  "version": "1.0.0",
+  "description": "Balance alerts for x402scan",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "scripts": {
+    "trigger:dev": "trigger dev",
+    "trigger:deploy": "trigger deploy",
+    "check:format": "prettier --check .",
+    "format": "prettier --write .",
+    "check:types": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@trigger.dev/sdk": "4.0.5",
+    "viem": "^2.21.54"
+  },
+  "devDependencies": {
+    "@trigger.dev/build": "4.0.5",
+    "@typescript-eslint/parser": "^8.46.2",
+    "eslint": "^9.38.0",
+    "prettier": "^3.6.2",
+    "trigger.dev": "^4.0.4",
+    "typescript": "^5.9.3"
+  }
+}

@@ -2,8 +2,17 @@ import { api } from '@/trpc/client';
 
 import { useConnectedWallets } from '../use-connected-wallets';
 import { useCallback } from 'react';
+import { SolanaAddress } from '@/types/address';
 
-export const useSPLTokenBalance = (tokenMint?: string, enabled?: boolean) => {
+interface Props {
+  tokenMint?: string;
+  enabled?: boolean;
+  address?: SolanaAddress;
+}
+
+export const useSPLTokenBalance = (props?: Props) => {
+  const { tokenMint, enabled, address } = props ?? {};
+
   const connectedWallets = useConnectedWallets();
 
   const utils = api.useUtils();
@@ -18,7 +27,7 @@ export const useSPLTokenBalance = (tokenMint?: string, enabled?: boolean) => {
   return {
     ...api.public.solana.balance.useQuery(
       {
-        ownerAddress: connectedWallets.solanaAddress ?? '',
+        ownerAddress: address ?? connectedWallets.solanaAddress ?? '',
         tokenMint,
       },
       {

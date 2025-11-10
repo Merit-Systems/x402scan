@@ -13,10 +13,10 @@ import { Button } from '@/components/ui/button';
 import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
 import { useEthBalance } from '@/app/_hooks/use-eth-balance';
 
-import { USDC_ADDRESS } from '@/lib/utils';
 import { ethereumAddressSchema } from '@/lib/schemas';
+import { BASE_USDC } from '@/lib/tokens/usdc';
 
-import { Chain } from '@/types/chain';
+import type { Address } from 'viem';
 
 interface Props {
   address: string;
@@ -37,8 +37,8 @@ export const WithdrawEVM: React.FC<Props> = ({
     refetch: refetchEthBalance,
   } = useEthBalance();
   const {
-    isLoading: isBalanceLoading,
     data: balance,
+    isLoading: isBalanceLoading,
     refetch: refetchBalance,
   } = useBalance();
 
@@ -58,7 +58,7 @@ export const WithdrawEVM: React.FC<Props> = ({
     const parsedAddress = parseResult.data;
     writeContract(
       {
-        address: USDC_ADDRESS[Chain.BASE] as `0x${string}`,
+        address: BASE_USDC.address as Address,
         abi: erc20Abi,
         functionName: 'transfer',
         args: [parsedAddress, parseUnits(amount.toString(), 6)],
