@@ -57,11 +57,11 @@ function calculateHealthStatus(metrics?: HealthMetrics | null): HealthStatus {
   const errorRate = total > 0 ? ((errors5xx + errors4xx) / total) * 100 : 0;
   const serverErrorRate = total > 0 ? (errors5xx / total) * 100 : 0;
 
-  if (uptime >= 99 && errorRate < 5 && serverErrorRate < 1) {
+  if (uptime >= 95 && errorRate < 5 && serverErrorRate < 1) {
     return HealthStatus.Healthy;
   }
 
-  if (uptime < 95 || errorRate > 10 || serverErrorRate > 5) {
+  if (uptime < 85 || errorRate > 15 || serverErrorRate > 5) {
     return HealthStatus.Unhealthy;
   }
 
