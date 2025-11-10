@@ -1,5 +1,5 @@
 import { formatCompactAgo } from '@/lib/utils';
-import { TOTAL_REQUESTS_THRESHOLD } from './constants';
+import { TOTAL_REQUESTS_THRESHOLD, HEALTH_THRESHOLDS } from './constants';
 import { HealthStatus, type HealthMetrics } from './types';
 
 interface Props {
@@ -39,7 +39,18 @@ export const HealthTooltipContent: React.FC<Props> = ({ status, metrics }) => {
             {metrics.uptime24hPct !== null && (
               <div className="flex justify-between gap-4">
                 <span>Uptime:</span>
-                <span>{metrics.uptime24hPct.toFixed(2)}%</span>
+                <span
+                  className={
+                    metrics.uptime24hPct >= HEALTH_THRESHOLDS.healthy.uptime
+                      ? 'text-green-500'
+                      : metrics.uptime24hPct >=
+                          HEALTH_THRESHOLDS.unhealthy.uptime
+                        ? 'text-yellow-500'
+                        : 'text-red-500'
+                  }
+                >
+                  {metrics.uptime24hPct.toFixed(2)}%
+                </span>
               </div>
             )}
           </div>
