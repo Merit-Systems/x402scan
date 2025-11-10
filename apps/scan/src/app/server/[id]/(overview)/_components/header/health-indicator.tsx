@@ -23,11 +23,16 @@ interface Props {
   metrics?: HealthMetrics | null;
 }
 
-type HealthStatus = 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
+enum HealthStatus {
+  Healthy = 'healthy',
+  Degraded = 'degraded',
+  Unhealthy = 'unhealthy',
+  Unknown = 'unknown',
+}
 
 function calculateHealthStatus(metrics?: HealthMetrics | null): HealthStatus {
   if (!metrics?.totalCount24h) {
-    return 'unknown';
+    return HealthStatus.Unknown;
   }
 
   const uptime = metrics.uptime24hPct ?? 0;
@@ -45,42 +50,42 @@ function calculateHealthStatus(metrics?: HealthMetrics | null): HealthStatus {
     serverErrorRate < 1 &&
     p99Latency < 8000
   ) {
-    return 'healthy';
+    return HealthStatus.Healthy;
   }
 
   if (uptime < 95 || errorRate > 10 || serverErrorRate > 5) {
-    return 'unhealthy';
+    return HealthStatus.Unhealthy;
   }
 
-  return 'degraded';
+  return HealthStatus.Degraded;
 }
 
 export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
   const status = calculateHealthStatus(metrics);
 
   const config = {
-    healthy: {
+    [HealthStatus.Healthy]: {
       Icon: CircleCheck,
       color: 'text-green-500',
       bgColor: 'bg-green-500/10',
       borderColor: 'border-green-500/20',
       label: 'Healthy',
     },
-    degraded: {
+    [HealthStatus.Degraded]: {
       Icon: CircleAlert,
       color: 'text-yellow-500',
       bgColor: 'bg-yellow-500/10',
       borderColor: 'border-yellow-500/20',
       label: 'Degraded',
     },
-    unhealthy: {
+    [HealthStatus.Unhealthy]: {
       Icon: CircleX,
       color: 'text-red-500',
       bgColor: 'bg-red-500/10',
       borderColor: 'border-red-500/20',
       label: 'Unhealthy',
     },
-    unknown: {
+    [HealthStatus.Unknown]: {
       Icon: Circle,
       color: 'text-gray-400',
       bgColor: 'bg-gray-400/10',
@@ -105,15 +110,13 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
     </div>
   );
 
-  if (status === 'unknown') {
+  if (status === HealthStatus.Unknown) {
     return badge;
   }
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        {badge}
-      </TooltipTrigger>
+      <TooltipTrigger asChild>{badge}</TooltipTrigger>
       <TooltipContent side="bottom" className="max-w-xs">
         <div className="text-xs">
           <div className="font-semibold mb-1">Health Status (24h)</div>
@@ -124,11 +127,11 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
                 <span>{metrics.totalCount24h.toLocaleString()}</span>
               </div>
               {metrics.uptime24hPct !== null && (
-                  <div className="flex justify-between gap-4">
-                    <span>Uptime:</span>
-                    <span>{metrics.uptime24hPct.toFixed(0)}%</span>
-                  </div>
-                )}
+                <div className="flex justify-between gap-4">
+                  <span>Uptime:</span>
+                  <span>{metrics.uptime24hPct.toFixed(0)}%</span>
+                </div>
+              )}
               {metrics.p99_24hMs && (
                 <div className="flex justify-between gap-4">
                   <span>P99 Latency:</span>
