@@ -33,8 +33,14 @@ enum HealthStatus {
   Unknown = 'unknown',
 }
 
+const TooltipFooter = () => (
+  <div className="text-[10px] text-muted-foreground/60 mt-2 pt-2 border-t border-border/30 text-center">
+    Data collected by the x402scan.com proxy
+  </div>
+);
+
 function calculateHealthStatus(metrics?: HealthMetrics | null): HealthStatus {
-  if (!metrics?.totalCount24h) {
+  if (!metrics?.totalCount24h || metrics?.totalCount24h < 10) {
     return HealthStatus.Unknown;
   }
 
@@ -108,7 +114,24 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
   );
 
   if (status === HealthStatus.Unknown) {
-    return badge;
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{badge}</TooltipTrigger>
+        <TooltipContent side="bottom">
+          <div className="space-y-2">
+            <div className="space-y-0.5">
+              <div className="flex justify-between gap-4">
+                <span>
+                  Unable to determine status (fewer than 10 requests in last
+                  24h)
+                </span>
+              </div>
+            </div>
+            <TooltipFooter />
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    );
   }
 
   return (
@@ -188,9 +211,7 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
               </div>
             </>
           )}
-          <div className="text-[10px] text-muted-foreground/60 mt-2 pt-2 border-t border-border/30 text-center">
-            Data collected by the x402scan.com proxy
-          </div>
+          <TooltipFooter />
         </div>
       </TooltipContent>
     </Tooltip>
