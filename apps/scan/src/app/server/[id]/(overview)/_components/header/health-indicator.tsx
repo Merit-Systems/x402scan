@@ -33,6 +33,8 @@ enum HealthStatus {
   Unknown = 'unknown',
 }
 
+const TOTAL_REQUESTS_THRESHOLD = 10;
+
 const TooltipFooter = () => (
   <div className="text-[10px] text-muted-foreground/60 mt-2 pt-2 border-t border-border/30 text-center">
     Data collected by the x402scan.com proxy
@@ -40,7 +42,10 @@ const TooltipFooter = () => (
 );
 
 function calculateHealthStatus(metrics?: HealthMetrics | null): HealthStatus {
-  if (!metrics?.totalCount24h || metrics?.totalCount24h < 10) {
+  if (
+    !metrics?.totalCount24h ||
+    metrics?.totalCount24h < TOTAL_REQUESTS_THRESHOLD
+  ) {
     return HealthStatus.Unknown;
   }
 
@@ -122,8 +127,8 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
             <div className="space-y-0.5">
               <div className="flex justify-between gap-4">
                 <span>
-                  Unable to determine status (fewer than 10 requests in last
-                  24h)
+                  Unable to determine status (fewer than{' '}
+                  {TOTAL_REQUESTS_THRESHOLD} requests in last 24h)
                 </span>
               </div>
             </div>
