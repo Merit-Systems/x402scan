@@ -25,12 +25,9 @@ interface Props {
 
 type HealthStatus = 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
 
-function calculateHealthStatus(metrics?: HealthMetrics | null): {
-  status: HealthStatus;
-  reason: string;
-} {
+function calculateHealthStatus(metrics?: HealthMetrics | null): HealthStatus {
   if (!metrics?.totalCount24h) {
-    return { status: 'unknown', reason: 'No data available' };
+    return 'unknown';
   }
 
   const uptime = metrics.uptime24hPct ?? 0;
@@ -48,30 +45,18 @@ function calculateHealthStatus(metrics?: HealthMetrics | null): {
     serverErrorRate < 1 &&
     p99Latency < 8000
   ) {
-    return {
-      status: 'healthy',
-      reason: `${uptime.toFixed(1)}% uptime, ${errorRate.toFixed(1)}% errors`,
-    };
+    return 'healthy';
   }
 
   if (uptime < 95 || errorRate > 10 || serverErrorRate > 5) {
-    return {
-      status: 'unhealthy',
-      reason:
-        uptime < 95
-          ? `Low uptime: ${uptime.toFixed(1)}%`
-          : `High error rate: ${errorRate.toFixed(1)}%`,
-    };
+    return 'unhealthy';
   }
 
-  return {
-    status: 'degraded',
-    reason: `${uptime.toFixed(1)}% uptime, ${errorRate.toFixed(1)}% errors`,
-  };
+  return 'degraded';
 }
 
 export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
-  const { status, reason } = calculateHealthStatus(metrics);
+  const status = calculateHealthStatus(metrics);
 
   const config = {
     healthy: {
@@ -124,13 +109,12 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
       <TooltipContent side="bottom" className="max-w-xs">
         <div className="text-xs">
           <div className="font-semibold mb-1">Health Status (24h)</div>
-          <div className="mb-2">{reason}</div>
           {metrics?.totalCount24h && (
             <div className="space-y-0.5 opacity-80">
               <div>Requests: {metrics.totalCount24h.toLocaleString()}</div>
               {metrics.uptime24hPct !== null &&
                 metrics.uptime24hPct !== undefined && (
-                  <div>Uptime: {metrics.uptime24hPct.toFixed(2)}%</div>
+                  <div>Uptime: {metrics.uptime24hPct.toFixed(0)}%</div>
                 )}
               {metrics.p99_24hMs && (
                 <div>P99 Latency: {metrics.p99_24hMs}ms</div>
