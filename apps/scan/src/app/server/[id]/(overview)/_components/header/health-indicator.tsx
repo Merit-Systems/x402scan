@@ -91,20 +91,28 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
 
   const { Icon, color, bgColor, borderColor, label } = config;
 
+  const badge = (
+    <div
+      className={cn(
+        'inline-flex items-center gap-1 px-1 py-0.5 rounded-full border',
+        'text-xs font-medium cursor-default',
+        bgColor,
+        borderColor
+      )}
+    >
+      <Icon className={cn('size-3', color)} />
+      <span className={cn(color, 'text-xs')}>{label}</span>
+    </div>
+  );
+
+  if (status === 'unknown') {
+    return badge;
+  }
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div
-          className={cn(
-            'inline-flex items-center gap-1 px-1 py-0.5 rounded-full border',
-            'text-xs font-medium cursor-default',
-            bgColor,
-            borderColor
-          )}
-        >
-          <Icon className={cn('size-3', color)} />
-          <span className={cn(color, 'text-xs')}>{label}</span>
-        </div>
+        {badge}
       </TooltipTrigger>
       <TooltipContent side="bottom" className="max-w-xs">
         <div className="text-xs">
@@ -115,8 +123,7 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
                 <span>Requests:</span>
                 <span>{metrics.totalCount24h.toLocaleString()}</span>
               </div>
-              {metrics.uptime24hPct !== null &&
-                metrics.uptime24hPct !== undefined && (
+              {metrics.uptime24hPct !== null && (
                   <div className="flex justify-between gap-4">
                     <span>Uptime:</span>
                     <span>{metrics.uptime24hPct.toFixed(0)}%</span>
