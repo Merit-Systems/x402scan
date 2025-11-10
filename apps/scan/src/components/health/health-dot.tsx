@@ -17,7 +17,7 @@ interface Props {
 
 export const HealthDot: React.FC<Props> = ({ metrics }) => {
   const status = calculateHealthStatus(metrics);
-  const { Icon, color } = HEALTH_CONFIG[status];
+  const { color } = HEALTH_CONFIG[status];
 
   if (status === HealthStatus.Unknown) {
     return;
@@ -26,9 +26,13 @@ export const HealthDot: React.FC<Props> = ({ metrics }) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="shrink-0">
-          <Icon className={cn('size-3', color)} />
-        </div>
+        <div
+          className={cn(
+            'shrink-0 rounded-full size-2 animate-pulse',
+            color,
+            'bg-current'
+          )}
+        />
       </TooltipTrigger>
       <TooltipContent side="bottom">
         <HealthTooltipContent status={status} metrics={metrics} />
