@@ -17,6 +17,7 @@ type HealthMetrics = Pick<
   | 'count_4xx_24h'
   | 'count_2xx_24h'
   | 'p50_24hMs'
+  | 'p90_24hMs'
   | 'p99_24hMs'
   | 'updatedAt'
 >;
@@ -118,7 +119,6 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
           <div className="font-semibold">Health Status (24h)</div>
           {metrics?.totalCount24h && (
             <>
-              {/* Section 1: Performance Metrics */}
               <div className="space-y-0.5">
                 {metrics.uptime24hPct !== null && (
                   <div className="flex justify-between gap-4">
@@ -126,10 +126,21 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
                     <span>{metrics.uptime24hPct.toFixed(0)}%</span>
                   </div>
                 )}
+              </div>
+
+              <div className="border-t border-border/50" />
+
+              <div className="space-y-0.5">
                 {metrics.p50_24hMs && (
                   <div className="flex justify-between gap-4">
                     <span>P50 Latency:</span>
                     <span>{(metrics.p50_24hMs / 1000).toFixed(2)}s</span>
+                  </div>
+                )}
+                {metrics.p90_24hMs && (
+                  <div className="flex justify-between gap-4">
+                    <span>P90 Latency:</span>
+                    <span>{(metrics.p90_24hMs / 1000).toFixed(2)}s</span>
                   </div>
                 )}
                 {metrics.p99_24hMs && (
@@ -140,10 +151,8 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
                 )}
               </div>
 
-              {/* Divider */}
               <div className="border-t border-border/50" />
 
-              {/* Section 2: Request Counts */}
               <div className="space-y-0.5">
                 <div className="flex justify-between gap-4">
                   <span>Total Requests:</span>
@@ -169,10 +178,8 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
                 )}
               </div>
 
-              {/* Divider */}
               <div className="border-t border-border/50" />
 
-              {/* Section 3: Last Updated */}
               <div className="space-y-0.5">
                 <div className="flex justify-between gap-4">
                   <span>Last Updated:</span>
