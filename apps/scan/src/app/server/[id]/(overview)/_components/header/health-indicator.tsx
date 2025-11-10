@@ -60,6 +60,11 @@ function calculateHealthStatus(metrics?: HealthMetrics | null): HealthStatus {
 export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
   const status = calculateHealthStatus(metrics);
 
+  const successRate =
+    metrics?.count_2xx_24h && metrics?.totalCount24h
+      ? (metrics.count_2xx_24h / metrics.totalCount24h) * 100
+      : null;
+
   const config = {
     [HealthStatus.Healthy]: {
       Icon: CircleCheck,
@@ -123,7 +128,13 @@ export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
                 {metrics.uptime24hPct !== null && (
                   <div className="flex justify-between gap-4">
                     <span>Uptime:</span>
-                    <span>{metrics.uptime24hPct.toFixed(0)}%</span>
+                    <span>{metrics.uptime24hPct.toFixed(1)}%</span>
+                  </div>
+                )}
+                {successRate !== null && (
+                  <div className="flex justify-between gap-4">
+                    <span>Success Rate:</span>
+                    <span>{successRate.toFixed(1)}%</span>
                   </div>
                 )}
               </div>
