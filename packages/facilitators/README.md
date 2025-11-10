@@ -71,6 +71,7 @@ The following facilitators currently support resource discovery:
 - **thirdweb** - Web3 development platform
 - **PayAI** - AI-payment infrastructure
 - **Ultravioleta DAO** - Community-driven multichain facilitator
+- **Aeon** - BSC Chain facilitator
 
 ### Enumerate All Discoverable Facilitators
 
