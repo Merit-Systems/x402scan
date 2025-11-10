@@ -1,5 +1,3 @@
-import { aeonFacilitator } from './aeon';
-
 export { auto, autoFacilitator } from './auto';
 export { coinbase, coinbaseFacilitator } from './coinbase';
 export { aurracloud, aurracloudFacilitator } from './aurracloud';
