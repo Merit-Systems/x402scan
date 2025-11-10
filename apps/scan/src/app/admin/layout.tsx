@@ -29,6 +29,10 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
             href: '/admin/free-tier',
           },
           {
+            label: 'Resource Search',
+            href: '/admin/resource-search',
+          },
+          {
             label: 'Tool Spending Analysis',
             href: '/admin/spending-analysis',
           },
