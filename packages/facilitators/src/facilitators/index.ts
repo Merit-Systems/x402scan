@@ -1,3 +1,5 @@
+import { aeonFacilitator } from './aeon';
+
 export { auto, autoFacilitator } from './auto';
 export { coinbase, coinbaseFacilitator } from './coinbase';
 export { aurracloud, aurracloudFacilitator } from './aurracloud';
@@ -15,3 +17,4 @@ export { xecho, xechoFacilitator } from './xecho';
 export { codenut, codenutFacilitator } from './codenut';
 export { ultravioletadao, ultravioletadaoFacilitator } from './ultravioletadao';
 export { virtuals, virtualsFacilitator } from './virtuals';
+export { aeon, aeonFacilitator } from './aeon';
