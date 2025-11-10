@@ -20,6 +20,8 @@ import { ResourceFetchProvider } from './contexts/fetch/provider';
 import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 import type { Resources, Tag } from '@prisma/client';
+import { HealthIndicator } from '@/app/server/[id]/(overview)/_components/header/health-indicator';
+import { api } from '@/trpc/client';
 
 interface Props {
   resource: Resources;
@@ -41,6 +43,10 @@ export const ResourceExecutor: React.FC<Props> = ({
   hideOrigin = false,
   isFlat = false,
 }) => {
+  const { data: resourceMetrics } = api.public.resources.getMetrics.useQuery({
+    resourceId: resource.id,
+  });
+
   return (
     <ResourceFetchWrapper
       response={response}
@@ -65,6 +71,7 @@ export const ResourceExecutor: React.FC<Props> = ({
                 response={response}
                 hideOrigin={hideOrigin}
               />
+              <HealthIndicator metrics={resourceMetrics} />
               <ChevronDownIcon className="size-4" />
             </CardHeader>
           </AccordionTrigger>

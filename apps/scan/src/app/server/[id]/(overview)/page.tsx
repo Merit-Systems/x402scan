@@ -9,7 +9,6 @@ import {
 } from './_components/resources';
 import { OriginActivity } from './_components/activity';
 import { OriginAgents } from './_components/agents';
-import { prisma } from '@/services/db/client';
 
 export default async function OriginPage({
   params,
