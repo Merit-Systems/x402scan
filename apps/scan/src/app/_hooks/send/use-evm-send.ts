@@ -9,7 +9,7 @@ import { useMutation } from '@tanstack/react-query';
 
 import { toast } from 'sonner';
 
-import { createWagmiConfig, wagmiConfig } from '@/app/_contexts/wagmi/config';
+import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
 
 import { BASE_USDC } from '@/lib/tokens/usdc';
 
@@ -124,7 +124,7 @@ export const useEvmSend = (props?: Props) => {
       functionName: 'transfer',
       args: [parsedAddress, parseUnits(amount.toString(), 6)],
     });
-  }, [toAddress, amount, writeContract]);
+  }, [toAddress, amount, writeContract, token.address]);
 
   const statusText = useMemo(() => {
     if (isEthBalanceLoading || isBalanceLoading) return 'Loading...';
@@ -135,7 +135,16 @@ export const useEvmSend = (props?: Props) => {
     if (isConfirming) return 'Confirming...';
     if (isConfirmed) return 'Confirmed';
     return 'Send USDC';
-  }, [isEthBalanceLoading, isBalanceLoading, ethBalance, balance, amount]);
+  }, [
+    isEthBalanceLoading,
+    isBalanceLoading,
+    ethBalance,
+    balance,
+    amount,
+    isSending,
+    isConfirming,
+    isConfirmed,
+  ]);
 
   return {
     handleSubmit,

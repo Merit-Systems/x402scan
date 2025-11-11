@@ -18,8 +18,9 @@ import {
 
 import { Fetch } from './fetch';
 
-import { Chain, SUPPORTED_CHAINS, SupportedChain } from '@/types/chain';
+import { SUPPORTED_CHAINS } from '@/types/chain';
 
+import type { SupportedChain } from '@/types/chain';
 import type { FieldDefinition, FieldValue, Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 

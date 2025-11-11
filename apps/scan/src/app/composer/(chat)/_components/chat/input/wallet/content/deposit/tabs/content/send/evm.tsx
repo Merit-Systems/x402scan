@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { usdc } from '@/lib/tokens/usdc';
 
 import { useEvmSend } from '@/app/_hooks/send/use-evm-send';
+
 import { api } from '@/trpc/client';
-import { SupportedChain } from '@/types/chain';
+
+import type { SupportedChain } from '@/types/chain';
 
 interface Props {
   amount: number;

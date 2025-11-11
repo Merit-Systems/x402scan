@@ -9,12 +9,13 @@ import {
 import Image from 'next/image';
 
 import { Chain } from '@/app/_components/chains';
-import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 
 import { Onramp } from './onramp';
-import { DepositTab } from '../types';
-import { SupportedChain } from '@/types/chain';
 import { SendToServerWallet } from './send';
+
+import { DepositTab } from '../types';
+
+import type { SupportedChain } from '@/types/chain';
 
 interface Props {
   tab: DepositTab;
@@ -33,7 +34,7 @@ export const DepositTabsContent: React.FC<Props> = ({
     <Tabs
       className="flex flex-col gap-0"
       value={tab}
-      onValueChange={value => setTab(value as DepositTab)}
+      onValueChange={value => setTab(value)}
     >
       <TabsList className="w-full justify-start gap-2 rounded-md h-fit">
         <TabsTrigger

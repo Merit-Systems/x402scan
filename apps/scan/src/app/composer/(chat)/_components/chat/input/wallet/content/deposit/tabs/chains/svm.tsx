@@ -4,10 +4,11 @@ import { DepositTabsContent } from '../content';
 
 import { DepositTab } from '../types';
 
-import type { DepositTabsProps } from './types';
-import { Chain } from '@/types/chain';
 import { useSolanaNativeBalance } from '@/app/_hooks/balance/native/use-svm-balance';
 import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
+
+import type { Chain } from '@/types/chain';
+import type { DepositTabsProps } from './types';
 
 export const SvmDepositTabs: React.FC<DepositTabsProps<Chain.SOLANA>> = ({
   chain,
@@ -22,7 +23,7 @@ export const SvmDepositTabs: React.FC<DepositTabsProps<Chain.SOLANA>> = ({
     if ((solBalance !== undefined && solBalance === 0) || !solanaAddress) {
       setTab(DepositTab.ONRAMP);
     }
-  }, [solBalance, solanaAddress]);
+  }, [solBalance, solanaAddress, setTab]);
 
   return (
     <DepositTabsContent

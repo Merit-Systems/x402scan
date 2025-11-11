@@ -1,13 +1,14 @@
 import { useAccount, useBalance as useBalanceWagmi } from 'wagmi';
 
-import { base } from 'viem/chains';
 import { formatEther } from 'viem';
 
 import { useQueryClient } from '@tanstack/react-query';
 
+import { CHAIN_ID } from '@/types/chain';
+
 import type { Address } from 'viem';
-import { UseBalanceReturnType } from '../types';
-import { CHAIN_ID, SupportedChain } from '@/types/chain';
+import type { UseBalanceReturnType } from '../types';
+import type { SupportedChain } from '@/types/chain';
 
 interface Props {
   address?: Address;

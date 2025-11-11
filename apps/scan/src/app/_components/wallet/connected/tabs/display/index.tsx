@@ -9,7 +9,7 @@ import {
 } from '@coinbase/cdp-hooks';
 import { signOut, useSession } from 'next-auth/react';
 
-import { useConnections, useDisconnect } from 'wagmi';
+import { useConnections } from 'wagmi';
 
 import { useMutation } from '@tanstack/react-query';
 

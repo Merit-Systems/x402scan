@@ -89,8 +89,6 @@ export const useSvmSend = ({
     mutate: sendTransaction,
     isPending: isSending,
     isSuccess: isSent,
-    data: signature,
-    reset: resetSendTransaction,
   } = useMutation({
     mutationFn: async ({
       recipientAddress,
@@ -217,6 +215,8 @@ export const useSvmSend = ({
     solBalance,
     usdcBalance,
     amount,
+    isSending,
+    isSent,
   ]);
 
   return {

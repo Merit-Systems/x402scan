@@ -2,15 +2,14 @@ import { Check, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
+import { SVMNotConnected } from '@/app/_components/wallet/connected/chain-not-connected/svm';
+
 import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import { useSvmSend } from '@/app/_hooks/send/use-svm-send';
 
-import { ChainNotConnected } from '@/app/_components/wallet/connected/chain-not-connected';
-
 import type { UiWalletAccount } from '@wallet-standard/react';
 import type { SolanaAddress } from '@/types/address';
-import { SVMNotConnected } from '@/app/_components/wallet/connected/chain-not-connected/svm';
 
 interface Props {
   amount: number;

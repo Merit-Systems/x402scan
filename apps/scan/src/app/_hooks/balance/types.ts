@@ -1,5 +1,3 @@
-import { UseQueryResult } from '@tanstack/react-query';
-
 export type UseBalanceReturnType = {
   data: number | undefined;
   isLoading: boolean;

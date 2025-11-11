@@ -1,12 +1,14 @@
 import { CopyCode } from '@/components/ui/copy-code';
+
 import { api } from '@/trpc/client';
-import { SupportedChain } from '@/types/chain';
+
+import type { SupportedChain } from '@/types/chain';
 
 interface Props {
   chain: SupportedChain;
 }
 
-export const ServerWalletAddress: React.FC<Props> = ({}) => {
+export const ServerWalletAddress: React.FC<Props> = () => {
   return (
     <div className="flex flex-col gap-1">
       <span className="font-medium text-sm">Your Composer Wallet Address</span>

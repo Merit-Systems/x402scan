@@ -1,11 +1,13 @@
 import { useState } from 'react';
 
-import { ServerWalletAddress } from '../../address';
-
-import { Chain, type SupportedChain } from '@/types/chain';
 import { SvmDepositTabs } from './chains/svm';
 import { EvmDepositTabs } from './chains/evm';
+
 import { DepositTab } from './types';
+
+import { Chain } from '@/types/chain';
+
+import type { SupportedChain } from '@/types/chain';
 
 interface Props {
   chain: SupportedChain;

@@ -23,7 +23,7 @@ export const EvmDepositTabs: React.FC<DepositTabsProps> = ({
     if ((ethBalance !== undefined && ethBalance === 0) || !evmAddress) {
       setTab(DepositTab.ONRAMP);
     }
-  }, [ethBalance, evmAddress]);
+  }, [ethBalance, evmAddress, setTab]);
 
   return (
     <DepositTabsContent

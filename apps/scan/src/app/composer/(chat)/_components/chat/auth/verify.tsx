@@ -1,12 +1,16 @@
 'use client';
 
-import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+import { Loader2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+
 import { useSiwe } from '@/app/_hooks/sign-in/use-siwe';
 import { useSiws } from '@/app/_hooks/sign-in/use-siws';
-import { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
-import { Button } from '@/components/ui/button';
-import { UiWalletAccount } from '@wallet-standard/react';
-import { Loader2 } from 'lucide-react';
+
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+
+import type { UiWalletAccount } from '@wallet-standard/react';
+import type { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
 interface Props {
   connectedWallets: ConnectedWallets;

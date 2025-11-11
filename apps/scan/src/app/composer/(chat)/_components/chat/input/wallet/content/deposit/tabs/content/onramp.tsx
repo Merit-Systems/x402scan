@@ -36,7 +36,7 @@ export const Onramp: React.FC<Props> = ({ chain }) => {
       redirect: window.location.href,
       defaultNetwork: chain,
     });
-  }, [amount, createOnrampSession]);
+  }, [amount, createOnrampSession, chain]);
 
   return (
     <div className="flex flex-col gap-2">

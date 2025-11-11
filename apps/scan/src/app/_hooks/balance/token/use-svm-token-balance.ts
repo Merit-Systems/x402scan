@@ -5,7 +5,7 @@ import { api } from '@/trpc/client';
 import { useConnectedWallets } from '../../use-connected-wallets';
 
 import type { SolanaAddress } from '@/types/address';
-import { UseBalanceReturnType } from '../types';
+import type { UseBalanceReturnType } from '../types';
 
 interface Props {
   tokenMint?: string;

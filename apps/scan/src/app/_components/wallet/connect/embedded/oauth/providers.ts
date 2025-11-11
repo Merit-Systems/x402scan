@@ -1,4 +1,4 @@
-import { OAuth2ProviderType } from '@coinbase/cdp-hooks';
+import type { OAuth2ProviderType } from '@coinbase/cdp-hooks';
 
 interface OauthProvider {
   id: OAuth2ProviderType;
