@@ -3,7 +3,7 @@ import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN, USDC_POLYGON_TOKEN } from '../const
 
 import type { Facilitator, FacilitatorConfig } from '../types';
 
-export const gx402Config: FacilitatorConfig = {
+export const gx402: FacilitatorConfig = {
   url: 'https://api.gx402.org',
 };
 
@@ -19,7 +19,7 @@ export const gx402Facilitator = {
     docsUrl: 'https://docs.gx402.org/facilitator',
     color: '#01b8da',
   },
-  config: gx402Config,
+  config: gx402,
   discoveryConfig: gx402Discovery,
   addresses: {
     [Network.BASE]: [
