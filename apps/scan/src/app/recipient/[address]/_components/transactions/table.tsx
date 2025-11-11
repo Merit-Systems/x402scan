@@ -18,7 +18,7 @@ export const LatestTransactionsTable: React.FC<Props> = ({
   address,
   pageSize,
 }) => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
   const { sorting } = useTransfersSorting();
 
   const [page, setPage] = useState(0);
@@ -31,8 +31,7 @@ export const LatestTransactionsTable: React.FC<Props> = ({
       include: [address],
     },
     sorting,
-    startDate,
-    endDate,
+    timeframe,
   });
 
   return (

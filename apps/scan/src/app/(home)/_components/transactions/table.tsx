@@ -16,7 +16,7 @@ interface Props {
 
 export const Table: React.FC<Props> = ({ pageSize }) => {
   const { sorting } = useTransfersSorting();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
   const [page, setPage] = useState(0);
@@ -28,8 +28,7 @@ export const Table: React.FC<Props> = ({ pageSize }) => {
       page,
     },
     sorting,
-    startDate,
-    endDate,
+    timeframe,
   });
 
   return (
