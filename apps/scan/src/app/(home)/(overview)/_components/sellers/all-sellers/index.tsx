@@ -48,7 +48,6 @@ export const AllSellers: React.FC<Props> = async ({ chain }) => {
   return (
     <HydrateClient>
       <TimeRangeProvider
-        creationDate={firstTransfer}
         initialTimeframe={ActivityTimeframe.OneDay}
       >
         <SellersSortingProvider initialSorting={defaultSellersSorting}>

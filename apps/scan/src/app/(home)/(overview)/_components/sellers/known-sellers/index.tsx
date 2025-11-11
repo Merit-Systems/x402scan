@@ -46,7 +46,6 @@ export const TopServers = async ({ chain }: Props) => {
     <HydrateClient>
       <SellersSortingProvider initialSorting={defaultSellersSorting}>
         <TimeRangeProvider
-          creationDate={firstTransfer}
           initialTimeframe={ActivityTimeframe.OneDay}
         >
           <TopServersContainer>

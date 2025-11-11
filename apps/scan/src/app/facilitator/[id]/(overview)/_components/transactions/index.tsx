@@ -47,7 +47,6 @@ export const LatestTransactions: React.FC<Props> = async ({
   return (
     <HydrateClient>
       <TimeRangeProvider
-        creationDate={firstTransfer}
         initialTimeframe={ActivityTimeframe.ThirtyDays}
       >
         <TransfersSortingProvider initialSorting={defaultTransfersSorting}>

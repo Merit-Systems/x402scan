@@ -45,7 +45,6 @@ export default async function NetworksPage({
   return (
     <HydrateClient>
       <TimeRangeProvider
-        creationDate={firstTransfer}
         initialTimeframe={ActivityTimeframe.OneDay}
       >
         <NetworksSortingProvider initialSorting={defaultNetworksSorting}>

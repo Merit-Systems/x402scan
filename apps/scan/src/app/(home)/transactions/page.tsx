@@ -40,7 +40,6 @@ export default async function TransactionsPage({
     <HydrateClient>
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
         <TimeRangeProvider
-          creationDate={firstTransfer}
           initialTimeframe={ActivityTimeframe.ThirtyDays}
         >
           <Heading

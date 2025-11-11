@@ -40,7 +40,6 @@ export const OverallStats = async () => {
     <HydrateClient>
       <TimeRangeProvider
         initialTimeframe={ActivityTimeframe.ThreeDays}
-        creationDate={firstTransfer}
       >
         <ActivityContainer>
           <ErrorBoundary

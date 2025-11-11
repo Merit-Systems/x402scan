@@ -54,7 +54,6 @@ export default async function TransactionsPage({
       />
       <Body>
         <TimeRangeProvider
-          creationDate={firstTransfer}
           initialTimeframe={ActivityTimeframe.ThirtyDays}
         >
           <TransfersSortingProvider initialSorting={defaultTransfersSorting}>

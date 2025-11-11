@@ -22,7 +22,6 @@ export default async function MarketplacePage() {
 
   return (
     <TimeRangeProvider
-      creationDate={firstTransfer}
       initialTimeframe={ActivityTimeframe.OneDay}
     >
       <Heading
