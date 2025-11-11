@@ -6,12 +6,13 @@ import Image from 'next/image';
 
 import { Check, Loader2, Wallet } from 'lucide-react';
 
-import { MoneyInput } from '@/components/ui/money-input';
 import { Button } from '@/components/ui/button';
 
 import { api } from '@/trpc/client';
 import { useSession } from 'next-auth/react';
 import { useSignIn } from '@/app/_hooks/use-sign-in';
+import { TokenInput } from '@/components/ui/token/token-input';
+import { BASE_USDC } from '@/lib/tokens/usdc';
 
 export const Onramp = () => {
   const { data: session, status } = useSession();
@@ -87,8 +88,10 @@ const OnrampContent = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <MoneyInput
-        setAmount={setAmount}
+      <TokenInput
+        onChange={setAmount}
+        selectedToken={BASE_USDC}
+        label="Buy on Coinbase"
         placeholder="0.00"
         inputClassName="placeholder:text-muted-foreground/60"
       />
