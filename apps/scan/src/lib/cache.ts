@@ -6,7 +6,7 @@ import { CACHE_DURATION_MINUTES } from './cache-constants';
 /**
  * Cache context that can be passed from tRPC to control cache behavior
  */
-export interface CacheContext {
+interface CacheContext {
   isWarmingCache?: boolean;
 }
 
