@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 import type { Resources, Tag } from '@prisma/client';
-import { HealthIndicator } from '@/components/health/indicator';
+import { HealthIndicator } from '@/app/_components/health/indicator';
 import { api } from '@/trpc/client';
 
 interface Props {
