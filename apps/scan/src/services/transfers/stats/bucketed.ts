@@ -78,6 +78,8 @@ const getBucketedStatisticsUncached = async (
 
   const rawResult = await queryRaw(sql, bucketedResultSchema);
 
+  console.log('bucketed statistics rawResult', rawResult);
+
   const transformedResult = rawResult.map(row => ({
     ...row,
     total_amount:
