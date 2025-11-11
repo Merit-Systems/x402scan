@@ -13,7 +13,7 @@ export function getTimeRangeFromTimeframe(
       ? now
       : subHours(now, timeframe.offset * 24);
 
-  if (timeframe === ActivityTimeframe.AllTime) {
+  if (timeframe === Number(ActivityTimeframe.AllTime)) {
     return { startDate: undefined, endDate };
   }
 
@@ -39,7 +39,7 @@ export const getBucketedTimeRangeFromTimeframe = async ({
   const now = new Date();
   const endDate = now;
 
-  if (period === ActivityTimeframe.AllTime) {
+  if (period === Number(ActivityTimeframe.AllTime)) {
     return {
       startDate:
         typeof creationDate === 'function'
