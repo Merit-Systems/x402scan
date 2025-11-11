@@ -10,7 +10,7 @@ export const TopFacilitatorsContent = () => {
   const { chain } = useChain();
   const { timeframe } = useTimeRangeContext();
 
-  const [facilitatorsData] = api.public.facilitators.listMv.useSuspenseQuery({
+  const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
     chain,
     timeframe,
     pagination: {
