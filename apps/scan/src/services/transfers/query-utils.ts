@@ -15,8 +15,8 @@ export const transfersWhereClause = (
 
   return Prisma.sql`WHERE 1=1
     ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-    ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
-    ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
+    ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate.toISOString()}::timestamp` : Prisma.empty}
+    ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate.toISOString()}::timestamp` : Prisma.empty}
     ${
       recipients?.include !== undefined && recipients.include.length > 0
         ? Prisma.sql`AND t.recipient = ANY(${recipients.include})`

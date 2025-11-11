@@ -69,8 +69,8 @@ const listTopNetworksUncached = async (
     FROM "TransferEvent" t
     WHERE 1=1
       ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-      ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
-      ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
+      ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate.toISOString()}::timestamp` : Prisma.empty}
+      ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate.toISOString()}::timestamp` : Prisma.empty}
     GROUP BY t.chain
     ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
     LIMIT ${limit}

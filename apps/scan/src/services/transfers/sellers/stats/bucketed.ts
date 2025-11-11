@@ -40,9 +40,9 @@ const getBucketedSellerStatisticsUncached = async (
     WITH all_buckets AS (
       SELECT generate_series(
         to_timestamp(
-          floor(extract(epoch from ${startDate}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
+          floor(extract(epoch from ${startDate.toISOString()}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
         ),
-        ${endDate}::timestamp,
+        ${endDate.toISOString()}::timestamp,
         (${bucketSizeSeconds} || ' seconds')::interval
       ) AS bucket_start
     ),

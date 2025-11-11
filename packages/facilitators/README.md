@@ -110,6 +110,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **xEcho**      | BASE          | No        | No                             |
 | **CodeNut**    | BASE          | No        | No                             |
 | **Ultravioleta DAO** | BASE, SOLANA | ✅ Yes    | No                             |
+| **Virtuals**   | BASE          | No        | No                             |
 
 ### Import Individual Facilitators
 
@@ -128,6 +129,7 @@ import {
   xecho,
   codenut,
   ultravioletadao,
+  virtuals
 } from 'facilitators';
 
 // Facilitators requiring setup

@@ -1,18 +1,18 @@
-name: Deploy Analytics to Trigger.dev (prod)
+name: Deploy Alerts to Trigger.dev (prod)
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'sync/analytics/**'
+      - 'sync/alerts/**'
       - 'packages/facilitators/**'
       - 'pnpm-lock.yaml'
-      - '.github/workflows/deploy-analytics.yml'
+      - '.github/workflows/deploy-alerts.yml'
 
 jobs:
   deploy:
-    name: Deploy Analytics to Trigger.dev
+    name: Deploy Alerts to Trigger.dev
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -32,7 +32,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Deploy to Trigger.dev
-        working-directory: ./sync/analytics
+        working-directory: ./sync/alerts
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
         run: pnpm trigger:deploy

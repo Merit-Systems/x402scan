@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { api } from '@/trpc/server';
+import { createCaller } from '@/trpc/routers';
+import { createTRPCContext } from '@/trpc/trpc';
 import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import {
@@ -12,6 +14,7 @@ import { Chain } from '@/types/chain';
 
 import type { NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
+import { env } from '@/env';
 
 /**
  * Maximum number of concurrent cache warming requests
@@ -81,6 +84,7 @@ async function limitConcurrency(
  * Get cache warming tasks for the Homepage
  */
 function getHomePageTasks(
+  api: ReturnType<typeof createCaller>,
   timeframe: ActivityTimeframe,
   chain?: Chain
 ): (() => Promise<unknown>)[] {
@@ -102,16 +106,10 @@ function getHomePageTasks(
                 period: timeframe,
                 offset: timeframe,
               },
+              chain,
             }),
         ]
       : []),
-
-    // Overall Stats - previous period (for comparison)
-    () =>
-      api.public.stats.overall({
-        timeframe,
-        chain,
-      }),
 
     // Bucketed Statistics - for charts
     () =>
@@ -167,6 +165,7 @@ function getHomePageTasks(
  * Get cache warming tasks for the Networks Page
  */
 function getNetworksPageTasks(
+  api: ReturnType<typeof createCaller>,
   timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
@@ -183,11 +182,7 @@ function getNetworksPageTasks(
         timeframe,
       }),
 
-    // Overall stats (shared with homepage)
-    () =>
-      api.public.stats.overall({
-        timeframe,
-      }),
+    // Overall stats already warmed by Home page (all chains variant)
   ];
 }
 
@@ -195,6 +190,7 @@ function getNetworksPageTasks(
  * Get cache warming tasks for the Facilitators Page
  */
 function getFacilitatorsPageTasks(
+  api: ReturnType<typeof createCaller>,
   timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
@@ -214,11 +210,7 @@ function getFacilitatorsPageTasks(
         timeframe,
       }),
 
-    // Overall stats (shared with homepage)
-    () =>
-      api.public.stats.overall({
-        timeframe,
-      }),
+    // Overall stats already warmed by Networks page
   ];
 }
 
@@ -226,6 +218,7 @@ function getFacilitatorsPageTasks(
  * Get cache warming tasks for the Resources/Marketplace Page
  */
 function getResourcesPageTasks(
+  api: ReturnType<typeof createCaller>,
   timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
@@ -316,10 +309,19 @@ export async function GET(request: NextRequest) {
     const startTime = Date.now();
     const timeframesWarmed: Record<string, number> = {};
 
+    // Create cache warming API with authenticated headers
+    const warmingHeaders = new Headers();
+    warmingHeaders.set('x-cache-warming', 'true');
+    warmingHeaders.set('authorization', `Bearer ${env.CRON_SECRET ?? ''}`);
+
+    const ctx = await createTRPCContext(warmingHeaders);
+    const api = createCaller(ctx);
+
     // Optional query params
     const { searchParams } = new URL(request.url);
     const onlyAllTime = searchParams.get('onlyAllTime') === 'true';
     const pagesParam = searchParams.get('pages'); // e.g., "home,networks"
+    const chainParam = searchParams.get('chain'); // e.g., "base", "solana", "all"
 
     // Filter timeframes if requested
     const timeframesToWarm = onlyAllTime
@@ -332,6 +334,17 @@ export async function GET(request: NextRequest) {
           .split(',')
           .filter(p => ALL_PAGES.includes(p as WarmablePage)) as WarmablePage[])
       : ALL_PAGES;
+
+    // Parse chain filter if provided
+    const chainFilter: Chain | 'all' | undefined = chainParam
+      ? chainParam === 'all'
+        ? 'all'
+        : chainParam === (Chain.BASE as string)
+          ? Chain.BASE
+          : chainParam === (Chain.SOLANA as string)
+            ? Chain.SOLANA
+            : undefined
+      : undefined;
 
     console.log(
       `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'}${onlyAllTime ? ' (All Time only)' : ''} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? '' : 's'}: ${pagesToWarm.join(', ')}`
@@ -354,22 +367,28 @@ export async function GET(request: NextRequest) {
       const allTasks: (() => Promise<unknown>)[] = [];
 
       if (pagesToWarm.includes('home')) {
-        // Home page with all chain variants
-        allTasks.push(...getHomePageTasks(timeframe)); // All chains
-        allTasks.push(...getHomePageTasks(timeframe, Chain.BASE));
-        allTasks.push(...getHomePageTasks(timeframe, Chain.SOLANA));
+        // Home page with chain filtering
+        if (!chainFilter || chainFilter === 'all') {
+          allTasks.push(...getHomePageTasks(api, timeframe)); // All chains (undefined)
+        }
+        if (!chainFilter || chainFilter === Chain.BASE) {
+          allTasks.push(...getHomePageTasks(api, timeframe, Chain.BASE));
+        }
+        if (!chainFilter || chainFilter === Chain.SOLANA) {
+          allTasks.push(...getHomePageTasks(api, timeframe, Chain.SOLANA));
+        }
       }
 
       if (pagesToWarm.includes('networks')) {
-        allTasks.push(...getNetworksPageTasks(timeframe));
+        allTasks.push(...getNetworksPageTasks(api, timeframe));
       }
 
       if (pagesToWarm.includes('facilitators')) {
-        allTasks.push(...getFacilitatorsPageTasks(timeframe));
+        allTasks.push(...getFacilitatorsPageTasks(api, timeframe));
       }
 
       if (pagesToWarm.includes('resources')) {
-        allTasks.push(...getResourcesPageTasks(timeframe));
+        allTasks.push(...getResourcesPageTasks(api, timeframe));
       }
 
       // Run all tasks with controlled concurrency
