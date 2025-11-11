@@ -54,7 +54,16 @@ export const Seller: React.FC<Props> = ({
     );
   }
 
-  return <Origins origins={origins} addresses={[address]} />;
+  const healthMetrics = origins[0]?.originMetrics?.[0];
+
+  return (
+    <Origins
+      origins={origins}
+      addresses={[address]}
+      healthMetrics={healthMetrics}
+      disableCopy={disableCopy}
+    />
+  );
 };
 
 export const SellerSkeleton = () => {

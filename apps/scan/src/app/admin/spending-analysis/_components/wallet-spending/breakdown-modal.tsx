@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { DataTable } from '@/components/ui/data-table';
 import { createWalletBreakdownColumns } from './breakdown-columns';
+import { ToolCallsChart } from './tool-calls-chart';
 import { api } from '@/trpc/client';
 
 interface WalletBreakdownModalProps {
@@ -50,7 +51,9 @@ export const WalletBreakdownModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
+          <ToolCallsChart resourceId={resourceId} resourceUrl={resourceUrl} />
+
           <DataTable
             columns={columns}
             data={breakdown}
