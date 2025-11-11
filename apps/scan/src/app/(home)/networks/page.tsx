@@ -25,7 +25,7 @@ export default async function NetworksPage({
 
   await Promise.all([
     // Use MV for bucketed statistics (OneDay is supported)
-    api.networks.bucketedStatisticsMv.prefetch({
+    api.networks.bucketedStatistics.prefetch({
       timeframe: ActivityTimeframe.OneDay,
       numBuckets: 48,
       chain,
@@ -36,7 +36,7 @@ export default async function NetworksPage({
       chain,
     }),
     // Use MV for networks list (OneDay is supported)
-    api.networks.listMv.prefetch({
+    api.networks.list.prefetch({
       timeframe: ActivityTimeframe.OneDay,
       chain,
     }),

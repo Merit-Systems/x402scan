@@ -94,7 +94,7 @@ function getHomePageTasks(
   const canUseMV = timeframe && [
     ActivityTimeframe.OneDay,
     ActivityTimeframe.SevenDays,
-    ActivityTimeframe.FifteenDays,
+    ActivityTimeframe.FourteenDays,
     ActivityTimeframe.ThirtyDays,
   ].includes(timeframe);
 
@@ -201,30 +201,26 @@ function getHomePageTasks(
  * Get cache warming tasks for the Networks Page
  */
 function getNetworksPageTasks(
-  startDate: Date,
-  endDate: Date
+  timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
     // Networks bucketed statistics
     () =>
       api.networks.bucketedStatistics({
         numBuckets: 48,
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Networks list
     () =>
       api.networks.list({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Overall stats (shared with homepage)
     () =>
       api.public.stats.overall({
-        startDate,
-        endDate,
+        timeframe,
       }),
   ];
 }
@@ -422,7 +418,7 @@ export async function GET(request: NextRequest) {
       }
 
       if (pagesToWarm.includes('networks')) {
-        allTasks.push(...getNetworksPageTasks(startDate, endDate));
+        allTasks.push(...getNetworksPageTasks(timeframe));
       }
 
       if (pagesToWarm.includes('facilitators')) {

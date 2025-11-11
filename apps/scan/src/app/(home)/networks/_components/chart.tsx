@@ -17,7 +17,7 @@ export const NetworksChart = () => {
   const { timeframe } = useTimeRangeContext();
 
   const [bucketedNetworkData] =
-    api.networks.bucketedStatisticsMv.useSuspenseQuery({
+    api.networks.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,
       timeframe,
       chain,

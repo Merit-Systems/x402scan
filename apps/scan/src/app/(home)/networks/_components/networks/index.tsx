@@ -14,7 +14,7 @@ export const NetworksTable: React.FC = () => {
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
-  const [networks] = api.networks.listMv.useSuspenseQuery({
+  const [networks] = api.networks.list.useSuspenseQuery({
     sorting,
     timeframe,
     chain,
