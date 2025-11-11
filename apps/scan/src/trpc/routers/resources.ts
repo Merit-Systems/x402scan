@@ -33,7 +33,7 @@ import type { ImageObject } from 'open-graph-scraper/types';
 export const resourcesRouter = createTRPCRouter({
   list: {
     all: publicProcedure.query(async () => {
-      return await listResources();
+      return await listResources({});
     }),
     byAddress: publicProcedure
       .input(mixedAddressSchema)

@@ -19,6 +19,7 @@ import { defaultFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators
 import { getChain } from '@/app/_lib/chain';
 import { facilitators } from '@/lib/facilitators';
 import { getSSRTimeRange } from '@/lib/time-range';
+import { FacilitatorPackageBanner } from './_components/facilitator-package-banner';
 
 export default async function FacilitatorsPage({
   searchParams,
@@ -67,6 +68,7 @@ export default async function FacilitatorsPage({
             actions={<RangeSelector />}
           />
           <Body>
+            <FacilitatorPackageBanner />
             <Card className="overflow-hidden">
               <Suspense fallback={<LoadingFacilitatorsChart />}>
                 <FacilitatorsChart />

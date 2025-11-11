@@ -16,6 +16,7 @@ import {
   ultravioletadaoFacilitator,
   virtualsFacilitator,
   gx402Facilitator,
+  treasureFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -40,6 +41,7 @@ const FACILITATORS = validateUniqueFacilitators([
   ultravioletadaoFacilitator,
   virtualsFacilitator,
   gx402Facilitator,
+  treasureFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =
