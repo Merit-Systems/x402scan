@@ -18,8 +18,9 @@ import {
 
 import { Fetch } from './fetch';
 
-import { Chain } from '@/types/chain';
+import { SUPPORTED_CHAINS } from '@/types/chain';
 
+import type { SupportedChain } from '@/types/chain';
 import type { FieldDefinition, FieldValue, Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 
@@ -211,8 +212,8 @@ export function Form({
           (x402Response.accepts
             ?.map(accept => accept.network)
             .filter(network =>
-              Object.values(Chain).includes(network as Chain)
-            ) ?? []) as Chain[]
+              SUPPORTED_CHAINS.includes(network as SupportedChain)
+            ) ?? []) as SupportedChain[]
         }
         allRequiredFieldsFilled={allRequiredFieldsFilled}
         maxAmountRequired={maxAmountRequired}

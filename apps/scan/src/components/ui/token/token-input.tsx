@@ -14,8 +14,8 @@ import { Loading } from '@/components/ui/loading';
 
 import { TokenSelect } from './token-select';
 
-import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
-import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
+import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
+import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-balance';
 
 import { cn } from '@/lib/utils';
 import { BASE_USDC } from '@/lib/tokens/usdc';
@@ -55,13 +55,14 @@ export const TokenInput: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const autoNumericRef = useRef<AutoNumeric | null>(null);
 
-  const { data: evmBalance, isLoading: isEvmBalanceLoading } = useBalance(
-    selectedToken,
-    address as `0x${string}` | undefined,
-    {
-      enabled: isBalanceMax && chain !== Chain.SOLANA,
-    }
-  );
+  const { data: evmBalance, isLoading: isEvmBalanceLoading } =
+    useEvmTokenBalance({
+      token: selectedToken,
+      address: address as `0x${string}` | undefined,
+      query: {
+        enabled: isBalanceMax && chain !== Chain.SOLANA,
+      },
+    });
 
   const { data: svmBalance, isLoading: isSolanaBalanceLoading } =
     useSPLTokenBalance({

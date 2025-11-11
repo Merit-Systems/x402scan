@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { cookieToInitialState } from 'wagmi';
 
 import { WagmiProviderClient } from './client';
-import { getServerConfig } from './config';
+import { createWagmiConfig } from './config';
 
 interface Props {
   children: React.ReactNode;
@@ -11,7 +11,7 @@ interface Props {
 
 export const WagmiProvider: React.FC<Props> = async ({ children }) => {
   const initialState = cookieToInitialState(
-    getServerConfig(),
+    createWagmiConfig(),
     (await headers()).get('cookie')
   );
   return (

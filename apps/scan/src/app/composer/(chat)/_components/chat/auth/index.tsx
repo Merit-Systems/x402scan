@@ -6,12 +6,9 @@ import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-
-import { useAccount } from 'wagmi';
 
 import { Logo } from '@/components/logo';
 
@@ -20,13 +17,14 @@ import { Verify } from './verify';
 import { ConnectWalletForm } from '@/app/_components/wallet/connect/form';
 import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
 import { Chain } from '@/types/chain';
+import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
 interface Props {
   agentConfig?: NonNullable<RouterOutputs['public']['agents']['get']>;
 }
 
 export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
-  const { address } = useAccount();
+  const connectedWallets = useConnectedWallets();
 
   return (
     <WalletChainProvider initialChain={Chain.BASE} isFixed>
@@ -56,28 +54,13 @@ export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
               </AlertDialogDescription>
             </div>
           </AlertDialogHeader>
-          {address ? (
-            <Verify />
+          {connectedWallets.isConnected ? (
+            <Verify connectedWallets={connectedWallets} />
           ) : (
             <div className="p-4 flex flex-col gap-4">
               <ConnectWalletForm />
             </div>
           )}
-          <AlertDialogFooter className="flex flex-row items-center gap-4 space-y-0 bg-muted border-t p-4">
-            <p className="text-xs font-mono text-center">
-              Composer currenly only supports Base wallets. Track our progress
-              on Solana support{' '}
-              <a
-                href="https://github.com/Merit-Systems/x402scan/pull/320"
-                className="text-primary underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                here
-              </a>
-              .
-            </p>
-          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </WalletChainProvider>

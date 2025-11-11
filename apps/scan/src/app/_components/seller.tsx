@@ -1,14 +1,17 @@
 'use client';
 
-import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { Address } from '@/components/ui/address';
 
 import { Origins } from '@/app/_components/origins';
+
 import { api } from '@/trpc/client';
+
 import { cn } from '@/lib/utils';
+
 import type { MixedAddress } from '@/types/address';
-import Link from 'next/link';
 
 interface Props {
   address: MixedAddress;
@@ -21,11 +24,7 @@ export const Seller: React.FC<Props> = ({
   addressClassName,
   disableCopy,
 }) => {
-  const {
-    data: origins,
-    isLoading,
-    error,
-  } = api.public.origins.list.origins.useQuery(
+  const { data: origins, isLoading } = api.public.origins.list.origins.useQuery(
     {
       address,
     },
@@ -33,10 +32,6 @@ export const Seller: React.FC<Props> = ({
       enabled: !!address,
     }
   );
-
-  if (error) {
-    console.log(address);
-  }
 
   if (isLoading) {
     return <SellerSkeleton />;
@@ -54,7 +49,16 @@ export const Seller: React.FC<Props> = ({
     );
   }
 
-  return <Origins origins={origins} addresses={[address]} />;
+  const healthMetrics = origins[0]?.originMetrics?.[0];
+
+  return (
+    <Origins
+      origins={origins}
+      addresses={[address]}
+      healthMetrics={healthMetrics}
+      disableCopy={disableCopy}
+    />
+  );
 };
 
 export const SellerSkeleton = () => {

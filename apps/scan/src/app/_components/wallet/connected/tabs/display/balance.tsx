@@ -3,7 +3,7 @@ import { useWalletChain } from '../../../../../_contexts/wallet-chain/hook';
 import { ItemContainer } from './item';
 import { Loading } from '@/components/ui/loading';
 import { api } from '@/trpc/client';
-import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
+import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
 import { usdc } from '@/lib/tokens/usdc';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -34,7 +34,9 @@ interface EvmBalanceProps extends Props {
 }
 
 const EvmBalance: React.FC<EvmBalanceProps> = ({ chain }) => {
-  const { data: balance, isLoading } = useBalance(usdc(chain));
+  const { data: balance, isLoading } = useEvmTokenBalance({
+    token: usdc(chain),
+  });
 
   return <BalanceItem balance={balance} isLoading={isLoading} />;
 };

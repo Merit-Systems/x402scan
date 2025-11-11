@@ -13,11 +13,7 @@ import { Chain, CHAIN_ICONS, CHAIN_LABELS } from '@/types/chain';
 import { WithdrawEVM } from './evm';
 import { WithdrawSolana } from './svm';
 
-interface Props {
-  address: string;
-}
-
-export const Withdraw: React.FC<Props> = ({ address }) => {
+export const Withdraw: React.FC = () => {
   const [toAddress, setToAddress] = useState('');
   const [amount, setAmount] = useState(0);
 
@@ -61,7 +57,6 @@ export const Withdraw: React.FC<Props> = ({ address }) => {
       </div>
       {chain === Chain.BASE ? (
         <WithdrawEVM
-          address={address}
           amount={amount}
           toAddress={toAddress}
           setAmount={setAmount}

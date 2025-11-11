@@ -1,3 +1,5 @@
+'use client';
+
 import { Bot } from 'lucide-react';
 
 import { useSession } from 'next-auth/react';
@@ -14,31 +16,30 @@ import { api } from '@/trpc/client';
 export const WalletButton = () => {
   const { data: session } = useSession();
 
-  const { data: address, isLoading: isLoadingAddress } =
-    api.user.serverWallet.address.useQuery(undefined, {
-      enabled: !!session,
-    });
-
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
     api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
       enabled: !!session,
     });
 
-  const { isLoading: isLoadingHasUserAcknowledgedComposer } =
-    api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
-      enabled: !!session,
-    });
+  const {
+    data: hasUserAcknowledgedComposer,
+    isLoading: isLoadingHasUserAcknowledgedComposer,
+  } = api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
+    enabled: !!session,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
 
-  if (isLoadingAddress || isLoadingHasUserAcknowledgedComposer) {
+  if (isLoadingHasUserAcknowledgedComposer) {
     return <LoadingWalletButton />;
   }
 
-  if (!address) {
-    return null;
+  if (!hasUserAcknowledgedComposer) {
+    return <WalletButtonComponent disabled>Welcome</WalletButtonComponent>;
   }
 
   return (
-    <WalletDialog address={address}>
+    <WalletDialog>
       <WalletButtonComponent
         className={
           usdcBalance !== undefined && usdcBalance < 0.1

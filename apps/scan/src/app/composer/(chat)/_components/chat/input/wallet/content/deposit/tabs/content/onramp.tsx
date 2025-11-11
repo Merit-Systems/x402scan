@@ -11,9 +11,13 @@ import { api } from '@/trpc/client';
 
 import { BASE_USDC } from '@/lib/tokens/usdc';
 
-import { Chain } from '@/types/chain';
+import type { SupportedChain } from '@/types/chain';
 
-export const Onramp = () => {
+interface Props {
+  chain: SupportedChain;
+}
+
+export const Onramp: React.FC<Props> = ({ chain }) => {
   const {
     mutate: createOnrampSession,
     isPending: isCreatingOnrampSession,
@@ -30,9 +34,9 @@ export const Onramp = () => {
     createOnrampSession({
       amount,
       redirect: window.location.href,
-      defaultNetwork: Chain.BASE,
+      defaultNetwork: chain,
     });
-  }, [amount, createOnrampSession]);
+  }, [amount, createOnrampSession, chain]);
 
   return (
     <div className="flex flex-col gap-2">

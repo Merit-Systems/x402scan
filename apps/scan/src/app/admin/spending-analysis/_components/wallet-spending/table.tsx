@@ -6,6 +6,8 @@ import { createColumns } from './columns';
 import { api, type RouterOutputs } from '@/trpc/client';
 import { ToolBreakdownModal } from '../tool-spending/breakdown-modal';
 import { useWalletSpendingSorting } from '@/app/_contexts/sorting/wallet-spending/hook';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 
 type WalletSpending =
   RouterOutputs['admin']['spending']['byWallet']['items'][number];
@@ -33,6 +35,26 @@ export const WalletSpendingTable = () => {
   const wallets = data?.items ?? [];
   const hasNextPage = data?.hasNextPage ?? false;
 
+  const { refetch: fetchAccountsCsv, isFetching: isDownloading } =
+    api.admin.spending.getServerAccountsCsv.useQuery(undefined, {
+      enabled: false,
+    });
+
+  const handleDownloadCsv = async () => {
+    const result = await fetchAccountsCsv();
+    if (result.data) {
+      const blob = new Blob([result.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `server-accounts-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }
+  };
+
   const columns = useMemo(
     () => createColumns(freeTierWallet?.address),
     [freeTierWallet?.address]
@@ -40,6 +62,17 @@ export const WalletSpendingTable = () => {
 
   return (
     <div className="space-y-4">
+      <div className="flex justify-end">
+        <Button
+          onClick={handleDownloadCsv}
+          disabled={isDownloading}
+          variant="outline"
+          size="sm"
+        >
+          <Download className="mr-2 h-4 w-4" />
+          {isDownloading ? 'Downloading...' : 'Download Server Accounts CSV'}
+        </Button>
+      </div>
       <DataTable
         columns={columns}
         data={wallets}

@@ -3,8 +3,10 @@ import { FetchSvm } from './chains/svm';
 
 import { Chain } from '@/types/chain';
 
+import type { SupportedChain } from '@/types/chain';
+
 interface Props {
-  chains: Chain[];
+  chains: SupportedChain[];
   allRequiredFieldsFilled: boolean;
   maxAmountRequired: bigint;
   targetUrl: string;
