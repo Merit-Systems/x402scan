@@ -14,8 +14,6 @@ import {
 
 import { createResumableStreamContext } from 'resumable-stream';
 
-import { toAccount } from 'viem/accounts';
-
 import { createX402OpenAI } from '@merit-systems/ai-x402/server';
 
 import { createChat, getChat, updateChat } from '@/services/db/composer/chat';
@@ -24,14 +22,16 @@ import { auth } from '@/auth';
 
 import { createX402AITools } from '@/services/agent/create-tools';
 
-import { messageSchema } from '@/lib/message-schema';
+import { getUserWallets } from '@/services/cdp/server-wallet/user';
 
-import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
 import { ChatSDKError } from '@/lib/errors';
+import { messageSchema } from '@/lib/message-schema';
 
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
 import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
 import { env } from '@/env';
+
+import { Chain } from '@/types/chain';
 
 import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
@@ -63,16 +63,12 @@ export async function POST(request: NextRequest) {
 
   let chat = await getChat(chatId, session.user.id);
 
-  const wallet = await getWalletForUserId(session.user.id).then(
-    wallet => wallet.wallet
-  );
+  const { wallets } = await getUserWallets(session.user.id);
 
-  if (!wallet) {
-    return new ChatSDKError('not_found:chat').toResponse();
-  }
-  const signer = toAccount(wallet);
+  const wallet = wallets[Chain.BASE];
+
   const openai = createX402OpenAI({
-    walletClient: signer,
+    walletClient: await wallet.signer(),
     baseRouterUrl: env.ECHO_PROXY_URL,
     echoAppId: env.ECHO_APP_ID,
   });
@@ -163,7 +159,7 @@ export async function POST(request: NextRequest) {
 
   const tools = await createX402AITools({
     resourceIds,
-    walletClient: signer,
+    wallets,
     chatId,
   });
 

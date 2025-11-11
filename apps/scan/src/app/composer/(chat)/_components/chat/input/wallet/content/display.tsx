@@ -7,14 +7,20 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ComposerWalletAddressCopyCode } from './address';
 
 import { api } from '@/trpc/client';
+import { Chain } from '@/types/chain';
 
 export const WalletDisplay: React.FC = () => {
   const { data: session } = useSession();
 
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
-      enabled: !!session,
-    });
+    api.user.serverWallet.tokenBalance.useQuery(
+      {
+        chain: Chain.BASE,
+      },
+      {
+        enabled: !!session,
+      }
+    );
 
   return (
     <div className="space-y-4 w-full overflow-hidden">

@@ -17,21 +17,24 @@ import {
 import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
 import { ChatSDKError } from '@/lib/errors';
 
+import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
+
+import type { SupportedChain } from '@/types/chain';
+import type { Wallets } from '../cdp/server-wallet/wallets/types';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { ResourceRequestMetadata } from '@prisma/client';
-import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
 
 interface CreateX402AIToolsParams {
   resourceIds: string[];
-  walletClient: Signer;
+  wallets: Wallets;
   chatId: string;
   maxAmount?: number;
 }
 
 export async function createX402AITools({
   resourceIds,
-  walletClient,
+  wallets,
   chatId,
   maxAmount,
 }: CreateX402AIToolsParams): Promise<Record<string, Tool>> {
@@ -133,10 +136,23 @@ export async function createX402AITools({
               }
             }
 
+            const supportedAccepts = resource.accepts.find(accept =>
+              SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+            );
+
+            if (!supportedAccepts) {
+              throw new ChatSDKError(
+                'payment_required:chat',
+                `This resource does not accept USDC on any networks supported by x402scan`
+              );
+            }
+
+            const network = supportedAccepts.network as SupportedChain;
+
             try {
               const fetchWithPayment = wrapFetchWithPayment(
                 fetch,
-                walletClient,
+                await wallets[network].signer(),
                 maxAmount
                   ? BigInt(parseUnits(String(maxAmount), 6))
                   : resource.accepts[0].maxAmountRequired

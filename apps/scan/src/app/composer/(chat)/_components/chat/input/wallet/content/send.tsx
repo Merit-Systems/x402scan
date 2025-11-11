@@ -8,6 +8,8 @@ import { Check, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { api } from '@/trpc/client';
 import { CopyCode } from '@/components/ui/copy-code';
+import { Chain } from '@/types/chain';
+import { usdc } from '@/lib/tokens/usdc';
 import { TokenInput } from '@/components/ui/token/token-input';
 import { BASE_USDC } from '@/lib/tokens/usdc';
 import { useSession } from 'next-auth/react';
@@ -20,25 +22,37 @@ export const Send: React.FC = () => {
 
   const utils = api.useUtils();
   const { data: serverWalletAddress, isLoading: isServerWalletAddressLoading } =
-    api.user.serverWallet.address.useQuery(undefined, {
-      enabled: !!session,
-    });
+    api.user.serverWallet.address.useQuery(
+      {
+        chain: Chain.BASE,
+      },
+      {
+        enabled: !!session,
+      }
+    );
   const { data: ethBalance, isLoading: isEthBalanceLoading } =
-    api.user.serverWallet.ethBaseBalance.useQuery(undefined, {
-      enabled: !!session,
-    });
-  const { data: balance } = api.user.serverWallet.usdcBaseBalance.useQuery(
-    undefined,
+    api.user.serverWallet.nativeBalance.useQuery(
+      {
+        chain: Chain.BASE,
+      },
+      {
+        enabled: !!session,
+      }
+    );
+  const { data: balance } = api.user.serverWallet.tokenBalance.useQuery(
+    {
+      chain: Chain.BASE,
+    },
     {
       enabled: !!session,
     }
   );
 
   const {
-    mutate: sendUsdc,
+    mutate: sendTokens,
     isPending: isSending,
     isSuccess: isSent,
-  } = api.user.serverWallet.sendUSDC.useMutation();
+  } = api.user.serverWallet.sendTokens.useMutation();
 
   const handleSubmit = useCallback(async () => {
     const parseResult = ethereumAddressSchema.safeParse(address);
@@ -47,18 +61,24 @@ export const Send: React.FC = () => {
       return;
     }
     const parsedAddress = parseResult.data;
-    sendUsdc(
+    sendTokens(
       {
         amount,
-        toAddress: parsedAddress,
+        address: parsedAddress,
+        chain: Chain.BASE,
+        token: usdc(Chain.BASE),
       },
       {
         onSuccess: () => {
           toast.success(`${amount} USDC sent`);
           for (let i = 0; i < 5; i++) {
             setTimeout(() => {
-              void utils.user.serverWallet.ethBaseBalance.invalidate();
-              void utils.user.serverWallet.usdcBaseBalance.invalidate();
+              void utils.user.serverWallet.nativeBalance.invalidate({
+                chain: Chain.BASE,
+              });
+              void utils.user.serverWallet.tokenBalance.invalidate({
+                chain: Chain.BASE,
+              });
             }, i * 1000);
           }
           setAmount(0);
@@ -66,7 +86,7 @@ export const Send: React.FC = () => {
         },
       }
     );
-  }, [address, amount, sendUsdc, utils]);
+  }, [address, amount, sendTokens, utils]);
 
   return (
     <div className="flex flex-col gap-4">

@@ -30,13 +30,12 @@ export const WalletBreakdownModal = ({
     { resourceId },
     { enabled: open }
   );
-  const { data: freeTierWallet } =
-    api.admin.freeTier.getWalletBalances.useQuery();
+  const { data: freeTierWallet } = api.admin.freeTier.address.useQuery();
 
   const breakdown = data ?? [];
   const columns = useMemo(
-    () => createWalletBreakdownColumns(freeTierWallet?.address),
-    [freeTierWallet?.address]
+    () => createWalletBreakdownColumns(freeTierWallet),
+    [freeTierWallet]
   );
 
   return (

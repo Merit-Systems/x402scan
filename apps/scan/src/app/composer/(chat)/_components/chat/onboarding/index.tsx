@@ -36,8 +36,9 @@ export const Onboarding = () => {
       },
     });
 
-  const { data: usdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery();
+  const { data: usdcBalance } = api.user.serverWallet.tokenBalance.useQuery({
+    chain: Chain.BASE,
+  });
 
   const hasBalance = (usdcBalance ?? 0) > 0;
 

@@ -27,7 +27,7 @@ import { Chain } from '@/types/chain';
 import type { Token } from '@/types/token';
 import type { SolanaAddress } from '@/types/address';
 import type { UiWalletAccount } from '@wallet-standard/react';
-import { solanaRpc } from '@/services/solana/rpc';
+import { solanaRpc } from '@/services/rpc/solana';
 import { toast } from 'sonner';
 import { useCallback, useMemo, useState } from 'react';
 import { waitForSolanaTransactionConfirmation } from '@/services/solana/transaction';

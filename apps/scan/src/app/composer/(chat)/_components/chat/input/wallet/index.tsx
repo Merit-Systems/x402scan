@@ -3,6 +3,7 @@
 import { Bot } from 'lucide-react';
 
 import { useSession } from 'next-auth/react';
+import { Chain } from '@/types/chain';
 
 import { Loading } from '@/components/ui/loading';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,9 +18,14 @@ export const WalletButton = () => {
   const { data: session } = useSession();
 
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
-      enabled: !!session,
-    });
+    api.user.serverWallet.tokenBalance.useQuery(
+      {
+        chain: Chain.BASE,
+      },
+      {
+        enabled: !!session,
+      }
+    );
 
   const {
     data: hasUserAcknowledgedComposer,

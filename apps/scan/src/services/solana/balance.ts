@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { address } from '@solana/kit';
 
-import { solanaRpc } from './rpc';
+import { solanaRpc } from '@/services/rpc/solana';
 
 import { solanaAddressSchema } from '@/lib/schemas';
 import { USDC_ADDRESS } from '@/lib/utils';

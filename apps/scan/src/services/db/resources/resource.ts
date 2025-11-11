@@ -279,11 +279,7 @@ export const searchResources = async (
   return await prisma.resources.findMany({
     where: {
       accepts: {
-        some: {
-          network: {
-            equals: 'base',
-          },
-        },
+        some: {},
       },
       ...(search
         ? {
@@ -323,8 +319,8 @@ export const searchResources = async (
       origin: true,
       accepts: {
         where: {
-          network: {
-            equals: 'base',
+          payTo: {
+            not: '',
           },
         },
       },

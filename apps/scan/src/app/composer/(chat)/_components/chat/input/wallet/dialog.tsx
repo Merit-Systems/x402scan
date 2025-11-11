@@ -37,8 +37,10 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
   const { data: session } = useSession();
 
   const searchParams = useSearchParams();
-  const { data: usdcBalance } = api.user.serverWallet.usdcBaseBalance.useQuery(
-    undefined,
+  const { data: usdcBalance } = api.user.serverWallet.tokenBalance.useQuery(
+    {
+      chain: Chain.BASE,
+    },
     {
       enabled: !!session,
     }

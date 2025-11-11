@@ -24,7 +24,9 @@ export const SendToServerWalletEVM: React.FC<Props> = ({
   const utils = api.useUtils();
 
   const { data: serverWalletAddress, isLoading: isServerWalletAddressLoading } =
-    api.user.serverWallet.address.useQuery();
+    api.user.serverWallet.address.useQuery({
+      chain,
+    });
 
   const { handleSubmit, isPending, isInvalid, statusText, isConfirmed } =
     useEvmSend({
@@ -32,7 +34,9 @@ export const SendToServerWalletEVM: React.FC<Props> = ({
       address: serverWalletAddress!,
       amount,
       onSuccess: () => {
-        void utils.user.serverWallet.usdcBaseBalance.invalidate();
+        void utils.user.serverWallet.tokenBalance.invalidate({
+          chain,
+        });
         onSuccess?.();
       },
     });
