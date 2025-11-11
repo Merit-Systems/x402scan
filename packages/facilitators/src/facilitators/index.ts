@@ -15,4 +15,4 @@ export { xecho, xechoFacilitator } from './xecho';
 export { codenut, codenutFacilitator } from './codenut';
 export { ultravioletadao, ultravioletadaoFacilitator } from './ultravioletadao';
 export { virtuals, virtualsFacilitator } from './virtuals';
-export { gx402Config, gx402Discovery, gx402Facilitator } from './gx-402';
+export { gx402, gx402Facilitator } from './gx-402';
