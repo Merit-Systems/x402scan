@@ -47,23 +47,23 @@ export const StatusChart: React.FC<Props> = ({ data }) => {
     chartData.length > 0 ? chartData[chartData.length - 1].timestamp : '';
 
   return (
-    <div className="w-full">
+    <div className="w-1/2">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Edge Requests</h2>
-        <div className="flex gap-4">
-          <div className="flex items-center gap-2">
+        <h2 className="text-xl font-bold"></h2>
+        <div className="flex gap-3">
+          <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-[#3b82f6]" />
             <span className="text-xs">2XX</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-[#6366f1]" />
             <span className="text-xs">3XX</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
             <span className="text-xs">4XX</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
             <span className="text-xs">5XX</span>
           </div>
@@ -72,8 +72,8 @@ export const StatusChart: React.FC<Props> = ({ data }) => {
       <BaseChart
         type="composed"
         data={chartData}
-        height={400}
-        margin={{ top: 0, right: 0, left: 0, bottom: 40 }}
+        height={200}
+        margin={{ top: 0, right: 0, left: 0, bottom: 20 }}
         yAxes={[
           {
             domain: [0, 'dataMax'],
@@ -162,7 +162,7 @@ export const StatusChart: React.FC<Props> = ({ data }) => {
           yAxisId={0}
         />
       </BaseChart>
-      <div className="flex justify-between text-sm text-muted-foreground px-2 mt-2">
+      <div className="flex justify-between text-xs text-muted-foreground px-2 mt-1">
         <span>{startTime}</span>
         <span>{endTime}</span>
       </div>

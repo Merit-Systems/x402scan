@@ -1,9 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { StatusChart } from './status-chart';
 import { differenceInDays } from 'date-fns';
+import { BaseChart } from '@/components/ui/charts/chart/chart';
+import { Area } from 'recharts';
+import { simulateChartData } from '@/components/ui/charts/chart/simulate';
 
 interface StatusCodeData {
   ts: string;
@@ -16,6 +19,62 @@ interface StatusCodeData {
 interface Props {
   originUrl: string;
 }
+
+const LoadingStatusChart = () => {
+  const simulatedData = useMemo(() => simulateChartData({ days: 48 }), []);
+
+  return (
+    <div className="w-1/2 animate-pulse">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-xl font-bold"></h2>
+        <div className="flex gap-3">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-muted" />
+            <span className="text-xs text-muted-foreground">2XX</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-muted" />
+            <span className="text-xs text-muted-foreground">3XX</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-muted" />
+            <span className="text-xs text-muted-foreground">4XX</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-muted" />
+            <span className="text-xs text-muted-foreground">5XX</span>
+          </div>
+        </div>
+      </div>
+      <BaseChart
+        type="composed"
+        data={simulatedData}
+        height={200}
+        margin={{ top: 0, right: 0, left: 0, bottom: 20 }}
+        yAxes={[
+          {
+            domain: [0, 'dataMax'],
+            hide: false,
+          },
+        ]}
+        xAxis={{
+          show: false,
+          height: 0,
+        }}
+      >
+        <Area
+          type="monotone"
+          dataKey="value"
+          stroke="color-mix(in oklab, var(--color-neutral-500) 20%, transparent)"
+          fill="color-mix(in oklab, var(--color-neutral-500) 20%, transparent)"
+          strokeWidth={2}
+          yAxisId={0}
+          isAnimationActive={false}
+        />
+      </BaseChart>
+    </div>
+  );
+};
 
 export const StatusChartWrapper: React.FC<Props> = ({ originUrl }) => {
   const { startDate, endDate } = useTimeRangeContext();
@@ -68,11 +127,7 @@ export const StatusChartWrapper: React.FC<Props> = ({ originUrl }) => {
   }, [startDate, endDate, originUrl]);
 
   if (isLoading) {
-    return (
-      <div className="text-center text-muted-foreground py-8">
-        Loading observability data...
-      </div>
-    );
+    return <LoadingStatusChart />;
   }
 
   if (data.length === 0) {
