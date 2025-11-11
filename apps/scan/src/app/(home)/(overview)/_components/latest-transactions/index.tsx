@@ -18,7 +18,7 @@ interface Props {
 export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
   const pageSize = 10;
 
-  await api.public.transfers.list.prefetch({
+  void api.public.transfers.list.prefetch({
     chain,
     pagination: {
       page_size: pageSize,

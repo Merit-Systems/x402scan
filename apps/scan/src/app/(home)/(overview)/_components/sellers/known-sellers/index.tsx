@@ -23,16 +23,14 @@ interface Props {
 }
 
 export const TopServers = async ({ chain }: Props) => {
-  await Promise.all([
-    api.public.sellers.bazaar.list.prefetch({
-      chain,
-      pagination: {
-        page_size: 100,
-      },
-      timeframe: ActivityTimeframe.OneDay,
-      sorting: defaultSellersSorting,
-    }),
-  ]);
+  void api.public.sellers.bazaar.list.prefetch({
+    chain,
+    pagination: {
+      page_size: 100,
+    },
+    timeframe: ActivityTimeframe.OneDay,
+    sorting: defaultSellersSorting,
+  });
 
   return (
     <HydrateClient>

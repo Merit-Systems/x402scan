@@ -1,27 +1,14 @@
 import { Body } from '../../_components/layout/page-utils';
 
 import { HomeHeading } from './_components/heading';
-import { LoadingOverallStats, OverallStats } from './_components/stats';
-import {
-  TopServers,
-  LoadingTopServers,
-} from './_components/sellers/known-sellers';
-import {
-  TopFacilitators,
-  LoadingTopFacilitators,
-} from './_components/top-facilitators';
-import {
-  LatestTransactions,
-  LoadingLatestTransactions,
-} from './_components/latest-transactions';
-import {
-  AllSellers,
-  LoadingAllSellers,
-} from './_components/sellers/all-sellers';
+import { OverallStats } from './_components/stats';
+import { TopServers } from './_components/sellers/known-sellers';
+import { TopFacilitators } from './_components/top-facilitators';
+import { LatestTransactions } from './_components/latest-transactions';
+import { AllSellers } from './_components/sellers/all-sellers';
 import { ComposerCallout } from './_components/composer-callout';
 import { getChain } from '@/app/_lib/chain';
-import { Suspense } from 'react';
-import { LoadingTopAgents, TopAgents } from './_components/top-agents';
+import { TopAgents } from './_components/top-agents';
 import { cookies } from 'next/headers';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
@@ -32,24 +19,12 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
       <HomeHeading />
       <Body>
         <ComposerCallout />
-        <Suspense fallback={<LoadingOverallStats />}>
-          <OverallStats chain={chain} />
-        </Suspense>
-        <Suspense fallback={<LoadingTopServers />}>
-          <TopServers chain={chain} />
-        </Suspense>
-        <Suspense fallback={<LoadingTopFacilitators />}>
-          <TopFacilitators chain={chain} />
-        </Suspense>
-        <Suspense fallback={<LoadingTopAgents />}>
-          <TopAgents />
-        </Suspense>
-        <Suspense fallback={<LoadingLatestTransactions />}>
-          <LatestTransactions chain={chain} />
-        </Suspense>
-        <Suspense fallback={<LoadingAllSellers />}>
-          <AllSellers chain={chain} />
-        </Suspense>
+        <OverallStats chain={chain} />
+        <TopServers chain={chain} />
+        <TopFacilitators chain={chain} />
+        <TopAgents />
+        <LatestTransactions chain={chain} />
+        <AllSellers chain={chain} />
       </Body>
     </div>
   );

@@ -21,24 +21,22 @@ interface Props {
 }
 
 export const OverallStats = async ({ chain }: Props) => {
-  await Promise.all([
-    api.public.stats.overall.prefetch({
-      timeframe: ActivityTimeframe.OneDay,
-      chain,
-    }),
-    api.public.stats.overall.prefetch({
-      timeframe: {
-        period: ActivityTimeframe.OneDay,
-        offset: ActivityTimeframe.OneDay,
-      },
-      chain,
-    }),
-    api.public.stats.bucketed.prefetch({
-      timeframe: ActivityTimeframe.OneDay,
-      numBuckets: 32,
-      chain,
-    }),
-  ]);
+  void api.public.stats.overall.prefetch({
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
+  void api.public.stats.overall.prefetch({
+    timeframe: {
+      period: ActivityTimeframe.OneDay,
+      offset: ActivityTimeframe.OneDay,
+    },
+    chain,
+  });
+  void api.public.stats.bucketed.prefetch({
+    timeframe: ActivityTimeframe.OneDay,
+    numBuckets: 32,
+    chain,
+  });
 
   return (
     <HydrateClient>

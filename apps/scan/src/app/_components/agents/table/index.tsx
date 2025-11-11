@@ -20,7 +20,7 @@ interface Props {
 }
 
 export const AgentsTable: React.FC<Props> = async ({ input, limit = 10 }) => {
-  await api.public.agents.list.prefetch({
+  void api.public.agents.list.prefetch({
     ...input,
     pagination: { page: 0, page_size: limit },
     sorting: defaultAgentsSorting,

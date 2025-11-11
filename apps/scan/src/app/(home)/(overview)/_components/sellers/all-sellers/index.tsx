@@ -28,7 +28,7 @@ interface Props {
 export const AllSellers: React.FC<Props> = async ({ chain }) => {
   const limit = 100;
 
-  await api.public.sellers.all.list.prefetch({
+  void api.public.sellers.all.list.prefetch({
     chain,
     sorting: defaultSellersSorting,
     pagination: {

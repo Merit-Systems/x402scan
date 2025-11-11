@@ -27,19 +27,17 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
     ? facilitators.flatMap(f => f.addresses[chain] ?? [])
     : facilitatorAddresses;
 
-  await Promise.all([
-    api.public.stats.overall.prefetch({
-      chain,
-      timeframe: ActivityTimeframe.OneDay,
-    }),
-    api.public.facilitators.list.prefetch({
-      chain,
-      pagination: {
-        page_size: chainFacilitators.length,
-      },
-      timeframe: ActivityTimeframe.OneDay,
-    }),
-  ]);
+  void api.public.stats.overall.prefetch({
+    chain,
+    timeframe: ActivityTimeframe.OneDay,
+  });
+  void api.public.facilitators.list.prefetch({
+    chain,
+    pagination: {
+      page_size: chainFacilitators.length,
+    },
+    timeframe: ActivityTimeframe.OneDay,
+  });
 
   return (
     <HydrateClient>
