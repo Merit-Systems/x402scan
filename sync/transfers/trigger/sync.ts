@@ -9,7 +9,7 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
   }
 
   return schedules.task({
-    id: syncConfig.chain + '-sync-transfers-' + syncConfig.provider,
+    id: syncConfig.chain + '-' + syncConfig.provider,
     cron: syncConfig.cron,
     maxDuration: syncConfig.maxDurationInSeconds,
     machine: syncConfig.machine,

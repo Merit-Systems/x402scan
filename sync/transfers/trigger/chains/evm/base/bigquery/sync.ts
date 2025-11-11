@@ -1,4 +1,5 @@
 import { createChainSyncTask } from '../../../../sync';
-import { baseChainConfig } from './config';
+import { baseBigQueryConfig } from './config';
 
-export const baseSyncTransfers = createChainSyncTask(baseChainConfig);
+export const baseBigQuerySyncTransfers =
+  createChainSyncTask(baseBigQueryConfig);

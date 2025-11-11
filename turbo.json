@@ -13,7 +13,14 @@
     },
     "lint": {
       "dependsOn": ["^build"],
-      "env": ["CRON_SECRET", "GITHUB_TOKEN", "NODE_ENV", "NEXT_RUNTIME"]
+      "env": [
+        "BASE_RPC_URL",
+        "CRON_SECRET",
+        "DISCORD_WEBHOOK_URL",
+        "GITHUB_TOKEN",
+        "NODE_ENV",
+        "NEXT_RUNTIME"
+      ]
     },
     "format": {
       "cache": false

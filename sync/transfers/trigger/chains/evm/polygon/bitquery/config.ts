@@ -1,12 +1,23 @@
-import { createEvmChainConfig } from '../../../../fetch/bitquery/query';
-import { Network } from '@/trigger/types';
+import { buildQuery, transformResponse } from './query';
+import {
+  Network,
+  PaginationStrategy,
+  QueryProvider,
+  SyncConfig,
+} from '@/trigger/types';
 import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 
-export const polygonChainConfig = createEvmChainConfig({
+export const polygonChainConfig: SyncConfig = {
   cron: '*/30 * * * *',
-  maxDuration: 1000,
-  network: 'polygon',
-  chain: 'matic',
+  maxDurationInSeconds: 300,
+  chain: 'polygon',
   facilitators: FACILITATORS_BY_CHAIN(Network.POLYGON),
-  enabled: false,
-});
+  enabled: true,
+  apiUrl: 'https://streaming.bitquery.io/graphql',
+  paginationStrategy: PaginationStrategy.OFFSET,
+  provider: QueryProvider.BITQUERY,
+  buildQuery,
+  transformResponse,
+  limit: 20_000,
+  machine: 'medium-1x',
+};

@@ -7,6 +7,7 @@ export const baseConfig = [
     ignores: [
       'node_modules/**',
       '.next/**',
+      '.trigger/**',
       'dist/**',
       'build/**',
       'generated/**',
