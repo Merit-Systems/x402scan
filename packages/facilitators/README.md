@@ -34,6 +34,18 @@ paymentMiddleware(
 );
 ```
 
+## Auto Facilitator
+
+The `auto` facilitator is a proxy that load-balances between other facilitators to guarantee uptime. Simply import and use it directly - no configuration required:
+
+```typescript
+import { auto } from 'facilitators';
+
+paymentMiddleware(address, resources, auto);
+```
+
+If you are not interested in using the facilitators package, and simply want to hit the facilitator proxy yourself, you can at `https://facilitators.x402scan.com/settle` or `https://facilitators.x402scan.com/verify`. Currently only the settle and verify methods are supported.
+
 ## Resource Discovery
 
 Some facilitators support **discovery** - the ability to list all x402-protected resources they're facilitating.
@@ -57,6 +69,7 @@ The following facilitators currently support resource discovery:
 - **AurraCloud** - Infrastructure-focused facilitator
 - **thirdweb** - Web3 development platform
 - **PayAI** - AI-payment infrastructure
+- **Ultravioleta DAO** - Community-driven multichain facilitator
 
 ### Enumerate All Discoverable Facilitators
 
@@ -79,26 +92,32 @@ await Promise.all(
 
 This package includes pre-configured integrations for the following X402 facilitators:
 
-| Facilitator    | Networks      | Discovery | Setup Required                 |
-| -------------- | ------------- | --------- | ------------------------------ |
-| **Coinbase**   | BASE, SOLANA  | ✅ Yes    | No - uses `@coinbase/x402` SDK |
-| **AurraCloud** | BASE          | ✅ Yes    | Yes - API key                  |
-| **thirdweb**   | BASE          | ✅ Yes    | Yes - Secret key & wallet      |
-| **PayAI**      | BASE, SOLANA  | ✅ Yes    | No                             |
-| **Daydreams**  | BASE, SOLANA  | No        | No                             |
-| **X402rs**     | BASE, POLYGON | No        | No                             |
-| **Polygon**    | POLYGON       | No        | No                             |
-| **Corbits**    | SOLANA        | No        | No                             |
-| **Dexter**     | SOLANA        | No        | No                             |
-| **Mogami**     | BASE          | No        | No                             |
-| **OpenX402**   | BASE, SOLANA  | No        | No                             |
-| **xEcho**      | BASE          | No        | No                             |
+| Facilitator          | Networks      | Discovery | Setup Required               |
+| -------------------- | ------------- | --------- | ---------------------------- |
+| **Auto**             | BASE          | No        | No                           |
+| **Coinbase**         | BASE, SOLANA  | ✅ Yes    | Yes - Requires CDP API Creds |
+| **AurraCloud**       | BASE          | ✅ Yes    | Yes - API key                |
+| **thirdweb**         | BASE, POLYGON | ✅ Yes    | Yes - Secret key             |
+| **PayAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
+| **Daydreams**        | BASE, SOLANA  | No        | No                           |
+| **X402rs**           | BASE, POLYGON | No        | No                           |
+| **Corbits**          | SOLANA        | No        | No                           |
+| **Dexter**           | SOLANA        | No        | No                           |
+| **Mogami**           | BASE          | No        | No                           |
+| **OpenX402**         | BASE, SOLANA  | No        | No                           |
+| **Questflow**        | BASE          | ✅ Yes    | Yes - API key                |
+| **xEcho**            | BASE          | No        | No                           |
+| **CodeNut**          | BASE          | No        | No                           |
+| **Ultravioleta DAO** | BASE, SOLANA  | ✅ Yes    | No                           |
+| **Virtuals**         | BASE          | No        | No                           |
+| **Polygon**          | POLYGON       | No        | No                           |
 
 ### Import Individual Facilitators
 
 ```typescript
 // Simple facilitators (no setup)
 import {
+  auto,
   coinbase,
   payai,
   daydreams,
@@ -109,18 +128,24 @@ import {
   mogami,
   openx402,
   xecho,
+  codenut,
+  ultravioletadao,
+  virtuals,
 } from 'facilitators';
 
 // Facilitators requiring setup
-import { aurracloud, thirdweb } from 'facilitators';
+import { aurracloud, thirdweb, questflow } from 'facilitators';
 
 aurracloud({
   apiKey: process.env.AURRACLOUD_API_KEY,
 });
 
+questflow({
+  apiKey: process.env.QUESTFLOW_API_KEY,
+});
+
 thirdweb({
-  walletSecret: process.env.THIRDWEB_NEXUS_SECRET_KEY,
-  walletAddress: process.env.SERVER_WALLET,
+  secretKey: process.env.THIRDWEB_SECRET_KEY,
 });
 ```
 

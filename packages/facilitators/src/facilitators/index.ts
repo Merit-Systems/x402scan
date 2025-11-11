@@ -1,3 +1,4 @@
+export { auto, autoFacilitator } from './auto';
 export { coinbase, coinbaseFacilitator } from './coinbase';
 export { aurracloud, aurracloudFacilitator } from './aurracloud';
 export { thirdweb, thirdwebFacilitator } from './thirdweb';
@@ -9,5 +10,9 @@ export { daydreams, daydreamsFacilitator } from './daydreams';
 export { mogami, mogamiFacilitator } from './mogami';
 export { openx402, openx402Facilitator } from './openx402';
 export { f402104, f402104Facilitator } from './402104';
+export { questflow, questflowFacilitator } from './questflow';
 export { xecho, xechoFacilitator } from './xecho';
 export { polygon, polygonFacilitator } from './polygon';
+export { codenut, codenutFacilitator } from './codenut';
+export { ultravioletadao, ultravioletadaoFacilitator } from './ultravioletadao';
+export { virtuals, virtualsFacilitator } from './virtuals';

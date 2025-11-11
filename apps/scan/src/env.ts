@@ -27,6 +27,11 @@ export const env = createEnv({
     REDIS_URL: z.string().optional(),
     ECHO_APP_ID: z.string().default('7fed205e-3aa5-44af-83a3-f7ae5e49dba4'),
     ECHO_PROXY_URL: z.url().optional(),
+    CLICKHOUSE_HOST: z.string().url().optional(),
+    CLICKHOUSE_USER: z.string().optional(),
+    CLICKHOUSE_PASSWORD: z.string().optional(),
+    CLICKHOUSE_DATABASE: z.string().optional(),
+    JINA_API_KEY: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
@@ -48,6 +53,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
     NEXT_PUBLIC_ENABLE_COMPOSER: z.string().optional().default('false'),
+    NEXT_PUBLIC_BASE_RPC_URL: z.url().optional(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL:
@@ -64,6 +70,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_ENABLE_COMPOSER: process.env.NEXT_PUBLIC_ENABLE_COMPOSER,
+    NEXT_PUBLIC_BASE_RPC_URL: process.env.NEXT_PUBLIC_BASE_RPC_URL,
   },
   emptyStringAsUndefined: true,
 });

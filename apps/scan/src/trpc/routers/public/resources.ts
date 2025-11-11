@@ -13,6 +13,7 @@ import {
   listResourcesWithPagination,
   searchResources,
   searchResourcesSchema,
+  type ResourceSortId,
 } from '@/services/db/resources/resource';
 
 import { prisma } from '@/services/db/client';
@@ -23,7 +24,11 @@ import { Methods } from '@/types/x402';
 
 import { registerResource } from '@/lib/resources';
 import { TRPCError } from '@trpc/server';
-import { listResourceTags, listTags } from '@/services/db/resources/tag';
+import {
+  listResourceTags,
+  listTags,
+  listTagsSchema,
+} from '@/services/db/resources/tag';
 
 import type { Prisma } from '@prisma/client';
 
@@ -46,10 +51,23 @@ export const resourcesRouter = createTRPCRouter({
       .input(
         z.object({
           where: z.custom<Prisma.ResourcesWhereInput>().optional(),
+          sorting: z
+            .object({
+              id: z.enum([
+                'lastUpdated',
+                'toolCalls',
+              ] satisfies ResourceSortId[]),
+              desc: z.boolean(),
+            })
+            .optional(),
         })
       )
       .query(async ({ input, ctx: { pagination } }) => {
-        return await listResourcesWithPagination(pagination, input.where);
+        return await listResourcesWithPagination(
+          pagination,
+          input.where,
+          input.sorting
+        );
       }),
     byAddress: publicProcedure
       .input(mixedAddressSchema)
@@ -136,7 +154,10 @@ export const resourcesRouter = createTRPCRouter({
           }
         }
 
-        return result;
+        return {
+          ...result,
+          methodUsed: method,
+        };
       }
 
       if (parseErrorData) {
@@ -159,12 +180,33 @@ export const resourcesRouter = createTRPCRouter({
       };
     }),
   tags: {
-    list: publicProcedure.query(async () => {
-      return await listTags();
-    }),
+    list: publicProcedure
+      .input(listTagsSchema.optional())
+      .query(async ({ input }) => {
+        return await listTags(input ?? { filterTags: [] });
+      }),
 
     getByResource: publicProcedure.input(z.uuid()).query(async ({ input }) => {
       return await listResourceTags(input);
     }),
   },
+  getMetrics: publicProcedure
+    .input(z.object({ resourceId: z.string() }))
+    .query(async ({ input }) => {
+      return await prisma.resourceMetrics.findFirst({
+        where: { resourceId: input.resourceId },
+        orderBy: { updatedAt: 'desc' },
+        select: {
+          uptime24hPct: true,
+          totalCount24h: true,
+          count_5xx_24h: true,
+          count_4xx_24h: true,
+          count_2xx_24h: true,
+          p50_24hMs: true,
+          p90_24hMs: true,
+          p99_24hMs: true,
+          updatedAt: true,
+        },
+      });
+    }),
 });

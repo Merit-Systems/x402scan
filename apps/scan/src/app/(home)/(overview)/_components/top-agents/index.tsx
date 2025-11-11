@@ -6,17 +6,17 @@ import { AgentsSortingProvider } from '@/app/_contexts/sorting/agents/provider';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { agentsRelease } from '@/lib/agents';
+import { getSSRTimeRange } from '@/lib/time-range';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { subDays } from 'date-fns';
 
 export const TopAgents = () => {
-  const endDate = new Date();
-  const startDate = subDays(endDate, 1);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.OneDay,
+    agentsRelease
+  );
 
   return (
     <TimeRangeProvider
-      initialEndDate={endDate}
-      initialStartDate={startDate}
       creationDate={agentsRelease}
       initialTimeframe={ActivityTimeframe.OneDay}
     >

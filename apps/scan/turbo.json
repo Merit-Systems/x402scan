@@ -7,6 +7,7 @@
       "env": [
         "POSTGRES_*",
         "CDP_*",
+        "CLICKHOUSE_*",
         "HIDE_TRPC_LOGS",
         "GITHUB_TOKEN",
         "CRON_SECRET",
@@ -27,6 +28,7 @@
       "env": [
         "POSTGRES_*",
         "CDP_*",
+        "CLICKHOUSE_*",
         "HIDE_TRPC_LOGS",
         "GITHUB_TOKEN",
         "CRON_SECRET",

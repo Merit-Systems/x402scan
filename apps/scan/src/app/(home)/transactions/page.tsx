@@ -5,13 +5,13 @@ import {
   LoadingLatestTransactionsTable,
 } from '../_components/transactions';
 import { Suspense } from 'react';
-import { subMonths } from 'date-fns';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { getChain } from '@/app/_lib/chain';
+import { getSSRTimeRange } from '@/lib/time-range';
 
 export default async function TransactionsPage({
   searchParams,
@@ -20,8 +20,10 @@ export default async function TransactionsPage({
 
   const pageSize = 15;
 
-  const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.ThirtyDays,
+    firstTransfer
+  );
 
   await api.public.transfers.list.prefetch({
     startDate,
@@ -38,8 +40,6 @@ export default async function TransactionsPage({
     <HydrateClient>
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
         <TimeRangeProvider
-          initialEndDate={endDate}
-          initialStartDate={startDate}
           creationDate={firstTransfer}
           initialTimeframe={ActivityTimeframe.ThirtyDays}
         >
