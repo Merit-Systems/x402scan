@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import type { RouterOutputs } from '@/trpc/client';
 import { HeaderButtons, LoadingHeaderButtons } from './buttons';
 import { prisma } from '@/services/db/client';
-import { HealthIndicator } from './health-indicator';
+import { HealthIndicator } from '@/components/health';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;

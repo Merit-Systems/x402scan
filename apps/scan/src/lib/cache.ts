@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import superjson from 'superjson';
 import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
@@ -39,6 +40,20 @@ const roundDateToInterval = (date?: Date): string | undefined => {
     0
   );
   return rounded.toISOString();
+};
+
+/**
+ * Serialize data using SuperJSON (handles BigInt, Date, Map, Set, etc.)
+ */
+const serialize = <T>(data: T): string => {
+  return superjson.stringify(data);
+};
+
+/**
+ * Deserialize data using SuperJSON
+ */
+const deserialize = <T>(str: string): T => {
+  return superjson.parse<T>(str);
 };
 
 /**
@@ -93,7 +108,7 @@ async function withRedisCache<T>(
   const cached = await redis.get(fullCacheKey);
   if (cached) {
     console.log(`[Cache] HIT: ${fullCacheKey}`);
-    return JSON.parse(cached) as T;
+    return deserialize<T>(cached);
   }
 
   // Try to acquire lock with NX (set if not exists) and EX (expiry)
@@ -110,7 +125,7 @@ async function withRedisCache<T>(
     console.log(`[Cache] MISS: Executing query for ${fullCacheKey}`);
     try {
       const result = await queryFn();
-      await redis.setex(fullCacheKey, ttlSeconds, JSON.stringify(result));
+      await redis.setex(fullCacheKey, ttlSeconds, serialize(result));
       return result;
     } finally {
       // Release lock
@@ -126,7 +141,7 @@ async function withRedisCache<T>(
         console.log(
           `[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`
         );
-        return JSON.parse(cached) as T;
+        return deserialize<T>(cached);
       }
     }
 
