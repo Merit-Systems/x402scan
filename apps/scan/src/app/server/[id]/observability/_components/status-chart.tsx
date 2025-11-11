@@ -23,25 +23,56 @@ export const StatusChart: React.FC<Props> = ({ data }) => {
     redirect: number;
     clientError: number;
     serverError: number;
-  }>[] = data.map(item => ({
-    timestamp: new Date(item.ts).toLocaleString('en-US', {
+  }>[] = data.map(item => {
+    const date = new Date(item.ts);
+    // Format as "Nov 5, 2:40 AM"
+    const formatted = date.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
-      hour: '2-digit',
+      hour: 'numeric',
       minute: '2-digit',
-    }),
-    success: parseInt(item.r_2xx),
-    redirect: parseInt(item.r_3xx),
-    clientError: parseInt(item.r_4xx),
-    serverError: parseInt(item.r_5xx),
-  }));
+    });
+    return {
+      timestamp: formatted,
+      success: parseInt(item.r_2xx),
+      redirect: parseInt(item.r_3xx),
+      clientError: parseInt(item.r_4xx),
+      serverError: parseInt(item.r_5xx),
+    };
+  });
+
+  // Get start and end timestamps for display
+  const startTime = chartData.length > 0 ? chartData[0].timestamp : '';
+  const endTime = chartData.length > 0 ? chartData[chartData.length - 1].timestamp : '';
 
   return (
     <div className="w-full">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Edge Requests</h2>
+        <div className="flex gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[#3b82f6]" />
+            <span className="text-xs">2XX</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[#6366f1]" />
+            <span className="text-xs">3XX</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
+            <span className="text-xs">4XX</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
+            <span className="text-xs">5XX</span>
+          </div>
+        </div>
+      </div>
       <BaseChart
         type="composed"
         data={chartData}
         height={400}
+        margin={{ top: 0, right: 0, left: 0, bottom: 40 }}
         yAxes={[
           {
             domain: [0, 'dataMax'],
@@ -53,63 +84,62 @@ export const StatusChart: React.FC<Props> = ({ data }) => {
             key: 'success',
             label: '2xx Success',
             getValue: data => data.toString(),
-            dotColor: 'hsl(142, 76%, 36%)',
+            dotColor: '#3b82f6',
           },
           {
             key: 'redirect',
             label: '3xx Redirect',
             getValue: data => data.toString(),
-            dotColor: 'hsl(48, 96%, 53%)',
+            dotColor: '#6366f1',
           },
           {
             key: 'clientError',
             label: '4xx Client Error',
             getValue: data => data.toString(),
-            dotColor: 'hsl(25, 95%, 53%)',
+            dotColor: '#f59e0b',
           },
           {
             key: 'serverError',
             label: '5xx Server Error',
             getValue: data => data.toString(),
-            dotColor: 'hsl(0, 84%, 60%)',
+            dotColor: '#ef4444',
           },
         ]}
         xAxis={{
-          show: true,
-          angle: -45,
-          height: 60,
+          show: false,
+          height: 0,
         }}
       >
         <defs>
           <linearGradient id="success-gradient" x1="0" y1="0" x2="0" y2="1">
             <stop
               offset="0%"
-              stopColor="hsl(142, 76%, 36%)"
+              stopColor="#3b82f6"
               stopOpacity={0.4}
             />
             <stop
               offset="100%"
-              stopColor="hsl(142, 76%, 36%)"
+              stopColor="#3b82f6"
               stopOpacity={0}
             />
           </linearGradient>
           <linearGradient id="redirect-gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="hsl(48, 96%, 53%)" stopOpacity={0.4} />
-            <stop offset="100%" stopColor="hsl(48, 96%, 53%)" stopOpacity={0} />
+            <stop offset="0%" stopColor="#6366f1" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="clientError-gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0.4} />
-            <stop offset="100%" stopColor="hsl(25, 95%, 53%)" stopOpacity={0} />
+            <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="serverError-gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0.4} />
-            <stop offset="100%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0} />
+            <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#ef4444" stopOpacity={0} />
           </linearGradient>
         </defs>
         <Area
           type="monotone"
           dataKey="success"
-          stroke="hsl(142, 76%, 36%)"
+          stroke="#3b82f6"
           fill="url(#success-gradient)"
           strokeWidth={2}
           yAxisId={0}
@@ -117,7 +147,7 @@ export const StatusChart: React.FC<Props> = ({ data }) => {
         <Area
           type="monotone"
           dataKey="redirect"
-          stroke="hsl(48, 96%, 53%)"
+          stroke="#6366f1"
           fill="url(#redirect-gradient)"
           strokeWidth={2}
           yAxisId={0}
@@ -125,7 +155,7 @@ export const StatusChart: React.FC<Props> = ({ data }) => {
         <Area
           type="monotone"
           dataKey="clientError"
-          stroke="hsl(25, 95%, 53%)"
+          stroke="#f59e0b"
           fill="url(#clientError-gradient)"
           strokeWidth={2}
           yAxisId={0}
@@ -133,29 +163,15 @@ export const StatusChart: React.FC<Props> = ({ data }) => {
         <Area
           type="monotone"
           dataKey="serverError"
-          stroke="hsl(0, 84%, 60%)"
+          stroke="#ef4444"
           fill="url(#serverError-gradient)"
           strokeWidth={2}
           yAxisId={0}
         />
       </BaseChart>
-      <div className="mt-4 flex gap-4 justify-center flex-wrap">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[hsl(142,76%,36%)]" />
-          <span className="text-sm">2xx Success</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[hsl(48,96%,53%)]" />
-          <span className="text-sm">3xx Redirect</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[hsl(25,95%,53%)]" />
-          <span className="text-sm">4xx Client Error</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[hsl(0,84%,60%)]" />
-          <span className="text-sm">5xx Server Error</span>
-        </div>
+      <div className="flex justify-between text-sm text-muted-foreground px-2 mt-2">
+        <span>{startTime}</span>
+        <span>{endTime}</span>
       </div>
     </div>
   );

@@ -3,15 +3,32 @@ import { notFound } from 'next/navigation';
 import { Body } from '@/app/_components/layout/page-utils';
 import { clickhouse } from '@/services/db/clickhouse/resource-invocations';
 import { StatusChart } from './_components/status-chart';
+import { DateSelector } from './_components/date-selector';
 
 export default async function ObservabilityPage({
   params,
+  searchParams,
 }: PageProps<'/server/[id]'>) {
   const { id } = await params;
   const origin = await api.public.origins.get(id);
 
   if (!origin) {
     return notFound();
+  }
+
+  // Get time range from search params (default to 1 day)
+  const resolvedSearchParams = await searchParams;
+  const rangeDays = parseInt(resolvedSearchParams?.range || '1');
+  const rangeHours = rangeDays * 24;
+
+  // Calculate bucket size based on range (more days = larger buckets)
+  let bucketMinutes = 10;
+  if (rangeDays >= 15) {
+    bucketMinutes = 60; // 1 hour buckets for 15+ days
+  } else if (rangeDays >= 7) {
+    bucketMinutes = 30; // 30 min buckets for 7+ days
+  } else if (rangeDays >= 3) {
+    bucketMinutes = 15; // 15 min buckets for 3+ days
   }
 
   // Run ClickHouse query
@@ -27,8 +44,8 @@ export default async function ObservabilityPage({
     const query = `
       WITH
         now()                                 AS t_end,
-        t_end - INTERVAL 10000 MINUTE         AS t_start,
-        toIntervalMinute(10)                  AS bucket
+        t_end - INTERVAL ${rangeHours} HOUR   AS t_start,
+        toIntervalMinute(${bucketMinutes})    AS bucket
 
       SELECT
         toStartOfInterval(created_at, bucket) AS ts,
@@ -57,6 +74,9 @@ export default async function ObservabilityPage({
 
   return (
     <Body className="pt-0">
+      <div className="mb-6">
+        <DateSelector />
+      </div>
       {statusData.length > 0 ? (
         <StatusChart data={statusData} />
       ) : (
