@@ -15,26 +15,54 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { useChain } from '@/app/_contexts/chain/hook';
 
+// Check if timeframe can use materialized views
+const canUseMV = (timeframe: ActivityTimeframe): boolean => {
+  return [
+    ActivityTimeframe.OneDay,
+    ActivityTimeframe.SevenDays,
+    ActivityTimeframe.FifteenDays,
+    ActivityTimeframe.ThirtyDays,
+  ].includes(timeframe);
+};
+
 export const OverallCharts = () => {
   const { startDate, endDate, timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
-  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
-    chain,
-    startDate,
-    endDate,
-  });
+  const useMV = canUseMV(timeframe);
+
+  const [overallStats] = useMV
+    ? api.public.stats.overallMv.useSuspenseQuery({
+        chain,
+        timeframe,
+      })
+    : api.public.stats.overall.useSuspenseQuery({
+        chain,
+        startDate,
+        endDate,
+      });
+
+  // For comparison, always use the original query with previous period dates
   const [previousOverallStats] = api.public.stats.overall.useSuspenseQuery({
     chain,
     startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
     endDate: startDate,
   });
-  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
-    numBuckets: 32,
-    startDate,
-    endDate,
-    chain,
-  });
+
+  const [bucketedStats] = useMV
+    ? api.public.stats.bucketedMv.useSuspenseQuery({
+        chain,
+        timeframe,
+        startDate,
+        endDate,
+        numBuckets: 48,
+      })
+    : api.public.stats.bucketed.useSuspenseQuery({
+        numBuckets: 48,
+        startDate,
+        endDate,
+        chain,
+      });
 
   const chartData: ChartData<{
     transactions: number;

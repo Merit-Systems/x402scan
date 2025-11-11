@@ -3,9 +3,17 @@ import {
   overallStatisticsInputSchema,
 } from '@/services/transfers/stats/overall';
 import {
+  getOverallStatisticsMV,
+  overallStatisticsMvInputSchema,
+} from '@/services/transfers/stats/overall-mv';
+import {
   getBucketedStatistics,
   bucketedStatisticsInputSchema,
 } from '@/services/transfers/stats/bucketed';
+import {
+  getBucketedStatisticsMV,
+  bucketedStatisticsMvInputSchema,
+} from '@/services/transfers/stats/bucketed-mv';
 import {
   getFirstTransferTimestampInputSchema,
   getFirstTransferTimestamp,
@@ -21,10 +29,20 @@ export const statsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await getOverallStatistics(input);
     }),
+  overallMv: publicProcedure
+    .input(overallStatisticsMvInputSchema)
+    .query(async ({ input }) => {
+      return await getOverallStatisticsMV(input);
+    }),
   bucketed: publicProcedure
     .input(bucketedStatisticsInputSchema)
     .query(async ({ input }) => {
       return await getBucketedStatistics(input);
+    }),
+  bucketedMv: publicProcedure
+    .input(bucketedStatisticsMvInputSchema)
+    .query(async ({ input }) => {
+      return await getBucketedStatisticsMV(input);
     }),
 
   firstTransferTimestamp: publicProcedure

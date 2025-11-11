@@ -85,18 +85,32 @@ async function limitConcurrency(
 function getHomePageTasks(
   startDate: Date,
   endDate: Date,
-  chain?: Chain
+  chain?: Chain,
+  timeframe?: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   const limit = 100;
 
+  // Check if we can use materialized views for this timeframe
+  const canUseMV = timeframe && [
+    ActivityTimeframe.OneDay,
+    ActivityTimeframe.SevenDays,
+    ActivityTimeframe.FifteenDays,
+    ActivityTimeframe.ThirtyDays,
+  ].includes(timeframe);
+
   return [
-    // Overall Stats - current period
+    // Overall Stats - current period (use MV if available)
     () =>
-      api.public.stats.overall({
-        startDate,
-        endDate,
-        chain,
-      }),
+      canUseMV
+        ? api.public.stats.overallMv({
+            timeframe,
+            chain,
+          })
+        : api.public.stats.overall({
+            startDate,
+            endDate,
+            chain,
+          }),
 
     // Overall Stats - previous period (for comparison)
     () =>
@@ -109,14 +123,22 @@ function getHomePageTasks(
         chain,
       }),
 
-    // Bucketed Statistics - for charts
+    // Bucketed Statistics - for charts (use MV if available)
     () =>
-      api.public.stats.bucketed({
-        startDate,
-        endDate,
-        numBuckets: 32,
-        chain,
-      }),
+      canUseMV
+        ? api.public.stats.bucketedMv({
+            timeframe,
+            startDate,
+            endDate,
+            numBuckets: 48,
+            chain,
+          })
+        : api.public.stats.bucketed({
+            startDate,
+            endDate,
+            numBuckets: 48,
+            chain,
+          }),
 
     // Top Facilitators
     () =>
@@ -394,9 +416,9 @@ export async function GET(request: NextRequest) {
 
       if (pagesToWarm.includes('home')) {
         // Home page with all chain variants
-        allTasks.push(...getHomePageTasks(startDate, endDate)); // All chains
-        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.BASE));
-        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.SOLANA));
+        allTasks.push(...getHomePageTasks(startDate, endDate, undefined, timeframe)); // All chains
+        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.BASE, timeframe));
+        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.SOLANA, timeframe));
       }
 
       if (pagesToWarm.includes('networks')) {
