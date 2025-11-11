@@ -25,19 +25,13 @@ export const ActivityCharts: React.FC<Props> = ({ address }) => {
     startDate,
     endDate,
   });
-  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery(
-    {
-      recipients: {
-        include: [address],
-      },
-      startDate,
-      endDate,
+  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
+    recipients: {
+      include: [address],
     },
-    {
-      staleTime: 15000,
-      refetchInterval: 15000,
-    }
-  );
+    startDate,
+    endDate,
+  });
 
   // Transform data for the chart
   const chartData: ChartData<{

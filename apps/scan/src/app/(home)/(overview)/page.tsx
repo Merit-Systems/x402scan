@@ -1,7 +1,7 @@
 import { Body } from '../../_components/layout/page-utils';
 
 import { HomeHeading } from './_components/heading';
-import { OverallStats } from './_components/stats';
+import { LoadingOverallStats, OverallStats } from './_components/stats';
 import {
   TopServers,
   LoadingTopServers,
@@ -21,24 +21,28 @@ import {
 import { ComposerCallout } from './_components/composer-callout';
 import { getChain } from '@/app/_lib/chain';
 import { Suspense } from 'react';
-import { env } from '@/env';
-import { TopAgents } from './_components/top-agents';
+import { LoadingTopAgents, TopAgents } from './_components/top-agents';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
+
   return (
     <div>
       <HomeHeading />
       <Body>
-        {env.NEXT_PUBLIC_ENABLE_COMPOSER === 'true' && <ComposerCallout />}
-        <OverallStats chain={chain} />
+        <ComposerCallout />
+        <Suspense fallback={<LoadingOverallStats />}>
+          <OverallStats chain={chain} />
+        </Suspense>
         <Suspense fallback={<LoadingTopServers />}>
           <TopServers chain={chain} />
         </Suspense>
         <Suspense fallback={<LoadingTopFacilitators />}>
           <TopFacilitators chain={chain} />
         </Suspense>
-        <TopAgents />
+        <Suspense fallback={<LoadingTopAgents />}>
+          <TopAgents />
+        </Suspense>
         <Suspense fallback={<LoadingLatestTransactions />}>
           <LatestTransactions chain={chain} />
         </Suspense>

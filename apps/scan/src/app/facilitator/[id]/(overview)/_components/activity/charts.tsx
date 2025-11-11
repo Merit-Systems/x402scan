@@ -23,17 +23,11 @@ export const ActivityCharts: React.FC<Props> = ({ facilitatorId }) => {
     startDate,
     endDate,
   });
-  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery(
-    {
-      facilitatorIds: [facilitatorId],
-      startDate,
-      endDate,
-    },
-    {
-      staleTime: 15000,
-      refetchInterval: 15000,
-    }
-  );
+  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
+    facilitatorIds: [facilitatorId],
+    startDate,
+    endDate,
+  });
 
   // Transform data for the chart
   const chartData: ChartData<{

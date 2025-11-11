@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
 
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
 import { ThemeProvider } from 'next-themes';
 
 import Link from 'next/link';
@@ -178,6 +180,7 @@ export default async function RootLayout({
                             {children}
                           </div>
                         </div>
+                        <ReactQueryDevtools />
                       </ThemeProvider>
                     </PostHogProvider>
                   </WagmiProvider>

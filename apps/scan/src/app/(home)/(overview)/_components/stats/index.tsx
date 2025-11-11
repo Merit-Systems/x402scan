@@ -32,24 +32,22 @@ export const OverallStats = async ({ chain }: Props) => {
     firstTransfer
   );
 
-  await Promise.all([
-    api.public.stats.overall.prefetch({
-      startDate,
-      endDate,
-      chain,
-    }),
-    api.public.stats.overall.prefetch({
-      startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-      endDate: startDate,
-      chain,
-    }),
-    api.public.stats.bucketed.prefetch({
-      startDate,
-      endDate,
-      numBuckets: 32,
-      chain,
-    }),
-  ]);
+  void api.public.stats.overall.prefetch({
+    startDate,
+    endDate,
+    chain,
+  });
+  void api.public.stats.overall.prefetch({
+    startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
+    endDate: startDate,
+    chain,
+  });
+  void api.public.stats.bucketed.prefetch({
+    startDate,
+    endDate,
+    numBuckets: 32,
+    chain,
+  });
 
   return (
     <HydrateClient>
