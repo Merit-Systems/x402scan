@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import {
-  httpBatchStreamLink,
+  httpBatchLink,
   httpLink,
   isNonJsonSerializable,
   loggerLink,
@@ -45,26 +45,14 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
             env.NEXT_PUBLIC_NODE_ENV === 'development' ||
             (op.direction === 'down' && op.result instanceof Error),
         }),
-        splitLink({
-          condition: op => isNonJsonSerializable(op.input),
-          true: httpLink({
-            transformer: SuperJSON,
-            url: getBaseUrl() + '/api/trpc',
-            headers: () => {
-              const headers = new Headers();
-              headers.set('x-trpc-source', 'nextjs-react');
-              return headers;
-            },
-          }),
-          false: httpBatchStreamLink({
-            transformer: SuperJSON,
-            url: getBaseUrl() + '/api/trpc',
-            headers: () => {
-              const headers = new Headers();
-              headers.set('x-trpc-source', 'nextjs-react');
-              return headers;
-            },
-          }),
+        httpLink({
+          transformer: SuperJSON,
+          url: getBaseUrl() + '/api/trpc',
+          headers: () => {
+            const headers = new Headers();
+            headers.set('x-trpc-source', 'nextjs-react');
+            return headers;
+          },
         }),
       ],
     })

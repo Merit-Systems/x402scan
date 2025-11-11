@@ -27,7 +27,7 @@ const listFacilitatorTransfersUncached = async (
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
   const { sorting } = input;
-  const { page_size: limit, page } = pagination;
+  const { page_size, page } = pagination;
 
   const where = transfersWhereObject(input);
   const [count, transfers] = await Promise.all([
@@ -39,8 +39,8 @@ const listFacilitatorTransfersUncached = async (
       orderBy: {
         [sorting.id]: sorting.desc ? 'desc' : 'asc',
       },
-      take: limit + 1,
-      skip: page * limit,
+      take: page_size + 1,
+      skip: page * page_size,
     }),
   ]);
 

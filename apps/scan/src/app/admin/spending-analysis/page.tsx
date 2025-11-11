@@ -21,10 +21,7 @@ export default async function ToolSpendingAnalysisPage() {
   }
 
   return (
-    <TimeRangeProvider
-      creationDate={subDays(new Date(), 365)}
-      initialTimeframe={ActivityTimeframe.ThirtyDays}
-    >
+    <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
       <div>
         <Heading
           title="Tool Spending Analysis"
