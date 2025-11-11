@@ -10,7 +10,7 @@ export const virtuals: FacilitatorConfig = {
 export const virtualsFacilitator = {
   id: 'virtuals',
   metadata: {
-    name: 'Virtual Protocol',
+    name: 'Virtuals Protocol',
     image: '/virtuals.png',
     docsUrl: 'https://app.virtuals.io',
     color: '#15886D',
