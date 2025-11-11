@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache';
+import superjson from 'superjson';
 import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
@@ -42,52 +43,17 @@ const roundDateToInterval = (date?: Date): string | undefined => {
 };
 
 /**
- * Type for serialized BigInt values
+ * Serialize data using SuperJSON (handles BigInt, Date, Map, Set, etc.)
  */
-interface SerializedBigInt {
-  __type: 'bigint';
-  value: string;
-}
-
-/**
- * Type guard for SerializedBigInt
- */
-const isSerializedBigInt = (value: unknown): value is SerializedBigInt => {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    '__type' in value &&
-    value.__type === 'bigint' &&
-    'value' in value &&
-    typeof value.value === 'string'
-  );
+const serialize = <T>(data: T): string => {
+  return superjson.stringify(data);
 };
 
 /**
- * Custom JSON serializer that handles BigInt values
+ * Deserialize data using SuperJSON
  */
-const jsonStringify = (obj: unknown): string => {
-  return JSON.stringify(obj, (_, value: unknown) => {
-    if (typeof value === 'bigint') {
-      return {
-        __type: 'bigint',
-        value: value.toString(),
-      } satisfies SerializedBigInt;
-    }
-    return value;
-  });
-};
-
-/**
- * Custom JSON parser that handles BigInt values
- */
-const jsonParse = <T>(str: string): T => {
-  return JSON.parse(str, (_, value: unknown) => {
-    if (isSerializedBigInt(value)) {
-      return BigInt(value.value);
-    }
-    return value;
-  }) as T;
+const deserialize = <T>(str: string): T => {
+  return superjson.parse<T>(str);
 };
 
 /**
@@ -142,7 +108,7 @@ async function withRedisCache<T>(
   const cached = await redis.get(fullCacheKey);
   if (cached) {
     console.log(`[Cache] HIT: ${fullCacheKey}`);
-    return jsonParse<T>(cached);
+    return deserialize<T>(cached);
   }
 
   // Try to acquire lock with NX (set if not exists) and EX (expiry)
@@ -159,7 +125,7 @@ async function withRedisCache<T>(
     console.log(`[Cache] MISS: Executing query for ${fullCacheKey}`);
     try {
       const result = await queryFn();
-      await redis.setex(fullCacheKey, ttlSeconds, jsonStringify(result));
+      await redis.setex(fullCacheKey, ttlSeconds, serialize(result));
       return result;
     } finally {
       // Release lock
@@ -175,7 +141,7 @@ async function withRedisCache<T>(
         console.log(
           `[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`
         );
-        return jsonParse<T>(cached);
+        return deserialize<T>(cached);
       }
     }
 
