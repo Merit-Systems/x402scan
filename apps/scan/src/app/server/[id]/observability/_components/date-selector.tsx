@@ -3,11 +3,11 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const TIME_RANGES = [
-  { label: '24 Hours', value: '1', hours: 24 },
-  { label: '3 Days', value: '3', hours: 72 },
-  { label: '7 Days', value: '7', hours: 168 },
-  { label: '15 Days', value: '15', hours: 360 },
-  { label: '30 Days', value: '30', hours: 720 },
+  { label: '24 Hours', value: '1' },
+  { label: '3 Days', value: '3' },
+  { label: '7 Days', value: '7' },
+  { label: '15 Days', value: '15' },
+  { label: '30 Days', value: '30' },
 ] as const;
 
 export const DateSelector = () => {
@@ -15,27 +15,23 @@ export const DateSelector = () => {
   const searchParams = useSearchParams();
   const currentRange = searchParams.get('range') || '1';
 
-  const handleRangeChange = (value: string) => {
+  const handleRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('range', value);
+    params.set('range', e.target.value);
     router.push(`?${params.toString()}`);
   };
 
   return (
-    <div className="flex gap-2">
+    <select
+      value={currentRange}
+      onChange={handleRangeChange}
+      className="px-3 py-2 text-sm rounded-md border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+    >
       {TIME_RANGES.map(({ label, value }) => (
-        <button
-          key={value}
-          onClick={() => handleRangeChange(value)}
-          className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-            currentRange === value
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80'
-          }`}
-        >
+        <option key={value} value={value}>
           {label}
-        </button>
+        </option>
       ))}
-    </div>
+    </select>
   );
 };

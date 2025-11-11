@@ -43,7 +43,8 @@ export const StatusChart: React.FC<Props> = ({ data }) => {
 
   // Get start and end timestamps for display
   const startTime = chartData.length > 0 ? chartData[0].timestamp : '';
-  const endTime = chartData.length > 0 ? chartData[chartData.length - 1].timestamp : '';
+  const endTime =
+    chartData.length > 0 ? chartData[chartData.length - 1].timestamp : '';
 
   return (
     <div className="w-full">
@@ -112,16 +113,8 @@ export const StatusChart: React.FC<Props> = ({ data }) => {
       >
         <defs>
           <linearGradient id="success-gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="0%"
-              stopColor="#3b82f6"
-              stopOpacity={0.4}
-            />
-            <stop
-              offset="100%"
-              stopColor="#3b82f6"
-              stopOpacity={0}
-            />
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="redirect-gradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#6366f1" stopOpacity={0.4} />
