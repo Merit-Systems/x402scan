@@ -102,3 +102,16 @@ export const USDC_ADDRESS = {
 } satisfies Record<Chain, MixedAddress>;
 
 export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
+export const safeParseJson = <T>(
+  value: string | null | undefined,
+  fallback: T
+): T => {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(decodeURIComponent(value)) as T;
+  } catch (e) {
+    console.error('Failed to parse JSON from cookie value:', e);
+    return fallback;
+  }
+};

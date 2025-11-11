@@ -8,12 +8,12 @@ import { Suspense } from 'react';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { getChain } from '@/app/_lib/chain';
+import { getChainForPage } from '@/app/_lib/chain/page';
 
 export default async function TransactionsPage({
   searchParams,
 }: PageProps<'/transactions'>) {
-  const chain = await searchParams.then(params => getChain(params.chain));
+  const chain = await getChainForPage(await searchParams);
 
   const pageSize = 15;
 

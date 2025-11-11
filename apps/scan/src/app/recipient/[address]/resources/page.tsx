@@ -4,7 +4,7 @@ import {
   LoadingResourcesByOrigin,
   ResourcesByOrigin,
 } from '@/app/_components/resources/by-origin';
-import { getChain } from '@/app/_lib/chain';
+import { getChainForPage } from '@/app/_lib/chain/page';
 
 import { api, HydrateClient } from '@/trpc/server';
 import { ResourcesHeading } from './_components/heading';
@@ -15,7 +15,7 @@ export default async function ResourcesPage({
   searchParams,
 }: PageProps<'/recipient/[address]/resources'>) {
   const { address } = await params;
-  const chain = await searchParams.then(params => getChain(params.chain));
+  const chain = await getChainForPage(await searchParams);
 
   const origins = await api.public.origins.list.origins({
     chain,
