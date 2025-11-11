@@ -50,7 +50,10 @@ export const adminSpendingRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      return await getSpendingByWallet(input.pagination, input.sorting);
+      return await getSpendingByWallet(
+        { sorting: input.sorting },
+        input.pagination
+      );
     }),
 
   toolBreakdown: adminProcedure
@@ -96,7 +99,10 @@ export const adminSpendingRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      return await getSpendingByTool(input.pagination, input.sorting);
+      return await getSpendingByTool(
+        { sorting: input.sorting },
+        input.pagination
+      );
     }),
 
   walletBreakdown: adminProcedure

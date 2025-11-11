@@ -14,6 +14,12 @@ import type { AcceptsNetwork, Prisma } from '@prisma/client';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { Chain } from '@/types/chain';
 
+import {
+  createCachedArrayQuery,
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
+
 export const upsertResourceSchema = z.object({
   resource: z.string(),
   type: z.enum(['http']),
@@ -185,7 +191,9 @@ export const getResource = async (id: string) => {
   });
 };
 
-export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
+export const listResourcesUncached = async (
+  where?: Prisma.ResourcesWhereInput
+) => {
   return await prisma.resources.findMany({
     where,
     orderBy: [
@@ -195,6 +203,14 @@ export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
   });
 };
 
+export const listResources = createCachedArrayQuery({
+  queryFn: listResourcesUncached,
+  cacheKeyPrefix: 'resources:list',
+  createCacheKey: where => createStandardCacheKey({ where }),
+  dateFields: [],
+  tags: ['resources'],
+});
+
 export type ResourceSortId = 'lastUpdated' | 'toolCalls';
 
 type ResourceSorting = {
@@ -202,11 +218,11 @@ type ResourceSorting = {
   desc: boolean;
 };
 
-export const listResourcesWithPagination = async (
-  pagination: PaginatedQueryParams,
-  where?: Prisma.ResourcesWhereInput,
-  sorting?: ResourceSorting
+export const listResourcesWithPaginationUncached = async (
+  input: { where?: Prisma.ResourcesWhereInput; sorting?: ResourceSorting },
+  pagination: PaginatedQueryParams
 ) => {
+  const { where, sorting } = input;
   const { page, page_size } = pagination;
 
   // Default sorting
@@ -252,6 +268,14 @@ export const listResourcesWithPagination = async (
   });
 };
 
+export const listResourcesWithPagination = createCachedPaginatedQuery({
+  queryFn: listResourcesWithPaginationUncached,
+  cacheKeyPrefix: 'resources:list-paginated',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: [],
+  tags: ['resources'],
+});
+
 export const getResourceByAddress = async (address: string) => {
   return await prisma.resources.findFirst({
     where: {
@@ -272,7 +296,7 @@ export const searchResourcesSchema = z.object({
   showExcluded: z.boolean().optional().default(false),
 });
 
-export const searchResources = async (
+const searchResourcesUncached = async (
   input: z.infer<typeof searchResourcesSchema>
 ) => {
   const { search, limit, tagIds, resourceIds, showExcluded } = input;
@@ -338,6 +362,14 @@ export const searchResources = async (
     orderBy: [{ toolCalls: { _count: 'desc' } }, { tags: { _count: 'desc' } }],
   });
 };
+
+export const searchResources = createCachedArrayQuery({
+  queryFn: searchResourcesUncached,
+  cacheKeyPrefix: 'resources:search',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: [],
+  tags: ['resources'],
+});
 
 export const listResourcesForTools = async (resourceIds: string[]) => {
   return await prisma.resources.findMany({
