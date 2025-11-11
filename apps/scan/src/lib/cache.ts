@@ -1,3 +1,4 @@
+import superjson from 'superjson';
 import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
@@ -49,6 +50,20 @@ const roundDateToInterval = (date?: Date): string | undefined => {
 };
 
 /**
+ * Serialize data using SuperJSON (handles BigInt, Date, Map, Set, etc.)
+ */
+const serialize = <T>(data: T): string => {
+  return superjson.stringify(data);
+};
+
+/**
+ * Deserialize data using SuperJSON
+ */
+const deserialize = <T>(str: string): T => {
+  return superjson.parse<T>(str);
+};
+
+/**
  * Serialize dates in an object to ISO strings for JSON serialization
  */
 const serializeDates = <T>(obj: T, dateKeys: (keyof T)[]): T => {
@@ -97,13 +112,11 @@ async function withRedisCache<T>(
 
   const lockKey = `${fullCacheKey}:lock`;
 
-  // Try to get from cache first (unless force refresh)
-  if (!forceRefresh) {
-    const cached = await redis.get(fullCacheKey);
-    if (cached) {
-      console.log(`[Cache] HIT: ${fullCacheKey}`);
-      return JSON.parse(cached) as T;
-    }
+  // Try to get from cache first
+  const cached = await redis.get(fullCacheKey);
+  if (cached) {
+    console.log(`[Cache] HIT: ${fullCacheKey}`);
+    return deserialize<T>(cached);
   }
 
   // Try to acquire lock with NX (set if not exists) and EX (expiry)
@@ -124,10 +137,7 @@ async function withRedisCache<T>(
     }
     try {
       const result = await queryFn();
-      await redis.setex(fullCacheKey, ttlSeconds, JSON.stringify(result));
-      if (forceRefresh) {
-        console.log(`[Cache] WARMED: ${fullCacheKey}`);
-      }
+      await redis.setex(fullCacheKey, ttlSeconds, serialize(result));
       return result;
     } finally {
       // Release lock
@@ -144,12 +154,10 @@ async function withRedisCache<T>(
       await sleep(POLL_INTERVAL_MS);
       const cached = await redis.get(fullCacheKey);
       if (cached) {
-        if (!forceRefresh) {
-          console.log(
-            `[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`
-          );
-        }
-        return JSON.parse(cached) as T;
+        console.log(
+          `[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`
+        );
+        return deserialize<T>(cached);
       }
     }
 

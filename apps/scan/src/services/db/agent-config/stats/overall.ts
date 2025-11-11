@@ -1,6 +1,11 @@
 import z from 'zod';
 
 import { Prisma } from '@prisma/client';
+import {
+  createCachedQuery,
+  createCachedArrayQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 import { differenceInMilliseconds, getUnixTime } from 'date-fns';
 
@@ -17,10 +22,10 @@ export const overallActivityInputSchema = z.object({
   timeframe: timeframeSchema,
 });
 
-export const getOverallActivity = async ({
-  timeframe,
-}: z.infer<typeof overallActivityInputSchema>) => {
-  const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
+const getOverallActivityUncached = async (
+  input: z.infer<typeof overallActivityInputSchema>
+) => {
+  const { startDate, endDate } = getTimeRangeFromTimeframe(input.timeframe);
   const [result] = await queryRaw(
     Prisma.sql`
       SELECT
@@ -46,12 +51,20 @@ export const getOverallActivity = async ({
   return result;
 };
 
+export const getOverallActivity = createCachedQuery({
+  queryFn: getOverallActivityUncached,
+  cacheKeyPrefix: 'agent-config:overall-activity',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: [],
+  tags: ['agent-configuration', 'activity'],
+});
+
 export const overallBucketedActivityInputSchema = z.object({
   timeframe: timePeriodSchema,
   numBuckets: z.number().optional().default(48),
 });
 
-export const getOverallBucketedActivity = async (
+const getOverallBucketedActivityUncached = async (
   input: z.infer<typeof overallBucketedActivityInputSchema>
 ) => {
   const { timeframe, numBuckets } = input;
@@ -142,3 +155,11 @@ export const getOverallBucketedActivity = async (
     )
   );
 };
+
+export const getOverallBucketedActivity = createCachedArrayQuery({
+  queryFn: getOverallBucketedActivityUncached,
+  cacheKeyPrefix: 'agent-config:overall-bucketed-activity',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['bucket_start'],
+  tags: ['agent-configuration', 'activity'],
+});

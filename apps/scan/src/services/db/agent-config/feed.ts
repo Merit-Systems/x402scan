@@ -4,6 +4,10 @@ import { Prisma } from '@prisma/client';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
 import { prisma } from '../client';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const agentConfigurationSchema = z
   .object({
@@ -44,7 +48,7 @@ export const getAgentConfigFeedSchema = z.object({
   userId: z.string().optional(),
 });
 
-export const getAgentConfigFeed = async (
+const getAgentConfigFeedUncached = async (
   input: z.infer<typeof getAgentConfigFeedSchema>,
   pagination: PaginatedQueryParams
 ) => {
@@ -141,3 +145,11 @@ export const getAgentConfigFeed = async (
     ...pagination,
   });
 };
+
+export const getAgentConfigFeed = createCachedPaginatedQuery({
+  queryFn: getAgentConfigFeedUncached,
+  cacheKeyPrefix: 'agent-config:feed',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['createdAt'],
+  tags: ['agent-configuration', 'feed'],
+});

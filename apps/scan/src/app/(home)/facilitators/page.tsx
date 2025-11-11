@@ -25,6 +25,7 @@ import { getChain } from '@/app/_lib/chain';
 import { facilitators } from '@/lib/facilitators';
 
 import { ActivityTimeframe } from '@/types/timeframes';
+import { FacilitatorPackageBanner } from './_components/facilitator-package-banner';
 
 export default async function FacilitatorsPage({
   searchParams,
@@ -60,6 +61,7 @@ export default async function FacilitatorsPage({
             actions={<RangeSelector />}
           />
           <Body>
+            <FacilitatorPackageBanner />
             <Card className="overflow-hidden">
               <Suspense fallback={<LoadingFacilitatorsChart />}>
                 <FacilitatorsChart />
