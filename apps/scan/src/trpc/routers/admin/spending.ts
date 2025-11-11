@@ -16,7 +16,16 @@ import {
   type WalletBreakdownSortId,
 } from '@/services/db/spending/by-tool';
 
+import {
+  getToolCallsOverTime,
+  toolCallsOverTimeQuerySchema,
+} from '@/services/db/spending/tool-calls-over-time';
+
 import { getWalletAddressFromName } from '@/services/cdp/server-wallet/admin';
+import {
+  listAllServerAccounts,
+  generateAccountsCsv,
+} from '@/services/cdp/server-wallet/list-accounts';
 import { paginatedQuerySchema } from '@/lib/pagination';
 
 export const adminSpendingRouter = createTRPCRouter({
@@ -117,4 +126,15 @@ export const adminSpendingRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await getWalletAddressFromName(input.walletName);
     }),
+
+  toolCallsOverTime: adminProcedure
+    .input(toolCallsOverTimeQuerySchema)
+    .query(async ({ input }) => {
+      return await getToolCallsOverTime(input);
+    }),
+
+  getServerAccountsCsv: adminProcedure.query(async () => {
+    const accounts = await listAllServerAccounts();
+    return generateAccountsCsv(accounts);
+  }),
 });
