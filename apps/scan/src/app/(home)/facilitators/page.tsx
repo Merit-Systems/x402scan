@@ -31,7 +31,7 @@ export default async function FacilitatorsPage({
 
   await Promise.all([
     // Use MV for bucketed statistics (OneDay is supported)
-    api.public.facilitators.bucketedStatisticsMv.prefetch({
+    api.public.facilitators.bucketedStatistics.prefetch({
       timeframe: ActivityTimeframe.OneDay,
       numBuckets: 48,
       startDate,
@@ -44,7 +44,7 @@ export default async function FacilitatorsPage({
       chain,
     }),
     // Use MV for facilitators list (OneDay is supported)
-    api.public.facilitators.listMv.prefetch({
+    api.public.facilitators.list.prefetch({
       timeframe: ActivityTimeframe.OneDay,
       pagination: {
         page_size: 100,

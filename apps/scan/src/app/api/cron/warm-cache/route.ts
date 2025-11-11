@@ -146,8 +146,7 @@ function getHomePageTasks(
         pagination: {
           page_size: facilitatorAddresses.length,
         },
-        startDate,
-        endDate,
+        timeframe,
         chain,
       }),
 
@@ -229,16 +228,14 @@ function getNetworksPageTasks(
  * Get cache warming tasks for the Facilitators Page
  */
 function getFacilitatorsPageTasks(
-  startDate: Date,
-  endDate: Date
+  timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
     // Facilitators bucketed statistics
     () =>
       api.public.facilitators.bucketedStatistics({
         numBuckets: 48,
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Facilitators list (shared with homepage)
@@ -247,15 +244,13 @@ function getFacilitatorsPageTasks(
         pagination: {
           page_size: facilitatorAddresses.length,
         },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Overall stats (shared with homepage)
     () =>
-      api.public.stats.overall({
-        startDate,
-        endDate,
+      api.public.stats.overallMv({
+        timeframe,
       }),
   ];
 }
@@ -422,7 +417,7 @@ export async function GET(request: NextRequest) {
       }
 
       if (pagesToWarm.includes('facilitators')) {
-        allTasks.push(...getFacilitatorsPageTasks(startDate, endDate));
+        allTasks.push(...getFacilitatorsPageTasks(timeframe));
       }
 
       if (pagesToWarm.includes('resources')) {

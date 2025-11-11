@@ -36,7 +36,7 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
       timeframe: ActivityTimeframe.OneDay,
       chain,
     }),
-    api.public.facilitators.listMv.prefetch({
+    api.public.facilitators.list.prefetch({
       timeframe: ActivityTimeframe.OneDay,
       chain,
       pagination: {

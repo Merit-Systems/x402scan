@@ -17,7 +17,7 @@ export const FacilitatorsChart = () => {
   const { timeframe } = useTimeRangeContext();
 
   const [bucketedFacilitatorData] =
-    api.public.facilitators.bucketedStatisticsMv.useSuspenseQuery({
+    api.public.facilitators.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,
       timeframe,
       chain,

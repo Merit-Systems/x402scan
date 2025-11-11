@@ -15,7 +15,7 @@ export const FacilitatorsTable: React.FC = () => {
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
-  const [facilitatorsData] = api.public.facilitators.listMv.useSuspenseQuery({
+  const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
     pagination: {
       page_size: facilitatorAddresses.length,
     },
