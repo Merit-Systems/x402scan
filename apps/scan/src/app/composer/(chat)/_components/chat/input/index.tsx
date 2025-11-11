@@ -51,14 +51,10 @@ export const PromptInputSection: React.FC<Props> = ({
     api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
       enabled: !!session,
     });
-  const { data: freeTierUsage, isLoading: isFreeTierUsageLoading } =
-    api.user.freeTier.usage.useQuery(undefined, {
-      enabled: !!session,
-    });
 
-  const isLoading = isUsdcBalanceLoading || isFreeTierUsageLoading;
+  const isLoading = isUsdcBalanceLoading;
 
-  const hasBalance = (usdcBalance ?? 0) > 0 || freeTierUsage?.hasFreeTier;
+  const hasBalance = (usdcBalance ?? 0) > 0;
 
   return (
     <PromptInput onSubmit={handleSubmit}>
