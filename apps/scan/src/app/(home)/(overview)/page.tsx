@@ -35,7 +35,6 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
         <Suspense fallback={<LoadingOverallStats />}>
           <OverallStats chain={chain} />
         </Suspense>
-        <OverallStats chain={chain} />
         <Suspense fallback={<LoadingTopServers />}>
           <TopServers chain={chain} />
         </Suspense>
