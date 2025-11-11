@@ -52,7 +52,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
         onPointerLeave={() => setHoveredTabIndex(null)}
       >
         <motion.ul
-          className="list-none p-0 m-0 font-medium text-sm flex w-full h-full flex-nowrap md:flex-wrap"
+          className="list-none p-0 m-0 font-medium text-sm flex w-full h-full"
           style={{ paddingLeft: paddingLeft }}
         >
           {tabs.map((tab, index) => (
