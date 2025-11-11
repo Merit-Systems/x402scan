@@ -1,13 +1,20 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
+
 import { Skeleton } from '@/components/ui/skeleton';
-import { api } from '@/trpc/client';
 
 import { ComposerWalletAddressCopyCode } from './address';
 
+import { api } from '@/trpc/client';
+
 export const WalletDisplay: React.FC = () => {
+  const { data: session } = useSession();
+
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery();
+    api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
+      enabled: !!session,
+    });
 
   return (
     <div className="space-y-4 w-full overflow-hidden">

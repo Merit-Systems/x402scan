@@ -34,15 +34,20 @@ interface Props {
 }
 
 export const WalletDialog: React.FC<Props> = ({ children }) => {
-  const { data: session } = useSession({ required: true });
+  const { data: session } = useSession();
 
   const searchParams = useSearchParams();
-  const { data: usdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery();
+  const { data: usdcBalance } = api.user.serverWallet.usdcBaseBalance.useQuery(
+    undefined,
+    {
+      enabled: !!session,
+    }
+  );
   const {
     data: hasUserAcknowledgedComposer,
     isLoading: isLoadingHasUserAcknowledgedComposer,
   } = api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
+    refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
     enabled: !!session,
@@ -169,6 +174,20 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
                 <WalletExport />
               </TabsContent>
             </Tabs>
+            <div className="border-t bg-muted p-4">
+              <p className="text-xs text-muted-foreground font-mono text-center">
+                Composer currently only supports Base. Multi-network support is
+                in progress{' '}
+                <a
+                  href="https://github.com/Merit-Systems/x402scan/pull/320"
+                  target="_blank"
+                  className="text-primary underline"
+                >
+                  here
+                </a>
+                .
+              </p>
+            </div>
           </DialogContent>
         </Dialog>
       </WalletChainProvider>

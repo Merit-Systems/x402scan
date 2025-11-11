@@ -1,3 +1,5 @@
+'use client';
+
 import { Bot } from 'lucide-react';
 
 import { useSession } from 'next-auth/react';
@@ -19,15 +21,21 @@ export const WalletButton = () => {
       enabled: !!session,
     });
 
-  const { isLoading: isLoadingHasUserAcknowledgedComposer } =
-    api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
-      enabled: !!session,
-      refetchOnReconnect: false,
-      refetchOnMount: false,
-    });
+  const {
+    data: hasUserAcknowledgedComposer,
+    isLoading: isLoadingHasUserAcknowledgedComposer,
+  } = api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
+    enabled: !!session,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
 
   if (isLoadingHasUserAcknowledgedComposer) {
     return <LoadingWalletButton />;
+  }
+
+  if (!hasUserAcknowledgedComposer) {
+    return <WalletButtonComponent disabled>Welcome</WalletButtonComponent>;
   }
 
   return (
