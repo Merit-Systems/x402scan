@@ -13,8 +13,7 @@ import {
 import { ActivityTimeframe } from '@/types/timeframes';
 
 export const RangeSelector = () => {
-  const { selectTimeframe, timeframe } =
-    useTimeRangeContext();
+  const { selectTimeframe, timeframe } = useTimeRangeContext();
 
   // Get only the numeric enum values
   const timeframeValues = Object.values(ActivityTimeframe).filter(

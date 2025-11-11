@@ -8,7 +8,6 @@ import {
   getBucketedNetworksStatistics,
 } from '@/services/transfers/networks/bucketed';
 
-
 export const networksRouter = createTRPCRouter({
   list: publicProcedure
     .input(listTopNetworksInputSchema)

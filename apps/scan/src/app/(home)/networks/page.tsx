@@ -44,9 +44,7 @@ export default async function NetworksPage({
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        initialTimeframe={ActivityTimeframe.OneDay}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <NetworksSortingProvider initialSorting={defaultNetworksSorting}>
           <Heading
             title="Networks"

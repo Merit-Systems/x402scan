@@ -9,7 +9,10 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 export const bucketedNetworksStatisticsInputSchema = baseQuerySchema.extend({
-  timeframe: z.nativeEnum(ActivityTimeframe).optional().default(ActivityTimeframe.OneDay),
+  timeframe: z
+    .nativeEnum(ActivityTimeframe)
+    .optional()
+    .default(ActivityTimeframe.OneDay),
   numBuckets: z.number().optional().default(48),
 });
 
@@ -120,4 +123,3 @@ export const getBucketedNetworksStatistics = createCachedArrayQuery({
   dateFields: ['bucket_start'],
   tags: ['networks-statistics'],
 });
-

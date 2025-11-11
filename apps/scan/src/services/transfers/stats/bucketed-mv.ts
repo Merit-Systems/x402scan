@@ -9,7 +9,10 @@ import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 // Schema accepts ActivityTimeframe
 export const bucketedStatisticsMvInputSchema = baseBucketedQuerySchema.extend({
-  timeframe: z.nativeEnum(ActivityTimeframe).optional().default(ActivityTimeframe.OneDay),
+  timeframe: z
+    .nativeEnum(ActivityTimeframe)
+    .optional()
+    .default(ActivityTimeframe.OneDay),
 });
 
 const bucketedResultSchema = z.array(
@@ -34,7 +37,9 @@ const getBucketedStatisticsMVUncached = async (
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
 
   if (input.facilitatorIds && input.facilitatorIds.length > 0) {
-    conditions.push(Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`);
+    conditions.push(
+      Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`
+    );
   }
 
   if (input.chain) {
@@ -77,4 +82,3 @@ export const getBucketedStatisticsMV = createCachedArrayQuery({
   dateFields: ['bucket_start'],
   tags: ['statistics'],
 });
-

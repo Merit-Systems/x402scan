@@ -9,7 +9,10 @@ import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 // Schema accepts ActivityTimeframe or date range
 export const overallStatisticsMvInputSchema = baseQuerySchema.extend({
-  timeframe: z.nativeEnum(ActivityTimeframe).optional().default(ActivityTimeframe.OneDay),
+  timeframe: z
+    .nativeEnum(ActivityTimeframe)
+    .optional()
+    .default(ActivityTimeframe.OneDay),
 });
 
 const getOverallStatisticsMVUncached = async (
@@ -24,7 +27,9 @@ const getOverallStatisticsMVUncached = async (
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
 
   if (input.facilitatorIds && input.facilitatorIds.length > 0) {
-    conditions.push(Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`);
+    conditions.push(
+      Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`
+    );
   }
 
   if (input.chain) {

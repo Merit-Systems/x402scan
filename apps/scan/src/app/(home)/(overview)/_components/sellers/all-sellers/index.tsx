@@ -47,9 +47,7 @@ export const AllSellers: React.FC<Props> = async ({ chain }) => {
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        initialTimeframe={ActivityTimeframe.OneDay}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <SellersSortingProvider initialSorting={defaultSellersSorting}>
           <AllSellersContainer>
             <ErrorBoundary

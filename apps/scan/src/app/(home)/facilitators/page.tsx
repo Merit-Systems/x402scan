@@ -55,9 +55,7 @@ export default async function FacilitatorsPage({
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        initialTimeframe={ActivityTimeframe.OneDay}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <FacilitatorsSortingProvider
           initialSorting={defaultFacilitatorsSorting}
         >

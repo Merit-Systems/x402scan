@@ -38,9 +38,7 @@ export const OverallStats = async () => {
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        initialTimeframe={ActivityTimeframe.ThreeDays}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThreeDays}>
         <ActivityContainer>
           <ErrorBoundary
             fallback={<p>There was an error loading the activity data</p>}

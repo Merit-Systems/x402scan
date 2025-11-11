@@ -21,7 +21,10 @@ const listTopNetworksSortIds = [
 export type NetworksSortId = (typeof listTopNetworksSortIds)[number];
 
 export const listTopNetworksInputSchema = baseQuerySchema.extend({
-  timeframe: z.nativeEnum(ActivityTimeframe).optional().default(ActivityTimeframe.OneDay),
+  timeframe: z
+    .nativeEnum(ActivityTimeframe)
+    .optional()
+    .default(ActivityTimeframe.OneDay),
   limit: z.number().default(100),
   sorting: sortingSchema(listTopNetworksSortIds).default({
     id: 'tx_count',
@@ -122,4 +125,3 @@ export const listTopNetworks = createCachedArrayQuery({
   dateFields: ['latest_block_timestamp'],
   tags: ['networks'],
 });
-

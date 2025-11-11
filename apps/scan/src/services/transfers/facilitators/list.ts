@@ -33,7 +33,10 @@ export const listTopFacilitatorsInputSchema = baseListQuerySchema({
   sortIds: FACILITATORS_SORT_IDS,
   defaultSortId: FACILITATORS_SORT_IDS[0],
 }).extend({
-  timeframe: z.nativeEnum(ActivityTimeframe).optional().default(ActivityTimeframe.OneDay),
+  timeframe: z
+    .nativeEnum(ActivityTimeframe)
+    .optional()
+    .default(ActivityTimeframe.OneDay),
 });
 
 const listTopFacilitatorsUncached = async (
@@ -59,7 +62,9 @@ const listTopFacilitatorsUncached = async (
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
 
   if (input.facilitatorIds && input.facilitatorIds.length > 0) {
-    conditions.push(Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`);
+    conditions.push(
+      Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`
+    );
   }
 
   if (input.chain) {

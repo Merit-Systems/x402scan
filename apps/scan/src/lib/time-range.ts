@@ -88,7 +88,9 @@ export function getSSRTimeRange(
   return getTimeRangeFromTimeframe(timeframe, creationDate);
 }
 
-export function getMaterializedViewSuffix(timeframe: ActivityTimeframe): string {
+export function getMaterializedViewSuffix(
+  timeframe: ActivityTimeframe
+): string {
   switch (timeframe) {
     case ActivityTimeframe.OneDay:
       return '1d';

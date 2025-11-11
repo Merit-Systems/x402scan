@@ -53,9 +53,7 @@ export default async function TransactionsPage({
         description="Transactions made through this facilitator"
       />
       <Body>
-        <TimeRangeProvider
-          initialTimeframe={ActivityTimeframe.ThirtyDays}
-        >
+        <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
           <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
             <Suspense
               fallback={

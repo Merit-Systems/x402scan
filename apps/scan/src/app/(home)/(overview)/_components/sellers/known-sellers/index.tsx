@@ -45,9 +45,7 @@ export const TopServers = async ({ chain }: Props) => {
   return (
     <HydrateClient>
       <SellersSortingProvider initialSorting={defaultSellersSorting}>
-        <TimeRangeProvider
-          initialTimeframe={ActivityTimeframe.OneDay}
-        >
+        <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
           <TopServersContainer>
             <ErrorBoundary
               fallback={

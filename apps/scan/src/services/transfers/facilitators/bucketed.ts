@@ -9,9 +9,13 @@ import { getMaterializedViewSuffix } from '@/lib/time-range';
 import { facilitators } from '@/lib/facilitators';
 
 // Schema accepts ActivityTimeframe
-export const bucketedFacilitatorsStatisticsInputSchema = baseBucketedQuerySchema.extend({
-  timeframe: z.nativeEnum(ActivityTimeframe).optional().default(ActivityTimeframe.OneDay),
-});
+export const bucketedFacilitatorsStatisticsInputSchema =
+  baseBucketedQuerySchema.extend({
+    timeframe: z
+      .nativeEnum(ActivityTimeframe)
+      .optional()
+      .default(ActivityTimeframe.OneDay),
+  });
 
 const getBucketedFacilitatorsStatisticsUncached = async (
   input: z.infer<typeof bucketedFacilitatorsStatisticsInputSchema>
@@ -33,7 +37,9 @@ const getBucketedFacilitatorsStatisticsUncached = async (
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
 
   if (input.facilitatorIds && input.facilitatorIds.length > 0) {
-    conditions.push(Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`);
+    conditions.push(
+      Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`
+    );
   } else if (facilitatorIds.length > 0) {
     conditions.push(Prisma.sql`AND facilitator_id = ANY(${facilitatorIds})`);
   }
@@ -126,4 +132,3 @@ export const getBucketedFacilitatorsStatistics = createCachedArrayQuery({
   dateFields: ['bucket_start'],
   tags: ['facilitators-statistics'],
 });
-

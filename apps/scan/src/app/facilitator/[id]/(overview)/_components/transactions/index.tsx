@@ -46,9 +46,7 @@ export const LatestTransactions: React.FC<Props> = async ({
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        initialTimeframe={ActivityTimeframe.ThirtyDays}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
         <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
           <LatestTransactionsTableContainer>
             <Suspense fallback={<LoadingLatestTransactionsTable />}>

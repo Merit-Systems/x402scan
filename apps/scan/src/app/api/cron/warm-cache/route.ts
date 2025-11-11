@@ -91,12 +91,14 @@ function getHomePageTasks(
   const limit = 100;
 
   // Check if we can use materialized views for this timeframe
-  const canUseMV = timeframe && [
-    ActivityTimeframe.OneDay,
-    ActivityTimeframe.SevenDays,
-    ActivityTimeframe.FourteenDays,
-    ActivityTimeframe.ThirtyDays,
-  ].includes(timeframe);
+  const canUseMV =
+    timeframe &&
+    [
+      ActivityTimeframe.OneDay,
+      ActivityTimeframe.SevenDays,
+      ActivityTimeframe.FourteenDays,
+      ActivityTimeframe.ThirtyDays,
+    ].includes(timeframe);
 
   return [
     // Overall Stats - current period (use MV if available)
@@ -407,9 +409,15 @@ export async function GET(request: NextRequest) {
 
       if (pagesToWarm.includes('home')) {
         // Home page with all chain variants
-        allTasks.push(...getHomePageTasks(startDate, endDate, undefined, timeframe)); // All chains
-        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.BASE, timeframe));
-        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.SOLANA, timeframe));
+        allTasks.push(
+          ...getHomePageTasks(startDate, endDate, undefined, timeframe)
+        ); // All chains
+        allTasks.push(
+          ...getHomePageTasks(startDate, endDate, Chain.BASE, timeframe)
+        );
+        allTasks.push(
+          ...getHomePageTasks(startDate, endDate, Chain.SOLANA, timeframe)
+        );
       }
 
       if (pagesToWarm.includes('networks')) {

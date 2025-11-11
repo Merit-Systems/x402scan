@@ -25,11 +25,6 @@ interface Props {
 }
 
 export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.OneDay,
-    firstTransfer
-  );
-
   await Promise.all([
     // Use MV for current period (OneDay is supported)
     api.public.stats.overallMv.prefetch({
@@ -47,9 +42,7 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        initialTimeframe={ActivityTimeframe.OneDay}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <FacilitatorsSection>
           <Suspense fallback={<LoadingTopFacilitatorsContent />}>
             <TopFacilitatorsContent />

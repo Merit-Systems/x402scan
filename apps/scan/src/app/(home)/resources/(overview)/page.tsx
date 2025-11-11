@@ -21,9 +21,7 @@ export default async function MarketplacePage() {
   );
 
   return (
-    <TimeRangeProvider
-      initialTimeframe={ActivityTimeframe.OneDay}
-    >
+    <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
       <Heading
         title="Marketplace"
         description="Explore the most popular x402 servers"

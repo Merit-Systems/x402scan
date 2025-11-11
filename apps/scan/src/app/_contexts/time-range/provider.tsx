@@ -10,10 +10,7 @@ interface Props {
   initialTimeframe: ActivityTimeframe;
 }
 
-export const TimeRangeProvider = ({
-  children,
-  initialTimeframe,
-}: Props) => {
+export const TimeRangeProvider = ({ children, initialTimeframe }: Props) => {
   const [timeframe, setTimeframe] =
     useState<ActivityTimeframe>(initialTimeframe);
 
