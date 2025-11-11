@@ -6,6 +6,11 @@ import {
   paginationClause,
   type PaginatedQueryParams,
 } from '@/lib/pagination';
+import {
+  createCachedPaginatedQuery,
+  createCachedArrayQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const walletSpendingResultSchema = z.array(
   z.object({
@@ -35,13 +40,11 @@ export type WalletSpendingSortId =
   | 'uniqueResources'
   | 'totalMaxAmount';
 
-export const getSpendingByWallet = async (
-  pagination: PaginatedQueryParams,
-  sorting?: {
-    id: WalletSpendingSortId;
-    desc: boolean;
-  }
+const getSpendingByWalletUncached = async (
+  input: { sorting?: { id: WalletSpendingSortId; desc: boolean } },
+  pagination: PaginatedQueryParams
 ) => {
+  const { sorting } = input;
   const orderByColumn = sorting?.id ?? 'totalMaxAmount';
   const orderDirection = (sorting?.desc ?? true) ? 'DESC' : 'ASC';
 
@@ -106,13 +109,21 @@ export const getSpendingByWallet = async (
   });
 };
 
+export const getSpendingByWallet = createCachedPaginatedQuery({
+  queryFn: getSpendingByWalletUncached,
+  cacheKeyPrefix: 'spending:by-wallet',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: [],
+  tags: ['spending', 'wallet'],
+});
+
 export type ToolBreakdownSortId =
   | 'resourceUrl'
   | 'toolCalls'
   | 'maxAmountPerCall'
   | 'totalMaxAmount';
 
-export const getToolBreakdownByWallet = async (
+const getToolBreakdownByWalletUncached = async (
   walletId: string,
   sorting?: { id: ToolBreakdownSortId; desc: boolean }
 ) => {
@@ -164,3 +175,12 @@ export const getToolBreakdownByWallet = async (
 
   return walletToolBreakdownResultSchema.parse(rawResult);
 };
+
+export const getToolBreakdownByWallet = createCachedArrayQuery({
+  queryFn: getToolBreakdownByWalletUncached,
+  cacheKeyPrefix: 'spending:tool-breakdown-by-wallet',
+  createCacheKey: (walletId, sorting) =>
+    createStandardCacheKey({ walletId, sorting }),
+  dateFields: [],
+  tags: ['spending', 'wallet', 'tool-breakdown'],
+});

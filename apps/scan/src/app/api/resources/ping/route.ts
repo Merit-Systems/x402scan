@@ -1,4 +1,4 @@
-import { listResources } from '@/services/db/resources/resource';
+import { listResourcesUncached } from '@/services/db/resources/resource';
 
 import { parseX402Response } from '@/lib/x402/schema';
 import { checkCronSecret } from '@/lib/cron';
@@ -17,7 +17,7 @@ export const GET = async (request: NextRequest) => {
   try {
     // Step 1: Fetch all resources from database
     console.info('Fetching all resources from database');
-    const resources = await listResources();
+    const resources = await listResourcesUncached();
     console.info('Successfully fetched resources', {
       totalResources: resources.length,
     });

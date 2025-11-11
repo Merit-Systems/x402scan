@@ -42,6 +42,55 @@ const roundDateToInterval = (date?: Date): string | undefined => {
 };
 
 /**
+ * Type for serialized BigInt values
+ */
+interface SerializedBigInt {
+  __type: 'bigint';
+  value: string;
+}
+
+/**
+ * Type guard for SerializedBigInt
+ */
+const isSerializedBigInt = (value: unknown): value is SerializedBigInt => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    '__type' in value &&
+    value.__type === 'bigint' &&
+    'value' in value &&
+    typeof value.value === 'string'
+  );
+};
+
+/**
+ * Custom JSON serializer that handles BigInt values
+ */
+const jsonStringify = (obj: unknown): string => {
+  return JSON.stringify(obj, (_, value: unknown) => {
+    if (typeof value === 'bigint') {
+      return {
+        __type: 'bigint',
+        value: value.toString(),
+      } satisfies SerializedBigInt;
+    }
+    return value;
+  });
+};
+
+/**
+ * Custom JSON parser that handles BigInt values
+ */
+const jsonParse = <T>(str: string): T => {
+  return JSON.parse(str, (_, value: unknown) => {
+    if (isSerializedBigInt(value)) {
+      return BigInt(value.value);
+    }
+    return value;
+  }) as T;
+};
+
+/**
  * Serialize dates in an object to ISO strings for JSON serialization
  */
 const serializeDates = <T>(obj: T, dateKeys: (keyof T)[]): T => {
@@ -93,7 +142,7 @@ async function withRedisCache<T>(
   const cached = await redis.get(fullCacheKey);
   if (cached) {
     console.log(`[Cache] HIT: ${fullCacheKey}`);
-    return JSON.parse(cached) as T;
+    return jsonParse<T>(cached);
   }
 
   // Try to acquire lock with NX (set if not exists) and EX (expiry)
@@ -110,7 +159,7 @@ async function withRedisCache<T>(
     console.log(`[Cache] MISS: Executing query for ${fullCacheKey}`);
     try {
       const result = await queryFn();
-      await redis.setex(fullCacheKey, ttlSeconds, JSON.stringify(result));
+      await redis.setex(fullCacheKey, ttlSeconds, jsonStringify(result));
       return result;
     } finally {
       // Release lock
@@ -126,7 +175,7 @@ async function withRedisCache<T>(
         console.log(
           `[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`
         );
-        return JSON.parse(cached) as T;
+        return jsonParse<T>(cached);
       }
     }
 

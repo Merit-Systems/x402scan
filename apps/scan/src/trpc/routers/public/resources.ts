@@ -45,7 +45,7 @@ export const resourcesRouter = createTRPCRouter({
   }),
   list: {
     all: publicProcedure.query(async () => {
-      return await listResources();
+      return await listResources({});
     }),
     paginated: paginatedProcedure
       .input(
@@ -64,9 +64,8 @@ export const resourcesRouter = createTRPCRouter({
       )
       .query(async ({ input, ctx: { pagination } }) => {
         return await listResourcesWithPagination(
-          pagination,
-          input.where,
-          input.sorting
+          { where: input.where, sorting: input.sorting },
+          pagination
         );
       }),
     byAddress: publicProcedure
