@@ -17,7 +17,7 @@ export default async function TransactionsPage({
 
   const pageSize = 15;
 
-  await api.public.transfers.list.prefetch({
+  void api.public.transfers.list.prefetch({
     sorting: defaultTransfersSorting,
     chain,
     pagination: {

@@ -23,21 +23,19 @@ export default async function NetworksPage({
 }: PageProps<'/networks'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  await Promise.all([
-    api.networks.bucketedStatistics.prefetch({
-      numBuckets: 48,
-      timeframe: ActivityTimeframe.OneDay,
-      chain,
-    }),
-    api.public.stats.overall.prefetch({
-      timeframe: ActivityTimeframe.OneDay,
-      chain,
-    }),
-    api.networks.list.prefetch({
-      timeframe: ActivityTimeframe.OneDay,
-      chain,
-    }),
-  ]);
+  void api.networks.bucketedStatistics.prefetch({
+    numBuckets: 48,
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
+  void api.public.stats.overall.prefetch({
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
+  void api.networks.list.prefetch({
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
 
   return (
     <HydrateClient>

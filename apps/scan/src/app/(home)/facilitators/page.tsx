@@ -31,24 +31,22 @@ export default async function FacilitatorsPage({
 }: PageProps<'/facilitators'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  await Promise.all([
-    api.public.facilitators.bucketedStatistics.prefetch({
-      numBuckets: 48,
-      timeframe: ActivityTimeframe.OneDay,
-      chain,
-    }),
-    api.public.stats.overall.prefetch({
-      timeframe: ActivityTimeframe.OneDay,
-      chain,
-    }),
-    api.public.facilitators.list.prefetch({
-      pagination: {
-        page_size: facilitators.length,
-      },
-      timeframe: ActivityTimeframe.OneDay,
-      chain,
-    }),
-  ]);
+  void api.public.facilitators.bucketedStatistics.prefetch({
+    numBuckets: 48,
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
+  void api.public.stats.overall.prefetch({
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
+  void api.public.facilitators.list.prefetch({
+    pagination: {
+      page_size: facilitators.length,
+    },
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
 
   return (
     <HydrateClient>

@@ -15,15 +15,13 @@ import { api, HydrateClient } from '@/trpc/server';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 export const OverallStats = async () => {
-  await Promise.all([
-    api.public.agents.activity.overall.prefetch({
-      timeframe: ActivityTimeframe.ThreeDays,
-    }),
-    api.public.agents.activity.bucketed.prefetch({
-      timeframe: ActivityTimeframe.ThreeDays,
-      numBuckets: 32,
-    }),
-  ]);
+  void api.public.agents.activity.overall.prefetch({
+    timeframe: ActivityTimeframe.ThreeDays,
+  });
+  void api.public.agents.activity.bucketed.prefetch({
+    timeframe: ActivityTimeframe.ThreeDays,
+    numBuckets: 32,
+  });
 
   return (
     <HydrateClient>

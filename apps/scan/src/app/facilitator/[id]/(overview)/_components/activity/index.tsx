@@ -39,17 +39,15 @@ const ActivityContainer = ({
   );
 };
 
-export const Activity: React.FC<Props> = async ({ facilitatorId }) => {
-  await Promise.all([
-    api.public.stats.bucketed.prefetch({
-      facilitatorIds: [facilitatorId],
-      timeframe: ActivityTimeframe.OneDay,
-    }),
-    api.public.stats.overall.prefetch({
-      facilitatorIds: [facilitatorId],
-      timeframe: ActivityTimeframe.OneDay,
-    }),
-  ]);
+export const Activity: React.FC<Props> = ({ facilitatorId }) => {
+  void api.public.stats.bucketed.prefetch({
+    facilitatorIds: [facilitatorId],
+    timeframe: ActivityTimeframe.OneDay,
+  });
+  void api.public.stats.overall.prefetch({
+    facilitatorIds: [facilitatorId],
+    timeframe: ActivityTimeframe.OneDay,
+  });
 
   return (
     <HydrateClient>
