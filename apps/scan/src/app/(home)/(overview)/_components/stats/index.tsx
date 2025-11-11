@@ -38,12 +38,6 @@ export const OverallStats = async ({ chain }: Props) => {
       timeframe: ActivityTimeframe.OneDay,
       chain,
     }),
-    // Use regular query for previous period comparison
-    api.public.stats.overall.prefetch({
-      startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-      endDate: startDate,
-      chain,
-    }),
     // Use MV for bucketed stats (OneDay is supported)
     api.public.stats.bucketedMv.prefetch({
       timeframe: ActivityTimeframe.OneDay,
@@ -58,7 +52,6 @@ export const OverallStats = async ({ chain }: Props) => {
     <HydrateClient>
       <TimeRangeProvider
         initialTimeframe={ActivityTimeframe.OneDay}
-        creationDate={firstTransfer}
       >
         <ActivityContainer>
           <ErrorBoundary
