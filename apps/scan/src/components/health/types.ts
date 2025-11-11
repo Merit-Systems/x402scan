@@ -20,7 +20,7 @@ export type OriginHealthMetrics = Pick<
   | 'updatedAt'
 >;
 
-export type ResourceHealthMetrics = Pick<
+type ResourceHealthMetrics = Pick<
   ResourceMetrics,
   | 'uptime24hPct'
   | 'totalCount24h'
