@@ -16,7 +16,7 @@ export const gx402Facilitator = {
   metadata: {
     name: 'GX402 Facilitator',
     image: '/gx-402.png',
-    docsUrl: 'https://github.com/your-repo/gx-402', // Update to your actual docs URL
+    docsUrl: 'https://docs.gx402.org/facilitator',
     color: '#01b8da',
   },
   config: gx402Config,
