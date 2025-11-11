@@ -8,7 +8,11 @@ export enum Chain {
   AVALANCHE = 'avalanche',
 }
 
-export const SUPPORTED_CHAINS = Object.values([Chain.BASE, Chain.SOLANA, Chain.AVALANCHE]);
+export const SUPPORTED_CHAINS = Object.values([
+  Chain.BASE,
+  Chain.SOLANA,
+  Chain.AVALANCHE,
+]);
 
 export const CHAIN_LABELS: Record<Chain, string> = {
   [Chain.BASE]: 'Base',

@@ -1,5 +1,10 @@
-import { USDC_MULTIPLIER } from "@/trigger/lib/constants";
-import { Facilitator, FacilitatorConfig, SyncConfig, TransferEventData } from "@/trigger/types";
+import { USDC_MULTIPLIER } from '@/trigger/lib/constants';
+import {
+  Facilitator,
+  FacilitatorConfig,
+  SyncConfig,
+  TransferEventData,
+} from '@/trigger/types';
 
 export function buildQuery(
   config: SyncConfig,
@@ -54,10 +59,11 @@ export function transformResponse(
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
   const response = data as { ethereum: { transfers: any[] } };
-  
+
   return response.ethereum.transfers.map((transfer: any) => ({
     address: transfer.currency?.address,
-    transaction_from: transfer.transaction?.txFrom?.address || transfer.sender.address,
+    transaction_from:
+      transfer.transaction?.txFrom?.address || transfer.sender.address,
     sender: transfer.sender.address,
     recipient: transfer.receiver.address,
     amount: Math.round(parseFloat(transfer.amount) * USDC_MULTIPLIER),
