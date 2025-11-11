@@ -15,7 +15,7 @@ export const hydraProtocolFacilitator = {
   id: 'hydra-protocol',
   metadata: {
     name: 'Hydra Protocol',
-    image: 'https://x402scan.com/hydra-protocol.png',
+    image: '/hydra-protocol.png',
     docsUrl: 'https://hydraprotocol.org/docs',
     color: '#2B9DEE',
   },
