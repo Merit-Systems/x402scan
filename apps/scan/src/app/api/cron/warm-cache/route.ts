@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { api } from '@/trpc/server';
 import { createCaller } from '@/trpc/routers';
 import { createTRPCContext } from '@/trpc/trpc';
 import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';

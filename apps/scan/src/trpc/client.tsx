@@ -2,13 +2,7 @@
 
 import { useState } from 'react';
 
-import {
-  httpBatchLink,
-  httpLink,
-  isNonJsonSerializable,
-  loggerLink,
-  splitLink,
-} from '@trpc/client';
+import { httpLink, loggerLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 

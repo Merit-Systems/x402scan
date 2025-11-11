@@ -11,7 +11,6 @@ import { ToolSpendingSortingProvider } from '@/app/_contexts/sorting/tool-spendi
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { subDays } from 'date-fns';
 
 export default async function ToolSpendingAnalysisPage() {
   const session = await auth();
