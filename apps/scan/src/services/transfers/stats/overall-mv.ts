@@ -25,7 +25,7 @@ const getTimeframeForMV = (
         return '1d';
       case ActivityTimeframe.SevenDays:
         return '7d';
-      case ActivityTimeframe.FifteenDays:
+      case ActivityTimeframe.FourteenDays:
         return '14d';
       case ActivityTimeframe.ThirtyDays:
         return '30d';
