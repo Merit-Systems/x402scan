@@ -3,6 +3,10 @@ import {
   listTopFacilitatorsInputSchema,
 } from '@/services/transfers/facilitators/list';
 import {
+  listTopFacilitatorsMV,
+  listTopFacilitatorsMvInputSchema,
+} from '@/services/transfers/facilitators/list-mv';
+import {
   createTRPCRouter,
   paginatedProcedure,
   publicProcedure,
@@ -11,6 +15,10 @@ import {
   bucketedStatisticsInputSchema,
   getBucketedFacilitatorsStatistics,
 } from '@/services/transfers/facilitators/bucketed';
+import {
+  bucketedFacilitatorsStatisticsMvInputSchema,
+  getBucketedFacilitatorsStatisticsMV,
+} from '@/services/transfers/facilitators/bucketed-mv';
 
 export const facilitatorsRouter = createTRPCRouter({
   list: paginatedProcedure
@@ -19,9 +27,21 @@ export const facilitatorsRouter = createTRPCRouter({
       return await listTopFacilitators(input, pagination);
     }),
 
+  listMv: paginatedProcedure
+    .input(listTopFacilitatorsMvInputSchema)
+    .query(async ({ input, ctx: { pagination } }) => {
+      return await listTopFacilitatorsMV(input, pagination);
+    }),
+
   bucketedStatistics: publicProcedure
     .input(bucketedStatisticsInputSchema)
     .query(async ({ input }) => {
       return await getBucketedFacilitatorsStatistics(input);
+    }),
+
+  bucketedStatisticsMv: publicProcedure
+    .input(bucketedFacilitatorsStatisticsMvInputSchema)
+    .query(async ({ input }) => {
+      return await getBucketedFacilitatorsStatisticsMV(input);
     }),
 });

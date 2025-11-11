@@ -5,10 +5,11 @@ import { baseBucketedQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { ActivityTimeframe } from '@/types/timeframes';
+import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 // Schema accepts ActivityTimeframe
 export const bucketedStatisticsMvInputSchema = baseBucketedQuerySchema.extend({
-  timeframe: z.nativeEnum(ActivityTimeframe).optional(),
+  timeframe: z.nativeEnum(ActivityTimeframe).optional().default(ActivityTimeframe.OneDay),
 });
 
 const bucketedResultSchema = z.array(
@@ -21,36 +22,10 @@ const bucketedResultSchema = z.array(
   })
 );
 
-// Convert ActivityTimeframe to MV table suffix
-const getTimeframeForMV = (
-  timeframe?: ActivityTimeframe
-): '1d' | '7d' | '14d' | '30d' | null => {
-  if (timeframe === undefined) return null;
-
-  switch (timeframe) {
-    case ActivityTimeframe.OneDay:
-      return '1d';
-    case ActivityTimeframe.SevenDays:
-      return '7d';
-    case ActivityTimeframe.FourteenDays:
-      return '14d';
-    case ActivityTimeframe.ThirtyDays:
-      return '30d';
-    default:
-      return null;
-  }
-};
-
 const getBucketedStatisticsMVUncached = async (
   input: z.infer<typeof bucketedStatisticsMvInputSchema>
 ) => {
-  // Determine which MV to use
-  const mvTimeframe = getTimeframeForMV(input.timeframe);
-
-  // If no suitable MV exists, throw error
-  if (!mvTimeframe) {
-    throw new Error('No suitable materialized view for the given timeframe');
-  }
+  const mvTimeframe = getMaterializedViewSuffix(input.timeframe);
 
   // Generate table name based on timeframe
   const tableName = `stats_buckets_${mvTimeframe}`;

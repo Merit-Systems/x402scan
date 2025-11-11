@@ -87,3 +87,18 @@ export function getSSRTimeRange(
 ): { startDate: Date; endDate: Date } {
   return getTimeRangeFromTimeframe(timeframe, creationDate);
 }
+
+export function getMaterializedViewSuffix(timeframe: ActivityTimeframe): string {
+  switch (timeframe) {
+    case ActivityTimeframe.OneDay:
+      return '1d';
+    case ActivityTimeframe.SevenDays:
+      return '7d';
+    case ActivityTimeframe.FourteenDays:
+      return '14d';
+    case ActivityTimeframe.ThirtyDays:
+      return '30d';
+    default:
+      return '1d';
+  }
+}

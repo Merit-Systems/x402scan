@@ -8,15 +8,14 @@ import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
 export const TopFacilitatorsContent = () => {
   const { chain } = useChain();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
-  const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
+  const [facilitatorsData] = api.public.facilitators.listMv.useSuspenseQuery({
     chain,
+    timeframe,
     pagination: {
       page_size: 3,
     },
-    startDate,
-    endDate,
   });
 
   return (

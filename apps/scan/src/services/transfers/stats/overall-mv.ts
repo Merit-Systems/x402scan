@@ -5,57 +5,17 @@ import { baseQuerySchema } from '../schemas';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { differenceInDays } from 'date-fns';
+import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 // Schema accepts ActivityTimeframe or date range
 export const overallStatisticsMvInputSchema = baseQuerySchema.extend({
-  timeframe: z.nativeEnum(ActivityTimeframe).optional(),
+  timeframe: z.nativeEnum(ActivityTimeframe).optional().default(ActivityTimeframe.OneDay),
 });
-
-// Convert ActivityTimeframe to MV table suffix
-const getTimeframeForMV = (
-  timeframe?: ActivityTimeframe,
-  startDate?: Date,
-  endDate?: Date
-): '1d' | '7d' | '14d' | '30d' | null => {
-  // If timeframe is provided, use it
-  if (timeframe !== undefined) {
-    switch (timeframe) {
-      case ActivityTimeframe.OneDay:
-        return '1d';
-      case ActivityTimeframe.SevenDays:
-        return '7d';
-      case ActivityTimeframe.FourteenDays:
-        return '14d';
-      case ActivityTimeframe.ThirtyDays:
-        return '30d';
-      default:
-        return null;
-    }
-  }
-
-  // If no timeframe but dates provided, calculate days difference
-  if (startDate && endDate) {
-    const days = differenceInDays(endDate, startDate);
-    if (days <= 1) return '1d';
-    if (days <= 7) return '7d';
-    if (days <= 14) return '14d';
-    if (days <= 30) return '30d';
-  }
-
-  return null;
-};
 
 const getOverallStatisticsMVUncached = async (
   input: z.infer<typeof overallStatisticsMvInputSchema>
 ) => {
-  // Determine which MV to use
-  const mvTimeframe = getTimeframeForMV(input.timeframe, input.startDate, input.endDate);
-  
-  // If no suitable MV exists, return null (caller should fallback to regular query)
-  if (!mvTimeframe) {
-    throw new Error('No suitable materialized view for the given timeframe');
-  }
+  const mvTimeframe = getMaterializedViewSuffix(input.timeframe);
 
   // Generate table name based on timeframe
   const tableName = `stats_aggregated_${mvTimeframe}`;
