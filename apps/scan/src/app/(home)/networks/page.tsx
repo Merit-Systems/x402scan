@@ -14,14 +14,14 @@ import { defaultNetworksSorting } from '@/app/_contexts/sorting/networks/default
 
 import { api, HydrateClient } from '@/trpc/server';
 
-import { getChain } from '@/app/_lib/chain';
+import { getChainForPage } from '@/app/_lib/chain/page';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
 export default async function NetworksPage({
   searchParams,
 }: PageProps<'/networks'>) {
-  const chain = await searchParams.then(params => getChain(params.chain));
+  const chain = await getChainForPage(await searchParams);
 
   void api.networks.bucketedStatistics.prefetch({
     numBuckets: 48,

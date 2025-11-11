@@ -20,7 +20,7 @@ import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 
 import { api, HydrateClient } from '@/trpc/server';
 
-import { getChain } from '@/app/_lib/chain';
+import { getChainForPage } from '@/app/_lib/chain/page';
 
 import { facilitators } from '@/lib/facilitators';
 
@@ -30,7 +30,7 @@ import { FacilitatorPackageBanner } from './_components/facilitator-package-bann
 export default async function FacilitatorsPage({
   searchParams,
 }: PageProps<'/facilitators'>) {
-  const chain = await searchParams.then(params => getChain(params.chain));
+  const chain = await getChainForPage(await searchParams);
 
   void api.public.facilitators.bucketedStatistics.prefetch({
     numBuckets: 48,

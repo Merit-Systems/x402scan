@@ -7,11 +7,12 @@ import { TopFacilitators } from './_components/top-facilitators';
 import { LatestTransactions } from './_components/latest-transactions';
 import { AllSellers } from './_components/sellers/all-sellers';
 import { ComposerCallout } from './_components/composer-callout';
-import { getChain } from '@/app/_lib/chain';
+import { getChainForPage } from '@/app/_lib/chain/page';
 import { TopAgents } from './_components/top-agents';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
-  const chain = await searchParams.then(params => getChain(params.chain));
+  const chain = await getChainForPage(await searchParams);
+
   return (
     <div>
       <HomeHeading />
