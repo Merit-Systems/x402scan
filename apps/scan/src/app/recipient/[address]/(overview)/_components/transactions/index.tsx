@@ -19,7 +19,7 @@ interface Props {
 export const LatestTransactions: React.FC<Props> = async ({ address }) => {
   const pageSize = 10;
 
-  await api.public.transfers.list.prefetch({
+  void api.public.transfers.list.prefetch({
     pagination: {
       page_size: pageSize,
       page: 0,

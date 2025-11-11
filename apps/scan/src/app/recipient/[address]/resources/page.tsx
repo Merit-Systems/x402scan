@@ -22,7 +22,7 @@ export default async function ResourcesPage({
     address,
   });
 
-  await api.public.origins.list.withResources.prefetch({ chain, address });
+  void api.public.origins.list.withResources.prefetch({ chain, address });
 
   return (
     <HydrateClient>
