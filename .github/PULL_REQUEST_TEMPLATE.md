@@ -4,11 +4,11 @@
 
 ## Summary
 
-- Faciliator Name: `<Name>`
-- URL: `<https://...>`
-- Website: `<https://...>`
-- Twitter: `<@handle>`
-- Short description: `<what the facilitator does in 1 to 2 sentences>`
+- Facilitator Name: AEON Facilitator
+- URL: https://facilitator.aeon.xyz
+- Website: https://aeon.xyz
+- Twitter: @AEON_Community
+- Short description: "A facilitator that verifies and settles x402 payments directly on BNB Chain."
 
 ## Required changes
 
