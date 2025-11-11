@@ -22,9 +22,11 @@ import { ComposerCallout } from './_components/composer-callout';
 import { getChain } from '@/app/_lib/chain';
 import { Suspense } from 'react';
 import { LoadingTopAgents, TopAgents } from './_components/top-agents';
+import { cookies } from 'next/headers';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
+  await cookies();
   return (
     <div>
       <HomeHeading />
