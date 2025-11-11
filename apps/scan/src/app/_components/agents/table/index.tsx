@@ -28,7 +28,7 @@ export const AgentsTable: React.FC<Props> = async ({
   limit = 10,
   initialTimeRange,
 }) => {
-  api.public.agents.list.prefetch({
+  void api.public.agents.list.prefetch({
     ...input,
     pagination: { page: 0, page_size: limit },
     sorting: defaultAgentsSorting,
