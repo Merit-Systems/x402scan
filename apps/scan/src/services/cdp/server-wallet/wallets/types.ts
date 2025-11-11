@@ -2,10 +2,11 @@ import type { Chain, SupportedChain, SupportedEVMChain } from '@/types/chain';
 import type { Signer } from 'x402-fetch';
 import type z from 'zod';
 import type { getTokenBalanceSchema, sendTokensSchema } from './schemas';
-import type { MixedAddress } from '@/types/address';
+import type { SolanaAddress } from '@/types/address';
+import { Address } from 'viem';
 
 export type NetworkServerWallet<T extends Chain> = (name: string) => {
-  address: () => Promise<MixedAddress>;
+  address: () => Promise<T extends Chain.SOLANA ? SolanaAddress : Address>;
   getTokenBalance: (
     input: z.infer<typeof getTokenBalanceSchema>
   ) => Promise<number>;

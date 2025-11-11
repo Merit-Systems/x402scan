@@ -8,6 +8,7 @@ import {
 } from 'wagmi';
 import { base } from 'wagmi/chains';
 import { cdpConfig } from '../cdp/config';
+import { env } from '@/env';
 
 const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
   cdpConfig,
@@ -25,13 +26,10 @@ export const wagmiConfig = {
     storage: cookieStorage,
   }),
   transports: {
-    [base.id]: http(),
+    [base.id]: http(env.NEXT_PUBLIC_BASE_RPC_URL),
   },
   connectors: [injected(), cdpEmbeddedWalletConnector],
   ssr: true,
 } as const;
 
-export const getServerConfig = () =>
-  createConfig({
-    ...wagmiConfig,
-  });
+export const createWagmiConfig = () => createConfig(wagmiConfig);

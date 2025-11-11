@@ -31,9 +31,9 @@ import {
 } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+
 import type { ParsedX402Response } from '@/lib/x402/schema';
 import { Methods } from '@/types/x402';
-import type { OgImage, ResourceOrigin } from '@prisma/client';
 import { Checklist } from './checklist';
 import {
   createDummyOgImage,
@@ -52,6 +52,7 @@ import { isLocalUrl, extractPort } from '@/lib/url-helpers';
 import { NgrokAlert } from './ngrok-alert';
 
 import type { SupportedChain } from '@/types/chain';
+import type { OgImage, ResourceOrigin } from '@prisma/client';
 
 export const TestEndpointForm = () => {
   const queryClient = useQueryClient();

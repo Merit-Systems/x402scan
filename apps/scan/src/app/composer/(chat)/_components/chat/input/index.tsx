@@ -57,14 +57,10 @@ export const PromptInputSection: React.FC<Props> = ({
         enabled: !!session,
       }
     );
-  const { data: freeTierUsage, isLoading: isFreeTierUsageLoading } =
-    api.user.freeTier.usage.useQuery(undefined, {
-      enabled: !!session,
-    });
 
-  const isLoading = isUsdcBalanceLoading || isFreeTierUsageLoading;
+  const isLoading = isUsdcBalanceLoading;
 
-  const hasBalance = (usdcBalance ?? 0) > 0 || freeTierUsage?.hasFreeTier;
+  const hasBalance = (usdcBalance ?? 0) > 0;
 
   return (
     <PromptInput onSubmit={handleSubmit}>
@@ -77,7 +73,7 @@ export const PromptInputSection: React.FC<Props> = ({
         placeholder={
           session
             ? !isLoading && !hasBalance
-              ? 'Add funds to your agent to continue'
+              ? 'Add funds to your composer wallet to continue'
               : undefined
             : 'Sign in to use the composer'
         }

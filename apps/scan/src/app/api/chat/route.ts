@@ -23,25 +23,13 @@ import { auth } from '@/auth';
 import { createX402AITools } from '@/services/agent/create-tools';
 
 import { getUserWallets } from '@/services/cdp/server-wallet/user';
-import { freeTierWallets } from '@/services/cdp/server-wallet/free-tier';
 
 import { ChatSDKError } from '@/lib/errors';
 import { messageSchema } from '@/lib/message-schema';
-import { freeTierConfig } from '@/lib/free-tier';
-
-import {
-  getUserMessageCount,
-  getUserToolCallCount,
-} from '@/services/db/user/chat';
 
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
-import {
-  agentSystemPrompt,
-  baseSystemPrompt,
-  freeTierSystemPrompt,
-} from './system-prompt';
+import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
 import { env } from '@/env';
-import { api } from '@/trpc/server';
 
 import { Chain } from '@/types/chain';
 
@@ -75,33 +63,12 @@ export async function POST(request: NextRequest) {
 
   let chat = await getChat(chatId, session.user.id);
 
-  const balance = await api.user.serverWallet.tokenBalance({
-    chain: Chain.BASE,
-  });
+  const { wallets } = await getUserWallets(session.user.id);
 
-  let isFreeTier: boolean;
-
-  if (balance === 0) {
-    const [messageCount, toolCallCount] = await Promise.all([
-      getUserMessageCount(session.user.id),
-      getUserToolCallCount(session.user.id),
-    ]);
-
-    isFreeTier =
-      messageCount < freeTierConfig.numMessages &&
-      toolCallCount < freeTierConfig.numToolCalls;
-  } else {
-    isFreeTier = false;
-  }
-
-  const wallets = isFreeTier
-    ? freeTierWallets
-    : (await getUserWallets(session.user.id)).wallets;
-
-  const baseSigner = await wallets[Chain.BASE].signer();
+  const wallet = wallets[Chain.BASE];
 
   const openai = createX402OpenAI({
-    walletClient: baseSigner,
+    walletClient: await wallet.signer(),
     baseRouterUrl: env.ECHO_PROXY_URL,
     echoAppId: env.ECHO_APP_ID,
   });
@@ -194,7 +161,6 @@ export async function POST(request: NextRequest) {
     resourceIds,
     wallets,
     chatId,
-    maxAmount: isFreeTier ? freeTierConfig.maxAmount : undefined,
   });
 
   const getSystemPrompt = async () => {
@@ -207,10 +173,9 @@ export async function POST(request: NextRequest) {
         agentName: details.name,
         agentDescription: details.description ?? '',
         systemPrompt: details.systemPrompt,
-        isFreeTier,
       });
     }
-    return isFreeTier ? freeTierSystemPrompt : baseSystemPrompt;
+    return baseSystemPrompt;
   };
 
   const messages = z.array(messageSchema).parse([

@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { TokenInput } from '@/components/ui/token/token-input';
 
-import { useWalletChain } from '@/app/_components/wallet/chain-context/hook';
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 
 import { api } from '@/trpc/client';
 

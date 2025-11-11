@@ -9,7 +9,7 @@ import { ConnectSVMInjectedWalletForm } from './injected/form/svm';
 
 import { ConnectEmbeddedWalletEmail } from './embedded/email';
 import { ConnectEmbeddedWalletOAuth } from './embedded/oauth';
-import { useWalletChain } from '../chain-context/hook';
+import { useWalletChain } from '../../../_contexts/wallet-chain/hook';
 import { Chain } from '@/types/chain';
 
 export const ConnectWalletForm = () => {
@@ -28,6 +28,7 @@ export const ConnectWalletForm = () => {
         <ConnectEmbeddedWalletEmail />
       ) : (
         <div className="flex flex-col gap-2">
+          <ConnectEmbeddedWalletOAuth />
           <Button
             onClick={() => setIsEmailFlow(true)}
             className="w-full h-12 md:h-12"
@@ -36,7 +37,6 @@ export const ConnectWalletForm = () => {
             <Mail className="size-4" />
             Continue with Email
           </Button>
-          <ConnectEmbeddedWalletOAuth />
         </div>
       )}
       {isEmailFlow && (

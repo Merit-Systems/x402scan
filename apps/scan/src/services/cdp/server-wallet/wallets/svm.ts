@@ -36,6 +36,7 @@ import type { Chain } from '@/types/chain';
 import type { TransactionModifyingSigner } from '@solana/kit';
 import type { NetworkServerWallet } from './types';
 import type { SolanaAddress } from '@/types/address';
+import { Signer } from 'x402-fetch';
 
 export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
   name: string
@@ -63,7 +64,7 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
         name,
       });
     },
-    signer: async () => getModifyingSigner(await getAccount()),
+    signer: async () => getModifyingSigner(await getAccount()) as Signer,
     sendTokens: async ({ address, token, amount }) => {
       const account = await getAccount();
 

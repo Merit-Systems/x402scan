@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import { OnrampContent } from './content';
 import { UnauthedOnramp } from './unauthed';
 
-import { useWalletChain } from '@/app/_components/wallet/chain-context/hook';
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 
 import { chainToAuthProviderId } from '@/auth/providers/wallet-map';
 

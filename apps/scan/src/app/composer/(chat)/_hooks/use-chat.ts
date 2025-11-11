@@ -46,10 +46,7 @@ export const useChat = ({
       enabled: !!session,
     }
   );
-  const { data: freeTierUsage } = api.user.freeTier.usage.useQuery(undefined, {
-    enabled: !!session,
-  });
-  const hasBalance = (usdcBalance ?? 0) > 0 || freeTierUsage?.hasFreeTier;
+  const hasBalance = (usdcBalance ?? 0) > 0;
 
   const { messages, sendMessage, status, regenerate, error } = useAiChat({
     messages: initialMessages ? convertToUIMessages(initialMessages) : [],
@@ -66,7 +63,6 @@ export const useChat = ({
             : `/composer/chat/${id}`
         );
         void utils.user.chats.list.invalidate();
-        void utils.user.freeTier.usage.invalidate();
         setTimeout(() => {
           void utils.user.serverWallet.tokenBalance.invalidate({
             chain: Chain.BASE,

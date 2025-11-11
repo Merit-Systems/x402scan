@@ -190,4 +190,23 @@ export const resourcesRouter = createTRPCRouter({
       return await listResourceTags(input);
     }),
   },
+  getMetrics: publicProcedure
+    .input(z.object({ resourceId: z.string() }))
+    .query(async ({ input }) => {
+      return await prisma.resourceMetrics.findFirst({
+        where: { resourceId: input.resourceId },
+        orderBy: { updatedAt: 'desc' },
+        select: {
+          uptime24hPct: true,
+          totalCount24h: true,
+          count_5xx_24h: true,
+          count_4xx_24h: true,
+          count_2xx_24h: true,
+          p50_24hMs: true,
+          p90_24hMs: true,
+          p99_24hMs: true,
+          updatedAt: true,
+        },
+      });
+    }),
 });

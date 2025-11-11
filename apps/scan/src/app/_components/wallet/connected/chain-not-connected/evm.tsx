@@ -13,7 +13,7 @@ export const EVMNotConnected = () => {
 
   if (filteredConnectors.length === 0) {
     return (
-      <div>
+      <div className="flex flex-col items-center gap-2 text-xs p-2 bg-muted rounded-md">
         <p>No EVM wallets found</p>
       </div>
     );

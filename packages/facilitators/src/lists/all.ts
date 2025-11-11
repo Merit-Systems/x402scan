@@ -14,6 +14,7 @@ import {
   xechoFacilitator,
   codenutFacilitator,
   ultravioletadaoFacilitator,
+  virtualsFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -36,6 +37,7 @@ const FACILITATORS = validateUniqueFacilitators([
   xechoFacilitator,
   codenutFacilitator,
   ultravioletadaoFacilitator,
+  virtualsFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =

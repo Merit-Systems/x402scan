@@ -25,7 +25,7 @@ export const ConnectedWalletTabsContent = ({ user, address }: Props) => {
         value="withdraw"
         className="px-4 w-full overflow-hidden mt-0"
       >
-        <Withdraw address={address} />
+        <Withdraw />
       </TabsContent>
       {user && (
         <TabsContent

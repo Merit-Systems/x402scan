@@ -9,23 +9,27 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Address, Addresses } from '@/components/ui/address';
 
 import { Favicon } from '@/app/_components/favicon';
+import { HealthDot } from '@/app/_components/health/dot';
 
 import { cn } from '@/lib/utils';
 
 import type { ResourceOrigin } from '@prisma/client';
 import type { MixedAddress } from '@/types/address';
+import type { OriginHealthMetrics } from '@/app/_components/health/types';
 import Link from 'next/link';
 
 interface Props {
   addresses: MixedAddress[];
   origins: ResourceOrigin[];
   disableCopy?: boolean;
+  healthMetrics?: OriginHealthMetrics | null;
 }
 
 export const Origins: React.FC<Props> = ({
   origins,
   addresses,
   disableCopy,
+  healthMetrics,
 }) => {
   if (!origins || origins.length === 0) {
     if (addresses.length === 0) {
@@ -55,6 +59,7 @@ export const Origins: React.FC<Props> = ({
               <Addresses addresses={addresses} />
             )
           }
+          healthMetrics={healthMetrics}
         />
       </Link>
     );
@@ -70,12 +75,13 @@ export const Origins: React.FC<Props> = ({
         />
       )}
       title={
-        <div className="flex items-center gap-2 overflow-hidden flex-1 w-0">
+        <>
           <Link href={`/server/${origins[0].id}`} prefetch={false}>
             <span className="truncate">
               {new URL(origins[0].origin).hostname}
             </span>
           </Link>
+          {healthMetrics && <HealthDot metrics={healthMetrics} />}
           <Tooltip>
             <TooltipTrigger className="cursor-pointer hover:bg-muted text-muted-foreground hover:text-foreground rounded-md transition-colors text-xs font-mono shrink-0">
               +{origins.length - 1} more
@@ -95,7 +101,7 @@ export const Origins: React.FC<Props> = ({
               </ul>
             </TooltipContent>
           </Tooltip>
-        </div>
+        </>
       }
       address={
         addresses.length === 0 ? null : addresses.length === 1 ? (
@@ -158,15 +164,22 @@ interface OriginsContainerProps {
   Icon: ({ className }: { className: string }) => React.ReactNode;
   title: React.ReactNode;
   address: React.ReactNode;
+  healthMetrics?: OriginHealthMetrics | null;
 }
 
-const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
+const OriginsContainer = ({
+  Icon,
+  title,
+  address,
+  healthMetrics,
+}: OriginsContainerProps) => {
   return (
     <div className="flex items-center gap-2 w-full overflow-hidden">
       <Icon className="size-6" />
       <div className="flex-1 overflow-hidden">
-        <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full flex">
+        <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full flex items-center gap-2">
           {title}
+          {healthMetrics && <HealthDot metrics={healthMetrics} />}
         </div>
         <div>{address}</div>
       </div>

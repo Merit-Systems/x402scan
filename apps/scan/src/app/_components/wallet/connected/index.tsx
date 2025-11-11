@@ -14,9 +14,9 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ConnectedWalletTabsContent } from './content';
 import { ChainNotConnected } from './chain-not-connected';
 
-import { WalletChain } from '../chain-context/component';
+import { WalletChain } from '../../../_contexts/wallet-chain/component';
 
-import { useWalletChain } from '../chain-context/hook';
+import { useWalletChain } from '../../../_contexts/wallet-chain/hook';
 import { Chain } from '@/types/chain';
 
 import type { User } from '@coinbase/cdp-hooks';

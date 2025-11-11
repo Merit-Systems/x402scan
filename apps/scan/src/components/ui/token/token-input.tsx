@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+
 import AutoNumeric from 'autonumeric';
+
 import { Wallet } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -12,14 +14,16 @@ import { Loading } from '@/components/ui/loading';
 
 import { TokenSelect } from './token-select';
 
-import { useBalance } from '@/app/_hooks/balance/use-evm-balance';
+import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
+import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-balance';
 
 import { cn } from '@/lib/utils';
 import { BASE_USDC } from '@/lib/tokens/usdc';
 
-import type { Token } from '@/types/token';
 import { Chain } from '@/types/chain';
-import { useSPLTokenBalance } from '@/app/_hooks/balance/use-svm-balance';
+
+import type { Token } from '@/types/token';
+import type { MixedAddress, SolanaAddress } from '@/types/address';
 
 interface Props
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
@@ -32,6 +36,7 @@ interface Props
   className?: string;
   inputClassName?: string;
   isBalanceMax?: boolean;
+  address?: MixedAddress;
 }
 
 export const TokenInput: React.FC<Props> = ({
@@ -44,20 +49,26 @@ export const TokenInput: React.FC<Props> = ({
   label,
   className,
   inputClassName,
+  address,
   ...props
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const autoNumericRef = useRef<AutoNumeric | null>(null);
 
-  const { data: evmBalance, isLoading: isEvmBalanceLoading } = useBalance(
-    selectedToken,
-    {
-      enabled: isBalanceMax && chain !== Chain.SOLANA,
-    }
-  );
+  const { data: evmBalance, isLoading: isEvmBalanceLoading } =
+    useEvmTokenBalance({
+      token: selectedToken,
+      address: address as `0x${string}` | undefined,
+      query: {
+        enabled: isBalanceMax && chain !== Chain.SOLANA,
+      },
+    });
 
   const { data: svmBalance, isLoading: isSolanaBalanceLoading } =
-    useSPLTokenBalance(undefined, isBalanceMax && chain === Chain.SOLANA);
+    useSPLTokenBalance({
+      enabled: isBalanceMax && chain === Chain.SOLANA,
+      address: address as SolanaAddress | undefined,
+    });
 
   const { balance, isLoading } =
     chain === Chain.SOLANA

@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { CopyCode } from '@/components/ui/copy-code';
 
-import { useWalletChain } from '../../chain-context/hook';
+import { useWalletChain } from '../../../../_contexts/wallet-chain/hook';
 
 import { Chain } from '@/types/chain';
 
