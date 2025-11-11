@@ -11,7 +11,12 @@ import { ResourceExecutor } from '@/app/_components/resources/executor';
 import { parseX402Response } from '@/lib/x402/schema';
 import { Loader2 } from 'lucide-react';
 import { getBazaarMethod } from '@/app/_components/resources/executor/utils';
-import { Accordion } from '@/components/ui/accordion';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 interface ResourceExecutorModalProps {
   open: boolean;
@@ -78,6 +83,8 @@ export function ResourceExecutorModal({
     );
   }
 
+  const outputSchema = resource.accepts[0]?.outputSchema;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-7xl">
@@ -95,6 +102,20 @@ export function ResourceExecutorModal({
             className="bg-transparent"
           />
         </Accordion>
+        {outputSchema && (
+          <Accordion type="single" collapsible className="mt-4">
+            <AccordionItem value="output-schema">
+              <AccordionTrigger className="text-sm font-semibold">
+                Output Schema
+              </AccordionTrigger>
+              <AccordionContent>
+                <pre className="overflow-auto rounded-lg border bg-muted/50 p-4 text-xs">
+                  {JSON.stringify(outputSchema, null, 2)}
+                </pre>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        )}
       </DialogContent>
     </Dialog>
   );
