@@ -4,11 +4,11 @@
 
 ## Summary
 
-- Facilitator Name: AEON Facilitator
-- URL: https://facilitator.aeon.xyz
-- Website: https://aeon.xyz
-- Twitter: @AEON_Community
-- Short description: "A facilitator that verifies and settles x402 payments directly on BNB Chain."
+- Facilitator Name: `AEON Facilitator`
+- URL: `https://facilitator.aeon.xyz`
+- Website: `https://aeon.xyz`
+- Twitter: `@AEON_Community`
+- Short description: `A facilitator that verifies and settles x402 payments directly on BNB Chain.`
 
 ## Required changes
 
