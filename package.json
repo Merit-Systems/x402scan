@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --filter=!*.example",
     "build": "turbo run build --filter=!x402sync --filter=!*.example",
     "lint": "turbo run lint",
     "format": "prettier --write ."

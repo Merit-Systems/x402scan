@@ -12,9 +12,12 @@ export const cdpFetch = async <T>(
   const { requestMethod, requestPath, requestHost } =
     cdpFetchSchema.parse(request);
 
+  // Split path into base path (for JWT) and query params (for actual request)
+  const [basePath] = requestPath.split('?');
+
   const jwt = await generateCdpJwt({
     requestMethod: request.requestMethod,
-    requestPath: request.requestPath,
+    requestPath: basePath,
     requestHost: request.requestHost,
   });
 
@@ -31,8 +34,10 @@ export const cdpFetch = async <T>(
   });
 
   if (!response.ok) {
+    const errorBody = await response.text();
     const message = `Failed to ${requestMethod} ${requestPath} from ${requestHost}: ${response.status}`;
     console.error(message);
+    console.error('Response body:', errorBody);
     throw new CdpError(message, {
       status: response.status,
     });

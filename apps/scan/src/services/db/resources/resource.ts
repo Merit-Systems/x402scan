@@ -195,11 +195,29 @@ export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
   });
 };
 
+export type ResourceSortId = 'lastUpdated' | 'toolCalls';
+
+type ResourceSorting = {
+  id: ResourceSortId;
+  desc: boolean;
+};
+
 export const listResourcesWithPagination = async (
   pagination: PaginatedQueryParams,
-  where?: Prisma.ResourcesWhereInput
+  where?: Prisma.ResourcesWhereInput,
+  sorting?: ResourceSorting
 ) => {
   const { page, page_size } = pagination;
+
+  // Default sorting
+  const sortConfig = sorting ?? { id: 'toolCalls', desc: true };
+
+  // Map sorting to Prisma orderBy
+  const orderBy: Prisma.ResourcesOrderByWithRelationInput =
+    sortConfig.id === 'lastUpdated'
+      ? { lastUpdated: sortConfig.desc ? 'desc' : 'asc' }
+      : { toolCalls: { _count: sortConfig.desc ? 'desc' : 'asc' } };
+
   const [count, resources] = await Promise.all([
     prisma.resources.count({
       where,
@@ -217,15 +235,11 @@ export const listResourcesWithPagination = async (
         _count: {
           select: {
             tags: true,
-            invocations: true,
+            toolCalls: true,
           },
         },
       },
-      orderBy: {
-        invocations: {
-          _count: 'desc',
-        },
-      },
+      orderBy,
       skip: page * page_size,
       take: page_size + 1,
     }),

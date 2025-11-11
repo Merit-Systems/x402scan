@@ -30,6 +30,12 @@ export interface ChartProps<T extends Record<string, number>> {
   }>;
   dataMax?: number | string;
   stackOffset?: StackOffset;
+  xAxis?: {
+    show?: boolean;
+    dataKey?: string;
+    angle?: number;
+    height?: number;
+  };
 }
 
 export type Series<T extends Record<string, number>, S> = S & {

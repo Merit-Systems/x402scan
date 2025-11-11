@@ -1,7 +1,5 @@
 import { Suspense } from 'react';
 
-import { subDays } from 'date-fns';
-
 import { api, HydrateClient } from '@/trpc/server';
 
 import {
@@ -20,6 +18,8 @@ import { facilitatorAddresses, facilitators } from '@/lib/facilitators';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import { getSSRTimeRange } from '@/lib/time-range';
+
 import type { Chain } from '@/types/chain';
 
 interface Props {
@@ -27,8 +27,10 @@ interface Props {
 }
 
 export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
-  const endDate = new Date();
-  const startDate = subDays(endDate, ActivityTimeframe.OneDay);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.OneDay,
+    firstTransfer
+  );
 
   const chainFacilitators = chain
     ? facilitators.flatMap(f => f.addresses[chain] ?? [])
@@ -50,8 +52,6 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransfer}
-        initialStartDate={startDate}
-        initialEndDate={endDate}
         initialTimeframe={ActivityTimeframe.OneDay}
       >
         <FacilitatorsSection>

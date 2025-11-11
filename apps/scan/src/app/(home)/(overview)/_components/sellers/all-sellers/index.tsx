@@ -1,7 +1,5 @@
 import { Suspense } from 'react';
 
-import { subDays } from 'date-fns';
-
 import { DataTable } from '@/components/ui/data-table';
 
 import { Section } from '@/app/_components/layout/page-utils';
@@ -21,6 +19,7 @@ import { api, HydrateClient } from '@/trpc/server';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 import { ErrorBoundary } from 'react-error-boundary';
+import { getSSRTimeRange } from '@/lib/time-range';
 import type { Chain } from '@/types/chain';
 
 interface Props {
@@ -28,8 +27,10 @@ interface Props {
 }
 
 export const AllSellers: React.FC<Props> = async ({ chain }) => {
-  const endDate = new Date();
-  const startDate = subDays(endDate, 1);
+  const { endDate, startDate } = getSSRTimeRange(
+    ActivityTimeframe.OneDay,
+    firstTransfer
+  );
 
   const limit = 100;
 
@@ -48,8 +49,6 @@ export const AllSellers: React.FC<Props> = async ({ chain }) => {
     <HydrateClient>
       <TimeRangeProvider
         creationDate={firstTransfer}
-        initialEndDate={endDate}
-        initialStartDate={startDate}
         initialTimeframe={ActivityTimeframe.OneDay}
       >
         <SellersSortingProvider initialSorting={defaultSellersSorting}>

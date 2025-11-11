@@ -1,3 +1,4 @@
+export { auto, autoFacilitator } from './auto';
 export { coinbase, coinbaseFacilitator } from './coinbase';
 export { aurracloud, aurracloudFacilitator } from './aurracloud';
 export { thirdweb, thirdwebFacilitator } from './thirdweb';
@@ -13,3 +14,5 @@ export { hydraProtocol, hydraProtocolFacilitator } from './hydra-protocol';
 export { questflow, questflowFacilitator } from './questflow';
 export { xecho, xechoFacilitator } from './xecho';
 export { codenut, codenutFacilitator } from './codenut';
+export { ultravioletadao, ultravioletadaoFacilitator } from './ultravioletadao';
+export { virtuals, virtualsFacilitator } from './virtuals';

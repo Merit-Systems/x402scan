@@ -9,3 +9,18 @@ export enum ActivityTimeframe {
   AllTime = 999999,
   Custom = 0,
 }
+
+/**
+ * Timeframes that should be pre-warmed in the cache.
+ * Excludes Custom since it's user-defined and cannot be pre-cached.
+ */
+export const CACHE_WARMABLE_TIMEFRAMES = [
+  ActivityTimeframe.OneDay,
+  ActivityTimeframe.ThreeDays,
+  ActivityTimeframe.SevenDays,
+  ActivityTimeframe.FifteenDays,
+  ActivityTimeframe.ThirtyDays,
+  ActivityTimeframe.SixtyDays,
+  ActivityTimeframe.NinetyDays,
+  ActivityTimeframe.AllTime,
+] as const;

@@ -1,7 +1,19 @@
 {
   "crons": [
     {
-      "path": "/api/cron/warm-cache",
+      "path": "/api/cron/warm-cache?pages=home",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/warm-cache?pages=networks",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/warm-cache?pages=facilitators",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/warm-cache?pages=resources",
       "schedule": "*/5 * * * *"
     },
     {

@@ -95,6 +95,7 @@ model Resources {
   requestMetadata             ResourceRequestMetadata?
   toolCalls                   ToolCall[]
   excluded                    ExcludedResource?
+  metrics                     ResourceMetrics[]
 }
 
 enum AcceptsScheme {
@@ -159,6 +160,7 @@ model ResourceOrigin {
 
   resources Resources[]
   ogImages  OgImage[]
+  originMetrics ResourceOriginMetrics[]
 }
 
 model ResourceResponse {
@@ -385,4 +387,174 @@ model UserAcknowledgement {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("UserAcknowledgement")
+}
+
+model ResourceOriginMetrics {
+  id                  String   @id @default(uuid())
+  originId            String
+  totalCount1h        Int?
+  totalCount6h        Int?
+  totalCount24h       Int?
+  totalCount3d        Int?
+  totalCount7d        Int?
+  totalCount15d       Int?
+  totalCount30d       Int?
+  totalCountAllTime   Int?
+  uptime1hPct         Float?
+  uptime6hPct         Float?
+  uptime24hPct        Float?
+  uptime3dPct         Float?
+  uptime7dPct         Float?
+  uptime15dPct        Float?
+  uptime30dPct        Float?
+  uptimeAllTimePct    Float?
+  p50_1hMs            Int?
+  p50_6hMs            Int?
+  p50_24hMs           Int?
+  p50_3dMs            Int?
+  p50_7dMs            Int?
+  p50_15dMs           Int?
+  p50_30dMs           Int?
+  p50AllTimeMs        Int?
+  p90_1hMs            Int?
+  p90_6hMs            Int?
+  p90_24hMs           Int?
+  p90_3dMs            Int?
+  p90_7dMs            Int?
+  p90_15dMs           Int?
+  p90_30dMs           Int?
+  p90AllTimeMs        Int?
+  p99_1hMs            Int?
+  p99_6hMs            Int?
+  p99_24hMs           Int?
+  p99_3dMs            Int?
+  p99_7dMs            Int?
+  p99_15dMs           Int?
+  p99_30dMs           Int?
+  p99AllTimeMs        Int?
+  count_2xx_1h        Int?
+  count_2xx_6h        Int?
+  count_2xx_24h       Int?
+  count_2xx_3d        Int?
+  count_2xx_7d        Int?
+  count_2xx_15d       Int?
+  count_2xx_30d       Int?
+  count_2xx_all_time  Int?
+  count_3xx_1h        Int?
+  count_3xx_6h        Int?
+  count_3xx_24h       Int?
+  count_3xx_3d        Int?
+  count_3xx_7d        Int?
+  count_3xx_15d       Int?
+  count_3xx_30d       Int?
+  count_3xx_all_time  Int?
+  count_4xx_1h        Int?
+  count_4xx_6h        Int?
+  count_4xx_24h       Int?
+  count_4xx_3d        Int?
+  count_4xx_7d        Int?
+  count_4xx_15d       Int?
+  count_4xx_30d       Int?
+  count_4xx_all_time  Int?
+  count_5xx_1h        Int?
+  count_5xx_6h        Int?
+  count_5xx_24h       Int?
+  count_5xx_3d        Int?
+  count_5xx_7d        Int?
+  count_5xx_15d       Int?
+  count_5xx_30d       Int?
+  count_5xx_all_time  Int?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  origin ResourceOrigin @relation(fields: [originId], references: [id], onDelete: Cascade)
+
+  @@map("ResourceOriginMetrics")
+  @@index([originId])
+  @@index([originId, createdAt])
+}
+
+model ResourceMetrics {
+  id                  String   @id @default(uuid())
+  resourceId          String
+  totalCount1h        Int?
+  totalCount6h        Int?
+  totalCount24h       Int?
+  totalCount3d        Int?
+  totalCount7d        Int?
+  totalCount15d       Int?
+  totalCount30d       Int?
+  totalCountAllTime   Int?
+  uptime1hPct         Float?
+  uptime6hPct         Float?
+  uptime24hPct        Float?
+  uptime3dPct         Float?
+  uptime7dPct         Float?
+  uptime15dPct        Float?
+  uptime30dPct        Float?
+  uptimeAllTimePct    Float?
+  p50_1hMs            Int?
+  p50_6hMs            Int?
+  p50_24hMs           Int?
+  p50_3dMs            Int?
+  p50_7dMs            Int?
+  p50_15dMs           Int?
+  p50_30dMs           Int?
+  p50AllTimeMs        Int?
+  p90_1hMs            Int?
+  p90_6hMs            Int?
+  p90_24hMs           Int?
+  p90_3dMs            Int?
+  p90_7dMs            Int?
+  p90_15dMs           Int?
+  p90_30dMs           Int?
+  p90AllTimeMs        Int?
+  p99_1hMs            Int?
+  p99_6hMs            Int?
+  p99_24hMs           Int?
+  p99_3dMs            Int?
+  p99_7dMs            Int?
+  p99_15dMs           Int?
+  p99_30dMs           Int?
+  p99AllTimeMs        Int?
+  count_2xx_1h        Int?
+  count_2xx_6h        Int?
+  count_2xx_24h       Int?
+  count_2xx_3d        Int?
+  count_2xx_7d        Int?
+  count_2xx_15d       Int?
+  count_2xx_30d       Int?
+  count_2xx_all_time  Int?
+  count_3xx_1h        Int?
+  count_3xx_6h        Int?
+  count_3xx_24h       Int?
+  count_3xx_3d        Int?
+  count_3xx_7d        Int?
+  count_3xx_15d       Int?
+  count_3xx_30d       Int?
+  count_3xx_all_time  Int?
+  count_4xx_1h        Int?
+  count_4xx_6h        Int?
+  count_4xx_24h       Int?
+  count_4xx_3d        Int?
+  count_4xx_7d        Int?
+  count_4xx_15d       Int?
+  count_4xx_30d       Int?
+  count_4xx_all_time  Int?
+  count_5xx_1h        Int?
+  count_5xx_6h        Int?
+  count_5xx_24h       Int?
+  count_5xx_3d        Int?
+  count_5xx_7d        Int?
+  count_5xx_15d       Int?
+  count_5xx_30d       Int?
+  count_5xx_all_time  Int?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  resource            Resources @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@map("ResourceMetrics")
+  @@index([resourceId])
+  @@index([resourceId, createdAt])
 }

@@ -22,6 +22,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
   yAxes,
   dataMax = 'dataMax',
   stackOffset,
+  xAxis,
 }: ChartProps<T> & { type: 'bar' | 'area' | 'line' | 'composed' }) => {
   const getContainer = () => {
     switch (type) {
@@ -49,11 +50,18 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
         stackOffset={stackOffset}
       >
         <XAxis
+          dataKey={xAxis?.dataKey ?? 'timestamp'}
           tickLine={false}
-          tick={false}
+          tick={
+            xAxis?.show
+              ? { fontSize: 12, fill: 'hsl(var(--muted-foreground))' }
+              : false
+          }
           axisLine={false}
           interval="preserveEnd"
-          height={0}
+          height={xAxis?.height ?? (xAxis?.show ? 40 : 0)}
+          angle={xAxis?.angle ?? 0}
+          textAnchor={xAxis?.angle ? 'end' : 'middle'}
         />
         {yAxes != undefined ? (
           yAxes.map(({ domain, hide }, index) => (
