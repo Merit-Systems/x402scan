@@ -3,10 +3,7 @@ import { createCaller } from '@/trpc/routers';
 import { createTRPCContext } from '@/trpc/trpc';
 import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
-import {
-  CACHE_WARMABLE_TIMEFRAMES,
-  ActivityTimeframe,
-} from '@/types/timeframes';
+import { ActivityTimeframe } from '@/types/timeframes';
 import { facilitatorAddresses } from '@/lib/facilitators';
 import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
 import { Chain } from '@/types/chain';
@@ -324,8 +321,8 @@ export async function GET(request: NextRequest) {
 
     // Filter timeframes if requested
     const timeframesToWarm = onlyAllTime
-      ? CACHE_WARMABLE_TIMEFRAMES.filter(tf => tf === ActivityTimeframe.AllTime)
-      : CACHE_WARMABLE_TIMEFRAMES;
+      ? [ActivityTimeframe.AllTime]
+      : Object.values(ActivityTimeframe).filter(tf => typeof tf === 'number');
 
     // Filter pages if requested
     const pagesToWarm: WarmablePage[] = pagesParam
