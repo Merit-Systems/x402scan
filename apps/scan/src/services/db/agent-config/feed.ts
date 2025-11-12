@@ -2,7 +2,7 @@ import z from 'zod';
 import { queryRaw } from '../query';
 import { Prisma } from '@x402scan/scan-db';
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
+import { toPaginatedResponse } from '@/lib/pagination';
 import { scanDb } from '@x402scan/scan-db';
 import {
   createCachedPaginatedQuery,
@@ -112,7 +112,8 @@ const getAgentConfigFeedUncached = async (
       )
       SELECT * FROM combined_events
       ORDER BY "createdAt" DESC
-      ${paginationClause(pagination)}
+      LIMIT ${pagination.page_size}
+      OFFSET ${pagination.page * pagination.page_size}
       `,
       z.array(feedEventSchema)
     ),

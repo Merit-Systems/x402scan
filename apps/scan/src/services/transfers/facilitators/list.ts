@@ -14,7 +14,6 @@ import { Prisma } from '@x402scan/transfers-db';
 import { facilitatorIdMap } from '@/lib/facilitators';
 import {
   toPaginatedResponse,
-  paginationClause,
   type paginatedQuerySchema,
 } from '@/lib/pagination';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
@@ -83,7 +82,8 @@ const listTopFacilitatorsUncached = async (
       ${whereClause}
       GROUP BY facilitator_id
       ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
-      ${paginationClause(pagination)}
+      LIMIT ${pagination.page_size}
+      OFFSET ${pagination.page * pagination.page_size}
     `,
     z.array(
       z.object({

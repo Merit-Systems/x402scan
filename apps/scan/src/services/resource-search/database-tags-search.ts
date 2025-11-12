@@ -151,7 +151,6 @@ export const searchResourcesWithNaturalLanguage = async (
   }
 
   const { keywords, explanation } = result.object;
-  console.log('Expanded keywords:', keywords);
 
   // Build SQL programmatically using the keywords
   const sqlCondition = buildSearchCondition(keywords);

@@ -6,7 +6,7 @@ import { queryRaw } from '../query';
 
 import { sortingSchema, timeframeSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
+import { toPaginatedResponse } from '@/lib/pagination';
 import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 import {
   createCachedPaginatedQuery,
@@ -132,7 +132,8 @@ const listTopAgentConfigurationsUncached = async (
       GROUP BY 
         ac.id, ac.name, ac.description, ac.image, ac."systemPrompt", ac.visibility, ac."createdAt", u.user_count, m.message_count, tc.tool_call_count
       ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
-      ${paginationClause(pagination)}
+      LIMIT ${pagination.page_size}
+      OFFSET ${pagination.page * pagination.page_size}
     `,
       z.array(
         z.object({

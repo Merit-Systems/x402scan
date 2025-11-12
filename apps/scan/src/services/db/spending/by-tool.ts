@@ -2,7 +2,6 @@ import z from 'zod';
 import { scanDb, Prisma } from '@x402scan/scan-db';
 import {
   toPaginatedResponse,
-  paginationClause,
   type PaginatedQueryParams,
 } from '@/lib/pagination';
 import {
@@ -91,7 +90,8 @@ const getSpendingByToolUncached = async (
     WHERE tc.id IS NOT NULL
     GROUP BY r.id, r.resource
     ORDER BY ${orderByClause}
-    ${paginationClause(pagination)}
+    LIMIT ${pagination.page_size}
+    OFFSET ${pagination.page * pagination.page_size}
   `;
 
   const rawResult = await scanDb.$queryRaw<

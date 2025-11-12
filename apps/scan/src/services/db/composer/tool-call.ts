@@ -4,7 +4,7 @@ import { queryRaw } from '../query';
 
 import { sortingSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
+import { toPaginatedResponse } from '@/lib/pagination';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
@@ -128,7 +128,8 @@ const listTopToolsUncached = async (
               ? Prisma.sql`unique_users`
               : Prisma.sql`latest_call_time`
       } ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
-    ${paginationClause(pagination)}
+    LIMIT ${pagination.page_size}
+    OFFSET ${pagination.page * pagination.page_size}
   `,
       z.array(
         z.object({
