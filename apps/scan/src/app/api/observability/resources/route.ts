@@ -8,6 +8,7 @@ interface ResourcesRequest {
 }
 
 interface ResourcesResponse {
+  id: string;
   url: string;
   total_requests: number;
   error_count: number;
