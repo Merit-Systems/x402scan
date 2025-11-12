@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Body } from '@/app/_components/layout/page-utils';
 import { StatusChart } from './_components/status-chart';
 import { ErrorRateChart } from './_components/error-rate-chart';
+import { LatencyChart } from './_components/latency-chart';
 import { ResourcesTable } from './_components/resources-table';
 import { ResourceHeader } from './_components/resource-header';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
@@ -56,6 +57,10 @@ export default async function ObservabilityPage({
                   resourceUrl={resourceUrl}
                 />
                 <ErrorRateChart
+                  originUrl={origin.origin}
+                  resourceUrl={resourceUrl}
+                />
+                <LatencyChart
                   originUrl={origin.origin}
                   resourceUrl={resourceUrl}
                 />
