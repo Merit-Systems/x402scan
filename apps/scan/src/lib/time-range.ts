@@ -55,7 +55,13 @@ export const getBucketedTimeRangeFromTimeframe = async ({
 };
 
 export function getMaterializedViewSuffix(
-  timeframe: number
+  timeframe: number | {
+    period: number;
+    offset?: number | undefined;
+  }
 ): string {
-  return `${timeframe}d`;
+  if (typeof timeframe === 'number') {
+    return `${timeframe}d`;
+  }
+  return `${timeframe.period}d`;
 };
