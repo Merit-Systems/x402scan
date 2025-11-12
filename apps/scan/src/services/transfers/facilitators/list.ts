@@ -2,9 +2,9 @@ import z from 'zod';
 
 import { baseListQuerySchema } from '../schemas';
 
-import { queryRaw, transfersPrisma } from '@/services/transfers/client';
+import { queryRaw } from '@/services/transfers/client';
 
-import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
+import { chainSchema } from '@/lib/schemas';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
@@ -12,7 +12,6 @@ import {
 
 import { Prisma } from '@prisma/client';
 import { facilitatorIdMap } from '@/lib/facilitators';
-import { transfersWhereClause, transfersWhereObject } from '../query-utils';
 import {
   toPaginatedResponse,
   paginationClause,

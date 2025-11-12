@@ -11,7 +11,7 @@ export const overallStatisticsMVInputSchema = baseQuerySchema;
 const getOverallStatisticsMVUncached = async (
   input: z.infer<typeof overallStatisticsMVInputSchema>
 ) => {
-  const { chain, timeframe } = input;
+  const { timeframe } = input;
   const mvTimeframe = getMaterializedViewSuffix(timeframe);
   const tableName = `stats_aggregated_${mvTimeframe}`;
 
