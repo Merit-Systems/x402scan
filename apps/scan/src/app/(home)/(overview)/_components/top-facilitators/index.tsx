@@ -12,13 +12,9 @@ import { Section } from '@/app/_components/layout/page-utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 
-import { firstTransfer } from '@/services/facilitator/constants';
-
 import { facilitatorAddresses, facilitators } from '@/lib/facilitators';
 
 import { ActivityTimeframe } from '@/types/timeframes';
-
-import { getSSRTimeRange } from '@/lib/time-range';
 
 import type { Chain } from '@/types/chain';
 
@@ -27,33 +23,25 @@ interface Props {
 }
 
 export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.OneDay,
-    firstTransfer
-  );
-
   const chainFacilitators = chain
     ? facilitators.flatMap(f => f.addresses[chain] ?? [])
     : facilitatorAddresses;
 
-  await Promise.all([
-    api.public.stats.overall.prefetch({ chain, startDate, endDate }),
-    api.public.facilitators.list.prefetch({
-      chain,
-      pagination: {
-        page_size: chainFacilitators.length,
-      },
-      startDate,
-      endDate,
-    }),
-  ]);
+  void api.public.stats.overallMV.prefetch({
+    chain,
+    timeframe: ActivityTimeframe.OneDay,
+  });
+  void api.public.facilitators.list.prefetch({
+    chain,
+    pagination: {
+      page_size: chainFacilitators.length,
+    },
+    timeframe: ActivityTimeframe.OneDay,
+  });
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        creationDate={firstTransfer}
-        initialTimeframe={ActivityTimeframe.OneDay}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <FacilitatorsSection>
           <Suspense fallback={<LoadingTopFacilitatorsContent />}>
             <TopFacilitatorsContent />

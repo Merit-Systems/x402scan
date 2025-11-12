@@ -13,7 +13,7 @@ import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
 import { WalletChainProvider } from '../../_contexts/wallet-chain/provider';
 
-import { getChain } from '@/app/_lib/chain';
+import { parseChain } from '@/app/_lib/chain/parse';
 
 import type { SupportedChain } from '@/types/chain';
 
@@ -38,7 +38,7 @@ export const WalletDialog: React.FC<Props> = ({
 
   const { currentUser } = useCurrentUser();
 
-  const initialChainParam = getChain(searchParams.get('chain'));
+  const initialChainParam = parseChain(searchParams.get('chain'));
 
   return (
     <Dialog

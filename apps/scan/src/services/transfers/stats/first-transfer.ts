@@ -7,8 +7,11 @@ import { baseQuerySchema } from '../schemas';
 import { queryRaw } from '@/services/transfers/client';
 
 import { transfersWhereClause } from '../query-utils';
+import { ActivityTimeframe } from '@/types/timeframes';
 
-export const getFirstTransferTimestampInputSchema = baseQuerySchema;
+export const getFirstTransferTimestampInputSchema = baseQuerySchema.omit({
+  timeframe: true,
+});
 
 export const getFirstTransferTimestamp = async (
   input: z.infer<typeof getFirstTransferTimestampInputSchema>
@@ -16,7 +19,7 @@ export const getFirstTransferTimestamp = async (
   const sql = Prisma.sql`
     SELECT t.block_timestamp
     FROM "TransferEvent" t
-    ${transfersWhereClause(input)}
+    ${transfersWhereClause({ ...input, timeframe: ActivityTimeframe.ThirtyDays })}
     ORDER BY t.block_timestamp ASC
     LIMIT 1
   `;

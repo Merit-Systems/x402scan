@@ -1,20 +1,28 @@
 {
   "crons": [
     {
-      "path": "/api/cron/warm-cache?pages=home",
-      "schedule": "*/5 * * * *"
+      "path": "/api/cron/warm-cache?pages=home&chain=all",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/warm-cache?pages=home&chain=base",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/warm-cache?pages=home&chain=solana",
+      "schedule": "*/15 * * * *"
     },
     {
       "path": "/api/cron/warm-cache?pages=networks",
-      "schedule": "*/5 * * * *"
+      "schedule": "*/15 * * * *"
     },
     {
       "path": "/api/cron/warm-cache?pages=facilitators",
-      "schedule": "*/5 * * * *"
+      "schedule": "*/15 * * * *"
     },
     {
       "path": "/api/cron/warm-cache?pages=resources",
-      "schedule": "*/5 * * * *"
+      "schedule": "*/15 * * * *"
     },
     {
       "path": "/api/resources/ping",

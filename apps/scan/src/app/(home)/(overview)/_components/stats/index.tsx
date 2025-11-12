@@ -2,8 +2,6 @@ import React, { Suspense } from 'react';
 
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { differenceInSeconds, subSeconds } from 'date-fns';
-
 import { Section } from '@/app/_components/layout/page-utils';
 
 import { OverallCharts, LoadingOverallCharts } from './charts';
@@ -14,11 +12,7 @@ import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 
 import { api, HydrateClient } from '@/trpc/server';
 
-import { firstTransfer } from '@/services/facilitator/constants';
-
 import { ActivityTimeframe } from '@/types/timeframes';
-
-import { getSSRTimeRange } from '@/lib/time-range';
 
 import type { Chain } from '@/types/chain';
 
@@ -27,36 +21,19 @@ interface Props {
 }
 
 export const OverallStats = async ({ chain }: Props) => {
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.OneDay,
-    firstTransfer
-  );
-
-  await Promise.all([
-    api.public.stats.overall.prefetch({
-      startDate,
-      endDate,
-      chain,
-    }),
-    api.public.stats.overall.prefetch({
-      startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-      endDate: startDate,
-      chain,
-    }),
-    api.public.stats.bucketed.prefetch({
-      startDate,
-      endDate,
-      numBuckets: 32,
-      chain,
-    }),
-  ]);
+  void api.public.stats.overallMV.prefetch({
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
+  void api.public.stats.bucketedMV.prefetch({
+    timeframe: ActivityTimeframe.OneDay,
+    numBuckets: 32,
+    chain,
+  });
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        initialTimeframe={ActivityTimeframe.OneDay}
-        creationDate={firstTransfer}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <ActivityContainer>
           <ErrorBoundary
             fallback={<p>There was an error loading the activity data</p>}

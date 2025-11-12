@@ -8,6 +8,8 @@ import { ThemeProvider } from 'next-themes';
 import Link from 'next/link';
 import Image from 'next/image';
 
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { AnimatedThemeToggler } from '@/components/magicui/animated-theme-toggler';
@@ -179,6 +181,9 @@ export default async function RootLayout({
                             <div className="bg-background flex-1 flex flex-col">
                               {children}
                             </div>
+                            {env.NEXT_PUBLIC_NODE_ENV === 'development' && (
+                              <ReactQueryDevtools />
+                            )}
                           </div>
                         </ThemeProvider>
                       </PostHogProvider>

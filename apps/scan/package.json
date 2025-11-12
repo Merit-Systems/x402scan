@@ -99,7 +99,6 @@
     "open-graph-scraper": "^6.10.0",
     "posthog-js": "^1.273.1",
     "react": "19.1.0",
-    "react-day-picker": "^9.11.0",
     "react-dom": "19.1.0",
     "react-dropzone": "^14.3.8",
     "react-error-boundary": "^6.0.0",
@@ -128,6 +127,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@tanstack/react-query-devtools": "^5.90.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -34,3 +34,16 @@ export const mixedAddressSchema = z
 export const chainSchema = z.enum(Chain);
 export const optionalChainSchema = chainSchema.optional();
 export const supportedChainSchema = z.enum(SUPPORTED_CHAINS);
+export const optionalSupportedChainSchema = supportedChainSchema.optional();
+
+export const timePeriodSchema = z.number().nonnegative();
+
+export const timeframeSchema = z
+  .union([
+    timePeriodSchema,
+    z.object({
+      period: timePeriodSchema,
+      offset: timePeriodSchema.optional(),
+    }),
+  ])
+  .default(0);
