@@ -3,11 +3,25 @@
   "extends": ["//"],
   "tasks": {
     "dev": {
+      "dependsOn": ["^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "env": ["CLICKHOUSE_URL", "CLICKHOUSE_USER", "CLICKHOUSE_PASSWORD"]
+      "env": [
+        "CLICKHOUSE_URL",
+        "CLICKHOUSE_USER",
+        "CLICKHOUSE_PASSWORD",
+        "POSTGRES_PRISMA_URL",
+        "POSTGRES_URL_NON_POOLING"
+      ]
     },
     "lint": {
-      "env": ["CLICKHOUSE_URL", "CLICKHOUSE_USER", "CLICKHOUSE_PASSWORD"]
+      "dependsOn": ["^db:generate"],
+      "env": [
+        "CLICKHOUSE_URL",
+        "CLICKHOUSE_USER",
+        "CLICKHOUSE_PASSWORD",
+        "POSTGRES_PRISMA_URL",
+        "POSTGRES_URL_NON_POOLING"
+      ]
     }
   }
 }

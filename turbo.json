@@ -5,7 +5,14 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "generated/**"],
+      "env": [
+        "CLICKHOUSE_URL",
+        "CLICKHOUSE_USER",
+        "CLICKHOUSE_PASSWORD",
+        "POSTGRES_PRISMA_URL",
+        "POSTGRES_URL_NON_POOLING"
+      ]
     },
     "dev": {
       "cache": false,
@@ -24,6 +31,16 @@
       "dependsOn": ["^build"]
     },
     "format": {
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:deploy": {
       "cache": false
     }
   },

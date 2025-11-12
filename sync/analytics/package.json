@@ -17,12 +17,12 @@
   },
   "dependencies": {
     "@clickhouse/client": "^1.8.0",
+    "@repo/scan-db": "workspace:*",
     "@trigger.dev/sdk": "4.0.5",
     "facilitators": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/scan-db": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@trigger.dev/build": "4.0.5",
     "@types/node": "^20",

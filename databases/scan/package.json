@@ -5,36 +5,35 @@
     ".": "./src/client.ts"
   },
   "scripts": {
-    "postinstall": "prisma generate",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:migrate:dev": "prisma migrate dev",
-    "db:push": "prisma db push",
-    "db:seed": "tsx src/seed.ts",
-    "dev": "tsup src/* --watch",
-    "format": "prisma format",
-    "generate": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev --skip-generate",
+    "db:deploy": "prisma migrate deploy",
+    "db:format": "prisma format",
     "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit",
     "check-format": "prettier --check .",
     "knip": "knip",
-    "prebuild": "npm run generate",
-    "predev": "npm run generate",
+    "prebuild": "npm run db:generate",
+    "predev": "npm run db:generate",
+    "postinstall": "npm run db:generate",
     "studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0"
+    "@neondatabase/serverless": "^1.0.2",
+    "@prisma/adapter-neon": "^6.19.0",
+    "@prisma/client": "^6.19.0",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^20",
+    "@types/ws": "^8.18.1",
     "eslint": "^9.39.1",
     "knip": "^5.69.0",
     "prettier": "^3.6.2",
     "prisma": "^6.19.0",
     "rimraf": "^5.0.5",
-    "tsup": "^8.0.2",
-    "tsx": "4.19.1",
     "typescript": "5.5.4"
   }
 }

@@ -64,6 +64,7 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@radix-ui/react-use-controllable-state": "^1.2.2",
+    "@repo/scan-db": "workspace:*",
     "@solana-program/token": "^0.7.0",
     "@solana/kit": "^5.0.0",
     "@solana/react": "^5.0.0",
