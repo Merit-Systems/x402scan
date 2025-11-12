@@ -7,17 +7,20 @@ import { createToolCall } from '@/services/db/composer/tool-call';
 import { listResourcesForTools } from '@/services/db/resources/resource';
 
 import { inputSchemaToZodSchema } from './utils';
-import { fetchWithX402Payment } from './fetch';
 
 import { env } from '@/env';
 
-import { enhancedAcceptsSchema, enhancedOutputSchema } from '@/lib/x402/schema';
+import {
+  EnhancedPaymentRequirementsSchema,
+  enhancedOutputSchema,
+} from '@/lib/x402/schema';
+import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
+import { ChatSDKError } from '@/lib/errors';
 
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { ResourceRequestMetadata } from '@prisma/client';
 import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
-import { ChatSDKError } from '@/lib/errors';
 
 interface CreateX402AIToolsParams {
   resourceIds: string[];
@@ -39,14 +42,12 @@ export async function createX402AITools({
   for (const resource of resources) {
     if (resource.accepts) {
       for (const accept of resource.accepts) {
-        const parsedAccept = enhancedAcceptsSchema
-          .extend({
-            outputSchema: enhancedOutputSchema,
-          })
-          .safeParse({
-            ...accept,
-            maxAmountRequired: accept.maxAmountRequired.toString(),
-          });
+        const parsedAccept = EnhancedPaymentRequirementsSchema.extend({
+          outputSchema: enhancedOutputSchema,
+        }).safeParse({
+          ...accept,
+          maxAmountRequired: accept.maxAmountRequired.toString(),
+        });
         if (!parsedAccept.success) {
           continue;
         }
@@ -133,15 +134,18 @@ export async function createX402AITools({
             }
 
             try {
-              const response = await fetchWithX402Payment(
+              const fetchWithPayment = wrapFetchWithPayment(
                 fetch,
                 walletClient,
                 maxAmount
-              )(
+                  ? BigInt(parseUnits(String(maxAmount), 6))
+                  : resource.accepts[0].maxAmountRequired
+              );
+              const response = await fetchWithPayment(
                 new URL(
                   `/api/proxy?url=${encodeURIComponent(url)}&share_data=true`,
                   env.NEXT_PUBLIC_PROXY_URL
-                ),
+                ).toString(),
                 requestInit
               );
               void createToolCall({

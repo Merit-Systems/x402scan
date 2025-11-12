@@ -1,7 +1,7 @@
-import { optionalChainSchema } from '@/lib/schemas';
+import { optionalSupportedChainSchema } from '@/lib/schemas';
 
 export const parseChain = (chain: unknown) => {
-  const result = optionalChainSchema.safeParse(chain);
+  const result = optionalSupportedChainSchema.safeParse(chain);
   if (!result.success) {
     return undefined;
   }
