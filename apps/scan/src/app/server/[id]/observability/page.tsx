@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Body } from '@/app/_components/layout/page-utils';
 import { StatusChartWrapper } from './_components/status-chart-wrapper';
 import { ErrorRateChartWrapper } from './_components/error-rate-chart-wrapper';
+import { ResourcesTableWrapper } from './_components/resources-table-wrapper';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
@@ -31,10 +32,11 @@ export default async function ObservabilityPage({
             <h2 className="text-2xl font-bold">Observability</h2>
             <RangeSelector />
           </div>
-          <div className="flex gap-6">
+          <div className="flex gap-6 mb-6">
             <StatusChartWrapper originUrl={origin.origin} />
             <ErrorRateChartWrapper originUrl={origin.origin} />
           </div>
+          <ResourcesTableWrapper originUrl={origin.origin} />
         </TimeRangeProvider>
       </HydrateClient>
     </Body>
