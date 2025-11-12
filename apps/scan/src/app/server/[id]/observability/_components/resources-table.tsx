@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { formatDistanceToNow } from 'date-fns';
 
 interface ResourceData {
   url: string;
@@ -34,11 +35,11 @@ export const ResourcesTable: React.FC<Props> = ({ data }) => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>URL</TableHead>
-              <TableHead className="text-right">Requests</TableHead>
-              <TableHead className="text-right">Errors</TableHead>
-              <TableHead className="text-right">Avg Duration</TableHead>
-              <TableHead className="text-right">Last Seen</TableHead>
+              <TableHead className="w-[30%]">URL</TableHead>
+              <TableHead className="text-right w-[10%]">Requests</TableHead>
+              <TableHead className="text-right w-[10%]">Errors</TableHead>
+              <TableHead className="text-right w-[10%]">Avg Duration</TableHead>
+              <TableHead className="text-right w-[10%]">Last Seen</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -54,7 +55,7 @@ export const ResourcesTable: React.FC<Props> = ({ data }) => {
             ) : (
               data.map((resource, index) => (
                 <TableRow key={index}>
-                  <TableCell className="font-mono text-xs max-w-md truncate">
+                  <TableCell className="font-mono text-xs break-all">
                     {resource.url}
                   </TableCell>
                   <TableCell className="text-right">
@@ -70,14 +71,11 @@ export const ResourcesTable: React.FC<Props> = ({ data }) => {
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    {Math.round(parseFloat(resource.avg_duration))}ms
+                    {(parseFloat(resource.avg_duration) / 1000).toFixed(2)}s
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
-                    {new Date(resource.last_seen).toLocaleString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit',
+                    {formatDistanceToNow(new Date(resource.last_seen), {
+                      addSuffix: true,
                     })}
                   </TableCell>
                 </TableRow>
