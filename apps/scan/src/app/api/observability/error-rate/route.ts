@@ -34,8 +34,8 @@ export async function POST(
       SELECT
         toStartOfInterval(created_at, bucket) AS ts,
         count() AS total_requests,
-        countIf(status_code >= 400) AS error_requests,
-        (countIf(status_code >= 400) / count()) * 100 AS error_rate
+        countIf(status_code >= 500) AS error_requests,
+        (countIf(status_code >= 500) / count()) * 100 AS error_rate
       FROM resource_invocations
       WHERE created_at >= t_start
         AND created_at <= t_end

@@ -45,7 +45,7 @@ export const ErrorRateChart: React.FC<Props> = ({ data }) => {
         <div className="flex gap-3">
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
-            <span className="text-xs">Error Rate</span>
+            <span className="text-xs">Server Error Rate</span>
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@ export const ErrorRateChart: React.FC<Props> = ({ data }) => {
         tooltipRows={[
           {
             key: 'errorRate',
-            label: 'Error Rate',
+            label: 'Server Error Rate',
             getValue: data => `${data.toFixed(2)}%`,
             dotColor: '#ef4444',
           },
