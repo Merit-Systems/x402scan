@@ -20,7 +20,7 @@ const bucketedNetworkResultSchema = z.array(
         total_amount: z.number(),
         unique_buyers: z.coerce.number(),
         unique_sellers: z.coerce.number(),
-        unique_facilitators: z.number(),
+        unique_facilitators: z.coerce.number(),
       })
     ),
   })
@@ -110,62 +110,23 @@ const getBucketedNetworksStatisticsUncached = async (
     )
     SELECT 
       bucket_start,
-      map(
+      CAST((
         groupArray(chain),
-        groupArray((total_transactions, total_amount, unique_buyers, unique_sellers, unique_facilitators))
-      ) AS networks
+        groupArray(map(
+          'total_transactions', CAST(total_transactions AS Float64),
+          'total_amount', CAST(total_amount AS Float64),
+          'unique_buyers', CAST(unique_buyers AS Float64),
+          'unique_sellers', CAST(unique_sellers AS Float64),
+          'unique_facilitators', CAST(unique_facilitators AS Float64)
+        ))
+      ) AS Map(String, Map(String, Float64))) AS networks
     FROM combined_stats
     GROUP BY bucket_start
     ORDER BY bucket_start
     LIMIT ${numBuckets}
   `;
 
-  const rawResult = await queryRaw(
-    sql,
-    z.array(
-      z.object({
-        bucket_start: z.coerce.date(),
-        networks: z.any(),
-      })
-    )
-  );
-
-  // Transform ClickHouse map to the expected format
-  const transformedResult = rawResult.map(row => {
-    const networks: Record<
-      string,
-      {
-        total_transactions: number;
-        total_amount: number;
-        unique_buyers: number;
-        unique_sellers: number;
-        unique_facilitators: number;
-      }
-    > = {};
-
-    if (Array.isArray(row.networks)) {
-      const keys = Object.keys(row.networks);
-      keys.forEach(key => {
-        const value = (row.networks as any)[key];
-        if (Array.isArray(value) && value.length === 5) {
-          networks[key] = {
-            total_transactions: value[0],
-            total_amount: value[1],
-            unique_buyers: value[2],
-            unique_sellers: value[3],
-            unique_facilitators: value[4],
-          };
-        }
-      });
-    }
-
-    return {
-      bucket_start: row.bucket_start,
-      networks,
-    };
-  });
-
-  return bucketedNetworkResultSchema.parse(transformedResult);
+  return await queryRaw(sql, bucketedNetworkResultSchema);
 };
 
 export const getBucketedNetworksStatistics = createCachedArrayQuery({

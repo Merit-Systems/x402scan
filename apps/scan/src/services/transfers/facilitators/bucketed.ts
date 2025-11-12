@@ -80,63 +80,24 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     )
     SELECT
       bucket_start,
-      map(
+      CAST((
         groupArray(facilitator_id),
-        groupArray((total_transactions, total_amount, unique_buyers, unique_sellers))
-      ) AS facilitators
+        groupArray(map(
+          'total_transactions', CAST(total_transactions AS Float64),
+          'total_amount', CAST(total_amount AS Float64),
+          'unique_buyers', CAST(unique_buyers AS Float64),
+          'unique_sellers', CAST(unique_sellers AS Float64)
+        ))
+      ) AS Map(String, Map(String, Float64))) AS facilitators
     FROM combined_stats
     GROUP BY bucket_start
     ORDER BY bucket_start
     LIMIT ${numBuckets}
   `;
 
-  // ClickHouse map returns a different structure, so we need to transform it
-  const rawResult = await queryRaw(
+  return await queryRaw(
     sql,
     z.array(
-      z.object({
-        bucket_start: z.coerce.date(),
-        facilitators: z.any(), // We'll transform this
-      })
-    )
-  );
-
-  // Transform ClickHouse map to the expected format
-  const transformedResult = rawResult.map(row => {
-    const facilitators: Record<
-      string,
-      {
-        total_transactions: number;
-        total_amount: number;
-        unique_buyers: number;
-        unique_sellers: number;
-      }
-    > = {};
-
-    if (Array.isArray(row.facilitators)) {
-      // Handle the ClickHouse map format
-      const keys = Object.keys(row.facilitators);
-      keys.forEach(key => {
-        const value = (row.facilitators as any)[key];
-        if (Array.isArray(value) && value.length === 4) {
-          facilitators[key] = {
-            total_transactions: value[0],
-            total_amount: value[1],
-            unique_buyers: value[2],
-            unique_sellers: value[3],
-          };
-        }
-      });
-    }
-
-    return {
-      bucket_start: row.bucket_start,
-      facilitators,
-    };
-  });
-
-  return z
-    .array(
       z.object({
         bucket_start: z.coerce.date(),
         facilitators: z.record(
@@ -150,7 +111,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
         ),
       })
     )
-    .parse(transformedResult);
+  );
 };
 
 export const getBucketedFacilitatorsStatistics = createCachedArrayQuery({

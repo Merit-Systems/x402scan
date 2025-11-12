@@ -102,7 +102,7 @@ const listTopNetworksUncached = async (
         latest_block_timestamp: z.coerce.date(),
         unique_buyers: z.coerce.number(),
         unique_sellers: z.coerce.number(),
-        unique_facilitators: z.number(),
+        unique_facilitators: z.coerce.number(),
       })
     )
   );
