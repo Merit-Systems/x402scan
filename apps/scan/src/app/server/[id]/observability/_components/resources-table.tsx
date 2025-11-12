@@ -67,7 +67,7 @@ export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
           throw new Error('Failed to fetch resources data');
         }
 
-        const result = await response.json();
+        const result = (await response.json()) as ResourceData[];
         setData(result);
       } catch (error) {
         console.error('Error fetching resources data:', error);
@@ -77,7 +77,7 @@ export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
       }
     };
 
-    fetchData();
+    void fetchData();
   }, [startDate, endDate, originUrl]);
 
   if (isLoading) {

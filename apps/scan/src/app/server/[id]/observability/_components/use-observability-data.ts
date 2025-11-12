@@ -47,7 +47,7 @@ export function useObservabilityData<T>(options: UseObservabilityDataOptions) {
           throw new Error(`Failed to fetch data from ${endpoint}`);
         }
 
-        const result = await response.json();
+        const result = (await response.json()) as T[];
         setData(result);
       } catch (error) {
         console.error(`Error fetching data from ${endpoint}:`, error);
@@ -57,7 +57,7 @@ export function useObservabilityData<T>(options: UseObservabilityDataOptions) {
       }
     };
 
-    fetchData();
+    void fetchData();
   }, [startDate, endDate, originUrl, resourceUrl, endpoint]);
 
   return { data, isLoading };

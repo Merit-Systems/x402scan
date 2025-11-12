@@ -18,7 +18,7 @@ export default async function ObservabilityPage({
     return notFound();
   }
 
-  // Use a default creation date (e.g., when the origin was created or when observability started)
+  // NOTE(shafu): use a default creation date
   const creationDate = new Date('2024-01-01');
 
   return (
