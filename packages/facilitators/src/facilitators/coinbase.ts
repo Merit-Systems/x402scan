@@ -70,6 +70,56 @@ export const coinbaseFacilitator = {
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-31'),
       },
+      {
+        address: "0x47d8b3c9717e976f31025089384f23900750a5f4",
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-11'),
+      },
+      {
+        address: "0x94701e1df9ae06642bf6027589b8e05dc7004813",
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-11'),
+      },
+      {
+        address: "0x552300992857834c0ad41c8e1a6934a5e4a2e4ca",
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-11'),
+      },
+      {
+        address: "0xd7469bf02d221968ab9f0c8b9351f55f8668ac4f",
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-11'),
+      },
+      {
+        address: "0x88800e08e20b45c9b1f0480cf759b5bf2f05180c",
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-11'),
+      },
+      {
+        address: "0x6831508455a716f987782a1ab41e204856055cc2",
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-11'),
+      },
+      {
+        address: "0xdc8fbad54bf5151405de488f45acd555517e0958",
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-11'),
+      },
+      {
+        address: "0x91d313853ad458addda56b35a7686e2f38ff3952",
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-11'),
+      },
+      {
+        address: "0xadd5585c776b9b0ea77e9309c1299a40442d820f",
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-11'),
+      },
+      {
+        address: "0x4ffeffa616a1460570d1eb0390e264d45a199e91",
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-11'),
+      },
     ],
     [Network.SOLANA]: [
       {
