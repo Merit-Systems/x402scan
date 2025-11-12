@@ -26,6 +26,13 @@ interface PropertyDefinition {
   description?: string;
   enum?: string[];
   isRequired: boolean;
+  properties?: Record<string, unknown>;
+  propertiesRequired?: string[];
+  items?: {
+    type?: string;
+    properties?: Record<string, unknown>;
+    required?: string[];
+  };
 }
 
 interface Props {
@@ -63,7 +70,12 @@ export function Form({ x402Response }: Props) {
                   </Label>
                   <FieldInput
                     field={field}
-                    value={queryValues[field.name] ?? field.default ?? ''}
+                    value={
+                      queryValues[field.name] ??
+                      (field.type === 'object' && field.properties
+                        ? undefined
+                        : (field.default ?? ''))
+                    }
                     onChange={value => handleQueryChange(field.name, value)}
                     prefix="query"
                   />
@@ -92,7 +104,12 @@ export function Form({ x402Response }: Props) {
                   </Label>
                   <FieldInput
                     field={field}
-                    value={bodyValues[field.name] ?? field.default ?? ''}
+                    value={
+                      bodyValues[field.name] ??
+                      (field.type === 'object' && field.properties
+                        ? undefined
+                        : (field.default ?? ''))
+                    }
                     onChange={value => handleBodyChange(field.name, value)}
                     prefix="body"
                   />
@@ -154,6 +171,21 @@ function parsePropertyDefinition(
       ? (propField.enum as string[])
       : undefined,
     isRequired: itemsRequired.includes(propName),
+    properties:
+      typeof propField.properties === 'object' && propField.properties !== null
+        ? (propField.properties as Record<string, unknown>)
+        : undefined,
+    propertiesRequired: Array.isArray(propField.required)
+      ? (propField.required as string[])
+      : undefined,
+    items:
+      typeof propField.items === 'object' && propField.items !== null
+        ? (propField.items as {
+            type?: string;
+            properties?: Record<string, unknown>;
+            required?: string[];
+          })
+        : undefined,
   };
 }
 
@@ -167,11 +199,60 @@ function PropertyFieldInput({
 }: {
   propName: string;
   propDef: PropertyDefinition;
-  value: string;
-  onChange: (value: string) => void;
+  value: string | Record<string, unknown> | unknown[];
+  onChange: (value: string | Record<string, unknown> | unknown[]) => void;
   fieldId: string;
   showLabel?: boolean;
 }) {
+  // Handle nested objects by delegating to ObjectFieldInput
+  if (propDef.type === 'object' && propDef.properties) {
+    const nestedField: FieldDefinition = {
+      name: propName,
+      type: 'object',
+      properties: propDef.properties,
+      propertiesRequired: propDef.propertiesRequired,
+      description: propDef.description,
+      required: propDef.isRequired,
+    };
+
+    return (
+      <ObjectFieldInput
+        field={nestedField}
+        value={
+          typeof value === 'object' && !Array.isArray(value) ? value : undefined
+        }
+        onChange={
+          onChange as (value: Record<string, unknown> | undefined) => void
+        }
+        prefix={fieldId}
+      />
+    );
+  }
+
+  // Handle arrays by delegating to ArrayFieldInput
+  if (propDef.type === 'array' && propDef.items) {
+    const nestedField: FieldDefinition = {
+      name: propName,
+      type: 'array',
+      items: propDef.items,
+      description: propDef.description,
+      required: propDef.isRequired,
+    };
+
+    return (
+      <ArrayFieldInput
+        field={nestedField}
+        value={Array.isArray(value) ? value : []}
+        onChange={onChange as (value: unknown[]) => void}
+        prefix={fieldId}
+      />
+    );
+  }
+
+  // Handle scalar types (string, number, boolean, etc.)
+  const stringValue = typeof value === 'string' ? value : '';
+  const handleChange = (newValue: string) => onChange(newValue);
+
   return (
     <div className="space-y-1">
       {showLabel && (
@@ -181,7 +262,7 @@ function PropertyFieldInput({
         </Label>
       )}
       {propDef.enum && propDef.enum.length > 0 ? (
-        <Select value={value} onValueChange={onChange}>
+        <Select value={stringValue} onValueChange={handleChange}>
           <SelectTrigger id={fieldId} className="w-full h-8">
             <SelectValue
               placeholder={propDef.description ?? `Select ${propName}`}
@@ -200,8 +281,8 @@ function PropertyFieldInput({
           id={fieldId}
           className="h-8"
           placeholder={propDef.description ?? propDef.type}
-          value={value}
-          onChange={e => onChange(e.target.value)}
+          value={stringValue}
+          onChange={e => handleChange(e.target.value)}
         />
       )}
     </div>
@@ -222,9 +303,19 @@ function ArrayFieldInput({
   const addItem = () => {
     // Create empty object based on items.properties schema
     if (field.items?.properties) {
-      const newItem: Record<string, string> = {};
+      const newItem: Record<string, unknown> = {};
       Object.keys(field.items.properties).forEach(key => {
-        newItem[key] = '';
+        const propDef = field.items?.properties?.[key] as Record<
+          string,
+          unknown
+        >;
+        if (propDef?.type === 'object' && propDef.properties) {
+          newItem[key] = undefined; // Let nested ObjectFieldInput handle initialization
+        } else if (propDef?.type === 'array') {
+          newItem[key] = [];
+        } else {
+          newItem[key] = '';
+        }
       });
       onChange([...value, newItem]);
     } else {
@@ -246,10 +337,10 @@ function ArrayFieldInput({
   const updateItemField = (
     index: number,
     fieldName: string,
-    fieldValue: string
+    fieldValue: string | Record<string, unknown> | unknown[]
   ) => {
     const newValue = [...value];
-    const item = newValue[index] as Record<string, string>;
+    const item = newValue[index] as Record<string, unknown>;
     item[fieldName] = fieldValue;
     onChange(newValue);
   };
@@ -276,7 +367,13 @@ function ArrayFieldInput({
                     propName,
                     itemsRequired
                   )}
-                  value={(item as Record<string, string>)[propName] ?? ''}
+                  value={
+                    ((item as Record<string, unknown>)[propName] as
+                      | string
+                      | Record<string, unknown>
+                      | unknown[]
+                      | undefined) ?? ''
+                  }
                   onChange={val => updateItemField(index, propName, val)}
                   fieldId={`${prefix}-${field.name}-${index}-${propName}`}
                 />
@@ -316,6 +413,102 @@ function ArrayFieldInput({
   );
 }
 
+function ObjectFieldInput({
+  field,
+  value,
+  onChange,
+  prefix,
+}: {
+  field: FieldDefinition;
+  value: Record<string, unknown> | undefined;
+  onChange: (value: Record<string, unknown> | undefined) => void;
+  prefix: string;
+}) {
+  const hasValue = value !== undefined && value !== null;
+  const properties = field.properties ?? {};
+  const propertiesRequired = field.propertiesRequired ?? [];
+
+  const updateProperty = (
+    propName: string,
+    propValue: string | Record<string, unknown> | unknown[]
+  ) => {
+    const newValue = { ...(value ?? {}), [propName]: propValue };
+    onChange(newValue);
+  };
+
+  const removeObject = () => {
+    onChange(undefined);
+  };
+
+  const addObject = () => {
+    const newValue: Record<string, unknown> = {};
+    Object.keys(properties).forEach(key => {
+      const propDef = properties[key] as Record<string, unknown>;
+      if (propDef.type === 'object' && propDef.properties) {
+        newValue[key] = undefined; // Let nested ObjectFieldInput handle initialization
+      } else if (propDef.type === 'array') {
+        newValue[key] = [];
+      } else {
+        newValue[key] = '';
+      }
+    });
+    onChange(newValue);
+  };
+
+  if (!hasValue) {
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="w-full"
+        onClick={addObject}
+      >
+        <Plus className="h-4 w-4 mr-2" />
+        Add {field.name}
+      </Button>
+    );
+  }
+
+  return (
+    <div className="space-y-2 border rounded-md p-3">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-medium">{field.name}</span>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6"
+          onClick={removeObject}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+      <div className="space-y-2">
+        {Object.entries(properties).map(([propName, propDef]) => (
+          <PropertyFieldInput
+            key={propName}
+            propName={propName}
+            propDef={parsePropertyDefinition(
+              propDef,
+              propName,
+              propertiesRequired
+            )}
+            value={
+              (value?.[propName] ?? '') as
+                | string
+                | Record<string, unknown>
+                | unknown[]
+            }
+            onChange={val => updateProperty(propName, val)}
+            fieldId={`${prefix}-${field.name}-${propName}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FieldInput({
   field,
   value,
@@ -341,7 +534,23 @@ function FieldInput({
     );
   }
 
-  // Delegate to PropertyFieldInput for non-array fields
+  // Handle object type with properties
+  if (field.type === 'object' && field.properties) {
+    return (
+      <ObjectFieldInput
+        field={field}
+        value={
+          typeof value === 'object' && !Array.isArray(value) ? value : undefined
+        }
+        onChange={
+          onChange as (value: Record<string, unknown> | undefined) => void
+        }
+        prefix={prefix}
+      />
+    );
+  }
+
+  // Delegate to PropertyFieldInput for non-array, non-object fields
   // Label is already rendered by the parent Form component
   return (
     <PropertyFieldInput
