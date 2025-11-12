@@ -1,10 +1,17 @@
 import { clickhouse } from '@/services/db/clickhouse/resource-invocations';
 import { NextResponse } from 'next/server';
 
+interface ErrorRateRequest {
+  originUrl: string;
+  startDate: string;
+  endDate: string;
+  bucketMinutes: number;
+}
+
 export async function POST(request: Request) {
   try {
     const { originUrl, startDate, endDate, bucketMinutes } =
-      await request.json();
+      await request.json() as ErrorRateRequest;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
