@@ -18,9 +18,11 @@ interface Props {
   resourceUrl?: string;
 }
 
+const ERROR_RATE_ENDPOINT = '/api/observability/error-rate';
+
 export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
   const { data, isLoading } = useObservabilityData<ErrorRateData>({
-    endpoint: '/api/observability/error-rate',
+    endpoint: ERROR_RATE_ENDPOINT,
     originUrl,
     resourceUrl,
   });
@@ -37,11 +39,6 @@ export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     );
   }
 
-  return <ErrorRateChartInner data={data} />;
-};
-
-const ErrorRateChartInner: React.FC<{ data: ErrorRateData[] }> = ({ data }) => {
-  // Transform the data to the format expected by the chart
   const chartData: ChartData<{
     errorRate: number;
   }>[] = data.map(item => {
@@ -58,7 +55,6 @@ const ErrorRateChartInner: React.FC<{ data: ErrorRateData[] }> = ({ data }) => {
     };
   });
 
-  // Get start and end timestamps for display
   const startTime = chartData.length > 0 ? chartData[0].timestamp : '';
   const endTime =
     chartData.length > 0 ? chartData[chartData.length - 1].timestamp : '';
