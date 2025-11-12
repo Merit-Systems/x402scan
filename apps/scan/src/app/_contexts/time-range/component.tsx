@@ -29,9 +29,7 @@ export const RangeSelector = () => {
       <SelectTrigger className="border shadow-xs dark:border-input">
         <CalendarDays />
         <span>
-          {timeframe === ActivityTimeframe.AllTime
-            ? 'All Time'
-            : timeframe === ActivityTimeframe.OneDay
+          {timeframe === ActivityTimeframe.OneDay
               ? 'Past 24 Hours'
               : `Past ${timeframe} Days`}
         </span>
@@ -39,9 +37,7 @@ export const RangeSelector = () => {
       <SelectContent align="end">
         {timeframeValues.map(value => (
           <SelectItem key={value} value={value.toString()}>
-            {value === ActivityTimeframe.AllTime
-              ? 'All Time'
-              : value === ActivityTimeframe.OneDay
+            {value === ActivityTimeframe.OneDay
                 ? 'Past 24 Hours'
                 : `Past ${value} Days`}
           </SelectItem>

@@ -33,7 +33,7 @@ export const LatestTransactionsTable: React.FC<Props> = ({
       include: [address],
     },
     sorting,
-    timeframe: ActivityTimeframe.AllTime,
+    timeframe: ActivityTimeframe.ThirtyDays,
   });
 
   return (

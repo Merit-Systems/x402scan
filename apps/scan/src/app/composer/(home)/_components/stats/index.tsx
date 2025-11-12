@@ -16,16 +16,16 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 export const OverallStats = async () => {
   void api.public.agents.activity.overall.prefetch({
-    timeframe: ActivityTimeframe.ThreeDays,
+    timeframe: ActivityTimeframe.SevenDays,
   });
   void api.public.agents.activity.bucketed.prefetch({
-    timeframe: ActivityTimeframe.ThreeDays,
+    timeframe: ActivityTimeframe.SevenDays,
     numBuckets: 32,
   });
 
   return (
     <HydrateClient>
-      <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThreeDays}>
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.SevenDays}>
         <ActivityContainer>
           <ErrorBoundary
             fallback={<p>There was an error loading the activity data</p>}
