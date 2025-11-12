@@ -1,0 +1,16 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "dev": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": ["CLICKHOUSE_*", "PORT"]
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"],
+      "env": ["CLICKHOUSE_*", "PORT"]
+    }
+  }
+}

@@ -5,10 +5,10 @@ on:
     branches: [main]
 
 jobs:
-  check-scan:
-    name: Check Scan Workspace
+  check:
+    name: Run All Checks
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code
@@ -25,95 +25,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma client
-        working-directory: apps/scan
-        run: pnpm db:generate
+      - name: Generate Prisma clients
+        run: |
+          cd apps/scan && pnpm db:generate
+          cd ../../sync/transfers && pnpm db:generate
 
-      - name: Check Formatting
-        working-directory: apps/scan
-        run: pnpm check:format
-
-      - name: Check Knip
-        working-directory: apps/scan
-        run: pnpm check:knip
-
-      - name: Check Types
-        working-directory: apps/scan
-        run: pnpm check:types
-
-      - name: Check Lint
-        working-directory: apps/scan
-        run: pnpm lint
-
-  check-sync:
-    name: Check Sync Workspace
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma client
-        working-directory: sync/transfers
-        run: pnpm db:generate
-
-      - name: Check Formatting
-        working-directory: sync/transfers
-        run: pnpm check:format
-
-      - name: Check Knip
-        working-directory: sync/transfers
-        run: pnpm knip
-
-      - name: Check Types
-        working-directory: sync/transfers
-        run: pnpm check:types
-
-      - name: Check Lint
-        working-directory: sync/transfers
-        run: pnpm lint
-
-  check-facilitators:
-    name: Check Facilitators
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-        working-directory: packages/facilitators
-
-      - name: Check types
-        run: pnpm check:types
-        working-directory: packages/facilitators
-
-      - name: Check lint
-        run: pnpm lint
-        working-directory: packages/facilitators
-
-      - name: Check knip
-        run: pnpm knip
-        working-directory: packages/facilitators
+      - name: Run all checks (format, types, knip, lint)
+        run: pnpm check

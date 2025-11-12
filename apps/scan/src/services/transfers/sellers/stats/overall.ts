@@ -5,12 +5,14 @@ import { baseQuerySchema } from '../../schemas';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { transfersWhereClause } from '../../query-utils';
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 
 export const sellerStatisticsInputSchema = baseQuerySchema;
 
 const getOverallSellerStatisticsUncached = async (
   input: z.infer<typeof sellerStatisticsInputSchema>
 ) => {
+  const { startDate, endDate } = getTimeRangeFromTimeframe(input.timeframe);
   const sql = Prisma.sql`
     WITH seller_first_transactions AS (
       SELECT 
@@ -27,8 +29,8 @@ const getOverallSellerStatisticsUncached = async (
     SELECT 
       COUNT(DISTINCT ft.recipient)::int AS total_sellers,
       COUNT(DISTINCT CASE 
-        WHEN sft.first_transaction_date >= ${input.startDate ?? Prisma.sql`'1970-01-01'::timestamp`}
-         AND sft.first_transaction_date <= ${input.endDate ?? Prisma.sql`NOW()`}
+        WHEN sft.first_transaction_date >= ${startDate ?? Prisma.sql`'1970-01-01'::timestamp`}
+         AND sft.first_transaction_date <= ${endDate ?? Prisma.sql`NOW()`}
         THEN ft.recipient 
       END)::int AS new_sellers
     FROM filtered_transfers ft

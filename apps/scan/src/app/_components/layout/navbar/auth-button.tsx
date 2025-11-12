@@ -16,7 +16,7 @@ export const NavbarAuthButton = () => {
   return (
     <>
       <OnrampSessionDialog />
-      <WalletDialog>
+      <WalletDialog watchOnramp>
         {address ? (
           <ConnectedButton />
         ) : (

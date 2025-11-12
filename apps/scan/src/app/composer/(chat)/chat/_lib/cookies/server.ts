@@ -3,16 +3,7 @@ import { cookies } from 'next/headers';
 import { COOKIE_KEYS } from './keys';
 
 import type { ChatConfig } from '../../../_types/chat-config';
-
-const safeParseJson = <T>(value: string | null | undefined, fallback: T): T => {
-  if (!value) return fallback;
-  try {
-    return JSON.parse(decodeURIComponent(value)) as T;
-  } catch (e) {
-    console.error('Failed to parse JSON from cookie value:', e);
-    return fallback;
-  }
-};
+import { safeParseJson } from '@/lib/utils';
 
 export const serverCookieUtils = {
   async getConfig(): Promise<ChatConfig> {

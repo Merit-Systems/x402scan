@@ -1,7 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { Hono } from 'hono';
-import type { Context } from 'hono';
+
 import { insertResourceInvocation } from '../db/clickhouse.js';
 import { randomUUID } from 'crypto';
+
+import type { Context } from 'hono';
 
 const RESPONSE_HEADER_BLOCKLIST = new Set([
   'content-encoding',
@@ -13,7 +16,7 @@ const REQUEST_HEADER_BLOCKLIST = new Set(['host', 'content-length']);
 const extractRequestBody = async (request: Request) => {
   const contentType = request.headers.get('content-type') ?? '';
   if (contentType.includes('application/json')) {
-    return await request.json();
+    return (await request.json()) as unknown;
   } else if (contentType.includes('application/x-www-form-urlencoded')) {
     const formData = await request.formData();
     return Object.fromEntries(formData.entries());
@@ -31,7 +34,7 @@ const extractResponseBody = async (response: Response) => {
 
   if (contentType.includes('application/json')) {
     try {
-      return await response.json();
+      return (await response.json()) as unknown;
     } catch {
       return null;
     }
@@ -138,10 +141,11 @@ async function proxyHandler(c: Context) {
     const clonedUpstreamResponse = upstreamResponse.clone();
 
     // Handle response asynchronously (similar to Next.js 'after')
-    (async () => {
+    void (async () => {
       try {
         if (clonedUpstreamResponse.status === 402) {
-          const upstreamX402Response = await clonedUpstreamResponse.json();
+          const upstreamX402Response =
+            (await clonedUpstreamResponse.json()) as unknown;
           console.log('[402 Response]', {
             url: targetUrl.toString(),
             data: upstreamX402Response,
@@ -188,7 +192,7 @@ async function proxyHandler(c: Context) {
           console.log('[Proxy Data]', { cleanedTargetUrl, data });
 
           // Insert into ClickHouse (non-blocking, fire-and-forget)
-          insertResourceInvocation({
+          void insertResourceInvocation({
             id: randomUUID(),
             resourceId: null, // TODO: lookup resourceId by URL if needed
             statusCode: clonedUpstreamResponse.status,

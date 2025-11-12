@@ -1,23 +1,10 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "@repo/typescript-config/trigger.json",
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "jsx": "preserve",
-    "incremental": true,
+    "rootDir": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@facilitators/*": ["../facilitators/*"],
-      "@scan/*": ["../scan/src/*"]
+      "@/*": ["./*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "trigger.config.ts",
-    "../facilitators/**/*.ts"
-  ],
-  "exclude": ["node_modules"]
+  "include": ["**/*.ts", "**/*.tsx", "trigger.config.ts"]
 }

@@ -9,14 +9,14 @@ import {
   LoadingLatestTransactionsTable,
 } from '../_components/transactions/table';
 
-import { api, HydrateClient } from '@/trpc/server';
-import { facilitatorIdMap } from '@/lib/facilitators';
-import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
-import { ActivityTimeframe } from '@/types/timeframes';
-import { firstTransfer } from '@/services/facilitator/constants';
-import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
-import { getSSRTimeRange } from '@/lib/time-range';
+import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
+
+import { api, HydrateClient } from '@/trpc/server';
+
+import { facilitatorIdMap } from '@/lib/facilitators';
+
+import { ActivityTimeframe } from '@/types/timeframes';
 
 export default async function TransactionsPage({
   params,
@@ -30,19 +30,14 @@ export default async function TransactionsPage({
   }
 
   const pageSize = 15;
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.ThirtyDays,
-    firstTransfer
-  );
 
-  await api.public.transfers.list.prefetch({
+  void api.public.transfers.list.prefetch({
     pagination: {
       page_size: pageSize,
       page: 0,
     },
     facilitatorIds: [id],
-    startDate,
-    endDate,
+    timeframe: ActivityTimeframe.ThirtyDays,
     sorting: defaultTransfersSorting,
   });
 
@@ -53,20 +48,15 @@ export default async function TransactionsPage({
         description="Transactions made through this facilitator"
       />
       <Body>
-        <TimeRangeProvider
-          creationDate={firstTransfer}
-          initialTimeframe={ActivityTimeframe.ThirtyDays}
-        >
-          <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
-            <Suspense
-              fallback={
-                <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
-              }
-            >
-              <LatestTransactionsTable facilitatorId={id} pageSize={pageSize} />
-            </Suspense>
-          </TransfersSortingProvider>
-        </TimeRangeProvider>
+        <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
+          <Suspense
+            fallback={
+              <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
+            }
+          >
+            <LatestTransactionsTable facilitatorId={id} pageSize={pageSize} />
+          </Suspense>
+        </TransfersSortingProvider>
       </Body>
     </HydrateClient>
   );

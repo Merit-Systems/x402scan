@@ -1,23 +1,13 @@
 import z from 'zod';
-import { subMonths } from 'date-fns';
 import { Prisma } from '@prisma/client';
 
-import { baseQuerySchema } from '../schemas';
+import { baseBucketedQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { Chain } from '@/types/chain';
+import { getMaterializedViewSuffix } from '@/lib/time-range';
 
-export const bucketedNetworksStatisticsInputSchema = baseQuerySchema.extend({
-  startDate: z
-    .date()
-    .optional()
-    .default(() => subMonths(new Date(), 1)),
-  endDate: z
-    .date()
-    .optional()
-    .default(() => new Date()),
-  numBuckets: z.number().optional().default(48),
-});
+export const bucketedNetworksStatisticsInputSchema = baseBucketedQuerySchema;
 
 const bucketedNetworkResultSchema = z.array(
   z.object({
@@ -38,26 +28,42 @@ const bucketedNetworkResultSchema = z.array(
 const getBucketedNetworksStatisticsUncached = async (
   input: z.infer<typeof bucketedNetworksStatisticsInputSchema>
 ) => {
-  const { startDate, endDate, numBuckets, chain } = input;
+  const { timeframe, chain } = input;
+
+  const mvTimeframe = getMaterializedViewSuffix(timeframe);
+  const tableName = `stats_buckets_${mvTimeframe}`;
 
   // If a specific chain is requested, only include that one, otherwise all chains
   const chains = chain ? [chain] : Object.values(Chain);
 
-  const timeRangeMs = endDate.getTime() - startDate.getTime();
-  const bucketSizeSeconds = Math.max(
-    1,
-    Math.floor(timeRangeMs / numBuckets / 1000)
-  );
+  // Build WHERE clause for materialized view
+  const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
+
+  if (chain) {
+    conditions.push(Prisma.sql`AND chain = ${chain}`);
+  }
+
+  const whereClause = Prisma.join(conditions, ' ');
 
   const sql = Prisma.sql`
-    WITH all_buckets AS (
-      SELECT generate_series(
-        to_timestamp(
-          floor(extract(epoch from ${startDate}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ),
-        ${endDate}::timestamp,
-        (${bucketSizeSeconds} || ' seconds')::interval
-      ) AS bucket_start
+    WITH bucket_stats AS (
+      SELECT 
+        bucket AS bucket_start,
+        chain,
+        SUM(total_transactions)::int AS total_transactions,
+        SUM(total_amount)::float AS total_amount,
+        SUM(unique_buyers)::int AS unique_buyers,
+        SUM(unique_sellers)::int AS unique_sellers,
+        COUNT(DISTINCT facilitator_id)::int AS unique_facilitators
+      FROM ${Prisma.raw(tableName)}
+      ${whereClause}
+      GROUP BY bucket, chain
+    ),
+    active_chains AS (
+      SELECT DISTINCT chain FROM bucket_stats
+    ),
+    all_buckets AS (
+      SELECT DISTINCT bucket_start FROM bucket_stats
     ),
     network_list AS (
       SELECT unnest(${chains}::text[]) AS chain
@@ -66,24 +72,6 @@ const getBucketedNetworksStatisticsUncached = async (
       SELECT ab.bucket_start, nl.chain
       FROM all_buckets ab
       CROSS JOIN network_list nl
-    ),
-    bucket_stats AS (
-      SELECT 
-        to_timestamp(
-          floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ) AS bucket_start,
-        t.chain,
-        COUNT(*)::int AS total_transactions,
-        SUM(t.amount)::float AS total_amount,
-        COUNT(DISTINCT t.sender)::int AS unique_buyers,
-        COUNT(DISTINCT t.recipient)::int AS unique_sellers,
-        COUNT(DISTINCT t.facilitator_id)::int AS unique_facilitators
-      FROM "TransferEvent" t
-      WHERE 1=1
-        ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-        ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
-        ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
-      GROUP BY bucket_start, t.chain
     ),
     combined_stats AS (
       SELECT 
@@ -114,7 +102,6 @@ const getBucketedNetworksStatisticsUncached = async (
     FROM combined_stats
     GROUP BY bucket_start
     ORDER BY bucket_start
-    LIMIT ${numBuckets}
   `;
 
   const rawResult = await queryRaw(sql, bucketedNetworkResultSchema);

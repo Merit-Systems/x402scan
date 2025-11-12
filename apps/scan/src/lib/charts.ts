@@ -68,7 +68,7 @@ export function createTab<T extends Record<string, number>, TItem extends Item>(
     },
     items: {
       type: 'bar',
-      bars: options.items.toReversed().map(item => ({
+      bars: [...options.items].reverse().map(item => ({
         dataKey: `${getKey(item)}-${dataType}` as keyof T,
         name: item.name,
         color: item.color,

@@ -12,8 +12,16 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["^build"],
-      "env": ["CRON_SECRET", "GITHUB_TOKEN", "NODE_ENV", "NEXT_RUNTIME"]
+      "dependsOn": ["^build"]
+    },
+    "check-types": {
+      "dependsOn": ["^build"]
+    },
+    "check-format": {
+      "cache": false
+    },
+    "knip": {
+      "dependsOn": ["^build"]
     },
     "format": {
       "cache": false

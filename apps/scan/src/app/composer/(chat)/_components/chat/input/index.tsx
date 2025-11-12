@@ -67,7 +67,7 @@ export const PromptInputSection: React.FC<Props> = ({
         placeholder={
           session
             ? !isLoading && !hasBalance
-              ? 'Add funds to your agent to continue'
+              ? 'Add funds to your composer wallet to continue'
               : undefined
             : 'Sign in to use the composer'
         }

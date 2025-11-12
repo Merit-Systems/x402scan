@@ -15,9 +15,6 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-import { getSSRTimeRange } from '@/lib/time-range';
-import { firstTransfer as systemStart } from '@/services/facilitator/constants';
-
 interface Props {
   address: string;
 }
@@ -41,42 +38,24 @@ const ActivityContainer = ({
 };
 
 export const Activity: React.FC<Props> = async ({ address }) => {
-  const [firstTransferTimestamp] = await Promise.all([
-    api.public.stats.firstTransferTimestamp({
-      recipients: {
-        include: [address],
-      },
-    }),
-  ]);
-
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.SevenDays,
-    firstTransferTimestamp ?? systemStart
-  );
-
   await Promise.all([
-    api.public.stats.bucketed({
+    api.public.stats.bucketed.prefetch({
       recipients: {
         include: [address],
       },
-      startDate,
-      endDate,
+      timeframe: ActivityTimeframe.OneDay,
     }),
-    api.public.stats.overall({
+    api.public.stats.overall.prefetch({
       recipients: {
         include: [address],
       },
-      startDate,
-      endDate,
+      timeframe: ActivityTimeframe.OneDay,
     }),
   ]);
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        creationDate={firstTransferTimestamp ?? systemStart}
-        initialTimeframe={ActivityTimeframe.SevenDays}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <ActivityContainer>
           <ErrorBoundary
             fallback={<p>There was an error loading the activity data</p>}
