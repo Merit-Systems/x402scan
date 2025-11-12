@@ -29,7 +29,7 @@ const stats: Stat[] = [
 export const StatsCards: React.FC<Props> = async ({ id }) => {
   const overallStats = await api.public.stats.overall({
     facilitatorIds: [id],
-    timeframe: ActivityTimeframe.AllTime,
+    timeframe: ActivityTimeframe.ThirtyDays,
   });
 
   const values = [

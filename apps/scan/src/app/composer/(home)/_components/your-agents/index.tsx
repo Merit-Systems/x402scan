@@ -9,7 +9,7 @@ interface Props {
 
 export const YourAgents = async ({ userId }: Props) => {
   const yourAgents = await api.public.agents.list({
-    timeframe: ActivityTimeframe.AllTime,
+    timeframe: ActivityTimeframe.ThirtyDays,
     pagination: {
       page: 0,
       page_size: 100,

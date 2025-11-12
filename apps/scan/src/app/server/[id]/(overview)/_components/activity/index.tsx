@@ -33,7 +33,7 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
         recipients: {
           include: addresses,
         },
-        timeframe: ActivityTimeframe.AllTime,
+        timeframe: ActivityTimeframe.ThirtyDays,
       },
       {
         enabled: !!metadata,
@@ -43,7 +43,7 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
     api.public.stats.bucketed.useQuery(
       {
         numBuckets: 48,
-        timeframe: ActivityTimeframe.AllTime,
+        timeframe: ActivityTimeframe.ThirtyDays,
         recipients: {
           include: addresses,
         },

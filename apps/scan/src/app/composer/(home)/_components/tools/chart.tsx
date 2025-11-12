@@ -19,7 +19,7 @@ export const KnownSellerChart = ({ addresses }: Props) => {
       recipients: {
         include: addresses,
       },
-      timeframe: ActivityTimeframe.AllTime,
+      timeframe: ActivityTimeframe.ThirtyDays,
       numBuckets: 48,
     }
   );
