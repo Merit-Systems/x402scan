@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@x402scan/scan-db';
 import z from 'zod';
 
 interface ToPaginatedResponseParams<T> {

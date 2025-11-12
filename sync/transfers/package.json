@@ -37,8 +37,8 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "@trigger.dev/build": "4.0.5",
     "@types/node": "^20",
     "@types/ws": "^8.18.1",

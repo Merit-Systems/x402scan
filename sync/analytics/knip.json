@@ -3,8 +3,8 @@
   "entry": ["trigger/**/*.ts", "trigger.config.ts"],
   "project": ["**/*.ts"],
   "ignoreDependencies": [
-    "@repo/eslint-config",
-    "@repo/scan-db",
+    "@x402scan/eslint-config",
+    "@x402scan/scan-db",
     "facilitators"
   ],
   "ignoreWorkspaces": []

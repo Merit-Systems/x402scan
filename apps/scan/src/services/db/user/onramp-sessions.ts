@@ -1,7 +1,8 @@
 import z from 'zod';
 
-import { scanDb } from '@repo/scan-db';
-import type { OnrampSession } from '@prisma/client';
+import { scanDb } from '@x402scan/scan-db';
+
+import type { OnrampSession } from '@x402scan/scan-db';
 
 export const getOnrampSessionByToken = async (
   token: string,

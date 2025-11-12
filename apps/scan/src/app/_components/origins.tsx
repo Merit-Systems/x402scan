@@ -15,7 +15,7 @@ import { HealthDot } from '@/app/_components/health/dot';
 
 import { cn } from '@/lib/utils';
 
-import type { ResourceOrigin } from '@repo/scan-db';
+import type { ResourceOrigin } from '@x402scan/scan-db';
 import type { MixedAddress } from '@/types/address';
 import type { OriginHealthMetrics } from '@/app/_components/health/types';
 

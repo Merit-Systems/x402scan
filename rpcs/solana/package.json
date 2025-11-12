@@ -18,8 +18,8 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240208.0",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "eslint": "^9.39.1",
     "knip": "^5.66.2",
     "prettier": "^3.6.2",

@@ -10,7 +10,7 @@ import {
   createStandardCacheKey,
 } from '@/lib/cache';
 
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@x402scan/transfers-db';
 import { facilitatorIdMap } from '@/lib/facilitators';
 import {
   toPaginatedResponse,

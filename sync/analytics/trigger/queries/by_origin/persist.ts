@@ -1,8 +1,9 @@
-import { scanDb } from '@repo/scan-db';
+import { scanDb } from '@x402scan/scan-db';
 import { logger } from '@trigger.dev/sdk';
-import type { MetricsByOrigin } from '../types';
 import { mapMetric } from '../utils';
-import type { Prisma } from '@repo/scan-db';
+
+import type { MetricsByOrigin } from '../types';
+import type { Prisma } from '@x402scan/scan-db';
 
 export async function persistMetrics(
   data: unknown

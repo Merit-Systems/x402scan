@@ -1,0 +1,16 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": [
+        "TRANSFERS_DB_URL",
+        "TRANSFERS_DB_URL_REPLICA_1",
+        "TRANSFERS_DB_URL_REPLICA_2",
+        "TRANSFERS_DB_URL_REPLICA_3",
+        "TRANSFERS_DB_URL_REPLICA_4",
+        "TRANSFERS_DB_URL_REPLICA_5"
+      ]
+    }
+  }
+}

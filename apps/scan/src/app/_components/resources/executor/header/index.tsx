@@ -4,7 +4,7 @@ import { Method } from './method';
 
 import { Tags } from '@/app/_components/tags';
 
-import type { Resources, Tag } from '@repo/scan-db';
+import type { Resources, Tag } from '@x402scan/scan-db';
 import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 

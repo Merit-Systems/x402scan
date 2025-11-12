@@ -8,8 +8,9 @@
     "postcss",
     "redis",
     "facilitators",
-    "@repo/eslint-config",
-    "@repo/scan-db"
+    "@x402scan/eslint-config",
+    "@x402scan/scan-db",
+    "@x402scan/transfers-db"
   ],
   "ignore": ["/scripts/**", "src/components/ui/charts/chart/**"],
   "ignoreWorkspaces": []

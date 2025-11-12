@@ -3,7 +3,7 @@ import Credentials, {
   type CredentialsConfig,
 } from 'next-auth/providers/credentials';
 import { z } from 'zod';
-import { scanDb } from '@repo/scan-db';
+import { scanDb } from '@x402scan/scan-db';
 import {
   SIWE_PROVIDER_ID,
   SIWE_PROVIDER_NAME,

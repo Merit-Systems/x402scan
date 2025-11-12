@@ -1,4 +1,4 @@
-import { scanDb } from '@repo/scan-db';
+import { scanDb } from '@x402scan/scan-db';
 
 import { v4 as uuid } from 'uuid';
 

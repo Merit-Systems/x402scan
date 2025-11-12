@@ -6,7 +6,7 @@
     "@prisma/client",
     "p-limit",
     "facilitators",
-    "@repo/eslint-config",
+    "@x402scan/eslint-config",
     "@trigger.dev/build"
   ]
 }

@@ -1,14 +1,12 @@
 import z from 'zod';
 
-import { Prisma } from '@prisma/client';
-
-import type { resourceBucketedQuerySchema } from './schemas';
-
-import { scanDb } from '@repo/scan-db';
+import { scanDb, Prisma } from '@x402scan/scan-db';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
 import { agentsRelease } from '@/lib/agents';
+
+import type { resourceBucketedQuerySchema } from './schemas';
 
 const bucketedToolCallsByResourcesResultSchema = z.array(
   z.object({

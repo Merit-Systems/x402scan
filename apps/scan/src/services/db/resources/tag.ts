@@ -1,4 +1,4 @@
-import { scanDb } from '@repo/scan-db';
+import { scanDb } from '@x402scan/scan-db';
 import { z } from 'zod';
 import { MAIN_TAGS } from '@/services/labeling/main-tags';
 

@@ -1,9 +1,8 @@
 {
-  "name": "@repo/scan-db",
+  "name": "@x402scan/scan-db",
   "version": "1.0.0",
   "exports": {
-    ".": "./src/client.ts",
-    "./auth-adapter": "./src/auth-adapter.ts"
+    ".": "./src/client.ts"
   },
   "scripts": {
     "db:generate": "prisma generate",
@@ -20,15 +19,14 @@
     "studio": "prisma studio"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.11.1",
     "@neondatabase/serverless": "^1.0.2",
     "@prisma/adapter-neon": "^6.19.0",
     "@prisma/client": "^6.19.0",
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "@types/node": "^20",
     "@types/ws": "^8.18.1",
     "eslint": "^9.39.1",

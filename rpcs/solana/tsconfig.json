@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/typescript-config/base.json",
+  "extends": "@x402scan/typescript-config/base.json",
   "compilerOptions": {
     "types": ["@cloudflare/workers-types"]
   },

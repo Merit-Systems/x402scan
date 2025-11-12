@@ -18,8 +18,8 @@
     "x402-express": "^0.7.1"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "@types/express": "^5.0.1",
     "@types/node": "^20.19.24",
     "eslint": "^9.24.0",

@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { scanDb } from '@repo/scan-db';
+import { scanDb } from '@x402scan/scan-db';
 
 import { parseX402Response } from '@/lib/x402/schema';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
 
-import type { Prisma } from '@repo/scan-db';
+import type { Prisma } from '@x402scan/scan-db';
 
 const ogImageSchema = z.object({
   url: z.url(),

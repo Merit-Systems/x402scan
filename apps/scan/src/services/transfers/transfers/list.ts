@@ -9,7 +9,7 @@ import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
-import { transfersPrisma } from '@/services/transfers/client';
+import { transfersPrisma } from '@x402scan/transfers-db';
 import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
 import { transfersWhereObject } from '../query-utils';

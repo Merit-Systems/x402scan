@@ -1,8 +1,7 @@
 import z from 'zod';
 
-import { Prisma } from '@prisma/client';
+import { scanDb, Prisma } from '@x402scan/scan-db';
 
-import { scanDb } from '@repo/scan-db';
 import { firstTransfer } from '@/services/facilitator/constants';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';

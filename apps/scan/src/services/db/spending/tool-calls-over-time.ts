@@ -1,7 +1,7 @@
 import z from 'zod';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { scanDb, Prisma } from '@repo/scan-db';
+import { scanDb, Prisma } from '@x402scan/scan-db';
 import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
 import { agentsRelease } from '@/lib/agents';
 

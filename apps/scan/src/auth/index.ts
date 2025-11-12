@@ -6,14 +6,14 @@ import { encode as defaultEncode } from 'next-auth/jwt';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { v4 as uuid } from 'uuid';
 
-import { scanDb } from '@repo/scan-db';
+import { scanDb } from '@x402scan/scan-db';
 import { providers } from './providers';
 
 import { SIWE_PROVIDER_ID } from './providers/siwe/constants';
 import { SIWS_PROVIDER_ID } from './providers/siws/constants';
 
 import type { DefaultSession } from 'next-auth';
-import type { Account, Role } from '@repo/scan-db';
+import type { Account, Role } from '@x402scan/scan-db';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -41,7 +41,7 @@ declare module 'next-auth' {
 const { handlers, auth: uncachedAuth } = NextAuth({
   providers,
   adapter: {
-    ...PrismaAdapter(scanDb),
+    ...PrismaAdapter(scanDb as Parameters<typeof PrismaAdapter>[0]),
     getUser: async id => {
       const user = await scanDb.user.findUnique({
         where: { id },

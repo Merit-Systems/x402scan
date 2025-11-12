@@ -12,7 +12,7 @@ import { OriginStats, LoadingOriginStats } from './stats';
 import { cn } from '@/lib/utils';
 
 import { HeaderButtons, LoadingHeaderButtons } from './buttons';
-import { scanDb } from '@repo/scan-db';
+import { scanDb } from '@x402scan/scan-db';
 import { HealthIndicator } from '@/app/_components/health/indicator';
 
 import type { RouterOutputs } from '@/trpc/client';

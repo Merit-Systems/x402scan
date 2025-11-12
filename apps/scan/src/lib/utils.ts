@@ -4,7 +4,7 @@ import { Chain } from '@/types/chain';
 import { clsx, type ClassValue } from 'clsx';
 import { formatDistanceToNow, formatISO } from 'date-fns';
 
-import type { Message } from '@repo/scan-db';
+import type { Message } from '@x402scan/scan-db';
 import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from 'ai';
 import type { MixedAddress, SolanaAddress } from '@/types/address';
 

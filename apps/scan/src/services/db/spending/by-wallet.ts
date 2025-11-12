@@ -1,5 +1,5 @@
 import z from 'zod';
-import { scanDb, Prisma } from '@repo/scan-db';
+import { scanDb, Prisma } from '@x402scan/scan-db';
 import {
   toPaginatedResponse,
   paginationClause,

@@ -44,8 +44,8 @@
     "directory": "facilitators"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "eslint": "^9.38.0",
     "knip": "^5.66.4",
     "prettier": "^3.6.2",

@@ -19,8 +19,8 @@
     "x402-hono": "^0.7.1"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "@types/node": "^24.9.2",
     "eslint": "^9.24.0",
     "knip": "^5.66.2",
