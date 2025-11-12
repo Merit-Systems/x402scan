@@ -550,6 +550,12 @@ importers:
         specifier: ^0.6.6
         version: 0.6.6(@solana/sysvars@3.0.3(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/react-query@5.90.5(react@19.1.0))(fastestsmallesttextencoderdecoder@1.0.22)(react@19.1.0)(typescript@5.9.3)
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       eslint:
         specifier: ^9.38.0
         version: 9.39.1(jiti@2.6.1)
@@ -580,9 +586,18 @@ importers:
         specifier: ^2.21.54
         version: 2.38.5(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@trigger.dev/build':
         specifier: 4.0.5
         version: 4.0.5(bufferutil@4.0.9)(supports-color@10.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@types/node':
+        specifier: ^20
+        version: 20.19.24
       '@typescript-eslint/parser':
         specifier: ^8.46.2
         version: 8.46.4(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
@@ -614,9 +629,18 @@ importers:
         specifier: workspace:*
         version: link:../../packages/facilitators
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@trigger.dev/build':
         specifier: 4.0.5
         version: 4.0.5(bufferutil@4.0.9)(supports-color@10.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@types/node':
+        specifier: ^20
+        version: 20.19.24
       '@typescript-eslint/parser':
         specifier: ^8.46.2
         version: 8.46.4(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
@@ -672,9 +696,18 @@ importers:
         specifier: ^8.18.3
         version: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@trigger.dev/build':
         specifier: 4.0.5
         version: 4.0.5(bufferutil@4.0.9)(supports-color@10.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@types/node':
+        specifier: ^20
+        version: 20.19.24
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
@@ -686,7 +719,7 @@ importers:
         version: 9.39.1(jiti@2.6.1)
       knip:
         specifier: ^5.66.2
-        version: 5.66.4(@types/node@24.9.2)(typescript@5.9.3)
+        version: 5.66.4(@types/node@20.19.24)(typescript@5.9.3)
       prettier:
         specifier: ^3.6.2
         version: 3.6.2

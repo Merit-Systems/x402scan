@@ -2,9 +2,8 @@
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
   "tasks": {
-    "build": {
-      "outputs": ["dist/**"]
-    },
-    "lint": {}
+    "lint": {
+      "env": ["BASE_RPC_URL", "DISCORD_WEBHOOK_URL"]
+    }
   }
 }

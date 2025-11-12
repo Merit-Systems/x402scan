@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "turbo run dev --filter=!*.example",
     "build": "turbo run build --filter=!x402sync --filter=!*.example",
-    "lint": "turbo run lint",
+    "lint": "turbo run lint --filter=!*.example",
     "format": "prettier --write ."
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { Address, Chain } from 'viem';
+import type { Address, Chain } from 'viem';
 
 export enum Currency {
   USDC = 'USDC',

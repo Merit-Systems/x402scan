@@ -1,11 +1,10 @@
-import {
+import type {
   SyncConfig,
   Facilitator,
-  PaginationStrategy,
-  QueryProvider,
   TransferEventData,
   FacilitatorConfig,
 } from '../types';
+import { PaginationStrategy, QueryProvider } from '../types';
 import { fetchWithOffsetPagination, fetchBitquery } from './bitquery/fetch';
 import { fetchBigQuery } from './bigquery/fetch';
 import { logger } from '@trigger.dev/sdk';
