@@ -44,7 +44,7 @@ export const StatsCards: React.FC<Props> = ({ stats }) => {
   ];
 
   return statsData.map((stat, index) => (
-    <StatCard key={stat.title} {...stat} value={values[index]} />
+    <StatCard key={stat.title} {...stat} value={values[index]!} />
   ));
 };
 

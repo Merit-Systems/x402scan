@@ -337,6 +337,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.16
@@ -359,8 +362,8 @@ importers:
         specifier: ^17.2.3
         version: 17.2.3
       eslint:
-        specifier: ^9.38.0
-        version: 9.38.0(jiti@2.6.1)
+        specifier: ^9.39.1
+        version: 9.39.1(jiti@2.6.1)
       knip:
         specifier: ^5.64.0
         version: 5.66.4(@types/node@20.19.24)(typescript@5.9.3)
@@ -382,9 +385,6 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
-      typescript-eslint:
-        specifier: ^8.44.1
-        version: 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.24)(@vitest/ui@3.2.4)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.1)
@@ -559,6 +559,8 @@ importers:
       typescript-eslint:
         specifier: ^8.44.1
         version: 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
+
+  packages/typescript-config: {}
 
   sync/alerts:
     dependencies:

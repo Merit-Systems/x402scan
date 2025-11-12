@@ -89,12 +89,12 @@ export const CreateAgentForm: React.FC<Props> = ({
       <Stepper steps={stepsConfig} currentStep={step} />
       <Card className="overflow-hidden">
         <CardHeader className="bg-muted border-b">
-          <CardTitle>{stepsConfig[step].card.title}</CardTitle>
+          <CardTitle>{stepsConfig[step]!.card.title}</CardTitle>
           <CardDescription>
-            {stepsConfig[step].card.description}
+            {stepsConfig[step]!.card.description}
           </CardDescription>
         </CardHeader>
-        {stepsConfig[step].component}
+        {stepsConfig[step]!.component}
       </Card>
     </form>
   );

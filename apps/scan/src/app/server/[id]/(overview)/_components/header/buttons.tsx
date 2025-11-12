@@ -25,7 +25,7 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
 
   const onTryInChat = () => {
     clientCookieUtils.setResources(
-      originWithResources?.resources.map(resource => ({
+      originWithResources!.resources.map(resource => ({
         id: resource.id,
         favicon: origin.favicon,
       }))
@@ -33,7 +33,7 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
     router.push(`/composer/chat`);
   };
 
-  if (originWithResources?.resources.length > 0) {
+  if (originWithResources!.resources.length > 0) {
     return (
       <ButtonsContainer>
         <Button variant="turbo" onClick={onTryInChat}>

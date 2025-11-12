@@ -159,6 +159,7 @@ export default async function RootLayout({
                                 <a
                                   href="https://github.com/Merit-Systems/x402scan"
                                   target="_blank"
+                                  rel="noreferrer"
                                 >
                                   <Button variant="outline" size={'icon'}>
                                     <Image

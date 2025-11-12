@@ -47,7 +47,7 @@ const getOverallActivityUncached = async (
     )
   );
 
-  return result;
+  return result!;
 };
 
 export const getOverallActivity = createCachedQuery({

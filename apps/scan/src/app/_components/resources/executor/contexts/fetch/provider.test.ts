@@ -100,15 +100,15 @@ function reconstructNestedObject(
     // Navigate/create nested structure
     for (let i = 0; i < parts.length - 1; i++) {
       const part = parts[i];
-      if (!(part in current)) {
+      if (part && !(part in current)) {
         current[part] = {};
       }
-      current = current[part] as Record<string, unknown>;
+      current = current[part!] as Record<string, unknown>;
     }
 
     // Set the final value
     const finalKey = parts[parts.length - 1];
-    current[finalKey] = value;
+    current[finalKey!] = value;
   }
 
   return result;
@@ -215,14 +215,14 @@ describe('Field Expansion', () => {
     const result = expandFields(input);
 
     expect(result).toHaveLength(2);
-    expect(result[0].name).toBe('user.profile.name');
-    expect(result[0].required).toBe(true);
-    expect(result[0].enum).toBeUndefined();
-    expect(result[0].default).toBeUndefined();
-    expect(result[1].name).toBe('user.profile.age');
-    expect(result[1].required).toBe(false);
-    expect(result[1].enum).toBeUndefined();
-    expect(result[1].default).toBeUndefined();
+    expect(result[0]!.name).toBe('user.profile.name');
+    expect(result[0]!.required).toBe(true);
+    expect(result[0]!.enum).toBeUndefined();
+    expect(result[0]!.default).toBeUndefined();
+    expect(result[1]!.name).toBe('user.profile.age');
+    expect(result[1]!.required).toBe(false);
+    expect(result[1]!.enum).toBeUndefined();
+    expect(result[1]!.default).toBeUndefined();
   });
 });
 

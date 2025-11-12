@@ -88,11 +88,11 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
           return acc;
         }
         if (acc[accept.payTo]) {
-          const existingOrigin = acc[accept.payTo].find(
+          const existingOrigin = acc[accept.payTo]!.find(
             origin => origin.id === accept.resourceRel.origin.id
           );
           if (!existingOrigin) {
-            acc[accept.payTo].push(accept.resourceRel.origin);
+            acc[accept.payTo]!.push(accept.resourceRel.origin);
           }
         } else {
           acc[accept.payTo] = [accept.resourceRel.origin];
