@@ -1,9 +1,11 @@
 import { Section } from '@/app/_components/layout/page-utils';
 import { api } from '@/trpc/server';
 import { AgentCard, LoadingAgentCard } from '../lib/agent-card';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 export const Agents = async () => {
   const topAgents = await api.public.agents.list({
+    timeframe: ActivityTimeframe.OneDay,
     pagination: {
       page: 0,
       page_size: 4,

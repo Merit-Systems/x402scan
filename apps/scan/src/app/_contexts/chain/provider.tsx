@@ -1,11 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChainContext } from './context';
 
 import type { Chain } from '@/types/chain';
 import { useSearchParams } from 'next/navigation';
-import { getChain } from '@/app/_lib/chain';
+import { parseChain } from '@/app/_lib/chain/parse';
+import {
+  getDataChainCookieClient,
+  setDataChainCookieClient,
+} from './cookies/client';
 
 interface Props {
   children: React.ReactNode;
@@ -14,20 +18,15 @@ interface Props {
 export const ChainProvider: React.FC<Props> = ({ children }) => {
   const searchParams = useSearchParams();
   const [chain, setChainState] = useState<Chain | undefined>(
-    getChain(searchParams.get('chain'))
+    parseChain(searchParams.get('chain')) ?? getDataChainCookieClient()
   );
+
+  useEffect(() => {
+    setDataChainCookieClient(chain);
+  }, [chain]);
 
   const setChain = (chain: Chain | undefined) => {
     setChainState(chain);
-    if (chain) {
-      window.history.pushState(
-        null,
-        '',
-        `${window.location.pathname}?chain=${chain}`
-      );
-    } else {
-      window.history.pushState(null, '', window.location.pathname);
-    }
   };
 
   return (

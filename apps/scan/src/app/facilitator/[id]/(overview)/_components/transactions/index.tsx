@@ -4,22 +4,17 @@ import { DataTable } from '@/components/ui/data-table';
 
 import { Section } from '@/app/_components/layout/page-utils';
 
-import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { LatestTransactionsTable } from '../../../_components/transactions/table';
+
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 
 import { columns } from '../../../_components/transactions/columns';
-import { LatestTransactionsTable } from '../../../_components/transactions/table';
 
 import { api, HydrateClient } from '@/trpc/server';
 
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 
-import { firstTransfer } from '@/services/facilitator/constants';
-
 import { ActivityTimeframe } from '@/types/timeframes';
-
-import { getSSRTimeRange } from '@/lib/time-range';
 
 interface Props {
   facilitatorId: string;
@@ -28,39 +23,29 @@ interface Props {
 export const LatestTransactions: React.FC<Props> = async ({
   facilitatorId,
 }) => {
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.ThirtyDays,
-    firstTransfer
-  );
   const pageSize = 10;
 
-  await api.public.transfers.list.prefetch({
+  void api.public.transfers.list.prefetch({
     pagination: {
       page_size: pageSize,
     },
     facilitatorIds: [facilitatorId],
-    startDate,
-    endDate,
+    timeframe: ActivityTimeframe.ThirtyDays,
     sorting: defaultTransfersSorting,
   });
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        creationDate={firstTransfer}
-        initialTimeframe={ActivityTimeframe.ThirtyDays}
-      >
-        <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
-          <LatestTransactionsTableContainer>
-            <Suspense fallback={<LoadingLatestTransactionsTable />}>
-              <LatestTransactionsTable
-                facilitatorId={facilitatorId}
-                pageSize={pageSize}
-              />
-            </Suspense>
-          </LatestTransactionsTableContainer>
-        </TransfersSortingProvider>
-      </TimeRangeProvider>
+      <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
+        <LatestTransactionsTableContainer>
+          <Suspense fallback={<LoadingLatestTransactionsTable />}>
+            <LatestTransactionsTable
+              facilitatorId={facilitatorId}
+              pageSize={pageSize}
+            />
+          </Suspense>
+        </LatestTransactionsTableContainer>
+      </TransfersSortingProvider>
     </HydrateClient>
   );
 };
@@ -88,7 +73,6 @@ const LatestTransactionsTableContainer = ({
     <Section
       title="Transactions"
       description="x402 transactions submitted by this facilitator"
-      actions={<RangeSelector />}
     >
       {children}
     </Section>

@@ -38,7 +38,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { getChain } from '@/app/_lib/chain';
+import { parseChain } from '@/app/_lib/chain/parse';
 import {
   Accordion,
   AccordionContent,
@@ -79,7 +79,7 @@ export const RegisterResourceForm = () => {
         );
         void utils.public.origins.list.withResources.invalidate({
           address: accept.payTo,
-          chain: getChain(accept.network),
+          chain: parseChain(accept.network),
         });
       }
       void utils.public.sellers.bazaar.list.invalidate();

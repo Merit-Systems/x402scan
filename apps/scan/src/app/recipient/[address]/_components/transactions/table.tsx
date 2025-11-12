@@ -1,13 +1,16 @@
 'use client';
 
-import { api } from '@/trpc/client';
+import { useState } from 'react';
 
 import { DataTable } from '@/components/ui/data-table';
 
 import { columns } from './columns';
-import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
+
 import { useTransfersSorting } from '@/app/_contexts/sorting/transfers/hook';
-import { useState } from 'react';
+
+import { api } from '@/trpc/client';
+
+import { ActivityTimeframe } from '@/types/timeframes';
 
 interface Props {
   address: string;
@@ -18,7 +21,6 @@ export const LatestTransactionsTable: React.FC<Props> = ({
   address,
   pageSize,
 }) => {
-  const { startDate, endDate } = useTimeRangeContext();
   const { sorting } = useTransfersSorting();
 
   const [page, setPage] = useState(0);
@@ -31,8 +33,7 @@ export const LatestTransactionsTable: React.FC<Props> = ({
       include: [address],
     },
     sorting,
-    startDate,
-    endDate,
+    timeframe: ActivityTimeframe.ThirtyDays,
   });
 
   return (

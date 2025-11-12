@@ -3,13 +3,14 @@ import { Prisma } from '@prisma/client';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { prisma } from '@/services/db/client';
+import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
+import { agentsRelease } from '@/lib/agents';
 
 export const toolCallsOverTimeQuerySchema = z.object({
-  resourceId: z.string().uuid(),
-  startDate: z.date(),
-  endDate: z.date(),
+  resourceId: z.uuid(),
+  timeframe: z.number(),
   numBuckets: z.number().int().positive(),
-  walletIds: z.array(z.string().uuid()).optional(),
+  walletIds: z.array(z.uuid()).optional(),
 });
 
 const bucketedToolCallsResultSchema = z.array(
@@ -22,7 +23,12 @@ const bucketedToolCallsResultSchema = z.array(
 const getToolCallsOverTimeUncached = async (
   input: z.infer<typeof toolCallsOverTimeQuerySchema>
 ) => {
-  const { resourceId, startDate, endDate, numBuckets, walletIds } = input;
+  const { resourceId, timeframe, numBuckets, walletIds } = input;
+
+  const { startDate, endDate } = await getBucketedTimeRangeFromTimeframe({
+    period: timeframe,
+    creationDate: agentsRelease,
+  });
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(

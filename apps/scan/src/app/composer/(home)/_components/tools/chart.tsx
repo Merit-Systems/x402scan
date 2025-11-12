@@ -7,6 +7,7 @@ import {
 import { api } from '@/trpc/client';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 interface Props {
   addresses: string[];
@@ -18,6 +19,7 @@ export const KnownSellerChart = ({ addresses }: Props) => {
       recipients: {
         include: addresses,
       },
+      timeframe: ActivityTimeframe.ThirtyDays,
       numBuckets: 48,
     }
   );

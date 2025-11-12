@@ -1,64 +1,57 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { Card } from '@/components/ui/card';
-import { api, HydrateClient } from '@/trpc/server';
 import { Suspense } from 'react';
+
+import { Card } from '@/components/ui/card';
+
+import { Body, Heading } from '@/app/_components/layout/page-utils';
+
 import {
   FacilitatorsChart,
   LoadingFacilitatorsChart,
 } from './_components/chart';
-import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
-import { firstTransfer } from '@/services/facilitator/constants';
-import { ActivityTimeframe } from '@/types/timeframes';
 import {
   FacilitatorsTable,
   LoadingFacilitatorsTable,
 } from './_components/facilitators';
+
 import { FacilitatorsSortingProvider } from '@/app/_contexts/sorting/facilitators/provider';
 import { defaultFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/default';
-import { getChain } from '@/app/_lib/chain';
+import { RangeSelector } from '@/app/_contexts/time-range/component';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+
+import { api, HydrateClient } from '@/trpc/server';
+
+import { getChainForPage } from '@/app/_lib/chain/page';
+
 import { facilitators } from '@/lib/facilitators';
-import { getSSRTimeRange } from '@/lib/time-range';
+
+import { ActivityTimeframe } from '@/types/timeframes';
 import { FacilitatorPackageBanner } from './_components/facilitator-package-banner';
 
 export default async function FacilitatorsPage({
   searchParams,
 }: PageProps<'/facilitators'>) {
-  const chain = await searchParams.then(params => getChain(params.chain));
+  const chain = await getChainForPage(await searchParams);
 
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.OneDay,
-    firstTransfer
-  );
-
-  await Promise.all([
-    api.public.facilitators.bucketedStatistics.prefetch({
-      numBuckets: 48,
-      startDate,
-      endDate,
-      chain,
-    }),
-    api.public.stats.overall.prefetch({
-      startDate,
-      endDate,
-      chain,
-    }),
-    api.public.facilitators.list.prefetch({
-      pagination: {
-        page_size: facilitators.length,
-      },
-      startDate,
-      endDate,
-      chain,
-    }),
-  ]);
+  void api.public.facilitators.bucketedStatistics.prefetch({
+    numBuckets: 48,
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
+  void api.public.stats.overallMV.prefetch({
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
+  void api.public.facilitators.list.prefetch({
+    pagination: {
+      page_size: facilitators.length,
+    },
+    timeframe: ActivityTimeframe.OneDay,
+    chain,
+  });
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        creationDate={firstTransfer}
-        initialTimeframe={ActivityTimeframe.OneDay}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <FacilitatorsSortingProvider
           initialSorting={defaultFacilitatorsSorting}
         >

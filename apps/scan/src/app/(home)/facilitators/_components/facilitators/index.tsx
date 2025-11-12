@@ -12,7 +12,7 @@ import { useChain } from '@/app/_contexts/chain/hook';
 
 export const FacilitatorsTable: React.FC = () => {
   const { sorting } = useFacilitatorsSorting();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
   const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
@@ -20,8 +20,7 @@ export const FacilitatorsTable: React.FC = () => {
       page_size: facilitatorAddresses.length,
     },
     sorting,
-    startDate,
-    endDate,
+    timeframe,
     chain,
   });
 

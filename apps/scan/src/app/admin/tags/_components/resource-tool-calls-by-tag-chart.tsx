@@ -24,7 +24,7 @@ function createTagKey(tagId: string): TagKey {
 }
 
 export const ResourceToolCallsByTagChart = () => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   // Fetch all tags for labels
   const { data: allTags } = api.public.resources.tags.list.useQuery();
@@ -32,17 +32,14 @@ export const ResourceToolCallsByTagChart = () => {
   // Query for tool calls by tags
   const { data: toolCallsByTagsData, isLoading } =
     api.admin.resources.stats.toolCallsByTags.useQuery({
-      startDate,
-      endDate,
+      timeframe,
       numBuckets: 48,
     });
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    const diffInMs = endDate.getTime() - startDate.getTime();
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-    return diffInDays < 7;
-  }, [startDate, endDate]);
+    return Number(timeframe) < 7;
+  }, [timeframe]);
 
   // Transform data for chart
   const chartData = useMemo<ChartData<Record<TagKey, number>>[]>(() => {
