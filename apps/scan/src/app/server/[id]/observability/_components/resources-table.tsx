@@ -35,11 +35,11 @@ export const ResourcesTable: React.FC<Props> = ({ data }) => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[30%]">URL</TableHead>
-              <TableHead className="text-right w-[10%]">Requests</TableHead>
-              <TableHead className="text-right w-[10%]">Errors</TableHead>
-              <TableHead className="text-right w-[10%]">Avg Duration</TableHead>
-              <TableHead className="text-right w-[10%]">Last Updated</TableHead>
+              <TableHead className="w-[20%]">URL</TableHead>
+              <TableHead className="text-right w-[20%]">Requests</TableHead>
+              <TableHead className="text-right w-[20%]">Errors</TableHead>
+              <TableHead className="text-right w-[20%]">Avg Duration</TableHead>
+              <TableHead className="text-right w-[20%]">Last Updated</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -53,33 +53,45 @@ export const ResourcesTable: React.FC<Props> = ({ data }) => {
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((resource, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-mono text-xs break-all">
-                    {resource.url}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {parseInt(resource.total_requests).toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {parseInt(resource.error_count) > 0 ? (
-                      <span>
-                        {parseInt(resource.error_count).toLocaleString()}
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">0</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {(parseFloat(resource.avg_duration) / 1000).toFixed(2)}s
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    {formatDistanceToNow(new Date(resource.last_seen), {
-                      addSuffix: true,
-                    })}
-                  </TableCell>
-                </TableRow>
-              ))
+              data.map((resource, index) => {
+                // Extract just the path from the URL
+                let path = resource.url;
+                try {
+                  const url = new URL(resource.url);
+                  path = url.pathname + url.search + url.hash;
+                } catch {
+                  // If URL parsing fails, just use the original
+                  path = resource.url;
+                }
+
+                return (
+                  <TableRow key={index}>
+                    <TableCell className="font-mono text-xs break-all">
+                      {path}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {parseInt(resource.total_requests).toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {parseInt(resource.error_count) > 0 ? (
+                        <span>
+                          {parseInt(resource.error_count).toLocaleString()}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">0</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {(parseFloat(resource.avg_duration) / 1000).toFixed(2)}s
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {formatDistanceToNow(new Date(resource.last_seen), {
+                        addSuffix: true,
+                      })}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
