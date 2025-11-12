@@ -10,9 +10,8 @@ import {
 } from '@/components/ui/table';
 import { formatDistanceToNow } from 'date-fns';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useObservabilityData } from './use-observability-data';
 
 interface ResourceData {
   url: string;
@@ -42,52 +41,14 @@ const LoadingResourcesTable = () => {
   );
 };
 
+const RESOURCES_ENDPOINT = '/api/observability/resources';
+
 export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
-  const { startDate, endDate } = useTimeRangeContext();
-  const [data, setData] = useState<ResourceData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading } = useObservabilityData<ResourceData>({
+    endpoint: RESOURCES_ENDPOINT,
+    originUrl,
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch('/api/observability/resources', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            originUrl,
-            startDate: startDate.toISOString(),
-            endDate: endDate.toISOString(),
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch resources data');
-        }
-
-        const result = (await response.json()) as ResourceData[];
-        setData(result);
-      } catch (error) {
-        console.error('Error fetching resources data:', error);
-        setData([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void fetchData();
-  }, [startDate, endDate, originUrl]);
-
-  if (isLoading) {
-    return <LoadingResourcesTable />;
-  }
-
-  return <ResourcesTableInner data={data} />;
-};
-
-const ResourcesTableInner: React.FC<{ data: ResourceData[] }> = ({ data }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -96,6 +57,11 @@ const ResourcesTableInner: React.FC<{ data: ResourceData[] }> = ({ data }) => {
     params.set('resource', encodeURIComponent(url));
     router.push(`?${params.toString()}`);
   };
+
+  if (isLoading) {
+    return <LoadingResourcesTable />;
+  }
+
   return (
     <div className="w-full">
       <div className="mb-4">
@@ -127,13 +93,11 @@ const ResourcesTableInner: React.FC<{ data: ResourceData[] }> = ({ data }) => {
               </TableRow>
             ) : (
               data.map((resource, index) => {
-                // Extract just the path from the URL
                 let path = resource.url;
                 try {
                   const url = new URL(resource.url);
                   path = url.pathname + url.search + url.hash;
                 } catch {
-                  // If URL parsing fails, just use the original
                   path = resource.url;
                 }
 
