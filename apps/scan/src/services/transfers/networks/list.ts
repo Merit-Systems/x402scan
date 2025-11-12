@@ -46,10 +46,8 @@ const listTopNetworksUncached = async (
 ): Promise<NetworkItem[]> => {
   const parsed = listTopNetworksInputSchema.parse(input);
   const { timeframe, limit, sorting, chain } = parsed;
-  
 
   const mvTimeframe = getMaterializedViewSuffix(timeframe);
-  console.log('mvTimeframe', mvTimeframe);
   const tableName = `stats_aggregated_${mvTimeframe}`;
 
   const sortColumnMap: Record<NetworksSortId, string> = {

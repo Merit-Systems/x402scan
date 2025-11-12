@@ -4,7 +4,6 @@ import { Prisma } from '@prisma/client';
 
 import { baseBucketedQuerySchema } from '../schemas';
 
-
 import { queryRaw } from '@/services/transfers/client';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
@@ -121,7 +120,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
 
 export const getBucketedFacilitatorsStatistics = createCachedArrayQuery({
   queryFn: getBucketedFacilitatorsStatisticsUncached,
-  cacheKeyPrefix: 'bucketed-facilitators-statistics-test',
+  cacheKeyPrefix: 'bucketed-facilitators-statistics',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['bucket_start'],
   tags: ['facilitators-statistics'],
