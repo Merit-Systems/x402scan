@@ -38,7 +38,7 @@ export const config = [
     },
   },
   {
-    ignores: ['dist/**'],
+    ignores: ['dist/**', 'generated/**'],
   },
   {
     files: ['**/*.ts', '**/*.tsx'],

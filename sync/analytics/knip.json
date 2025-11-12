@@ -1,11 +1,11 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
-  "entry": ["trigger/**/*.ts", "trigger.config.ts", "services/**/*.ts"],
+  "entry": ["trigger/**/*.ts", "trigger.config.ts"],
   "project": ["**/*.ts"],
   "ignoreDependencies": [
     "@repo/eslint-config",
-    "facilitators",
-    "@trigger.dev/build"
+    "@repo/scan-db",
+    "facilitators"
   ],
   "ignoreWorkspaces": []
 }

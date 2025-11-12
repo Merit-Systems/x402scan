@@ -17,17 +17,17 @@
   },
   "dependencies": {
     "@clickhouse/client": "^1.8.0",
-    "@prisma/client": "6.17.1",
     "@trigger.dev/sdk": "4.0.5",
     "facilitators": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/scan-db": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@trigger.dev/build": "4.0.5",
     "@types/node": "^20",
-    "eslint": "^9.38.0",
-    "knip": "^5.66.2",
+    "eslint": "^9.39.1",
+    "knip": "^5.69.0",
     "prettier": "^3.6.2",
     "trigger.dev": "^4.0.4",
     "typescript": "^5.9.3"

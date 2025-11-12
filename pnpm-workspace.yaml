@@ -5,3 +5,4 @@ packages:
   - 'rpcs/*'
   - 'packages/*'
   - 'examples/**/*'
+  - 'databases/*'
