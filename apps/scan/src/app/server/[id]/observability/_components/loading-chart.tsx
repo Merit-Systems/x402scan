@@ -5,7 +5,6 @@ import { BaseChart } from '@/components/ui/charts/chart/chart';
 import { Area } from 'recharts';
 import { simulateChartData } from '@/components/ui/charts/chart/simulate';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface LegendItem {
   label: string;
