@@ -29,7 +29,7 @@ export async function settleHandler(req: Request, res: Response): Promise<void> 
     }
   ).mapErr((error) => {
     // Log validation errors as INVALID_PAYLOAD - this tracks failed validation attempts
-    // Just return 400, end client are fucking up, just return a useful error to them
+    // Just return 400, end client are responsible for sending valid requests, just return a useful error to them
     // don't write to clickhouse
     return error;
   });
