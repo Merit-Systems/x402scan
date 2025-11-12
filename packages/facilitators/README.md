@@ -111,6 +111,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Ultravioleta DAO** | BASE, SOLANA  | ✅ Yes    | No                           |
 | **Virtuals**         | BASE          | No        | No                           |
 | **Polygon**          | POLYGON       | No        | No                           |
+| **Heurist**          | BASE          | No        | No                           |
 | **Treasure**         | BASE          | No        | No                           |
 
 ### Import Individual Facilitators
@@ -132,7 +133,8 @@ import {
   codenut,
   ultravioletadao,
   virtuals,
-  treasure,
+  heurist,
+  treasure
 } from 'facilitators';
 
 // Facilitators requiring setup

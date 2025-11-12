@@ -13,10 +13,8 @@ import { ActivityCharts, LoadingActivityCharts } from './charts';
 import { api, HydrateClient } from '@/trpc/server';
 
 import { ActivityTimeframe } from '@/types/timeframes';
-import type { Chain } from '@/types/chain';
 
-import { getSSRTimeRange } from '@/lib/time-range';
-import { firstTransfer as systemStart } from '@/services/facilitator/constants';
+import type { Chain } from '@/types/chain';
 
 interface Props {
   facilitatorId: string;
@@ -41,37 +39,19 @@ const ActivityContainer = ({
   );
 };
 
-export const Activity: React.FC<Props> = async ({ facilitatorId }) => {
-  const [firstTransferTimestamp] = await Promise.all([
-    api.public.stats.firstTransferTimestamp({
-      facilitatorIds: [facilitatorId],
-    }),
-  ]);
-
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.SevenDays,
-    firstTransferTimestamp ?? systemStart
-  );
-
-  await Promise.all([
-    api.public.stats.bucketed.prefetch({
-      facilitatorIds: [facilitatorId],
-      startDate,
-      endDate,
-    }),
-    api.public.stats.overall.prefetch({
-      facilitatorIds: [facilitatorId],
-      startDate,
-      endDate,
-    }),
-  ]);
+export const Activity: React.FC<Props> = ({ facilitatorId }) => {
+  void api.public.stats.bucketedMV.prefetch({
+    facilitatorIds: [facilitatorId],
+    timeframe: ActivityTimeframe.OneDay,
+  });
+  void api.public.stats.overallMV.prefetch({
+    facilitatorIds: [facilitatorId],
+    timeframe: ActivityTimeframe.OneDay,
+  });
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        creationDate={firstTransferTimestamp ?? systemStart}
-        initialTimeframe={ActivityTimeframe.SevenDays}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <ActivityContainer>
           <ErrorBoundary
             fallback={<p>There was an error loading the activity data</p>}

@@ -16,6 +16,7 @@ import {
   codenutFacilitator,
   ultravioletadaoFacilitator,
   virtualsFacilitator,
+  heuristFacilitator,
   treasureFacilitator,
 } from '../facilitators';
 
@@ -41,6 +42,7 @@ const FACILITATORS = validateUniqueFacilitators([
   codenutFacilitator,
   ultravioletadaoFacilitator,
   virtualsFacilitator,
+  heuristFacilitator,
   treasureFacilitator,
 ]);
 

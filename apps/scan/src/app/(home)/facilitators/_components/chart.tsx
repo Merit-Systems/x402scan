@@ -14,18 +14,16 @@ type FacilitatorKey = `${string}-${'transactions' | 'amount'}`;
 
 export const FacilitatorsChart = () => {
   const { chain } = useChain();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const [bucketedFacilitatorData] =
     api.public.facilitators.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,
-      startDate,
-      endDate,
+      timeframe,
       chain,
     });
-  const [overallData] = api.public.stats.overall.useSuspenseQuery({
-    startDate,
-    endDate,
+  const [overallData] = api.public.stats.overallMV.useSuspenseQuery({
+    timeframe,
     chain,
   });
 

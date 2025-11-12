@@ -1,4 +1,4 @@
-# NOTE: DELETE THIS TEMPLATE IF YOU ARE NOT ADDING A NEW FACILITATOR
+# NOTE: DELETE THIS TEMPLATE IF YOU ARE NOT ADDING A NEW FACILITATOR!
 
 # Add Facilitator
 
@@ -22,3 +22,7 @@
 - [ ] Added image to `apps/scan/public`
 - [ ] Make sure we support that chain
 - [ ] Make sure all EVM addresses are lowercase
+
+# NOTE
+
+We reserve the right to close any pull request at our discretion, without obligation to provide a reason.
