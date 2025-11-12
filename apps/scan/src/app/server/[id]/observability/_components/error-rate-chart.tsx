@@ -5,6 +5,12 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Area } from 'recharts';
 import { LoadingChart } from './loading-chart';
 import { useObservabilityData } from './use-observability-data';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 interface ErrorRateData {
   ts: string;
@@ -55,32 +61,34 @@ export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     };
   });
 
-  const startTime = chartData.length > 0 ? (chartData[0]?.timestamp ?? '') : '';
-  const endTime =
+  const avgErrorRate =
     chartData.length > 0
-      ? (chartData[chartData.length - 1]?.timestamp ?? '')
-      : '';
+      ? chartData.reduce((sum, d) => sum + d.errorRate, 0) / chartData.length
+      : 0;
 
   return (
-    <div className="w-1/2">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-bold"></h2>
-        <div className="flex gap-3">
+    <Card className="w-full lg:w-1/2">
+      <CardHeader className="space-y-0 pb-4">
+        <CardDescription>Server Error Rate</CardDescription>
+        <div className="flex items-center justify-between pt-2">
+          <CardTitle className="text-2xl font-bold">
+            {avgErrorRate.toFixed(2)}%
+          </CardTitle>
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
-            <span className="text-xs">Server Error Rate</span>
+            <span className="text-xs">Error Rate</span>
           </div>
         </div>
-      </div>
+      </CardHeader>
       <BaseChart
         type="composed"
         data={chartData}
-        height={200}
-        margin={{ top: 10, right: 0, left: 0, bottom: 20 }}
+        height={120}
+        margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
         yAxes={[
           {
             domain: [0, 100],
-            hide: false,
+            hide: true,
           },
         ]}
         tooltipRows={[
@@ -111,10 +119,6 @@ export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
           yAxisId={0}
         />
       </BaseChart>
-      <div className="flex justify-between text-xs text-muted-foreground px-2 mt-1">
-        <span>{startTime}</span>
-        <span>{endTime}</span>
-      </div>
-    </div>
+    </Card>
   );
 };

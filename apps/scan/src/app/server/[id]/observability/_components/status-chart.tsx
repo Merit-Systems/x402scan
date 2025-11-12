@@ -5,6 +5,12 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Area } from 'recharts';
 import { LoadingChart } from './loading-chart';
 import { useObservabilityData } from './use-observability-data';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 interface StatusCodeData {
   ts: string;
@@ -75,45 +81,43 @@ const StatusChartInner: React.FC<{ data: StatusCodeData[] }> = ({ data }) => {
     };
   });
 
-  // Get start and end timestamps for display
-  const startTime = chartData.length > 0 ? (chartData[0]?.timestamp ?? '') : '';
-  const endTime =
-    chartData.length > 0
-      ? (chartData[chartData.length - 1]?.timestamp ?? '')
-      : '';
-
   return (
-    <div className="w-1/2">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-bold"></h2>
-        <div className="flex gap-3">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-[#3b82f6]" />
-            <span className="text-xs">2XX</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-[#6366f1]" />
-            <span className="text-xs">3XX</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
-            <span className="text-xs">4XX</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
-            <span className="text-xs">5XX</span>
+    <Card className="w-full lg:w-1/2">
+      <CardHeader className="space-y-0 pb-4">
+        <CardDescription>Status Codes</CardDescription>
+        <div className="flex items-center justify-between pt-2">
+          <CardTitle className="text-2xl font-bold">
+            {chartData.reduce((sum, d) => sum + d.success, 0).toLocaleString()}
+          </CardTitle>
+          <div className="flex gap-3">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#3b82f6]" />
+              <span className="text-xs">2XX</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#6366f1]" />
+              <span className="text-xs">3XX</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
+              <span className="text-xs">4XX</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
+              <span className="text-xs">5XX</span>
+            </div>
           </div>
         </div>
-      </div>
+      </CardHeader>
       <BaseChart
         type="composed"
         data={chartData}
-        height={200}
-        margin={{ top: 10, right: 0, left: 0, bottom: 20 }}
+        height={120}
+        margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
         yAxes={[
           {
             domain: [0, (dataMax: number) => Math.ceil(dataMax * 1.1)],
-            hide: false,
+            hide: true,
           },
         ]}
         tooltipRows={[
@@ -198,10 +202,6 @@ const StatusChartInner: React.FC<{ data: StatusCodeData[] }> = ({ data }) => {
           yAxisId={0}
         />
       </BaseChart>
-      <div className="flex justify-between text-xs text-muted-foreground px-2 mt-1">
-        <span>{startTime}</span>
-        <span>{endTime}</span>
-      </div>
-    </div>
+    </Card>
   );
 };

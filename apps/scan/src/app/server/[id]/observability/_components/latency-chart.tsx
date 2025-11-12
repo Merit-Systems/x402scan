@@ -5,6 +5,12 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Line } from 'recharts';
 import { LoadingChart } from './loading-chart';
 import { useObservabilityData } from './use-observability-data';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 interface LatencyData {
   ts: string;
@@ -63,40 +69,44 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     };
   });
 
-  const startTime = chartData.length > 0 ? (chartData[0]?.timestamp ?? '') : '';
-  const endTime =
+  const avgP50 =
     chartData.length > 0
-      ? (chartData[chartData.length - 1]?.timestamp ?? '')
-      : '';
+      ? chartData.reduce((sum, d) => sum + d.p50, 0) / chartData.length
+      : 0;
 
   return (
-    <div className="w-1/2">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-bold"></h2>
-        <div className="flex gap-3">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-[#10b981]" />
-            <span className="text-xs">p50</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
-            <span className="text-xs">p90</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
-            <span className="text-xs">p99</span>
+    <Card className="w-full lg:w-1/3">
+      <CardHeader className="space-y-0 pb-4">
+        <CardDescription>Latency (p50)</CardDescription>
+        <div className="flex items-center justify-between pt-2">
+          <CardTitle className="text-2xl font-bold">
+            {avgP50.toFixed(3)}s
+          </CardTitle>
+          <div className="flex gap-3">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#10b981]" />
+              <span className="text-xs">p50</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#f59e0b]" />
+              <span className="text-xs">p90</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
+              <span className="text-xs">p99</span>
+            </div>
           </div>
         </div>
-      </div>
+      </CardHeader>
       <BaseChart
         type="composed"
         data={chartData}
-        height={200}
-        margin={{ top: 10, right: 0, left: 0, bottom: 20 }}
+        height={120}
+        margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
         yAxes={[
           {
             domain: [0, (dataMax: number) => Math.ceil(dataMax * 1.1)],
-            hide: false,
+            hide: true,
           },
         ]}
         tooltipRows={[
@@ -152,10 +162,6 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
           isAnimationActive={false}
         />
       </BaseChart>
-      <div className="flex justify-between text-xs text-muted-foreground px-2 mt-1">
-        <span>{startTime}</span>
-        <span>{endTime}</span>
-      </div>
-    </div>
+    </Card>
   );
 };
