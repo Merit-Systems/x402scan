@@ -6,13 +6,6 @@
   "author": "",
   "type": "commonjs",
   "scripts": {
-    "db:migrate:dev": "prisma migrate dev",
-    "db:migrate:prod": "prisma migrate deploy",
-    "db:push": "prisma db push",
-    "db:generate": "prisma generate",
-    "db:reset": "prisma migrate reset",
-    "db:format": "prisma format",
-    "db:studio": "prisma studio",
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
     "check-format": "prettier --check .",
@@ -25,27 +18,22 @@
   "dependencies": {
     "@coinbase/cdp-sdk": "^1.38.4",
     "@google-cloud/bigquery": "^8.1.1",
-    "@neondatabase/serverless": "^1.0.2",
-    "@prisma/adapter-neon": "^6.17.1",
-    "@prisma/client": "6.17.1",
     "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
     "@trigger.dev/sdk": "4.0.5",
+    "@x402scan/transfers-db": "workspace:*",
     "bottleneck": "^2.19.5",
     "facilitators": "workspace:*",
-    "p-limit": "^7.2.0",
-    "ws": "^8.18.3"
+    "p-limit": "^7.2.0"
   },
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "@trigger.dev/build": "4.0.5",
     "@types/node": "^20",
-    "@types/ws": "^8.18.1",
     "eslint": "^9.38.0",
     "knip": "^5.66.2",
     "prettier": "^3.6.2",
-    "prisma": "^6.17.1",
     "trigger.dev": "^4.0.4",
     "typescript": "^5.9.3"
   }

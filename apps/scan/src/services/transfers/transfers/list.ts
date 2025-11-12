@@ -9,7 +9,7 @@ import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
-import { transfersPrisma } from '@x402scan/transfers-db';
+import { transfersDb } from '@x402scan/transfers-db';
 import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
 import { transfersWhereObject } from '../query-utils';
@@ -31,10 +31,10 @@ const listFacilitatorTransfersUncached = async (
 
   const where = transfersWhereObject(input);
   const [count, transfers] = await Promise.all([
-    transfersPrisma.transferEvent.count({
+    transfersDb.transferEvent.count({
       where,
     }),
-    transfersPrisma.transferEvent.findMany({
+    transfersDb.transferEvent.findMany({
       where,
       orderBy: {
         [sorting.id]: sorting.desc ? 'desc' : 'asc',
