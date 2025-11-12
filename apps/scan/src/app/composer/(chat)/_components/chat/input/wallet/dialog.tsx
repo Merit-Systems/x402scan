@@ -182,6 +182,7 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
                   href="https://github.com/Merit-Systems/x402scan/pull/320"
                   target="_blank"
                   className="text-primary underline"
+                  rel="noreferrer"
                 >
                   here
                 </a>

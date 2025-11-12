@@ -140,6 +140,7 @@ export const Onboarding = () => {
                       href="https://github.com/Merit-Systems/x402scan/pull/320"
                       target="_blank"
                       className="text-primary underline"
+                      rel="noreferrer"
                     >
                       here
                     </a>
