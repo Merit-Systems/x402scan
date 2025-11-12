@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 
 interface StatusCodesRequest {
   originUrl: string;
+  resourceUrl?: string;
   startDate: string;
   endDate: string;
   bucketMinutes: number;
@@ -20,11 +21,16 @@ export async function POST(
   request: Request
 ): Promise<NextResponse<StatusCodesResponse[]>> {
   try {
-    const { originUrl, startDate, endDate, bucketMinutes } =
+    const { originUrl, resourceUrl, startDate, endDate, bucketMinutes } =
       (await request.json()) as StatusCodesRequest;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
+
+    // Use exact match if resourceUrl is provided, otherwise use LIKE pattern
+    const urlCondition = resourceUrl
+      ? `url = '${resourceUrl}'`
+      : `url LIKE '%${originUrl}%'`;
 
     const query = `
       WITH
@@ -41,7 +47,7 @@ export async function POST(
       FROM resource_invocations
       WHERE created_at >= t_start
         AND created_at <= t_end
-        AND url LIKE '%${originUrl}%'
+        AND ${urlCondition}
       GROUP BY ts
       ORDER BY ts
     `;

@@ -4,12 +4,14 @@ import { Body } from '@/app/_components/layout/page-utils';
 import { StatusChart } from './_components/status-chart';
 import { ErrorRateChart } from './_components/error-rate-chart';
 import { ResourcesTable } from './_components/resources-table';
+import { ResourceHeader } from './_components/resource-header';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 export default async function ObservabilityPage({
   params,
+  searchParams,
 }: PageProps<'/server/[id]'>) {
   const { id } = await params;
   const origin = await api.public.origins.get(id);
@@ -21,6 +23,12 @@ export default async function ObservabilityPage({
   // NOTE(shafu): use a default creation date
   const creationDate = new Date('2024-01-01');
 
+  // Check if viewing a specific resource or origin
+  const resolvedSearchParams = await searchParams;
+  const resourceUrl = resolvedSearchParams?.resource
+    ? decodeURIComponent(resolvedSearchParams.resource as string)
+    : null;
+
   return (
     <Body className="pt-0">
       <HydrateClient>
@@ -28,7 +36,7 @@ export default async function ObservabilityPage({
           creationDate={creationDate}
           initialTimeframe={ActivityTimeframe.OneDay}
         >
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-2">
             <div>
               <h2 className="text-xl font-bold">Observability</h2>
               <div className="text-sm text-muted-foreground">
@@ -37,11 +45,32 @@ export default async function ObservabilityPage({
             </div>
             <RangeSelector />
           </div>
-          <div className="flex gap-6 mb-6">
-            <StatusChart originUrl={origin.origin} />
-            <ErrorRateChart originUrl={origin.origin} />
-          </div>
-          <ResourcesTable originUrl={origin.origin} />
+
+          {resourceUrl ? (
+            // Resource view
+            <>
+              <ResourceHeader resourceUrl={resourceUrl} />
+              <div className="flex gap-6 mb-6">
+                <StatusChart
+                  originUrl={origin.origin}
+                  resourceUrl={resourceUrl}
+                />
+                <ErrorRateChart
+                  originUrl={origin.origin}
+                  resourceUrl={resourceUrl}
+                />
+              </div>
+            </>
+          ) : (
+            // Origin view
+            <>
+              <div className="flex gap-6 mb-6">
+                <StatusChart originUrl={origin.origin} />
+                <ErrorRateChart originUrl={origin.origin} />
+              </div>
+              <ResourcesTable originUrl={origin.origin} />
+            </>
+          )}
         </TimeRangeProvider>
       </HydrateClient>
     </Body>
