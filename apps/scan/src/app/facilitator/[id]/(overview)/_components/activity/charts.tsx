@@ -18,11 +18,11 @@ interface Props {
 export const ActivityCharts: React.FC<Props> = ({ facilitatorId }) => {
   const { timeframe } = useTimeRangeContext();
 
-  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
+  const [overallStats] = api.public.stats.overallMV.useSuspenseQuery({
     facilitatorIds: [facilitatorId],
     timeframe,
   });
-  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery(
+  const [bucketedStats] = api.public.stats.bucketedMV.useSuspenseQuery(
     {
       facilitatorIds: [facilitatorId],
       timeframe,
