@@ -63,7 +63,7 @@ export const ResourcesTable: React.FC<Props> = ({ data }) => {
                   </TableCell>
                   <TableCell className="text-right">
                     {parseInt(resource.error_count) > 0 ? (
-                      <span className="text-red-500">
+                      <span>
                         {parseInt(resource.error_count).toLocaleString()}
                       </span>
                     ) : (
