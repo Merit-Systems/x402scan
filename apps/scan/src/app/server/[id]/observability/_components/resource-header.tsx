@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -10,12 +10,11 @@ interface Props {
 
 export const ResourceHeader: React.FC<Props> = ({ resourceUrl }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const params = useParams();
+  const serverId = params.id as string;
 
   const handleBack = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('resource');
-    router.push(`?${params.toString()}`);
+    router.push(`/server/${serverId}/observability`);
   };
 
   return (

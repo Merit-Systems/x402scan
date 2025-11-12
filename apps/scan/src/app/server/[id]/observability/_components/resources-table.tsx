@@ -9,9 +9,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { formatDistanceToNow } from 'date-fns';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useObservabilityData } from './use-observability-data';
+import type { Route } from 'next';
 
 interface ResourceData {
   url: string;
@@ -27,6 +28,12 @@ interface Props {
 
 const RESOURCES_ENDPOINT = '/api/observability/resources';
 
+function encodeResourceId(url: string): string {
+  // Encode URL as URL-safe base64
+  const base64 = Buffer.from(url, 'utf-8').toString('base64');
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
 export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
   const { data, isLoading } = useObservabilityData<ResourceData>({
     endpoint: RESOURCES_ENDPOINT,
@@ -34,12 +41,14 @@ export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
   });
 
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const params = useParams();
+  const serverId = params.id as string;
 
   const handleRowClick = (url: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('resource', encodeURIComponent(url));
-    router.push(`?${params.toString()}`);
+    const resourceId = encodeResourceId(url);
+    router.push(
+      `/server/${serverId}/observability/resource/${resourceId}` as Route
+    );
   };
 
   if (isLoading) {
