@@ -7,6 +7,12 @@ export const balanceMonitor = schedules.task({
   cron: '0 * * * *',
   run: async () => {
     for (const monitor of BALANCE_MONITORS) {
+      if (!monitor.enabled) {
+        logger.log(
+          `[Skipping] ${monitor.address}:${monitor.chain.id} is disabled`
+        );
+        continue;
+      }
       const monitorId = monitor.address + ':' + monitor.chain.id;
       logger.log(`[Checking] ${monitorId}`);
       const result = await CURRENCY_TO_BALANCE_CHECKER[monitor.currency](
