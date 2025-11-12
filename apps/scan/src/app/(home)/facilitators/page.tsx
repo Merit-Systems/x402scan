@@ -37,7 +37,7 @@ export default async function FacilitatorsPage({
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });
-  void api.public.stats.overall.prefetch({
+  void api.public.stats.overallMV.prefetch({
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });

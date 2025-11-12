@@ -21,7 +21,7 @@ interface Props {
 }
 
 export const OverallStats = async ({ chain }: Props) => {
-  void api.public.stats.overall.prefetch({
+  void api.public.stats.overallMV.prefetch({
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });
@@ -32,7 +32,7 @@ export const OverallStats = async ({ chain }: Props) => {
     },
     chain,
   });
-  void api.public.stats.bucketed.prefetch({
+  void api.public.stats.bucketedMV.prefetch({
     timeframe: ActivityTimeframe.OneDay,
     numBuckets: 32,
     chain,
