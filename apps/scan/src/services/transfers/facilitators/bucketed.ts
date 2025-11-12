@@ -4,65 +4,65 @@ import { Prisma } from '@prisma/client';
 
 import { baseBucketedQuerySchema } from '../schemas';
 
-import { transfersWhereClause } from '../query-utils';
 
-import { firstTransfer } from '@/services/facilitator/constants';
 import { queryRaw } from '@/services/transfers/client';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { facilitators } from '@/lib/facilitators';
-import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
+import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
 const getBucketedFacilitatorsStatisticsUncached = async (
   input: z.infer<typeof bucketedStatisticsInputSchema>
 ) => {
-  const { timeframe, numBuckets, chain } = input;
+  const { timeframe, chain } = input;
 
-  const { startDate, endDate } = await getBucketedTimeRangeFromTimeframe({
-    period: timeframe,
-    creationDate: firstTransfer,
-  });
+  const mvTimeframe = getMaterializedViewSuffix(timeframe);
+  const tableName = `stats_buckets_${mvTimeframe}`;
 
   const chainFacilitators = chain
     ? facilitators.filter(f => f.addresses[chain] !== undefined)
     : facilitators;
 
-  const timeRangeMs = endDate.getTime() - startDate.getTime();
-  const bucketSizeSeconds = Math.max(
-    1,
-    Math.floor(timeRangeMs / numBuckets / 1000)
-  );
-
   const facilitatorIds = chainFacilitators.map(f => f.id);
 
+  // Build WHERE clause for materialized view
+  const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
+
+  if (input.facilitatorIds && input.facilitatorIds.length > 0) {
+    conditions.push(
+      Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`
+    );
+  } else if (facilitatorIds.length > 0) {
+    conditions.push(Prisma.sql`AND facilitator_id = ANY(${facilitatorIds})`);
+  }
+
+  if (input.chain) {
+    conditions.push(Prisma.sql`AND chain = ${input.chain}`);
+  }
+
+  const whereClause = Prisma.join(conditions, ' ');
+
+  // Query the appropriate materialized view
   const sql = Prisma.sql`
-    WITH all_buckets AS (
-      SELECT generate_series(
-        to_timestamp(
-          floor(extract(epoch from ${startDate.toISOString()}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ),
-        ${endDate.toISOString()}::timestamp,
-        (${bucketSizeSeconds} || ' seconds')::interval
-      ) AS bucket_start
-    ),
-    bucket_stats AS (
+    WITH bucket_stats AS (
       SELECT
-        to_timestamp(
-          floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ) AS bucket_start,
-        t.facilitator_id,
-        COUNT(*)::int AS total_transactions,
-        SUM(t.amount)::float AS total_amount,
-        COUNT(DISTINCT t.sender)::int AS unique_buyers,
-        COUNT(DISTINCT t.recipient)::int AS unique_sellers
-      FROM "TransferEvent" t
-      ${transfersWhereClause({ ...input, facilitatorIds })}
-      GROUP BY bucket_start, facilitator_id
+        bucket AS bucket_start,
+        facilitator_id,
+        SUM(total_transactions)::int AS total_transactions,
+        SUM(total_amount)::float AS total_amount,
+        SUM(unique_buyers)::int AS unique_buyers,
+        SUM(unique_sellers)::int AS unique_sellers
+      FROM ${Prisma.raw(tableName)}
+      ${whereClause}
+      GROUP BY bucket, facilitator_id
     ),
     active_facilitators AS (
       SELECT DISTINCT facilitator_id FROM bucket_stats
+    ),
+    all_buckets AS (
+      SELECT DISTINCT bucket_start FROM bucket_stats
     ),
     all_combinations AS (
       SELECT ab.bucket_start, af.facilitator_id
@@ -96,7 +96,6 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     FROM combined_stats
     GROUP BY bucket_start
     ORDER BY bucket_start
-    LIMIT ${numBuckets}
   `;
 
   const rawResult = await queryRaw(
@@ -122,7 +121,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
 
 export const getBucketedFacilitatorsStatistics = createCachedArrayQuery({
   queryFn: getBucketedFacilitatorsStatisticsUncached,
-  cacheKeyPrefix: 'bucketed-facilitators-statistics',
+  cacheKeyPrefix: 'bucketed-facilitators-statistics-test',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['bucket_start'],
   tags: ['facilitators-statistics'],
