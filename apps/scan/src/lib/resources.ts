@@ -16,7 +16,6 @@ import { formatTokenAmount } from './token';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { EnhancedPaymentRequirements } from '@/lib/x402/schema';
-import type { SupportedChain } from '@/types/chain';
 import type { AcceptsNetwork } from '@prisma/client';
 
 export const registerResource = async (url: string, data: unknown) => {
@@ -105,13 +104,13 @@ export const registerResource = async (url: string, data: unknown) => {
     accepts:
       baseX402ParsedResponse.data.accepts
         ?.filter(accept =>
-          SUPPORTED_CHAINS.includes(
-            accept.network.replace('-', '_') as SupportedChain
+          (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(
+            accept.network!.replace('-', '_')
           )
         )
         .map(accept => ({
           ...accept,
-          network: accept.network.replace('-', '_') as AcceptsNetwork,
+          network: accept.network!.replace('-', '_') as AcceptsNetwork,
           maxAmountRequired: accept.maxAmountRequired,
           outputSchema: accept.outputSchema,
           extra: accept.extra,

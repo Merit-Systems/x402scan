@@ -171,7 +171,7 @@ export const TestEndpointForm = () => {
         const accepts = pair.parsed.data.accepts ?? [];
         accepts.forEach(accept => {
           allAccepts.push({
-            network: accept.network,
+            network: accept.network!,
             payTo: accept.payTo,
             asset: accept.asset,
             method,

@@ -5,7 +5,7 @@ import { LoadingMultiCharts, MultiCharts } from '@/components/ui/charts/multi';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
-  agentConfiguration: RouterOutputs['public']['agents']['get'];
+  agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
   bucketedActivity: RouterOutputs['public']['agents']['activity']['agent']['bucketed'];
 }
 export const ActivityCharts: React.FC<Props> = ({

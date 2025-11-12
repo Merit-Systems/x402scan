@@ -30,16 +30,22 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
 
   const router = useRouter();
 
-  const baseResources = originWithResources?.resources
-    .filter(resource =>
-      resource.accepts.some(accept => accept.network === Chain.BASE.toString())
-    )
-    .map(resource => ({
-      id: resource.id,
-      favicon: origin.favicon,
-    }));
+  const baseResources =
+    originWithResources?.resources
+      .filter(resource =>
+        resource.accepts.some(
+          accept => accept.network === Chain.BASE.toString()
+        )
+      )
+      .map(resource => ({
+        id: resource.id,
+        favicon: origin.favicon,
+      })) ?? [];
 
   const onTryInChat = () => {
+    if (!baseResources.length) {
+      return;
+    }
     clientCookieUtils.setResources(baseResources);
     router.push(`/composer/chat`);
   };
@@ -86,7 +92,10 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
     </Button>
   );
 
-  if (originWithResources?.resources.length > 0) {
+  if (
+    originWithResources?.resources.length &&
+    originWithResources.resources.length > 0
+  ) {
     return (
       <ButtonsContainer>
         {baseResources.length === 0 ? (

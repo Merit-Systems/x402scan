@@ -47,7 +47,7 @@ export const FacilitatorsChart = () => {
   ) => {
     const total = facilitators.reduce(
       (sum, facilitator) =>
-        sum + (allData[`${facilitator.id}-${id}` as FacilitatorKey] || 0),
+        sum + (allData[`${facilitator.id}-${id}` as FacilitatorKey] ?? 0),
       0
     );
     const percentage = total > 0 ? (data / total) * 100 : 0;

@@ -4,7 +4,7 @@ import {
   USDC_POLYGON,
   TRANSFER_TOPIC,
 } from '@/trigger/lib/constants';
-import {
+import type {
   SyncConfig,
   TransferEventData,
   BigQueryTransferRow,

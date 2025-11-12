@@ -17,7 +17,7 @@ export const TooltipContent = <T extends Record<string, number>>({
 }: Props<T>) => {
   const sortedRows = rows
     .filter(row => row.key in data)
-    .sort((a, b) => data[b.key] - data[a.key]);
+    .sort((a, b) => data[b.key]! - data[a.key]!);
 
   return (
     <Card className="min-w-32 overflow-hidden">

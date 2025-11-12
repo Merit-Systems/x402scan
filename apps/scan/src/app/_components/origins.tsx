@@ -36,7 +36,7 @@ export const Origins: React.FC<Props> = ({
       return null;
     }
     if (addresses.length === 1) {
-      return <Address address={addresses[0]} disableCopy={disableCopy} />;
+      return <Address address={addresses[0]!} disableCopy={disableCopy} />;
     }
     return <Addresses addresses={addresses} disableCopy={disableCopy} />;
   }
@@ -44,17 +44,17 @@ export const Origins: React.FC<Props> = ({
   if (origins.length === 1) {
     const origin = origins[0];
     return (
-      <Link href={`/server/${origin.id}`} prefetch={false}>
+      <Link href={`/server/${origin!.id}`} prefetch={false}>
         <OriginsContainer
           Icon={({ className }) => (
-            <Favicon url={origin.favicon} className={className} />
+            <Favicon url={origin!.favicon} className={className} />
           )}
           title={
-            <span className="truncate">{new URL(origin.origin).hostname}</span>
+            <span className="truncate">{new URL(origin!.origin).hostname}</span>
           }
           address={
             addresses.length === 0 ? null : addresses.length === 1 ? (
-              <Address address={addresses[0]} disableCopy={disableCopy} />
+              <Address address={addresses[0]!} disableCopy={disableCopy} />
             ) : (
               <Addresses addresses={addresses} />
             )
@@ -76,9 +76,9 @@ export const Origins: React.FC<Props> = ({
       )}
       title={
         <>
-          <Link href={`/server/${origins[0].id}`} prefetch={false}>
+          <Link href={`/server/${origins[0]!.id}`} prefetch={false}>
             <span className="truncate">
-              {new URL(origins[0].origin).hostname}
+              {new URL(origins[0]!.origin).hostname}
             </span>
           </Link>
           {healthMetrics && <HealthDot metrics={healthMetrics} />}
@@ -105,7 +105,7 @@ export const Origins: React.FC<Props> = ({
       }
       address={
         addresses.length === 0 ? null : addresses.length === 1 ? (
-          <Address address={addresses[0]} disableCopy={disableCopy} />
+          <Address address={addresses[0]!} disableCopy={disableCopy} />
         ) : (
           <Addresses addresses={addresses} disableCopy={disableCopy} />
         )

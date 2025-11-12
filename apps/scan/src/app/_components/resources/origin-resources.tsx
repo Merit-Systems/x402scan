@@ -41,14 +41,14 @@ export const OriginResources: React.FC<Props> = ({
           resource.data &&
           resource.accepts &&
           resource.accepts.length > 0 &&
-          resource.accepts[0].outputSchema
+          resource.accepts[0]!.outputSchema
       ).length > 0 ? (
         resources.map(resource => (
           <ResourceExecutor
             key={resource.id}
             resource={resource}
             tags={resource.tags.map(tag => tag.tag)}
-            bazaarMethod={getBazaarMethod(resource.accepts[0].outputSchema)}
+            bazaarMethod={getBazaarMethod(resource.accepts[0]!.outputSchema)}
             className="bg-transparent"
             response={resource.data}
             hideOrigin={hideOrigin}

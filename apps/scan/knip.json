@@ -5,12 +5,12 @@
     "src/app/**/route.{js,jsx,ts,tsx}"
   ],
   "ignoreDependencies": [
-    "eslint-config-next",
     "tw-animate-css",
     "tailwindcss",
     "postcss",
     "redis",
-    "facilitators"
+    "facilitators",
+    "@repo/eslint-config"
   ],
   "ignore": ["/scripts/**", "src/components/ui/charts/chart/**"],
   "ignoreWorkspaces": []

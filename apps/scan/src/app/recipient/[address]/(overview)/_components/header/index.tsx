@@ -28,7 +28,7 @@ export const HeaderCard: React.FC<Props> = async ({ address }) => {
     <Card className={cn('relative mt-10 md:mt-12')}>
       <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
         <Avatar
-          src={origins.length === 1 ? origins[0].favicon : null}
+          src={origins.length === 1 ? origins[0]!.favicon : null}
           className="size-8 border-none rounded-none"
           fallback={
             origins.length === 1 ? (
@@ -46,7 +46,7 @@ export const HeaderCard: React.FC<Props> = async ({ address }) => {
               {origins.length === 0
                 ? formatAddress(address)
                 : origins.length === 1
-                  ? new URL(origins[0].origin).hostname
+                  ? new URL(origins[0]!.origin).hostname
                   : `${origins.length} servers`}
             </h1>
             <p

@@ -139,7 +139,7 @@ export async function createX402AITools({
                 walletClient,
                 maxAmount
                   ? BigInt(parseUnits(String(maxAmount), 6))
-                  : resource.accepts[0].maxAmountRequired
+                  : resource.accepts[0]!.maxAmountRequired
               );
               const response = await fetchWithPayment(
                 new URL(

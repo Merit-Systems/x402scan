@@ -1,31 +1,26 @@
-import { defineConfig } from 'eslint/config';
-import { FlatCompat } from '@eslint/eslintrc';
-import eslintConfigPrettier from 'eslint-config-prettier/flat';
-
+import js from '@eslint/js';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import turboPlugin from 'eslint-plugin-turbo';
 import tseslint from 'typescript-eslint';
 
-import { baseConfig } from '../../eslint.config.base.mjs';
-
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
-
-export default defineConfig([
-  ...baseConfig,
-  {
-    ignores: [
-      'next-env.d.ts',
-      'public/**',
-      'prisma/generated/**',
-      '**/*.d.ts',
-      '.trigger/**',
-      'eslint.config.mjs',
-      'postcss.config.mjs',
-    ],
-  },
-  ...compat.extends('next/core-web-vitals'),
+/**
+ * A shared ESLint configuration for the repository.
+ *
+ * @type {import("eslint").Linter.Config[]}
+ * */
+export const config = [
+  js.configs.recommended,
+  eslintConfigPrettier,
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
+  {
+    plugins: {
+      turbo: turboPlugin,
+    },
+    rules: {
+      'turbo/no-undeclared-env-vars': 'warn',
+    },
+  },
   {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
@@ -43,15 +38,18 @@ export default defineConfig([
     },
   },
   {
-    linterOptions: {
-      reportUnusedDisableDirectives: true,
-    },
+    ignores: ['dist/**'],
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: import.meta.dirname,
       },
     },
   },
-  eslintConfigPrettier,
-]);
+  {
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+    ...tseslint.configs.disableTypeChecked,
+  },
+];

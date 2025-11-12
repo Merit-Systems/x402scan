@@ -1,12 +1,6 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "jsx": "preserve",
-    "incremental": true,
     "plugins": [
       {
         "name": "next"
@@ -14,14 +8,15 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "isolatedModules": true
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "trigger.config.ts"
+    "next-env.d.ts",
+    "next.config.js",
+    ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

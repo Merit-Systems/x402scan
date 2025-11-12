@@ -47,7 +47,7 @@ export const Messages: React.FC<MessagesProps> = ({
             ))}
             {status === 'submitted' ||
               (status === 'streaming' &&
-                messages[messages.length - 1].parts.length === 0 && (
+                messages[messages.length - 1]!.parts.length === 0 && (
                   <AnimatedShinyText className="text-xs md:text-sm pb-4">
                     Calling {model} with x402...
                   </AnimatedShinyText>

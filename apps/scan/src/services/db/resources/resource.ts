@@ -51,7 +51,7 @@ export const upsertResourceSchema = z.object({
           })
           .transform(
             v =>
-              ChainIdToNetwork[Number(v.split(':')[1])].replace(
+              ChainIdToNetwork[Number(v.split(':')[1])]!.replace(
                 '-',
                 '_'
               ) as AcceptsNetwork

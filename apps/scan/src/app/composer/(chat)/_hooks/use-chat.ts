@@ -86,8 +86,8 @@ export const useChat = ({
     initialConfig?.model
       ? (languageModels.find(
           model => `${model.provider}/${model.modelId}` === initialConfig.model
-        ) ?? languageModels[0])
-      : languageModels[0]
+        ) ?? languageModels[0]!)
+      : languageModels[0]!
   );
   const [selectedResources, setSelectedResources] = useState<
     SelectedResource[]
@@ -97,7 +97,7 @@ export const useChat = ({
     error?.message ??
     (status === 'ready' &&
     messages.length > 0 &&
-    messages[messages.length - 1].role === 'user'
+    messages[messages.length - 1]!.role === 'user'
       ? 'The last message failed. Please regenerate the message to continue.'
       : undefined);
 
@@ -106,7 +106,7 @@ export const useChat = ({
       toast.error('Please wait for the chat to be ready');
       return;
     }
-    if (!!errorMessage) {
+    if (errorMessage) {
       toast.error(errorMessage);
       return;
     }

@@ -212,7 +212,7 @@ export function Form({
           (x402Response.accepts
             ?.map(accept => accept.network)
             .filter(network =>
-              SUPPORTED_CHAINS.includes(network as SupportedChain)
+              (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(network!)
             ) ?? []) as SupportedChain[]
         }
         allRequiredFieldsFilled={allRequiredFieldsFilled}
@@ -579,15 +579,15 @@ function reconstructNestedObject(
     // Navigate/create nested structure
     for (let i = 0; i < parts.length - 1; i++) {
       const part = parts[i];
-      if (!(part in current)) {
+      if (part && !(part in current)) {
         current[part] = {};
       }
-      current = current[part] as Record<string, unknown>;
+      current = current[part!] as Record<string, unknown>;
     }
 
     // Set the final value
     const finalKey = parts[parts.length - 1];
-    current[finalKey] = value;
+    current[finalKey!] = value;
   }
 
   return result;

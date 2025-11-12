@@ -51,7 +51,7 @@ const port = Number(process.env.PORT) || 6969;
 initClickHouseTable().catch(error => {
   console.error(
     'Failed to initialize ClickHouse, continuing without it:',
-    error.message
+    error instanceof Error ? error.message : String(error)
   );
 });
 
