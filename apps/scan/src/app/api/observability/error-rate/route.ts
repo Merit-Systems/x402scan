@@ -8,10 +8,19 @@ interface ErrorRateRequest {
   bucketMinutes: number;
 }
 
-export async function POST(request: Request) {
+interface ErrorRateResponse {
+  ts: string;
+  total_requests: number;
+  error_requests: number;
+  error_rate: number;
+}
+
+export async function POST(
+  request: Request
+): Promise<NextResponse<ErrorRateResponse[]>> {
   try {
     const { originUrl, startDate, endDate, bucketMinutes } =
-      await request.json() as ErrorRateRequest;
+      (await request.json()) as ErrorRateRequest;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -42,12 +51,9 @@ export async function POST(request: Request) {
 
     const data = await resultSet.json();
 
-    return NextResponse.json(data);
+    return NextResponse.json(data as ErrorRateResponse[]);
   } catch (error) {
     console.error('ClickHouse query error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch error rate data' },
-      { status: 500 }
-    );
+    return NextResponse.json<ErrorRateResponse[]>([], { status: 500 });
   }
 }
