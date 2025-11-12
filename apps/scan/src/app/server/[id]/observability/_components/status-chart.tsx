@@ -3,6 +3,8 @@
 import { BaseChart } from '@/components/ui/charts/chart/chart';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Area } from 'recharts';
+import { LoadingChart } from './loading-chart';
+import { useObservabilityData } from './use-observability-data';
 
 interface StatusCodeData {
   ts: string;
@@ -13,10 +15,42 @@ interface StatusCodeData {
 }
 
 interface Props {
-  data: StatusCodeData[];
+  originUrl: string;
+  resourceUrl?: string;
 }
 
-export const StatusChart: React.FC<Props> = ({ data }) => {
+export const StatusChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
+  const { data, isLoading } = useObservabilityData<StatusCodeData>({
+    endpoint: '/api/observability/status-codes',
+    originUrl,
+    resourceUrl,
+  });
+
+  if (isLoading) {
+    return (
+      <LoadingChart
+        legendItems={[
+          { label: '2XX' },
+          { label: '3XX' },
+          { label: '4XX' },
+          { label: '5XX' },
+        ]}
+      />
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className="text-center text-muted-foreground py-8">
+        No observability data available
+      </div>
+    );
+  }
+
+  return <StatusChartInner data={data} />;
+};
+
+const StatusChartInner: React.FC<{ data: StatusCodeData[] }> = ({ data }) => {
   // Transform the data to the format expected by the chart
   const chartData: ChartData<{
     success: number;

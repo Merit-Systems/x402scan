@@ -3,6 +3,8 @@
 import { BaseChart } from '@/components/ui/charts/chart/chart';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Area } from 'recharts';
+import { LoadingChart } from './loading-chart';
+import { useObservabilityData } from './use-observability-data';
 
 interface ErrorRateData {
   ts: string;
@@ -12,10 +14,33 @@ interface ErrorRateData {
 }
 
 interface Props {
-  data: ErrorRateData[];
+  originUrl: string;
+  resourceUrl?: string;
 }
 
-export const ErrorRateChart: React.FC<Props> = ({ data }) => {
+export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
+  const { data, isLoading } = useObservabilityData<ErrorRateData>({
+    endpoint: '/api/observability/error-rate',
+    originUrl,
+    resourceUrl,
+  });
+
+  if (isLoading) {
+    return <LoadingChart legendItems={[{ label: 'Server Error Rate' }]} />;
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className="text-center text-muted-foreground py-8">
+        No error rate data available
+      </div>
+    );
+  }
+
+  return <ErrorRateChartInner data={data} />;
+};
+
+const ErrorRateChartInner: React.FC<{ data: ErrorRateData[] }> = ({ data }) => {
   // Transform the data to the format expected by the chart
   const chartData: ChartData<{
     errorRate: number;

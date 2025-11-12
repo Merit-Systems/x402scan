@@ -1,9 +1,9 @@
 import { api, HydrateClient } from '@/trpc/server';
 import { notFound } from 'next/navigation';
 import { Body } from '@/app/_components/layout/page-utils';
-import { StatusChartWrapper } from './_components/status-chart-wrapper';
-import { ErrorRateChartWrapper } from './_components/error-rate-chart-wrapper';
-import { ResourcesTableWrapper } from './_components/resources-table-wrapper';
+import { StatusChart } from './_components/status-chart';
+import { ErrorRateChart } from './_components/error-rate-chart';
+import { ResourcesTable } from './_components/resources-table';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
@@ -38,10 +38,10 @@ export default async function ObservabilityPage({
             <RangeSelector />
           </div>
           <div className="flex gap-6 mb-6">
-            <StatusChartWrapper originUrl={origin.origin} />
-            <ErrorRateChartWrapper originUrl={origin.origin} />
+            <StatusChart originUrl={origin.origin} />
+            <ErrorRateChart originUrl={origin.origin} />
           </div>
-          <ResourcesTableWrapper originUrl={origin.origin} />
+          <ResourcesTable originUrl={origin.origin} />
         </TimeRangeProvider>
       </HydrateClient>
     </Body>
