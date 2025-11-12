@@ -30,16 +30,16 @@ export const RangeSelector = () => {
         <CalendarDays />
         <span>
           {timeframe === ActivityTimeframe.OneDay
-              ? 'Past 24 Hours'
-              : `Past ${timeframe} Days`}
+            ? 'Past 24 Hours'
+            : `Past ${timeframe} Days`}
         </span>
       </SelectTrigger>
       <SelectContent align="end">
         {timeframeValues.map(value => (
           <SelectItem key={value} value={value.toString()}>
             {value === ActivityTimeframe.OneDay
-                ? 'Past 24 Hours'
-                : `Past ${value} Days`}
+              ? 'Past 24 Hours'
+              : `Past ${value} Days`}
           </SelectItem>
         ))}
       </SelectContent>

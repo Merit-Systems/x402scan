@@ -306,7 +306,9 @@ export async function GET(request: NextRequest) {
     const chainParam = searchParams.get('chain'); // e.g., "base", "solana", "all"
 
     // Filter timeframes if requested
-    const timeframesToWarm = Object.values(ActivityTimeframe).filter(tf => typeof tf === 'number');
+    const timeframesToWarm = Object.values(ActivityTimeframe).filter(
+      tf => typeof tf === 'number'
+    );
 
     // Filter pages if requested
     const pagesToWarm: WarmablePage[] = pagesParam
@@ -335,9 +337,7 @@ export async function GET(request: NextRequest) {
       const timeframeStartTime = Date.now();
 
       const timeframeName =
-        timeframe === ActivityTimeframe.OneDay
-          ? '1 Day'
-          : `${timeframe} Days`;
+        timeframe === ActivityTimeframe.OneDay ? '1 Day' : `${timeframe} Days`;
 
       console.log(`[Cache Warming] Warming timeframe: ${timeframeName}`);
 
