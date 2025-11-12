@@ -1,10 +1,27 @@
 import { clickhouse } from '@/services/db/clickhouse/resource-invocations';
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+interface StatusCodesRequest {
+  originUrl: string;
+  startDate: string;
+  endDate: string;
+  bucketMinutes: number;
+}
+
+interface StatusCodesResponse {
+  ts: string;
+  r_2xx: number;
+  r_3xx: number;
+  r_4xx: number;
+  r_5xx: number;
+}
+
+export async function POST(
+  request: Request
+): Promise<NextResponse<StatusCodesResponse[]>> {
   try {
     const { originUrl, startDate, endDate, bucketMinutes } =
-      await request.json();
+      (await request.json()) as StatusCodesRequest;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -36,12 +53,9 @@ export async function POST(request: Request) {
 
     const data = await resultSet.json();
 
-    return NextResponse.json(data);
+    return NextResponse.json(data as StatusCodesResponse[]);
   } catch (error) {
     console.error('ClickHouse query error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch observability data' },
-      { status: 500 }
-    );
+    return NextResponse.json<StatusCodesResponse[]>([], { status: 500 });
   }
 }

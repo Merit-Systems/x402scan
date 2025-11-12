@@ -1,9 +1,26 @@
 import { clickhouse } from '@/services/db/clickhouse/resource-invocations';
 import { NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+interface ResourcesRequest {
+  originUrl: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface ResourcesResponse {
+  url: string;
+  total_requests: number;
+  error_count: number;
+  avg_duration: number;
+  last_seen: string;
+}
+
+export async function POST(
+  request: Request
+): Promise<NextResponse<ResourcesResponse[]>> {
   try {
-    const { originUrl, startDate, endDate } = await request.json();
+    const { originUrl, startDate, endDate } =
+      (await request.json()) as ResourcesRequest;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -31,12 +48,9 @@ export async function POST(request: Request) {
 
     const data = await resultSet.json();
 
-    return NextResponse.json(data);
+    return NextResponse.json(data as ResourcesResponse[]);
   } catch (error) {
     console.error('ClickHouse query error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch resources data' },
-      { status: 500 }
-    );
+    return NextResponse.json<ResourcesResponse[]>([], { status: 500 });
   }
 }
