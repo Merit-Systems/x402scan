@@ -1,11 +1,17 @@
-import { ETH_ADDRESS, USDC_ADDRESS } from '@/lib/utils';
+import { USDC_ADDRESS } from '@/lib/utils';
 import { convertTokenAmount } from '@/lib/token';
 import { cdpClient } from './client';
 import { getWalletForUserId as getWalletForUserIdDb } from '@/services/db/user/server-wallets';
-import { encodeFunctionData, erc20Abi, parseUnits } from 'viem';
+import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import z from 'zod';
 import { Chain } from '@/types/chain';
+import { BASE_USDC } from '@/lib/tokens/usdc';
+import { createConfig, getBalance, readContract } from '@wagmi/core';
+import { wagmiConfig } from '@/app/_contexts/wagmi/config';
+import { base } from 'wagmi/chains';
+
+import type { Address } from 'viem';
 
 export const getWalletForUserId = async (userId: string) => {
   const dbWallet = await getWalletForUserIdDb(userId);
@@ -23,49 +29,26 @@ export const getUSDCBaseBalanceFromUserId = async (
   userId: string
 ): Promise<number> => {
   const wallet = await getWalletForUserId(userId);
-  const balances = await cdpClient.evm.listTokenBalances({
-    address: wallet.wallet.address,
-    network: 'base',
+
+  const balance = await readContract(createConfig(wagmiConfig), {
+    abi: erc20Abi,
+    address: BASE_USDC.address as Address,
+    args: [wallet.wallet.address],
+    functionName: 'balanceOf',
+    chainId: base.id,
   });
-
-  const usdcBalance = balances.balances.find(
-    balance =>
-      balance.token.contractAddress.toLowerCase() ===
-      USDC_ADDRESS[Chain.BASE].toLowerCase()
-  );
-
-  if (!usdcBalance) {
-    return 0;
-  }
-
-  return convertTokenAmount(
-    usdcBalance.amount.amount,
-    usdcBalance.amount.decimals
-  );
+  return convertTokenAmount(balance, BASE_USDC.decimals);
 };
 
 export const getEthBaseBalanceFromUserId = async (
   userId: string
 ): Promise<number> => {
   const wallet = await getWalletForUserId(userId);
-  const balances = await cdpClient.evm.listTokenBalances({
+  const weiBalance = await getBalance(createConfig(wagmiConfig), {
     address: wallet.wallet.address,
-    network: 'base',
+    chainId: base.id,
   });
-
-  const ethBalance = balances.balances.find(
-    balance =>
-      balance.token.contractAddress.toLowerCase() === ETH_ADDRESS.toLowerCase()
-  );
-
-  if (!ethBalance) {
-    return 0;
-  }
-
-  return convertTokenAmount(
-    ethBalance.amount.amount,
-    ethBalance.amount.decimals
-  );
+  return parseFloat(formatEther(weiBalance.value));
 };
 
 export const getWalletAddressFromUserId = async (userId: string) => {

@@ -16,6 +16,8 @@ import {
   acedatacloudFacilitator,
   ultravioletadaoFacilitator,
   virtualsFacilitator,
+  heuristFacilitator,
+  treasureFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -40,6 +42,8 @@ const FACILITATORS = validateUniqueFacilitators([
   codenutFacilitator,
   ultravioletadaoFacilitator,
   virtualsFacilitator,
+  heuristFacilitator,
+  treasureFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =

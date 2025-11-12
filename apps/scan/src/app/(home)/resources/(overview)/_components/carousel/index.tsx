@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import { LoadingOriginsCarouselClient, OriginsCarouselClient } from './client';
 
 import { api, HydrateClient } from '@/trpc/server';
@@ -5,30 +7,21 @@ import { api, HydrateClient } from '@/trpc/server';
 import type { RouterInputs } from '@/trpc/client';
 import type { SectionProps } from '@/app/_components/layout/page-utils';
 import type { LucideIcon } from 'lucide-react';
-import { Suspense } from 'react';
 
 interface Props<T extends string> {
   sectionProps: Omit<SectionProps<T>, 'children' | 'actions'> & {
     Icon: LucideIcon;
   };
   input: RouterInputs['public']['sellers']['bazaar']['list'];
-  startDate: Date;
-  endDate: Date;
   hideCount?: boolean;
 }
 
 export const OriginsCarousel = async <T extends string>({
   sectionProps,
   input,
-  startDate,
-  endDate,
   hideCount,
 }: Props<T>) => {
-  void api.public.sellers.bazaar.list.prefetch({
-    ...input,
-    startDate,
-    endDate,
-  });
+  void api.public.sellers.bazaar.list.prefetch(input);
 
   const { title, Icon, ...rest } = sectionProps;
 
