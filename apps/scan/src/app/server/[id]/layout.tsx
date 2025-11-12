@@ -17,6 +17,10 @@ export default async function OriginLayout({
             label: 'Agents',
             href: `/server/${id}/agents`,
           },
+          {
+            label: 'Observability',
+            href: `/server/${id}/observability`,
+          },
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>
