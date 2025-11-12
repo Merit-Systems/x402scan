@@ -23,6 +23,9 @@
   "pnpm": {
     "overrides": {
       "@auth/core": "0.40.0"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@coinbase/x402"
+    ]
   }
 }
