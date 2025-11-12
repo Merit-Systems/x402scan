@@ -12,7 +12,7 @@ import { agentsRelease } from '@/lib/agents';
 
 const bucketedToolCallsByResourcesResultSchema = z.array(
   z.object({
-    bucket_start: z.date(),
+    bucket_start: z.coerce.date(),
     resources: z.record(
       z.string(),
       z.object({

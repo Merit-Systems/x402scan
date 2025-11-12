@@ -11,7 +11,7 @@ import type { resourceBucketedQuerySchema } from './schemas';
 
 const bucketedToolCallsByTagsResultSchema = z.array(
   z.object({
-    bucket_start: z.date(),
+    bucket_start: z.coerce.date(),
     tags: z.record(
       z.string(),
       z.object({

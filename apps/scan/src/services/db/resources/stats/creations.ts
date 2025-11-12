@@ -12,7 +12,7 @@ import type { resourceBucketedQuerySchema } from './schemas';
 
 const bucketedCreationsResultSchema = z.array(
   z.object({
-    bucket_start: z.date(),
+    bucket_start: z.coerce.date(),
     total_resources: z.number(),
   })
 );

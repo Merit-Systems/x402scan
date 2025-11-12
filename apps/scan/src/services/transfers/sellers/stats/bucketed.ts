@@ -1,5 +1,4 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
 
 import { baseBucketedQuerySchema } from '../../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
@@ -13,9 +12,9 @@ export const bucketedSellerStatisticsInputSchema = baseBucketedQuerySchema;
 
 const bucketedSellerResultSchema = z.array(
   z.object({
-    bucket_start: z.date(),
-    total_sellers: z.number(),
-    new_sellers: z.number(),
+    bucket_start: z.coerce.date(),
+    total_sellers: z.coerce.number(),
+    new_sellers: z.coerce.number(),
   })
 );
 
@@ -36,46 +35,40 @@ const getBucketedSellerStatisticsUncached = async (
     Math.floor(timeRangeMs / numBuckets / 1000)
   );
 
-  const sql = Prisma.sql`
+  const startTimestamp =
+    Math.floor(startDate.getTime() / 1000 / bucketSizeSeconds) *
+    bucketSizeSeconds;
+  const endTimestamp = Math.floor(endDate.getTime() / 1000);
+  const whereClause = transfersWhereClause(input);
+
+  const sql = `
     WITH all_buckets AS (
-      SELECT generate_series(
-        to_timestamp(
-          floor(extract(epoch from ${startDate.toISOString()}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ),
-        ${endDate.toISOString()}::timestamp,
-        (${bucketSizeSeconds} || ' seconds')::interval
-      ) AS bucket_start
+      SELECT toDateTime(arrayJoin(range(${startTimestamp}, ${endTimestamp}, ${bucketSizeSeconds}))) AS bucket_start
     ),
     seller_first_transactions AS (
       SELECT 
         recipient,
         MIN(block_timestamp) AS first_transaction_date
-      FROM "TransferEvent"
+      FROM public_TransferEvent
       GROUP BY recipient
     ),
     bucket_stats AS (
       SELECT 
-        to_timestamp(
-          floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ) AS bucket_start,
-        COUNT(DISTINCT t.recipient)::int AS total_sellers,
-        COUNT(DISTINCT CASE 
-          WHEN to_timestamp(
-            floor(extract(epoch from sft.first_transaction_date) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-          ) = to_timestamp(
-            floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-          )
-          THEN t.recipient 
-        END)::int AS new_sellers
-      FROM "TransferEvent" t
-      LEFT JOIN seller_first_transactions sft ON t.recipient = sft.recipient
-      ${transfersWhereClause(input)}
+        toStartOfInterval(block_timestamp, INTERVAL ${bucketSizeSeconds} SECOND) AS bucket_start,
+        uniq(recipient) AS total_sellers,
+        uniqIf(recipient,
+          toStartOfInterval(sft.first_transaction_date, INTERVAL ${bucketSizeSeconds} SECOND) = 
+          toStartOfInterval(block_timestamp, INTERVAL ${bucketSizeSeconds} SECOND)
+        ) AS new_sellers
+      FROM public_TransferEvent
+      LEFT JOIN seller_first_transactions sft ON recipient = sft.recipient
+      ${whereClause}
       GROUP BY bucket_start
     )
     SELECT 
       ab.bucket_start,
-      COALESCE(bs.total_sellers, 0)::int AS total_sellers,
-      COALESCE(bs.new_sellers, 0)::int AS new_sellers
+      COALESCE(bs.total_sellers, 0) AS total_sellers,
+      COALESCE(bs.new_sellers, 0) AS new_sellers
     FROM all_buckets ab
     LEFT JOIN bucket_stats bs ON ab.bucket_start = bs.bucket_start
     ORDER BY ab.bucket_start

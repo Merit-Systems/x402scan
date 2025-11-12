@@ -1,5 +1,4 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
 
 import { baseQuerySchema } from '../../schemas';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
@@ -13,26 +12,32 @@ const getOverallSellerStatisticsUncached = async (
   input: z.infer<typeof sellerStatisticsInputSchema>
 ) => {
   const { startDate, endDate } = getTimeRangeFromTimeframe(input.timeframe);
-  const sql = Prisma.sql`
+  const whereClause = transfersWhereClause(input);
+
+  const startDateStr = startDate
+    ? `'${startDate.toISOString()}'`
+    : `'1970-01-01 00:00:00'`;
+  const endDateStr = endDate ? `'${endDate.toISOString()}'` : 'NOW()';
+
+  const sql = `
     WITH seller_first_transactions AS (
       SELECT 
         recipient,
         MIN(block_timestamp) AS first_transaction_date
-      FROM "TransferEvent"
+      FROM public_TransferEvent
       GROUP BY recipient
     ),
     filtered_transfers AS (
-      SELECT DISTINCT t.recipient
-      FROM "TransferEvent" t
-      ${transfersWhereClause(input)}
+      SELECT DISTINCT recipient
+      FROM public_TransferEvent
+      ${whereClause}
     )
     SELECT 
-      COUNT(DISTINCT ft.recipient)::int AS total_sellers,
-      COUNT(DISTINCT CASE 
-        WHEN sft.first_transaction_date >= ${startDate ?? Prisma.sql`'1970-01-01'::timestamp`}
-         AND sft.first_transaction_date <= ${endDate ?? Prisma.sql`NOW()`}
-        THEN ft.recipient 
-      END)::int AS new_sellers
+      uniq(ft.recipient) AS total_sellers,
+      uniqIf(ft.recipient, 
+        sft.first_transaction_date >= parseDateTime64BestEffort(${startDateStr})
+        AND sft.first_transaction_date <= parseDateTime64BestEffort(${endDateStr})
+      ) AS new_sellers
     FROM filtered_transfers ft
     LEFT JOIN seller_first_transactions sft ON ft.recipient = sft.recipient
   `;
@@ -41,8 +46,8 @@ const getOverallSellerStatisticsUncached = async (
     sql,
     z.array(
       z.object({
-        total_sellers: z.number(),
-        new_sellers: z.number(),
+        total_sellers: z.coerce.number(),
+        new_sellers: z.coerce.number(),
       })
     )
   );

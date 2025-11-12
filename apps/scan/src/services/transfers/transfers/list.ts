@@ -1,4 +1,4 @@
-import type z from 'zod';
+import z from 'zod';
 
 import {
   toPaginatedResponse,
@@ -9,10 +9,11 @@ import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
-import { transfersPrisma } from '@/services/transfers/client';
+import { queryRaw } from '@/services/transfers/client';
 import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
-import { transfersWhereObject } from '../query-utils';
+import { transfersWhereClause } from '../query-utils';
+import { mixedAddressSchema, chainSchema } from '@/lib/schemas';
 
 const TRANSFERS_SORT_IDS = ['block_timestamp', 'amount'] as const;
 export type TransfersSortId = (typeof TRANSFERS_SORT_IDS)[number];
@@ -29,27 +30,64 @@ const listFacilitatorTransfersUncached = async (
   const { sorting } = input;
   const { page_size, page } = pagination;
 
-  const where = transfersWhereObject(input);
-  const [count, transfers] = await Promise.all([
-    transfersPrisma.transferEvent.count({
-      where,
-    }),
-    transfersPrisma.transferEvent.findMany({
-      where,
-      orderBy: {
-        [sorting.id]: sorting.desc ? 'desc' : 'asc',
-      },
-      take: page_size + 1,
-      skip: page * page_size,
-    }),
+  const whereClause = transfersWhereClause(input);
+  const sortDirection = sorting.desc ? 'DESC' : 'ASC';
+  const offset = page * page_size;
+
+  const [countResult, transfers] = await Promise.all([
+    queryRaw(
+      `
+        SELECT COUNT(*) as count
+        FROM public_TransferEvent
+        ${whereClause}
+      `,
+      z.array(z.object({ count: z.coerce.number() }))
+    ),
+    queryRaw(
+      `
+        SELECT 
+          transaction_from,
+          sender,
+          recipient,
+          amount,
+          block_timestamp,
+          tx_hash,
+          chain,
+          provider,
+          decimals,
+          facilitator_id,
+          log_index
+        FROM public_TransferEvent
+        ${whereClause}
+        ORDER BY ${sorting.id} ${sortDirection}
+        LIMIT ${page_size + 1}
+        OFFSET ${offset}
+      `,
+      z.array(
+        z.object({
+          transaction_from: mixedAddressSchema,
+          sender: mixedAddressSchema,
+          recipient: mixedAddressSchema,
+          amount: z.number(),
+          block_timestamp: z.coerce.date(),
+          tx_hash: z.string(),
+          chain: chainSchema,
+          provider: z.string(),
+          decimals: z.coerce.number(),
+          facilitator_id: z.string(),
+          log_index: z.coerce.number(),
+        })
+      )
+    ),
   ]);
+
+  const count = countResult[0]?.count ?? 0;
 
   // Map to expected output format
   const items = transfers.map(transfer => ({
     ...transfer,
     sender: transfer.sender as MixedAddress,
     recipient: transfer.recipient as MixedAddress,
-    token_address: transfer.address as MixedAddress,
     transaction_from: transfer.transaction_from as MixedAddress,
     chain: transfer.chain as Chain,
   }));

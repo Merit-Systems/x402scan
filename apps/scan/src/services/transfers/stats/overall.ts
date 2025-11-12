@@ -1,5 +1,4 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
 
 import { baseQuerySchema } from '../schemas';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
@@ -11,26 +10,28 @@ export const overallStatisticsInputSchema = baseQuerySchema;
 const getOverallStatisticsUncached = async (
   input: z.infer<typeof overallStatisticsInputSchema>
 ) => {
-  const sql = Prisma.sql`
+  const whereClause = transfersWhereClause(input);
+
+  const sql = `
     SELECT 
-      COUNT(*)::int AS total_transactions,
-      COALESCE(SUM(t.amount), 0)::float AS total_amount,
-      COUNT(DISTINCT t.sender)::int AS unique_buyers,
-      COUNT(DISTINCT t.recipient)::int AS unique_sellers,
-      MAX(t.block_timestamp) AS latest_block_timestamp
-    FROM "TransferEvent" t
-    ${transfersWhereClause(input)}
+      COUNT(*) AS total_transactions,
+      COALESCE(SUM(amount), 0) AS total_amount,
+      uniq(sender) AS unique_buyers,
+      uniq(recipient) AS unique_sellers,
+      MAX(block_timestamp) AS latest_block_timestamp
+    FROM public_TransferEvent
+    ${whereClause}
   `;
 
   const result = await queryRaw(
     sql,
     z.array(
       z.object({
-        total_transactions: z.number(),
+        total_transactions: z.coerce.number(),
         total_amount: z.number(),
-        unique_buyers: z.number(),
-        unique_sellers: z.number(),
-        latest_block_timestamp: z.date().nullable(),
+        unique_buyers: z.coerce.number(),
+        unique_sellers: z.coerce.number(),
+        latest_block_timestamp: z.coerce.date().nullable(),
       })
     )
   );

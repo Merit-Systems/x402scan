@@ -1,5 +1,4 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
 
 import { baseBucketedQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
@@ -13,14 +12,14 @@ export const bucketedNetworksStatisticsInputSchema = baseBucketedQuerySchema;
 
 const bucketedNetworkResultSchema = z.array(
   z.object({
-    bucket_start: z.date(),
+    bucket_start: z.coerce.date(),
     networks: z.record(
       z.string(),
       z.object({
-        total_transactions: z.number(),
+        total_transactions: z.coerce.number(),
         total_amount: z.number(),
-        unique_buyers: z.number(),
-        unique_sellers: z.number(),
+        unique_buyers: z.coerce.number(),
+        unique_sellers: z.coerce.number(),
         unique_facilitators: z.number(),
       })
     ),
@@ -47,18 +46,35 @@ const getBucketedNetworksStatisticsUncached = async (
     Math.floor(timeRangeMs / numBuckets / 1000)
   );
 
-  const sql = Prisma.sql`
+  const startTimestamp =
+    Math.floor(startDate.getTime() / 1000 / bucketSizeSeconds) *
+    bucketSizeSeconds;
+  const endTimestamp = Math.floor(endDate.getTime() / 1000);
+
+  const conditions: string[] = ['1=1'];
+  if (chain) {
+    conditions.push(`chain = '${chain}'`);
+  }
+  if (startDate) {
+    conditions.push(
+      `block_timestamp >= parseDateTime64BestEffort('${startDate.toISOString()}')`
+    );
+  }
+  if (endDate) {
+    conditions.push(
+      `block_timestamp <= parseDateTime64BestEffort('${endDate.toISOString()}')`
+    );
+  }
+  const whereClause = 'WHERE ' + conditions.join(' AND ');
+
+  const chainsArray = chains.map(c => `'${c}'`).join(', ');
+
+  const sql = `
     WITH all_buckets AS (
-      SELECT generate_series(
-        to_timestamp(
-          floor(extract(epoch from ${startDate.toISOString()}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ),
-        ${endDate.toISOString()}::timestamp,
-        (${bucketSizeSeconds} || ' seconds')::interval
-      ) AS bucket_start
+      SELECT toDateTime(arrayJoin(range(${startTimestamp}, ${endTimestamp}, ${bucketSizeSeconds}))) AS bucket_start
     ),
     network_list AS (
-      SELECT unnest(${chains}::text[]) AS chain
+      SELECT arrayJoin([${chainsArray}]) AS chain
     ),
     all_combinations AS (
       SELECT ab.bucket_start, nl.chain
@@ -67,31 +83,26 @@ const getBucketedNetworksStatisticsUncached = async (
     ),
     bucket_stats AS (
       SELECT
-        to_timestamp(
-          floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ) AS bucket_start,
-        t.chain,
-        COUNT(*)::int AS total_transactions,
-        SUM(t.amount)::float AS total_amount,
-        COUNT(DISTINCT t.sender)::int AS unique_buyers,
-        COUNT(DISTINCT t.recipient)::int AS unique_sellers,
-        COUNT(DISTINCT t.facilitator_id)::int AS unique_facilitators
-      FROM "TransferEvent" t
-      WHERE 1=1
-        ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-        ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate.toISOString()}::timestamp` : Prisma.empty}
-        ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate.toISOString()}::timestamp` : Prisma.empty}
-      GROUP BY bucket_start, t.chain
+        toStartOfInterval(block_timestamp, INTERVAL ${bucketSizeSeconds} SECOND) AS bucket_start,
+        chain,
+        COUNT(*) AS total_transactions,
+        SUM(amount) AS total_amount,
+        uniq(sender) AS unique_buyers,
+        uniq(recipient) AS unique_sellers,
+        uniq(facilitator_id) AS unique_facilitators
+      FROM public_TransferEvent
+      ${whereClause}
+      GROUP BY bucket_start, chain
     ),
     combined_stats AS (
       SELECT 
         ac.bucket_start,
         ac.chain,
-        COALESCE(bs.total_transactions, 0)::int AS total_transactions,
-        COALESCE(bs.total_amount, 0)::float AS total_amount,
-        COALESCE(bs.unique_buyers, 0)::int AS unique_buyers,
-        COALESCE(bs.unique_sellers, 0)::int AS unique_sellers,
-        COALESCE(bs.unique_facilitators, 0)::int AS unique_facilitators
+        COALESCE(bs.total_transactions, 0) AS total_transactions,
+        COALESCE(bs.total_amount, 0) AS total_amount,
+        COALESCE(bs.unique_buyers, 0) AS unique_buyers,
+        COALESCE(bs.unique_sellers, 0) AS unique_sellers,
+        COALESCE(bs.unique_facilitators, 0) AS unique_facilitators
       FROM all_combinations ac
       LEFT JOIN bucket_stats bs 
         ON ac.bucket_start = bs.bucket_start 
@@ -99,15 +110,9 @@ const getBucketedNetworksStatisticsUncached = async (
     )
     SELECT 
       bucket_start,
-      jsonb_object_agg(
-        chain,
-        jsonb_build_object(
-          'total_transactions', total_transactions,
-          'total_amount', total_amount,
-          'unique_buyers', unique_buyers,
-          'unique_sellers', unique_sellers,
-          'unique_facilitators', unique_facilitators
-        )
+      map(
+        groupArray(chain),
+        groupArray((total_transactions, total_amount, unique_buyers, unique_sellers, unique_facilitators))
       ) AS networks
     FROM combined_stats
     GROUP BY bucket_start
@@ -115,9 +120,52 @@ const getBucketedNetworksStatisticsUncached = async (
     LIMIT ${numBuckets}
   `;
 
-  const rawResult = await queryRaw(sql, bucketedNetworkResultSchema);
+  const rawResult = await queryRaw(
+    sql,
+    z.array(
+      z.object({
+        bucket_start: z.coerce.date(),
+        networks: z.any(),
+      })
+    )
+  );
 
-  return rawResult;
+  // Transform ClickHouse map to the expected format
+  const transformedResult = rawResult.map(row => {
+    const networks: Record<
+      string,
+      {
+        total_transactions: number;
+        total_amount: number;
+        unique_buyers: number;
+        unique_sellers: number;
+        unique_facilitators: number;
+      }
+    > = {};
+
+    if (Array.isArray(row.networks)) {
+      const keys = Object.keys(row.networks);
+      keys.forEach(key => {
+        const value = (row.networks as any)[key];
+        if (Array.isArray(value) && value.length === 5) {
+          networks[key] = {
+            total_transactions: value[0],
+            total_amount: value[1],
+            unique_buyers: value[2],
+            unique_sellers: value[3],
+            unique_facilitators: value[4],
+          };
+        }
+      });
+    }
+
+    return {
+      bucket_start: row.bucket_start,
+      networks,
+    };
+  });
+
+  return bucketedNetworkResultSchema.parse(transformedResult);
 };
 
 export const getBucketedNetworksStatistics = createCachedArrayQuery({

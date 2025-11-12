@@ -3,7 +3,6 @@ import z from 'zod';
 import { chainSchema, sortingSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
-import { Prisma } from '@prisma/client';
 import type { Chain } from '@/types/chain';
 import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 
@@ -55,24 +54,41 @@ const listTopNetworksUncached = async (
     unique_facilitators: 'unique_facilitators',
   };
   const sortColumn = sortColumnMap[sorting.id as NetworksSortId];
-  const sortDirection = Prisma.raw(sorting.desc ? 'DESC' : 'ASC');
+  const sortDirection = sorting.desc ? 'DESC' : 'ASC';
 
-  const sql = Prisma.sql`
+  const conditions: string[] = ['1=1'];
+
+  if (chain) {
+    conditions.push(`chain = '${chain}'`);
+  }
+
+  if (startDate) {
+    conditions.push(
+      `block_timestamp >= parseDateTime64BestEffort('${startDate.toISOString()}')`
+    );
+  }
+
+  if (endDate) {
+    conditions.push(
+      `block_timestamp <= parseDateTime64BestEffort('${endDate.toISOString()}')`
+    );
+  }
+
+  const whereClause = 'WHERE ' + conditions.join(' AND ');
+
+  const sql = `
     SELECT 
-      t.chain,
-      COUNT(*)::int AS tx_count,
-      SUM(t.amount)::float AS total_amount,
-      MAX(t.block_timestamp) AS latest_block_timestamp,
-      COUNT(DISTINCT t.sender)::int AS unique_buyers,
-      COUNT(DISTINCT t.recipient)::int AS unique_sellers,
-      COUNT(DISTINCT t.facilitator_id)::int AS unique_facilitators
-    FROM "TransferEvent" t
-    WHERE 1=1
-      ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-      ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate.toISOString()}::timestamp` : Prisma.empty}
-      ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate.toISOString()}::timestamp` : Prisma.empty}
-    GROUP BY t.chain
-    ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
+      chain,
+      COUNT(*) AS tx_count,
+      SUM(amount) AS total_amount,
+      MAX(block_timestamp) AS latest_block_timestamp,
+      uniq(sender) AS unique_buyers,
+      uniq(recipient) AS unique_sellers,
+      uniq(facilitator_id) AS unique_facilitators
+    FROM public_TransferEvent
+    ${whereClause}
+    GROUP BY chain
+    ORDER BY ${sortColumn} ${sortDirection}
     LIMIT ${limit}
   `;
 
@@ -81,11 +97,11 @@ const listTopNetworksUncached = async (
     z.array(
       z.object({
         chain: chainSchema,
-        tx_count: z.number(),
+        tx_count: z.coerce.number(),
         total_amount: z.number(),
-        latest_block_timestamp: z.date(),
-        unique_buyers: z.number(),
-        unique_sellers: z.number(),
+        latest_block_timestamp: z.coerce.date(),
+        unique_buyers: z.coerce.number(),
+        unique_sellers: z.coerce.number(),
         unique_facilitators: z.number(),
       })
     )

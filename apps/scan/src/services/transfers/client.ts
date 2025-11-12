@@ -1,33 +1,23 @@
-import { PrismaClient as TransfersPrismaClient } from '.prisma/client-transfers';
-import { readReplicas } from '@prisma/extension-read-replicas';
+import { createClient } from '@clickhouse/client';
 import { env } from '@/env';
-import type { Sql } from '@prisma/client/runtime/library';
 import type z from 'zod';
 
-export const transfersPrisma = new TransfersPrismaClient().$extends(
-  readReplicas({
-    url: [
-      ...(env.TRANSFERS_DB_URL_REPLICA_1
-        ? [env.TRANSFERS_DB_URL_REPLICA_1]
-        : []),
-      ...(env.TRANSFERS_DB_URL_REPLICA_2
-        ? [env.TRANSFERS_DB_URL_REPLICA_2]
-        : []),
-      ...(env.TRANSFERS_DB_URL_REPLICA_3
-        ? [env.TRANSFERS_DB_URL_REPLICA_3]
-        : []),
-      ...(env.TRANSFERS_DB_URL_REPLICA_4
-        ? [env.TRANSFERS_DB_URL_REPLICA_4]
-        : []),
-      ...(env.TRANSFERS_DB_URL_REPLICA_5
-        ? [env.TRANSFERS_DB_URL_REPLICA_5]
-        : []),
-    ],
-  })
-);
+export const transfersClickhouse = createClient({
+  url: env.TRANSFERS_CLICKHOUSE_HOST ?? 'http://localhost:8123',
+  username: env.TRANSFERS_CLICKHOUSE_USER ?? 'default',
+  password: env.TRANSFERS_CLICKHOUSE_PASSWORD ?? '',
+  database: env.TRANSFERS_CLICKHOUSE_DATABASE ?? 'default',
+});
 
-export const queryRaw = async <T>(sql: Sql, resultSchema: z.ZodSchema<T>) => {
-  const result = await transfersPrisma.$replica().$queryRaw<T>(sql);
+export const queryRaw = async <T>(
+  query: string,
+  resultSchema: z.ZodSchema<T>
+): Promise<T> => {
+  const resultSet = await transfersClickhouse.query({
+    query,
+    format: 'JSONEachRow',
+  });
+  const result = await resultSet.json<T>();
   const parseResult = resultSchema.safeParse(result);
   if (!parseResult.success) {
     throw new Error('Invalid result: ' + parseResult.error.message);

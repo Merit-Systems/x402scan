@@ -1,5 +1,4 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
 
 import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
@@ -11,7 +10,6 @@ import {
 } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { transfersWhereClause } from '../query-utils';
-import { paginationClause } from '@/lib/pagination';
 
 import type { paginatedQuerySchema } from '@/lib/pagination';
 
@@ -34,43 +32,48 @@ const listTopSellersUncached = async (
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
   const { sorting } = input;
+  const { page_size, page } = pagination;
+  const whereClause = transfersWhereClause(input);
+  const sortDirection = sorting.desc ? 'DESC' : 'ASC';
+  const offset = page * page_size;
 
   const [count, items] = await Promise.all([
     queryRaw(
-      Prisma.sql`
-        SELECT COUNT(DISTINCT t.recipient)::integer AS count
-        FROM "TransferEvent" t
-        ${transfersWhereClause(input)}
+      `
+        SELECT uniq(recipient) AS count
+        FROM public_TransferEvent
+        ${whereClause}
       `,
       z.array(
         z.object({
-          count: z.number(),
+          count: z.coerce.number(),
         })
       )
     ).then(result => result[0]?.count ?? 0),
     queryRaw(
-      Prisma.sql`
+      `
       SELECT 
-        t.recipient,
-        ARRAY_AGG(DISTINCT t.facilitator_id) as facilitator_ids,
-        COUNT(*)::integer as tx_count,
-        SUM(t.amount)::float as total_amount,
-        MAX(t.block_timestamp) as latest_block_timestamp,
-        COUNT(DISTINCT t.sender)::integer as unique_buyers,
-        ARRAY_AGG(DISTINCT t.chain) as chains
-      FROM "TransferEvent" t
-      ${transfersWhereClause(input)}
-      GROUP BY t.recipient
-      ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.raw('DESC') : Prisma.raw('ASC')}
-      ${paginationClause(pagination)}`,
+        recipient,
+        groupArrayDistinct(facilitator_id) as facilitator_ids,
+        COUNT(*) as tx_count,
+        SUM(amount) as total_amount,
+        MAX(block_timestamp) as latest_block_timestamp,
+        uniq(sender) as unique_buyers,
+        groupArrayDistinct(chain) as chains
+      FROM public_TransferEvent
+      ${whereClause}
+      GROUP BY recipient
+      ORDER BY ${sorting.id} ${sortDirection}
+      LIMIT ${page_size + 1}
+      OFFSET ${offset}`,
       z.array(
         z.object({
           recipient: mixedAddressSchema,
           facilitator_ids: z.array(z.string()),
-          tx_count: z.number(),
+          tx_count: z.coerce.number(),
           total_amount: z.number(),
-          latest_block_timestamp: z.date(),
-          unique_buyers: z.number(),
+          latest_block_timestamp: z.coerce.date(),
+          unique_buyers: z.coerce.number(),
           chains: z.array(chainSchema),
         })
       )

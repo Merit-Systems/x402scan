@@ -1,7 +1,5 @@
 import z from 'zod';
 
-import { Prisma } from '@prisma/client';
-
 import { baseBucketedQuerySchema } from '../schemas';
 
 import { transfersWhereClause } from '../query-utils';
@@ -37,28 +35,26 @@ const getBucketedFacilitatorsStatisticsUncached = async (
 
   const facilitatorIds = chainFacilitators.map(f => f.id);
 
-  const sql = Prisma.sql`
+  const startTimestamp =
+    Math.floor(startDate.getTime() / 1000 / bucketSizeSeconds) *
+    bucketSizeSeconds;
+  const endTimestamp = Math.floor(endDate.getTime() / 1000);
+  const whereClause = transfersWhereClause({ ...input, facilitatorIds });
+
+  const sql = `
     WITH all_buckets AS (
-      SELECT generate_series(
-        to_timestamp(
-          floor(extract(epoch from ${startDate.toISOString()}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ),
-        ${endDate.toISOString()}::timestamp,
-        (${bucketSizeSeconds} || ' seconds')::interval
-      ) AS bucket_start
+      SELECT toDateTime(arrayJoin(range(${startTimestamp}, ${endTimestamp}, ${bucketSizeSeconds}))) AS bucket_start
     ),
     bucket_stats AS (
       SELECT
-        to_timestamp(
-          floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ) AS bucket_start,
-        t.facilitator_id,
-        COUNT(*)::int AS total_transactions,
-        SUM(t.amount)::float AS total_amount,
-        COUNT(DISTINCT t.sender)::int AS unique_buyers,
-        COUNT(DISTINCT t.recipient)::int AS unique_sellers
-      FROM "TransferEvent" t
-      ${transfersWhereClause({ ...input, facilitatorIds })}
+        toStartOfInterval(block_timestamp, INTERVAL ${bucketSizeSeconds} SECOND) AS bucket_start,
+        facilitator_id,
+        COUNT(*) AS total_transactions,
+        SUM(amount) AS total_amount,
+        uniq(sender) AS unique_buyers,
+        uniq(recipient) AS unique_sellers
+      FROM public_TransferEvent
+      ${whereClause}
       GROUP BY bucket_start, facilitator_id
     ),
     active_facilitators AS (
@@ -73,10 +69,10 @@ const getBucketedFacilitatorsStatisticsUncached = async (
       SELECT
         ac.bucket_start,
         ac.facilitator_id,
-        COALESCE(bs.total_transactions, 0)::int AS total_transactions,
-        COALESCE(bs.total_amount, 0)::float AS total_amount,
-        COALESCE(bs.unique_buyers, 0)::int AS unique_buyers,
-        COALESCE(bs.unique_sellers, 0)::int AS unique_sellers
+        COALESCE(bs.total_transactions, 0) AS total_transactions,
+        COALESCE(bs.total_amount, 0) AS total_amount,
+        COALESCE(bs.unique_buyers, 0) AS unique_buyers,
+        COALESCE(bs.unique_sellers, 0) AS unique_sellers
       FROM all_combinations ac
       LEFT JOIN bucket_stats bs
         ON ac.bucket_start = bs.bucket_start
@@ -84,14 +80,9 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     )
     SELECT
       bucket_start,
-      jsonb_object_agg(
-        facilitator_id,
-        jsonb_build_object(
-          'total_transactions', total_transactions,
-          'total_amount', total_amount,
-          'unique_buyers', unique_buyers,
-          'unique_sellers', unique_sellers
-        )
+      map(
+        groupArray(facilitator_id),
+        groupArray((total_transactions, total_amount, unique_buyers, unique_sellers))
       ) AS facilitators
     FROM combined_stats
     GROUP BY bucket_start
@@ -99,25 +90,67 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     LIMIT ${numBuckets}
   `;
 
+  // ClickHouse map returns a different structure, so we need to transform it
   const rawResult = await queryRaw(
     sql,
     z.array(
       z.object({
-        bucket_start: z.date(),
-        facilitators: z.record(
-          z.string(),
-          z.object({
-            total_transactions: z.number(),
-            total_amount: z.number(),
-            unique_buyers: z.number(),
-            unique_sellers: z.number(),
-          })
-        ),
+        bucket_start: z.coerce.date(),
+        facilitators: z.any(), // We'll transform this
       })
     )
   );
 
-  return rawResult;
+  // Transform ClickHouse map to the expected format
+  const transformedResult = rawResult.map(row => {
+    const facilitators: Record<
+      string,
+      {
+        total_transactions: number;
+        total_amount: number;
+        unique_buyers: number;
+        unique_sellers: number;
+      }
+    > = {};
+
+    if (Array.isArray(row.facilitators)) {
+      // Handle the ClickHouse map format
+      const keys = Object.keys(row.facilitators);
+      keys.forEach(key => {
+        const value = (row.facilitators as any)[key];
+        if (Array.isArray(value) && value.length === 4) {
+          facilitators[key] = {
+            total_transactions: value[0],
+            total_amount: value[1],
+            unique_buyers: value[2],
+            unique_sellers: value[3],
+          };
+        }
+      });
+    }
+
+    return {
+      bucket_start: row.bucket_start,
+      facilitators,
+    };
+  });
+
+  return z
+    .array(
+      z.object({
+        bucket_start: z.coerce.date(),
+        facilitators: z.record(
+          z.string(),
+          z.object({
+            total_transactions: z.coerce.number(),
+            total_amount: z.number(),
+            unique_buyers: z.coerce.number(),
+            unique_sellers: z.coerce.number(),
+          })
+        ),
+      })
+    )
+    .parse(transformedResult);
 };
 
 export const getBucketedFacilitatorsStatistics = createCachedArrayQuery({

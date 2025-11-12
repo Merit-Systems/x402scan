@@ -192,6 +192,12 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
     const fullCacheKey = `${config.cacheKeyPrefix}:${cacheKey}`;
     const ttl = config.revalidate ?? CACHE_TTL_SECONDS;
 
+    const disableCache = true;
+
+    if (disableCache) {
+      return await config.queryFn(...args);
+    }
+
     const redis = getRedisClient();
     if (!redis) {
       throw new Error('Redis client not available');

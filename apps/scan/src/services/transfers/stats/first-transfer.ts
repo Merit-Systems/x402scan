@@ -1,7 +1,5 @@
 import z from 'zod';
 
-import { Prisma } from '@prisma/client';
-
 import { baseQuerySchema } from '../schemas';
 
 import { queryRaw } from '@/services/transfers/client';
@@ -16,11 +14,16 @@ export const getFirstTransferTimestampInputSchema = baseQuerySchema.omit({
 export const getFirstTransferTimestamp = async (
   input: z.infer<typeof getFirstTransferTimestampInputSchema>
 ): Promise<Date | null> => {
-  const sql = Prisma.sql`
-    SELECT t.block_timestamp
-    FROM "TransferEvent" t
-    ${transfersWhereClause({ ...input, timeframe: ActivityTimeframe.AllTime })}
-    ORDER BY t.block_timestamp ASC
+  const whereClause = transfersWhereClause({
+    ...input,
+    timeframe: ActivityTimeframe.AllTime,
+  });
+
+  const sql = `
+    SELECT block_timestamp
+    FROM public_TransferEvent
+    ${whereClause}
+    ORDER BY block_timestamp ASC
     LIMIT 1
   `;
 
@@ -28,7 +31,7 @@ export const getFirstTransferTimestamp = async (
     sql,
     z.array(
       z.object({
-        block_timestamp: z.date(),
+        block_timestamp: z.coerce.date(),
       })
     )
   );

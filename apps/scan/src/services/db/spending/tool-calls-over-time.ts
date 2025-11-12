@@ -15,7 +15,7 @@ export const toolCallsOverTimeQuerySchema = z.object({
 
 const bucketedToolCallsResultSchema = z.array(
   z.object({
-    bucket_start: z.date(),
+    bucket_start: z.coerce.date(),
     total_tool_calls: z.number(),
   })
 );

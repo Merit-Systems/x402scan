@@ -1,7 +1,5 @@
 import z from 'zod';
 
-import { Prisma } from '@prisma/client';
-
 import { baseBucketedQuerySchema } from '../schemas';
 import { transfersWhereClause } from '../query-utils';
 import { getFirstTransferTimestamp } from './first-transfer';
@@ -16,11 +14,11 @@ export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
 const bucketedResultSchema = z.array(
   z.object({
-    bucket_start: z.date(),
-    total_transactions: z.number(),
+    bucket_start: z.coerce.date(),
+    total_transactions: z.coerce.number(),
     total_amount: z.number(),
-    unique_buyers: z.number(),
-    unique_sellers: z.number(),
+    unique_buyers: z.coerce.number(),
+    unique_sellers: z.coerce.number(),
   })
 );
 
@@ -41,35 +39,33 @@ const getBucketedStatisticsUncached = async (
     Math.floor(timeRangeMs / numBuckets / 1000)
   );
 
-  const sql = Prisma.sql`
+  const startTimestamp =
+    Math.floor(startDate.getTime() / 1000 / bucketSizeSeconds) *
+    bucketSizeSeconds;
+  const endTimestamp = Math.floor(endDate.getTime() / 1000);
+  const whereClause = transfersWhereClause(input);
+
+  const sql = `
     WITH all_buckets AS (
-      SELECT generate_series(
-        to_timestamp(
-          floor(extract(epoch from ${startDate.toISOString()}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ),
-        ${endDate.toISOString()}::timestamp,
-        (${bucketSizeSeconds} || ' seconds')::interval
-      ) AS bucket_start
+      SELECT toDateTime(arrayJoin(range(${startTimestamp}, ${endTimestamp}, ${bucketSizeSeconds}))) AS bucket_start
     ),
     bucket_stats AS (
       SELECT 
-        to_timestamp(
-          floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ) AS bucket_start,
-        COUNT(*)::int AS total_transactions,
-        SUM(t.amount)::float AS total_amount,
-        COUNT(DISTINCT t.sender)::int AS unique_buyers,
-        COUNT(DISTINCT t.recipient)::int AS unique_sellers
-      FROM "TransferEvent" t
-      ${transfersWhereClause(input)}
+        toStartOfInterval(block_timestamp, INTERVAL ${bucketSizeSeconds} SECOND) AS bucket_start,
+        COUNT(*) AS total_transactions,
+        SUM(amount) AS total_amount,
+        uniq(sender) AS unique_buyers,
+        uniq(recipient) AS unique_sellers
+      FROM public_TransferEvent
+      ${whereClause}
       GROUP BY bucket_start
     )
     SELECT 
       ab.bucket_start,
-      COALESCE(bs.total_transactions, 0)::int AS total_transactions,
-      COALESCE(bs.total_amount, 0)::float AS total_amount,
-      COALESCE(bs.unique_buyers, 0)::int AS unique_buyers,
-      COALESCE(bs.unique_sellers, 0)::int AS unique_sellers
+      COALESCE(bs.total_transactions, 0) AS total_transactions,
+      COALESCE(bs.total_amount, 0) AS total_amount,
+      COALESCE(bs.unique_buyers, 0) AS unique_buyers,
+      COALESCE(bs.unique_sellers, 0) AS unique_sellers
     FROM all_buckets ab
     LEFT JOIN bucket_stats bs ON ab.bucket_start = bs.bucket_start
     ORDER BY ab.bucket_start
@@ -77,8 +73,6 @@ const getBucketedStatisticsUncached = async (
   `;
 
   const rawResult = await queryRaw(sql, bucketedResultSchema);
-
-  console.log('bucketed statistics rawResult', rawResult);
 
   const transformedResult = rawResult.map(row => ({
     ...row,

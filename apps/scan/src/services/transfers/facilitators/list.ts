@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { baseListQuerySchema } from '../schemas';
 
-import { queryRaw, transfersPrisma } from '@/services/transfers/client';
+import { queryRaw } from '@/services/transfers/client';
 
 import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import {
@@ -10,12 +10,10 @@ import {
   createStandardCacheKey,
 } from '@/lib/cache';
 
-import { Prisma } from '@prisma/client';
 import { facilitatorIdMap } from '@/lib/facilitators';
-import { transfersWhereClause, transfersWhereObject } from '../query-utils';
+import { transfersWhereClause } from '../query-utils';
 import {
   toPaginatedResponse,
-  paginationClause,
   type paginatedQuerySchema,
 } from '@/lib/pagination';
 
@@ -38,7 +36,7 @@ const listTopFacilitatorsUncached = async (
   input: z.infer<typeof listTopFacilitatorsInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
-  const { sorting } = input;
+  const { sorting, page_size, page } = { ...input, ...pagination };
 
   const sortColumnMap: Record<FacilitatorsSortId, string> = {
     tx_count: 'tx_count',
@@ -48,43 +46,53 @@ const listTopFacilitatorsUncached = async (
     unique_sellers: 'unique_sellers',
   };
   const sortColumn = sortColumnMap[sorting.id];
-  const sortDirection = Prisma.raw(sorting.desc ? 'DESC' : 'ASC');
+  const sortDirection = sorting.desc ? 'DESC' : 'ASC';
+  const whereClause = transfersWhereClause(input);
+  const offset = page * page_size;
 
-  const [count, results] = await Promise.all([
-    transfersPrisma.transferEvent.count({
-      where: transfersWhereObject(input),
-    }),
+  const [countResult, results] = await Promise.all([
     queryRaw(
-      Prisma.sql`
+      `
+        SELECT COUNT(*) as count
+        FROM public_TransferEvent
+        ${whereClause}
+      `,
+      z.array(z.object({ count: z.coerce.number() }))
+    ),
+    queryRaw(
+      `
       SELECT
-        t.facilitator_id,
-        COUNT(*)::int AS tx_count,
-        SUM(t.amount)::float AS total_amount,
-        MAX(t.block_timestamp) AS latest_block_timestamp,
-        COUNT(DISTINCT t.sender)::int AS unique_buyers,
-        COUNT(DISTINCT t.recipient)::int AS unique_sellers,
-        ARRAY_AGG(DISTINCT t.transaction_from) as facilitator_addresses,
-        ARRAY_AGG(DISTINCT t.chain) as chains
-      FROM "TransferEvent" t
-      ${transfersWhereClause(input)}
-      GROUP BY t.facilitator_id
-      ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
-      ${paginationClause(pagination)}
+        facilitator_id,
+        COUNT(*) AS tx_count,
+        SUM(amount) AS total_amount,
+        MAX(block_timestamp) AS latest_block_timestamp,
+        uniq(sender) AS unique_buyers,
+        uniq(recipient) AS unique_sellers,
+        groupArrayDistinct(transaction_from) as facilitator_addresses,
+        groupArrayDistinct(chain) as chains
+      FROM public_TransferEvent
+      ${whereClause}
+      GROUP BY facilitator_id
+      ORDER BY ${sortColumn} ${sortDirection}
+      LIMIT ${page_size + 1}
+      OFFSET ${offset}
       `,
       z.array(
         z.object({
           facilitator_id: z.string(),
           facilitator_addresses: z.array(mixedAddressSchema),
-          tx_count: z.number(),
+          tx_count: z.coerce.number(),
           total_amount: z.number(),
-          latest_block_timestamp: z.date(),
-          unique_buyers: z.number(),
-          unique_sellers: z.number(),
+          latest_block_timestamp: z.coerce.date(),
+          unique_buyers: z.coerce.number(),
+          unique_sellers: z.coerce.number(),
           chains: z.array(chainSchema),
         })
       )
     ),
   ]);
+
+  const count = countResult[0]?.count ?? 0;
 
   const items = results
     .map(result => {
