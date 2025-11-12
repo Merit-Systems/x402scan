@@ -7,6 +7,10 @@ import { sortingSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
 import { prisma } from '../client';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const agentsSortingIds = [
   'score',
@@ -30,7 +34,7 @@ export const listTopAgentConfigurationsSchema = z.object({
   }),
 });
 
-export const listTopAgentConfigurations = async (
+const listTopAgentConfigurationsUncached = async (
   input: z.infer<typeof listTopAgentConfigurationsSchema>,
   pagination: PaginatedQueryParams
 ) => {
@@ -160,3 +164,11 @@ export const listTopAgentConfigurations = async (
     ...pagination,
   });
 };
+
+export const listTopAgentConfigurations = createCachedPaginatedQuery({
+  queryFn: listTopAgentConfigurationsUncached,
+  cacheKeyPrefix: 'agent-config:list',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['createdAt'],
+  tags: ['agent-configuration'],
+});

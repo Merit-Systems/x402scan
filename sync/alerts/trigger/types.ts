@@ -24,4 +24,5 @@ export interface AddressConfig {
   chain: Chain;
   currency: Currency;
   threshold: number;
+  enabled: boolean;
 }

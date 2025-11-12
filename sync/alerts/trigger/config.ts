@@ -8,12 +8,14 @@ export const BALANCE_MONITORS: AddressConfig[] = [
     chain: base,
     currency: Currency.USDC,
     threshold: 10,
+    enabled: false,
   },
   {
     address: '0x034128338730855a835a4Ab9C16a0fBd27441b0F',
     chain: base,
     currency: Currency.ETH,
     threshold: 0.01,
+    enabled: true,
   },
 ];
 

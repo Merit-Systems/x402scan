@@ -15,4 +15,6 @@ export { xecho, xechoFacilitator } from './xecho';
 export { codenut, codenutFacilitator } from './codenut';
 export { ultravioletadao, ultravioletadaoFacilitator } from './ultravioletadao';
 export { virtuals, virtualsFacilitator } from './virtuals';
+export { heurist, heuristFacilitator } from './heurist';
+export { treasure, treasureFacilitator } from './treasure';
 export { aeon, aeonFacilitator } from './aeon';
