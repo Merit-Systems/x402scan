@@ -119,7 +119,7 @@
     "zod3": "npm:zod@^3.24.2"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
+    "@repo/eslint-config": "workspace:*",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -128,8 +128,6 @@
     "@vitest/ui": "^3.2.4",
     "dotenv": "^17.2.3",
     "eslint": "^9.38.0",
-    "eslint-config-next": "15.5.4",
-    "eslint-config-prettier": "^10.1.8",
     "knip": "^5.64.0",
     "prettier": "^3.6.2",
     "prisma": "^6.16.2",
