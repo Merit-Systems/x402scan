@@ -5,12 +5,7 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Line } from 'recharts';
 import { LoadingChart } from './loading-chart';
 import { useObservabilityData } from './use-observability-data';
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface LatencyData {
   ts: string;
@@ -69,19 +64,11 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     };
   });
 
-  const avgP50 =
-    chartData.length > 0
-      ? chartData.reduce((sum, d) => sum + d.p50, 0) / chartData.length
-      : 0;
-
   return (
     <Card className="w-full lg:w-1/3">
       <CardHeader className="space-y-0 pb-4">
-        <CardDescription>Latency (p50)</CardDescription>
-        <div className="flex items-center justify-between pt-2">
-          <CardTitle className="text-2xl font-bold">
-            {avgP50.toFixed(3)}s
-          </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base font-medium">Latency</CardTitle>
           <div className="flex gap-3">
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-[#10b981]" />
