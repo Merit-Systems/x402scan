@@ -6,6 +6,10 @@ import { Prisma } from '@prisma/client';
 import { sortingSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 export const createToolCall = async (data: Prisma.ToolCallCreateInput) => {
   return await prisma.toolCall.create({
@@ -29,7 +33,7 @@ export const listTopToolsSchema = z.object({
   }),
 });
 
-export const listTopTools = async (
+const listTopToolsUncached = async (
   input: z.infer<typeof listTopToolsSchema>,
   pagination: PaginatedQueryParams
 ) => {
@@ -160,3 +164,11 @@ export const listTopTools = async (
     ...pagination,
   });
 };
+
+export const listTopTools = createCachedPaginatedQuery({
+  queryFn: listTopToolsUncached,
+  cacheKeyPrefix: 'composer:top-tools',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['latest_call_time'],
+  tags: ['composer', 'tools'],
+});

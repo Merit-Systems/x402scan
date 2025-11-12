@@ -6,7 +6,6 @@ import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ResourcesSortingProvider } from '@/app/_contexts/sorting/resource-tags/provider';
 import { defaultResourcesSorting } from '@/app/_contexts/sorting/resource-tags/default';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { subDays } from 'date-fns';
 import { auth } from '@/auth';
 import { forbidden } from 'next/navigation';
 
@@ -17,10 +16,7 @@ export default async function ResourcesPage() {
   }
 
   return (
-    <TimeRangeProvider
-      creationDate={subDays(new Date(), 365)}
-      initialTimeframe={ActivityTimeframe.ThirtyDays}
-    >
+    <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
       <ResourcesSortingProvider initialSorting={defaultResourcesSorting}>
         <div>
           <Heading

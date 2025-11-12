@@ -12,7 +12,7 @@ import { useState } from 'react';
 
 export const AllSellersTable = () => {
   const { sorting } = useSellersSorting();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
   const [page, setPage] = useState(0);
@@ -24,8 +24,7 @@ export const AllSellersTable = () => {
       page_size: pageSize,
       page,
     },
-    startDate,
-    endDate,
+    timeframe,
   });
 
   return (

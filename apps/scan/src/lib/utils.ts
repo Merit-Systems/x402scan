@@ -72,16 +72,6 @@ export const formatAddress = (address: string) => {
   return address.slice(0, 6) + '...' + address.slice(-6);
 };
 
-export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
-  if (previous === BigInt(0)) {
-    return 0;
-  }
-
-  return ((Number(current) - Number(previous)) / Number(previous)) * 100;
-};
-
-export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-
 export function convertToUIMessages(messages: Message[]): UIMessage[] {
   return messages.map(message => ({
     id: message.id,
@@ -102,3 +92,18 @@ export const USDC_ADDRESS = {
   [Chain.POLYGON]: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359' as const,
   [Chain.OPTIMISM]: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85' as const,
 } satisfies Record<Chain, MixedAddress>;
+
+export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
+export const safeParseJson = <T>(
+  value: string | null | undefined,
+  fallback: T
+): T => {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(decodeURIComponent(value)) as T;
+  } catch (e) {
+    console.error('Failed to parse JSON from cookie value:', e);
+    return fallback;
+  }
+};

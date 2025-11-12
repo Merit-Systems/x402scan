@@ -11,7 +11,7 @@ import { api } from '@/trpc/client';
 
 export const KnownSellersTable = () => {
   const { sorting } = useSellersSorting();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
   const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
@@ -19,8 +19,7 @@ export const KnownSellersTable = () => {
     pagination: {
       page_size: 100,
     },
-    startDate,
-    endDate,
+    timeframe,
     sorting,
   });
 

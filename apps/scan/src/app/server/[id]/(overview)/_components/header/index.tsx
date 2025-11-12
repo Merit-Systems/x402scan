@@ -13,12 +13,32 @@ import { cn } from '@/lib/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
 import { HeaderButtons, LoadingHeaderButtons } from './buttons';
+import { prisma } from '@/services/db/client';
+import { HealthIndicator } from '@/components/health';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
 }
 
 export const HeaderCard: React.FC<Props> = async ({ origin }) => {
+  const originMetrics = await prisma.resourceOriginMetrics.findFirst({
+    where: {
+      originId: origin.id,
+    },
+    orderBy: { updatedAt: 'desc' },
+    select: {
+      uptime24hPct: true,
+      totalCount24h: true,
+      count_5xx_24h: true,
+      count_4xx_24h: true,
+      count_2xx_24h: true,
+      p50_24hMs: true,
+      p90_24hMs: true,
+      p99_24hMs: true,
+      updatedAt: true,
+    },
+  });
+
   return (
     <Card className={cn('relative mt-10 md:mt-12')}>
       <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
@@ -34,14 +54,17 @@ export const HeaderCard: React.FC<Props> = async ({ origin }) => {
             <h1 className="text-xl md:text-3xl font-bold break-words line-clamp-2">
               {origin.title ?? new URL(origin.origin).hostname}
             </h1>
-            <a
-              href={origin.origin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-bold font-mono text-muted-foreground hover:underline break-all"
-            >
-              {origin.origin}
-            </a>
+            <div className="flex items-center gap-2">
+              <a
+                href={origin.origin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-bold font-mono text-muted-foreground hover:underline break-all"
+              >
+                {origin.origin}
+              </a>
+              <HealthIndicator metrics={originMetrics} />
+            </div>
             <p
               className={cn(
                 'break-words line-clamp-2 text-sm md:text-base',
