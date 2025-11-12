@@ -25,22 +25,6 @@ interface Props {
   originUrl: string;
 }
 
-const LoadingResourcesTable = () => {
-  return (
-    <div className="w-full">
-      <div className="mb-4">
-        <Skeleton className="h-7 w-32 mb-2" />
-        <Skeleton className="h-4 w-64" />
-      </div>
-      <div className="border rounded-lg p-4 space-y-3">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full" />
-        ))}
-      </div>
-    </div>
-  );
-};
-
 const RESOURCES_ENDPOINT = '/api/observability/resources';
 
 export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
@@ -59,7 +43,19 @@ export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
   };
 
   if (isLoading) {
-    return <LoadingResourcesTable />;
+    return (
+      <div className="w-full">
+        <div className="mb-4">
+          <Skeleton className="h-7 w-32 mb-2" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <div className="border rounded-lg p-4 space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
