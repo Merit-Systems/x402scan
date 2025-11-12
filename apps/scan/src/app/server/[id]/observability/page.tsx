@@ -32,7 +32,7 @@ export default async function ObservabilityPage({
             <RangeSelector />
           </div>
 
-          <div className="flex gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
             <StatusChart originUrl={origin.origin} />
             <ErrorRateChart originUrl={origin.origin} />
           </div>

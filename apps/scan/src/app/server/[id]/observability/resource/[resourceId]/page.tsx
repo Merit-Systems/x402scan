@@ -52,7 +52,7 @@ export default async function ResourcePage({
           </div>
 
           <ResourceHeader resourceUrl={resourceUrl} />
-          <div className="flex gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
             <StatusChart originUrl={origin.origin} resourceUrl={resourceUrl} />
             <ErrorRateChart
               originUrl={origin.origin}

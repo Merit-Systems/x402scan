@@ -65,7 +65,7 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
   });
 
   return (
-    <Card className="w-full lg:w-1/3">
+    <Card className="w-full">
       <CardHeader className="space-y-0 pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base font-medium">Latency</CardTitle>

@@ -77,7 +77,7 @@ const StatusChartInner: React.FC<{ data: StatusCodeData[] }> = ({ data }) => {
   });
 
   return (
-    <Card className="w-full lg:w-1/2">
+    <Card className="w-full">
       <CardHeader className="space-y-0 pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base font-medium">Status Codes</CardTitle>
