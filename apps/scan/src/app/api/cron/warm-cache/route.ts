@@ -89,29 +89,16 @@ function getHomePageTasks(
   return [
     // Overall Stats - current period
     () =>
-      api.public.stats.overall({
+      api.public.stats.overallMV({
         timeframe,
         chain,
       }),
 
-    ...(timeframe !== ActivityTimeframe.AllTime
-      ? [
-          () =>
-            api.public.stats.overall({
-              timeframe: {
-                period: timeframe,
-                offset: timeframe,
-              },
-              chain,
-            }),
-        ]
-      : []),
-
     // Bucketed Statistics - for charts
     () =>
-      api.public.stats.bucketed({
+      api.public.stats.bucketedMV({
         timeframe,
-        numBuckets: 32,
+        numBuckets: 48,
         chain,
       }),
 
@@ -315,14 +302,11 @@ export async function GET(request: NextRequest) {
 
     // Optional query params
     const { searchParams } = new URL(request.url);
-    const onlyAllTime = searchParams.get('onlyAllTime') === 'true';
     const pagesParam = searchParams.get('pages'); // e.g., "home,networks"
     const chainParam = searchParams.get('chain'); // e.g., "base", "solana", "all"
 
     // Filter timeframes if requested
-    const timeframesToWarm = onlyAllTime
-      ? [ActivityTimeframe.AllTime]
-      : Object.values(ActivityTimeframe).filter(tf => typeof tf === 'number');
+    const timeframesToWarm = Object.values(ActivityTimeframe).filter(tf => typeof tf === 'number');
 
     // Filter pages if requested
     const pagesToWarm: WarmablePage[] = pagesParam
@@ -343,7 +327,7 @@ export async function GET(request: NextRequest) {
       : undefined;
 
     console.log(
-      `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'}${onlyAllTime ? ' (All Time only)' : ''} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? '' : 's'}: ${pagesToWarm.join(', ')}`
+      `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? '' : 's'}: ${pagesToWarm.join(', ')}`
     );
 
     // Warm each timeframe serially to avoid overwhelming the database
@@ -351,11 +335,9 @@ export async function GET(request: NextRequest) {
       const timeframeStartTime = Date.now();
 
       const timeframeName =
-        timeframe === ActivityTimeframe.AllTime
-          ? 'All Time'
-          : timeframe === ActivityTimeframe.OneDay
-            ? '1 Day'
-            : `${timeframe} Days`;
+        timeframe === ActivityTimeframe.OneDay
+          ? '1 Day'
+          : `${timeframe} Days`;
 
       console.log(`[Cache Warming] Warming timeframe: ${timeframeName}`);
 
