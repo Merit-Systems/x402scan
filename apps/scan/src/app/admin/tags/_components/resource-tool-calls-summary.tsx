@@ -28,22 +28,19 @@ interface ResourceToolCallsSummaryProps {
 export const ResourceToolCallsSummary = ({
   selectedTagIds,
 }: ResourceToolCallsSummaryProps) => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const { data: toolCallsData, isLoading: toolCallsLoading } =
     api.admin.resources.stats.toolCalls.useQuery({
       tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
-      startDate,
-      endDate,
+      timeframe,
       numBuckets: 48,
     });
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    const diffInMs = endDate.getTime() - startDate.getTime();
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-    return diffInDays < 7;
-  }, [startDate, endDate]);
+    return Number(timeframe) < 7;
+  }, [timeframe]);
 
   // Transform tool calls data for chart
   const toolCallsChartData = useMemo<ChartData<ResourceToolCallData>[]>(() => {

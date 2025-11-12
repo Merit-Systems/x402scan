@@ -27,7 +27,7 @@ export const AgentsTable: React.FC<Props> = ({
   limit = 10,
   useTimeRange = false,
 }) => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
   const { sorting } = useAgentsSorting();
 
   const [page, setPage] = useState(0);
@@ -38,7 +38,7 @@ export const AgentsTable: React.FC<Props> = ({
       page,
       page_size: limit,
     },
-    ...(useTimeRange ? { startDate, endDate } : {}),
+    timeframe,
   });
 
   return (

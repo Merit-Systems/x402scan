@@ -33,30 +33,24 @@ export const OverallStats = async ({ chain }: Props) => {
   );
 
   await Promise.all([
-    api.public.stats.overall.prefetch({
-      startDate,
-      endDate,
+    // Use MV for current period (OneDay is supported)
+    api.public.stats.overallMv.prefetch({
+      timeframe: ActivityTimeframe.OneDay,
       chain,
     }),
-    api.public.stats.overall.prefetch({
-      startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-      endDate: startDate,
-      chain,
-    }),
-    api.public.stats.bucketed.prefetch({
+    // Use MV for bucketed stats (OneDay is supported)
+    api.public.stats.bucketedMv.prefetch({
+      timeframe: ActivityTimeframe.OneDay,
       startDate,
       endDate,
-      numBuckets: 32,
+      numBuckets: 48,
       chain,
     }),
   ]);
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        initialTimeframe={ActivityTimeframe.OneDay}
-        creationDate={firstTransfer}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <ActivityContainer>
           <ErrorBoundary
             fallback={<p>There was an error loading the activity data</p>}

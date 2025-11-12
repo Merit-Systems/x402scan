@@ -16,18 +16,16 @@ interface Props {
 }
 
 export const ActivityCharts: React.FC<Props> = ({ facilitatorId }) => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const [overallStats] = api.public.stats.overall.useSuspenseQuery({
     facilitatorIds: [facilitatorId],
-    startDate,
-    endDate,
+    timeframe,
   });
   const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery(
     {
       facilitatorIds: [facilitatorId],
-      startDate,
-      endDate,
+      timeframe,
     },
     {
       staleTime: 15000,

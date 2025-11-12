@@ -17,7 +17,6 @@ import {
 import { FacilitatorsSortingProvider } from '@/app/_contexts/sorting/facilitators/provider';
 import { defaultFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/default';
 import { getChain } from '@/app/_lib/chain';
-import { facilitators } from '@/lib/facilitators';
 import { getSSRTimeRange } from '@/lib/time-range';
 import { FacilitatorPackageBanner } from './_components/facilitator-package-banner';
 
@@ -32,33 +31,32 @@ export default async function FacilitatorsPage({
   );
 
   await Promise.all([
+    // Use MV for bucketed statistics (OneDay is supported)
     api.public.facilitators.bucketedStatistics.prefetch({
+      timeframe: ActivityTimeframe.OneDay,
       numBuckets: 48,
       startDate,
       endDate,
       chain,
     }),
-    api.public.stats.overall.prefetch({
-      startDate,
-      endDate,
+    // Use MV for overall stats (OneDay is supported)
+    api.public.stats.overallMv.prefetch({
+      timeframe: ActivityTimeframe.OneDay,
       chain,
     }),
+    // Use MV for facilitators list (OneDay is supported)
     api.public.facilitators.list.prefetch({
+      timeframe: ActivityTimeframe.OneDay,
       pagination: {
-        page_size: facilitators.length,
+        page_size: 100,
       },
-      startDate,
-      endDate,
       chain,
     }),
   ]);
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        creationDate={firstTransfer}
-        initialTimeframe={ActivityTimeframe.OneDay}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <FacilitatorsSortingProvider
           initialSorting={defaultFacilitatorsSorting}
         >

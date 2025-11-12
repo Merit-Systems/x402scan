@@ -28,22 +28,19 @@ interface ResourceCreationsChartProps {
 export const ResourceCreationsChart = ({
   selectedTagIds,
 }: ResourceCreationsChartProps) => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const { data: creationsData, isLoading: creationsLoading } =
     api.admin.resources.stats.creations.useQuery({
       tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined,
-      startDate,
-      endDate,
+      timeframe,
       numBuckets: 48,
     });
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    const diffInMs = endDate.getTime() - startDate.getTime();
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-    return diffInDays < 7;
-  }, [startDate, endDate]);
+    return Number(timeframe) < 7;
+  }, [timeframe]);
 
   // Transform creations data for chart
   const creationsChartData = useMemo<ChartData<ResourceCreationData>[]>(() => {

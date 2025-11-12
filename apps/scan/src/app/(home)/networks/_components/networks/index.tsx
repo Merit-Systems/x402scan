@@ -11,13 +11,12 @@ import { useChain } from '@/app/_contexts/chain/hook';
 
 export const NetworksTable: React.FC = () => {
   const { sorting } = useNetworksSorting();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
   const [networks] = api.networks.list.useSuspenseQuery({
     sorting,
-    startDate,
-    endDate,
+    timeframe,
     chain,
   });
 

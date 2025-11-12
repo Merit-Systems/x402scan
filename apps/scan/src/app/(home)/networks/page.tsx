@@ -24,30 +24,27 @@ export default async function NetworksPage({
   );
 
   await Promise.all([
+    // Use MV for bucketed statistics (OneDay is supported)
     api.networks.bucketedStatistics.prefetch({
+      timeframe: ActivityTimeframe.OneDay,
       numBuckets: 48,
-      startDate,
-      endDate,
       chain,
     }),
-    api.public.stats.overall.prefetch({
-      startDate,
-      endDate,
+    // Use MV for overall stats (OneDay is supported)
+    api.public.stats.overallMv.prefetch({
+      timeframe: ActivityTimeframe.OneDay,
       chain,
     }),
+    // Use MV for networks list (OneDay is supported)
     api.networks.list.prefetch({
-      startDate,
-      endDate,
+      timeframe: ActivityTimeframe.OneDay,
       chain,
     }),
   ]);
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        creationDate={firstTransfer}
-        initialTimeframe={ActivityTimeframe.OneDay}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
         <NetworksSortingProvider initialSorting={defaultNetworksSorting}>
           <Heading
             title="Networks"

@@ -8,7 +8,7 @@ import {
   publicProcedure,
 } from '../../trpc';
 import {
-  bucketedStatisticsInputSchema,
+  bucketedFacilitatorsStatisticsInputSchema,
   getBucketedFacilitatorsStatistics,
 } from '@/services/transfers/facilitators/bucketed';
 
@@ -20,7 +20,7 @@ export const facilitatorsRouter = createTRPCRouter({
     }),
 
   bucketedStatistics: publicProcedure
-    .input(bucketedStatisticsInputSchema)
+    .input(bucketedFacilitatorsStatisticsInputSchema)
     .query(async ({ input }) => {
       return await getBucketedFacilitatorsStatistics(input);
     }),

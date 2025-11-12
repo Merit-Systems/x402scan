@@ -72,14 +72,6 @@ export const formatAddress = (address: string) => {
   return address.slice(0, 6) + '...' + address.slice(-6);
 };
 
-export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
-  if (previous === BigInt(0)) {
-    return 0;
-  }
-
-  return ((Number(current) - Number(previous)) / Number(previous)) * 100;
-};
-
 export function convertToUIMessages(messages: Message[]): UIMessage[] {
   return messages.map(message => ({
     id: message.id,

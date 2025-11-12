@@ -39,10 +39,7 @@ export default async function TransactionsPage({
   return (
     <HydrateClient>
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
-        <TimeRangeProvider
-          creationDate={firstTransfer}
-          initialTimeframe={ActivityTimeframe.ThirtyDays}
-        >
+        <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
           <Heading
             title="Transactions"
             description="All x402 transactions through the Coinbase facilitator"

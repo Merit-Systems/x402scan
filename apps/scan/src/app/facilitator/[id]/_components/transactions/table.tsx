@@ -19,7 +19,7 @@ export const LatestTransactionsTable: React.FC<Props> = ({
   pageSize,
 }) => {
   const { sorting } = useTransfersSorting();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const [page, setPage] = useState(0);
   const [latestTransactions] = api.public.transfers.list.useSuspenseQuery({
@@ -29,8 +29,7 @@ export const LatestTransactionsTable: React.FC<Props> = ({
     },
     facilitatorIds: [facilitatorId],
     sorting,
-    startDate,
-    endDate,
+    timeframe,
   });
 
   return (

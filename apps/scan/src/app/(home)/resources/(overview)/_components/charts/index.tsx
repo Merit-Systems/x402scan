@@ -8,30 +8,26 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
 export const ServersCharts = () => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const { data: allOverallStats, isLoading: isAllOverallStatsLoading } =
     api.public.sellers.all.stats.overall.useQuery({
-      startDate,
-      endDate,
+      timeframe,
     });
 
   const { data: allBucketedStats, isLoading: isAllBucketedStatsLoading } =
     api.public.sellers.all.stats.bucketed.useQuery({
-      startDate,
-      endDate,
+      timeframe,
     });
 
   const { data: bazaarOverallStats, isLoading: isBazaarOverallStatsLoading } =
     api.public.sellers.bazaar.stats.overall.useQuery({
-      startDate,
-      endDate,
+      timeframe,
     });
 
   const { data: bazaarBucketedStats, isLoading: isBazaarBucketedStatsLoading } =
     api.public.sellers.bazaar.stats.bucketed.useQuery({
-      startDate,
-      endDate,
+      timeframe,
     });
 
   if (

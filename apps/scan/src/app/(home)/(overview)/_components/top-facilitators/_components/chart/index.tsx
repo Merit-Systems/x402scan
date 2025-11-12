@@ -17,21 +17,19 @@ interface Props {
 
 export const FacilitatorChart: React.FC<Props> = ({ facilitatorId }) => {
   const { chain } = useChain();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
-  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
+  const [overallStats] = api.public.stats.overallMv.useSuspenseQuery({
     chain,
     facilitatorIds: [facilitatorId],
-    startDate,
-    endDate,
+    timeframe,
   });
 
-  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
+  const [bucketedStats] = api.public.stats.bucketedMv.useSuspenseQuery({
     chain,
     numBuckets: 48,
     facilitatorIds: [facilitatorId],
-    startDate,
-    endDate,
+    timeframe,
   });
 
   const chartData: ChartData<{

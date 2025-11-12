@@ -13,15 +13,14 @@ interface Props {
 }
 
 export const KnownSellerChart = ({ addresses }: Props) => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const { data: bucketedStats, isLoading } = api.public.stats.bucketed.useQuery(
     {
       recipients: {
         include: addresses,
       },
-      startDate,
-      endDate,
+      timeframe,
       numBuckets: 48,
     }
   );
