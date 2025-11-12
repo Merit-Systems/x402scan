@@ -2,6 +2,7 @@ import { subHours } from 'date-fns';
 
 import type z from 'zod';
 import type { timeframeSchema, timePeriodSchema } from './schemas';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 export function getTimeRangeFromTimeframe(
   timeframe: z.infer<typeof timeframeSchema>
@@ -34,6 +35,15 @@ export const getBucketedTimeRangeFromTimeframe = async ({
   const now = new Date();
   const endDate = now;
 
+  if (period === Number(ActivityTimeframe.ThirtyDays)) {
+    return {
+      startDate:
+        typeof creationDate === 'function'
+          ? await creationDate()
+          : creationDate,
+      endDate,
+    };
+  }
   const startDate = subHours(endDate, period * 24);
 
   return { startDate, endDate };
