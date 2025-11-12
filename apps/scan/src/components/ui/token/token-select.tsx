@@ -52,9 +52,9 @@ export const TokenSelect: React.FC<Props> = ({
         <Image
           src={CHAIN_ICONS[selectedToken.chain]}
           alt={selectedToken.chain}
-          height={10}
-          width={10}
-          className="size-2 absolute bottom-0 right-0"
+          height={16}
+          width={16}
+          className="size-2.5 absolute bottom-0 right-0"
         />
       </div>
       <span className="text-base font-semibold">{selectedToken.symbol}</span>

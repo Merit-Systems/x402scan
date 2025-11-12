@@ -25,7 +25,7 @@ interface Props {
 
 export const OriginCard: React.FC<Props> = ({ origin }) => {
   const originWithMetadata =
-    origin.origins.find(o => o.favicon) ?? origin.origins[0];
+    origin.origins.find(o => o.favicon) ?? origin.origins[0]!;
 
   return (
     <Link

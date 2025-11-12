@@ -24,9 +24,12 @@ export const NavMain = () => {
     !pathname.includes('/composer/agent/new');
   const agentId = pathname.split('/')[3];
 
-  const { data: agentConfiguration } = api.public.agents.get.useQuery(agentId, {
-    enabled: isAgent && !!session?.user.id,
-  });
+  const { data: agentConfiguration } = api.public.agents.get.useQuery(
+    agentId!,
+    {
+      enabled: isAgent && !!session?.user.id,
+    }
+  );
 
   const newChatUrl = isAgent
     ? (`/composer/agent/${agentId}/chat` as const)

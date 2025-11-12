@@ -1,7 +1,9 @@
 import { createManyTransferEvents, getTransferEvents } from '@/db/services';
 import { logger, schedules } from '@trigger.dev/sdk/v3';
-import { Network, SyncConfig } from './types';
+import { Network } from './types';
 import { fetchTransfers } from './fetch/fetch';
+
+import type { SyncConfig } from './types';
 
 export function createChainSyncTask(syncConfig: SyncConfig) {
   if (!syncConfig.enabled) {
@@ -34,7 +36,7 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
               where: {
                 chain: syncConfig.chain,
                 transaction_from:
-                  syncConfig.chain === Network.SOLANA
+                  syncConfig.chain === Network.SOLANA.toString()
                     ? facilitatorConfig.address
                     : facilitatorConfig.address.toLowerCase(),
                 provider: syncConfig.provider,

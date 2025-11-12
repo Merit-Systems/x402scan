@@ -31,7 +31,7 @@ export const SelectedResourceItem: React.FC<Props> = ({
 
   return (
     <BaseResourceItem
-      resource={tool[0]}
+      resource={tool[0]!}
       isSelected={true}
       onSelectResource={onSelectResource}
     />

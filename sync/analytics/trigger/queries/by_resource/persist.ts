@@ -1,8 +1,8 @@
 import { db } from '@/services/db';
 import { logger } from '@trigger.dev/sdk';
-import { MetricsByResource } from '../types';
+import type { MetricsByResource } from '../types';
 import { mapMetric } from '../utils';
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 
 export async function persistMetrics(
   data: unknown

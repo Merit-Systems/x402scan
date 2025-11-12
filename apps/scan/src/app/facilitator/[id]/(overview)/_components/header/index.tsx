@@ -18,7 +18,7 @@ interface Props {
   facilitator: Facilitator;
 }
 
-export const HeaderCard: React.FC<Props> = async ({ facilitator }) => {
+export const HeaderCard: React.FC<Props> = ({ facilitator }) => {
   return (
     <Card className={cn('relative mt-10 md:mt-12')}>
       <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
@@ -31,10 +31,10 @@ export const HeaderCard: React.FC<Props> = async ({ facilitator }) => {
       <div className="grid grid-cols-1 md:grid-cols-7">
         <div className="flex flex-col gap-4 p-4 pt-8 md:pt-10 col-span-5">
           <div className="">
-            <h1 className="text-3xl font-bold break-words line-clamp-2">
+            <h1 className="text-3xl font-bold wrap-break-words line-clamp-2">
               {facilitator.name} Facilitator
             </h1>
-            <p className={cn('break-words line-clamp-2')}>
+            <p className={cn('wrap-break-words line-clamp-2')}>
               <Addresses
                 addresses={Object.values(facilitator.addresses).flat()}
                 className="border-none p-0 text-sm"

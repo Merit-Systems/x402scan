@@ -30,21 +30,18 @@ export const ToolCallsChart = ({
   resourceId,
   resourceUrl,
 }: ToolCallsChartProps) => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const { data: toolCallsData, isLoading: toolCallsLoading } =
     api.admin.spending.toolCallsOverTime.useQuery({
       resourceId,
-      startDate,
-      endDate,
+      timeframe,
       numBuckets: 48,
     });
 
   const isLessThan7Days = useMemo(() => {
-    const diffInMs = endDate.getTime() - startDate.getTime();
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-    return diffInDays < 7;
-  }, [startDate, endDate]);
+    return Number(timeframe) < 7;
+  }, [timeframe]);
 
   const toolCallsChartData = useMemo<ChartData<ToolCallData>[]>(() => {
     const dateFormat = isLessThan7Days ? 'MMM d HH:mm' : 'MMM d';

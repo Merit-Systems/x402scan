@@ -139,7 +139,7 @@ const AgentSelectButton = React.forwardRef<
   const agentId = pathname.split('/')[3];
 
   const { data: agentConfiguration, isLoading: isAgentConfigurationLoading } =
-    api.public.agents.get.useQuery(agentId, {
+    api.public.agents.get.useQuery(agentId!, {
       enabled: isAgent,
     });
 

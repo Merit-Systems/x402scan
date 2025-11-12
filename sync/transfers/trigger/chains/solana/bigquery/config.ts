@@ -1,9 +1,5 @@
-import {
-  SyncConfig,
-  PaginationStrategy,
-  QueryProvider,
-  Network,
-} from '@/trigger/types';
+import type { SyncConfig } from '@/trigger/types';
+import { PaginationStrategy, QueryProvider, Network } from '@/trigger/types';
 import { buildQuery, transformResponse } from './query';
 import { ONE_DAY_IN_MS, ONE_MINUTE_IN_SECONDS } from '@/trigger/lib/constants';
 import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';

@@ -1,10 +1,6 @@
 import { ONE_MINUTE_IN_SECONDS } from '@/trigger/lib/constants';
-import {
-  SyncConfig,
-  PaginationStrategy,
-  QueryProvider,
-  Network,
-} from '../../../types';
+import type { SyncConfig } from '../../../types';
+import { PaginationStrategy, QueryProvider, Network } from '../../../types';
 import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 import { buildQuery, transformResponse } from './query';
 
