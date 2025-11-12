@@ -39,7 +39,7 @@ export const ResourcesTable: React.FC<Props> = ({ data }) => {
               <TableHead className="text-right w-[10%]">Requests</TableHead>
               <TableHead className="text-right w-[10%]">Errors</TableHead>
               <TableHead className="text-right w-[10%]">Avg Duration</TableHead>
-              <TableHead className="text-right w-[10%]">Last Seen</TableHead>
+              <TableHead className="text-right w-[10%]">Last Updated</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
