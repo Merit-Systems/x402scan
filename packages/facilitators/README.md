@@ -132,7 +132,7 @@ import {
   ultravioletadao,
   virtuals,
   heurist,
-  treasure
+  treasure,
 } from 'facilitators';
 
 // Facilitators requiring setup
