@@ -1,4 +1,4 @@
-import { prisma } from '../client';
+import { scanDb } from '@repo/scan-db';
 import { z } from 'zod';
 
 export const createExcludedResourceSchema = z.object({
@@ -9,7 +9,7 @@ export const createExcludedResource = async (
   input: z.input<typeof createExcludedResourceSchema>
 ) => {
   const data = createExcludedResourceSchema.parse(input);
-  return await prisma.excludedResource.create({
+  return await scanDb.excludedResource.create({
     data,
     include: {
       resource: {
@@ -22,7 +22,7 @@ export const createExcludedResource = async (
 };
 
 export const getAllExcludedResources = async () => {
-  return await prisma.excludedResource.findMany({
+  return await scanDb.excludedResource.findMany({
     include: {
       resource: {
         include: {
@@ -44,7 +44,7 @@ export const getAllExcludedResources = async () => {
 };
 
 export const deleteExcludedResource = async (id: string) => {
-  return await prisma.excludedResource.delete({
+  return await scanDb.excludedResource.delete({
     where: { id },
   });
 };
@@ -52,13 +52,13 @@ export const deleteExcludedResource = async (id: string) => {
 export const deleteExcludedResourceByResourceId = async (
   resourceId: string
 ) => {
-  return await prisma.excludedResource.delete({
+  return await scanDb.excludedResource.delete({
     where: { resourceId },
   });
 };
 
 export const searchResourcesForExcludes = async (search?: string) => {
-  return await prisma.resources.findMany({
+  return await scanDb.resources.findMany({
     where: {
       ...(search
         ? {

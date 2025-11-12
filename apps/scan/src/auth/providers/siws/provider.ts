@@ -12,7 +12,7 @@ import {
   verifySignature,
 } from '@solana/kit';
 
-import { prisma } from '@/services/db/client';
+import { scanDb } from '@repo/scan-db';
 
 import { auth } from '@/auth';
 
@@ -58,7 +58,7 @@ function SiwsProvider(options?: Partial<CredentialsConfig>) {
 
       if (session) {
         // link account to user
-        const { user } = await prisma.account.upsert({
+        const { user } = await scanDb.account.upsert({
           where: {
             provider_providerAccountId: {
               provider: SIWS_PROVIDER_ID,
@@ -85,7 +85,7 @@ function SiwsProvider(options?: Partial<CredentialsConfig>) {
 
         return user;
       } else {
-        const user = await prisma.user.findFirst({
+        const user = await scanDb.user.findFirst({
           where: {
             accounts: {
               some: {
@@ -101,7 +101,7 @@ function SiwsProvider(options?: Partial<CredentialsConfig>) {
 
         // no user, create a user and an account
         if (!user) {
-          return await prisma.user.create({
+          return await scanDb.user.create({
             data: {
               email,
               accounts: {

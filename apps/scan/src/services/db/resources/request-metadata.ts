@@ -1,4 +1,4 @@
-import { prisma } from '../client';
+import { scanDb } from '@repo/scan-db';
 import { z } from 'zod';
 
 export const createResourceRequestMetadataSchema = z.object({
@@ -21,7 +21,7 @@ export const createResourceRequestMetadata = async (
   input: z.input<typeof createResourceRequestMetadataSchema>
 ) => {
   const data = createResourceRequestMetadataSchema.parse(input);
-  return await prisma.resourceRequestMetadata.create({
+  return await scanDb.resourceRequestMetadata.create({
     data,
     include: {
       resource: {
@@ -38,7 +38,7 @@ export const updateResourceRequestMetadata = async (
 ) => {
   const { id, ...updateData } =
     updateResourceRequestMetadataSchema.parse(input);
-  return await prisma.resourceRequestMetadata.update({
+  return await scanDb.resourceRequestMetadata.update({
     where: { id },
     data: updateData,
     include: {
@@ -52,7 +52,7 @@ export const updateResourceRequestMetadata = async (
 };
 
 export const getResourceRequestMetadata = async (resourceId: string) => {
-  return await prisma.resourceRequestMetadata.findUnique({
+  return await scanDb.resourceRequestMetadata.findUnique({
     where: { resourceId },
     include: {
       resource: {
@@ -65,7 +65,7 @@ export const getResourceRequestMetadata = async (resourceId: string) => {
 };
 
 export const getAllResourceRequestMetadata = async () => {
-  return await prisma.resourceRequestMetadata.findMany({
+  return await scanDb.resourceRequestMetadata.findMany({
     include: {
       resource: {
         include: {
@@ -82,13 +82,13 @@ export const getAllResourceRequestMetadata = async () => {
 };
 
 export const deleteResourceRequestMetadata = async (id: string) => {
-  return await prisma.resourceRequestMetadata.delete({
+  return await scanDb.resourceRequestMetadata.delete({
     where: { id },
   });
 };
 
 export const searchResourcesForMetadata = async (search?: string) => {
-  return await prisma.resources.findMany({
+  return await scanDb.resources.findMany({
     where: {
       ...(search
         ? {

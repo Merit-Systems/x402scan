@@ -1,7 +1,7 @@
-import { prisma } from '../client';
+import { scanDb } from '@repo/scan-db';
 
 export const listUserAgentConfigurations = async (userId: string) => {
-  return await prisma.agentConfigurationUser.findMany({
+  return await scanDb.agentConfigurationUser.findMany({
     where: {
       userId,
     },
@@ -16,7 +16,7 @@ export const joinAgentConfiguration = async (
   userId: string,
   agentConfigurationId: string
 ) => {
-  const agentConfiguration = await prisma.agentConfiguration.findUnique({
+  const agentConfiguration = await scanDb.agentConfiguration.findUnique({
     where: { id: agentConfigurationId },
   });
   if (!agentConfiguration) {
@@ -28,7 +28,7 @@ export const joinAgentConfiguration = async (
   ) {
     throw new Error('You are not authorized to join this agent configuration');
   }
-  return await prisma.agentConfigurationUser.create({
+  return await scanDb.agentConfigurationUser.create({
     data: {
       userId,
       agentConfigurationId,
@@ -40,7 +40,7 @@ export const leaveAgentConfiguration = async (
   userId: string,
   agentConfigurationId: string
 ) => {
-  return await prisma.agentConfigurationUser.delete({
+  return await scanDb.agentConfigurationUser.delete({
     where: { userId_agentConfigurationId: { userId, agentConfigurationId } },
   });
 };

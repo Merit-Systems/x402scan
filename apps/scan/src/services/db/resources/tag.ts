@@ -1,4 +1,4 @@
-import { prisma } from '@/services/db/client';
+import { scanDb } from '@repo/scan-db';
 import { z } from 'zod';
 import { MAIN_TAGS } from '@/services/labeling/main-tags';
 
@@ -8,7 +8,7 @@ export const createTagSchema = z.object({
 });
 
 export const createTag = async (data: z.infer<typeof createTagSchema>) => {
-  return await prisma.tag.create({
+  return await scanDb.tag.create({
     data,
   });
 };
@@ -18,7 +18,7 @@ export const listTagsSchema = z.object({
 });
 
 export const listTags = async (data: z.infer<typeof listTagsSchema>) => {
-  return await prisma.tag.findMany({
+  return await scanDb.tag.findMany({
     orderBy: {
       name: 'asc',
     },
@@ -46,7 +46,7 @@ export const assignTagToResource = async (
   data: z.infer<typeof assignTagToResourceSchema>
 ) => {
   const { resourceId, tagId } = data;
-  return await prisma.resourcesTags.upsert({
+  return await scanDb.resourcesTags.upsert({
     where: {
       resourceId_tagId: {
         resourceId,
@@ -67,7 +67,7 @@ export const unassignTagFromResource = async (
   data: z.infer<typeof assignTagToResourceSchema>
 ) => {
   const { resourceId, tagId } = data;
-  return await prisma.resourcesTags.delete({
+  return await scanDb.resourcesTags.delete({
     where: {
       resourceId_tagId: {
         resourceId,
@@ -78,7 +78,7 @@ export const unassignTagFromResource = async (
 };
 
 export const listResourceTags = async (resourceId: string) => {
-  return await prisma.resourcesTags.findMany({
+  return await scanDb.resourcesTags.findMany({
     where: {
       resourceId,
     },
@@ -94,7 +94,7 @@ export const listResourceTags = async (resourceId: string) => {
 };
 
 export const unassignAllTagsFromResource = async (resourceId: string) => {
-  return await prisma.resourcesTags.deleteMany({
+  return await scanDb.resourcesTags.deleteMany({
     where: {
       resourceId,
     },
@@ -102,11 +102,11 @@ export const unassignAllTagsFromResource = async (resourceId: string) => {
 };
 
 export const unassignAllTagsFromAllResources = async () => {
-  return await prisma.resourcesTags.deleteMany({});
+  return await scanDb.resourcesTags.deleteMany({});
 };
 
 export const deleteResourceTag = async (tagId: string) => {
-  return await prisma.tag.delete({
+  return await scanDb.tag.delete({
     where: {
       id: tagId,
     },
@@ -118,7 +118,7 @@ export const deleteResourceTag = async (tagId: string) => {
 
 export const removeSubTagsFromTag = async (tagId: string) => {
   // Find all resources that have this tag
-  const resourcesWithTag = await prisma.resourcesTags.findMany({
+  const resourcesWithTag = await scanDb.resourcesTags.findMany({
     where: {
       tagId,
     },
@@ -130,7 +130,7 @@ export const removeSubTagsFromTag = async (tagId: string) => {
   const resourceIds = resourcesWithTag.map(rt => rt.resourceId);
 
   // Delete all tag associations from these resources EXCEPT for the specified tag
-  return await prisma.resourcesTags.deleteMany({
+  return await scanDb.resourcesTags.deleteMany({
     where: {
       resourceId: {
         in: resourceIds,
@@ -146,7 +146,7 @@ export const unassignAllSubTags = async () => {
   const mainTagNames = Object.keys(MAIN_TAGS);
 
   // Delete all tags (and their assignments via cascade) that are NOT main categories
-  return await prisma.tag.deleteMany({
+  return await scanDb.tag.deleteMany({
     where: {
       name: {
         notIn: mainTagNames,

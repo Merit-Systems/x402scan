@@ -1,7 +1,6 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
+import { scanDb, Prisma } from '@repo/scan-db';
 
-import { prisma } from '@/services/db/client';
 import { firstTransfer } from '@/services/facilitator/constants';
 
 import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
@@ -83,7 +82,7 @@ const getBucketedToolCallsByTagsUncached = async (
     LIMIT ${numBuckets}
   `;
 
-  const rawResult = await prisma.$queryRaw<
+  const rawResult = await scanDb.$queryRaw<
     Array<{
       bucket_start: Date;
       tags: Record<

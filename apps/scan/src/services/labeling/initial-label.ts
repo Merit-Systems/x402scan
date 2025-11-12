@@ -1,4 +1,4 @@
-import { prisma } from '@/services/db/client';
+import { scanDb } from '@repo/scan-db';
 import {
   listTags,
   createTag,
@@ -101,7 +101,7 @@ export const labelingPass = async (
   }
 
   const tag = result.object.tag;
-  const tagData = await prisma.tag.findFirst({ where: { name: tag } });
+  const tagData = await scanDb.tag.findFirst({ where: { name: tag } });
   if (!tagData) {
     const newTag = await createTag({ name: tag, color: randomColor() });
     await assignTagToResource({ resourceId: resource.id, tagId: newTag.id });

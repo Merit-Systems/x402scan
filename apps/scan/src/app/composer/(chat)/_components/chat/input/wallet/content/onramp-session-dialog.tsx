@@ -19,7 +19,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { cn, formatCurrency } from '@/lib/utils';
 
-import { SessionStatus, type OnrampSession } from '@prisma/client';
+import { SessionStatus, type OnrampSession } from '@repo/scan-db';
 
 import { api } from '@/trpc/client';
 import Image from 'next/image';

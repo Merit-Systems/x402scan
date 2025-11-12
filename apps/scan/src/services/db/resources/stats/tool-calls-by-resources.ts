@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 
 import type { resourceBucketedQuerySchema } from './schemas';
 
-import { prisma } from '@/services/db/client';
+import { scanDb } from '@repo/scan-db';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
@@ -95,7 +95,7 @@ const getBucketedToolCallsByResourcesUncached = async (
     LIMIT ${numBuckets}
   `;
 
-  const rawResult = await prisma.$queryRaw<
+  const rawResult = await scanDb.$queryRaw<
     Array<{
       bucket_start: Date;
       resources: Record<

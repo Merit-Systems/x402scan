@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { Prisma } from '@prisma/client';
 
-import { prisma } from '@/services/db/client';
+import { scanDb } from '@repo/scan-db';
 import { firstTransfer } from '@/services/facilitator/constants';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
@@ -77,7 +77,7 @@ const getBucketedResourceCreationsUncached = async (
   `;
 
   const rawResult =
-    await prisma.$queryRaw<
+    await scanDb.$queryRaw<
       Array<{ bucket_start: Date; total_resources: number }>
     >(sql);
 

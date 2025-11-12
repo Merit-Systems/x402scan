@@ -1,4 +1,4 @@
-import { prisma } from '../client';
+import { scanDb } from '@repo/scan-db';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { z } from 'zod';
@@ -10,7 +10,7 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 import { ChainIdToNetwork } from 'x402/types';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import type { AcceptsNetwork, Prisma } from '@prisma/client';
+import type { AcceptsNetwork, Prisma } from '@repo/scan-db';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { SupportedChain } from '@/types/chain';
 
@@ -84,7 +84,7 @@ export const upsertResource = async (
     accept => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
   const originStr = getOriginFromUrl(baseResource.resource);
-  return await prisma.$transaction(async tx => {
+  return await scanDb.$transaction(async tx => {
     const { origin, ...resource } = await tx.resources.upsert({
       where: {
         resource: baseResource.resource,
@@ -170,7 +170,7 @@ export const upsertResource = async (
 };
 
 export const getResource = async (id: string) => {
-  return await prisma.resources.findUnique({
+  return await scanDb.resources.findUnique({
     where: {
       id,
     },
@@ -194,7 +194,7 @@ export const getResource = async (id: string) => {
 export const listResourcesUncached = async (
   where?: Prisma.ResourcesWhereInput
 ) => {
-  return await prisma.resources.findMany({
+  return await scanDb.resources.findMany({
     where,
     orderBy: [
       { invocations: { _count: 'desc' } },
@@ -235,10 +235,10 @@ export const listResourcesWithPaginationUncached = async (
       : { toolCalls: { _count: sortConfig.desc ? 'desc' : 'asc' } };
 
   const [count, resources] = await Promise.all([
-    prisma.resources.count({
+    scanDb.resources.count({
       where,
     }),
-    prisma.resources.findMany({
+    scanDb.resources.findMany({
       where,
       include: {
         accepts: true,
@@ -277,7 +277,7 @@ export const listResourcesWithPagination = createCachedPaginatedQuery({
 });
 
 export const getResourceByAddress = async (address: string) => {
-  return await prisma.resources.findFirst({
+  return await scanDb.resources.findFirst({
     where: {
       accepts: {
         some: {
@@ -300,7 +300,7 @@ const searchResourcesUncached = async (
   input: z.infer<typeof searchResourcesSchema>
 ) => {
   const { search, limit, tagIds, resourceIds, showExcluded } = input;
-  return await prisma.resources.findMany({
+  return await scanDb.resources.findMany({
     where: {
       accepts: {
         some: {
@@ -372,7 +372,7 @@ export const searchResources = createCachedArrayQuery({
 });
 
 export const listResourcesForTools = async (resourceIds: string[]) => {
-  return await prisma.resources.findMany({
+  return await scanDb.resources.findMany({
     where: {
       id: { in: resourceIds },
       excluded: { is: null },

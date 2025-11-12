@@ -1,4 +1,4 @@
-import { prisma } from '../client';
+import { scanDb } from '@repo/scan-db';
 
 import type { ParsedX402Response } from '@/lib/x402/schema';
 
@@ -6,7 +6,7 @@ export const upsertResourceResponse = async (
   resourceId: string,
   response: ParsedX402Response
 ) => {
-  return await prisma.resourceResponse.upsert({
+  return await scanDb.resourceResponse.upsert({
     where: {
       resourceId,
     },
@@ -22,7 +22,7 @@ export const upsertResourceResponse = async (
 };
 
 export const deleteResourceResponse = async (resourceId: string) => {
-  return await prisma.resourceResponse.deleteMany({
+  return await scanDb.resourceResponse.deleteMany({
     where: {
       resourceId,
     },

@@ -1,9 +1,9 @@
-import { prisma } from '../client';
+import { scanDb } from '@repo/scan-db';
 
 import { v4 as uuid } from 'uuid';
 
 export const getWalletForUserId = async (userId: string) => {
-  const wallet = await prisma.serverWallet.findFirst({
+  const wallet = await scanDb.serverWallet.findFirst({
     where: { userId, type: 'CHAT' },
   });
 
@@ -11,7 +11,7 @@ export const getWalletForUserId = async (userId: string) => {
     return wallet;
   }
 
-  const newWallet = await prisma.serverWallet.create({
+  const newWallet = await scanDb.serverWallet.create({
     data: {
       userId,
       walletName: uuid(),

@@ -1,12 +1,12 @@
 import z from 'zod';
 
+import { scanDb, Prisma } from '@repo/scan-db';
+
 import { queryRaw } from '../query';
 
-import { Prisma } from '@prisma/client';
 import { sortingSchema, timeframeSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
-import { prisma } from '../client';
 import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 import {
   createCachedPaginatedQuery,
@@ -42,7 +42,7 @@ const listTopAgentConfigurationsUncached = async (
   const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
 
   const [count, items] = await Promise.all([
-    prisma.agentConfiguration.count({
+    scanDb.agentConfiguration.count({
       where: {
         visibility: 'public',
         ...(originId

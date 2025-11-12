@@ -3,7 +3,7 @@ import Credentials, {
   type CredentialsConfig,
 } from 'next-auth/providers/credentials';
 import { z } from 'zod';
-import { prisma } from '@/services/db/client';
+import { scanDb } from '@repo/scan-db';
 import {
   SIWE_PROVIDER_ID,
   SIWE_PROVIDER_NAME,
@@ -52,7 +52,7 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
 
       if (session) {
         // link account to user
-        const { user } = await prisma.account.upsert({
+        const { user } = await scanDb.account.upsert({
           where: {
             provider_providerAccountId: {
               provider: SIWE_PROVIDER_ID,
@@ -79,7 +79,7 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
 
         return user;
       } else {
-        const user = await prisma.user.findFirst({
+        const user = await scanDb.user.findFirst({
           where: {
             accounts: {
               some: {
@@ -95,7 +95,7 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
 
         // no user, create a user and an account
         if (!user) {
-          return await prisma.user.create({
+          return await scanDb.user.create({
             data: {
               email,
               accounts: {

@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { EmptyMessages, LoadingMessages, Messages } from './messages';
 import { LoadingPromptInputSection, PromptInputSection } from './input';
 
-import type { Message } from '@prisma/client';
+import type { Message } from '@repo/scan-db';
 import type { ChatConfig } from '../../_types/chat-config';
 import type { RouterOutputs } from '@/trpc/client';
 import { SidebarTrigger } from '@/components/ui/sidebar';

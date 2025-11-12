@@ -1,9 +1,9 @@
-import { prisma } from '../client';
+import { scanDb } from '@repo/scan-db';
 
 export const hasUserAcknowledgedComposer = async (
   userId: string
 ): Promise<boolean> => {
-  const acknowledgement = await prisma.userAcknowledgement.findUnique({
+  const acknowledgement = await scanDb.userAcknowledgement.findUnique({
     where: { userId },
     select: { id: true },
   });
@@ -11,7 +11,7 @@ export const hasUserAcknowledgedComposer = async (
 };
 
 export const upsertUserAcknowledgement = async (userId: string) => {
-  return await prisma.userAcknowledgement.upsert({
+  return await scanDb.userAcknowledgement.upsert({
     where: { userId },
     create: {
       userId,

@@ -1,10 +1,13 @@
-import { prisma } from './client';
+import { scanDb } from '@repo/scan-db';
 
 import type z from 'zod';
-import type { Sql } from '@prisma/client/runtime/library';
+import type { Prisma } from '@repo/scan-db';
 
-export const queryRaw = async <T>(sql: Sql, resultSchema: z.ZodSchema<T>) => {
-  const result = await prisma.$queryRaw<T>(sql);
+export const queryRaw = async <T>(
+  sql: Prisma.Sql,
+  resultSchema: z.ZodSchema<T>
+) => {
+  const result = await scanDb.$queryRaw<T>(sql);
 
   const parseResult = resultSchema.safeParse(result);
 

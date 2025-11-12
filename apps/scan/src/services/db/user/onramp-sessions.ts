@@ -1,13 +1,13 @@
 import z from 'zod';
 
-import { prisma } from '../client';
+import { scanDb } from '@repo/scan-db';
 import type { OnrampSession } from '@prisma/client';
 
 export const getOnrampSessionByToken = async (
   token: string,
   userId: string
 ) => {
-  return prisma.onrampSession.findUnique({
+  return scanDb.onrampSession.findUnique({
     where: { token, userId },
   });
 };
@@ -25,7 +25,7 @@ export const createOnrampSession = async (
   const { token, amount, userId, serverWalletId } =
     createOnrampSessionSchema.parse(input);
 
-  return prisma.onrampSession.create({
+  return scanDb.onrampSession.create({
     data: {
       token,
       amount,
@@ -39,7 +39,7 @@ export const updateOnrampSession = async (
   id: string,
   data: Partial<OnrampSession>
 ) => {
-  return prisma.onrampSession.update({
+  return scanDb.onrampSession.update({
     where: {
       id,
     },

@@ -1,4 +1,4 @@
-import type { ResourceOriginMetrics, ResourceMetrics } from '@prisma/client';
+import type { ResourceOriginMetrics, ResourceMetrics } from '@repo/scan-db';
 
 export enum HealthStatus {
   Healthy = 'healthy',

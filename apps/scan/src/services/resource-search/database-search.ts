@@ -1,8 +1,7 @@
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
-import { prisma } from '@/services/db/client';
-import { Prisma } from '@prisma/client';
+import { scanDb, Prisma } from '@repo/scan-db';
 import type { SearchResult } from './types';
 
 export const sqlGenerationSchema = z.object({
@@ -292,7 +291,7 @@ export async function executeResourceSearch(
       ''
     );
 
-    const rawResults = await prisma.$queryRaw<unknown[]>(fullSql);
+    const rawResults = await scanDb.$queryRaw<unknown[]>(fullSql);
     const results = searchResultsSchema.parse(rawResults);
     return { success: true, results };
   } catch (error) {

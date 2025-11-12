@@ -1,8 +1,7 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { prisma } from '@/services/db/client';
+import { scanDb, Prisma } from '@repo/scan-db';
 import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
 import { agentsRelease } from '@/lib/agents';
 
@@ -77,7 +76,7 @@ const getToolCallsOverTimeUncached = async (
   `;
 
   const rawResult =
-    await prisma.$queryRaw<
+    await scanDb.$queryRaw<
       Array<{ bucket_start: Date; total_tool_calls: number }>
     >(sql);
 

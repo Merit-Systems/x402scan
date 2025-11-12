@@ -3,7 +3,7 @@ import { queryRaw } from '../query';
 import { Prisma } from '@prisma/client';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
-import { prisma } from '../client';
+import { scanDb } from '@repo/scan-db';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
@@ -116,7 +116,7 @@ const getAgentConfigFeedUncached = async (
       `,
       z.array(feedEventSchema)
     ),
-    prisma.toolCall.count({
+    scanDb.toolCall.count({
       where: {
         chat: {
           userAgentConfiguration: {
@@ -126,7 +126,7 @@ const getAgentConfigFeedUncached = async (
         },
       },
     }),
-    prisma.message.count({
+    scanDb.message.count({
       where: {
         chat: {
           userAgentConfiguration: {

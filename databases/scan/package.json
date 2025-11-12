@@ -2,7 +2,8 @@
   "name": "@repo/scan-db",
   "version": "1.0.0",
   "exports": {
-    ".": "./src/client.ts"
+    ".": "./src/client.ts",
+    "./auth-adapter": "./src/auth-adapter.ts"
   },
   "scripts": {
     "db:generate": "prisma generate",
@@ -19,6 +20,7 @@
     "studio": "prisma studio"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.1",
     "@neondatabase/serverless": "^1.0.2",
     "@prisma/adapter-neon": "^6.19.0",
     "@prisma/client": "^6.19.0",

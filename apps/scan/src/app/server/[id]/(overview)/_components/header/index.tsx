@@ -11,17 +11,18 @@ import { OriginStats, LoadingOriginStats } from './stats';
 
 import { cn } from '@/lib/utils';
 
-import type { RouterOutputs } from '@/trpc/client';
 import { HeaderButtons, LoadingHeaderButtons } from './buttons';
-import { prisma } from '@/services/db/client';
+import { scanDb } from '@repo/scan-db';
 import { HealthIndicator } from '@/app/_components/health/indicator';
+
+import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
 }
 
 export const HeaderCard: React.FC<Props> = async ({ origin }) => {
-  const originMetrics = await prisma.resourceOriginMetrics.findFirst({
+  const originMetrics = await scanDb.resourceOriginMetrics.findFirst({
     where: {
       originId: origin.id,
     },

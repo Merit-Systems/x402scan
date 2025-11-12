@@ -1,5 +1,7 @@
 import { Globe } from 'lucide-react';
 
+import Link from 'next/link';
+
 import {
   Tooltip,
   TooltipContent,
@@ -13,10 +15,9 @@ import { HealthDot } from '@/app/_components/health/dot';
 
 import { cn } from '@/lib/utils';
 
-import type { ResourceOrigin } from '@prisma/client';
+import type { ResourceOrigin } from '@repo/scan-db';
 import type { MixedAddress } from '@/types/address';
 import type { OriginHealthMetrics } from '@/app/_components/health/types';
-import Link from 'next/link';
 
 interface Props {
   addresses: MixedAddress[];
