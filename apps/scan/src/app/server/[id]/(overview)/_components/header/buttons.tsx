@@ -10,6 +10,13 @@ import { api } from '@/trpc/client';
 import { clientCookieUtils } from '@/app/composer/(chat)/chat/_lib/cookies/client';
 
 import type { RouterOutputs } from '@/trpc/client';
+import { Chain } from '@/types/chain';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
@@ -23,39 +30,94 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
 
   const router = useRouter();
 
-  const onTryInChat = () => {
-    clientCookieUtils.setResources(
-      originWithResources!.resources.map(resource => ({
+  const baseResources =
+    originWithResources?.resources
+      .filter(resource =>
+        resource.accepts.some(
+          accept => accept.network === Chain.BASE.toString()
+        )
+      )
+      .map(resource => ({
         id: resource.id,
         favicon: origin.favicon,
-      }))
-    );
+      })) ?? [];
+
+  const onTryInChat = () => {
+    if (!baseResources.length) {
+      return;
+    }
+    clientCookieUtils.setResources(baseResources);
     router.push(`/composer/chat`);
   };
 
-  if (originWithResources!.resources.length > 0) {
+  const NoBaseResourcesTooltip = ({
+    children,
+  }: {
+    children: React.ReactNode;
+  }) => {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipContent>
+          <p>Composer currently only supports Base</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  };
+
+  const tryInChatButton = (
+    <Button
+      variant="turbo"
+      onClick={baseResources.length === 0 ? undefined : onTryInChat}
+      className={cn(
+        baseResources.length === 0 &&
+          'opacity-50 cursor-not-allowed hover:opacity-50'
+      )}
+    >
+      <MessagesSquare className="size-4" />
+      Try in Chat
+    </Button>
+  );
+
+  const createAgentButton = (
+    <Button
+      variant="outline"
+      className={cn(
+        baseResources.length === 0 &&
+          'opacity-50 cursor-not-allowed hover:opacity-50'
+      )}
+    >
+      <Bot className="size-4" />
+      Create Agent
+    </Button>
+  );
+
+  if (
+    originWithResources?.resources.length &&
+    originWithResources.resources.length > 0
+  ) {
     return (
       <ButtonsContainer>
-        <Button variant="turbo" onClick={onTryInChat}>
-          <MessagesSquare className="size-4" />
-          Try in Chat
-        </Button>
-        <Link
-          href={{
-            pathname: '/composer/agents/new',
-            query: {
-              resources:
-                originWithResources?.resources.map(resource => resource.id) ??
-                [],
-            },
-          }}
-          prefetch={false}
-        >
-          <Button variant="outline">
-            <Bot className="size-4" />
-            Create Agent
-          </Button>
-        </Link>
+        {baseResources.length === 0 ? (
+          <NoBaseResourcesTooltip>{tryInChatButton}</NoBaseResourcesTooltip>
+        ) : (
+          tryInChatButton
+        )}
+        {baseResources.length === 0 ? (
+          <NoBaseResourcesTooltip>{createAgentButton}</NoBaseResourcesTooltip>
+        ) : (
+          <Link
+            href={{
+              pathname: '/composer/agents/new',
+              query: {
+                resources: baseResources.map(resource => resource.id) ?? [],
+              },
+            }}
+            prefetch={false}
+          >
+            {createAgentButton}
+          </Link>
+        )}
       </ButtonsContainer>
     );
   }

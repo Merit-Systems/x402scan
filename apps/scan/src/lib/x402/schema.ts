@@ -45,10 +45,6 @@ export const enhancedOutputSchema = z3.object({
 
 export type EnhancedOutputSchema = z3.infer<typeof enhancedOutputSchema>;
 
-export const enhancedAcceptsSchema = PaymentRequirementsSchema.extend({
-  outputSchema: enhancedOutputSchema.optional(),
-});
-
 const namedNetwork = z3.enum([
   'base-sepolia',
   'avalanche-fuji',

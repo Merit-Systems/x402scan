@@ -1,19 +1,16 @@
 import { NextResponse } from 'next/server';
-import { subDays, subMinutes, differenceInSeconds, subSeconds } from 'date-fns';
-import { api } from '@/trpc/server';
+import { createCaller } from '@/trpc/routers';
+import { createTRPCContext } from '@/trpc/trpc';
 import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
-import {
-  CACHE_WARMABLE_TIMEFRAMES,
-  ActivityTimeframe,
-} from '@/types/timeframes';
-import { firstTransfer } from '@/services/facilitator/constants';
+import { ActivityTimeframe } from '@/types/timeframes';
 import { facilitatorAddresses } from '@/lib/facilitators';
 import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
 import { Chain } from '@/types/chain';
 
 import type { NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
+import { env } from '@/env';
 
 /**
  * Maximum number of concurrent cache warming requests
@@ -83,8 +80,8 @@ async function limitConcurrency(
  * Get cache warming tasks for the Homepage
  */
 function getHomePageTasks(
-  startDate: Date,
-  endDate: Date,
+  api: ReturnType<typeof createCaller>,
+  timeframe: ActivityTimeframe,
   chain?: Chain
 ): (() => Promise<unknown>)[] {
   const limit = 100;
@@ -92,40 +89,16 @@ function getHomePageTasks(
   return [
     // Overall Stats - current period
     () =>
-      api.public.stats.overall({
-        startDate,
-        endDate,
-        chain,
-      }),
-
-    // Overall Stats - previous period (for comparison)
-    () =>
-      api.public.stats.overall({
-        startDate: subSeconds(
-          startDate,
-          differenceInSeconds(endDate, startDate)
-        ),
-        endDate: startDate,
+      api.public.stats.overallMV({
+        timeframe,
         chain,
       }),
 
     // Bucketed Statistics - for charts
     () =>
-      api.public.stats.bucketed({
-        startDate,
-        endDate,
-        numBuckets: 32,
-        chain,
-      }),
-
-    // Top Facilitators
-    () =>
-      api.public.facilitators.list({
-        pagination: {
-          page_size: facilitatorAddresses.length,
-        },
-        startDate,
-        endDate,
+      api.public.stats.bucketedMV({
+        timeframe,
+        numBuckets: 48,
         chain,
       }),
 
@@ -135,8 +108,7 @@ function getHomePageTasks(
         pagination: {
           page_size: 100,
         },
-        startDate,
-        endDate,
+        timeframe,
         sorting: defaultSellersSorting,
         chain,
       }),
@@ -144,8 +116,7 @@ function getHomePageTasks(
     // Top Servers (Bazaar) - overall stats
     () =>
       api.public.stats.bazaar.overall({
-        startDate,
-        endDate,
+        timeframe,
         chain,
       }),
 
@@ -156,8 +127,7 @@ function getHomePageTasks(
           page_size: limit,
         },
         sorting: defaultTransfersSorting,
-        startDate,
-        endDate,
+        timeframe,
         chain,
       }),
 
@@ -167,8 +137,7 @@ function getHomePageTasks(
         pagination: {
           page_size: 100,
         },
-        startDate,
-        endDate,
+        timeframe,
         sorting: defaultSellersSorting,
         chain,
       }),
@@ -179,31 +148,24 @@ function getHomePageTasks(
  * Get cache warming tasks for the Networks Page
  */
 function getNetworksPageTasks(
-  startDate: Date,
-  endDate: Date
+  api: ReturnType<typeof createCaller>,
+  timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
     // Networks bucketed statistics
     () =>
       api.networks.bucketedStatistics({
         numBuckets: 48,
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Networks list
     () =>
       api.networks.list({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
-    // Overall stats (shared with homepage)
-    () =>
-      api.public.stats.overall({
-        startDate,
-        endDate,
-      }),
+    // Overall stats already warmed by Home page (all chains variant)
   ];
 }
 
@@ -211,16 +173,15 @@ function getNetworksPageTasks(
  * Get cache warming tasks for the Facilitators Page
  */
 function getFacilitatorsPageTasks(
-  startDate: Date,
-  endDate: Date
+  api: ReturnType<typeof createCaller>,
+  timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
     // Facilitators bucketed statistics
     () =>
       api.public.facilitators.bucketedStatistics({
         numBuckets: 48,
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Facilitators list (shared with homepage)
@@ -229,16 +190,10 @@ function getFacilitatorsPageTasks(
         pagination: {
           page_size: facilitatorAddresses.length,
         },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
-    // Overall stats (shared with homepage)
-    () =>
-      api.public.stats.overall({
-        startDate,
-        endDate,
-      }),
+    // Overall stats already warmed by Networks page
   ];
 }
 
@@ -246,35 +201,31 @@ function getFacilitatorsPageTasks(
  * Get cache warming tasks for the Resources/Marketplace Page
  */
 function getResourcesPageTasks(
-  startDate: Date,
-  endDate: Date
+  api: ReturnType<typeof createCaller>,
+  timeframe: ActivityTimeframe
 ): (() => Promise<unknown>)[] {
   return [
     // All Sellers stats
     () =>
       api.public.sellers.all.stats.overall({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     () =>
       api.public.sellers.all.stats.bucketed({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Bazaar Sellers stats (overall)
     () =>
       api.public.sellers.bazaar.stats.overall({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Bazaar Sellers stats (bucketed)
     () =>
       api.public.sellers.bazaar.stats.bucketed({
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Marketplace carousels (5 different tag filters)
@@ -282,8 +233,7 @@ function getResourcesPageTasks(
     () =>
       api.public.sellers.bazaar.list({
         pagination: { page_size: 20 },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Search Servers
@@ -291,8 +241,7 @@ function getResourcesPageTasks(
       api.public.sellers.bazaar.list({
         tags: ['Search'],
         pagination: { page_size: 20 },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Crypto Servers
@@ -300,8 +249,7 @@ function getResourcesPageTasks(
       api.public.sellers.bazaar.list({
         tags: ['Crypto'],
         pagination: { page_size: 20 },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // AI Servers (Utility tag)
@@ -309,8 +257,7 @@ function getResourcesPageTasks(
       api.public.sellers.bazaar.list({
         tags: ['Utility'],
         pagination: { page_size: 20 },
-        startDate,
-        endDate,
+        timeframe,
       }),
 
     // Trading Servers
@@ -318,8 +265,7 @@ function getResourcesPageTasks(
       api.public.sellers.bazaar.list({
         tags: ['Trading'],
         pagination: { page_size: 20 },
-        startDate,
-        endDate,
+        timeframe,
       }),
   ];
 }
@@ -344,18 +290,25 @@ export async function GET(request: NextRequest) {
 
   try {
     const startTime = Date.now();
-    const endDate = new Date();
     const timeframesWarmed: Record<string, number> = {};
+
+    // Create cache warming API with authenticated headers
+    const warmingHeaders = new Headers();
+    warmingHeaders.set('x-cache-warming', 'true');
+    warmingHeaders.set('authorization', `Bearer ${env.CRON_SECRET ?? ''}`);
+
+    const ctx = await createTRPCContext(warmingHeaders);
+    const api = createCaller(ctx);
 
     // Optional query params
     const { searchParams } = new URL(request.url);
-    const onlyAllTime = searchParams.get('onlyAllTime') === 'true';
     const pagesParam = searchParams.get('pages'); // e.g., "home,networks"
+    const chainParam = searchParams.get('chain'); // e.g., "base", "solana", "all"
 
     // Filter timeframes if requested
-    const timeframesToWarm = onlyAllTime
-      ? CACHE_WARMABLE_TIMEFRAMES.filter(tf => tf === ActivityTimeframe.AllTime)
-      : CACHE_WARMABLE_TIMEFRAMES;
+    const timeframesToWarm = Object.values(ActivityTimeframe).filter(
+      tf => typeof tf === 'number'
+    );
 
     // Filter pages if requested
     const pagesToWarm: WarmablePage[] = pagesParam
@@ -364,28 +317,27 @@ export async function GET(request: NextRequest) {
           .filter(p => ALL_PAGES.includes(p as WarmablePage)) as WarmablePage[])
       : ALL_PAGES;
 
+    // Parse chain filter if provided
+    const chainFilter: Chain | 'all' | undefined = chainParam
+      ? chainParam === 'all'
+        ? 'all'
+        : chainParam === (Chain.BASE as string)
+          ? Chain.BASE
+          : chainParam === (Chain.SOLANA as string)
+            ? Chain.SOLANA
+            : undefined
+      : undefined;
+
     console.log(
-      `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'}${onlyAllTime ? ' (All Time only)' : ''} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? '' : 's'}: ${pagesToWarm.join(', ')}`
+      `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? '' : 's'}: ${pagesToWarm.join(', ')}`
     );
 
     // Warm each timeframe serially to avoid overwhelming the database
     for (const timeframe of timeframesToWarm) {
       const timeframeStartTime = Date.now();
 
-      // Calculate date range based on timeframe
-      // Note: For All Time, we lag firstTransfer by CACHE_DURATION_MINUTES because
-      // the frontend applies this lag when computing relative timeframes.
-      const startDate =
-        timeframe === ActivityTimeframe.AllTime
-          ? subMinutes(firstTransfer, CACHE_DURATION_MINUTES)
-          : subDays(endDate, timeframe);
-
       const timeframeName =
-        timeframe === ActivityTimeframe.AllTime
-          ? 'All Time'
-          : timeframe === ActivityTimeframe.OneDay
-            ? '1 Day'
-            : `${timeframe} Days`;
+        timeframe === ActivityTimeframe.OneDay ? '1 Day' : `${timeframe} Days`;
 
       console.log(`[Cache Warming] Warming timeframe: ${timeframeName}`);
 
@@ -393,22 +345,28 @@ export async function GET(request: NextRequest) {
       const allTasks: (() => Promise<unknown>)[] = [];
 
       if (pagesToWarm.includes('home')) {
-        // Home page with all chain variants
-        allTasks.push(...getHomePageTasks(startDate, endDate)); // All chains
-        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.BASE));
-        allTasks.push(...getHomePageTasks(startDate, endDate, Chain.SOLANA));
+        // Home page with chain filtering
+        if (!chainFilter || chainFilter === 'all') {
+          allTasks.push(...getHomePageTasks(api, timeframe)); // All chains (undefined)
+        }
+        if (!chainFilter || chainFilter === Chain.BASE) {
+          allTasks.push(...getHomePageTasks(api, timeframe, Chain.BASE));
+        }
+        if (!chainFilter || chainFilter === Chain.SOLANA) {
+          allTasks.push(...getHomePageTasks(api, timeframe, Chain.SOLANA));
+        }
       }
 
       if (pagesToWarm.includes('networks')) {
-        allTasks.push(...getNetworksPageTasks(startDate, endDate));
+        allTasks.push(...getNetworksPageTasks(api, timeframe));
       }
 
       if (pagesToWarm.includes('facilitators')) {
-        allTasks.push(...getFacilitatorsPageTasks(startDate, endDate));
+        allTasks.push(...getFacilitatorsPageTasks(api, timeframe));
       }
 
       if (pagesToWarm.includes('resources')) {
-        allTasks.push(...getResourcesPageTasks(startDate, endDate));
+        allTasks.push(...getResourcesPageTasks(api, timeframe));
       }
 
       // Run all tasks with controlled concurrency

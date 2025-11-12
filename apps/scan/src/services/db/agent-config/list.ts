@@ -3,10 +3,11 @@ import z from 'zod';
 import { queryRaw } from '../query';
 
 import { Prisma } from '@prisma/client';
-import { sortingSchema } from '@/lib/schemas';
+import { sortingSchema, timeframeSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
 import { prisma } from '../client';
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
@@ -24,8 +25,7 @@ const agentsSortingIds = [
 export type AgentSortId = (typeof agentsSortingIds)[number];
 
 export const listTopAgentConfigurationsSchema = z.object({
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
+  timeframe: timeframeSchema,
   userId: z.string().optional(),
   originId: z.string().optional(),
   sorting: sortingSchema(agentsSortingIds).default({
@@ -38,7 +38,8 @@ const listTopAgentConfigurationsUncached = async (
   input: z.infer<typeof listTopAgentConfigurationsSchema>,
   pagination: PaginatedQueryParams
 ) => {
-  const { sorting, userId, originId, startDate, endDate } = input;
+  const { sorting, userId, originId, timeframe } = input;
+  const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
 
   const [count, items] = await Promise.all([
     prisma.agentConfiguration.count({
@@ -84,8 +85,8 @@ const listTopAgentConfigurationsUncached = async (
         LEFT JOIN "Message" m ON c.id = m."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
           AND m.role = 'assistant'
-          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate}` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate}` : Prisma.sql``}
+          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) u ON u."agentConfigurationId" = ac.id
       LEFT JOIN (
@@ -95,8 +96,8 @@ const listTopAgentConfigurationsUncached = async (
         LEFT JOIN "Message" m ON c.id = m."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
           AND m.role = 'assistant'
-          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate}` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate}` : Prisma.sql``}
+          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) m ON m."agentConfigurationId" = ac.id
       LEFT JOIN (
@@ -105,8 +106,8 @@ const listTopAgentConfigurationsUncached = async (
         LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
         LEFT JOIN "ToolCall" tc ON c.id = tc."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
-          ${startDate ? Prisma.sql`AND tc."createdAt" >= ${startDate}` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND tc."createdAt" <= ${endDate}` : Prisma.sql``}
+          ${startDate ? Prisma.sql`AND tc."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND tc."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) tc ON tc."agentConfigurationId" = ac.id
       -- Join to tools/resources related to the AgentConfiguration

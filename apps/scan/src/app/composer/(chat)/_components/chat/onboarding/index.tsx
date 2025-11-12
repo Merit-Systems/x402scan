@@ -17,7 +17,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Deposit } from '../input/wallet/content/deposit';
-import { Skeleton } from '@/components/ui/skeleton';
+import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
+import { Chain } from '@/types/chain';
 
 export const Onboarding = () => {
   const utils = api.useUtils();
@@ -37,7 +38,7 @@ export const Onboarding = () => {
 
   const { data: usdcBalance } =
     api.user.serverWallet.usdcBaseBalance.useQuery();
-  const { data: address } = api.user.serverWallet.address.useQuery();
+
   const hasBalance = (usdcBalance ?? 0) > 0;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -80,13 +81,13 @@ export const Onboarding = () => {
               We&apos;re excited to explore the x402 ecosystem with you
             </AlertDialogDescription>
           </div>
-          <Stepper steps={steps} currentStep={step} />
+          <Stepper steps={steps} currentStep={step} setCurrentStep={setStep} />
         </AlertDialogHeader>
-        <div className="py-4 flex flex-col gap-4 w-full max-w-full overflow-hidden">
-          <div className="relative w-full overflow-hidden">
+        <div className="pt-4 flex flex-col gap-4 w-full max-w-full overflow-hidden">
+          <div className="relative w-full overflow-hidden flex flex-col gap-4">
             {step < steps.length ? (
               <div
-                className="flex transition-transform duration-500 ease-in-out"
+                className="flex transition-transform duration-500 ease-in-out pb-4"
                 style={{
                   width: `${steps.length * 100}%`,
                   transform: `translateX(-${step * (100 / steps.length)}%)`,
@@ -113,26 +114,38 @@ export const Onboarding = () => {
                 ))}
               </div>
             ) : (
-              <div className="w-full shrink-0 grow-0 flex flex-col gap-4 px-4">
-                <div>
-                  <h2 className="font-bold">
-                    Fund Your Composer Wallet with USDC
-                  </h2>
+              <>
+                <div className="w-full shrink-0 grow-0 flex flex-col gap-4 px-4">
+                  <div>
+                    <h2 className="font-bold">
+                      Fund Your Composer Wallet with USDC
+                    </h2>
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center">
+                    <WalletChainProvider initialChain={Chain.BASE} isFixed>
+                      <Deposit
+                        onSuccess={() => {
+                          setIsOpen(false);
+                          void utils.user.acknowledgements.hasAcknowledged.invalidate();
+                        }}
+                      />
+                    </WalletChainProvider>
+                  </div>
                 </div>
-                <div className="flex-1 flex flex-col justify-center">
-                  {!address ? (
-                    <Skeleton className="h-24 w-full" />
-                  ) : (
-                    <Deposit
-                      address={address}
-                      onSuccess={() => {
-                        setIsOpen(false);
-                        void utils.user.acknowledgements.hasAcknowledged.invalidate();
-                      }}
-                    />
-                  )}
+                <div className="border-t bg-muted p-4">
+                  <p className="text-xs text-muted-foreground font-mono text-center">
+                    Composer currently only supports Base. Multi-network support
+                    is in progress{' '}
+                    <a
+                      href="https://github.com/Merit-Systems/x402scan/pull/320"
+                      target="_blank"
+                      className="text-primary underline"
+                    >
+                      here
+                    </a>
+                  </p>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>

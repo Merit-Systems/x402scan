@@ -1,5 +1,6 @@
 packages:
   - 'apps/*'
+  - 'apps/rpc/*'
   - 'sync/*'
   - 'packages/*'
   - 'examples'
