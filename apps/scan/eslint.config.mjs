@@ -10,7 +10,7 @@ const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
 });
 
-export default defineConfig(
+export default defineConfig([
   ...baseConfig,
   {
     ignores: [
@@ -53,5 +53,5 @@ export default defineConfig(
       },
     },
   },
-  eslintConfigPrettier
-);
+  eslintConfigPrettier,
+]);

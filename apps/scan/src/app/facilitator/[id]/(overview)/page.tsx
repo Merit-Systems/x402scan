@@ -1,15 +1,10 @@
-import { Suspense } from 'react';
-
 import { notFound } from 'next/navigation';
 
 import { Body } from '@/app/_components/layout/page-utils';
 
-import { HeaderCard, LoadingHeaderCard } from './_components/header';
-import { Activity, LoadingActivity } from './_components/activity';
-import {
-  LatestTransactions,
-  LoadingLatestTransactions,
-} from './_components/transactions';
+import { HeaderCard } from './_components/header';
+import { Activity } from './_components/activity';
+import { LatestTransactions } from './_components/transactions';
 
 import { facilitatorIdMap } from '@/lib/facilitators';
 
@@ -23,15 +18,9 @@ export default async function FacilitatorPage({
   }
   return (
     <Body className="gap-8 pt-0">
-      <Suspense fallback={<LoadingHeaderCard />}>
-        <HeaderCard facilitator={facilitator} />
-      </Suspense>
-      <Suspense fallback={<LoadingActivity />}>
-        <Activity facilitatorId={id} />
-      </Suspense>
-      <Suspense fallback={<LoadingLatestTransactions />}>
-        <LatestTransactions facilitatorId={id} />
-      </Suspense>
+      <HeaderCard facilitator={facilitator} />
+      <Activity facilitatorId={id} />
+      <LatestTransactions facilitatorId={id} />
     </Body>
   );
 }

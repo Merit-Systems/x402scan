@@ -35,13 +35,12 @@ export const OriginsCarouselClient = <T extends string>({
   input,
   hideCount,
 }: Props<T>) => {
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const [{ items, total_count }] =
     api.public.sellers.bazaar.list.useSuspenseQuery({
       ...input,
-      startDate,
-      endDate,
+      timeframe,
     });
 
   const [emblaRef, emblaApi] = useEmblaCarousel(

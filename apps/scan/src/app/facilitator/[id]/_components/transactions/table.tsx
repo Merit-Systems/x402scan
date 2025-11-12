@@ -6,8 +6,8 @@ import { DataTable } from '@/components/ui/data-table';
 
 import { columns } from './columns';
 import { useTransfersSorting } from '@/app/_contexts/sorting/transfers/hook';
-import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { useState } from 'react';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 interface Props {
   facilitatorId: string;
@@ -19,7 +19,6 @@ export const LatestTransactionsTable: React.FC<Props> = ({
   pageSize,
 }) => {
   const { sorting } = useTransfersSorting();
-  const { startDate, endDate } = useTimeRangeContext();
 
   const [page, setPage] = useState(0);
   const [latestTransactions] = api.public.transfers.list.useSuspenseQuery({
@@ -29,8 +28,7 @@ export const LatestTransactionsTable: React.FC<Props> = ({
     },
     facilitatorIds: [facilitatorId],
     sorting,
-    startDate,
-    endDate,
+    timeframe: ActivityTimeframe.ThirtyDays,
   });
 
   return (

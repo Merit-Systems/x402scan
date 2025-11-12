@@ -9,13 +9,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Address, Addresses } from '@/components/ui/address';
 
 import { Favicon } from '@/app/_components/favicon';
-import { HealthDot } from '@/components/health/dot';
+import { HealthDot } from '@/app/_components/health/dot';
 
 import { cn } from '@/lib/utils';
 
 import type { ResourceOrigin } from '@prisma/client';
 import type { MixedAddress } from '@/types/address';
-import type { OriginHealthMetrics } from '@/components/health/types';
+import type { OriginHealthMetrics } from '@/app/_components/health/types';
 import Link from 'next/link';
 
 interface Props {

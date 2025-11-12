@@ -42,7 +42,7 @@ export const HeaderCard: React.FC<Props> = async ({ address }) => {
       <div className="grid grid-cols-1 md:grid-cols-7">
         <div className="flex flex-col gap-4 p-4 pt-8 md:pt-10 col-span-5">
           <div className="">
-            <h1 className="text-3xl font-bold break-words line-clamp-2">
+            <h1 className="text-3xl font-bold wrap-break-words line-clamp-2">
               {origins.length === 0
                 ? formatAddress(address)
                 : origins.length === 1
@@ -51,7 +51,7 @@ export const HeaderCard: React.FC<Props> = async ({ address }) => {
             </h1>
             <p
               className={cn(
-                'break-words line-clamp-2',
+                'wrap-break-words line-clamp-2',
                 origins.length === 0
                   ? 'text-muted-foreground/60'
                   : 'text-muted-foreground'

@@ -16,4 +16,5 @@ export { codenut, codenutFacilitator } from './codenut';
 export { ultravioletadao, ultravioletadaoFacilitator } from './ultravioletadao';
 export { virtuals, virtualsFacilitator } from './virtuals';
 export { gx402, gx402Facilitator } from './gx-402';
+export { heurist, heuristFacilitator } from './heurist';
 export { treasure, treasureFacilitator } from './treasure';

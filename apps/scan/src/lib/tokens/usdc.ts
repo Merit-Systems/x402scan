@@ -4,7 +4,7 @@ import { Chain } from '@/types/chain';
 
 import type { Token } from '@/types/token';
 
-const usdc = (chain: Chain): Token => ({
+export const usdc = (chain: Chain): Token => ({
   symbol: 'USDC',
   name: 'USD Coin',
   icon: '/usdc.png',
