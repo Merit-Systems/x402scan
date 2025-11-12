@@ -2,7 +2,7 @@
   "name": "@x402scan/transfers-db",
   "version": "1.0.0",
   "exports": {
-    ".": "./src/client.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "db:generate": "prisma generate",

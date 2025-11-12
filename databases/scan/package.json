@@ -2,7 +2,7 @@
   "name": "@x402scan/scan-db",
   "version": "1.0.0",
   "exports": {
-    ".": "./src/client.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "db:generate": "prisma generate",
@@ -35,5 +35,8 @@
     "prisma": "^6.19.0",
     "rimraf": "^5.0.5",
     "typescript": "5.5.4"
+  },
+  "peerDependencies": {
+    "zod": "^4.0.0"
   }
 }

@@ -35,6 +35,8 @@ const listTopSellersUncached = async (
 ) => {
   const { sorting } = input;
 
+  console.log(input);
+
   const [count, items] = await Promise.all([
     queryRaw(
       Prisma.sql`
