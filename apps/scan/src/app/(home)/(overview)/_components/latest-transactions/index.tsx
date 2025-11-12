@@ -25,7 +25,7 @@ export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
       page: 0,
     },
     sorting: defaultTransfersSorting,
-    timeframe: ActivityTimeframe.AllTime,
+    timeframe: ActivityTimeframe.ThirtyDays,
   });
 
   return (

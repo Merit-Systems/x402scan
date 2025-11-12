@@ -27,7 +27,7 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
     recipients: {
       include: [address],
     },
-    timeframe: ActivityTimeframe.AllTime,
+    timeframe: ActivityTimeframe.ThirtyDays,
     sorting: defaultTransfersSorting,
   });
 

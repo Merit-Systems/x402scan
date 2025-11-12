@@ -30,7 +30,7 @@ export const LatestTransactions: React.FC<Props> = async ({
       page_size: pageSize,
     },
     facilitatorIds: [facilitatorId],
-    timeframe: ActivityTimeframe.AllTime,
+    timeframe: ActivityTimeframe.ThirtyDays,
     sorting: defaultTransfersSorting,
   });
 

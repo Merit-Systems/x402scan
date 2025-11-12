@@ -37,7 +37,7 @@ export default async function TransactionsPage({
       page: 0,
     },
     facilitatorIds: [id],
-    timeframe: ActivityTimeframe.AllTime,
+    timeframe: ActivityTimeframe.ThirtyDays,
     sorting: defaultTransfersSorting,
   });
 

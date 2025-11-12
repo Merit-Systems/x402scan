@@ -24,7 +24,7 @@ export default async function TransactionsPage({
       page_size: pageSize,
       page: 0,
     },
-    timeframe: ActivityTimeframe.AllTime,
+    timeframe: ActivityTimeframe.ThirtyDays,
   });
 
   return (

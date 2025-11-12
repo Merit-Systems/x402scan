@@ -27,7 +27,7 @@ export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
     ? facilitators.flatMap(f => f.addresses[chain] ?? [])
     : facilitatorAddresses;
 
-  void api.public.stats.overall.prefetch({
+  void api.public.stats.overallMV.prefetch({
     chain,
     timeframe: ActivityTimeframe.OneDay,
   });

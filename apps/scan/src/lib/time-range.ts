@@ -13,10 +13,6 @@ export function getTimeRangeFromTimeframe(
       ? now
       : subHours(now, timeframe.offset * 24);
 
-  if (timeframe === Number(ActivityTimeframe.AllTime)) {
-    return { startDate: undefined, endDate };
-  }
-
   // For all other timeframes, calculate from endDate
   // Using hours instead of days because of daylight savings.
   const startDate =
@@ -39,7 +35,7 @@ export const getBucketedTimeRangeFromTimeframe = async ({
   const now = new Date();
   const endDate = now;
 
-  if (period === Number(ActivityTimeframe.AllTime)) {
+  if (period === Number(ActivityTimeframe.ThirtyDays)) {
     return {
       startDate:
         typeof creationDate === 'function'
@@ -48,8 +44,21 @@ export const getBucketedTimeRangeFromTimeframe = async ({
       endDate,
     };
   }
-
   const startDate = subHours(endDate, period * 24);
 
   return { startDate, endDate };
 };
+
+export function getMaterializedViewSuffix(
+  timeframe:
+    | number
+    | {
+        period: number;
+        offset?: number | undefined;
+      }
+): string {
+  if (typeof timeframe === 'number') {
+    return `${timeframe}d`;
+  }
+  return `${timeframe.period}d`;
+}

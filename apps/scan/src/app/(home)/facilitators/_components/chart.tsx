@@ -22,7 +22,7 @@ export const FacilitatorsChart = () => {
       timeframe,
       chain,
     });
-  const [overallData] = api.public.stats.overall.useSuspenseQuery({
+  const [overallData] = api.public.stats.overallMV.useSuspenseQuery({
     timeframe,
     chain,
   });

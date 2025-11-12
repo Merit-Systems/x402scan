@@ -30,7 +30,7 @@ export const Table: React.FC<Props> = ({ pageSize }) => {
       page,
     },
     sorting,
-    timeframe: ActivityTimeframe.AllTime,
+    timeframe: ActivityTimeframe.ThirtyDays,
   });
 
   return (

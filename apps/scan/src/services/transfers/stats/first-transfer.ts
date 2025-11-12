@@ -19,7 +19,7 @@ export const getFirstTransferTimestamp = async (
   const sql = Prisma.sql`
     SELECT t.block_timestamp
     FROM "TransferEvent" t
-    ${transfersWhereClause({ ...input, timeframe: ActivityTimeframe.AllTime })}
+    ${transfersWhereClause({ ...input, timeframe: ActivityTimeframe.ThirtyDays })}
     ORDER BY t.block_timestamp ASC
     LIMIT 1
   `;

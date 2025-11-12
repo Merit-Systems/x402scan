@@ -14,6 +14,14 @@ import {
 import { createTRPCRouter, publicProcedure } from '../../trpc';
 import { getAcceptsAddresses } from '@/services/db/resources/accepts';
 import { mixedAddressSchema } from '@/lib/schemas';
+import {
+  getOverallStatisticsMV,
+  overallStatisticsMVInputSchema,
+} from '@/services/transfers/stats/overall-mv';
+import {
+  getBucketedStatisticsMV,
+  bucketedStatisticsMVInputSchema,
+} from '@/services/transfers/stats/bucketed-mv';
 
 export const statsRouter = createTRPCRouter({
   overall: publicProcedure
@@ -21,12 +29,21 @@ export const statsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       return await getOverallStatistics(input, ctx);
     }),
+  overallMV: publicProcedure
+    .input(overallStatisticsMVInputSchema)
+    .query(async ({ input, ctx }) => {
+      return await getOverallStatisticsMV(input, ctx);
+    }),
   bucketed: publicProcedure
     .input(bucketedStatisticsInputSchema)
     .query(async ({ input, ctx }) => {
       return await getBucketedStatistics(input, ctx);
     }),
-
+  bucketedMV: publicProcedure
+    .input(bucketedStatisticsMVInputSchema)
+    .query(async ({ input, ctx }) => {
+      return await getBucketedStatisticsMV(input, ctx);
+    }),
   firstTransferTimestamp: publicProcedure
     .input(getFirstTransferTimestampInputSchema)
     .query(async ({ input }) => {

@@ -40,11 +40,11 @@ const ActivityContainer = ({
 };
 
 export const Activity: React.FC<Props> = ({ facilitatorId }) => {
-  void api.public.stats.bucketed.prefetch({
+  void api.public.stats.bucketedMV.prefetch({
     facilitatorIds: [facilitatorId],
     timeframe: ActivityTimeframe.OneDay,
   });
-  void api.public.stats.overall.prefetch({
+  void api.public.stats.overallMV.prefetch({
     facilitatorIds: [facilitatorId],
     timeframe: ActivityTimeframe.OneDay,
   });
