@@ -129,6 +129,7 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
           strokeWidth={2}
           dot={false}
           yAxisId={0}
+          isAnimationActive={false}
         />
         <Line
           type="linear"
@@ -137,6 +138,7 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
           strokeWidth={2}
           dot={false}
           yAxisId={0}
+          isAnimationActive={false}
         />
         <Line
           type="linear"
@@ -145,6 +147,7 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
           strokeWidth={2}
           dot={false}
           yAxisId={0}
+          isAnimationActive={false}
         />
       </BaseChart>
       <div className="flex justify-between text-xs text-muted-foreground px-2 mt-1">
