@@ -9,8 +9,12 @@
     "start": "node dist/server.js",
     "docker:build": "docker build -t x402-proxy .",
     "docker:run": "docker run -p 6969:6969 --env-file .env x402-proxy",
-    "check:types": "tsc --noEmit",
-    "lint": "eslint ."
+    "check-format": "prettier --check .",
+    "format": "prettier --write .",
+    "check-types": "tsc --noEmit",
+    "knip": "knip",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@clickhouse/client": "^1.7.0",
@@ -23,6 +27,8 @@
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^20",
     "eslint": "^9.39.1",
+    "knip": "^5.66.2",
+    "prettier": "^3.6.2",
     "tsx": "^4.7.0",
     "typescript": "^5.6.3"
   }

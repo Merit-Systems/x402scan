@@ -6,6 +6,7 @@
     "@prisma/client",
     "p-limit",
     "facilitators",
-    "@repo/eslint-config"
+    "@repo/eslint-config",
+    "@trigger.dev/build"
   ]
 }

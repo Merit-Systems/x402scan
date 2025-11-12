@@ -15,9 +15,9 @@
     "db:studio": "prisma studio",
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "check:format": "prettier --check .",
+    "check-format": "prettier --check .",
     "format": "prettier --write .",
-    "check:types": "tsc --noEmit",
+    "check-types": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "knip": "knip"

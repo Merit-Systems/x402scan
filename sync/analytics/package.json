@@ -8,9 +8,10 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "check:format": "prettier --check .",
+    "check-format": "prettier --check .",
     "format": "prettier --write .",
-    "check:types": "tsc --noEmit",
+    "check-types": "tsc --noEmit",
+    "knip": "knip",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -25,8 +26,8 @@
     "@repo/typescript-config": "workspace:*",
     "@trigger.dev/build": "4.0.5",
     "@types/node": "^20",
-    "@typescript-eslint/parser": "^8.46.2",
     "eslint": "^9.38.0",
+    "knip": "^5.66.2",
     "prettier": "^3.6.2",
     "trigger.dev": "^4.0.4",
     "typescript": "^5.9.3"
