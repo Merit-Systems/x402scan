@@ -6,4 +6,4 @@
  * This should match the interval used for date rounding to prevent cache fragmentation.
  * IMPORTANT: This value must match the cron schedule in vercel.json (/api/cron/warm-cache)
  */
-export const CACHE_DURATION_MINUTES = 15;
+export const CACHE_DURATION_MINUTES = 5;

@@ -15,7 +15,7 @@ interface CacheContext {
  * This ensures cache doesn't expire while the next warming cycle is running.
  */
 // TODO(sragss): With unwramed queries they'll be cached by 45mins.
-const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 2;
+const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60;
 
 /**
  * Lock timeout in seconds (query should complete within this time)
