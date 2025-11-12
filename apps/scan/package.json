@@ -9,7 +9,7 @@
     "next:dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "next typegen && eslint",
     "lint:fix": "eslint --fix",
     "check-format": "prettier --check .",
     "format": "prettier --write .",
