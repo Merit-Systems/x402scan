@@ -29,7 +29,12 @@ export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
   });
 
   if (isLoading) {
-    return <LoadingChart legendItems={[{ label: 'Server Error Rate' }]} />;
+    return (
+      <LoadingChart
+        title="Server Error Rate"
+        legendItems={[{ label: 'Error Rate' }]}
+      />
+    );
   }
 
   if (data.length === 0) {

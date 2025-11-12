@@ -31,6 +31,7 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
   if (isLoading) {
     return (
       <LoadingChart
+        title="Latency"
         legendItems={[{ label: 'p50' }, { label: 'p90' }, { label: 'p99' }]}
       />
     );

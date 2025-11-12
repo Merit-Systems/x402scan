@@ -30,6 +30,7 @@ export const StatusChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
   if (isLoading) {
     return (
       <LoadingChart
+        title="Status Codes"
         legendItems={[
           { label: '2XX' },
           { label: '3XX' },
