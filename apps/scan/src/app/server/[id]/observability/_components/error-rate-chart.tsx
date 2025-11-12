@@ -56,7 +56,7 @@ export const ErrorRateChart: React.FC<Props> = ({ data }) => {
         margin={{ top: 10, right: 0, left: 0, bottom: 20 }}
         yAxes={[
           {
-            domain: [0, (dataMax: number) => Math.ceil(dataMax * 1.1)],
+            domain: [0, 100],
             hide: false,
           },
         ]}
