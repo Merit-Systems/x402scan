@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "dev": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": ["HELIUS_API_KEY", "CORS_ALLOW_ORIGIN"]
+    },
+    "deploy": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "wrangler.toml"],
+      "env": ["CLOUDFLARE_*"]
+    }
+  }
+}
