@@ -37,16 +37,10 @@ export default async function ResourcePage({
     return notFound();
   }
 
-  // NOTE(shafu): use a default creation date
-  const creationDate = new Date('2024-01-01');
-
   return (
     <Body className="pt-0">
       <HydrateClient>
-        <TimeRangeProvider
-          creationDate={creationDate}
-          initialTimeframe={ActivityTimeframe.OneDay}
-        >
+        <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
           <div className="flex justify-between items-center mb-2">
             <div>
               <h2 className="text-xl font-bold">Observability</h2>

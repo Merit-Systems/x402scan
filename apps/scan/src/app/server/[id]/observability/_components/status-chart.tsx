@@ -76,9 +76,11 @@ const StatusChartInner: React.FC<{ data: StatusCodeData[] }> = ({ data }) => {
   });
 
   // Get start and end timestamps for display
-  const startTime = chartData.length > 0 ? chartData[0].timestamp : '';
+  const startTime = chartData.length > 0 ? (chartData[0]?.timestamp ?? '') : '';
   const endTime =
-    chartData.length > 0 ? chartData[chartData.length - 1].timestamp : '';
+    chartData.length > 0
+      ? (chartData[chartData.length - 1]?.timestamp ?? '')
+      : '';
 
   return (
     <div className="w-1/2">

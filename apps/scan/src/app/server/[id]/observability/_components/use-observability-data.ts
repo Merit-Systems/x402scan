@@ -16,14 +16,15 @@ export function useObservabilityData<T>(options: UseObservabilityDataOptions) {
 
   const { startDate, endDate, bucketMinutes } = useMemo(() => {
     const now = new Date();
-    const start = subDays(now, timeframe);
+    const start = subDays(now, Number(timeframe));
 
     let minutes = 10;
-    if (timeframe >= 15) {
+    const days = Number(timeframe);
+    if (days >= 15) {
       minutes = 60; // 1 hour buckets for 15+ days
-    } else if (timeframe >= 7) {
+    } else if (days >= 7) {
       minutes = 30; // 30 min buckets for 7+ days
-    } else if (timeframe >= 3) {
+    } else if (days >= 3) {
       minutes = 15; // 15 min buckets for 3+ days
     }
 
@@ -67,7 +68,7 @@ export function useObservabilityData<T>(options: UseObservabilityDataOptions) {
     };
 
     void fetchData();
-  }, [startDate, endDate, originUrl, resourceUrl, endpoint]);
+  }, [startDate, endDate, originUrl, resourceUrl, endpoint, bucketMinutes]);
 
   return { data, isLoading };
 }
