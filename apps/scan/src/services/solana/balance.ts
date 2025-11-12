@@ -36,7 +36,8 @@ export const getSolanaTokenBalance = async (
     } = await solanaRpc.getTokenAccountBalance(usdcTokenAccount).send();
 
     return convertTokenAmount(BigInt(amount), decimals);
-  } catch {
+  } catch (error) {
+    console.error('Error getting Solana token balance', error);
     return 0;
   }
 };
