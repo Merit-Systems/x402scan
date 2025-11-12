@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { Facilitator } from './types';
 import { env } from '../env';
 import { baseFacilitators } from 'facilitators';
+import { ValidationError } from '../errors';
 
 /**
  * Create circuit breaker for a facilitator
@@ -71,6 +72,9 @@ let currentFacilitatorIndex = 0;
  * Get next facilitator using round-robin load balancing
  */
 export function getNextFacilitator(): Facilitator {
+  if (facilitators.length === 0) {
+    throw new ValidationError('No facilitators available');
+  }
   const facilitator = facilitators[currentFacilitatorIndex];
   currentFacilitatorIndex = (currentFacilitatorIndex + 1) % facilitators.length;
   return facilitator;
