@@ -29,7 +29,12 @@ export default async function ObservabilityPage({
           initialTimeframe={ActivityTimeframe.OneDay}
         >
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Observability</h2>
+            <div>
+              <h2 className="text-xl font-bold">Observability</h2>
+              <div className="text-sm text-muted-foreground">
+                {origin.origin}
+              </div>
+            </div>
             <RangeSelector />
           </div>
           <div className="flex gap-6 mb-6">
