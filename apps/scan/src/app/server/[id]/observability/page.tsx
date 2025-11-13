@@ -7,7 +7,7 @@ import { ResourcesTable } from './_components/resources-table';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { ObservabilityBanner } from './_components/proxy-callout';
+import { ObservabilityBanner } from './_components/observability-banner';
 
 export default async function ObservabilityPage({
   params,
