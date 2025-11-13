@@ -21,27 +21,6 @@ import {
 import { api } from '@/trpc/client';
 import { useObservabilityDataParams } from './use-observability-data';
 
-interface InvocationData {
-  id: string;
-  url: string;
-  method: string;
-  status_code: number;
-  status_text: string;
-  duration: number;
-  created_at: string;
-  request_content_type: string;
-  response_content_type: string;
-  response_body: string;
-}
-
-interface PaginatedResponse {
-  data: InvocationData[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-
 interface Props {
   resourceUrl: string;
 }

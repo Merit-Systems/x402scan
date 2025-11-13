@@ -7,13 +7,6 @@ import { LoadingChart } from './loading-chart';
 import { useLatency } from './use-observability-data';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
-interface LatencyData {
-  ts: string;
-  p50: string;
-  p90: string;
-  p99: string;
-}
-
 interface Props {
   originUrl: string;
   resourceUrl: string;

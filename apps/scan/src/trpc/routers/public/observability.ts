@@ -221,14 +221,8 @@ export const observabilityRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      const {
-        resourceUrl,
-        startDate,
-        endDate,
-        page,
-        pageSize,
-        statusFilter,
-      } = input;
+      const { resourceUrl, startDate, endDate, page, pageSize, statusFilter } =
+        input;
 
       const start = new Date(startDate);
       const end = new Date(endDate);
@@ -265,8 +259,7 @@ export const observabilityRouter = createTRPCRouter({
       });
 
       const countData = await countResultSet.json();
-      const totalStr =
-        (countData as Array<{ total: string }>)[0]?.total ?? '0';
+      const totalStr = (countData as Array<{ total: string }>)[0]?.total ?? '0';
       const total = parseInt(totalStr);
 
       const dataQuery = `

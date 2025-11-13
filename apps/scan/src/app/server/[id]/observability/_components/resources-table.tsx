@@ -14,14 +14,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useResources } from './use-observability-data';
 import type { Route } from 'next';
 
-interface ResourceData {
-  url: string;
-  total_requests: string;
-  error_count: string;
-  avg_duration: string;
-  last_seen: string;
-}
-
 interface Props {
   originUrl: string;
 }

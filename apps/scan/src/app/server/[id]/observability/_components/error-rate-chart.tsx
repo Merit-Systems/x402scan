@@ -7,13 +7,6 @@ import { LoadingChart } from './loading-chart';
 import { useErrorRate } from './use-observability-data';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
-interface ErrorRateData {
-  ts: string;
-  total_requests: string;
-  error_requests: string;
-  error_rate: string;
-}
-
 interface Props {
   originUrl: string;
   resourceUrl?: string;
