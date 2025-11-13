@@ -4,28 +4,21 @@ import { BaseChart } from '@/components/ui/charts/chart/chart';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Area } from 'recharts';
 import { LoadingChart } from './loading-chart';
-import { useObservabilityData } from './use-observability-data';
+import { useObservabilityDataParams } from './use-observability-data';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-
-interface ErrorRateData {
-  ts: string;
-  total_requests: string;
-  error_requests: string;
-  error_rate: string;
-}
+import { api } from '@/trpc/client';
 
 interface Props {
   originUrl: string;
   resourceUrl?: string;
 }
 
-const ERROR_RATE_ENDPOINT = '/api/observability/error-rate';
-
 export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
-  const { data, isLoading } = useObservabilityData<ErrorRateData>({
-    endpoint: ERROR_RATE_ENDPOINT,
+  const params = useObservabilityDataParams();
+  const { data, isLoading } = api.public.observability.errorRate.useQuery({
     originUrl,
     resourceUrl,
+    ...params,
   });
 
   if (isLoading) {
@@ -37,7 +30,7 @@ export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     );
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-8">
         No error rate data available

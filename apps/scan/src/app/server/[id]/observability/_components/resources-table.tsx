@@ -11,22 +11,13 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useRouter, useParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useObservabilityData } from './use-observability-data';
+import { useObservabilityDataParams } from './use-observability-data';
 import type { Route } from 'next';
-
-interface ResourceData {
-  url: string;
-  total_requests: string;
-  error_count: string;
-  avg_duration: string;
-  last_seen: string;
-}
+import { api } from '@/trpc/client';
 
 interface Props {
   originUrl: string;
 }
-
-const RESOURCES_ENDPOINT = '/api/observability/resources';
 
 function encodeResourceId(url: string): string {
   // Encode URL as URL-safe base64
@@ -35,14 +26,16 @@ function encodeResourceId(url: string): string {
 }
 
 export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
-  const { data, isLoading } = useObservabilityData<ResourceData>({
-    endpoint: RESOURCES_ENDPOINT,
+  const params = useObservabilityDataParams();
+  const { data, isLoading } = api.public.observability.resources.useQuery({
     originUrl,
+    startDate: params.startDate,
+    endDate: params.endDate,
   });
 
   const router = useRouter();
-  const params = useParams();
-  const serverId = params.id as string;
+  const routeParams = useParams();
+  const serverId = routeParams.id as string;
 
   const handleRowClick = (url: string) => {
     const resourceId = encodeResourceId(url);
@@ -87,7 +80,7 @@ export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 ? (
+            {!data || data.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={5}

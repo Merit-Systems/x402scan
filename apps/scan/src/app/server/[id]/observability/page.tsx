@@ -7,6 +7,7 @@ import { ResourcesTable } from './_components/resources-table';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
+import { ProxyCallout } from './_components/proxy-callout';
 
 export default async function ObservabilityPage({
   params,
@@ -21,6 +22,7 @@ export default async function ObservabilityPage({
   return (
     <Body className="pt-0">
       <HydrateClient>
+        <ProxyCallout />
         <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
           <div className="flex justify-between items-center mb-2">
             <div>
