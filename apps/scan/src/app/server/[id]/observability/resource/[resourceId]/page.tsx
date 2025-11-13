@@ -5,6 +5,7 @@ import { StatusChart } from '../../_components/status-chart';
 import { ErrorRateChart } from '../../_components/error-rate-chart';
 import { LatencyChart } from '../../_components/latency-chart';
 import { ResourceHeader } from '../../_components/resource-header';
+import { InvocationsTable } from '../../_components/invocations-table';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
@@ -60,6 +61,7 @@ export default async function ResourcePage({
             />
             <LatencyChart originUrl={origin.origin} resourceUrl={resourceUrl} />
           </div>
+          <InvocationsTable resourceUrl={resourceUrl} />
         </TimeRangeProvider>
       </HydrateClient>
     </Body>
