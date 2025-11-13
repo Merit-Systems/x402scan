@@ -6,11 +6,37 @@
       "dependsOn": ["^build", "^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "generated/**"],
-      "env": ["ANALYTICS_CLICKHOUSE_*", "POSTGRES_*"]
+      "env": [
+        "ANALYTICS_CLICKHOUSE_*",
+        "POSTGRES_*",
+        "CDP_*",
+        "*_RPC_URL",
+        "TRANSFERS_DB_*",
+        "HIDE_TRPC_LOGS",
+        "GITHUB_TOKEN",
+        "CRON_SECRET",
+        "FREEPIK_API_KEY",
+        "BLOB_READ_WRITE_TOKEN",
+        "FREE_TIER_WALLET_NAME",
+        "REDIS_URL",
+        "LMNR_PROJECT_API_KEY",
+        "NODE_ENV",
+        "NEXT_RUNTIME",
+        "AUTH_SECRET",
+        "OPENAI_API_KEY",
+        "DATABASE_URL",
+        "ECHO_PROXY_URL",
+        "JINA_API_KEY",
+        "HELIUS_API_KEY",
+        "GOOGLE_CLOUD_CREDENTIALS",
+        "BITQUERY_API_KEY",
+        "ADDRESS",
+        "PORT",
+        "DISCORD_WEBHOOK_URL"
+      ]
     },
     "dev": {
       "dependsOn": ["^db:generate"],
-      "cache": false,
       "persistent": true
     },
     "lint": {
@@ -19,11 +45,11 @@
     "typegen": {
       "outputs": [".next/**", "!.next/cache/**"]
     },
-    "knip": {
-      "dependsOn": ["^build"]
+    "check-types": {
+      "dependsOn": ["^db:generate", "typegen", "^build"]
     },
     "db:generate": {
-      "cache": false
+      "outputs": ["generated/**"]
     },
     "db:migrate": {
       "cache": false,

@@ -1,6 +1,0 @@
-{
-  "$schema": "https://unpkg.com/knip@latest/schema.json",
-  "entry": [],
-  "ignoreDependencies": ["@x402scan/eslint-config", "facilitators"],
-  "ignoreWorkspaces": []
-}

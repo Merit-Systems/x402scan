@@ -9,7 +9,6 @@
     "dev": "tsc --watch",
     "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit",
-    "knip": "knip",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev --skip-generate",
     "db:deploy": "prisma migrate deploy",
@@ -31,7 +30,6 @@
     "@types/node": "^20",
     "@types/ws": "^8.18.1",
     "eslint": "^9.39.1",
-    "knip": "^5.69.0",
     "prisma": "^6.19.0",
     "rimraf": "^5.0.5",
     "typescript": "5.5.4"

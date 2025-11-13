@@ -9,15 +9,13 @@
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
     "check-types": "tsc --noEmit",
-    "knip": "knip",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@x402scan/analytics-db": "workspace:*",
     "@x402scan/scan-db": "workspace:*",
-    "@trigger.dev/sdk": "4.0.5",
-    "facilitators": "workspace:*"
+    "@trigger.dev/sdk": "4.0.5"
   },
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",
@@ -25,7 +23,6 @@
     "@trigger.dev/build": "4.0.5",
     "@types/node": "^20",
     "eslint": "^9.39.1",
-    "knip": "^5.69.0",
     "trigger.dev": "^4.0.4",
     "typescript": "^5.9.3"
   }

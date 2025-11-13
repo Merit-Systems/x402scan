@@ -10,8 +10,7 @@
     "trigger:deploy": "trigger deploy",
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "knip": "knip"
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@coinbase/cdp-sdk": "^1.38.4",
@@ -30,7 +29,6 @@
     "@trigger.dev/build": "4.0.5",
     "@types/node": "^20",
     "eslint": "^9.38.0",
-    "knip": "^5.66.2",
     "trigger.dev": "^4.0.4",
     "typescript": "^5.9.3"
   }

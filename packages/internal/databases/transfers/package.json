@@ -11,7 +11,6 @@
     "db:format": "prisma format",
     "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit",
-    "knip": "knip",
     "prebuild": "npm run db:generate",
     "predev": "npm run db:generate",
     "postinstall": "npm run db:generate",
@@ -30,7 +29,6 @@
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "^9.39.1",
-    "knip": "^5.69.0",
     "prisma": "^6.19.0",
     "rimraf": "^5.0.5",
     "typescript": "5.5.4"

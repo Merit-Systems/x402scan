@@ -7,19 +7,16 @@
     "dev": "turbo run dev --filter=x402scan",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
-    "knip": "turbo run knip",
+    "knip": "knip --cache",
     "format": "prettier --write --cache .",
     "format:check": "prettier --check --cache .",
     "check": "turbo run check-types knip lint"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.46.2",
-    "@typescript-eslint/parser": "^8.46.2",
-    "eslint-config-turbo": "^2.5.8",
+    "knip": "^5.69.0",
     "prettier": "^3.6.2",
     "turbo": "^2.5.1",
-    "typescript": "^5",
-    "typescript-eslint": "^8.46.2"
+    "typescript": "^5"
   },
   "pnpm": {
     "overrides": {

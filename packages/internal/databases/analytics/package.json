@@ -8,8 +8,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint . --max-warnings 0",
-    "check-types": "tsc --noEmit",
-    "knip": "knip"
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@clickhouse/client": "^1.12.1"
@@ -19,7 +18,6 @@
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "^9.39.1",
-    "knip": "^5.69.0",
     "typescript": "5.5.4"
   }
 }
