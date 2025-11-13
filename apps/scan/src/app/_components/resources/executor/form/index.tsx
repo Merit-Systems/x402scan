@@ -19,6 +19,7 @@ import {
 import { Fetch } from './fetch';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
+import { parseInputFieldsSafe } from '@/lib/x402/input-schema';
 
 import type { SupportedChain } from '@/types/chain';
 import type { FieldDefinition, FieldValue, Methods } from '@/types/x402';
@@ -49,12 +50,12 @@ export function Form({
   resource,
 }: Props) {
   const queryFields = useMemo(
-    () => getFields(inputSchema.queryParams),
-    [inputSchema]
+    () => parseInputFieldsSafe(inputSchema.queryParams, 'queryParams'),
+    [inputSchema.queryParams]
   );
   const bodyFields = useMemo(
-    () => getFields(inputSchema.bodyFields),
-    [inputSchema]
+    () => parseInputFieldsSafe(inputSchema.bodyFields, 'bodyFields'),
+    [inputSchema.bodyFields]
   );
 
   const [queryValues, setQueryValues] = useState<Record<string, FieldValue>>(
@@ -444,114 +445,6 @@ function FieldInput({
       showLabel={false}
     />
   );
-}
-
-function getFields(
-  record: Record<string, unknown> | null | undefined
-): FieldDefinition[] {
-  if (!record) {
-    return [];
-  }
-
-  return expandFields(record);
-}
-
-function expandFields(
-  record: Record<string, unknown>,
-  prefix = '',
-  parentRequired?: string[]
-): FieldDefinition[] {
-  const fields: FieldDefinition[] = [];
-
-  for (const [name, raw] of Object.entries(record)) {
-    const fullName = prefix ? `${prefix}.${name}` : name;
-
-    if (typeof raw === 'string') {
-      fields.push({
-        name: fullName,
-        type: raw,
-        required: parentRequired?.includes(name) ?? false,
-        enum: undefined,
-        default: undefined,
-      } satisfies FieldDefinition);
-      continue;
-    }
-
-    if (typeof raw !== 'object' || !raw) {
-      continue;
-    }
-
-    const field = raw as Record<string, unknown>;
-    const fieldType = typeof field.type === 'string' ? field.type : undefined;
-    const fieldDescription =
-      typeof field.description === 'string' ? field.description : undefined;
-    const fieldEnum = Array.isArray(field.enum)
-      ? (field.enum as string[])
-      : undefined;
-    const fieldDefault =
-      typeof field.default === 'string' ? field.default : undefined;
-
-    // Determine if this field is required
-    const isFieldRequired =
-      typeof field.required === 'boolean'
-        ? field.required
-        : (parentRequired?.includes(name) ?? false);
-
-    // Handle array type with items - preserve items schema
-    if (
-      fieldType === 'array' &&
-      field.items &&
-      typeof field.items === 'object'
-    ) {
-      const items = field.items as Record<string, unknown>;
-      fields.push({
-        name: fullName,
-        type: fieldType,
-        description: fieldDescription,
-        required: isFieldRequired,
-        enum: fieldEnum,
-        default: fieldDefault,
-        items: {
-          type: typeof items.type === 'string' ? items.type : undefined,
-          properties:
-            typeof items.properties === 'object' && items.properties !== null
-              ? (items.properties as Record<string, unknown>)
-              : undefined,
-          required: Array.isArray(items.required)
-            ? (items.required as string[])
-            : undefined,
-        },
-      } satisfies FieldDefinition);
-    }
-    // Handle object type with properties - expand recursively
-    else if (
-      fieldType === 'object' &&
-      field.properties &&
-      typeof field.properties === 'object'
-    ) {
-      const objectRequired = Array.isArray(field.required)
-        ? field.required
-        : [];
-      const expandedFields = expandFields(
-        field.properties as Record<string, unknown>,
-        fullName,
-        objectRequired
-      );
-      fields.push(...expandedFields);
-    } else {
-      // Regular field or object without properties
-      fields.push({
-        name: fullName,
-        type: fieldType,
-        description: fieldDescription,
-        required: isFieldRequired,
-        enum: fieldEnum,
-        default: fieldDefault,
-      } satisfies FieldDefinition);
-    }
-  }
-
-  return fields;
 }
 
 function isValidFieldValue(value: FieldValue): boolean {

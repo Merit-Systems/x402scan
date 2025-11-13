@@ -19,6 +19,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { type parseX402Response } from '@/lib/x402/schema';
+import { parseInputFields, formatErrorPath } from '@/lib/x402/input-schema';
 import { CheckCircle, Minus, XCircle } from 'lucide-react';
 
 type TestResult = {
@@ -131,6 +132,49 @@ export function Checklist({
     return undefined;
   };
 
+  const validateSchemaFields = (pair: ParsedPair) => {
+    if (!pair?.parsed?.success) return { ok: false, errors: [] };
+    const inputSchema = pair.parsed.data.accepts?.[0]?.outputSchema?.input;
+    if (!inputSchema) return { ok: true, errors: [] };
+
+    const errors: string[] = [];
+
+    // Validate queryParams
+    if (inputSchema.queryParams) {
+      const result = parseInputFields(inputSchema.queryParams, 'queryParams');
+      if (!result.success) {
+        errors.push(
+          ...result.errors.map(err => `${formatErrorPath(err.path)}: ${err.message}`)
+        );
+      }
+    }
+
+    // Validate bodyFields
+    if (inputSchema.bodyFields) {
+      const result = parseInputFields(inputSchema.bodyFields, 'bodyFields');
+      if (!result.success) {
+        errors.push(
+          ...result.errors.map(err => `${formatErrorPath(err.path)}: ${err.message}`)
+        );
+      }
+    }
+
+    // Validate headerFields
+    if (inputSchema.headerFields) {
+      const result = parseInputFields(inputSchema.headerFields, 'headerFields');
+      if (!result.success) {
+        errors.push(
+          ...result.errors.map(err => `${formatErrorPath(err.path)}: ${err.message}`)
+        );
+      }
+    }
+
+    return { ok: errors.length === 0, errors };
+  };
+
+  const gSchemaValidation = g ? validateSchemaFields(g) : null;
+  const pSchemaValidation = p ? validateSchemaFields(p) : null;
+
   return (
     <Card>
       <CardHeader className="py-3">
@@ -232,6 +276,29 @@ export function Checklist({
                 />
               </>
             )}
+            <Row
+              label="Schema fields valid"
+              gOk={
+                gSchemaValidation === null
+                  ? undefined
+                  : gSchemaValidation.ok
+              }
+              pOk={
+                pSchemaValidation === null
+                  ? undefined
+                  : pSchemaValidation.ok
+              }
+              gMsg={
+                gSchemaValidation && !gSchemaValidation.ok
+                  ? gSchemaValidation.errors.join('\n')
+                  : undefined
+              }
+              pMsg={
+                pSchemaValidation && !pSchemaValidation.ok
+                  ? pSchemaValidation.errors.join('\n')
+                  : undefined
+              }
+            />
 
             {/* Section: Page metadata */}
             <TableRow>
