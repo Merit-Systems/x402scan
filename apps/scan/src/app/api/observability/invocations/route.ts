@@ -47,7 +47,6 @@ export async function POST(
     const end = new Date(endDate);
     const offset = (page - 1) * pageSize;
 
-    // Get total count
     const countQuery = `
       SELECT count() AS total
       FROM resource_invocations
@@ -61,10 +60,10 @@ export async function POST(
       format: 'JSONEachRow',
     });
 
-    const countData = (await countResultSet.json()) as Array<{ total: string }>;
-    const total = parseInt(countData[0]?.total ?? '0');
+    const countData = await countResultSet.json();
+    const totalStr = (countData as Array<{ total: string }>)[0]?.total ?? '0';
+    const total = parseInt(totalStr);
 
-    // Get paginated data
     const dataQuery = `
       SELECT
         id,
@@ -92,10 +91,10 @@ export async function POST(
       format: 'JSONEachRow',
     });
 
-    const data = (await dataResultSet.json()) as InvocationResponse[];
+    const data = await dataResultSet.json();
 
     return NextResponse.json({
-      data,
+      data: data as InvocationResponse[],
       total,
       page,
       pageSize,
