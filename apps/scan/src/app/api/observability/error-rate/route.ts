@@ -26,7 +26,7 @@ export async function POST(
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    // Use exact match if resourceUrl is provided, otherwise use LIKE pattern
+    // NOTE(shafu): use exact match if resourceUrl is provided, otherwise use LIKE pattern
     const urlCondition = resourceUrl
       ? `url = '${resourceUrl}'`
       : `url LIKE '%${originUrl}%'`;
