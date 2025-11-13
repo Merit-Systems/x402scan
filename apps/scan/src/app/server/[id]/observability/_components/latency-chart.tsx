@@ -4,8 +4,9 @@ import { BaseChart } from '@/components/ui/charts/chart/chart';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Line } from 'recharts';
 import { LoadingChart } from './loading-chart';
-import { useLatency } from './use-observability-data';
+import { useObservabilityDataParams } from './use-observability-data';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { api } from '@/trpc/client';
 
 interface Props {
   originUrl: string;
@@ -13,7 +14,12 @@ interface Props {
 }
 
 export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
-  const { data, isLoading } = useLatency(originUrl, resourceUrl);
+  const params = useObservabilityDataParams();
+  const { data, isLoading } = api.public.observability.latency.useQuery({
+    originUrl,
+    resourceUrl,
+    ...params,
+  });
 
   if (isLoading) {
     return (

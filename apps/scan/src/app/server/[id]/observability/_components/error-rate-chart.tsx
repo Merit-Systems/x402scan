@@ -4,8 +4,9 @@ import { BaseChart } from '@/components/ui/charts/chart/chart';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Area } from 'recharts';
 import { LoadingChart } from './loading-chart';
-import { useErrorRate } from './use-observability-data';
+import { useObservabilityDataParams } from './use-observability-data';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { api } from '@/trpc/client';
 
 interface Props {
   originUrl: string;
@@ -13,7 +14,12 @@ interface Props {
 }
 
 export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
-  const { data, isLoading } = useErrorRate(originUrl, resourceUrl);
+  const params = useObservabilityDataParams();
+  const { data, isLoading } = api.public.observability.errorRate.useQuery({
+    originUrl,
+    resourceUrl,
+    ...params,
+  });
 
   if (isLoading) {
     return (

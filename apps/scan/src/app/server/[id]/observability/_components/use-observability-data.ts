@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { subDays } from 'date-fns';
-import { api } from '@/trpc/client';
 
 export function useObservabilityDataParams() {
   const { timeframe } = useTimeRangeContext();
@@ -26,40 +25,4 @@ export function useObservabilityDataParams() {
       bucketMinutes: minutes,
     };
   }, [timeframe]);
-}
-
-export function useStatusCodes(originUrl: string, resourceUrl?: string) {
-  const params = useObservabilityDataParams();
-  return api.public.observability.statusCodes.useQuery({
-    originUrl,
-    resourceUrl,
-    ...params,
-  });
-}
-
-export function useErrorRate(originUrl: string, resourceUrl?: string) {
-  const params = useObservabilityDataParams();
-  return api.public.observability.errorRate.useQuery({
-    originUrl,
-    resourceUrl,
-    ...params,
-  });
-}
-
-export function useLatency(originUrl: string, resourceUrl: string) {
-  const params = useObservabilityDataParams();
-  return api.public.observability.latency.useQuery({
-    originUrl,
-    resourceUrl,
-    ...params,
-  });
-}
-
-export function useResources(originUrl: string) {
-  const params = useObservabilityDataParams();
-  return api.public.observability.resources.useQuery({
-    originUrl,
-    startDate: params.startDate,
-    endDate: params.endDate,
-  });
 }
