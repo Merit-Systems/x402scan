@@ -62,15 +62,20 @@ export async function POST(
     const countQuery = `
       SELECT count() AS total
       FROM resource_invocations
-      WHERE created_at >= toDateTime('${start.toISOString().replace('T', ' ').split('.')[0]}')
-        AND created_at <= toDateTime('${end.toISOString().replace('T', ' ').split('.')[0]}')
-        AND url = '${resourceUrl}'
+      WHERE created_at >= toDateTime({start: String})
+        AND created_at <= toDateTime({end: String})
+        AND url = {resourceUrl: String}
         ${statusCondition}
     `;
 
     const countResultSet = await clickhouse.query({
       query: countQuery,
       format: 'JSONEachRow',
+      query_params: {
+        start: start.toISOString().replace('T', ' ').split('.')[0],
+        end: end.toISOString().replace('T', ' ').split('.')[0],
+        resourceUrl,
+      },
     });
 
     const countData = await countResultSet.json();
@@ -90,18 +95,25 @@ export async function POST(
         response_content_type,
         response_body
       FROM resource_invocations
-      WHERE created_at >= toDateTime('${start.toISOString().replace('T', ' ').split('.')[0]}')
-        AND created_at <= toDateTime('${end.toISOString().replace('T', ' ').split('.')[0]}')
-        AND url = '${resourceUrl}'
+      WHERE created_at >= toDateTime({start: String})
+        AND created_at <= toDateTime({end: String})
+        AND url = {resourceUrl: String}
         ${statusCondition}
       ORDER BY created_at DESC
-      LIMIT ${pageSize}
-      OFFSET ${offset}
+      LIMIT {pageSize: UInt32}
+      OFFSET {offset: UInt32}
     `;
 
     const dataResultSet = await clickhouse.query({
       query: dataQuery,
       format: 'JSONEachRow',
+      query_params: {
+        start: start.toISOString().replace('T', ' ').split('.')[0],
+        end: end.toISOString().replace('T', ' ').split('.')[0],
+        resourceUrl,
+        pageSize,
+        offset,
+      },
     });
 
     const data = await dataResultSet.json();
