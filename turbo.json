@@ -40,7 +40,8 @@
       "persistent": true
     },
     "start": {
-      "dependsOn": ["^build"]
+      "cache": false,
+      "persistent": true
     },
     "lint": {
       "dependsOn": ["^db:generate", "typegen", "^build"]
