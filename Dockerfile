@@ -76,18 +76,18 @@ ENV ANALYTICS_CLICKHOUSE_USER=$ANALYTICS_CLICKHOUSE_USER
 ENV ANALYTICS_CLICKHOUSE_PASSWORD=$ANALYTICS_CLICKHOUSE_PASSWORD
 ENV ANALYTICS_CLICKHOUSE_DATABASE=$ANALYTICS_CLICKHOUSE_DATABASE
 
-# Copy workspace configuration files
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-COPY package.json ./
-COPY tsconfig.base.json ./
+# Copy workspace configuration files from builder
+COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/package.json ./
 
-# Copy internal packages (needed at runtime)
-COPY packages/internal/databases/analytics/package.json ./packages/internal/databases/analytics/package.json
-COPY packages/internal/databases/analytics/dist/ ./packages/internal/databases/analytics/dist/
+# Copy internal packages from builder (both source and built artifacts)
+COPY --from=builder /app/packages/internal/databases/analytics/package.json ./packages/internal/databases/analytics/package.json
+COPY --from=builder /app/packages/internal/databases/analytics/dist/ ./packages/internal/databases/analytics/dist/
+COPY --from=builder /app/packages/internal/configurations/ ./packages/internal/configurations/
 
-# Copy the proxy app
-COPY apps/proxy/package.json ./apps/proxy/package.json
+# Copy the proxy app from builder
+COPY --from=builder /app/apps/proxy/package.json ./apps/proxy/package.json
 COPY --from=builder /app/apps/proxy/dist/ ./apps/proxy/dist/
 
 # Install production dependencies only
