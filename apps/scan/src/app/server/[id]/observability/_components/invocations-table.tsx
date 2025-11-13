@@ -20,11 +20,6 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
 
 interface InvocationData {
   id: string;
@@ -37,6 +32,7 @@ interface InvocationData {
   request_content_type: string;
   response_content_type: string;
   response_body: string;
+  response_headers: string;
 }
 
 interface PaginatedResponse {
@@ -125,15 +121,6 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
       }
       return newSet;
     });
-  };
-
-  const formatResponseBody = (body: string): string => {
-    try {
-      const parsed = JSON.parse(body);
-      return JSON.stringify(parsed, null, 2);
-    } catch {
-      return body;
-    }
   };
 
   if (isLoading) {
@@ -230,13 +217,31 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
                     {isExpanded && (
                       <TableRow>
                         <TableCell colSpan={7} className="bg-muted/50 p-4">
-                          <div className="space-y-2">
-                            <h4 className="text-sm font-semibold">
-                              Response Body
-                            </h4>
-                            <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-96 overflow-y-auto border">
-                              {formatResponseBody(invocation.response_body)}
-                            </pre>
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-semibold">
+                                Response Headers
+                              </h4>
+                              <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-48 overflow-y-auto border">
+                                {JSON.stringify(
+                                  JSON.parse(invocation.response_headers),
+                                  null,
+                                  2
+                                )}
+                              </pre>
+                            </div>
+                            <div className="space-y-2">
+                              <h4 className="text-sm font-semibold">
+                                Response Body
+                              </h4>
+                              <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-96 overflow-y-auto border">
+                                {JSON.stringify(
+                                  JSON.parse(invocation.response_body),
+                                  null,
+                                  2
+                                )}
+                              </pre>
+                            </div>
                           </div>
                         </TableCell>
                       </TableRow>
