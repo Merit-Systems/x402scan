@@ -6,7 +6,7 @@ import {
   publicProcedure,
 } from '@/trpc/trpc';
 
-import { getAgentConfiguration } from '@/services/db/agent-config/get';
+import { getAgentConfigurationUncached } from '@/services/db/agent-config/get';
 import {
   listTopAgentConfigurations,
   listTopAgentConfigurationsSchema,
@@ -31,7 +31,7 @@ import { auth } from '@/auth';
 export const publicAgentConfigurationsRouter = createTRPCRouter({
   get: publicProcedure.input(z.uuid()).query(async ({ input }) => {
     const session = await auth();
-    return await getAgentConfiguration(input, session?.user?.id);
+    return await getAgentConfigurationUncached(input, session?.user?.id);
   }),
 
   list: paginatedProcedure
