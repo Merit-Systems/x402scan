@@ -41,7 +41,8 @@
     },
     "start": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["ANALYTICS_CLICKHOUSE_*"]
     },
     "lint": {
       "dependsOn": ["^db:generate", "typegen", "^build"]
