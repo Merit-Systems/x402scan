@@ -4,7 +4,7 @@ import { BaseChart } from '@/components/ui/charts/chart/chart';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Area } from 'recharts';
 import { LoadingChart } from './loading-chart';
-import { useObservabilityData } from './use-observability-data';
+import { useStatusCodes } from './use-observability-data';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface StatusCodeData {
@@ -21,11 +21,7 @@ interface Props {
 }
 
 export const StatusChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
-  const { data, isLoading } = useObservabilityData<StatusCodeData>({
-    endpoint: '/api/observability/status-codes',
-    originUrl,
-    resourceUrl,
-  });
+  const { data, isLoading } = useStatusCodes(originUrl, resourceUrl);
 
   if (isLoading) {
     return (
@@ -41,7 +37,7 @@ export const StatusChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     );
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-8">
         No observability data available

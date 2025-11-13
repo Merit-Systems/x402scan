@@ -10,9 +10,7 @@ import {
 } from '@/components/ui/table';
 import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
-import { useEffect, useMemo, useState } from 'react';
-import { subDays } from 'date-fns';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   ChevronLeft,
@@ -20,6 +18,8 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
+import { api } from '@/trpc/client';
+import { useObservabilityDataParams } from './use-observability-data';
 
 interface InvocationData {
   id: string;
@@ -46,62 +46,19 @@ interface Props {
   resourceUrl: string;
 }
 
-const INVOCATIONS_ENDPOINT = '/api/observability/invocations';
-
 export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
-  const { timeframe } = useTimeRangeContext();
-  const [data, setData] = useState<PaginatedResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const params = useObservabilityDataParams();
 
-  const { startDate, endDate } = useMemo(() => {
-    const now = new Date();
-    const start = subDays(now, Number(timeframe));
-    return { startDate: start, endDate: now };
-  }, [timeframe]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(INVOCATIONS_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            resourceUrl,
-            startDate: startDate.toISOString(),
-            endDate: endDate.toISOString(),
-            page: currentPage,
-            pageSize: 50,
-            statusFilter: '5xx',
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch invocations');
-        }
-
-        const result = (await response.json()) as PaginatedResponse;
-        setData(result);
-      } catch (error) {
-        console.error('Error fetching invocations:', error);
-        setData({
-          data: [],
-          total: 0,
-          page: 1,
-          pageSize: 50,
-          totalPages: 0,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void fetchData();
-  }, [startDate, endDate, resourceUrl, currentPage]);
+  const { data, isLoading } = api.public.observability.invocations.useQuery({
+    resourceUrl,
+    startDate: params.startDate,
+    endDate: params.endDate,
+    page: currentPage,
+    pageSize: 50,
+    statusFilter: '5xx',
+  });
 
   const getStatusColor = (statusCode: number): string => {
     if (statusCode >= 200 && statusCode < 300) return 'text-green-600';
@@ -170,7 +127,7 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {!data || data.data.length === 0 ? (
+            {!data || data?.data.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={7}
@@ -180,7 +137,7 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
                 </TableCell>
               </TableRow>
             ) : (
-              data.data.map(invocation => {
+              data?.data.map(invocation => {
                 const isExpanded = expandedRows.has(invocation.id);
                 return (
                   <>
@@ -247,7 +204,7 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
         </Table>
       </div>
 
-      {data && data.totalPages > 1 && (
+      {data && data?.totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-muted-foreground">
             Page {data.page} of {data.totalPages}

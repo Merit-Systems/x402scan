@@ -11,7 +11,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useRouter, useParams } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useObservabilityData } from './use-observability-data';
+import { useResources } from './use-observability-data';
 import type { Route } from 'next';
 
 interface ResourceData {
@@ -26,8 +26,6 @@ interface Props {
   originUrl: string;
 }
 
-const RESOURCES_ENDPOINT = '/api/observability/resources';
-
 function encodeResourceId(url: string): string {
   // Encode URL as URL-safe base64
   const base64 = Buffer.from(url, 'utf-8').toString('base64');
@@ -35,10 +33,7 @@ function encodeResourceId(url: string): string {
 }
 
 export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
-  const { data, isLoading } = useObservabilityData<ResourceData>({
-    endpoint: RESOURCES_ENDPOINT,
-    originUrl,
-  });
+  const { data, isLoading } = useResources(originUrl);
 
   const router = useRouter();
   const params = useParams();
@@ -87,7 +82,7 @@ export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 ? (
+            {!data || data.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={5}

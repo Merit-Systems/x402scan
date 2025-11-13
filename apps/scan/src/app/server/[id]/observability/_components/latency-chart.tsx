@@ -4,7 +4,7 @@ import { BaseChart } from '@/components/ui/charts/chart/chart';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Line } from 'recharts';
 import { LoadingChart } from './loading-chart';
-import { useObservabilityData } from './use-observability-data';
+import { useLatency } from './use-observability-data';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface LatencyData {
@@ -19,14 +19,8 @@ interface Props {
   resourceUrl: string;
 }
 
-const LATENCY_ENDPOINT = '/api/observability/latency';
-
 export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
-  const { data, isLoading } = useObservabilityData<LatencyData>({
-    endpoint: LATENCY_ENDPOINT,
-    originUrl,
-    resourceUrl,
-  });
+  const { data, isLoading } = useLatency(originUrl, resourceUrl);
 
   if (isLoading) {
     return (
@@ -37,7 +31,7 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     );
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-8">
         No latency data available
