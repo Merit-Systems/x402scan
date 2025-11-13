@@ -16,6 +16,8 @@ import { createResumableStreamContext } from 'resumable-stream';
 
 import { toAccount } from 'viem/accounts';
 
+import { createX402OpenAI } from '@merit-systems/ai-x402/server';
+
 import { createChat, getChat, updateChat } from '@/services/db/composer/chat';
 
 import { auth } from '@/auth';
@@ -29,18 +31,10 @@ import { ChatSDKError } from '@/lib/errors';
 
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
 import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
+import { env } from '@/env';
 
 import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
-
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-
-export const openrouter = createOpenRouter({
-  headers: {
-    'HTTP-Referer': 'https://x402scan.com',
-    'X-Title': 'x402scan',
-  },
-});
 
 const bodySchema = z.object({
   model: z.string(),
@@ -77,6 +71,11 @@ export async function POST(request: NextRequest) {
     return new ChatSDKError('not_found:chat').toResponse();
   }
   const signer = toAccount(wallet);
+  const openai = createX402OpenAI({
+    walletClient: signer,
+    baseRouterUrl: env.ECHO_PROXY_URL,
+    echoAppId: env.ECHO_APP_ID,
+  });
 
   const lastMessage = message;
 
@@ -84,7 +83,7 @@ export async function POST(request: NextRequest) {
     // Start title generation in parallel (don't await)
     const titlePromise = generateTitleFromUserMessage({
       message: lastMessage,
-      model: openrouter.chat('gpt-4.1-nano'),
+      model: openai('gpt-4.1-nano'),
     });
 
     // Create chat with temporary title immediately
@@ -192,7 +191,7 @@ export async function POST(request: NextRequest) {
   ]);
 
   const result = streamText({
-    model: openrouter.chat(model),
+    model: openai.chat(model),
     messages: convertToModelMessages(messages),
     system: await getSystemPrompt(),
     stopWhen: stepCountIs(50),
