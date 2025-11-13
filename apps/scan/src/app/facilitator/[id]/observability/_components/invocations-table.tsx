@@ -165,17 +165,18 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
                 </TableCell>
               </TableRow>
             ) : (
-              data?.data.map(invocation => {
-                const isExpanded = expandedRows.has(invocation.request_id);
+              data?.data.map((invocation, index) => {
+                const uniqueKey = `${invocation.request_id}-${invocation.created_at}-${index}`;
+                const isExpanded = expandedRows.has(uniqueKey);
                 return (
-                  <Fragment key={invocation.request_id}>
+                  <Fragment key={uniqueKey}>
                     <TableRow>
                       <TableCell>
                         <Button
                           variant="ghost"
                           size="sm"
                           className="h-6 w-6 p-0"
-                          onClick={() => toggleRow(invocation.request_id)}
+                          onClick={() => toggleRow(uniqueKey)}
                         >
                           {isExpanded ? (
                             <ChevronUp className="h-4 w-4" />
