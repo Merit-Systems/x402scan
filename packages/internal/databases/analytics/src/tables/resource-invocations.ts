@@ -30,10 +30,6 @@ const resourceInvocationsTable = `
 `;
 
 export const createResourceInvocationsTable = async () => {
-  console.log(
-    'userFromCreateResourceInvocationsTable',
-    process.env.ANALYTICS_CLICKHOUSE_USER
-  );
   return createTable(resourceInvocationsTable);
 };
 

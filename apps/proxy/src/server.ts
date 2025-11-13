@@ -1,23 +1,9 @@
-import { config } from 'dotenv';
-import { resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import 'dotenv/config'
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
 import { registerProxyRouter } from './routes/proxy.js';
 import { createResourceInvocationsTable } from '@x402scan/analytics-db';
-
-// Load .env from repository root (2 levels up from dist/server.js)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const envPath = resolve(__dirname, '../../../.env');
-const result = config({ path: envPath });
-if (result.error) {
-  console.warn('Warning: Could not load .env file:', result.error.message);
-} else {
-  console.log('Loaded .env from:', envPath);
-}
 
 const app = new Hono();
 
@@ -68,8 +54,6 @@ void createResourceInvocationsTable().catch(error => {
     error instanceof Error ? error.message : String(error)
   );
 });
-
-console.log('userFromServer', process.env.ANALYTICS_CLICKHOUSE_USER);
 
 serve({
   fetch: app.fetch,
