@@ -217,9 +217,12 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
                         {invocation.response_content_type || '-'}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
-                        {formatDistanceToNow(new Date(invocation.created_at), {
-                          addSuffix: true,
-                        })}
+                        {formatDistanceToNow(
+                          new Date(invocation.created_at + 'Z'),
+                          {
+                            addSuffix: true,
+                          }
+                        )}
                       </TableCell>
                     </TableRow>
                     {isExpanded && (

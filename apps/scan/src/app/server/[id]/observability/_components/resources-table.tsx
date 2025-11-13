@@ -131,7 +131,7 @@ export const ResourcesTable: React.FC<Props> = ({ originUrl }) => {
                       {(parseFloat(resource.avg_duration) / 1000).toFixed(2)}s
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
-                      {formatDistanceToNow(new Date(resource.last_seen), {
+                      {formatDistanceToNow(new Date(resource.last_seen + 'Z'), {
                         addSuffix: true,
                       })}
                     </TableCell>

@@ -60,7 +60,7 @@ const StatusChartInner: React.FC<{ data: StatusCodeData[] }> = ({ data }) => {
     clientError: number;
     serverError: number;
   }>[] = data.map(item => {
-    const date = new Date(item.ts);
+    const date = new Date(item.ts + 'Z');
     // Format as "Nov 5, 2:40 AM"
     const formatted = date.toLocaleString('en-US', {
       month: 'short',

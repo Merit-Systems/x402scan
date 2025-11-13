@@ -48,7 +48,7 @@ export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
   const chartData: ChartData<{
     errorRate: number;
   }>[] = data.map(item => {
-    const date = new Date(item.ts);
+    const date = new Date(item.ts + 'Z');
     const formatted = date.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
