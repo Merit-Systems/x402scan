@@ -4,11 +4,11 @@
 
 ## Summary
 
-- Faciliator Name: `<Name>`
-- URL: `<https://...>`
-- Website: `<https://...>`
-- Twitter: `<@handle>`
-- Short description: `<what the facilitator does in 1 to 2 sentences>`
+- Faciliator Name: Megalith
+- URL: https://x402.megalithlabs.ai
+- Website: https://www.megalithlabs.ai
+- Twitter: @megalith_ai
+- Short description: Megalith verifies and settles x402 payments on BNB Chain and Base, with ERC-20 support via our Stargate proxy contract.
 
 ## Required changes
 
