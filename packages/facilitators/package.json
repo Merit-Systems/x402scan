@@ -1,6 +1,6 @@
 {
   "name": "facilitators",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "x402 facilitator configuration and validation utilities",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -19,7 +19,6 @@
   ],
   "scripts": {
     "build": "tsup",
-    "postinstall": "pnpm run build",
     "prepublishOnly": "pnpm run build",
     "check-format": "prettier --check .",
     "format": "prettier --write .",

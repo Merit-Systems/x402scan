@@ -3,6 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "dev": {
+      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "env": [
         "POSTGRES_*",
