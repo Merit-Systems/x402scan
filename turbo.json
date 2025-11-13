@@ -14,10 +14,10 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^db:generate", "typegen"]
     },
-    "check-types": {
-      "dependsOn": ["^build"]
+    "typegen": {
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "knip": {
       "dependsOn": ["^build"]
