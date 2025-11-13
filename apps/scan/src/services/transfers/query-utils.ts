@@ -1,4 +1,4 @@
-import { Prisma } from '@x402scan/transfers-db';
+import { Prisma } from '../../../../../databases/transfers/src';
 
 import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 

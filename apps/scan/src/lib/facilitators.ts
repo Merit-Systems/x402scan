@@ -1,10 +1,13 @@
-import { allFacilitators, Network as FacilitatorsNetwork } from 'facilitators';
+import {
+  allFacilitators,
+  Network as FacilitatorsNetwork,
+} from '../../../../packages/facilitators/dist';
 
 import { mixedAddressSchema } from './schemas';
 
 import { Chain } from '@/types/chain';
 
-import type { FacilitatorMetadata } from 'facilitators';
+import type { FacilitatorMetadata } from '../../../../packages/facilitators/dist';
 import type { MixedAddress } from '@/types/address';
 
 export type Facilitator = FacilitatorMetadata & {

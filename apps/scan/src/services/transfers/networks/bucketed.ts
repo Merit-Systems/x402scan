@@ -1,5 +1,5 @@
 import z from 'zod';
-import { Prisma } from '@x402scan/scan-db';
+import { Prisma } from '../../../../../../databases/scan/src';
 
 import { baseBucketedQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';

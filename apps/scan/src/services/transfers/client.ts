@@ -1,6 +1,6 @@
-import { transfersDb } from '@x402scan/transfers-db';
+import { transfersDb } from '../../../../../databases/transfers/src';
 
-import type { Prisma } from '@x402scan/transfers-db';
+import type { Prisma } from '../../../../../databases/transfers/src';
 import type z from 'zod';
 
 export const queryRaw = async <T>(

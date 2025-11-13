@@ -1,4 +1,4 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from '../../../../../../databases/scan/src';
 
 import { v4 as uuid } from 'uuid';
 

@@ -19,7 +19,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { cn, formatCurrency } from '@/lib/utils';
 
-import { SessionStatus, type OnrampSession } from '@x402scan/scan-db';
+import {
+  SessionStatus,
+  type OnrampSession,
+} from '../../../../../../../../../../../databases/scan/src';
 
 import { api } from '@/trpc/client';
 import Image from 'next/image';

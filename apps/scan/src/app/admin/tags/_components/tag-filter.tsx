@@ -19,7 +19,7 @@ import {
 import { api } from '@/trpc/client';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { type Tag } from '@x402scan/scan-db';
+import { type Tag } from '../../../../../../../databases/scan/src';
 
 interface TagFilterProps {
   selectedTagIds: string[];

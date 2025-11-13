@@ -6,7 +6,7 @@ import { serverCookieUtils } from '../../chat/_lib/cookies/server';
 
 import { auth } from '@/auth';
 
-import type { Message } from '@x402scan/scan-db';
+import type { Message } from '../../../../../../../../databases/scan/src';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {

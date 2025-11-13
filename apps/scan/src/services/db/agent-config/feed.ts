@@ -1,9 +1,9 @@
 import z from 'zod';
 import { queryRaw } from '../query';
-import { Prisma } from '@x402scan/scan-db';
+import { Prisma } from '../../../../../../databases/scan/src';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { toPaginatedResponse } from '@/lib/pagination';
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from '../../../../../../databases/scan/src';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,

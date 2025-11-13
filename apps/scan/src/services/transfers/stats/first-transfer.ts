@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { Prisma } from '@x402scan/transfers-db';
+import { Prisma } from '../../../../../../databases/transfers/src';
 
 import { baseQuerySchema } from '../schemas';
 

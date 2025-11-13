@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { Tag } from '@x402scan/scan-db';
+import type { Tag } from '../../../../../databases/scan/src';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 

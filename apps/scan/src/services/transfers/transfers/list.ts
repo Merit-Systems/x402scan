@@ -9,7 +9,7 @@ import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
-import { transfersDb } from '@x402scan/transfers-db';
+import { transfersDb } from '../../../../../../databases/transfers/src';
 import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
 import { transfersWhereObject } from '../query-utils';

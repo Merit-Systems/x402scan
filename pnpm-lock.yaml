@@ -40,7 +40,7 @@ importers:
         version: 1.19.5(hono@4.10.3)
       '@x402scan/analytics-db':
         specifier: workspace:*
-        version: link:../../packages/internal/databases/analytics
+        version: link:../../databases/analytics
       dotenv:
         specifier: ^16.4.5
         version: 16.6.1
@@ -53,10 +53,10 @@ importers:
         version: 20.19.24
       '@x402scan/eslint-config':
         specifier: workspace:*
-        version: link:../../packages/internal/configurations/eslint
+        version: link:../../configurations/eslint
       '@x402scan/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/internal/configurations/typescript
+        version: link:../../configurations/typescript
       eslint:
         specifier: ^9.39.1
         version: 9.39.1(jiti@2.6.1)
@@ -117,6 +117,9 @@ importers:
       '@prisma/client':
         specifier: ^6.19.0
         version: 6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
+      '@prisma/nextjs-monorepo-workaround-plugin':
+        specifier: ^6.19.0
+        version: 6.19.0
       '@radix-ui/react-accordion':
         specifier: ^1.2.12
         version: 1.2.12(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -221,10 +224,10 @@ importers:
         version: 1.0.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@x402scan/scan-db':
         specifier: workspace:*
-        version: link:../../packages/internal/databases/scan
+        version: link:../../databases/scan
       '@x402scan/transfers-db':
         specifier: workspace:*
-        version: link:../../packages/internal/databases/transfers
+        version: link:../../databases/transfers
       ai:
         specifier: ^5.0.68
         version: 5.0.81(zod@4.1.12)
@@ -254,7 +257,7 @@ importers:
         version: 8.1.0(embla-carousel@8.6.0)
       facilitators:
         specifier: workspace:*
-        version: link:../../packages/external/facilitators
+        version: link:../../packages/facilitators
       hast-util-to-jsx-runtime:
         specifier: ^2.3.6
         version: 2.3.6
@@ -381,10 +384,10 @@ importers:
         version: 3.2.4(vitest@3.2.4)
       '@x402scan/eslint-config':
         specifier: workspace:*
-        version: link:../../packages/internal/configurations/eslint
+        version: link:../../configurations/eslint
       '@x402scan/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/internal/configurations/typescript
+        version: link:../../configurations/typescript
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
@@ -413,124 +416,7 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.24)(@vitest/ui@3.2.4)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.1)
 
-  examples/servers/express:
-    dependencies:
-      dotenv:
-        specifier: ^16.4.7
-        version: 16.6.1
-      express:
-        specifier: ^4.18.2
-        version: 4.21.2
-      facilitators:
-        specifier: workspace:*
-        version: link:../../../packages/external/facilitators
-      x402-express:
-        specifier: ^0.7.1
-        version: 0.7.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-    devDependencies:
-      '@types/express':
-        specifier: ^5.0.1
-        version: 5.0.5
-      '@types/node':
-        specifier: ^20.19.24
-        version: 20.19.24
-      '@x402scan/eslint-config':
-        specifier: workspace:*
-        version: link:../../../packages/internal/configurations/eslint
-      '@x402scan/typescript-config':
-        specifier: workspace:*
-        version: link:../../../packages/internal/configurations/typescript
-      eslint:
-        specifier: ^9.24.0
-        version: 9.39.1(jiti@2.6.1)
-      knip:
-        specifier: ^5.66.2
-        version: 5.69.0(@types/node@20.19.24)(typescript@5.9.3)
-      prettier:
-        specifier: 3.5.2
-        version: 3.5.2
-      tsx:
-        specifier: ^4.7.0
-        version: 4.20.6
-      typescript:
-        specifier: ^5.3.0
-        version: 5.9.3
-
-  examples/servers/hono:
-    dependencies:
-      '@hono/node-server':
-        specifier: ^1.13.8
-        version: 1.19.5(hono@4.10.3)
-      dotenv:
-        specifier: ^16.4.7
-        version: 16.6.1
-      facilitators:
-        specifier: workspace:*
-        version: link:../../../packages/external/facilitators
-      hono:
-        specifier: ^4.7.1
-        version: 4.10.3
-      x402-hono:
-        specifier: ^0.7.1
-        version: 0.7.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-    devDependencies:
-      '@types/node':
-        specifier: ^24.9.2
-        version: 24.9.2
-      '@x402scan/eslint-config':
-        specifier: workspace:*
-        version: link:../../../packages/internal/configurations/eslint
-      '@x402scan/typescript-config':
-        specifier: workspace:*
-        version: link:../../../packages/internal/configurations/typescript
-      eslint:
-        specifier: ^9.24.0
-        version: 9.39.1(jiti@2.6.1)
-      knip:
-        specifier: ^5.66.2
-        version: 5.69.0(@types/node@24.9.2)(typescript@5.9.3)
-      prettier:
-        specifier: 3.5.2
-        version: 3.5.2
-      tsx:
-        specifier: ^4.7.0
-        version: 4.20.6
-      typescript:
-        specifier: ^5.3.0
-        version: 5.9.3
-
-  packages/external/facilitators:
-    dependencies:
-      '@coinbase/x402':
-        specifier: ^0.6.6
-        version: 0.6.6(@solana/sysvars@5.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/react-query@5.90.5(react@19.1.0))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      x402:
-        specifier: ^0.6.6
-        version: 0.6.6(@solana/sysvars@5.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/react-query@5.90.5(react@19.1.0))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-    devDependencies:
-      '@x402scan/eslint-config':
-        specifier: workspace:*
-        version: link:../../internal/configurations/eslint
-      '@x402scan/typescript-config':
-        specifier: workspace:*
-        version: link:../../internal/configurations/typescript
-      eslint:
-        specifier: ^9.38.0
-        version: 9.39.1(jiti@2.6.1)
-      knip:
-        specifier: ^5.66.4
-        version: 5.69.0(@types/node@24.9.2)(typescript@5.9.3)
-      prettier:
-        specifier: ^3.6.2
-        version: 3.6.2
-      tsup:
-        specifier: ^8.0.0
-        version: 8.5.0(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
-      typescript:
-        specifier: ^5.6.0
-        version: 5.9.3
-
-  packages/internal/configurations/eslint:
+  configurations/eslint:
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.1
@@ -563,9 +449,9 @@ importers:
         specifier: ^8.46.3
         version: 8.46.4(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
 
-  packages/internal/configurations/typescript: {}
+  configurations/typescript: {}
 
-  packages/internal/databases/analytics:
+  databases/analytics:
     dependencies:
       '@clickhouse/client':
         specifier: ^1.12.1
@@ -593,7 +479,7 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
 
-  packages/internal/databases/scan:
+  databases/scan:
     dependencies:
       '@neondatabase/serverless':
         specifier: ^1.0.2
@@ -642,7 +528,7 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
 
-  packages/internal/databases/transfers:
+  databases/transfers:
     dependencies:
       '@neondatabase/serverless':
         specifier: ^1.0.2
@@ -691,6 +577,123 @@ importers:
         specifier: 5.5.4
         version: 5.5.4
 
+  examples/servers/express:
+    dependencies:
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
+      express:
+        specifier: ^4.18.2
+        version: 4.21.2
+      facilitators:
+        specifier: workspace:*
+        version: link:../../../packages/facilitators
+      x402-express:
+        specifier: ^0.7.1
+        version: 0.7.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+    devDependencies:
+      '@types/express':
+        specifier: ^5.0.1
+        version: 5.0.5
+      '@types/node':
+        specifier: ^20.19.24
+        version: 20.19.24
+      '@x402scan/eslint-config':
+        specifier: workspace:*
+        version: link:../../../configurations/eslint
+      '@x402scan/typescript-config':
+        specifier: workspace:*
+        version: link:../../../configurations/typescript
+      eslint:
+        specifier: ^9.24.0
+        version: 9.39.1(jiti@2.6.1)
+      knip:
+        specifier: ^5.66.2
+        version: 5.69.0(@types/node@20.19.24)(typescript@5.9.3)
+      prettier:
+        specifier: 3.5.2
+        version: 3.5.2
+      tsx:
+        specifier: ^4.7.0
+        version: 4.20.6
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+
+  examples/servers/hono:
+    dependencies:
+      '@hono/node-server':
+        specifier: ^1.13.8
+        version: 1.19.5(hono@4.10.3)
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
+      facilitators:
+        specifier: workspace:*
+        version: link:../../../packages/facilitators
+      hono:
+        specifier: ^4.7.1
+        version: 4.10.3
+      x402-hono:
+        specifier: ^0.7.1
+        version: 0.7.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+    devDependencies:
+      '@types/node':
+        specifier: ^24.9.2
+        version: 24.9.2
+      '@x402scan/eslint-config':
+        specifier: workspace:*
+        version: link:../../../configurations/eslint
+      '@x402scan/typescript-config':
+        specifier: workspace:*
+        version: link:../../../configurations/typescript
+      eslint:
+        specifier: ^9.24.0
+        version: 9.39.1(jiti@2.6.1)
+      knip:
+        specifier: ^5.66.2
+        version: 5.69.0(@types/node@24.9.2)(typescript@5.9.3)
+      prettier:
+        specifier: 3.5.2
+        version: 3.5.2
+      tsx:
+        specifier: ^4.7.0
+        version: 4.20.6
+      typescript:
+        specifier: ^5.3.0
+        version: 5.9.3
+
+  packages/facilitators:
+    dependencies:
+      '@coinbase/x402':
+        specifier: ^0.6.6
+        version: 0.6.6(@solana/sysvars@5.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/react-query@5.90.5(react@19.1.0))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+      x402:
+        specifier: ^0.6.6
+        version: 0.6.6(@solana/sysvars@5.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/react-query@5.90.5(react@19.1.0))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(react@19.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+    devDependencies:
+      '@x402scan/eslint-config':
+        specifier: workspace:*
+        version: link:../../configurations/eslint
+      '@x402scan/typescript-config':
+        specifier: workspace:*
+        version: link:../../configurations/typescript
+      eslint:
+        specifier: ^9.38.0
+        version: 9.39.1(jiti@2.6.1)
+      knip:
+        specifier: ^5.66.4
+        version: 5.69.0(@types/node@24.9.2)(typescript@5.9.3)
+      prettier:
+        specifier: ^3.6.2
+        version: 3.6.2
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.0(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+
   sync/alerts:
     dependencies:
       '@trigger.dev/sdk':
@@ -708,10 +711,10 @@ importers:
         version: 20.19.24
       '@x402scan/eslint-config':
         specifier: workspace:*
-        version: link:../../packages/internal/configurations/eslint
+        version: link:../../configurations/eslint
       '@x402scan/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/internal/configurations/typescript
+        version: link:../../configurations/typescript
       eslint:
         specifier: ^9.38.0
         version: 9.39.1(jiti@2.6.1)
@@ -735,13 +738,13 @@ importers:
         version: 4.0.5(ai@5.0.81(zod@4.1.12))(bufferutil@4.0.9)(utf-8-validate@5.0.10)(zod@4.1.12)
       '@x402scan/analytics-db':
         specifier: workspace:*
-        version: link:../../packages/internal/databases/analytics
+        version: link:../../databases/analytics
       '@x402scan/scan-db':
         specifier: workspace:*
-        version: link:../../packages/internal/databases/scan
+        version: link:../../databases/scan
       facilitators:
         specifier: workspace:*
-        version: link:../../packages/external/facilitators
+        version: link:../../packages/facilitators
     devDependencies:
       '@trigger.dev/build':
         specifier: 4.0.5
@@ -751,10 +754,10 @@ importers:
         version: 20.19.24
       '@x402scan/eslint-config':
         specifier: workspace:*
-        version: link:../../packages/internal/configurations/eslint
+        version: link:../../configurations/eslint
       '@x402scan/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/internal/configurations/typescript
+        version: link:../../configurations/typescript
       eslint:
         specifier: ^9.39.1
         version: 9.39.1(jiti@2.6.1)
@@ -790,13 +793,13 @@ importers:
         version: 4.0.5(ai@5.0.81(zod@4.1.12))(bufferutil@4.0.9)(utf-8-validate@5.0.10)(zod@4.1.12)
       '@x402scan/transfers-db':
         specifier: workspace:*
-        version: link:../../packages/internal/databases/transfers
+        version: link:../../databases/transfers
       bottleneck:
         specifier: ^2.19.5
         version: 2.19.5
       facilitators:
         specifier: workspace:*
-        version: link:../../packages/external/facilitators
+        version: link:../../packages/facilitators
       p-limit:
         specifier: ^7.2.0
         version: 7.2.0
@@ -809,10 +812,10 @@ importers:
         version: 20.19.24
       '@x402scan/eslint-config':
         specifier: workspace:*
-        version: link:../../packages/internal/configurations/eslint
+        version: link:../../configurations/eslint
       '@x402scan/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/internal/configurations/typescript
+        version: link:../../configurations/typescript
       eslint:
         specifier: ^9.38.0
         version: 9.39.1(jiti@2.6.1)
@@ -2546,6 +2549,9 @@ packages:
 
   '@prisma/get-platform@6.19.0':
     resolution: {integrity: sha512-ym85WDO2yDhC3fIXHWYpG3kVMBA49cL1XD2GCsCF8xbwoy2OkDQY44gEbAt2X46IQ4Apq9H6g0Ex1iFfPqEkHA==}
+
+  '@prisma/nextjs-monorepo-workaround-plugin@6.19.0':
+    resolution: {integrity: sha512-gI80bqfPf8bmW2y2jISsIFrAYZlDcrPC+CBUS5Lehq5umsY0LD1O+qWd4T59OUdHKDb475vbAOiG6K8iQbZsfw==}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -11949,6 +11955,8 @@ snapshots:
   '@prisma/get-platform@6.19.0':
     dependencies:
       '@prisma/debug': 6.19.0
+
+  '@prisma/nextjs-monorepo-workaround-plugin@6.19.0': {}
 
   '@protobufjs/aspromise@1.1.2': {}
 

@@ -1,7 +1,11 @@
 import { Address } from '@/components/ui/address';
 import { Favicon } from '@/app/_components/favicon';
 
-import type { Accepts, ResourceOrigin, Resources } from '@x402scan/scan-db';
+import type {
+  Accepts,
+  ResourceOrigin,
+  Resources,
+} from '../../../../../databases/scan/src';
 
 interface Props {
   resource: Resources & {

@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tags } from '@/app/_components/tags';
 
 import type { LucideIcon } from 'lucide-react';
-import type { Tag as TagType } from '@x402scan/scan-db';
+import type { Tag as TagType } from '../../../../../../../../../../databases/scan/src';
 
 interface Props {
   originId: string;

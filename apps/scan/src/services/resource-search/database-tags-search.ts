@@ -1,7 +1,7 @@
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
-import { Prisma } from '@x402scan/scan-db';
+import { Prisma } from '../../../../../databases/scan/src';
 import type { SearchResult } from './types';
 import { queryRaw } from '../db/query';
 

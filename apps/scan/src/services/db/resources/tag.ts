@@ -1,4 +1,4 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from '../../../../../../databases/scan/src';
 import { z } from 'zod';
 import { MAIN_TAGS } from '@/services/labeling/main-tags';
 

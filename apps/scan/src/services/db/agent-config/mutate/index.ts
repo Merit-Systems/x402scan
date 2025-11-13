@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from '../../../../../../../databases/scan/src';
 
 import { agentConfigurationSchema } from './schema';
 

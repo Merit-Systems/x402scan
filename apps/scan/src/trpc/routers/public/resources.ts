@@ -16,7 +16,7 @@ import {
   type ResourceSortId,
 } from '@/services/db/resources/resource';
 
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from '../../../../../../databases/scan/src';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 
@@ -30,7 +30,7 @@ import {
   listTagsSchema,
 } from '@/services/db/resources/tag';
 
-import type { Prisma } from '@x402scan/scan-db';
+import type { Prisma } from '../../../../../../databases/scan/src';
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {

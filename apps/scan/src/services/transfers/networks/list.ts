@@ -3,7 +3,7 @@ import z from 'zod';
 import { chainSchema, sortingSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
-import { Prisma } from '@x402scan/transfers-db';
+import { Prisma } from '../../../../../../databases/transfers/src';
 import type { Chain } from '@/types/chain';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
 import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
