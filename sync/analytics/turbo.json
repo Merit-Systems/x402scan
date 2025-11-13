@@ -5,6 +5,9 @@
     "dev": {
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "env": ["CLICKHOUSE_URL", "CLICKHOUSE_USER", "CLICKHOUSE_PASSWORD"]
+    },
+    "lint": {
+      "env": ["CLICKHOUSE_URL", "CLICKHOUSE_USER", "CLICKHOUSE_PASSWORD"]
     }
   }
 }

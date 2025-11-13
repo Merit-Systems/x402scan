@@ -45,7 +45,9 @@ export const scrapeOriginData = async (inputOrigin: string) => {
                     favicon: getFaviconUrl(ogResponse.favicon, origin),
                   };
                 }
-              } catch {}
+              } catch {
+                // do nothing
+              }
             }
           }
         } catch {

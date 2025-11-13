@@ -97,7 +97,7 @@ export function ResourceExecutorModal({
           <ResourceExecutor
             resource={resource}
             tags={resource.tags.map(tag => tag.tag)}
-            bazaarMethod={getBazaarMethod(resource.accepts[0].outputSchema)}
+            bazaarMethod={getBazaarMethod(resource.accepts[0]!.outputSchema)}
             response={parsedResponse.data}
             className="bg-transparent"
           />

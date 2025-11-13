@@ -1,20 +1,22 @@
-import type z from 'zod';
-
 import { Prisma } from '@prisma/client';
 
-import type { Prisma as TransfersPrisma } from '.prisma/client-transfers';
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 
+import type z from 'zod';
+import type { Prisma as TransfersPrisma } from '.prisma/client-transfers';
 import type { baseQuerySchema } from './schemas';
 
 export const transfersWhereClause = (
   input: z.infer<typeof baseQuerySchema>
 ) => {
-  const { chain, startDate, endDate, senders, recipients, facilitatorIds } =
-    input;
+  const { chain, timeframe, senders, recipients, facilitatorIds } = input;
+
+  const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
+
   return Prisma.sql`WHERE 1=1
     ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-    ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
-    ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
+    ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate.toISOString()}::timestamp` : Prisma.empty}
+    ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate.toISOString()}::timestamp` : Prisma.empty}
     ${
       recipients?.include !== undefined && recipients.include.length > 0
         ? Prisma.sql`AND t.recipient = ANY(${recipients.include})`
@@ -42,8 +44,10 @@ export const transfersWhereClause = (
 export const transfersWhereObject = (
   input: z.infer<typeof baseQuerySchema>
 ): TransfersPrisma.TransferEventWhereInput => {
-  const { chain, startDate, endDate, senders, recipients, facilitatorIds } =
-    input;
+  const { chain, timeframe, senders, recipients, facilitatorIds } = input;
+
+  const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
+
   return {
     chain,
     block_timestamp: {

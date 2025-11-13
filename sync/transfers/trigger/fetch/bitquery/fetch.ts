@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { logger } from '@trigger.dev/sdk/v3';
-import {
+import type {
   SyncConfig,
   Facilitator,
   TransferEventData,

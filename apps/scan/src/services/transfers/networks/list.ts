@@ -5,6 +5,7 @@ import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { Prisma } from '@prisma/client';
 import type { Chain } from '@/types/chain';
+import { getMaterializedViewSuffix } from '@/lib/time-range';
 import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 
 const listTopNetworksSortIds = [
@@ -44,7 +45,10 @@ const listTopNetworksUncached = async (
   input: z.input<typeof listTopNetworksInputSchema>
 ): Promise<NetworkItem[]> => {
   const parsed = listTopNetworksInputSchema.parse(input);
-  const { startDate, endDate, limit, sorting, chain } = parsed;
+  const { timeframe, limit, sorting, chain } = parsed;
+
+  const mvTimeframe = getMaterializedViewSuffix(timeframe);
+  const tableName = `stats_aggregated_${mvTimeframe}`;
 
   const sortColumnMap: Record<NetworksSortId, string> = {
     tx_count: 'tx_count',
@@ -57,21 +61,27 @@ const listTopNetworksUncached = async (
   const sortColumn = sortColumnMap[sorting.id as NetworksSortId];
   const sortDirection = Prisma.raw(sorting.desc ? 'DESC' : 'ASC');
 
+  // Build WHERE clause for materialized view
+  const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
+
+  if (chain) {
+    conditions.push(Prisma.sql`AND chain = ${chain}`);
+  }
+
+  const whereClause = Prisma.join(conditions, ' ');
+
   const sql = Prisma.sql`
     SELECT 
-      t.chain,
-      COUNT(*)::int AS tx_count,
-      SUM(t.amount)::float AS total_amount,
-      MAX(t.block_timestamp) AS latest_block_timestamp,
-      COUNT(DISTINCT t.sender)::int AS unique_buyers,
-      COUNT(DISTINCT t.recipient)::int AS unique_sellers,
-      COUNT(DISTINCT t.facilitator_id)::int AS unique_facilitators
-    FROM "TransferEvent" t
-    WHERE 1=1
-      ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-      ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
-      ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
-    GROUP BY t.chain
+      chain,
+      SUM(total_transactions)::int AS tx_count,
+      SUM(total_amount)::float AS total_amount,
+      MAX(latest_block_timestamp) AS latest_block_timestamp,
+      SUM(unique_buyers)::int AS unique_buyers,
+      SUM(unique_sellers)::int AS unique_sellers,
+      COUNT(DISTINCT facilitator_id)::int AS unique_facilitators
+    FROM ${Prisma.raw(tableName)}
+    ${whereClause}
+    GROUP BY chain
     ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
     LIMIT ${limit}
   `;

@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
     "lib": ["ES2020"],
     "module": "esnext",
@@ -8,9 +8,6 @@
     "declarationMap": true,
     "outDir": "./dist",
     "rootDir": ".",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
   "include": ["**/*.ts", "src/**/*.ts"],

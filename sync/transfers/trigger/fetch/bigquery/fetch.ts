@@ -1,6 +1,6 @@
 import { logger } from '@trigger.dev/sdk/v3';
 import { BigQuery } from '@google-cloud/bigquery';
-import {
+import type {
   SyncConfig,
   Facilitator,
   TransferEventData,
@@ -15,6 +15,7 @@ export async function fetchBigQuery(
   now: Date
 ): Promise<TransferEventData[]> {
   const bq = new BigQuery({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     credentials: JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS!),
   });
 

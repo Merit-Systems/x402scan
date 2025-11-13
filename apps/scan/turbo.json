@@ -42,7 +42,9 @@
         "NEXT_RUNTIME",
         "AUTH_SECRET",
         "OPENAI_API_KEY",
-        "DATABASE_URL"
+        "DATABASE_URL",
+        "ECHO_PROXY_URL",
+        "JINA_API_KEY"
       ]
     },
     "lint": {

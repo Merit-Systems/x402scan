@@ -12,7 +12,7 @@ import { ChainIdToNetwork } from 'x402/types';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { AcceptsNetwork, Prisma } from '@prisma/client';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
-import type { Chain } from '@/types/chain';
+import type { SupportedChain } from '@/types/chain';
 
 import {
   createCachedArrayQuery,
@@ -51,7 +51,7 @@ export const upsertResourceSchema = z.object({
           })
           .transform(
             v =>
-              ChainIdToNetwork[Number(v.split(':')[1])].replace(
+              ChainIdToNetwork[Number(v.split(':')[1])]!.replace(
                 '-',
                 '_'
               ) as AcceptsNetwork
@@ -78,10 +78,10 @@ export const upsertResource = async (
   }
   const baseResource = parsedResourceInput.data;
   const supportedAccepts = baseResource.accepts.filter(accept =>
-    SUPPORTED_CHAINS.includes(accept.network as Chain)
+    SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
   const unsupportedAccepts = baseResource.accepts.filter(
-    accept => !SUPPORTED_CHAINS.includes(accept.network as Chain)
+    accept => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
   const originStr = getOriginFromUrl(baseResource.resource);
   return await prisma.$transaction(async tx => {
