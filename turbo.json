@@ -39,6 +39,9 @@
       "dependsOn": ["^db:generate"],
       "persistent": true
     },
+    "start": {
+      "dependsOn": ["^build"]
+    },
     "lint": {
       "dependsOn": ["^db:generate", "typegen", "^build"]
     },
