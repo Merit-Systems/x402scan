@@ -48,7 +48,6 @@ export async function POST(
     const end = new Date(endDate);
     const offset = (page - 1) * pageSize;
 
-    // Build status filter condition
     let statusCondition = '';
     if (statusFilter === '2xx') {
       statusCondition = 'AND status_code >= 200 AND status_code < 300';
