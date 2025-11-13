@@ -6,7 +6,7 @@ on:
 
 jobs:
   format:
-    name: Run Format Checks
+    name: Format
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -26,10 +26,33 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run format checks
-        run: pnpm format:check
+        run: pnpm check:format
 
-  check:
-    name: Run All Checks
+  knip:
+    name: Knip
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run knip checks
+        run: pnpm knip
+
+  lint-and-types:
+    name: Lint and Check Types
     runs-on: ubuntu-latest
     timeout-minutes: 15
 

@@ -10,7 +10,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:format": "prisma format",
     "lint": "eslint . --max-warnings 0",
-    "check-types": "tsc --noEmit",
+    "check:types": "tsc --noEmit",
     "prebuild": "npm run db:generate",
     "predev": "npm run db:generate",
     "postinstall": "npm run db:generate",

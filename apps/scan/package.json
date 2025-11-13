@@ -11,7 +11,7 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "typegen": "next typegen",
-    "check-types": "tsc --noEmit",
+    "check:types": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
     "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts"

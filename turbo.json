@@ -45,7 +45,7 @@
     "typegen": {
       "outputs": [".next/**", "!.next/cache/**"]
     },
-    "check-types": {
+    "check:types": {
       "dependsOn": ["^db:generate", "typegen", "^build"]
     },
     "db:generate": {

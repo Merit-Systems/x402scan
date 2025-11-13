@@ -20,7 +20,7 @@
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "pnpm run build",
-    "check-types": "tsc --noEmit",
+    "check:types": "tsc --noEmit",
     "lint": "eslint",
     "lint:fix": "eslint --fix"
   },

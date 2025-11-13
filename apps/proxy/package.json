@@ -9,7 +9,7 @@
     "start": "node dist/server.js",
     "docker:build": "docker build -t x402-proxy .",
     "docker:run": "docker run -p 6969:6969 --env-file .env x402-proxy",
-    "check-types": "tsc --noEmit",
+    "check:types": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

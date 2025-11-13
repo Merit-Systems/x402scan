@@ -6,7 +6,7 @@
     "dev": "tsx index.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "check-types": "tsc --noEmit"
+    "check:types": "tsc --noEmit"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

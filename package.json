@@ -6,11 +6,12 @@
   "scripts": {
     "dev": "turbo run dev --filter=x402scan",
     "lint": "turbo run lint",
-    "check-types": "turbo run check-types",
     "knip": "knip --cache",
     "format": "prettier --write --cache .",
-    "format:check": "prettier --check --cache .",
-    "check": "turbo run check-types knip lint"
+    "check": "turbo run check:types lint",
+    "check:format": "prettier --check --cache .",
+    "check:types": "turbo run check:types",
+    "check:all": "pnpm check:format && pnpm knip && pnpm check"
   },
   "devDependencies": {
     "knip": "^5.69.0",
