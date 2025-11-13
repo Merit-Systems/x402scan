@@ -16,7 +16,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@clickhouse/client": "^1.8.0",
+    "@x402scan/analytics-db": "workspace:*",
     "@x402scan/scan-db": "workspace:*",
     "@trigger.dev/sdk": "4.0.5",
     "facilitators": "workspace:*"

@@ -6,9 +6,11 @@
       "dependsOn": ["^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "env": [
-        "CLICKHOUSE_URL",
-        "CLICKHOUSE_USER",
-        "CLICKHOUSE_PASSWORD",
+        "ANALYTICS_CLICKHOUSE_URL",
+        "ANALYTICS_CLICKHOUSE_USER",
+        "ANALYTICS_CLICKHOUSE_PASSWORD",
+        "ANALYTICS_CLICKHOUSE_DATABASE",
+        "ANALYTICS_CLICKHOUSE_REQUEST_TIMEOUT",
         "POSTGRES_PRISMA_URL",
         "POSTGRES_URL_NON_POOLING"
       ]
@@ -16,9 +18,11 @@
     "lint": {
       "dependsOn": ["^db:generate"],
       "env": [
-        "CLICKHOUSE_URL",
-        "CLICKHOUSE_USER",
-        "CLICKHOUSE_PASSWORD",
+        "ANALYTICS_CLICKHOUSE_URL",
+        "ANALYTICS_CLICKHOUSE_USER",
+        "ANALYTICS_CLICKHOUSE_PASSWORD",
+        "ANALYTICS_CLICKHOUSE_DATABASE",
+        "ANALYTICS_CLICKHOUSE_REQUEST_TIMEOUT",
         "POSTGRES_PRISMA_URL",
         "POSTGRES_URL_NON_POOLING"
       ]

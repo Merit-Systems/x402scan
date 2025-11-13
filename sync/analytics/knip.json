@@ -5,6 +5,7 @@
   "ignoreDependencies": [
     "@x402scan/eslint-config",
     "@x402scan/scan-db",
+    "@x402scan/analytics-db",
     "facilitators"
   ],
   "ignoreWorkspaces": []
