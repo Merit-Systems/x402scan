@@ -1,4 +1,4 @@
-import { clickhouse } from '@/services/db/clickhouse/resource-invocations';
+import { analyticsDb } from '@x402scan/analytics-db';
 import { NextResponse } from 'next/server';
 
 interface InvocationsRequest {
@@ -68,7 +68,7 @@ export async function POST(
         ${statusCondition}
     `;
 
-    const countResultSet = await clickhouse.query({
+    const countResultSet = await analyticsDb.query({
       query: countQuery,
       format: 'JSONEachRow',
       query_params: {
@@ -104,7 +104,7 @@ export async function POST(
       OFFSET {offset: UInt32}
     `;
 
-    const dataResultSet = await clickhouse.query({
+    const dataResultSet = await analyticsDb.query({
       query: dataQuery,
       format: 'JSONEachRow',
       query_params: {
