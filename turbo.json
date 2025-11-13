@@ -6,14 +6,7 @@
       "dependsOn": ["^build", "^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "generated/**"],
-      "env": [
-        "CLICKHOUSE_URL",
-        "CLICKHOUSE_USER",
-        "CLICKHOUSE_PASSWORD",
-        "CLICKHOUSE_DATABASE",
-        "POSTGRES_PRISMA_URL",
-        "POSTGRES_URL_NON_POOLING"
-      ]
+      "env": ["ANALYTICS_CLICKHOUSE_*", "POSTGRES_*"]
     },
     "dev": {
       "dependsOn": ["^db:generate"],
@@ -26,14 +19,8 @@
     "check-types": {
       "dependsOn": ["^build"]
     },
-    "check-format": {
-      "cache": false
-    },
     "knip": {
       "dependsOn": ["^build"]
-    },
-    "format": {
-      "cache": false
     },
     "db:generate": {
       "cache": false

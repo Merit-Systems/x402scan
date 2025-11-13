@@ -20,8 +20,6 @@
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "pnpm run build",
-    "check-format": "prettier --check .",
-    "format": "prettier --write .",
     "check-types": "tsc --noEmit",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
@@ -47,7 +45,6 @@
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "^9.38.0",
     "knip": "^5.66.4",
-    "prettier": "^3.6.2",
     "tsup": "^8.0.0",
     "typescript": "^5.6.0"
   },

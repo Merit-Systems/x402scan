@@ -8,8 +8,6 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "check-format": "prettier --check .",
-    "format": "prettier --write .",
     "check-types": "tsc --noEmit",
     "knip": "knip",
     "lint": "eslint .",
@@ -28,7 +26,6 @@
     "@types/node": "^20",
     "eslint": "^9.39.1",
     "knip": "^5.69.0",
-    "prettier": "^3.6.2",
     "trigger.dev": "^4.0.4",
     "typescript": "^5.9.3"
   }

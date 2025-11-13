@@ -1,5 +1,5 @@
 {
-  "name": "x402scan",
+  "name": "x402scan-monorepo",
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.11.0",
@@ -7,10 +7,10 @@
     "dev": "turbo run dev --filter=x402scan",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
-    "check-format": "turbo run check-format",
     "knip": "turbo run knip",
-    "format": "prettier --write .",
-    "check": "turbo run check-format check-types knip lint"
+    "format": "prettier --write --cache .",
+    "format:check": "prettier --check --cache .",
+    "check": "turbo run check-types knip lint"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.46.2",
