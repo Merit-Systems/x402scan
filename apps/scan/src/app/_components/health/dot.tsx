@@ -42,18 +42,8 @@ export const HealthDot: React.FC<Props> = ({ metrics, originId }) => {
             'bg-current'
           )}
           onClick={handleClick}
-          role={originId ? 'button' : undefined}
-          tabIndex={originId ? 0 : undefined}
-          onKeyDown={
-            originId
-              ? (e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleClick(e as unknown as React.MouseEvent);
-                  }
-                }
-              : undefined
-          }
+          role="button"
+          tabIndex={0}
         />
       </TooltipTrigger>
       <TooltipContent side="bottom">
