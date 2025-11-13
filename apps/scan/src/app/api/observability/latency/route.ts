@@ -57,7 +57,7 @@ export async function POST(
         start: start.toISOString().replace('T', ' ').split('.')[0],
         end: end.toISOString().replace('T', ' ').split('.')[0],
         bucketMinutes,
-        url: resourceUrl || '',
+        url: resourceUrl ?? '',
         urlPattern: `%${originUrl}%`,
       },
     });
