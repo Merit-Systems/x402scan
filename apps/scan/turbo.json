@@ -18,8 +18,7 @@
         "REDIS_URL",
         "LMNR_PROJECT_API_KEY",
         "NODE_ENV",
-        "NEXT_RUNTIME",
-        "OPENROUTER_API_KEY"
+        "NEXT_RUNTIME"
       ]
     },
     "build": {
