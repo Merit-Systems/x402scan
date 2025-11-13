@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { v4 } from 'uuid';
 
-import { scanDb } from '../../../../../../../databases/scan/src';
+import { scanDb } from '../../../../../../../packages/internal/databases/scan/src';
 
 import { NextResponse, type NextRequest } from 'next/server';
 
@@ -10,7 +10,7 @@ import { iterateResourcesBatched } from '@/services/labeling/helpers';
 
 import { checkCronSecret } from '@/lib/cron';
 
-import type { Prisma } from '../../../../../../../databases/scan/src';
+import type { Prisma } from '../../../../../../../packages/internal/databases/scan/src';
 
 const resourceLabelingPayloadSchema = z.object({
   resourceIds: z.array(z.string()).optional(),

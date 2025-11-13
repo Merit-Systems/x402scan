@@ -1,7 +1,7 @@
 import type {
   ResourceOriginMetrics,
   ResourceMetrics,
-} from '../../../../../../databases/scan/src';
+} from '../../../../../../packages/internal/databases/scan/src';
 
 export enum HealthStatus {
   Healthy = 'healthy',

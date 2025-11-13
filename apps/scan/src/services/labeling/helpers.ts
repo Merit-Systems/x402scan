@@ -1,5 +1,5 @@
 import { listResourcesWithPaginationUncached } from '@/services/db/resources/resource';
-import type { Prisma } from '../../../../../databases/scan/src';
+import type { Prisma } from '../../../../../packages/internal/databases/scan/src';
 
 export async function* iterateResourcesBatched(
   batchSize: number,

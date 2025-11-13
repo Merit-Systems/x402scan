@@ -1,4 +1,4 @@
-import { scanDb } from '../../../../../../databases/scan/src';
+import { scanDb } from '../../../../../../packages/internal/databases/scan/src';
 
 export const hasUserAcknowledgedComposer = async (
   userId: string

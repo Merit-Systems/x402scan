@@ -7,7 +7,7 @@ import { Tags } from '@/app/_components/tags';
 import type {
   Resources,
   Tag,
-} from '../../../../../../../../databases/scan/src';
+} from '../../../../../../../../packages/internal/databases/scan/src';
 import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 

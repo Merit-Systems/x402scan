@@ -1,6 +1,6 @@
-import { transfersDb } from '../../../../../databases/transfers/src';
+import { transfersDb } from '../../../../../packages/internal/databases/transfers/src';
 
-import type { Prisma } from '../../../../../databases/transfers/src';
+import type { Prisma } from '../../../../../packages/internal/databases/transfers/src';
 import type z from 'zod';
 
 export const queryRaw = async <T>(

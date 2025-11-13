@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { Tag } from '../../../../../databases/scan/src';
+import type { Tag } from '../../../../../packages/internal/databases/scan/src';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 

@@ -10,7 +10,7 @@
     "check-format": "turbo run check-format",
     "knip": "turbo run knip",
     "format": "prettier --write .",
-    "check": "turbo run check-format check-types knip lint"
+    "check": "turbo run check-format check-types knip lint --parallel"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.46.2",

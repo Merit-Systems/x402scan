@@ -1,5 +1,5 @@
 import z from 'zod';
-import { Prisma } from '../../../../../../databases/scan/src';
+import { Prisma } from '../../../../../../packages/internal/databases/scan/src';
 
 import { baseBucketedQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';

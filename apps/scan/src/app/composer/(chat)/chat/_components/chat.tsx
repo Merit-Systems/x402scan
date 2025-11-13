@@ -1,6 +1,6 @@
 import { Chat as BaseChat } from '../../_components/chat';
 
-import type { Message } from '../../../../../../../../databases/scan/src';
+import type { Message } from '../../../../../../../../packages/internal/databases/scan/src';
 
 interface Props {
   id: string;

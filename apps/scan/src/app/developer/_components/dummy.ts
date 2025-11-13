@@ -2,7 +2,7 @@ import type {
   OgImage,
   ResourceOrigin,
   Resources,
-} from '../../../../../../databases/scan/src';
+} from '../../../../../../packages/internal/databases/scan/src';
 
 export function createDummyOgImage(params: {
   id: string;

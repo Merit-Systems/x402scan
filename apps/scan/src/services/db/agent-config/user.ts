@@ -1,4 +1,4 @@
-import { scanDb } from '../../../../../../databases/scan/src';
+import { scanDb } from '../../../../../../packages/internal/databases/scan/src';
 
 export const listUserAgentConfigurations = async (userId: string) => {
   return await scanDb.agentConfigurationUser.findMany({

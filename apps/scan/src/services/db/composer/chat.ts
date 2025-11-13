@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { scanDb } from '../../../../../../databases/scan/src';
+import { scanDb } from '../../../../../../packages/internal/databases/scan/src';
 
-import type { Prisma } from '../../../../../../databases/scan/src';
+import type { Prisma } from '../../../../../../packages/internal/databases/scan/src';
 
 export const createChat = async (data: Prisma.ChatCreateInput) => {
   return await scanDb.chat.create({

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import type {
   OgImage,
   ResourceOrigin,
-} from '../../../../../../databases/scan/src';
+} from '../../../../../../packages/internal/databases/scan/src';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {

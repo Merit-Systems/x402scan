@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { Prisma } from '../../../../../../databases/transfers/src';
+import { Prisma } from '../../../../../../packages/internal/databases/transfers/src';
 
 import { baseBucketedQuerySchema } from '../schemas';
 

@@ -1,4 +1,4 @@
-import { scanDb } from '../../../../../../databases/scan/src';
+import { scanDb } from '../../../../../../packages/internal/databases/scan/src';
 
 import type { ParsedX402Response } from '@/lib/x402/schema';
 

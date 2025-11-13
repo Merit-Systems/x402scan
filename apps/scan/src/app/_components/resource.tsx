@@ -5,7 +5,7 @@ import type {
   Accepts,
   ResourceOrigin,
   Resources,
-} from '../../../../../databases/scan/src';
+} from '../../../../../packages/internal/databases/scan/src';
 
 interface Props {
   resource: Resources & {

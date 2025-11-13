@@ -7,14 +7,14 @@ import { upsertResource } from '@/services/db/resources/resource';
 import { checkCronSecret } from '@/lib/cron';
 import { getOriginFromUrl } from '@/lib/url';
 
-import type { AcceptsNetwork } from '../../../../../../../databases/scan/src';
+import type { AcceptsNetwork } from '../../../../../../../packages/internal/databases/scan/src';
 import type z from 'zod';
 import type { upsertResourceSchema } from '@/services/db/resources/resource';
 import type { NextRequest } from 'next/server';
 import {
   discoverableFacilitators,
   listAllFacilitatorResources,
-} from '../../../../../../../packages/facilitators/dist';
+} from '../../../../../../../packages/external/facilitators/dist';
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);

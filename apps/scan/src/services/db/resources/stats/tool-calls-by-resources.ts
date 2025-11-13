@@ -1,6 +1,9 @@
 import z from 'zod';
 
-import { scanDb, Prisma } from '../../../../../../../databases/scan/src';
+import {
+  scanDb,
+  Prisma,
+} from '../../../../../../../packages/internal/databases/scan/src';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';

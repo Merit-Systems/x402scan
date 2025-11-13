@@ -1,7 +1,7 @@
-import { scanDb } from '../../../../../databases/scan/src';
+import { scanDb } from '../../../../../packages/internal/databases/scan/src';
 
 import type z from 'zod';
-import type { Prisma } from '../../../../../databases/scan/src';
+import type { Prisma } from '../../../../../packages/internal/databases/scan/src';
 
 export const queryRaw = async <T>(
   sql: Prisma.Sql,

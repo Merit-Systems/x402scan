@@ -1,4 +1,4 @@
-import { scanDb } from '../../../../../../databases/scan/src';
+import { scanDb } from '../../../../../../packages/internal/databases/scan/src';
 import { z } from 'zod';
 
 export const createExcludedResourceSchema = z.object({

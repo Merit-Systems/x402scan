@@ -1,7 +1,10 @@
 import z from 'zod';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { scanDb, Prisma } from '../../../../../../databases/scan/src';
+import {
+  scanDb,
+  Prisma,
+} from '../../../../../../packages/internal/databases/scan/src';
 import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
 import { agentsRelease } from '@/lib/agents';
 

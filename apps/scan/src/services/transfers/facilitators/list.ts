@@ -10,7 +10,7 @@ import {
   createStandardCacheKey,
 } from '@/lib/cache';
 
-import { Prisma } from '../../../../../../databases/transfers/src';
+import { Prisma } from '../../../../../../packages/internal/databases/transfers/src';
 import { facilitatorIdMap } from '@/lib/facilitators';
 import {
   toPaginatedResponse,

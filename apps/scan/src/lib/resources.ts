@@ -16,7 +16,7 @@ import { formatTokenAmount } from './token';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { EnhancedPaymentRequirements } from '@/lib/x402/schema';
-import type { AcceptsNetwork } from '../../../../databases/scan/src';
+import type { AcceptsNetwork } from '../../../../packages/internal/databases/scan/src';
 
 export const registerResource = async (url: string, data: unknown) => {
   // Strip the query params from the incoming URL

@@ -1,4 +1,4 @@
-import { scanDb } from '../../../../../../databases/scan/src';
+import { scanDb } from '../../../../../../packages/internal/databases/scan/src';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 
@@ -6,7 +6,7 @@ import type { Chain } from '@/types/chain';
 import type {
   AcceptsNetwork,
   Prisma,
-} from '../../../../../../databases/scan/src';
+} from '../../../../../../packages/internal/databases/scan/src';
 
 interface GetAcceptsAddressesInput {
   chain?: Chain;

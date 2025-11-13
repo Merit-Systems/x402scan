@@ -17,7 +17,10 @@ import { cn } from '@/lib/utils';
 
 import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
-import type { Resources, Tag } from '../../../../../../../databases/scan/src';
+import type {
+  Resources,
+  Tag,
+} from '../../../../../../../packages/internal/databases/scan/src';
 import { HealthIndicator } from '@/app/_components/health/indicator';
 import { api } from '@/trpc/client';
 

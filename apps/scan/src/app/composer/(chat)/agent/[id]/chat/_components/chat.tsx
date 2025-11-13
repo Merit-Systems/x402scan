@@ -1,6 +1,6 @@
 import { Chat } from '../../../../_components/chat';
 
-import type { Message } from '../../../../../../../../../../databases/scan/src';
+import type { Message } from '../../../../../../../../../../packages/internal/databases/scan/src';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {

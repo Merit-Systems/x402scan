@@ -55,7 +55,7 @@ import type { SupportedChain } from '@/types/chain';
 import type {
   OgImage,
   ResourceOrigin,
-} from '../../../../../../databases/scan/src';
+} from '../../../../../../packages/internal/databases/scan/src';
 
 export const TestEndpointForm = () => {
   const queryClient = useQueryClient();

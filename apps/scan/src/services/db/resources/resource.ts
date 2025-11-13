@@ -1,4 +1,4 @@
-import { scanDb } from '../../../../../../databases/scan/src';
+import { scanDb } from '../../../../../../packages/internal/databases/scan/src';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { z } from 'zod';
@@ -13,7 +13,7 @@ import type { PaginatedQueryParams } from '@/lib/pagination';
 import type {
   AcceptsNetwork,
   Prisma,
-} from '../../../../../../databases/scan/src';
+} from '../../../../../../packages/internal/databases/scan/src';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { SupportedChain } from '@/types/chain';
 
