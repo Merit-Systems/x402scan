@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import 'dotenv/config';
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { cors } from 'hono/cors';
