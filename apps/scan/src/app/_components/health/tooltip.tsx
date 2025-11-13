@@ -109,8 +109,9 @@ export const HealthTooltipContent: React.FC<Props> = ({ status, metrics }) => {
             <span>Health Status (24h)</span>
           </div>
           <div className="text-xs text-yellow-600 bg-yellow-500/10 rounded p-2 border border-yellow-500/20">
-            Insufficient data for health assessment. At least{' '}
-            {TOTAL_REQUESTS_THRESHOLD} requests needed.
+            Insufficient data for health assessment.
+            <br />
+            At least {TOTAL_REQUESTS_THRESHOLD} requests needed.
           </div>
           <MetricsDisplay metrics={metrics} showColorCoding={false} />
           <TooltipFooter />
@@ -123,8 +124,9 @@ export const HealthTooltipContent: React.FC<Props> = ({ status, metrics }) => {
         <div className="space-y-0.5">
           <div className="flex justify-between gap-4">
             <span>
-              Unable to determine status (fewer than {TOTAL_REQUESTS_THRESHOLD}{' '}
-              requests in last 24h)
+              Unable to determine status!
+              <br /> (fewer than {TOTAL_REQUESTS_THRESHOLD} requests in last
+              24h)
             </span>
           </div>
         </div>
