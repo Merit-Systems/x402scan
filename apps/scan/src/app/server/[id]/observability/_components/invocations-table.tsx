@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { api } from '@/trpc/client';
 import { useObservabilityDataParams } from './use-observability-data';
+import { Fragment } from 'react';
 
 interface Props {
   resourceUrl: string;
@@ -119,8 +120,8 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
               data?.data.map(invocation => {
                 const isExpanded = expandedRows.has(invocation.id);
                 return (
-                  <>
-                    <TableRow key={invocation.id}>
+                  <Fragment key={invocation.id}>
+                    <TableRow>
                       <TableCell>
                         <Button
                           variant="ghost"
@@ -175,7 +176,7 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
                         </TableCell>
                       </TableRow>
                     )}
-                  </>
+                  </Fragment>
                 );
               })
             )}
