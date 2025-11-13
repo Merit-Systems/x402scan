@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "cp -f ../facilitators/images/* public/ 2>/dev/null || true",
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",

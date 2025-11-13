@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "dev": "turbo run dev --filter=x402scan",
+    "build": "turbo run build --filter=x402scan",
     "lint": "turbo run lint",
     "knip": "knip --cache",
     "format": "prettier --write --cache .",
