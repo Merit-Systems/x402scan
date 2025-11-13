@@ -10,17 +10,29 @@ import { api } from '@/trpc/client';
 import { CopyCode } from '@/components/ui/copy-code';
 import { TokenInput } from '@/components/ui/token/token-input';
 import { BASE_USDC } from '@/lib/tokens/usdc';
+import { useSession } from 'next-auth/react';
 
 export const Send: React.FC = () => {
   const [amount, setAmount] = useState(0);
   const [address, setAddress] = useState('');
 
+  const { data: session } = useSession();
+
   const utils = api.useUtils();
   const { data: serverWalletAddress, isLoading: isServerWalletAddressLoading } =
-    api.user.serverWallet.address.useQuery();
+    api.user.serverWallet.address.useQuery(undefined, {
+      enabled: !!session,
+    });
   const { data: ethBalance, isLoading: isEthBalanceLoading } =
-    api.user.serverWallet.ethBaseBalance.useQuery();
-  const { data: balance } = api.user.serverWallet.usdcBaseBalance.useQuery();
+    api.user.serverWallet.ethBaseBalance.useQuery(undefined, {
+      enabled: !!session,
+    });
+  const { data: balance } = api.user.serverWallet.usdcBaseBalance.useQuery(
+    undefined,
+    {
+      enabled: !!session,
+    }
+  );
 
   const {
     mutate: sendUsdc,

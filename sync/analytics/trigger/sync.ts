@@ -1,5 +1,5 @@
 import { logger, schedules } from '@trigger.dev/sdk';
-import { SyncConfig } from './types';
+import type { SyncConfig } from './types';
 import { createClient } from '@clickhouse/client';
 
 export function createAnalyticsSyncTask(config: SyncConfig) {

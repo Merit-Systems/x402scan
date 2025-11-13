@@ -1,10 +1,16 @@
 import z from 'zod';
+
 import { Prisma } from '@prisma/client';
 
 import { baseBucketedQuerySchema } from '../schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
 import { transfersWhereClause } from '../query-utils';
+import { getFirstTransferTimestamp } from './first-transfer';
+
+import { firstTransfer } from '@/services/facilitator/constants';
+import { queryRaw } from '@/services/transfers/client';
+
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
@@ -21,7 +27,13 @@ const bucketedResultSchema = z.array(
 const getBucketedStatisticsUncached = async (
   input: z.infer<typeof bucketedStatisticsInputSchema>
 ) => {
-  const { startDate, endDate, numBuckets } = input;
+  const { timeframe, numBuckets } = input;
+
+  const { startDate, endDate } = await getBucketedTimeRangeFromTimeframe({
+    period: timeframe,
+    creationDate: async () =>
+      (await getFirstTransferTimestamp(input)) ?? firstTransfer,
+  });
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(
@@ -33,9 +45,9 @@ const getBucketedStatisticsUncached = async (
     WITH all_buckets AS (
       SELECT generate_series(
         to_timestamp(
-          floor(extract(epoch from ${startDate}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
+          floor(extract(epoch from ${startDate.toISOString()}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
         ),
-        ${endDate}::timestamp,
+        ${endDate.toISOString()}::timestamp,
         (${bucketSizeSeconds} || ' seconds')::interval
       ) AS bucket_start
     ),
@@ -65,6 +77,8 @@ const getBucketedStatisticsUncached = async (
   `;
 
   const rawResult = await queryRaw(sql, bucketedResultSchema);
+
+  console.log('bucketed statistics rawResult', rawResult);
 
   const transformedResult = rawResult.map(row => ({
     ...row,

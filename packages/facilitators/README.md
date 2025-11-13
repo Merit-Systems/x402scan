@@ -133,7 +133,7 @@ import {
   ultravioletadao,
   virtuals,
   heurist,
-  treasure
+  treasure,
   aeon
 } from 'facilitators';
 

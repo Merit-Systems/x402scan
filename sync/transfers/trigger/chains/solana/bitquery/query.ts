@@ -1,5 +1,5 @@
 import { USDC_MULTIPLIER } from '@/trigger/lib/constants';
-import {
+import type {
   BitQueryTransferRow,
   Facilitator,
   FacilitatorConfig,

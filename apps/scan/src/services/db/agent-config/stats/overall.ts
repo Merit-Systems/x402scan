@@ -1,8 +1,5 @@
 import z from 'zod';
 
-import { subMonths, differenceInMilliseconds, getUnixTime } from 'date-fns';
-
-import { queryRaw } from '../../query';
 import { Prisma } from '@prisma/client';
 import {
   createCachedQuery,
@@ -10,21 +7,25 @@ import {
   createStandardCacheKey,
 } from '@/lib/cache';
 
+import { differenceInMilliseconds, getUnixTime } from 'date-fns';
+
+import { queryRaw } from '../../query';
+
+import {
+  getTimeRangeFromTimeframe,
+  getBucketedTimeRangeFromTimeframe,
+} from '@/lib/time-range';
+import { timeframeSchema, timePeriodSchema } from '@/lib/schemas';
+import { agentsRelease } from '@/lib/agents';
+
 export const overallActivityInputSchema = z.object({
-  startDate: z
-    .date()
-    .optional()
-    .default(() => subMonths(new Date(), 1)),
-  endDate: z
-    .date()
-    .optional()
-    .default(() => new Date()),
+  timeframe: timeframeSchema,
 });
 
 const getOverallActivityUncached = async (
   input: z.infer<typeof overallActivityInputSchema>
 ) => {
-  const { startDate, endDate } = input;
+  const { startDate, endDate } = getTimeRangeFromTimeframe(input.timeframe);
   const [result] = await queryRaw(
     Prisma.sql`
       SELECT
@@ -47,7 +48,7 @@ const getOverallActivityUncached = async (
     )
   );
 
-  return result;
+  return result!;
 };
 
 export const getOverallActivity = createCachedQuery({
@@ -59,20 +60,19 @@ export const getOverallActivity = createCachedQuery({
 });
 
 export const overallBucketedActivityInputSchema = z.object({
-  startDate: z.date().optional(),
-  endDate: z
-    .date()
-    .optional()
-    .default(() => new Date()),
+  timeframe: timePeriodSchema,
   numBuckets: z.number().optional().default(48),
 });
 
 const getOverallBucketedActivityUncached = async (
   input: z.infer<typeof overallBucketedActivityInputSchema>
 ) => {
-  const { endDate, numBuckets } = input;
+  const { timeframe, numBuckets } = input;
 
-  const startDate = input.startDate ?? subMonths(new Date(), 1);
+  const { startDate, endDate } = await getBucketedTimeRangeFromTimeframe({
+    period: timeframe,
+    creationDate: agentsRelease,
+  });
 
   // Calculate bucket size in seconds for consistent alignment using date-fns
   const timeRangeMs = differenceInMilliseconds(endDate, startDate);

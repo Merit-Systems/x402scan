@@ -1,7 +1,8 @@
 import { createPublicClient, http, formatUnits, type Address } from 'viem';
 import { base } from 'viem/chains';
 import { USDC_ADDRESS, ERC20_ABI } from './constants';
-import { BalanceCheckResult, Currency } from './types';
+import type { BalanceCheckResult } from './types';
+import { Currency } from './types';
 import { CURRENCY_CONFIG } from './config';
 
 export async function checkUSDCBalance(
@@ -10,7 +11,7 @@ export async function checkUSDCBalance(
 ): Promise<BalanceCheckResult> {
   const client = createPublicClient({
     chain: base,
-    transport: http(process.env.BASE_RPC_URL!),
+    transport: http(process.env.BASE_RPC_URL),
   });
 
   const balance = await client.readContract({
@@ -21,7 +22,7 @@ export async function checkUSDCBalance(
   });
 
   const balanceInUSDC = formatUnits(
-    balance,
+    balance as bigint,
     CURRENCY_CONFIG[Currency.USDC].decimalsInternal
   );
   const balanceNumber = parseFloat(balanceInUSDC);
@@ -42,7 +43,7 @@ export async function checkETHBalance(
 ): Promise<BalanceCheckResult> {
   const client = createPublicClient({
     chain: base,
-    transport: http(process.env.BASE_RPC_URL!),
+    transport: http(process.env.BASE_RPC_URL),
   });
 
   const balance = await client.getBalance({

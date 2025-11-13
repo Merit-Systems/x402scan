@@ -1,5 +1,9 @@
 import { logger } from '@trigger.dev/sdk/v3';
-import { FacilitatorConfig, SyncConfig, TransferEventData } from '../types';
+import type {
+  FacilitatorConfig,
+  SyncConfig,
+  TransferEventData,
+} from '../types';
 
 export async function fetchWithTimeWindowing(
   config: SyncConfig,

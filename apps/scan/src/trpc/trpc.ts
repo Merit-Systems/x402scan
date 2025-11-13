@@ -17,6 +17,7 @@ import type { Session } from 'next-auth';
 interface Context {
   headers: Headers;
   session: Session | null;
+  isWarmingCache: boolean;
 }
 
 /**
@@ -25,9 +26,15 @@ interface Context {
 export async function createTRPCContext(headers: Headers): Promise<Context> {
   const session = await auth();
 
+  // Check for cache warming header (only valid with cron secret)
+  const isWarmingCache =
+    headers.get('x-cache-warming') === 'true' &&
+    headers.get('authorization') === `Bearer ${env.CRON_SECRET}`;
+
   return {
     headers,
     session,
+    isWarmingCache,
   };
 }
 

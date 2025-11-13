@@ -70,7 +70,7 @@ const ToolHeader = ({
                   {resource.resource}
                 </span>
                 <span className="text-xs md:text-sm font-semibold text-primary font-mono">
-                  {formatTokenAmount(resource.accepts[0].maxAmountRequired)}
+                  {formatTokenAmount(resource.accepts[0]!.maxAmountRequired)}
                 </span>
                 {state === 'output-available' ? (
                   <Check className="size-3 text-green-600" />
@@ -89,7 +89,7 @@ const ToolHeader = ({
             isLoading={isResourceLoading ?? state === 'input-streaming'}
             component={resource => (
               <span className="text-[10px] md:text-xs text-muted-foreground text-left">
-                {resource.accepts[0].description}
+                {resource.accepts[0]!.description}
               </span>
             )}
             loadingComponent={<Skeleton className="h-[12px] my-[2px] w-32" />}

@@ -39,7 +39,7 @@ export const Facilitators: React.FC<FacilitatorsProps> = ({
   className,
 }) => {
   if (ids.length === 1) {
-    return <Facilitator id={ids[0]} className={className} />;
+    return <Facilitator id={ids[0]!} className={className} />;
   }
 
   return (

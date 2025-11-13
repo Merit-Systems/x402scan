@@ -29,11 +29,12 @@ import { messageSchema } from '@/lib/message-schema';
 import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
 import { ChatSDKError } from '@/lib/errors';
 
-import type { NextRequest } from 'next/server';
-import type { LanguageModel, UIMessage } from 'ai';
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
 import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
 import { env } from '@/env';
+
+import type { NextRequest } from 'next/server';
+import type { LanguageModel, UIMessage } from 'ai';
 
 const bodySchema = z.object({
   model: z.string(),

@@ -19,7 +19,7 @@ export const Resource: React.FC<Props> = ({ resource }) => {
       title={`${new URL(resource.origin.origin).hostname}${new URL(resource.resource).pathname}`}
       address={
         <Address
-          address={resource.accepts[0].payTo}
+          address={resource.accepts[0]!.payTo}
           className="border-none p-0"
           hideTooltip
         />

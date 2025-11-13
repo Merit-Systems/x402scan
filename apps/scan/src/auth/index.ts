@@ -11,6 +11,8 @@ import { providers } from './providers';
 
 import type { DefaultSession } from 'next-auth';
 import type { Account, Role } from '@prisma/client';
+import { SIWE_PROVIDER_ID } from './providers/siwe/constants';
+import { SIWS_PROVIDER_ID } from './providers/siws/constants';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -85,7 +87,10 @@ const { handlers, auth: uncachedAuth } = NextAuth({
       };
     },
     async jwt({ token, account }) {
-      if (account?.provider === 'siwe-csrf') {
+      if (
+        account?.provider === SIWE_PROVIDER_ID ||
+        account?.provider === SIWS_PROVIDER_ID
+      ) {
         token.credentials = true;
       }
       return token;

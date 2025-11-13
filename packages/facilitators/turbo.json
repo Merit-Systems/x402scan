@@ -3,7 +3,9 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["dist/**"]
-    }
+      "outputs": ["dist/**"],
+      "env": []
+    },
+    "lint": {}
   }
 }

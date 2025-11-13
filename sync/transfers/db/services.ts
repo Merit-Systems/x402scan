@@ -1,5 +1,6 @@
 import { prisma } from './client';
-import { Prisma } from '@/generated/prisma';
+
+import type { Prisma } from '@/generated/prisma';
 
 /**
  * Create a new TransferEvent
@@ -55,7 +56,7 @@ export async function getTransferEvents(params?: {
   skip?: number;
   take?: number;
 }) {
-  const { where, orderBy, skip, take } = params || {};
+  const { where, orderBy, skip, take } = params ?? {};
 
   return await prisma.transferEvent.findMany({
     where,

@@ -1,4 +1,4 @@
-import { Metrics } from './types';
+import type { Metrics } from './types';
 
 function toNumber(value: number | string | null | undefined): number | null {
   if (value === null || value === undefined) {

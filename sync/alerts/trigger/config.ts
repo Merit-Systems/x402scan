@@ -1,4 +1,5 @@
-import { AddressConfig, Currency } from './types';
+import type { AddressConfig } from './types';
+import { Currency } from './types';
 import { checkUSDCBalance, checkETHBalance } from './balance-checker';
 import { base } from 'viem/chains';
 

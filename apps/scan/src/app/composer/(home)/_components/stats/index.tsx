@@ -12,36 +12,20 @@ import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 
 import { api, HydrateClient } from '@/trpc/server';
 
-import { firstTransfer } from '@/services/facilitator/constants';
-
 import { ActivityTimeframe } from '@/types/timeframes';
 
-import { getSSRTimeRange } from '@/lib/time-range';
-
 export const OverallStats = async () => {
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.ThreeDays,
-    firstTransfer
-  );
-
-  await Promise.all([
-    api.public.agents.activity.overall.prefetch({
-      startDate,
-      endDate,
-    }),
-    api.public.agents.activity.bucketed.prefetch({
-      startDate,
-      endDate,
-      numBuckets: 32,
-    }),
-  ]);
+  void api.public.agents.activity.overall.prefetch({
+    timeframe: ActivityTimeframe.SevenDays,
+  });
+  void api.public.agents.activity.bucketed.prefetch({
+    timeframe: ActivityTimeframe.SevenDays,
+    numBuckets: 32,
+  });
 
   return (
     <HydrateClient>
-      <TimeRangeProvider
-        initialTimeframe={ActivityTimeframe.ThreeDays}
-        creationDate={firstTransfer}
-      >
+      <TimeRangeProvider initialTimeframe={ActivityTimeframe.SevenDays}>
         <ActivityContainer>
           <ErrorBoundary
             fallback={<p>There was an error loading the activity data</p>}

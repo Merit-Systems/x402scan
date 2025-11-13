@@ -7,7 +7,7 @@ interface Props {
 }
 
 export const FeedTable = async ({ limit = 10 }: Props) => {
-  await api.public.agents.activity.feed.prefetch({
+  void api.public.agents.activity.feed.prefetch({
     pagination: {
       page_size: limit,
       page: 0,

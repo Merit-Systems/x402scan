@@ -57,7 +57,7 @@ const listBazaarOriginsUncached = async (
     if (!origins || origins.length === 0) continue;
 
     // Use the first origin's ID as the grouping key
-    const originId = origins[0].id;
+    const originId = origins[0]!.id;
 
     const existing = originMap.get(originId);
     if (existing) {

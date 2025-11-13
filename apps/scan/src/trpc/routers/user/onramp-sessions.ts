@@ -17,6 +17,9 @@ import {
 
 import { SessionStatus } from '@prisma/client';
 import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
+import { SIWE_PROVIDER_ID } from '@/auth/providers/siwe/constants';
+import { SIWS_PROVIDER_ID } from '@/auth/providers/siws/constants';
+import { Chain } from '@/types/chain';
 
 export const onrampSessionsRouter = createTRPCRouter({
   get: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
@@ -62,8 +65,13 @@ export const onrampSessionsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createOnrampUrlParamsSchema)
     .mutation(async ({ ctx, input }) => {
+      const { defaultNetwork } = input;
       const account = ctx.session.user.accounts.find(
-        account => account.type === 'siwe'
+        account =>
+          account.provider ===
+          (defaultNetwork === Chain.SOLANA
+            ? SIWS_PROVIDER_ID
+            : SIWE_PROVIDER_ID)
       );
       if (!account) {
         throw new TRPCError({ code: 'NOT_FOUND' });

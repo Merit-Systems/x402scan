@@ -1,8 +1,9 @@
 import z from 'zod';
 
+import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
+
 import type { Address, Hash } from 'viem';
 import type { MixedAddress, SolanaAddress } from '@/types/address';
-import { Chain } from '@/types/chain';
 
 export const ethereumAddressSchema = z
   .string()
@@ -20,7 +21,7 @@ export const sortingSchema = (sortIds: string[] | readonly string[]) =>
     desc: z.boolean(),
   });
 // Add a Solana address schema
-const solanaAddressSchema = z
+export const solanaAddressSchema = z
   .string()
   .regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/, 'Invalid Solana address')
   .transform(address => address as SolanaAddress);
@@ -32,3 +33,17 @@ export const mixedAddressSchema = z
 
 export const chainSchema = z.enum(Chain);
 export const optionalChainSchema = chainSchema.optional();
+const supportedChainSchema = z.enum(SUPPORTED_CHAINS);
+export const optionalSupportedChainSchema = supportedChainSchema.optional();
+
+export const timePeriodSchema = z.number().nonnegative();
+
+export const timeframeSchema = z
+  .union([
+    timePeriodSchema,
+    z.object({
+      period: timePeriodSchema,
+      offset: timePeriodSchema.optional(),
+    }),
+  ])
+  .default(0);

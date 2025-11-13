@@ -126,7 +126,7 @@ export const AgentForm: React.FC<Props> = ({
                         toast.error('No file selected');
                         return;
                       }
-                      uploadImage(files[0]);
+                      uploadImage(files[0]!);
                     }}
                     disabled={isUploading}
                     className={cn(

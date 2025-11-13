@@ -2,16 +2,15 @@ import {
   DEFAULT_CONTRACT_ADDRESS,
   USDC_MULTIPLIER,
 } from '@/trigger/lib/constants';
-import {
+import type {
   SyncConfig,
   EvmChainConfig,
   Facilitator,
-  PaginationStrategy,
-  QueryProvider,
   TransferEventData,
   BitQueryTransferRowStream,
   FacilitatorConfig,
 } from '@/trigger/types';
+import { PaginationStrategy, QueryProvider } from '@/trigger/types';
 
 export function buildQuery(
   config: SyncConfig,
