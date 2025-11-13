@@ -25,10 +25,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma clients
-        run: |
-          cd apps/scan && pnpm db:generate
-          cd ../../sync/transfers && pnpm db:generate
-
       - name: Run all checks (format, types, knip, lint)
         run: pnpm check
