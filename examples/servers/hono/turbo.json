@@ -2,6 +2,9 @@
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
   "tasks": {
+    "check-types": {
+      "dependsOn": ["^build"]
+    },
     "lint": {
       "env": ["ADDRESS"]
     }
