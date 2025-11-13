@@ -3,15 +3,19 @@ import { useSiwe } from '@/app/_hooks/sign-in/use-siwe';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useAccount } from 'wagmi';
+import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
+import { Chain } from '@/types/chain';
 
 export const ConnectStep = () => {
   const { address } = useAccount();
 
   if (!address) {
     return (
-      <div className="p-4 flex flex-col gap-2">
-        <ConnectWalletForm />
-      </div>
+      <WalletChainProvider initialChain={Chain.BASE}>
+        <div className="p-4 flex flex-col gap-2">
+          <ConnectWalletForm />
+        </div>
+      </WalletChainProvider>
     );
   }
 
