@@ -10,6 +10,7 @@
         "CLICKHOUSE_URL",
         "CLICKHOUSE_USER",
         "CLICKHOUSE_PASSWORD",
+        "CLICKHOUSE_DATABASE",
         "POSTGRES_PRISMA_URL",
         "POSTGRES_URL_NON_POOLING"
       ]

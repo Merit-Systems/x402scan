@@ -1,0 +1,25 @@
+{
+  "name": "@x402scan/analytics-db",
+  "version": "1.0.0",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit",
+    "check-format": "prettier --check .",
+    "knip": "knip"
+  },
+  "dependencies": {
+    "@clickhouse/client": "^1.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
+    "eslint": "^9.39.1",
+    "knip": "^5.69.0",
+    "prettier": "^3.6.2",
+    "typescript": "5.5.4"
+  }
+}

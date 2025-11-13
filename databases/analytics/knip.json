@@ -1,6 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "entry": ["src/**/*.ts"],
-  "ignoreDependencies": ["@x402scan/eslint-config", "@x402scan/analytics-db"],
+  "ignoreDependencies": ["rimraf", "@x402scan/eslint-config"],
+  "ignore": ["generated/**"],
   "ignoreWorkspaces": []
 }

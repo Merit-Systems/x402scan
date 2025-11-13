@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { Hono } from 'hono';
 
-import { insertResourceInvocation } from '../db/clickhouse.js';
+import { insertResourceInvocation } from '@x402scan/analytics-db';
 import { randomUUID } from 'crypto';
 
 import type { Context } from 'hono';
@@ -194,20 +194,21 @@ async function proxyHandler(c: Context) {
           // Insert into ClickHouse (non-blocking, fire-and-forget)
           void insertResourceInvocation({
             id: randomUUID(),
-            resourceId: null, // TODO: lookup resourceId by URL if needed
-            statusCode: clonedUpstreamResponse.status,
+            resource_id: null, // TODO: lookup resourceId by URL if needed
+            status_code: clonedUpstreamResponse.status,
             duration: fetchDuration,
-            statusText: clonedUpstreamResponse.statusText,
+            status_text: clonedUpstreamResponse.statusText,
             method,
             url: targetUrl.toString(),
-            requestContentType: clonedRequest.headers.get('content-type') ?? '',
-            responseContentType:
+            request_content_type:
+              clonedRequest.headers.get('content-type') ?? '',
+            response_content_type:
               clonedUpstreamResponse.headers.get('content-type') ?? '',
-            responseHeaders,
-            responseBody,
-            requestHeaders,
-            requestBody,
-            createdAt: new Date(),
+            response_headers: responseHeaders,
+            response_body: responseBody,
+            request_headers: requestHeaders,
+            request_body: requestBody,
+            created_at: new Date(),
           });
         }
       } catch (error) {
