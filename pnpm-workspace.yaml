@@ -1,8 +1,7 @@
 packages:
   - 'apps/*'
   - 'sync/*'
-  - 'configurations/*'
-  - 'rpcs/*'
-  - 'packages/*'
-  - 'examples/**/*'
-  - 'databases/*'
+  - 'examples/servers/*'
+  - 'packages/internal/configurations/*'
+  - 'packages/internal/databases/*'
+  - 'packages/external/*'
