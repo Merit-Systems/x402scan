@@ -1,4 +1,4 @@
-import { clickhouse } from '@/services/db/clickhouse/resource-invocations';
+import { analyticsDb } from '@x402scan/analytics-db';
 import { NextResponse } from 'next/server';
 
 interface ResourcesRequest {
@@ -42,7 +42,7 @@ export async function POST(
       LIMIT 100
     `;
 
-    const resultSet = await clickhouse.query({
+    const resultSet = await analyticsDb.query({
       query,
       format: 'JSONEachRow',
     });

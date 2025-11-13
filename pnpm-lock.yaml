@@ -93,9 +93,6 @@ importers:
       '@auth/prisma-adapter':
         specifier: ^2.7.4
         version: 2.11.1(@prisma/client@6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))
-      '@clickhouse/client':
-        specifier: ^1.12.1
-        version: 1.12.1
       '@coinbase/cdp-core':
         specifier: ^0.0.58
         version: 0.0.58(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.12)
@@ -231,6 +228,9 @@ importers:
       '@wallet-standard/react':
         specifier: ^1.0.1
         version: 1.0.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@x402scan/analytics-db':
+        specifier: workspace:*
+        version: link:../../packages/internal/databases/analytics
       '@x402scan/scan-db':
         specifier: workspace:*
         version: link:../../packages/internal/databases/scan

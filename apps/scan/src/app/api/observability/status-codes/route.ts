@@ -1,4 +1,4 @@
-import { clickhouse } from '@/services/db/clickhouse/resource-invocations';
+import { analyticsDb } from '@x402scan/analytics-db';
 import { NextResponse } from 'next/server';
 
 interface StatusCodesRequest {
@@ -52,7 +52,7 @@ export async function POST(
       ORDER BY ts
     `;
 
-    const resultSet = await clickhouse.query({
+    const resultSet = await analyticsDb.query({
       query,
       format: 'JSONEachRow',
     });
