@@ -1,5 +1,5 @@
 {
-  "extends": "@x402scan/typescript-config/nextjs.json",
+  "extends": "@x402scan/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src"

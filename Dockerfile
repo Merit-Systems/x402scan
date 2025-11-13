@@ -39,7 +39,8 @@ COPY . .
 RUN pnpm install --frozen-lockfile
 
 # Build the proxy and its dependencies using turbo
-RUN turbo build --filter=x402proxy
+# The "..." suffix includes all dependencies in the build
+RUN turbo build --filter=x402proxy...
 
 # Expose the port that the proxy runs on
 EXPOSE 6969
