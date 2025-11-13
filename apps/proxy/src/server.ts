@@ -55,7 +55,7 @@ void createResourceInvocationsTable().catch(error => {
   );
 });
 
-console.log(process.env.ANALYTICS_CLICKHOUSE_USER);
+console.log('userFromServer', process.env.ANALYTICS_CLICKHOUSE_USER);
 
 serve({
   fetch: app.fetch,
