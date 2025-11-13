@@ -32,7 +32,6 @@ interface InvocationData {
   request_content_type: string;
   response_content_type: string;
   response_body: string;
-  response_headers: string;
 }
 
 interface PaginatedResponse {
@@ -77,6 +76,7 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
             endDate: endDate.toISOString(),
             page: currentPage,
             pageSize: 50,
+            statusFilter: '5xx',
           }),
         });
 
@@ -142,9 +142,9 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
   return (
     <div className="w-full">
       <div className="mb-4">
-        <h2 className="text-xl font-bold">Recent Invocations</h2>
+        <h2 className="text-xl font-bold">Server Errors (5xx)</h2>
         <p className="text-sm text-muted-foreground">
-          All requests to this resource ({data?.total.toLocaleString() ?? 0}{' '}
+          All 5xx errors for this resource ({data?.total.toLocaleString() ?? 0}{' '}
           total)
         </p>
       </div>
@@ -217,31 +217,17 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
                     {isExpanded && (
                       <TableRow>
                         <TableCell colSpan={7} className="bg-muted/50 p-4">
-                          <div className="space-y-4">
-                            <div className="space-y-2">
-                              <h4 className="text-sm font-semibold">
-                                Response Headers
-                              </h4>
-                              <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-48 overflow-y-auto border">
-                                {JSON.stringify(
-                                  JSON.parse(invocation.response_headers),
-                                  null,
-                                  2
-                                )}
-                              </pre>
-                            </div>
-                            <div className="space-y-2">
-                              <h4 className="text-sm font-semibold">
-                                Response Body
-                              </h4>
-                              <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-96 overflow-y-auto border">
-                                {JSON.stringify(
-                                  JSON.parse(invocation.response_body),
-                                  null,
-                                  2
-                                )}
-                              </pre>
-                            </div>
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-semibold">
+                              Response Body
+                            </h4>
+                            <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-96 overflow-y-auto border">
+                              {JSON.stringify(
+                                JSON.parse(invocation.response_body),
+                                null,
+                                2
+                              )}
+                            </pre>
                           </div>
                         </TableCell>
                       </TableRow>

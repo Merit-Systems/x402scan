@@ -7,6 +7,7 @@ interface InvocationsRequest {
   endDate: string;
   page?: number;
   pageSize?: number;
+  statusFilter?: string;
 }
 
 interface InvocationResponse {
@@ -20,7 +21,6 @@ interface InvocationResponse {
   request_content_type: string;
   response_content_type: string;
   response_body: string;
-  response_headers: string;
 }
 
 interface PaginatedResponse {
@@ -41,11 +41,24 @@ export async function POST(
       endDate,
       page = 1,
       pageSize = 50,
+      statusFilter = 'all',
     } = (await request.json()) as InvocationsRequest;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
     const offset = (page - 1) * pageSize;
+
+    // Build status filter condition
+    let statusCondition = '';
+    if (statusFilter === '2xx') {
+      statusCondition = 'AND status_code >= 200 AND status_code < 300';
+    } else if (statusFilter === '3xx') {
+      statusCondition = 'AND status_code >= 300 AND status_code < 400';
+    } else if (statusFilter === '4xx') {
+      statusCondition = 'AND status_code >= 400 AND status_code < 500';
+    } else if (statusFilter === '5xx') {
+      statusCondition = 'AND status_code >= 500 AND status_code < 600';
+    }
 
     const countQuery = `
       SELECT count() AS total
@@ -53,6 +66,7 @@ export async function POST(
       WHERE created_at >= toDateTime('${start.toISOString().replace('T', ' ').split('.')[0]}')
         AND created_at <= toDateTime('${end.toISOString().replace('T', ' ').split('.')[0]}')
         AND url = '${resourceUrl}'
+        ${statusCondition}
     `;
 
     const countResultSet = await clickhouse.query({
@@ -75,12 +89,12 @@ export async function POST(
         created_at,
         request_content_type,
         response_content_type,
-        response_body,
-        response_headers
+        response_body
       FROM resource_invocations
       WHERE created_at >= toDateTime('${start.toISOString().replace('T', ' ').split('.')[0]}')
         AND created_at <= toDateTime('${end.toISOString().replace('T', ' ').split('.')[0]}')
         AND url = '${resourceUrl}'
+        ${statusCondition}
       ORDER BY created_at DESC
       LIMIT ${pageSize}
       OFFSET ${offset}
