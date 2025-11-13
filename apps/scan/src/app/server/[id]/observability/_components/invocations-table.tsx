@@ -14,7 +14,17 @@ import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { useEffect, useMemo, useState } from 'react';
 import { subDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 interface InvocationData {
   id: string;
@@ -26,6 +36,7 @@ interface InvocationData {
   created_at: string;
   request_content_type: string;
   response_content_type: string;
+  response_body: string;
 }
 
 interface PaginatedResponse {
@@ -47,6 +58,7 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
   const [data, setData] = useState<PaginatedResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const { startDate, endDate } = useMemo(() => {
     const now = new Date();
@@ -103,6 +115,27 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
     return '';
   };
 
+  const toggleRow = (id: string) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const formatResponseBody = (body: string): string => {
+    try {
+      const parsed = JSON.parse(body);
+      return JSON.stringify(parsed, null, 2);
+    } catch {
+      return body;
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="w-full">
@@ -132,11 +165,12 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[5%]"></TableHead>
               <TableHead className="w-[10%]">Method</TableHead>
               <TableHead className="w-[10%]">Status</TableHead>
               <TableHead className="text-right w-[15%]">Duration</TableHead>
               <TableHead className="w-[20%]">Request Type</TableHead>
-              <TableHead className="w-[20%]">Response Type</TableHead>
+              <TableHead className="w-[15%]">Response Type</TableHead>
               <TableHead className="text-right w-[25%]">Time</TableHead>
             </TableRow>
           </TableHeader>
@@ -144,39 +178,72 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
             {!data || data.data.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center text-muted-foreground"
                 >
                   No invocations found
                 </TableCell>
               </TableRow>
             ) : (
-              data.data.map(invocation => (
-                <TableRow key={invocation.id}>
-                  <TableCell className="font-mono text-xs font-semibold">
-                    {invocation.method}
-                  </TableCell>
-                  <TableCell
-                    className={`font-mono text-xs font-semibold ${getStatusColor(invocation.status_code)}`}
-                  >
-                    {invocation.status_code}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {(invocation.duration / 1000).toFixed(2)}s
-                  </TableCell>
-                  <TableCell className="font-mono text-xs truncate">
-                    {invocation.request_content_type || '-'}
-                  </TableCell>
-                  <TableCell className="font-mono text-xs truncate">
-                    {invocation.response_content_type || '-'}
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    {formatDistanceToNow(new Date(invocation.created_at), {
-                      addSuffix: true,
-                    })}
-                  </TableCell>
-                </TableRow>
-              ))
+              data.data.map(invocation => {
+                const isExpanded = expandedRows.has(invocation.id);
+                return (
+                  <>
+                    <TableRow key={invocation.id}>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0"
+                          onClick={() => toggleRow(invocation.id)}
+                        >
+                          {isExpanded ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs font-semibold">
+                        {invocation.method}
+                      </TableCell>
+                      <TableCell
+                        className={`font-mono text-xs font-semibold ${getStatusColor(invocation.status_code)}`}
+                      >
+                        {invocation.status_code}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {(invocation.duration / 1000).toFixed(2)}s
+                      </TableCell>
+                      <TableCell className="font-mono text-xs truncate">
+                        {invocation.request_content_type || '-'}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs truncate">
+                        {invocation.response_content_type || '-'}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">
+                        {formatDistanceToNow(new Date(invocation.created_at), {
+                          addSuffix: true,
+                        })}
+                      </TableCell>
+                    </TableRow>
+                    {isExpanded && (
+                      <TableRow>
+                        <TableCell colSpan={7} className="bg-muted/50 p-4">
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-semibold">
+                              Response Body
+                            </h4>
+                            <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-96 overflow-y-auto border">
+                              {formatResponseBody(invocation.response_body)}
+                            </pre>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
+                );
+              })
             )}
           </TableBody>
         </Table>

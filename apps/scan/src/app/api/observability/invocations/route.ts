@@ -19,6 +19,7 @@ interface InvocationResponse {
   created_at: string;
   request_content_type: string;
   response_content_type: string;
+  response_body: string;
 }
 
 interface PaginatedResponse {
@@ -73,7 +74,8 @@ export async function POST(
         duration,
         created_at,
         request_content_type,
-        response_content_type
+        response_content_type,
+        response_body
       FROM resource_invocations
       WHERE created_at >= toDateTime('${start.toISOString().replace('T', ' ').split('.')[0]}')
         AND created_at <= toDateTime('${end.toISOString().replace('T', ' ').split('.')[0]}')
