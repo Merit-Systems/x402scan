@@ -123,6 +123,14 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
     });
   };
 
+  const parseResponseBody = (body: string): string => {
+    try {
+      return JSON.stringify(JSON.parse(body), null, 2);
+    } catch {
+      return body;
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="w-full">
@@ -222,11 +230,7 @@ export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
                               Response Body
                             </h4>
                             <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-96 overflow-y-auto border">
-                              {JSON.stringify(
-                                JSON.parse(invocation.response_body),
-                                null,
-                                2
-                              )}
+                              {parseResponseBody(invocation.response_body)}
                             </pre>
                           </div>
                         </TableCell>
