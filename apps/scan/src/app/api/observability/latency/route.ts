@@ -28,14 +28,14 @@ export async function POST(
 
     // Use exact match if resourceUrl is provided, otherwise use LIKE pattern
     const urlCondition = resourceUrl
-      ? `url = '${resourceUrl}'`
-      : `url LIKE '%${originUrl}%'`;
+      ? 'url = {url: String}'
+      : 'url LIKE {urlPattern: String}';
 
     const query = `
       WITH
-        toDateTime('${end.toISOString().replace('T', ' ').split('.')[0]}') AS t_end,
-        toDateTime('${start.toISOString().replace('T', ' ').split('.')[0]}') AS t_start,
-        toIntervalMinute(${bucketMinutes}) AS bucket
+        toDateTime({end: String}) AS t_end,
+        toDateTime({start: String}) AS t_start,
+        toIntervalMinute({bucketMinutes: UInt32}) AS bucket
 
       SELECT
         toStartOfInterval(created_at, bucket) AS ts,
@@ -53,6 +53,13 @@ export async function POST(
     const resultSet = await analyticsDb.query({
       query,
       format: 'JSONEachRow',
+      query_params: {
+        start: start.toISOString().replace('T', ' ').split('.')[0],
+        end: end.toISOString().replace('T', ' ').split('.')[0],
+        bucketMinutes,
+        url: resourceUrl ?? '',
+        urlPattern: `%${originUrl}%`,
+      },
     });
 
     const data = await resultSet.json();

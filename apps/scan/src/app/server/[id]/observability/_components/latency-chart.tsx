@@ -50,7 +50,7 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     p90: number;
     p99: number;
   }>[] = data.map(item => {
-    const date = new Date(item.ts);
+    const date = new Date(item.ts + 'Z');
     const formatted = date.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',

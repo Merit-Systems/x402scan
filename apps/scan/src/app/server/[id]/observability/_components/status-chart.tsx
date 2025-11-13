@@ -53,15 +53,13 @@ export const StatusChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
 };
 
 const StatusChartInner: React.FC<{ data: StatusCodeData[] }> = ({ data }) => {
-  // Transform the data to the format expected by the chart
   const chartData: ChartData<{
     success: number;
     redirect: number;
     clientError: number;
     serverError: number;
   }>[] = data.map(item => {
-    const date = new Date(item.ts);
-    // Format as "Nov 5, 2:40 AM"
+    const date = new Date(item.ts + 'Z');
     const formatted = date.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',

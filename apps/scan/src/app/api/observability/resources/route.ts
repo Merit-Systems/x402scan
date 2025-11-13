@@ -34,9 +34,9 @@ export async function POST(
         avg(duration) AS avg_duration,
         max(created_at) AS last_seen
       FROM resource_invocations
-      WHERE created_at >= toDateTime('${start.toISOString().replace('T', ' ').split('.')[0]}')
-        AND created_at <= toDateTime('${end.toISOString().replace('T', ' ').split('.')[0]}')
-        AND url LIKE '%${originUrl}%'
+      WHERE created_at >= toDateTime({start: String})
+        AND created_at <= toDateTime({end: String})
+        AND url LIKE {urlPattern: String}
       GROUP BY url
       ORDER BY total_requests DESC
       LIMIT 100
@@ -45,6 +45,11 @@ export async function POST(
     const resultSet = await analyticsDb.query({
       query,
       format: 'JSONEachRow',
+      query_params: {
+        start: start.toISOString().replace('T', ' ').split('.')[0],
+        end: end.toISOString().replace('T', ' ').split('.')[0],
+        urlPattern: `%${originUrl}%`,
+      },
     });
 
     const data = await resultSet.json();
