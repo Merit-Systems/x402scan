@@ -1,4 +1,4 @@
-import { api, HydrateClient } from '@/trpc/server';
+import { HydrateClient } from '@/trpc/server';
 import { notFound } from 'next/navigation';
 import { Body } from '@/app/_components/layout/page-utils';
 import { StatusChart } from './_components/status-chart';
@@ -10,6 +10,7 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { facilitatorIdMap } from '@/lib/facilitators';
+import { ObservabilityBanner } from '@/app/server/[id]/observability/_components/observability-banner';
 
 export default async function FacilitatorObservabilityPage({
   params,
@@ -24,6 +25,7 @@ export default async function FacilitatorObservabilityPage({
   return (
     <Body className="pt-0">
       <HydrateClient>
+        <ObservabilityBanner />
         <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
           <div className="flex justify-between items-center mb-2">
             <div>

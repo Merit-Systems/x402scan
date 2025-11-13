@@ -68,7 +68,17 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
     try {
       return JSON.stringify(data, null, 2);
     } catch {
-      return String(data);
+      // Handle edge case where data cannot be stringified
+      if (typeof data === 'object' && data !== null) {
+        return '[Object]';
+      }
+      if (typeof data === 'string') {
+        return data;
+      }
+      if (typeof data === 'number' || typeof data === 'boolean') {
+        return String(data);
+      }
+      return '[Unknown]';
     }
   };
 
@@ -202,7 +212,7 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
                           : 'N/A'}
                       </TableCell>
                       <TableCell className="font-mono text-xs truncate">
-                        {invocation.error_type || '-'}
+                        {invocation.error_type ?? '-'}
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {formatDistanceToNow(
@@ -235,13 +245,13 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
                                     <span className="text-muted-foreground">
                                       Client IP:
                                     </span>{' '}
-                                    {invocation.client_ip || 'N/A'}
+                                    {invocation.client_ip ?? 'N/A'}
                                   </div>
                                   <div>
                                     <span className="text-muted-foreground">
                                       User Agent:
                                     </span>{' '}
-                                    {invocation.user_agent || 'N/A'}
+                                    {invocation.user_agent ?? 'N/A'}
                                   </div>
                                   <div>
                                     <span className="text-muted-foreground">
