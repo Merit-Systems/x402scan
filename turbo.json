@@ -14,7 +14,7 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["^db:generate", "typegen"]
+      "dependsOn": ["^db:generate", "typegen", "^build"]
     },
     "typegen": {
       "outputs": [".next/**", "!.next/cache/**"]
