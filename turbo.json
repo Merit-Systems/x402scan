@@ -49,8 +49,7 @@
       "dependsOn": ["^db:generate", "typegen", "^build"]
     },
     "db:generate": {
-      "outputs": ["generated/**"],
-      "env": ["!*"]
+      "outputs": ["generated/**"]
     },
     "db:migrate": {
       "cache": false,
