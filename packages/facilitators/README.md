@@ -110,6 +110,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **CodeNut**          | BASE          | No        | No                           |
 | **Ultravioleta DAO** | BASE, SOLANA  | ✅ Yes    | No                           |
 | **Virtuals**         | BASE          | No        | No                           |
+| **Polygon**          | POLYGON       | No        | No                           |
 | **Heurist**          | BASE          | No        | No                           |
 | **Treasure**         | BASE          | No        | No                           |
 | **AnySpend**         | BASE, SOLANA  | ✅ Yes    | No                           |
@@ -124,6 +125,7 @@ import {
   payai,
   daydreams,
   x402rs,
+  polygon,
   corbits,
   dexter,
   mogami,
