@@ -1,6 +1,6 @@
 import { Activity } from 'lucide-react';
 
-export const ProxyCallout = () => {
+export const ObservabilityBanner = () => {
   return (
     <div className="border border-primary bg-primary/5 p-4 rounded-md flex items-center gap-4">
       <Activity className="size-8 text-primary shrink-0" />
