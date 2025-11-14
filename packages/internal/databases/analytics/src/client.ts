@@ -5,7 +5,7 @@ export const analyticsDb = createClient({
   username: process.env.ANALYTICS_CLICKHOUSE_USER ?? 'default',
   password: process.env.ANALYTICS_CLICKHOUSE_PASSWORD,
   database: process.env.ANALYTICS_CLICKHOUSE_DATABASE ?? 'default',
-  request_timeout: Number(
-    process.env.ANALYTICS_CLICKHOUSE_REQUEST_TIMEOUT ?? 10000
-  ),
+  request_timeout: process.env.ANALYTICS_CLICKHOUSE_REQUEST_TIMEOUT
+    ? Number(process.env.ANALYTICS_CLICKHOUSE_REQUEST_TIMEOUT)
+    : undefined,
 });

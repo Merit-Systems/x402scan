@@ -21,29 +21,27 @@ const transfersDbAdapter =
 if (process.env.NODE_ENV !== 'production')
   globalForPrisma.transfersDbAdapter = transfersDbAdapter;
 
-export const transfersDb = (
+export const transfersDb =
   globalForPrisma.transfersDb ||
   new PrismaClient({
     adapter: transfersDbAdapter,
-  })
-).$extends(
-  readReplicas({
-    url: [
-      ...(process.env.TRANSFERS_DB_URL_REPLICA_1
-        ? [process.env.TRANSFERS_DB_URL_REPLICA_1]
-        : []),
-      ...(process.env.TRANSFERS_DB_URL_REPLICA_2
-        ? [process.env.TRANSFERS_DB_URL_REPLICA_2]
-        : []),
-      ...(process.env.TRANSFERS_DB_URL_REPLICA_3
-        ? [process.env.TRANSFERS_DB_URL_REPLICA_3]
-        : []),
-      ...(process.env.TRANSFERS_DB_URL_REPLICA_4
-        ? [process.env.TRANSFERS_DB_URL_REPLICA_4]
-        : []),
-      ...(process.env.TRANSFERS_DB_URL_REPLICA_5
-        ? [process.env.TRANSFERS_DB_URL_REPLICA_5]
-        : []),
-    ],
-  })
-);
+  });
+
+const hasReplicas =
+  process.env.TRANSFERS_DB_URL_REPLICA_1 !== undefined ||
+  process.env.TRANSFERS_DB_URL_REPLICA_2 !== undefined ||
+  process.env.TRANSFERS_DB_URL_REPLICA_3 !== undefined ||
+  process.env.TRANSFERS_DB_URL_REPLICA_4 !== undefined ||
+  process.env.TRANSFERS_DB_URL_REPLICA_5 !== undefined;
+
+export const transfersDbReadReplicas = hasReplicas
+  ? transfersDb.$extends(
+      readReplicas({
+        url: [
+          ...(process.env.TRANSFERS_DB_URL_REPLICA_1
+            ? [process.env.TRANSFERS_DB_URL_REPLICA_1]
+            : []),
+        ],
+      })
+    )
+  : undefined;
