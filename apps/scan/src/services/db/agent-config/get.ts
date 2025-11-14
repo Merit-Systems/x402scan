@@ -18,7 +18,10 @@ export const getAgentConfigurationDetails = async (id: string) => {
   return agentConfiguration;
 };
 
-export const getAgentConfigurationUncached = async (id: string, userId?: string) => {
+export const getAgentConfigurationUncached = async (
+  id: string,
+  userId?: string
+) => {
   const [agentConfiguration] = await queryRaw(
     Prisma.sql`
     SELECT 
