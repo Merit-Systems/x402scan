@@ -106,7 +106,18 @@ const getBucketedFacilitatorsStatisticsUncached = async (
           'unique_sellers', unique_sellers
         )
         ORDER BY total_txs DESC
-      ) AS facilitators
+      ) AS facilitators,
+      (
+        SELECT jsonb_object_agg(
+          facilitator_id,
+          jsonb_build_object(
+            'totalTransactions', total_txs,
+            'totalAmount', total_amt
+          )
+          ORDER BY total_txs DESC
+        )
+        FROM facilitator_totals
+      ) AS totals
     FROM combined_stats
     GROUP BY bucket_start
     ORDER BY bucket_start
@@ -126,6 +137,15 @@ const getBucketedFacilitatorsStatisticsUncached = async (
             unique_sellers: z.number(),
           })
         ),
+        totals: z
+          .record(
+            z.string(),
+            z.object({
+              totalTransactions: z.number(),
+              totalAmount: z.number(),
+            })
+          )
+          .nullable(),
       })
     )
   );

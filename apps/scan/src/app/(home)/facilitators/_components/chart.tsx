@@ -54,22 +54,14 @@ export const FacilitatorsChart = () => {
     return `${percentage.toFixed(1)}%`;
   };
 
-  // Calculate totals for sorting
+  const totals = bucketedFacilitatorData[0]?.totals;
+
   const facilitatorTotals = facilitators.map(facilitator => ({
     facilitator,
-    totalTransactions: bucketedFacilitatorData.reduce(
-      (sum, item) =>
-        sum + (item.facilitators[facilitator.id]?.total_transactions ?? 0),
-      0
-    ),
-    totalAmount: bucketedFacilitatorData.reduce(
-      (sum, item) =>
-        sum + (item.facilitators[facilitator.id]?.total_amount ?? 0),
-      0
-    ),
+    totalTransactions: totals?.[facilitator.id]?.totalTransactions ?? 0,
+    totalAmount: totals?.[facilitator.id]?.totalAmount ?? 0,
   }));
 
-  // Sort by transactions (desc)
   const facilitatorsByTransactions = [...facilitatorTotals].sort(
     (a, b) => b.totalTransactions - a.totalTransactions
   );
