@@ -7,7 +7,7 @@ import { baseBucketedQuerySchema } from '../schemas';
 import { queryRaw } from '@/services/transfers/client';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { facilitators } from '@/lib/facilitators';
+import { facilitators, MIN_FACILITATOR_TRANSACTIONS } from '@/lib/facilitators';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
@@ -58,20 +58,34 @@ const getBucketedFacilitatorsStatisticsUncached = async (
       GROUP BY bucket, facilitator_id
     ),
     active_facilitators AS (
-      SELECT DISTINCT facilitator_id FROM bucket_stats
+      SELECT facilitator_id
+      FROM bucket_stats
+      GROUP BY facilitator_id
+      HAVING SUM(total_transactions) >= ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
+    ),
+    facilitator_totals AS (
+      SELECT
+        facilitator_id,
+        SUM(total_transactions)::int AS total_txs,
+        SUM(total_amount)::float AS total_amt
+      FROM bucket_stats
+      WHERE facilitator_id IN (SELECT facilitator_id FROM active_facilitators)
+      GROUP BY facilitator_id
+      ORDER BY total_txs DESC
     ),
     all_buckets AS (
       SELECT DISTINCT bucket_start FROM bucket_stats
     ),
     all_combinations AS (
-      SELECT ab.bucket_start, af.facilitator_id
+      SELECT ab.bucket_start, ft.facilitator_id, ft.total_txs
       FROM all_buckets ab
-      CROSS JOIN active_facilitators af
+      CROSS JOIN facilitator_totals ft
     ),
     combined_stats AS (
       SELECT
         ac.bucket_start,
         ac.facilitator_id,
+        ac.total_txs,
         COALESCE(bs.total_transactions, 0)::int AS total_transactions,
         COALESCE(bs.total_amount, 0)::float AS total_amount,
         COALESCE(bs.unique_buyers, 0)::int AS unique_buyers,
@@ -91,7 +105,19 @@ const getBucketedFacilitatorsStatisticsUncached = async (
           'unique_buyers', unique_buyers,
           'unique_sellers', unique_sellers
         )
-      ) AS facilitators
+        ORDER BY total_txs DESC
+      ) AS facilitators,
+      (
+        SELECT jsonb_object_agg(
+          facilitator_id,
+          jsonb_build_object(
+            'totalTransactions', total_txs,
+            'totalAmount', total_amt
+          )
+          ORDER BY total_txs DESC
+        )
+        FROM facilitator_totals
+      ) AS totals
     FROM combined_stats
     GROUP BY bucket_start
     ORDER BY bucket_start
@@ -111,6 +137,15 @@ const getBucketedFacilitatorsStatisticsUncached = async (
             unique_sellers: z.number(),
           })
         ),
+        totals: z
+          .record(
+            z.string(),
+            z.object({
+              totalTransactions: z.number(),
+              totalAmount: z.number(),
+            })
+          )
+          .nullable(),
       })
     )
   );

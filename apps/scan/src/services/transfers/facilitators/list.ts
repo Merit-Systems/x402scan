@@ -11,7 +11,10 @@ import {
 } from '@/lib/cache';
 
 import { Prisma } from '@x402scan/transfers-db';
-import { facilitatorIdMap } from '@/lib/facilitators';
+import {
+  facilitatorIdMap,
+  MIN_FACILITATOR_TRANSACTIONS,
+} from '@/lib/facilitators';
 import {
   toPaginatedResponse,
   type paginatedQuerySchema,
@@ -81,6 +84,7 @@ const listTopFacilitatorsUncached = async (
       FROM ${Prisma.raw(tableName)}
       ${whereClause}
       GROUP BY facilitator_id
+      HAVING SUM(total_transactions) >= ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
       ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
       LIMIT ${pagination.page_size}
       OFFSET ${pagination.page * pagination.page_size}
@@ -101,9 +105,14 @@ const listTopFacilitatorsUncached = async (
   // Get total count for pagination
   const countResult = await queryRaw(
     Prisma.sql`
-      SELECT COUNT(DISTINCT facilitator_id)::int as count
-      FROM ${Prisma.raw(tableName)}
-      ${whereClause}
+      SELECT COUNT(*)::int as count
+      FROM (
+        SELECT facilitator_id
+        FROM ${Prisma.raw(tableName)}
+        ${whereClause}
+        GROUP BY facilitator_id
+        HAVING SUM(total_transactions) > ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
+      ) subquery
     `,
     z.array(z.object({ count: z.number() }))
   );

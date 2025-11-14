@@ -10,6 +10,9 @@ import { Chain } from '@/types/chain';
 import type { FacilitatorMetadata } from '../../../../packages/external/facilitators/dist';
 import type { MixedAddress } from '@/types/address';
 
+// NOTE(shafu): Minimum number of transactions required for a facilitator to be displayed
+export const MIN_FACILITATOR_TRANSACTIONS = 100;
+
 export type Facilitator = FacilitatorMetadata & {
   id: string;
   addresses: Partial<Record<Chain, MixedAddress[]>>;
