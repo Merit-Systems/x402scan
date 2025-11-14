@@ -6,17 +6,14 @@ import { encode as defaultEncode } from 'next-auth/jwt';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { v4 as uuid } from 'uuid';
 
-import { scanDb } from '../../../../packages/internal/databases/scan/src';
+import { scanDb } from '@x402scan/scan-db';
 import { providers } from './providers';
 
 import { SIWE_PROVIDER_ID } from './providers/siwe/constants';
 import { SIWS_PROVIDER_ID } from './providers/siws/constants';
 
 import type { DefaultSession } from 'next-auth';
-import type {
-  Account,
-  Role,
-} from '../../../../packages/internal/databases/scan/src';
+import type { Account, Role } from '@x402scan/scan-db';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {

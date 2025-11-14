@@ -1,9 +1,6 @@
 import z from 'zod';
 
-import {
-  scanDb,
-  Prisma,
-} from '../../../../../../../packages/internal/databases/scan/src';
+import { scanDb, Prisma } from '@x402scan/scan-db';
 
 import { firstTransfer } from '@/services/facilitator/constants';
 

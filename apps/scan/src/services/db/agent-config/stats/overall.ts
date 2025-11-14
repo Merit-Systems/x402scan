@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { Prisma } from '../../../../../../../packages/internal/databases/scan/src';
+import { Prisma } from '@x402scan/scan-db';
 import {
   createCachedQuery,
   createCachedArrayQuery,

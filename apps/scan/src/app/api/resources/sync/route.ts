@@ -7,7 +7,7 @@ import { upsertResource } from '@/services/db/resources/resource';
 import { checkCronSecret } from '@/lib/cron';
 import { getOriginFromUrl } from '@/lib/url';
 
-import type { AcceptsNetwork } from '../../../../../../../packages/internal/databases/scan/src';
+import type { AcceptsNetwork } from '@x402scan/scan-db';
 import type z from 'zod';
 import type { upsertResourceSchema } from '@/services/db/resources/resource';
 import type { NextRequest } from 'next/server';

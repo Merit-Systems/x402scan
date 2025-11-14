@@ -12,7 +12,7 @@ import {
   verifySignature,
 } from '@solana/kit';
 
-import { scanDb } from '../../../../../../packages/internal/databases/scan/src';
+import { scanDb } from '@x402scan/scan-db';
 
 import { auth } from '@/auth';
 

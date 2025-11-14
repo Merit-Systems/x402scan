@@ -1,4 +1,4 @@
-import { scanDb } from '../../../../../../packages/internal/databases/scan/src';
+import { scanDb } from '@x402scan/scan-db';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { z } from 'zod';
@@ -10,10 +10,7 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 import { ChainIdToNetwork } from 'x402/types';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import type {
-  AcceptsNetwork,
-  Prisma,
-} from '../../../../../../packages/internal/databases/scan/src';
+import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { SupportedChain } from '@/types/chain';
 

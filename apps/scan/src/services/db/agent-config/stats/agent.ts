@@ -3,10 +3,7 @@ import z from 'zod';
 import { subMonths, differenceInMilliseconds, getUnixTime } from 'date-fns';
 
 import { queryRaw } from '../../query';
-import {
-  scanDb,
-  Prisma,
-} from '../../../../../../../packages/internal/databases/scan/src';
+import { scanDb, Prisma } from '@x402scan/scan-db';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 
 export const agentConfigBucketedActivityInputSchema = z.object({

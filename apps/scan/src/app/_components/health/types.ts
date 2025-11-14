@@ -1,7 +1,4 @@
-import type {
-  ResourceOriginMetrics,
-  ResourceMetrics,
-} from '../../../../../../packages/internal/databases/scan/src';
+import type { ResourceOriginMetrics, ResourceMetrics } from '@x402scan/scan-db';
 
 export enum HealthStatus {
   Healthy = 'healthy',

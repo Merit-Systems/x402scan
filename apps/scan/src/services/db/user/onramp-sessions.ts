@@ -1,8 +1,8 @@
 import z from 'zod';
 
-import { scanDb } from '../../../../../../packages/internal/databases/scan/src';
+import { scanDb } from '@x402scan/scan-db';
 
-import type { OnrampSession } from '../../../../../../packages/internal/databases/scan/src';
+import type { OnrampSession } from '@x402scan/scan-db';
 
 export const getOnrampSessionByToken = async (
   token: string,

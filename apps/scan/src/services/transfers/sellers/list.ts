@@ -1,5 +1,5 @@
 import z from 'zod';
-import { Prisma } from '../../../../../../packages/internal/databases/transfers/src';
+import { Prisma } from '@x402scan/transfers-db';
 
 import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
@@ -33,8 +33,6 @@ const listTopSellersUncached = async (
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
   const { sorting } = input;
-
-  console.log(input);
 
   const [count, items] = await Promise.all([
     queryRaw(

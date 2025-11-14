@@ -4,10 +4,7 @@ import { Favicon } from '@/app/_components/favicon';
 
 import { cn } from '@/lib/utils';
 
-import type {
-  OgImage,
-  ResourceOrigin,
-} from '../../../../../../packages/internal/databases/scan/src';
+import type { OgImage, ResourceOrigin } from '@x402scan/scan-db';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
