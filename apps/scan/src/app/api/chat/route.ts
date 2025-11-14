@@ -35,7 +35,7 @@ import type { LanguageModel, UIMessage } from 'ai';
 
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 
-export const openrouter = createOpenRouter({
+const openrouter = createOpenRouter({
   headers: {
     'HTTP-Referer': 'https://x402scan.com',
     'X-Title': 'x402scan',
