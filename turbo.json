@@ -59,6 +59,16 @@
     "db:deploy": {
       "cache": false
     },
+    "trigger:deploy": {
+      "dependsOn": ["^build", "^db:generate"],
+      "cache": false,
+      "env": [
+        "TRIGGER_ACCESS_TOKEN",
+        "ANALYTICS_CLICKHOUSE_*",
+        "POSTGRES_*",
+        "TRANSFERS_DB_*"
+      ]
+    },
     "lint": {
       "dependsOn": ["^db:generate", "typegen", "^build"]
     },
