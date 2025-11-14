@@ -11,7 +11,10 @@ import {
 } from '@/lib/cache';
 
 import { Prisma } from '@prisma/client';
-import { facilitatorIdMap } from '@/lib/facilitators';
+import {
+  facilitatorIdMap,
+  MIN_FACILITATOR_TRANSACTIONS,
+} from '@/lib/facilitators';
 import {
   toPaginatedResponse,
   paginationClause,
@@ -82,7 +85,7 @@ const listTopFacilitatorsUncached = async (
       FROM ${Prisma.raw(tableName)}
       ${whereClause}
       GROUP BY facilitator_id
-      HAVING SUM(total_transactions) > 100
+      HAVING SUM(total_transactions) > ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
       ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
       ${paginationClause(pagination)}
     `,
@@ -108,7 +111,7 @@ const listTopFacilitatorsUncached = async (
         FROM ${Prisma.raw(tableName)}
         ${whereClause}
         GROUP BY facilitator_id
-        HAVING SUM(total_transactions) > 100
+        HAVING SUM(total_transactions) > ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
       ) subquery
     `,
     z.array(z.object({ count: z.number() }))

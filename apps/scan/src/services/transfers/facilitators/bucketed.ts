@@ -7,7 +7,7 @@ import { baseBucketedQuerySchema } from '../schemas';
 import { queryRaw } from '@/services/transfers/client';
 
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { facilitators } from '@/lib/facilitators';
+import { facilitators, MIN_FACILITATOR_TRANSACTIONS } from '@/lib/facilitators';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
@@ -61,7 +61,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
       SELECT facilitator_id
       FROM bucket_stats
       GROUP BY facilitator_id
-      HAVING SUM(total_transactions) > 100
+      HAVING SUM(total_transactions) > ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
     ),
     all_buckets AS (
       SELECT DISTINCT bucket_start FROM bucket_stats
