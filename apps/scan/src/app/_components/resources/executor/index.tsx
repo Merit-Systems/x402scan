@@ -72,7 +72,7 @@ export const ResourceExecutor: React.FC<Props> = ({
       className={cn('border-b-0 pt-4 relative', !isFlat && 'pl-4 border-l')}
     >
       {!isFlat && (
-        <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-[px] bg-border" />
+        <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-[1px] bg-border" />
       )}
       <Card className={cn(className, 'overflow-hidden')}>
         <AccordionTrigger asChild>
