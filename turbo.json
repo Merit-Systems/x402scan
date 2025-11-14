@@ -36,7 +36,7 @@
       ]
     },
     "dev": {
-      "dependsOn": ["^db:generate"],
+      "dependsOn": ["^db:generate", "^build"],
       "persistent": true
     },
     "start": {
