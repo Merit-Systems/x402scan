@@ -85,7 +85,7 @@ const listTopFacilitatorsUncached = async (
       FROM ${Prisma.raw(tableName)}
       ${whereClause}
       GROUP BY facilitator_id
-      HAVING SUM(total_transactions) > ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
+      HAVING SUM(total_transactions) >= ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
       ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
       ${paginationClause(pagination)}
     `,

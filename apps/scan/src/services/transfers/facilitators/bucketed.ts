@@ -61,7 +61,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
       SELECT facilitator_id
       FROM bucket_stats
       GROUP BY facilitator_id
-      HAVING SUM(total_transactions) > ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
+      HAVING SUM(total_transactions) >= ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
     ),
     all_buckets AS (
       SELECT DISTINCT bucket_start FROM bucket_stats
