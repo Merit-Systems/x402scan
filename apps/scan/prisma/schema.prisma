@@ -206,7 +206,7 @@ model ResourceRequestMetadata {
 model OgImage {
   id          String  @id @default(uuid())
   originId    String
-  url         String  @unique
+  url         String
   height      Int?
   width       Int?
   title       String?
