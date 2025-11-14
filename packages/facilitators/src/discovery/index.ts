@@ -8,6 +8,7 @@ export { payaiDiscovery } from '../facilitators/payai';
 export { aurracloudDiscovery } from '../facilitators/aurracloud';
 export { thirdwebDiscovery } from '../facilitators/thirdweb';
 export { questflowDiscovery } from '../facilitators/questflow';
+export { hydraProtocolDiscovery } from '../facilitators/hydra-protocol';
 export { ultravioletadaoDiscovery } from '../facilitators/ultravioletadao';
 export { anyspendDiscovery } from '../facilitators/anyspend';
 
