@@ -58,7 +58,10 @@ const getBucketedFacilitatorsStatisticsUncached = async (
       GROUP BY bucket, facilitator_id
     ),
     active_facilitators AS (
-      SELECT DISTINCT facilitator_id FROM bucket_stats
+      SELECT facilitator_id
+      FROM bucket_stats
+      GROUP BY facilitator_id
+      HAVING SUM(total_transactions) > 100
     ),
     all_buckets AS (
       SELECT DISTINCT bucket_start FROM bucket_stats

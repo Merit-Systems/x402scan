@@ -82,6 +82,7 @@ const listTopFacilitatorsUncached = async (
       FROM ${Prisma.raw(tableName)}
       ${whereClause}
       GROUP BY facilitator_id
+      HAVING SUM(total_transactions) > 100
       ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
       ${paginationClause(pagination)}
     `,
@@ -101,9 +102,14 @@ const listTopFacilitatorsUncached = async (
   // Get total count for pagination
   const countResult = await queryRaw(
     Prisma.sql`
-      SELECT COUNT(DISTINCT facilitator_id)::int as count
-      FROM ${Prisma.raw(tableName)}
-      ${whereClause}
+      SELECT COUNT(*)::int as count
+      FROM (
+        SELECT facilitator_id
+        FROM ${Prisma.raw(tableName)}
+        ${whereClause}
+        GROUP BY facilitator_id
+        HAVING SUM(total_transactions) > 100
+      ) subquery
     `,
     z.array(z.object({ count: z.number() }))
   );
