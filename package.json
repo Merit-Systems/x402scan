@@ -17,9 +17,9 @@
     "check:types": "turbo run check:types",
     "check:knip": "turbo run knip",
     "check": "turbo run check:format check:types lint knip",
-    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=x402sync-analytics",
-    "trigger:deploy:transfers": "turbo run trigger:deploy --filter=x402sync-transfers",
-    "trigger:deploy:alerts": "turbo run trigger:deploy --filter=x402sync-alerts"
+    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=sync-analytics",
+    "trigger:deploy:transfers": "turbo run trigger:deploy --filter=sync-transfers",
+    "trigger:deploy:alerts": "turbo run trigger:deploy --filter=sync-alerts"
   },
   "devDependencies": {
     "knip": "^5.69.0",
