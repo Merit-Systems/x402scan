@@ -1,5 +1,5 @@
 {
-  "name": "x402sync-alerts",
+  "name": "sync-alerts",
   "version": "1.0.0",
   "description": "Balance alerts for x402scan",
   "license": "ISC",
