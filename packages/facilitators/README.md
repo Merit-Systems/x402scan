@@ -136,6 +136,7 @@ import {
   heurist,
   treasure,
   anyspend,
+  coinrailz,
 } from 'facilitators';
 
 // Facilitators requiring setup
