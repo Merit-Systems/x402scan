@@ -29,7 +29,6 @@ interface Props {
 export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const [statusFilter, setStatusFilter] = useState<string>('all');
   const params = useObservabilityDataParams();
 
   const { data, isLoading } =
@@ -39,7 +38,7 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
       endDate: params.endDate,
       page: currentPage,
       pageSize: 50,
-      statusFilter,
+      statusFilter: '5xx',
     });
 
   const getStatusColor = (statusCode: number | null): string => {
@@ -100,56 +99,11 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
 
   return (
     <div className="w-full">
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold">Invocations</h2>
-          <p className="text-sm text-muted-foreground">
-            All facilitator API invocations ({data?.total.toLocaleString() ?? 0}{' '}
-            total)
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant={statusFilter === 'all' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setStatusFilter('all');
-              setCurrentPage(1);
-            }}
-          >
-            All
-          </Button>
-          <Button
-            variant={statusFilter === '2xx' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setStatusFilter('2xx');
-              setCurrentPage(1);
-            }}
-          >
-            2xx
-          </Button>
-          <Button
-            variant={statusFilter === '4xx' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setStatusFilter('4xx');
-              setCurrentPage(1);
-            }}
-          >
-            4xx
-          </Button>
-          <Button
-            variant={statusFilter === '5xx' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => {
-              setStatusFilter('5xx');
-              setCurrentPage(1);
-            }}
-          >
-            5xx
-          </Button>
-        </div>
+      <div className="mb-4">
+        <h2 className="text-xl font-bold">Invocations (5xx errors only)</h2>
+        <p className="text-sm text-muted-foreground">
+          Facilitator API errors ({data?.total.toLocaleString() ?? 0} total)
+        </p>
       </div>
       <div className="border rounded-lg">
         <Table>
@@ -227,58 +181,21 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
                       <TableRow>
                         <TableCell colSpan={7} className="bg-muted/50 p-4">
                           <div className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <h4 className="text-sm font-semibold mb-2">
-                                  Request Details
-                                </h4>
-                                <div className="space-y-1 text-xs">
-                                  <div>
-                                    <span className="text-muted-foreground">
-                                      Request ID:
-                                    </span>{' '}
-                                    <span className="font-mono">
-                                      {invocation.request_id}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    <span className="text-muted-foreground">
-                                      Client IP:
-                                    </span>{' '}
-                                    {invocation.client_ip ?? 'N/A'}
-                                  </div>
-                                  <div>
-                                    <span className="text-muted-foreground">
-                                      User Agent:
-                                    </span>{' '}
-                                    {invocation.user_agent ?? 'N/A'}
-                                  </div>
-                                  <div>
-                                    <span className="text-muted-foreground">
-                                      Started At:
-                                    </span>{' '}
-                                    {new Date(
-                                      invocation.request_started_at + 'Z'
-                                    ).toLocaleString()}
-                                  </div>
+                            {invocation.error_message_json !== null &&
+                              invocation.error_message_json !== undefined && (
+                                <div>
+                                  <h4 className="text-sm font-semibold mb-2">
+                                    Error Details
+                                  </h4>
+                                  <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-48 overflow-y-auto border">
+                                    <code>
+                                      {formatJson(
+                                        invocation.error_message_json
+                                      )}
+                                    </code>
+                                  </pre>
                                 </div>
-                              </div>
-                              {invocation.error_message_json !== null &&
-                                invocation.error_message_json !== undefined && (
-                                  <div>
-                                    <h4 className="text-sm font-semibold mb-2">
-                                      Error Details
-                                    </h4>
-                                    <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-48 overflow-y-auto border">
-                                      <code>
-                                        {formatJson(
-                                          invocation.error_message_json
-                                        )}
-                                      </code>
-                                    </pre>
-                                  </div>
-                                )}
-                            </div>
+                              )}
 
                             {invocation.payment_payload_json !== null &&
                               invocation.payment_payload_json !== undefined && (
@@ -322,23 +239,6 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
                                   <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-48 overflow-y-auto border">
                                     <code>
                                       {formatJson(invocation.metadata)}
-                                    </code>
-                                  </pre>
-                                </div>
-                              )}
-
-                            {invocation.response_headers_json !== null &&
-                              invocation.response_headers_json !==
-                                undefined && (
-                                <div>
-                                  <h4 className="text-sm font-semibold mb-2">
-                                    Response Headers
-                                  </h4>
-                                  <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-48 overflow-y-auto border">
-                                    <code>
-                                      {formatJson(
-                                        invocation.response_headers_json
-                                      )}
                                     </code>
                                   </pre>
                                 </div>
