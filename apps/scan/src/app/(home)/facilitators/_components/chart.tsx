@@ -66,7 +66,6 @@ export const FacilitatorsChart = () => {
     (a, b) => b.totalTransactions - a.totalTransactions
   );
 
-  // Sort by amount (desc)
   const facilitatorsByAmount = [...facilitatorTotals].sort(
     (a, b) => b.totalAmount - a.totalAmount
   );
