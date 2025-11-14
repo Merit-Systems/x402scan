@@ -32,7 +32,8 @@
         "BITQUERY_API_KEY",
         "ADDRESS",
         "PORT",
-        "DISCORD_WEBHOOK_URL"
+        "DISCORD_WEBHOOK_URL",
+        "OPENROUTER_API_KEY"
       ]
     },
     "dev": {
