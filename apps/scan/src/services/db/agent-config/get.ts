@@ -161,11 +161,3 @@ export const getAgentConfigurationUncached = async (
 
   return agentConfiguration;
 };
-
-const getAgentConfiguration = createCachedQuery({
-  queryFn: getAgentConfigurationUncached,
-  cacheKeyPrefix: 'agent-config:get',
-  createCacheKey: (id, userId) => createStandardCacheKey({ id, userId }),
-  dateFields: ['createdAt', 'updatedAt'],
-  tags: ['agent-configuration'],
-});
