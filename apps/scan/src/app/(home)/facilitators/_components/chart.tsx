@@ -54,6 +54,41 @@ export const FacilitatorsChart = () => {
     return `${percentage.toFixed(1)}%`;
   };
 
+  // Calculate totals for each facilitator
+  const facilitatorTotals = facilitators.map(facilitator => {
+    const transactions = bucketedFacilitatorData.reduce(
+      (sum, item) =>
+        sum + (item.facilitators[facilitator.id]?.total_transactions ?? 0),
+      0
+    );
+    const amount = bucketedFacilitatorData.reduce(
+      (sum, item) =>
+        sum + (item.facilitators[facilitator.id]?.total_amount ?? 0),
+      0
+    );
+    return {
+      facilitator,
+      transactions,
+      amount,
+    };
+  });
+
+  // Filter out facilitators with less than 100 transactions
+  const MIN_TRANSACTIONS = 100;
+  const filteredFacilitators = facilitatorTotals.filter(
+    f => f.transactions >= MIN_TRANSACTIONS
+  );
+
+  // Sort facilitators by total transactions (biggest first)
+  const facilitatorsByTransactions = [...filteredFacilitators].sort(
+    (a, b) => b.transactions - a.transactions
+  );
+
+  // Sort facilitators by total amount (biggest first)
+  const facilitatorsByAmount = [...filteredFacilitators].sort(
+    (a, b) => b.amount - a.amount
+  );
+
   return (
     <div className="flex flex-col gap-4">
       <MultiCharts
@@ -65,7 +100,7 @@ export const FacilitatorsChart = () => {
           >({
             label: 'Transactions',
             amount: overallData.total_transactions.toLocaleString(),
-            items: facilitators,
+            items: facilitatorsByTransactions.map(f => f.facilitator),
             getValue: (
               data: number,
               dataType: string,
@@ -79,7 +114,7 @@ export const FacilitatorsChart = () => {
           >({
             label: 'Amount',
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
-            items: facilitators,
+            items: facilitatorsByAmount.map(f => f.facilitator),
             getValue: (
               data: number,
               dataType: string,
