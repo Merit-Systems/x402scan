@@ -1,12 +1,12 @@
 import z from 'zod';
 
+import { scanDb, Prisma } from '@x402scan/scan-db';
+
 import { queryRaw } from '../query';
 
-import { Prisma } from '@prisma/client';
 import { sortingSchema, timeframeSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
-import { prisma } from '../client';
+import { toPaginatedResponse } from '@/lib/pagination';
 import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 import {
   createCachedPaginatedQuery,
@@ -42,7 +42,7 @@ const listTopAgentConfigurationsUncached = async (
   const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
 
   const [count, items] = await Promise.all([
-    prisma.agentConfiguration.count({
+    scanDb.agentConfiguration.count({
       where: {
         visibility: 'public',
         ...(originId
@@ -132,7 +132,8 @@ const listTopAgentConfigurationsUncached = async (
       GROUP BY 
         ac.id, ac.name, ac.description, ac.image, ac."systemPrompt", ac.visibility, ac."createdAt", u.user_count, m.message_count, tc.tool_call_count
       ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
-      ${paginationClause(pagination)}
+      LIMIT ${pagination.page_size}
+      OFFSET ${pagination.page * pagination.page_size}
     `,
       z.array(
         z.object({

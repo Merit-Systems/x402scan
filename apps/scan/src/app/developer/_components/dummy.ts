@@ -1,4 +1,4 @@
-import type { OgImage, ResourceOrigin, Resources } from '@prisma/client';
+import type { OgImage, ResourceOrigin, Resources } from '@x402scan/scan-db';
 
 export function createDummyOgImage(params: {
   id: string;

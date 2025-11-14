@@ -5,10 +5,13 @@ on:
     branches: [main]
 
 jobs:
-  check:
-    name: Run All Checks
+  checks:
+    name: Run Checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
     steps:
       - name: Checkout code
@@ -24,11 +27,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma clients
-        run: |
-          cd apps/scan && pnpm db:generate
-          cd ../../sync/transfers && pnpm db:generate
 
       - name: Run all checks (format, types, knip, lint)
         run: pnpm check

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { Tag } from '@prisma/client';
+import type { Tag } from '@x402scan/scan-db';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 

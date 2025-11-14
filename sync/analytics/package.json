@@ -8,27 +8,24 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "check-format": "prettier --check .",
-    "format": "prettier --write .",
-    "check-types": "tsc --noEmit",
-    "knip": "knip",
+    "check:types": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "knip": "pnpm -w knip --workspace ./sync/analytics",
+    "format": "pnpm -w format-dir ./sync/analytics",
+    "check:format": "pnpm -w check:format-dir ./sync/analytics"
   },
   "dependencies": {
-    "@clickhouse/client": "^1.8.0",
-    "@prisma/client": "6.17.1",
-    "@trigger.dev/sdk": "4.0.5",
-    "facilitators": "workspace:*"
+    "@x402scan/analytics-db": "workspace:*",
+    "@x402scan/scan-db": "workspace:*",
+    "@trigger.dev/sdk": "4.0.5"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "@trigger.dev/build": "4.0.5",
     "@types/node": "^20",
-    "eslint": "^9.38.0",
-    "knip": "^5.66.2",
-    "prettier": "^3.6.2",
+    "eslint": "^9.39.1",
     "trigger.dev": "^4.0.4",
     "typescript": "^5.9.3"
   }

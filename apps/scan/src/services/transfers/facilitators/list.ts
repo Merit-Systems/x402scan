@@ -10,14 +10,13 @@ import {
   createStandardCacheKey,
 } from '@/lib/cache';
 
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@x402scan/transfers-db';
 import {
   facilitatorIdMap,
   MIN_FACILITATOR_TRANSACTIONS,
 } from '@/lib/facilitators';
 import {
   toPaginatedResponse,
-  paginationClause,
   type paginatedQuerySchema,
 } from '@/lib/pagination';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
@@ -87,7 +86,8 @@ const listTopFacilitatorsUncached = async (
       GROUP BY facilitator_id
       HAVING SUM(total_transactions) >= ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
       ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
-      ${paginationClause(pagination)}
+      LIMIT ${pagination.page_size}
+      OFFSET ${pagination.page * pagination.page_size}
     `,
     z.array(
       z.object({

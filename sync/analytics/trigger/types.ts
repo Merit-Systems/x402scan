@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '@x402scan/scan-db';
 
 export interface SyncConfig {
   name: string;

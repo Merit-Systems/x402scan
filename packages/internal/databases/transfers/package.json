@@ -1,0 +1,39 @@
+{
+  "name": "@x402scan/transfers-db",
+  "version": "1.0.0",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev --skip-generate",
+    "db:deploy": "prisma migrate deploy",
+    "db:format": "prisma format",
+    "lint": "eslint . --max-warnings 0",
+    "check:types": "tsc --noEmit",
+    "prebuild": "npm run db:generate",
+    "predev": "npm run db:generate",
+    "postinstall": "npm run db:generate",
+    "studio": "prisma studio",
+    "knip": "pnpm -w knip --workspace ./packages/internal/databases/transfers",
+    "format": "pnpm -w format-dir ./packages/internal/databases/transfers",
+    "check:format": "pnpm -w check:format-dir ./packages/internal/databases/transfers"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "@prisma/adapter-neon": "^6.19.0",
+    "@prisma/client": "^6.19.0",
+    "@prisma/extension-read-replicas": "^0.4.1",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/ws": "^8.18.1",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
+    "eslint": "^9.39.1",
+    "prisma": "^6.19.0",
+    "rimraf": "^5.0.5",
+    "typescript": "5.5.4"
+  }
+}

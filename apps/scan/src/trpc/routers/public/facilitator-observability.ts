@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/trpc/trpc';
-import { clickhouse } from '@/services/db/clickhouse/resource-invocations';
+import { analyticsDb } from '@x402scan/analytics-db';
 
 export const facilitatorObservabilityRouter = createTRPCRouter({
   statusCodes: publicProcedure
@@ -33,7 +33,7 @@ export const facilitatorObservabilityRouter = createTRPCRouter({
         ORDER BY ts ASC
       `;
 
-      const resultSet = await clickhouse.query({
+      const resultSet = await analyticsDb.query({
         query,
         format: 'JSONEachRow',
         query_params: {
@@ -83,7 +83,7 @@ export const facilitatorObservabilityRouter = createTRPCRouter({
         ORDER BY ts ASC
       `;
 
-      const resultSet = await clickhouse.query({
+      const resultSet = await analyticsDb.query({
         query,
         format: 'JSONEachRow',
         query_params: {
@@ -133,7 +133,7 @@ export const facilitatorObservabilityRouter = createTRPCRouter({
         ORDER BY ts ASC
       `;
 
-      const resultSet = await clickhouse.query({
+      const resultSet = await analyticsDb.query({
         query,
         format: 'JSONEachRow',
         query_params: {
@@ -183,7 +183,7 @@ export const facilitatorObservabilityRouter = createTRPCRouter({
         LIMIT 100
       `;
 
-      const resultSet = await clickhouse.query({
+      const resultSet = await analyticsDb.query({
         query,
         format: 'JSONEachRow',
         query_params: {
@@ -255,7 +255,7 @@ export const facilitatorObservabilityRouter = createTRPCRouter({
           ${methodCondition}
       `;
 
-      const countResultSet = await clickhouse.query({
+      const countResultSet = await analyticsDb.query({
         query: countQuery,
         format: 'JSONEachRow',
         query_params: {
@@ -298,7 +298,7 @@ export const facilitatorObservabilityRouter = createTRPCRouter({
         OFFSET {offset: UInt32}
       `;
 
-      const dataResultSet = await clickhouse.query({
+      const dataResultSet = await analyticsDb.query({
         query: dataQuery,
         format: 'JSONEachRow',
         query_params: {

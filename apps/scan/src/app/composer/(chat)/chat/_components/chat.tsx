@@ -1,6 +1,6 @@
 import { Chat as BaseChat } from '../../_components/chat';
 
-import type { Message } from '@prisma/client';
+import type { Message } from '@x402scan/scan-db';
 
 interface Props {
   id: string;
