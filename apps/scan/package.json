@@ -14,7 +14,10 @@
     "check:types": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts"
+    "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts",
+    "knip": "pnpm -w knip --workspace ./apps/scan",
+    "format": "pnpm -w format-dir ./apps/scan",
+    "check:format": "pnpm -w check:format-dir ./apps/scan"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.52",

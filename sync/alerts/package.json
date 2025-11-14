@@ -10,7 +10,10 @@
     "trigger:deploy": "trigger deploy",
     "check:types": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "knip": "pnpm -w knip --workspace ./sync/alerts",
+    "format": "pnpm -w format-dir ./sync/alerts",
+    "check:format": "pnpm -w check:format-dir ./sync/alerts"
   },
   "dependencies": {
     "@trigger.dev/sdk": "4.0.5",

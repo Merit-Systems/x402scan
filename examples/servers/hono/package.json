@@ -6,7 +6,10 @@
     "dev": "tsx index.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "check:types": "tsc --noEmit"
+    "check:types": "tsc --noEmit",
+    "knip": "pnpm -w knip --workspace ./examples/servers/hono",
+    "format": "pnpm -w format-dir ./examples/servers/hono",
+    "check:format": "pnpm -w check:format-dir ./examples/servers/hono"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",

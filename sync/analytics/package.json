@@ -10,7 +10,10 @@
     "trigger:deploy": "trigger deploy",
     "check:types": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "knip": "pnpm -w knip --workspace ./sync/analytics",
+    "format": "pnpm -w format-dir ./sync/analytics",
+    "check:format": "pnpm -w check:format-dir ./sync/analytics"
   },
   "dependencies": {
     "@x402scan/analytics-db": "workspace:*",

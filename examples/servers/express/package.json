@@ -6,7 +6,10 @@
     "dev": "tsx index.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "check:types": "tsc --noEmit"
+    "check:types": "tsc --noEmit",
+    "knip": "pnpm -w knip --workspace ./examples/servers/express",
+    "format": "pnpm -w format-dir ./examples/servers/express",
+    "check:format": "pnpm -w check:format-dir ./examples/servers/express"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

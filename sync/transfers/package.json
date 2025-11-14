@@ -10,7 +10,10 @@
     "trigger:deploy": "trigger deploy",
     "check:types": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "knip": "pnpm -w knip --workspace ./sync/transfers",
+    "format": "pnpm -w format-dir ./sync/transfers",
+    "check:format": "pnpm -w check:format-dir ./sync/transfers"
   },
   "dependencies": {
     "@coinbase/cdp-sdk": "^1.38.4",

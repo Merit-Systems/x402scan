@@ -9,11 +9,14 @@
     "build:proxy": "turbo run build --filter=x402proxy",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "format": "prettier --write --cache .",
-    "check": "turbo run check:types lint check:knip check:format",
-    "check:format": "prettier --check .",
+    "knip": "knip",
+    "format-dir": "prettier --write",
+    "format": "pnpm format-dir .",
+    "check:format-dir": "prettier --check",
+    "check:format": "pnpm check:format-dir .",
     "check:types": "turbo run check:types",
-    "check:knip": "knip"
+    "check:knip": "turbo run knip",
+    "check": "turbo run check:format check:types lint knip"
   },
   "devDependencies": {
     "knip": "^5.69.0",

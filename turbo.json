@@ -64,8 +64,8 @@
     "check:types": {
       "dependsOn": ["^db:generate", "typegen", "^build"]
     },
-    "//#check:format": {},
-    "//#check:knip": {}
+    "check:format": {},
+    "knip": {}
   },
   "globalEnv": [],
   "globalPassThroughEnv": [

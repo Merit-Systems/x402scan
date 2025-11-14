@@ -9,7 +9,10 @@
     "start": "node dist/server.js",
     "check:types": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "knip": "pnpm -w knip --workspace ./apps/proxy",
+    "format": "pnpm -w format-dir ./apps/proxy",
+    "check:format": "pnpm -w check:format-dir ./apps/proxy"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
