@@ -30,7 +30,6 @@
     "@coinbase/cdp-wagmi": "^0.0.52",
     "@hookform/resolvers": "^5.2.2",
     "@lmnr-ai/lmnr": "^0.7.4",
-    "@merit-systems/ai-x402": "^0.1.3",
     "@octokit/rest": "^22.0.0",
     "@openrouter/ai-sdk-provider": "^1.2.2",
     "@prisma/client": "^6.19.0",
