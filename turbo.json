@@ -67,11 +67,14 @@
     "check:format": {},
     "knip": {}
   },
-  "globalEnv": [],
+  "globalEnv": ["TURBO_*"],
   "globalPassThroughEnv": [
     "NODE_ENV",
     "VERCEL_ENV",
     "VERCEL_PROJECT_PRODUCTION_URL",
     "VERCEL_BRANCH_URL"
-  ]
+  ],
+  "remoteCache": {
+    "enabled": true
+  }
 }
