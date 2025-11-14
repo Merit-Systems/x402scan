@@ -17,6 +17,7 @@ import {
   virtualsFacilitator,
   heuristFacilitator,
   treasureFacilitator,
+  anyspendFacilitator,
   aeonFacilitator,
 } from '../facilitators';
 
@@ -43,6 +44,7 @@ const FACILITATORS = validateUniqueFacilitators([
   virtualsFacilitator,
   heuristFacilitator,
   treasureFacilitator,
+  anyspendFacilitator,
   aeonFacilitator,
 ]);
 

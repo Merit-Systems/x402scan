@@ -113,6 +113,8 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Virtuals**         | BASE          | No        | No                           |
 | **Heurist**          | BASE          | No        | No                           |
 | **Treasure**         | BASE          | No        | No                           |
+| **AnySpend**         | BASE, SOLANA  | ✅ Yes    | No                           |
+
 | **Aeon**             | BSC           | ✅ Yes  | No                             |
 ### Import Individual Facilitators
 
@@ -134,6 +136,7 @@ import {
   virtuals,
   heurist,
   treasure,
+  anyspend,
   aeon
 } from 'facilitators';
 

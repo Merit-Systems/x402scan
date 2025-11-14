@@ -4,28 +4,21 @@ import { BaseChart } from '@/components/ui/charts/chart/chart';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Line } from 'recharts';
 import { LoadingChart } from './loading-chart';
-import { useObservabilityData } from './use-observability-data';
+import { useObservabilityDataParams } from './use-observability-data';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-
-interface LatencyData {
-  ts: string;
-  p50: string;
-  p90: string;
-  p99: string;
-}
+import { api } from '@/trpc/client';
 
 interface Props {
   originUrl: string;
   resourceUrl: string;
 }
 
-const LATENCY_ENDPOINT = '/api/observability/latency';
-
 export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
-  const { data, isLoading } = useObservabilityData<LatencyData>({
-    endpoint: LATENCY_ENDPOINT,
+  const params = useObservabilityDataParams();
+  const { data, isLoading } = api.public.observability.latency.useQuery({
     originUrl,
     resourceUrl,
+    ...params,
   });
 
   if (isLoading) {
@@ -37,7 +30,7 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     );
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-8">
         No latency data available
@@ -50,7 +43,7 @@ export const LatencyChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     p90: number;
     p99: number;
   }>[] = data.map(item => {
-    const date = new Date(item.ts);
+    const date = new Date(item.ts + 'Z');
     const formatted = date.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',

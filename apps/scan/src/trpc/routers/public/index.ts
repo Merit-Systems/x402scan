@@ -10,6 +10,7 @@ import { sellersRouter } from './sellers';
 import { statsRouter } from './stats';
 import { resourcesRouter } from './resources';
 import { solanaRouter } from './solana';
+import { observabilityRouter } from './observability';
 
 export const publicRouter = createTRPCRouter({
   agents: publicAgentConfigurationsRouter,
@@ -22,4 +23,5 @@ export const publicRouter = createTRPCRouter({
   stats: statsRouter,
   resources: resourcesRouter,
   solana: solanaRouter,
+  observability: observabilityRouter,
 });

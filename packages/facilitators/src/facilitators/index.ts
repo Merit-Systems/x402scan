@@ -17,4 +17,5 @@ export { ultravioletadao, ultravioletadaoFacilitator } from './ultravioletadao';
 export { virtuals, virtualsFacilitator } from './virtuals';
 export { heurist, heuristFacilitator } from './heurist';
 export { treasure, treasureFacilitator } from './treasure';
+export { anyspend, anyspendFacilitator } from './anyspend';
 export { aeon, aeonFacilitator } from './aeon';
