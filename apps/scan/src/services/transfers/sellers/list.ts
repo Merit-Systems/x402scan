@@ -58,7 +58,7 @@ const listTopSellersUncached = async (
         MAX(t.block_timestamp) as latest_block_timestamp,
         COUNT(DISTINCT t.sender)::integer as unique_buyers,
         ARRAY_AGG(DISTINCT t.chain) as chains,
-        t.createdAt,
+        t.createdAt
       FROM "TransferEvent" t
       ${transfersWhereClause(input)}
       GROUP BY t.recipient
