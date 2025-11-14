@@ -54,6 +54,31 @@ export const FacilitatorsChart = () => {
     return `${percentage.toFixed(1)}%`;
   };
 
+  // Calculate totals for sorting
+  const facilitatorTotals = facilitators.map(facilitator => ({
+    facilitator,
+    totalTransactions: bucketedFacilitatorData.reduce(
+      (sum, item) =>
+        sum + (item.facilitators[facilitator.id]?.total_transactions ?? 0),
+      0
+    ),
+    totalAmount: bucketedFacilitatorData.reduce(
+      (sum, item) =>
+        sum + (item.facilitators[facilitator.id]?.total_amount ?? 0),
+      0
+    ),
+  }));
+
+  // Sort by transactions (desc)
+  const facilitatorsByTransactions = [...facilitatorTotals].sort(
+    (a, b) => b.totalTransactions - a.totalTransactions
+  );
+
+  // Sort by amount (desc)
+  const facilitatorsByAmount = [...facilitatorTotals].sort(
+    (a, b) => b.totalAmount - a.totalAmount
+  );
+
   return (
     <div className="flex flex-col gap-4">
       <MultiCharts
@@ -65,7 +90,7 @@ export const FacilitatorsChart = () => {
           >({
             label: 'Transactions',
             amount: overallData.total_transactions.toLocaleString(),
-            items: facilitators,
+            items: facilitatorsByTransactions.map(f => f.facilitator),
             getValue: (
               data: number,
               dataType: string,
@@ -79,7 +104,7 @@ export const FacilitatorsChart = () => {
           >({
             label: 'Amount',
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
-            items: facilitators,
+            items: facilitatorsByAmount.map(f => f.facilitator),
             getValue: (
               data: number,
               dataType: string,

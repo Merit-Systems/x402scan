@@ -63,18 +63,29 @@ const getBucketedFacilitatorsStatisticsUncached = async (
       GROUP BY facilitator_id
       HAVING SUM(total_transactions) >= ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
     ),
+    facilitator_totals AS (
+      SELECT
+        facilitator_id,
+        SUM(total_transactions)::int AS total_txs,
+        SUM(total_amount)::float AS total_amt
+      FROM bucket_stats
+      WHERE facilitator_id IN (SELECT facilitator_id FROM active_facilitators)
+      GROUP BY facilitator_id
+      ORDER BY total_txs DESC
+    ),
     all_buckets AS (
       SELECT DISTINCT bucket_start FROM bucket_stats
     ),
     all_combinations AS (
-      SELECT ab.bucket_start, af.facilitator_id
+      SELECT ab.bucket_start, ft.facilitator_id, ft.total_txs
       FROM all_buckets ab
-      CROSS JOIN active_facilitators af
+      CROSS JOIN facilitator_totals ft
     ),
     combined_stats AS (
       SELECT
         ac.bucket_start,
         ac.facilitator_id,
+        ac.total_txs,
         COALESCE(bs.total_transactions, 0)::int AS total_transactions,
         COALESCE(bs.total_amount, 0)::float AS total_amount,
         COALESCE(bs.unique_buyers, 0)::int AS unique_buyers,
@@ -94,6 +105,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
           'unique_buyers', unique_buyers,
           'unique_sellers', unique_sellers
         )
+        ORDER BY total_txs DESC
       ) AS facilitators
     FROM combined_stats
     GROUP BY bucket_start
