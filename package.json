@@ -5,18 +5,15 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "dev:scan": "turbo run dev --filter=x402scan",
-    "dev:proxy": "turbo run dev --filter=x402proxy",
     "build:scan": "turbo run build --filter=x402scan",
     "build:proxy": "turbo run build --filter=x402proxy",
-    "start:scan": "turbo run start --filter=x402scan",
-    "start:proxy": "turbo run start --filter=x402proxy",
+    "build": "turbo run build",
     "lint": "turbo run lint",
-    "knip": "knip --cache",
     "format": "prettier --write --cache .",
-    "check": "turbo run check:types lint",
-    "check:format": "prettier --check --cache .",
+    "check": "turbo run check:types lint check:knip check:format",
+    "check:format": "prettier --check .",
     "check:types": "turbo run check:types",
-    "check:all": "pnpm check:format && pnpm knip && pnpm check"
+    "check:knip": "knip"
   },
   "devDependencies": {
     "knip": "^5.69.0",

@@ -44,14 +44,9 @@
       "persistent": true,
       "env": ["ANALYTICS_CLICKHOUSE_*"]
     },
-    "lint": {
-      "dependsOn": ["^db:generate", "typegen", "^build"]
-    },
+
     "typegen": {
       "outputs": [".next/**", "!.next/cache/**"]
-    },
-    "check:types": {
-      "dependsOn": ["^db:generate", "typegen", "^build"]
     },
     "db:generate": {
       "outputs": ["generated/**"]
@@ -62,7 +57,15 @@
     },
     "db:deploy": {
       "cache": false
-    }
+    },
+    "lint": {
+      "dependsOn": ["^db:generate", "typegen", "^build"]
+    },
+    "check:types": {
+      "dependsOn": ["^db:generate", "typegen", "^build"]
+    },
+    "//#check:format": {},
+    "//#check:knip": {}
   },
   "globalEnv": [],
   "globalPassThroughEnv": [
