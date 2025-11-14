@@ -4,7 +4,6 @@ import { queryRaw } from '../query';
 
 import { Prisma } from '@prisma/client';
 import { prisma } from '../client';
-import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 
 export const getAgentConfigurationDetails = async (id: string) => {
   const agentConfiguration = await prisma.agentConfiguration.findUnique({
@@ -18,7 +17,10 @@ export const getAgentConfigurationDetails = async (id: string) => {
   return agentConfiguration;
 };
 
-const getAgentConfigurationUncached = async (id: string, userId?: string) => {
+export const getAgentConfigurationUncached = async (
+  id: string,
+  userId?: string
+) => {
   const [agentConfiguration] = await queryRaw(
     Prisma.sql`
     SELECT 
@@ -158,11 +160,3 @@ const getAgentConfigurationUncached = async (id: string, userId?: string) => {
 
   return agentConfiguration;
 };
-
-export const getAgentConfiguration = createCachedQuery({
-  queryFn: getAgentConfigurationUncached,
-  cacheKeyPrefix: 'agent-config:get',
-  createCacheKey: (id, userId) => createStandardCacheKey({ id, userId }),
-  dateFields: ['createdAt', 'updatedAt'],
-  tags: ['agent-configuration'],
-});
