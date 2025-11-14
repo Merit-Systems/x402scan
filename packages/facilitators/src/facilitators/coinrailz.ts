@@ -1,20 +1,14 @@
 import { Network } from '../types';
 import { USDC_BASE_TOKEN } from '../constants';
-import type { Facilitator, FacilitatorConfig } from '../types';
-
-export const coinrailz: FacilitatorConfig = {
-  url: 'https://coinrailz.com/facilitator',
-};
+import type { Facilitator } from '../types';
 
 export const coinrailzFacilitator = {
   id: 'coinrailz',
   metadata: {
     name: 'Coin Railz',
-    image: 'https://x402scan.com/coinrailz.png',
-    docsUrl: 'https://coinrailz.com',
-    color: '#2563EB',
+    image: '/coinrailz.png',
+    color: '#10B981',
   },
-  config: coinrailz,
   addresses: {
     [Network.BASE]: [
       {
@@ -24,4 +18,4 @@ export const coinrailzFacilitator = {
       },
     ],
   },
-} as const satisfies Facilitator;
+} as const satisfies Facilitator<void>;
