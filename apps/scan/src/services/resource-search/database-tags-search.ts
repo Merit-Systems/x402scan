@@ -1,9 +1,9 @@
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
-import { prisma } from '@/services/db/client';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@x402scan/scan-db';
 import type { SearchResult } from './types';
+import { queryRaw } from '../db/query';
 
 const keywordExpansionSchema = z.object({
   keywords: z
@@ -151,7 +151,6 @@ export const searchResourcesWithNaturalLanguage = async (
   }
 
   const { keywords, explanation } = result.object;
-  console.log('Expanded keywords:', keywords);
 
   // Build SQL programmatically using the keywords
   const sqlCondition = buildSearchCondition(keywords);
@@ -251,8 +250,7 @@ async function executeResourceSearch(
       ''
     );
 
-    const rawResults = await prisma.$queryRaw<unknown[]>(fullSql);
-    const results = searchResultsSchema.parse(rawResults);
+    const results = await queryRaw(fullSql, searchResultsSchema);
     return { success: true, results };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

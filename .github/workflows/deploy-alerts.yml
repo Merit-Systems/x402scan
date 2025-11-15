@@ -32,7 +32,6 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Deploy to Trigger.dev
-        working-directory: ./sync/alerts
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
-        run: pnpm trigger:deploy
+        run: pnpm trigger:deploy:alerts

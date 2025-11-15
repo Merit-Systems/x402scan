@@ -6,13 +6,14 @@ import { encode as defaultEncode } from 'next-auth/jwt';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { v4 as uuid } from 'uuid';
 
-import { prisma } from '../services/db/client';
+import { scanDb } from '@x402scan/scan-db';
 import { providers } from './providers';
 
-import type { DefaultSession } from 'next-auth';
-import type { Account, Role } from '@prisma/client';
 import { SIWE_PROVIDER_ID } from './providers/siwe/constants';
 import { SIWS_PROVIDER_ID } from './providers/siws/constants';
+
+import type { DefaultSession } from 'next-auth';
+import type { Account, Role } from '@x402scan/scan-db';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
@@ -40,9 +41,9 @@ declare module 'next-auth' {
 const { handlers, auth: uncachedAuth } = NextAuth({
   providers,
   adapter: {
-    ...PrismaAdapter(prisma),
+    ...PrismaAdapter(scanDb as Parameters<typeof PrismaAdapter>[0]),
     getUser: async id => {
-      const user = await prisma.user.findUnique({
+      const user = await scanDb.user.findUnique({
         where: { id },
         include: { accounts: true },
       });
@@ -55,14 +56,14 @@ const { handlers, auth: uncachedAuth } = NextAuth({
       };
     },
     getSessionAndUser: async sessionToken => {
-      const session = await prisma.session.findUnique({
+      const session = await scanDb.session.findUnique({
         where: { sessionToken },
         include: { user: true },
       });
       if (!session) {
         return null;
       }
-      const user = await prisma.user.findUnique({
+      const user = await scanDb.user.findUnique({
         where: { id: session.userId },
         include: { accounts: true },
       });
@@ -105,7 +106,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
           throw new Error('No user ID found in token');
         }
 
-        const createdSession = await prisma.session.create({
+        const createdSession = await scanDb.session.create({
           data: {
             sessionToken: sessionToken.toString(),
             userId: params.token.sub,

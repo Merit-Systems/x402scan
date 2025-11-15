@@ -1,5 +1,5 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@x402scan/transfers-db';
 
 import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
@@ -11,7 +11,6 @@ import {
 } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { transfersWhereClause } from '../query-utils';
-import { paginationClause } from '@/lib/pagination';
 
 import type { paginatedQuerySchema } from '@/lib/pagination';
 
@@ -62,7 +61,8 @@ const listTopSellersUncached = async (
       ${transfersWhereClause(input)}
       GROUP BY t.recipient
       ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.raw('DESC') : Prisma.raw('ASC')}
-      ${paginationClause(pagination)}`,
+      LIMIT ${pagination.page_size}
+      OFFSET ${pagination.page * pagination.page_size}`,
       z.array(
         z.object({
           recipient: mixedAddressSchema,

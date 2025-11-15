@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@x402scan/transfers-db';
 
 import { baseBucketedQuerySchema } from '../schemas';
 import { transfersWhereClause } from '../query-utils';
@@ -77,8 +77,6 @@ const getBucketedStatisticsUncached = async (
   `;
 
   const rawResult = await queryRaw(sql, bucketedResultSchema);
-
-  console.log('bucketed statistics rawResult', rawResult);
 
   const transformedResult = rawResult.map(row => ({
     ...row,

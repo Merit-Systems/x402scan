@@ -1,13 +1,13 @@
 import z from 'zod';
 
+import { scanDb, Prisma } from '@x402scan/scan-db';
+
 import { queryRaw } from '../query';
 
-import { Prisma } from '@prisma/client';
-import { prisma } from '../client';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 
 export const getAgentConfigurationDetails = async (id: string) => {
-  const agentConfiguration = await prisma.agentConfiguration.findUnique({
+  const agentConfiguration = await scanDb.agentConfiguration.findUnique({
     where: { id },
     select: {
       name: true,

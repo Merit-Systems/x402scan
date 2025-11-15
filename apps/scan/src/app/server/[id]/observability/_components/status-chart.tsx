@@ -4,16 +4,9 @@ import { BaseChart } from '@/components/ui/charts/chart/chart';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { Area } from 'recharts';
 import { LoadingChart } from './loading-chart';
-import { useObservabilityData } from './use-observability-data';
+import { useObservabilityDataParams } from './use-observability-data';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-
-interface StatusCodeData {
-  ts: string;
-  r_2xx: string;
-  r_3xx: string;
-  r_4xx: string;
-  r_5xx: string;
-}
+import { api } from '@/trpc/client';
 
 interface Props {
   originUrl: string;
@@ -21,10 +14,11 @@ interface Props {
 }
 
 export const StatusChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
-  const { data, isLoading } = useObservabilityData<StatusCodeData>({
-    endpoint: '/api/observability/status-codes',
+  const params = useObservabilityDataParams();
+  const { data, isLoading } = api.public.observability.statusCodes.useQuery({
     originUrl,
     resourceUrl,
+    ...params,
   });
 
   if (isLoading) {
@@ -41,7 +35,7 @@ export const StatusChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
     );
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-8">
         No observability data available
@@ -52,16 +46,22 @@ export const StatusChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
   return <StatusChartInner data={data} />;
 };
 
-const StatusChartInner: React.FC<{ data: StatusCodeData[] }> = ({ data }) => {
-  // Transform the data to the format expected by the chart
+const StatusChartInner: React.FC<{
+  data: Array<{
+    ts: string;
+    r_2xx: string;
+    r_3xx: string;
+    r_4xx: string;
+    r_5xx: string;
+  }>;
+}> = ({ data }) => {
   const chartData: ChartData<{
     success: number;
     redirect: number;
     clientError: number;
     serverError: number;
   }>[] = data.map(item => {
-    const date = new Date(item.ts);
-    // Format as "Nov 5, 2:40 AM"
+    const date = new Date(item.ts + 'Z');
     const formatted = date.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
