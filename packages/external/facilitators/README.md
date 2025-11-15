@@ -136,7 +136,7 @@ import {
   heurist,
   treasure,
   anyspend,
-  ainalyst
+  ainalyst,
 } from 'facilitators';
 
 // Facilitators requiring setup
