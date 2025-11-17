@@ -136,6 +136,7 @@ import {
   heurist,
   treasure,
   anyspend,
+  x402x,
 } from 'facilitators';
 
 // Facilitators requiring setup
