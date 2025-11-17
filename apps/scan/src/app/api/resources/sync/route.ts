@@ -14,7 +14,7 @@ import type { NextRequest } from 'next/server';
 import {
   discoverableFacilitators,
   listAllFacilitatorResources,
-} from '../../../../../../../packages/external/facilitators/dist';
+} from 'facilitators';
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);
