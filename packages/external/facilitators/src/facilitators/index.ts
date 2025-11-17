@@ -19,3 +19,4 @@ export { heurist, heuristFacilitator } from './heurist';
 export { treasure, treasureFacilitator } from './treasure';
 export { anyspend, anyspendFacilitator } from './anyspend';
 export { meridian, meridianFacilitator } from './meridian';
+export { x402x, x402xFacilitator } from './x402x';
