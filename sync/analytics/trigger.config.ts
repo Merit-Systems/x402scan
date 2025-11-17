@@ -23,8 +23,8 @@ export default defineConfig({
   build: {
     extensions: [
       prismaExtension({
-        schema: '../../apps/scan/prisma/schema.prisma',
-        version: '6.17.1',
+        schema: '../../packages/internal/databases/scan/prisma/schema.prisma',
+        version: '6.19.0',
       }),
     ],
   },

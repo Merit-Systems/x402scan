@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/typescript-config/trigger.json",
+  "extends": "@x402scan/typescript-config/trigger.json",
   "compilerOptions": {
     "rootDir": ".",
     "paths": {

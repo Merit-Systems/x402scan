@@ -1,13 +1,8 @@
 import { logger, schedules } from '@trigger.dev/sdk';
 import type { SyncConfig } from './types';
-import { createClient } from '@clickhouse/client';
+import { analyticsDb } from '@x402scan/analytics-db';
 
 export function createAnalyticsSyncTask(config: SyncConfig) {
-  const clickhouse = createClient({
-    url: process.env.CLICKHOUSE_URL,
-    username: process.env.CLICKHOUSE_USER,
-    password: process.env.CLICKHOUSE_PASSWORD,
-  });
   return schedules.task({
     id: 'sync-' + config.name,
     cron: config.cron,
@@ -16,7 +11,7 @@ export function createAnalyticsSyncTask(config: SyncConfig) {
     run: async () => {
       try {
         logger.log('Fetching data for ' + config.name);
-        const resultSet = await clickhouse.query({
+        const resultSet = await analyticsDb.query({
           query: config.query,
           format: 'JSONEachRow',
         });

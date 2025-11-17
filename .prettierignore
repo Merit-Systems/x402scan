@@ -30,3 +30,9 @@ coverage/
 # Turbo
 .turbo/
 **/.turbo/**
+
+# Environment files
+.env
+.env.*
+**/.env
+**/.env.*

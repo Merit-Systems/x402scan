@@ -7,28 +7,24 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "docker:build": "docker build -t x402-proxy .",
-    "docker:run": "docker run -p 6969:6969 --env-file .env x402-proxy",
-    "check-format": "prettier --check .",
-    "format": "prettier --write .",
-    "check-types": "tsc --noEmit",
-    "knip": "knip",
+    "check:types": "tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "knip": "pnpm -w knip --workspace ./apps/proxy",
+    "format": "pnpm -w format-dir ./apps/proxy",
+    "check:format": "pnpm -w check:format-dir ./apps/proxy"
   },
   "dependencies": {
-    "@clickhouse/client": "^1.7.0",
     "@hono/node-server": "^1.13.7",
+    "@x402scan/analytics-db": "workspace:*",
     "dotenv": "^16.4.5",
     "hono": "^4.6.14"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "@types/node": "^20",
     "eslint": "^9.39.1",
-    "knip": "^5.66.2",
-    "prettier": "^3.6.2",
     "tsx": "^4.7.0",
     "typescript": "^5.6.3"
   }
