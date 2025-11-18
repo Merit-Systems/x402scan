@@ -8,6 +8,10 @@ import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import { useSvmSend } from '@/app/_hooks/send/use-svm-send';
 
+import { api } from '@/trpc/client';
+
+import { Chain } from '@/types/chain';
+
 import type { UiWalletAccount } from '@wallet-standard/react';
 import type { SolanaAddress } from '@/types/address';
 
@@ -44,11 +48,16 @@ const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
   amount,
   onSuccess,
 }) => {
+  const { data: serverWalletAddress, isLoading: isServerWalletAddressLoading } =
+    api.user.serverWallet.address.useQuery({
+      chain: Chain.SOLANA,
+    });
+
   const { handleSubmit, isPending, isInvalid, statusText, isSent } = useSvmSend(
     {
       account,
       amount: amount,
-      address: 'server-wallet' as SolanaAddress,
+      address: serverWalletAddress as SolanaAddress | undefined,
       onSuccess,
     }
   );
@@ -56,7 +65,12 @@ const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
   return (
     <Button
       variant="turbo"
-      disabled={isInvalid || isPending}
+      disabled={
+        isInvalid ||
+        isPending ||
+        isServerWalletAddressLoading ||
+        !serverWalletAddress
+      }
       onClick={handleSubmit}
     >
       {isPending ? (
