@@ -1,5 +1,5 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@x402scan/transfers-db';
 
 import { baseQuerySchema } from '../../schemas';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';

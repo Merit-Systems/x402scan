@@ -31,12 +31,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma client
-        working-directory: ./sync/transfers
-        run: pnpm db:generate
-
       - name: Deploy to Trigger.dev
-        working-directory: ./sync/transfers
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
-        run: pnpm trigger:deploy
+        run: pnpm trigger:deploy:transfers

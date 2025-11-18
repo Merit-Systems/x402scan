@@ -1,9 +1,8 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@x402scan/transfers-db';
 
 import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 
 import type z from 'zod';
-import type { Prisma as TransfersPrisma } from '.prisma/client-transfers';
 import type { baseQuerySchema } from './schemas';
 
 export const transfersWhereClause = (
@@ -43,7 +42,7 @@ export const transfersWhereClause = (
 
 export const transfersWhereObject = (
   input: z.infer<typeof baseQuerySchema>
-): TransfersPrisma.TransferEventWhereInput => {
+): Prisma.TransferEventWhereInput => {
   const { chain, timeframe, senders, recipients, facilitatorIds } = input;
 
   const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);

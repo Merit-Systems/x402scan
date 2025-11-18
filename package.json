@@ -1,24 +1,31 @@
 {
-  "name": "x402scan",
+  "name": "x402scan-monorepo",
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "scripts": {
+    "dev:scan": "turbo run dev --filter=x402scan",
+    "build:scan": "turbo run build --filter=x402scan",
+    "build:proxy": "turbo run build --filter=x402proxy",
+    "build": "turbo run build",
     "lint": "turbo run lint",
-    "check-types": "turbo run check-types",
-    "check-format": "turbo run check-format",
-    "knip": "turbo run knip",
-    "format": "prettier --write .",
-    "check": "turbo run check-format check-types knip lint"
+    "knip": "knip",
+    "format-dir": "prettier --write",
+    "format": "pnpm format-dir .",
+    "check:format-dir": "prettier --check",
+    "check:format": "pnpm check:format-dir .",
+    "check:types": "turbo run check:types",
+    "check:knip": "turbo run knip",
+    "check": "turbo run check:format check:types lint knip",
+    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=sync-analytics",
+    "trigger:deploy:transfers": "turbo run trigger:deploy --filter=sync-transfers",
+    "trigger:deploy:alerts": "turbo run trigger:deploy --filter=sync-alerts"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.46.2",
-    "@typescript-eslint/parser": "^8.46.2",
-    "eslint-config-turbo": "^2.5.8",
+    "knip": "^5.69.0",
     "prettier": "^3.6.2",
     "turbo": "^2.5.1",
-    "typescript": "^5",
-    "typescript-eslint": "^8.46.2"
+    "typescript": "^5"
   },
   "pnpm": {
     "overrides": {

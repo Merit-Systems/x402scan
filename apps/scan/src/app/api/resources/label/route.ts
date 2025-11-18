@@ -1,11 +1,16 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import { checkCronSecret } from '@/lib/cron';
-import { labelingPass } from '@/services/labeling/initial-label';
-import { iterateResourcesBatched } from '@/services/labeling/helpers';
-import type { Prisma } from '@prisma/client';
-import { prisma } from '@/services/db/client';
 import { z } from 'zod';
 import { v4 } from 'uuid';
+
+import { scanDb } from '@x402scan/scan-db';
+
+import { NextResponse, type NextRequest } from 'next/server';
+
+import { labelingPass } from '@/services/labeling/initial-label';
+import { iterateResourcesBatched } from '@/services/labeling/helpers';
+
+import { checkCronSecret } from '@/lib/cron';
+
+import type { Prisma } from '@x402scan/scan-db';
 
 const resourceLabelingPayloadSchema = z.object({
   resourceIds: z.array(z.string()).optional(),
@@ -47,7 +52,7 @@ export const GET = async (request: NextRequest) => {
   let totalFailed = 0;
 
   // Fetch all resource IDs upfront to avoid dynamic filter issues
-  const resourcesToProcess = await prisma.resources.findMany({
+  const resourcesToProcess = await scanDb.resources.findMany({
     where,
     select: { id: true },
   });

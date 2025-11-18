@@ -1,39 +1,39 @@
-import { config } from "dotenv";
-import { Hono } from "hono";
-import { serve } from "@hono/node-server";
-import { paymentMiddleware, type SolanaAddress } from "x402-hono";
-import { daydreams } from "facilitators";
+import { config } from 'dotenv';
+import { Hono } from 'hono';
+import { serve } from '@hono/node-server';
+import { paymentMiddleware, type SolanaAddress } from 'x402-hono';
+import { daydreams } from 'facilitators';
 
 config();
 
 const payTo = process.env.ADDRESS as `0x${string}` | SolanaAddress;
 
 if (!payTo) {
-  console.error("Missing required environment variables");
+  console.error('Missing required environment variables');
   process.exit(1);
 }
 
 const app = new Hono();
 
-console.log("Server is running");
+console.log('Server is running');
 
 app.use(
   paymentMiddleware(
     payTo,
     {
-      "/weather": {
-        price: "$0.001",
-        network: "base-sepolia",
+      '/weather': {
+        price: '$0.001',
+        network: 'base-sepolia',
       },
     },
-    daydreams,
-  ),
+    daydreams
+  )
 );
 
-app.get("/weather", c => {
+app.get('/weather', c => {
   return c.json({
     report: {
-      weather: "sunny",
+      weather: 'sunny',
       temperature: 70,
     },
   });

@@ -69,3 +69,6 @@ Thumbs.db
 
 .pnpm-store
 
+
+# Turborepo
+.turbo
