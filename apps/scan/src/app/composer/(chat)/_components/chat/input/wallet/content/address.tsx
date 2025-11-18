@@ -1,8 +1,8 @@
 import { CopyCode } from '@/components/ui/copy-code';
 
-import { api } from '@/trpc/client';
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 
-import { Chain as ChainType } from '@/types/chain';
+import { api } from '@/trpc/client';
 
 import type { SupportedChain } from '@/types/chain';
 
@@ -20,9 +20,11 @@ export const ServerWalletAddress: React.FC<Props> = () => {
 };
 
 export const ComposerWalletAddressCopyCode: React.FC = () => {
+  const { chain } = useWalletChain();
+
   const { data: address, isLoading: isLoadingAddress } =
     api.user.serverWallet.address.useQuery({
-      chain: ChainType.BASE,
+      chain,
     });
 
   return (
