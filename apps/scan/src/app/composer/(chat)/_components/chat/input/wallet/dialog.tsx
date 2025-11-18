@@ -169,21 +169,6 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
               <WalletExport />
             </TabsContent>
           </Tabs>
-          <div className="border-t bg-muted p-4">
-            <p className="text-xs text-muted-foreground font-mono text-center">
-              Composer currently only supports Base. Multi-network support is in
-              progress{' '}
-              <a
-                href="https://github.com/Merit-Systems/x402scan/pull/320"
-                target="_blank"
-                className="text-primary underline"
-                rel="noreferrer"
-              >
-                here
-              </a>
-              .
-            </p>
-          </div>
         </DialogContent>
       </Dialog>
     </WalletChainProvider>

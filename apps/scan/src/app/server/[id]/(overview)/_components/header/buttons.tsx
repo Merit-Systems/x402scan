@@ -40,16 +40,12 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
     router.push(`/composer/chat`);
   };
 
-  const NoBaseResourcesTooltip = ({
-    children,
-  }: {
-    children: React.ReactNode;
-  }) => {
+  const NoResourcesTooltip = ({ children }: { children: React.ReactNode }) => {
     return (
       <Tooltip>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent>
-          <p>Composer currently only supports Base</p>
+          <p>No resources for this server are compatible with Composer</p>
         </TooltipContent>
       </Tooltip>
     );
@@ -89,12 +85,12 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
     return (
       <ButtonsContainer>
         {resources.length === 0 ? (
-          <NoBaseResourcesTooltip>{tryInChatButton}</NoBaseResourcesTooltip>
+          <NoResourcesTooltip>{tryInChatButton}</NoResourcesTooltip>
         ) : (
           tryInChatButton
         )}
         {resources.length === 0 ? (
-          <NoBaseResourcesTooltip>{createAgentButton}</NoBaseResourcesTooltip>
+          <NoResourcesTooltip>{createAgentButton}</NoResourcesTooltip>
         ) : (
           <Link
             href={{
