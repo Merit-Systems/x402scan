@@ -4,7 +4,6 @@ import { Bot } from 'lucide-react';
 
 import { useSession } from 'next-auth/react';
 
-import { Loading } from '@/components/ui/loading';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { PromptInputButton } from '@/components/ai-elements/prompt-input';
@@ -12,7 +11,6 @@ import { PromptInputButton } from '@/components/ai-elements/prompt-input';
 import { WalletDialog } from './dialog';
 
 import { api } from '@/trpc/client';
-import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
 
 export const WalletButton = () => {
@@ -37,41 +35,16 @@ export const WalletButton = () => {
 
   return (
     <WalletChainProvider>
-      <AcknowledgedWalletButton isLoggedIn={!!session} />
+      <AcknowledgedWalletButton />
     </WalletChainProvider>
   );
 };
 
-const AcknowledgedWalletButton = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
-  const { chain } = useWalletChain();
-
-  const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.user.serverWallet.tokenBalance.useQuery(
-      {
-        chain,
-      },
-      {
-        enabled: isLoggedIn,
-      }
-    );
-
+const AcknowledgedWalletButton = () => {
   return (
     <WalletDialog>
-      <WalletButtonComponent
-        className={
-          usdcBalance !== undefined && usdcBalance < 0.1
-            ? 'text-primary bg-primary/10 border-primary'
-            : ''
-        }
-      >
-        <Loading
-          isLoading={isLoadingUsdcBalance}
-          value={usdcBalance}
-          component={balance =>
-            balance < 0.1 ? 'Add Funds' : `${balance?.toPrecision(3)} USDC`
-          }
-          loadingComponent={<LoadingWalletButtonContent />}
-        />
+      <WalletButtonComponent>
+        <span>Wallet</span>
       </WalletButtonComponent>
     </WalletDialog>
   );

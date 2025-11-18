@@ -30,13 +30,13 @@ export const WalletDisplay: React.FC = () => {
       <ItemContainer
         label="Balance"
         value={
-          isLoadingUsdcBalance ? (
-            <Skeleton className="h-4 w-16" />
-          ) : (
-            <p className="bg-muted rounded-md border p-2">
-              {usdcBalance?.toPrecision(3)} USDC
-            </p>
-          )
+          <div className="bg-muted rounded-md border p-2">
+            {isLoadingUsdcBalance ? (
+              <Skeleton className="h-4 w-16" />
+            ) : (
+              <p>{usdcBalance?.toPrecision(3)} USDC</p>
+            )}
+          </div>
         }
       />
       <ItemContainer

@@ -22,7 +22,7 @@ interface JinaRerankerResponse {
 function buildResourceText(resource: EnrichedSearchResult): string {
   const parts = [
     resource.origin.title ?? resource.origin.origin,
-    resource.accepts[0]?.description ?? '',
+    resource.accepts?.find(accept => accept.description)?.description ?? '',
     resource.origin.description ?? '',
     resource.tags.map(t => t.name).join(', '),
     resource.analytics?.sampleResponseBody

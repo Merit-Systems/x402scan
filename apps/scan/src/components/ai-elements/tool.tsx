@@ -17,6 +17,10 @@ import { Favicon } from '../../app/_components/favicon';
 import { Loading } from '../ui/loading';
 import { formatTokenAmount } from '@/lib/token';
 
+import { Chain, Chains } from '@/app/_components/chains';
+
+import type { Chain as ChainType } from '@/types/chain';
+
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
 type JsonObject = { [key: string]: JsonValue };
 type JsonArray = JsonValue[];
@@ -69,15 +73,13 @@ const ToolHeader = ({
                 <span className="font-semibold text-xs md:text-sm font-mono text-left truncate">
                   {resource.resource}
                 </span>
-                <span className="text-xs md:text-sm font-semibold text-primary font-mono">
-                  {formatTokenAmount(resource.accepts[0]!.maxAmountRequired)}
-                </span>
+                <ToolAccepts accepts={resource.accepts} />
                 {state === 'output-available' ? (
-                  <Check className="size-3 text-green-600" />
+                  <Check className="size-3 shrink-0 text-green-600" />
                 ) : state === 'output-error' ? (
-                  <X className="size-3 text-red-600" />
+                  <X className="size-3 shrink-0 text-red-600" />
                 ) : (
-                  <Loader2 className="size-3 animate-spin" />
+                  <Loader2 className="size-3 shrink-0 animate-spin" />
                 )}
               </div>
             )}
@@ -89,7 +91,10 @@ const ToolHeader = ({
             isLoading={isResourceLoading ?? state === 'input-streaming'}
             component={resource => (
               <span className="text-[10px] md:text-xs text-muted-foreground text-left">
-                {resource.accepts[0]!.description}
+                {
+                  resource.accepts.find(accept => accept.description)
+                    ?.description
+                }
               </span>
             )}
             loadingComponent={<Skeleton className="h-[12px] my-[2px] w-32" />}
@@ -184,6 +189,50 @@ const ToolOutput = ({
           <Code value={JSON.stringify(raw, null, 2)} lang="json" />
         )}
       </div>
+    </div>
+  );
+};
+
+const ToolAccepts = ({
+  accepts,
+}: {
+  accepts: RouterOutputs['public']['resources']['get']['accepts'];
+}) => {
+  const allSameAmount = accepts.every(
+    accept => accept.maxAmountRequired === accepts[0]!.maxAmountRequired
+  );
+
+  const ToolAmount = ({ amount }: { amount: bigint }) => {
+    return (
+      <span className="text-xs md:text-sm font-semibold text-primary font-mono">
+        {formatTokenAmount(amount)}
+      </span>
+    );
+  };
+
+  if (allSameAmount) {
+    return (
+      <div className="flex items-center gap-1 shrink-0">
+        <Chains
+          chains={accepts.map(accept => accept.network as ChainType)}
+          iconClassName="size-3"
+        />
+        <ToolAmount amount={accepts[0]!.maxAmountRequired} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1 shrink-0">
+      {accepts.map(accept => (
+        <div
+          key={accept.network}
+          className="flex items-center gap-0.5 shrink-0"
+        >
+          <Chain chain={accept.network as ChainType} iconClassName="size-3" />
+          <ToolAmount amount={accept.maxAmountRequired} />
+        </div>
+      ))}
     </div>
   );
 };

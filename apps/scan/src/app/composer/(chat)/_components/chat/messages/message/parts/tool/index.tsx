@@ -37,7 +37,7 @@ export const ToolPart: React.FC<Props> = ({ part }) => {
     : undefined;
 
   return (
-    <Tool>
+    <Tool defaultOpen={part.errorText ? true : undefined} key={part.state}>
       <ToolHeader
         state={part.state}
         isResourceLoading={isResourceLoading}
@@ -54,7 +54,7 @@ export const ToolPart: React.FC<Props> = ({ part }) => {
           </div>
         ) : (
           <>
-            <ToolInput input={part.input} />
+            {!part.errorText && <ToolInput input={part.input} />}
             <ToolOutput
               output={JSON.stringify(part.output)}
               errorText={part.errorText}

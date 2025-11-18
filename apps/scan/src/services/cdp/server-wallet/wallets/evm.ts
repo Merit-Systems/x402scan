@@ -54,7 +54,6 @@ export const evmServerWallet =
           network: chain,
           transaction: {
             to: token.address as Address,
-            value: 0n,
             data: encodeFunctionData({
               abi: erc20Abi,
               functionName: 'transfer',

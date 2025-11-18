@@ -52,7 +52,7 @@ export const PromptInputSection: React.FC<Props> = ({
           setInput(e.target.value)
         }
         value={input}
-        placeholder={session ? 'Sign in to use the composer' : undefined}
+        placeholder={!session ? 'Sign in to use the composer' : undefined}
       />
       <PromptInputToolbar>
         <PromptInputTools>

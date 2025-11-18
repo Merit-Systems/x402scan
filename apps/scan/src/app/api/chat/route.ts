@@ -20,7 +20,7 @@ import { auth } from '@/auth';
 
 import { createX402AITools } from '@/services/agent/create-tools';
 
-import { ChatSDKError } from '@/lib/errors';
+import { ChatError } from '@/lib/errors';
 import { messageSchema } from '@/lib/message-schema';
 
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
@@ -50,14 +50,14 @@ export async function POST(request: NextRequest) {
   const session = await auth();
 
   if (!session) {
-    return new ChatSDKError('unauthorized:chat').toResponse();
+    return new ChatError('unauthorized:auth').toResponse();
   }
 
   const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
     console.error('Bad request:', requestBody.error);
-    return new ChatSDKError('bad_request:chat').toResponse();
+    return new ChatError('bad_request:chat').toResponse();
   }
 
   const { model, resourceIds, message, chatId, agentConfigurationId } =
@@ -210,13 +210,13 @@ export async function POST(request: NextRequest) {
     onError: error => {
       if (error instanceof APICallError) {
         if (error.statusCode === 402) {
-          return new ChatSDKError('payment_required:chat').message;
+          return new ChatError('payment_required:chat').message;
         }
       }
-      if (error instanceof ChatSDKError) {
+      if (error instanceof ChatError) {
         return error.message;
       }
-      return new ChatSDKError('bad_request:chat').message;
+      return new ChatError('bad_request:chat').message;
     },
     async consumeSseStream({ stream }) {
       const streamId = generateId();
@@ -265,6 +265,6 @@ async function generateTitleFromUserMessage({
     return title;
   } catch {
     console.error('Error generating title:');
-    throw new ChatSDKError('server:chat');
+    throw new ChatError('server:chat');
   }
 }

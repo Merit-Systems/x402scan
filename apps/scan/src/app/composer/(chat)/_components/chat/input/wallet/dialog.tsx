@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { AlertCircle, ArrowDown, ArrowUp, Key, Wallet } from 'lucide-react';
-
-import { useSearchParams } from 'next/navigation';
 
 import {
   Dialog,
@@ -39,7 +37,6 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
 
   const { chain } = useWalletChain();
 
-  const searchParams = useSearchParams();
   const { data: usdcBalance } = api.user.serverWallet.tokenBalance.useQuery(
     {
       chain,
@@ -62,15 +59,6 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
   const [tab, setTab] = useState<'wallet' | 'deposit' | 'send'>('wallet');
 
   const isOutOfFunds = usdcBalance !== undefined && usdcBalance <= 0.01;
-
-  useEffect(() => {
-    const showDeposit =
-      isOutOfFunds && !searchParams.get('server_wallet_onramp_token');
-    if (showDeposit && hasUserAcknowledgedComposer) {
-      setIsOpen(true);
-      setTab('deposit');
-    }
-  }, [searchParams, isOutOfFunds, hasUserAcknowledgedComposer]);
 
   if (isLoadingHasUserAcknowledgedComposer) {
     return children;
