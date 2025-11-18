@@ -30,6 +30,6 @@
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "^9.39.1",
     "typescript": "5.5.4",
-    "@types/x402": "^0.7.1"
+    "x402": "^0.7.1"
   }
 }
