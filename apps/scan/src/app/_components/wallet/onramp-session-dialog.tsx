@@ -30,15 +30,22 @@ import { SessionStatus, type OnrampSession } from '@x402scan/scan-db';
 
 import { api } from '@/trpc/client';
 import { usdc } from '@/lib/tokens/usdc';
+
 import { Chain } from '@/types/chain';
+import { optionalSupportedChainSchema } from '@/lib/schemas';
 
 export const OnrampSessionDialog: React.FC = () => {
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
 
+  const searchParams = useSearchParams();
+
+  const networkParam =
+    optionalSupportedChainSchema.parse(searchParams.get('network')) ??
+    Chain.BASE;
+
   const { invalidate: invalidateEvmBalance } = useEvmTokenBalance({
-    // TODO: make this dynamic
-    token: usdc(Chain.BASE),
+    token: usdc(networkParam),
     query: {
       enabled: false,
     },
@@ -46,8 +53,6 @@ export const OnrampSessionDialog: React.FC = () => {
   const { invalidate: invalidateSolanaBalance } = useSPLTokenBalance({
     enabled: false,
   });
-
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (searchParams.get('onramp_token')) {
@@ -83,13 +88,16 @@ export const OnrampSessionDialog: React.FC = () => {
       if (session.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS) {
         for (let i = 0; i < 3; i++) {
           setTimeout(() => {
-            void invalidateEvmBalance();
-            void invalidateSolanaBalance();
+            if (networkParam === Chain.SOLANA) {
+              void invalidateSolanaBalance();
+            } else {
+              void invalidateEvmBalance();
+            }
           }, i * 1000);
         }
       }
     }
-  }, [session, invalidateEvmBalance, invalidateSolanaBalance]);
+  }, [session, invalidateEvmBalance, invalidateSolanaBalance, networkParam]);
 
   const handleOnOpenChange = (open: boolean) => {
     setIsSessionDialogOpen(open);

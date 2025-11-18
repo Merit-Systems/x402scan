@@ -24,7 +24,7 @@ import { SessionStatus, type OnrampSession } from '@x402scan/scan-db';
 import { api } from '@/trpc/client';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import { Chain } from '@/types/chain';
+import { optionalSupportedChainSchema } from '@/lib/schemas';
 
 export const OnrampSessionDialog: React.FC = () => {
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
@@ -33,6 +33,10 @@ export const OnrampSessionDialog: React.FC = () => {
   const utils = api.useUtils();
 
   const searchParams = useSearchParams();
+
+  const networkParam = optionalSupportedChainSchema.parse(
+    searchParams.get('network')
+  );
 
   useEffect(() => {
     if (searchParams.get('server_wallet_onramp_token')) {
@@ -73,7 +77,7 @@ export const OnrampSessionDialog: React.FC = () => {
         for (let i = 0; i < 5; i++) {
           setTimeout(() => {
             void utils.user.serverWallet.tokenBalance.invalidate({
-              chain: Chain.BASE,
+              chain: networkParam,
             });
           }, i * 1000);
         }
@@ -85,7 +89,7 @@ export const OnrampSessionDialog: React.FC = () => {
         }
       }
     }
-  }, [session, utils]);
+  }, [session, utils, networkParam]);
 
   const handleOnOpenChange = (open: boolean) => {
     setIsSessionDialogOpen(open);
