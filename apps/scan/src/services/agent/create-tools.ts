@@ -139,6 +139,8 @@ export async function createX402AITools({
               );
             }
 
+            console.log('getting usdc balances');
+
             const usdcBalances = await Promise.all(
               supportedAccepts.map(async accept => ({
                 network: accept.network as SupportedChain,
@@ -154,11 +156,10 @@ export async function createX402AITools({
                 .sort((a, b) => b.balance - a.balance)
             );
 
+            console.log('usdc balances:', usdcBalances);
+
             if (usdcBalances.length === 0) {
-              throw new ChatError(
-                'payment_required:tool',
-                `You do not have USDC in your composer wallet for the networks supported by this tool.`
-              );
+              throw new ChatError('payment_required:tool');
             }
 
             const fetchWithPayment = wrapFetchWithPayment(

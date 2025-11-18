@@ -68,6 +68,10 @@ export const Onramp: React.FC<Props> = ({ chain }) => {
           'Buy on Coinbase'
         )}
       </Button>
+      <p className="text-xs text-muted-foreground text-center font-mono mt-2">
+        This will take you to a Coinbase checkout page to buy{' '}
+        {usdc(chain).symbol}
+      </p>
     </div>
   );
 };

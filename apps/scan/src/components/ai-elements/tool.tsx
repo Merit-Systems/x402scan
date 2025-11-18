@@ -140,13 +140,11 @@ const ToolInput = ({
 const ToolOutput = ({
   className,
   output,
-  errorText,
   ...props
 }: ComponentProps<'div'> & {
   output: ReactNode;
-  errorText: ToolUIPart['errorText'];
 }) => {
-  if (!(output || errorText)) {
+  if (!output) {
     return null;
   }
 
@@ -173,17 +171,14 @@ const ToolOutput = ({
   return (
     <div className={cn('space-y-2 px-4', className)} {...props}>
       <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
-        {errorText ? 'Error' : 'Result'}
+        Result
       </h4>
       <div
         className={cn(
           'overflow-x-auto rounded-md text-xs [&_table]:w-full font-mono',
-          errorText
-            ? 'bg-destructive/10 text-destructive'
-            : 'bg-muted text-foreground'
+          'bg-muted text-foreground'
         )}
       >
-        {errorText && <div className="p-3">{errorText}</div>}
         {parsed && <JsonViewer data={parsed} defaultCollapsed={true} />}
         {!parsed && raw && (
           <Code value={JSON.stringify(raw, null, 2)} lang="json" />
