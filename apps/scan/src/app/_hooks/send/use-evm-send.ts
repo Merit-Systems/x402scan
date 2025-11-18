@@ -122,9 +122,9 @@ export const useEvmSend = (props?: Props) => {
       address: token.address as Address,
       abi: erc20Abi,
       functionName: 'transfer',
-      args: [parsedAddress, parseUnits(amount.toString(), 6)],
+      args: [parsedAddress, parseUnits(amount.toString(), token.decimals)],
     });
-  }, [toAddress, amount, writeContract, token.address]);
+  }, [toAddress, amount, writeContract, token]);
 
   const statusText = useMemo(() => {
     if (isEthBalanceLoading || isBalanceLoading) return 'Loading...';

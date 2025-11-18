@@ -129,8 +129,7 @@ export const Send: React.FC = () => {
         ethBalance === 0 && (
           <div className="flex flex-col gap-1  bg-yellow-600/10 p-2 rounded-md">
             <p className="text-yellow-600 text-xs">
-              Insufficient gas to pay for this transaction. Please add some ETH
-              to your wallet.
+              Insufficient gas to pay for this transaction.
             </p>
             <CopyCode
               code={serverWalletAddress ?? ''}
