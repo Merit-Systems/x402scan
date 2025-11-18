@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import { Loader2, SearchX } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
 import {
   Command,
   CommandEmpty,
@@ -10,13 +9,23 @@ import {
   CommandInput,
   CommandList,
 } from '@/components/ui/command';
-import { Skeleton } from '@/components/ui/skeleton';
+
+import { Chain } from '@/app/_components/chains';
+
+import { Filters } from './filters';
+
+import { SelectedResourceItem } from './item/selected';
+import { UnselectedResourceItem } from './item/unselected';
 
 import { api } from '@/trpc/client';
 
+import {
+  CHAIN_LABELS,
+  SUPPORTED_CHAINS,
+  type SupportedChain,
+} from '@/types/chain';
+
 import type { SelectedResource } from '../../_types/chat-config';
-import { SelectedResourceItem } from './item/selected';
-import { UnselectedResourceItem } from './item/unselected';
 
 interface Props {
   selectedResourceIds: string[];
@@ -34,11 +43,13 @@ export const ResourceList: React.FC<Props> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedChains, setSelectedChains] = useState<SupportedChain[]>([]);
 
   const { data: tools, isLoading } = api.public.tools.search.useQuery({
     search: searchQuery.trim().length > 0 ? searchQuery.trim() : undefined,
     limit: 100,
     tagIds: selectedTags.length > 0 ? selectedTags : undefined,
+    chains: selectedChains.length > 0 ? selectedChains : undefined,
   });
   const { data: tags, isLoading: isLoadingTags } =
     api.public.resources.tags.list.useQuery();
@@ -50,35 +61,41 @@ export const ResourceList: React.FC<Props> = ({
         value={searchQuery}
         onValueChange={setSearchQuery}
       />
-      <div className="my-2">
-        <div className="text-muted-foreground mb-1.5 px-2 text-xs font-medium">
-          Categories
-        </div>
-        <div className="no-scrollbar flex gap-1 overflow-x-auto px-2">
-          {isLoadingTags
-            ? Array.from({ length: 3 }).map((_, index) => (
-                <Skeleton key={index} className="w-12 h-[22px]" />
-              ))
-            : tags?.map(tag => (
-                <Badge
-                  key={tag.id}
-                  variant={
-                    selectedTags.includes(tag.id) ? 'default' : 'outline'
-                  }
-                  className="shrink-0 cursor-pointer gap-1 px-1.5 py-0.5"
-                  onClick={() =>
-                    setSelectedTags(prev =>
-                      prev.includes(tag.id)
-                        ? prev.filter(t => t !== tag.id)
-                        : [...prev, tag.id]
-                    )
-                  }
-                >
-                  {tag.name}
-                </Badge>
-              ))}
-        </div>
-      </div>
+      <Filters
+        title="Categories"
+        items={tags ?? []}
+        isLoading={isLoadingTags}
+        onClickItem={tag =>
+          setSelectedTags(tags =>
+            tags.includes(tag.id)
+              ? tags.filter(t => t !== tag.id)
+              : [...tags, tag.id]
+          )
+        }
+        isSelected={tag => selectedTags.includes(tag.id)}
+        itemKey={tag => tag.id}
+        itemComponent={tag => tag.name}
+      />
+      <Filters
+        title="Network"
+        items={[...SUPPORTED_CHAINS]}
+        isLoading={false}
+        onClickItem={chain =>
+          setSelectedChains(chains =>
+            chains.includes(chain)
+              ? chains.filter(c => c !== chain)
+              : [...chains, chain]
+          )
+        }
+        isSelected={chain => selectedChains.includes(chain)}
+        itemKey={chain => chain}
+        itemComponent={chain => (
+          <>
+            <Chain chain={chain} iconClassName="size-3" />
+            <span>{CHAIN_LABELS[chain]}</span>
+          </>
+        )}
+      />
       <CommandList
         style={{
           height: `${toolItemHeight * (numToolsToShow + 0.5)}px`,

@@ -1,4 +1,4 @@
-import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 import { cdpFetch } from '../lib/fetch';
 
 import { z } from 'zod';
@@ -34,9 +34,9 @@ const onrampTransactionSchema = z.object({
     'CRYPTO_WALLET',
     'UNSPECIFIED',
   ]),
-  tx_hash: ethereumHashSchema.nullable().optional(),
+  tx_hash: z.string().nullable().optional(),
   transaction_id: z.string().nullable().optional(),
-  wallet_address: ethereumAddressSchema,
+  wallet_address: mixedAddressSchema,
   contract_address: z.string().nullable().optional(),
   type: z.enum([
     'ONRAMP_TRANSACTION_TYPE_BUY_AND_SEND',
