@@ -20,7 +20,7 @@ import { Deposit } from '@/app/composer/(chat)/_components/chat/input/wallet/con
 
 import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
 
-import { convertTokenAmount } from '@/lib/token';
+import { formatCurrency } from '@/lib/utils';
 
 interface Props {
   resource: RouterOutputs['public']['resources']['get'];
@@ -66,7 +66,7 @@ const AddFundsButton = ({
             <DialogDescription>
               Add at least{' '}
               <span className="font-bold">
-                {convertTokenAmount(accepts.maxAmountRequired)} USDC
+                {formatCurrency(accepts.maxAmountRequired)}
               </span>{' '}
               to your wallet to call this tool.
             </DialogDescription>

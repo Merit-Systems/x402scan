@@ -8,14 +8,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 import { JsonViewer } from './json-viewer';
 import { Code } from '../ui/code';
 import type { RouterOutputs } from '@/trpc/client';
 import { Skeleton } from '../ui/skeleton';
 import { Favicon } from '../../app/_components/favicon';
 import { Loading } from '../ui/loading';
-import { formatTokenAmount } from '@/lib/token';
 
 import { Chain, Chains } from '@/app/_components/chains';
 
@@ -197,10 +196,10 @@ const ToolAccepts = ({
     accept => accept.maxAmountRequired === accepts[0]!.maxAmountRequired
   );
 
-  const ToolAmount = ({ amount }: { amount: bigint }) => {
+  const ToolAmount = ({ amount }: { amount: number }) => {
     return (
       <span className="text-xs md:text-sm font-semibold text-primary font-mono">
-        {formatTokenAmount(amount)}
+        {formatCurrency(amount)}
       </span>
     );
   };

@@ -11,6 +11,8 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 import type { searchResourcesSchema } from '../db/resources/resource';
 import type { z } from 'zod';
 import type { SupportedChain } from '@/types/chain';
+import { convertTokenAmount } from '@/lib/token';
+import { usdc } from '@/lib/tokens/usdc';
 
 interface X402ToolResponse {
   id: string;
@@ -19,7 +21,7 @@ interface X402ToolResponse {
   description: string;
   invocations: number;
   accepts: {
-    maxAmountRequired: string;
+    maxAmountRequired: number;
     chain: SupportedChain;
   }[];
 }
@@ -61,7 +63,10 @@ export async function searchX402Tools(
             SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
           )
           .map(accept => ({
-            maxAmountRequired: accept.maxAmountRequired.toString(),
+            maxAmountRequired: convertTokenAmount(
+              BigInt(accept.maxAmountRequired),
+              usdc(accept.network as SupportedChain).decimals
+            ),
             chain: accept.network as SupportedChain,
           })),
       });

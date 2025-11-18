@@ -6,8 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Chains, Chain } from '@/app/_components/chains';
 import { Favicon } from '@/app/_components/favicon';
 
-import { cn } from '@/lib/utils';
-import { formatTokenAmount } from '@/lib/token';
+import { cn, formatCurrency } from '@/lib/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
 import type { SelectedResource } from '../../../_types/chat-config';
@@ -102,32 +101,33 @@ const ToolAccepts = ({
     accept => accept.maxAmountRequired === accepts[0]!.maxAmountRequired
   );
 
-  const ToolAmount = ({ amount }: { amount: bigint }) => {
+  const ToolAmount = ({ amount }: { amount: number }) => {
     return (
       <span className="text-xs font-semibold text-primary font-mono">
-        {formatTokenAmount(amount)}
+        {formatCurrency(amount)}
       </span>
     );
   };
 
   if (allSameAmount) {
     return (
-      <div className="flex items-center gap-1 shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
+        <ToolAmount amount={accepts[0]!.maxAmountRequired} />
         <Chains
-          chains={accepts.map(accept => accept.chain)}
+          chains={accepts.map(accept => accept.chain).sort()}
           iconClassName="size-3"
+          className="gap-0.5"
         />
-        <ToolAmount amount={BigInt(accepts[0]!.maxAmountRequired)} />
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-1 shrink-0">
+    <div className="flex items-center gap-2 shrink-0">
       {accepts.map(accept => (
         <div key={accept.chain} className="flex items-center gap-0.5 shrink-0">
+          <ToolAmount amount={accept.maxAmountRequired} />
           <Chain chain={accept.chain} iconClassName="size-3" />
-          <ToolAmount amount={BigInt(accept.maxAmountRequired)} />
         </div>
       ))}
     </div>

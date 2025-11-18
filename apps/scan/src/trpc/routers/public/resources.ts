@@ -30,7 +30,11 @@ import {
   listTagsSchema,
 } from '@/services/db/resources/tag';
 
+import { convertTokenAmount } from '@/lib/token';
+import { usdc } from '@/lib/tokens/usdc';
+
 import type { Prisma } from '@x402scan/scan-db';
+import type { SupportedChain } from '@/types/chain';
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
@@ -41,7 +45,16 @@ export const resourcesRouter = createTRPCRouter({
         message: 'Resource not found',
       });
     }
-    return resource;
+    return {
+      ...resource,
+      accepts: resource.accepts.map(accept => ({
+        ...accept,
+        maxAmountRequired: convertTokenAmount(
+          accept.maxAmountRequired,
+          usdc(accept.network as SupportedChain).decimals
+        ),
+      })),
+    };
   }),
   list: {
     all: publicProcedure.query(async () => {
