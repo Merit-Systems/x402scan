@@ -2,16 +2,15 @@ import { ConnectWalletForm } from '@/app/_components/wallet/connect/form';
 import { useSiwe } from '@/app/_hooks/sign-in/use-siwe';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { useAccount } from 'wagmi';
 import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
-import { Chain } from '@/types/chain';
+import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
 export const ConnectStep = () => {
-  const { address } = useAccount();
+  const { isConnected } = useConnectedWallets();
 
-  if (!address) {
+  if (!isConnected) {
     return (
-      <WalletChainProvider initialChain={Chain.BASE}>
+      <WalletChainProvider>
         <div className="p-4 flex flex-col gap-2">
           <ConnectWalletForm />
         </div>

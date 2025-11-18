@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { DefaultChatTransport } from 'ai';
 import { useChat as useAiChat } from '@ai-sdk/react';
 
-import { useSession } from 'next-auth/react';
-
 import { toast } from 'sonner';
 
 import { api } from '@/trpc/client';
@@ -19,7 +17,6 @@ import type { RouterOutputs } from '@/trpc/client';
 import type { ChatConfig, SelectedResource } from '../_types/chat-config';
 import type { LanguageModel } from '../_components/chat/input/model-select/types';
 import type { Message } from '@x402scan/scan-db';
-import { Chain } from '@/types/chain';
 
 interface Props {
   id: string;
@@ -36,18 +33,6 @@ export const useChat = ({
 }: Props) => {
   const utils = api.useUtils();
 
-  const { data: session } = useSession();
-
-  const { data: usdcBalance } = api.user.serverWallet.tokenBalance.useQuery(
-    {
-      chain: Chain.BASE,
-    },
-    {
-      enabled: !!session,
-    }
-  );
-  const hasBalance = (usdcBalance ?? 0) > 0;
-
   const { messages, sendMessage, status, regenerate, error } = useAiChat({
     messages: initialMessages ? convertToUIMessages(initialMessages) : [],
     resume: true,
@@ -63,11 +48,6 @@ export const useChat = ({
             : `/composer/chat/${id}`
         );
         void utils.user.chats.list.invalidate();
-        setTimeout(() => {
-          void utils.user.serverWallet.tokenBalance.invalidate({
-            chain: Chain.BASE,
-          });
-        }, 3000);
       }
     },
     transport: new DefaultChatTransport({
@@ -113,10 +93,6 @@ export const useChat = ({
     }
     if (errorMessage) {
       toast.error(errorMessage);
-      return;
-    }
-    if (!hasBalance) {
-      toast.error('Please fund your wallet to continue');
       return;
     }
     if (!text.trim()) {

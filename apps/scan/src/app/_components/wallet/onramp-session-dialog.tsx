@@ -29,12 +29,16 @@ import { cn, formatCurrency } from '@/lib/utils';
 import { SessionStatus, type OnrampSession } from '@x402scan/scan-db';
 
 import { api } from '@/trpc/client';
+import { usdc } from '@/lib/tokens/usdc';
+import { Chain } from '@/types/chain';
 
 export const OnrampSessionDialog: React.FC = () => {
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
 
   const { invalidate: invalidateEvmBalance } = useEvmTokenBalance({
+    // TODO: make this dynamic
+    token: usdc(Chain.BASE),
     query: {
       enabled: false,
     },

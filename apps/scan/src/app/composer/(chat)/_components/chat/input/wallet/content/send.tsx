@@ -8,11 +8,10 @@ import { Check, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { api } from '@/trpc/client';
 import { CopyCode } from '@/components/ui/copy-code';
-import { Chain } from '@/types/chain';
 import { usdc } from '@/lib/tokens/usdc';
 import { TokenInput } from '@/components/ui/token/token-input';
-import { BASE_USDC } from '@/lib/tokens/usdc';
 import { useSession } from 'next-auth/react';
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 
 export const Send: React.FC = () => {
   const [amount, setAmount] = useState(0);
@@ -20,11 +19,13 @@ export const Send: React.FC = () => {
 
   const { data: session } = useSession();
 
+  const { chain } = useWalletChain();
+
   const utils = api.useUtils();
   const { data: serverWalletAddress, isLoading: isServerWalletAddressLoading } =
     api.user.serverWallet.address.useQuery(
       {
-        chain: Chain.BASE,
+        chain,
       },
       {
         enabled: !!session,
@@ -33,7 +34,7 @@ export const Send: React.FC = () => {
   const { data: ethBalance, isLoading: isEthBalanceLoading } =
     api.user.serverWallet.nativeBalance.useQuery(
       {
-        chain: Chain.BASE,
+        chain,
       },
       {
         enabled: !!session,
@@ -41,7 +42,7 @@ export const Send: React.FC = () => {
     );
   const { data: balance } = api.user.serverWallet.tokenBalance.useQuery(
     {
-      chain: Chain.BASE,
+      chain,
     },
     {
       enabled: !!session,
@@ -65,8 +66,8 @@ export const Send: React.FC = () => {
       {
         amount,
         address: parsedAddress,
-        chain: Chain.BASE,
-        token: usdc(Chain.BASE),
+        chain,
+        token: usdc(chain),
       },
       {
         onSuccess: () => {
@@ -74,10 +75,10 @@ export const Send: React.FC = () => {
           for (let i = 0; i < 5; i++) {
             setTimeout(() => {
               void utils.user.serverWallet.nativeBalance.invalidate({
-                chain: Chain.BASE,
+                chain,
               });
               void utils.user.serverWallet.tokenBalance.invalidate({
-                chain: Chain.BASE,
+                chain,
               });
             }, i * 1000);
           }
@@ -86,7 +87,7 @@ export const Send: React.FC = () => {
         },
       }
     );
-  }, [address, amount, sendTokens, utils]);
+  }, [address, amount, sendTokens, utils, chain]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -103,7 +104,7 @@ export const Send: React.FC = () => {
       <TokenInput
         address={serverWalletAddress}
         onChange={setAmount}
-        selectedToken={BASE_USDC}
+        selectedToken={usdc(chain)}
         label="Amount"
         placeholder="0.00"
         inputClassName="placeholder:text-muted-foreground/60"

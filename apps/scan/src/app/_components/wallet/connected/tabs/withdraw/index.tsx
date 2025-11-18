@@ -49,23 +49,23 @@ export const Withdraw: React.FC = () => {
       <div className="flex flex-col gap-1">
         <span className="font-medium text-sm">Address</span>
         <Input
-          placeholder={chain === Chain.BASE ? '0x...' : 'Solana Address'}
+          placeholder={chain === Chain.SOLANA ? 'Solana Address' : '0x...'}
           value={toAddress}
           onChange={e => setToAddress(e.target.value)}
           className="border-2 shadow-none placeholder:text-muted-foreground/60 font-mono"
         />
       </div>
-      {chain === Chain.BASE ? (
-        <WithdrawEVM
-          amount={amount}
-          toAddress={toAddress}
-          setAmount={setAmount}
-        />
-      ) : (
+      {chain === Chain.SOLANA ? (
         <WithdrawSolana
           amount={amount}
           setAmount={setAmount}
           toAddress={toAddress}
+        />
+      ) : (
+        <WithdrawEVM
+          amount={amount}
+          toAddress={toAddress}
+          setAmount={setAmount}
         />
       )}
     </div>

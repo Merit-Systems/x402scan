@@ -2,8 +2,6 @@ import { Check, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
-import { BASE_USDC } from '@/lib/tokens/usdc';
-
 import { useEvmSend } from '@/app/_hooks/send/use-evm-send';
 
 interface Props {
@@ -21,7 +19,6 @@ export const WithdrawEVM: React.FC<Props> = ({ amount, toAddress }) => {
     statusText,
     isConfirmed,
   } = useEvmSend({
-    token: BASE_USDC,
     address: toAddress,
     amount,
   });

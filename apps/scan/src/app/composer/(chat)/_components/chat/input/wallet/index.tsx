@@ -3,7 +3,6 @@
 import { Bot } from 'lucide-react';
 
 import { useSession } from 'next-auth/react';
-import { Chain } from '@/types/chain';
 
 import { Loading } from '@/components/ui/loading';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -13,19 +12,11 @@ import { PromptInputButton } from '@/components/ai-elements/prompt-input';
 import { WalletDialog } from './dialog';
 
 import { api } from '@/trpc/client';
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
+import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
 
 export const WalletButton = () => {
   const { data: session } = useSession();
-
-  const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.user.serverWallet.tokenBalance.useQuery(
-      {
-        chain: Chain.BASE,
-      },
-      {
-        enabled: !!session,
-      }
-    );
 
   const {
     data: hasUserAcknowledgedComposer,
@@ -43,6 +34,26 @@ export const WalletButton = () => {
   if (!hasUserAcknowledgedComposer) {
     return <WalletButtonComponent disabled>Welcome</WalletButtonComponent>;
   }
+
+  return (
+    <WalletChainProvider>
+      <AcknowledgedWalletButton isLoggedIn={!!session} />
+    </WalletChainProvider>
+  );
+};
+
+const AcknowledgedWalletButton = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
+  const { chain } = useWalletChain();
+
+  const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
+    api.user.serverWallet.tokenBalance.useQuery(
+      {
+        chain,
+      },
+      {
+        enabled: isLoggedIn,
+      }
+    );
 
   return (
     <WalletDialog>

@@ -6,16 +6,19 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { ComposerWalletAddressCopyCode } from './address';
 
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
+
 import { api } from '@/trpc/client';
-import { Chain } from '@/types/chain';
 
 export const WalletDisplay: React.FC = () => {
   const { data: session } = useSession();
 
+  const { chain } = useWalletChain();
+
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
     api.user.serverWallet.tokenBalance.useQuery(
       {
-        chain: Chain.BASE,
+        chain,
       },
       {
         enabled: !!session,
