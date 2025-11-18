@@ -3,8 +3,8 @@
  * Provides seamless integration between neverthrow Results and Express responses
  */
 
-import { Request, Response } from 'express';
-import { Result, ResultAsync } from 'neverthrow';
+import type { Request, Response } from 'express';
+import type { Result, ResultAsync } from 'neverthrow';
 import {
   AppError,
   ValidationError,
@@ -15,15 +15,15 @@ import logger from '../logger';
 /**
  * Handles a Result and sends appropriate response for settle endpoint
  */
-export function handleSettleResult<T>(
+function handleSettleResult<T>(
   result: Result<T, AppError>,
   res: Response
 ): void {
   result.match(
-    (data) => {
+    data => {
       res.json(data);
     },
-    (error) => {
+    error => {
       logger.error('Settle request failed', {
         error: error.message,
         statusCode: error.statusCode,
@@ -72,15 +72,15 @@ export async function handleSettleResultAsync<T, E extends AppError>(
 /**
  * Handles a Result and sends appropriate response for verify endpoint
  */
-export function handleVerifyResult<T>(
+function handleVerifyResult<T>(
   result: Result<T, AppError>,
   res: Response
 ): void {
   result.match(
-    (data) => {
+    data => {
       res.json(data);
     },
-    (error) => {
+    error => {
       logger.error('Verify request failed', {
         error: error.message,
         statusCode: error.statusCode,
@@ -130,12 +130,7 @@ export async function handleVerifyResultAsync<T, E extends AppError>(
  * Generic error handler middleware for Express
  * Catches any unhandled AppErrors and sends appropriate response
  */
-export function errorHandler(
-  err: Error,
-  req: Request,
-  res: Response,
-  next: Function
-): void {
+export function errorHandler(err: Error, req: Request, res: Response): void {
   if (err instanceof AppError) {
     logger.error('Unhandled AppError', {
       error: err.message,

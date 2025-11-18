@@ -8,8 +8,8 @@
 export class AppError extends Error {
   constructor(
     message: string,
-    public readonly statusCode: number = 500,
-    public readonly isOperational: boolean = true
+    public readonly statusCode = 500,
+    public readonly isOperational = true
   ) {
     super(message);
     this.name = this.constructor.name;
@@ -21,7 +21,10 @@ export class AppError extends Error {
  * Validation error - thrown when request payload validation fails
  */
 export class ValidationError extends AppError {
-  constructor(message: string, public readonly details?: string) {
+  constructor(
+    message: string,
+    public readonly details?: string
+  ) {
     super(message, 400);
   }
 }

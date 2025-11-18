@@ -1,5 +1,5 @@
-import { IPolicy } from "cockatiel";
-import { FacilitatorConfig } from 'x402/types';
+import type { IPolicy } from 'cockatiel';
+import type { FacilitatorConfig } from 'x402/types';
 
 export enum FacilitatorMethod {
   VERIFY = 'verify',

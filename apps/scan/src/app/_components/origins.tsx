@@ -1,5 +1,7 @@
 import { Globe } from 'lucide-react';
 
+import Link from 'next/link';
+
 import {
   Tooltip,
   TooltipContent,
@@ -13,10 +15,9 @@ import { HealthDot } from '@/app/_components/health/dot';
 
 import { cn } from '@/lib/utils';
 
-import type { ResourceOrigin } from '@prisma/client';
+import type { ResourceOrigin } from '@x402scan/scan-db';
 import type { MixedAddress } from '@/types/address';
 import type { OriginHealthMetrics } from '@/app/_components/health/types';
-import Link from 'next/link';
 
 interface Props {
   addresses: MixedAddress[];
@@ -60,6 +61,7 @@ export const Origins: React.FC<Props> = ({
             )
           }
           healthMetrics={healthMetrics}
+          originId={origin!.id}
         />
       </Link>
     );
@@ -81,7 +83,9 @@ export const Origins: React.FC<Props> = ({
               {new URL(origins[0]!.origin).hostname}
             </span>
           </Link>
-          {healthMetrics && <HealthDot metrics={healthMetrics} />}
+          {healthMetrics && (
+            <HealthDot metrics={healthMetrics} originId={origins[0]!.id} />
+          )}
           <Tooltip>
             <TooltipTrigger className="cursor-pointer hover:bg-muted text-muted-foreground hover:text-foreground rounded-md transition-colors text-xs font-mono shrink-0">
               +{origins.length - 1} more
@@ -165,6 +169,7 @@ interface OriginsContainerProps {
   title: React.ReactNode;
   address: React.ReactNode;
   healthMetrics?: OriginHealthMetrics | null;
+  originId?: string;
 }
 
 const OriginsContainer = ({
@@ -172,6 +177,7 @@ const OriginsContainer = ({
   title,
   address,
   healthMetrics,
+  originId,
 }: OriginsContainerProps) => {
   return (
     <div className="flex items-center gap-2 w-full overflow-hidden">
@@ -179,7 +185,9 @@ const OriginsContainer = ({
       <div className="flex-1 overflow-hidden">
         <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full flex items-center gap-2">
           {title}
-          {healthMetrics && <HealthDot metrics={healthMetrics} />}
+          {healthMetrics && (
+            <HealthDot metrics={healthMetrics} originId={originId} />
+          )}
         </div>
         <div>{address}</div>
       </div>

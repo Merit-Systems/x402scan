@@ -3,35 +3,91 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "generated/**"],
+      "env": [
+        "ANALYTICS_CLICKHOUSE_*",
+        "POSTGRES_*",
+        "CDP_*",
+        "*_RPC_URL",
+        "TRANSFERS_DB_*",
+        "HIDE_TRPC_LOGS",
+        "GITHUB_TOKEN",
+        "CRON_SECRET",
+        "FREEPIK_API_KEY",
+        "BLOB_READ_WRITE_TOKEN",
+        "FREE_TIER_WALLET_NAME",
+        "REDIS_URL",
+        "LMNR_PROJECT_API_KEY",
+        "NODE_ENV",
+        "NEXT_RUNTIME",
+        "AUTH_SECRET",
+        "OPENAI_API_KEY",
+        "DATABASE_URL",
+        "ECHO_PROXY_URL",
+        "JINA_API_KEY",
+        "HELIUS_API_KEY",
+        "GOOGLE_CLOUD_CREDENTIALS",
+        "BITQUERY_API_KEY",
+        "ADDRESS",
+        "PORT",
+        "DISCORD_WEBHOOK_URL",
+        "OPENROUTER_API_KEY",
+        "WALLET_CLIENT_OWNER",
+        "TEST_SERVER_OWNER_ADDRESS"
+      ]
     },
     "dev": {
+      "dependsOn": ["^db:generate", "^build"],
+      "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "persistent": true,
+      "env": ["ANALYTICS_CLICKHOUSE_*"]
+    },
+
+    "typegen": {
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "db:generate": {
+      "outputs": ["generated/**"]
+    },
+    "db:migrate": {
       "cache": false,
       "persistent": true
     },
+    "db:deploy": {
+      "cache": false
+    },
+    "trigger:deploy": {
+      "dependsOn": ["^build", "^db:generate"],
+      "cache": false,
+      "env": [
+        "TRIGGER_ACCESS_TOKEN",
+        "ANALYTICS_CLICKHOUSE_*",
+        "POSTGRES_*",
+        "TRANSFERS_DB_*"
+      ]
+    },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^db:generate", "typegen", "^build"]
     },
-    "check-types": {
-      "dependsOn": ["^build"]
+    "check:types": {
+      "dependsOn": ["^db:generate", "typegen", "^build"]
     },
-    "check-format": {
-      "cache": false
-    },
-    "knip": {
-      "dependsOn": ["^build"]
-    },
-    "format": {
-      "cache": false
-    }
+    "check:format": {},
+    "knip": {}
   },
-  "globalEnv": [],
+  "globalEnv": ["TURBO_*"],
   "globalPassThroughEnv": [
     "NODE_ENV",
     "VERCEL_ENV",
     "VERCEL_PROJECT_PRODUCTION_URL",
     "VERCEL_BRANCH_URL"
-  ]
+  ],
+  "remoteCache": {
+    "enabled": true
+  }
 }

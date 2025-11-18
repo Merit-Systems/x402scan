@@ -4,12 +4,12 @@
   "type": "module",
   "scripts": {
     "dev": "tsx index.ts",
-    "check-format": "prettier -c .prettierrc --check \"**/*.{ts,js,cjs,json,md}\"",
-    "format": "prettier -c .prettierrc --write \"**/*.{ts,js,cjs,json,md}\"",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "check-types": "tsc --noEmit",
-    "knip": "knip"
+    "check:types": "tsc --noEmit",
+    "knip": "pnpm -w knip --workspace ./examples/servers/express",
+    "format": "pnpm -w format-dir ./examples/servers/express",
+    "check:format": "pnpm -w check:format-dir ./examples/servers/express"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
@@ -18,13 +18,11 @@
     "x402-express": "^0.7.1"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "@types/express": "^5.0.1",
     "@types/node": "^20.19.24",
     "eslint": "^9.24.0",
-    "knip": "^5.66.2",
-    "prettier": "3.5.2",
     "tsx": "^4.7.0",
     "typescript": "^5.3.0"
   }

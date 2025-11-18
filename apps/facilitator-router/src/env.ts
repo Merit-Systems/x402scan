@@ -8,16 +8,20 @@ export const env = createEnv({
     // Observability
     OTEL_SERVICE_NAME: z.string().min(1),
     OTEL_SERVICE_VERSION: z.string().min(1),
-    NODE_ENV: z.enum(['development', 'production', 'staging']).default('development'),
+    NODE_ENV: z
+      .enum(['development', 'production', 'staging'])
+      .default('development'),
     OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: z.string().url(),
     OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: z.string().url(),
     SIGNOZ_INGESTION_KEY: z.string().min(1),
     OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: z.string().url(),
-    // ClickHouse Database
-    CLICKHOUSE_HOST: z.string().url().default('http://localhost:8123'),
-    CLICKHOUSE_USER: z.string().default('default'),
-    CLICKHOUSE_PASSWORD: z.string().default(''),
-    CLICKHOUSE_REQUEST_TIMEOUT: z.coerce.number().default(30000), // 30 seconds default timeout
+    // ClickHouse Database (for analytics package)
+    // The analytics package reads these directly from process.env
+    ANALYTICS_CLICKHOUSE_URL: z.string().url().default('http://localhost:8123'),
+    ANALYTICS_CLICKHOUSE_USER: z.string().default('default'),
+    ANALYTICS_CLICKHOUSE_PASSWORD: z.string().default(''),
+    ANALYTICS_CLICKHOUSE_DATABASE: z.string().default('default'),
+    ANALYTICS_CLICKHOUSE_REQUEST_TIMEOUT: z.coerce.number().default(30000), // 30 seconds default timeout
 
     // CDP/Coinbase SDK
     CDP_API_KEY_ID: z.string().min(1),
@@ -40,9 +44,12 @@ export const env = createEnv({
 
     // Facilitator whitelist
     WHITELISTED_FACILITATOR_IDS: z.preprocess(
-      (val) => {
+      val => {
         if (typeof val === 'string') {
-          return val.split(',').map((s) => s.trim()).filter(Boolean);
+          return val
+            .split(',')
+            .map(s => s.trim())
+            .filter(Boolean);
         }
         return val;
       },

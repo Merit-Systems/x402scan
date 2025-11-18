@@ -1,27 +1,19 @@
-import {
-  retry,
-  handleAll,
-  wrap,
-  timeout,
-  TimeoutStrategy,
-  IPolicy,
-} from 'cockatiel';
+import type { IPolicy } from 'cockatiel';
+import { retry, handleAll, wrap, timeout, TimeoutStrategy } from 'cockatiel';
 import { ResultAsync } from 'neverthrow';
-import {
+import type {
   PaymentPayload,
   PaymentRequirements,
   SettleResponse,
   VerifyResponse,
 } from 'x402/types';
 import logger from '../logger';
-import {
-  AllFacilitatorsFailedError,
-  FacilitatorFailedError,
-} from '../errors';
-import { FacilitatorMethod, Facilitator } from './types';
-import { getNextFacilitator, getFacilitatorById, FacilitatorId } from './facilitators';
+import { AllFacilitatorsFailedError, FacilitatorFailedError } from '../errors';
+import type { FacilitatorMethod, Facilitator } from './types';
+import type { FacilitatorId } from './facilitators';
+import { getNextFacilitator, getFacilitatorById } from './facilitators';
 import { executeFacilitatorRequest } from './execute-facilitator-request';
-import { ContextHandler } from '../utils/context-handler';
+import type { ContextHandler } from '../utils/context-handler';
 import { env } from '../env';
 import { ConstantBackoff } from 'cockatiel';
 
@@ -67,7 +59,7 @@ async function attemptFacilitator<T extends VerifyResponse | SettleResponse>(
       method,
       payload,
       paymentRequirements,
-      contextHandler,
+      contextHandler
     );
     const res = await resultAsync;
     if (res.isErr()) {
@@ -80,7 +72,9 @@ async function attemptFacilitator<T extends VerifyResponse | SettleResponse>(
 /**
  * Attempts to execute a facilitator request with neverthrow, throwing FacilitatorFailedError on failure
  */
-function attemptFacilitatorWithNeverthrow<T extends VerifyResponse | SettleResponse>(
+function attemptFacilitatorWithNeverthrow<
+  T extends VerifyResponse | SettleResponse,
+>(
   facilitator: Facilitator,
   method: FacilitatorMethod,
   payload: PaymentPayload,
@@ -97,8 +91,9 @@ function attemptFacilitatorWithNeverthrow<T extends VerifyResponse | SettleRespo
       contextHandler,
       attemptNumber
     ),
-    (error) => {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+    error => {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       return new FacilitatorFailedError(facilitator.name, errorMessage);
     }
   );
@@ -114,44 +109,44 @@ function attemptFacilitatorWithNeverthrow<T extends VerifyResponse | SettleRespo
  * @param facilitatorId - The facilitator ID to call
  * @returns A ResultAsync that resolves to the facilitator response or AllFacilitatorsFailedError
  */
-export function callFacilitator<T extends VerifyResponse | SettleResponse>(
-    method: FacilitatorMethod,
-    payload: PaymentPayload,
-    paymentRequirements: PaymentRequirements,
-    contextHandler: ContextHandler,
-    facilitatorId: FacilitatorId
-  ): ResultAsync<T, AllFacilitatorsFailedError> {
-    return ResultAsync.fromPromise(
-      (async () => {
-        const facilitator = getFacilitatorById(facilitatorId);
-        
-        if (!facilitator) {
-          throw new AllFacilitatorsFailedError(method, [
-            { facilitator: facilitatorId, error: 'Facilitator not found' },
-          ]);
-        }
+function callFacilitator<T extends VerifyResponse | SettleResponse>(
+  method: FacilitatorMethod,
+  payload: PaymentPayload,
+  paymentRequirements: PaymentRequirements,
+  contextHandler: ContextHandler,
+  facilitatorId: FacilitatorId
+): ResultAsync<T, AllFacilitatorsFailedError> {
+  return ResultAsync.fromPromise(
+    (async () => {
+      const facilitator = getFacilitatorById(facilitatorId);
 
-        const result = await attemptFacilitatorWithNeverthrow<T>(
-          facilitator,
-          method,
-          payload,
-          paymentRequirements,
-          contextHandler,
-          1
-        );
+      if (!facilitator) {
+        throw new AllFacilitatorsFailedError(method, [
+          { facilitator: facilitatorId, error: 'Facilitator not found' },
+        ]);
+      }
 
-        if (result.isErr()) {
-          const error = result.error;
-          throw new AllFacilitatorsFailedError(method, [
-            { facilitator: error.facilitatorName, error: error.error }
-          ]);
-        }
+      const result = await attemptFacilitatorWithNeverthrow<T>(
+        facilitator,
+        method,
+        payload,
+        paymentRequirements,
+        contextHandler,
+        1
+      );
 
-        return result.value;
-      })(),
-      (error) => error as AllFacilitatorsFailedError
-    );
-  }
+      if (result.isErr()) {
+        const error = result.error;
+        throw new AllFacilitatorsFailedError(method, [
+          { facilitator: error.facilitatorName, error: error.error },
+        ]);
+      }
+
+      return result.value;
+    })(),
+    error => error as AllFacilitatorsFailedError
+  );
+}
 
 /**
  * Routes payment requests to facilitators using round-robin load balancing with circuit breakers
@@ -162,45 +157,48 @@ export function callFacilitator<T extends VerifyResponse | SettleResponse>(
  * @param contextHandler - Context handler for accumulating event data
  * @returns A ResultAsync that resolves to the facilitator response or AllFacilitatorsFailedError
  */
-export function callAutoFacilitator<T extends VerifyResponse | SettleResponse>(
-    method: FacilitatorMethod,
-    payload: PaymentPayload,
-    paymentRequirements: PaymentRequirements,
-    contextHandler: ContextHandler
-  ): ResultAsync<T, AllFacilitatorsFailedError> {
-    return ResultAsync.fromPromise(
-      (async () => {
-        const errors: Array<{ facilitator: string; error: string }> = [];
-        const attemptedFacilitators = new Set<string>();
-        const maxAttempts = env.MAX_FACILITATOR_ATTEMPTS;
+function callAutoFacilitator<T extends VerifyResponse | SettleResponse>(
+  method: FacilitatorMethod,
+  payload: PaymentPayload,
+  paymentRequirements: PaymentRequirements,
+  contextHandler: ContextHandler
+): ResultAsync<T, AllFacilitatorsFailedError> {
+  return ResultAsync.fromPromise(
+    (async () => {
+      const errors: Array<{ facilitator: string; error: string }> = [];
+      const attemptedFacilitators = new Set<string>();
+      const maxAttempts = env.MAX_FACILITATOR_ATTEMPTS;
 
-        // Try each facilitator once using round-robin load balancing
-        for (let i = 0; i < maxAttempts; i++) {
-          const facilitator = getNextFacilitator();
-          attemptedFacilitators.add(facilitator.name);
-          
-          const result = await attemptFacilitatorWithNeverthrow<T>(
-            facilitator,
-            method,
-            payload,
-            paymentRequirements,
-            contextHandler,
-            attemptedFacilitators.size
-          );
+      // Try each facilitator once using round-robin load balancing
+      for (let i = 0; i < maxAttempts; i++) {
+        const facilitator = getNextFacilitator();
+        attemptedFacilitators.add(facilitator.name);
 
-          if (result.isErr()) {
-            const error = result.error;
-            errors.push({ facilitator: error.facilitatorName, error: error.error });
-            continue;
-          }
+        const result = await attemptFacilitatorWithNeverthrow<T>(
+          facilitator,
+          method,
+          payload,
+          paymentRequirements,
+          contextHandler,
+          attemptedFacilitators.size
+        );
 
-          return result.value;
+        if (result.isErr()) {
+          const error = result.error;
+          errors.push({
+            facilitator: error.facilitatorName,
+            error: error.error,
+          });
+          continue;
         }
-        throw new AllFacilitatorsFailedError(method, errors);
-      })(),
-      (error) => error as AllFacilitatorsFailedError
-    );
-  }
+
+        return result.value;
+      }
+      throw new AllFacilitatorsFailedError(method, errors);
+    })(),
+    error => error as AllFacilitatorsFailedError
+  );
+}
 
 /**
  * Routes payment requests to facilitators with load balancing and circuit breakers
@@ -213,14 +211,25 @@ export function callAutoFacilitator<T extends VerifyResponse | SettleResponse>(
  * @returns A ResultAsync that resolves to the facilitator response or AllFacilitatorsFailedError
  */
 export function routePayment<T extends VerifyResponse | SettleResponse>(
-    method: FacilitatorMethod,
-    payload: PaymentPayload,
-    paymentRequirements: PaymentRequirements,
-    contextHandler: ContextHandler,
-    facilitatorId?: FacilitatorId
-  ): ResultAsync<T, AllFacilitatorsFailedError> {
-    if (facilitatorId && facilitatorId !== 'auto') {
-      return callFacilitator(method, payload, paymentRequirements, contextHandler, facilitatorId);
-    }
-    return callAutoFacilitator(method, payload, paymentRequirements, contextHandler);
+  method: FacilitatorMethod,
+  payload: PaymentPayload,
+  paymentRequirements: PaymentRequirements,
+  contextHandler: ContextHandler,
+  facilitatorId?: FacilitatorId
+): ResultAsync<T, AllFacilitatorsFailedError> {
+  if (facilitatorId && facilitatorId !== 'auto') {
+    return callFacilitator(
+      method,
+      payload,
+      paymentRequirements,
+      contextHandler,
+      facilitatorId
+    );
   }
+  return callAutoFacilitator(
+    method,
+    payload,
+    paymentRequirements,
+    contextHandler
+  );
+}

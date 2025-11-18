@@ -2,13 +2,12 @@
 // This ensures HTTP/Express requests are automatically traced
 import './logger';
 
-import express, { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+import express from 'express';
 import logger from './logger';
 import { env } from './env';
 import { errorHandler } from './utils/express-result';
-import {
-  initFacilitatorEventsTable,
-} from './db/clickhouse';
+import { initFacilitatorEventsTable } from './db/clickhouse';
 import { settleHandler } from './routes/settle';
 import { verifyHandler } from './routes/verify';
 import { traceEnrichmentMiddleware } from './utils/trace-enrichment-middleware';
@@ -41,20 +40,25 @@ async function initializeDatabase() {
   const eventsTableResult = await initFacilitatorEventsTable();
   eventsTableResult.match(
     () => logger.info('Facilitator events table initialized'),
-    (error) => logger.error('Failed to initialize facilitator events table', { error: error.message })
+    error =>
+      logger.error('Failed to initialize facilitator events table', {
+        error: error.message,
+      })
   );
 }
 
 // Start the server
-initializeDatabase().then(() => {
-  app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-    console.log('\nAvailable endpoints:');
-    console.log('  GET  /health - Health check');
-    console.log('  POST /settle - Settlement endpoint');
-    console.log('  POST /verify - Verification endpoint');
+initializeDatabase()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server running at http://localhost:${port}`);
+      console.log('\nAvailable endpoints:');
+      console.log('  GET  /health - Health check');
+      console.log('  POST /settle - Settlement endpoint');
+      console.log('  POST /verify - Verification endpoint');
+    });
+  })
+  .catch(error => {
+    logger.error('Failed to initialize database', { error: error as Error });
+    process.exit(1);
   });
-}).catch((error) => {
-  logger.error('Failed to initialize database', { error });
-  process.exit(1);
-});

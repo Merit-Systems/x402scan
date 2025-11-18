@@ -24,7 +24,7 @@ interface Props {
 
 export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
   const chainFacilitators = chain
-    ? facilitators.flatMap(f => f.addresses[chain] ?? [])
+    ? facilitators.filter(f => f.addresses[chain])
     : facilitatorAddresses;
 
   void api.public.stats.overallMV.prefetch({

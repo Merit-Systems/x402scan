@@ -1,7 +1,7 @@
-import { FacilitatorError } from '../errors';
+import type { FacilitatorError } from '../errors';
 import logger from '../logger';
-import { FacilitatorMethod } from './types';
-import { ContextHandler } from '../utils/context-handler';
+import type { FacilitatorMethod } from './types';
+import type { ContextHandler } from '../utils/context-handler';
 import { FacilitatorEventType } from '../db/types';
 
 /**
@@ -15,7 +15,7 @@ export function logFacilitatorFailure(
   contextHandler: ContextHandler
 ): void {
   const facilitatorDuration = Date.now() - facilitatorStartTime;
-  
+
   logger.warn(
     `${facilitatorName} failed for ${method}, trying next facilitator`,
     {
@@ -24,7 +24,7 @@ export function logFacilitatorFailure(
       error: error.message,
     }
   );
-  
+
   // Log individual facilitator failure to ClickHouse
   // This allows tracking failure rates per facilitator even when routing eventually succeeds
   contextHandler.logMetric(
@@ -57,12 +57,12 @@ export function logFacilitatorSuccess(
   contextHandler: ContextHandler
 ): void {
   const facilitatorDuration = Date.now() - facilitatorStartTime;
-  
+
   logger.info(`${facilitatorName} facilitator ${method} succeeded`, {
     facilitator: facilitatorName,
     method,
   });
-  
+
   // Log final success outcome - this is the only event logged for successful requests
   contextHandler.logMetric(
     FacilitatorEventType.FACILITATOR_SUCCESS,
@@ -80,4 +80,3 @@ export function logFacilitatorSuccess(
     }
   );
 }
-

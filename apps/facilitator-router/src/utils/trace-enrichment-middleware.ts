@@ -1,7 +1,7 @@
 import { context, trace } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import { randomUUID } from 'crypto';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import logger, { requestIdStorage } from '../logger';
 
 export function traceEnrichmentMiddleware(
@@ -15,8 +15,9 @@ export function traceEnrichmentMiddleware(
   const requestId = (req.headers['x-request-id'] as string) || randomUUID();
 
   // Store requestId and startTime on request for later use
-  (req as any).requestId = requestId;
-  (req as any).startTime = startTime;
+  (req as Request & { requestId: string; startTime: number }).requestId =
+    requestId;
+  (req as Request & { startTime: number }).startTime = startTime;
 
   // Set response header so client can correlate
   res.setHeader('X-Request-ID', requestId);
@@ -36,10 +37,10 @@ export function traceEnrichmentMiddleware(
       const duration = Date.now() - startTime;
 
       // Log request (body will be available after express.json() parsing)
-      const contentType = req.headers['content-type'] || '';
-      const shouldLogBody =
+      const contentType = req.headers['content-type'] ?? '';
+      const shouldLogBody: boolean =
         contentType.includes('application/json') &&
-        req.body &&
+        req.body !== undefined &&
         JSON.stringify(req.body).length < 10000; // Max 10KB
 
       logger.info('REQUEST', {
@@ -47,7 +48,9 @@ export function traceEnrichmentMiddleware(
         path: req.path,
         contentType,
         contentLength: req.headers['content-length'],
-        body: shouldLogBody ? req.body : '[BODY_TOO_LARGE_OR_BINARY]',
+        body: shouldLogBody
+          ? JSON.stringify(req.body)
+          : '[BODY_TOO_LARGE_OR_BINARY]',
       });
 
       // Log response (requestId will be automatically injected by logger format)
@@ -66,10 +69,15 @@ export function traceEnrichmentMiddleware(
       finishSpan.setAttribute(SemanticAttributes.HTTP_METHOD, req.method);
       finishSpan.setAttribute(
         SemanticAttributes.HTTP_ROUTE,
-        req.route?.path || req.path
+        req.route && typeof req.route === 'object' && 'path' in req.route
+          ? (req.route as { path: string }).path
+          : req.path
       );
       finishSpan.setAttribute(SemanticAttributes.HTTP_TARGET, req.originalUrl);
-      finishSpan.setAttribute(SemanticAttributes.HTTP_STATUS_CODE, res.statusCode);
+      finishSpan.setAttribute(
+        SemanticAttributes.HTTP_STATUS_CODE,
+        res.statusCode
+      );
 
       // Mark span status (0=UNSET, 1=OK, 2=ERROR)
       if (res.statusCode >= 500) {

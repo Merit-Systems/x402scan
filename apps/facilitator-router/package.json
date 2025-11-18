@@ -10,8 +10,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:server": "tsx test/test-server.ts",
     "test:client": "tsx test/test-client.ts",
-    "knip": "knip",
-    "knip:fix": "knip --fix"
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "knip": "pnpm -w knip --workspace ./apps/facilitator-router",
+    "format": "pnpm -w format-dir ./apps/facilitator-router",
+    "check:format": "pnpm -w check:format-dir ./apps/facilitator-router",
+    "check:types": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -26,7 +30,6 @@
   },
   "homepage": "https://github.com/Merit-Systems/facilitator-router#readme",
   "dependencies": {
-    "@clickhouse/client": "^1.12.1",
     "@coinbase/cdp-sdk": "^1.38.4",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "0.57.2",
@@ -41,10 +44,11 @@
     "@opentelemetry/semantic-conventions": "^1.36.0",
     "@opentelemetry/winston-transport": "^0.14.1",
     "@t3-oss/env-core": "^0.13.8",
+    "@x402scan/analytics-db": "workspace:*",
     "cockatiel": "^3.2.1",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "facilitators": "^0.0.9",
+    "facilitators": "workspace:*",
     "neverthrow": "^8.2.0",
     "viem": "^2.38.5",
     "winston": "^3.18.3",
@@ -56,7 +60,9 @@
   "devDependencies": {
     "@types/express": "^5.0.5",
     "@types/node": "^24.9.2",
-    "knip": "^5.66.4",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
+    "eslint": "^9.39.1",
     "tsup": "^8.5.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

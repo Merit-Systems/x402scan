@@ -1,9 +1,7 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
-import { prisma } from '../client';
+import { scanDb, Prisma } from '@x402scan/scan-db';
 import {
   toPaginatedResponse,
-  paginationClause,
   type PaginatedQueryParams,
 } from '@/lib/pagination';
 import {
@@ -67,7 +65,7 @@ const getSpendingByWalletUncached = async (
   `;
 
   const countResult =
-    await prisma.$queryRaw<Array<{ total: number }>>(countSql);
+    await scanDb.$queryRaw<Array<{ total: number }>>(countSql);
   const total_count = countResult[0]?.total ?? 0;
 
   // Get paginated results
@@ -86,10 +84,11 @@ const getSpendingByWalletUncached = async (
     LEFT JOIN "Accepts" a ON a."resourceId" = r.id AND a.network = 'base'
     GROUP BY sw.id, sw."walletName"
     ORDER BY ${orderByClause}
-    ${paginationClause(pagination)}
+    LIMIT ${pagination.page_size}
+    OFFSET ${pagination.page * pagination.page_size}
   `;
 
-  const rawResult = await prisma.$queryRaw<
+  const rawResult = await scanDb.$queryRaw<
     Array<{
       walletId: string;
       walletName: string;
@@ -161,7 +160,7 @@ const getToolBreakdownByWalletUncached = async (
     ORDER BY ${orderByClause}
   `;
 
-  const rawResult = await prisma.$queryRaw<
+  const rawResult = await scanDb.$queryRaw<
     Array<{
       walletId: string;
       walletName: string;

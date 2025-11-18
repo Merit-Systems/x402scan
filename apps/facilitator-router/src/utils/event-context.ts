@@ -2,12 +2,16 @@
  * Utilities for managing request context and building events
  */
 
-import { Request } from 'express';
+import type { Request } from 'express';
 import { randomUUID } from 'crypto';
-import { Result } from 'neverthrow';
-import { RequestContext, FacilitatorEventData, FacilitatorEventType } from '../db/types';
-import { PaymentPayload, PaymentRequirements } from 'x402/types';
-import { ValidationError } from '../errors';
+import type { Result } from 'neverthrow';
+import type {
+  RequestContext,
+  FacilitatorEventData,
+  FacilitatorEventType,
+} from '../db/types';
+import type { PaymentPayload, PaymentRequirements } from 'x402/types';
+import type { ValidationError } from '../errors';
 
 /**
  * Creates a new request context with a unique event ID
@@ -27,7 +31,7 @@ export function extractRequestMetadata(req: Request): {
   user_agent?: string;
 } {
   return {
-    client_ip: req.ip || req.socket.remoteAddress,
+    client_ip: req.ip ?? req.socket.remoteAddress,
     user_agent: req.get('user-agent'),
   };
 }
@@ -81,8 +85,10 @@ export function updateContextWithRequestData(
       context.payloadData.evm_from = payload.payload.authorization.from;
       context.payloadData.evm_to = payload.payload.authorization.to;
       context.payloadData.evm_value = payload.payload.authorization.value;
-      context.payloadData.evm_valid_after = payload.payload.authorization.validAfter;
-      context.payloadData.evm_valid_before = payload.payload.authorization.validBefore;
+      context.payloadData.evm_valid_after =
+        payload.payload.authorization.validAfter;
+      context.payloadData.evm_valid_before =
+        payload.payload.authorization.validBefore;
       context.payloadData.evm_nonce = payload.payload.authorization.nonce;
     } else if ('transaction' in payload.payload) {
       // SVM payload
@@ -123,7 +129,7 @@ export function buildFacilitatorEvent(
   }
 ): FacilitatorEventData {
   const now = new Date();
-  
+
   return {
     request_id: context.eventId,
     eventType,
@@ -155,11 +161,10 @@ export function mergeMetadata(
   eventMetadata?: Record<string, string | number | boolean>
 ): Record<string, string | number | boolean> | undefined {
   const merged = {
-    ...(attributes as Record<string, string | number | boolean>),
-    ...(eventMetadata as Record<string, string | number | boolean>),
+    ...attributes!,
+    ...eventMetadata!,
   };
 
   // Return undefined if no metadata to avoid empty objects
   return Object.keys(merged).length > 0 ? merged : undefined;
 }
-

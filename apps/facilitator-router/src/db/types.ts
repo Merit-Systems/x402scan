@@ -1,4 +1,4 @@
-import { PaymentPayload, PaymentRequirements } from 'x402/types';
+import type { PaymentPayload, PaymentRequirements } from 'x402/types';
 
 /**
  * Event types for facilitator events
@@ -19,14 +19,14 @@ export interface FacilitatorEventData {
   errorType?: string;
   responseHeadersJson: Record<string, string>;
   metadata?: Record<string, string | number | boolean>;
-  
+
   client_ip?: string;
   user_agent?: string;
-  
+
   // PaymentPayload and PaymentRequirements as objects for ClickHouse JSON columns
   payment_payload_json?: PaymentPayload;
   payment_requirements_json?: PaymentRequirements;
-  
+
   requestStartedAt: Date; // When the request started (from context.createdAt)
   createdAt: Date; // When this specific event occurred
   updatedAt: Date; // Used for ReplacingMergeTree versioning
@@ -69,4 +69,3 @@ export interface RequestContext {
   validatedRequirements?: PaymentRequirements;
   createdAt: Date;
 }
-  

@@ -1,15 +1,15 @@
-import { db } from '@/services/db';
+import { scanDb } from '@x402scan/scan-db';
 import { logger } from '@trigger.dev/sdk';
 import type { MetricsByResource } from '../types';
 import { mapMetric } from '../utils';
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '@x402scan/scan-db';
 
 export async function persistMetrics(
   data: unknown
 ): Promise<Prisma.BatchPayload> {
   const metrics: MetricsByResource[] = data as MetricsByResource[];
   const resources = metrics.map(m => m.resource);
-  const resourcesInDb = await db.resources.findMany({
+  const resourcesInDb = await scanDb.resources.findMany({
     where: {
       resource: {
         in: resources,
@@ -42,7 +42,7 @@ export async function persistMetrics(
   if (metricsWithResourceId.length === 0) {
     return { count: 0 };
   }
-  return await db.resourceMetrics.createMany({
+  return await scanDb.resourceMetrics.createMany({
     data: metricsWithResourceId,
   });
 }

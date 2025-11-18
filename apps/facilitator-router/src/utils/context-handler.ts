@@ -3,11 +3,11 @@
  * Maintains immutable request context and builds events from context + event data
  */
 
-import { Request } from 'express';
-import { Result } from 'neverthrow';
-import { RequestContext, FacilitatorEventType } from '../db/types';
-import { PaymentPayload, PaymentRequirements } from 'x402/types';
-import { ValidationError } from '../errors';
+import type { Request } from 'express';
+import type { Result } from 'neverthrow';
+import type { RequestContext, FacilitatorEventType } from '../db/types';
+import type { PaymentPayload, PaymentRequirements } from 'x402/types';
+import type { ValidationError } from '../errors';
 import { insertFacilitatorEvent } from '../db/clickhouse';
 import { logMetric } from '../logger';
 import {
@@ -15,7 +15,7 @@ import {
   mergeMetadata,
   createRequestContext,
   extractRequestMetadata,
-  updateContextWithRequestData
+  updateContextWithRequestData,
 } from './event-context';
 import { fireAndForget } from './result';
 
@@ -40,7 +40,7 @@ export class ContextHandler {
   static fromRequest(req: Request): ContextHandler {
     const handler = new ContextHandler();
     const metadata = extractRequestMetadata(req);
-    
+
     // Set initial metadata
     handler.context.client_ip = metadata.client_ip;
     handler.context.user_agent = metadata.user_agent;
@@ -83,7 +83,7 @@ export class ContextHandler {
    */
   logMetric(
     eventType: FacilitatorEventType,
-    value: number = 1,
+    value = 1,
     attributes?: Record<string, string | number | boolean>,
     eventData?: {
       facilitatorName: string;
@@ -105,28 +105,22 @@ export class ContextHandler {
     const mergedMetadata = mergeMetadata(attributes, eventData?.metadata);
 
     // Build complete event from context + event data
-    const facilitatorEvent = buildFacilitatorEvent(
-      this.context,
-      eventType,
-      {
-        facilitatorName: eventData?.facilitatorName ?? 'unknown',
-        method: eventData?.method ?? 'unknown',
-        statusCode: eventData?.statusCode,
-        duration: eventData?.duration,
-        errorMessageJson: eventData?.errorMessageJson,
-        errorType: eventData?.errorType,
-        responseHeadersJson: eventData?.responseHeadersJson ?? {},
-        metadata: mergedMetadata,
-        paymentHeader: eventData?.paymentHeader,
-        paymentResponseHeader: eventData?.paymentResponseHeader,
-      }
-    );
+    const facilitatorEvent = buildFacilitatorEvent(this.context, eventType, {
+      facilitatorName: eventData?.facilitatorName ?? 'unknown',
+      method: eventData?.method ?? 'unknown',
+      statusCode: eventData?.statusCode,
+      duration: eventData?.duration,
+      errorMessageJson: eventData?.errorMessageJson,
+      errorType: eventData?.errorType,
+      responseHeadersJson: eventData?.responseHeadersJson ?? {},
+      metadata: mergedMetadata,
+      paymentHeader: eventData?.paymentHeader,
+      paymentResponseHeader: eventData?.paymentResponseHeader,
+    });
 
     // Fire and forget - don't wait for ClickHouse
-    fireAndForget(
-      insertFacilitatorEvent(facilitatorEvent),
-      (error) => console.error('Failed to insert facilitator event:', error)
+    fireAndForget(insertFacilitatorEvent(facilitatorEvent), error =>
+      console.error('Failed to insert facilitator event:', error)
     );
   }
 }
-

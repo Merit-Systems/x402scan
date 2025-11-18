@@ -1,0 +1,35 @@
+{
+  "name": "@x402scan/analytics-db",
+  "version": "1.0.0",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint . --max-warnings 0",
+    "check:types": "tsc --noEmit",
+    "knip": "pnpm -w knip --workspace ./packages/internal/databases/analytics",
+    "format": "pnpm -w format-dir ./packages/internal/databases/analytics",
+    "check:format": "pnpm -w check:format-dir ./packages/internal/databases/analytics"
+  },
+  "dependencies": {
+    "@clickhouse/client": "^1.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
+    "eslint": "^9.39.1",
+    "typescript": "5.5.4",
+    "@types/x402": "^0.7.1"
+  }
+}

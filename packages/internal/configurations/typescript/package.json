@@ -1,0 +1,14 @@
+{
+  "name": "@x402scan/typescript-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "knip": "pnpm -w knip --workspace ./packages/internal/configurations/typescript",
+    "format": "pnpm -w format-dir ./packages/internal/configurations/typescript",
+    "check:format": "pnpm -w check:format-dir ./packages/internal/configurations/typescript"
+  }
+}

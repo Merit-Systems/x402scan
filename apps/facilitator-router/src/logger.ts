@@ -83,7 +83,7 @@ process.on('SIGTERM', () => {
     meterProvider.shutdown(),
   ])
     .then(() => console.log('OpenTelemetry terminated'))
-    .catch((error) => console.error('Error terminating OpenTelemetry', error))
+    .catch(error => console.error('Error terminating OpenTelemetry', error))
     .finally(() => process.exit(0));
 });
 
@@ -155,7 +155,7 @@ const counters: Record<string, ReturnType<typeof meter.createCounter>> = {};
 // Custom metric function
 export const logMetric = (
   metricName: string,
-  value: number = 1,
+  value = 1,
   attributes?: Record<string, string | number | boolean>
 ) => {
   if (!counters[metricName]) {
@@ -167,6 +167,5 @@ export const logMetric = (
 
   counters[metricName].add(value, attributes);
 };
-
 
 export default logger;

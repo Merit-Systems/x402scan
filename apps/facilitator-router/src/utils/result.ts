@@ -4,7 +4,7 @@
  */
 
 import { ResultAsync } from 'neverthrow';
-import { AppError } from '../errors';
+import type { AppError } from '../errors';
 
 /**
  * Wraps a promise in a ResultAsync, converting errors to AppError

@@ -1,5 +1,5 @@
-import { toJsonSafe } from "./to-json-safe";
-import {
+import { toJsonSafe } from './to-json-safe';
+import type {
   ListDiscoveryResourcesRequest,
   ListDiscoveryResourcesResponse,
   FacilitatorConfig,
@@ -8,13 +8,13 @@ import {
   PaymentRequirements,
   SettleResponse,
   VerifyResponse,
-} from "x402/types";
-import { FacilitatorError, JsonParsingError } from "../errors";
-import { ResultAsync, Result } from "neverthrow";
+} from 'x402/types';
+import { FacilitatorError, JsonParsingError } from '../errors';
+import { ResultAsync, Result } from 'neverthrow';
 
 function parseJsonSafely(text: string): Result<unknown, JsonParsingError> {
   return Result.fromThrowable(
-    () => JSON.parse(text),
+    () => JSON.parse(text) as Record<string, unknown>,
     () => new JsonParsingError('Failed to parse error response', text)
   )();
 }
@@ -26,37 +26,37 @@ function ensureObject(json: unknown): Record<string, unknown> {
   return { _value: json };
 }
 
-async function extractErrorMessage(res: Response): Promise<Record<string, unknown>> {
+async function extractErrorMessage(
+  res: Response
+): Promise<Record<string, unknown>> {
   const clonedRes = res.clone();
-  
+
   const result = await ResultAsync.fromPromise(
     clonedRes.text(),
     () => new JsonParsingError('Failed to read error response')
-  )
-    .andThen((text) => {
-      return parseJsonSafely(text)
-        .map(ensureObject);
-    });
+  ).andThen(text => {
+    return parseJsonSafely(text).map(ensureObject);
+  });
 
   if (result.isErr()) {
     throw result.error;
   }
-  
+
   return result.value;
 }
 
 async function createFacilitatorError(
   res: Response,
-  facilitatorName: string,
+  facilitatorName: string
 ): Promise<FacilitatorError> {
   const errorMessageJson = await extractErrorMessage(res);
-  
+
   // Extract response headers
   const responseHeaders: Record<string, string> = {};
   res.headers.forEach((value, key) => {
     responseHeaders[key] = value;
   });
-  
+
   return new FacilitatorError(
     `Failed to ${res.url}: ${res.status} ${JSON.stringify(errorMessageJson)}`,
     facilitatorName,
@@ -73,7 +73,10 @@ async function createFacilitatorError(
  * @param facilitatorName - The name of the facilitator for error reporting
  * @returns An object containing verify and settle functions for interacting with the facilitator
  */
-export function useFacilitator(facilitator: FacilitatorConfig, facilitatorName: string) {
+export function useFacilitator(
+  facilitator: FacilitatorConfig,
+  facilitatorName: string
+) {
   /**
    * Verifies a payment payload with the facilitator service
    *
@@ -83,18 +86,18 @@ export function useFacilitator(facilitator: FacilitatorConfig, facilitatorName: 
    */
   async function verify(
     payload: PaymentPayload,
-    paymentRequirements: PaymentRequirements,
+    paymentRequirements: PaymentRequirements
   ): Promise<VerifyResponse> {
     const url = facilitator.url;
 
-    let headers = { "Content-Type": "application/json" };
+    let headers = { 'Content-Type': 'application/json' };
     if (facilitator?.createAuthHeaders) {
       const authHeaders = await facilitator.createAuthHeaders();
       headers = { ...headers, ...authHeaders.verify };
     }
 
     const res = await fetch(`${url}/verify`, {
-      method: "POST",
+      method: 'POST',
       headers,
       body: JSON.stringify({
         x402Version: payload.x402Version,
@@ -107,8 +110,8 @@ export function useFacilitator(facilitator: FacilitatorConfig, facilitatorName: 
       throw await createFacilitatorError(res, facilitatorName);
     }
 
-    const data = await res.json();
-    return data as VerifyResponse;
+    const data = (await res.json()) as VerifyResponse;
+    return data;
   }
 
   /**
@@ -120,18 +123,18 @@ export function useFacilitator(facilitator: FacilitatorConfig, facilitatorName: 
    */
   async function settle(
     payload: PaymentPayload,
-    paymentRequirements: PaymentRequirements,
+    paymentRequirements: PaymentRequirements
   ): Promise<SettleResponse> {
     const url = facilitator.url;
 
-    let headers = { "Content-Type": "application/json" };
+    let headers = { 'Content-Type': 'application/json' };
     if (facilitator?.createAuthHeaders) {
       const authHeaders = await facilitator.createAuthHeaders();
       headers = { ...headers, ...authHeaders.settle };
     }
 
     const res = await fetch(`${url}/settle`, {
-      method: "POST",
+      method: 'POST',
       headers,
       body: JSON.stringify({
         x402Version: payload.x402Version,
@@ -144,8 +147,8 @@ export function useFacilitator(facilitator: FacilitatorConfig, facilitatorName: 
       throw await createFacilitatorError(res, facilitatorName);
     }
 
-    const data = await res.json();
-    return data as SettleResponse;
+    const data = (await res.json()) as SettleResponse;
+    return data;
   }
 
   /**
@@ -156,14 +159,14 @@ export function useFacilitator(facilitator: FacilitatorConfig, facilitatorName: 
   async function supported(): Promise<SupportedPaymentKindsResponse> {
     const url = facilitator.url;
 
-    let headers = { "Content-Type": "application/json" };
+    let headers = { 'Content-Type': 'application/json' };
     if (facilitator?.createAuthHeaders) {
       const authHeaders = await facilitator.createAuthHeaders();
       headers = { ...headers, ...authHeaders.supported };
     }
 
     const res = await fetch(`${url}/supported`, {
-      method: "GET",
+      method: 'GET',
       headers,
     });
 
@@ -171,8 +174,8 @@ export function useFacilitator(facilitator: FacilitatorConfig, facilitatorName: 
       throw await createFacilitatorError(res, facilitatorName);
     }
 
-    const data = await res.json();
-    return data as SupportedPaymentKindsResponse;
+    const data = (await res.json()) as SupportedPaymentKindsResponse;
+    return data;
   }
 
   /**
@@ -182,11 +185,11 @@ export function useFacilitator(facilitator: FacilitatorConfig, facilitatorName: 
    * @returns A promise that resolves to the discovery list response
    */
   async function list(
-    config: ListDiscoveryResourcesRequest = {},
+    config: ListDiscoveryResourcesRequest = {}
   ): Promise<ListDiscoveryResourcesResponse> {
     const url = facilitator.url;
 
-    let headers = { "Content-Type": "application/json" };
+    let headers = { 'Content-Type': 'application/json' };
     if (facilitator?.createAuthHeaders) {
       const authHeaders = await facilitator.createAuthHeaders();
       if (authHeaders.list) {
@@ -196,21 +199,24 @@ export function useFacilitator(facilitator: FacilitatorConfig, facilitatorName: 
 
     const urlParams = new URLSearchParams(
       Object.entries(config)
-        .filter(([_, value]) => value !== undefined)
-        .map(([key, value]) => [key, value.toString()]),
+        .filter(([, value]) => value !== undefined)
+        .map(([key, value]) => [key, value.toString()])
     );
 
-    const res = await fetch(`${url}/discovery/resources?${urlParams.toString()}`, {
-      method: "GET",
-      headers,
-    });
+    const res = await fetch(
+      `${url}/discovery/resources?${urlParams.toString()}`,
+      {
+        method: 'GET',
+        headers,
+      }
+    );
 
     if (res.status !== 200) {
       throw await createFacilitatorError(res, facilitatorName);
     }
 
-    const data = await res.json();
-    return data as ListDiscoveryResourcesResponse;
+    const data = (await res.json()) as ListDiscoveryResourcesResponse;
+    return data;
   }
 
   return { verify, settle, supported, list };

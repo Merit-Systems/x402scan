@@ -1,9 +1,0 @@
-{
-  "$schema": "https://turbo.build/schema.json",
-  "extends": ["//"],
-  "tasks": {
-    "lint": {
-      "env": ["BASE_RPC_URL", "DISCORD_WEBHOOK_URL"]
-    }
-  }
-}
