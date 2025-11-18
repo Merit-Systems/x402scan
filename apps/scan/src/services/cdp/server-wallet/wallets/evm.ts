@@ -1,8 +1,6 @@
-import { getBalance, readContract } from 'viem/actions';
+import { getBalance, readContract } from 'wagmi/actions';
 
 import { cdpClient } from '../client';
-
-import { evmRpc } from '@/services/rpc/evm';
 
 import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
 import { convertTokenAmount } from '@/lib/token';
@@ -11,6 +9,7 @@ import { toAccount } from 'viem/accounts';
 import type { EvmChain } from '@/types/chain';
 import type { Address } from 'viem';
 import type { NetworkServerWallet } from './types';
+import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
 
 export const evmServerWallet =
   <T extends EvmChain>(chain: T): NetworkServerWallet<EvmChain> =>
@@ -23,18 +22,18 @@ export const evmServerWallet =
 
     const getAddress = async () => (await getAccount()).address;
 
-    const rpc = evmRpc[chain];
+    const wagmiConfig = createWagmiConfig();
 
     return {
       address: getAddress,
       getNativeTokenBalance: async () => {
-        const weiBalance = await getBalance(rpc, {
+        const weiBalance = await getBalance(wagmiConfig, {
           address: await getAddress(),
         });
-        return parseFloat(formatEther(weiBalance));
+        return parseFloat(formatEther(weiBalance.value));
       },
       getTokenBalance: async ({ token }) => {
-        const balance = await readContract(rpc, {
+        const balance = await readContract(wagmiConfig, {
           abi: erc20Abi,
           address: token.address as Address,
           args: [await getAddress()],
@@ -52,7 +51,7 @@ export const evmServerWallet =
       sendTokens: async ({ address, token, amount }) => {
         const account = await getAccount();
         const { transactionHash } = await account.sendTransaction({
-          network: 'base',
+          network: chain,
           transaction: {
             to: token.address as Address,
             value: 0n,

@@ -1,5 +1,4 @@
 import { base, optimism, polygon } from 'wagmi/chains';
-import type { Chain as ViemChain } from 'viem';
 
 export enum Chain {
   BASE = 'base',
@@ -36,9 +35,3 @@ export const CHAIN_ID: Record<Chain, number> = {
   [Chain.OPTIMISM]: optimism.id,
   [Chain.SOLANA]: 0,
 };
-
-export const CHAIN_TO_VIEM_CHAIN = {
-  [Chain.BASE]: base,
-  [Chain.POLYGON]: polygon,
-  [Chain.OPTIMISM]: optimism,
-} as const satisfies Record<EvmChain, ViemChain>;
