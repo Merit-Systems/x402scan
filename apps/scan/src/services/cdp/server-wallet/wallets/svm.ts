@@ -154,30 +154,22 @@ const getModifyingSigner = (
     modifyAndSignTransactions: async transactions => {
       const signedTransactions = await Promise.all(
         transactions.map(async transaction => {
-          // Serialize transaction to base64 for CDP signing
           const base64Transaction =
             getBase64EncodedWireTransaction(transaction);
 
-          // Sign with CDP
           const { signedTransaction } = await account.signTransaction({
             transaction: base64Transaction,
           });
 
-          console.log('signedTransaction', signedTransaction);
-
-          // Decode the base58-encoded signed transaction to bytes
           const signedTransactionBytes =
             base64Encoder.encode(signedTransaction);
 
-          // Deserialize bytes back to Transaction object
           const decodedSignedTransaction = transactionCodec.decode(
             signedTransactionBytes
           );
 
-          // Assert the transaction is within size limit
           assertIsTransactionWithinSizeLimit(decodedSignedTransaction);
 
-          // Add lifetime constraint from the compiled transaction message
           const compiledTransactionMessage = compiledMessageDecoder.decode(
             decodedSignedTransaction.messageBytes
           );
