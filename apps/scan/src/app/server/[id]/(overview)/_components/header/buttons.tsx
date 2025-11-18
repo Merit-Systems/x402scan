@@ -10,7 +10,6 @@ import { api } from '@/trpc/client';
 import { clientCookieUtils } from '@/app/composer/(chat)/chat/_lib/cookies/client';
 
 import type { RouterOutputs } from '@/trpc/client';
-import { Chain } from '@/types/chain';
 import {
   Tooltip,
   TooltipContent,
@@ -30,36 +29,23 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
 
   const router = useRouter();
 
-  const baseResources =
-    originWithResources?.resources
-      .filter(resource =>
-        resource.accepts.some(
-          accept => accept.network === Chain.BASE.toString()
-        )
-      )
-      .map(resource => ({
-        id: resource.id,
-        favicon: origin.favicon,
-      })) ?? [];
+  const resources =
+    originWithResources?.resources.map(resource => ({
+      id: resource.id,
+      favicon: origin.favicon,
+    })) ?? [];
 
   const onTryInChat = () => {
-    if (!baseResources.length) {
-      return;
-    }
-    clientCookieUtils.setResources(baseResources);
+    clientCookieUtils.setResources(resources);
     router.push(`/composer/chat`);
   };
 
-  const NoBaseResourcesTooltip = ({
-    children,
-  }: {
-    children: React.ReactNode;
-  }) => {
+  const NoResourcesTooltip = ({ children }: { children: React.ReactNode }) => {
     return (
       <Tooltip>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent>
-          <p>Composer currently only supports Base</p>
+          <p>No resources for this server are compatible with Composer</p>
         </TooltipContent>
       </Tooltip>
     );
@@ -68,9 +54,9 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
   const tryInChatButton = (
     <Button
       variant="turbo"
-      onClick={baseResources.length === 0 ? undefined : onTryInChat}
+      onClick={resources.length === 0 ? undefined : onTryInChat}
       className={cn(
-        baseResources.length === 0 &&
+        resources.length === 0 &&
           'opacity-50 cursor-not-allowed hover:opacity-50'
       )}
     >
@@ -83,7 +69,7 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
     <Button
       variant="outline"
       className={cn(
-        baseResources.length === 0 &&
+        resources.length === 0 &&
           'opacity-50 cursor-not-allowed hover:opacity-50'
       )}
     >
@@ -98,19 +84,19 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
   ) {
     return (
       <ButtonsContainer>
-        {baseResources.length === 0 ? (
-          <NoBaseResourcesTooltip>{tryInChatButton}</NoBaseResourcesTooltip>
+        {resources.length === 0 ? (
+          <NoResourcesTooltip>{tryInChatButton}</NoResourcesTooltip>
         ) : (
           tryInChatButton
         )}
-        {baseResources.length === 0 ? (
-          <NoBaseResourcesTooltip>{createAgentButton}</NoBaseResourcesTooltip>
+        {resources.length === 0 ? (
+          <NoResourcesTooltip>{createAgentButton}</NoResourcesTooltip>
         ) : (
           <Link
             href={{
               pathname: '/composer/agents/new',
               query: {
-                resources: baseResources.map(resource => resource.id) ?? [],
+                resources: resources.map(resource => resource.id),
               },
             }}
             prefetch={false}

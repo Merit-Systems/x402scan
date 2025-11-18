@@ -40,7 +40,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
             {row.original.resource}
           </p>
           <p className="text-[10px] md:text-xs text-muted-foreground w-full break-words whitespace-normal line-clamp-2">
-            {row.original.accepts[0]!.description}
+            {
+              row.original.accepts.find(accept => accept.description)
+                ?.description
+            }
           </p>
         </div>
       </div>

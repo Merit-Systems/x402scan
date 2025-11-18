@@ -30,15 +30,13 @@ export const ToolBreakdownModal = ({
     { walletId },
     { enabled: open }
   );
-  const { data: freeTierWallet } =
-    api.admin.freeTier.getWalletBalances.useQuery();
+  const { data: freeTierWallet } = api.admin.freeTier.address.useQuery();
 
   const breakdown = data ?? [];
   const columns = useMemo(() => createToolBreakdownColumns(), []);
 
   const isFreeTier =
-    freeTierWallet?.address &&
-    walletName.toLowerCase() === freeTierWallet.address.toLowerCase();
+    freeTierWallet && walletName.toLowerCase() === freeTierWallet.toLowerCase();
   const displayName = isFreeTier ? `Free Tier - ${walletName}` : walletName;
 
   return (

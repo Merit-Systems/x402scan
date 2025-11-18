@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 
 import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
 
-import { BASE_USDC } from '@/lib/tokens/usdc';
+import { usdc } from '@/lib/tokens/usdc';
 
 import { useEvmTokenBalance } from '../balance/token/use-evm-token-balance';
 import { useEvmNativeBalance } from '../balance/native/use-evm-balance';
@@ -34,7 +34,7 @@ export const useEvmSend = (props?: Props) => {
   const { chain } = useWalletChain();
 
   const {
-    token = BASE_USDC,
+    token = usdc(chain),
     onSuccess,
     toastMessage,
     address: addressProp,
@@ -122,9 +122,9 @@ export const useEvmSend = (props?: Props) => {
       address: token.address as Address,
       abi: erc20Abi,
       functionName: 'transfer',
-      args: [parsedAddress, parseUnits(amount.toString(), 6)],
+      args: [parsedAddress, parseUnits(amount.toString(), token.decimals)],
     });
-  }, [toAddress, amount, writeContract, token.address]);
+  }, [toAddress, amount, writeContract, token]);
 
   const statusText = useMemo(() => {
     if (isEthBalanceLoading || isBalanceLoading) return 'Loading...';

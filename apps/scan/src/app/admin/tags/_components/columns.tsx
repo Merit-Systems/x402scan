@@ -65,7 +65,9 @@ export const createColumns = (
       <HeaderCell Icon={Hash} label="Description" className="mx-auto" />
     ),
     cell: ({ row }) => {
-      const description = row.original.accepts[0]?.description ?? 'N/A';
+      const description =
+        row.original.accepts.find(accept => accept.description)?.description ??
+        'N/A';
       return (
         <div className="text-center text-xs text-muted-foreground truncate max-w-[200px]">
           {description}

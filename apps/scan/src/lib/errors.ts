@@ -1,23 +1,14 @@
 type ErrorType =
   | 'bad_request'
   | 'unauthorized'
+  | 'payment_required'
   | 'forbidden'
   | 'not_found'
   | 'rate_limit'
   | 'offline'
-  | 'payment_required'
   | 'server';
 
-type Surface =
-  | 'chat'
-  | 'auth'
-  | 'api'
-  | 'stream'
-  | 'database'
-  | 'history'
-  | 'vote'
-  | 'document'
-  | 'suggestions';
+type Surface = 'chat' | 'auth' | 'api' | 'database' | 'tool';
 
 type ErrorCode = `${ErrorType}:${Surface}`;
 
@@ -27,15 +18,11 @@ const visibilityBySurface: Record<Surface, ErrorVisibility> = {
   database: 'log',
   chat: 'response',
   auth: 'response',
-  stream: 'response',
   api: 'response',
-  history: 'response',
-  vote: 'response',
-  document: 'response',
-  suggestions: 'response',
+  tool: 'response',
 };
 
-export class ChatSDKError extends Error {
+export class ChatError extends Error {
   public type: ErrorType;
   public surface: Surface;
   public statusCode: number;
@@ -50,6 +37,17 @@ export class ChatSDKError extends Error {
     this.surface = surface as Surface;
     this.message = message ?? getMessageByErrorCode(errorCode);
     this.statusCode = getStatusCodeByType(this.type);
+  }
+
+  static fromStatusCode(
+    statusCode: number,
+    surface: Surface,
+    message?: string,
+    cause?: string
+  ) {
+    const type = getTypeByStatusCode(statusCode);
+    const errorCode: ErrorCode = `${type}:${surface}`;
+    return new ChatError(errorCode, message, cause);
   }
 
   public toResponse() {
@@ -89,8 +87,6 @@ function getMessageByErrorCode(errorCode: ErrorCode): string {
     case 'forbidden:auth':
       return 'Your account does not have access to this feature.';
 
-    case 'rate_limit:chat':
-      return 'You have exceeded your maximum number of messages for the day. Please try again later.';
     case 'not_found:chat':
       return 'The requested chat was not found. Please check the chat ID and try again.';
     case 'forbidden:chat':
@@ -104,14 +100,22 @@ function getMessageByErrorCode(errorCode: ErrorCode): string {
     case 'server:chat':
       return 'An error occurred while processing your request. Please try again later.';
 
-    case 'not_found:document':
-      return 'The requested document was not found. Please check the document ID and try again.';
-    case 'forbidden:document':
-      return 'This document belongs to another user. Please check the document ID and try again.';
-    case 'unauthorized:document':
-      return 'You need to sign in to view this document. Please sign in and try again.';
-    case 'bad_request:document':
-      return 'The request to create or update the document was invalid. Please check your input and try again.';
+    case 'bad_request:tool':
+      return "The tool request couldn't be processed. Please check your input and try again.";
+    case 'unauthorized:tool':
+      return 'You need to sign in to use this tool.';
+    case 'payment_required:tool':
+      return toolPaymentRequiredMessage;
+    case 'forbidden:tool':
+      return 'You do not have access to use this tool.';
+    case 'not_found:tool':
+      return 'The requested tool was not found. Please check the tool ID and try again.';
+    case 'server:tool':
+      return 'An error occurred while executing the tool. Please try again later.';
+    case 'rate_limit:tool':
+      return 'You are using tools too quickly. Please wait and try again.';
+    case 'offline:tool':
+      return "We're having trouble connecting to the tool. Please check your internet connection and try again.";
 
     default:
       return 'Something went wrong. Please try again later.';
@@ -138,3 +142,27 @@ function getStatusCodeByType(type: ErrorType) {
       return 500;
   }
 }
+
+function getTypeByStatusCode(statusCode: number): ErrorType {
+  switch (statusCode) {
+    case 400:
+      return 'bad_request';
+    case 401:
+      return 'unauthorized';
+    case 402:
+      return 'payment_required';
+    case 403:
+      return 'forbidden';
+    case 404:
+      return 'not_found';
+    case 429:
+      return 'rate_limit';
+    case 503:
+      return 'offline';
+    default:
+      return 'server';
+  }
+}
+
+export const toolPaymentRequiredMessage =
+  'You do not have enough funds to use this tool. Please add more funds to continue.';

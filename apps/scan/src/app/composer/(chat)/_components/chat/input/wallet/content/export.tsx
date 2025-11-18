@@ -1,12 +1,19 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { CopyCode } from '@/components/ui/copy-code';
-import { api } from '@/trpc/client';
 import { Key } from 'lucide-react';
+
 import { toast } from 'sonner';
 
+import { Button } from '@/components/ui/button';
+import { CopyCode } from '@/components/ui/copy-code';
+
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
+
+import { api } from '@/trpc/client';
+
 export const WalletExport: React.FC = () => {
+  const { chain } = useWalletChain();
+
   const {
     mutate: exportWallet,
     isPending: isExporting,
@@ -14,11 +21,16 @@ export const WalletExport: React.FC = () => {
   } = api.user.serverWallet.export.useMutation();
 
   const handleExport = () => {
-    exportWallet(undefined, {
-      onSuccess: () => {
-        toast.success('Wallet exported');
+    exportWallet(
+      {
+        chain,
       },
-    });
+      {
+        onSuccess: () => {
+          toast.success('Wallet exported');
+        },
+      }
+    );
   };
 
   if (exportData) {

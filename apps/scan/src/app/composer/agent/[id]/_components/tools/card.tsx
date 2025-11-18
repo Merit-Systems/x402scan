@@ -32,7 +32,10 @@ export const ToolCard: React.FC<Props> = ({ resource }) => {
             </CardTitle>
             <span className="text-sm font-mono text-primary font-bold">
               {formatTokenAmount(
-                BigInt(resource.accepts[0]!.maxAmountRequired)
+                BigInt(
+                  resource.accepts.find(accept => accept.maxAmountRequired)
+                    ?.maxAmountRequired ?? 0
+                )
               )}
             </span>
           </div>
@@ -44,7 +47,7 @@ export const ToolCard: React.FC<Props> = ({ resource }) => {
           </div>
         </div>
         <CardDescription className="line-clamp-2 text-xs md:text-sm">
-          {resource.accepts[0]!.description}
+          {resource.accepts.find(accept => accept.description)?.description}
         </CardDescription>
       </CardHeader>
     </Card>

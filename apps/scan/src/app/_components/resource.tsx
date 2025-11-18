@@ -1,4 +1,4 @@
-import { Address } from '@/components/ui/address';
+import { Addresses } from '@/components/ui/address';
 import { Favicon } from '@/app/_components/favicon';
 
 import type { Accepts, ResourceOrigin, Resources } from '@x402scan/scan-db';
@@ -18,8 +18,8 @@ export const Resource: React.FC<Props> = ({ resource }) => {
       )}
       title={`${new URL(resource.origin.origin).hostname}${new URL(resource.resource).pathname}`}
       address={
-        <Address
-          address={resource.accepts[0]!.payTo}
+        <Addresses
+          addresses={resource.accepts.map(accept => accept.payTo)}
           className="border-none p-0"
           hideTooltip
         />

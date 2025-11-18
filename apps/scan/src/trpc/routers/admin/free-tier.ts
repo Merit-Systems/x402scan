@@ -1,8 +1,9 @@
+import { Chain } from '@/types/chain';
 import { createTRPCRouter, adminProcedure } from '../../trpc';
-import { getFreeTierWalletBalances } from '@/services/cdp/server-wallet/free-tier';
+import { freeTierWallets } from '@/services/cdp/server-wallet/free-tier';
 
 export const adminFreeTierRouter = createTRPCRouter({
-  getWalletBalances: adminProcedure.query(async () => {
-    return await getFreeTierWalletBalances();
+  address: adminProcedure.query(async () => {
+    return await freeTierWallets[Chain.BASE].address();
   }),
 });

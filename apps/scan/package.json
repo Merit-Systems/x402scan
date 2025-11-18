@@ -56,6 +56,8 @@
     "@solana-program/token": "^0.7.0",
     "@solana/kit": "^5.0.0",
     "@solana/react": "^5.0.0",
+    "@solana/transaction-messages": "^5.0.0",
+    "@solana/transactions": "^5.0.0",
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tanstack/react-query": "^5.90.2",
     "@tanstack/react-table": "^8.21.3",

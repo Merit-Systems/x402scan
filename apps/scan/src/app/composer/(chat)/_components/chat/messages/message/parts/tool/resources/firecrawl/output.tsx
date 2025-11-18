@@ -32,7 +32,7 @@ export const FirecrawlOutput: OutputComponent = ({ output, errorText }) => {
   const parseResult = firecrawlOutputSchema.safeParse(output);
 
   if (!parseResult.success) {
-    return <ToolOutput output={JSON.stringify(output)} errorText={errorText} />;
+    return <ToolOutput output={JSON.stringify(output)} />;
   }
 
   return (

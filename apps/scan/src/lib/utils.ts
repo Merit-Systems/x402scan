@@ -93,8 +93,6 @@ export const USDC_ADDRESS = {
   [Chain.OPTIMISM]: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85' as const,
 } satisfies Record<Chain, MixedAddress>;
 
-export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-
 export const safeParseJson = <T>(
   value: string | null | undefined,
   fallback: T

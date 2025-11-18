@@ -15,26 +15,32 @@ import {
   enhancedOutputSchema,
 } from '@/lib/x402/schema';
 import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
-import { ChatSDKError } from '@/lib/errors';
+import { ChatError } from '@/lib/errors';
 
+import { SUPPORTED_CHAINS } from '@/types/chain';
+
+import type { SupportedChain } from '@/types/chain';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { ResourceRequestMetadata } from '@x402scan/scan-db';
-import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
+import { getUserWallets } from '../cdp/server-wallet/user';
+import { usdc } from '@/lib/tokens/usdc';
 
 interface CreateX402AIToolsParams {
   resourceIds: string[];
-  walletClient: Signer;
   chatId: string;
+  userId: string;
   maxAmount?: number;
 }
 
 export async function createX402AITools({
   resourceIds,
-  walletClient,
   chatId,
+  userId,
   maxAmount,
 }: CreateX402AIToolsParams): Promise<Record<string, Tool>> {
+  const { wallets } = await getUserWallets(userId);
+
   const resources = await listResourcesForTools(resourceIds);
 
   const aiTools: Record<string, Tool> = {};
@@ -76,17 +82,6 @@ export async function createX402AITools({
               ? parametersSchema
               : z.object({ continue: z.boolean() }),
           execute: async (params: z.infer<typeof parametersSchema>) => {
-            if (
-              maxAmount &&
-              BigInt(parsedAccept.data.maxAmountRequired) >
-                BigInt(parseUnits(String(maxAmount), 6))
-            ) {
-              throw new ChatSDKError(
-                'payment_required:chat',
-                `The maximum amount per tool call on free tier is ${maxAmount}. You can fund your agent to increase the maximum amount per tool call.`
-              );
-            }
-
             let url = resource.resource;
             const requestInit: RequestInit = { method };
 
@@ -133,21 +128,62 @@ export async function createX402AITools({
               }
             }
 
-            try {
-              const fetchWithPayment = wrapFetchWithPayment(
-                fetch,
-                walletClient,
-                maxAmount
-                  ? BigInt(parseUnits(String(maxAmount), 6))
-                  : resource.accepts[0]!.maxAmountRequired
+            const supportedAccepts = resource.accepts.filter(accept =>
+              SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
+            );
+
+            if (supportedAccepts.length === 0) {
+              throw new ChatError(
+                'not_found:tool',
+                `This resource does not accept USDC on any networks supported by x402scan`
               );
+            }
+
+            console.log('getting usdc balances');
+
+            const usdcBalances = await Promise.all(
+              supportedAccepts.map(async accept => ({
+                network: accept.network as SupportedChain,
+                balance: await wallets[
+                  accept.network as SupportedChain
+                ].getTokenBalance({
+                  token: usdc(accept.network as SupportedChain),
+                }),
+              }))
+            ).then(balances =>
+              balances
+                .filter(balance => balance.balance > 0)
+                .sort((a, b) => b.balance - a.balance)
+            );
+
+            console.log('usdc balances:', usdcBalances);
+
+            if (usdcBalances.length === 0) {
+              throw new ChatError('payment_required:tool');
+            }
+
+            const fetchWithPayment = wrapFetchWithPayment(
+              fetch,
+              await wallets[usdcBalances[0]!.network].signer(),
+              maxAmount ? BigInt(parseUnits(String(maxAmount), 6)) : undefined
+            );
+
+            try {
               const response = await fetchWithPayment(
                 new URL(
                   `/api/proxy?url=${encodeURIComponent(url)}&share_data=true`,
                   env.NEXT_PUBLIC_PROXY_URL
                 ).toString(),
                 requestInit
-              );
+              ).catch(error => {
+                if (error instanceof ChatError) {
+                  throw error;
+                }
+                throw new ChatError('server:tool');
+              });
+              if (response.status !== 200) {
+                throw ChatError.fromStatusCode(response.status, 'tool');
+              }
               void createToolCall({
                 resource: {
                   connect: { id: resource.id },
@@ -159,8 +195,10 @@ export async function createX402AITools({
               const data: unknown = await response.json();
               return data;
             } catch (error) {
-              console.error('Error calling tool', error);
-              throw error;
+              if (error instanceof ChatError) {
+                throw error;
+              }
+              throw new ChatError('server:tool');
             }
           },
         });

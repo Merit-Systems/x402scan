@@ -9,7 +9,7 @@ import { TokenInput } from '@/components/ui/token/token-input';
 
 import { api } from '@/trpc/client';
 
-import { BASE_USDC } from '@/lib/tokens/usdc';
+import { usdc } from '@/lib/tokens/usdc';
 
 import type { SupportedChain } from '@/types/chain';
 
@@ -42,7 +42,7 @@ export const Onramp: React.FC<Props> = ({ chain }) => {
     <div className="flex flex-col gap-2">
       <TokenInput
         onChange={setAmount}
-        selectedToken={BASE_USDC}
+        selectedToken={usdc(chain)}
         label="Buy on Coinbase"
         placeholder="0.00"
         inputClassName="placeholder:text-muted-foreground/60"
@@ -68,6 +68,10 @@ export const Onramp: React.FC<Props> = ({ chain }) => {
           'Buy on Coinbase'
         )}
       </Button>
+      <p className="text-xs text-muted-foreground text-center font-mono mt-2">
+        This will take you to a Coinbase checkout page to buy{' '}
+        {usdc(chain).symbol}
+      </p>
     </div>
   );
 };
