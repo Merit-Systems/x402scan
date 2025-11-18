@@ -34,9 +34,13 @@ export const OnrampSessionDialog: React.FC = () => {
 
   const searchParams = useSearchParams();
 
-  const networkParam = optionalSupportedChainSchema.parse(
+  const networkParamResult = optionalSupportedChainSchema.safeParse(
     searchParams.get('network')
   );
+
+  const networkParam = networkParamResult.success
+    ? networkParamResult.data
+    : undefined;
 
   useEffect(() => {
     if (searchParams.get('server_wallet_onramp_token')) {

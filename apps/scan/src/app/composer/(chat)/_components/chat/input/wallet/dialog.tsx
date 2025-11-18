@@ -28,6 +28,7 @@ import { OnrampSessionDialog } from './content/onramp-session-dialog';
 import { useSession } from 'next-auth/react';
 import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
 import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
+import { WalletChain } from '@/app/_contexts/wallet-chain/component';
 
 interface Props {
   children: React.ReactNode;
@@ -94,16 +95,19 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
             }
           >
             <DialogHeader className=" gap-2 bg-muted">
-              <div className="flex flex-row gap-2 items-center p-4">
-                <Logo className="size-8" />
-                <div className="flex flex-col gap-2">
-                  <DialogTitle className="text-primary text-xl">
-                    Your Composer Wallet
-                  </DialogTitle>
-                  <DialogDescription className="hidden">
-                    This is your wallet.
-                  </DialogDescription>
+              <div className="flex flex-row justify-between items-center p-4">
+                <div className="flex flex-row gap-2 items-center">
+                  <Logo className="size-8" />
+                  <div className="flex flex-col gap-2">
+                    <DialogTitle className="text-primary text-xl">
+                      Your Composer Wallet
+                    </DialogTitle>
+                    <DialogDescription className="hidden">
+                      This is your wallet.
+                    </DialogDescription>
+                  </div>
                 </div>
+                <WalletChain />
               </div>
               <TabsList className="w-full h-fit max-w-full overflow-x-auto no-scrollbar">
                 <div className="h-[34px] border-b w-4" />

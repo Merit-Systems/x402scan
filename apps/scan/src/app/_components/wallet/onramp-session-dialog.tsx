@@ -40,12 +40,16 @@ export const OnrampSessionDialog: React.FC = () => {
 
   const searchParams = useSearchParams();
 
-  const networkParam =
-    optionalSupportedChainSchema.parse(searchParams.get('network')) ??
-    Chain.BASE;
+  const networkParamResult = optionalSupportedChainSchema.safeParse(
+    searchParams.get('network')
+  );
+
+  const networkParam = networkParamResult.success
+    ? networkParamResult.data
+    : undefined;
 
   const { invalidate: invalidateEvmBalance } = useEvmTokenBalance({
-    token: usdc(networkParam),
+    token: usdc(networkParam ?? Chain.BASE),
     query: {
       enabled: false,
     },

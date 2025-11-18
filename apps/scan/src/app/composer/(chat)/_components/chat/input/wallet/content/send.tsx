@@ -1,17 +1,26 @@
-import Image from 'next/image';
+import { useCallback, useState } from 'react';
+
+import { Check, Loader2 } from 'lucide-react';
+
+import { toast } from 'sonner';
+
+import { useSession } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
-import { useCallback, useState } from 'react';
-import { ethereumAddressSchema } from '@/lib/schemas';
-import { toast } from 'sonner';
-import { Check, Loader2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { api } from '@/trpc/client';
 import { CopyCode } from '@/components/ui/copy-code';
-import { usdc } from '@/lib/tokens/usdc';
 import { TokenInput } from '@/components/ui/token/token-input';
-import { useSession } from 'next-auth/react';
+import { Input } from '@/components/ui/input';
+
+import { Chain } from '@/app/_components/chains';
+
+import { api } from '@/trpc/client';
+
 import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
+
+import { ethereumAddressSchema } from '@/lib/schemas';
+import { usdc } from '@/lib/tokens/usdc';
+
+import { CHAIN_LABELS } from '@/types/chain';
 
 export const Send: React.FC = () => {
   const [amount, setAmount] = useState(0);
@@ -92,14 +101,10 @@ export const Send: React.FC = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="gap-1 flex items-center">
-        <Image
-          src="/coinbase.png"
-          alt="Base"
-          height={16}
-          width={16}
-          className="size-4 inline-block mr-1 rounded-full"
-        />
-        <span className="font-bold text-sm">Send USDC on Base</span>
+        <Chain chain={chain} iconClassName="size-4" />
+        <span className="font-bold text-sm">
+          Send USDC on {CHAIN_LABELS[chain]}
+        </span>
       </div>
       <TokenInput
         address={serverWalletAddress}
