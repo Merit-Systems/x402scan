@@ -8,6 +8,7 @@ import {
 
 import type { RouterInputs } from '@/trpc/client';
 import type { LucideIcon } from 'lucide-react';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 type MarketplaceCarousel = {
   sectionProps: {
@@ -27,6 +28,7 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
       Icon: TrendingUp,
     },
     input: {
+      timeframe: ActivityTimeframe.OneDay,
       pagination: {
         page_size: 20,
       },
@@ -39,6 +41,7 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
       Icon: Search,
     },
     input: {
+      timeframe: ActivityTimeframe.OneDay,
       tags: ['Search'],
       pagination: {
         page_size: 20,
@@ -52,6 +55,7 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
       Icon: Coins,
     },
     input: {
+      timeframe: ActivityTimeframe.OneDay,
       tags: ['Crypto'],
       pagination: {
         page_size: 20,
@@ -65,6 +69,7 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
       Icon: Brain,
     },
     input: {
+      timeframe: ActivityTimeframe.OneDay,
       tags: ['Utility'],
       pagination: {
         page_size: 20,
@@ -78,6 +83,7 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
       Icon: ChartCandlestick,
     },
     input: {
+      timeframe: ActivityTimeframe.OneDay,
       tags: ['Trading'],
       pagination: {
         page_size: 20,

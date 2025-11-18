@@ -39,7 +39,7 @@ export const MultiCharts = <T extends Record<string, number>>({
   height,
 }: Props<T>) => {
   return (
-    <Tabs defaultValue={tabs[0].trigger.value} className="h-full">
+    <Tabs defaultValue={tabs[0]?.trigger.value} className="h-full">
       <TabsList>
         {tabs.map(tab => (
           <TabsTrigger key={tab.trigger.label} {...tab.trigger} />
@@ -88,7 +88,7 @@ export const LoadingMultiCharts: React.FC<LoadingMultiChartsProps> = ({
 }) => {
   return (
     <div className="animate-pulse">
-      <Tabs defaultValue={tabs[0].label}>
+      <Tabs defaultValue={tabs[0]!.label}>
         <TabsList>
           {tabs.map(tab => (
             <TabsTrigger

@@ -34,9 +34,9 @@ export const Chain: React.FC<{ chain: ChainType; iconClassName?: string }> = ({
       key={chain}
       src={CHAIN_ICONS[chain]}
       alt={CHAIN_LABELS[chain]}
-      width={16}
-      height={16}
-      className={cn('rounded-md', iconClassName)}
+      width={64}
+      height={64}
+      className={cn('rounded-md size-4', iconClassName)}
     />
   );
 };

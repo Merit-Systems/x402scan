@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { prisma } from '../client';
+import { scanDb } from '@x402scan/scan-db';
 
 import { parseX402Response } from '@/lib/x402/schema';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
 
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '@x402scan/scan-db';
 
 const ogImageSchema = z.object({
   url: z.url(),
@@ -27,7 +27,7 @@ export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
 ) => {
   const origin = originSchema.parse(originInput);
-  return await prisma.resourceOrigin.upsert({
+  return await scanDb.resourceOrigin.upsert({
     where: { origin: origin.origin },
     update: {
       title: origin.title,
@@ -83,7 +83,7 @@ export const listOriginsSchema = z.object({
 
 export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
   const { chain, address } = input;
-  const origins = await prisma.resourceOrigin.findMany({
+  const origins = await scanDb.resourceOrigin.findMany({
     where: {
       resources: {
         some: {
@@ -133,7 +133,7 @@ export const listOriginsWithResources = async (
     ...(address ? { payTo: address } : {}),
     ...(chain ? { network: chain } : {}),
   };
-  const origins = await prisma.resourceOrigin.findMany({
+  const origins = await scanDb.resourceOrigin.findMany({
     where: {
       ...(originIds ? { id: { in: originIds } } : {}),
       resources: {
@@ -202,7 +202,7 @@ export const searchOrigins = async (
   input: z.input<typeof searchOriginsSchema>
 ) => {
   const { search, limit } = searchOriginsSchema.parse(input);
-  return await prisma.resourceOrigin.findMany({
+  return await scanDb.resourceOrigin.findMany({
     where: {
       origin: {
         contains: search,
@@ -231,13 +231,13 @@ export const searchOrigins = async (
 };
 
 export const getOrigin = async (id: string) => {
-  return await prisma.resourceOrigin.findUnique({
+  return await scanDb.resourceOrigin.findUnique({
     where: { id },
   });
 };
 
 export const getOriginMetadata = async (id: string) => {
-  return await prisma.resourceOrigin.findUnique({
+  return await scanDb.resourceOrigin.findUnique({
     where: { id },
     select: {
       resources: {

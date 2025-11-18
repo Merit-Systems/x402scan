@@ -4,7 +4,7 @@ import { Method } from './method';
 
 import { Tags } from '@/app/_components/tags';
 
-import type { Resources, Tag } from '@prisma/client';
+import type { Resources, Tag } from '@x402scan/scan-db';
 import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 
@@ -38,7 +38,7 @@ export const Header: React.FC<Props> = ({
       </div>
       <p className="text-xs text-muted-foreground">
         {response.accepts && response.accepts.length > 0
-          ? response.accepts[0].description
+          ? response.accepts[0]!.description
           : null}
       </p>
     </div>

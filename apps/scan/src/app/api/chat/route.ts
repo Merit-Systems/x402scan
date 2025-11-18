@@ -14,27 +14,29 @@ import {
 
 import { createResumableStreamContext } from 'resumable-stream';
 
-import { createX402OpenAI } from '@merit-systems/ai-x402/server';
-
 import { createChat, getChat, updateChat } from '@/services/db/composer/chat';
 
 import { auth } from '@/auth';
 
 import { createX402AITools } from '@/services/agent/create-tools';
 
-import { getUserWallets } from '@/services/cdp/server-wallet/user';
-
 import { ChatSDKError } from '@/lib/errors';
 import { messageSchema } from '@/lib/message-schema';
 
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
 import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
-import { env } from '@/env';
-
-import { Chain } from '@/types/chain';
 
 import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
+
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+
+const openrouter = createOpenRouter({
+  headers: {
+    'HTTP-Referer': 'https://x402scan.com',
+    'X-Title': 'x402scan',
+  },
+});
 
 const bodySchema = z.object({
   model: z.string(),
@@ -63,23 +65,13 @@ export async function POST(request: NextRequest) {
 
   let chat = await getChat(chatId, session.user.id);
 
-  const { wallets } = await getUserWallets(session.user.id);
-
-  const wallet = wallets[Chain.BASE];
-
-  const openai = createX402OpenAI({
-    walletClient: await wallet.signer(),
-    baseRouterUrl: env.ECHO_PROXY_URL,
-    echoAppId: env.ECHO_APP_ID,
-  });
-
   const lastMessage = message;
 
   if (!chat) {
     // Start title generation in parallel (don't await)
     const titlePromise = generateTitleFromUserMessage({
       message: lastMessage,
-      model: openai('gpt-4.1-nano'),
+      model: openrouter.chat('gpt-4.1-nano'),
     });
 
     // Create chat with temporary title immediately
@@ -159,8 +151,8 @@ export async function POST(request: NextRequest) {
 
   const tools = await createX402AITools({
     resourceIds,
-    wallets,
     chatId,
+    userId: session.user.id,
   });
 
   const getSystemPrompt = async () => {
@@ -187,7 +179,7 @@ export async function POST(request: NextRequest) {
   ]);
 
   const result = streamText({
-    model: openai.chat(model),
+    model: openrouter.chat(model),
     messages: convertToModelMessages(messages),
     system: await getSystemPrompt(),
     stopWhen: stepCountIs(50),

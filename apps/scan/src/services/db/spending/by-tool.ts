@@ -1,11 +1,14 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
-import { prisma } from '../client';
+import { scanDb, Prisma } from '@x402scan/scan-db';
 import {
   toPaginatedResponse,
-  paginationClause,
   type PaginatedQueryParams,
 } from '@/lib/pagination';
+import {
+  createCachedPaginatedQuery,
+  createCachedArrayQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const toolSpendingResultSchema = z.array(
   z.object({
@@ -38,13 +41,11 @@ export type ToolSpendingSortId =
   | 'totalMaxAmount'
   | 'lastUsedAt';
 
-export const getSpendingByTool = async (
-  pagination: PaginatedQueryParams,
-  sorting?: {
-    id: ToolSpendingSortId;
-    desc: boolean;
-  }
+const getSpendingByToolUncached = async (
+  input: { sorting?: { id: ToolSpendingSortId; desc: boolean } },
+  pagination: PaginatedQueryParams
 ) => {
+  const { sorting } = input;
   const orderByColumn = sorting?.id ?? 'totalMaxAmount';
   const orderDirection = (sorting?.desc ?? true) ? 'DESC' : 'ASC';
 
@@ -68,7 +69,7 @@ export const getSpendingByTool = async (
   `;
 
   const countResult =
-    await prisma.$queryRaw<Array<{ total: number }>>(countSql);
+    await scanDb.$queryRaw<Array<{ total: number }>>(countSql);
   const total_count = countResult[0]?.total ?? 0;
 
   // Get paginated results
@@ -89,10 +90,11 @@ export const getSpendingByTool = async (
     WHERE tc.id IS NOT NULL
     GROUP BY r.id, r.resource
     ORDER BY ${orderByClause}
-    ${paginationClause(pagination)}
+    LIMIT ${pagination.page_size}
+    OFFSET ${pagination.page * pagination.page_size}
   `;
 
-  const rawResult = await prisma.$queryRaw<
+  const rawResult = await scanDb.$queryRaw<
     Array<{
       resourceId: string;
       resourceUrl: string;
@@ -113,6 +115,14 @@ export const getSpendingByTool = async (
   });
 };
 
+export const getSpendingByTool = createCachedPaginatedQuery({
+  queryFn: getSpendingByToolUncached,
+  cacheKeyPrefix: 'spending:by-tool',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['lastUsedAt'],
+  tags: ['spending', 'tool'],
+});
+
 export type WalletBreakdownSortId =
   | 'walletName'
   | 'toolCalls'
@@ -120,7 +130,7 @@ export type WalletBreakdownSortId =
   | 'totalMaxAmount'
   | 'lastUsedAt';
 
-export const getWalletBreakdownByTool = async (
+const getWalletBreakdownByToolUncached = async (
   resourceId: string,
   sorting?: { id: WalletBreakdownSortId; desc: boolean }
 ) => {
@@ -160,7 +170,7 @@ export const getWalletBreakdownByTool = async (
     ORDER BY ${orderByClause}
   `;
 
-  const rawResult = await prisma.$queryRaw<
+  const rawResult = await scanDb.$queryRaw<
     Array<{
       resourceId: string;
       resourceUrl: string;
@@ -175,3 +185,12 @@ export const getWalletBreakdownByTool = async (
 
   return toolWalletBreakdownResultSchema.parse(rawResult);
 };
+
+export const getWalletBreakdownByTool = createCachedArrayQuery({
+  queryFn: getWalletBreakdownByToolUncached,
+  cacheKeyPrefix: 'spending:wallet-breakdown-by-tool',
+  createCacheKey: (resourceId, sorting) =>
+    createStandardCacheKey({ resourceId, sorting }),
+  dateFields: ['lastUsedAt'],
+  tags: ['spending', 'tool', 'wallet-breakdown'],
+});

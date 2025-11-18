@@ -144,7 +144,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
                   value={resource.resource}
                   onSelect={() =>
                     handleSelect(
-                      `/recipient/${resource.accepts[0].payTo}/resources`
+                      `/recipient/${resource.accepts[0]!.payTo}/resources`
                     )
                   }
                 >

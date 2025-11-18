@@ -18,7 +18,7 @@ import { convertToUIMessages } from '@/lib/utils';
 import type { RouterOutputs } from '@/trpc/client';
 import type { ChatConfig, SelectedResource } from '../_types/chat-config';
 import type { LanguageModel } from '../_components/chat/input/model-select/types';
-import type { Message } from '@prisma/client';
+import type { Message } from '@x402scan/scan-db';
 import { Chain } from '@/types/chain';
 
 interface Props {
@@ -91,8 +91,8 @@ export const useChat = ({
     initialConfig?.model
       ? (languageModels.find(
           model => `${model.provider}/${model.modelId}` === initialConfig.model
-        ) ?? languageModels[0])
-      : languageModels[0]
+        ) ?? languageModels[0]!)
+      : languageModels[0]!
   );
   const [selectedResources, setSelectedResources] = useState<
     SelectedResource[]
@@ -102,7 +102,7 @@ export const useChat = ({
     error?.message ??
     (status === 'ready' &&
     messages.length > 0 &&
-    messages[messages.length - 1].role === 'user'
+    messages[messages.length - 1]!.role === 'user'
       ? 'The last message failed. Please regenerate the message to continue.'
       : undefined);
 
@@ -111,7 +111,7 @@ export const useChat = ({
       toast.error('Please wait for the chat to be ready');
       return;
     }
-    if (!!errorMessage) {
+    if (errorMessage) {
       toast.error(errorMessage);
       return;
     }

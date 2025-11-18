@@ -77,7 +77,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
               if (payload?.length) {
                 return (
                   <TooltipContent
-                    data={payload[0].payload as ChartData<T>}
+                    data={payload[0]!.payload as ChartData<T>}
                     rows={tooltipRows}
                   />
                 );

@@ -1,9 +1,13 @@
 import z from 'zod';
 import { queryRaw } from '../query';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@x402scan/scan-db';
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
-import { prisma } from '../client';
+import { toPaginatedResponse } from '@/lib/pagination';
+import { scanDb } from '@x402scan/scan-db';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const agentConfigurationSchema = z
   .object({
@@ -44,7 +48,7 @@ export const getAgentConfigFeedSchema = z.object({
   userId: z.string().optional(),
 });
 
-export const getAgentConfigFeed = async (
+const getAgentConfigFeedUncached = async (
   input: z.infer<typeof getAgentConfigFeedSchema>,
   pagination: PaginatedQueryParams
 ) => {
@@ -108,11 +112,12 @@ export const getAgentConfigFeed = async (
       )
       SELECT * FROM combined_events
       ORDER BY "createdAt" DESC
-      ${paginationClause(pagination)}
+      LIMIT ${pagination.page_size}
+      OFFSET ${pagination.page * pagination.page_size}
       `,
       z.array(feedEventSchema)
     ),
-    prisma.toolCall.count({
+    scanDb.toolCall.count({
       where: {
         chat: {
           userAgentConfiguration: {
@@ -122,7 +127,7 @@ export const getAgentConfigFeed = async (
         },
       },
     }),
-    prisma.message.count({
+    scanDb.message.count({
       where: {
         chat: {
           userAgentConfiguration: {
@@ -141,3 +146,11 @@ export const getAgentConfigFeed = async (
     ...pagination,
   });
 };
+
+export const getAgentConfigFeed = createCachedPaginatedQuery({
+  queryFn: getAgentConfigFeedUncached,
+  cacheKeyPrefix: 'agent-config:feed',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['createdAt'],
+  tags: ['agent-configuration', 'feed'],
+});

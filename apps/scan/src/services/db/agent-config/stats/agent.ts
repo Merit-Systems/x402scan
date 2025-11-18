@@ -3,8 +3,8 @@ import z from 'zod';
 import { subMonths, differenceInMilliseconds, getUnixTime } from 'date-fns';
 
 import { queryRaw } from '../../query';
-import { Prisma } from '@prisma/client';
-import { prisma } from '../../client';
+import { scanDb, Prisma } from '@x402scan/scan-db';
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 
 export const agentConfigBucketedActivityInputSchema = z.object({
   agentConfigurationId: z.string(),
@@ -16,7 +16,7 @@ export const agentConfigBucketedActivityInputSchema = z.object({
   numBuckets: z.number().optional().default(48),
 });
 
-export const getAgentConfigBucketedActivity = async (
+const getAgentConfigBucketedActivityUncached = async (
   input: z.infer<typeof agentConfigBucketedActivityInputSchema>
 ) => {
   const { agentConfigurationId, endDate, numBuckets } = input;
@@ -24,7 +24,7 @@ export const getAgentConfigBucketedActivity = async (
   const startDate =
     input.startDate ??
     (
-      await prisma.agentConfiguration.findUnique({
+      await scanDb.agentConfiguration.findUnique({
         where: { id: agentConfigurationId },
         select: {
           createdAt: true,
@@ -103,3 +103,11 @@ export const getAgentConfigBucketedActivity = async (
     )
   );
 };
+
+export const getAgentConfigBucketedActivity = createCachedArrayQuery({
+  queryFn: getAgentConfigBucketedActivityUncached,
+  cacheKeyPrefix: 'agent-config:agent-bucketed-activity',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['bucket_start'],
+  tags: ['agent-configuration', 'activity'],
+});

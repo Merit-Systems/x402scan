@@ -4,7 +4,7 @@ import { Favicon } from '@/app/_components/favicon';
 
 import { cn } from '@/lib/utils';
 
-import type { OgImage, ResourceOrigin } from '@prisma/client';
+import type { OgImage, ResourceOrigin } from '@x402scan/scan-db';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
@@ -74,8 +74,8 @@ export const OriginCard: React.FC<Props> = ({
         <div className="border-l hidden md:flex items-center justify-center bg-muted p-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={origin.ogImages[0].url}
-            alt={origin.ogImages[0].title ?? ''}
+            src={origin.ogImages[0]!.url}
+            alt={origin.ogImages[0]!.title ?? ''}
             className="rounded-md max-h-24"
           />
         </div>

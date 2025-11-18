@@ -3,7 +3,7 @@ import type { Signer } from 'x402-fetch';
 import type z from 'zod';
 import type { getTokenBalanceSchema, sendTokensSchema } from './schemas';
 import type { SolanaAddress } from '@/types/address';
-import { Address } from 'viem';
+import type { Address } from 'viem';
 
 export type NetworkServerWallet<T extends Chain> = (name: string) => {
   address: () => Promise<T extends Chain.SOLANA ? SolanaAddress : Address>;

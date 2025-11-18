@@ -2,6 +2,7 @@ import { useConnect } from 'wagmi';
 
 import { ConnectEVMInjectedWalletButtons } from '../buttons/evm';
 import { ConnectInjectedWalletButtonsWrapper } from './wrapper';
+import { ConnectInjectedWalletEmpty } from './empty';
 
 export const ConnectEVMInjectedWalletForm = () => {
   const { connectors } = useConnect();
@@ -12,13 +13,13 @@ export const ConnectEVMInjectedWalletForm = () => {
       !['injected', 'cdp-embedded-wallet'].includes(connector.id)
   );
 
-  if (filteredConnectors.length === 0) {
-    return null;
-  }
-
   return (
     <ConnectInjectedWalletButtonsWrapper>
-      <ConnectEVMInjectedWalletButtons connectors={filteredConnectors} />
+      {filteredConnectors.length > 0 ? (
+        <ConnectEVMInjectedWalletButtons connectors={filteredConnectors} />
+      ) : (
+        <ConnectInjectedWalletEmpty />
+      )}
     </ConnectInjectedWalletButtonsWrapper>
   );
 };

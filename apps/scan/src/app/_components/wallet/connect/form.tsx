@@ -27,7 +27,7 @@ export const ConnectWalletForm = () => {
       {isEmailFlow ? (
         <ConnectEmbeddedWalletEmail />
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-full">
           <ConnectEmbeddedWalletOAuth />
           <Button
             onClick={() => setIsEmailFlow(true)}

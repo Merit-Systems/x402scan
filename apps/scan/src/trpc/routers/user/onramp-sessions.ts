@@ -15,8 +15,8 @@ import {
   createOnrampUrlParamsSchema,
 } from '@/services/cdp/onramp/create-onramp-session';
 
-import { SessionStatus } from '@prisma/client';
 import { getUserWallets } from '@/services/cdp/server-wallet/user';
+import { SessionStatus } from '@x402scan/scan-db';
 import { SIWE_PROVIDER_ID } from '@/auth/providers/siwe/constants';
 import { SIWS_PROVIDER_ID } from '@/auth/providers/siws/constants';
 import { Chain } from '@/types/chain';

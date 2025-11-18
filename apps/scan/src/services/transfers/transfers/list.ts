@@ -9,7 +9,7 @@ import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
-import { transfersPrisma } from '@/services/transfers/client';
+import { transfersDb } from '@x402scan/transfers-db';
 import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
 import { transfersWhereObject } from '../query-utils';
@@ -27,20 +27,20 @@ const listFacilitatorTransfersUncached = async (
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
   const { sorting } = input;
-  const { page_size: limit, page } = pagination;
+  const { page_size, page } = pagination;
 
   const where = transfersWhereObject(input);
   const [count, transfers] = await Promise.all([
-    transfersPrisma.transferEvent.count({
+    transfersDb.transferEvent.count({
       where,
     }),
-    transfersPrisma.transferEvent.findMany({
+    transfersDb.transferEvent.findMany({
       where,
       orderBy: {
         [sorting.id]: sorting.desc ? 'desc' : 'asc',
       },
-      take: limit + 1,
-      skip: page * limit,
+      take: page_size + 1,
+      skip: page * page_size,
     }),
   ]);
 

@@ -25,7 +25,7 @@ import { getOriginFromUrl } from '@/lib/url';
 
 import { Methods } from '@/types/x402';
 
-import type { AcceptsNetwork } from '@prisma/client';
+import type { AcceptsNetwork } from '@x402scan/scan-db';
 import { x402ResponseSchema } from 'x402/types';
 import { getFaviconUrl } from '@/lib/favicon';
 import type { ImageObject } from 'open-graph-scraper/types';
@@ -33,7 +33,7 @@ import type { ImageObject } from 'open-graph-scraper/types';
 export const resourcesRouter = createTRPCRouter({
   list: {
     all: publicProcedure.query(async () => {
-      return await listResources();
+      return await listResources({});
     }),
     byAddress: publicProcedure
       .input(mixedAddressSchema)

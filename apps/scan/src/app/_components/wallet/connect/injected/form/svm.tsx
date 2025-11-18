@@ -3,6 +3,7 @@ import { useWallets } from '@wallet-standard/react';
 import { ConnectInjectedWalletButtonsWrapper } from './wrapper';
 
 import { ConnectSVMInjectedWalletButtons } from '../buttons/svm';
+import { ConnectInjectedWalletEmpty } from './empty';
 
 export const ConnectSVMInjectedWalletForm = () => {
   const allWallets = useWallets();
@@ -11,13 +12,13 @@ export const ConnectSVMInjectedWalletForm = () => {
     wallet.chains.includes(`solana:mainnet`)
   );
 
-  if (wallets.length === 0) {
-    return null;
-  }
-
   return (
     <ConnectInjectedWalletButtonsWrapper>
-      <ConnectSVMInjectedWalletButtons wallets={wallets} />
+      {wallets.length > 0 ? (
+        <ConnectSVMInjectedWalletButtons wallets={wallets} />
+      ) : (
+        <ConnectInjectedWalletEmpty />
+      )}
     </ConnectInjectedWalletButtonsWrapper>
   );
 };

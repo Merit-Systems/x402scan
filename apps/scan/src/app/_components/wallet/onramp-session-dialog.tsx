@@ -26,7 +26,7 @@ import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-bal
 
 import { cn, formatCurrency } from '@/lib/utils';
 
-import { SessionStatus, type OnrampSession } from '@prisma/client';
+import { SessionStatus, type OnrampSession } from '@x402scan/scan-db';
 
 import { api } from '@/trpc/client';
 

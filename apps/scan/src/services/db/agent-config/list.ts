@@ -1,12 +1,17 @@
 import z from 'zod';
 
+import { scanDb, Prisma } from '@x402scan/scan-db';
+
 import { queryRaw } from '../query';
 
-import { Prisma } from '@prisma/client';
-import { sortingSchema } from '@/lib/schemas';
+import { sortingSchema, timeframeSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
-import { prisma } from '../client';
+import { toPaginatedResponse } from '@/lib/pagination';
+import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const agentsSortingIds = [
   'score',
@@ -20,8 +25,7 @@ const agentsSortingIds = [
 export type AgentSortId = (typeof agentsSortingIds)[number];
 
 export const listTopAgentConfigurationsSchema = z.object({
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
+  timeframe: timeframeSchema,
   userId: z.string().optional(),
   originId: z.string().optional(),
   sorting: sortingSchema(agentsSortingIds).default({
@@ -30,14 +34,15 @@ export const listTopAgentConfigurationsSchema = z.object({
   }),
 });
 
-export const listTopAgentConfigurations = async (
+const listTopAgentConfigurationsUncached = async (
   input: z.infer<typeof listTopAgentConfigurationsSchema>,
   pagination: PaginatedQueryParams
 ) => {
-  const { sorting, userId, originId, startDate, endDate } = input;
+  const { sorting, userId, originId, timeframe } = input;
+  const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
 
   const [count, items] = await Promise.all([
-    prisma.agentConfiguration.count({
+    scanDb.agentConfiguration.count({
       where: {
         visibility: 'public',
         ...(originId
@@ -80,8 +85,8 @@ export const listTopAgentConfigurations = async (
         LEFT JOIN "Message" m ON c.id = m."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
           AND m.role = 'assistant'
-          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate}` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate}` : Prisma.sql``}
+          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) u ON u."agentConfigurationId" = ac.id
       LEFT JOIN (
@@ -91,8 +96,8 @@ export const listTopAgentConfigurations = async (
         LEFT JOIN "Message" m ON c.id = m."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
           AND m.role = 'assistant'
-          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate}` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate}` : Prisma.sql``}
+          ${startDate ? Prisma.sql`AND m."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND m."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) m ON m."agentConfigurationId" = ac.id
       LEFT JOIN (
@@ -101,8 +106,8 @@ export const listTopAgentConfigurations = async (
         LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
         LEFT JOIN "ToolCall" tc ON c.id = tc."chatId"
         WHERE c."userAgentConfigurationId" IS NOT NULL
-          ${startDate ? Prisma.sql`AND tc."createdAt" >= ${startDate}` : Prisma.sql``}
-          ${endDate ? Prisma.sql`AND tc."createdAt" <= ${endDate}` : Prisma.sql``}
+          ${startDate ? Prisma.sql`AND tc."createdAt" >= ${startDate.toISOString()}::timestamp` : Prisma.sql``}
+          ${endDate ? Prisma.sql`AND tc."createdAt" <= ${endDate.toISOString()}::timestamp` : Prisma.sql``}
         GROUP BY acu."agentConfigurationId"
       ) tc ON tc."agentConfigurationId" = ac.id
       -- Join to tools/resources related to the AgentConfiguration
@@ -127,7 +132,8 @@ export const listTopAgentConfigurations = async (
       GROUP BY 
         ac.id, ac.name, ac.description, ac.image, ac."systemPrompt", ac.visibility, ac."createdAt", u.user_count, m.message_count, tc.tool_call_count
       ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
-      ${paginationClause(pagination)}
+      LIMIT ${pagination.page_size}
+      OFFSET ${pagination.page * pagination.page_size}
     `,
       z.array(
         z.object({
@@ -160,3 +166,11 @@ export const listTopAgentConfigurations = async (
     ...pagination,
   });
 };
+
+export const listTopAgentConfigurations = createCachedPaginatedQuery({
+  queryFn: listTopAgentConfigurationsUncached,
+  cacheKeyPrefix: 'agent-config:list',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['createdAt'],
+  tags: ['agent-configuration'],
+});

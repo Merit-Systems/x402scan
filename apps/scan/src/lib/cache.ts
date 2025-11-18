@@ -1,13 +1,21 @@
-import { unstable_cache } from 'next/cache';
+import superjson from 'superjson';
 import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
 
 /**
+ * Cache context that can be passed from tRPC to control cache behavior
+ */
+interface CacheContext {
+  isWarmingCache?: boolean;
+}
+
+/**
  * Redis TTL is 3x the cache duration to provide buffer time.
  * This ensures cache doesn't expire while the next warming cycle is running.
  */
-const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 3;
+// TODO(sragss): With unwramed queries they'll be cached by 45mins.
+const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 2;
 
 /**
  * Lock timeout in seconds (query should complete within this time)
@@ -39,6 +47,20 @@ const roundDateToInterval = (date?: Date): string | undefined => {
     0
   );
   return rounded.toISOString();
+};
+
+/**
+ * Serialize data using SuperJSON (handles BigInt, Date, Map, Set, etc.)
+ */
+const serialize = <T>(data: T): string => {
+  return superjson.stringify(data);
+};
+
+/**
+ * Deserialize data using SuperJSON
+ */
+const deserialize = <T>(str: string): T => {
+  return superjson.parse<T>(str);
 };
 
 /**
@@ -80,7 +102,8 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 async function withRedisCache<T>(
   fullCacheKey: string,
   queryFn: () => Promise<T>,
-  ttlSeconds: number
+  ttlSeconds: number,
+  forceRefresh = false
 ): Promise<T> {
   const redis = getRedisClient();
   if (!redis) {
@@ -93,7 +116,7 @@ async function withRedisCache<T>(
   const cached = await redis.get(fullCacheKey);
   if (cached) {
     console.log(`[Cache] HIT: ${fullCacheKey}`);
-    return JSON.parse(cached) as T;
+    return deserialize<T>(cached);
   }
 
   // Try to acquire lock with NX (set if not exists) and EX (expiry)
@@ -107,10 +130,14 @@ async function withRedisCache<T>(
 
   if (lockAcquired === 'OK') {
     // We got the lock - execute query and cache result
-    console.log(`[Cache] MISS: Executing query for ${fullCacheKey}`);
+    if (forceRefresh) {
+      console.log(`[Cache] WARMING: ${fullCacheKey}`);
+    } else {
+      console.log(`[Cache] MISS: Executing query for ${fullCacheKey}`);
+    }
     try {
       const result = await queryFn();
-      await redis.setex(fullCacheKey, ttlSeconds, JSON.stringify(result));
+      await redis.setex(fullCacheKey, ttlSeconds, serialize(result));
       return result;
     } finally {
       // Release lock
@@ -118,7 +145,11 @@ async function withRedisCache<T>(
     }
   } else {
     // Someone else has the lock - poll for the cached result
-    console.log(`[Cache] WAIT: Polling for ${fullCacheKey}`);
+    if (forceRefresh) {
+      console.log(`[Cache] WARMING (waiting for lock): ${fullCacheKey}`);
+    } else {
+      console.log(`[Cache] WAIT: Polling for ${fullCacheKey}`);
+    }
     for (let i = 0; i < MAX_POLL_ATTEMPTS; i++) {
       await sleep(POLL_INTERVAL_MS);
       const cached = await redis.get(fullCacheKey);
@@ -126,7 +157,7 @@ async function withRedisCache<T>(
         console.log(
           `[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`
         );
-        return JSON.parse(cached) as T;
+        return deserialize<T>(cached);
       }
     }
 
@@ -146,46 +177,35 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
   revalidate?: number;
   tags?: string[];
 }) => {
-  return async (...args: TInput): Promise<TOutput> => {
+  return async (...allArgs: [...TInput, CacheContext?]): Promise<TOutput> => {
+    // Extract context from last argument if present
+    const lastArg = allArgs[allArgs.length - 1];
+    const hasContext =
+      lastArg && typeof lastArg === 'object' && 'isWarmingCache' in lastArg;
+
+    const ctx = hasContext ? (lastArg as CacheContext) : {};
+    const args = hasContext
+      ? (allArgs.slice(0, -1) as TInput)
+      : (allArgs as unknown as TInput);
+
     const cacheKey = config.createCacheKey(...args);
     const fullCacheKey = `${config.cacheKeyPrefix}:${cacheKey}`;
     const ttl = config.revalidate ?? CACHE_TTL_SECONDS;
 
-    // Try Redis first
     const redis = getRedisClient();
-    if (redis) {
-      try {
-        return await withRedisCache(
-          fullCacheKey,
-          async () => {
-            const data = await config.queryFn(...args);
-            return config.serialize(data);
-          },
-          ttl
-        ).then(result => config.deserialize(result));
-      } catch (err) {
-        console.error(
-          '[Cache] Redis error, falling back to unstable_cache:',
-          err
-        );
-        // Fall through to unstable_cache
-      }
+    if (!redis) {
+      throw new Error('Redis client not available');
     }
 
-    // Fallback to Next.js unstable_cache
-    const result = await unstable_cache(
+    return await withRedisCache(
+      fullCacheKey,
       async () => {
         const data = await config.queryFn(...args);
         return config.serialize(data);
       },
-      [config.cacheKeyPrefix, cacheKey],
-      {
-        revalidate: ttl,
-        tags: config.tags,
-      }
-    )();
-
-    return config.deserialize(result);
+      ttl,
+      ctx.isWarmingCache
+    ).then(result => config.deserialize(result));
   };
 };
 
@@ -196,14 +216,16 @@ export const createCachedQuery = <TInput extends unknown[], TOutput>(config: {
   queryFn: (...args: TInput) => Promise<TOutput>;
   cacheKeyPrefix: string;
   createCacheKey: (...args: TInput) => string;
-  dateFields: (keyof TOutput)[];
+  dateFields: (keyof NonNullable<TOutput>)[];
   revalidate?: number;
   tags?: string[];
 }) => {
   return createCachedQueryBase({
     ...config,
-    serialize: data => serializeDates(data, config.dateFields),
-    deserialize: data => deserializeDates(data, config.dateFields),
+    serialize: data =>
+      serializeDates(data as NonNullable<TOutput>, config.dateFields),
+    deserialize: data =>
+      deserializeDates(data as NonNullable<TOutput>, config.dateFields),
   });
 };
 

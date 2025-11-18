@@ -11,7 +11,7 @@ import { WalletChain } from '../../../_contexts/wallet-chain/component';
 
 export const ConnectWalletDialogContent = () => {
   return (
-    <div className="flex flex-col gap-6 max-w-full">
+    <div className="flex flex-col gap-4 max-w-full">
       <DialogHeader className="gap-2 bg-muted border-b">
         <div className="flex gap-2 justify-between p-4">
           <div className="flex flex-row gap-2 items-center">

@@ -17,27 +17,29 @@ import {
 import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
 import { ChatSDKError } from '@/lib/errors';
 
-import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
+import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
-import type { Wallets } from '../cdp/server-wallet/wallets/types';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
-import type { ResourceRequestMetadata } from '@prisma/client';
+import type { ResourceRequestMetadata } from '@x402scan/scan-db';
 import type { Tool } from 'ai';
+import { getUserWallets } from '../cdp/server-wallet/user';
 
 interface CreateX402AIToolsParams {
   resourceIds: string[];
-  wallets: Wallets;
   chatId: string;
+  userId: string;
   maxAmount?: number;
 }
 
 export async function createX402AITools({
   resourceIds,
-  wallets,
   chatId,
+  userId,
   maxAmount,
 }: CreateX402AIToolsParams): Promise<Record<string, Tool>> {
+  const { wallets } = await getUserWallets(userId);
+
   const resources = await listResourcesForTools(resourceIds);
 
   const aiTools: Record<string, Tool> = {};
@@ -155,7 +157,7 @@ export async function createX402AITools({
                 await wallets[network].signer(),
                 maxAmount
                   ? BigInt(parseUnits(String(maxAmount), 6))
-                  : resource.accepts[0].maxAmountRequired
+                  : resource.accepts[0]!.maxAmountRequired
               );
               const response = await fetchWithPayment(
                 new URL(

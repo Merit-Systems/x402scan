@@ -5,7 +5,7 @@ import { ActivityCharts, LoadingActivityCharts } from './charts';
 import { Card } from '@/components/ui/card';
 
 interface Props {
-  agentConfiguration: RouterOutputs['public']['agents']['get'];
+  agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
 }
 
 export const Activity: React.FC<Props> = async ({ agentConfiguration }) => {

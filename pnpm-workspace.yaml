@@ -1,7 +1,6 @@
 packages:
-  - 'apps/*'
+  - 'apps/**'
   - 'sync/*'
-  - 'packages/*'
-  - 'examples'
-  - 'examples/*'
-  - 'examples/**/*'
+  - 'configurations/*'
+  - 'packages/**'
+  - 'examples/**'

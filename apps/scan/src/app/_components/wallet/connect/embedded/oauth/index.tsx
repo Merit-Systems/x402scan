@@ -10,7 +10,7 @@ export const ConnectEmbeddedWalletOAuth = () => {
   const { signInWithOAuth } = useSignInWithOAuth();
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row gap-2 w-full">
       {oauthProviders.map(provider => (
         <Button
           key={provider.id}

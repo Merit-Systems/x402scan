@@ -17,32 +17,19 @@ interface Props {
     'sorting' | 'pagination'
   >;
   limit?: number;
-  initialTimeRange?: {
-    startDate: Date;
-    endDate: Date;
-  };
 }
 
-export const AgentsTable: React.FC<Props> = async ({
-  input,
-  limit = 10,
-  initialTimeRange,
-}) => {
-  await api.public.agents.list.prefetch({
+export const AgentsTable: React.FC<Props> = async ({ input, limit = 10 }) => {
+  void api.public.agents.list.prefetch({
     ...input,
     pagination: { page: 0, page_size: limit },
     sorting: defaultAgentsSorting,
-    ...initialTimeRange,
   });
 
   return (
     <HydrateClient>
       <Suspense fallback={<LoadingAgentsTable />}>
-        <AgentsTableComponent
-          input={input}
-          limit={limit}
-          useTimeRange={!!initialTimeRange}
-        />
+        <AgentsTableComponent input={input} limit={limit} />
       </Suspense>
     </HydrateClient>
   );

@@ -1,68 +1,91 @@
 import z from 'zod';
 
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@x402scan/transfers-db';
 
 import { baseBucketedQuerySchema } from '../schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { facilitators } from '@/lib/facilitators';
+
 import { queryRaw } from '@/services/transfers/client';
-import { transfersWhereClause } from '../query-utils';
+
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+import { facilitators, MIN_FACILITATOR_TRANSACTIONS } from '@/lib/facilitators';
+import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
 const getBucketedFacilitatorsStatisticsUncached = async (
   input: z.infer<typeof bucketedStatisticsInputSchema>
 ) => {
-  const { startDate, endDate, numBuckets, chain } = input;
+  const { timeframe, chain } = input;
+
+  const mvTimeframe = getMaterializedViewSuffix(timeframe);
+  const tableName = `stats_buckets_${mvTimeframe}`;
 
   const chainFacilitators = chain
     ? facilitators.filter(f => f.addresses[chain] !== undefined)
     : facilitators;
 
-  const timeRangeMs = endDate.getTime() - startDate.getTime();
-  const bucketSizeSeconds = Math.max(
-    1,
-    Math.floor(timeRangeMs / numBuckets / 1000)
-  );
-
   const facilitatorIds = chainFacilitators.map(f => f.id);
 
+  // Build WHERE clause for materialized view
+  const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
+
+  if (input.facilitatorIds && input.facilitatorIds.length > 0) {
+    conditions.push(
+      Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`
+    );
+  } else if (facilitatorIds.length > 0) {
+    conditions.push(Prisma.sql`AND facilitator_id = ANY(${facilitatorIds})`);
+  }
+
+  if (input.chain) {
+    conditions.push(Prisma.sql`AND chain = ${input.chain}`);
+  }
+
+  const whereClause = Prisma.join(conditions, ' ');
+
+  // Query the appropriate materialized view
   const sql = Prisma.sql`
-    WITH all_buckets AS (
-      SELECT generate_series(
-        to_timestamp(
-          floor(extract(epoch from ${startDate}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ),
-        ${endDate}::timestamp,
-        (${bucketSizeSeconds} || ' seconds')::interval
-      ) AS bucket_start
-    ),
-    bucket_stats AS (
+    WITH bucket_stats AS (
       SELECT
-        to_timestamp(
-          floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
-        ) AS bucket_start,
-        t.facilitator_id,
-        COUNT(*)::int AS total_transactions,
-        SUM(t.amount)::float AS total_amount,
-        COUNT(DISTINCT t.sender)::int AS unique_buyers,
-        COUNT(DISTINCT t.recipient)::int AS unique_sellers
-      FROM "TransferEvent" t
-      ${transfersWhereClause({ ...input, facilitatorIds })}
-      GROUP BY bucket_start, facilitator_id
+        bucket AS bucket_start,
+        facilitator_id,
+        SUM(total_transactions)::int AS total_transactions,
+        SUM(total_amount)::float AS total_amount,
+        SUM(unique_buyers)::int AS unique_buyers,
+        SUM(unique_sellers)::int AS unique_sellers
+      FROM ${Prisma.raw(tableName)}
+      ${whereClause}
+      GROUP BY bucket, facilitator_id
     ),
     active_facilitators AS (
-      SELECT DISTINCT facilitator_id FROM bucket_stats
+      SELECT facilitator_id
+      FROM bucket_stats
+      GROUP BY facilitator_id
+      HAVING SUM(total_transactions) >= ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
+    ),
+    facilitator_totals AS (
+      SELECT
+        facilitator_id,
+        SUM(total_transactions)::int AS total_txs,
+        SUM(total_amount)::float AS total_amt
+      FROM bucket_stats
+      WHERE facilitator_id IN (SELECT facilitator_id FROM active_facilitators)
+      GROUP BY facilitator_id
+      ORDER BY total_txs DESC
+    ),
+    all_buckets AS (
+      SELECT DISTINCT bucket_start FROM bucket_stats
     ),
     all_combinations AS (
-      SELECT ab.bucket_start, af.facilitator_id
+      SELECT ab.bucket_start, ft.facilitator_id, ft.total_txs
       FROM all_buckets ab
-      CROSS JOIN active_facilitators af
+      CROSS JOIN facilitator_totals ft
     ),
     combined_stats AS (
       SELECT
         ac.bucket_start,
         ac.facilitator_id,
+        ac.total_txs,
         COALESCE(bs.total_transactions, 0)::int AS total_transactions,
         COALESCE(bs.total_amount, 0)::float AS total_amount,
         COALESCE(bs.unique_buyers, 0)::int AS unique_buyers,
@@ -82,11 +105,22 @@ const getBucketedFacilitatorsStatisticsUncached = async (
           'unique_buyers', unique_buyers,
           'unique_sellers', unique_sellers
         )
-      ) AS facilitators
+        ORDER BY total_txs DESC
+      ) AS facilitators,
+      (
+        SELECT jsonb_object_agg(
+          facilitator_id,
+          jsonb_build_object(
+            'totalTransactions', total_txs,
+            'totalAmount', total_amt
+          )
+          ORDER BY total_txs DESC
+        )
+        FROM facilitator_totals
+      ) AS totals
     FROM combined_stats
     GROUP BY bucket_start
     ORDER BY bucket_start
-    LIMIT ${numBuckets}
   `;
 
   const rawResult = await queryRaw(
@@ -103,6 +137,15 @@ const getBucketedFacilitatorsStatisticsUncached = async (
             unique_sellers: z.number(),
           })
         ),
+        totals: z
+          .record(
+            z.string(),
+            z.object({
+              totalTransactions: z.number(),
+              totalAmount: z.number(),
+            })
+          )
+          .nullable(),
       })
     )
   );

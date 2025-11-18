@@ -2,37 +2,27 @@
 
 import { api } from '@/trpc/client';
 
-import { differenceInSeconds, subSeconds } from 'date-fns';
-
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
 import { LoadingOverallStatsCard, OverallStatsCard } from './card';
 
-import { getPercentageFromBigInt } from '@/lib/utils';
 import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
-import { ActivityTimeframe } from '@/types/timeframes';
 import { useChain } from '@/app/_contexts/chain/hook';
 
 export const OverallCharts = () => {
-  const { startDate, endDate, timeframe } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
-  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
+  const [overallStats] = api.public.stats.overallMV.useSuspenseQuery({
     chain,
-    startDate,
-    endDate,
+    timeframe,
   });
-  const [previousOverallStats] = api.public.stats.overall.useSuspenseQuery({
-    chain,
-    startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-    endDate: startDate,
-  });
-  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
-    numBuckets: 32,
-    startDate,
-    endDate,
+
+  const [bucketedStats] = api.public.stats.bucketedMV.useSuspenseQuery({
+    numBuckets: 48,
+    timeframe,
     chain,
   });
 
@@ -60,14 +50,6 @@ export const OverallCharts = () => {
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
-        percentageChange={
-          timeframe === ActivityTimeframe.AllTime
-            ? undefined
-            : getPercentageFromBigInt(
-                BigInt(previousOverallStats.total_transactions),
-                BigInt(overallStats.total_transactions)
-              )
-        }
         items={{
           type: 'bar',
           bars: [{ dataKey: 'transactions', color: 'var(--color-primary)' }],
@@ -89,14 +71,6 @@ export const OverallCharts = () => {
       <OverallStatsCard
         title="Volume"
         value={formatTokenAmount(BigInt(overallStats.total_amount))}
-        percentageChange={
-          timeframe === ActivityTimeframe.AllTime
-            ? undefined
-            : getPercentageFromBigInt(
-                BigInt(previousOverallStats.total_amount),
-                BigInt(overallStats.total_amount)
-              )
-        }
         items={{
           type: 'area',
           areas: [{ dataKey: 'totalAmount', color: 'var(--color-primary)' }],
@@ -124,14 +98,6 @@ export const OverallCharts = () => {
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
-        percentageChange={
-          timeframe === ActivityTimeframe.AllTime
-            ? undefined
-            : getPercentageFromBigInt(
-                BigInt(previousOverallStats.unique_buyers),
-                BigInt(overallStats.unique_buyers)
-              )
-        }
         items={{
           type: 'bar',
           bars: [{ dataKey: 'buyers', color: 'var(--color-primary)' }],
@@ -157,14 +123,6 @@ export const OverallCharts = () => {
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         })}
-        percentageChange={
-          timeframe === ActivityTimeframe.AllTime
-            ? undefined
-            : getPercentageFromBigInt(
-                BigInt(previousOverallStats.unique_sellers),
-                BigInt(overallStats.unique_sellers)
-              )
-        }
         items={{
           type: 'bar',
           bars: [{ dataKey: 'sellers', color: 'var(--color-primary)' }],

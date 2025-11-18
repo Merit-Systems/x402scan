@@ -1,5 +1,5 @@
-import { listResourcesWithPagination } from '@/services/db/resources/resource';
-import type { Prisma } from '@prisma/client';
+import { listResourcesWithPaginationUncached } from '@/services/db/resources/resource';
+import type { Prisma } from '@x402scan/scan-db';
 
 export async function* iterateResourcesBatched(
   batchSize: number,
@@ -9,9 +9,9 @@ export async function* iterateResourcesBatched(
   let hasMore = true;
 
   while (hasMore) {
-    const { items, hasNextPage } = await listResourcesWithPagination(
-      { page, page_size: batchSize },
-      where
+    const { items, hasNextPage } = await listResourcesWithPaginationUncached(
+      { where },
+      { page, page_size: batchSize }
     );
 
     console.info('Fetched batch', {

@@ -1,4 +1,3 @@
-import { Chain } from '@/app/_components/chains';
 import { CopyCode } from '@/components/ui/copy-code';
 
 import { api } from '@/trpc/client';

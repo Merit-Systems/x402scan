@@ -6,7 +6,7 @@ import { LoadingToolsTable, ToolsTable } from './table';
 import { Suspense } from 'react';
 
 export const Tools = async () => {
-  await api.public.tools.top.prefetch({
+  void api.public.tools.top.prefetch({
     pagination: {
       page: 0,
       page_size: 10,

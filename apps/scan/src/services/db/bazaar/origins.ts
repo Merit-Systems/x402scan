@@ -10,8 +10,12 @@ import {
 import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
 import type { listBazaarOriginsInputSchema } from './schema';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
-export const listBazaarOrigins = async (
+const listBazaarOriginsUncached = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
@@ -53,7 +57,7 @@ export const listBazaarOrigins = async (
     if (!origins || origins.length === 0) continue;
 
     // Use the first origin's ID as the grouping key
-    const originId = origins[0].id;
+    const originId = origins[0]!.id;
 
     const existing = originMap.get(originId);
     if (existing) {
@@ -109,3 +113,11 @@ export const listBazaarOrigins = async (
     ...pagination,
   });
 };
+
+export const listBazaarOrigins = createCachedPaginatedQuery({
+  queryFn: listBazaarOriginsUncached,
+  cacheKeyPrefix: 'bazaar:origins',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['latest_block_timestamp'],
+  tags: ['bazaar', 'origins'],
+});

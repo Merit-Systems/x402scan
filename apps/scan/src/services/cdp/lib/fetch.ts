@@ -17,7 +17,7 @@ export const cdpFetch = async <T>(
 
   const jwt = await generateCdpJwt({
     requestMethod: request.requestMethod,
-    requestPath: basePath,
+    requestPath: basePath!,
     requestHost: request.requestHost,
   });
 

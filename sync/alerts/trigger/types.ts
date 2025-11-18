@@ -1,4 +1,4 @@
-import { Address, Chain } from 'viem';
+import type { Address, Chain } from 'viem';
 
 export enum Currency {
   USDC = 'USDC',
@@ -24,4 +24,5 @@ export interface AddressConfig {
   chain: Chain;
   currency: Currency;
   threshold: number;
+  enabled: boolean;
 }

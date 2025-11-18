@@ -1,9 +1,12 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
+
+import { scanDb, Prisma } from '@x402scan/scan-db';
+
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
+import { agentsRelease } from '@/lib/agents';
 
 import type { resourceBucketedQuerySchema } from './schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { prisma } from '@/services/db/client';
 
 const bucketedToolCallsByResourcesResultSchema = z.array(
   z.object({
@@ -21,7 +24,12 @@ const bucketedToolCallsByResourcesResultSchema = z.array(
 const getBucketedToolCallsByResourcesUncached = async (
   input: z.infer<typeof resourceBucketedQuerySchema>
 ) => {
-  const { startDate, endDate, numBuckets, tagIds } = input;
+  const { timeframe, numBuckets, tagIds } = input;
+
+  const { startDate, endDate } = await getBucketedTimeRangeFromTimeframe({
+    period: timeframe,
+    creationDate: agentsRelease,
+  });
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(
@@ -85,7 +93,7 @@ const getBucketedToolCallsByResourcesUncached = async (
     LIMIT ${numBuckets}
   `;
 
-  const rawResult = await prisma.$queryRaw<
+  const rawResult = await scanDb.$queryRaw<
     Array<{
       bucket_start: Date;
       resources: Record<

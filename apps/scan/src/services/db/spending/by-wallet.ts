@@ -1,11 +1,14 @@
 import z from 'zod';
-import { Prisma } from '@prisma/client';
-import { prisma } from '../client';
+import { scanDb, Prisma } from '@x402scan/scan-db';
 import {
   toPaginatedResponse,
-  paginationClause,
   type PaginatedQueryParams,
 } from '@/lib/pagination';
+import {
+  createCachedPaginatedQuery,
+  createCachedArrayQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const walletSpendingResultSchema = z.array(
   z.object({
@@ -35,13 +38,11 @@ export type WalletSpendingSortId =
   | 'uniqueResources'
   | 'totalMaxAmount';
 
-export const getSpendingByWallet = async (
-  pagination: PaginatedQueryParams,
-  sorting?: {
-    id: WalletSpendingSortId;
-    desc: boolean;
-  }
+const getSpendingByWalletUncached = async (
+  input: { sorting?: { id: WalletSpendingSortId; desc: boolean } },
+  pagination: PaginatedQueryParams
 ) => {
+  const { sorting } = input;
   const orderByColumn = sorting?.id ?? 'totalMaxAmount';
   const orderDirection = (sorting?.desc ?? true) ? 'DESC' : 'ASC';
 
@@ -64,7 +65,7 @@ export const getSpendingByWallet = async (
   `;
 
   const countResult =
-    await prisma.$queryRaw<Array<{ total: number }>>(countSql);
+    await scanDb.$queryRaw<Array<{ total: number }>>(countSql);
   const total_count = countResult[0]?.total ?? 0;
 
   // Get paginated results
@@ -83,10 +84,11 @@ export const getSpendingByWallet = async (
     LEFT JOIN "Accepts" a ON a."resourceId" = r.id AND a.network = 'base'
     GROUP BY sw.id, sw."walletName"
     ORDER BY ${orderByClause}
-    ${paginationClause(pagination)}
+    LIMIT ${pagination.page_size}
+    OFFSET ${pagination.page * pagination.page_size}
   `;
 
-  const rawResult = await prisma.$queryRaw<
+  const rawResult = await scanDb.$queryRaw<
     Array<{
       walletId: string;
       walletName: string;
@@ -106,13 +108,21 @@ export const getSpendingByWallet = async (
   });
 };
 
+export const getSpendingByWallet = createCachedPaginatedQuery({
+  queryFn: getSpendingByWalletUncached,
+  cacheKeyPrefix: 'spending:by-wallet',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: [],
+  tags: ['spending', 'wallet'],
+});
+
 export type ToolBreakdownSortId =
   | 'resourceUrl'
   | 'toolCalls'
   | 'maxAmountPerCall'
   | 'totalMaxAmount';
 
-export const getToolBreakdownByWallet = async (
+const getToolBreakdownByWalletUncached = async (
   walletId: string,
   sorting?: { id: ToolBreakdownSortId; desc: boolean }
 ) => {
@@ -150,7 +160,7 @@ export const getToolBreakdownByWallet = async (
     ORDER BY ${orderByClause}
   `;
 
-  const rawResult = await prisma.$queryRaw<
+  const rawResult = await scanDb.$queryRaw<
     Array<{
       walletId: string;
       walletName: string;
@@ -164,3 +174,12 @@ export const getToolBreakdownByWallet = async (
 
   return walletToolBreakdownResultSchema.parse(rawResult);
 };
+
+export const getToolBreakdownByWallet = createCachedArrayQuery({
+  queryFn: getToolBreakdownByWalletUncached,
+  cacheKeyPrefix: 'spending:tool-breakdown-by-wallet',
+  createCacheKey: (walletId, sorting) =>
+    createStandardCacheKey({ walletId, sorting }),
+  dateFields: [],
+  tags: ['spending', 'wallet', 'tool-breakdown'],
+});

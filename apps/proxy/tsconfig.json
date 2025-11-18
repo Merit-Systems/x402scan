@@ -1,18 +1,8 @@
 {
+  "extends": "@x402scan/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
-    "module": "NodeNext",
-    "target": "ES2022",
-    "lib": ["ES2022"],
-    "moduleResolution": "NodeNext",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true
+    "rootDir": "./src"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

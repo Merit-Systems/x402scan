@@ -14,18 +14,16 @@ type FacilitatorKey = `${string}-${'transactions' | 'amount'}`;
 
 export const FacilitatorsChart = () => {
   const { chain } = useChain();
-  const { startDate, endDate } = useTimeRangeContext();
+  const { timeframe } = useTimeRangeContext();
 
   const [bucketedFacilitatorData] =
     api.public.facilitators.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,
-      startDate,
-      endDate,
+      timeframe,
       chain,
     });
-  const [overallData] = api.public.stats.overall.useSuspenseQuery({
-    startDate,
-    endDate,
+  const [overallData] = api.public.stats.overallMV.useSuspenseQuery({
+    timeframe,
     chain,
   });
 
@@ -49,12 +47,28 @@ export const FacilitatorsChart = () => {
   ) => {
     const total = facilitators.reduce(
       (sum, facilitator) =>
-        sum + (allData[`${facilitator.id}-${id}` as FacilitatorKey] || 0),
+        sum + (allData[`${facilitator.id}-${id}` as FacilitatorKey] ?? 0),
       0
     );
     const percentage = total > 0 ? (data / total) * 100 : 0;
     return `${percentage.toFixed(1)}%`;
   };
+
+  const totals = bucketedFacilitatorData[0]?.totals;
+
+  const facilitatorTotals = facilitators.map(facilitator => ({
+    facilitator,
+    totalTransactions: totals?.[facilitator.id]?.totalTransactions ?? 0,
+    totalAmount: totals?.[facilitator.id]?.totalAmount ?? 0,
+  }));
+
+  const facilitatorsByTransactions = [...facilitatorTotals].sort(
+    (a, b) => b.totalTransactions - a.totalTransactions
+  );
+
+  const facilitatorsByAmount = [...facilitatorTotals].sort(
+    (a, b) => b.totalAmount - a.totalAmount
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -67,7 +81,7 @@ export const FacilitatorsChart = () => {
           >({
             label: 'Transactions',
             amount: overallData.total_transactions.toLocaleString(),
-            items: facilitators,
+            items: facilitatorsByTransactions.map(f => f.facilitator),
             getValue: (
               data: number,
               dataType: string,
@@ -81,7 +95,7 @@ export const FacilitatorsChart = () => {
           >({
             label: 'Amount',
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
-            items: facilitators,
+            items: facilitatorsByAmount.map(f => f.facilitator),
             getValue: (
               data: number,
               dataType: string,

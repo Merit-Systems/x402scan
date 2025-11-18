@@ -7,56 +7,42 @@ import {
 import { Suspense } from 'react';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
-import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
-import { getChain } from '@/app/_lib/chain';
-import { getSSRTimeRange } from '@/lib/time-range';
+import { getChainForPage } from '@/app/_lib/chain/page';
 
 export default async function TransactionsPage({
   searchParams,
 }: PageProps<'/transactions'>) {
-  const chain = await searchParams.then(params => getChain(params.chain));
+  const chain = await getChainForPage(await searchParams);
 
   const pageSize = 15;
 
-  const { endDate, startDate } = getSSRTimeRange(
-    ActivityTimeframe.ThirtyDays,
-    firstTransfer
-  );
-
-  await api.public.transfers.list.prefetch({
-    startDate,
-    endDate,
+  void api.public.transfers.list.prefetch({
     sorting: defaultTransfersSorting,
     chain,
     pagination: {
       page_size: pageSize,
       page: 0,
     },
+    timeframe: ActivityTimeframe.ThirtyDays,
   });
 
   return (
     <HydrateClient>
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
-        <TimeRangeProvider
-          creationDate={firstTransfer}
-          initialTimeframe={ActivityTimeframe.ThirtyDays}
-        >
-          <Heading
-            title="Transactions"
-            description="All x402 transactions through the Coinbase facilitator"
-          />
-          <Body>
-            <Suspense
-              fallback={
-                <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
-              }
-            >
-              <LatestTransactionsTable pageSize={pageSize} />
-            </Suspense>
-          </Body>
-        </TimeRangeProvider>
+        <Heading
+          title="Transactions"
+          description="All x402 transactions through the Coinbase facilitator"
+        />
+        <Body>
+          <Suspense
+            fallback={
+              <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
+            }
+          >
+            <LatestTransactionsTable pageSize={pageSize} />
+          </Suspense>
+        </Body>
       </TransfersSortingProvider>
     </HydrateClient>
   );
