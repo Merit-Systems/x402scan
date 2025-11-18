@@ -1,0 +1,11 @@
+{
+  "extends": "@x402scan/typescript-config/base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "outDir": "./dist",
+    "rootDir": "."
+  },
+  "include": ["**/*.ts", "src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

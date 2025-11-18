@@ -33,7 +33,9 @@
         "ADDRESS",
         "PORT",
         "DISCORD_WEBHOOK_URL",
-        "OPENROUTER_API_KEY"
+        "OPENROUTER_API_KEY",
+        "WALLET_CLIENT_OWNER",
+        "TEST_SERVER_OWNER_ADDRESS"
       ]
     },
     "dev": {

@@ -34,6 +34,7 @@ import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
 
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import type { Signer } from 'x402/types';
 
 const openrouter = createOpenRouter({
   headers: {
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
   if (!wallet) {
     return new ChatSDKError('not_found:chat').toResponse();
   }
-  const signer = toAccount(wallet);
+  const signer = toAccount(wallet) as Signer;
 
   const lastMessage = message;
 
