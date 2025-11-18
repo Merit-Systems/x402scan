@@ -37,7 +37,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     cell: ({ row }) => (
       <Link
         href={`/facilitator/${row.original.facilitator_id}`}
-        prefetch={false}
         className="flex items-center gap-1"
       >
         <Image

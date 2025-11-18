@@ -28,11 +28,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
     origin.origins.find(o => o.favicon) ?? origin.origins[0]!;
 
   return (
-    <Link
-      href={`/server/${originWithMetadata.id}`}
-      prefetch={false}
-      className="h-full"
-    >
+    <Link href={`/server/${originWithMetadata.id}`} className="h-full">
       <Card className="h-full flex flex-col hover:border-primary transition-colors cursor-pointer group">
         <div className="flex flex-row items-start gap-2 flex-1">
           <CardHeader className="w-full overflow-hidden p-3">

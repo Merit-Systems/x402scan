@@ -39,7 +39,7 @@ export const Seller: React.FC<Props> = ({
 
   if (!origins || origins.length === 0) {
     return (
-      <Link href={`/recipient/${address}`} prefetch={false}>
+      <Link href={`/recipient/${address}`}>
         <Address
           address={address}
           className={cn('text-xs font-medium', addressClassName)}

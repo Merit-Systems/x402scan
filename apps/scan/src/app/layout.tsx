@@ -147,7 +147,7 @@ export default async function RootLayout({
                         >
                           <div className="min-h-screen flex flex-col relative">
                             <LogoContainer>
-                              <Link href="/" prefetch={false}>
+                              <Link href="/">
                                 <Logo className="size-full aspect-square" />
                               </Link>
                             </LogoContainer>
