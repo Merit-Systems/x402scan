@@ -11,7 +11,7 @@ export const Megalith = {
   id: 'Megalith',
   metadata: {
     name: 'Megalith',
-    image: '----',
+    image: '/megalith.png',
     docsUrl: 'https://x402.megalithlabs.at',
     color: '#f26522',
   },
