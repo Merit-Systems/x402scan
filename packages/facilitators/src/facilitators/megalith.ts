@@ -19,14 +19,14 @@ export const Megalith = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0xa7833325cd012582dB1f1be511211E82eDDEA940',
+        address: '0xa7833325cd012582db1f1be511211e82eddea940',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-03'),
       },
     ],
     [Network.BSC]: [
       {
-        address: '0xa7833325cd012582dB1f1be511211E82eDDEA940',
+        address: '0xa7833325cd012582db1f1be511211e82eddea940',
         tokens: [USDC_BSC_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-28'),
       },
