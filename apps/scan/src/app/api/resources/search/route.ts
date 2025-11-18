@@ -4,12 +4,21 @@ import { z } from 'zod';
 
 import { env } from '@/env';
 import { searchResourcesCombined } from '@/services/resource-search/combined-search';
-import type { QueryMode, RefinementMode } from '@/services/resource-search/types';
+import type {
+  QueryMode,
+  RefinementMode,
+} from '@/services/resource-search/types';
 
 const searchSchema = z.object({
   q: z.string().min(1),
-  queryMode: z.enum(['keywords', 'sql', 'sql-parallel']).optional().default('keywords'),
-  refinementMode: z.enum(['none', 'llm', 'reranker', 'both']).optional().default('none'),
+  queryMode: z
+    .enum(['keywords', 'sql', 'sql-parallel'])
+    .optional()
+    .default('keywords'),
+  refinementMode: z
+    .enum(['none', 'llm', 'reranker', 'both'])
+    .optional()
+    .default('none'),
 });
 
 export const GET = async (request: NextRequest) => {
@@ -17,7 +26,10 @@ export const GET = async (request: NextRequest) => {
   const apiKey = request.headers.get('x-api-key');
   if (!env.RESOURCE_SEARCH_API_KEY || apiKey !== env.RESOURCE_SEARCH_API_KEY) {
     return NextResponse.json(
-      { success: false, error: 'Unauthorized - this endpoint is for internal use only' },
+      {
+        success: false,
+        error: 'Unauthorized - this endpoint is for internal use only',
+      },
       { status: 401 }
     );
   }
@@ -41,7 +53,11 @@ export const GET = async (request: NextRequest) => {
     );
   }
 
-  const { q: query, queryMode: parsedQueryMode, refinementMode: parsedRefinementMode } = parseResult.data;
+  const {
+    q: query,
+    queryMode: parsedQueryMode,
+    refinementMode: parsedRefinementMode,
+  } = parseResult.data;
 
   try {
     // 3. Execution
@@ -63,4 +79,3 @@ export const GET = async (request: NextRequest) => {
     );
   }
 };
-
