@@ -36,7 +36,7 @@ export const Messages: React.FC<MessagesProps> = ({
     <Conversation className="h-full w-full">
       {messages.length > 0 ? (
         <>
-          <ConversationContent className="max-w-4xl mx-auto">
+          <ConversationContent className="max-w-4xl mx-auto pb-8">
             {messages.map(message => (
               <Message
                 key={message.id}
