@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { AlertCircle, ArrowDown, ArrowUp, Key, Wallet } from 'lucide-react';
-
-import { useSearchParams } from 'next/navigation';
 
 import {
   Dialog,
@@ -25,23 +23,36 @@ import { api } from '@/trpc/client';
 
 import { OnrampSessionDialog } from './content/onramp-session-dialog';
 
-import type { Address } from 'viem';
+import { useSession } from 'next-auth/react';
+import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
+import { WalletChain } from '@/app/_contexts/wallet-chain/component';
 
 interface Props {
   children: React.ReactNode;
-  address: Address;
 }
 
-export const WalletDialog: React.FC<Props> = ({ children, address }) => {
-  const searchParams = useSearchParams();
-  const { data: usdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery();
+export const WalletDialog: React.FC<Props> = ({ children }) => {
+  const { data: session } = useSession();
+
+  const { chain } = useWalletChain();
+
+  const { data: usdcBalance } = api.user.serverWallet.tokenBalance.useQuery(
+    {
+      chain,
+    },
+    {
+      enabled: !!session,
+    }
+  );
   const {
     data: hasUserAcknowledgedComposer,
     isLoading: isLoadingHasUserAcknowledgedComposer,
   } = api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
+    refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
+    enabled: !!session,
   });
 
   const [isOpen, setIsOpen] = useState(false);
@@ -49,21 +60,12 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
 
   const isOutOfFunds = usdcBalance !== undefined && usdcBalance <= 0.01;
 
-  useEffect(() => {
-    const showDeposit =
-      isOutOfFunds && !searchParams.get('server_wallet_onramp_token');
-    if (showDeposit && hasUserAcknowledgedComposer) {
-      setIsOpen(true);
-      setTab('deposit');
-    }
-  }, [searchParams, isOutOfFunds, hasUserAcknowledgedComposer]);
-
   if (isLoadingHasUserAcknowledgedComposer) {
     return children;
   }
 
   return (
-    <>
+    <WalletChainProvider>
       <OnrampSessionDialog />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild disabled={!hasUserAcknowledgedComposer}>
@@ -81,16 +83,19 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
             }
           >
             <DialogHeader className=" gap-2 bg-muted">
-              <div className="flex flex-row gap-2 items-center p-4">
-                <Logo className="size-8" />
-                <div className="flex flex-col gap-2">
-                  <DialogTitle className="text-primary text-xl">
-                    Your Composer Wallet
-                  </DialogTitle>
-                  <DialogDescription className="hidden">
-                    This is your wallet.
-                  </DialogDescription>
+              <div className="flex flex-row justify-between items-center p-4">
+                <div className="flex flex-row gap-2 items-center">
+                  <Logo className="size-8" />
+                  <div className="flex flex-col gap-2">
+                    <DialogTitle className="text-primary text-xl">
+                      Your Composer Wallet
+                    </DialogTitle>
+                    <DialogDescription className="hidden">
+                      This is your wallet.
+                    </DialogDescription>
+                  </div>
                 </div>
+                <WalletChain />
               </div>
               <TabsList className="w-full h-fit max-w-full overflow-x-auto no-scrollbar">
                 <div className="h-[34px] border-b w-4" />
@@ -130,7 +135,7 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
               value="wallet"
               className="px-4 w-full overflow-hidden mt-0 pb-4"
             >
-              <WalletDisplay address={address} />
+              <WalletDisplay />
             </TabsContent>
             <TabsContent
               value="deposit"
@@ -148,7 +153,7 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
                 </div>
               )}
               <div className="px-4">
-                <Deposit address={address} />
+                <Deposit />
               </div>
             </TabsContent>
             <TabsContent
@@ -166,6 +171,6 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
           </Tabs>
         </DialogContent>
       </Dialog>
-    </>
+    </WalletChainProvider>
   );
 };

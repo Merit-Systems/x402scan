@@ -4,10 +4,12 @@
   "type": "module",
   "scripts": {
     "dev": "tsx index.ts",
-    "format": "prettier -c .prettierrc --write \"**/*.{ts,js,cjs,json,md}\"",
-    "format:check": "prettier -c .prettierrc --check \"**/*.{ts,js,cjs,json,md}\"",
-    "lint": "eslint . --ext .ts --fix",
-    "lint:check": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "check:types": "tsc --noEmit",
+    "knip": "pnpm -w knip --workspace ./examples/servers/hono",
+    "format": "pnpm -w format-dir ./examples/servers/hono",
+    "check:format": "pnpm -w check:format-dir ./examples/servers/hono"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
@@ -17,16 +19,10 @@
     "x402-hono": "^0.7.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.24.0",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "@types/node": "^24.9.2",
-    "@typescript-eslint/eslint-plugin": "^8.29.1",
-    "@typescript-eslint/parser": "^8.29.1",
     "eslint": "^9.24.0",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jsdoc": "^50.6.9",
-    "eslint-plugin-prettier": "^5.2.6",
-    "prettier": "3.5.2",
-    "tsup": "^7.2.0",
     "tsx": "^4.7.0",
     "typescript": "^5.3.0"
   }

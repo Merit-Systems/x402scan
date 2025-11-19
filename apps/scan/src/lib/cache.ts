@@ -216,14 +216,16 @@ export const createCachedQuery = <TInput extends unknown[], TOutput>(config: {
   queryFn: (...args: TInput) => Promise<TOutput>;
   cacheKeyPrefix: string;
   createCacheKey: (...args: TInput) => string;
-  dateFields: (keyof TOutput)[];
+  dateFields: (keyof NonNullable<TOutput>)[];
   revalidate?: number;
   tags?: string[];
 }) => {
   return createCachedQueryBase({
     ...config,
-    serialize: data => serializeDates(data, config.dateFields),
-    deserialize: data => deserializeDates(data, config.dateFields),
+    serialize: data =>
+      serializeDates(data as NonNullable<TOutput>, config.dateFields),
+    deserialize: data =>
+      deserializeDates(data as NonNullable<TOutput>, config.dateFields),
   });
 };
 

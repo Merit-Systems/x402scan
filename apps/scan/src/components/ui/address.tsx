@@ -65,7 +65,7 @@ export const Addresses = ({
   if (addresses.length === 1) {
     return (
       <Address
-        address={addresses[0]}
+        address={addresses[0]!}
         className={cn('border-none p-0', className)}
         hideTooltip={hideTooltip}
         side={side}

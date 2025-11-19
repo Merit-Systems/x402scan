@@ -31,9 +31,9 @@ import {
 } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+
 import type { ParsedX402Response } from '@/lib/x402/schema';
 import { Methods } from '@/types/x402';
-import type { OgImage, ResourceOrigin } from '@prisma/client';
 import { Checklist } from './checklist';
 import {
   createDummyOgImage,
@@ -47,9 +47,12 @@ import {
   type PreviewResult,
 } from './queries';
 import { AcceptsBreakdownTable } from '@/app/(home)/resources/register/_components/accepts-breakdown-table';
-import { SUPPORTED_CHAINS, type Chain } from '@/types/chain';
+import { SUPPORTED_CHAINS } from '@/types/chain';
 import { isLocalUrl, extractPort } from '@/lib/url-helpers';
 import { NgrokAlert } from './ngrok-alert';
+
+import type { SupportedChain } from '@/types/chain';
+import type { OgImage, ResourceOrigin } from '@x402scan/scan-db';
 
 export const TestEndpointForm = () => {
   const queryClient = useQueryClient();
@@ -168,11 +171,13 @@ export const TestEndpointForm = () => {
         const accepts = pair.parsed.data.accepts ?? [];
         accepts.forEach(accept => {
           allAccepts.push({
-            network: accept.network,
+            network: accept.network!,
             payTo: accept.payTo,
             asset: accept.asset,
             method,
-            isSupported: SUPPORTED_CHAINS.includes(accept.network as Chain),
+            isSupported: SUPPORTED_CHAINS.includes(
+              accept.network as SupportedChain
+            ),
           });
         });
       }

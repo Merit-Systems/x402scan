@@ -1,9 +1,9 @@
-import { prisma } from '../client';
+import { scanDb } from '@x402scan/scan-db';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 
 import type { Chain } from '@/types/chain';
-import type { AcceptsNetwork, Prisma } from '@prisma/client';
+import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
 
 interface GetAcceptsAddressesInput {
   chain?: Chain;
@@ -12,7 +12,7 @@ interface GetAcceptsAddressesInput {
 
 export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
   const { chain, tags } = input;
-  const accepts = await prisma.accepts.findMany({
+  const accepts = await scanDb.accepts.findMany({
     include: {
       resourceRel: {
         select: {
@@ -88,11 +88,11 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
           return acc;
         }
         if (acc[accept.payTo]) {
-          const existingOrigin = acc[accept.payTo].find(
+          const existingOrigin = acc[accept.payTo]!.find(
             origin => origin.id === accept.resourceRel.origin.id
           );
           if (!existingOrigin) {
-            acc[accept.payTo].push(accept.resourceRel.origin);
+            acc[accept.payTo]!.push(accept.resourceRel.origin);
           }
         } else {
           acc[accept.payTo] = [accept.resourceRel.origin];

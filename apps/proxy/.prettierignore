@@ -1,0 +1,8 @@
+# Build outputs
+dist/
+*.js
+*.mjs
+
+# Node modules
+node_modules/
+

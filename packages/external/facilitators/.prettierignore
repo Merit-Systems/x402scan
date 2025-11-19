@@ -1,0 +1,9 @@
+# Build outputs
+dist/
+*.js
+*.mjs
+*.d.ts
+
+# Node modules
+node_modules/
+

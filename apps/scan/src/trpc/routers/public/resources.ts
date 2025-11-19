@@ -16,7 +16,7 @@ import {
   type ResourceSortId,
 } from '@/services/db/resources/resource';
 
-import { prisma } from '@/services/db/client';
+import { scanDb } from '@x402scan/scan-db';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 
@@ -30,7 +30,11 @@ import {
   listTagsSchema,
 } from '@/services/db/resources/tag';
 
-import type { Prisma } from '@prisma/client';
+import { convertTokenAmount } from '@/lib/token';
+import { usdc } from '@/lib/tokens/usdc';
+
+import type { Prisma } from '@x402scan/scan-db';
+import type { SupportedChain } from '@/types/chain';
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
@@ -41,7 +45,16 @@ export const resourcesRouter = createTRPCRouter({
         message: 'Resource not found',
       });
     }
-    return resource;
+    return {
+      ...resource,
+      accepts: resource.accepts.map(accept => ({
+        ...accept,
+        maxAmountRequired: convertTokenAmount(
+          accept.maxAmountRequired,
+          usdc(accept.network as SupportedChain).decimals
+        ),
+      })),
+    };
   }),
   list: {
     all: publicProcedure.query(async () => {
@@ -81,7 +94,7 @@ export const resourcesRouter = createTRPCRouter({
       }),
   },
   getById: publicProcedure.input(z.string()).query(async ({ input }) => {
-    return await prisma.resources.findUnique({
+    return await scanDb.resources.findUnique({
       where: { id: input },
       include: {
         accepts: true,
@@ -192,7 +205,7 @@ export const resourcesRouter = createTRPCRouter({
   getMetrics: publicProcedure
     .input(z.object({ resourceId: z.string() }))
     .query(async ({ input }) => {
-      return await prisma.resourceMetrics.findFirst({
+      return await scanDb.resourceMetrics.findFirst({
         where: { resourceId: input.resourceId },
         orderBy: { updatedAt: 'desc' },
         select: {

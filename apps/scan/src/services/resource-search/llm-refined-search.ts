@@ -54,7 +54,9 @@ function buildFilterEvaluationPrompt(
 ): string {
   const resourceContext = {
     title: resource.origin.title ?? resource.origin.origin,
-    description: resource.accepts[0]?.description ?? 'No description',
+    description:
+      resource.accepts?.find(accept => accept.description)?.description ??
+      'No description',
     origin: resource.origin.origin,
     tags: resource.tags.map(t => t.name).join(', ') || 'No tags',
     hasRecentUsage: resource.analytics

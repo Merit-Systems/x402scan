@@ -1,26 +1,82 @@
-import { ConnectWalletForm } from '@/app/_components/wallet/connect/form';
-import { useSignIn } from '@/app/_hooks/use-sign-in';
-import { Button } from '@/components/ui/button';
+'use client';
+
 import { Loader2 } from 'lucide-react';
-import { useAccount } from 'wagmi';
+
+import { Button } from '@/components/ui/button';
+
+import { useSiwe } from '@/app/_hooks/sign-in/use-siwe';
+import { useSiws } from '@/app/_hooks/sign-in/use-siws';
+
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+
+import type { UiWalletAccount } from '@wallet-standard/react';
+import type { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
+
+import { ConnectWalletForm } from '@/app/_components/wallet/connect/form';
+import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
+import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
 export const ConnectStep = () => {
-  const { address } = useAccount();
+  const connectedWallets = useConnectedWallets();
 
-  if (!address) {
+  if (!connectedWallets.isConnected) {
     return (
-      <div className="p-4 flex flex-col gap-2">
-        <ConnectWalletForm />
-      </div>
+      <WalletChainProvider>
+        <div className="p-4 flex flex-col gap-2">
+          <ConnectWalletForm />
+        </div>
+      </WalletChainProvider>
     );
   }
 
-  return <Verify />;
+  return <Verify connectedWallets={connectedWallets} />;
 };
 
-const Verify = () => {
-  const { signIn, isPending } = useSignIn();
+interface Props {
+  connectedWallets: ConnectedWallets;
+}
 
+const Verify: React.FC<Props> = ({ connectedWallets }) => {
+  if (connectedWallets.evmAddress) {
+    return <VerifyEvm />;
+  }
+  if (connectedWallets.solanaAddress) {
+    return <VerifySvm />;
+  }
+
+  return null;
+};
+
+const VerifyEvm = () => {
+  const { signIn, isPending } = useSiwe();
+
+  return <VerifyContent signIn={signIn} isPending={isPending} />;
+};
+
+const VerifySvm = () => {
+  const { connectedWallet } = useSolanaWallet();
+
+  const VerifySvmContent = ({ account }: { account: UiWalletAccount }) => {
+    const { signIn, isPending } = useSiws({
+      account,
+    });
+
+    return <VerifyContent signIn={signIn} isPending={isPending} />;
+  };
+
+  if (!connectedWallet) {
+    return null;
+  }
+
+  return <VerifySvmContent account={connectedWallet.account} />;
+};
+
+interface VerifyProps {
+  signIn: () => void;
+  isPending: boolean;
+}
+
+const VerifyContent: React.FC<VerifyProps> = ({ signIn, isPending }) => {
   return (
     <div className="flex flex-col gap-4 pt-4 ">
       <div className="px-4">

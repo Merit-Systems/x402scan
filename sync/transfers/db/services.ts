@@ -1,5 +1,6 @@
-import { prisma } from './client';
-import { Prisma } from '@/generated/prisma';
+import { transfersDb } from '@x402scan/transfers-db';
+
+import type { Prisma } from '@x402scan/transfers-db';
 
 /**
  * Create a new TransferEvent
@@ -7,7 +8,7 @@ import { Prisma } from '@/generated/prisma';
 export async function createTransferEvent(
   data: Prisma.TransferEventCreateInput
 ) {
-  return await prisma.transferEvent.create({
+  return await transfersDb.transferEvent.create({
     data,
   });
 }
@@ -18,7 +19,7 @@ export async function createTransferEvent(
 export async function createManyTransferEvents(
   data: Prisma.TransferEventCreateManyInput[]
 ) {
-  return await prisma.transferEvent.createMany({
+  return await transfersDb.transferEvent.createMany({
     data,
     skipDuplicates: true,
   });
@@ -31,7 +32,7 @@ export async function updateManyTransferEvents(
   where: Prisma.TransferEventWhereInput,
   data: Prisma.TransferEventUpdateManyMutationInput
 ) {
-  return await prisma.transferEvent.updateMany({
+  return await transfersDb.transferEvent.updateMany({
     where,
     data,
   });
@@ -41,7 +42,7 @@ export async function updateManyTransferEvents(
  * Find a single TransferEvent by transaction hash
  */
 export async function getTransferEventByTxHash(tx_hash: string) {
-  return await prisma.transferEvent.findFirst({
+  return await transfersDb.transferEvent.findFirst({
     where: { tx_hash },
   });
 }
@@ -55,9 +56,9 @@ export async function getTransferEvents(params?: {
   skip?: number;
   take?: number;
 }) {
-  const { where, orderBy, skip, take } = params || {};
+  const { where, orderBy, skip, take } = params ?? {};
 
-  return await prisma.transferEvent.findMany({
+  return await transfersDb.transferEvent.findMany({
     where,
     orderBy,
     skip,
@@ -76,7 +77,7 @@ export async function getTransferEventsByChain(
     take?: number;
   }
 ) {
-  return await prisma.transferEvent.findMany({
+  return await transfersDb.transferEvent.findMany({
     where: { chain },
     orderBy: params?.orderBy,
     skip: params?.skip,
@@ -95,7 +96,7 @@ export async function getTransferEventsByAddress(
     take?: number;
   }
 ) {
-  return await prisma.transferEvent.findMany({
+  return await transfersDb.transferEvent.findMany({
     where: { address },
     orderBy: params?.orderBy,
     skip: params?.skip,
@@ -114,7 +115,7 @@ export async function getTransferEventsBySender(
     take?: number;
   }
 ) {
-  return await prisma.transferEvent.findMany({
+  return await transfersDb.transferEvent.findMany({
     where: { sender },
     orderBy: params?.orderBy,
     skip: params?.skip,
@@ -133,7 +134,7 @@ export async function getTransferEventsByRecipient(
     take?: number;
   }
 ) {
-  return await prisma.transferEvent.findMany({
+  return await transfersDb.transferEvent.findMany({
     where: { recipient },
     orderBy: params?.orderBy,
     skip: params?.skip,
@@ -147,7 +148,7 @@ export async function getTransferEventsByRecipient(
 export async function countTransferEvents(
   where?: Prisma.TransferEventWhereInput
 ) {
-  return await prisma.transferEvent.count({ where });
+  return await transfersDb.transferEvent.count({ where });
 }
 
 /**
@@ -156,7 +157,7 @@ export async function countTransferEvents(
 export async function deleteManyTransferEvents(
   where: Prisma.TransferEventWhereInput
 ) {
-  return await prisma.transferEvent.deleteMany({
+  return await transfersDb.transferEvent.deleteMany({
     where,
   });
 }

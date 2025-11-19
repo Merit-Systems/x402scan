@@ -1,49 +1,37 @@
 {
-  "name": "x402sync",
+  "name": "sync-transfers",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
   "author": "",
   "type": "commonjs",
   "scripts": {
-    "db:migrate:dev": "prisma migrate dev",
-    "db:migrate:prod": "prisma migrate deploy",
-    "db:push": "prisma db push",
-    "db:generate": "prisma generate",
-    "db:reset": "prisma migrate reset",
-    "db:format": "prisma format",
-    "db:studio": "prisma studio",
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "check:format": "prettier --check .",
-    "format": "prettier --write .",
     "check:types": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "knip": "knip"
+    "knip": "pnpm -w knip --workspace ./sync/transfers",
+    "format": "pnpm -w format-dir ./sync/transfers",
+    "check:format": "pnpm -w check:format-dir ./sync/transfers"
   },
   "dependencies": {
     "@coinbase/cdp-sdk": "^1.38.4",
     "@google-cloud/bigquery": "^8.1.1",
-    "@neondatabase/serverless": "^1.0.2",
-    "@prisma/adapter-neon": "^6.17.1",
-    "@prisma/client": "6.17.1",
     "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
     "@trigger.dev/sdk": "4.0.5",
+    "@x402scan/transfers-db": "workspace:*",
     "bottleneck": "^2.19.5",
     "facilitators": "workspace:*",
-    "p-limit": "^7.2.0",
-    "ws": "^8.18.3"
+    "p-limit": "^7.2.0"
   },
   "devDependencies": {
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "@trigger.dev/build": "4.0.5",
-    "@types/ws": "^8.18.1",
-    "@typescript-eslint/parser": "^8.46.2",
+    "@types/node": "^20",
     "eslint": "^9.38.0",
-    "knip": "^5.66.2",
-    "prettier": "^3.6.2",
-    "prisma": "^6.17.1",
     "trigger.dev": "^4.0.4",
     "typescript": "^5.9.3"
   }

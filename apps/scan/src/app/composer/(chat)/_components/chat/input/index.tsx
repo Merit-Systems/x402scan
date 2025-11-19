@@ -16,8 +16,6 @@ import { ModelSelect } from './model-select';
 import { ResourcesSelect } from './resources-select';
 import { WalletButton } from './wallet';
 
-import { api } from '@/trpc/client';
-
 import type { ChatStatus } from 'ai';
 import type { SelectedResource } from '../../../_types/chat-config';
 import type { LanguageModel } from './model-select/types';
@@ -47,15 +45,6 @@ export const PromptInputSection: React.FC<Props> = ({
 }) => {
   const { data: session } = useSession();
 
-  const { data: usdcBalance, isLoading: isUsdcBalanceLoading } =
-    api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
-      enabled: !!session,
-    });
-
-  const isLoading = isUsdcBalanceLoading;
-
-  const hasBalance = (usdcBalance ?? 0) > 0;
-
   return (
     <PromptInput onSubmit={handleSubmit}>
       <PromptInputTextarea
@@ -63,14 +52,7 @@ export const PromptInputSection: React.FC<Props> = ({
           setInput(e.target.value)
         }
         value={input}
-        disabled={!hasBalance}
-        placeholder={
-          session
-            ? !isLoading && !hasBalance
-              ? 'Add funds to your agent to continue'
-              : undefined
-            : 'Sign in to use the composer'
-        }
+        placeholder={!session ? 'Sign in to use the composer' : undefined}
       />
       <PromptInputToolbar>
         <PromptInputTools>
@@ -82,9 +64,7 @@ export const PromptInputSection: React.FC<Props> = ({
           <WalletButton />
         </PromptInputTools>
         <PromptInputSubmit
-          disabled={
-            !input || !hasBalance || status !== 'ready' || !!errorMessage
-          }
+          disabled={!input || status !== 'ready' || !!errorMessage}
           className="size-8 md:size-8"
         />
       </PromptInputToolbar>

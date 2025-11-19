@@ -64,7 +64,7 @@ async function limitConcurrency(
   async function runNext(): Promise<void> {
     while (index < tasks.length) {
       const taskIndex = index++;
-      await withRetry(tasks[taskIndex], MAX_RETRIES, `Task ${taskIndex + 1}`);
+      await withRetry(tasks[taskIndex]!, MAX_RETRIES, `Task ${taskIndex + 1}`);
     }
   }
 

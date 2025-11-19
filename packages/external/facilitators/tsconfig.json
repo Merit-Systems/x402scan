@@ -1,0 +1,15 @@
+{
+  "extends": "@x402scan/typescript-config/base.json",
+  "compilerOptions": {
+    "lib": ["ES2020"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["**/*.ts", "src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

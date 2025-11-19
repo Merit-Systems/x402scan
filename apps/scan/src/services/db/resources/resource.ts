@@ -1,18 +1,18 @@
-import { prisma } from '../client';
+import { scanDb } from '@x402scan/scan-db';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { z } from 'zod';
 import { toPaginatedResponse } from '@/lib/pagination';
 
-import { mixedAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema, supportedChainSchema } from '@/lib/schemas';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
 import { ChainIdToNetwork } from 'x402/types';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import type { AcceptsNetwork, Prisma } from '@prisma/client';
+import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
-import type { Chain } from '@/types/chain';
+import type { SupportedChain } from '@/types/chain';
 
 import {
   createCachedArrayQuery,
@@ -51,7 +51,7 @@ export const upsertResourceSchema = z.object({
           })
           .transform(
             v =>
-              ChainIdToNetwork[Number(v.split(':')[1])].replace(
+              ChainIdToNetwork[Number(v.split(':')[1])]!.replace(
                 '-',
                 '_'
               ) as AcceptsNetwork
@@ -78,13 +78,13 @@ export const upsertResource = async (
   }
   const baseResource = parsedResourceInput.data;
   const supportedAccepts = baseResource.accepts.filter(accept =>
-    SUPPORTED_CHAINS.includes(accept.network as Chain)
+    SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
   const unsupportedAccepts = baseResource.accepts.filter(
-    accept => !SUPPORTED_CHAINS.includes(accept.network as Chain)
+    accept => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
   const originStr = getOriginFromUrl(baseResource.resource);
-  return await prisma.$transaction(async tx => {
+  return await scanDb.$transaction(async tx => {
     const { origin, ...resource } = await tx.resources.upsert({
       where: {
         resource: baseResource.resource,
@@ -170,7 +170,7 @@ export const upsertResource = async (
 };
 
 export const getResource = async (id: string) => {
-  return await prisma.resources.findUnique({
+  return await scanDb.resources.findUnique({
     where: {
       id,
     },
@@ -194,7 +194,7 @@ export const getResource = async (id: string) => {
 export const listResourcesUncached = async (
   where?: Prisma.ResourcesWhereInput
 ) => {
-  return await prisma.resources.findMany({
+  return await scanDb.resources.findMany({
     where,
     orderBy: [
       { invocations: { _count: 'desc' } },
@@ -235,10 +235,10 @@ export const listResourcesWithPaginationUncached = async (
       : { toolCalls: { _count: sortConfig.desc ? 'desc' : 'asc' } };
 
   const [count, resources] = await Promise.all([
-    prisma.resources.count({
+    scanDb.resources.count({
       where,
     }),
-    prisma.resources.findMany({
+    scanDb.resources.findMany({
       where,
       include: {
         accepts: true,
@@ -277,7 +277,7 @@ export const listResourcesWithPagination = createCachedPaginatedQuery({
 });
 
 export const getResourceByAddress = async (address: string) => {
-  return await prisma.resources.findFirst({
+  return await scanDb.resources.findFirst({
     where: {
       accepts: {
         some: {
@@ -294,20 +294,24 @@ export const searchResourcesSchema = z.object({
   tagIds: z.array(z.string()).optional(),
   resourceIds: z.array(z.string()).optional(),
   showExcluded: z.boolean().optional().default(false),
+  chains: z.array(supportedChainSchema).optional(),
 });
 
 const searchResourcesUncached = async (
   input: z.infer<typeof searchResourcesSchema>
 ) => {
-  const { search, limit, tagIds, resourceIds, showExcluded } = input;
-  return await prisma.resources.findMany({
+  const { search, limit, tagIds, resourceIds, showExcluded, chains } = input;
+  return await scanDb.resources.findMany({
     where: {
       accepts: {
-        some: {
-          network: {
-            equals: 'base',
-          },
-        },
+        some:
+          chains !== undefined
+            ? {
+                network: {
+                  in: chains,
+                },
+              }
+            : {},
       },
       ...(search
         ? {
@@ -347,8 +351,8 @@ const searchResourcesUncached = async (
       origin: true,
       accepts: {
         where: {
-          network: {
-            equals: 'base',
+          payTo: {
+            not: '',
           },
         },
       },
@@ -372,7 +376,7 @@ export const searchResources = createCachedArrayQuery({
 });
 
 export const listResourcesForTools = async (resourceIds: string[]) => {
-  return await prisma.resources.findMany({
+  return await scanDb.resources.findMany({
     where: {
       id: { in: resourceIds },
       excluded: { is: null },

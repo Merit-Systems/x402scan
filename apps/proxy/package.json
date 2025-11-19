@@ -7,17 +7,24 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "docker:build": "docker build -t x402-proxy .",
-    "docker:run": "docker run -p 6969:6969 --env-file .env x402-proxy"
+    "check:types": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "knip": "pnpm -w knip --workspace ./apps/proxy",
+    "format": "pnpm -w format-dir ./apps/proxy",
+    "check:format": "pnpm -w check:format-dir ./apps/proxy"
   },
   "dependencies": {
-    "hono": "^4.6.14",
     "@hono/node-server": "^1.13.7",
-    "@clickhouse/client": "^1.7.0",
-    "dotenv": "^16.4.5"
+    "@x402scan/analytics-db": "workspace:*",
+    "dotenv": "^16.4.5",
+    "hono": "^4.6.14"
   },
   "devDependencies": {
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "@types/node": "^20",
+    "eslint": "^9.39.1",
     "tsx": "^4.7.0",
     "typescript": "^5.6.3"
   }

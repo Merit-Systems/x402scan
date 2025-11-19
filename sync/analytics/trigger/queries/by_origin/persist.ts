@@ -1,8 +1,9 @@
-import { db } from '@/services/db';
+import { scanDb } from '@x402scan/scan-db';
 import { logger } from '@trigger.dev/sdk';
-import { MetricsByOrigin } from '../types';
 import { mapMetric } from '../utils';
-import { Prisma } from '@prisma/client';
+
+import type { MetricsByOrigin } from '../types';
+import type { Prisma } from '@x402scan/scan-db';
 
 export async function persistMetrics(
   data: unknown
@@ -12,7 +13,7 @@ export async function persistMetrics(
   const originToId = new Map<string, string>();
 
   for (const metric of metrics) {
-    const origin = await db.resourceOrigin.findFirst({
+    const origin = await scanDb.resourceOrigin.findFirst({
       where: {
         origin: {
           mode: 'insensitive',
@@ -49,7 +50,7 @@ export async function persistMetrics(
   if (metricsWithOriginId.length === 0) {
     return { count: 0 };
   }
-  return await db.resourceOriginMetrics.createMany({
+  return await scanDb.resourceOriginMetrics.createMany({
     data: metricsWithOriginId,
   });
 }

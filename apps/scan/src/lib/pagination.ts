@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import z from 'zod';
 
 interface ToPaginatedResponseParams<T> {
@@ -36,12 +35,4 @@ export type PaginatedResponse<T> = {
   total_count: number;
   total_pages: number;
   page: number;
-};
-
-export const paginationClause = (
-  pagination: z.infer<typeof paginatedQuerySchema>
-) => {
-  return Prisma.sql`
-    LIMIT ${pagination.page_size} 
-    OFFSET ${pagination.page * pagination.page_size}`;
 };

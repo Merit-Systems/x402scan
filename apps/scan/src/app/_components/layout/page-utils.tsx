@@ -141,7 +141,7 @@ export const Section = <T extends string>({
       <div className="flex flex-col gap-1">
         <div className="flex justify-between items-center">
           {href ? (
-            <Link href={href} prefetch={false}>
+            <Link href={href}>
               <Header />
             </Link>
           ) : (

@@ -20,7 +20,7 @@ const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
   },
 });
 
-export const wagmiConfig = {
+const wagmiConfig = {
   chains: [base],
   storage: createStorage({
     storage: cookieStorage,
@@ -32,7 +32,4 @@ export const wagmiConfig = {
   ssr: true,
 } as const;
 
-export const getServerConfig = () =>
-  createConfig({
-    ...wagmiConfig,
-  });
+export const createWagmiConfig = () => createConfig(wagmiConfig);

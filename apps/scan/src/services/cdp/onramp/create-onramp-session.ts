@@ -1,20 +1,22 @@
 import { z } from 'zod';
 
 import { cdpFetch } from '../lib/fetch';
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { ethereumAddressSchema, solanaAddressSchema } from '@/lib/schemas';
+import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
 
 export const createOnrampUrlParamsSchema = z.object({
   redirect: z.url(),
   amount: z.number(),
   experience: z.enum(['send', 'buy']).default('buy'),
-  defaultNetwork: z.literal('base').default('base'),
+  defaultNetwork: z.enum(SUPPORTED_CHAINS),
   defaultAsset: z.literal('USDC').default('USDC'),
   fiatCurrency: z.literal('USD').default('USD'),
   tokenKey: z.string().default('onramp_token'),
+  redirectSearchParams: z.record(z.string(), z.string()).optional(),
 });
 
 export const createOnrampUrl = async (
-  addressInput: z.input<typeof ethereumAddressSchema>,
+  addressInput: string,
   input: z.input<typeof createOnrampUrlParamsSchema>
 ) => {
   const {
@@ -25,9 +27,13 @@ export const createOnrampUrl = async (
     fiatCurrency,
     redirect,
     tokenKey,
+    redirectSearchParams,
   } = createOnrampUrlParamsSchema.parse(input);
 
-  const address = ethereumAddressSchema.parse(addressInput);
+  const address =
+    defaultNetwork === Chain.SOLANA
+      ? solanaAddressSchema.parse(addressInput)
+      : ethereumAddressSchema.parse(addressInput);
 
   const { token } = await cdpFetch(
     {
@@ -53,6 +59,13 @@ export const createOnrampUrl = async (
 
   const redirectUrl = new URL(redirect);
   redirectUrl.searchParams.set(tokenKey, token);
+  redirectUrl.searchParams.set('network', defaultNetwork);
+
+  if (redirectSearchParams) {
+    Object.entries(redirectSearchParams).forEach(([key, value]) => {
+      redirectUrl.searchParams.set(key, value);
+    });
+  }
 
   const searchParams = new URLSearchParams({
     sessionToken: token,

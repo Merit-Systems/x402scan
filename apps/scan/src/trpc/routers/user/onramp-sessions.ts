@@ -15,8 +15,11 @@ import {
   createOnrampUrlParamsSchema,
 } from '@/services/cdp/onramp/create-onramp-session';
 
-import { SessionStatus } from '@prisma/client';
-import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
+import { getUserWallets } from '@/services/cdp/server-wallet/user';
+import { SessionStatus } from '@x402scan/scan-db';
+import { SIWE_PROVIDER_ID } from '@/auth/providers/siwe/constants';
+import { SIWS_PROVIDER_ID } from '@/auth/providers/siws/constants';
+import { Chain } from '@/types/chain';
 
 export const onrampSessionsRouter = createTRPCRouter({
   get: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
@@ -62,8 +65,13 @@ export const onrampSessionsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createOnrampUrlParamsSchema)
     .mutation(async ({ ctx, input }) => {
+      const { defaultNetwork } = input;
       const account = ctx.session.user.accounts.find(
-        account => account.type === 'siwe'
+        account =>
+          account.provider ===
+          (defaultNetwork === Chain.SOLANA
+            ? SIWS_PROVIDER_ID
+            : SIWE_PROVIDER_ID)
       );
       if (!account) {
         throw new TRPCError({ code: 'NOT_FOUND' });
@@ -82,14 +90,17 @@ export const onrampSessionsRouter = createTRPCRouter({
     create: protectedProcedure
       .input(createOnrampUrlParamsSchema)
       .mutation(async ({ ctx, input }) => {
-        const { wallet, id } = await getWalletForUserId(ctx.session.user.id);
-        if (!wallet) {
+        const { wallets, id } = await getUserWallets(ctx.session.user.id);
+        if (!wallets[input.defaultNetwork]) {
           throw new TRPCError({ code: 'NOT_FOUND' });
         }
-        const { token, url } = await createOnrampUrl(wallet.address, {
-          ...input,
-          tokenKey: 'server_wallet_onramp_token',
-        });
+        const { token, url } = await createOnrampUrl(
+          await wallets[input.defaultNetwork].address(),
+          {
+            ...input,
+            tokenKey: 'server_wallet_onramp_token',
+          }
+        );
         await createOnrampSession({
           token,
           amount: input.amount,

@@ -16,11 +16,13 @@ interface Props {
 
 export const EditAgentForm: React.FC<Props> = ({ agentConfiguration }) => {
   const router = useRouter();
+  const utils = api.useUtils();
 
   const { mutate: createAgent, isPending } =
     api.user.agentConfigurations.update.useMutation({
-      onSuccess: agentConfiguration => {
+      onSuccess: async agentConfiguration => {
         toast.success('Agent configuration updated successfully');
+        await utils.public.agents.get.invalidate(agentConfiguration.id);
         router.push(`/composer/agent/${agentConfiguration.id}`);
       },
       onError: error => {

@@ -1,15 +1,15 @@
 import { Activity } from 'lucide-react';
 
 import { CommandItem as BaseCommandItem } from '@/components/ui/command';
+import { Skeleton } from '@/components/ui/skeleton';
 
+import { Chains, Chain } from '@/app/_components/chains';
 import { Favicon } from '@/app/_components/favicon';
 
-import { cn } from '@/lib/utils';
-import { formatTokenAmount } from '@/lib/token';
+import { cn, formatCurrency } from '@/lib/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
 import type { SelectedResource } from '../../../_types/chat-config';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   isSelected: boolean;
@@ -55,13 +55,15 @@ export const BaseResourceItem: React.FC<Props> = ({
         <div className="flex items-center gap-0.5 font-semibold">
           <Activity className="size-3 text-muted-foreground" />
           <p className="text-xs text-muted-foreground">
-            {resource.invocations}
+            {resource.invocations.toLocaleString(undefined, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 1,
+              notation: 'compact',
+            })}
           </p>
         </div>
       )}
-      <p className="text-xs text-primary font-bold">
-        {formatTokenAmount(BigInt(resource.maxAmountRequired))}
-      </p>
+      <ToolAccepts accepts={resource.accepts} />
     </BaseCommandItem>
   );
 };
@@ -87,5 +89,47 @@ export const LoadingBaseResourceItem: React.FC = () => {
       </div>
       <Skeleton className="w-8 h-[14px]" />
     </BaseCommandItem>
+  );
+};
+
+const ToolAccepts = ({
+  accepts,
+}: {
+  accepts: RouterOutputs['public']['tools']['search'][number]['accepts'];
+}) => {
+  const allSameAmount = accepts.every(
+    accept => accept.maxAmountRequired === accepts[0]!.maxAmountRequired
+  );
+
+  const ToolAmount = ({ amount }: { amount: number }) => {
+    return (
+      <span className="text-xs font-semibold text-primary font-mono">
+        {formatCurrency(amount)}
+      </span>
+    );
+  };
+
+  if (allSameAmount) {
+    return (
+      <div className="flex items-center gap-2 shrink-0">
+        <ToolAmount amount={accepts[0]!.maxAmountRequired} />
+        <Chains
+          chains={accepts.map(accept => accept.chain).sort()}
+          iconClassName="size-3"
+          className="gap-0.5"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      {accepts.map(accept => (
+        <div key={accept.chain} className="flex items-center gap-0.5 shrink-0">
+          <ToolAmount amount={accept.maxAmountRequired} />
+          <Chain chain={accept.chain} iconClassName="size-3" />
+        </div>
+      ))}
+    </div>
   );
 };

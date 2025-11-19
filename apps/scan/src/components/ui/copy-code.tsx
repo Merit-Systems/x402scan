@@ -5,17 +5,10 @@ import { cn } from '@/lib/utils';
 
 type Props = {
   className?: string;
-} & (
-  | {
-      isLoading: true;
-    }
-  | {
-      isLoading?: false;
-      code: string;
-      toastMessage: string;
-      className?: string;
-    }
-);
+  toastMessage: string;
+  isLoading?: boolean;
+  code: string;
+};
 
 export const CopyCode: React.FC<Props> = ({ className, ...props }) => {
   return (

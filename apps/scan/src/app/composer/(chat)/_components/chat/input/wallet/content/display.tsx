@@ -1,38 +1,47 @@
 'use client';
 
-import { CopyCode } from '@/components/ui/copy-code';
+import { useSession } from 'next-auth/react';
+
 import { Skeleton } from '@/components/ui/skeleton';
+
+import { ComposerWalletAddressCopyCode } from './address';
+
+import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
+
 import { api } from '@/trpc/client';
 
-import type { Address } from 'viem';
+export const WalletDisplay: React.FC = () => {
+  const { data: session } = useSession();
 
-interface Props {
-  address: Address;
-}
+  const { chain } = useWalletChain();
 
-export const WalletDisplay: React.FC<Props> = ({ address }) => {
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery();
+    api.user.serverWallet.tokenBalance.useQuery(
+      {
+        chain,
+      },
+      {
+        enabled: !!session,
+      }
+    );
 
   return (
     <div className="space-y-4 w-full overflow-hidden">
       <ItemContainer
         label="Balance"
         value={
-          isLoadingUsdcBalance ? (
-            <Skeleton className="h-4 w-16" />
-          ) : (
-            <p className="bg-muted rounded-md border p-2">
-              {usdcBalance?.toPrecision(3)} USDC
-            </p>
-          )
+          <div className="bg-muted rounded-md border p-2">
+            {isLoadingUsdcBalance ? (
+              <Skeleton className="h-4 w-16" />
+            ) : (
+              <p>{usdcBalance?.toPrecision(3)} USDC</p>
+            )}
+          </div>
         }
       />
       <ItemContainer
         label="Address"
-        value={
-          <CopyCode code={address} toastMessage="Address copied to clipboard" />
-        }
+        value={<ComposerWalletAddressCopyCode />}
       />
     </div>
   );

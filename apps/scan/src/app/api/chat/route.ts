@@ -14,26 +14,29 @@ import {
 
 import { createResumableStreamContext } from 'resumable-stream';
 
-import { toAccount } from 'viem/accounts';
-
-import { createX402OpenAI } from '@merit-systems/ai-x402/server';
-
 import { createChat, getChat, updateChat } from '@/services/db/composer/chat';
 
 import { auth } from '@/auth';
 
 import { createX402AITools } from '@/services/agent/create-tools';
 
+import { ChatError } from '@/lib/errors';
 import { messageSchema } from '@/lib/message-schema';
 
-import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
-import { ChatSDKError } from '@/lib/errors';
+import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
+import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
 
 import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
-import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
-import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
-import { env } from '@/env';
+
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+
+const openrouter = createOpenRouter({
+  headers: {
+    'HTTP-Referer': 'https://x402scan.com',
+    'X-Title': 'x402scan',
+  },
+});
 
 const bodySchema = z.object({
   model: z.string(),
@@ -47,14 +50,14 @@ export async function POST(request: NextRequest) {
   const session = await auth();
 
   if (!session) {
-    return new ChatSDKError('unauthorized:chat').toResponse();
+    return new ChatError('unauthorized:auth').toResponse();
   }
 
   const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
     console.error('Bad request:', requestBody.error);
-    return new ChatSDKError('bad_request:chat').toResponse();
+    return new ChatError('bad_request:chat').toResponse();
   }
 
   const { model, resourceIds, message, chatId, agentConfigurationId } =
@@ -62,27 +65,13 @@ export async function POST(request: NextRequest) {
 
   let chat = await getChat(chatId, session.user.id);
 
-  const wallet = await getWalletForUserId(session.user.id).then(
-    wallet => wallet.wallet
-  );
-
-  if (!wallet) {
-    return new ChatSDKError('not_found:chat').toResponse();
-  }
-  const signer = toAccount(wallet);
-  const openai = createX402OpenAI({
-    walletClient: signer,
-    baseRouterUrl: env.ECHO_PROXY_URL,
-    echoAppId: env.ECHO_APP_ID,
-  });
-
   const lastMessage = message;
 
   if (!chat) {
     // Start title generation in parallel (don't await)
     const titlePromise = generateTitleFromUserMessage({
       message: lastMessage,
-      model: openai('gpt-4.1-nano'),
+      model: openrouter.chat('gpt-4.1-nano'),
     });
 
     // Create chat with temporary title immediately
@@ -162,8 +151,8 @@ export async function POST(request: NextRequest) {
 
   const tools = await createX402AITools({
     resourceIds,
-    walletClient: signer,
     chatId,
+    userId: session.user.id,
   });
 
   const getSystemPrompt = async () => {
@@ -190,7 +179,7 @@ export async function POST(request: NextRequest) {
   ]);
 
   const result = streamText({
-    model: openai.chat(model),
+    model: openrouter.chat(model),
     messages: convertToModelMessages(messages),
     system: await getSystemPrompt(),
     stopWhen: stepCountIs(50),
@@ -221,13 +210,13 @@ export async function POST(request: NextRequest) {
     onError: error => {
       if (error instanceof APICallError) {
         if (error.statusCode === 402) {
-          return new ChatSDKError('payment_required:chat').message;
+          return new ChatError('payment_required:chat').message;
         }
       }
-      if (error instanceof ChatSDKError) {
+      if (error instanceof ChatError) {
         return error.message;
       }
-      return new ChatSDKError('bad_request:chat').message;
+      return new ChatError('bad_request:chat').message;
     },
     async consumeSseStream({ stream }) {
       const streamId = generateId();
@@ -276,6 +265,6 @@ async function generateTitleFromUserMessage({
     return title;
   } catch {
     console.error('Error generating title:');
-    throw new ChatSDKError('server:chat');
+    throw new ChatError('server:chat');
   }
 }

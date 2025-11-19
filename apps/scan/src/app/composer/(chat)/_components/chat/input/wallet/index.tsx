@@ -1,8 +1,9 @@
+'use client';
+
 import { Bot } from 'lucide-react';
 
 import { useSession } from 'next-auth/react';
 
-import { Loading } from '@/components/ui/loading';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { PromptInputButton } from '@/components/ai-elements/prompt-input';
@@ -10,48 +11,40 @@ import { PromptInputButton } from '@/components/ai-elements/prompt-input';
 import { WalletDialog } from './dialog';
 
 import { api } from '@/trpc/client';
+import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
 
 export const WalletButton = () => {
   const { data: session } = useSession();
 
-  const { data: address, isLoading: isLoadingAddress } =
-    api.user.serverWallet.address.useQuery(undefined, {
-      enabled: !!session,
-    });
+  const {
+    data: hasUserAcknowledgedComposer,
+    isLoading: isLoadingHasUserAcknowledgedComposer,
+  } = api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
+    enabled: !!session,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
 
-  const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
-      enabled: !!session,
-    });
-
-  const { isLoading: isLoadingHasUserAcknowledgedComposer } =
-    api.user.acknowledgements.hasAcknowledged.useQuery();
-
-  if (isLoadingAddress || isLoadingHasUserAcknowledgedComposer) {
+  if (isLoadingHasUserAcknowledgedComposer) {
     return <LoadingWalletButton />;
   }
 
-  if (!address) {
-    return null;
+  if (!hasUserAcknowledgedComposer) {
+    return <WalletButtonComponent disabled>Welcome</WalletButtonComponent>;
   }
 
   return (
-    <WalletDialog address={address}>
-      <WalletButtonComponent
-        className={
-          usdcBalance !== undefined && usdcBalance < 0.1
-            ? 'text-primary bg-primary/10 border-primary'
-            : ''
-        }
-      >
-        <Loading
-          isLoading={isLoadingUsdcBalance}
-          value={usdcBalance}
-          component={balance =>
-            balance < 0.1 ? 'Add Funds' : `${balance?.toPrecision(3)} USDC`
-          }
-          loadingComponent={<LoadingWalletButtonContent />}
-        />
+    <WalletChainProvider>
+      <AcknowledgedWalletButton />
+    </WalletChainProvider>
+  );
+};
+
+const AcknowledgedWalletButton = () => {
+  return (
+    <WalletDialog>
+      <WalletButtonComponent>
+        <span>Wallet</span>
       </WalletButtonComponent>
     </WalletDialog>
   );
