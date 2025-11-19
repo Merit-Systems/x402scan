@@ -118,7 +118,7 @@ export function createChainSyncTask(syncConfig: SyncConfig) {
     return;
   }
 
-  if (syncConfig.syncJobByFacilitator) {
+  if (syncConfig.splitSyncByFacilitator) {
     return createSplitSyncTasks(syncConfig);
   }
 
