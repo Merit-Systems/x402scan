@@ -52,7 +52,7 @@ export const StatsCards: React.FC<Props> = async ({ id }) => {
   ];
 
   return stats.map((stat, index) => (
-    <StatCard key={stat.title} {...stat} value={values[index]} />
+    <StatCard key={stat.title} {...stat} value={values[index]!} />
   ));
 };
 

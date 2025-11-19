@@ -18,7 +18,6 @@ import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-bal
 import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-balance';
 
 import { cn } from '@/lib/utils';
-import { BASE_USDC } from '@/lib/tokens/usdc';
 
 import { Chain } from '@/types/chain';
 
@@ -41,7 +40,7 @@ interface Props
 
 export const TokenInput: React.FC<Props> = ({
   onChange,
-  selectedToken = BASE_USDC,
+  selectedToken,
   onTokenChange,
   tokens = [],
   isBalanceMax = false,

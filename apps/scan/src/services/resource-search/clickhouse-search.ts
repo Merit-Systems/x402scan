@@ -1,4 +1,4 @@
-import { clickhouse } from '@/services/db/clickhouse/resource-invocations';
+import { analyticsDb } from '@x402scan/analytics-db';
 import type {
   SearchResult,
   ResourceAnalytics,
@@ -46,7 +46,7 @@ async function fetchAnalyticsForUrls(
     GROUP BY url
   `;
 
-  const resultSet = await clickhouse.query({
+  const resultSet = await analyticsDb.query({
     query,
     format: 'JSONEachRow',
     query_params: { urls },

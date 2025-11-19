@@ -1,18 +1,17 @@
 import z from 'zod';
-import { prisma } from '../client';
+import { scanDb, Prisma } from '@x402scan/scan-db';
 import { queryRaw } from '../query';
 
-import { Prisma } from '@prisma/client';
 import { sortingSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
+import { toPaginatedResponse } from '@/lib/pagination';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
 
 export const createToolCall = async (data: Prisma.ToolCallCreateInput) => {
-  return await prisma.toolCall.create({
+  return await scanDb.toolCall.create({
     data,
   });
 };
@@ -39,7 +38,7 @@ const listTopToolsUncached = async (
 ) => {
   const { sorting } = input;
   const [count, items] = await Promise.all([
-    prisma.resources.count({
+    scanDb.resources.count({
       where: {
         toolCalls: {
           some: {},
@@ -129,7 +128,8 @@ const listTopToolsUncached = async (
               ? Prisma.sql`unique_users`
               : Prisma.sql`latest_call_time`
       } ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
-    ${paginationClause(pagination)}
+    LIMIT ${pagination.page_size}
+    OFFSET ${pagination.page * pagination.page_size}
   `,
       z.array(
         z.object({

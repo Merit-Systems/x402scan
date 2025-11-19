@@ -1,0 +1,40 @@
+// Explicitly export Prisma types and enums instead of using export *
+export { Prisma } from '../generated/client';
+export type {
+  User,
+  Account,
+  Session,
+  VerificationToken,
+  Resources,
+  Accepts,
+  News,
+  ResourceOrigin,
+  ResourceResponse,
+  ResourceInvocation,
+  ResourceRequestMetadata,
+  OgImage,
+  OnrampSession,
+  ServerWallet,
+  Chat,
+  Message,
+  ToolCall,
+  AgentConfiguration,
+  AgentConfigurationResource,
+  AgentConfigurationUser,
+  Tag,
+  ResourcesTags,
+  ExcludedResource,
+  UserAcknowledgement,
+  ResourceOriginMetrics,
+  ResourceMetrics,
+} from '../generated/client';
+export {
+  Role,
+  ResourceType,
+  AcceptsScheme,
+  AcceptsNetwork,
+  SessionStatus,
+  ServerWalletType,
+  Visibility,
+} from '../generated/client';
+export { scanDb } from './client';

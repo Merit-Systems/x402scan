@@ -83,7 +83,9 @@ export function ResourceExecutorModal({
     );
   }
 
-  const outputSchema = resource.accepts[0]?.outputSchema;
+  const outputSchema = resource.accepts?.find(
+    accept => accept.outputSchema
+  )?.outputSchema;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -97,7 +99,9 @@ export function ResourceExecutorModal({
           <ResourceExecutor
             resource={resource}
             tags={resource.tags.map(tag => tag.tag)}
-            bazaarMethod={getBazaarMethod(resource.accepts[0].outputSchema)}
+            bazaarMethod={getBazaarMethod(
+              resource.accepts.find(accept => accept.outputSchema)?.outputSchema
+            )}
             response={parsedResponse.data}
             className="bg-transparent"
           />

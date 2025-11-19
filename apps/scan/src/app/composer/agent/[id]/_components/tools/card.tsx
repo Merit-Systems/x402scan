@@ -15,7 +15,9 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
-  resource: RouterOutputs['public']['agents']['get']['resources'][number];
+  resource: NonNullable<
+    RouterOutputs['public']['agents']['get']
+  >['resources'][number];
 }
 
 export const ToolCard: React.FC<Props> = ({ resource }) => {
@@ -29,7 +31,12 @@ export const ToolCard: React.FC<Props> = ({ resource }) => {
               {resource.resource}
             </CardTitle>
             <span className="text-sm font-mono text-primary font-bold">
-              {formatTokenAmount(BigInt(resource.accepts[0].maxAmountRequired))}
+              {formatTokenAmount(
+                BigInt(
+                  resource.accepts.find(accept => accept.maxAmountRequired)
+                    ?.maxAmountRequired ?? 0
+                )
+              )}
             </span>
           </div>
           <div className="flex items-center gap-0.5">
@@ -40,7 +47,7 @@ export const ToolCard: React.FC<Props> = ({ resource }) => {
           </div>
         </div>
         <CardDescription className="line-clamp-2 text-xs md:text-sm">
-          {resource.accepts[0].description}
+          {resource.accepts.find(accept => accept.description)?.description}
         </CardDescription>
       </CardHeader>
     </Card>

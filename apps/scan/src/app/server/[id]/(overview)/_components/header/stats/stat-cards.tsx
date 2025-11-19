@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tags } from '@/app/_components/tags';
 
 import type { LucideIcon } from 'lucide-react';
-import type { Tag as TagType } from '@prisma/client';
+import type { Tag as TagType } from '@x402scan/scan-db';
 
 interface Props {
   originId: string;

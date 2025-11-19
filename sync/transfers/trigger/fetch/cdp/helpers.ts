@@ -53,7 +53,7 @@ export async function cdpFetch<T>(
     throw new Error(`CDP API error (${response.status}): ${errorText}`);
   }
 
-  return response.json();
+  return response.json() as Promise<T>;
 }
 
 export async function runCdpSqlQuery(sql: string): Promise<unknown[]> {
@@ -74,7 +74,9 @@ export async function runCdpSqlQuery(sql: string): Promise<unknown[]> {
 
       return data.result ?? [];
     } catch (error) {
-      logger.error(`[CDP] Error running SQL query: ${error}`);
+      logger.error(
+        `[CDP] Error running SQL query: ${error instanceof Error ? error.message : String(error)}`
+      );
 
       const isRateLimit =
         error instanceof Error &&

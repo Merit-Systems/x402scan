@@ -13,6 +13,7 @@ import { useEvmX402Fetch } from '@/app/_hooks/x402/evm';
 import { convertTokenAmount } from '@/lib/token';
 
 import type { SupportedChain } from '@/types/chain';
+import { usdc } from '@/lib/tokens/usdc';
 
 interface Props {
   chain: SupportedChain;
@@ -40,7 +41,9 @@ export const FetchEvm: React.FC<Props> = ({
     error,
   } = useEvmX402Fetch(targetUrl, maxAmountRequired, chain, requestInit);
 
-  const { data: balance, isLoading: isLoadingBalance } = useEvmTokenBalance();
+  const { data: balance, isLoading: isLoadingBalance } = useEvmTokenBalance({
+    token: usdc(chain),
+  });
 
   if (!walletClient) {
     return <ConnectWalletState chain={chain} />;

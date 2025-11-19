@@ -19,11 +19,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { cn, formatCurrency } from '@/lib/utils';
 
-import { SessionStatus, type OnrampSession } from '@prisma/client';
+import { SessionStatus, type OnrampSession } from '@x402scan/scan-db';
 
 import { api } from '@/trpc/client';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
+import { optionalSupportedChainSchema } from '@/lib/schemas';
 
 export const OnrampSessionDialog: React.FC = () => {
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
@@ -32,6 +33,14 @@ export const OnrampSessionDialog: React.FC = () => {
   const utils = api.useUtils();
 
   const searchParams = useSearchParams();
+
+  const networkParamResult = optionalSupportedChainSchema.safeParse(
+    searchParams.get('network')
+  );
+
+  const networkParam = networkParamResult.success
+    ? networkParamResult.data
+    : undefined;
 
   useEffect(() => {
     if (searchParams.get('server_wallet_onramp_token')) {
@@ -71,7 +80,9 @@ export const OnrampSessionDialog: React.FC = () => {
       if (session.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS) {
         for (let i = 0; i < 5; i++) {
           setTimeout(() => {
-            void utils.user.serverWallet.usdcBaseBalance.invalidate();
+            void utils.user.serverWallet.tokenBalance.invalidate({
+              chain: networkParam,
+            });
           }, i * 1000);
         }
         // Clear the URL search params when onramp session is completed
@@ -82,7 +93,7 @@ export const OnrampSessionDialog: React.FC = () => {
         }
       }
     }
-  }, [session, utils]);
+  }, [session, utils, networkParam]);
 
   const handleOnOpenChange = (open: boolean) => {
     setIsSessionDialogOpen(open);

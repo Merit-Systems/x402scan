@@ -9,6 +9,7 @@ import { api } from '@/trpc/client';
 
 import type { ToolUIPart } from 'ai';
 import { resourceComponents } from './resources';
+import { ToolError } from './error';
 
 interface Props {
   part: ToolUIPart;
@@ -37,14 +38,20 @@ export const ToolPart: React.FC<Props> = ({ part }) => {
     : undefined;
 
   return (
-    <Tool>
+    <Tool defaultOpen={part.errorText ? true : undefined} key={part.state}>
       <ToolHeader
         state={part.state}
         isResourceLoading={isResourceLoading}
         resource={resource}
       />
       <ToolContent>
-        {components ? (
+        {part.errorText ? (
+          <ToolError
+            errorText={part.errorText}
+            isResourceLoading={isResourceLoading}
+            resource={resource}
+          />
+        ) : components ? (
           <div className="flex flex-col gap-4 px-4">
             <components.input input={part.input} />
             <components.output
@@ -55,10 +62,7 @@ export const ToolPart: React.FC<Props> = ({ part }) => {
         ) : (
           <>
             <ToolInput input={part.input} />
-            <ToolOutput
-              output={JSON.stringify(part.output)}
-              errorText={part.errorText}
-            />
+            <ToolOutput output={JSON.stringify(part.output)} />
           </>
         )}
       </ToolContent>

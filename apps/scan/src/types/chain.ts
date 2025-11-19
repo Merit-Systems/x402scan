@@ -7,9 +7,13 @@ export enum Chain {
   OPTIMISM = 'optimism',
 }
 
+export type EvmChain = Exclude<Chain, Chain.SOLANA>;
+
 export const SUPPORTED_CHAINS = [Chain.BASE, Chain.SOLANA] as const;
 
 export type SupportedChain = (typeof SUPPORTED_CHAINS)[number];
+
+export type SupportedEVMChain = Exclude<SupportedChain, Chain.SOLANA>;
 
 export const CHAIN_LABELS: Record<Chain, string> = {
   [Chain.BASE]: 'Base',

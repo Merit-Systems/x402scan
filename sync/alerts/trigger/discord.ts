@@ -1,4 +1,4 @@
-import type { BalanceCheckResult, DiscordWebhookConfig } from './types';
+import type { BalanceCheckResult } from './types';
 import { CURRENCY_CONFIG } from './config';
 
 export async function sendDiscordAlert(

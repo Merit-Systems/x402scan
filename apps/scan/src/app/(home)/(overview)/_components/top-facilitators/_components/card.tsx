@@ -26,7 +26,7 @@ export const FacilitatorCard: React.FC<Props> = ({ facilitator, stats }) => {
   const { chain } = useChain();
 
   return (
-    <Link href={`/facilitator/${facilitator.id}`} prefetch={false}>
+    <Link href={`/facilitator/${facilitator.id}`}>
       <Card className="grid grid-cols-1 md:grid-cols-7 hover:border-primary hover:bg-card/80 transition-colors">
         <div className="flex flex-col col-span-5">
           <div className="flex items-center gap-2 p-4">

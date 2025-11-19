@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { prisma } from '../../client';
+import { scanDb } from '@x402scan/scan-db';
 
 import { agentConfigurationSchema } from './schema';
 
@@ -11,7 +11,7 @@ export const createAgentConfiguration = async (
   input: z.infer<typeof agentConfigurationSchema>
 ) => {
   const { resourceIds, ...data } = input;
-  return await prisma.agentConfiguration.create({
+  return await scanDb.agentConfiguration.create({
     data: {
       ...data,
       owner: {
@@ -46,7 +46,7 @@ export const updateAgentConfiguration = async (
   updateData: z.infer<typeof updateAgentConfigurationSchema>
 ) => {
   const { id, resourceIds, ...data } = updateData;
-  return await prisma.agentConfiguration.update({
+  return await scanDb.agentConfiguration.update({
     where: { id, ownerId: userId },
     data: {
       ...data,
@@ -61,7 +61,7 @@ export const updateAgentConfiguration = async (
 };
 
 export const deleteAgentConfiguration = async (id: string, userId: string) => {
-  return await prisma.agentConfiguration.delete({
+  return await scanDb.agentConfiguration.delete({
     where: { id, ownerId: userId },
   });
 };

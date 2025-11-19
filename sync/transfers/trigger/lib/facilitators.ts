@@ -5,7 +5,8 @@ import type {
   Token,
 } from 'facilitators';
 import { Network as FacilitatorsNetwork } from 'facilitators';
-import { Facilitator, FacilitatorConfig, Network } from '../types';
+import type { Facilitator, FacilitatorConfig } from '../types';
+import { Network } from '../types';
 
 const chainMap: Record<FacilitatorsNetwork, Network> = {
   [FacilitatorsNetwork.BASE]: Network.BASE,
@@ -58,7 +59,7 @@ export function FACILITATORS_BY_CHAIN(network: Network): Facilitator[] {
   return FACILITATORS.map(f => ({
     id: f.id,
     addresses: {
-      [network]: f.addresses[network] || [],
+      [network]: f.addresses[network] ?? [],
     },
   })).filter(f => f.addresses[network]?.length);
 }

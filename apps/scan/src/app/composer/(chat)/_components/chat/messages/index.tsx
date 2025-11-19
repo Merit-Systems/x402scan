@@ -36,7 +36,7 @@ export const Messages: React.FC<MessagesProps> = ({
     <Conversation className="h-full w-full">
       {messages.length > 0 ? (
         <>
-          <ConversationContent className="max-w-4xl mx-auto">
+          <ConversationContent className="max-w-4xl mx-auto pb-8">
             {messages.map(message => (
               <Message
                 key={message.id}
@@ -47,7 +47,7 @@ export const Messages: React.FC<MessagesProps> = ({
             ))}
             {status === 'submitted' ||
               (status === 'streaming' &&
-                messages[messages.length - 1].parts.length === 0 && (
+                messages[messages.length - 1]!.parts.length === 0 && (
                   <AnimatedShinyText className="text-xs md:text-sm pb-4">
                     Calling {model} with x402...
                   </AnimatedShinyText>
