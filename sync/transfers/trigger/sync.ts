@@ -67,7 +67,7 @@ async function syncFacilitator(
 
 function createSingleSyncTask(syncConfig: SyncConfig) {
   return schedules.task({
-    id: syncConfig.chain + '-sync-transfers-' + syncConfig.provider,
+    id: syncConfig.chain + '-' + syncConfig.provider,
     cron: syncConfig.cron,
     maxDuration: syncConfig.maxDurationInSeconds,
     machine: syncConfig.machine,
@@ -91,7 +91,7 @@ function createSingleSyncTask(syncConfig: SyncConfig) {
 function createSplitSyncTasks(syncConfig: SyncConfig) {
   return syncConfig.facilitators.map(facilitator => {
     return schedules.task({
-      id: `${syncConfig.chain}-sync-transfers-${syncConfig.provider}-${facilitator.id}`,
+      id: `${syncConfig.chain}-${syncConfig.provider}-${facilitator.id}`,
       cron: syncConfig.cron,
       maxDuration: syncConfig.maxDurationInSeconds,
       machine: syncConfig.machine,
