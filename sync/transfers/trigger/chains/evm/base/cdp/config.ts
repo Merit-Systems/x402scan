@@ -7,7 +7,7 @@ import { Network } from '@/trigger/types';
 
 export const baseCdpConfig: SyncConfig = {
   cron: '*/5 * * * *',
-  maxDurationInSeconds: ONE_MINUTE_IN_SECONDS * 5,
+  maxDurationInSeconds: ONE_MINUTE_IN_SECONDS * 15,
   chain: 'base',
   provider: QueryProvider.CDP,
   apiUrl: 'api.cdp.coinbase.com',
