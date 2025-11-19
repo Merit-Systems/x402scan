@@ -99,7 +99,6 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
                 resources: resources.map(resource => resource.id),
               },
             }}
-            prefetch={false}
           >
             {createAgentButton}
           </Link>
@@ -114,13 +113,13 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
 export const LoadingHeaderButtons = () => {
   return (
     <ButtonsContainer>
-      <Link href={`/composer/chat`} prefetch={false}>
+      <Link href={`/composer/chat`}>
         <Button variant="turbo">
           <MessagesSquare className="size-4" />
           Try in Chat
         </Button>
       </Link>
-      <Link href={`/resources/register`} prefetch={false}>
+      <Link href={`/resources/register`}>
         <Button variant="outline">
           <Bot className="size-4" />
           Create Agent

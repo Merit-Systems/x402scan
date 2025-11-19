@@ -33,7 +33,7 @@ export const ErrorCard: React.FC<ErrorComponentProps> = ({
               Reset
             </Button>
           ) : (
-            <Link href="/" className="flex-1" prefetch={false}>
+            <Link href="/" className="flex-1">
               <Button variant="outline" className="w-full">
                 Back to Home
               </Button>

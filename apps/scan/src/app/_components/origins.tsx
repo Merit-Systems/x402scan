@@ -45,7 +45,7 @@ export const Origins: React.FC<Props> = ({
   if (origins.length === 1) {
     const origin = origins[0];
     return (
-      <Link href={`/server/${origin!.id}`} prefetch={false}>
+      <Link href={`/server/${origin!.id}`}>
         <OriginsContainer
           Icon={({ className }) => (
             <Favicon url={origin!.favicon} className={className} />
@@ -78,7 +78,7 @@ export const Origins: React.FC<Props> = ({
       )}
       title={
         <>
-          <Link href={`/server/${origins[0]!.id}`} prefetch={false}>
+          <Link href={`/server/${origins[0]!.id}`}>
             <span className="truncate">
               {new URL(origins[0]!.origin).hostname}
             </span>
