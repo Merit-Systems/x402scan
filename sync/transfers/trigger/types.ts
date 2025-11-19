@@ -79,6 +79,7 @@ export type SyncConfig = QueryConfig & {
   limit: number;
   enabled: boolean;
   machine: 'small-1x' | 'medium-1x' | 'large-2x';
+  syncJobByFacilitator?: boolean;
 };
 
 export interface EvmChainConfig {

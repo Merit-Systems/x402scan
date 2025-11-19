@@ -18,4 +18,5 @@ export const baseCdpConfig: SyncConfig = {
   transformResponse,
   enabled: true,
   machine: 'large-2x',
+  syncJobByFacilitator: true,
 };
