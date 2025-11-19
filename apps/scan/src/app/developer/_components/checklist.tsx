@@ -269,7 +269,7 @@ export function Checklist({
         {(!!g?.result?.body || !!p?.result?.body) && (
           <Accordion type="single" collapsible className="w-full border-t mt-2">
             {!!g?.result?.body && (
-              <AccordionItem value="get-response" className="border-b-0 px-4">
+              <AccordionItem value="get-response" className="border-b-0 px-2">
                 <AccordionTrigger className="py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium hover:no-underline hover:text-foreground">
                   GET Response
                   <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
@@ -285,7 +285,7 @@ export function Checklist({
               </AccordionItem>
             )}
             {!!p?.result?.body && (
-              <AccordionItem value="post-response" className="border-b-0 px-4">
+              <AccordionItem value="post-response" className="border-b-0 px-2">
                 <AccordionTrigger className="py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium hover:no-underline hover:text-foreground">
                   POST Response
                   <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
