@@ -18,8 +18,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Code } from '@/components/ui/code';
 import { type parseX402Response } from '@/lib/x402/schema';
-import { CheckCircle, Minus, XCircle } from 'lucide-react';
+import { CheckCircle, ChevronDown, Minus, XCircle } from 'lucide-react';
 
 type TestResult = {
   ok: boolean;
@@ -259,6 +266,42 @@ export function Checklist({
             />
           </TableBody>
         </Table>
+        {(!!g?.result?.body || !!p?.result?.body) && (
+          <Accordion type="single" collapsible className="w-full border-t mt-2">
+            {!!g?.result?.body && (
+              <AccordionItem value="get-response" className="border-b-0 px-4">
+                <AccordionTrigger className="py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium hover:no-underline hover:text-foreground">
+                  GET Response
+                  <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="rounded-md bg-muted/50 border">
+                    <Code
+                      lang="json"
+                      value={JSON.stringify(g.result.body, null, 2)}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+            {!!p?.result?.body && (
+              <AccordionItem value="post-response" className="border-b-0 px-4">
+                <AccordionTrigger className="py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium hover:no-underline hover:text-foreground">
+                  POST Response
+                  <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="rounded-md bg-muted/50 border">
+                    <Code
+                      lang="json"
+                      value={JSON.stringify(p.result.body, null, 2)}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+          </Accordion>
+        )}
       </CardContent>
     </Card>
   );
