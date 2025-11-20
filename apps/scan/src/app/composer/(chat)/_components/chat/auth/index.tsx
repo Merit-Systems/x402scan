@@ -49,7 +49,7 @@ export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
               </AlertDialogTitle>
               <AlertDialogDescription className="text-xs font-mono">
                 {agentConfig?.description ??
-                  'Build agents that pay for their inference and invoke resources and pay for them with x402.'}
+                  'A playground for building agents that use x402 resources'}
               </AlertDialogDescription>
             </div>
           </AlertDialogHeader>
