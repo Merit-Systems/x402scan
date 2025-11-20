@@ -1,7 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from '@/trpc/trpc';
 
 import { getUserWallets } from '@/services/cdp/server-wallet/user';
-import { supportedChainSchema } from '@/lib/schemas';
+import { mixedAddressSchema, supportedChainSchema } from '@/lib/schemas';
 import z from 'zod';
 import {
   getTokenBalanceSchema,
@@ -10,6 +10,9 @@ import {
 import { tokenSchema } from '@/types/token';
 import { usdc } from '@/lib/tokens/usdc';
 import { SUPPORTED_CHAINS } from '@/types/chain';
+import { wrapFetchWithPayment } from 'x402-fetch';
+import { parseUnits } from 'viem';
+import { env } from '@/env';
 
 const serverWalletChainShape = {
   chain: supportedChainSchema,
@@ -87,4 +90,29 @@ export const serverWalletRouter = createTRPCRouter({
       .then(balances => balances.filter(balance => balance.balance > 0))
       .then(balances => balances.map(balance => balance.chain));
   }),
+
+  sendUsdc: protectedProcedure
+    .input(
+      z.object({
+        chain: supportedChainSchema,
+        amount: z.number(),
+        address: mixedAddressSchema,
+      })
+    )
+    .mutation(async ({ ctx, input: { chain, amount, address } }) => {
+      const { wallets } = await getUserWallets(ctx.session.user.id);
+      const fetchWithPayment = wrapFetchWithPayment(
+        fetch,
+        await wallets[chain].signer(),
+        parseUnits(amount.toString(), usdc(chain).decimals)
+      );
+      const url = new URL(`/api/send`, env.NEXT_PUBLIC_APP_URL);
+      url.searchParams.set('amount', amount.toString());
+      url.searchParams.set('address', address);
+      url.searchParams.set('chain', chain);
+      const response = await fetchWithPayment(url.toString(), {
+        method: 'POST',
+      });
+      return (await response.json()) as { success: boolean; message: string };
+    }),
 });
