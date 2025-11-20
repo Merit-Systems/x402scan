@@ -170,11 +170,7 @@ interface Props {
   onReset: () => void;
 }
 
-export const WithdrawSuccess: React.FC<Props> = ({
-  amount,
-  toAddress,
-  onReset,
-}) => {
+const WithdrawSuccess: React.FC<Props> = ({ amount, toAddress, onReset }) => {
   return (
     <div className="flex flex-col gap-2 items-center justify-center p-4 bg-muted rounded-lg">
       <CheckCircle className="size-10 text-green-600" />
