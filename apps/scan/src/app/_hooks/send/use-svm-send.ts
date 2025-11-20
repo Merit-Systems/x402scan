@@ -127,8 +127,8 @@ export const useSvmSend = ({
       !usdcBalance ||
       usdcBalance < amount ||
       isUsdcBalanceLoading ||
-      isSending ||
-      isSent,
+      isSent ||
+      !solanaAddressSchema.safeParse(toAddress).success,
     isPending: isSending,
     statusText,
   };

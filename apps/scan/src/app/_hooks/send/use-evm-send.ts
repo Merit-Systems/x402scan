@@ -126,8 +126,8 @@ export const useEvmSend = (props?: Props) => {
       !balance ||
       balance < amount ||
       isBalanceLoading ||
-      isSending ||
-      isSent,
+      isSent ||
+      !ethereumAddressSchema.safeParse(toAddress).success,
     isPending: isSending,
     statusText,
   };
