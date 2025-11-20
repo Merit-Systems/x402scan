@@ -42,12 +42,7 @@ export const FetchEvm: React.FC<Props> = ({
     useWalletClient();
   const { isInitialized } = useIsInitialized();
 
-  const {
-    data: response,
-    mutate: execute,
-    isPending,
-    error,
-  } = useEvmX402Fetch({
+  const { mutate: execute, isPending } = useEvmX402Fetch({
     targetUrl,
     value: maxAmountRequired,
     chain,
@@ -82,9 +77,6 @@ export const FetchEvm: React.FC<Props> = ({
       isLoading={isLoadingWalletClient || !isInitialized}
       chains={[chain]}
       maxAmountRequired={maxAmountRequired}
-      error={error}
-      response={response}
-      isTool={isTool}
       text={text}
     />
   );

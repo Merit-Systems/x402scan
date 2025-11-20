@@ -93,12 +93,7 @@ const FetchContent: React.FC<FetchContentProps> = ({
   isTool = false,
   text,
 }) => {
-  const {
-    data: response,
-    mutate: execute,
-    isPending,
-    error,
-  } = useSvmX402Fetch({
+  const { mutate: execute, isPending } = useSvmX402Fetch({
     account,
     targetUrl,
     value: maxAmountRequired,
@@ -119,9 +114,6 @@ const FetchContent: React.FC<FetchContentProps> = ({
       isLoading={!isInitialized}
       chains={[Chain.SOLANA]}
       maxAmountRequired={maxAmountRequired}
-      error={error}
-      response={response}
-      isTool={isTool}
       text={text}
     />
   );
