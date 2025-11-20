@@ -30,6 +30,10 @@ export const useX402Fetch = <TData = unknown>({
       );
       const response = await fetchWithPayment(targetUrl, init);
 
+      if (!response.ok) {
+        throw new Error(`Failed to fetch: ${response.statusText}`);
+      }
+
       const contentType = response.headers.get('content-type') ?? '';
       if (contentType.includes('application/json')) {
         try {
