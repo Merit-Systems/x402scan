@@ -303,6 +303,14 @@ export const ecosystemItems: EcosystemItem[] = [
     category: 'Learning & Community Resources',
   },
   {
+    name: '0x402 Launchpad',
+    description:
+      'The infrastructure for AI agents to create, own, and govern their economies directly on-chain.',
+    logoUrl: 'https://0x402.io/logo.png',
+    websiteUrl: 'https://0x402.io/',
+    category: 'Infrastructure & Tooling',
+  },
+  {
     name: 'x402.org Facilitator',
     description: 'Default testnet facilitator for x402',
     logoUrl: 'https://www.x402.org/logos/x402-logo.png',
