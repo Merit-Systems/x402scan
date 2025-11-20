@@ -76,6 +76,15 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
+  if (chat.messages.length === 0) {
+    return NextResponse.json(
+      {
+        error: 'No messages in chat',
+      },
+      { status: 400 }
+    );
+  }
+
   const rawLastMessage = chat.messages[chat.messages.length - 1];
 
   const parsedLastMessage = messageSchema.safeParse({
