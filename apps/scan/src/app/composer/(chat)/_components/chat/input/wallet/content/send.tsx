@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { Check, Loader2 } from 'lucide-react';
+import { Check, CheckCircle, Loader2 } from 'lucide-react';
 
 import { toast } from 'sonner';
 
@@ -18,6 +18,7 @@ import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 
 import { ethereumAddressSchema, solanaAddressSchema } from '@/lib/schemas';
 import { usdc } from '@/lib/tokens/usdc';
+import { formatAddress } from '@/lib/utils';
 
 import { CHAIN_LABELS } from '@/types/chain';
 
@@ -54,6 +55,7 @@ export const Send: React.FC = () => {
     mutate: sendUsdc,
     isPending: isSending,
     isSuccess: isSent,
+    reset,
   } = api.user.serverWallet.sendUsdc.useMutation();
 
   const schema =
@@ -82,12 +84,24 @@ export const Send: React.FC = () => {
               });
             }, i * 1000);
           }
-          setAmount(0);
-          setAddress('');
         },
       }
     );
   }, [address, amount, sendUsdc, utils, chain, schema]);
+
+  if (isSent) {
+    return (
+      <WithdrawSuccess
+        amount={amount}
+        toAddress={address}
+        onReset={() => {
+          setAmount(0);
+          setAddress('');
+          reset();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -146,6 +160,30 @@ export const Send: React.FC = () => {
           'Send USDC'
         )}
       </Button>
+    </div>
+  );
+};
+
+interface Props {
+  amount: number;
+  toAddress: string;
+  onReset: () => void;
+}
+
+export const WithdrawSuccess: React.FC<Props> = ({
+  amount,
+  toAddress,
+  onReset,
+}) => {
+  return (
+    <div className="flex flex-col gap-2 items-center justify-center p-4 bg-muted rounded-lg">
+      <CheckCircle className="size-10 text-green-600" />
+      <p className="text-center">
+        You have successfullt sent{' '}
+        <span className="font-bold">{amount} USDC</span> to{' '}
+        <span className="font-bold">{formatAddress(toAddress)}</span>
+      </p>
+      <Button onClick={onReset}>Send Again</Button>
     </div>
   );
 };
