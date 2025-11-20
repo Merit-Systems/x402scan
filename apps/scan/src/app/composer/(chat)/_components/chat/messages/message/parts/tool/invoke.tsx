@@ -2,7 +2,6 @@ import { ResourceFetch } from '@/app/_components/resource-fetch';
 import { Button } from '@/components/ui/button';
 import { Loading } from '@/components/ui/loading';
 import { Skeleton } from '@/components/ui/skeleton';
-import { env } from '@/env';
 import { supportedChainSchema } from '@/lib/schemas';
 import { usdc } from '@/lib/tokens/usdc';
 
@@ -55,7 +54,7 @@ export const ToolInvoke: React.FC<Props> = ({
               )}
               targetUrl={new URL(
                 '/api/chat/execute-tool',
-                env.NEXT_PUBLIC_APP_URL
+                window.location.origin
               ).toString()}
               requestInit={chain => ({
                 body: JSON.stringify({
