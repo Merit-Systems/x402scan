@@ -149,11 +149,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const tools = await createX402AITools({
-    resourceIds,
-    chatId,
-    userId: session.user.id,
-  });
+  const tools = await createX402AITools(resourceIds);
 
   const getSystemPrompt = async () => {
     if (agentConfigurationId) {
@@ -197,11 +193,21 @@ export async function POST(request: NextRequest) {
       if (responseMessage.parts.length > 0) {
         await updateChat(session.user.id, chatId, {
           messages: {
-            create: {
-              id: responseMessage.id,
-              role: responseMessage.role,
-              parts: JSON.stringify(responseMessage.parts),
-              attachments: {},
+            upsert: {
+              where: {
+                id: responseMessage.id,
+              },
+              create: {
+                id: responseMessage.id,
+                role: responseMessage.role,
+                parts: JSON.stringify(responseMessage.parts),
+                attachments: {},
+              },
+              update: {
+                role: responseMessage.role,
+                parts: JSON.stringify(responseMessage.parts),
+                attachments: {},
+              },
             },
           },
         });

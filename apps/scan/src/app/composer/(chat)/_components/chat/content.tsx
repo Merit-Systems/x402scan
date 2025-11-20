@@ -45,6 +45,7 @@ export const ChatContent: React.FC<Props> = ({
     selectedResources,
     input,
     setInput,
+    addToolResult,
   } = useChat({
     id,
     initialMessages,
@@ -60,6 +61,8 @@ export const ChatContent: React.FC<Props> = ({
         status={status}
         model={model.name}
         errorMessage={errorMessage}
+        chatId={id}
+        addToolResult={addToolResult}
         onRegenerate={regenerate}
         emptyState={
           agentConfig

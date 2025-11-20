@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { Fetch } from './fetch';
+import { ResourceFetch } from '../../../resource-fetch';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
@@ -207,7 +207,7 @@ export function Form({
         </div>
       )}
 
-      <Fetch
+      <ResourceFetch
         chains={
           (x402Response.accepts
             ?.map(accept => accept.network)

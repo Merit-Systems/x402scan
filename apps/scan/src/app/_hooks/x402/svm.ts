@@ -9,13 +9,19 @@ import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';
 import type { UiWalletAccount } from '@wallet-standard/react';
 import type { Signer } from 'x402-fetch';
 
-export const useSvmX402Fetch = <TData = unknown>(
-  targetUrl: string,
-  value: bigint,
-  account: UiWalletAccount,
-  init?: RequestInit,
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>
-) => {
+interface UseSvmX402FetchParams<TData = unknown> {
+  targetUrl: string;
+  value: bigint;
+  account: UiWalletAccount;
+  init?: RequestInit;
+  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
+  isTool?: boolean;
+}
+
+export const useSvmX402Fetch = <TData = unknown>({
+  account,
+  ...params
+}: UseSvmX402FetchParams<TData>) => {
   const transactionSigner = useWalletAccountTransactionSigner(
     account,
     'solana:mainnet'
@@ -29,5 +35,8 @@ export const useSvmX402Fetch = <TData = unknown>(
     return wrapFetchWithPayment(baseFetch, transactionSigner as Signer, value);
   };
 
-  return useX402Fetch<TData>(wrapperFn, targetUrl, value, init, options);
+  return useX402Fetch<TData>({
+    wrapperFn,
+    ...params,
+  });
 };

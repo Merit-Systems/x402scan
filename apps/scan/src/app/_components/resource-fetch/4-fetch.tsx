@@ -22,6 +22,7 @@ interface Props {
   maxAmountRequired: bigint;
   error: Error | null;
   response: X402FetchResponse | undefined;
+  isTool?: boolean;
 }
 
 export const FetchState: React.FC<Props> = ({
@@ -33,6 +34,7 @@ export const FetchState: React.FC<Props> = ({
   maxAmountRequired,
   error,
   response,
+  isTool = false,
 }) => {
   return (
     <>
@@ -58,13 +60,13 @@ export const FetchState: React.FC<Props> = ({
           </>
         )}
       </Button>
-      {error && (
+      {!isTool && error && (
         <p className="text-xs text-red-600 bg-red-50 p-3 rounded-md">
           {error.message}
         </p>
       )}
 
-      {response && (
+      {!isTool && response && (
         <pre className="max-h-60 overflow-auto rounded-md bg-muted text-xs">
           {response.type === 'json' ? (
             <JsonViewer data={response.data as JsonValue} />

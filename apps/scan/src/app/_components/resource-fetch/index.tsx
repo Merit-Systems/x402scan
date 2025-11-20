@@ -4,21 +4,27 @@ import { FetchSvm } from './chains/svm';
 import { Chain } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
+import type { UseMutationOptions } from '@tanstack/react-query';
+import type { X402FetchResponse } from '@/app/_hooks/x402/types';
 
-interface Props {
+interface Props<TData = unknown> {
   chains: SupportedChain[];
   allRequiredFieldsFilled: boolean;
   maxAmountRequired: bigint;
   targetUrl: string;
-  requestInit?: RequestInit;
+  requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
+  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
+  isTool?: boolean;
 }
 
-export const Fetch: React.FC<Props> = ({
+export const ResourceFetch: React.FC<Props> = ({
   chains,
   allRequiredFieldsFilled,
   maxAmountRequired,
   targetUrl,
   requestInit,
+  options,
+  isTool = false,
 }) => {
   return (
     <div className="flex flex-col gap-2">
@@ -30,6 +36,8 @@ export const Fetch: React.FC<Props> = ({
             maxAmountRequired={maxAmountRequired}
             targetUrl={targetUrl}
             requestInit={requestInit}
+            options={options}
+            isTool={isTool}
           />
         ) : (
           <FetchEvm
@@ -39,6 +47,8 @@ export const Fetch: React.FC<Props> = ({
             maxAmountRequired={maxAmountRequired}
             targetUrl={targetUrl}
             requestInit={requestInit}
+            options={options}
+            isTool={isTool}
           />
         )
       )}

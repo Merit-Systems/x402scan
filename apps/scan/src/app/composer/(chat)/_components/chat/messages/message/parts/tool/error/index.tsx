@@ -17,7 +17,7 @@ export const ToolError: React.FC<Props> = ({
   resource,
 }) => {
   return (
-    <div className="flex flex-col gap-4 px-4">
+    <div className="flex flex-col gap-4">
       <div className="overflow-x-auto rounded-md text-xs [&_table]:w-full font-mono bg-destructive/10 text-destructive">
         <div className="p-3">{errorText}</div>
       </div>

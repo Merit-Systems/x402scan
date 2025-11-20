@@ -1,7 +1,7 @@
 'use client';
 
 import type { ToolUIPart } from 'ai';
-import { Check, ChevronDownIcon, Loader2, X } from 'lucide-react';
+import { Check, ChevronDownIcon, CircleDot, Loader2, X } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import {
   Collapsible,
@@ -73,13 +73,15 @@ const ToolHeader = ({
                   {resource.resource}
                 </span>
                 <ToolAccepts accepts={resource.accepts} />
-                {state === 'output-available' ? (
+                {state === 'input-streaming' ? (
+                  <Loader2 className="size-3 shrink-0 animate-spin" />
+                ) : state === 'input-available' ? (
+                  <CircleDot className="size-3 shrink-0" />
+                ) : state === 'output-available' ? (
                   <Check className="size-3 shrink-0 text-green-600" />
                 ) : state === 'output-error' ? (
                   <X className="size-3 shrink-0 text-red-600" />
-                ) : (
-                  <Loader2 className="size-3 shrink-0 animate-spin" />
-                )}
+                ) : null}
               </div>
             )}
             loadingComponent={<Skeleton className="h-[14px] my-[3px] w-32" />}
@@ -126,7 +128,7 @@ const ToolInput = ({
 }: ComponentProps<'div'> & {
   input: ToolUIPart['input'];
 }) => (
-  <div className={cn('space-y-2 overflow-hidden px-4', className)} {...props}>
+  <div className={cn('space-y-2 overflow-hidden', className)} {...props}>
     <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
       Parameters
     </h4>
@@ -168,7 +170,7 @@ const ToolOutput = ({
   const { raw, parsed } = result;
 
   return (
-    <div className={cn('space-y-2 px-4', className)} {...props}>
+    <div className={cn('space-y-2', className)} {...props}>
       <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
         Result
       </h4>
