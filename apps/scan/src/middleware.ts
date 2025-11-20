@@ -27,6 +27,7 @@ const x402MiddlewareFactory = (req: NextRequest) => {
 };
 
 export function middleware(req: NextRequest) {
+  console.log(process.env.CDP_API_KEY_ID);
   if (req.nextUrl.pathname === '/api/send') {
     const x402Middleware = x402MiddlewareFactory(req);
     return x402Middleware(req);
