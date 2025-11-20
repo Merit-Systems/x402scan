@@ -36,7 +36,7 @@ interface Props
   inputClassName?: string;
   isBalanceMax?: boolean;
   address?: MixedAddress;
-  balanceProp: {
+  balanceProp?: {
     balance: number | undefined;
     isLoading: boolean;
   };
@@ -76,9 +76,9 @@ export const TokenInput: React.FC<Props> = ({
       address: address as SolanaAddress | undefined,
     });
 
-  const { balance, isLoading } = balanceProp
-    ? balanceProp
-    : chain === Chain.SOLANA
+  const { balance, isLoading } =
+    balanceProp ??
+    (chain === Chain.SOLANA
       ? {
           balance: svmBalance,
           isLoading: isSolanaBalanceLoading,
@@ -86,7 +86,7 @@ export const TokenInput: React.FC<Props> = ({
       : {
           balance: evmBalance,
           isLoading: isEvmBalanceLoading,
-        };
+        });
 
   useEffect(() => {
     if (inputRef.current) {
