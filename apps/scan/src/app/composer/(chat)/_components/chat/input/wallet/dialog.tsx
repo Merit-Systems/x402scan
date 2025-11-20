@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { AlertCircle, ArrowDown, ArrowUp, Key, Wallet } from 'lucide-react';
+import { ArrowUp, Key } from 'lucide-react';
 
 import {
   Dialog,
@@ -14,63 +14,36 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { Logo } from '@/components/logo';
 
-import { WalletDisplay } from './content/display';
 import { Send } from './content/send';
-import { Deposit } from './content/deposit';
 import { WalletExport } from './content/export';
-
-import { api } from '@/trpc/client';
 
 import { OnrampSessionDialog } from './content/onramp-session-dialog';
 
-import { useSession } from 'next-auth/react';
 import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
-import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 import { WalletChain } from '@/app/_contexts/wallet-chain/component';
+
+import type { SupportedChain } from '@/types/chain';
 
 interface Props {
   children: React.ReactNode;
+  chainsWithBalance: [SupportedChain, ...SupportedChain[]];
 }
 
-export const WalletDialog: React.FC<Props> = ({ children }) => {
-  const { data: session } = useSession();
-
-  const { chain } = useWalletChain();
-
-  const { data: usdcBalance } = api.user.serverWallet.tokenBalance.useQuery(
-    {
-      chain,
-    },
-    {
-      enabled: !!session,
-    }
-  );
-  const {
-    data: hasUserAcknowledgedComposer,
-    isLoading: isLoadingHasUserAcknowledgedComposer,
-  } = api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    enabled: !!session,
-  });
-
+export const WalletDialog: React.FC<Props> = ({
+  children,
+  chainsWithBalance,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [tab, setTab] = useState<'wallet' | 'deposit' | 'send'>('wallet');
-
-  const isOutOfFunds = usdcBalance !== undefined && usdcBalance <= 0.01;
-
-  if (isLoadingHasUserAcknowledgedComposer) {
-    return children;
-  }
+  const [tab, setTab] = useState<'send' | 'export'>('send');
 
   return (
-    <WalletChainProvider>
+    <WalletChainProvider
+      initialChain={chainsWithBalance[0]}
+      isFixed={chainsWithBalance.length === 1}
+    >
       <OnrampSessionDialog />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild disabled={!hasUserAcknowledgedComposer}>
-          {children}
-        </DialogTrigger>
+        <DialogTrigger asChild>{children}</DialogTrigger>
         <DialogContent
           className="p-0 overflow-hidden sm:max-w-md"
           showCloseButton={false}
@@ -78,9 +51,7 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
           <Tabs
             className="w-full overflow-hidden flex flex-col gap-4"
             value={tab}
-            onValueChange={value =>
-              setTab(value as 'wallet' | 'deposit' | 'send')
-            }
+            onValueChange={value => setTab(value as 'send' | 'export')}
           >
             <DialogHeader className=" gap-2 bg-muted">
               <div className="flex flex-row justify-between items-center p-4">
@@ -95,30 +66,16 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
                     </DialogDescription>
                   </div>
                 </div>
-                <WalletChain />
+                <WalletChain options={chainsWithBalance} />
               </div>
               <TabsList className="w-full h-fit max-w-full overflow-x-auto no-scrollbar">
                 <div className="h-[34px] border-b w-4" />
-                <TabsTrigger
-                  value="wallet"
-                  variant="github"
-                  className="data-[state=active]:bg-background"
-                >
-                  <Wallet className="size-4" /> Overview
-                </TabsTrigger>
-                <TabsTrigger
-                  value="deposit"
-                  variant="github"
-                  className="data-[state=active]:bg-background"
-                >
-                  <ArrowDown className="size-4" /> Deposit
-                </TabsTrigger>
                 <TabsTrigger
                   value="send"
                   variant="github"
                   className="data-[state=active]:bg-background"
                 >
-                  <ArrowUp className="size-4" /> Send
+                  <ArrowUp className="size-4" /> Withdraw
                 </TabsTrigger>
                 <TabsTrigger
                   value="export"
@@ -130,32 +87,11 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
                 <div className="h-[34px] border-b flex-1" />
               </TabsList>
             </DialogHeader>
-
-            <TabsContent
-              value="wallet"
-              className="px-4 w-full overflow-hidden mt-0 pb-4"
-            >
-              <WalletDisplay />
-            </TabsContent>
-            <TabsContent
-              value="deposit"
-              className="w-full overflow-hidden mt-0 flex flex-col gap-2 pb-4"
-            >
-              {isOutOfFunds && (
-                <div className="flex flex-row gap-2 items-center mx-4 border-yellow-600 border p-2 bg-yellow-600/20 rounded-md mb-2">
-                  <AlertCircle className="size-4 text-yellow-600 shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium">Agent Out of Funds</p>
-                    <p className="text-xs">
-                      Please deposit more funds to continue.
-                    </p>
-                  </div>
-                </div>
-              )}
-              <div className="px-4">
-                <Deposit />
-              </div>
-            </TabsContent>
+            <div className="text-xs font-mono p-4 bg-primary/10 mx-4 rounded-md border-primary border text-primary">
+              The Composer now uses embedded and injected wallets for invoking
+              tools. You can withdraw all funds deposited on the Composer to
+              your wallet.
+            </div>
             <TabsContent
               value="send"
               className="w-full overflow-hidden mt-0 px-4 pb-4"

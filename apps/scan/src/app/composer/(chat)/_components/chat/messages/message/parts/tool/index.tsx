@@ -5,12 +5,13 @@ import {
   ToolInput,
   ToolOutput,
 } from '@/components/ai-elements/tool';
+
+import { resourceComponents } from './resources';
+import { ToolInvoke } from './invoke';
+
 import { api } from '@/trpc/client';
 
 import type { ToolUIPart, UIMessage } from 'ai';
-import { resourceComponents } from './resources';
-import { ToolError } from './error';
-import { ToolInvoke } from './invoke';
 import type { UseChatHelpers } from '@ai-sdk/react';
 
 interface Props {
@@ -58,11 +59,11 @@ export const ToolPart: React.FC<Props> = ({ part, chatId, addToolResult }) => {
           <ToolInput input={part.input} />
         )}
         {part.state === 'output-error' ? (
-          <ToolError
-            errorText={part.errorText}
-            isResourceLoading={isResourceLoading}
-            resource={resource}
-          />
+          <div className="flex flex-col gap-4">
+            <div className="overflow-x-auto rounded-md text-xs [&_table]:w-full font-mono bg-destructive/10 text-destructive">
+              <div className="p-3">{part.errorText}</div>
+            </div>
+          </div>
         ) : part.state === 'output-available' ? (
           components ? (
             <components.output

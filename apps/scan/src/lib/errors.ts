@@ -105,7 +105,7 @@ function getMessageByErrorCode(errorCode: ErrorCode): string {
     case 'unauthorized:tool':
       return 'You need to sign in to use this tool.';
     case 'payment_required:tool':
-      return toolPaymentRequiredMessage;
+      return 'You do not have enough funds to use this tool. Please add more funds to continue.';
     case 'forbidden:tool':
       return 'You do not have access to use this tool.';
     case 'not_found:tool':
@@ -163,6 +163,3 @@ function getTypeByStatusCode(statusCode: number): ErrorType {
       return 'server';
   }
 }
-
-export const toolPaymentRequiredMessage =
-  'You do not have enough funds to use this tool. Please add more funds to continue.';

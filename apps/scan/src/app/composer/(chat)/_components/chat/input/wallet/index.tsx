@@ -11,6 +11,8 @@ import { WalletDialog } from './dialog';
 import { api } from '@/trpc/client';
 import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
 
+import type { SupportedChain } from '@/types/chain';
+
 export const WalletButton = () => {
   const { data: session } = useSession();
 
@@ -25,50 +27,26 @@ export const WalletButton = () => {
     return null;
   }
 
-  if (chainsWithBalances?.length === 0) {
+  if (!chainsWithBalances) {
+    return null;
+  }
+
+  if (chainsWithBalances.length === 0) {
     return null;
   }
 
   return (
     <WalletChainProvider>
-      <AcknowledgedWalletButton />
+      <WalletDialog
+        chainsWithBalance={
+          chainsWithBalances as [SupportedChain, ...SupportedChain[]]
+        }
+      >
+        <PromptInputButton variant="primaryOutline" size="sm">
+          <Bot className="size-4" />
+          <span className="text-xs">Withdraw Funds</span>
+        </PromptInputButton>
+      </WalletDialog>
     </WalletChainProvider>
-  );
-};
-
-const AcknowledgedWalletButton = () => {
-  return (
-    <WalletDialog>
-      <WalletButtonComponent>
-        <span>Wallet</span>
-      </WalletButtonComponent>
-    </WalletDialog>
-  );
-};
-
-interface WalletButtonProps {
-  onClick?: () => void;
-  children: React.ReactNode;
-  className?: string;
-  disabled?: boolean;
-}
-
-const WalletButtonComponent: React.FC<WalletButtonProps> = ({
-  children,
-  onClick,
-  className,
-  disabled,
-}) => {
-  return (
-    <PromptInputButton
-      variant="outline"
-      size="sm"
-      onClick={onClick}
-      className={className}
-      disabled={disabled}
-    >
-      <Bot className="size-4" />
-      <div className="text-xs">{children}</div>
-    </PromptInputButton>
   );
 };

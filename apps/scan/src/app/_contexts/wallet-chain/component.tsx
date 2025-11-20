@@ -19,11 +19,17 @@ import { useWalletChain } from './hook';
 
 import { SUPPORTED_CHAINS, CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 
-export const WalletChain = () => {
+import type { SupportedChain } from '@/types/chain';
+
+interface Props {
+  options?: SupportedChain[];
+}
+
+export const WalletChain: React.FC<Props> = ({ options }) => {
   const { isFixed } = useWalletChain();
 
   if (!isFixed) {
-    return <WalletChainSelector />;
+    return <WalletChainSelector options={options} />;
   }
 
   return <ChainDisplay />;
@@ -40,7 +46,7 @@ const ChainDisplay = () => {
   );
 };
 
-const WalletChainSelector = () => {
+const WalletChainSelector: React.FC<Props> = ({ options }) => {
   const { chain, setChain } = useWalletChain();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -61,7 +67,7 @@ const WalletChainSelector = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[140px] p-1">
-        {SUPPORTED_CHAINS.map(value => (
+        {(options ?? SUPPORTED_CHAINS).map(value => (
           <Button
             key={value}
             variant="ghost"

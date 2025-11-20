@@ -114,6 +114,7 @@ export const Send: React.FC = () => {
         placeholder="0.00"
         inputClassName="placeholder:text-muted-foreground/60"
         isBalanceMax
+        chain={chain}
       />
       <div className="flex flex-col gap-1">
         <span className="font-medium text-sm">Address</span>
