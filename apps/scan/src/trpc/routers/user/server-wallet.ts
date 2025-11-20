@@ -9,6 +9,7 @@ import {
 } from '@/services/cdp/server-wallet/wallets/schemas';
 import { tokenSchema } from '@/types/token';
 import { usdc } from '@/lib/tokens/usdc';
+import { SUPPORTED_CHAINS } from '@/types/chain';
 
 const serverWalletChainShape = {
   chain: supportedChainSchema,
@@ -74,4 +75,16 @@ export const serverWalletRouter = createTRPCRouter({
       const { wallets } = await getUserWallets(ctx.session.user.id);
       return await wallets[chain].sendTokens(rest);
     }),
+
+  chainsWithBalances: protectedProcedure.query(async ({ ctx }) => {
+    const { wallets } = await getUserWallets(ctx.session.user.id);
+    return Promise.all(
+      SUPPORTED_CHAINS.map(async chain => ({
+        chain,
+        balance: await wallets[chain].getTokenBalance({ token: usdc(chain) }),
+      }))
+    )
+      .then(balances => balances.filter(balance => balance.balance > 0))
+      .then(balances => balances.map(balance => balance.chain));
+  }),
 });

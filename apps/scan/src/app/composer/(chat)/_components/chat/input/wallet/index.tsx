@@ -4,8 +4,6 @@ import { Bot } from 'lucide-react';
 
 import { useSession } from 'next-auth/react';
 
-import { Skeleton } from '@/components/ui/skeleton';
-
 import { PromptInputButton } from '@/components/ai-elements/prompt-input';
 
 import { WalletDialog } from './dialog';
@@ -16,21 +14,19 @@ import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
 export const WalletButton = () => {
   const { data: session } = useSession();
 
-  const {
-    data: hasUserAcknowledgedComposer,
-    isLoading: isLoadingHasUserAcknowledgedComposer,
-  } = api.user.acknowledgements.hasAcknowledged.useQuery(undefined, {
-    enabled: !!session,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-  });
+  const { data: chainsWithBalances, isLoading: isLoadingChainsWithBalances } =
+    api.user.serverWallet.chainsWithBalances.useQuery(undefined, {
+      enabled: !!session,
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+    });
 
-  if (isLoadingHasUserAcknowledgedComposer) {
-    return <LoadingWalletButton />;
+  if (isLoadingChainsWithBalances) {
+    return null;
   }
 
-  if (!hasUserAcknowledgedComposer) {
-    return <WalletButtonComponent disabled>Welcome</WalletButtonComponent>;
+  if (chainsWithBalances?.length === 0) {
+    return null;
   }
 
   return (
@@ -75,16 +71,4 @@ const WalletButtonComponent: React.FC<WalletButtonProps> = ({
       <div className="text-xs">{children}</div>
     </PromptInputButton>
   );
-};
-
-const LoadingWalletButton = () => {
-  return (
-    <WalletButtonComponent disabled>
-      <LoadingWalletButtonContent />
-    </WalletButtonComponent>
-  );
-};
-
-const LoadingWalletButtonContent = () => {
-  return <Skeleton className="h-3 w-8" />;
 };
