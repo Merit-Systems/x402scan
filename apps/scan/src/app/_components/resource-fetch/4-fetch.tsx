@@ -23,6 +23,7 @@ interface Props {
   error: Error | null;
   response: X402FetchResponse | undefined;
   isTool?: boolean;
+  text?: string;
 }
 
 export const FetchState: React.FC<Props> = ({
@@ -35,6 +36,7 @@ export const FetchState: React.FC<Props> = ({
   error,
   response,
   isTool = false,
+  text = 'Fetch',
 }) => {
   return (
     <>
@@ -55,7 +57,7 @@ export const FetchState: React.FC<Props> = ({
         ) : (
           <>
             <Chains chains={chains} />
-            Fetch
+            {text}
             <span>{formatTokenAmount(maxAmountRequired)}</span>
           </>
         )}

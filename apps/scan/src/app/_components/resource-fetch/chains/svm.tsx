@@ -26,6 +26,7 @@ interface Props<TData = unknown> {
   requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
+  text?: string;
 }
 
 export const FetchSvm: React.FC<Props> = ({
@@ -35,6 +36,7 @@ export const FetchSvm: React.FC<Props> = ({
   requestInit,
   options,
   isTool = false,
+  text,
 }) => {
   const { connectedWallet } = useSolanaWallet();
 
@@ -71,6 +73,7 @@ export const FetchSvm: React.FC<Props> = ({
       requestInit={requestInit}
       options={options}
       isTool={isTool}
+      text={text}
     />
   );
 };
@@ -88,6 +91,7 @@ const FetchContent: React.FC<FetchContentProps> = ({
   requestInit,
   options,
   isTool = false,
+  text,
 }) => {
   const {
     data: response,
@@ -118,6 +122,7 @@ const FetchContent: React.FC<FetchContentProps> = ({
       error={error}
       response={response}
       isTool={isTool}
+      text={text}
     />
   );
 };

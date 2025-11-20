@@ -16,6 +16,7 @@ interface Props<TData = unknown> {
   requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
+  text?: string;
 }
 
 export const ResourceFetch: React.FC<Props> = ({
@@ -26,6 +27,7 @@ export const ResourceFetch: React.FC<Props> = ({
   requestInit,
   options,
   isTool = false,
+  text,
 }) => {
   return (
     <div
@@ -44,6 +46,7 @@ export const ResourceFetch: React.FC<Props> = ({
             requestInit={requestInit}
             options={options}
             isTool={isTool}
+            text={text}
           />
         ) : (
           <FetchEvm
@@ -55,6 +58,7 @@ export const ResourceFetch: React.FC<Props> = ({
             requestInit={requestInit}
             options={options}
             isTool={isTool}
+            text={text}
           />
         )
       )}

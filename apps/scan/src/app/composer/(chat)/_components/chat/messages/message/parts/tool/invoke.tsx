@@ -89,6 +89,7 @@ export const ToolInvoke: React.FC<Props> = ({
                 },
               }}
               isTool={true}
+              text="Execute Tool"
             />
             <Button
               className="w-full text-muted-foreground"

@@ -43,7 +43,7 @@ export const PromptInputSection: React.FC<Props> = ({
   status,
   errorMessage,
 }) => {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
 
   return (
     <PromptInput onSubmit={handleSubmit}>
@@ -52,7 +52,11 @@ export const PromptInputSection: React.FC<Props> = ({
           setInput(e.target.value)
         }
         value={input}
-        placeholder={!session ? 'Sign in to use the composer' : undefined}
+        placeholder={
+          sessionStatus !== 'loading' && !session
+            ? 'Sign in to use the composer'
+            : undefined
+        }
       />
       <PromptInputToolbar>
         <PromptInputTools>

@@ -25,6 +25,7 @@ interface Props<TData = unknown> {
   requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
+  text?: string;
 }
 
 export const FetchEvm: React.FC<Props> = ({
@@ -35,6 +36,7 @@ export const FetchEvm: React.FC<Props> = ({
   requestInit,
   options,
   isTool = false,
+  text,
 }) => {
   const { data: walletClient, isLoading: isLoadingWalletClient } =
     useWalletClient();
@@ -83,6 +85,7 @@ export const FetchEvm: React.FC<Props> = ({
       error={error}
       response={response}
       isTool={isTool}
+      text={text}
     />
   );
 };
