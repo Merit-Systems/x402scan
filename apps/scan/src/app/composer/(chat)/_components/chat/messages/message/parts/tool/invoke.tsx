@@ -61,6 +61,7 @@ export const ToolInvoke: React.FC<Props> = ({
                 body: JSON.stringify({
                   resourceId: resource.id,
                   chatId,
+                  toolCallId,
                   parameters: input,
                   chain: chain.toString(),
                 }),

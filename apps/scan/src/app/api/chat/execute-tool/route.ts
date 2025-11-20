@@ -1,10 +1,17 @@
 import { after, NextResponse, type NextRequest } from 'next/server';
 
+import { isToolUIPart } from 'ai';
+
 import z from 'zod';
 
 import { createToolCall } from '@/services/db/composer/tool-call';
 import { listResourcesForTools } from '@/services/db/resources/resource';
+import { getChat } from '@/services/db/composer/chat';
 
+import { auth } from '@/auth';
+
+import { messageSchema } from '@/lib/message-schema';
+import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
 import {
   EnhancedPaymentRequirementsSchema,
   enhancedOutputSchema,
@@ -14,10 +21,10 @@ import { supportedChainSchema } from '@/lib/schemas';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
-import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
 
 const bodySchema = z.object({
   resourceId: z.string(),
+  toolCallId: z.string(),
   chatId: z.string(),
   chain: supportedChainSchema,
   parameters: z.record(z.string(), z.unknown()),
@@ -35,9 +42,71 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const { resourceId, chatId, chain, parameters } = requestBody.data;
+  const { resourceId, toolCallId, chatId, chain, parameters } =
+    requestBody.data;
 
-  console.log(parameters);
+  const session = await auth();
+
+  if (!session) {
+    return NextResponse.json(
+      {
+        error: 'Unauthorized',
+      },
+      { status: 401 }
+    );
+  }
+
+  const chat = await getChat(chatId, session.user.id);
+
+  if (!chat) {
+    return NextResponse.json(
+      {
+        error: 'Chat not found',
+      },
+      { status: 404 }
+    );
+  }
+
+  if (chat.userId !== session.user.id) {
+    return NextResponse.json(
+      {
+        error: 'Unauthorized',
+      },
+      { status: 401 }
+    );
+  }
+
+  const rawLastMessage = chat.messages[chat.messages.length - 1];
+
+  const parsedLastMessage = messageSchema.safeParse({
+    ...rawLastMessage,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    parts: JSON.parse(rawLastMessage!.parts as string),
+  });
+  if (!parsedLastMessage.success) {
+    console.error(parsedLastMessage.error);
+    return NextResponse.json(
+      {
+        error: 'Invalid last message',
+      },
+      { status: 400 }
+    );
+  }
+
+  const lastMessage = parsedLastMessage.data;
+
+  const toolPart = lastMessage.parts.find(
+    part => isToolUIPart(part) && part.toolCallId === toolCallId
+  );
+
+  if (!toolPart) {
+    return NextResponse.json(
+      {
+        error: 'Tool part not found',
+      },
+      { status: 404 }
+    );
+  }
 
   const [resource] = await listResourcesForTools([resourceId]);
 
@@ -83,12 +152,7 @@ export const POST = async (request: NextRequest) => {
   let url = resource.resource;
 
   // Filter out headers that should be set automatically by fetch
-  const headersToExclude = new Set([
-    'content-length',
-    'transfer-encoding',
-    'connection',
-    'host',
-  ]);
+  const headersToExclude = new Set(['content-length', 'transfer-encoding']);
 
   const filteredHeaders: Record<string, string> = {};
   request.headers.forEach((value, key) => {
