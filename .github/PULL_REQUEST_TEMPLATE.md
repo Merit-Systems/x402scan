@@ -8,20 +8,20 @@
 - URL: https://x402.megalithlabs.ai
 - Website: https://www.megalithlabs.ai
 - Twitter: @megalith_ai
-- Short description: Megalith verifies and settles x402 payments on BNB Chain and Base, with ERC-20 support via our Stargate proxy contract.
+- Short description: x402 payments on BNB Chain and Base, with full ERC-20 support
 
 ## Required changes
 
-- [ ] Added config file at `packages/facilitators/src/facilitators`
-- [ ] Exported in `packages/facilitators/src/facilitators/index.ts`
-- [ ] Appended to `packages/facilitators/src/lists/all.ts`
-- [ ] Chose a **new unique color** not used by other facilitators
-- [ ] Updated `README.md` with a one-line entry under Facilitators
-- [ ] `dateOfFirstTransaction` is correct and matches on-chain history
-- [ ] Facilitator has **at least 10 USDC transfers**
-- [ ] Added image to `apps/scan/public`
-- [ ] Make sure we support that chain
-- [ ] Make sure all EVM addresses are lowercase
+- [x] Added config file at `packages/facilitators/src/facilitators`
+- [x] Exported in `packages/facilitators/src/facilitators/index.ts`
+- [x] Appended to `packages/facilitators/src/lists/all.ts`
+- [x] Chose a **new unique color** not used by other facilitators
+- [x] Updated `README.md` with a one-line entry under Facilitators
+- [x] `dateOfFirstTransaction` is correct and matches on-chain history
+- [x] Facilitator has **at least 10 USDC transfers**
+- [x] Added image to `apps/scan/public`
+- [x] Make sure we support that chain
+- [x] Make sure all EVM addresses are lowercase
 
 # NOTE
 
