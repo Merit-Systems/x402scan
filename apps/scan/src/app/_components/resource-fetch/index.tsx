@@ -6,6 +6,7 @@ import { Chain } from '@/types/chain';
 import type { SupportedChain } from '@/types/chain';
 import type { UseMutationOptions } from '@tanstack/react-query';
 import type { X402FetchResponse } from '@/app/_hooks/x402/types';
+import { cn } from '@/lib/utils';
 
 interface Props<TData = unknown> {
   chains: SupportedChain[];
@@ -27,7 +28,12 @@ export const ResourceFetch: React.FC<Props> = ({
   isTool = false,
 }) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div
+      className={cn(
+        'grid grid-cols-1 md:grid-cols-2 gap-2',
+        chains.length % 2 === 1 ? 'md:[&>*:last-child]:col-span-2' : ''
+      )}
+    >
       {chains.map(chain =>
         chain === Chain.SOLANA ? (
           <FetchSvm

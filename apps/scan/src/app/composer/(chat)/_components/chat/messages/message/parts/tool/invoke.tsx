@@ -98,7 +98,7 @@ export const ToolInvoke: React.FC<Props> = ({
                 void addToolResult({
                   state: 'output-error',
                   toolCallId: toolCallId,
-                  errorText: 'Tool call cancelled',
+                  errorText: 'I do not want to use this tool',
                   tool: resource.id,
                 });
               }}

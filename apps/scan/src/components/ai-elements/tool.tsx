@@ -122,16 +122,25 @@ const ToolInput = ({
   ...props
 }: ComponentProps<'div'> & {
   input: ToolUIPart['input'];
-}) => (
-  <div className={cn('space-y-2 overflow-hidden', className)} {...props}>
-    <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
-      Parameters
-    </h4>
-    <div className="rounded-md bg-muted">
-      <JsonViewer data={input as JsonValue} />
+}) => {
+  if (Object.keys(input as Record<string, unknown>).length === 0) {
+    return (
+      <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
+        No Parameters
+      </h4>
+    );
+  }
+  return (
+    <div className={cn('space-y-2 overflow-hidden', className)} {...props}>
+      <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
+        Parameters
+      </h4>
+      <div className="rounded-md bg-muted">
+        <JsonViewer data={input as JsonValue} />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const ToolOutput = ({
   className,

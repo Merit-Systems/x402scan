@@ -1,4 +1,3 @@
-import z from 'zod';
 import { tool } from 'ai';
 
 import { listResourcesForTools } from '@/services/db/resources/resource';
@@ -49,10 +48,7 @@ export async function createX402AITools(
 
         aiTools[resource.id] = tool({
           description: `${toolName}: ${parsedAccept.data.description} (Paid API - ${parsedAccept.data.maxAmountRequired} on ${parsedAccept.data.network})`,
-          inputSchema:
-            Object.keys(parametersSchema.shape).length > 0
-              ? parametersSchema
-              : z.object({ continue: z.boolean() }),
+          inputSchema: parametersSchema,
         });
       }
     }
