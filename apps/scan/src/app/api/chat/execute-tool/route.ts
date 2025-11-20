@@ -6,7 +6,7 @@ import z from 'zod';
 
 import { createToolCall } from '@/services/db/composer/tool-call';
 import { listResourcesForTools } from '@/services/db/resources/resource';
-import { getChat } from '@/services/db/composer/chat';
+import { getChat, updateChat } from '@/services/db/composer/chat';
 
 import { auth } from '@/auth';
 
@@ -222,20 +222,48 @@ export const POST = async (request: NextRequest) => {
 
   const response = await fetchWithProxy(url, requestInit);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const data = await response.json();
+
   after(async () => {
     if (response.status === 200) {
-      void createToolCall({
-        resource: {
-          connect: { id: resource.id },
-        },
-        chat: {
-          connect: { id: chatId },
-        },
-      });
+      await Promise.all([
+        updateChat(session.user.id, chatId, {
+          messages: {
+            update: {
+              where: {
+                id: lastMessage.id,
+              },
+              data: {
+                parts: JSON.stringify(
+                  lastMessage.parts.map(part => {
+                    if (isToolUIPart(part) && part.toolCallId === toolCallId) {
+                      return {
+                        ...part,
+                        state: 'output-available',
+                        output: data,
+                      };
+                    }
+                    return part;
+                  })
+                ),
+              },
+            },
+          },
+        }),
+        createToolCall({
+          resource: {
+            connect: { id: resource.id },
+          },
+          chat: {
+            connect: { id: chatId },
+          },
+        }),
+      ]);
     }
   });
 
-  return NextResponse.json(await response.json(), {
+  return NextResponse.json(data, {
     status: response.status,
     headers: response.headers,
   });
