@@ -36,6 +36,7 @@ export const useSPLTokenBalance = (props?: Props): UseBalanceReturnType => {
     },
     {
       enabled: !!addressToQuery && (enabled === undefined || enabled),
+      refetchOnMount: 'always',
     }
   );
 

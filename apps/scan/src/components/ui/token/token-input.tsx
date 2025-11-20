@@ -66,6 +66,7 @@ export const TokenInput: React.FC<Props> = ({
       query: {
         enabled:
           isBalanceMax && chain !== Chain.SOLANA && balanceProp === undefined,
+        refetchOnMount: 'always',
       },
     });
 
