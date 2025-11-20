@@ -31,7 +31,8 @@ export const useX402Fetch = <TData = unknown>({
       const response = await fetchWithPayment(targetUrl, init);
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(errorText || `Failed to fetch: ${response.statusText}`);
       }
 
       const contentType = response.headers.get('content-type') ?? '';
