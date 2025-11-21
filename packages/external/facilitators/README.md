@@ -70,6 +70,7 @@ The following facilitators currently support resource discovery:
 - **thirdweb** - Web3 development platform
 - **PayAI** - AI-payment infrastructure
 - **Ultravioleta DAO** - Community-driven multichain facilitator
+- **Aeon** - BSC Chain facilitator
 
 ### Enumerate All Discoverable Facilitators
 
@@ -113,7 +114,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Heurist**          | BASE          | No        | No                           |
 | **Treasure**         | BASE          | No        | No                           |
 | **AnySpend**         | BASE, SOLANA  | ✅ Yes    | No                           |
-
+| **Aeon**             | BSC           | ✅ Yes  | No                             |
 ### Import Individual Facilitators
 
 ```typescript
@@ -135,6 +136,7 @@ import {
   heurist,
   treasure,
   anyspend,
+  aeon
 } from 'facilitators';
 
 // Facilitators requiring setup
