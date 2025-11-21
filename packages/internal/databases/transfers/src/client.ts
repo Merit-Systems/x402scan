@@ -44,19 +44,19 @@ export const transfersDbReadReplicas = hasReplicas
       readReplicas({
         replicas: [
           ...(process.env.TRANSFERS_DB_URL_REPLICA_1
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_1!)]
+            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_1)]
             : []),
           ...(process.env.TRANSFERS_DB_URL_REPLICA_2
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_2!)]
+            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_2)]
             : []),
           ...(process.env.TRANSFERS_DB_URL_REPLICA_3
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_3!)]
+            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_3)]
             : []),
           ...(process.env.TRANSFERS_DB_URL_REPLICA_4
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_4!)]
+            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_4)]
             : []),
           ...(process.env.TRANSFERS_DB_URL_REPLICA_5
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_5!)]
+            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_5)]
             : []),
         ],
       })
