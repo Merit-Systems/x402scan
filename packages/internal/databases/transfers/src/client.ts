@@ -1,4 +1,4 @@
-import { PrismaClient } from '../generated/client';
+import { PrismaClient } from '../generated/prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
 
 import { neonConfig } from '@neondatabase/serverless';
@@ -9,15 +9,14 @@ import ws from 'ws';
 
 neonConfig.webSocketConstructor = ws;
 
-const connectionString = `${process.env.TRANSFERS_DB_URL}`;
-
 const globalForPrisma = global as unknown as {
   transfersDb: PrismaClient;
   transfersDbAdapter: PrismaNeon;
 };
 
 const transfersDbAdapter =
-  globalForPrisma.transfersDbAdapter || new PrismaNeon({ connectionString });
+  globalForPrisma.transfersDbAdapter ||
+  new PrismaNeon({ connectionString: process.env.TRANSFERS_DB_URL! });
 if (process.env.NODE_ENV !== 'production')
   globalForPrisma.transfersDbAdapter = transfersDbAdapter;
 
@@ -34,12 +33,30 @@ const hasReplicas =
   process.env.TRANSFERS_DB_URL_REPLICA_4 !== undefined ||
   process.env.TRANSFERS_DB_URL_REPLICA_5 !== undefined;
 
+const createReplicaClient = (connectionString: string) => {
+  return new PrismaClient({
+    adapter: new PrismaNeon({ connectionString }),
+  });
+};
+
 export const transfersDbReadReplicas = hasReplicas
   ? transfersDb.$extends(
       readReplicas({
-        url: [
+        replicas: [
           ...(process.env.TRANSFERS_DB_URL_REPLICA_1
-            ? [process.env.TRANSFERS_DB_URL_REPLICA_1]
+            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_1!)]
+            : []),
+          ...(process.env.TRANSFERS_DB_URL_REPLICA_2
+            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_2!)]
+            : []),
+          ...(process.env.TRANSFERS_DB_URL_REPLICA_3
+            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_3!)]
+            : []),
+          ...(process.env.TRANSFERS_DB_URL_REPLICA_4
+            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_4!)]
+            : []),
+          ...(process.env.TRANSFERS_DB_URL_REPLICA_5
+            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_5!)]
             : []),
         ],
       })

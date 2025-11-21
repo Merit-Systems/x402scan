@@ -31,9 +31,9 @@ export const WalletButton = () => {
     return null;
   }
 
-  if (chainsWithBalances.length === 0) {
-    return null;
-  }
+  // if (chainsWithBalances.length === 0) {
+  //   return null;
+  // }
 
   return (
     <WalletChainProvider>

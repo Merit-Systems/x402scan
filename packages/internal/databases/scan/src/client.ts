@@ -7,7 +7,7 @@ import ws from 'ws';
 
 neonConfig.webSocketConstructor = ws;
 
-const connectionString = `${process.env.POSTGRES_PRISMA_URL}`;
+const connectionString = `${process.env.SCAN_DATABASE_URL}`;
 
 const globalForPrisma = global as unknown as {
   scanDb: PrismaClient;

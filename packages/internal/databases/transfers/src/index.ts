@@ -1,3 +1,3 @@
-export { Prisma } from '../generated/client';
-export type { TransferEvent } from '../generated/client';
-export { transfersDb, transfersDbReadReplicas } from './client';
+export { Prisma } from '../generated/prisma/client';
+export type { TransferEvent } from '../generated/prisma/client';
+export { transfersDb } from './client';
