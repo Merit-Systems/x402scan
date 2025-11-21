@@ -18,6 +18,7 @@ interface UseEvmX402FetchParams<TData = unknown> {
   init?: RequestInit;
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
+  skipTracking?: boolean;
 }
 
 export const useEvmX402Fetch = <TData = unknown>({

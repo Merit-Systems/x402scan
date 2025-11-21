@@ -43,6 +43,7 @@ interface Props {
   maxAmountRequired: bigint;
   method: Methods;
   resource: string;
+  skipTracking?: boolean;
 }
 
 export function Form({
@@ -51,6 +52,7 @@ export function Form({
   maxAmountRequired,
   method,
   resource,
+  skipTracking = false,
 }: Props) {
   const queryFields = useMemo(
     () => getFields(inputSchema.queryParams),

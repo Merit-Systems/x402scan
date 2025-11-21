@@ -407,6 +407,7 @@ export const TestEndpointForm = () => {
                             }
                             hideOrigin
                             isFlat
+                            skipTracking={true}
                           />
                         ))}
                       </Accordion>

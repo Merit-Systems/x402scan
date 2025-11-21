@@ -4,7 +4,8 @@ const PROXY_ENDPOINT = '/api/proxy' as const;
 
 export const fetchWithProxy = async (
   input: URL | RequestInfo,
-  requestInit?: RequestInit
+  requestInit?: RequestInit,
+  options?: { skipTracking?: boolean }
 ) => {
   let url: string;
   if (input instanceof Request) {
@@ -15,6 +16,9 @@ export const fetchWithProxy = async (
   const proxyUrl = new URL(PROXY_ENDPOINT, env.NEXT_PUBLIC_PROXY_URL);
   proxyUrl.searchParams.set('url', encodeURIComponent(url));
   proxyUrl.searchParams.set('share_data', 'true');
+  if (options?.skipTracking) {
+    proxyUrl.searchParams.set('skip_tracking', 'true');
+  }
 
   const { method = 'GET', ...restInit } = requestInit ?? {};
   const normalizedMethod = method.toString().toUpperCase();

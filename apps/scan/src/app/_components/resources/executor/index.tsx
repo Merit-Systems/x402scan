@@ -30,6 +30,7 @@ interface Props {
   hideOrigin?: boolean;
   defaultOpen?: boolean;
   isFlat?: boolean;
+  skipTracking?: boolean;
 }
 
 export const ResourceExecutor: React.FC<Props> = ({
@@ -40,6 +41,7 @@ export const ResourceExecutor: React.FC<Props> = ({
   className,
   hideOrigin = false,
   isFlat = false,
+  skipTracking = false,
 }) => {
   const { data: resourceMetrics } = api.public.resources.getMetrics.useQuery(
     {
@@ -95,6 +97,7 @@ export const ResourceExecutor: React.FC<Props> = ({
             maxAmountRequired={maxAmountRequired}
             method={bazaarMethod}
             resource={resource.resource}
+            skipTracking={skipTracking}
           />
         </AccordionContent>
       </Card>
