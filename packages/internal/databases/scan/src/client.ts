@@ -7,15 +7,14 @@ import ws from 'ws';
 
 neonConfig.webSocketConstructor = ws;
 
-const connectionString = `${process.env.SCAN_DATABASE_URL}`;
-
 const globalForPrisma = global as unknown as {
   scanDb: PrismaClient;
   scanDbAdapter: PrismaNeon;
 };
 
 const scanDbAdapter =
-  globalForPrisma.scanDbAdapter || new PrismaNeon({ connectionString });
+  globalForPrisma.scanDbAdapter ||
+  new PrismaNeon({ connectionString: `${process.env.SCAN_DATABASE_URL}` });
 if (process.env.NODE_ENV !== 'production')
   globalForPrisma.scanDbAdapter = scanDbAdapter;
 
