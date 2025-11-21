@@ -3,7 +3,7 @@ import { PrismaNeon } from '@prisma/adapter-neon';
 
 import { neonConfig } from '@neondatabase/serverless';
 
-import { readReplicas } from '@prisma/extension-read-replicas';
+import { readReplicas } from './read-replicas/extension';
 
 import ws from 'ws';
 
@@ -33,30 +33,24 @@ const hasReplicas =
   process.env.TRANSFERS_DB_URL_REPLICA_4 !== undefined ||
   process.env.TRANSFERS_DB_URL_REPLICA_5 !== undefined;
 
-const createReplicaClient = (connectionString: string) => {
-  return new PrismaClient({
-    adapter: new PrismaNeon({ connectionString }),
-  });
-};
-
 export const transfersDbReadReplicas = hasReplicas
   ? transfersDb.$extends(
       readReplicas({
-        replicas: [
+        url: [
           ...(process.env.TRANSFERS_DB_URL_REPLICA_1
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_1!)]
+            ? [process.env.TRANSFERS_DB_URL_REPLICA_1]
             : []),
           ...(process.env.TRANSFERS_DB_URL_REPLICA_2
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_2!)]
+            ? [process.env.TRANSFERS_DB_URL_REPLICA_2]
             : []),
           ...(process.env.TRANSFERS_DB_URL_REPLICA_3
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_3!)]
+            ? [process.env.TRANSFERS_DB_URL_REPLICA_3]
             : []),
           ...(process.env.TRANSFERS_DB_URL_REPLICA_4
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_4!)]
+            ? [process.env.TRANSFERS_DB_URL_REPLICA_4]
             : []),
           ...(process.env.TRANSFERS_DB_URL_REPLICA_5
-            ? [createReplicaClient(process.env.TRANSFERS_DB_URL_REPLICA_5!)]
+            ? [process.env.TRANSFERS_DB_URL_REPLICA_5]
             : []),
         ],
       })

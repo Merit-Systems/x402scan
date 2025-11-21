@@ -34,7 +34,7 @@
     },
     "packages/internal/databases/transfers": {
       "project": ["src/**/*.ts", "prisma/schema.prisma"],
-      "ignoreDependencies": ["rimraf"],
+      "ignoreDependencies": ["rimraf", "@prisma/client"],
       "ignore": ["generated/**"]
     },
     "packages/internal/configurations/eslint": {
