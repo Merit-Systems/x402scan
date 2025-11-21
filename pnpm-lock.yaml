@@ -123,9 +123,6 @@ importers:
       '@prisma/client':
         specifier: ^7.0.0
         version: 7.0.0(prisma@7.0.0(@types/react@19.2.6)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
-      '@prisma/nextjs-monorepo-workaround-plugin':
-        specifier: ^6.19.0
-        version: 6.19.0
       '@radix-ui/react-accordion':
         specifier: ^1.2.12
         version: 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.6))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -2918,9 +2915,6 @@ packages:
 
   '@prisma/get-platform@7.0.0':
     resolution: {integrity: sha512-zyhzrAa+y/GfyCzTnuk0D9lfkvDzo7IbsNyuhTqhPu/AN0txm0x26HAR4tJLismla/fHf5fBzYwSivYSzkpakg==}
-
-  '@prisma/nextjs-monorepo-workaround-plugin@6.19.0':
-    resolution: {integrity: sha512-gI80bqfPf8bmW2y2jISsIFrAYZlDcrPC+CBUS5Lehq5umsY0LD1O+qWd4T59OUdHKDb475vbAOiG6K8iQbZsfw==}
 
   '@prisma/query-plan-executor@6.18.0':
     resolution: {integrity: sha512-jZ8cfzFgL0jReE1R10gT8JLHtQxjWYLiQ//wHmVYZ2rVkFHoh0DT8IXsxcKcFlfKN7ak7k6j0XMNn2xVNyr5cA==}
@@ -12839,8 +12833,6 @@ snapshots:
   '@prisma/get-platform@7.0.0':
     dependencies:
       '@prisma/debug': 7.0.0
-
-  '@prisma/nextjs-monorepo-workaround-plugin@6.19.0': {}
 
   '@prisma/query-plan-executor@6.18.0': {}
 
