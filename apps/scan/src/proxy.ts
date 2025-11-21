@@ -35,5 +35,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/send']
+  matcher: ['/api/send'],
 };
