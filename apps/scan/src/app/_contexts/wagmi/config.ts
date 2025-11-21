@@ -10,28 +10,15 @@ import { base } from 'wagmi/chains';
 import { cdpConfig } from '../cdp/config';
 import { env } from '@/env';
 
-const cdpEmbeddedWalletConnectorFactory = () => {
-  console.warn = () => {
-    return;
-  };
-  console.log = () => {
-    return;
-  };
-  console.error = () => {
-    return;
-  };
-  return createCDPEmbeddedWalletConnector({
-    cdpConfig,
-    providerConfig: {
-      chains: [base],
-      transports: {
-        [base.id]: http(),
-      },
+const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
+  cdpConfig,
+  providerConfig: {
+    chains: [base],
+    transports: {
+      [base.id]: http(),
     },
-  });
-};
-
-const cdpEmbeddedWalletConnector = cdpEmbeddedWalletConnectorFactory();
+  },
+});
 
 const wagmiConfig = {
   chains: [base],
