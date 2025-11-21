@@ -18,6 +18,7 @@ interface Props<TData = unknown> {
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
   text?: string;
+  skipTracking?: boolean;
 }
 
 export const ResourceFetch: React.FC<Props> = ({
@@ -29,6 +30,7 @@ export const ResourceFetch: React.FC<Props> = ({
   options,
   isTool = false,
   text,
+  skipTracking = false,
 }) => {
   return (
     <div
@@ -48,6 +50,7 @@ export const ResourceFetch: React.FC<Props> = ({
             options={options}
             isTool={isTool}
             text={text}
+            skipTracking={skipTracking}
           />
         ) : (
           <FetchEvm
@@ -60,6 +63,7 @@ export const ResourceFetch: React.FC<Props> = ({
             options={options}
             isTool={isTool}
             text={text}
+            skipTracking={skipTracking}
           />
         )
       )}

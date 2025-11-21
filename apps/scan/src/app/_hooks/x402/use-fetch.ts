@@ -12,6 +12,7 @@ interface UseX402FetchParams<TData = unknown> {
   init?: RequestInit;
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
+  skipTracking?: boolean;
 }
 
 export const useX402Fetch = <TData = unknown>({
@@ -21,11 +22,15 @@ export const useX402Fetch = <TData = unknown>({
   init,
   options,
   isTool = false,
+  skipTracking = false,
 }: UseX402FetchParams<TData>) => {
   return useMutation({
     mutationFn: async () => {
       const fetchWithPayment = wrapperFn(
-        isTool ? fetch : fetchWithProxy,
+        isTool
+          ? fetch
+          : (url: string | URL | Request, init?: RequestInit) =>
+              fetchWithProxy(url, init, { skipTracking }),
         value
       );
       const response = await fetchWithPayment(targetUrl, init);
