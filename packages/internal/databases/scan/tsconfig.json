@@ -1,9 +1,9 @@
 {
-  "extends": "@x402scan/typescript-config/base.json",
+  "extends": "@x402scan/typescript-config/prisma.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "./"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "prisma.config.ts"],
   "exclude": ["node_modules", "generated"]
 }

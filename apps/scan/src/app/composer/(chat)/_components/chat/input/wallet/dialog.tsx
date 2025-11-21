@@ -88,9 +88,8 @@ export const WalletDialog: React.FC<Props> = ({
               </TabsList>
             </DialogHeader>
             <div className="text-xs font-mono p-4 bg-primary/10 mx-4 rounded-md border-primary border text-primary">
-              The Composer now uses embedded and injected wallets for invoking
-              tools. You can withdraw all funds deposited on the Composer to
-              your wallet.
+              Composer no longer uses these funds. Withdraw all funds deposited
+              on the Composer to your wallet.
             </div>
             <TabsContent
               value="send"

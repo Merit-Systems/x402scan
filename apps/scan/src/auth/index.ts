@@ -13,7 +13,7 @@ import { SIWE_PROVIDER_ID } from './providers/siwe/constants';
 import { SIWS_PROVIDER_ID } from './providers/siws/constants';
 
 import type { DefaultSession } from 'next-auth';
-import type { Account, Role } from '@x402scan/scan-db';
+import type { Account, Role } from '@x402scan/scan-db/types';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {

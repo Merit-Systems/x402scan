@@ -16,7 +16,7 @@ export default async function ToolSpendingAnalysisPage() {
   const session = await auth();
 
   if (session?.user.role !== 'admin') {
-    return forbidden();
+    forbidden();
   }
 
   return (

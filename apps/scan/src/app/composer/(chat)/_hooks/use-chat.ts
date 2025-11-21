@@ -19,7 +19,7 @@ import { convertToUIMessages } from '@/lib/utils';
 import type { RouterOutputs } from '@/trpc/client';
 import type { ChatConfig, SelectedResource } from '../_types/chat-config';
 import type { LanguageModel } from '../_components/chat/input/model-select/types';
-import type { Message } from '@x402scan/scan-db';
+import type { Message } from '@x402scan/scan-db/types';
 
 interface Props {
   id: string;

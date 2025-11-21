@@ -7,9 +7,8 @@ export const queryRaw = async <T>(
   sql: Prisma.Sql,
   resultSchema: z.ZodSchema<T>
 ) => {
-  const result = await (
-    transfersDbReadReplicas?.$replica() ?? transfersDb
-  ).$queryRaw<T>(sql);
+  const db = transfersDbReadReplicas?.$replica() ?? transfersDb;
+  const result = await db.$queryRaw<T>(sql);
   const parseResult = resultSchema.safeParse(result);
   if (!parseResult.success) {
     throw new Error('Invalid result: ' + parseResult.error.message);

@@ -10,7 +10,7 @@ import {
 } from '@/lib/x402/schema';
 
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
-import type { ResourceRequestMetadata } from '@x402scan/scan-db';
+import type { ResourceRequestMetadata } from '@x402scan/scan-db/types';
 import type { Tool } from 'ai';
 
 export async function createX402AITools(

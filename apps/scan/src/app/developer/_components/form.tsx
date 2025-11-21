@@ -52,7 +52,7 @@ import { isLocalUrl, extractPort } from '@/lib/url-helpers';
 import { NgrokAlert } from './ngrok-alert';
 
 import type { SupportedChain } from '@/types/chain';
-import type { OgImage, ResourceOrigin } from '@x402scan/scan-db';
+import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 
 export const TestEndpointForm = () => {
   const queryClient = useQueryClient();
