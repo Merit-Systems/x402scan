@@ -10,7 +10,7 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 import { ChainIdToNetwork } from 'x402/types';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
+import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db/types';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { SupportedChain } from '@/types/chain';
 
