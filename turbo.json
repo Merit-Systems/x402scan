@@ -3,9 +3,9 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build", "^db:generate"],
+      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", "generated/**"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": [
         "ANALYTICS_CLICKHOUSE_*",
         "POSTGRES_*",
@@ -38,7 +38,7 @@
       ]
     },
     "dev": {
-      "dependsOn": ["^db:generate", "^build"],
+      "dependsOn": ["^build"],
       "persistent": true
     },
     "start": {
@@ -61,7 +61,7 @@
       "cache": false
     },
     "trigger:deploy": {
-      "dependsOn": ["^build", "^db:generate"],
+      "dependsOn": ["^build"],
       "cache": false,
       "env": [
         "TRIGGER_ACCESS_TOKEN",
