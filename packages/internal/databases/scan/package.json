@@ -2,8 +2,10 @@
   "name": "@x402scan/scan-db",
   "version": "1.0.0",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts"
   },
+  "type": "module",
   "scripts": {
     "dev": "tsc --watch",
     "lint": "eslint . --max-warnings 0",
@@ -22,17 +24,18 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
-    "@prisma/adapter-neon": "^6.19.0",
-    "@prisma/client": "^6.19.0",
+    "@prisma/adapter-neon": "^7.0.0",
+    "@prisma/client": "^7.0.0",
+    "dotenv": "^17.2.3",
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@x402scan/eslint-config": "workspace:*",
-    "@x402scan/typescript-config": "workspace:*",
     "@types/node": "^20",
     "@types/ws": "^8.18.1",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
     "eslint": "^9.39.1",
-    "prisma": "^6.19.0",
+    "prisma": "^7.0.0",
     "rimraf": "^5.0.5",
     "typescript": "5.5.4"
   },

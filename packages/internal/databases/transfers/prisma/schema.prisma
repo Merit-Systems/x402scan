@@ -1,12 +1,11 @@
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../generated/client"
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  provider            = "prisma-client"
+  output              = "../generated/prisma"
+  importFileExtension = "ts"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("TRANSFERS_DB_URL")
 }
 
 model TransferEvent {

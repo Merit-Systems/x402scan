@@ -1,5 +1,6 @@
-// Explicitly export Prisma types and enums instead of using export *
-export { Prisma } from '../generated/prisma/client';
+// Types-only exports for client-side usage
+// This file does not export the Prisma client or Prisma namespace to avoid bundling Node.js modules in the browser
+
 export type {
   User,
   Account,
@@ -28,6 +29,7 @@ export type {
   ResourceOriginMetrics,
   ResourceMetrics,
 } from '../generated/prisma/client';
+
 export {
   Role,
   ResourceType,
@@ -37,4 +39,3 @@ export {
   ServerWalletType,
   Visibility,
 } from '../generated/prisma/enums';
-export { scanDb } from './client';

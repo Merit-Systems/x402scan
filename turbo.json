@@ -9,6 +9,7 @@
       "env": [
         "ANALYTICS_CLICKHOUSE_*",
         "POSTGRES_*",
+        "SCAN_DATABASE_URL*",
         "CDP_*",
         "*_RPC_URL",
         "TRANSFERS_DB_*",
@@ -66,7 +67,8 @@
         "TRIGGER_ACCESS_TOKEN",
         "ANALYTICS_CLICKHOUSE_*",
         "POSTGRES_*",
-        "TRANSFERS_DB_*"
+        "TRANSFERS_DB_*",
+        "SCAN_DATABASE_URL*"
       ]
     },
     "lint": {
