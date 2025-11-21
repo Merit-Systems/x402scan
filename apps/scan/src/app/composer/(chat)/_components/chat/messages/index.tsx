@@ -11,7 +11,7 @@ import { EmptyState } from './empty-state';
 import { LoadingMessage, Message } from './message';
 
 import type { ChatStatus } from 'ai';
-import type { UIMessage } from '@ai-sdk/react';
+import type { UIMessage, UseChatHelpers } from '@ai-sdk/react';
 import { AnimatedShinyText } from '@/components/magicui/animated-shiny-text';
 import { ErrorState } from './error';
 
@@ -19,7 +19,9 @@ interface MessagesProps {
   messages: UIMessage[];
   status: ChatStatus;
   model: string;
+  chatId: string;
   onRegenerate: () => void;
+  addToolResult: UseChatHelpers<UIMessage>['addToolResult'];
   errorMessage?: string;
   emptyState?: EmptyStateProps;
 }
@@ -28,8 +30,10 @@ export const Messages: React.FC<MessagesProps> = ({
   messages,
   status,
   model,
+  chatId,
   errorMessage,
   onRegenerate,
+  addToolResult,
   emptyState,
 }) => {
   return (
@@ -43,6 +47,8 @@ export const Messages: React.FC<MessagesProps> = ({
                 message={message}
                 status={status}
                 isLast={message.id === messages.at(-1)?.id}
+                chatId={chatId}
+                addToolResult={addToolResult}
               />
             ))}
             {status === 'submitted' ||

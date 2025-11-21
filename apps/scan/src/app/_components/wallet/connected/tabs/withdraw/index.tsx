@@ -12,12 +12,28 @@ import { usdc } from '@/lib/tokens/usdc';
 import { Chain, CHAIN_ICONS, CHAIN_LABELS } from '@/types/chain';
 import { WithdrawEVM } from './evm';
 import { WithdrawSolana } from './svm';
+import { WithdrawSuccess } from './success';
 
 export const Withdraw: React.FC = () => {
   const [toAddress, setToAddress] = useState('');
   const [amount, setAmount] = useState(0);
+  const [isSuccessful, setIsSuccessful] = useState(false);
 
   const { chain } = useWalletChain();
+
+  if (isSuccessful) {
+    return (
+      <WithdrawSuccess
+        amount={amount}
+        toAddress={toAddress}
+        onReset={() => {
+          setIsSuccessful(false);
+          setToAddress('');
+          setAmount(0);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -58,14 +74,18 @@ export const Withdraw: React.FC = () => {
       {chain === Chain.SOLANA ? (
         <WithdrawSolana
           amount={amount}
-          setAmount={setAmount}
           toAddress={toAddress}
+          onSuccess={() => {
+            setIsSuccessful(true);
+          }}
         />
       ) : (
         <WithdrawEVM
           amount={amount}
           toAddress={toAddress}
-          setAmount={setAmount}
+          onSuccess={() => {
+            setIsSuccessful(true);
+          }}
         />
       )}
     </div>

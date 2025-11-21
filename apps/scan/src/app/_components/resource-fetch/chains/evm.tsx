@@ -11,16 +11,21 @@ import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-bal
 import { useEvmX402Fetch } from '@/app/_hooks/x402/evm';
 
 import { convertTokenAmount } from '@/lib/token';
-
-import type { SupportedChain } from '@/types/chain';
 import { usdc } from '@/lib/tokens/usdc';
 
-interface Props {
+import type { SupportedChain } from '@/types/chain';
+import type { UseMutationOptions } from '@tanstack/react-query';
+import type { X402FetchResponse } from '@/app/_hooks/x402/types';
+
+interface Props<TData = unknown> {
   chain: SupportedChain;
   allRequiredFieldsFilled: boolean;
   maxAmountRequired: bigint;
   targetUrl: string;
-  requestInit?: RequestInit;
+  requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
+  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
+  isTool?: boolean;
+  text?: string;
 }
 
 export const FetchEvm: React.FC<Props> = ({
@@ -29,17 +34,22 @@ export const FetchEvm: React.FC<Props> = ({
   maxAmountRequired,
   targetUrl,
   requestInit,
+  options,
+  isTool = false,
+  text,
 }) => {
   const { data: walletClient, isLoading: isLoadingWalletClient } =
     useWalletClient();
   const { isInitialized } = useIsInitialized();
 
-  const {
-    data: response,
-    mutate: execute,
-    isPending,
-    error,
-  } = useEvmX402Fetch(targetUrl, maxAmountRequired, chain, requestInit);
+  const { mutate: execute, isPending } = useEvmX402Fetch({
+    targetUrl,
+    value: maxAmountRequired,
+    chain,
+    init: typeof requestInit === 'function' ? requestInit(chain) : requestInit,
+    options,
+    isTool,
+  });
 
   const { data: balance, isLoading: isLoadingBalance } = useEvmTokenBalance({
     token: usdc(chain),
@@ -67,8 +77,7 @@ export const FetchEvm: React.FC<Props> = ({
       isLoading={isLoadingWalletClient || !isInitialized}
       chains={[chain]}
       maxAmountRequired={maxAmountRequired}
-      error={error}
-      response={response}
+      text={text}
     />
   );
 };

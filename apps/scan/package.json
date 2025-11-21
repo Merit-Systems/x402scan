@@ -67,7 +67,6 @@
     "@vercel/analytics": "^1.5.0",
     "@vercel/blob": "^2.0.0",
     "@vercel/speed-insights": "^1.2.0",
-    "@wagmi/core": "^2.22.1",
     "@wallet-standard/base": "^1.1.0",
     "@wallet-standard/react": "^1.0.1",
     "@x402scan/analytics-db": "workspace:*",
@@ -116,6 +115,7 @@
     "wagmi": "^2.17.5",
     "x402": "^0.7.1",
     "x402-fetch": "^0.7.0",
+    "x402-next": "^0.7.1",
     "zod": "^4.1.11",
     "zod3": "npm:zod@^3.24.2"
   },

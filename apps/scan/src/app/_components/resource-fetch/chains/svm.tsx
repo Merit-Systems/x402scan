@@ -1,3 +1,5 @@
+import { useIsInitialized } from '@coinbase/cdp-hooks';
+
 import { ConnectWalletState } from '../1-connect';
 import { LoadingState } from '../2-loading-balance';
 import { AddFundsState } from '../3-add-funds';
@@ -8,18 +10,23 @@ import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-bal
 
 import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
+import type { SupportedChain } from '@/types/chain';
 import { Chain } from '@/types/chain';
 
 import { convertTokenAmount } from '@/lib/token';
 
 import type { UiWalletAccount } from '@wallet-standard/react';
-import { useIsInitialized } from '@coinbase/cdp-hooks';
+import type { UseMutationOptions } from '@tanstack/react-query';
+import type { X402FetchResponse } from '@/app/_hooks/x402/types';
 
-interface Props {
+interface Props<TData = unknown> {
   allRequiredFieldsFilled: boolean;
   maxAmountRequired: bigint;
   targetUrl: string;
-  requestInit?: RequestInit;
+  requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
+  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
+  isTool?: boolean;
+  text?: string;
 }
 
 export const FetchSvm: React.FC<Props> = ({
@@ -27,6 +34,9 @@ export const FetchSvm: React.FC<Props> = ({
   maxAmountRequired,
   targetUrl,
   requestInit,
+  options,
+  isTool = false,
+  text,
 }) => {
   const { connectedWallet } = useSolanaWallet();
 
@@ -61,12 +71,16 @@ export const FetchSvm: React.FC<Props> = ({
       maxAmountRequired={maxAmountRequired}
       targetUrl={targetUrl}
       requestInit={requestInit}
+      options={options}
+      isTool={isTool}
+      text={text}
     />
   );
 };
 
 interface FetchContentProps extends Omit<Props, 'chain'> {
   account: UiWalletAccount;
+  isTool?: boolean;
 }
 
 const FetchContent: React.FC<FetchContentProps> = ({
@@ -75,13 +89,21 @@ const FetchContent: React.FC<FetchContentProps> = ({
   maxAmountRequired,
   targetUrl,
   requestInit,
+  options,
+  isTool = false,
+  text,
 }) => {
-  const {
-    data: response,
-    mutate: execute,
-    isPending,
-    error,
-  } = useSvmX402Fetch(targetUrl, maxAmountRequired, account, requestInit);
+  const { mutate: execute, isPending } = useSvmX402Fetch({
+    account,
+    targetUrl,
+    value: maxAmountRequired,
+    init:
+      typeof requestInit === 'function'
+        ? requestInit(Chain.SOLANA)
+        : requestInit,
+    options,
+    isTool,
+  });
   const { isInitialized } = useIsInitialized();
 
   return (
@@ -92,8 +114,7 @@ const FetchContent: React.FC<FetchContentProps> = ({
       isLoading={!isInitialized}
       chains={[Chain.SOLANA]}
       maxAmountRequired={maxAmountRequired}
-      error={error}
-      response={response}
+      text={text}
     />
   );
 };

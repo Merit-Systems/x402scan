@@ -1,26 +1,17 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { useWriteContract } from 'wagmi';
-import { base } from 'wagmi/chains';
-import { waitForTransactionReceipt } from '@wagmi/core';
-import { erc20Abi, parseUnits } from 'viem';
-
-import { useMutation } from '@tanstack/react-query';
-
 import { toast } from 'sonner';
-
-import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
 
 import { usdc } from '@/lib/tokens/usdc';
 
 import { useEvmTokenBalance } from '../balance/token/use-evm-token-balance';
-import { useEvmNativeBalance } from '../balance/native/use-evm-balance';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 
-import type { Address, Hash } from 'viem';
-import type { Token } from '@/types/token';
 import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
+import { useEvmX402Fetch } from '../x402/evm';
+
+import type { Token } from '@/types/token';
 
 interface Props {
   token?: Token;
@@ -55,11 +46,6 @@ export const useEvmSend = (props?: Props) => {
   );
 
   const {
-    data: ethBalance,
-    isLoading: isEthBalanceLoading,
-    invalidate: invalidateEthBalance,
-  } = useEvmNativeBalance({ chain });
-  const {
     data: balance,
     isLoading: isBalanceLoading,
     invalidate: invalidateBalance,
@@ -68,36 +54,31 @@ export const useEvmSend = (props?: Props) => {
   });
 
   const {
-    mutate: confirmTransactionReceipt,
-    isPending: isConfirming,
-    isSuccess: isConfirmed,
-  } = useMutation({
-    mutationFn: async (hash: Hash) => {
-      return waitForTransactionReceipt(createWagmiConfig(), {
-        hash,
-        chainId: base.id,
-        confirmations: 1,
-      });
-    },
-    onSuccess: () => {
-      toast.success(
-        toastMessage ? toastMessage(amount!) : `${amount} USDC sent`
-      );
-      void invalidateBalance();
-      void invalidateEthBalance();
-      setAmount(0);
-      onSuccess?.();
-    },
-  });
-
-  const {
-    writeContract,
+    mutate: sendTransaction,
     isPending: isSending,
     isSuccess: isSent,
-  } = useWriteContract({
-    mutation: {
-      onSuccess: hash => {
-        confirmTransactionReceipt(hash);
+    reset,
+  } = useEvmX402Fetch({
+    chain,
+    targetUrl: `${window.location.origin}/api/send?address=${toAddress}&amount=${amount}&chain=${chain}`,
+    value: amount ? BigInt(amount * 10 ** token.decimals) : BigInt(0),
+    init: {
+      method: 'POST',
+    },
+    options: {
+      onSuccess: () => {
+        toast.success(
+          toastMessage ? toastMessage(amountProp!) : `${amountProp} USDC sent`
+        );
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            void invalidateBalance();
+          }, i * 1000);
+        }
+        onSuccess?.();
+        setTimeout(() => {
+          reset();
+        }, 3000);
       },
       onError: error => {
         toast.error('Failed to send USDC', {
@@ -105,6 +86,7 @@ export const useEvmSend = (props?: Props) => {
         });
       },
     },
+    isTool: true,
   });
 
   const handleSubmit = useCallback(async () => {
@@ -117,34 +99,17 @@ export const useEvmSend = (props?: Props) => {
       toast.error('Invalid address');
       return;
     }
-    const parsedAddress = parseResult.data;
-    writeContract({
-      address: token.address as Address,
-      abi: erc20Abi,
-      functionName: 'transfer',
-      args: [parsedAddress, parseUnits(amount.toString(), token.decimals)],
-    });
-  }, [toAddress, amount, writeContract, token]);
+    sendTransaction();
+  }, [toAddress, amount, sendTransaction]);
 
   const statusText = useMemo(() => {
-    if (isEthBalanceLoading || isBalanceLoading) return 'Loading...';
-    if (!ethBalance) return 'Insufficient ETH';
+    if (isBalanceLoading) return 'Loading...';
     if (!amount) return 'Enter an amount';
     if (!balance || balance < amount) return 'Insufficient USDC';
     if (isSending) return 'Sending...';
-    if (isConfirming) return 'Confirming...';
-    if (isConfirmed) return 'Confirmed';
+    if (isSent) return 'USDC sent';
     return 'Send USDC';
-  }, [
-    isEthBalanceLoading,
-    isBalanceLoading,
-    ethBalance,
-    balance,
-    amount,
-    isSending,
-    isConfirming,
-    isConfirmed,
-  ]);
+  }, [isBalanceLoading, balance, amount, isSending, isSent]);
 
   return {
     handleSubmit,
@@ -154,19 +119,16 @@ export const useEvmSend = (props?: Props) => {
     setAmount,
     isSending,
     isSent,
-    isConfirming,
-    isConfirmed,
-    isEthBalanceLoading,
     isBalanceLoading,
-    ethBalance,
     balance,
     isInvalid:
       !amount ||
       !balance ||
       balance < amount ||
-      isEthBalanceLoading ||
-      !ethBalance,
-    isPending: isSending || isConfirming || isSent,
+      isBalanceLoading ||
+      isSent ||
+      !ethereumAddressSchema.safeParse(toAddress).success,
+    isPending: isSending,
     statusText,
   };
 };

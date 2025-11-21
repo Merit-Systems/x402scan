@@ -18,7 +18,7 @@ export const ComposerHomeHeading = () => {
           </span>
         </div>
       }
-      description="A playground for building agents that pay for inference and resources with x402"
+      description="A playground for building agents that use x402 resources"
       actions={
         <div className="flex items-center gap-2">
           <Link href="/composer/agents/new">

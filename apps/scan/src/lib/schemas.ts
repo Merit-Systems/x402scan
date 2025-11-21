@@ -42,3 +42,9 @@ export const timeframeSchema = z
     }),
   ])
   .default(0);
+
+export const sendUsdcQueryParamsSchema = z.object({
+  amount: z.coerce.number(),
+  address: mixedAddressSchema,
+  chain: supportedChainSchema,
+});

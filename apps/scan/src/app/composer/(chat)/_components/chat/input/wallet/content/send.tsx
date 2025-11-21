@@ -1,13 +1,12 @@
 import { useCallback, useState } from 'react';
 
-import { Check, Loader2 } from 'lucide-react';
+import { Check, CheckCircle, Loader2 } from 'lucide-react';
 
 import { toast } from 'sonner';
 
 import { useSession } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
-import { CopyCode } from '@/components/ui/copy-code';
 import { TokenInput } from '@/components/ui/token/token-input';
 import { Input } from '@/components/ui/input';
 
@@ -17,10 +16,13 @@ import { api } from '@/trpc/client';
 
 import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { ethereumAddressSchema, solanaAddressSchema } from '@/lib/schemas';
 import { usdc } from '@/lib/tokens/usdc';
+import { formatAddress } from '@/lib/utils';
 
 import { CHAIN_LABELS } from '@/types/chain';
+
+import { Chain as ChainType } from '@/types/chain';
 
 export const Send: React.FC = () => {
   const [amount, setAmount] = useState(0);
@@ -31,25 +33,7 @@ export const Send: React.FC = () => {
   const { chain } = useWalletChain();
 
   const utils = api.useUtils();
-  const { data: serverWalletAddress, isLoading: isServerWalletAddressLoading } =
-    api.user.serverWallet.address.useQuery(
-      {
-        chain,
-      },
-      {
-        enabled: !!session,
-      }
-    );
-  const { data: ethBalance, isLoading: isEthBalanceLoading } =
-    api.user.serverWallet.nativeBalance.useQuery(
-      {
-        chain,
-      },
-      {
-        enabled: !!session,
-      }
-    );
-  const { data: balance } = api.user.serverWallet.tokenBalance.useQuery(
+  const { data: serverWalletAddress } = api.user.serverWallet.address.useQuery(
     {
       chain,
     },
@@ -57,46 +41,67 @@ export const Send: React.FC = () => {
       enabled: !!session,
     }
   );
+  const { data: balance, isLoading: isBalanceLoading } =
+    api.user.serverWallet.tokenBalance.useQuery(
+      {
+        chain,
+      },
+      {
+        enabled: !!session,
+      }
+    );
 
   const {
-    mutate: sendTokens,
+    mutate: sendUsdc,
     isPending: isSending,
     isSuccess: isSent,
-  } = api.user.serverWallet.sendTokens.useMutation();
+    reset,
+  } = api.user.serverWallet.sendUsdc.useMutation();
+
+  const schema =
+    chain === ChainType.SOLANA ? solanaAddressSchema : ethereumAddressSchema;
 
   const handleSubmit = useCallback(async () => {
-    const parseResult = ethereumAddressSchema.safeParse(address);
+    const parseResult = schema.safeParse(address);
     if (!parseResult.success) {
       toast.error('Invalid address');
       return;
     }
     const parsedAddress = parseResult.data;
-    sendTokens(
+    sendUsdc(
       {
         amount,
         address: parsedAddress,
         chain,
-        token: usdc(chain),
       },
       {
         onSuccess: () => {
           toast.success(`${amount} USDC sent`);
           for (let i = 0; i < 5; i++) {
             setTimeout(() => {
-              void utils.user.serverWallet.nativeBalance.invalidate({
-                chain,
-              });
               void utils.user.serverWallet.tokenBalance.invalidate({
                 chain,
               });
             }, i * 1000);
           }
-          setAmount(0);
-          setAddress('');
         },
       }
     );
-  }, [address, amount, sendTokens, utils, chain]);
+  }, [address, amount, sendUsdc, utils, chain, schema]);
+
+  if (isSent) {
+    return (
+      <WithdrawSuccess
+        amount={amount}
+        toAddress={address}
+        onReset={() => {
+          setAmount(0);
+          setAddress('');
+          reset();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -114,40 +119,30 @@ export const Send: React.FC = () => {
         placeholder="0.00"
         inputClassName="placeholder:text-muted-foreground/60"
         isBalanceMax
+        chain={chain}
+        balanceProp={{
+          balance: balance,
+          isLoading: isBalanceLoading,
+        }}
       />
       <div className="flex flex-col gap-1">
         <span className="font-medium text-sm">Address</span>
         <Input
-          placeholder="0x..."
+          placeholder={chain === ChainType.SOLANA ? 'Solana Address' : '0x...'}
           value={address}
           onChange={e => setAddress(e.target.value)}
           className="border-2 shadow-none placeholder:text-muted-foreground/60 font-mono"
         />
       </div>
-      {!isEthBalanceLoading &&
-        !isServerWalletAddressLoading &&
-        ethBalance === 0 && (
-          <div className="flex flex-col gap-1  bg-yellow-600/10 p-2 rounded-md">
-            <p className="text-yellow-600 text-xs">
-              Insufficient gas to pay for this transaction.
-            </p>
-            <CopyCode
-              code={serverWalletAddress ?? ''}
-              toastMessage="Copied to clipboard"
-            />
-          </div>
-        )}
       <Button
         variant="turbo"
         disabled={
-          amount === 0 ||
+          !amount ||
           !address ||
-          !ethereumAddressSchema.safeParse(address).success ||
           isSending ||
           !balance ||
           balance < amount ||
-          isEthBalanceLoading ||
-          !ethBalance
+          !schema.safeParse(address).success
         }
         onClick={handleSubmit}
       >
@@ -165,6 +160,26 @@ export const Send: React.FC = () => {
           'Send USDC'
         )}
       </Button>
+    </div>
+  );
+};
+
+interface Props {
+  amount: number;
+  toAddress: string;
+  onReset: () => void;
+}
+
+const WithdrawSuccess: React.FC<Props> = ({ amount, toAddress, onReset }) => {
+  return (
+    <div className="flex flex-col gap-2 items-center justify-center p-4 bg-muted rounded-lg">
+      <CheckCircle className="size-10 text-green-600" />
+      <p className="text-center">
+        You have successfully sent{' '}
+        <span className="font-bold">{amount} USDC</span> to{' '}
+        <span className="font-bold">{formatAddress(toAddress)}</span>
+      </p>
+      <Button onClick={onReset}>Send Again</Button>
     </div>
   );
 };

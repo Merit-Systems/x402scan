@@ -36,6 +36,10 @@ interface Props
   inputClassName?: string;
   isBalanceMax?: boolean;
   address?: MixedAddress;
+  balanceProp?: {
+    balance: number | undefined;
+    isLoading: boolean;
+  };
 }
 
 export const TokenInput: React.FC<Props> = ({
@@ -49,6 +53,7 @@ export const TokenInput: React.FC<Props> = ({
   className,
   inputClassName,
   address,
+  balanceProp,
   ...props
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -59,18 +64,22 @@ export const TokenInput: React.FC<Props> = ({
       token: selectedToken,
       address: address as `0x${string}` | undefined,
       query: {
-        enabled: isBalanceMax && chain !== Chain.SOLANA,
+        enabled:
+          isBalanceMax && chain !== Chain.SOLANA && balanceProp === undefined,
+        refetchOnMount: 'always',
       },
     });
 
   const { data: svmBalance, isLoading: isSolanaBalanceLoading } =
     useSPLTokenBalance({
-      enabled: isBalanceMax && chain === Chain.SOLANA,
+      enabled:
+        isBalanceMax && chain === Chain.SOLANA && balanceProp === undefined,
       address: address as SolanaAddress | undefined,
     });
 
   const { balance, isLoading } =
-    chain === Chain.SOLANA
+    balanceProp ??
+    (chain === Chain.SOLANA
       ? {
           balance: svmBalance,
           isLoading: isSolanaBalanceLoading,
@@ -78,7 +87,7 @@ export const TokenInput: React.FC<Props> = ({
       : {
           balance: evmBalance,
           isLoading: isEvmBalanceLoading,
-        };
+        });
 
   useEffect(() => {
     if (inputRef.current) {

@@ -17,14 +17,23 @@ import { TextPart } from './parts/text';
 import { cn } from '@/lib/utils';
 
 import type { UIMessage, ChatStatus } from 'ai';
+import type { UseChatHelpers } from '@ai-sdk/react';
 
 interface Props {
   message: UIMessage;
   status: ChatStatus;
   isLast: boolean;
+  chatId: string;
+  addToolResult: UseChatHelpers<UIMessage>['addToolResult'];
 }
 
-export const Message: React.FC<Props> = ({ message, status, isLast }) => {
+export const Message: React.FC<Props> = ({
+  message,
+  status,
+  isLast,
+  chatId,
+  addToolResult,
+}) => {
   if (message.parts.length === 0) {
     return null;
   }
@@ -39,7 +48,14 @@ export const Message: React.FC<Props> = ({ message, status, isLast }) => {
         )}
       {message.parts.map((part, i) => {
         if (isToolUIPart(part)) {
-          return <ToolPart key={`${part.toolCallId}-${i}`} part={part} />;
+          return (
+            <ToolPart
+              key={`${part.toolCallId}-${i}`}
+              part={part}
+              chatId={chatId}
+              addToolResult={addToolResult}
+            />
+          );
         } else {
           switch (part.type) {
             case 'text':

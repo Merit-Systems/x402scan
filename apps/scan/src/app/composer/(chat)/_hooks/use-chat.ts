@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 
-import { DefaultChatTransport } from 'ai';
+import {
+  DefaultChatTransport,
+  lastAssistantMessageIsCompleteWithToolCalls,
+} from 'ai';
 import { useChat as useAiChat } from '@ai-sdk/react';
 
 import { toast } from 'sonner';
@@ -57,41 +60,44 @@ export const useChat = ({
     selectedResourcesRef.current = selectedResources;
   }, [selectedResources]);
 
-  const { messages, sendMessage, status, regenerate, error } = useAiChat({
-    messages: initialMessages ? convertToUIMessages(initialMessages) : [],
-    resume: true,
-    id,
-    onError: ({ message }) => toast.error(message),
-    onFinish: ({ messages }) => {
-      if (messages.length > 0) {
-        window.history.replaceState(
-          {},
-          '',
-          agentConfig
-            ? `/composer/agent/${agentConfig.id}/chat/${id}`
-            : `/composer/chat/${id}`
-        );
-        void utils.user.chats.list.invalidate();
-      }
-    },
-    transport: new DefaultChatTransport({
-      api: '/api/chat',
-      prepareSendMessagesRequest({ messages }) {
-        const currentModel = modelRef.current;
-        const currentSelectedResources = selectedResourcesRef.current;
-        console.log('selectedResources', currentSelectedResources);
-        return {
-          body: {
-            chatId: id,
-            model: `${currentModel.provider}/${currentModel.modelId}`,
-            message: messages[messages.length - 1],
-            resourceIds: currentSelectedResources.map(resource => resource.id),
-            agentConfigurationId: agentConfig?.id,
-          },
-        };
+  const { messages, sendMessage, status, regenerate, error, addToolResult } =
+    useAiChat({
+      messages: initialMessages ? convertToUIMessages(initialMessages) : [],
+      resume: true,
+      id,
+      onError: ({ message }) => toast.error(message),
+      onFinish: ({ messages }) => {
+        if (messages.length > 0) {
+          window.history.replaceState(
+            {},
+            '',
+            agentConfig
+              ? `/composer/agent/${agentConfig.id}/chat/${id}`
+              : `/composer/chat/${id}`
+          );
+          void utils.user.chats.list.invalidate();
+        }
       },
-    }),
-  });
+      transport: new DefaultChatTransport({
+        api: '/api/chat',
+        prepareSendMessagesRequest({ messages }) {
+          const currentModel = modelRef.current;
+          const currentSelectedResources = selectedResourcesRef.current;
+          return {
+            body: {
+              chatId: id,
+              model: `${currentModel.provider}/${currentModel.modelId}`,
+              message: messages[messages.length - 1],
+              resourceIds: currentSelectedResources.map(
+                resource => resource.id
+              ),
+              agentConfigurationId: agentConfig?.id,
+            },
+          };
+        },
+      }),
+      sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+    });
 
   const errorMessage =
     error?.message ??
@@ -158,5 +164,6 @@ export const useChat = ({
     selectedResources,
     input,
     setInput,
+    addToolResult,
   };
 };
