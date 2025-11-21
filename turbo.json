@@ -3,7 +3,7 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": [
@@ -61,7 +61,7 @@
       "cache": false
     },
     "trigger:deploy": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "^db:generate"],
       "cache": false,
       "env": [
         "TRIGGER_ACCESS_TOKEN",
