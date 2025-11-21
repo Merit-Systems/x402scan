@@ -26,7 +26,7 @@ const x402MiddlewareFactory = (req: NextRequest) => {
   );
 };
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   if (req.nextUrl.pathname === '/api/send') {
     const x402Middleware = x402MiddlewareFactory(req);
     return x402Middleware(req);
@@ -35,6 +35,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/send'],
-  runtime: 'nodejs',
+  matcher: ['/api/send']
 };
