@@ -10,7 +10,7 @@ import { iterateResourcesBatched } from '@/services/labeling/helpers';
 
 import { checkCronSecret } from '@/lib/cron';
 
-import type { Prisma } from '@x402scan/scan-db/types';
+import type { Prisma } from '@x402scan/scan-db';
 
 const resourceLabelingPayloadSchema = z.object({
   resourceIds: z.array(z.string()).optional(),
