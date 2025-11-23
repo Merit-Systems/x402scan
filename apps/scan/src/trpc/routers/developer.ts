@@ -4,6 +4,7 @@ import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { parseX402Response } from '@/lib/x402/schema';
+import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
 import { scrapeOriginData } from '@/services/scraper';
 
 export const developerRouter = createTRPCRouter({
@@ -56,15 +57,19 @@ export const developerRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { method, url, headers = {} } = input;
 
-      const response = await fetch(url, {
-        method,
-        headers:
-          method === 'POST'
-            ? { ...headers, 'Content-Type': 'application/json' }
-            : headers,
-        body: method === 'POST' ? '{}' : undefined,
-        redirect: 'follow',
-      });
+      const response = await fetchWithProxy(
+        url,
+        {
+          method,
+          headers:
+            method === 'POST'
+              ? { ...headers, 'Content-Type': 'application/json' }
+              : headers,
+          body: method === 'POST' ? '{}' : undefined,
+          redirect: 'follow',
+        },
+        { skipTracking: true }
+      );
 
       const text = await response.text();
       let body: unknown = null;

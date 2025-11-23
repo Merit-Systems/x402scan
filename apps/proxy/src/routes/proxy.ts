@@ -192,24 +192,33 @@ async function proxyHandler(c: Context) {
           console.log('[Proxy Data]', { cleanedTargetUrl, data });
 
           // Insert into ClickHouse (non-blocking, fire-and-forget)
-          void insertResourceInvocation({
-            id: randomUUID(),
-            resource_id: null, // TODO: lookup resourceId by URL if needed
-            status_code: clonedUpstreamResponse.status,
-            duration: fetchDuration,
-            status_text: clonedUpstreamResponse.statusText,
-            method,
-            url: targetUrl.toString(),
-            request_content_type:
-              clonedRequest.headers.get('content-type') ?? '',
-            response_content_type:
-              clonedUpstreamResponse.headers.get('content-type') ?? '',
-            response_headers: responseHeaders,
-            response_body: responseBody,
-            request_headers: requestHeaders,
-            request_body: requestBody,
-            created_at: new Date(),
-          });
+          // Skip insertion if skip_tracking is enabled (i.e developer/test mode)
+          const skipTracking = c.req.query('skip_tracking') === 'true';
+          if (!skipTracking) {
+            void insertResourceInvocation({
+              id: randomUUID(),
+              resource_id: null, // TODO: lookup resourceId by URL if needed
+              status_code: clonedUpstreamResponse.status,
+              duration: fetchDuration,
+              status_text: clonedUpstreamResponse.statusText,
+              method,
+              url: targetUrl.toString(),
+              request_content_type:
+                clonedRequest.headers.get('content-type') ?? '',
+              response_content_type:
+                clonedUpstreamResponse.headers.get('content-type') ?? '',
+              response_headers: responseHeaders,
+              response_body: responseBody,
+              request_headers: requestHeaders,
+              request_body: requestBody,
+              created_at: new Date(),
+            });
+          } else {
+            console.log('Proxy Skip Tracking', {
+              url: targetUrl.toString(),
+              reason: 'skip_tracking parameter enabled',
+            });
+          }
         }
       } catch (error) {
         console.error('[Proxy After Error]', {

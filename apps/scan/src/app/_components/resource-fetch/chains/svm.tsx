@@ -27,6 +27,7 @@ interface Props<TData = unknown> {
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
   text?: string;
+  skipTracking?: boolean;
 }
 
 export const FetchSvm: React.FC<Props> = ({
@@ -37,6 +38,7 @@ export const FetchSvm: React.FC<Props> = ({
   options,
   isTool = false,
   text,
+  skipTracking = false,
 }) => {
   const { connectedWallet } = useSolanaWallet();
 
@@ -74,6 +76,7 @@ export const FetchSvm: React.FC<Props> = ({
       options={options}
       isTool={isTool}
       text={text}
+      skipTracking={skipTracking}
     />
   );
 };
@@ -92,6 +95,7 @@ const FetchContent: React.FC<FetchContentProps> = ({
   options,
   isTool = false,
   text,
+  skipTracking = false,
 }) => {
   const { mutate: execute, isPending } = useSvmX402Fetch({
     account,
@@ -103,6 +107,7 @@ const FetchContent: React.FC<FetchContentProps> = ({
         : requestInit,
     options,
     isTool,
+    skipTracking,
   });
   const { isInitialized } = useIsInitialized();
 
