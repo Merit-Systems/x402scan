@@ -103,7 +103,7 @@ export const thirdwebFacilitator = {
         dateOfFirstTransaction: new Date('2025-11-20'),
       },
     ],
-    
+
     [Network.POLYGON]: [
       {
         address: '0x80c08de1a05df2bd633cf520754e40fde3c794d3',
