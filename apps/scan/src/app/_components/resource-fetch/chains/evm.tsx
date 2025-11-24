@@ -83,25 +83,22 @@ export const FetchEvm: React.FC<Props> = ({
     return <LoadingState chain={chain} maxAmountRequired={maxAmountRequired} />;
   }
 
-  // Check if we need to show insufficient funds for the new price
-  const requiredAmount = priceIncreaseInfo?.newPrice ?? maxAmountRequired;
-
-  if (!balance || balance < convertTokenAmount(requiredAmount)) {
-    return <AddFundsState chain={chain} maxAmountRequired={requiredAmount} />;
-  }
-
-  return (
-    <>
-      <FetchState
-        isPending={isPending}
-        allRequiredFieldsFilled={allRequiredFieldsFilled}
-        execute={() => execute(undefined)}
-        isLoading={isLoadingWalletClient || !isInitialized}
-        chains={[chain]}
-        maxAmountRequired={maxAmountRequired}
-        text={text}
-      />
-      {priceIncreaseInfo && (
+  // If price increase is detected, show the dialog first to let the user
+  // understand the price change before checking balance
+  if (priceIncreaseInfo) {
+    return (
+      <>
+        <FetchState
+          isPending={isPending}
+          allRequiredFieldsFilled={allRequiredFieldsFilled}
+          // Pass undefined to let the hook use its internal max value state
+          // (either initial value or confirmed increased price if applicable)
+          execute={() => execute(undefined)}
+          isLoading={isLoadingWalletClient || !isInitialized}
+          chains={[chain]}
+          maxAmountRequired={maxAmountRequired}
+          text={text}
+        />
         <PriceConfirmationDialog
           open={true}
           onOpenChange={open => {
@@ -113,7 +110,28 @@ export const FetchEvm: React.FC<Props> = ({
           oldPrice={priceIncreaseInfo.oldPrice}
           newPrice={priceIncreaseInfo.newPrice}
         />
-      )}
-    </>
+      </>
+    );
+  }
+
+  // Check if we need to show insufficient funds for the initial price
+  if (!balance || balance < convertTokenAmount(maxAmountRequired)) {
+    return (
+      <AddFundsState chain={chain} maxAmountRequired={maxAmountRequired} />
+    );
+  }
+
+  return (
+    <FetchState
+      isPending={isPending}
+      allRequiredFieldsFilled={allRequiredFieldsFilled}
+      // Pass undefined to let the hook use its internal max value state
+      // (either initial value or confirmed increased price if applicable)
+      execute={() => execute(undefined)}
+      isLoading={isLoadingWalletClient || !isInitialized}
+      chains={[chain]}
+      maxAmountRequired={maxAmountRequired}
+      text={text}
+    />
   );
 };

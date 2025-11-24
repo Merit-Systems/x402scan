@@ -129,27 +129,22 @@ const FetchContent: React.FC<FetchContentProps> = ({
   });
   const { isInitialized } = useIsInitialized();
 
-  // Check if we need to show insufficient funds for the new price
-  const requiredAmount = priceIncreaseInfo?.newPrice ?? maxAmountRequired;
-
-  if (!balance || balance < convertTokenAmount(requiredAmount)) {
+  // If price increase is detected, show the dialog first to let the user
+  // understand the price change before checking balance
+  if (priceIncreaseInfo) {
     return (
-      <AddFundsState chain={Chain.SOLANA} maxAmountRequired={requiredAmount} />
-    );
-  }
-
-  return (
-    <>
-      <FetchState
-        isPending={isPending}
-        allRequiredFieldsFilled={allRequiredFieldsFilled}
-        execute={() => execute(undefined)}
-        isLoading={!isInitialized}
-        chains={[Chain.SOLANA]}
-        maxAmountRequired={maxAmountRequired}
-        text={text}
-      />
-      {priceIncreaseInfo && (
+      <>
+        <FetchState
+          isPending={isPending}
+          allRequiredFieldsFilled={allRequiredFieldsFilled}
+          // Pass undefined to let the hook use its internal max value state
+          // (either initial value or confirmed increased price if applicable)
+          execute={() => execute(undefined)}
+          isLoading={!isInitialized}
+          chains={[Chain.SOLANA]}
+          maxAmountRequired={maxAmountRequired}
+          text={text}
+        />
         <PriceConfirmationDialog
           open={true}
           onOpenChange={open => {
@@ -161,7 +156,31 @@ const FetchContent: React.FC<FetchContentProps> = ({
           oldPrice={priceIncreaseInfo.oldPrice}
           newPrice={priceIncreaseInfo.newPrice}
         />
-      )}
-    </>
+      </>
+    );
+  }
+
+  // Check if we need to show insufficient funds for the initial price
+  if (!balance || balance < convertTokenAmount(maxAmountRequired)) {
+    return (
+      <AddFundsState
+        chain={Chain.SOLANA}
+        maxAmountRequired={maxAmountRequired}
+      />
+    );
+  }
+
+  return (
+    <FetchState
+      isPending={isPending}
+      allRequiredFieldsFilled={allRequiredFieldsFilled}
+      // Pass undefined to let the hook use its internal max value state
+      // (either initial value or confirmed increased price if applicable)
+      execute={() => execute(undefined)}
+      isLoading={!isInitialized}
+      chains={[Chain.SOLANA]}
+      maxAmountRequired={maxAmountRequired}
+      text={text}
+    />
   );
 };
