@@ -6,9 +6,10 @@ import { ConnectWalletState } from '../1-connect';
 import { LoadingState } from '../2-loading-balance';
 import { AddFundsState } from '../3-add-funds';
 import { FetchState } from '../4-fetch';
+import { PriceConfirmationDialog } from '../price-confirmation-dialog';
 
 import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
-import { useEvmX402Fetch } from '@/app/_hooks/x402/evm';
+import { useEvmX402FetchWithConfirmation } from '@/app/_hooks/x402/evm-with-confirmation';
 
 import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
@@ -42,12 +43,31 @@ export const FetchEvm: React.FC<Props> = ({
     useWalletClient();
   const { isInitialized } = useIsInitialized();
 
-  const { mutate: execute, isPending } = useEvmX402Fetch({
+  const {
+    mutate: execute,
+    isPending,
+    priceIncreaseInfo,
+    confirmPriceIncrease,
+    cancelPriceIncrease,
+  } = useEvmX402FetchWithConfirmation({
     targetUrl,
     value: maxAmountRequired,
     chain,
     init: typeof requestInit === 'function' ? requestInit(chain) : requestInit,
-    options,
+    options: {
+      ...options,
+      onError: (...args) => {
+        const [error] = args;
+        // Don't call the original onError for price confirmation required
+        if (
+          error instanceof Error &&
+          error.message === 'PRICE_CONFIRMATION_REQUIRED'
+        ) {
+          return;
+        }
+        options?.onError?.(...args);
+      },
+    },
     isTool,
   });
 
@@ -63,21 +83,37 @@ export const FetchEvm: React.FC<Props> = ({
     return <LoadingState chain={chain} maxAmountRequired={maxAmountRequired} />;
   }
 
-  if (!balance || balance < convertTokenAmount(maxAmountRequired)) {
-    return (
-      <AddFundsState chain={chain} maxAmountRequired={maxAmountRequired} />
-    );
+  // Check if we need to show insufficient funds for the new price
+  const requiredAmount = priceIncreaseInfo?.newPrice ?? maxAmountRequired;
+
+  if (!balance || balance < convertTokenAmount(requiredAmount)) {
+    return <AddFundsState chain={chain} maxAmountRequired={requiredAmount} />;
   }
 
   return (
-    <FetchState
-      isPending={isPending}
-      allRequiredFieldsFilled={allRequiredFieldsFilled}
-      execute={execute}
-      isLoading={isLoadingWalletClient || !isInitialized}
-      chains={[chain]}
-      maxAmountRequired={maxAmountRequired}
-      text={text}
-    />
+    <>
+      <FetchState
+        isPending={isPending}
+        allRequiredFieldsFilled={allRequiredFieldsFilled}
+        execute={() => execute(undefined)}
+        isLoading={isLoadingWalletClient || !isInitialized}
+        chains={[chain]}
+        maxAmountRequired={maxAmountRequired}
+        text={text}
+      />
+      {priceIncreaseInfo && (
+        <PriceConfirmationDialog
+          open={true}
+          onOpenChange={open => {
+            if (!open) {
+              cancelPriceIncrease();
+            }
+          }}
+          onConfirm={confirmPriceIncrease}
+          oldPrice={priceIncreaseInfo.oldPrice}
+          newPrice={priceIncreaseInfo.newPrice}
+        />
+      )}
+    </>
   );
 };

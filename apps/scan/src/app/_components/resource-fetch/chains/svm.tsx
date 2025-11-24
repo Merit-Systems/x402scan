@@ -4,8 +4,9 @@ import { ConnectWalletState } from '../1-connect';
 import { LoadingState } from '../2-loading-balance';
 import { AddFundsState } from '../3-add-funds';
 import { FetchState } from '../4-fetch';
+import { PriceConfirmationDialog } from '../price-confirmation-dialog';
 
-import { useSvmX402Fetch } from '@/app/_hooks/x402/svm';
+import { useSvmX402FetchWithConfirmation } from '@/app/_hooks/x402/svm-with-confirmation';
 import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-balance';
 
 import { useSolanaWallet } from '@/app/_contexts/solana/hook';
@@ -74,6 +75,7 @@ export const FetchSvm: React.FC<Props> = ({
       options={options}
       isTool={isTool}
       text={text}
+      balance={balance}
     />
   );
 };
@@ -81,6 +83,7 @@ export const FetchSvm: React.FC<Props> = ({
 interface FetchContentProps extends Omit<Props, 'chain'> {
   account: UiWalletAccount;
   isTool?: boolean;
+  balance: number;
 }
 
 const FetchContent: React.FC<FetchContentProps> = ({
@@ -92,8 +95,15 @@ const FetchContent: React.FC<FetchContentProps> = ({
   options,
   isTool = false,
   text,
+  balance,
 }) => {
-  const { mutate: execute, isPending } = useSvmX402Fetch({
+  const {
+    mutate: execute,
+    isPending,
+    priceIncreaseInfo,
+    confirmPriceIncrease,
+    cancelPriceIncrease,
+  } = useSvmX402FetchWithConfirmation({
     account,
     targetUrl,
     value: maxAmountRequired,
@@ -101,20 +111,57 @@ const FetchContent: React.FC<FetchContentProps> = ({
       typeof requestInit === 'function'
         ? requestInit(Chain.SOLANA)
         : requestInit,
-    options,
+    options: {
+      ...options,
+      onError: (...args) => {
+        const [error] = args;
+        // Don't call the original onError for price confirmation required
+        if (
+          error instanceof Error &&
+          error.message === 'PRICE_CONFIRMATION_REQUIRED'
+        ) {
+          return;
+        }
+        options?.onError?.(...args);
+      },
+    },
     isTool,
   });
   const { isInitialized } = useIsInitialized();
 
+  // Check if we need to show insufficient funds for the new price
+  const requiredAmount = priceIncreaseInfo?.newPrice ?? maxAmountRequired;
+
+  if (balance < convertTokenAmount(requiredAmount)) {
+    return (
+      <AddFundsState chain={Chain.SOLANA} maxAmountRequired={requiredAmount} />
+    );
+  }
+
   return (
-    <FetchState
-      isPending={isPending}
-      allRequiredFieldsFilled={allRequiredFieldsFilled}
-      execute={execute}
-      isLoading={!isInitialized}
-      chains={[Chain.SOLANA]}
-      maxAmountRequired={maxAmountRequired}
-      text={text}
-    />
+    <>
+      <FetchState
+        isPending={isPending}
+        allRequiredFieldsFilled={allRequiredFieldsFilled}
+        execute={() => execute(undefined)}
+        isLoading={!isInitialized}
+        chains={[Chain.SOLANA]}
+        maxAmountRequired={maxAmountRequired}
+        text={text}
+      />
+      {priceIncreaseInfo && (
+        <PriceConfirmationDialog
+          open={true}
+          onOpenChange={open => {
+            if (!open) {
+              cancelPriceIncrease();
+            }
+          }}
+          onConfirm={confirmPriceIncrease}
+          oldPrice={priceIncreaseInfo.oldPrice}
+          newPrice={priceIncreaseInfo.newPrice}
+        />
+      )}
+    </>
   );
 };
