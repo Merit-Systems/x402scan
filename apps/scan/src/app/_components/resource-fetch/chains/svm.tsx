@@ -132,7 +132,7 @@ const FetchContent: React.FC<FetchContentProps> = ({
   // Check if we need to show insufficient funds for the new price
   const requiredAmount = priceIncreaseInfo?.newPrice ?? maxAmountRequired;
 
-  if (balance < convertTokenAmount(requiredAmount)) {
+  if (!balance || balance < convertTokenAmount(requiredAmount)) {
     return (
       <AddFundsState chain={Chain.SOLANA} maxAmountRequired={requiredAmount} />
     );
