@@ -20,6 +20,10 @@ async function syncFacilitator(
       continue;
     }
 
+    logger.log(
+      `[${syncConfig.chain}] Getting most recent transfer for ${facilitator.id}:${facilitatorConfig.address}`
+    );
+
     const mostRecentTransfer = await getTransferEvents({
       orderBy: { block_timestamp: 'desc' },
       take: 1,
@@ -32,6 +36,10 @@ async function syncFacilitator(
         provider: syncConfig.provider,
       },
     });
+
+    logger.log(
+      `[${syncConfig.chain}] Most recent transfer: ${mostRecentTransfer[0]?.block_timestamp?.toISOString()}`
+    );
 
     // Start from 1 second after the most recent transfer to avoid re-fetching it
     const since = mostRecentTransfer[0]?.block_timestamp
