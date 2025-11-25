@@ -1,17 +1,10 @@
-import { facilitator } from '@coinbase/x402';
-
 import { Network } from '../types';
-import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
+import { USDC_BASE_TOKEN, USDC_ARBITRUM_TOKEN, USDC_ETHEREUM_TOKEN, USDC_OPTIMISM_TOKEN, USDC_UNICHAIN_TOKEN } from '../constants';
 
 import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const polymer: FacilitatorConfig = {
-  url: 'https://mainnet.anyspend.com/x402',
-};
-
-// TODO: Do we support discovery?
-export const polymerFacilitatorDiscovery: FacilitatorConfig = {
-  url: 'https://mainnet.anyspend.com/x402',
+  url: 'https://api.polymer.zone/v1/x402',
 };
 
 export const polymerFacilitator = {
@@ -19,19 +12,45 @@ export const polymerFacilitator = {
   metadata: {
     name: 'Polymer',
     image: 'https://x402scan.com/polymer.png',
-    docsUrl: 'https://docs.cdp.coinbase.com/x402/welcome', // TODO: Write up docs for facilitator
+    docsUrl: '', // TODO: Write up docs for facilitator
     color: '#22a7dd',
   },
   config: polymer,
-  discoveryConfig: polymerFacilitatorDiscovery,
   addresses: {
-    // TODO: Fix addresses
+    [Network.ARBITRUM]: [
+      {
+        address: '0xd9bbe98d78c1309e61c3cd50cd9329dcc29e99df',
+        tokens: [USDC_ARBITRUM_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-27'),
+      },
+    ],
     [Network.BASE]: [
       {
         address: '0xd9bbe98d78c1309e61c3cd50cd9329dcc29e99df',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-05-05'),
+        dateOfFirstTransaction: new Date('2025-10-27'),
       },
-    ]
+    ],
+    [Network.ETHEREUM]: [
+      {
+        address: '0xd9bbe98d78c1309e61c3cd50cd9329dcc29e99df',
+        tokens: [USDC_ETHEREUM_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-27'),
+      },
+    ],
+    [Network.OPTIMISM]: [
+      {
+        address: '0xd9bbe98d78c1309e61c3cd50cd9329dcc29e99df',
+        tokens: [USDC_OPTIMISM_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-27'),
+      },
+    ],
+    [Network.UNICHAIN]: [
+      {
+        address: '0xd9bbe98d78c1309e61c3cd50cd9329dcc29e99df',
+        tokens: [USDC_UNICHAIN_TOKEN],
+        dateOfFirstTransaction: new Date('2025-10-27'),
+      },
+    ],
   },
 } as const satisfies Facilitator<void>;
