@@ -11,7 +11,7 @@ export const worldfunFacilitator = {
   id: 'worldfun',
   metadata: {
     name: 'WorldFun by AWE',
-    image: '/worldfun.png',
+    image: '/worldfun.svg',
     docsUrl: 'https://docs.awenetwork.ai/awe-ecosystem/world.fun/x402-facilitator',
     color: '#AB824F',
   },
