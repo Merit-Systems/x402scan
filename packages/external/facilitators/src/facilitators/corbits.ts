@@ -38,7 +38,7 @@ export const corbitsFacilitator = {
     [Network.POLYGON]: [
       {
         address: '0x06F0BfD2C8f36674DF5cdE852c1eeD8025C268C9',
-        tokens: [USDC_BASE_TOKEN],
+        tokens: [USDC_POLYGON_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-24'),
       },
     ],
