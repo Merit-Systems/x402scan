@@ -40,4 +40,8 @@ export enum Network {
   BASE = 'base',
   POLYGON = 'polygon',
   SOLANA = 'solana',
+  OPTIMISM = 'optimism',
+  ETHEREUM = 'ethereum',
+  UNICHAIN = 'unichain',
+  ARBITRUM = 'arbitrum',
 }
