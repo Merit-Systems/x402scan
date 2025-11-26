@@ -21,7 +21,7 @@ export const meridianFacilitator = {
       {
         address: '0x8E7769D440b3460b92159Dd9C6D17302b036e2d6',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-11-25'),
+        dateOfFirstTransaction: new Date('2025-11-26'),
       },
     ],
   },
