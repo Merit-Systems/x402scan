@@ -19,7 +19,7 @@ export const meridianFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0x6152935e7fB695d3E7BEceA07e5C1Ce78074F7C0',
+        address: '0x8E7769D440b3460b92159Dd9C6D17302b036e2d6',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-25'),
       },
