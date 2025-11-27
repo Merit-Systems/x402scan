@@ -18,3 +18,4 @@ export { virtuals, virtualsFacilitator } from './virtuals';
 export { heurist, heuristFacilitator } from './heurist';
 export { treasure, treasureFacilitator } from './treasure';
 export { anyspend, anyspendFacilitator } from './anyspend';
+export { x402x, x402xFacilitator } from './x402x';
