@@ -1,4 +1,8 @@
-import type { OgImage, ResourceOrigin, Resources } from '@x402scan/scan-db';
+import type {
+  OgImage,
+  ResourceOrigin,
+  Resources,
+} from '@x402scan/scan-db/types';
 
 export function createDummyOgImage(params: {
   id: string;

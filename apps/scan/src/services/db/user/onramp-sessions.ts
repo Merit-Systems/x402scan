@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { scanDb } from '@x402scan/scan-db';
 
-import type { OnrampSession } from '@x402scan/scan-db';
+import type { OnrampSession } from '@x402scan/scan-db/types';
 
 export const getOnrampSessionByToken = async (
   token: string,

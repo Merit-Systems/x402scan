@@ -13,7 +13,7 @@ export default async function FreeTierWalletPage() {
   const session = await auth();
 
   if (session?.user.role !== 'admin') {
-    return forbidden();
+    forbidden();
   }
 
   return (
