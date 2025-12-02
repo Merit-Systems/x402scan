@@ -6,7 +6,7 @@ import { forbidden } from 'next/navigation';
 export default async function EndUsersPage() {
   const session = await auth();
   if (session?.user.role !== 'admin') {
-    return forbidden();
+    forbidden();
   }
 
   return (

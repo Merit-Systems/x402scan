@@ -2,19 +2,22 @@ import { Section } from '@/app/_components/layout/page-utils';
 import { api } from '@/trpc/server';
 import { AgentCard } from '../lib/agent-card';
 import { ActivityTimeframe } from '@/types/timeframes';
+import { auth } from '@/auth';
 
-interface Props {
-  userId: string;
-}
+export const YourAgents = async () => {
+  const session = await auth();
 
-export const YourAgents = async ({ userId }: Props) => {
+  if (!session?.user?.id) {
+    return null;
+  }
+
   const yourAgents = await api.public.agents.list({
     timeframe: ActivityTimeframe.ThirtyDays,
     pagination: {
       page: 0,
       page_size: 100,
     },
-    userId,
+    userId: session.user.id,
   });
 
   if (yourAgents.items.length === 0) {
