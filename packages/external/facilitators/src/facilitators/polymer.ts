@@ -4,7 +4,7 @@ import { USDC_BASE_TOKEN } from '../constants';
 import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const polymer: FacilitatorConfig = {
-  url: 'https://api.polymer.zone/v1/x402',
+  url: 'https://api.polymer.zone/x402/v1',
 };
 
 export const polymerFacilitator = {
