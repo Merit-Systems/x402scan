@@ -19,7 +19,7 @@ export const polymerFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0xc4f6017a2345db17d5a6eb4de7d6c63f0d55c9ac',
+        address: '0x66c40946b0dffd04be467e18309857307ecd37cb',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-27'),
       },
