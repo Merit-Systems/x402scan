@@ -27,52 +27,72 @@ export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
 ) => {
   const origin = originSchema.parse(originInput);
-  return await scanDb.resourceOrigin.upsert({
-    where: { origin: origin.origin },
-    update: {
-      title: origin.title,
-      description: origin.description,
-      favicon: origin.favicon,
-      ogImages: {
-        upsert: origin.ogImages.map(
-          ({ url, height, width, title, description }) => ({
-            where: {
-              url,
-            },
-            create: {
-              url,
-              height,
-              width,
-              title,
-              description,
-            },
-            update: {
-              height,
-              width,
-              title,
-              description,
-            },
-          })
-        ),
+
+  return await scanDb.$transaction(async tx => {
+    // Step 1: Upsert the ResourceOrigin to get a stable ID
+    const upsertedOrigin = await tx.resourceOrigin.upsert({
+      where: { origin: origin.origin },
+      update: {
+        title: origin.title,
+        description: origin.description,
+        favicon: origin.favicon,
       },
-    },
-    create: {
-      origin: origin.origin,
-      title: origin.title,
-      description: origin.description,
-      favicon: origin.favicon,
-      ogImages: {
-        create: origin.ogImages.map(
-          ({ url, height, width, title, description }) => ({
+      create: {
+        origin: origin.origin,
+        title: origin.title,
+        description: origin.description,
+        favicon: origin.favicon,
+      },
+    });
+
+    const originId = upsertedOrigin.id;
+    const newImageUrls = origin.ogImages.map(img => img.url);
+
+    // Step 2: Delete any old OgImage records for this origin that are no longer present
+    await tx.ogImage.deleteMany({
+      where: {
+        originId: originId,
+        url: {
+          notIn: newImageUrls,
+        },
+      },
+    });
+
+    // Step 3: Upsert all new/updated OgImage records
+    // This ensures that if an image is already associated, it's updated, and if not, it's created.
+    // It correctly uses the composite key for the 'where' clause.
+    await Promise.all(
+      origin.ogImages.map(({ url, height, width, title, description }) =>
+        tx.ogImage.upsert({
+          where: {
+            originId_url: {
+              originId: originId,
+              url: url,
+            },
+          },
+          update: {
+            height,
+            width,
+            title,
+            description,
+          },
+          create: {
+            originId: originId,
             url,
             height,
             width,
             title,
             description,
-          })
-        ),
-      },
-    },
+          },
+        })
+      )
+    );
+
+    // Return the final state
+    return tx.resourceOrigin.findUnique({
+      where: { id: originId },
+      include: { ogImages: true },
+    });
   });
 };
 
