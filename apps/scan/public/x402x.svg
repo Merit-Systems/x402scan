@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 64 64">
+  <!-- Simple rounded-square with an X mark; small and legible at favicon sizes -->
+  <rect x="0" y="0" width="64" height="64" rx="12" fill="#0b0b0f"/>
+  <g stroke="#00d1ff" stroke-width="6" stroke-linecap="round">
+    <path d="M20 20 L44 44"/>
+    <path d="M44 20 L20 44"/>
+  </g>
+</svg>
