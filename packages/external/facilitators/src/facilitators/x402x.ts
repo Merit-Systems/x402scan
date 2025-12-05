@@ -48,6 +48,31 @@ export const x402xFacilitator = {
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-16'),
       },
+      {
+        address: '0x3b37152a76d4e55162552f54da919580e9ee7b07',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-04'),
+      },
+      {
+        address: '0xf191ee96f115beb213947147a12a4afbcaa42e1d',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-04'),
+      },
+      {
+        address: '0x7873a8874d903c0e548557dc94101cb5f23f0057',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-04'),
+      },
+      {
+        address: '0xcf3d25f66fc21f7c23a6af7298bbb844b03636ec',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-04'),
+      },
+      {
+        address: '0xd15fcaee825b48d402e2148877999bea8efd9e01',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-04'),
+      },
     ],
   },
 } as const satisfies Facilitator;
