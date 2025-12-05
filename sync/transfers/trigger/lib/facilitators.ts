@@ -12,6 +12,7 @@ const chainMap: Record<FacilitatorsNetwork, Network> = {
   [FacilitatorsNetwork.BASE]: Network.BASE,
   [FacilitatorsNetwork.POLYGON]: Network.POLYGON,
   [FacilitatorsNetwork.SOLANA]: Network.SOLANA,
+  [FacilitatorsNetwork.BINANCE]: Network.BINANCE,
 };
 
 function convertAddressConfig(
@@ -67,3 +68,4 @@ export function FACILITATORS_BY_CHAIN(network: Network): Facilitator[] {
 export const BASE_FACILITATORS = FACILITATORS_BY_CHAIN(Network.BASE);
 export const POLYGON_FACILITATORS = FACILITATORS_BY_CHAIN(Network.POLYGON);
 export const SOLANA_FACILITATORS = FACILITATORS_BY_CHAIN(Network.SOLANA);
+export const BINANCE_FACILITATORS = FACILITATORS_BY_CHAIN(Network.BINANCE);
