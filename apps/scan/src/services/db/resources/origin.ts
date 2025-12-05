@@ -62,13 +62,16 @@ export const upsertOrigin = async (
       description: origin.description,
       favicon: origin.favicon,
       ogImages: {
-        create: origin.ogImages.map(
+        connectOrCreate: origin.ogImages.map(
           ({ url, height, width, title, description }) => ({
-            url,
-            height,
-            width,
-            title,
-            description,
+            where: { url },
+            create: {
+              url,
+              height,
+              width,
+              title,
+              description,
+            },
           })
         ),
       },
