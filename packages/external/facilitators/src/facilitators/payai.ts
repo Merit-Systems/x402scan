@@ -114,7 +114,7 @@ export const payaiFacilitator = {
         address: '0x9df61a719ddae27c20a63a417271cc2c704654bd',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-12-08'),
-      },      
+      },
     ],
   },
 } as const satisfies Facilitator;
