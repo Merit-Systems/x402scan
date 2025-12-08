@@ -28,6 +28,16 @@ export const payaiFacilitator = {
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2025-07-01'),
       },
+      {
+        address: 'CjNFTjvBhbJJd2B5ePPMHRLx1ELZpa8dwQgGL727eKww',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
+      {
+        address: '8B5UKhwfAyFW67h58cBkQj1Ur6QXRgwWJJcQp8ZBsDPa',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
     ],
     [Network.BASE]: [
       {
@@ -54,6 +64,56 @@ export const payaiFacilitator = {
         address: '0xe575fa51af90957d66fab6d63355f1ed021b887b',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-29'),
+      },
+      {
+        address: '0x03a3f7ce8e21e6f8d9fa14c67d8876b2470dc2f1',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
+      {
+        address: '0x675707bc7d03089f820c1b7d49f7480083e8f4df',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
+      {
+        address: '0xf46833d4ac4f0f1405cc05c30edfd86770f721c9',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
+      {
+        address: '0x2daaef6f941de214bf7d6daf322bc6bc7406accb',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
+      {
+        address: '0x2fae4026a31f19183947f0a6045ef975ebfa9ca8',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
+      {
+        address: '0xe299c486066739c4a31609e1268d93229632dd47',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
+      {
+        address: '0x6ccf245c883f9f3c6caee0687aa61daf7bc96e32',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
+      {
+        address: '0xaf990eef9846b63d896056050fdc0b28bca9c24b',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
+      {
+        address: '0x489c40fc3c2a19ad8cb275b7dd6aa194e9219c4f',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
+      },
+      {
+        address: '0x9df61a719ddae27c20a63a417271cc2c704654bd',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-08'),
       },
     ],
   },
