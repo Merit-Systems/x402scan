@@ -12,7 +12,7 @@ export const polymerFacilitator = {
   metadata: {
     name: 'Polymer',
     image: 'https://x402scan.com/polymer.png',
-    docsUrl: '', // TODO: Write up docs for facilitator
+    docsUrl: 'https://docs.polymerlabs.org/docs/build/start/', 
     color: '#22a7dd',
   },
   config: polymer,
