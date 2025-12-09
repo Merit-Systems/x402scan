@@ -114,6 +114,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Treasure**         | BASE          | No        | No                           |
 | **AnySpend**         | BASE, SOLANA  | ✅ Yes    | No                           |
 | **Meridian**         | BASE          | No        | No                           |
+| **Amiko**            | BASE, SOLANA  | No        | No                           |
 
 ### Import Individual Facilitators
 
