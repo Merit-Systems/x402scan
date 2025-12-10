@@ -7,7 +7,7 @@ export const Megalith: FacilitatorConfig = {
   url: 'https://x402.megalithlabs.ai',
 };
 
-export const Megalith = {
+export const MegalithFacilitator = {
   id: 'Megalith',
   metadata: {
     name: 'Megalith',
@@ -27,7 +27,6 @@ export const Megalith = {
     [Network.BSC]: [
       {
         address: '0xa7833325cd012582db1f1be511211e82eddea940',
-        tokens: [USDC_BSC_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-28'),
       },
     ],
