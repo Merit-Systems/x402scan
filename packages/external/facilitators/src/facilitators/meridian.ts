@@ -23,6 +23,11 @@ export const meridianFacilitator = {
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-26'),
       },
+      {
+        address: '0x3210d7b21bFE1083c9dddbe17e8F947C9029a584',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-11-26'),
+      },
     ],
   },
 } as const satisfies Facilitator;
