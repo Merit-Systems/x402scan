@@ -8,3 +8,4 @@ const getFacilitatorsByNetwork = function (network: Network) {
 export const baseFacilitators = getFacilitatorsByNetwork(Network.BASE);
 export const polygonFacilitators = getFacilitatorsByNetwork(Network.POLYGON);
 export const solanaFacilitators = getFacilitatorsByNetwork(Network.SOLANA);
+export const binanceFacilitators = getFacilitatorsByNetwork(Network.BINANCE);
