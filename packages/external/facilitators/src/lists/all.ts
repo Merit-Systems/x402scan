@@ -19,6 +19,7 @@ import {
   treasureFacilitator,
   anyspendFacilitator,
   polymerFacilitator,
+  meridianFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -46,6 +47,7 @@ const FACILITATORS = validateUniqueFacilitators([
   treasureFacilitator,
   anyspendFacilitator,
   polymerFacilitator,
+  meridianFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =
