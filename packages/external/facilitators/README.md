@@ -113,6 +113,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Heurist**          | BASE          | No        | No                           |
 | **Treasure**         | BASE          | No        | No                           |
 | **AnySpend**         | BASE, SOLANA  | ✅ Yes    | No                           |
+| **Polymer**          | BASE          | No        | No                           |
 | **Meridian**         | BASE          | No        | No                           |
 
 ### Import Individual Facilitators
@@ -136,6 +137,7 @@ import {
   heurist,
   treasure,
   anyspend,
+  polymer,
   meridian,
 } from 'facilitators';
 

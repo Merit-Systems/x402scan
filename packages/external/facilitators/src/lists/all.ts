@@ -18,6 +18,7 @@ import {
   heuristFacilitator,
   treasureFacilitator,
   anyspendFacilitator,
+  polymerFacilitator,
   meridianFacilitator,
 } from '../facilitators';
 
@@ -45,6 +46,7 @@ const FACILITATORS = validateUniqueFacilitators([
   heuristFacilitator,
   treasureFacilitator,
   anyspendFacilitator,
+  polymerFacilitator,
   meridianFacilitator,
 ]);
 
