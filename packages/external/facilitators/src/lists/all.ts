@@ -1,5 +1,5 @@
 import {
-  aeonFacilitator,
+  megalithFacilitator,
   aurracloudFacilitator,
   coinbaseFacilitator,
   thirdwebFacilitator,
@@ -26,7 +26,7 @@ import { validateUniqueFacilitators } from './validate';
 import type { Facilitator } from '../types';
 
 const FACILITATORS = validateUniqueFacilitators([
-  aeonFacilitator,
+  megalithFacilitator,
   coinbaseFacilitator,
   aurracloudFacilitator,
   thirdwebFacilitator,
