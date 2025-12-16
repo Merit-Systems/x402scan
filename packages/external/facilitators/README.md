@@ -114,6 +114,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Treasure**         | BASE          | No        | No                           |
 | **AnySpend**         | BASE, SOLANA  | ✅ Yes    | No                           |
 | **Meridian**         | BASE          | No        | No                           |
+| **Openmid**          | BASE          | No        | No                           |
 
 ### Import Individual Facilitators
 
@@ -137,6 +138,7 @@ import {
   treasure,
   anyspend,
   meridian,
+  openmid,
 } from 'facilitators';
 
 // Facilitators requiring setup
