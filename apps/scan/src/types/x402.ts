@@ -6,7 +6,7 @@ export enum Methods {
   PATCH = 'PATCH',
 }
 
-export type FieldValue = string | unknown[];
+export type FieldValue = string | unknown[] | Record<string, unknown>;
 
 export type FieldDefinition = {
   name: string;
@@ -20,4 +20,6 @@ export type FieldDefinition = {
     properties?: Record<string, unknown>;
     required?: string[];
   };
+  properties?: Record<string, unknown>; // For object types
+  propertiesRequired?: string[]; // Required properties within the object
 };
