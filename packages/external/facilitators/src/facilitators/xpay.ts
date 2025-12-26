@@ -11,7 +11,7 @@ export const xpayFacilitator = {
   id: 'xpay',
   metadata: {
     name: 'XPAY',
-    image: 'https://chargexpay.com/favicon.png',
+    image: 'image: 'xpay.jpg',
     docsUrl: 'https://chargexpay.com',
     color: '#06B6D4',
   },
