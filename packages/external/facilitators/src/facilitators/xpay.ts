@@ -21,7 +21,7 @@ export const xpayFacilitator = {
       {
         address: 'E1qqqSBuSwNPGKoCnof5g67xM5fDEstiEK3hSPpiHtT3',
         tokens: [USDC_SOLANA_TOKEN],
-        dateOfFirstTransaction: new Date('2025-01-01'),
+        dateOfFirstTransaction: new Date('2025-12-25'),
       },
     ],
   },
