@@ -35,6 +35,7 @@ SELECT
   time_bucket('30 minutes', t."block_timestamp") AS bucket,
   t."recipient",
   t."chain",
+  ARRAY_AGG(DISTINCT t."facilitator_id") AS facilitator_ids,
   COUNT(*)::int AS total_transactions,
   COALESCE(SUM(t."amount"), 0)::float AS total_amount,
   COUNT(DISTINCT t."sender")::int AS unique_buyers,

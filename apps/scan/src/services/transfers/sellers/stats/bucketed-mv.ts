@@ -31,8 +31,9 @@ const getBucketedSellerStatisticsMVUncached = async (
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
 
   if (input.facilitatorIds && input.facilitatorIds.length > 0) {
-    // Note: bucketed views don't have facilitator_ids column
-    // This filter would need to be handled differently if needed
+    conditions.push(
+      Prisma.sql`AND ${input.facilitatorIds}::text[] && facilitator_ids`
+    );
   }
 
   if (input.chain) {
