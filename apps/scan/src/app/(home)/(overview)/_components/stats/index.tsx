@@ -21,11 +21,11 @@ interface Props {
 }
 
 export const OverallStats = async ({ chain }: Props) => {
-  void api.public.stats.overallMV.prefetch({
+  void api.public.stats.overall.prefetch({
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });
-  void api.public.stats.bucketedMV.prefetch({
+  void api.public.stats.bucketed.prefetch({
     timeframe: ActivityTimeframe.OneDay,
     numBuckets: 32,
     chain,

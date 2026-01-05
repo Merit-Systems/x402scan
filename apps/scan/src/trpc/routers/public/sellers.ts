@@ -4,41 +4,37 @@ import {
   publicProcedure,
 } from '../../trpc';
 import {
-  listTopSellers,
-  listTopSellersInputSchema,
-} from '@/services/transfers/sellers/list';
+  listTopSellersMV,
+  listTopSellersMVInputSchema,
+} from '@/services/transfers/sellers/list-mv';
 
 import { listBazaarOrigins } from '@/services/db/bazaar/origins';
 import { listBazaarOriginsInputSchema } from '@/services/db/bazaar/schema';
-import {
-  getOverallSellerStatistics,
-  sellerStatisticsInputSchema,
-} from '@/services/transfers/sellers/stats/overall';
-import {
-  bucketedSellerStatisticsInputSchema,
-  getBucketedSellerStatistics,
-} from '@/services/transfers/sellers/stats/bucketed';
+import { sellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/overall-mv';
+import { bucketedSellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/bucketed-mv';
 import { getAcceptsAddresses } from '@/services/db/resources/accepts';
 import { mixedAddressSchema } from '@/lib/schemas';
+import { getOverallSellerStatisticsMV } from '@/services/transfers/sellers/stats/overall-mv';
+import { getBucketedSellerStatisticsMV } from '@/services/transfers/sellers/stats/bucketed-mv';
 
 export const sellersRouter = createTRPCRouter({
   all: {
     list: paginatedProcedure
-      .input(listTopSellersInputSchema)
+      .input(listTopSellersMVInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
-        return await listTopSellers(input, pagination);
+        return await listTopSellersMV(input, pagination);
       }),
     stats: {
       overall: publicProcedure
-        .input(sellerStatisticsInputSchema)
+        .input(sellerStatisticsMVInputSchema)
         .query(async ({ input }) => {
-          return await getOverallSellerStatistics(input);
+          return await getOverallSellerStatisticsMV(input);
         }),
 
       bucketed: publicProcedure
-        .input(bucketedSellerStatisticsInputSchema)
+        .input(bucketedSellerStatisticsMVInputSchema)
         .query(async ({ input }) => {
-          return await getBucketedSellerStatistics(input);
+          return await getBucketedSellerStatisticsMV(input);
         }),
     },
   },
@@ -51,12 +47,12 @@ export const sellersRouter = createTRPCRouter({
       }),
     stats: {
       overall: publicProcedure
-        .input(sellerStatisticsInputSchema)
+        .input(sellerStatisticsMVInputSchema)
         .query(async ({ input }) => {
           const originsByAddress = await getAcceptsAddresses({
             chain: input.chain,
           });
-          return await getOverallSellerStatistics({
+          return await getOverallSellerStatisticsMV({
             ...input,
             recipients: {
               include: Object.keys(originsByAddress)
@@ -68,12 +64,12 @@ export const sellersRouter = createTRPCRouter({
         }),
 
       bucketed: publicProcedure
-        .input(bucketedSellerStatisticsInputSchema)
+        .input(bucketedSellerStatisticsMVInputSchema)
         .query(async ({ input }) => {
           const originsByAddress = await getAcceptsAddresses({
             chain: input.chain,
           });
-          return await getBucketedSellerStatistics({
+          return await getBucketedSellerStatisticsMV({
             ...input,
             recipients: {
               include: Object.keys(originsByAddress)
