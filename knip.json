@@ -8,15 +8,7 @@
         "src/app/**/route.{js,jsx,ts,tsx}"
       ],
       "project": ["src/**/*.{ts,tsx}", "*.{ts,tsx,js,mjs}"],
-      "ignoreDependencies": [
-        "postcss",
-        "redis",
-        "facilitators",
-        "tailwindcss",
-        "tw-animate-css",
-        "@x402scan/transfers-db",
-        "@x402scan/scan-db"
-      ],
+      "ignoreDependencies": ["postcss", "redis", "tailwindcss", "tw-animate-css"],
       "ignore": ["src/scripts/**", "src/components/ui/charts/chart/**"]
     },
     "apps/proxy": {},
