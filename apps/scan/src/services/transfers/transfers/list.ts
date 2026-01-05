@@ -66,7 +66,10 @@ const listFacilitatorTransfersUncached = async (
     skip: page * page_size,
   });
 
-  const [countResult, transfers] = await Promise.all([countQuery, transfersQuery]);
+  const [countResult, transfers] = await Promise.all([
+    countQuery,
+    transfersQuery,
+  ]);
   const count = countResult[0]?.count ?? 0;
 
   // Map to expected output format
