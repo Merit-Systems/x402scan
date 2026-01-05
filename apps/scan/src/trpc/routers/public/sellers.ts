@@ -27,14 +27,14 @@ export const sellersRouter = createTRPCRouter({
     stats: {
       overall: publicProcedure
         .input(sellerStatisticsMVInputSchema)
-        .query(async ({ input }) => {
-          return await getOverallSellerStatisticsMV(input);
+        .query(async ({ input, ctx }) => {
+          return await getOverallSellerStatisticsMV(input, ctx);
         }),
 
       bucketed: publicProcedure
         .input(bucketedSellerStatisticsMVInputSchema)
-        .query(async ({ input }) => {
-          return await getBucketedSellerStatisticsMV(input);
+        .query(async ({ input, ctx }) => {
+          return await getBucketedSellerStatisticsMV(input, ctx);
         }),
     },
   },
@@ -48,36 +48,42 @@ export const sellersRouter = createTRPCRouter({
     stats: {
       overall: publicProcedure
         .input(sellerStatisticsMVInputSchema)
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
           const originsByAddress = await getAcceptsAddresses({
             chain: input.chain,
           });
-          return await getOverallSellerStatisticsMV({
-            ...input,
-            recipients: {
-              include: Object.keys(originsByAddress)
-                .map(addr => mixedAddressSchema.safeParse(addr))
-                .filter(result => result.success)
-                .map(result => result.data),
+          return await getOverallSellerStatisticsMV(
+            {
+              ...input,
+              recipients: {
+                include: Object.keys(originsByAddress)
+                  .map(addr => mixedAddressSchema.safeParse(addr))
+                  .filter(result => result.success)
+                  .map(result => result.data),
+              },
             },
-          });
+            ctx
+          );
         }),
 
       bucketed: publicProcedure
         .input(bucketedSellerStatisticsMVInputSchema)
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
           const originsByAddress = await getAcceptsAddresses({
             chain: input.chain,
           });
-          return await getBucketedSellerStatisticsMV({
-            ...input,
-            recipients: {
-              include: Object.keys(originsByAddress)
-                .map(addr => mixedAddressSchema.safeParse(addr))
-                .filter(result => result.success)
-                .map(result => result.data),
+          return await getBucketedSellerStatisticsMV(
+            {
+              ...input,
+              recipients: {
+                include: Object.keys(originsByAddress)
+                  .map(addr => mixedAddressSchema.safeParse(addr))
+                  .filter(result => result.success)
+                  .map(result => result.data),
+              },
             },
-          });
+            ctx
+          );
         }),
     },
   },
