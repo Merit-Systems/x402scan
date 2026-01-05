@@ -1,5 +1,8 @@
 ![X402 Facilitators](assets/banner.gif)
 
+> [!WARNING]  
+> As of January 2026, the auto facilitator has been deprecated. Please use any of the other facilitators shown below.
+
 # facilitators
 
 The `facilitators` package offers a unified, drop-in configuration for all x402 facilitators
@@ -34,7 +37,7 @@ paymentMiddleware(
 );
 ```
 
-## Auto Facilitator
+## Auto Facilitator (DEPRECATED)
 
 The `auto` facilitator is a proxy that load-balances between other facilitators to guarantee uptime. Simply import and use it directly - no configuration required:
 
