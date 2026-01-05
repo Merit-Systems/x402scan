@@ -16,8 +16,6 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
     include: {
       resourceRel: {
         select: {
-          _count: true,
-          tags: true,
           origin: true,
         },
       },
