@@ -99,7 +99,7 @@ const JsonNode = ({
           {!isEmpty && (
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="mt-0.5 flex-shrink-0 hover:bg-accent rounded p-0.5 transition-colors"
+              className="mt-0.5 shrink-0 hover:bg-accent rounded p-0.5 transition-colors"
               aria-label={isCollapsed ? 'Expand' : 'Collapse'}
             >
               {isCollapsed ? (
