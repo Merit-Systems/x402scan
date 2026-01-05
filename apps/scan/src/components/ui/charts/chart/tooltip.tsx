@@ -6,10 +6,10 @@ import { Card } from '../../card';
 
 import type { ChartData, TooltipRowProps } from './types';
 
-interface Props<T extends Record<string, number>> {
+type Props<T extends Record<string, number>> = {
   data: ChartData<T>;
-  rows: Array<TooltipRowProps<T>>;
-}
+  rows: TooltipRowProps<T>[];
+};
 
 export const TooltipContent = <T extends Record<string, number>>({
   data,

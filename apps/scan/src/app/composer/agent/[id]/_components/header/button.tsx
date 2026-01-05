@@ -10,13 +10,11 @@ import { auth } from '@/auth';
 import type { RouterOutputs } from '@/trpc/client';
 import { MessageSquare, Pencil } from 'lucide-react';
 
-interface Props {
+type Props = {
   agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
-}
+};
 
-export const HeaderButtons: React.FC<Props> = async ({
-  agentConfiguration,
-}) => {
+export const HeaderButtons: React.FC<Props> = ({ agentConfiguration }) => {
   return (
     <ButtonsContainer>
       <Link href={`/composer/agent/${agentConfiguration.id}/chat`}>
@@ -35,7 +33,7 @@ export const HeaderButtons: React.FC<Props> = async ({
 const EditButton: React.FC<Props> = async ({ agentConfiguration }) => {
   const session = await auth();
 
-  if (session?.user.id !== agentConfiguration.ownerId) {
+  if (session?.user?.id !== agentConfiguration.ownerId) {
     return null;
   }
 

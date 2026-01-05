@@ -1,8 +1,8 @@
 import { Separator } from '@/components/ui/separator';
 
-interface Props {
+type Props = {
   children: React.ReactNode;
-}
+};
 
 export const ConnectInjectedWalletButtonsWrapper: React.FC<Props> = ({
   children,

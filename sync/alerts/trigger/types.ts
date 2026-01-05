@@ -5,24 +5,24 @@ export enum Currency {
   ETH = 'ETH',
 }
 
-export interface BalanceCheckResult {
+export type BalanceCheckResult = {
   address: Address;
   balance: string;
   isLow: boolean;
   threshold: number;
   currency: Currency;
-}
+};
 
-export interface DiscordWebhookConfig {
+export type DiscordWebhookConfig = {
   webhookUrl: string;
   username?: string;
   avatarUrl?: string;
-}
+};
 
-export interface AddressConfig {
+export type AddressConfig = {
   address: Address;
   chain: Chain;
   currency: Currency;
   threshold: number;
   enabled: boolean;
-}
+};

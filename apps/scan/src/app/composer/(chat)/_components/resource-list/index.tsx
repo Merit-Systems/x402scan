@@ -27,11 +27,11 @@ import {
 
 import type { SelectedResource } from '../../_types/chat-config';
 
-interface Props {
+type Props = {
   selectedResourceIds: string[];
   onSelectResource: (resource: SelectedResource) => void;
   gradientClassName?: string;
-}
+};
 
 const toolItemHeight = 48;
 const numToolsToShow = 5;

@@ -7,14 +7,14 @@ import { formatTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
 
-interface Props {
+type Props = {
   stats: RouterOutputs['public']['facilitators']['list']['items'][number];
-}
+};
 
-interface Stat {
+type Stat = {
   title: string;
   Icon: LucideIcon;
-}
+};
 
 const statsData: Stat[] = [
   { title: 'Requests', Icon: ArrowLeftRight },
@@ -52,9 +52,9 @@ export const LoadingStatsCards = () => {
   return statsData.map(stat => <LoadingStatCard {...stat} key={stat.title} />);
 };
 
-interface StatsCardProps extends Stat {
+type StatsCardProps = {
   value: string;
-}
+} & Stat;
 
 const StatCard = ({ value, ...stat }: StatsCardProps) => {
   return (

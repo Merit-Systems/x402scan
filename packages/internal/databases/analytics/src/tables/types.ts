@@ -5,9 +5,9 @@ export enum Tables {
   ResourceInvocations = 'resource_invocations',
 }
 
-export interface AnalyticsDatabaseMap {
+export type AnalyticsDatabaseMap = {
   [Tables.ResourceInvocations]: ResourceInvocationData;
-}
+};
 
 export type InsertDataFunction<T extends Tables> = (
   data: AnalyticsDatabaseMap[T]

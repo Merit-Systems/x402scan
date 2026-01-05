@@ -7,10 +7,10 @@ import { CopyIcon } from 'lucide-react';
 
 import type { TextUIPart } from 'ai';
 
-interface Props {
+type Props = {
   part: TextUIPart;
   showActions: boolean;
-}
+};
 
 export const TextPart: React.FC<Props> = ({ part, showActions }) => {
   return (
@@ -22,7 +22,7 @@ export const TextPart: React.FC<Props> = ({ part, showActions }) => {
         <Actions className="-mt-2">
           <Action
             onClick={() =>
-              navigator.clipboard
+              void navigator.clipboard
                 .writeText(part.text)
                 .then(() => {
                   toast.success('Copied to clipboard');

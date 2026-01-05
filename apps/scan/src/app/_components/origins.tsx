@@ -19,12 +19,12 @@ import type { ResourceOrigin } from '@x402scan/scan-db/types';
 import type { MixedAddress } from '@/types/address';
 import type { OriginHealthMetrics } from '@/app/_components/health/types';
 
-interface Props {
+type Props = {
   addresses: MixedAddress[];
   origins: ResourceOrigin[];
   disableCopy?: boolean;
   healthMetrics?: OriginHealthMetrics | null;
-}
+};
 
 export const Origins: React.FC<Props> = ({
   origins,
@@ -118,11 +118,11 @@ export const Origins: React.FC<Props> = ({
   );
 };
 
-interface OriginProps {
+type OriginProps = {
   origin: ResourceOrigin;
   addresses: string[];
   disableCopy?: boolean;
-}
+};
 
 export const Origin: React.FC<OriginProps> = ({
   origin,
@@ -164,13 +164,13 @@ export const OriginsSkeleton = () => {
   );
 };
 
-interface OriginsContainerProps {
+type OriginsContainerProps = {
   Icon: ({ className }: { className: string }) => React.ReactNode;
   title: React.ReactNode;
   address: React.ReactNode;
   healthMetrics?: OriginHealthMetrics | null;
   originId?: string;
-}
+};
 
 const OriginsContainer = ({
   Icon,

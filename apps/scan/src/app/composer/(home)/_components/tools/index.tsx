@@ -5,7 +5,7 @@ import { defaultToolsSorting } from '@/app/_contexts/sorting/tools/default';
 import { LoadingToolsTable, ToolsTable } from './table';
 import { Suspense } from 'react';
 
-export const Tools = async () => {
+export const Tools = () => {
   void api.public.tools.top.prefetch({
     pagination: {
       page: 0,

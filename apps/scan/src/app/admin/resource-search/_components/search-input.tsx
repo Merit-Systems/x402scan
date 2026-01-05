@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 type RefinementMode = 'none' | 'llm' | 'reranker' | 'both';
 type QueryMode = 'keywords' | 'sql' | 'sql-parallel';
 
-interface SearchInputProps {
+type SearchInputProps = {
   onSearch: (
     query: string,
     refinementMode: RefinementMode,
@@ -20,7 +20,7 @@ interface SearchInputProps {
   placeholder?: string;
   className?: string;
   isLoading?: boolean;
-}
+};
 
 const SearchInputComponent = ({
   onSearch,

@@ -15,9 +15,9 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-interface Props {
+type Props = {
   address: string;
-}
+};
 
 const ActivityContainer = ({
   children,

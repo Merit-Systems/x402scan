@@ -7,11 +7,11 @@ import { useConnectedWallets } from '../../use-connected-wallets';
 import type { SolanaAddress } from '@/types/address';
 import type { UseBalanceReturnType } from '../types';
 
-interface Props {
+type Props = {
   tokenMint?: string;
   enabled?: boolean;
   address?: SolanaAddress;
-}
+};
 
 export const useSPLTokenBalance = (props?: Props): UseBalanceReturnType => {
   const { tokenMint, enabled, address } = props ?? {};

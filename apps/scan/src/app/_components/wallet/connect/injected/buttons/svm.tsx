@@ -8,12 +8,12 @@ import { ConnectInjectedWalletButton } from './button';
 
 import type { UiWallet } from '@wallet-standard/react';
 
-interface Props {
+type Props = {
   className?: string;
   buttonClassName?: string;
   wallets: readonly UiWallet[];
   prefix?: string;
-}
+};
 
 export const ConnectSVMInjectedWalletButtons: React.FC<Props> = ({
   wallets,
@@ -35,11 +35,11 @@ export const ConnectSVMInjectedWalletButtons: React.FC<Props> = ({
   );
 };
 
-interface ConnectSVMInjectedWalletButtonProps {
+type ConnectSVMInjectedWalletButtonProps = {
   wallet: UiWallet;
   className?: string;
   prefix?: string;
-}
+};
 
 const ConnectSVMInjectedWalletButton: React.FC<
   ConnectSVMInjectedWalletButtonProps
@@ -70,7 +70,7 @@ const ConnectSVMInjectedWalletButton: React.FC<
       icon={wallet.icon}
       name={wallet.name}
       isPending={isConnecting}
-      onClick={handleConnect}
+      onClick={() => void handleConnect()}
     />
   );
 };

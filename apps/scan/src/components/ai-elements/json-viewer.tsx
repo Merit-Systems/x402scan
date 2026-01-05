@@ -14,12 +14,12 @@ export type JsonValue =
 type JsonObject = { [key: string]: JsonValue };
 export type JsonArray = JsonValue[];
 
-interface JsonNodeProps {
+type JsonNodeProps = {
   data: JsonValue;
   keyName?: string;
   depth?: number;
   defaultCollapsed?: boolean;
-}
+};
 
 const JsonNode = ({
   data,
@@ -179,11 +179,11 @@ const JsonNode = ({
   );
 };
 
-interface JsonViewerProps {
+type JsonViewerProps = {
   data: JsonValue;
   defaultCollapsed?: boolean;
   className?: string;
-}
+};
 
 export const JsonViewer = ({
   data,

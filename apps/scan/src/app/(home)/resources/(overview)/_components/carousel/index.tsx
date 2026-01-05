@@ -8,15 +8,15 @@ import type { RouterInputs } from '@/trpc/client';
 import type { SectionProps } from '@/app/_components/layout/page-utils';
 import type { LucideIcon } from 'lucide-react';
 
-interface Props<T extends string> {
+type Props<T extends string> = {
   sectionProps: Omit<SectionProps<T>, 'children' | 'actions'> & {
     Icon: LucideIcon;
   };
   input: RouterInputs['public']['sellers']['bazaar']['list'];
   hideCount?: boolean;
-}
+};
 
-export const OriginsCarousel = async <T extends string>({
+export const OriginsCarousel = <T extends string>({
   sectionProps,
   input,
   hideCount,
@@ -53,7 +53,7 @@ export const OriginsCarousel = async <T extends string>({
   );
 };
 
-export const LoadingOriginsCarousel = async <T extends string>({
+export const LoadingOriginsCarousel = <T extends string>({
   sectionProps,
 }: Omit<Props<T>, 'input' | 'hideCount' | 'startDate' | 'endDate'>) => {
   const { title, Icon, ...rest } = sectionProps;

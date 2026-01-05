@@ -2,10 +2,10 @@ import { formatCompactAgo } from '@/lib/utils';
 import { TOTAL_REQUESTS_THRESHOLD, HEALTH_THRESHOLDS } from './constants';
 import { HealthStatus, type HealthMetrics } from './types';
 
-interface Props {
+type Props = {
   status: HealthStatus;
   metrics?: HealthMetrics | null;
-}
+};
 
 const TooltipFooter = () => (
   <div className="text-[10px] text-muted-foreground/60 mt-2 pt-2 border-t border-border/30 text-center">

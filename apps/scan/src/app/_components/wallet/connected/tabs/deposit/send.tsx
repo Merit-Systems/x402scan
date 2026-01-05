@@ -6,9 +6,9 @@ import { CopyCode } from '@/components/ui/copy-code';
 import { useWalletChain } from '../../../../../_contexts/wallet-chain/hook';
 import { CHAIN_ICONS, CHAIN_LABELS } from '@/types/chain';
 
-interface Props {
+type Props = {
   address: string;
-}
+};
 
 export const Send: React.FC<Props> = ({ address }) => {
   const { chain } = useWalletChain();

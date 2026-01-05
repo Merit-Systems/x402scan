@@ -16,11 +16,11 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
 
-interface Props {
+type Props = {
   chain?: Chain;
-}
+};
 
-export const OverallStats = async ({ chain }: Props) => {
+export const OverallStats: React.FC<Props> = ({ chain }) => {
   void api.public.stats.overallMV.prefetch({
     timeframe: ActivityTimeframe.OneDay,
     chain,

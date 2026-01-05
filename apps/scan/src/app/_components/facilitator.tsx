@@ -4,10 +4,10 @@ import { facilitatorIdMap } from '@/lib/facilitators';
 
 import { cn } from '@/lib/utils';
 
-interface Props {
+type Props = {
   id: string;
   className?: string;
-}
+};
 
 export const Facilitator: React.FC<Props> = ({ id, className }) => {
   const facilitator = facilitatorIdMap.get(id);
@@ -29,10 +29,10 @@ export const Facilitator: React.FC<Props> = ({ id, className }) => {
   );
 };
 
-interface FacilitatorsProps {
+type FacilitatorsProps = {
   ids: string[];
   className?: string;
-}
+};
 
 export const Facilitators: React.FC<FacilitatorsProps> = ({
   ids,

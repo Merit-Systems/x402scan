@@ -1,10 +1,10 @@
 import type { EcosystemItem } from '@/lib/ecosystem/schema';
 import { EcosystemCard } from './card';
 
-interface Props {
+type Props = {
   items: EcosystemItem[];
   showBadge?: boolean;
-}
+};
 
 export const EcosystemList: React.FC<Props> = ({ items, showBadge }) => {
   return (

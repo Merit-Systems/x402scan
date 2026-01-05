@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils';
 import { LoadingStatsCards, StatsCards } from './stat-cards';
 
-interface Props {
+type Props = {
   originId: string;
-}
+};
 
 export const OriginStats: React.FC<Props> = ({ originId }) => {
   return (

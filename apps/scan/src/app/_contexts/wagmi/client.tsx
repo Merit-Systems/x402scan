@@ -6,10 +6,10 @@ import { createWagmiConfig } from './config';
 
 import type { State } from 'wagmi';
 
-interface Props {
+type Props = {
   children: React.ReactNode;
   initialState: State | undefined;
-}
+};
 
 const wagmiConfig = createWagmiConfig();
 

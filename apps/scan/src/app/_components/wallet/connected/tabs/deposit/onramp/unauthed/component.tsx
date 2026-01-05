@@ -6,10 +6,10 @@ import { Loader2, Wallet } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
-interface Props {
+type Props = {
   onSignIn: () => void;
   isPending: boolean;
-}
+};
 
 export const NoSessionContent: React.FC<Props> = ({ onSignIn, isPending }) => {
   return (

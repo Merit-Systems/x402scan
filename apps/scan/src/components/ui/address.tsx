@@ -6,14 +6,14 @@ import { Copyable } from './copyable';
 
 import { cn, formatAddress } from '@/lib/utils';
 
-interface Props {
+type Props = {
   address: string;
   className?: string;
   hideTooltip?: boolean;
   side?: 'top' | 'bottom' | 'left' | 'right';
   disableCopy?: boolean;
   showLink?: boolean;
-}
+};
 
 export const Address: React.FC<Props> = ({
   address,
@@ -51,9 +51,9 @@ export const Address: React.FC<Props> = ({
   );
 };
 
-interface AddressesProps extends Omit<Props, 'address'> {
+type AddressesProps = {
   addresses: string[];
-}
+} & Omit<Props, 'address'>;
 
 export const Addresses = ({
   addresses,

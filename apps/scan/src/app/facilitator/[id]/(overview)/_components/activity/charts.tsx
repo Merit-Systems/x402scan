@@ -11,9 +11,9 @@ import { useMemo } from 'react';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 
-interface Props {
+type Props = {
   facilitatorId: string;
-}
+};
 
 export const ActivityCharts: React.FC<Props> = ({ facilitatorId }) => {
   const { timeframe } = useTimeRangeContext();

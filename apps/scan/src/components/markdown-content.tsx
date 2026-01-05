@@ -3,10 +3,10 @@
 import { Streamdown } from 'streamdown';
 import { cn } from '@/lib/utils';
 
-interface MarkdownContentProps {
+type MarkdownContentProps = {
   content: string;
   className?: string;
-}
+};
 
 export function MarkdownContent({ content, className }: MarkdownContentProps) {
   return (

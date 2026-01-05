@@ -17,10 +17,10 @@ import { useChain } from '@/app/_contexts/chain/hook';
 import type { Facilitator } from '@/lib/facilitators';
 import type { RouterOutputs } from '@/trpc/client';
 
-interface Props {
+type Props = {
   facilitator: Facilitator;
   stats: RouterOutputs['public']['facilitators']['list']['items'][number];
-}
+};
 
 export const FacilitatorCard: React.FC<Props> = ({ facilitator, stats }) => {
   const { chain } = useChain();

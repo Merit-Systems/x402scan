@@ -37,7 +37,7 @@ import { cn } from '@/lib/utils';
 
 import type z from 'zod';
 
-interface Props {
+type Props = {
   onSubmit: (data: z.infer<typeof agentConfigurationSchema>) => void;
   isSubmitting: boolean;
   defaultValues?: z.input<typeof agentConfigurationSchema>;
@@ -45,7 +45,7 @@ interface Props {
     default: string;
     submitting: string;
   };
-}
+};
 
 export const AgentForm: React.FC<Props> = ({
   defaultValues,
@@ -77,7 +77,7 @@ export const AgentForm: React.FC<Props> = ({
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit)}
+      onSubmit={void form.handleSubmit(onSubmit)}
       className="flex flex-col gap-6"
     >
       <FieldSet>
@@ -121,7 +121,7 @@ export const AgentForm: React.FC<Props> = ({
                     }}
                     maxFiles={1}
                     maxSize={5 * 1024 * 1024}
-                    onDrop={async files => {
+                    onDrop={files => {
                       if (files.length === 0) {
                         toast.error('No file selected');
                         return;

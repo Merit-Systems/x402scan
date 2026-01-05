@@ -2,11 +2,11 @@ import { api, HydrateClient } from '@/trpc/server';
 import { FeedTableContent, LoadingFeedTableContent } from './table';
 import { Suspense } from 'react';
 
-interface Props {
+type Props = {
   limit?: number;
-}
+};
 
-export const FeedTable = async ({ limit = 10 }: Props) => {
+export const FeedTable = ({ limit = 10 }: Props) => {
   void api.public.agents.activity.feed.prefetch({
     pagination: {
       page_size: limit,

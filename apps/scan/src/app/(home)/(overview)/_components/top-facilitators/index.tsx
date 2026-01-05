@@ -18,11 +18,11 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
 
-interface Props {
+type Props = {
   chain?: Chain;
-}
+};
 
-export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
+export const TopFacilitators: React.FC<Props> = ({ chain }) => {
   const chainFacilitators = chain
     ? facilitators.filter(f => f.addresses[chain])
     : facilitatorAddresses;

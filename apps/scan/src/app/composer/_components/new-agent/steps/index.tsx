@@ -5,12 +5,12 @@ import { ToolsStep } from './tools';
 import { DisplayStep } from './display';
 import type { CreateAgentStep, NewAgentForm } from './types';
 
-interface StepProps {
+type StepProps = {
   onNext: () => void;
   onPrevious: () => void;
   form: NewAgentForm;
   isSubmitting: boolean;
-}
+};
 
 export const steps = ({
   onNext,

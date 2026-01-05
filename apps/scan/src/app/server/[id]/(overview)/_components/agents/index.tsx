@@ -13,9 +13,9 @@ import {
 } from '@/components/ui/empty';
 import { BotOff } from 'lucide-react';
 
-interface Props {
+type Props = {
   originId: string;
-}
+};
 
 export const OriginAgents: React.FC<Props> = async ({ originId }) => {
   const agents = await api.public.agents.list({

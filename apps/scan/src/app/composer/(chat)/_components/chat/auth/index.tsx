@@ -18,9 +18,9 @@ import { ConnectWalletForm } from '@/app/_components/wallet/connect/form';
 import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
 import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
-interface Props {
+type Props = {
   agentConfig?: NonNullable<RouterOutputs['public']['agents']['get']>;
-}
+};
 
 export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
   const connectedWallets = useConnectedWallets();

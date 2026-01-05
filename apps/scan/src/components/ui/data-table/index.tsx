@@ -37,7 +37,7 @@ export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
   loading?: React.ComponentType;
 };
 
-interface DataTableProps<TData, TValue, AppRoute extends string> {
+type DataTableProps<TData, TValue, AppRoute extends string> = {
   columns: ExtendedColumnDef<TData, TValue>[];
   data: TData[];
   href?: (data: TData) => Route<AppRoute>;
@@ -53,7 +53,7 @@ interface DataTableProps<TData, TValue, AppRoute extends string> {
   rowSelection?: RowSelectionState;
   onRowSelectionChange?: OnChangeFn<RowSelectionState>;
   getRowId?: (row: TData, index: number) => string;
-}
+};
 
 export function DataTable<TData, TValue, AppRoute extends string>({
   columns,
@@ -75,6 +75,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
   const isServerSidePagination =
     page !== undefined && onPageChange !== undefined;
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: isLoading ? (Array(loadingRowCount).fill(null) as TData[]) : data,
     columns,

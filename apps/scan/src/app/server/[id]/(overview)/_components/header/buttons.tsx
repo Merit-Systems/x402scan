@@ -17,9 +17,20 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
-interface Props {
+type Props = {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
-}
+};
+
+const NoResourcesTooltip = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent>
+        <p>No resources for this server are compatible with Composer</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+};
 
 export const HeaderButtons: React.FC<Props> = ({ origin }) => {
   const [[originWithResources]] =
@@ -38,17 +49,6 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
   const onTryInChat = () => {
     clientCookieUtils.setResources(resources);
     router.push(`/composer/chat`);
-  };
-
-  const NoResourcesTooltip = ({ children }: { children: React.ReactNode }) => {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
-        <TooltipContent>
-          <p>No resources for this server are compatible with Composer</p>
-        </TooltipContent>
-      </Tooltip>
-    );
   };
 
   const tryInChatButton = (

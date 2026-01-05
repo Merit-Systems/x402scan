@@ -11,15 +11,15 @@ import { defaultAgentsSorting } from '@/app/_contexts/sorting/agents/default';
 
 import type { RouterInputs } from '@/trpc/client';
 
-interface Props {
+type Props = {
   input: Omit<
     RouterInputs['public']['agents']['list'],
     'sorting' | 'pagination'
   >;
   limit?: number;
-}
+};
 
-export const AgentsTable: React.FC<Props> = async ({ input, limit = 10 }) => {
+export const AgentsTable: React.FC<Props> = ({ input, limit = 10 }) => {
   void api.public.agents.list.prefetch({
     ...input,
     pagination: { page: 0, page_size: limit },

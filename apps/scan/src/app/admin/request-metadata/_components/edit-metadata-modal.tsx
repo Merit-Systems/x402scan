@@ -22,12 +22,12 @@ type Resource =
 type Metadata =
   RouterOutputs['admin']['resources']['requestMetadata']['list'][number];
 
-interface EditMetadataModalProps {
+type EditMetadataModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resource: Resource;
   existingMetadata?: Metadata;
-}
+};
 
 export const EditMetadataModal = ({
   open,
@@ -88,6 +88,7 @@ export const EditMetadataModal = ({
   useEffect(() => {
     if (open) {
       if (existingMetadata) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHeaders(JSON.stringify(existingMetadata.headers, null, 2));
         setBody(JSON.stringify(existingMetadata.body, null, 2));
         setQueryParams(JSON.stringify(existingMetadata.queryParams, null, 2));

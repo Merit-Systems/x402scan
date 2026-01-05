@@ -13,10 +13,10 @@ import { type HealthMetrics } from './types';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 
-interface Props {
+type Props = {
   metrics?: HealthMetrics | null;
   originId?: string;
-}
+};
 
 export const HealthDot: React.FC<Props> = ({ metrics, originId }) => {
   const status = calculateHealthStatus(metrics);

@@ -4,10 +4,10 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { LoadingMultiCharts, MultiCharts } from '@/components/ui/charts/multi';
 import type { RouterOutputs } from '@/trpc/client';
 
-interface Props {
+type Props = {
   agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
   bucketedActivity: RouterOutputs['public']['agents']['activity']['agent']['bucketed'];
-}
+};
 export const ActivityCharts: React.FC<Props> = ({
   agentConfiguration,
   bucketedActivity,

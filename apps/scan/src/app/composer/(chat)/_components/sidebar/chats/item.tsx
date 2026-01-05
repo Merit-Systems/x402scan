@@ -19,12 +19,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import type { RouterOutputs } from '@/trpc/client';
 
-interface Props {
+type Props = {
   chat: RouterOutputs['user']['chats']['list'][number];
   isActive: boolean;
   onDelete: (chatId: string) => void;
   setOpenMobile: (open: boolean) => void;
-}
+};
 
 const PureChatItem: React.FC<Props> = ({
   chat,

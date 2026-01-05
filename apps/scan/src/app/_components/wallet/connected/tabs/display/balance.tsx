@@ -7,9 +7,9 @@ import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-bal
 import { usdc } from '@/lib/tokens/usdc';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface Props {
+type Props = {
   address: string;
-}
+};
 
 export const Balance: React.FC<Props> = ({ address }) => {
   const { chain } = useWalletChain();
@@ -29,9 +29,9 @@ const SolanaBalance: React.FC<Props> = ({ address }) => {
   return <BalanceItem balance={balance} isLoading={isLoading} />;
 };
 
-interface EvmBalanceProps extends Props {
+type EvmBalanceProps = {
   chain: Chain;
-}
+} & Props;
 
 const EvmBalance: React.FC<EvmBalanceProps> = ({ chain }) => {
   const { data: balance, isLoading } = useEvmTokenBalance({

@@ -14,11 +14,11 @@ import { api } from '@/trpc/client';
 import type { ToolUIPart, UIMessage } from 'ai';
 import type { UseChatHelpers } from '@ai-sdk/react';
 
-interface Props {
+type Props = {
   part: ToolUIPart;
   chatId: string;
   addToolResult: UseChatHelpers<UIMessage>['addToolResult'];
-}
+};
 export const ToolPart: React.FC<Props> = ({ part, chatId, addToolResult }) => {
   const resourceId = part.type.slice(5);
   const { data: resource, isLoading: isResourceLoading } =

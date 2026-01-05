@@ -21,9 +21,9 @@ type ResourceCreationData = {
   total_resources: number;
 };
 
-interface ResourceCreationsChartProps {
+type ResourceCreationsChartProps = {
   selectedTagIds: string[];
-}
+};
 
 export const ResourceCreationsChart = ({
   selectedTagIds,

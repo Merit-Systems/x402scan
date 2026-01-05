@@ -6,10 +6,10 @@ import { BaseResourceItem, LoadingBaseResourceItem } from './base';
 
 import type { SelectedResource } from '../../../_types/chat-config';
 
-interface Props {
+type Props = {
   id: string;
   onSelectResource: (resource: SelectedResource) => void;
-}
+};
 
 export const SelectedResourceItem: React.FC<Props> = ({
   id,

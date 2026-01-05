@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils';
 import { LoadingStatsCards, StatsCards } from './stat-cards';
 
-interface Props {
+type Props = {
   id: string;
-}
+};
 
 export const OverallRecipientStats: React.FC<Props> = ({ id }) => {
   return (

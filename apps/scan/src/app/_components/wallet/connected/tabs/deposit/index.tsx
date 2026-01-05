@@ -3,9 +3,9 @@ import { Separator } from '@/components/ui/separator';
 import { Send } from './send';
 import { Onramp } from './onramp';
 
-interface Props {
+type Props = {
   address: string;
-}
+};
 
 export const Deposit: React.FC<Props> = ({ address }) => {
   return (

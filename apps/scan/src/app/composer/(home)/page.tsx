@@ -7,7 +7,7 @@ import { Feed } from './_components/feed';
 import { YourAgents } from './_components/your-agents';
 import { Suspense } from 'react';
 
-export default async function ComposerPage() {
+export default function ComposerPage() {
   return (
     <div>
       <ComposerHomeHeading />

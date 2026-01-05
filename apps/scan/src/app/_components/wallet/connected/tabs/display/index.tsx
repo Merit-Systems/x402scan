@@ -23,10 +23,10 @@ import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import type { User } from '@coinbase/cdp-hooks';
 
-interface Props {
+type Props = {
   address: string;
   user?: User;
-}
+};
 
 export const WalletContent: React.FC<Props> = ({ user, address }) => {
   const { data: session, status } = useSession();
@@ -92,7 +92,7 @@ export const WalletContent: React.FC<Props> = ({ user, address }) => {
         />
       )}
       <Button
-        onClick={() => handleSignOut()}
+        onClick={() => void handleSignOut()}
         className="w-full"
         disabled={!isInitialized || isSigningOut || status === 'loading'}
       >

@@ -11,9 +11,9 @@ import { HEALTH_CONFIG } from './constants';
 import { HealthTooltipContent } from './tooltip';
 import type { HealthMetrics } from './types';
 
-interface Props {
+type Props = {
   metrics?: HealthMetrics | null;
-}
+};
 
 export const HealthIndicator: React.FC<Props> = ({ metrics }) => {
   const status = calculateHealthStatus(metrics);

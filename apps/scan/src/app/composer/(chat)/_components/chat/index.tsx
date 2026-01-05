@@ -9,13 +9,13 @@ import { auth } from '@/auth';
 import type { Message } from '@x402scan/scan-db/types';
 import type { RouterOutputs } from '@/trpc/client';
 
-interface Props {
+type Props = {
   id: string;
   initialMessages: Message[];
   agentConfig?: NonNullable<RouterOutputs['public']['agents']['get']>;
   isReadOnly?: boolean;
   storeConfig?: boolean;
-}
+};
 
 export const Chat: React.FC<Props> = async ({
   id,

@@ -21,10 +21,10 @@ import { Label } from '@/components/ui/label';
 
 import { cn } from '@/lib/utils';
 
-interface Props {
+type Props = {
   flowId: string;
   handleReset: () => void;
-}
+};
 
 export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
   const [otp, setOtp] = useState('');
@@ -102,7 +102,7 @@ export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
       </div>
       <div className="flex flex-col gap-4">
         <Button
-          onClick={() => verifyOTP({ flowId, otp })}
+          onClick={() => void verifyOTP({ flowId, otp })}
           disabled={isVerifyingOTP || verifyOTPSuccess || otp.length !== 6}
           className="h-12 md:h-12"
           variant="turbo"

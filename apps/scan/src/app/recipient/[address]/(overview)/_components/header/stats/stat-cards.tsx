@@ -8,14 +8,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { LucideIcon } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
 
-interface Props {
+type Props = {
   address: string;
-}
+};
 
-interface Stat {
+type Stat = {
   title: string;
   Icon: LucideIcon;
-}
+};
 
 const stats: Stat[] = [
   { title: 'Requests', Icon: ArrowLeftRight },
@@ -57,9 +57,9 @@ export const LoadingStatsCards = () => {
   return stats.map(stat => <LoadingStatCard {...stat} key={stat.title} />);
 };
 
-interface StatsCardProps extends Stat {
+type StatsCardProps = {
   value: string;
-}
+} & Stat;
 
 const StatCard = ({ value, ...stat }: StatsCardProps) => {
   return (

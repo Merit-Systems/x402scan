@@ -1,3 +1,3 @@
-export default async function FacilitatorTransactionsPage() {
+export default function FacilitatorTransactionsPage() {
   return null;
 }

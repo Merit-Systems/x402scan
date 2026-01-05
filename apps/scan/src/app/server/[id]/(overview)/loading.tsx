@@ -5,7 +5,7 @@ import { LoadingOriginResources } from './_components/resources';
 import { LoadingOriginActivity } from './_components/activity';
 import { LoadingOriginAgents } from './_components/agents';
 
-export default async function LoadingOriginPage() {
+export default function LoadingOriginPage() {
   return (
     <Body>
       <LoadingHeaderCard />

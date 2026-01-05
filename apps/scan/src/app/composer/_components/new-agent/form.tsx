@@ -20,10 +20,10 @@ import { useForm } from 'react-hook-form';
 import { agentConfigurationSchema } from '@/services/db/agent-config/mutate/schema';
 import type z from 'zod';
 
-interface Props {
+type Props = {
   initialStep?: number;
   initialResourceIds?: string[];
-}
+};
 
 export const CreateAgentForm: React.FC<Props> = ({
   initialStep = 0,
@@ -83,7 +83,7 @@ export const CreateAgentForm: React.FC<Props> = ({
 
   return (
     <form
-      onSubmit={form.handleSubmit(handleSubmit)}
+      onSubmit={void form.handleSubmit(handleSubmit)}
       className="flex flex-col gap-4"
     >
       <Stepper steps={stepsConfig} currentStep={step} />

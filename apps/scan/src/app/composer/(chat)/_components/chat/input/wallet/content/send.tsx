@@ -61,7 +61,7 @@ export const Send: React.FC = () => {
   const schema =
     chain === ChainType.SOLANA ? solanaAddressSchema : ethereumAddressSchema;
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(() => {
     const parseResult = schema.safeParse(address);
     if (!parseResult.success) {
       toast.error('Invalid address');
@@ -164,11 +164,11 @@ export const Send: React.FC = () => {
   );
 };
 
-interface Props {
+type Props = {
   amount: number;
   toAddress: string;
   onReset: () => void;
-}
+};
 
 const WithdrawSuccess: React.FC<Props> = ({ amount, toAddress, onReset }) => {
   return (

@@ -17,9 +17,9 @@ import { HealthIndicator } from '@/app/_components/health/indicator';
 
 import type { RouterOutputs } from '@/trpc/client';
 
-interface Props {
+type Props = {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
-}
+};
 
 export const HeaderCard: React.FC<Props> = async ({ origin }) => {
   const originMetrics = await scanDb.resourceOriginMetrics.findFirst({

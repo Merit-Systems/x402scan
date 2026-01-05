@@ -3,9 +3,9 @@ import { BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface Props {
+type Props = {
   link: string;
-}
+};
 
 export const HeaderButtons: React.FC<Props> = ({ link }) => {
   return (

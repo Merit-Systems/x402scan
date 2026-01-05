@@ -21,10 +21,10 @@ type ToolCallData = {
   total_tool_calls: number;
 };
 
-interface ToolCallsChartProps {
+type ToolCallsChartProps = {
   resourceId: string;
   resourceUrl: string;
-}
+};
 
 export const ToolCallsChart = ({
   resourceId,

@@ -2,12 +2,12 @@
 
 import { createContext } from 'react';
 
-interface SearchContext {
+type SearchContext = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   search: string;
   setSearch: (search: string) => void;
-}
+};
 
 export const SearchContext = createContext<SearchContext>({
   isOpen: false,

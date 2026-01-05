@@ -13,12 +13,12 @@ import { createWalletBreakdownColumns } from './breakdown-columns';
 import { ToolCallsChart } from './tool-calls-chart';
 import { api } from '@/trpc/client';
 
-interface WalletBreakdownModalProps {
+type WalletBreakdownModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resourceId: string;
   resourceUrl: string;
-}
+};
 
 export const WalletBreakdownModal = ({
   open,

@@ -13,9 +13,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useObservabilityDataParams } from './use-observability-data';
 import { api } from '@/trpc/client';
 
-interface Props {
+type Props = {
   facilitatorName: string;
-}
+};
 
 export const MethodsTable: React.FC<Props> = ({ facilitatorName }) => {
   const params = useObservabilityDataParams();

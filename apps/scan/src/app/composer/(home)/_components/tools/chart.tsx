@@ -9,9 +9,9 @@ import { api } from '@/trpc/client';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { ActivityTimeframe } from '@/types/timeframes';
 
-interface Props {
+type Props = {
   addresses: string[];
-}
+};
 
 export const KnownSellerChart = ({ addresses }: Props) => {
   const { data: bucketedStats, isLoading } = api.public.stats.bucketed.useQuery(

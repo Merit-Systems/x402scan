@@ -12,10 +12,10 @@ import { api } from '@/trpc/client';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-interface Props {
+type Props = {
   address: string;
   pageSize: number;
-}
+};
 
 export const LatestTransactionsTable: React.FC<Props> = ({
   address,

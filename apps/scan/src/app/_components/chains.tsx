@@ -6,11 +6,11 @@ import { cn } from '@/lib/utils';
 
 import type { Chain as ChainType } from '@/types/chain';
 
-interface Props {
+type Props = {
   chains: ChainType[];
   className?: string;
   iconClassName?: string;
-}
+};
 export const Chains: React.FC<Props> = ({
   chains,
   className,

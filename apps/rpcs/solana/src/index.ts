@@ -1,7 +1,7 @@
-interface Env {
+type Env = {
   HELIUS_API_KEY: string;
   CORS_ALLOW_ORIGIN?: string;
-}
+};
 
 // Configuration - adjust as needed
 const BUFFER_TIMEOUT_MS = 10000;
@@ -61,11 +61,11 @@ export default {
   },
 };
 
-async function handleWebSocket(
+function handleWebSocket(
   request: Request,
   env: Env,
   corsHeaders: Record<string, string>
-): Promise<Response> {
+): Response {
   const { search } = new URL(request.url);
   const upstreamUrl = `wss://mainnet.helius-rpc.com${search ? `${search}&` : '?'}api-key=${
     env.HELIUS_API_KEY

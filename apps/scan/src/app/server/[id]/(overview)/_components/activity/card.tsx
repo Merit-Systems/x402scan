@@ -27,7 +27,7 @@ type Props<T extends Record<string, number>> = {
   items: ChartItems<T>;
   percentageChange?: number;
   data: ChartData<T>[];
-  tooltipRows?: Array<TooltipRowProps<T>>;
+  tooltipRows?: TooltipRowProps<T>[];
 };
 
 export const OverallStatsCard = <T extends Record<string, number>>({

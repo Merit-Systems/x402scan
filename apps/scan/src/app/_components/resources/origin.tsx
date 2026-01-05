@@ -7,13 +7,13 @@ import { cn } from '@/lib/utils';
 import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface Props {
+type Props = {
   origin: ResourceOrigin & {
     ogImages: OgImage[];
   };
   numResources: number;
   onClick?: () => void;
-}
+};
 
 export const OriginCard: React.FC<Props> = ({
   origin,

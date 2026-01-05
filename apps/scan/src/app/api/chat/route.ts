@@ -240,10 +240,10 @@ export async function POST(request: NextRequest) {
   });
 }
 
-interface GenerateTitleProps {
+type GenerateTitleProps = {
   message: UIMessage;
   model: LanguageModel;
-}
+};
 
 async function generateTitleFromUserMessage({
   message,

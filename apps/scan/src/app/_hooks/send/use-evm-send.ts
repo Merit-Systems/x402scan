@@ -13,13 +13,13 @@ import { useEvmX402Fetch } from '../x402/evm';
 
 import type { Token } from '@/types/token';
 
-interface Props {
+type Props = {
   token?: Token;
   onSuccess?: () => void;
   toastMessage?: (amount: number) => string;
   address?: string;
   amount?: number;
-}
+};
 
 export const useEvmSend = (props?: Props) => {
   const { chain } = useWalletChain();
@@ -89,7 +89,7 @@ export const useEvmSend = (props?: Props) => {
     isTool: true,
   });
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(() => {
     if (!amount) {
       toast.error('Amount is required');
       return;

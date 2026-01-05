@@ -17,7 +17,7 @@ export const thirdweb: FacilitatorConfigConstructor<ThirdwebConfig> = ({
 }) => ({
   url: FACILITATOR_URL,
   createAuthHeaders: async () => {
-    return {
+    return Promise.resolve({
       verify: {
         'x-secret-key': secretKey,
       },
@@ -30,7 +30,7 @@ export const thirdweb: FacilitatorConfigConstructor<ThirdwebConfig> = ({
       list: {
         'x-secret-key': secretKey,
       },
-    };
+    });
   },
 });
 

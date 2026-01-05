@@ -8,12 +8,12 @@ import { Chain } from '@/types/chain';
 import type { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 import type { SupportedChain } from '@/types/chain';
 
-interface Props {
+type Props = {
   children: React.ReactNode;
   connectedWallets?: ConnectedWallets;
   initialChain?: SupportedChain;
   isFixed?: boolean;
-}
+};
 
 export const WalletChainProvider: React.FC<Props> = ({
   children,

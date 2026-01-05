@@ -57,7 +57,7 @@ export function NgrokAlert({ port }: NgrokAlertProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleCopy}
+                onClick={() => void handleCopy()}
                 className="h-7 px-2 shrink-0"
               >
                 {copied ? (

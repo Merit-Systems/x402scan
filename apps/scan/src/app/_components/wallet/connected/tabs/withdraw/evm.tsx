@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 
 import { useEvmSend } from '@/app/_hooks/send/use-evm-send';
 
-interface Props {
+type Props = {
   amount: number;
   toAddress: string;
   onSuccess: () => void;
-}
+};
 
 export const WithdrawEVM: React.FC<Props> = ({
   amount,

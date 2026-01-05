@@ -9,10 +9,10 @@ import { createColumns } from './columns';
 import type { Row } from '@tanstack/react-table';
 import { useResourceSearchSorting } from '@/app/_contexts/sorting/resource-search/hook';
 
-interface ResultsTableProps {
+type ResultsTableProps = {
   results: FilteredSearchResult[];
   isLoading?: boolean;
-}
+};
 
 const ResultsTableComponent = ({
   results,

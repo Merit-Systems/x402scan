@@ -14,9 +14,9 @@ import { cn } from '@/lib/utils';
 
 import type { Facilitator } from '@/lib/facilitators';
 
-interface Props {
+type Props = {
   facilitator: Facilitator;
-}
+};
 
 export const HeaderCard: React.FC<Props> = ({ facilitator }) => {
   return (

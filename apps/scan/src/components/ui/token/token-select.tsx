@@ -25,11 +25,11 @@ import { Check, ChevronDown } from 'lucide-react';
 import type { ButtonProps } from '../button';
 import type { Token } from '@/types/token';
 
-interface Props extends Omit<ButtonProps, 'children'> {
+type Props = {
   selectedToken: Token;
   onTokenChange?: (token: Token) => void;
   tokens?: Token[];
-}
+} & Omit<ButtonProps, 'children'>;
 
 export const TokenSelect: React.FC<Props> = ({
   selectedToken,

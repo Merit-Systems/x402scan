@@ -30,10 +30,10 @@ export const formatCurrency = (
   });
 };
 
-interface FormatCompactAgoOptions {
+type FormatCompactAgoOptions = {
   addSuffix?: boolean;
   suffix?: string;
-}
+};
 
 export const formatCompactAgo = (
   date: Date,

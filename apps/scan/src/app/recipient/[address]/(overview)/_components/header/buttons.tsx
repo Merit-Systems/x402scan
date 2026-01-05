@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface Props {
+type Props = {
   hasOrigins: boolean;
   address: string;
-}
+};
 
 export const HeaderButtons: React.FC<Props> = ({ hasOrigins, address }) => {
   return (

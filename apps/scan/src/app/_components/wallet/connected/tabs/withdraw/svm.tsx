@@ -9,11 +9,11 @@ import { useSvmSend } from '@/app/_hooks/send/use-svm-send';
 import type { UiWalletAccount } from '@wallet-standard/react';
 import type { SolanaAddress } from '@/types/address';
 
-interface Props {
+type Props = {
   amount: number;
   toAddress: string;
   onSuccess: () => void;
-}
+};
 
 export const WithdrawSolana: React.FC<Props> = ({
   amount,
@@ -36,9 +36,9 @@ export const WithdrawSolana: React.FC<Props> = ({
   );
 };
 
-interface WithdrawContentProps extends Props {
+type WithdrawContentProps = {
   account: UiWalletAccount;
-}
+} & Props;
 
 const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
   account,

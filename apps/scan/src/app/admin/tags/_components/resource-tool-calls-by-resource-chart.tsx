@@ -46,9 +46,9 @@ const generatePerturbedColor = (baseHue: number, seed: string) => {
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 };
 
-interface ResourceToolCallsByResourceChartProps {
+type ResourceToolCallsByResourceChartProps = {
   selectedTagIds: string[];
-}
+};
 
 export const ResourceToolCallsByResourceChart = ({
   selectedTagIds,

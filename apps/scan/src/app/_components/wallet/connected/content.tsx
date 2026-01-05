@@ -7,10 +7,10 @@ import { WalletContent } from './tabs/display';
 
 import type { User } from '@coinbase/cdp-hooks';
 
-interface Props {
+type Props = {
   user?: User;
   address: string;
-}
+};
 
 export const ConnectedWalletTabsContent = ({ user, address }: Props) => {
   return (

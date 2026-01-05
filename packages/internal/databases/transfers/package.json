@@ -23,7 +23,7 @@
     "@neondatabase/serverless": "^1.0.2",
     "@prisma/adapter-neon": "^7.0.0",
     "@prisma/client": "^7.0.0",
-    "dotenv": "^17.2.3",
+    "dotenv": "catalog:env",
     "ws": "^8.18.3"
   },
   "devDependencies": {

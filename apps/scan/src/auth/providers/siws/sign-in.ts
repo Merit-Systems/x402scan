@@ -5,12 +5,12 @@ import { SIWS_PROVIDER_ID, SIWS_STATEMENT } from './constants';
 
 import type { useSignMessage } from '@solana/react';
 
-interface SignInWithSolanaOptions {
+type SignInWithSolanaOptions = {
   address: string;
   signMessage: ReturnType<typeof useSignMessage>;
   email?: string;
   redirectTo?: string;
-}
+};
 
 export async function signInWithSolana({
   address,

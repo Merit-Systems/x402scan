@@ -23,23 +23,23 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
-    "@prisma/adapter-neon": "^7.0.0",
-    "@prisma/client": "^7.0.0",
-    "dotenv": "^17.2.3",
+    "@prisma/adapter-neon": "catalog:prisma",
+    "@prisma/client": "catalog:prisma",
+    "dotenv": "catalog:env",
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "catalog:",
     "@types/ws": "^8.18.1",
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "eslint": "^9.39.1",
-    "prisma": "^7.0.0",
+    "eslint": "catalog:",
+    "prisma": "catalog:prisma",
     "rimraf": "^5.0.5",
-    "tsup": "^8.5.0",
-    "typescript": "5.5.4"
+    "tsup": "catalog:",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
-    "zod": "^4.0.0"
+    "zod": "catalog:"
   }
 }

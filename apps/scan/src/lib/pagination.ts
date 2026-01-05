@@ -1,11 +1,11 @@
 import z from 'zod';
 
-interface ToPaginatedResponseParams<T> {
+type ToPaginatedResponseParams<T> = {
   items: T[];
   page: number;
   page_size: number;
   total_count: number;
-}
+};
 
 export const paginatedQuerySchema = z.object({
   page: z.number().optional().default(0),

@@ -23,10 +23,10 @@ import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
 import type { Route } from 'next';
 
-interface Props<T extends string> {
+type Props<T extends string> = {
   agentConfiguration: RouterOutputs['public']['agents']['list']['items'][number];
   href?: Route<T>;
-}
+};
 
 export const AgentCard = <T extends string>({
   agentConfiguration,
@@ -89,14 +89,14 @@ export const AgentCard = <T extends string>({
   );
 };
 
-interface Stat {
+type Stat = {
   title: string;
   Icon: LucideIcon;
-}
+};
 
-interface StatsCardProps extends Stat {
+type StatsCardProps = {
   children: React.ReactNode;
-}
+} & Stat;
 
 const StatCard = ({ children, ...stat }: StatsCardProps) => {
   return <BaseStatCard {...stat}>{children}</BaseStatCard>;

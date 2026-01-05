@@ -55,7 +55,7 @@ export const AnimatedThemeToggler = ({ className }: props) => {
   return (
     <Button
       ref={buttonRef}
-      onClick={changeTheme}
+      onClick={() => void changeTheme()}
       className={cn(className)}
       size="icon"
       variant="outline"

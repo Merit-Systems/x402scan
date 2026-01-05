@@ -155,13 +155,13 @@ export const TestEndpointForm = () => {
 
   // Process accepts from both GET and POST
   const acceptsData = useMemo(() => {
-    const allAccepts: Array<{
+    const allAccepts: {
       network: string;
       payTo: string;
       asset: string;
       method: 'GET' | 'POST';
       isSupported: boolean;
-    }> = [];
+    }[] = [];
 
     [
       { pair: getPair, method: 'GET' as const },

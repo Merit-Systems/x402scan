@@ -22,22 +22,22 @@ type TabConfig<T extends Record<string, number>> = {
   };
   items: {
     type: 'bar';
-    bars: Array<{
+    bars: {
       dataKey: keyof T;
       name: string;
       color: string;
-    }>;
+    }[];
     solid?: boolean;
     stackOffset?: 'expand' | 'none';
   };
-  tooltipRows: Array<{
+  tooltipRows: {
     key: keyof T;
     label: string;
     getValue: (data: number, allData: T) => string;
     labelClassName?: string;
     valueClassName?: string;
     dotColor: string;
-  }>;
+  }[];
 };
 
 type Item = {

@@ -4,9 +4,9 @@ import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface Props {
+type Props = {
   resourceUrl: string;
-}
+};
 
 export const ResourceHeader: React.FC<Props> = ({ resourceUrl }) => {
   const router = useRouter();

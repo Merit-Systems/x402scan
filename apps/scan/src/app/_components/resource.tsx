@@ -7,12 +7,12 @@ import type {
   Resources,
 } from '@x402scan/scan-db/types';
 
-interface Props {
+type Props = {
   resource: Resources & {
     accepts: Accepts[];
     origin: ResourceOrigin;
   };
-}
+};
 
 export const Resource: React.FC<Props> = ({ resource }) => {
   return (
@@ -32,11 +32,11 @@ export const Resource: React.FC<Props> = ({ resource }) => {
   );
 };
 
-interface ResourceContainerProps {
+type ResourceContainerProps = {
   Icon: ({ className }: { className: string }) => React.ReactNode;
   title: React.ReactNode;
   address: React.ReactNode;
-}
+};
 
 const ResourceContainer = ({
   Icon,

@@ -69,6 +69,7 @@ export const Reasoning = memo(
     useEffect(() => {
       if (isStreaming) {
         if (startTime === null) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setStartTime(Date.now());
         }
       } else if (startTime !== null) {

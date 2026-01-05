@@ -5,11 +5,11 @@ import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface Props {
+type Props = {
   Icon: LucideIcon;
   value: number | string;
   className?: string;
-}
+};
 
 export const FooterStat: React.FC<Props> = ({ Icon, value, className }) => {
   return (
@@ -27,9 +27,9 @@ export const FooterStat: React.FC<Props> = ({ Icon, value, className }) => {
   );
 };
 
-interface FooterStatContainerProps extends Omit<Props, 'value'> {
+type FooterStatContainerProps = {
   children: React.ReactNode;
-}
+} & Omit<Props, 'value'>;
 
 const FooterStatContainer: React.FC<FooterStatContainerProps> = ({
   Icon,

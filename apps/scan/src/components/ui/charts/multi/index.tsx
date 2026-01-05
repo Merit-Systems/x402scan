@@ -11,7 +11,7 @@ import type { AreaChartProps } from '../chart/area/types';
 
 import type { TabsTriggerProps } from './tabs';
 
-interface TabProps<T extends Record<string, number>> {
+type TabProps<T extends Record<string, number>> = {
   trigger: TabsTriggerProps;
   items:
     | {
@@ -25,13 +25,13 @@ interface TabProps<T extends Record<string, number>> {
         areas: AreaChartProps<T>['areas'];
       };
   tooltipRows?: ChartProps<T>['tooltipRows'];
-}
+};
 
-interface Props<T extends Record<string, number>> {
+type Props<T extends Record<string, number>> = {
   chartData: ChartData<T>[];
   tabs: TabProps<T>[];
   height?: number | string;
-}
+};
 
 export const MultiCharts = <T extends Record<string, number>>({
   tabs,
@@ -74,13 +74,13 @@ export const MultiCharts = <T extends Record<string, number>>({
   );
 };
 
-interface LoadingMultiChartsProps {
+type LoadingMultiChartsProps = {
   tabs: {
     type: 'bar' | 'area';
     label: string;
   }[];
   height?: number | string;
-}
+};
 
 export const LoadingMultiCharts: React.FC<LoadingMultiChartsProps> = ({
   tabs,

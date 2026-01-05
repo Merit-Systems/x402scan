@@ -104,7 +104,7 @@ export const registerResource = async (url: string, data: unknown) => {
     accepts:
       baseX402ParsedResponse.data.accepts
         ?.filter(accept =>
-          (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(
+          (SUPPORTED_CHAINS as readonly string[]).includes(
             accept.network!.replace('-', '_')
           )
         )

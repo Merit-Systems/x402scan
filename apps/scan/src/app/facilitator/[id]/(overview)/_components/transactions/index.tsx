@@ -16,13 +16,11 @@ import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/defau
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-interface Props {
+type Props = {
   facilitatorId: string;
-}
+};
 
-export const LatestTransactions: React.FC<Props> = async ({
-  facilitatorId,
-}) => {
+export const LatestTransactions: React.FC<Props> = ({ facilitatorId }) => {
   const pageSize = 10;
 
   void api.public.transfers.list.prefetch({

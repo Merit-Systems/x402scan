@@ -21,12 +21,12 @@ import type { ChatConfig, SelectedResource } from '../_types/chat-config';
 import type { LanguageModel } from '../_components/chat/input/model-select/types';
 import type { Message } from '@x402scan/scan-db/types';
 
-interface Props {
+type Props = {
   id: string;
   initialMessages: Message[];
   agentConfig?: RouterOutputs['public']['agents']['get'];
   initialConfig?: ChatConfig;
-}
+};
 
 export const useChat = ({
   id,
@@ -78,6 +78,7 @@ export const useChat = ({
           void utils.user.chats.list.invalidate();
         }
       },
+      // eslint-disable-next-line react-hooks/refs
       transport: new DefaultChatTransport({
         api: '/api/chat',
         prepareSendMessagesRequest({ messages }) {

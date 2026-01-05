@@ -21,7 +21,7 @@ import type { Resources, Tag } from '@x402scan/scan-db/types';
 import { HealthIndicator } from '@/app/_components/health/indicator';
 import { api } from '@/trpc/client';
 
-interface Props {
+type Props = {
   resource: Resources;
   tags: Tag[];
   response: ParsedX402Response;
@@ -30,7 +30,7 @@ interface Props {
   hideOrigin?: boolean;
   defaultOpen?: boolean;
   isFlat?: boolean;
-}
+};
 
 export const ResourceExecutor: React.FC<Props> = ({
   resource,

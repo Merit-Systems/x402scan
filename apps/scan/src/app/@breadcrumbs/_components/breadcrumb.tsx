@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
 import type { Route } from 'next';
 
-interface Props<T extends string> {
+type Props<T extends string> = {
   href: Route<T>;
   image: string | null;
   name: string;
@@ -21,7 +21,7 @@ interface Props<T extends string> {
   disabled?: boolean;
   textClassName?: string;
   className?: string;
-}
+};
 
 export const Breadcrumb = <T extends string>({
   href,

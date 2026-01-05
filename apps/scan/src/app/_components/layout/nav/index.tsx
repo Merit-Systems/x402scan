@@ -12,20 +12,20 @@ import { MotionTab } from './motion-tab';
 
 import type { Route } from 'next';
 
-interface Tab<T extends string> {
+type Tab<T extends string> = {
   label: string;
   href: Route<T>;
   subRoutes?: string[];
   external?: boolean;
   isNew?: boolean;
-}
+};
 
-interface Props<T extends string = string> {
+type Props<T extends string = string> = {
   tabs: Tab<T>[];
-}
+};
 
 export const Nav = <T extends string>({ tabs }: Props<T>) => {
-  const [buttonRefs, setButtonRefs] = useState<Array<HTMLAnchorElement | null>>(
+  const [buttonRefs, setButtonRefs] = useState<(HTMLAnchorElement | null)[]>(
     []
   );
 
@@ -38,6 +38,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
   }, [tabs.length]);
 
   const navRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line react-hooks/refs
   const navRect = navRef.current?.getBoundingClientRect();
 
   const [hoveredTabIndex, setHoveredTabIndex] = useState<number | null>(null);

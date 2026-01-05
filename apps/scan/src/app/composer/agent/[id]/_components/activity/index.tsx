@@ -4,9 +4,9 @@ import { api } from '@/trpc/server';
 import { ActivityCharts, LoadingActivityCharts } from './charts';
 import { Card } from '@/components/ui/card';
 
-interface Props {
+type Props = {
   agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
-}
+};
 
 export const Activity: React.FC<Props> = async ({ agentConfiguration }) => {
   const bucketedActivity = await api.public.agents.activity.agent.bucketed({

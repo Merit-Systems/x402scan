@@ -19,13 +19,13 @@ import { cn } from '@/lib/utils';
 import type { UIMessage, ChatStatus } from 'ai';
 import type { UseChatHelpers } from '@ai-sdk/react';
 
-interface Props {
+type Props = {
   message: UIMessage;
   status: ChatStatus;
   isLast: boolean;
   chatId: string;
   addToolResult: UseChatHelpers<UIMessage>['addToolResult'];
-}
+};
 
 export const Message: React.FC<Props> = ({
   message,
@@ -88,10 +88,10 @@ export const Message: React.FC<Props> = ({
   );
 };
 
-interface LoadingMessageProps {
+type LoadingMessageProps = {
   from: UIMessage['role'];
   numLines: number;
-}
+};
 
 export const LoadingMessage: React.FC<LoadingMessageProps> = ({
   from,

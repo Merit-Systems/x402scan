@@ -8,9 +8,9 @@ import {
 import { api } from '@/trpc/client';
 import { OriginOverviewSection } from './section';
 
-interface Props {
+type Props = {
   originId: string;
-}
+};
 
 export const OriginResources: React.FC<Props> = ({ originId }) => {
   const [[origin]] = api.public.origins.list.withResources.useSuspenseQuery({

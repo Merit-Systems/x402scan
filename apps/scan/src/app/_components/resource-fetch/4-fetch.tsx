@@ -8,7 +8,7 @@ import { formatTokenAmount } from '@/lib/token';
 
 import type { Chain } from '@/types/chain';
 
-interface Props {
+type Props = {
   isPending: boolean;
   allRequiredFieldsFilled: boolean;
   execute: () => void;
@@ -16,7 +16,7 @@ interface Props {
   chains: Chain[];
   maxAmountRequired: bigint;
   text?: string;
-}
+};
 
 export const FetchState: React.FC<Props> = ({
   isPending,

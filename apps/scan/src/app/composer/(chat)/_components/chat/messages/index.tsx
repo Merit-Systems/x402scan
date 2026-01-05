@@ -15,7 +15,7 @@ import type { UIMessage, UseChatHelpers } from '@ai-sdk/react';
 import { AnimatedShinyText } from '@/components/magicui/animated-shiny-text';
 import { ErrorState } from './error';
 
-interface MessagesProps {
+type MessagesProps = {
   messages: UIMessage[];
   status: ChatStatus;
   model: string;
@@ -24,7 +24,7 @@ interface MessagesProps {
   addToolResult: UseChatHelpers<UIMessage>['addToolResult'];
   errorMessage?: string;
   emptyState?: EmptyStateProps;
-}
+};
 
 export const Messages: React.FC<MessagesProps> = ({
   messages,

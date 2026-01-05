@@ -5,12 +5,12 @@ import {
 } from '@/components/ai-elements/reasoning';
 import type { ChatStatus, ReasoningUIPart } from 'ai';
 
-interface Props {
+type Props = {
   part: ReasoningUIPart;
   status: ChatStatus;
   isLastPart: boolean;
   isLastMessage: boolean;
-}
+};
 
 export const ReasoningPart: React.FC<Props> = ({
   part,

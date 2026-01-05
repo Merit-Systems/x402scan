@@ -28,22 +28,22 @@ import type { ParsedX402Response } from '@/lib/x402/schema';
 import type { X402FetchResponse } from '@/app/_hooks/x402/types';
 import type { JsonValue } from '@/components/ai-elements/json-viewer';
 
-interface PropertyDefinition {
+type PropertyDefinition = {
   type: string;
   description?: string;
   enum?: string[];
   isRequired: boolean;
-}
+};
 
 type Accept = NonNullable<ParsedX402Response['accepts']>[number];
 
-interface Props {
+type Props = {
   x402Response: ParsedX402Response;
   inputSchema: NonNullable<Accept['outputSchema']>['input'];
   maxAmountRequired: bigint;
   method: Methods;
   resource: string;
-}
+};
 
 export function Form({
   x402Response,
@@ -92,7 +92,7 @@ export function Form({
 
   const queryEntries = useMemo(
     () =>
-      Object.entries(queryValues).reduce<Array<[string, string]>>(
+      Object.entries(queryValues).reduce<[string, string][]>(
         (acc, [key, value]) => {
           if (typeof value === 'string') {
             const trimmed = value.trim();
@@ -118,7 +118,7 @@ export function Form({
 
   const bodyEntries = useMemo(
     () =>
-      Object.entries(bodyValues).reduce<Array<[string, FieldValue]>>(
+      Object.entries(bodyValues).reduce<[string, FieldValue][]>(
         (acc, [key, value]) => {
           if (Array.isArray(value)) {
             if (value.length > 0) {
@@ -219,7 +219,7 @@ export function Form({
           (x402Response.accepts
             ?.map(accept => accept.network)
             .filter(network =>
-              (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(network!)
+              (SUPPORTED_CHAINS as readonly string[]).includes(network!)
             ) ?? []) as SupportedChain[]
         }
         allRequiredFieldsFilled={allRequiredFieldsFilled}

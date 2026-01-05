@@ -49,6 +49,47 @@ type PreviewData = {
   origin: string;
 } | null;
 
+const Icon = ({ ok, message }: { ok?: boolean; message?: string }) =>
+  ok === undefined ? (
+    <Minus className="size-4 text-muted-foreground" />
+  ) : ok ? (
+    <CheckCircle className="size-4 text-green-600" />
+  ) : message ? (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <XCircle className="size-4 text-red-600" />
+      </TooltipTrigger>
+      <TooltipContent sideOffset={6}>{message}</TooltipContent>
+    </Tooltip>
+  ) : (
+    <XCircle className="size-4 text-red-600" />
+  );
+
+// Helper to render a row with GET/POST icons
+const Row = ({
+  label,
+  gOk,
+  pOk,
+  gMsg,
+  pMsg,
+}: {
+  label: string;
+  gOk?: boolean;
+  pOk?: boolean;
+  gMsg?: string;
+  pMsg?: string;
+}) => (
+  <TableRow>
+    <TableCell className="pr-2">{label}</TableCell>
+    <TableCell className="pr-2">
+      <Icon ok={gOk} message={gMsg} />
+    </TableCell>
+    <TableCell>
+      <Icon ok={pOk} message={pMsg} />
+    </TableCell>
+  </TableRow>
+);
+
 export function Checklist({
   preview,
   getPair,
@@ -74,47 +115,6 @@ export function Checklist({
   };
   const gInfo = g?.parsed?.success ? analyze(g.parsed) : undefined;
   const pInfo = p?.parsed?.success ? analyze(p.parsed) : undefined;
-
-  const Icon = ({ ok, message }: { ok?: boolean; message?: string }) =>
-    ok === undefined ? (
-      <Minus className="size-4 text-muted-foreground" />
-    ) : ok ? (
-      <CheckCircle className="size-4 text-green-600" />
-    ) : message ? (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <XCircle className="size-4 text-red-600" />
-        </TooltipTrigger>
-        <TooltipContent sideOffset={6}>{message}</TooltipContent>
-      </Tooltip>
-    ) : (
-      <XCircle className="size-4 text-red-600" />
-    );
-
-  // Helper to render a row with GET/POST icons
-  const Row = ({
-    label,
-    gOk,
-    pOk,
-    gMsg,
-    pMsg,
-  }: {
-    label: string;
-    gOk?: boolean;
-    pOk?: boolean;
-    gMsg?: string;
-    pMsg?: string;
-  }) => (
-    <TableRow>
-      <TableCell className="pr-2">{label}</TableCell>
-      <TableCell className="pr-2">
-        <Icon ok={gOk} message={gMsg} />
-      </TableCell>
-      <TableCell>
-        <Icon ok={pOk} message={pMsg} />
-      </TableCell>
-    </TableRow>
-  );
 
   const joinErrors = (errors?: string[]) =>
     errors?.length ? errors.join('\n') : undefined;

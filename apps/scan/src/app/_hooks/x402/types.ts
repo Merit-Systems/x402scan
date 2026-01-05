@@ -1,7 +1,7 @@
-export interface X402FetchResponse<TData = unknown> {
+export type X402FetchResponse<TData = unknown> = {
   data: TData | string;
   type: 'json' | 'text' | 'unknown';
-}
+};
 
 export type FetchWithPaymentWrapper = (
   baseFetch: typeof fetch,

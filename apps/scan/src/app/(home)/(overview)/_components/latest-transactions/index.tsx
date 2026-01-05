@@ -11,11 +11,11 @@ import { Section } from '@/app/_components/layout/page-utils';
 import { ActivityTimeframe } from '@/types/timeframes';
 import type { Chain } from '@/types/chain';
 
-interface Props {
+type Props = {
   chain?: Chain;
-}
+};
 
-export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
+export const LatestTransactions: React.FC<Props> = ({ chain }) => {
   const pageSize = 10;
 
   void api.public.transfers.list.prefetch({

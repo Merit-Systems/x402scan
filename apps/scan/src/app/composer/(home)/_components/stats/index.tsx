@@ -14,7 +14,7 @@ import { api, HydrateClient } from '@/trpc/server';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-export const OverallStats = async () => {
+export const OverallStats = () => {
   void api.public.agents.activity.overall.prefetch({
     timeframe: ActivityTimeframe.SevenDays,
   });

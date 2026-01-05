@@ -37,7 +37,7 @@ export const insertResourceInvocation: InsertDataFunction<
   Tables.ResourceInvocations
 > = async data => insertData(Tables.ResourceInvocations, [data]);
 
-export interface ResourceInvocationData {
+export type ResourceInvocationData = {
   id: string;
   resource_id: string | null;
   status_code: number;
@@ -52,4 +52,4 @@ export interface ResourceInvocationData {
   response_body?: unknown;
   request_headers?: unknown;
   request_body?: unknown;
-}
+};

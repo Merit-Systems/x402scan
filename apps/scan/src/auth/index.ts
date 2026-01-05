@@ -16,7 +16,8 @@ import type { DefaultSession } from 'next-auth';
 import type { Account, Role } from '@x402scan/scan-db/types';
 
 declare module 'next-auth' {
-  interface Session extends DefaultSession {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface Session {
     user: {
       id: string;
       role: Role;
@@ -24,13 +25,14 @@ declare module 'next-auth' {
     } & DefaultSession['user'];
   }
 
-  interface AdapterUser {
+  type AdapterUser = {
     id: string;
     email: string | null;
     role: Role;
     accounts: Account[];
-  }
+  };
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface User {
     id?: string;
     email?: string | null;
@@ -82,10 +84,10 @@ const { handlers, auth: uncachedAuth } = NextAuth({
   trustHost: true,
   callbacks: {
     async session({ session, user }) {
-      return {
+      return Promise.resolve({
         ...session,
         user: user,
-      };
+      });
     },
     async jwt({ token, account }) {
       if (
@@ -94,7 +96,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
       ) {
         token.credentials = true;
       }
-      return token;
+      return Promise.resolve(token);
     },
   },
   jwt: {

@@ -60,6 +60,7 @@ export const OnrampSessionDialog: React.FC = () => {
 
   useEffect(() => {
     if (searchParams.get('onramp_token')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSessionToken(searchParams.get('onramp_token') ?? null);
       setIsSessionDialogOpen(true);
     }
@@ -80,12 +81,14 @@ export const OnrampSessionDialog: React.FC = () => {
 
   useEffect(() => {
     if (isErrorSession) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsError(true);
     }
   }, [isErrorSession]);
 
   useEffect(() => {
     if (session && ['succeeded', 'failed'].includes(session.status)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsCompleted(true);
 
       // Invalidate balance query when session is completed
@@ -190,7 +193,7 @@ export const OnrampSessionDialog: React.FC = () => {
                 <Button
                   variant="outline"
                   className="w-full font-bold"
-                  onClick={() => refetchSession()}
+                  onClick={() => void refetchSession()}
                 >
                   Refresh
                 </Button>

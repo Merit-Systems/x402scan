@@ -10,13 +10,13 @@ import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 import type { Route } from 'next';
 
-interface HeadingProps {
+type HeadingProps = {
   title: string | ReactNode;
   icon?: ReactNode;
   description?: string | ReactNode;
   actions?: ReactNode;
   className?: string;
-}
+};
 
 export const Heading: React.FC<HeadingProps> = ({
   icon,
@@ -79,10 +79,10 @@ export const HeadingContainer = ({
   );
 };
 
-interface BodyProps {
+type BodyProps = {
   children: ReactNode;
   className?: string;
-}
+};
 
 export const Body: React.FC<BodyProps> = ({ children, className }) => {
   return (
@@ -97,14 +97,39 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
   );
 };
 
-export interface SectionProps<T extends string> {
+export type SectionProps<T extends string> = {
   title: string | ReactNode;
   description?: string;
   children: React.ReactNode;
   actions?: React.ReactNode;
   className?: string;
   href?: Route<T>;
-}
+};
+
+const SectionHeader = ({
+  title,
+  href,
+}: {
+  title: string | ReactNode;
+  href?: string;
+}) => {
+  return (
+    <div
+      className={cn('flex items-center gap-1', href && 'group cursor-pointer')}
+    >
+      {typeof title === 'string' ? (
+        <h1 className="font-bold text-xl md:text-2xl">{title}</h1>
+      ) : (
+        title
+      )}
+      {href && (
+        <div className="flex items-center gap-2 bg-muted/0 hover:bg-muted rounded-md p-0.5 transition-all hover:scale-105 group-hover:translate-x-1">
+          <ChevronRight className="size-4 text-foreground/60 group-hover:text-muted-foreground" />
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const Section = <T extends string>({
   children,
@@ -114,38 +139,16 @@ export const Section = <T extends string>({
   className,
   href,
 }: SectionProps<T>) => {
-  const Header = () => {
-    return (
-      <div
-        className={cn(
-          'flex items-center gap-1',
-          href && 'group cursor-pointer'
-        )}
-      >
-        {typeof title === 'string' ? (
-          <h1 className="font-bold text-xl md:text-2xl">{title}</h1>
-        ) : (
-          title
-        )}
-        {href && (
-          <div className="flex items-center gap-2 bg-muted/0 hover:bg-muted rounded-md p-0.5 transition-all hover:scale-105 group-hover:translate-x-1">
-            <ChevronRight className="size-4 text-foreground/60 group-hover:text-muted-foreground" />
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className={cn('flex flex-col gap-4 md:gap-6', className)}>
       <div className="flex flex-col gap-1">
         <div className="flex justify-between items-center">
           {href ? (
             <Link href={href}>
-              <Header />
+              <SectionHeader title={title} href={href} />
             </Link>
           ) : (
-            <Header />
+            <SectionHeader title={title} href={href} />
           )}
           {actions}
         </div>

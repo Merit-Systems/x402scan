@@ -21,10 +21,10 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { type Tag } from '@x402scan/scan-db';
 
-interface TagFilterProps {
+type TagFilterProps = {
   selectedTagIds: string[];
   onSelectedTagIdsChange: (tagIds: string[]) => void;
-}
+};
 
 export const TagFilter: React.FC<TagFilterProps> = ({
   selectedTagIds,

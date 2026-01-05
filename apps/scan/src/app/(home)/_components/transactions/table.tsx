@@ -13,9 +13,9 @@ import { columns } from './columns';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-interface Props {
+type Props = {
   pageSize: number;
-}
+};
 
 export const Table: React.FC<Props> = ({ pageSize }) => {
   const { sorting } = useTransfersSorting();

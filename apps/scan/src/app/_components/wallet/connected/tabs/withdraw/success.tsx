@@ -2,11 +2,11 @@ import { Button } from '@/components/ui/button';
 import { formatAddress } from '@/lib/utils';
 import { CheckCircle } from 'lucide-react';
 
-interface Props {
+type Props = {
   amount: number;
   toAddress: string;
   onReset: () => void;
-}
+};
 
 export const WithdrawSuccess: React.FC<Props> = ({
   amount,

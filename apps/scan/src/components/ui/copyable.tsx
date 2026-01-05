@@ -3,12 +3,12 @@
 import React from 'react';
 import { toast } from 'sonner';
 
-interface CopyableProps {
+type CopyableProps = {
   value: string;
   children?: React.ReactNode;
   className?: string;
   toastMessage?: string;
-}
+};
 
 export const Copyable: React.FC<CopyableProps> = ({
   value,
@@ -28,7 +28,7 @@ export const Copyable: React.FC<CopyableProps> = ({
 
   return (
     <span
-      onClick={handleCopy}
+      onClick={void handleCopy}
       className={className}
       style={{ cursor: 'pointer' }}
       tabIndex={0}

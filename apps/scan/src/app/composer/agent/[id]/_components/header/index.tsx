@@ -15,11 +15,11 @@ import { HeaderButtons, LoadingHeaderButtons } from './button';
 
 import type { RouterOutputs } from '@/trpc/client';
 
-interface Props {
+type Props = {
   agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
-}
+};
 
-export const HeaderCard: React.FC<Props> = async ({ agentConfiguration }) => {
+export const HeaderCard: React.FC<Props> = ({ agentConfiguration }) => {
   return (
     <Card className={cn('relative mt-10 md:mt-12')}>
       <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">

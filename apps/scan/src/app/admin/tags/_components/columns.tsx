@@ -15,9 +15,9 @@ import type { RouterOutputs } from '@/trpc/client';
 type ColumnType =
   RouterOutputs['public']['resources']['list']['paginated']['items'][number];
 
-interface ColumnHandlers {
+type ColumnHandlers = {
   onTagsClick?: (resource: ColumnType) => void;
-}
+};
 
 export const createColumns = (
   handlers?: ColumnHandlers

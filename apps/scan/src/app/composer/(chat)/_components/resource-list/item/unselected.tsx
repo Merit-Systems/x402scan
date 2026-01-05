@@ -5,10 +5,10 @@ import { BaseResourceItem } from './base';
 import type { RouterOutputs } from '@/trpc/client';
 import type { SelectedResource } from '../../../_types/chat-config';
 
-interface Props {
+type Props = {
   resource: RouterOutputs['public']['tools']['search'][number];
   onSelectResource: (resource: SelectedResource) => void;
-}
+};
 
 export const UnselectedResourceItem: React.FC<Props> = ({
   resource,

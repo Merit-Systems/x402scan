@@ -17,7 +17,7 @@ import type { SupportedChain } from '@/types/chain';
 import type { UseMutationOptions } from '@tanstack/react-query';
 import type { X402FetchResponse } from '@/app/_hooks/x402/types';
 
-interface Props<TData = unknown> {
+type Props<TData = unknown> = {
   chain: SupportedChain;
   allRequiredFieldsFilled: boolean;
   maxAmountRequired: bigint;
@@ -26,7 +26,7 @@ interface Props<TData = unknown> {
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
   text?: string;
-}
+};
 
 export const FetchEvm: React.FC<Props> = ({
   chain,

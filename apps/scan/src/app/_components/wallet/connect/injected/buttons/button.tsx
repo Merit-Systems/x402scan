@@ -2,14 +2,14 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 
-interface Props {
+type Props = {
   className?: string;
   prefix?: string;
   icon?: string;
   name?: string;
   isPending?: boolean;
   onClick?: () => void;
-}
+};
 
 export const ConnectInjectedWalletButton: React.FC<Props> = ({
   className,

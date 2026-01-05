@@ -17,9 +17,9 @@ import { Button } from '@/components/ui/button';
 
 import { cn } from '@/lib/utils';
 
-interface Props {
+type Props = {
   setFlowId: (flowId: string) => void;
-}
+};
 
 export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
   const [email, setEmail] = useState('');
@@ -43,7 +43,7 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
     },
   });
 
-  const handleSignIn = async () => {
+  const handleSignIn = () => {
     if (!email) {
       toast.error('Email is required');
       return;
@@ -73,7 +73,7 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
         )}
       </div>
       <Button
-        onClick={handleSignIn}
+        onClick={() => handleSignIn()}
         disabled={isSigningIn || !z.email().safeParse(email).success}
         className="w-full"
         variant={'turbo'}

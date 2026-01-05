@@ -6,11 +6,11 @@ import * as AvatarPrimitive from '@radix-ui/react-avatar';
 
 import { cn } from '@/lib/utils';
 
-interface Props {
+type Props = {
   src: string | null | undefined;
   fallback?: React.ReactNode;
   className?: string;
-}
+};
 
 export const Avatar: React.FC<Props> = ({ src, fallback, className }) => {
   return (

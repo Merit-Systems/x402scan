@@ -17,11 +17,11 @@ import { toast } from 'sonner';
 type Resource =
   RouterOutputs['public']['resources']['list']['paginated']['items'][number];
 
-interface ControlMenuProps {
+type ControlMenuProps = {
   selectedResources?: Resource[];
   selectedTagIds?: string[];
   onSuccess?: () => void;
-}
+};
 
 export const ControlMenu = ({
   selectedResources = [],

@@ -1,12 +1,12 @@
 import { generateJwt } from '@coinbase/cdp-sdk/auth';
 import { logger } from '@trigger.dev/sdk/v3';
 
-interface CdpFetchRequest {
+type CdpFetchRequest = {
   requestMethod: 'GET' | 'POST' | 'PUT' | 'DELETE';
   requestPath: string;
   requestHost?: string;
   expiresIn?: number;
-}
+};
 
 const DEFAULT_HOST = 'api.cdp.coinbase.com';
 

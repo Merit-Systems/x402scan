@@ -14,7 +14,7 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-export default async function MarketplacePage() {
+export default function MarketplacePage() {
   return (
     <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
       <Heading

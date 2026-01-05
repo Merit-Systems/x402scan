@@ -6,10 +6,10 @@ import type { Chain } from '@/types/chain';
 import type { AcceptsNetwork } from '@x402scan/scan-db/types';
 import type { Prisma } from '@x402scan/scan-db';
 
-interface GetAcceptsAddressesInput {
+type GetAcceptsAddressesInput = {
   chain?: Chain;
   tags?: string[];
-}
+};
 
 export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
   const { chain, tags } = input;
@@ -100,6 +100,6 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
         }
         return acc;
       },
-      {} as Record<string, Array<OriginWithMetrics>>
+      {} as Record<string, OriginWithMetrics[]>
     );
 };

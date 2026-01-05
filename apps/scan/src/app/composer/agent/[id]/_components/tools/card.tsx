@@ -14,11 +14,11 @@ import { formatTokenAmount } from '@/lib/token';
 import type { RouterOutputs } from '@/trpc/client';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface Props {
+type Props = {
   resource: NonNullable<
     RouterOutputs['public']['agents']['get']
   >['resources'][number];
-}
+};
 
 export const ToolCard: React.FC<Props> = ({ resource }) => {
   return (

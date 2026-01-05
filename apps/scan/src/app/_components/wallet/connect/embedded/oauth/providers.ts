@@ -1,11 +1,11 @@
 import type { OAuth2ProviderType } from '@coinbase/cdp-hooks';
 
-interface OauthProvider {
+type OauthProvider = {
   id: OAuth2ProviderType;
   name: string;
   icon: string;
   iconClassName: string;
-}
+};
 
 export const oauthProviders: OauthProvider[] = [
   {

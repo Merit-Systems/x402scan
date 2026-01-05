@@ -21,9 +21,9 @@ type ResourceToolCallData = {
   total_tool_calls: number;
 };
 
-interface ResourceToolCallsSummaryProps {
+type ResourceToolCallsSummaryProps = {
   selectedTagIds: string[];
-}
+};
 
 export const ResourceToolCallsSummary = ({
   selectedTagIds,

@@ -8,10 +8,10 @@ import type { NewAgentForm } from './types';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 
-interface Props {
+type Props = {
   form: NewAgentForm;
   onNext: () => void;
-}
+};
 
 export const ToolsStep: React.FC<Props> = ({ form, onNext }) => {
   return (

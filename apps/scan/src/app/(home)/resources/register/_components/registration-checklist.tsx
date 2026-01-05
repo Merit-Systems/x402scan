@@ -15,19 +15,19 @@ type RegistrationChecklistProps = {
   hasOriginMetadata: boolean;
 };
 
+const Icon = ({ success }: { success: boolean }) =>
+  success ? (
+    <CheckCircle className="size-4 text-green-600" />
+  ) : (
+    <XCircle className="size-4 text-red-600" />
+  );
+
 export function RegistrationChecklist({
   methodUsed,
   hasAccepts,
   hasEnhancedSchema,
   hasOriginMetadata,
 }: RegistrationChecklistProps) {
-  const Icon = ({ success }: { success: boolean }) =>
-    success ? (
-      <CheckCircle className="size-4 text-green-600" />
-    ) : (
-      <XCircle className="size-4 text-red-600" />
-    );
-
   return (
     <div className="rounded-md border overflow-hidden">
       <Table>

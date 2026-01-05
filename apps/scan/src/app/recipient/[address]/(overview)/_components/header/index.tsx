@@ -15,9 +15,9 @@ import { api } from '@/trpc/server';
 import { Address } from '@/components/ui/address';
 import { HeaderButtons, LoadingHeaderButtons } from './buttons';
 
-interface Props {
+type Props = {
   address: string;
-}
+};
 
 export const HeaderCard: React.FC<Props> = async ({ address }) => {
   const origins = await api.public.origins.list.origins({

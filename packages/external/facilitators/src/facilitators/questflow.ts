@@ -7,16 +7,16 @@ import type {
   FacilitatorConfigConstructor,
 } from '../types';
 
-interface QuestflowProps {
+type QuestflowProps = {
   apiKey: string;
-}
+};
 
 export const questflow: FacilitatorConfigConstructor<QuestflowProps> = ({
   apiKey,
 }) => ({
   url: 'https://facilitator.questflow.ai',
-  createAuthHeaders: async () => {
-    return {
+  createAuthHeaders: () => {
+    return Promise.resolve({
       verify: {
         Authorization: `Bearer ${apiKey}`,
       },
@@ -26,7 +26,7 @@ export const questflow: FacilitatorConfigConstructor<QuestflowProps> = ({
       supported: {
         Authorization: `Bearer ${apiKey}`,
       },
-    };
+    });
   },
 });
 

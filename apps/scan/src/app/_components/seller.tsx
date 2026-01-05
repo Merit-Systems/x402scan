@@ -13,11 +13,11 @@ import { cn } from '@/lib/utils';
 
 import type { MixedAddress } from '@/types/address';
 
-interface Props {
+type Props = {
   address: MixedAddress;
   disableCopy?: boolean;
   addressClassName?: string;
-}
+};
 
 export const Seller: React.FC<Props> = ({
   address,

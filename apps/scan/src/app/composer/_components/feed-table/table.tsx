@@ -6,9 +6,9 @@ import { columns } from './columns';
 import { api } from '@/trpc/client';
 import { useState } from 'react';
 
-interface Props {
+type Props = {
   limit?: number;
-}
+};
 
 export const FeedTableContent = ({ limit = 10 }: Props) => {
   const [page, setPage] = useState(0);

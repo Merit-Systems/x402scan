@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/context-menu';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 
-interface EditTagModalProps {
+type EditTagModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resourceId: string;
@@ -30,7 +30,7 @@ interface EditTagModalProps {
   pagination: PaginatedQueryParams;
   selectedTagIds: string[];
   setSelectedTagIds: (tagIds: string[]) => void;
-}
+};
 
 export function EditTagModal({
   open,

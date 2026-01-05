@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   typedRoutes: true,
   async rewrites() {
-    return [
+    return Promise.resolve([
       {
         source: '/ingest/static/:path*',
         destination: 'https://us-assets.i.posthog.com/static/:path*',
@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
         source: '/ingest/:path*',
         destination: 'https://us.i.posthog.com/:path*',
       },
-    ];
+    ]);
   },
   images: {
     remotePatterns: [

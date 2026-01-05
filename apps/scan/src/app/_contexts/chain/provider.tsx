@@ -11,9 +11,9 @@ import {
   setDataChainCookieClient,
 } from './cookies/client';
 
-interface Props {
+type Props = {
   children: React.ReactNode;
-}
+};
 
 export const ChainProvider: React.FC<Props> = ({ children }) => {
   const searchParams = useSearchParams();

@@ -4,11 +4,11 @@ import type { Tag } from '@x402scan/scan-db/types';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-interface Props {
+type Props = {
   tags: Tag[];
   className?: string;
   badgeClassName?: string;
-}
+};
 
 export const Tags: React.FC<Props> = ({ tags, className, badgeClassName }) => {
   return (

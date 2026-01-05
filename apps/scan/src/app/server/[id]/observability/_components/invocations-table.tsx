@@ -22,9 +22,9 @@ import { api } from '@/trpc/client';
 import { useObservabilityDataParams } from './use-observability-data';
 import { Fragment } from 'react';
 
-interface Props {
+type Props = {
   resourceUrl: string;
-}
+};
 
 export const InvocationsTable: React.FC<Props> = ({ resourceUrl }) => {
   const [currentPage, setCurrentPage] = useState(1);

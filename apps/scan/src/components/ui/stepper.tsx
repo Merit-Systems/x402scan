@@ -4,22 +4,22 @@ import { Progress } from '@/components/ui/progress';
 
 import { cn } from '@/lib/utils';
 
-export interface StepType {
+export type StepType = {
   icon: React.ReactNode;
   title?: string;
   className?: string;
   completedClassName?: string;
   activeClassName?: string;
-}
+};
 
-interface Props {
+type Props = {
   steps: StepType[];
   currentStep: number;
   setCurrentStep?: (step: number) => void;
   stepClassName?: string;
   completedStepClassName?: string;
   activeStepClassName?: string;
-}
+};
 
 export const Stepper: React.FC<Props> = ({
   steps,
@@ -79,14 +79,14 @@ export const Stepper: React.FC<Props> = ({
   );
 };
 
-interface StepProps extends StepType {
+type StepProps = {
   isActive: boolean;
   isCompleted: boolean;
   className?: string;
   completedClassName?: string;
   activeClassName?: string;
   onClick?: () => void;
-}
+} & StepType;
 
 const Step: React.FC<StepProps> = ({
   title,

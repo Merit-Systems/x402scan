@@ -11,9 +11,9 @@ import { solanaWalletCookies } from './cookies';
 import type { ReactNode } from 'react';
 import type { ConnectedSolanaWallet } from './context';
 
-interface Props {
+type Props = {
   children: ReactNode;
-}
+};
 
 export function SolanaWalletProvider({ children }: Props) {
   const { ready, wallet: cdpWallet } = useCdpSolanaStandardWallet();
@@ -48,6 +48,7 @@ export function SolanaWalletProvider({ children }: Props) {
           wallet.accounts[0]?.address === cdpWallet.accounts[0]?.address
       );
       if (wallet) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setConnectedWallet({
           account: wallet.accounts[0]!,
           wallet: wallet,
@@ -74,6 +75,7 @@ export function SolanaWalletProvider({ children }: Props) {
       );
 
       if (matchingAccount) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setConnectedWallet({
           account: matchingAccount,
           wallet: matchingWallet,

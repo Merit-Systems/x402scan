@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
 
-interface Props {
+type Props = {
   title: string;
   children: React.ReactNode;
   className?: string;
-}
+};
 
 export const OriginOverviewSection: React.FC<Props> = ({
   title,

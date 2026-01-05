@@ -6,9 +6,9 @@ import { CACHE_DURATION_MINUTES } from './cache-constants';
 /**
  * Cache context that can be passed from tRPC to control cache behavior
  */
-interface CacheContext {
+type CacheContext = {
   isWarmingCache?: boolean;
-}
+};
 
 /**
  * Redis TTL is 3x the cache duration to provide buffer time.
