@@ -36,14 +36,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
     cell: ({ row }) => {
-      const healthMetrics = row.original.origins?.[0]?.originMetrics?.[0];
       return (
         <div className="flex items-center gap-2">
           <Origins
             origins={row.original.origins}
             addresses={row.original.recipients}
             disableCopy
-            healthMetrics={healthMetrics}
           />
         </div>
       );
