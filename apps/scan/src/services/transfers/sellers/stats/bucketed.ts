@@ -36,6 +36,13 @@ const getBucketedSellerStatisticsUncached = async (
     Math.floor(timeRangeMs / numBuckets / 1000)
   );
 
+  // Build recipient filter for the seller_first_transactions CTE
+  // This is critical for performance when querying bazaar stats with 1000+ addresses
+  const recipientFilter =
+    input.recipients?.include && input.recipients.include.length > 0
+      ? Prisma.sql`WHERE recipient = ANY(${input.recipients.include})`
+      : Prisma.empty;
+
   const sql = Prisma.sql`
     WITH all_buckets AS (
       SELECT generate_series(
@@ -51,6 +58,7 @@ const getBucketedSellerStatisticsUncached = async (
         recipient,
         MIN(block_timestamp) AS first_transaction_date
       FROM "TransferEvent"
+      ${recipientFilter}
       GROUP BY recipient
     ),
     bucket_stats AS (

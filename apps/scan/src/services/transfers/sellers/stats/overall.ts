@@ -13,12 +13,21 @@ const getOverallSellerStatisticsUncached = async (
   input: z.infer<typeof sellerStatisticsInputSchema>
 ) => {
   const { startDate, endDate } = getTimeRangeFromTimeframe(input.timeframe);
+
+  // Build recipient filter for the seller_first_transactions CTE
+  // This is critical for performance when querying bazaar stats with 1000+ addresses
+  const recipientFilter =
+    input.recipients?.include && input.recipients.include.length > 0
+      ? Prisma.sql`WHERE recipient = ANY(${input.recipients.include})`
+      : Prisma.empty;
+
   const sql = Prisma.sql`
     WITH seller_first_transactions AS (
       SELECT 
         recipient,
         MIN(block_timestamp) AS first_transaction_date
       FROM "TransferEvent"
+      ${recipientFilter}
       GROUP BY recipient
     ),
     filtered_transfers AS (
