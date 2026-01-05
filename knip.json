@@ -8,7 +8,12 @@
         "src/app/**/route.{js,jsx,ts,tsx}"
       ],
       "project": ["src/**/*.{ts,tsx}", "*.{ts,tsx,js,mjs}"],
-      "ignoreDependencies": ["postcss", "redis", "tailwindcss", "tw-animate-css"],
+      "ignoreDependencies": [
+        "postcss",
+        "redis",
+        "tailwindcss",
+        "tw-animate-css"
+      ],
       "ignore": ["src/scripts/**", "src/components/ui/charts/chart/**"]
     },
     "apps/proxy": {},
