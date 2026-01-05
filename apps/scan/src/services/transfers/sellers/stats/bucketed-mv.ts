@@ -8,14 +8,14 @@ import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 export const bucketedSellerStatisticsMVInputSchema = baseBucketedQuerySchema;
 
-const bucketedSellerResultSchema = z.array(
+// Raw schema for SQL query (without new_sellers)
+const bucketedSellerRawSchema = z.array(
   z.object({
     bucket_start: z.date(),
     total_sellers: z.number(),
     total_transactions: z.number(),
     total_amount: z.number(),
     unique_buyers: z.number(),
-    new_sellers: z.number(),
   })
 );
 
@@ -67,19 +67,13 @@ const getBucketedSellerStatisticsMVUncached = async (
     ORDER BY bucket
   `;
 
-  const rawResult = await queryRaw(sql, bucketedSellerResultSchema);
+  const rawResult = await queryRaw(sql, bucketedSellerRawSchema);
 
-  const transformedResult = rawResult.map(row => ({
+  // Add new_sellers: 0 for backwards compatibility (MVs don't track first transaction dates)
+  return rawResult.map(row => ({
     ...row,
-    total_amount:
-      typeof row.total_amount === 'number'
-        ? row.total_amount
-        : Number(row.total_amount),
-    // Add new_sellers as 0 for backwards compatibility (MVs don't track first transaction dates)
     new_sellers: 0,
   }));
-
-  return bucketedSellerResultSchema.parse(transformedResult);
 };
 
 export const getBucketedSellerStatisticsMV = createCachedArrayQuery({
