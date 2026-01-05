@@ -1,6 +1,7 @@
 import { scanDb } from '@x402scan/scan-db';
 
 import { mixedAddressSchema } from '@/lib/schemas';
+import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 
 import type { Chain } from '@/types/chain';
 import type { AcceptsNetwork, ResourceOrigin } from '@x402scan/scan-db';
@@ -10,7 +11,7 @@ interface GetAcceptsAddressesInput {
   tags?: string[];
 }
 
-export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
+const getAcceptsAddressesUncached = async (input: GetAcceptsAddressesInput) => {
   const { chain, tags } = input;
   const accepts = await scanDb.accepts.findMany({
     include: {
@@ -58,3 +59,16 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
       {} as Record<string, Array<ResourceOrigin>>
     );
 };
+
+/**
+ * Get accepts addresses grouped by origin (cached)
+ * This is used to determine which addresses are "bazaar" sellers
+ */
+export const getAcceptsAddresses = createCachedQuery({
+  queryFn: getAcceptsAddressesUncached,
+  cacheKeyPrefix: 'accepts:addresses',
+  createCacheKey: input =>
+    createStandardCacheKey(input as Record<string, unknown>),
+  dateFields: [],
+  tags: ['accepts', 'bazaar'],
+});
