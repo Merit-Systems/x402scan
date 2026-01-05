@@ -14,23 +14,10 @@ const getOverallSellerStatisticsUncached = async (
 ) => {
   const { startDate, endDate } = getTimeRangeFromTimeframe(input.timeframe);
 
-  // Build recipient filter for the seller_first_transactions CTE
-  // This is critical for performance when querying bazaar stats with 1000+ addresses
-  const recipientFilter =
-    input.recipients?.include && input.recipients.include.length > 0
-      ? Prisma.sql`WHERE recipient = ANY(${input.recipients.include})`
-      : Prisma.empty;
-
+  // Use the recipient_first_transaction materialized view for fast lookups
+  // This avoids scanning all hypertable chunks to compute MIN(block_timestamp)
   const sql = Prisma.sql`
-    WITH seller_first_transactions AS (
-      SELECT 
-        recipient,
-        MIN(block_timestamp) AS first_transaction_date
-      FROM "TransferEvent"
-      ${recipientFilter}
-      GROUP BY recipient
-    ),
-    filtered_transfers AS (
+    WITH filtered_transfers AS (
       SELECT DISTINCT t.recipient
       FROM "TransferEvent" t
       ${transfersWhereClause(input)}
@@ -38,12 +25,12 @@ const getOverallSellerStatisticsUncached = async (
     SELECT 
       COUNT(DISTINCT ft.recipient)::int AS total_sellers,
       COUNT(DISTINCT CASE 
-        WHEN sft.first_transaction_date >= ${startDate ?? Prisma.sql`'1970-01-01'::timestamp`}
-         AND sft.first_transaction_date <= ${endDate ?? Prisma.sql`NOW()`}
+        WHEN rft.first_transaction_date >= ${startDate ?? Prisma.sql`'1970-01-01'::timestamp`}
+         AND rft.first_transaction_date <= ${endDate ?? Prisma.sql`NOW()`}
         THEN ft.recipient 
       END)::int AS new_sellers
     FROM filtered_transfers ft
-    LEFT JOIN seller_first_transactions sft ON ft.recipient = sft.recipient
+    LEFT JOIN recipient_first_transaction rft ON ft.recipient = rft.recipient
   `;
 
   const result = await queryRaw(
