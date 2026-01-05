@@ -4,41 +4,37 @@ import {
   publicProcedure,
 } from '../../trpc';
 import {
-  listTopSellers,
-  listTopSellersInputSchema,
-} from '@/services/transfers/sellers/list';
+  listTopSellersMV,
+  listTopSellersMVInputSchema,
+} from '@/services/transfers/sellers/list-mv';
 
 import { listBazaarOrigins } from '@/services/db/bazaar/origins';
 import { listBazaarOriginsInputSchema } from '@/services/db/bazaar/schema';
-import {
-  getOverallSellerStatistics,
-  sellerStatisticsInputSchema,
-} from '@/services/transfers/sellers/stats/overall';
-import {
-  bucketedSellerStatisticsInputSchema,
-  getBucketedSellerStatistics,
-} from '@/services/transfers/sellers/stats/bucketed';
+import { sellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/overall-mv';
+import { bucketedSellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/bucketed-mv';
 import { getAcceptsAddresses } from '@/services/db/resources/accepts';
 import { mixedAddressSchema } from '@/lib/schemas';
+import { getOverallSellerStatisticsMV } from '@/services/transfers/sellers/stats/overall-mv';
+import { getBucketedSellerStatisticsMV } from '@/services/transfers/sellers/stats/bucketed-mv';
 
 export const sellersRouter = createTRPCRouter({
   all: {
     list: paginatedProcedure
-      .input(listTopSellersInputSchema)
+      .input(listTopSellersMVInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
-        return await listTopSellers(input, pagination);
+        return await listTopSellersMV(input, pagination);
       }),
     stats: {
       overall: publicProcedure
-        .input(sellerStatisticsInputSchema)
-        .query(async ({ input }) => {
-          return await getOverallSellerStatistics(input);
+        .input(sellerStatisticsMVInputSchema)
+        .query(async ({ input, ctx }) => {
+          return await getOverallSellerStatisticsMV(input, ctx);
         }),
 
       bucketed: publicProcedure
-        .input(bucketedSellerStatisticsInputSchema)
-        .query(async ({ input }) => {
-          return await getBucketedSellerStatistics(input);
+        .input(bucketedSellerStatisticsMVInputSchema)
+        .query(async ({ input, ctx }) => {
+          return await getBucketedSellerStatisticsMV(input, ctx);
         }),
     },
   },
@@ -51,37 +47,43 @@ export const sellersRouter = createTRPCRouter({
       }),
     stats: {
       overall: publicProcedure
-        .input(sellerStatisticsInputSchema)
-        .query(async ({ input }) => {
+        .input(sellerStatisticsMVInputSchema)
+        .query(async ({ input, ctx }) => {
           const originsByAddress = await getAcceptsAddresses({
             chain: input.chain,
           });
-          return await getOverallSellerStatistics({
-            ...input,
-            recipients: {
-              include: Object.keys(originsByAddress)
-                .map(addr => mixedAddressSchema.safeParse(addr))
-                .filter(result => result.success)
-                .map(result => result.data),
+          return await getOverallSellerStatisticsMV(
+            {
+              ...input,
+              recipients: {
+                include: Object.keys(originsByAddress)
+                  .map(addr => mixedAddressSchema.safeParse(addr))
+                  .filter(result => result.success)
+                  .map(result => result.data),
+              },
             },
-          });
+            ctx
+          );
         }),
 
       bucketed: publicProcedure
-        .input(bucketedSellerStatisticsInputSchema)
-        .query(async ({ input }) => {
+        .input(bucketedSellerStatisticsMVInputSchema)
+        .query(async ({ input, ctx }) => {
           const originsByAddress = await getAcceptsAddresses({
             chain: input.chain,
           });
-          return await getBucketedSellerStatistics({
-            ...input,
-            recipients: {
-              include: Object.keys(originsByAddress)
-                .map(addr => mixedAddressSchema.safeParse(addr))
-                .filter(result => result.success)
-                .map(result => result.data),
+          return await getBucketedSellerStatisticsMV(
+            {
+              ...input,
+              recipients: {
+                include: Object.keys(originsByAddress)
+                  .map(addr => mixedAddressSchema.safeParse(addr))
+                  .filter(result => result.success)
+                  .map(result => result.data),
+              },
             },
-          });
+            ctx
+          );
         }),
     },
   },

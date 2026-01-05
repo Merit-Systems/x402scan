@@ -89,14 +89,14 @@ function getHomePageTasks(
   return [
     // Overall Stats - current period
     () =>
-      api.public.stats.overallMV({
+      api.public.stats.overall({
         timeframe,
         chain,
       }),
 
     // Bucketed Statistics - for charts
     () =>
-      api.public.stats.bucketedMV({
+      api.public.stats.bucketed({
         timeframe,
         numBuckets: 48,
         chain,
