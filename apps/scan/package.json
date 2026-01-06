@@ -33,6 +33,7 @@
     "@modelcontextprotocol/sdk": "^1.25.1",
     "@octokit/rest": "^22.0.0",
     "@openrouter/ai-sdk-provider": "^1.2.2",
+    "@permi/ts": "^0.0.1",
     "@prisma/client": "catalog:prisma",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
