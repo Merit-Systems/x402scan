@@ -33,6 +33,8 @@ export const env = createEnv({
     ANALYTICS_CLICKHOUSE_DATABASE: z.string().optional(),
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
+    PERMI_APP_URL: z.url(),
+    PERMI_CLIENT_ID: z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
