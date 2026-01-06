@@ -23,7 +23,7 @@ interface Props {
 export const LatestTransactions: React.FC<Props> = async ({
   facilitatorId,
 }) => {
-  const pageSize = 10;
+  const pageSize = 15;
 
   void api.public.transfers.list.prefetch({
     pagination: {

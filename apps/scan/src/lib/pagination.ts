@@ -36,3 +36,34 @@ export type PaginatedResponse<T> = {
   total_pages: number;
   page: number;
 };
+
+/**
+ * "Peek ahead" pagination - no COUNT query needed!
+ * Expects items to include page_size + 1 items if there's a next page.
+ * Returns page_size items and determines hasNextPage from the extra item.
+ */
+interface ToPeekAheadResponseParams<T> {
+  /** Items fetched with LIMIT page_size + 1 */
+  items: T[];
+  page: number;
+  page_size: number;
+}
+
+export const toPeekAheadResponse = <T>({
+  items,
+  page,
+  page_size,
+}: ToPeekAheadResponseParams<T>): PeekAheadResponse<T> => {
+  const hasNextPage = items.length > page_size;
+  return {
+    items: items.slice(0, page_size),
+    hasNextPage,
+    page,
+  };
+};
+
+export type PeekAheadResponse<T> = {
+  items: T[];
+  hasNextPage: boolean;
+  page: number;
+};
