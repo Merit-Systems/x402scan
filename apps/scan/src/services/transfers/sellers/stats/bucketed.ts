@@ -36,6 +36,8 @@ const getBucketedSellerStatisticsUncached = async (
     Math.floor(timeRangeMs / numBuckets / 1000)
   );
 
+  // Use the recipient_first_transaction materialized view for fast lookups
+  // This avoids scanning all hypertable chunks to compute MIN(block_timestamp)
   const sql = Prisma.sql`
     WITH all_buckets AS (
       SELECT generate_series(
@@ -46,13 +48,6 @@ const getBucketedSellerStatisticsUncached = async (
         (${bucketSizeSeconds} || ' seconds')::interval
       ) AS bucket_start
     ),
-    seller_first_transactions AS (
-      SELECT 
-        recipient,
-        MIN(block_timestamp) AS first_transaction_date
-      FROM "TransferEvent"
-      GROUP BY recipient
-    ),
     bucket_stats AS (
       SELECT 
         to_timestamp(
@@ -61,14 +56,14 @@ const getBucketedSellerStatisticsUncached = async (
         COUNT(DISTINCT t.recipient)::int AS total_sellers,
         COUNT(DISTINCT CASE 
           WHEN to_timestamp(
-            floor(extract(epoch from sft.first_transaction_date) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
+            floor(extract(epoch from rft.first_transaction_date) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
           ) = to_timestamp(
             floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
           )
           THEN t.recipient 
         END)::int AS new_sellers
       FROM "TransferEvent" t
-      LEFT JOIN seller_first_transactions sft ON t.recipient = sft.recipient
+      LEFT JOIN recipient_first_transaction rft ON t.recipient = rft.recipient
       ${transfersWhereClause(input)}
       GROUP BY bucket_start
     )
