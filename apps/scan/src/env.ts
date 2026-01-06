@@ -25,6 +25,7 @@ export const env = createEnv({
     TRANSFERS_DB_URL_REPLICA_4: z.url().optional(),
     TRANSFERS_DB_URL_REPLICA_5: z.url().optional(),
     REDIS_URL: z.string().optional(),
+    REDIS_DISABLE: z.boolean().optional().default(false),
     ECHO_APP_ID: z.string().default('7fed205e-3aa5-44af-83a3-f7ae5e49dba4'),
     ECHO_PROXY_URL: z.url().optional(),
     ANALYTICS_CLICKHOUSE_URL: z.string().url().optional(),
