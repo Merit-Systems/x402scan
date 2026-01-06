@@ -19,6 +19,13 @@ export const RangeSelector = () => {
     value => typeof value === 'number'
   ) as ActivityTimeframe[];
 
+  const timeframeNames = {
+    [ActivityTimeframe.OneDay]: 'Past 24 Hours',
+    [ActivityTimeframe.SevenDays]: 'Past 7 Days',
+    [ActivityTimeframe.FifteenDays]: 'Past 15 Days',
+    [ActivityTimeframe.ThirtyDays]: 'Past 30 Days',
+  };
+
   return (
     <Select
       value={timeframe.toString()}
@@ -28,18 +35,12 @@ export const RangeSelector = () => {
     >
       <SelectTrigger className="border shadow-xs dark:border-input">
         <CalendarDays />
-        <span>
-          {timeframe === ActivityTimeframe.OneDay
-            ? 'Past 24 Hours'
-            : `Past ${timeframe} Days`}
-        </span>
+        <span>{timeframeNames[timeframe]}</span>
       </SelectTrigger>
       <SelectContent align="end">
         {timeframeValues.map(value => (
           <SelectItem key={value} value={value.toString()}>
-            {value === ActivityTimeframe.OneDay
-              ? 'Past 24 Hours'
-              : `Past ${value} Days`}
+            {timeframeNames[value]}
           </SelectItem>
         ))}
       </SelectContent>

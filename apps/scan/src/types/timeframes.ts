@@ -4,3 +4,6 @@ export enum ActivityTimeframe {
   FifteenDays = 14,
   ThirtyDays = 30,
 }
+
+/** Use sparingly - only for explicit "all time" queries where supported */
+export const ALL_TIME_TIMEFRAME = 0;

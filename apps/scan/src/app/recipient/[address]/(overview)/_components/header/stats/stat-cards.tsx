@@ -30,6 +30,7 @@ export const StatsCards: React.FC<Props> = async ({ address }) => {
     recipients: {
       include: [address],
     },
+    // TODO: Change to AllTime once 0d migrations are deployed
     timeframe: ActivityTimeframe.ThirtyDays,
   });
 

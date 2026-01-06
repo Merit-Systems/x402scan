@@ -12,6 +12,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { BotOff } from 'lucide-react';
+import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
 
 interface Props {
   originId: string;
@@ -20,6 +21,7 @@ interface Props {
 export const OriginAgents: React.FC<Props> = async ({ originId }) => {
   const agents = await api.public.agents.list({
     originId,
+    timeframe: ALL_TIME_TIMEFRAME,
     pagination: {
       page: 0,
       page_size: 6,
