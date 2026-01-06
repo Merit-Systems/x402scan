@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="23.209mm"
+   height="23.209mm"
+   viewBox="0 0 23.209 23.209"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="k.svg"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   inkscape:export-filename="kobaru-website/public/icon-dark-32x32.png"
+   inkscape:export-xdpi="35.02"
+   inkscape:export-ydpi="35.02"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="5.7245586"
+     inkscape:cx="154.68442"
+     inkscape:cy="44.632262"
+     inkscape:window-width="2752"
+     inkscape:window-height="1074"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1"
+     inkscape:export-bgcolor="#ffffff00">
+    <inkscape:page
+       x="0"
+       y="0"
+       width="23.209"
+       height="23.209"
+       id="page2"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <rect
+     style="fill:#000000;stroke-width:0.264583"
+     id="rect1"
+     width="25.374226"
+     height="24.35741"
+     x="-0.78572285"
+     y="-0.5546279" />
+  <path
+     style="font-weight:600;font-size:31.75px;font-family:Geom;-inkscape-font-specification:'Geom Semi-Bold';fill:#7ccf00;stroke-width:0.264583"
+     d="M 4.2333335,23.20925 V 0 h 4.3180004 v 13.04925 l 5.2387521,-6.096 h 5.11175 l -6.477001,7.08025 6.699251,9.17575 h -4.92125 L 8.5513339,15.3035 v 7.90575 z"
+     id="text1"
+     aria-label="k" />
+</svg>
