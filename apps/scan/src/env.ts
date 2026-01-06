@@ -57,6 +57,9 @@ export const env = createEnv({
     NEXT_PUBLIC_ENABLE_COMPOSER: z.string().optional().default('true'),
     NEXT_PUBLIC_SOLANA_RPC_URL: z.url().optional(),
     NEXT_PUBLIC_BASE_RPC_URL: z.url().optional(),
+    NEXT_PUBLIC_VERCEL_ENV: z
+      .enum(['development', 'preview', 'production'])
+      .optional(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL:
@@ -75,6 +78,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ENABLE_COMPOSER: process.env.NEXT_PUBLIC_ENABLE_COMPOSER,
     NEXT_PUBLIC_SOLANA_RPC_URL: process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
     NEXT_PUBLIC_BASE_RPC_URL: process.env.NEXT_PUBLIC_BASE_RPC_URL,
+    NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV,
   },
   emptyStringAsUndefined: true,
 });
