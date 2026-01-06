@@ -107,7 +107,11 @@ async function withRedisCache<T>(
 ): Promise<T> {
   const redis = getRedisClient();
   if (!redis) {
-    throw new Error('Redis client not available');
+    // Fallback: execute query directly without caching
+    console.log(
+      `[Cache] NO REDIS: Executing query directly for ${fullCacheKey}`
+    );
+    return await queryFn();
   }
 
   const lockKey = `${fullCacheKey}:lock`;
@@ -191,11 +195,6 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
     const cacheKey = config.createCacheKey(...args);
     const fullCacheKey = `${config.cacheKeyPrefix}:${cacheKey}`;
     const ttl = config.revalidate ?? CACHE_TTL_SECONDS;
-
-    const redis = getRedisClient();
-    if (!redis) {
-      throw new Error('Redis client not available');
-    }
 
     return await withRedisCache(
       fullCacheKey,
