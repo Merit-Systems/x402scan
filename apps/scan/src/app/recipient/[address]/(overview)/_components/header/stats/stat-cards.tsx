@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import type { LucideIcon } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 interface Props {
   address: string;
@@ -29,6 +30,7 @@ export const StatsCards: React.FC<Props> = async ({ address }) => {
     recipients: {
       include: [address],
     },
+    timeframe: ActivityTimeframe.ThirtyDays,
   });
 
   const values = [
