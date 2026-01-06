@@ -27,8 +27,8 @@ const getBucketedStatisticsMVUncached = async (
 
   // Use recipient-specific materialized view when filtering by recipients
   const hasRecipientFilter =
-    (recipients?.include && recipients.include.length > 0) ||
-    (recipients?.exclude && recipients.exclude.length > 0);
+    (recipients?.include?.length ?? 0) > 0 ||
+    (recipients?.exclude?.length ?? 0) > 0;
 
   const tableName = hasRecipientFilter
     ? `recipient_stats_bucketed_${mvTimeframe}`
