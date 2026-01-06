@@ -23,7 +23,7 @@ interface Props {
 export const LatestTransactions: React.FC<Props> = async ({
   facilitatorId,
 }) => {
-  const pageSize = 15;
+  const pageSize = 10;
 
   void api.public.transfers.list.prefetch({
     pagination: {
@@ -38,7 +38,11 @@ export const LatestTransactions: React.FC<Props> = async ({
     <HydrateClient>
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
         <LatestTransactionsTableContainer>
-          <Suspense fallback={<LoadingLatestTransactionsTable />}>
+          <Suspense
+            fallback={
+              <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
+            }
+          >
             <LatestTransactionsTable
               facilitatorId={facilitatorId}
               pageSize={pageSize}
@@ -50,17 +54,30 @@ export const LatestTransactions: React.FC<Props> = async ({
   );
 };
 
-export const LoadingLatestTransactions = () => {
+export const LoadingLatestTransactions = ({
+  loadingRowCount,
+}: {
+  loadingRowCount: number;
+}) => {
   return (
     <LatestTransactionsTableContainer>
-      <LoadingLatestTransactionsTable />
+      <LoadingLatestTransactionsTable loadingRowCount={loadingRowCount} />
     </LatestTransactionsTableContainer>
   );
 };
 
-const LoadingLatestTransactionsTable = () => {
+const LoadingLatestTransactionsTable = ({
+  loadingRowCount,
+}: {
+  loadingRowCount: number;
+}) => {
   return (
-    <DataTable columns={columns} data={[]} loadingRowCount={10} isLoading />
+    <DataTable
+      columns={columns}
+      data={[]}
+      loadingRowCount={loadingRowCount}
+      isLoading
+    />
   );
 };
 

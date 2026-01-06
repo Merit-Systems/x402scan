@@ -7,7 +7,7 @@ export default function LoadingTransactionsPage() {
     <div>
       <Heading
         title="Transactions"
-        description="All x402 transactions through the Coinbase facilitator"
+        description="All x402 transactions through facilitators we track"
       />
       <Body>
         <LoadingLatestTransactionsTable loadingRowCount={15} />

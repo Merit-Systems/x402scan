@@ -5,11 +5,12 @@ import { LoadingActivity } from './_components/activity';
 import { LoadingLatestTransactions } from './_components/transactions';
 
 export default async function LoadingFacilitatorPage() {
+  const pageSize = 10;
   return (
     <Body className="gap-0 pt-0">
       <LoadingHeaderCard />
       <LoadingActivity />
-      <LoadingLatestTransactions />
+      <LoadingLatestTransactions loadingRowCount={pageSize} />
     </Body>
   );
 }
