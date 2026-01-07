@@ -21,12 +21,10 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
 export const registerResource = async (url: string, data: unknown) => {
-  // Strip the query params from the incoming URL
   const urlObj = new URL(url);
   urlObj.search = '';
   const cleanUrl = urlObj.toString();
 
-  // parse the x402 response to see if it fits the x402 schema
   const baseX402ParsedResponse = x402ResponseSchema
     .omit({
       error: true,
@@ -67,7 +65,7 @@ export const registerResource = async (url: string, data: unknown) => {
         .optional(),
     })
     .safeParse(data);
-  // if it doesn't fit the x402 schema, return an error
+
   if (!baseX402ParsedResponse.success) {
     console.error(baseX402ParsedResponse.error.issues);
     return {
@@ -82,7 +80,6 @@ export const registerResource = async (url: string, data: unknown) => {
     };
   }
 
-  // scrape the origin data
   const origin = getOriginFromUrl(cleanUrl);
   const {
     og,
@@ -90,7 +87,6 @@ export const registerResource = async (url: string, data: unknown) => {
     origin: scrapedOrigin,
   } = await scrapeOriginData(origin);
 
-  // upsert the origin data
   await upsertOrigin({
     origin: origin,
     title: metadata?.title ?? og?.ogTitle,
@@ -108,20 +104,18 @@ export const registerResource = async (url: string, data: unknown) => {
       })) ?? [],
   });
 
-  // Parse the enhanced response to get resourceInfo for v2
   const parsedResponse = parseX402Response(data);
   const resourceInfo =
     parsedResponse.success && isV2Response(parsedResponse.data)
       ? parsedResponse.data.resourceInfo
       : undefined;
 
-  // Normalize accepts to common format, handling both v1 and v2
+  // NOTE(shafu): normalize accepts for both v1 and v2
   const normalizedAccepts =
     baseX402ParsedResponse.data.accepts?.map(accept =>
       normalizePaymentRequirement(accept, resourceInfo)
     ) ?? [];
 
-  // upsert the resource
   const resource = await upsertResource({
     resource: cleanUrl,
     type: 'http',
@@ -142,7 +136,6 @@ export const registerResource = async (url: string, data: unknown) => {
       })),
   });
 
-  // if the resource fails to upsert, return an error
   if (!resource) {
     return {
       success: false as const,
@@ -154,7 +147,6 @@ export const registerResource = async (url: string, data: unknown) => {
     };
   }
 
-  // parse the response to see if it fits the enhanced x402 schema for allowing invocations
   let enhancedParseWarnings: string[] | null = null;
   if (parsedResponse.success) {
     await upsertResourceResponse(resource.resource.id, parsedResponse.data);
