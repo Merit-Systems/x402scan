@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import type { LucideIcon } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
 
 interface Props {
   address: string;
@@ -30,8 +30,7 @@ export const StatsCards: React.FC<Props> = async ({ address }) => {
     recipients: {
       include: [address],
     },
-    // TODO: Change to AllTime once 0d migrations are deployed
-    timeframe: ActivityTimeframe.ThirtyDays,
+    timeframe: ALL_TIME_TIMEFRAME,
   });
 
   const values = [

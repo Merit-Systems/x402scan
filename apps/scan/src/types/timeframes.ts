@@ -1,4 +1,5 @@
 export enum ActivityTimeframe {
+  AllTime = 0,
   OneDay = 1,
   SevenDays = 7,
   FifteenDays = 14,
@@ -6,4 +7,4 @@ export enum ActivityTimeframe {
 }
 
 /** Use sparingly - only for explicit "all time" queries where supported */
-export const ALL_TIME_TIMEFRAME = 0;
+export const ALL_TIME_TIMEFRAME = ActivityTimeframe.AllTime;

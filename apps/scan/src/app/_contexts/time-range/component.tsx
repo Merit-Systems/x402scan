@@ -14,12 +14,17 @@ import { CalendarDays } from 'lucide-react';
 export const RangeSelector = () => {
   const { selectTimeframe, timeframe } = useTimeRangeContext();
 
-  // Get only the numeric enum values
-  const timeframeValues = Object.values(ActivityTimeframe).filter(
-    value => typeof value === 'number'
-  ) as ActivityTimeframe[];
+  // Define ordered timeframe options (All Time at the end)
+  const timeframeValues = [
+    ActivityTimeframe.OneDay,
+    ActivityTimeframe.SevenDays,
+    ActivityTimeframe.FifteenDays,
+    ActivityTimeframe.ThirtyDays,
+    ActivityTimeframe.AllTime,
+  ];
 
   const timeframeNames = {
+    [ActivityTimeframe.AllTime]: 'All Time',
     [ActivityTimeframe.OneDay]: 'Past 24 Hours',
     [ActivityTimeframe.SevenDays]: 'Past 7 Days',
     [ActivityTimeframe.FifteenDays]: 'Past 15 Days',
