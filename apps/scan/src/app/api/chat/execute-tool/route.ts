@@ -11,11 +11,7 @@ import { getChat, updateChat } from '@/services/db/composer/chat';
 import { auth } from '@/auth';
 
 import { messageSchema } from '@/lib/message-schema';
-import {
-  fetchWithProxy,
-  paymentRequirementsSchemaV1,
-  outputSchemaV1,
-} from '@/lib/x402';
+import { fetchWithProxy, normalizedAcceptSchema } from '@/lib/x402';
 import { supportedChainSchema } from '@/lib/schemas';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
@@ -141,14 +137,10 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const parsedAccept = paymentRequirementsSchemaV1
-    .extend({
-      outputSchema: outputSchemaV1,
-    })
-    .safeParse({
-      ...accept,
-      maxAmountRequired: accept.maxAmountRequired.toString(),
-    });
+  const parsedAccept = normalizedAcceptSchema.safeParse({
+    ...accept,
+    maxAmountRequired: accept.maxAmountRequired.toString(),
+  });
   if (!parsedAccept.success) {
     return NextResponse.json(
       {
@@ -158,7 +150,17 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const method = parsedAccept.data.outputSchema.input.method.toUpperCase();
+  const outputSchema = parsedAccept.data.outputSchema;
+  if (!outputSchema) {
+    return NextResponse.json(
+      {
+        error: 'Resource does not have an output schema for execution',
+      },
+      { status: 400 }
+    );
+  }
+
+  const method = outputSchema.input.method.toUpperCase();
 
   let url = resource.resource;
 

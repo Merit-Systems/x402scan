@@ -7,6 +7,7 @@ export { fetchWithProxy } from './proxy-fetch';
 import {
   parseV1,
   paymentRequirementsSchemaV1,
+  outputSchemaV1,
   type X402ResponseV1,
   type PaymentRequirementsV1,
   type OutputSchemaV1,
@@ -22,6 +23,27 @@ import {
 export type OutputSchema = OutputSchemaV1 | OutputSchemaV2;
 export type InputSchema = OutputSchema['input'];
 import { normalizeChainId } from './v2/normalize';
+
+/**
+ * NOTE(shafu): we need this because we want to store the accept in
+ * the database in a common format for v1 and v2.
+ */
+export const normalizedAcceptSchema = z3.object({
+  scheme: z3.literal('exact'),
+  network: z3.string(),
+  maxAmountRequired: z3.string(),
+  payTo: z3.string(),
+  asset: z3.string(),
+  maxTimeoutSeconds: z3.number(),
+  extra: z3.record(z3.string(), z3.any()).optional(),
+  resource: z3.string().optional(),
+  description: z3.string().optional(),
+  mimeType: z3.string().optional(),
+  // NOTE(shafu): use V1 outputSchema since it's the same structure
+  outputSchema: outputSchemaV1.optional(),
+});
+
+export type NormalizedAccept = z3.infer<typeof normalizedAcceptSchema>;
 
 export const paymentRequirementsSchema = z3.union([
   paymentRequirementsSchemaV1,
