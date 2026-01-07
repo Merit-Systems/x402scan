@@ -104,7 +104,9 @@ describe('parseV1 with normalized schemas', () => {
       const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema).toBeDefined();
       expect(inputSchema?.bodyFields?.prompt).toEqual({ type: 'string' });
-      expect(inputSchema?.bodyFields?.walletAddress).toEqual({ type: 'string' });
+      expect(inputSchema?.bodyFields?.walletAddress).toEqual({
+        type: 'string',
+      });
       expect(inputSchema?.bodyType).toBe('json');
     }
   });

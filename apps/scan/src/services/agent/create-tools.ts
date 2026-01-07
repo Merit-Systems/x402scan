@@ -23,12 +23,14 @@ export async function createX402AITools(
   for (const resource of resources) {
     if (resource.accepts) {
       for (const accept of resource.accepts) {
-        const parsedAccept = paymentRequirementsSchemaV1.extend({
-          outputSchema: outputSchemaV1,
-        }).safeParse({
-          ...accept,
-          maxAmountRequired: accept.maxAmountRequired.toString(),
-        });
+        const parsedAccept = paymentRequirementsSchemaV1
+          .extend({
+            outputSchema: outputSchemaV1,
+          })
+          .safeParse({
+            ...accept,
+            maxAmountRequired: accept.maxAmountRequired.toString(),
+          });
         if (!parsedAccept.success) {
           continue;
         }

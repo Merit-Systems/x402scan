@@ -30,7 +30,13 @@ import {
   type parseX402Response,
   type ParsedX402Response,
 } from '@/lib/x402';
-import { CheckCircle, ChevronDown, HelpCircle, Minus, XCircle } from 'lucide-react';
+import {
+  CheckCircle,
+  ChevronDown,
+  HelpCircle,
+  Minus,
+  XCircle,
+} from 'lucide-react';
 
 type TestResult = {
   ok: boolean;

@@ -12,7 +12,9 @@ export function parseV1(data: unknown): ParseResult<X402ResponseV1> {
   if (!result.success) {
     return {
       success: false,
-      errors: result.error.issues.map(issue => issue.message),
+      errors: result.error.issues.map(
+        issue => `${issue.path.join('.')}: ${issue.message}`
+      ),
     };
   }
   return { success: true, data: result.data };

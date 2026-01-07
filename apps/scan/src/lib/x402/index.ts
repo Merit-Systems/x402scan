@@ -36,7 +36,7 @@ function isV2PaymentRequirement(
 }
 
 /**
- * NOTE(shafu): we do this because we want to store the payment requirements 
+ * NOTE(shafu): we do this because we want to store the payment requirements
  * in the database in a common format.
  * maps v2's 'amount' to 'maxAmountRequired' and normalizes chain IDs.
  * NOT GREAT
@@ -137,7 +137,9 @@ export function isV2Response(
  * V1: description is in accepts[].description
  * V2: description is in resourceInfo.description
  */
-export function getDescription(response: ParsedX402Response): string | undefined {
+export function getDescription(
+  response: ParsedX402Response
+): string | undefined {
   if (response.x402Version === 2) {
     return response.resourceInfo?.description;
   }
@@ -152,5 +154,7 @@ export function getDescription(response: ParsedX402Response): string | undefined
 export function getMaxAmount(response: ParsedX402Response): string | undefined {
   const firstAccept = response.accepts?.[0];
   if (!firstAccept) return undefined;
-  return 'amount' in firstAccept ? firstAccept.amount : firstAccept.maxAmountRequired;
+  return 'amount' in firstAccept
+    ? firstAccept.amount
+    : firstAccept.maxAmountRequired;
 }

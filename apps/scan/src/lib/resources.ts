@@ -99,14 +99,16 @@ export const registerResource = async (url: string, data: unknown) => {
 
   // Parse the enhanced response to get resourceInfo for v2
   const parsedResponse = parseX402Response(data);
-  const resourceInfo = parsedResponse.success && isV2Response(parsedResponse.data)
-    ? parsedResponse.data.resourceInfo
-    : undefined;
+  const resourceInfo =
+    parsedResponse.success && isV2Response(parsedResponse.data)
+      ? parsedResponse.data.resourceInfo
+      : undefined;
 
   // Normalize accepts to common format, handling both v1 and v2
-  const normalizedAccepts = baseX402ParsedResponse.data.accepts?.map(accept =>
-    normalizePaymentRequirement(accept, resourceInfo)
-  ) ?? [];
+  const normalizedAccepts =
+    baseX402ParsedResponse.data.accepts?.map(accept =>
+      normalizePaymentRequirement(accept, resourceInfo)
+    ) ?? [];
 
   // upsert the resource
   const resource = await upsertResource({

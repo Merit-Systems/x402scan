@@ -141,12 +141,14 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const parsedAccept = paymentRequirementsSchemaV1.extend({
-    outputSchema: outputSchemaV1,
-  }).safeParse({
-    ...accept,
-    maxAmountRequired: accept.maxAmountRequired.toString(),
-  });
+  const parsedAccept = paymentRequirementsSchemaV1
+    .extend({
+      outputSchema: outputSchemaV1,
+    })
+    .safeParse({
+      ...accept,
+      maxAmountRequired: accept.maxAmountRequired.toString(),
+    });
   if (!parsedAccept.success) {
     return NextResponse.json(
       {

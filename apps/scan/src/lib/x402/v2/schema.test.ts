@@ -24,7 +24,11 @@ const v2Responses = {
           type: 'http',
           method: 'GET' as const,
           queryParams: {
-            query: { type: 'string', description: 'Search query', required: true },
+            query: {
+              type: 'string',
+              description: 'Search query',
+              required: true,
+            },
           },
         },
         output: {
@@ -55,7 +59,11 @@ const v2Responses = {
           method: 'POST' as const,
           bodyType: 'json' as const,
           bodyFields: {
-            message: { type: 'string', description: 'User message', required: true },
+            message: {
+              type: 'string',
+              description: 'User message',
+              required: true,
+            },
             context: { type: 'object', description: 'Optional context' },
           },
         },
@@ -147,10 +155,14 @@ describe('parseV2', () => {
       expect(result.data.accepts).toHaveLength(1);
       expect(result.data.accepts?.[0]?.amount).toBe('10000');
       expect(result.data.accepts?.[0]?.network).toBe('eip155:8453');
-      expect(result.data.resourceInfo?.resource).toBe('https://api.example.com/endpoint');
+      expect(result.data.resourceInfo?.resource).toBe(
+        'https://api.example.com/endpoint'
+      );
       expect(result.data.resourceInfo?.description).toBe('A test API endpoint');
       expect(result.data.resourceInfo?.outputSchema?.input.method).toBe('GET');
-      expect(result.data.resourceInfo?.outputSchema?.input.queryParams?.query).toBeDefined();
+      expect(
+        result.data.resourceInfo?.outputSchema?.input.queryParams?.query
+      ).toBeDefined();
     }
   });
 
@@ -160,8 +172,12 @@ describe('parseV2', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.resourceInfo?.outputSchema?.input.method).toBe('POST');
-      expect(result.data.resourceInfo?.outputSchema?.input.bodyType).toBe('json');
-      expect(result.data.resourceInfo?.outputSchema?.input.bodyFields?.message).toBeDefined();
+      expect(result.data.resourceInfo?.outputSchema?.input.bodyType).toBe(
+        'json'
+      );
+      expect(
+        result.data.resourceInfo?.outputSchema?.input.bodyFields?.message
+      ).toBeDefined();
       expect(result.data.resourceInfo?.outputSchema?.output?.id).toBeDefined();
     }
   });
@@ -358,7 +374,8 @@ describe('V2 schema validation edge cases', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const bodyFields = result.data.resourceInfo?.outputSchema?.input.bodyFields;
+      const bodyFields =
+        result.data.resourceInfo?.outputSchema?.input.bodyFields;
       expect(bodyFields?.data).toBeDefined();
     }
   });
@@ -404,7 +421,8 @@ describe('V2 schema validation edge cases', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const bodyFields = result.data.resourceInfo?.outputSchema?.input.bodyFields;
+      const bodyFields =
+        result.data.resourceInfo?.outputSchema?.input.bodyFields;
       expect(bodyFields?.messages).toBeDefined();
     }
   });

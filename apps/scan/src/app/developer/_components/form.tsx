@@ -402,7 +402,9 @@ export const TestEndpointForm = () => {
                             tags={[]}
                             response={entry.data}
                             bazaarMethod={
-                              (getOutputSchema(entry.data)?.input.method?.toUpperCase?.() as Methods) ??
+                              (getOutputSchema(
+                                entry.data
+                              )?.input.method?.toUpperCase?.() as Methods) ??
                               entry.method
                             }
                             hideOrigin

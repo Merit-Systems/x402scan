@@ -1,10 +1,7 @@
 import z3 from 'zod3';
 
 import { searchResources } from '../db/resources/resource';
-import {
-  paymentRequirementsSchemaV1,
-  outputSchemaV1,
-} from '@/lib/x402';
+import { paymentRequirementsSchemaV1, outputSchemaV1 } from '@/lib/x402';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
