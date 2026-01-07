@@ -3,7 +3,11 @@ import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
-import { parseX402Response, getOutputSchema } from '@/lib/x402';
+import {
+  parseX402Response,
+  getOutputSchema,
+  extractX402Data,
+} from '@/lib/x402';
 import { scrapeOriginData } from '@/services/scraper';
 
 export const developerRouter = createTRPCRouter({
@@ -66,32 +70,11 @@ export const developerRouter = createTRPCRouter({
         redirect: 'follow',
       });
 
-      const text = await response.text();
-      let body: unknown = null;
-      try {
-        body = text ? JSON.parse(text) : null;
-      } catch {
-        body = text;
-      }
-
       const hdrs: Record<string, string> = {};
       response.headers.forEach((v, k) => (hdrs[k] = v));
 
-      // Try to extract x402 data from Payment-Required header first, then body
-      let x402Data: unknown = body;
-      const paymentRequiredHeader = response.headers.get('Payment-Required');
-      if (paymentRequiredHeader) {
-        try {
-          const decoded = Buffer.from(paymentRequiredHeader, 'base64').toString(
-            'utf-8'
-          );
-          x402Data = JSON.parse(decoded);
-        } catch {
-          // Fall back to body if header parsing fails
-        }
-      }
+      const x402Data = await extractX402Data(response);
 
-      // Use x402Data for the result body so UI displays it correctly
       const result = {
         ok: response.ok,
         status: response.status,

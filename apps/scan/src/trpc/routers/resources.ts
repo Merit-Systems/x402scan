@@ -20,6 +20,7 @@ import {
   parseX402Response,
   normalizePaymentRequirement,
   isV2Response,
+  extractX402Data,
   type PaymentRequirements,
 } from '@/lib/x402';
 import { formatTokenAmount } from '@/lib/token';
@@ -87,23 +88,7 @@ export const resourcesRouter = createTRPCRouter({
           continue;
         }
 
-        // Try to extract x402 data from Payment-Required header first, then body
-        let data: unknown;
-        const paymentRequiredHeader = response.headers.get('Payment-Required');
-        if (paymentRequiredHeader) {
-          try {
-            const decoded = Buffer.from(
-              paymentRequiredHeader,
-              'base64'
-            ).toString('utf-8');
-            data = JSON.parse(decoded);
-          } catch {
-            // Fall back to body if header parsing fails
-            data = (await response.json()) as unknown;
-          }
-        } else {
-          data = (await response.json()) as unknown;
-        }
+        const data = await extractX402Data(response);
 
         const baseX402ParsedResponse = x402ResponseSchema
           .omit({

@@ -172,9 +172,7 @@ describe('parseV2', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.resource?.outputSchema?.input.method).toBe('POST');
-      expect(result.data.resource?.outputSchema?.input.bodyType).toBe(
-        'json'
-      );
+      expect(result.data.resource?.outputSchema?.input.bodyType).toBe('json');
       expect(
         result.data.resource?.outputSchema?.input.bodyFields?.message
       ).toBeDefined();
@@ -374,8 +372,7 @@ describe('V2 schema validation edge cases', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const bodyFields =
-        result.data.resource?.outputSchema?.input.bodyFields;
+      const bodyFields = result.data.resource?.outputSchema?.input.bodyFields;
       expect(bodyFields?.data).toBeDefined();
     }
   });
@@ -421,8 +418,7 @@ describe('V2 schema validation edge cases', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const bodyFields =
-        result.data.resource?.outputSchema?.input.bodyFields;
+      const bodyFields = result.data.resource?.outputSchema?.input.bodyFields;
       expect(bodyFields?.messages).toBeDefined();
     }
   });

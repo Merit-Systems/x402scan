@@ -187,3 +187,27 @@ export function getMaxAmount(response: ParsedX402Response): string | undefined {
     ? firstAccept.amount
     : firstAccept.maxAmountRequired;
 }
+
+export async function extractX402Data(response: Response): Promise<unknown> {
+  // v2 - check header first
+  const paymentRequiredHeader = response.headers.get('Payment-Required');
+  if (paymentRequiredHeader) {
+    try {
+      const decoded = Buffer.from(paymentRequiredHeader, 'base64').toString(
+        'utf-8'
+      );
+      return JSON.parse(decoded);
+    } catch {
+      // fall through to body parsing if header decoding fails
+    }
+  }
+
+  // v1 fallback
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
