@@ -32,7 +32,7 @@ export interface NormalizedX402Response {
   error?: string;
   payer?: string;
   accepts?: NormalizedAccept[];
-  resourceInof?: NormalizedResourceInfo;
+  resourceInfo?: NormalizedResourceInfo;
 }
 
 export type ParseResult<T> =

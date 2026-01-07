@@ -26,7 +26,7 @@ const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
   )
 );
 
-export const ouputSchemaV1 = z3.object({
+export const outputSchemaV1 = z3.object({
   input: HTTPRequestStructureSchema.omit({
     queryParams: true,
     bodyFields: true,
@@ -65,7 +65,7 @@ const networkSchemaV1 = z3.union([
 
 export const paymentRequirementsSchemaV1 = PaymentRequirementsSchema.extend({
   network: networkSchemaV1,
-  outputSchema: ouputSchemaV1.optional(),
+  outputSchema: outputSchemaV1.optional(),
 });
 
 export const x402ResponseSchemaV1 = x402ResponseSchema
