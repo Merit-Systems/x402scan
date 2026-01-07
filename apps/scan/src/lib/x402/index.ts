@@ -1,14 +1,10 @@
 import { z as z3 } from 'zod3';
 
-// Re-export version-specific modules
 export * from './v1';
 export * from './v2';
-
-// Re-export utilities
 export { wrapFetchWithPayment } from './wrap-fetch';
 export { fetchWithProxy } from './proxy-fetch';
 
-// Import for unified parser
 import {
   parseV1,
   paymentRequirementsSchemaV1,
@@ -24,11 +20,9 @@ import {
   type OutputSchemaV2,
 } from './v2';
 
-// Union type for output schemas (v1 and v2)
 export type OutputSchema = OutputSchemaV1 | OutputSchemaV2;
 import { normalizeChainId } from './v2/normalize';
 
-// Union schema that accepts either v1 or v2 payment requirements
 export const paymentRequirementsSchema = z3.union([
   paymentRequirementsSchemaV1,
   paymentRequirementsSchemaV2,
@@ -36,9 +30,6 @@ export const paymentRequirementsSchema = z3.union([
 
 export type PaymentRequirements = PaymentRequirementsV1 | PaymentRequirementsV2;
 
-/**
- * Check if a payment requirement is v2 format (has 'amount' instead of 'maxAmountRequired')
- */
 export function isV2PaymentRequirement(
   accept: PaymentRequirements
 ): accept is PaymentRequirementsV2 {
@@ -46,8 +37,10 @@ export function isV2PaymentRequirement(
 }
 
 /**
- * Normalize a payment requirement to common format for storage.
- * Maps v2's 'amount' to 'maxAmountRequired' and normalizes chain IDs.
+ * NOTE(shafu): we do this because we want to store the payment requirements 
+ * in the database in a common format.
+ * maps v2's 'amount' to 'maxAmountRequired' and normalizes chain IDs.
+ * NOT GREAT
  */
 export function normalizePaymentRequirement(
   accept: PaymentRequirements,
@@ -60,7 +53,7 @@ export function normalizePaymentRequirement(
   asset: string;
   maxTimeoutSeconds: number;
   extra?: Record<string, unknown>;
-  // These come from accept in v1, from resourceInfo in v2
+  // these come from accept in v1, from resourceInfo in v2
   resource?: string;
   description?: string;
   mimeType?: string;
@@ -99,14 +92,12 @@ export function normalizePaymentRequirement(
   };
 }
 
-// Union type - discriminated by x402Version field
 export type ParsedX402Response = X402ResponseV1 | X402ResponseV2;
 
 export type ParseResult<T> =
   | { success: true; data: T }
   | { success: false; errors: string[] };
 
-// Unified parser - returns union type
 export function parseX402Response(
   data: unknown
 ): ParseResult<ParsedX402Response> {
@@ -124,11 +115,8 @@ function detectVersion(data: unknown): 1 | 2 {
   return 1;
 }
 
-// ==================== Helper Functions ====================
-// Version-agnostic accessors for common fields
-
 /**
- * Get the output schema from a parsed x402 response.
+ * NOTE(shafu): get the output schema from a parsed x402 response
  * V1: schema is in accepts[0].outputSchema
  * V2: schema is in resourceInfo.outputSchema
  */
@@ -140,7 +128,7 @@ export function getOutputSchema(response: ParsedX402Response) {
 }
 
 /**
- * Get resource info from a parsed x402 response.
+ * NOTE(shafu): get resource info from a parsed x402 response.
  * V1: resource info is embedded in each accepts[] entry
  * V2: resource info is at top level
  */
@@ -160,7 +148,7 @@ export function getResourceInfo(response: ParsedX402Response) {
 }
 
 /**
- * Get the amount from a payment requirement.
+ * NOTE(shafu): get the amount from a payment requirement.
  * V1: uses maxAmountRequired
  * V2: uses amount
  */
@@ -170,18 +158,12 @@ export function getAmount(
   return 'amount' in accept ? accept.amount : accept.maxAmountRequired;
 }
 
-/**
- * Check if a response is V2
- */
 export function isV2Response(
   response: ParsedX402Response
 ): response is X402ResponseV2 {
   return response.x402Version === 2;
 }
 
-/**
- * Check if a response is V1
- */
 export function isV1Response(
   response: ParsedX402Response
 ): response is X402ResponseV1 {
@@ -189,7 +171,7 @@ export function isV1Response(
 }
 
 /**
- * Get description from a parsed x402 response.
+ * NOTE(shafu): get description from a parsed x402 response.
  * V1: description is in accepts[].description
  * V2: description is in resourceInfo.description
  */
@@ -201,7 +183,7 @@ export function getDescription(response: ParsedX402Response): string | undefined
 }
 
 /**
- * Get the max amount required from a payment requirement (normalized to string).
+ * NOTE(shafu): get the max amount required from a payment requirement (normalized to string).
  * V1: uses maxAmountRequired
  * V2: uses amount
  */
