@@ -99,7 +99,7 @@ const getOverallStatisticsMVUncached = async (
       total_amount: 0,
       unique_buyers: 0,
       unique_sellers: 0,
-      latest_block_timestamp: new Date(),
+      latest_block_timestamp: null,
     }
   );
 };

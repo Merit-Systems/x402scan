@@ -144,7 +144,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="size-4 mx-auto" />,
   },
   {
-    accessorKey: 'facilitators',
+    accessorKey: 'facilitator_ids',
     header: () => (
       <HeaderCell Icon={Server} label="Facilitator" className="mx-auto" />
     ),
