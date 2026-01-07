@@ -18,7 +18,7 @@ export default async function FacilitatorsPage() {
         <Card className="overflow-hidden">
           <LoadingFacilitatorsChart />
         </Card>
-        <LoadingFacilitatorsTable />
+        <LoadingFacilitatorsTable pageSize={10} />
       </Body>
     </div>
   );
