@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseX402Response } from '../';
+import { parseX402Response, getOutputSchema, isV1Response } from '../';
 
 // Raw bodies from the test data file
 const rawBodies = [
@@ -59,7 +59,7 @@ describe('parseX402Response with normalized schemas', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
+      const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema).toBeDefined();
       expect(inputSchema?.queryParams?.feed_categories).toBeDefined();
       expect(inputSchema?.bodyFields).toBeUndefined();
@@ -84,7 +84,7 @@ describe('parseX402Response with normalized schemas', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
+      const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema).toBeDefined();
       expect(inputSchema?.bodyFields?.prompt).toBeDefined();
       expect(inputSchema?.bodyType).toBe('json');
@@ -97,11 +97,12 @@ describe('parseX402Response with normalized schemas', () => {
     const result = parseX402Response(response);
 
     expect(result.success).toBe(true);
-    if (result.success && result.data.accepts?.[0]?.outputSchema?.input) {
-      const inputSchema = result.data.accepts[0].outputSchema.input;
-      expect(inputSchema.bodyFields?.prompt).toEqual({ type: 'string' });
-      expect(inputSchema.bodyFields?.walletAddress).toEqual({ type: 'string' });
-      expect(inputSchema.bodyType).toBe('json');
+    if (result.success) {
+      const inputSchema = getOutputSchema(result.data)?.input;
+      expect(inputSchema).toBeDefined();
+      expect(inputSchema?.bodyFields?.prompt).toEqual({ type: 'string' });
+      expect(inputSchema?.bodyFields?.walletAddress).toEqual({ type: 'string' });
+      expect(inputSchema?.bodyType).toBe('json');
     }
   });
 
@@ -111,7 +112,7 @@ describe('parseX402Response with normalized schemas', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
+      const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema?.queryParams).toBeUndefined();
       expect(inputSchema?.bodyFields).toBeUndefined();
     }
@@ -123,8 +124,8 @@ describe('parseX402Response with normalized schemas', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
-      expect(inputSchema).toBeUndefined();
+      const outputSchema = getOutputSchema(result.data);
+      expect(outputSchema).toBeUndefined();
     }
   });
 
@@ -193,12 +194,13 @@ describe('parseX402Response with normalized schemas', () => {
     const result = parseX402Response(mixedResponse);
 
     expect(result.success).toBe(true);
-    if (result.success && result.data.accepts?.[0]?.outputSchema?.input) {
-      const inputSchema = result.data.accepts[0].outputSchema.input;
-      expect(inputSchema.queryParams?.test).toEqual({ type: 'value' });
-      expect(inputSchema.bodyFields?.body).toEqual({ type: 'test' });
-      expect(inputSchema.bodyType).toBe('json');
-      expect(inputSchema.headerFields?.auth).toEqual({ type: 'bearer' });
+    if (result.success) {
+      const inputSchema = getOutputSchema(result.data)?.input;
+      expect(inputSchema).toBeDefined();
+      expect(inputSchema?.queryParams?.test).toEqual({ type: 'value' });
+      expect(inputSchema?.bodyFields?.body).toEqual({ type: 'test' });
+      expect(inputSchema?.bodyType).toBe('json');
+      expect(inputSchema?.headerFields?.auth).toEqual({ type: 'bearer' });
     }
   });
 
@@ -208,8 +210,9 @@ describe('parseX402Response with normalized schemas', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
-      const outputSchema = result.data.accepts?.[0]?.outputSchema?.output;
+      const schema = getOutputSchema(result.data);
+      const inputSchema = schema?.input;
+      const outputSchema = schema?.output;
 
       // Verify input schema structure
       expect(inputSchema).toBeDefined();
@@ -308,10 +311,11 @@ describe('schema validation edge cases', () => {
     const result = parseX402Response(minimalResponse);
 
     expect(result.success).toBe(true);
-    if (result.success && result.data.accepts?.[0]?.outputSchema?.input) {
-      const inputSchema = result.data.accepts[0].outputSchema.input;
-      expect(inputSchema.queryParams).toBeUndefined();
-      expect(inputSchema.bodyFields).toBeUndefined();
+    if (result.success) {
+      const inputSchema = getOutputSchema(result.data)?.input;
+      expect(inputSchema).toBeDefined();
+      expect(inputSchema?.queryParams).toBeUndefined();
+      expect(inputSchema?.bodyFields).toBeUndefined();
     }
   });
 
