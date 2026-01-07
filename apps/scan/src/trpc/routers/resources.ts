@@ -134,14 +134,13 @@ export const resourcesRouter = createTRPCRouter({
             })) ?? [],
         });
 
-        // Parse enhanced response to get resourceInfo for v2
         const parsedResponse = parseX402Response(data);
         const resourceInfo =
           parsedResponse.success && isV2Response(parsedResponse.data)
             ? parsedResponse.data.resourceInfo
             : undefined;
 
-        // upsert the resource - normalize accepts for both v1 and v2
+        // NOTE(shafu): normalize accepts for both v1 and v2
         const accepts = baseX402ParsedResponse.data.accepts ?? [];
         const normalizedAccepts = accepts.map((accept: PaymentRequirements) =>
           normalizePaymentRequirement(accept, resourceInfo)
@@ -161,7 +160,6 @@ export const resourcesRouter = createTRPCRouter({
           continue;
         }
 
-        // store the response
         let enhancedParseWarnings: string[] | null = null;
         if (parsedResponse.success) {
           await upsertResourceResponse(
