@@ -29,7 +29,7 @@ export const toPaginatedResponse = <T>({
   };
 };
 
-export type PaginatedResponse<T> = {
+type PaginatedResponse<T> = {
   items: T[];
   hasNextPage: boolean;
   total_count: number;
@@ -62,7 +62,7 @@ export const toPeekAheadResponse = <T>({
   };
 };
 
-export type PeekAheadResponse<T> = {
+type PeekAheadResponse<T> = {
   items: T[];
   hasNextPage: boolean;
   page: number;
