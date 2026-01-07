@@ -27,7 +27,7 @@ export const OverallStats = async ({ chain }: Props) => {
   });
   void api.public.stats.bucketed.prefetch({
     timeframe: ActivityTimeframe.OneDay,
-    numBuckets: 32,
+    numBuckets: 48,
     chain,
   });
 
