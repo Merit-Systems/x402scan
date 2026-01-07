@@ -2,7 +2,7 @@ import { normalizeX402FieldsV1 } from './normalize';
 import type { X402ResponseV1 } from './schema';
 import { x402ResponseSchemaV1 } from './schema';
 
-export type ParseResult<T> =
+type ParseResult<T> =
   | { success: true; data: T }
   | { success: false; errors: string[] };
 

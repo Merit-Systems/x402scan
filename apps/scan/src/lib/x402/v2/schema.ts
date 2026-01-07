@@ -21,7 +21,7 @@ const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
   )
 );
 
-export const outputSchemaV2 = z3.object({
+const outputSchemaV2 = z3.object({
   input: z3.object({
     type: z3.string(),
     method: z3
@@ -37,7 +37,7 @@ export const outputSchemaV2 = z3.object({
   output: z3.record(z3.string(), z3.any()).optional().nullable(),
 });
 
-export const resourceInfoSchemaV2 = z3.object({
+const resourceInfoSchemaV2 = z3.object({
   resource: z3.string(),
   description: z3.string().optional(),
   mimeType: z3.string().optional(),
@@ -66,5 +66,4 @@ export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
 export type PaymentRequirementsV2 = z3.infer<
   typeof paymentRequirementsSchemaV2
 >;
-export type ResourceInfoV2 = z3.infer<typeof resourceInfoSchemaV2>;
 export type OutputSchemaV2 = z3.infer<typeof outputSchemaV2>;

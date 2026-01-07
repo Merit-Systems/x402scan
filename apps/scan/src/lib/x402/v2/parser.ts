@@ -1,7 +1,7 @@
 import type { X402ResponseV2 } from './schema';
 import { x402ResponseSchemaV2 } from './schema';
 
-export type ParseResult<T> =
+type ParseResult<T> =
   | { success: true; data: T }
   | { success: false; errors: string[] };
 

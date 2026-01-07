@@ -2,7 +2,6 @@ import { z as z3 } from 'zod3';
 
 export * from './v1';
 export * from './v2';
-export { wrapFetchWithPayment } from './wrap-fetch';
 export { fetchWithProxy } from './proxy-fetch';
 
 import {
@@ -30,7 +29,7 @@ export const paymentRequirementsSchema = z3.union([
 
 export type PaymentRequirements = PaymentRequirementsV1 | PaymentRequirementsV2;
 
-export function isV2PaymentRequirement(
+function isV2PaymentRequirement(
   accept: PaymentRequirements
 ): accept is PaymentRequirementsV2 {
   return 'amount' in accept;
@@ -94,7 +93,7 @@ export function normalizePaymentRequirement(
 
 export type ParsedX402Response = X402ResponseV1 | X402ResponseV2;
 
-export type ParseResult<T> =
+type ParseResult<T> =
   | { success: true; data: T }
   | { success: false; errors: string[] };
 
@@ -127,47 +126,10 @@ export function getOutputSchema(response: ParsedX402Response) {
   return response.accepts?.[0]?.outputSchema;
 }
 
-/**
- * NOTE(shafu): get resource info from a parsed x402 response.
- * V1: resource info is embedded in each accepts[] entry
- * V2: resource info is at top level
- */
-export function getResourceInfo(response: ParsedX402Response) {
-  if (response.x402Version === 2) {
-    return response.resourceInfo;
-  }
-  const firstAccept = response.accepts?.[0];
-  return firstAccept
-    ? {
-        resource: firstAccept.resource,
-        description: firstAccept.description,
-        mimeType: firstAccept.mimeType,
-        outputSchema: firstAccept.outputSchema,
-      }
-    : undefined;
-}
-
-/**
- * NOTE(shafu): get the amount from a payment requirement.
- * V1: uses maxAmountRequired
- * V2: uses amount
- */
-export function getAmount(
-  accept: PaymentRequirementsV1 | PaymentRequirementsV2
-): string {
-  return 'amount' in accept ? accept.amount : accept.maxAmountRequired;
-}
-
 export function isV2Response(
   response: ParsedX402Response
 ): response is X402ResponseV2 {
   return response.x402Version === 2;
-}
-
-export function isV1Response(
-  response: ParsedX402Response
-): response is X402ResponseV1 {
-  return response.x402Version !== 2;
 }
 
 /**
