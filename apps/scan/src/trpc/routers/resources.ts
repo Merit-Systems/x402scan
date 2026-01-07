@@ -16,10 +16,12 @@ import { upsertResourceResponse } from '@/services/db/resources/response';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 import {
-  EnhancedPaymentRequirementsSchema,
+  paymentRequirementsSchema,
   parseX402Response,
-  type EnhancedPaymentRequirements,
-} from '@/lib/x402/schema';
+  normalizePaymentRequirement,
+  isV2Response,
+  type PaymentRequirements,
+} from '@/lib/x402';
 import { formatTokenAmount } from '@/lib/token';
 import { getOriginFromUrl } from '@/lib/url';
 
@@ -93,7 +95,7 @@ export const resourcesRouter = createTRPCRouter({
           })
           .extend({
             error: z3.string().optional(),
-            accepts: z3.array(EnhancedPaymentRequirementsSchema).optional(),
+            accepts: z3.array(paymentRequirementsSchema).optional(),
           })
           .safeParse(data);
         if (!baseX402ParsedResponse.success) {
@@ -132,22 +134,28 @@ export const resourcesRouter = createTRPCRouter({
             })) ?? [],
         });
 
-        // upsert the resource
+        // Parse enhanced response to get resourceInfo for v2
+        const parsedResponse = parseX402Response(data);
+        const resourceInfo = parsedResponse.success && isV2Response(parsedResponse.data)
+          ? parsedResponse.data.resourceInfo
+          : undefined;
+
+        // upsert the resource - normalize accepts for both v1 and v2
         const accepts = baseX402ParsedResponse.data.accepts ?? [];
+        const normalizedAccepts = accepts.map((accept: PaymentRequirements) =>
+          normalizePaymentRequirement(accept, resourceInfo)
+        );
         const resource = await upsertResource({
           resource: input.url.toString(),
           type: 'http',
           x402Version: baseX402ParsedResponse.data.x402Version,
           lastUpdated: new Date(),
-          accepts: accepts.map((accept: EnhancedPaymentRequirements) => ({
+          accepts: normalizedAccepts.map(accept => ({
             ...accept,
             network: (accept.network as string).replace(
               '-',
               '_'
             ) as AcceptsNetwork,
-            maxAmountRequired: accept.maxAmountRequired,
-            outputSchema: accept.outputSchema!,
-            extra: accept.extra,
           })),
         });
 
@@ -155,9 +163,8 @@ export const resourcesRouter = createTRPCRouter({
           continue;
         }
 
-        // parse the response
+        // store the response
         let enhancedParseWarnings: string[] | null = null;
-        const parsedResponse = parseX402Response(data);
         if (parsedResponse.success) {
           await upsertResourceResponse(
             resource.resource.id,

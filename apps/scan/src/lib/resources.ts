@@ -5,9 +5,12 @@ import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
 import {
-  EnhancedPaymentRequirementsSchema,
+  paymentRequirementsSchema,
   parseX402Response,
-} from '@/lib/x402/schema';
+  normalizePaymentRequirement,
+  isV2Response,
+  type PaymentRequirements,
+} from '@/lib/x402';
 import { getOriginFromUrl } from '@/lib/url';
 
 import { x402ResponseSchema } from 'x402/types';
@@ -15,7 +18,6 @@ import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
-import type { EnhancedPaymentRequirements } from '@/lib/x402/schema';
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
 export const registerResource = async (url: string, data: unknown) => {
@@ -35,22 +37,22 @@ export const registerResource = async (url: string, data: unknown) => {
         .array(z3.any())
         .refine(accepts => {
           return accepts.some(accept => {
-            const parsed = EnhancedPaymentRequirementsSchema.safeParse(accept);
+            // Accept both v1 and v2 payment requirements
+            const parsed = paymentRequirementsSchema.safeParse(accept);
             return parsed.success;
           });
-        }, 'Accepts must contain at least one EnhancedPaymentRequirements')
+        }, 'Accepts must contain at least one valid payment requirement')
         .transform(
           accepts =>
             accepts
               .map(accept => {
-                const parsed =
-                  EnhancedPaymentRequirementsSchema.safeParse(accept);
+                const parsed = paymentRequirementsSchema.safeParse(accept);
                 if (!parsed.success) {
                   return null;
                 }
                 return parsed.data;
               })
-              .filter(Boolean) as EnhancedPaymentRequirements[]
+              .filter(Boolean) as PaymentRequirements[]
         ),
     })
     .safeParse(data);
@@ -95,26 +97,36 @@ export const registerResource = async (url: string, data: unknown) => {
       })) ?? [],
   });
 
+  // Parse the enhanced response to get resourceInfo for v2
+  const parsedResponse = parseX402Response(data);
+  const resourceInfo = parsedResponse.success && isV2Response(parsedResponse.data)
+    ? parsedResponse.data.resourceInfo
+    : undefined;
+
+  // Normalize accepts to common format, handling both v1 and v2
+  const normalizedAccepts = baseX402ParsedResponse.data.accepts?.map(accept =>
+    normalizePaymentRequirement(accept, resourceInfo)
+  ) ?? [];
+
   // upsert the resource
   const resource = await upsertResource({
     resource: cleanUrl,
     type: 'http',
     x402Version: baseX402ParsedResponse.data.x402Version,
     lastUpdated: new Date(),
-    accepts:
-      baseX402ParsedResponse.data.accepts
-        ?.filter(accept =>
-          (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(
-            accept.network!.replace('-', '_')
-          )
+    accepts: normalizedAccepts
+      .filter(accept =>
+        (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(
+          accept.network!.replace('-', '_')
         )
-        .map(accept => ({
-          ...accept,
-          network: accept.network!.replace('-', '_') as AcceptsNetwork,
-          maxAmountRequired: accept.maxAmountRequired,
-          outputSchema: accept.outputSchema,
-          extra: accept.extra,
-        })) ?? [],
+      )
+      .map(accept => ({
+        ...accept,
+        network: accept.network!.replace('-', '_') as AcceptsNetwork,
+        maxAmountRequired: accept.maxAmountRequired,
+        outputSchema: accept.outputSchema,
+        extra: accept.extra,
+      })),
   });
 
   // if the resource fails to upsert, return an error
@@ -131,7 +143,6 @@ export const registerResource = async (url: string, data: unknown) => {
 
   // parse the response to see if it fits the enhanced x402 schema for allowing invocations
   let enhancedParseWarnings: string[] | null = null;
-  const parsedResponse = parseX402Response(data);
   if (parsedResponse.success) {
     await upsertResourceResponse(resource.resource.id, parsedResponse.data);
   } else {
@@ -148,7 +159,7 @@ export const registerResource = async (url: string, data: unknown) => {
     enhancedParseWarnings,
     response: data,
     registrationDetails: {
-      providedAccepts: baseX402ParsedResponse.data.accepts ?? [],
+      providedAccepts: normalizedAccepts,
       supportedAccepts: resource.accepts,
       unsupportedAccepts: resource.unsupportedAccepts,
       originMetadata: {

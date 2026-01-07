@@ -24,7 +24,7 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
 import type { FieldDefinition, FieldValue, Methods } from '@/types/x402';
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import type { ParsedX402Response, OutputSchema } from '@/lib/x402';
 import type { X402FetchResponse } from '@/app/_hooks/x402/types';
 import type { JsonValue } from '@/components/ai-elements/json-viewer';
 
@@ -35,11 +35,9 @@ interface PropertyDefinition {
   isRequired: boolean;
 }
 
-type Accept = NonNullable<ParsedX402Response['accepts']>[number];
-
 interface Props {
   x402Response: ParsedX402Response;
-  inputSchema: NonNullable<Accept['outputSchema']>['input'];
+  inputSchema: NonNullable<OutputSchema>['input'];
   maxAmountRequired: bigint;
   method: Methods;
   resource: string;

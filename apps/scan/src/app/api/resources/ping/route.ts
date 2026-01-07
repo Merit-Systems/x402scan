@@ -1,6 +1,6 @@
 import { listResourcesUncached } from '@/services/db/resources/resource';
 
-import { parseX402Response } from '@/lib/x402/schema';
+import { parseX402Response } from '@/lib/x402';
 import { checkCronSecret } from '@/lib/cron';
 import { NextResponse, type NextRequest } from 'next/server';
 import {

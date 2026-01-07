@@ -67,3 +67,4 @@ export type PaymentRequirementsV2 = z3.infer<
   typeof paymentRequirementsSchemaV2
 >;
 export type ResourceInfoV2 = z3.infer<typeof resourceInfoSchemaV2>;
+export type OutputSchemaV2 = z3.infer<typeof outputSchemaV2>;

@@ -11,11 +11,11 @@ import { getChat, updateChat } from '@/services/db/composer/chat';
 import { auth } from '@/auth';
 
 import { messageSchema } from '@/lib/message-schema';
-import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
 import {
-  EnhancedPaymentRequirementsSchema,
-  enhancedOutputSchema,
-} from '@/lib/x402/schema';
+  fetchWithProxy,
+  paymentRequirementsSchemaV1,
+  outputSchemaV1,
+} from '@/lib/x402';
 import { supportedChainSchema } from '@/lib/schemas';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
@@ -141,8 +141,8 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const parsedAccept = EnhancedPaymentRequirementsSchema.extend({
-    outputSchema: enhancedOutputSchema,
+  const parsedAccept = paymentRequirementsSchemaV1.extend({
+    outputSchema: outputSchemaV1,
   }).safeParse({
     ...accept,
     maxAmountRequired: accept.maxAmountRequired.toString(),

@@ -32,7 +32,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import { getOutputSchema, type ParsedX402Response } from '@/lib/x402';
 import { Methods } from '@/types/x402';
 import { Checklist } from './checklist';
 import {
@@ -402,7 +402,7 @@ export const TestEndpointForm = () => {
                             tags={[]}
                             response={entry.data}
                             bazaarMethod={
-                              (entry.data.accepts?.[0]?.outputSchema?.input.method?.toUpperCase?.() as Methods) ??
+                              (getOutputSchema(entry.data)?.input.method?.toUpperCase?.() as Methods) ??
                               entry.method
                             }
                             hideOrigin

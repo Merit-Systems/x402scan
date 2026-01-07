@@ -3,7 +3,7 @@ import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
-import { parseX402Response } from '@/lib/x402/schema';
+import { parseX402Response, getOutputSchema } from '@/lib/x402';
 import { scrapeOriginData } from '@/services/scraper';
 
 export const developerRouter = createTRPCRouter({
@@ -91,9 +91,9 @@ export const developerRouter = createTRPCRouter({
           return { hasAccepts: false, hasInputSchema: false };
         const accepts = parsed.data.accepts ?? [];
         const hasAccepts = accepts.length > 0;
-        const hasInputSchema = Boolean(
-          accepts.find(accept => accept.outputSchema)?.outputSchema?.input
-        );
+        // Use helper to get outputSchema (handles v1 and v2 differences)
+        const outputSchema = getOutputSchema(parsed.data);
+        const hasInputSchema = Boolean(outputSchema?.input);
         return { hasAccepts, hasInputSchema };
       })();
 

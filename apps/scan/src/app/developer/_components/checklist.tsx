@@ -25,7 +25,11 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Code } from '@/components/ui/code';
-import { type parseX402Response } from '@/lib/x402/schema';
+import {
+  getOutputSchema,
+  type parseX402Response,
+  type ParsedX402Response,
+} from '@/lib/x402';
 import { CheckCircle, ChevronDown, Minus, XCircle } from 'lucide-react';
 
 type TestResult = {
@@ -61,19 +65,17 @@ export function Checklist({
   const g = getPair;
   const p = postPair;
 
-  const analyze = (parsed: ReturnType<typeof parseX402Response>) => {
-    if (!parsed?.success)
-      return { hasAccepts: false, hasInput: false, hasOutput: false };
-    const acc = parsed.data.accepts ?? [];
-    const firstAcc = acc[0];
+  const analyze = (data: ParsedX402Response) => {
+    const acc = data.accepts ?? [];
+    const outputSchema = getOutputSchema(data);
     return {
       hasAccepts: acc.length > 0,
-      hasInput: Boolean(firstAcc?.outputSchema?.input),
-      hasOutput: firstAcc?.outputSchema?.output !== undefined,
+      hasInput: Boolean(outputSchema?.input),
+      hasOutput: outputSchema?.output !== undefined,
     };
   };
-  const gInfo = g?.parsed?.success ? analyze(g.parsed) : undefined;
-  const pInfo = p?.parsed?.success ? analyze(p.parsed) : undefined;
+  const gInfo = g?.parsed?.success ? analyze(g.parsed.data) : undefined;
+  const pInfo = p?.parsed?.success ? analyze(p.parsed.data) : undefined;
 
   const Icon = ({ ok, message }: { ok?: boolean; message?: string }) =>
     ok === undefined ? (
@@ -125,9 +127,9 @@ export function Checklist({
   ) => {
     if (!pair?.parsed) return undefined;
     if (pair.parsed.success === false) return joinErrors(pair.parsed.errors);
-    const acc = pair.parsed.data.accepts?.[0];
-    const hasInput = Boolean(acc?.outputSchema?.input);
-    const hasOutput = acc?.outputSchema?.output !== undefined;
+    const outputSchema = getOutputSchema(pair.parsed.data);
+    const hasInput = Boolean(outputSchema?.input);
+    const hasOutput = outputSchema?.output !== undefined;
     if (which === 'input')
       return hasInput ? undefined : 'Missing outputSchema.input';
     if (which === 'output')
