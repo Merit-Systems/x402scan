@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/card';
 import { Code } from '@/components/ui/code';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AlertTriangle } from 'lucide-react';
 
 export const OutputSchema = () => {
   return (
@@ -20,19 +21,26 @@ export const OutputSchema = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-4">
-        <Tabs defaultValue="v1">
+        <Tabs defaultValue="v2">
           <TabsList>
-            <TabsTrigger value="v1">V1 Schema</TabsTrigger>
             <TabsTrigger value="v2">V2 Schema</TabsTrigger>
+            <TabsTrigger value="v1">V1 Schema (legacy)</TabsTrigger>
           </TabsList>
-          <TabsContent value="v1" className="mt-4">
-            <div className="bg-muted rounded-md">
-              <Code value={schemaV1} lang="ts" />
-            </div>
-          </TabsContent>
           <TabsContent value="v2" className="mt-4">
             <div className="bg-muted rounded-md">
               <Code value={schemaV2} lang="ts" />
+            </div>
+          </TabsContent>
+          <TabsContent value="v1" className="mt-4 space-y-4">
+            <div className="flex items-center gap-2 p-3 rounded-md border border-destructive/50 bg-destructive/10 text-destructive text-sm">
+              <AlertTriangle className="h-4 w-4 shrink-0" />
+              <span>
+                V1 is legacy and will be deprecated. We highly recommend using
+                V2 for new resources.
+              </span>
+            </div>
+            <div className="bg-muted rounded-md">
+              <Code value={schemaV1} lang="ts" />
             </div>
           </TabsContent>
         </Tabs>
