@@ -30,7 +30,7 @@ import {
   type parseX402Response,
   type ParsedX402Response,
 } from '@/lib/x402';
-import { CheckCircle, ChevronDown, Minus, XCircle } from 'lucide-react';
+import { CheckCircle, ChevronDown, HelpCircle, Minus, XCircle } from 'lucide-react';
 
 type TestResult = {
   ok: boolean;
@@ -211,6 +211,49 @@ export function Checklist({
                   : undefined
               }
             />
+            <TableRow>
+              <TableCell className="pr-2">Version</TableCell>
+              <TableCell className="pr-2">
+                {g?.parsed?.success ? (
+                  g.parsed.data.x402Version !== undefined ? (
+                    <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-muted">
+                      v{g.parsed.data.x402Version}
+                    </span>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="size-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent sideOffset={6}>
+                        x402Version not defined
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                ) : (
+                  <Minus className="size-4 text-muted-foreground" />
+                )}
+              </TableCell>
+              <TableCell>
+                {p?.parsed?.success ? (
+                  p.parsed.data.x402Version !== undefined ? (
+                    <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-muted">
+                      v{p.parsed.data.x402Version}
+                    </span>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="size-4 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent sideOffset={6}>
+                        x402Version not defined
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                ) : (
+                  <Minus className="size-4 text-muted-foreground" />
+                )}
+              </TableCell>
+            </TableRow>
             {/* Valid schema: collapse if input/output match across GET & POST */}
             {(gInfo?.hasInput ?? undefined) ===
               (gInfo?.hasOutput ?? undefined) &&
