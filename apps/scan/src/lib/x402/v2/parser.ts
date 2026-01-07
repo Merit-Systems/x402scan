@@ -1,9 +1,7 @@
+import type { ParseResult } from '../shared';
+
 import type { X402ResponseV2 } from './schema';
 import { x402ResponseSchemaV2 } from './schema';
-
-type ParseResult<T> =
-  | { success: true; data: T }
-  | { success: false; errors: string[] };
 
 export function parseV2(data: unknown): ParseResult<X402ResponseV2> {
   const result = x402ResponseSchemaV2.safeParse(data);

@@ -3,6 +3,7 @@ import { z as z3 } from 'zod3';
 export * from './v1';
 export * from './v2';
 export { fetchWithProxy } from './proxy-fetch';
+export type { ParseResult } from './shared';
 
 import {
   parseV1,
@@ -23,6 +24,7 @@ import {
 export type OutputSchema = OutputSchemaV1 | OutputSchemaV2;
 export type InputSchema = OutputSchema['input'];
 import { normalizeChainId } from './v2/normalize';
+import type { ParseResult } from './shared';
 
 /**
  * NOTE(shafu): we need this because we want to store the accept in
@@ -113,10 +115,6 @@ export function normalizePaymentRequirement(
 }
 
 export type ParsedX402Response = X402ResponseV1 | X402ResponseV2;
-
-type ParseResult<T> =
-  | { success: true; data: T }
-  | { success: false; errors: string[] };
 
 export function parseX402Response(
   data: unknown
