@@ -20,6 +20,7 @@ import {
 } from './v2';
 
 export type OutputSchema = OutputSchemaV1 | OutputSchemaV2;
+export type InputSchema = OutputSchema['input'];
 import { normalizeChainId } from './v2/normalize';
 
 export const paymentRequirementsSchema = z3.union([
