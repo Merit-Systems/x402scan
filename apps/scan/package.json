@@ -59,7 +59,8 @@
     "@solana/transaction-messages": "^5.0.0",
     "@solana/transactions": "^5.0.0",
     "@t3-oss/env-nextjs": "^0.13.8",
-    "@tanstack/react-query": "^5.90.2",
+    "@tanstack/react-query": "^5.90.16",
+    "@tanstack/react-query-next-experimental": "^5.91.0",
     "@tanstack/react-table": "^8.21.3",
     "@trpc/client": "^11.5.1",
     "@trpc/react-query": "^11.5.1",
@@ -121,7 +122,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@tanstack/react-query-devtools": "^5.90.2",
+    "@tanstack/react-query-devtools": "^5.91.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

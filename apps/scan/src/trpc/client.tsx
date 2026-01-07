@@ -13,6 +13,7 @@ import { env } from '@/env';
 
 import type { AppRouter } from './routers';
 import { QueryClientProvider, type QueryClient } from '@tanstack/react-query';
+import { ReactQueryStreamedHydration } from '@tanstack/react-query-next-experimental';
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {
@@ -55,7 +56,9 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <api.Provider client={trpcClient} queryClient={queryClient}>
-        {props.children}
+        <ReactQueryStreamedHydration>
+          {props.children}
+        </ReactQueryStreamedHydration>
       </api.Provider>
     </QueryClientProvider>
   );
