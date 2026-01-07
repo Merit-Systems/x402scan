@@ -23,9 +23,12 @@ export const createQueryClient = () =>
       },
       dehydrate: {
         serializeData: SuperJSON.serialize,
-        // Only dehydrate successful queries - don't dehydrate pending queries
-        // as they can cause issues during client-side navigation
-        shouldDehydrateQuery: defaultShouldDehydrateQuery,
+        // Include pending queries in dehydration so that Suspense boundaries
+        // can properly resume on the client during navigation
+        // @see https://trpc.io/docs/client/tanstack-react-query/server-components
+        shouldDehydrateQuery: query =>
+          defaultShouldDehydrateQuery(query) ||
+          query.state.status === 'pending',
       },
       hydrate: {
         deserializeData: SuperJSON.deserialize,
