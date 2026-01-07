@@ -22,9 +22,9 @@ import { api, HydrateClient } from '@/trpc/server';
 
 import { getChainForPage } from '@/app/_lib/chain/page';
 
-import { facilitators } from '@/lib/facilitators';
-
 import { ActivityTimeframe } from '@/types/timeframes';
+
+const PAGE_SIZE = 10;
 
 export default async function FacilitatorsPage({
   searchParams,
@@ -42,8 +42,9 @@ export default async function FacilitatorsPage({
   });
   void api.public.facilitators.list.prefetch({
     pagination: {
-      page_size: facilitators.length,
+      page_size: PAGE_SIZE,
     },
+    sorting: defaultFacilitatorsSorting,
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });
@@ -66,8 +67,10 @@ export default async function FacilitatorsPage({
                 <FacilitatorsChart />
               </Suspense>
             </Card>
-            <Suspense fallback={<LoadingFacilitatorsTable />}>
-              <FacilitatorsTable />
+            <Suspense
+              fallback={<LoadingFacilitatorsTable pageSize={PAGE_SIZE} />}
+            >
+              <FacilitatorsTable pageSize={PAGE_SIZE} />
             </Suspense>
           </Body>
         </FacilitatorsSortingProvider>

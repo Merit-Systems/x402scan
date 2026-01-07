@@ -33,6 +33,7 @@ export default async function NetworksPage({
     chain,
   });
   void api.networks.list.prefetch({
+    sorting: defaultNetworksSorting,
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });
