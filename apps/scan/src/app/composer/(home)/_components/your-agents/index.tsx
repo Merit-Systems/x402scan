@@ -1,34 +1,36 @@
+import { Suspense } from 'react';
 import { Section } from '@/app/_components/layout/page-utils';
-import { api } from '@/trpc/server';
-import { AgentCard } from '../lib/agent-card';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { HydrateClient } from '@/trpc/server';
+import { YourAgentsContent } from './content';
+import { LoadingAgentCard } from '../lib/agent-card';
 
 interface Props {
   userId: string;
 }
 
-export const YourAgents = async ({ userId }: Props) => {
-  const yourAgents = await api.public.agents.list({
-    timeframe: ActivityTimeframe.ThirtyDays,
-    pagination: {
-      page: 0,
-      page_size: 100,
-    },
-    userId,
-  });
+export const YourAgents: React.FC<Props> = ({ userId }) => {
+  return (
+    <HydrateClient>
+      <Suspense fallback={<LoadingYourAgents />}>
+        <YourAgentsWrapper userId={userId} />
+      </Suspense>
+    </HydrateClient>
+  );
+};
 
-  if (yourAgents.items.length === 0) {
-    return null;
-  }
-
+const YourAgentsWrapper: React.FC<Props> = ({ userId }) => {
   return (
     <AgentsContainer>
-      {yourAgents.items.map(agent => (
-        <AgentCard
-          key={agent.id}
-          agentConfiguration={agent}
-          href={`/composer/agent/${agent.id}/chat`}
-        />
+      <YourAgentsContent userId={userId} />
+    </AgentsContainer>
+  );
+};
+
+const LoadingYourAgents = () => {
+  return (
+    <AgentsContainer>
+      {Array.from({ length: 4 }).map((_, index) => (
+        <LoadingAgentCard key={index} />
       ))}
     </AgentsContainer>
   );

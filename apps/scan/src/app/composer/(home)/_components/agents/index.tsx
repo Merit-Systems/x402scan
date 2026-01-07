@@ -1,33 +1,36 @@
+import { Suspense } from 'react';
 import { Section } from '@/app/_components/layout/page-utils';
-import { api } from '@/trpc/server';
-import { AgentCard, LoadingAgentCard } from '../lib/agent-card';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { LoadingAgentCard } from '../lib/agent-card';
+import { HydrateClient } from '@/trpc/server';
+import { AgentsContent } from './content';
 
-export const Agents = async () => {
-  const topAgents = await api.public.agents.list({
-    timeframe: ActivityTimeframe.OneDay,
-    pagination: {
-      page: 0,
-      page_size: 10,
-    },
-  });
-
+export const Agents = () => {
   return (
-    <AgentsContainer>
-      {topAgents.items.slice(0, 4).map(agent => (
-        <AgentCard key={agent.id} agentConfiguration={agent} />
-      ))}
-    </AgentsContainer>
+    <HydrateClient>
+      <AgentsContainer>
+        <Suspense fallback={<LoadingAgentsContent />}>
+          <AgentsContent />
+        </Suspense>
+      </AgentsContainer>
+    </HydrateClient>
   );
 };
 
 export const LoadingAgents = () => {
   return (
     <AgentsContainer>
+      <LoadingAgentsContent />
+    </AgentsContainer>
+  );
+};
+
+const LoadingAgentsContent = () => {
+  return (
+    <>
       {Array.from({ length: 4 }).map((_, index) => (
         <LoadingAgentCard key={index} />
       ))}
-    </AgentsContainer>
+    </>
   );
 };
 

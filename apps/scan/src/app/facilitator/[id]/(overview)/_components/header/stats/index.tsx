@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
-import { LoadingStatsCards, StatsCards } from './stat-cards';
+import { StatsCards } from './stat-cards';
+import { LoadingStatsCards } from './content';
 
 interface Props {
   id: string;
