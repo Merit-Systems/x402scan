@@ -43,8 +43,6 @@ export const normalizedAcceptSchema = z3.object({
   outputSchema: outputSchemaV1.optional(),
 });
 
-export type NormalizedAccept = z3.infer<typeof normalizedAcceptSchema>;
-
 export const paymentRequirementsSchema = z3.union([
   paymentRequirementsSchemaV1,
   paymentRequirementsSchemaV2,
