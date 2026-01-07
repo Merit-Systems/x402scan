@@ -8,13 +8,13 @@ export const Agents = async () => {
     timeframe: ActivityTimeframe.OneDay,
     pagination: {
       page: 0,
-      page_size: 4,
+      page_size: 10,
     },
   });
 
   return (
     <AgentsContainer>
-      {topAgents.items.map(agent => (
+      {topAgents.items.slice(0, 4).map(agent => (
         <AgentCard key={agent.id} agentConfiguration={agent} />
       ))}
     </AgentsContainer>
