@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -7,17 +6,9 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Code } from '@/components/ui/code';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export const OutputSchema = ({
-  collapsible = false,
-}: {
-  collapsible?: boolean;
-}) => {
+export const OutputSchema = () => {
   return (
     <Card className="">
       <CardHeader className="border-b">
@@ -29,69 +20,114 @@ export const OutputSchema = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-4">
-        {collapsible ? (
-          <Collapsible>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" className="px-0">
-                Show schema
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-2">
-              <div className="bg-muted rounded-md">
-                <Code value={schema} lang="ts" />
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        ) : (
-          <div className="bg-muted rounded-md">
-            <Code value={schema} lang="ts" />
-          </div>
-        )}
+        <Tabs defaultValue="v1">
+          <TabsList>
+            <TabsTrigger value="v1">V1 Schema</TabsTrigger>
+            <TabsTrigger value="v2">V2 Schema</TabsTrigger>
+          </TabsList>
+          <TabsContent value="v1" className="mt-4">
+            <div className="bg-muted rounded-md">
+              <Code value={schemaV1} lang="ts" />
+            </div>
+          </TabsContent>
+          <TabsContent value="v2" className="mt-4">
+            <div className="bg-muted rounded-md">
+              <Code value={schemaV2} lang="ts" />
+            </div>
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );
 };
 
-const schema = `type X402Response = {
-    x402Version: number,
+const schemaV1 = `type X402Response = {
+    x402Version: 1,
     error?: string,
     accepts?: Array<Accepts>,
     payer?: string
 }
-  
+
 type Accepts = {
     scheme: "exact",
-    network: "base",
-    maxAmountRequired: string,
+    network: "base" | "base-sepolia" | "solana" | ...,  // Named network
+    maxAmountRequired: string,  // V1 uses maxAmountRequired
     resource: string,
     description: string,
     mimeType: string,
     payTo: string,
     maxTimeoutSeconds: number,
     asset: string,
+    outputSchema?: OutputSchema,  // Schema is per-accept in V1
+    extra?: Record<string, any>
+}
 
-    // Optionally, schema describing the input and output expectations for the paid endpoint.
-    outputSchema?: {
-        input: {
+type OutputSchema = {
+    input: {
         type: "http",
         method: "GET" | "POST",
         bodyType?: "json" | "form-data" | "multipart-form-data" | "text" | "binary",
         queryParams?: Record<string, FieldDef>,
         bodyFields?: Record<string, FieldDef>,
         headerFields?: Record<string, FieldDef>
-        },
-        output?: Record<string, any>
     },
-
-    // Optionally, additional custom data the provider wants to include.
-    extra?: Record<string, any>
+    output?: Record<string, any>
 }
-    
+
 type FieldDef = {
     type?: string,
     required?: boolean | string[],
     description?: string,
     enum?: string[],
-    properties?: Record<string, FieldDef> // for nested objects
+    properties?: Record<string, FieldDef>,
+    items?: FieldDef
+}
+`;
+
+const schemaV2 = `type X402Response = {
+    x402Version: 2,
+    error?: string,
+    accepts?: Array<Accepts>,
+    payer?: string,
+    resourceInfo?: ResourceInfo  // V2 has resourceInfo at top level
+}
+
+type Accepts = {
+    scheme: "exact",
+    network: string,  // Chain ID format: "eip155:8453" for Base
+    amount: string,   // V2 uses "amount" instead of "maxAmountRequired"
+    payTo: string,
+    maxTimeoutSeconds: number,
+    asset: string,
+    extra?: Record<string, any>
+    // Note: No outputSchema here - it's in resourceInfo
+}
+
+type ResourceInfo = {
+    resource: string,
+    description?: string,
+    mimeType?: string,
+    outputSchema?: OutputSchema
+}
+
+type OutputSchema = {
+    input: {
+        type: "http",
+        method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD",
+        bodyType?: "json" | "form-data" | "multipart-form-data" | "text" | "binary",
+        queryParams?: Record<string, FieldDef>,
+        bodyFields?: Record<string, FieldDef>,
+        headerFields?: Record<string, FieldDef>
+    },
+    output?: Record<string, any>
+}
+
+type FieldDef = {
+    type?: string,
+    required?: boolean | string[],
+    description?: string,
+    enum?: string[],
+    properties?: Record<string, FieldDef>,
+    items?: FieldDef
 }
 `;
