@@ -72,7 +72,7 @@ export const HeaderCard: React.FC<Props> = async ({ origin }) => {
 
 export const LoadingHeaderCard = () => {
   return (
-    <Card className={cn('relative mt-10 md:mt-12 mb-12')}>
+    <Card className={cn('relative mt-10 md:mt-12')}>
       <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
         <Avatar
           src={undefined}
