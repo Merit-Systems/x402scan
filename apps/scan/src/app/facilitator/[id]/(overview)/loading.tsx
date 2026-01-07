@@ -4,13 +4,12 @@ import { LoadingHeaderCard } from './_components/header';
 import { LoadingActivity } from './_components/activity';
 import { LoadingLatestTransactions } from './_components/transactions';
 
-export default async function LoadingFacilitatorPage() {
-  const pageSize = 10;
+export default function LoadingFacilitatorPage() {
   return (
     <Body className="gap-0 pt-0">
       <LoadingHeaderCard />
       <LoadingActivity />
-      <LoadingLatestTransactions loadingRowCount={pageSize} />
+      <LoadingLatestTransactions loadingRowCount={10} />
     </Body>
   );
 }
