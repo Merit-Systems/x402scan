@@ -232,36 +232,20 @@ export function Checklist({
                 )}
               </TableCell>
             </TableRow>
-            {/* Valid schema: collapse if input/output match across GET & POST */}
-            {(gInfo?.hasInput ?? undefined) ===
-              (gInfo?.hasOutput ?? undefined) &&
-            (pInfo?.hasInput ?? undefined) ===
-              (pInfo?.hasOutput ?? undefined) ? (
-              <Row
-                label="Valid schema"
-                gOk={gInfo?.hasInput}
-                pOk={pInfo?.hasInput}
-                gMsg={buildSchemaMessage(g, 'both')}
-                pMsg={buildSchemaMessage(p, 'both')}
-              />
-            ) : (
-              <>
-                <Row
-                  label="Valid input schema"
-                  gOk={gInfo?.hasInput}
-                  pOk={pInfo?.hasInput}
-                  gMsg={buildSchemaMessage(g, 'input')}
-                  pMsg={buildSchemaMessage(p, 'input')}
-                />
-                <Row
-                  label="Valid output schema"
-                  gOk={gInfo?.hasOutput}
-                  pOk={pInfo?.hasOutput}
-                  gMsg={buildSchemaMessage(g, 'output')}
-                  pMsg={buildSchemaMessage(p, 'output')}
-                />
-              </>
-            )}
+            <Row
+              label="Input schema"
+              gOk={gInfo?.hasInput}
+              pOk={pInfo?.hasInput}
+              gMsg={buildSchemaMessage(g, 'input')}
+              pMsg={buildSchemaMessage(p, 'input')}
+            />
+            <Row
+              label="Output schema"
+              gOk={gInfo?.hasOutput}
+              pOk={pInfo?.hasOutput}
+              gMsg={buildSchemaMessage(g, 'output')}
+              pMsg={buildSchemaMessage(p, 'output')}
+            />
 
             {/* Section: Page metadata */}
             <TableRow>
