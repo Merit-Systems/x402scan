@@ -7,8 +7,8 @@ import {
   LoadingOriginResources,
   OriginResources,
 } from './_components/resources';
-import { OriginActivity } from './_components/activity';
-import { OriginAgents } from './_components/agents';
+import { LoadingOriginActivity, OriginActivity } from './_components/activity';
+import { LoadingOriginAgents, OriginAgents } from './_components/agents';
 
 export default async function OriginPage({
   params,
@@ -30,7 +30,9 @@ export default async function OriginPage({
         <Suspense fallback={<LoadingHeaderCard />}>
           <HeaderCard origin={origin} />
         </Suspense>
-        <OriginActivity originId={id} />
+        <Suspense fallback={<LoadingOriginActivity />}>
+          <OriginActivity originId={id} />
+        </Suspense>
         <div className="md:grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="col-span-1 md:col-span-2 flex flex-col gap-8">
             <Suspense fallback={<LoadingOriginResources />}>
@@ -38,7 +40,9 @@ export default async function OriginPage({
             </Suspense>
           </div>
           <div className="col-span-1">
-            <OriginAgents originId={id} />
+            <Suspense fallback={<LoadingOriginAgents />}>
+              <OriginAgents originId={id} />
+            </Suspense>
           </div>
         </div>
       </Body>
