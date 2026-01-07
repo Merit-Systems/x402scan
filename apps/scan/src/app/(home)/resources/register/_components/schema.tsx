@@ -94,7 +94,7 @@ const schemaV2 = `type X402Response = {
 
 type Accepts = {
     scheme: "exact",
-    network: string,  // Chain ID format: "eip155:8453" for Base
+    network: string,  // Chain ID Example for Base: "eip155:8453"
     amount: string,   // V2 uses "amount" instead of "maxAmountRequired"
     payTo: string,
     maxTimeoutSeconds: number,
