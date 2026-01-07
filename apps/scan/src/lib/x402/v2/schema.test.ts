@@ -15,8 +15,8 @@ const v2Responses = {
         asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
       },
     ],
-    resourceInfo: {
-      resource: 'https://api.example.com/endpoint',
+    resource: {
+      url: 'https://api.example.com/endpoint',
       description: 'A test API endpoint',
       mimeType: 'application/json',
       outputSchema: {
@@ -49,8 +49,8 @@ const v2Responses = {
         asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
       },
     ],
-    resourceInfo: {
-      resource: 'https://api.example.com/submit',
+    resource: {
+      url: 'https://api.example.com/submit',
       description: 'Submit data endpoint',
       mimeType: 'application/json',
       outputSchema: {
@@ -86,8 +86,8 @@ const v2Responses = {
         asset: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC on Solana
       },
     ],
-    resourceInfo: {
-      resource: 'https://api.solana-example.com/data',
+    resource: {
+      url: 'https://api.solana-example.com/data',
       description: 'Solana data endpoint',
     },
   },
@@ -111,8 +111,8 @@ const v2Responses = {
         asset: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
       },
     ],
-    resourceInfo: {
-      resource: 'https://api.multi-chain.com/endpoint',
+    resource: {
+      url: 'https://api.multi-chain.com/endpoint',
       description: 'Multi-chain endpoint',
     },
   },
@@ -155,13 +155,13 @@ describe('parseV2', () => {
       expect(result.data.accepts).toHaveLength(1);
       expect(result.data.accepts?.[0]?.amount).toBe('10000');
       expect(result.data.accepts?.[0]?.network).toBe('eip155:8453');
-      expect(result.data.resourceInfo?.resource).toBe(
+      expect(result.data.resource?.url).toBe(
         'https://api.example.com/endpoint'
       );
-      expect(result.data.resourceInfo?.description).toBe('A test API endpoint');
-      expect(result.data.resourceInfo?.outputSchema?.input.method).toBe('GET');
+      expect(result.data.resource?.description).toBe('A test API endpoint');
+      expect(result.data.resource?.outputSchema?.input.method).toBe('GET');
       expect(
-        result.data.resourceInfo?.outputSchema?.input.queryParams?.query
+        result.data.resource?.outputSchema?.input.queryParams?.query
       ).toBeDefined();
     }
   });
@@ -171,14 +171,14 @@ describe('parseV2', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.resourceInfo?.outputSchema?.input.method).toBe('POST');
-      expect(result.data.resourceInfo?.outputSchema?.input.bodyType).toBe(
+      expect(result.data.resource?.outputSchema?.input.method).toBe('POST');
+      expect(result.data.resource?.outputSchema?.input.bodyType).toBe(
         'json'
       );
       expect(
-        result.data.resourceInfo?.outputSchema?.input.bodyFields?.message
+        result.data.resource?.outputSchema?.input.bodyFields?.message
       ).toBeDefined();
-      expect(result.data.resourceInfo?.outputSchema?.output?.id).toBeDefined();
+      expect(result.data.resource?.outputSchema?.output?.id).toBeDefined();
     }
   });
 
@@ -213,13 +213,13 @@ describe('parseV2', () => {
     }
   });
 
-  it('should parse minimal V2 response without resourceInfo', () => {
+  it('should parse minimal V2 response without resource', () => {
     const result = parseV2(v2Responses.minimal);
 
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.x402Version).toBe(2);
-      expect(result.data.resourceInfo).toBeUndefined();
+      expect(result.data.resource).toBeUndefined();
       expect(result.data.accepts).toHaveLength(1);
     }
   });
@@ -349,8 +349,8 @@ describe('V2 schema validation edge cases', () => {
           asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
         },
       ],
-      resourceInfo: {
-        resource: 'https://api.example.com/endpoint',
+      resource: {
+        url: 'https://api.example.com/endpoint',
         outputSchema: {
           input: {
             type: 'http',
@@ -375,7 +375,7 @@ describe('V2 schema validation edge cases', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       const bodyFields =
-        result.data.resourceInfo?.outputSchema?.input.bodyFields;
+        result.data.resource?.outputSchema?.input.bodyFields;
       expect(bodyFields?.data).toBeDefined();
     }
   });
@@ -393,8 +393,8 @@ describe('V2 schema validation edge cases', () => {
           asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
         },
       ],
-      resourceInfo: {
-        resource: 'https://api.example.com/endpoint',
+      resource: {
+        url: 'https://api.example.com/endpoint',
         outputSchema: {
           input: {
             type: 'http',
@@ -422,7 +422,7 @@ describe('V2 schema validation edge cases', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       const bodyFields =
-        result.data.resourceInfo?.outputSchema?.input.bodyFields;
+        result.data.resource?.outputSchema?.input.bodyFields;
       expect(bodyFields?.messages).toBeDefined();
     }
   });

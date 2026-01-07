@@ -54,13 +54,24 @@ export const registerResource = async (url: string, data: unknown) => {
               })
               .filter(Boolean) as PaymentRequirements[]
         ),
-      // V2 has resourceInfo at top level
-      resourceInfo: z3
+      // V2 has resource at top level (note: uses "url" not "resource")
+      resource: z3
         .object({
-          resource: z3.string(),
+          url: z3.string(),
           description: z3.string().optional(),
           mimeType: z3.string().optional(),
           outputSchema: z3.any().optional(),
+        })
+        .optional(),
+      // V2 extensions (for bazaar schema info)
+      extensions: z3
+        .object({
+          bazaar: z3
+            .object({
+              info: z3.any().optional(),
+              schema: z3.any().optional(),
+            })
+            .optional(),
         })
         .optional(),
     })
@@ -105,15 +116,19 @@ export const registerResource = async (url: string, data: unknown) => {
   });
 
   const parsedResponse = parseX402Response(data);
-  const resourceInfo =
+  const v2Resource =
     parsedResponse.success && isV2Response(parsedResponse.data)
-      ? parsedResponse.data.resourceInfo
+      ? parsedResponse.data.resource
+      : undefined;
+  const v2Extensions =
+    parsedResponse.success && isV2Response(parsedResponse.data)
+      ? parsedResponse.data.extensions
       : undefined;
 
   // NOTE(shafu): normalize accepts for both v1 and v2
   const normalizedAccepts =
     baseX402ParsedResponse.data.accepts?.map(accept =>
-      normalizePaymentRequirement(accept, resourceInfo)
+      normalizePaymentRequirement(accept, v2Resource, v2Extensions)
     ) ?? [];
 
   const resource = await upsertResource({

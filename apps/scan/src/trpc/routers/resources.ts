@@ -87,7 +87,23 @@ export const resourcesRouter = createTRPCRouter({
           continue;
         }
 
-        const data = (await response.json()) as unknown;
+        // Try to extract x402 data from Payment-Required header first, then body
+        let data: unknown;
+        const paymentRequiredHeader = response.headers.get('Payment-Required');
+        if (paymentRequiredHeader) {
+          try {
+            const decoded = Buffer.from(
+              paymentRequiredHeader,
+              'base64'
+            ).toString('utf-8');
+            data = JSON.parse(decoded);
+          } catch {
+            // Fall back to body if header parsing fails
+            data = (await response.json()) as unknown;
+          }
+        } else {
+          data = (await response.json()) as unknown;
+        }
 
         const baseX402ParsedResponse = x402ResponseSchema
           .omit({
@@ -98,13 +114,24 @@ export const resourcesRouter = createTRPCRouter({
             x402Version: z3.union([z3.literal(1), z3.literal(2)]),
             error: z3.string().optional(),
             accepts: z3.array(paymentRequirementsSchema).optional(),
-            // V2 has resourceInfo at top level
-            resourceInfo: z3
+            // V2 has resource at top level (note: uses "url" not "resource")
+            resource: z3
               .object({
-                resource: z3.string(),
+                url: z3.string(),
                 description: z3.string().optional(),
                 mimeType: z3.string().optional(),
                 outputSchema: z3.any().optional(),
+              })
+              .optional(),
+            // V2 extensions (for bazaar schema info)
+            extensions: z3
+              .object({
+                bazaar: z3
+                  .object({
+                    info: z3.any().optional(),
+                    schema: z3.any().optional(),
+                  })
+                  .optional(),
               })
               .optional(),
           })
@@ -146,15 +173,19 @@ export const resourcesRouter = createTRPCRouter({
         });
 
         const parsedResponse = parseX402Response(data);
-        const resourceInfo =
+        const v2Resource =
           parsedResponse.success && isV2Response(parsedResponse.data)
-            ? parsedResponse.data.resourceInfo
+            ? parsedResponse.data.resource
+            : undefined;
+        const v2Extensions =
+          parsedResponse.success && isV2Response(parsedResponse.data)
+            ? parsedResponse.data.extensions
             : undefined;
 
         // NOTE(shafu): normalize accepts for both v1 and v2
         const accepts = baseX402ParsedResponse.data.accepts ?? [];
         const normalizedAccepts = accepts.map((accept: PaymentRequirements) =>
-          normalizePaymentRequirement(accept, resourceInfo)
+          normalizePaymentRequirement(accept, v2Resource, v2Extensions)
         );
         const resource = await upsertResource({
           resource: input.url.toString(),

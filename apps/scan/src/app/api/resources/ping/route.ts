@@ -67,7 +67,25 @@ export const GET = async (request: NextRequest) => {
 
           if (status === 402) {
             try {
-              const parsedResponse = parseX402Response(await response.json());
+              // Try to extract x402 data from Payment-Required header first, then body
+              let x402Data: unknown;
+              const paymentRequiredHeader =
+                response.headers.get('Payment-Required');
+              if (paymentRequiredHeader) {
+                try {
+                  const decoded = Buffer.from(
+                    paymentRequiredHeader,
+                    'base64'
+                  ).toString('utf-8');
+                  x402Data = JSON.parse(decoded);
+                } catch {
+                  // Fall back to body if header parsing fails
+                  x402Data = await response.json();
+                }
+              } else {
+                x402Data = await response.json();
+              }
+              const parsedResponse = parseX402Response(x402Data);
               if (parsedResponse.success) {
                 await upsertResourceResponse(resource.id, parsedResponse.data);
                 handled = true;

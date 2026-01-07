@@ -77,15 +77,30 @@ export const developerRouter = createTRPCRouter({
       const hdrs: Record<string, string> = {};
       response.headers.forEach((v, k) => (hdrs[k] = v));
 
+      // Try to extract x402 data from Payment-Required header first, then body
+      let x402Data: unknown = body;
+      const paymentRequiredHeader = response.headers.get('Payment-Required');
+      if (paymentRequiredHeader) {
+        try {
+          const decoded = Buffer.from(paymentRequiredHeader, 'base64').toString(
+            'utf-8'
+          );
+          x402Data = JSON.parse(decoded);
+        } catch {
+          // Fall back to body if header parsing fails
+        }
+      }
+
+      // Use x402Data for the result body so UI displays it correctly
       const result = {
         ok: response.ok,
         status: response.status,
         statusText: response.statusText,
         headers: hdrs,
-        body,
+        body: x402Data,
       };
 
-      const parsed = parseX402Response(result.body);
+      const parsed = parseX402Response(x402Data);
       const info = (() => {
         if (!parsed?.success)
           return { hasAccepts: false, hasInputSchema: false };

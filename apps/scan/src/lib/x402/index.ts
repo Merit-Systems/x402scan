@@ -3,7 +3,6 @@ import { z as z3 } from 'zod3';
 export * from './v1';
 export * from './v2';
 export { fetchWithProxy } from './proxy-fetch';
-export type { ParseResult } from './shared';
 
 import {
   parseV1,
@@ -66,7 +65,8 @@ function isV2PaymentRequirement(
  */
 export function normalizePaymentRequirement(
   accept: PaymentRequirements,
-  resourceInfo?: X402ResponseV2['resourceInfo']
+  resource?: X402ResponseV2['resource'],
+  extensions?: X402ResponseV2['extensions']
 ): {
   scheme: 'exact';
   network?: string;
@@ -75,14 +75,18 @@ export function normalizePaymentRequirement(
   asset: string;
   maxTimeoutSeconds: number;
   extra?: Record<string, unknown>;
-  // these come from accept in v1, from resourceInfo in v2
+  // these come from accept in v1, from resource in v2
   resource?: string;
   description?: string;
   mimeType?: string;
   outputSchema?: OutputSchemaV1 | OutputSchemaV2;
 } {
   if (isV2PaymentRequirement(accept)) {
-    // V2: amount field, chain ID format, resourceInfo at top level
+    // V2: amount field, chain ID format, resource at top level
+    // Note: outputSchema can come from resource.outputSchema or extensions.bazaar.schema
+    const outputSchema = (resource?.outputSchema ??
+      extensions?.bazaar?.schema ??
+      undefined) as OutputSchemaV1 | OutputSchemaV2 | undefined;
     return {
       scheme: accept.scheme,
       network: normalizeChainId(accept.network),
@@ -91,14 +95,14 @@ export function normalizePaymentRequirement(
       asset: accept.asset,
       maxTimeoutSeconds: accept.maxTimeoutSeconds,
       extra: accept.extra,
-      // V2 resourceInfo fields
-      resource: resourceInfo?.resource,
-      description: resourceInfo?.description,
-      mimeType: resourceInfo?.mimeType,
-      outputSchema: resourceInfo?.outputSchema,
+      // V2 resource fields (note: url not resource)
+      resource: resource?.url,
+      description: resource?.description,
+      mimeType: resource?.mimeType,
+      outputSchema,
     };
   }
-  // V1: maxAmountRequired field, named network, per-accept resourceInfo
+  // V1: maxAmountRequired field, named network, per-accept resource info
   return {
     scheme: accept.scheme,
     network: accept.network,
@@ -136,11 +140,17 @@ function detectVersion(data: unknown): 1 | 2 {
 /**
  * NOTE(shafu): get the output schema from a parsed x402 response
  * V1: schema is in accepts[0].outputSchema
- * V2: schema is in resourceInfo.outputSchema
+ * V2: schema is in resource.outputSchema OR extensions.bazaar.schema
  */
-export function getOutputSchema(response: ParsedX402Response) {
+export function getOutputSchema(
+  response: ParsedX402Response
+): OutputSchemaV1 | OutputSchemaV2 | undefined {
   if (response.x402Version === 2) {
-    return response.resourceInfo?.outputSchema;
+    return (response.resource?.outputSchema ??
+      response.extensions?.bazaar?.schema) as
+      | OutputSchemaV1
+      | OutputSchemaV2
+      | undefined;
   }
   return response.accepts?.[0]?.outputSchema;
 }
@@ -154,13 +164,13 @@ export function isV2Response(
 /**
  * NOTE(shafu): get description from a parsed x402 response.
  * V1: description is in accepts[].description
- * V2: description is in resourceInfo.description
+ * V2: description is in resource.description
  */
 export function getDescription(
   response: ParsedX402Response
 ): string | undefined {
   if (response.x402Version === 2) {
-    return response.resourceInfo?.description;
+    return response.resource?.description;
   }
   return response.accepts?.find(a => a.description)?.description;
 }

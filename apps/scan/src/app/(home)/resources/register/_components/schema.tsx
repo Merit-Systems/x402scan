@@ -97,7 +97,8 @@ const schemaV2 = `type X402Response = {
     error?: string,
     accepts?: Array<Accepts>,
     payer?: string,
-    resourceInfo?: ResourceInfo  // V2 has resourceInfo at top level
+    resource?: Resource,  // V2 uses "resource" (not "resourceInfo")
+    extensions?: Extensions  // For outputSchema via bazaar extension
 }
 
 type Accepts = {
@@ -108,14 +109,21 @@ type Accepts = {
     maxTimeoutSeconds: number,
     asset: string,
     extra?: Record<string, any>
-    // Note: No outputSchema here - it's in resourceInfo
 }
 
-type ResourceInfo = {
-    resource: string,
+type Resource = {
+    url: string,       // V2 uses "url" (not "resource")
     description?: string,
     mimeType?: string,
-    outputSchema?: OutputSchema
+    outputSchema?: OutputSchema  // Extension: not in official spec
+}
+
+// Extension: bazaar schema info (for x402scan compatibility)
+type Extensions = {
+    bazaar?: {
+        info?: any,
+        schema?: OutputSchema
+    }
 }
 
 type OutputSchema = {
