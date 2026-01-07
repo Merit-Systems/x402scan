@@ -92,10 +92,21 @@ export const resourcesRouter = createTRPCRouter({
         const baseX402ParsedResponse = x402ResponseSchema
           .omit({
             error: true,
+            x402Version: true,
           })
           .extend({
+            x402Version: z3.union([z3.literal(1), z3.literal(2)]),
             error: z3.string().optional(),
             accepts: z3.array(paymentRequirementsSchema).optional(),
+            // V2 has resourceInfo at top level
+            resourceInfo: z3
+              .object({
+                resource: z3.string(),
+                description: z3.string().optional(),
+                mimeType: z3.string().optional(),
+                outputSchema: z3.any().optional(),
+              })
+              .optional(),
           })
           .safeParse(data);
         if (!baseX402ParsedResponse.success) {
