@@ -36,12 +36,15 @@ describe('parseV1', () => {
     }
   });
 
-  it('should parse object without accepts as valid (lenient schema)', () => {
+  it('should reject object without x402Version', () => {
     const invalidData = { invalid: 'data' };
     const result = parseV1(invalidData);
 
-    // V1 schema is lenient - accepts is optional
-    expect(result.success).toBe(true);
+    // x402Version is required
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.errors).toBeDefined();
+    }
   });
 
   it('should handle null or undefined input', () => {
@@ -49,10 +52,13 @@ describe('parseV1', () => {
     expect(parseV1(undefined).success).toBe(false);
   });
 
-  it('should parse empty object as valid (lenient schema)', () => {
+  it('should reject empty object (x402Version required)', () => {
     const result = parseV1({});
-    // V1 schema is lenient - all fields are optional
-    expect(result.success).toBe(true);
+    // x402Version is required
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.errors).toBeDefined();
+    }
   });
 });
 
