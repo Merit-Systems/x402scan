@@ -9,7 +9,6 @@ import { z as z3 } from 'zod3';
 const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
   z3.preprocess(
     val => {
-      // Convert string shorthand to object
       if (typeof val === 'string') {
         return { type: val };
       }

@@ -91,7 +91,6 @@ export const developerRouter = createTRPCRouter({
           return { hasAccepts: false, hasInputSchema: false };
         const accepts = parsed.data.accepts ?? [];
         const hasAccepts = accepts.length > 0;
-        // Use helper to get outputSchema (handles v1 and v2 differences)
         const outputSchema = getOutputSchema(parsed.data);
         const hasInputSchema = Boolean(outputSchema?.input);
         return { hasAccepts, hasInputSchema };
