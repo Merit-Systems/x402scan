@@ -1,4 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+
+import { skipToken } from '@tanstack/react-query';
 
 import { api } from '@/trpc/client';
 
@@ -6,6 +8,7 @@ import { useConnectedWallets } from '../../use-connected-wallets';
 
 import type { SolanaAddress } from '@/types/address';
 import type { UseBalanceReturnType } from '../types';
+import { solanaAddressSchema } from '@/lib/schemas';
 
 interface Props {
   tokenMint?: string;
@@ -20,9 +23,18 @@ export const useSPLTokenBalance = (props?: Props): UseBalanceReturnType => {
 
   const utils = api.useUtils();
 
-  const addressToQuery = address ?? connectedWallets.solanaAddress ?? '';
+  const addressToQuery = address ?? connectedWallets.solanaAddress;
+
+  const isValidAddress = useMemo(
+    () =>
+      !!addressToQuery && solanaAddressSchema.safeParse(addressToQuery).success,
+    [addressToQuery]
+  );
+
+  const isEnabled = isValidAddress && (enabled === undefined || enabled);
 
   const invalidate = useCallback(() => {
+    if (!addressToQuery) return;
     void utils.public.solana.balance.invalidate({
       ownerAddress: addressToQuery,
       tokenMint,
@@ -30,12 +42,13 @@ export const useSPLTokenBalance = (props?: Props): UseBalanceReturnType => {
   }, [addressToQuery, tokenMint, utils]);
 
   const result = api.public.solana.balance.useQuery(
+    isEnabled
+      ? {
+          ownerAddress: addressToQuery!,
+          tokenMint,
+        }
+      : skipToken,
     {
-      ownerAddress: addressToQuery,
-      tokenMint,
-    },
-    {
-      enabled: !!addressToQuery && (enabled === undefined || enabled),
       refetchOnMount: 'always',
     }
   );
