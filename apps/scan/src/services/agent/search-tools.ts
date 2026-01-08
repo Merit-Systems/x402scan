@@ -40,7 +40,7 @@ export async function searchX402Tools(
         .safeParse(
           resource.accepts.map(accept => ({
             ...accept,
-            network: accept.network?.replace(/_/g, '-'),
+            network: accept.network,
             maxAmountRequired: accept.maxAmountRequired.toString(),
           }))
         );
