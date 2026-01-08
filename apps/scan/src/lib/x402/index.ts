@@ -69,7 +69,7 @@ export function normalizePaymentRequirement(
   extensions?: X402ResponseV2['extensions']
 ): {
   scheme: 'exact';
-  network?: string;
+  network: string;
   maxAmountRequired: string;
   payTo: string;
   asset: string;
@@ -105,7 +105,7 @@ export function normalizePaymentRequirement(
   // V1: maxAmountRequired field, named network, per-accept resource info
   return {
     scheme: accept.scheme,
-    network: accept.network,
+    network: accept.network ?? '',
     maxAmountRequired: accept.maxAmountRequired,
     payTo: accept.payTo,
     asset: accept.asset,

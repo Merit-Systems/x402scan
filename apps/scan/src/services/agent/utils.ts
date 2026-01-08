@@ -62,7 +62,7 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
 export const inputSchemaToZodSchema = (
   inputSchema: OutputSchemaV1['input']
 ) => {
-  const method = inputSchema.method.toUpperCase();
+  const method = (inputSchema.method ?? 'GET').toUpperCase();
   const shape: Record<string, z.ZodTypeAny> = {};
 
   // For GET/HEAD/OPTIONS: use query params

@@ -139,6 +139,7 @@ export const POST = async (request: NextRequest) => {
 
   const parsedAccept = normalizedAcceptSchema.safeParse({
     ...accept,
+    network: accept.network?.replace(/_/g, '-'),
     maxAmountRequired: accept.maxAmountRequired.toString(),
   });
   if (!parsedAccept.success) {

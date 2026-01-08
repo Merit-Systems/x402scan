@@ -29,6 +29,7 @@ export async function createX402AITools(
           })
           .safeParse({
             ...accept,
+            network: accept.network?.replace(/_/g, '-'),
             maxAmountRequired: accept.maxAmountRequired.toString(),
           });
         if (!parsedAccept.success) {
