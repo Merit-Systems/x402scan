@@ -32,7 +32,9 @@ const bucketedSellerResultSchema = z.array(
   })
 );
 
-const getBucketedSellerStatisticsMVUncached = async (
+// Exported for use when calling from within another cached function
+// to avoid creating huge cache keys with many addresses
+export const getBucketedSellerStatisticsMVUncached = async (
   input: z.infer<typeof bucketedSellerStatisticsMVInputSchema>
 ) => {
   const { timeframe } = input;

@@ -19,7 +19,9 @@ const getTimeframeInterval = (mvTimeframe: string): string | null => {
   return intervalMap[mvTimeframe] ?? null;
 };
 
-const getOverallSellerStatisticsMVUncached = async (
+// Exported for use when calling from within another cached function
+// to avoid creating huge cache keys with many addresses
+export const getOverallSellerStatisticsMVUncached = async (
   input: z.infer<typeof sellerStatisticsMVInputSchema>
 ) => {
   const { timeframe } = input;

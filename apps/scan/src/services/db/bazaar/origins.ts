@@ -1,4 +1,4 @@
-import { listTopSellersMV } from '@/services/transfers/sellers/list-mv';
+import { listTopSellersMVUncached } from '@/services/transfers/sellers/list-mv';
 import { getAcceptsAddresses } from '../resources/accepts';
 import { mixedAddressSchema } from '@/lib/schemas';
 
@@ -24,7 +24,9 @@ const listBazaarOriginsUncached = async (
     tags: input.tags,
   });
 
-  const result = await listTopSellersMV(
+  // Use uncached version since listBazaarOrigins is already cached
+  // This avoids creating a massive cache key with 100+ addresses
+  const result = await listTopSellersMVUncached(
     {
       ...input,
       recipients: {

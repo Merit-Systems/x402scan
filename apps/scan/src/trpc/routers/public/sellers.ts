@@ -12,10 +12,17 @@ import { listBazaarOrigins } from '@/services/db/bazaar/origins';
 import { listBazaarOriginsInputSchema } from '@/services/db/bazaar/schema';
 import { sellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/overall-mv';
 import { bucketedSellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/bucketed-mv';
-import { getAcceptsAddresses } from '@/services/db/resources/accepts';
-import { mixedAddressSchema } from '@/lib/schemas';
 import { getOverallSellerStatisticsMV } from '@/services/transfers/sellers/stats/overall-mv';
 import { getBucketedSellerStatisticsMV } from '@/services/transfers/sellers/stats/bucketed-mv';
+// Origin-based stats (pre-joined with payto_origin_map - no need to pass addresses)
+import {
+  getOverallOriginStatisticsMV,
+  originStatisticsMVInputSchema,
+} from '@/services/transfers/origins/stats/overall-mv';
+import {
+  getBucketedOriginStatisticsMV,
+  bucketedOriginStatisticsMVInputSchema,
+} from '@/services/transfers/origins/stats/bucketed-mv';
 
 export const sellersRouter = createTRPCRouter({
   all: {
@@ -46,44 +53,18 @@ export const sellersRouter = createTRPCRouter({
         return await listBazaarOrigins(input, pagination);
       }),
     stats: {
+      // Use origin_stats_aggregated_* views which are pre-joined with payto_origin_map
+      // This eliminates the need to pass thousands of recipient addresses
       overall: publicProcedure
-        .input(sellerStatisticsMVInputSchema)
+        .input(originStatisticsMVInputSchema)
         .query(async ({ input, ctx }) => {
-          const originsByAddress = await getAcceptsAddresses({
-            chain: input.chain,
-          });
-          return await getOverallSellerStatisticsMV(
-            {
-              ...input,
-              recipients: {
-                include: Object.keys(originsByAddress)
-                  .map(addr => mixedAddressSchema.safeParse(addr))
-                  .filter(result => result.success)
-                  .map(result => result.data),
-              },
-            },
-            ctx
-          );
+          return await getOverallOriginStatisticsMV(input, ctx);
         }),
 
       bucketed: publicProcedure
-        .input(bucketedSellerStatisticsMVInputSchema)
+        .input(bucketedOriginStatisticsMVInputSchema)
         .query(async ({ input, ctx }) => {
-          const originsByAddress = await getAcceptsAddresses({
-            chain: input.chain,
-          });
-          return await getBucketedSellerStatisticsMV(
-            {
-              ...input,
-              recipients: {
-                include: Object.keys(originsByAddress)
-                  .map(addr => mixedAddressSchema.safeParse(addr))
-                  .filter(result => result.success)
-                  .map(result => result.data),
-              },
-            },
-            ctx
-          );
+          return await getBucketedOriginStatisticsMV(input, ctx);
         }),
     },
   },

@@ -28,7 +28,8 @@ export const listTopSellersMVInputSchema = baseListQuerySchema({
   defaultSortId: 'tx_count',
 });
 
-const listTopSellersMVUncached = async (
+// Exported for use in listBazaarOrigins to avoid double-caching
+export const listTopSellersMVUncached = async (
   input: z.infer<typeof listTopSellersMVInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
