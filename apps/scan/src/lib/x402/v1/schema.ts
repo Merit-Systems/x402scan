@@ -1,6 +1,5 @@
 import {
   ChainIdToNetwork,
-  HTTPRequestStructureSchema,
   PaymentRequirementsSchema,
   x402ResponseSchema,
 } from 'x402/types';
@@ -9,14 +8,15 @@ import { z as z3 } from 'zod3';
 import { FieldDefSchema } from '../shared';
 
 export const outputSchemaV1 = z3.object({
-  input: HTTPRequestStructureSchema.omit({
-    queryParams: true,
-    bodyFields: true,
-    headerFields: true,
-  }).extend({
-    headerFields: z3.record(FieldDefSchema).optional(),
+  input: z3.object({
+    type: z3.literal('http'),
+    method: z3.enum(['GET', 'POST']),
+    bodyType: z3
+      .enum(['json', 'form-data', 'multipart-form-data', 'text', 'binary'])
+      .optional(),
     queryParams: z3.record(FieldDefSchema).optional(),
     bodyFields: z3.record(FieldDefSchema).optional(),
+    headerFields: z3.record(FieldDefSchema).optional(),
   }),
   output: z3.record(z3.string(), z3.any()).optional().nullable(),
 });
