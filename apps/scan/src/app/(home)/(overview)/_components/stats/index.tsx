@@ -20,7 +20,7 @@ type Props = {
   chain?: Chain;
 };
 
-export const OverallStats = ({ chain }: Props) => {
+export const OverallStats: React.FC<Props> = ({ chain }) => {
   void api.public.stats.overall.prefetch({
     timeframe: ActivityTimeframe.OneDay,
     chain,

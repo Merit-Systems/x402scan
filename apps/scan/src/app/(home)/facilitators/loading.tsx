@@ -6,7 +6,7 @@ import { LoadingFacilitatorsChart } from './_components/chart';
 import { LoadingFacilitatorsTable } from './_components/facilitators';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 
-export default function FacilitatorsPage() {
+export default function LoadingFacilitatorsPage() {
   return (
     <div>
       <Heading
