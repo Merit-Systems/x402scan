@@ -25,7 +25,7 @@ import { getOriginFromUrl } from '@/lib/url';
 
 import { Methods } from '@/types/x402';
 
-import type { AcceptsNetwork } from '@x402scan/scan-db';
+import type { AcceptsNetwork } from '@x402scan/scan-db/types';
 import { x402ResponseSchema } from 'x402/types';
 import { getFaviconUrl } from '@/lib/favicon';
 import type { ImageObject } from 'open-graph-scraper/types';

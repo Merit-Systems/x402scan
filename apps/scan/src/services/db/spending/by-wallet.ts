@@ -64,8 +64,7 @@ const getSpendingByWalletUncached = async (
     INNER JOIN "User" u ON sw."userId" = u.id
   `;
 
-  const countResult =
-    await scanDb.$queryRaw<Array<{ total: number }>>(countSql);
+  const countResult = await scanDb.$queryRaw<{ total: number }[]>(countSql);
   const total_count = countResult[0]?.total ?? 0;
 
   // Get paginated results
@@ -89,13 +88,13 @@ const getSpendingByWalletUncached = async (
   `;
 
   const rawResult = await scanDb.$queryRaw<
-    Array<{
+    {
       walletId: string;
       walletName: string;
       totalToolCalls: number;
       uniqueResources: number;
       totalMaxAmount: string;
-    }>
+    }[]
   >(sql);
 
   const items = walletSpendingResultSchema.parse(rawResult);
@@ -161,7 +160,7 @@ const getToolBreakdownByWalletUncached = async (
   `;
 
   const rawResult = await scanDb.$queryRaw<
-    Array<{
+    {
       walletId: string;
       walletName: string;
       resourceId: string;
@@ -169,7 +168,7 @@ const getToolBreakdownByWalletUncached = async (
       toolCalls: number;
       maxAmountPerCall: string;
       totalMaxAmount: string;
-    }>
+    }[]
   >(sql);
 
   return walletToolBreakdownResultSchema.parse(rawResult);

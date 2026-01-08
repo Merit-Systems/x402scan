@@ -47,50 +47,40 @@ const listTopToolsUncached = async (
     }),
     queryRaw(
       Prisma.sql`
-    WITH resource_stats AS (
+    WITH tool_call_stats AS (
+      -- Pre-aggregate tool call stats per resource (avoids cartesian explosion)
       SELECT 
-        r.id,
-        r.resource,
-        r.type,
-        r."x402Version",
-        r."lastUpdated",
-        r.metadata,
-        r."originId",
-        -- Origin data
-        ro.id as origin_id,
-        ro.origin as origin_origin,
-        ro.title as origin_title,
-        ro.description as origin_description,
-        ro.favicon as origin_favicon,
-        ro."createdAt" as origin_created_at,
-        ro."updatedAt" as origin_updated_at,
-        -- Statistics
-        COUNT(DISTINCT tc.id) as tool_calls,
-        COUNT(DISTINCT acr.id) as agent_configurations,
-        COUNT(DISTINCT c."userId") as unique_users,
-        MAX(tc."createdAt") as latest_call_time
-      FROM "Resources" r
-      LEFT JOIN "ResourceOrigin" ro ON r."originId" = ro.id
-      LEFT JOIN "ToolCall" tc ON r.id = tc."resourceId"
-      LEFT JOIN "Chat" c ON tc."chatId" = c.id
-      LEFT JOIN "AgentConfigurationResource" acr ON r.id = acr."resourceId"
-      GROUP BY r.id, r.resource, r.type, r."x402Version", r."lastUpdated", r.metadata, r."originId",
-               ro.id, ro.origin, ro.title, ro.description, ro.favicon, ro."createdAt", ro."updatedAt"
+        tc."resourceId",
+        COUNT(tc.id) AS tool_calls,
+        COUNT(DISTINCT c."userId") AS unique_users,
+        MAX(tc."createdAt") AS latest_call_time
+      FROM "ToolCall" tc
+      INNER JOIN "Chat" c ON tc."chatId" = c.id
+      WHERE tc."resourceId" IS NOT NULL
+      GROUP BY tc."resourceId"
+    ),
+    agent_config_counts AS (
+      -- Pre-aggregate agent config counts per resource (separate to avoid multiply)
+      SELECT 
+        "resourceId",
+        COUNT(*) AS agent_configurations
+      FROM "AgentConfigurationResource"
+      GROUP BY "resourceId"
     )
     SELECT 
-      rs.id,
-      rs.resource,
-      rs.tool_calls,
-      rs.agent_configurations,
-      rs.unique_users,
-      rs.latest_call_time,
+      r.id,
+      r.resource,
+      COALESCE(tcs.tool_calls, 0) AS tool_calls,
+      COALESCE(acc.agent_configurations, 0) AS agent_configurations,
+      COALESCE(tcs.unique_users, 0) AS unique_users,
+      tcs.latest_call_time,
       -- Origin data as nested JSON object
       json_build_object(
-        'id', rs.origin_id,
-        'origin', rs.origin_origin,
-        'favicon', rs.origin_favicon
+        'id', ro.id,
+        'origin', ro.origin,
+        'favicon', ro.favicon
       ) as origin,
-      -- Accepts data as JSON array
+      -- Accepts data as JSON array (correlated subquery - fast with index)
       COALESCE(
         (
           SELECT json_agg(
@@ -104,29 +94,32 @@ const listTopToolsUncached = async (
             )
           )
           FROM "Accepts" a 
-          WHERE a."resourceId" = rs.id
+          WHERE a."resourceId" = r.id
         ),
         '[]'::json
       ) as accepts
-    FROM resource_stats rs
+    FROM "Resources" r
+    INNER JOIN tool_call_stats tcs ON r.id = tcs."resourceId"
+    LEFT JOIN "ResourceOrigin" ro ON r."originId" = ro.id
+    LEFT JOIN agent_config_counts acc ON r.id = acc."resourceId"
     WHERE ${
       sorting.id === 'latestCallTime'
-        ? Prisma.sql`latest_call_time IS NOT NULL`
+        ? Prisma.sql`tcs.latest_call_time IS NOT NULL`
         : sorting.id === 'toolCalls'
-          ? Prisma.sql`tool_calls > 0`
+          ? Prisma.sql`tcs.tool_calls > 0`
           : sorting.id === 'agentConfigurations'
-            ? Prisma.sql`agent_configurations > 0`
-            : Prisma.sql`unique_users > 0`
+            ? Prisma.sql`COALESCE(acc.agent_configurations, 0) > 0`
+            : Prisma.sql`tcs.unique_users > 0`
     }
     ORDER BY 
       ${
         sorting.id === 'toolCalls'
-          ? Prisma.sql`tool_calls`
+          ? Prisma.sql`tcs.tool_calls`
           : sorting.id === 'agentConfigurations'
-            ? Prisma.sql`agent_configurations`
+            ? Prisma.sql`acc.agent_configurations`
             : sorting.id === 'uniqueUsers'
-              ? Prisma.sql`unique_users`
-              : Prisma.sql`latest_call_time`
+              ? Prisma.sql`tcs.unique_users`
+              : Prisma.sql`tcs.latest_call_time`
       } ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
     LIMIT ${pagination.page_size}
     OFFSET ${pagination.page * pagination.page_size}

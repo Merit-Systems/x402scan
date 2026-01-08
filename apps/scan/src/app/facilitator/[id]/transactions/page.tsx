@@ -29,7 +29,7 @@ export default async function TransactionsPage({
     return notFound();
   }
 
-  const pageSize = 15;
+  const pageSize = 10;
 
   void api.public.transfers.list.prefetch({
     pagination: {

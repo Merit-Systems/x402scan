@@ -70,7 +70,7 @@ const ConnectEVMInjectedWalletButton: React.FC<
       icon={connector.icon}
       name={connector.name}
       isPending={isPending}
-      onClick={onConnect}
+      onClick={() => void onConnect()}
     />
   );
 };

@@ -13,7 +13,7 @@ import { Address, Addresses } from '@/components/ui/address';
 import { Favicon } from '@/app/_components/favicon';
 import { cn } from '@/lib/utils';
 
-import type { ResourceOrigin } from '@x402scan/scan-db';
+import type { ResourceOrigin } from '@x402scan/scan-db/types';
 import type { MixedAddress } from '@/types/address';
 
 interface Props {

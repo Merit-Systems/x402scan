@@ -8,7 +8,7 @@ export enum Methods {
 
 export type FieldValue = string | unknown[];
 
-export type FieldDefinition = {
+export interface FieldDefinition {
   name: string;
   type?: string;
   description?: string;
@@ -20,4 +20,4 @@ export type FieldDefinition = {
     properties?: Record<string, unknown>;
     required?: string[];
   };
-};
+}

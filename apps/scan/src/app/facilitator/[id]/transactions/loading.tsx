@@ -10,7 +10,7 @@ export default function LoadingTransactionsPage() {
         description="Transactions made through this facilitator"
       />
       <Body>
-        <LoadingLatestTransactionsTable loadingRowCount={15} />
+        <LoadingLatestTransactionsTable loadingRowCount={10} />
       </Body>
     </div>
   );

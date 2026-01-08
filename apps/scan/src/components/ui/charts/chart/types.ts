@@ -21,13 +21,13 @@ export type ChartData<T extends Record<string, number>> = {
 export interface ChartProps<T extends Record<string, number>> {
   data: ChartData<T>[];
   children?: React.ReactNode;
-  tooltipRows?: Array<TooltipRowProps<T>>;
+  tooltipRows?: TooltipRowProps<T>[];
   height?: number | string;
   margin?: { top: number; right: number; left: number; bottom: number };
-  yAxes?: Array<{
+  yAxes?: {
     domain: AxisDomain;
     hide: boolean;
-  }>;
+  }[];
   dataMax?: number | string;
   stackOffset?: StackOffset;
   xAxis?: {

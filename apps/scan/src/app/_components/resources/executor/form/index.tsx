@@ -92,7 +92,7 @@ export function Form({
 
   const queryEntries = useMemo(
     () =>
-      Object.entries(queryValues).reduce<Array<[string, string]>>(
+      Object.entries(queryValues).reduce<[string, string][]>(
         (acc, [key, value]) => {
           if (typeof value === 'string') {
             const trimmed = value.trim();
@@ -118,7 +118,7 @@ export function Form({
 
   const bodyEntries = useMemo(
     () =>
-      Object.entries(bodyValues).reduce<Array<[string, FieldValue]>>(
+      Object.entries(bodyValues).reduce<[string, FieldValue][]>(
         (acc, [key, value]) => {
           if (Array.isArray(value)) {
             if (value.length > 0) {
@@ -219,7 +219,7 @@ export function Form({
           (x402Response.accepts
             ?.map(accept => accept.network)
             .filter(network =>
-              (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(network!)
+              (SUPPORTED_CHAINS as readonly string[]).includes(network!)
             ) ?? []) as SupportedChain[]
         }
         allRequiredFieldsFilled={allRequiredFieldsFilled}

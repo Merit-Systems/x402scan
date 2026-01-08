@@ -3,12 +3,12 @@ import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
 
-interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
+type LogoProps = {
   className?: string;
   containerClassName?: string;
   onClick?: () => void;
   priority?: boolean;
-}
+} & React.HTMLAttributes<HTMLDivElement>;
 export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
   ({ className, containerClassName, onClick, priority, ...props }, ref) => {
     return (

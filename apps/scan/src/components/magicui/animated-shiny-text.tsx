@@ -6,9 +6,9 @@ import {
 
 import { cn } from '@/lib/utils';
 
-interface AnimatedShinyTextProps extends ComponentPropsWithoutRef<'span'> {
+type AnimatedShinyTextProps = {
   shimmerWidth?: number;
-}
+} & ComponentPropsWithoutRef<'span'>;
 
 export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
   children,

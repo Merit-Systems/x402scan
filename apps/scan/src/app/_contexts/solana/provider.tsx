@@ -48,6 +48,7 @@ export function SolanaWalletProvider({ children }: Props) {
           wallet.accounts[0]?.address === cdpWallet.accounts[0]?.address
       );
       if (wallet) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setConnectedWallet({
           account: wallet.accounts[0]!,
           wallet: wallet,
@@ -74,6 +75,7 @@ export function SolanaWalletProvider({ children }: Props) {
       );
 
       if (matchingAccount) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setConnectedWallet({
           account: matchingAccount,
           wallet: matchingWallet,

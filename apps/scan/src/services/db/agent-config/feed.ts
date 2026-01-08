@@ -53,11 +53,15 @@ const getAgentConfigFeedUncached = async (
   pagination: PaginatedQueryParams
 ) => {
   const { agentConfigurationId, userId } = input;
+  // Fetch extra rows to handle pagination offset properly
+  const fetchLimit =
+    pagination.page_size + pagination.page * pagination.page_size;
 
   const [items, toolCallCount, messageCount] = await Promise.all([
     queryRaw(
       Prisma.sql`
       WITH message_events AS (
+        -- Push LIMIT into each CTE to avoid processing all rows
         SELECT 
           'message' as type,
           m."createdAt",
@@ -77,6 +81,8 @@ const getAgentConfigFeedUncached = async (
         WHERE m.role = 'user'
           ${agentConfigurationId ? Prisma.sql`AND acu."agentConfigurationId" = ${agentConfigurationId}` : Prisma.sql``}
           ${userId ? Prisma.sql`AND c."userId" = ${userId}` : Prisma.sql``}
+        ORDER BY m."createdAt" DESC
+        LIMIT ${fetchLimit}
       ),
       tool_call_events AS (
         SELECT 
@@ -104,6 +110,8 @@ const getAgentConfigFeedUncached = async (
         WHERE 1=1
           ${agentConfigurationId ? Prisma.sql`AND acu."agentConfigurationId" = ${agentConfigurationId}` : Prisma.sql``}
           ${userId ? Prisma.sql`AND c."userId" = ${userId}` : Prisma.sql``}
+        ORDER BY tc."createdAt" DESC
+        LIMIT ${fetchLimit}
       ),
       combined_events AS (
         SELECT * FROM message_events

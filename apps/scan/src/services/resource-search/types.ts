@@ -19,44 +19,44 @@ export interface SearchResult {
     description: string | null;
     favicon: string | null;
   };
-  accepts: Array<{
+  accepts: {
     id: string;
     description: string;
     network: string;
     maxAmountRequired: string;
     asset: string;
-  }>;
-  tags: Array<{
+  }[];
+  tags: {
     id: string;
     name: string;
     color: string;
-  }>;
+  }[];
   toolCallCount: number;
 }
 
-export interface EnrichedSearchResult extends SearchResult {
+export type EnrichedSearchResult = {
   analytics: ResourceAnalytics | null;
-}
+} & SearchResult;
 
 export interface FilterQuestion {
   question: string;
   index: number;
 }
 
-export interface FilteredSearchResult extends EnrichedSearchResult {
+export type FilteredSearchResult = {
   filterMatches: number;
   filterAnswers: boolean[];
-}
+} & EnrichedSearchResult;
 
-export interface RerankedSearchResult extends EnrichedSearchResult {
+export type RerankedSearchResult = {
   rerankerScore: number | null;
   rerankerIndex: number | null;
-}
+} & EnrichedSearchResult;
 
-export interface CombinedRefinedResult extends FilteredSearchResult {
+export type CombinedRefinedResult = {
   rerankerScore: number | null;
   rerankerIndex: number | null;
-}
+} & FilteredSearchResult;
 
 export type RefinementMode = 'none' | 'llm' | 'reranker' | 'both';
 

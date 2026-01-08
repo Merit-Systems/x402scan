@@ -30,12 +30,13 @@ export const SoraOutput: OutputComponent = ({ output, errorText }) => {
   const parseResult = createSoraVideoOutputSchema.safeParse(output);
 
   if (!parseResult.success) {
+    let data: JsonValue | undefined;
     try {
-      const data = JSON.parse(output as string) as JsonValue;
-      return <JsonViewer data={data} />;
+      data = JSON.parse(output as string) as JsonValue;
     } catch {
       return <div className="text-destructive text-sm">Invalid output</div>;
     }
+    return <JsonViewer data={data} />;
   }
 
   const { id } = parseResult.data;
@@ -59,6 +60,7 @@ const SoraVideoDisplay: React.FC<{ id: string }> = ({ id }) => {
       task &&
       ['completed', 'failed', 'cancelled', 'expired'].includes(task.status)
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsTaskFetched(true);
     }
   }, [task, id]);

@@ -22,7 +22,7 @@ export const TextPart: React.FC<Props> = ({ part, showActions }) => {
         <Actions className="-mt-2">
           <Action
             onClick={() =>
-              navigator.clipboard
+              void navigator.clipboard
                 .writeText(part.text)
                 .then(() => {
                   toast.success('Copied to clipboard');

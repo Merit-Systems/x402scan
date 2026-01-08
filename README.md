@@ -17,7 +17,7 @@
 
 ![x402scan screenshot](./preview.png)
 
-x402 API resources can be be purchased just-in-time without a prior relationship with the seller using cryptocurrency. x402 is vision for an internet without ads or centralized intermediaries.
+x402 API resources can be be purchased just-in-time without a prior relationship with the seller using stablecoins. x402 is vision for an internet without ads or centralized intermediaries.
 
 x402scan lets you explore the ecosystem of x402 servers, see their transaction volumes and directly access their resources through an embedded wallet.
 

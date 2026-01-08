@@ -33,15 +33,13 @@ export const optionalSupportedChainSchema = supportedChainSchema.optional();
 
 export const timePeriodSchema = z.number().nonnegative();
 
-export const timeframeSchema = z
-  .union([
-    timePeriodSchema,
-    z.object({
-      period: timePeriodSchema,
-      offset: timePeriodSchema.optional(),
-    }),
-  ])
-  .default(0);
+export const timeframeSchema = z.union([
+  timePeriodSchema,
+  z.object({
+    period: timePeriodSchema,
+    offset: timePeriodSchema.optional(),
+  }),
+]);
 
 export const sendUsdcQueryParamsSchema = z.object({
   amount: z.coerce.number(),

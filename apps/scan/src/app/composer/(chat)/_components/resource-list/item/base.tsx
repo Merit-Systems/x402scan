@@ -92,6 +92,14 @@ export const LoadingBaseResourceItem: React.FC = () => {
   );
 };
 
+const ToolAmount = ({ amount }: { amount: number }) => {
+  return (
+    <span className="text-xs font-semibold text-primary font-mono">
+      {formatCurrency(amount)}
+    </span>
+  );
+};
+
 const ToolAccepts = ({
   accepts,
 }: {
@@ -100,14 +108,6 @@ const ToolAccepts = ({
   const allSameAmount = accepts.every(
     accept => accept.maxAmountRequired === accepts[0]!.maxAmountRequired
   );
-
-  const ToolAmount = ({ amount }: { amount: number }) => {
-    return (
-      <span className="text-xs font-semibold text-primary font-mono">
-        {formatCurrency(amount)}
-      </span>
-    );
-  };
 
   if (allSameAmount) {
     return (

@@ -16,6 +16,11 @@ export default async function AgentPage({
     return notFound();
   }
 
+  // Prefetch activity data for hydration
+  void api.public.agents.activity.agent.bucketed.prefetch({
+    agentConfigurationId: agentConfiguration.id,
+  });
+
   return (
     <Body className="gap-8 pt-0">
       <HeaderCard agentConfiguration={agentConfiguration} />

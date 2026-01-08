@@ -15,12 +15,12 @@ export const OverallCharts = () => {
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
-  const [overallStats] = api.public.stats.overallMV.useSuspenseQuery({
+  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
     chain,
     timeframe,
   });
 
-  const [bucketedStats] = api.public.stats.bucketedMV.useSuspenseQuery({
+  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
     numBuckets: 48,
     timeframe,
     chain,

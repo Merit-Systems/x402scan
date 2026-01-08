@@ -1,4 +1,4 @@
-export type UseBalanceReturnType = {
+export interface UseBalanceReturnType {
   data: number | undefined;
   isLoading: boolean;
   isError: boolean;
@@ -6,4 +6,4 @@ export type UseBalanceReturnType = {
   isFetching: boolean;
   isSuccess: boolean;
   isPending: boolean;
-};
+}

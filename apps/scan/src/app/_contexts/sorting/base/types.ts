@@ -1,4 +1,4 @@
-export type SortType<SortKey extends string> = {
+export interface SortType<SortKey extends string> {
   id: SortKey;
   desc: boolean;
-};
+}

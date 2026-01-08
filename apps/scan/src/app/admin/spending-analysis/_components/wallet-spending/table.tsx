@@ -63,7 +63,7 @@ export const WalletSpendingTable = () => {
     <div className="space-y-4">
       <div className="flex justify-end">
         <Button
-          onClick={handleDownloadCsv}
+          onClick={() => void handleDownloadCsv()}
           disabled={isDownloading}
           variant="outline"
           size="sm"
