@@ -16,9 +16,9 @@ import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/defau
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-type Props = {
+interface Props {
   facilitatorId: string;
-};
+}
 
 export const LatestTransactions: React.FC<Props> = ({ facilitatorId }) => {
   const pageSize = 10;

@@ -1,9 +1,9 @@
-export type SelectedResource = {
+export interface SelectedResource {
   id: string;
   favicon: string | null;
-};
+}
 
-export type ChatConfig = {
+export interface ChatConfig {
   model?: string;
   resources?: SelectedResource[];
-};
+}

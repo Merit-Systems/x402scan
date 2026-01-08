@@ -14,7 +14,7 @@ export const networks = Object.values(Chain).map(chain => ({
   color: NETWORK_COLORS[chain],
 }));
 
-type TabConfig<T extends Record<string, number>> = {
+interface TabConfig<T extends Record<string, number>> {
   trigger: {
     label: string;
     value: string;
@@ -38,21 +38,21 @@ type TabConfig<T extends Record<string, number>> = {
     valueClassName?: string;
     dotColor: string;
   }[];
-};
+}
 
-type Item = {
+interface Item {
   name: string;
   color: string;
-};
+}
 
-type CreateTabOptions<T extends Record<string, number>, TItem extends Item> = {
+interface CreateTabOptions<T extends Record<string, number>, TItem extends Item> {
   label: string;
   stackOffset?: 'expand' | 'none';
   amount: string;
   items: TItem[];
   getKey: (item: TItem) => string;
   getValue: (data: number, dataType: string, allData: T) => string;
-};
+}
 
 export function createTab<T extends Record<string, number>, TItem extends Item>(
   options: CreateTabOptions<T, TItem>

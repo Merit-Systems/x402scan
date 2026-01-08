@@ -2,23 +2,23 @@ import type { AxisDomain } from 'recharts/types/util/types';
 import type { BarChartProps, StackOffset } from './bar/types';
 import type { AreaChartProps } from './area/types';
 
-export type TooltipRowProps<
+export interface TooltipRowProps<
   T extends Record<string, number>,
   K extends keyof T = keyof T,
-> = {
+> {
   key: K;
   label: string;
   getValue: (data: T[K], allData: T) => string;
   labelClassName?: string;
   valueClassName?: string;
   dotColor?: string;
-};
+}
 
 export type ChartData<T extends Record<string, number>> = {
   timestamp: string;
 } & T;
 
-export type ChartProps<T extends Record<string, number>> = {
+export interface ChartProps<T extends Record<string, number>> {
   data: ChartData<T>[];
   children?: React.ReactNode;
   tooltipRows?: TooltipRowProps<T>[];
@@ -36,7 +36,7 @@ export type ChartProps<T extends Record<string, number>> = {
     angle?: number;
     height?: number;
   };
-};
+}
 
 export type Series<T extends Record<string, number>, S> = S & {
   yAxisId?: number;

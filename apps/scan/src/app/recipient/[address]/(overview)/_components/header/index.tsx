@@ -12,9 +12,9 @@ import { HydrateClient } from '@/trpc/server';
 import { LoadingHeaderButtons } from './buttons';
 import { HeaderCardContent } from './content';
 
-type Props = {
+interface Props {
   address: string;
-};
+}
 
 export const HeaderCard: React.FC<Props> = ({ address }) => {
   return (

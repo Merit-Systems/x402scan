@@ -2,13 +2,13 @@ import { SiweMessage } from 'siwe';
 import { SIWE_PROVIDER_ID, SIWE_STATEMENT } from './constants';
 import { getCsrfToken, signIn } from 'next-auth/react';
 
-type SignInWithEthereumOptions = {
+interface SignInWithEthereumOptions {
   address: string;
   chainId: number;
   signMessage: (message: string) => Promise<string>;
   email?: string;
   redirectTo?: string;
-};
+}
 
 export async function signInWithEthereum({
   address,

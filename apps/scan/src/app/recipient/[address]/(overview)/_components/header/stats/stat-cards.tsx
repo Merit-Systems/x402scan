@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 import { StatsCardsContent, LoadingStatsCards } from './content';
 
-type Props = {
+interface Props {
   address: string;
-};
+}
 
 export const StatsCards: React.FC<Props> = ({ address }) => {
   return (

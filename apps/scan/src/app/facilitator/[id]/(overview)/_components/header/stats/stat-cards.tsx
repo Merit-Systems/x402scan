@@ -2,9 +2,9 @@ import { Suspense } from 'react';
 import { HydrateClient } from '@/trpc/server';
 import { StatsCardsContent, LoadingStatsCards } from './content';
 
-type Props = {
+interface Props {
   id: string;
-};
+}
 
 export const StatsCards: React.FC<Props> = ({ id }) => {
   return (

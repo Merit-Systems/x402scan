@@ -3,9 +3,9 @@ import { LoadingStatsCards, StatsCards } from './stat-cards';
 
 import type { RouterOutputs } from '@/trpc/client';
 
-type Props = {
+interface Props {
   stats: RouterOutputs['public']['facilitators']['list']['items'][number];
-};
+}
 
 export const FacilitatorStats: React.FC<Props> = ({ stats }) => {
   return (

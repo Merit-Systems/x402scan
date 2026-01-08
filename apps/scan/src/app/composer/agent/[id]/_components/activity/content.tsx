@@ -4,9 +4,9 @@ import { api } from '@/trpc/client';
 import type { RouterOutputs } from '@/trpc/client';
 import { ActivityCharts } from './charts';
 
-type Props = {
+interface Props {
   agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
-};
+}
 
 export const ActivityContent: React.FC<Props> = ({ agentConfiguration }) => {
   const [bucketedActivity] =

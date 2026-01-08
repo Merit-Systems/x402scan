@@ -12,14 +12,14 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { LucideIcon } from 'lucide-react';
 
-type Props = {
+interface Props {
   id: string;
-};
+}
 
-type Stat = {
+interface Stat {
   title: string;
   Icon: LucideIcon;
-};
+}
 
 const stats: Stat[] = [
   { title: 'Requests', Icon: ArrowLeftRight },

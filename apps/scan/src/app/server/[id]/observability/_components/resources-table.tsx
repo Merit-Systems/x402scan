@@ -15,9 +15,9 @@ import { useObservabilityDataParams } from './use-observability-data';
 import type { Route } from 'next';
 import { api } from '@/trpc/client';
 
-type Props = {
+interface Props {
   originUrl: string;
-};
+}
 
 function encodeResourceId(url: string): string {
   // Encode URL as URL-safe base64

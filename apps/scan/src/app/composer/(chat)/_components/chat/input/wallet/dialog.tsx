@@ -24,10 +24,10 @@ import { WalletChain } from '@/app/_contexts/wallet-chain/component';
 
 import type { SupportedChain } from '@/types/chain';
 
-type Props = {
+interface Props {
   children: React.ReactNode;
   chainsWithBalance: [SupportedChain, ...SupportedChain[]];
-};
+}
 
 export const WalletDialog: React.FC<Props> = ({
   children,

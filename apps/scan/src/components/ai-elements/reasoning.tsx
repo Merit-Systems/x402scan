@@ -12,12 +12,12 @@ import type { ComponentProps } from 'react';
 import { createContext, memo, useContext, useEffect, useState } from 'react';
 import { Response } from './response';
 
-type ReasoningContextValue = {
+interface ReasoningContextValue {
   isStreaming: boolean;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   duration: number;
-};
+}
 
 const ReasoningContext = createContext<ReasoningContextValue | null>(null);
 

@@ -12,9 +12,9 @@ import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 import type { UiWalletAccount } from '@wallet-standard/react';
 import type { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
-type Props = {
+interface Props {
   connectedWallets: ConnectedWallets;
-};
+}
 
 export const Verify: React.FC<Props> = ({ connectedWallets }) => {
   if (connectedWallets.evmAddress) {
@@ -51,10 +51,10 @@ const VerifySvm = () => {
   return <VerifySvmContent account={connectedWallet.account} />;
 };
 
-type VerifyProps = {
+interface VerifyProps {
   signIn: () => void;
   isPending: boolean;
-};
+}
 
 const VerifyContent: React.FC<VerifyProps> = ({ signIn, isPending }) => {
   return (

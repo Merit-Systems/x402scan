@@ -10,10 +10,10 @@ import type { EcosystemCategory, EcosystemItem } from '@/lib/ecosystem/schema';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
-type Props = {
+interface Props {
   item: EcosystemItem;
   showBadge?: boolean;
-};
+}
 
 export const EcosystemCard: React.FC<Props> = ({ item, showBadge }) => {
   return (

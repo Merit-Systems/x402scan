@@ -17,13 +17,13 @@ import { parseChain } from '@/app/_lib/chain/parse';
 
 import type { SupportedChain } from '@/types/chain';
 
-type Props = {
+interface Props {
   children: React.ReactNode;
   initialTab?: 'wallet' | 'deposit' | 'withdraw';
   initialChain?: SupportedChain;
   isFixed?: boolean;
   watchOnramp?: boolean;
-};
+}
 
 export const WalletDialog: React.FC<Props> = ({
   children,

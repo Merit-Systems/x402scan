@@ -23,10 +23,10 @@ import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import type { User } from '@coinbase/cdp-hooks';
 
-type Props = {
+interface Props {
   address: string;
   user?: User;
-};
+}
 
 export const WalletContent: React.FC<Props> = ({ user, address }) => {
   const { data: session, status } = useSession();

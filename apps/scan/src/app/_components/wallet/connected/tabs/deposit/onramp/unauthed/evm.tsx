@@ -4,9 +4,9 @@ import { useSiwe } from '@/app/_hooks/sign-in/use-siwe';
 
 import type { Chain } from '@/types/chain';
 
-type Props = {
+interface Props {
   chain: Chain;
-};
+}
 
 export const NoEVMSessionContent: React.FC<Props> = ({ chain }) => {
   const { signIn, isPending } = useSiwe({

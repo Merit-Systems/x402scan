@@ -17,9 +17,9 @@ import { Button } from '@/components/ui/button';
 
 import { cn } from '@/lib/utils';
 
-type Props = {
+interface Props {
   setFlowId: (flowId: string) => void;
-};
+}
 
 export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
   const [email, setEmail] = useState('');

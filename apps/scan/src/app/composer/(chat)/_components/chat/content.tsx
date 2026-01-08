@@ -16,14 +16,14 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Suggestion, Suggestions } from '@/components/ai-elements/suggestion';
 import { useChat } from '../../_hooks/use-chat';
 
-type Props = {
+interface Props {
   id: string;
   initialMessages: Message[];
   isReadOnly?: boolean;
   initialConfig?: ChatConfig;
   storeConfig?: boolean;
   agentConfig?: RouterOutputs['public']['agents']['get'];
-};
+}
 
 export const ChatContent: React.FC<Props> = ({
   id,

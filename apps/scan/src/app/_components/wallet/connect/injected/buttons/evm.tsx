@@ -11,12 +11,12 @@ import { cn } from '@/lib/utils';
 
 import type { Connector } from 'wagmi';
 
-type Props = {
+interface Props {
   className?: string;
   buttonClassName?: string;
   connectors: Connector[];
   prefix?: string;
-};
+}
 
 export const ConnectEVMInjectedWalletButtons: React.FC<Props> = ({
   connectors,
@@ -38,11 +38,11 @@ export const ConnectEVMInjectedWalletButtons: React.FC<Props> = ({
   );
 };
 
-type ConnectEVMInjectedWalletButtonProps = {
+interface ConnectEVMInjectedWalletButtonProps {
   connector: Connector;
   className?: string;
   prefix?: string;
-};
+}
 
 const ConnectEVMInjectedWalletButton: React.FC<
   ConnectEVMInjectedWalletButtonProps

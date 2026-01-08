@@ -13,9 +13,9 @@ import { BotOff } from 'lucide-react';
 import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
 import { defaultAgentsSorting } from '@/app/_contexts/sorting/agents/default';
 
-type Props = {
+interface Props {
   originId: string;
-};
+}
 
 export const OriginAgentsContent: React.FC<Props> = ({ originId }) => {
   const [agents] = api.public.agents.list.useSuspenseQuery({

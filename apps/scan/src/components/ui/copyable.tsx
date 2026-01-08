@@ -3,12 +3,12 @@
 import React from 'react';
 import { toast } from 'sonner';
 
-type CopyableProps = {
+interface CopyableProps {
   value: string;
   children?: React.ReactNode;
   className?: string;
   toastMessage?: string;
-};
+}
 
 export const Copyable: React.FC<CopyableProps> = ({
   value,

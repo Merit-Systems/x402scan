@@ -15,12 +15,12 @@ import { getBazaarMethod } from './executor/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
 
-type Props = {
+interface Props {
   resources: RouterOutputs['public']['origins']['list']['withResources'][number]['resources'];
   defaultOpen?: boolean;
   hideOrigin?: boolean;
   isFlat?: boolean;
-};
+}
 
 export const OriginResources: React.FC<Props> = ({
   resources,

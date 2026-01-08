@@ -9,9 +9,9 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
-type NgrokAlertProps = {
+interface NgrokAlertProps {
   port: string | null;
-};
+}
 
 export function NgrokAlert({ port }: NgrokAlertProps) {
   const [copied, setCopied] = useState(false);

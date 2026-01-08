@@ -5,9 +5,9 @@ import { useMutation } from '@tanstack/react-query';
 import { signInWithEthereum } from '@/auth/providers/siwe/sign-in';
 import { toast } from 'sonner';
 
-type Props = {
+interface Props {
   redirectParams?: Record<string, string>;
-};
+}
 
 export const useSiwe = (props?: Props) => {
   const { address } = useAccount();

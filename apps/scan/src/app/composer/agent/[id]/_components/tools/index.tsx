@@ -4,9 +4,9 @@ import { LoadingToolCard, ToolCard } from './card';
 
 import type { RouterOutputs } from '@/trpc/client';
 
-type Props = {
+interface Props {
   resources: NonNullable<RouterOutputs['public']['agents']['get']>['resources'];
-};
+}
 
 export const Tools: React.FC<Props> = ({ resources }) => {
   return (

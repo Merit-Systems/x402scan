@@ -9,14 +9,14 @@ import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';
 import type { UiWalletAccount } from '@wallet-standard/react';
 import type { Signer } from 'x402-fetch';
 
-type UseSvmX402FetchWithConfirmationParams<TData = unknown> = {
+interface UseSvmX402FetchWithConfirmationParams<TData = unknown> {
   targetUrl: string;
   value: bigint;
   account: UiWalletAccount;
   init?: RequestInit;
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
-};
+}
 
 /**
  * Solana (SVM) specific hook for x402 payments with dynamic price confirmation.

@@ -18,11 +18,11 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-type ResourceExecutorModalProps = {
+interface ResourceExecutorModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resourceId: string;
-};
+}
 
 export function ResourceExecutorModal({
   open,

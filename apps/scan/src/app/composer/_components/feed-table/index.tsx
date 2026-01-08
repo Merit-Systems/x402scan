@@ -2,9 +2,9 @@ import { api, HydrateClient } from '@/trpc/server';
 import { FeedTableContent, LoadingFeedTableContent } from './table';
 import { Suspense } from 'react';
 
-type Props = {
+interface Props {
   limit?: number;
-};
+}
 
 export const FeedTable = ({ limit = 10 }: Props) => {
   void api.public.agents.activity.feed.prefetch({

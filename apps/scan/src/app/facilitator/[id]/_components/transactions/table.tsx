@@ -9,10 +9,10 @@ import { useTransfersSorting } from '@/app/_contexts/sorting/transfers/hook';
 import { useState } from 'react';
 import { ActivityTimeframe } from '@/types/timeframes';
 
-type Props = {
+interface Props {
   facilitatorId: string;
   pageSize: number;
-};
+}
 
 export const LatestTransactionsTable: React.FC<Props> = ({
   facilitatorId,

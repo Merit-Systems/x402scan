@@ -37,7 +37,7 @@ import { cn } from '@/lib/utils';
 
 import type z from 'zod';
 
-type Props = {
+interface Props {
   onSubmit: (data: z.infer<typeof agentConfigurationSchema>) => void;
   isSubmitting: boolean;
   defaultValues?: z.input<typeof agentConfigurationSchema>;
@@ -45,7 +45,7 @@ type Props = {
     default: string;
     submitting: string;
   };
-};
+}
 
 export const AgentForm: React.FC<Props> = ({
   defaultValues,

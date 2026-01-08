@@ -2,9 +2,9 @@ import { OriginOverviewSection } from '../section';
 import { LoadingAgentCard } from '@/app/composer/(home)/_components/lib/agent-card';
 import { OriginAgentsContent } from './content';
 
-type Props = {
+interface Props {
   originId: string;
-};
+}
 
 export const OriginAgents: React.FC<Props> = ({ originId }) => {
   return (

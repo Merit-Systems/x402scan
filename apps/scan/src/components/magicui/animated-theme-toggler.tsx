@@ -12,9 +12,9 @@ import { Button } from '@/components/ui/button';
 
 import { cn } from '@/lib/utils';
 
-type props = {
+interface props {
   className?: string;
-};
+}
 
 export const AnimatedThemeToggler = ({ className }: props) => {
   const buttonRef = useRef<HTMLButtonElement | null>(null);

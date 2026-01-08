@@ -16,9 +16,9 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
 
-type Props = {
+interface Props {
   chain?: Chain;
-};
+}
 
 export const OverallStats: React.FC<Props> = ({ chain }) => {
   void api.public.stats.overall.prefetch({

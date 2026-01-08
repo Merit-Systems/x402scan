@@ -10,13 +10,13 @@ import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 import type { Route } from 'next';
 
-type HeadingProps = {
+interface HeadingProps {
   title: string | ReactNode;
   icon?: ReactNode;
   description?: string | ReactNode;
   actions?: ReactNode;
   className?: string;
-};
+}
 
 export const Heading: React.FC<HeadingProps> = ({
   icon,
@@ -79,10 +79,10 @@ export const HeadingContainer = ({
   );
 };
 
-type BodyProps = {
+interface BodyProps {
   children: ReactNode;
   className?: string;
-};
+}
 
 export const Body: React.FC<BodyProps> = ({ children, className }) => {
   return (
@@ -97,14 +97,14 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
   );
 };
 
-export type SectionProps<T extends string> = {
+export interface SectionProps<T extends string> {
   title: string | ReactNode;
   description?: string;
   children: React.ReactNode;
   actions?: React.ReactNode;
   className?: string;
   href?: Route<T>;
-};
+}
 
 const SectionHeader = ({
   title,

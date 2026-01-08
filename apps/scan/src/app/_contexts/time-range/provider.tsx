@@ -6,10 +6,10 @@ import { TimeRangeContext } from './context';
 
 import type { ActivityTimeframe } from '@/types/timeframes';
 
-type Props = {
+interface Props {
   children: React.ReactNode;
   initialTimeframe: ActivityTimeframe;
-};
+}
 
 export const TimeRangeProvider: React.FC<Props> = ({
   children,

@@ -14,9 +14,9 @@ import { api } from '@/trpc/client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-type Props = {
+interface Props {
   agentId: string;
-};
+}
 
 export const DeleteAgentButton: React.FC<Props> = ({ agentId }) => {
   const router = useRouter();

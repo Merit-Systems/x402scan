@@ -3,9 +3,9 @@ import React from 'react';
 import { Methods } from '@/types/x402';
 import { cn } from '@/lib/utils';
 
-type Props = {
+interface Props {
   method?: Methods;
-};
+}
 
 export const Method: React.FC<Props> = ({ method }) => {
   const methodClassName: Record<Methods, string> = {

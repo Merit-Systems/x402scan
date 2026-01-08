@@ -164,11 +164,11 @@ export const Send: React.FC = () => {
   );
 };
 
-type Props = {
+interface Props {
   amount: number;
   toAddress: string;
   onReset: () => void;
-};
+}
 
 const WithdrawSuccess: React.FC<Props> = ({ amount, toAddress, onReset }) => {
   return (

@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-type ConfirmDialogProps = {
+interface ConfirmDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
@@ -20,7 +20,7 @@ type ConfirmDialogProps = {
   cancelLabel?: string;
   onConfirm: () => void;
   variant?: 'default' | 'destructive';
-};
+}
 
 export const ConfirmDialog = ({
   open,

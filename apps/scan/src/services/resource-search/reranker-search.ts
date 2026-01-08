@@ -1,7 +1,7 @@
 import { env } from '@/env';
 import type { EnrichedSearchResult, RerankedSearchResult } from './types';
 
-type JinaRerankerResponse = {
+interface JinaRerankerResponse {
   model: string;
   usage: {
     total_tokens: number;
@@ -14,7 +14,7 @@ type JinaRerankerResponse = {
     };
     relevance_score: number;
   }[];
-};
+}
 
 /**
  * Builds a text representation of a resource for reranking

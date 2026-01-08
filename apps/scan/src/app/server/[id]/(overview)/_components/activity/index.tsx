@@ -12,9 +12,9 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
 
-type Props = {
+interface Props {
   originId: string;
-};
+}
 
 export const OriginActivity: React.FC<Props> = ({ originId }) => {
   const [metadata] = api.public.origins.getMetadata.useSuspenseQuery(originId);

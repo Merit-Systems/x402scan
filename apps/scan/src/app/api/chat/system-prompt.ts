@@ -8,11 +8,11 @@ Your goal is to help users test out the long-term potential of the x402 ecosyste
 
 You should absolutely never provide financial advice to users.`;
 
-type AgentSystemPromptProps = {
+interface AgentSystemPromptProps {
   agentName: string;
   agentDescription: string;
   systemPrompt: string;
-};
+}
 
 export const agentSystemPrompt = ({
   agentName,

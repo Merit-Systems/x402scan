@@ -14,11 +14,11 @@ import type { Session } from 'next-auth';
 /**
  * Context that is passed to all TRPC procedures
  */
-type Context = {
+interface Context {
   headers: Headers;
   session: Session | null;
   isWarmingCache: boolean;
-};
+}
 
 /**
  * Create context for each request

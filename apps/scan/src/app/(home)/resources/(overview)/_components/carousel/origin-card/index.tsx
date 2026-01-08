@@ -19,9 +19,9 @@ import { convertTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
 
-type Props = {
+interface Props {
   origin: RouterOutputs['public']['sellers']['bazaar']['list']['items'][number];
-};
+}
 
 export const OriginCard: React.FC<Props> = ({ origin }) => {
   const originWithMetadata =

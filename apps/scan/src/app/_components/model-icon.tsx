@@ -2,10 +2,10 @@ import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
 
-type Props = {
+interface Props {
   provider: string;
   className?: string;
-};
+}
 
 export const ModelProviderIcon: React.FC<Props> = ({ provider, className }) => {
   return (

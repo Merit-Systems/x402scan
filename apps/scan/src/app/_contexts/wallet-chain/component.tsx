@@ -21,9 +21,9 @@ import { SUPPORTED_CHAINS, CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
 
-type Props = {
+interface Props {
   options?: SupportedChain[];
-};
+}
 
 export const WalletChain: React.FC<Props> = ({ options }) => {
   const { isFixed } = useWalletChain();

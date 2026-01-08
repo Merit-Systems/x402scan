@@ -213,10 +213,10 @@ export const listResources = createCachedArrayQuery({
 
 export type ResourceSortId = 'lastUpdated' | 'toolCalls';
 
-type ResourceSorting = {
+interface ResourceSorting {
   id: ResourceSortId;
   desc: boolean;
-};
+}
 
 export const listResourcesWithPaginationUncached = async (
   input: { where?: Prisma.ResourcesWhereInput; sorting?: ResourceSorting },

@@ -14,7 +14,7 @@ import type { SupportedChain } from '@/types/chain';
 import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
 
-type X402ToolResponse = {
+interface X402ToolResponse {
   id: string;
   favicon: string | null;
   resource: string;
@@ -24,7 +24,7 @@ type X402ToolResponse = {
     maxAmountRequired: number;
     chain: SupportedChain;
   }[];
-};
+}
 
 export async function searchX402Tools(
   input: z.infer<typeof searchResourcesSchema>

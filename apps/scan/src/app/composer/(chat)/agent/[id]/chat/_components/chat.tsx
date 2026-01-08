@@ -3,12 +3,12 @@ import { Chat } from '../../../../_components/chat';
 import type { Message } from '@x402scan/scan-db/types';
 import type { RouterOutputs } from '@/trpc/client';
 
-type Props = {
+interface Props {
   id: string;
   initialMessages: Message[];
   agentConfig: NonNullable<RouterOutputs['public']['agents']['get']>;
   isReadOnly?: boolean;
-};
+}
 
 export const AgentChat: React.FC<Props> = ({
   id,

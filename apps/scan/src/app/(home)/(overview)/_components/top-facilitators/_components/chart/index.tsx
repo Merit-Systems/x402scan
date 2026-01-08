@@ -11,9 +11,9 @@ import { useChain } from '@/app/_contexts/chain/hook';
 import { api } from '@/trpc/client';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
-type Props = {
+interface Props {
   facilitatorId: string;
-};
+}
 
 export const FacilitatorChart: React.FC<Props> = ({ facilitatorId }) => {
   const { chain } = useChain();

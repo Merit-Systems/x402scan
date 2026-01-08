@@ -13,13 +13,13 @@ import { useAgentsSorting } from '@/app/_contexts/sorting/agents/hook';
 import type { RouterInputs } from '@/trpc/client';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
-type Props = {
+interface Props {
   input: Omit<
     RouterInputs['public']['agents']['list'],
     'sorting' | 'pagination'
   >;
   limit?: number;
-};
+}
 
 export const AgentsTable: React.FC<Props> = ({ input, limit = 10 }) => {
   const { timeframe } = useTimeRangeContext();

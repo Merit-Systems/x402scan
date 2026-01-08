@@ -20,7 +20,7 @@ import type { UiWalletAccount } from '@wallet-standard/react';
 import type { UseMutationOptions } from '@tanstack/react-query';
 import type { X402FetchResponse } from '@/app/_hooks/x402/types';
 
-type Props<TData = unknown> = {
+interface Props<TData = unknown> {
   allRequiredFieldsFilled: boolean;
   maxAmountRequired: bigint;
   targetUrl: string;
@@ -28,7 +28,7 @@ type Props<TData = unknown> = {
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
   text?: string;
-};
+}
 
 export const FetchSvm: React.FC<Props> = ({
   allRequiredFieldsFilled,

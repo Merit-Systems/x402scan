@@ -11,14 +11,14 @@ import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';
 import type { Chain } from '@/types/chain';
 import type { Signer } from 'x402-fetch';
 
-type UseEvmX402FetchWithConfirmationParams<TData = unknown> = {
+interface UseEvmX402FetchWithConfirmationParams<TData = unknown> {
   targetUrl: string;
   value: bigint;
   chain: Chain;
   init?: RequestInit;
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
-};
+}
 
 /**
  * EVM-specific hook for x402 payments with dynamic price confirmation.

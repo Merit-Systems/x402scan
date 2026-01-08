@@ -6,11 +6,11 @@ import { usePathname } from 'next/navigation';
 
 import { cn } from '@/lib/utils';
 
-type Props = {
+interface Props {
   href: string;
   children: React.ReactNode;
   subRoutes?: string[];
-};
+}
 
 export const MotionTab = forwardRef<HTMLLIElement, Props>(
   ({ href, children, subRoutes }, ref) => {

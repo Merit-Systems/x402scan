@@ -182,10 +182,10 @@ const ModelSelectContent: React.FC<{
   </Command>
 );
 
-type Props = {
+interface Props {
   model: LanguageModel;
   setModel: (model: LanguageModel) => void;
-};
+}
 export const ModelSelect: React.FC<Props> = ({ model, setModel }) => {
   const isMobile = useIsMobile();
 

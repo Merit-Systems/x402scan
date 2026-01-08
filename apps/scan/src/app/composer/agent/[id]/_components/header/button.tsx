@@ -10,9 +10,9 @@ import { auth } from '@/auth';
 import type { RouterOutputs } from '@/trpc/client';
 import { MessageSquare, Pencil } from 'lucide-react';
 
-type Props = {
+interface Props {
   agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
-};
+}
 
 export const HeaderButtons: React.FC<Props> = ({ agentConfiguration }) => {
   return (

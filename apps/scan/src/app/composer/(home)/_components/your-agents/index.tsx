@@ -3,9 +3,9 @@ import { Section } from '@/app/_components/layout/page-utils';
 import { YourAgentsContent } from './content';
 import { LoadingAgentCard } from '../lib/agent-card';
 
-type Props = {
+interface Props {
   userId: string;
-};
+}
 
 // Note: No HydrateClient here - parent page.tsx provides it
 export const YourAgents: React.FC<Props> = ({ userId }) => {

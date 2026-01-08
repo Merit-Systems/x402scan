@@ -21,10 +21,10 @@ import { Label } from '@/components/ui/label';
 
 import { cn } from '@/lib/utils';
 
-type Props = {
+interface Props {
   flowId: string;
   handleReset: () => void;
-};
+}
 
 export const EmbeddedWalletOTP: React.FC<Props> = ({ flowId, handleReset }) => {
   const [otp, setOtp] = useState('');

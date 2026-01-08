@@ -11,9 +11,9 @@ import {
 
 type Config = NonNullable<RouterOutputs['public']['agents']['get']>;
 
-type Props = {
+interface Props {
   agentConfiguration: Config;
-};
+}
 
 const statCards = [
   {
@@ -80,11 +80,11 @@ const AgentStatsContainer = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-type BaseStatCardProps = {
+interface BaseStatCardProps {
   title: string;
   value: React.ReactNode;
   Icon: LucideIcon;
-};
+}
 
 const BaseStatCard: React.FC<BaseStatCardProps> = ({ title, value, Icon }) => {
   return (

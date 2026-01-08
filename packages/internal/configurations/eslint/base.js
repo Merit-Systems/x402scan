@@ -18,9 +18,6 @@ export const config = [
         projectService: true,
       },
     },
-    rules: {
-      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
-    },
   },
   eslintConfigPrettier,
   {

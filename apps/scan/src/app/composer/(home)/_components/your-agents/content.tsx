@@ -4,9 +4,9 @@ import { api } from '@/trpc/client';
 import { AgentCard } from '../lib/agent-card';
 import { ActivityTimeframe } from '@/types/timeframes';
 
-type Props = {
+interface Props {
   userId: string;
-};
+}
 
 export const YourAgentsContent: React.FC<Props> = ({ userId }) => {
   const [yourAgents] = api.public.agents.list.useSuspenseQuery({

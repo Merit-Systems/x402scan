@@ -11,11 +11,11 @@ import { cn, formatCurrency } from '@/lib/utils';
 import type { RouterOutputs } from '@/trpc/client';
 import type { SelectedResource } from '../../../_types/chat-config';
 
-type Props = {
+interface Props {
   isSelected: boolean;
   resource: RouterOutputs['public']['tools']['search'][number];
   onSelectResource: (resource: SelectedResource) => void;
-};
+}
 
 export const BaseResourceItem: React.FC<Props> = ({
   resource,

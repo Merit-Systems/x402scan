@@ -7,9 +7,9 @@ import { Chain } from '@/app/_components/chains';
 
 import type { SupportedChain } from '@/types/chain';
 
-type Props = {
+interface Props {
   chain: SupportedChain;
-};
+}
 
 export const ConnectWalletState: React.FC<Props> = ({ chain }) => {
   return (

@@ -22,12 +22,12 @@ type Resource =
 type Metadata =
   RouterOutputs['admin']['resources']['requestMetadata']['list'][number];
 
-type EditMetadataModalProps = {
+interface EditMetadataModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resource: Resource;
   existingMetadata?: Metadata;
-};
+}
 
 export const EditMetadataModal = ({
   open,

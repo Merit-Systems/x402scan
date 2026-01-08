@@ -7,10 +7,10 @@ import { CopyIcon } from 'lucide-react';
 
 import type { TextUIPart } from 'ai';
 
-type Props = {
+interface Props {
   part: TextUIPart;
   showActions: boolean;
-};
+}
 
 export const TextPart: React.FC<Props> = ({ part, showActions }) => {
   return (

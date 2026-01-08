@@ -8,10 +8,10 @@ import { formatTokenAmount } from '@/lib/token';
 
 import type { Chain as ChainType } from '@/types/chain';
 
-type Props = {
+interface Props {
   chain: ChainType;
   maxAmountRequired: bigint;
-};
+}
 
 export const LoadingState: React.FC<Props> = ({ chain, maxAmountRequired }) => {
   return (

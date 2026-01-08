@@ -9,9 +9,9 @@ import { useFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/hoo
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { useChain } from '@/app/_contexts/chain/hook';
 
-type Props = {
+interface Props {
   pageSize: number;
-};
+}
 
 export const FacilitatorsTable: React.FC<Props> = ({ pageSize }) => {
   const { sorting } = useFacilitatorsSorting();

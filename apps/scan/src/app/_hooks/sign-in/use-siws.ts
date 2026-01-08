@@ -10,10 +10,10 @@ import { signInWithSolana } from '@/auth/providers/siws/sign-in';
 
 import type { UiWalletAccount } from '@wallet-standard/react';
 
-type Props = {
+interface Props {
   account: UiWalletAccount;
   redirectParams?: Record<string, string>;
-};
+}
 
 export const useSiws = (props: Props) => {
   const { account, redirectParams } = props;

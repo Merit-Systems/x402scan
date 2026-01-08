@@ -8,9 +8,9 @@ import {
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { api } from '@/trpc/client';
 
-type Props = {
+interface Props {
   addresses: string[];
-};
+}
 
 export const KnownSellerChart = ({ addresses }: Props) => {
   const { timeframe } = useTimeRangeContext();

@@ -8,13 +8,13 @@ import type { Resources, Tag } from '@x402scan/scan-db/types';
 import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 
-type Props = {
+interface Props {
   resource: Resources;
   tags: Tag[];
   method: Methods;
   response: ParsedX402Response;
   hideOrigin?: boolean;
-};
+}
 
 export const Header: React.FC<Props> = ({
   resource,

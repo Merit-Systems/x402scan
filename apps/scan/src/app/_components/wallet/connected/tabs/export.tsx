@@ -24,9 +24,9 @@ import { Chain } from '@/types/chain';
 
 import type { Address } from 'viem';
 
-type Props = {
+interface Props {
   address: string;
-};
+}
 
 export const ExportWallet: React.FC<Props> = ({ address }) => {
   const { chain } = useWalletChain();

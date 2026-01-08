@@ -15,14 +15,14 @@ import type { Token } from '@/types/token';
 import type { SolanaAddress } from '@/types/address';
 import type { UiWalletAccount } from '@wallet-standard/react';
 
-type Props = {
+interface Props {
   account: UiWalletAccount;
   token?: Token;
   onSuccess?: () => void;
   toastMessage?: (amount: number) => string;
   address?: SolanaAddress;
   amount?: number;
-};
+}
 
 export const useSvmSend = ({
   account,

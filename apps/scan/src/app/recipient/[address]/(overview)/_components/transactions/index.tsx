@@ -12,9 +12,9 @@ import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/defau
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 
-type Props = {
+interface Props {
   address: string;
-};
+}
 
 export const LatestTransactions: React.FC<Props> = ({ address }) => {
   const pageSize = 10;

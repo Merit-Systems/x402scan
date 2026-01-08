@@ -11,14 +11,14 @@ import type { LucideIcon } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
 import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
 
-type Props = {
+interface Props {
   address: string;
-};
+}
 
-type Stat = {
+interface Stat {
   title: string;
   Icon: LucideIcon;
-};
+}
 
 const stats: Stat[] = [
   { title: 'Requests', Icon: ArrowLeftRight },

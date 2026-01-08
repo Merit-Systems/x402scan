@@ -2,11 +2,11 @@ import { subDays, format } from 'date-fns';
 
 import type { ChartData } from './types';
 
-type Props = {
+interface Props {
   baseValue?: number;
   variance?: number;
   days?: number;
-};
+}
 
 export const simulateChartData = ({
   baseValue = 10,

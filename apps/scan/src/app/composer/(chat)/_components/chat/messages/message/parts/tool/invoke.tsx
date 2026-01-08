@@ -11,14 +11,14 @@ import type { UseChatHelpers } from '@ai-sdk/react';
 import type { ToolUIPart, UIMessage } from 'ai';
 import { parseUnits } from 'viem';
 
-type Props = {
+interface Props {
   isResourceLoading: boolean;
   resource: RouterOutputs['public']['resources']['get'] | undefined;
   input: ToolUIPart['input'];
   chatId: string;
   addToolResult: UseChatHelpers<UIMessage>['addToolResult'];
   toolCallId: string;
-};
+}
 
 export const ToolInvoke: React.FC<Props> = ({
   isResourceLoading,

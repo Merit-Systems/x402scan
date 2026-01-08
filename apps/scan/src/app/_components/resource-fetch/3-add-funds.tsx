@@ -9,10 +9,10 @@ import { formatTokenAmount } from '@/lib/token';
 
 import type { SupportedChain } from '@/types/chain';
 
-type Props = {
+interface Props {
   chain: SupportedChain;
   maxAmountRequired: bigint;
-};
+}
 
 export const AddFundsState: React.FC<Props> = ({
   chain,

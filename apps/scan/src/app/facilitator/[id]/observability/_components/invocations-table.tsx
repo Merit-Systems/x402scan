@@ -22,9 +22,9 @@ import { api } from '@/trpc/client';
 import { useObservabilityDataParams } from './use-observability-data';
 import { Fragment } from 'react';
 
-type Props = {
+interface Props {
   facilitatorName: string;
-};
+}
 
 export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
   const [currentPage, setCurrentPage] = useState(1);

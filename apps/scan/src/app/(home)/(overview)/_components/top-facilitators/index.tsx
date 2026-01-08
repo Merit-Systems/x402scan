@@ -18,9 +18,9 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
 
-type Props = {
+interface Props {
   chain?: Chain;
-};
+}
 
 export const TopFacilitators: React.FC<Props> = ({ chain }) => {
   const chainFacilitators = chain

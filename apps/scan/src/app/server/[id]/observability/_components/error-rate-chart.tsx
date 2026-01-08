@@ -8,10 +8,10 @@ import { useObservabilityDataParams } from './use-observability-data';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { api } from '@/trpc/client';
 
-type Props = {
+interface Props {
   originUrl: string;
   resourceUrl?: string;
-};
+}
 
 export const ErrorRateChart: React.FC<Props> = ({ originUrl, resourceUrl }) => {
   const params = useObservabilityDataParams();

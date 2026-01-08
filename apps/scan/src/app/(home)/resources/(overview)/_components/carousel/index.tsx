@@ -8,13 +8,13 @@ import type { RouterInputs } from '@/trpc/client';
 import type { SectionProps } from '@/app/_components/layout/page-utils';
 import type { LucideIcon } from 'lucide-react';
 
-type Props<T extends string> = {
+interface Props<T extends string> {
   sectionProps: Omit<SectionProps<T>, 'children' | 'actions'> & {
     Icon: LucideIcon;
   };
   input: RouterInputs['public']['sellers']['bazaar']['list'];
   hideCount?: boolean;
-};
+}
 
 export const OriginsCarousel = <T extends string>({
   sectionProps,

@@ -5,11 +5,11 @@ import { ArrowDown, ArrowUp, type LucideIcon } from 'lucide-react';
 import type { SortingContext } from '@/app/_contexts/sorting/base/context';
 import { useSorting } from '@/app/_contexts/sorting/base/hook';
 
-type BaseProps = {
+interface BaseProps {
   Icon: LucideIcon;
   label: string;
   className?: string;
-};
+}
 
 type Props<SortKey extends string> = {
   sorting?: SortingProps<SortKey>;
@@ -35,10 +35,10 @@ export const HeaderCell = <SortKey extends string>({
   return <HeaderCellInternal Icon={Icon} label={label} className={className} />;
 };
 
-type SortingProps<SortKey extends string> = {
+interface SortingProps<SortKey extends string> {
   sortContext: SortingContext<SortKey>;
   sortKey: SortKey;
-};
+}
 
 const SortableHeaderCell = <SortKey extends string>({
   Icon,

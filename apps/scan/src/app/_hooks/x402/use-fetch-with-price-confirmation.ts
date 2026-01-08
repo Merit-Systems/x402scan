@@ -4,34 +4,34 @@ import { useMutation } from '@tanstack/react-query';
 import type { UseMutationOptions } from '@tanstack/react-query';
 import type { X402FetchResponse, FetchWithPaymentWrapper } from './types';
 
-type UseX402FetchWithPriceConfirmationParams<TData = unknown> = {
+interface UseX402FetchWithPriceConfirmationParams<TData = unknown> {
   wrapperFn: FetchWithPaymentWrapper;
   targetUrl: string;
   initialMaxValue: bigint;
   init?: RequestInit;
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   fetchFn: typeof fetch;
-};
+}
 
-type PriceIncreaseInfo = {
+interface PriceIncreaseInfo {
   oldPrice: bigint;
   newPrice: bigint;
-};
+}
 
 /**
  * Type definition for x402 payment acceptance options
  */
-type X402Accept = {
+interface X402Accept {
   maxAmountRequired?: string | number;
   max_amount_required?: string | number;
-};
+}
 
 /**
  * Type definition for x402 402 response data
  */
-type X402Response = {
+interface X402Response {
   accepts?: X402Accept[];
-};
+}
 
 /**
  * Hook for handling x402 payments with dynamic price confirmation.

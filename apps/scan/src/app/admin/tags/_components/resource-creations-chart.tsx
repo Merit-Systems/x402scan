@@ -17,13 +17,13 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { api } from '@/trpc/client';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
-type ResourceCreationData = {
+interface ResourceCreationData {
   total_resources: number;
-};
+}
 
-type ResourceCreationsChartProps = {
+interface ResourceCreationsChartProps {
   selectedTagIds: string[];
-};
+}
 
 export const ResourceCreationsChart = ({
   selectedTagIds,

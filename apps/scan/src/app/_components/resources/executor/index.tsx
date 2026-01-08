@@ -19,7 +19,7 @@ import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 import type { Resources, Tag } from '@x402scan/scan-db';
 
-type Props = {
+interface Props {
   resource: Resources;
   tags: Tag[];
   response: ParsedX402Response;
@@ -28,7 +28,7 @@ type Props = {
   hideOrigin?: boolean;
   defaultOpen?: boolean;
   isFlat?: boolean;
-};
+}
 
 export const ResourceExecutor: React.FC<Props> = ({
   resource,

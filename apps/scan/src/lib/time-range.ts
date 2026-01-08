@@ -30,10 +30,10 @@ export function getTimeRangeFromTimeframe(
   return { startDate, endDate };
 }
 
-type BucketedTimeframeProps = {
+interface BucketedTimeframeProps {
   period: z.infer<typeof timePeriodSchema>;
   creationDate: Date | (() => Promise<Date>);
-};
+}
 
 export const getBucketedTimeRangeFromTimeframe = async ({
   period,

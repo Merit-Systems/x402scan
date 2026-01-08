@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 import type { RefObject } from 'react';
 
-type AnimatedBeamProps = {
+interface AnimatedBeamProps {
   className?: string;
   containerRef: RefObject<HTMLElement | null>; // Container ref
   fromRef: RefObject<HTMLElement | null>;
@@ -33,7 +33,7 @@ type AnimatedBeamProps = {
   repeatDelay?: number;
   beamWidth?: number;
   isFull?: boolean;
-};
+}
 
 export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   className,

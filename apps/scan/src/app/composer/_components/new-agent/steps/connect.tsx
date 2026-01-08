@@ -32,9 +32,9 @@ export const ConnectStep = () => {
   return <Verify connectedWallets={connectedWallets} />;
 };
 
-type Props = {
+interface Props {
   connectedWallets: ConnectedWallets;
-};
+}
 
 const Verify: React.FC<Props> = ({ connectedWallets }) => {
   if (connectedWallets.evmAddress) {
@@ -71,10 +71,10 @@ const VerifySvm = () => {
   return <VerifySvmContent account={connectedWallet.account} />;
 };
 
-type VerifyProps = {
+interface VerifyProps {
   signIn: () => void;
   isPending: boolean;
-};
+}
 
 const VerifyContent: React.FC<VerifyProps> = ({ signIn, isPending }) => {
   return (

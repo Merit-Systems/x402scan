@@ -13,12 +13,12 @@ import { Copyable } from '@/components/ui/copyable';
 import { createToolBreakdownColumns } from './breakdown-columns';
 import { api } from '@/trpc/client';
 
-type ToolBreakdownModalProps = {
+interface ToolBreakdownModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   walletId: string;
   walletName: string;
-};
+}
 
 export const ToolBreakdownModal = ({
   open,

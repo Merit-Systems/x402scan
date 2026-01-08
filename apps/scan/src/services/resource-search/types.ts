@@ -1,11 +1,11 @@
-export type ResourceAnalytics = {
+export interface ResourceAnalytics {
   totalCalls: number;
   avgDuration: number;
   successRate: number;
   sampleResponseBody: string | null;
-};
+}
 
-export type SearchResult = {
+export interface SearchResult {
   id: string;
   resource: string;
   type: string;
@@ -32,16 +32,16 @@ export type SearchResult = {
     color: string;
   }[];
   toolCallCount: number;
-};
+}
 
 export type EnrichedSearchResult = {
   analytics: ResourceAnalytics | null;
 } & SearchResult;
 
-export type FilterQuestion = {
+export interface FilterQuestion {
   question: string;
   index: number;
-};
+}
 
 export type FilteredSearchResult = {
   filterMatches: number;

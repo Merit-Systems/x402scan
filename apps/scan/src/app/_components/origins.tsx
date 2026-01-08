@@ -16,11 +16,11 @@ import { cn } from '@/lib/utils';
 import type { ResourceOrigin } from '@x402scan/scan-db/types';
 import type { MixedAddress } from '@/types/address';
 
-type Props = {
+interface Props {
   addresses: MixedAddress[];
   origins: ResourceOrigin[];
   disableCopy?: boolean;
-};
+}
 
 export const Origins: React.FC<Props> = ({
   origins,
@@ -108,11 +108,11 @@ export const Origins: React.FC<Props> = ({
   );
 };
 
-type OriginProps = {
+interface OriginProps {
   origin: ResourceOrigin;
   addresses: string[];
   disableCopy?: boolean;
-};
+}
 
 export const Origin: React.FC<OriginProps> = ({
   origin,
@@ -154,11 +154,11 @@ export const OriginsSkeleton = () => {
   );
 };
 
-type OriginsContainerProps = {
+interface OriginsContainerProps {
   Icon: ({ className }: { className: string }) => React.ReactNode;
   title: React.ReactNode;
   address: React.ReactNode;
-};
+}
 
 const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
   return (

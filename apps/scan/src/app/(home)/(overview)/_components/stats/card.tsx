@@ -21,14 +21,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 
-type Props<T extends Record<string, number>> = {
+interface Props<T extends Record<string, number>> {
   title: string;
   value: string;
   items: ChartItems<T>;
   percentageChange?: number;
   data: ChartData<T>[];
   tooltipRows?: TooltipRowProps<T>[];
-};
+}
 
 export const OverallStatsCard = <T extends Record<string, number>>({
   title,

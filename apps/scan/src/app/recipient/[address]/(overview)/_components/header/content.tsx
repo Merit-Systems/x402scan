@@ -15,9 +15,9 @@ import { api } from '@/trpc/client';
 import { Address } from '@/components/ui/address';
 import { HeaderButtons } from './buttons';
 
-type Props = {
+interface Props {
   address: string;
-};
+}
 
 export const HeaderCardContent: React.FC<Props> = ({ address }) => {
   const [origins] = api.public.origins.list.origins.useSuspenseQuery({

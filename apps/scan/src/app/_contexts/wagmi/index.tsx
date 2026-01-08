@@ -5,9 +5,9 @@ import { cookieToInitialState } from 'wagmi';
 import { WagmiProviderClient } from './client';
 import { createWagmiConfig } from './config';
 
-type Props = {
+interface Props {
   children: React.ReactNode;
-};
+}
 
 export const WagmiProvider: React.FC<Props> = async ({ children }) => {
   const initialState = cookieToInitialState(

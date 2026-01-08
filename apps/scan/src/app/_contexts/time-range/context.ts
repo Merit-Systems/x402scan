@@ -4,10 +4,10 @@ import { createContext } from 'react';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-type TimeRangeContextType = {
+interface TimeRangeContextType {
   timeframe: ActivityTimeframe;
   selectTimeframe: (timeframe: ActivityTimeframe) => void;
-};
+}
 
 export const TimeRangeContext = createContext<TimeRangeContextType>({
   timeframe: ActivityTimeframe.OneDay,

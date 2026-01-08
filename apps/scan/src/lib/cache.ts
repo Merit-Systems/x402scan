@@ -6,9 +6,9 @@ import { CACHE_DURATION_MINUTES } from './cache-constants';
 /**
  * Cache context that can be passed from tRPC to control cache behavior
  */
-type CacheContext = {
+interface CacheContext {
   isWarmingCache?: boolean;
-};
+}
 
 /**
  * Redis TTL is 3x the cache duration to provide buffer time.
@@ -254,11 +254,11 @@ export const createCachedArrayQuery = <
 /**
  * Base response shape for paginated queries (items + hasNextPage + page)
  */
-type BasePaginatedResponse<TItem> = {
+interface BasePaginatedResponse<TItem> {
   items: TItem[];
   hasNextPage: boolean;
   page: number;
-};
+}
 
 /**
  * Generic cached query wrapper for paginated responses with dates.

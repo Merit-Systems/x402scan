@@ -13,13 +13,13 @@ import { useEvmX402Fetch } from '../x402/evm';
 
 import type { Token } from '@/types/token';
 
-type Props = {
+interface Props {
   token?: Token;
   onSuccess?: () => void;
   toastMessage?: (amount: number) => string;
   address?: string;
   amount?: number;
-};
+}
 
 export const useEvmSend = (props?: Props) => {
   const { chain } = useWalletChain();

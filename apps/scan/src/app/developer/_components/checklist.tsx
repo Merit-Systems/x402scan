@@ -28,13 +28,13 @@ import { Code } from '@/components/ui/code';
 import { type parseX402Response } from '@/lib/x402/schema';
 import { CheckCircle, ChevronDown, Minus, XCircle } from 'lucide-react';
 
-type TestResult = {
+interface TestResult {
   ok: boolean;
   status: number;
   statusText: string;
   headers: Record<string, string>;
   body: unknown;
-};
+}
 
 type ParsedPair = {
   result: TestResult;

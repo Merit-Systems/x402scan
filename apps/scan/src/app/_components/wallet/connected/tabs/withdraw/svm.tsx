@@ -9,11 +9,11 @@ import { useSvmSend } from '@/app/_hooks/send/use-svm-send';
 import type { UiWalletAccount } from '@wallet-standard/react';
 import type { SolanaAddress } from '@/types/address';
 
-type Props = {
+interface Props {
   amount: number;
   toAddress: string;
   onSuccess: () => void;
-};
+}
 
 export const WithdrawSolana: React.FC<Props> = ({
   amount,

@@ -5,14 +5,14 @@ import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
 import type { UseMutationOptions } from '@tanstack/react-query';
 import type { X402FetchResponse, FetchWithPaymentWrapper } from './types';
 
-type UseX402FetchParams<TData = unknown> = {
+interface UseX402FetchParams<TData = unknown> {
   wrapperFn: FetchWithPaymentWrapper;
   targetUrl: string;
   value: bigint;
   init?: RequestInit;
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
-};
+}
 
 export const useX402Fetch = <TData = unknown>({
   wrapperFn,

@@ -9,11 +9,11 @@ import type { UseBalanceParameters } from 'wagmi';
 import type { Address } from 'viem';
 import type { UseBalanceReturnType } from '../types';
 
-type Props = {
+interface Props {
   token: Token;
   address?: Address;
   query?: UseBalanceParameters['query'];
-};
+}
 
 export const useEvmTokenBalance = (props: Props): UseBalanceReturnType => {
   const queryClient = useQueryClient();

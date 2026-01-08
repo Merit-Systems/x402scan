@@ -7,9 +7,9 @@ import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-bal
 import { usdc } from '@/lib/tokens/usdc';
 import { Skeleton } from '@/components/ui/skeleton';
 
-type Props = {
+interface Props {
   address: string;
-};
+}
 
 export const Balance: React.FC<Props> = ({ address }) => {
   const { chain } = useWalletChain();

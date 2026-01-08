@@ -25,10 +25,10 @@ import { cn } from '@/lib/utils';
 
 import type { SelectedResource } from '../../../_types/chat-config';
 
-type Props = {
+interface Props {
   resources: SelectedResource[];
   onSelectResource: (resource: SelectedResource) => void;
-};
+}
 
 export const ResourcesSelect: React.FC<Props> = ({
   resources,

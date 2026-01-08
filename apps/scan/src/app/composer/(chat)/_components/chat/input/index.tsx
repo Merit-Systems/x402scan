@@ -20,7 +20,7 @@ import type { ChatStatus } from 'ai';
 import type { SelectedResource } from '../../../_types/chat-config';
 import type { LanguageModel } from './model-select/types';
 
-type Props = {
+interface Props {
   input: string;
   setInput: (value: string) => void;
   handleSubmit: (e: React.FormEvent) => void;
@@ -30,7 +30,7 @@ type Props = {
   onSelectResource: (resource: SelectedResource) => void;
   status: ChatStatus;
   errorMessage: string | undefined;
-};
+}
 
 export const PromptInputSection: React.FC<Props> = ({
   input,

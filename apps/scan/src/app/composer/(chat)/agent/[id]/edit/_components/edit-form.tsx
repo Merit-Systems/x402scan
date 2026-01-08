@@ -10,9 +10,9 @@ import { AgentForm } from './form';
 
 import type { RouterOutputs } from '@/trpc/client';
 
-type Props = {
+interface Props {
   agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
-};
+}
 
 export const EditAgentForm: React.FC<Props> = ({ agentConfiguration }) => {
   const router = useRouter();

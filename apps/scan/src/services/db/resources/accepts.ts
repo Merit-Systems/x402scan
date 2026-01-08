@@ -5,10 +5,10 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import type { Chain } from '@/types/chain';
 import type { AcceptsNetwork, ResourceOrigin } from '@x402scan/scan-db';
 
-type GetAcceptsAddressesInput = {
+interface GetAcceptsAddressesInput {
   chain?: Chain;
   tags?: string[];
-};
+}
 
 export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
   const { chain, tags } = input;

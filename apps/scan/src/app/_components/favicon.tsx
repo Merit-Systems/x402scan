@@ -6,11 +6,11 @@ import type { LucideIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar } from '@/components/ui/avatar';
 
-type Props = {
+interface Props {
   url: string | null;
   className?: string;
   Fallback?: LucideIcon;
-};
+}
 
 export const Favicon = ({
   url,
@@ -28,13 +28,13 @@ export const Favicon = ({
   );
 };
 
-type FaviconsProps = {
+interface FaviconsProps {
   favicons: (string | null)[];
   numToShow?: number;
   orientation?: 'horizontal' | 'vertical';
   containerClassName?: string;
   iconContainerClassName?: string;
-};
+}
 
 export const Favicons: React.FC<FaviconsProps> = ({
   favicons,

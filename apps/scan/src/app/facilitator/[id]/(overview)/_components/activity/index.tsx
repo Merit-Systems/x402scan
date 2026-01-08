@@ -16,10 +16,10 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
 
-type Props = {
+interface Props {
   facilitatorId: string;
   chain?: Chain;
-};
+}
 
 const ActivityContainer = ({
   children,

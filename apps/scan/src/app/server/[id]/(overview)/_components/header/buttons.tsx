@@ -17,9 +17,9 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
-type Props = {
+interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
-};
+}
 
 const NoResourcesTooltip = ({ children }: { children: React.ReactNode }) => {
   return (

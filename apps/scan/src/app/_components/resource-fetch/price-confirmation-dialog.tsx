@@ -11,7 +11,7 @@ import {
 
 import { formatTokenAmount } from '@/lib/token';
 
-type Props = {
+interface Props {
   /** Whether the dialog is open */
   open: boolean;
   /** Callback when the dialog open state changes */
@@ -22,7 +22,7 @@ type Props = {
   oldPrice: bigint;
   /** The actual price from the 402 response (in token base units) */
   newPrice: bigint;
-};
+}
 
 /**
  * Dialog component that prompts users to confirm payment when a resource's

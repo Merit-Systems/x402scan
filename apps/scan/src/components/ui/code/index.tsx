@@ -9,12 +9,12 @@ import { highlight } from './shared';
 import type { JSX } from 'react';
 import type { BundledLanguage, Highlighter } from './shiki.bundle.ts';
 
-type Props = {
+interface Props {
   value: string;
   lang: BundledLanguage;
   initial?: JSX.Element;
   highlighter?: Highlighter;
-};
+}
 
 export const Code: React.FC<Props> = ({
   value,

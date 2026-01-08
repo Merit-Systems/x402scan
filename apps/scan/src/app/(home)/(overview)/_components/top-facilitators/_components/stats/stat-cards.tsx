@@ -7,14 +7,14 @@ import { formatTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
 
-type Props = {
+interface Props {
   stats: RouterOutputs['public']['facilitators']['list']['items'][number];
-};
+}
 
-type Stat = {
+interface Stat {
   title: string;
   Icon: LucideIcon;
-};
+}
 
 const statsData: Stat[] = [
   { title: 'Requests', Icon: ArrowLeftRight },

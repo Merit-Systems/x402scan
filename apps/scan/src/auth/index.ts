@@ -16,7 +16,7 @@ import type { DefaultSession } from 'next-auth';
 import type { Account, Role } from '@x402scan/scan-db/types';
 
 declare module 'next-auth' {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+   
   interface Session {
     user: {
       id: string;
@@ -25,14 +25,14 @@ declare module 'next-auth' {
     } & DefaultSession['user'];
   }
 
-  type AdapterUser = {
+  interface AdapterUser {
     id: string;
     email: string | null;
     role: Role;
     accounts: Account[];
-  };
+  }
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+   
   interface User {
     id?: string;
     email?: string | null;

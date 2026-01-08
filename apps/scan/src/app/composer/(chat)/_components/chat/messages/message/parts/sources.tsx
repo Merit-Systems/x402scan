@@ -7,9 +7,9 @@ import {
 
 import type { SourceUrlUIPart } from 'ai';
 
-type Props = {
+interface Props {
   parts: SourceUrlUIPart[];
-};
+}
 
 export const SourcesParts: React.FC<Props> = ({ parts }) => {
   if (parts.length === 0) {

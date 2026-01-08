@@ -3,9 +3,9 @@
 import { ResourceToolCallsByTagChart } from './resource-tool-calls-by-tag-chart';
 import { ResourceToolCallsByResourceChart } from './resource-tool-calls-by-resource-chart';
 
-type ResourceToolCallsChartProps = {
+interface ResourceToolCallsChartProps {
   selectedTagIds: string[];
-};
+}
 
 export const ResourceToolCallsChart = ({
   selectedTagIds,

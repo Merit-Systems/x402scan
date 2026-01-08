@@ -11,13 +11,13 @@ import { cn } from '@/lib/utils';
 import type { DropEvent, DropzoneOptions, FileRejection } from 'react-dropzone';
 import type { ReactNode } from 'react';
 
-type DropzoneContextType = {
+interface DropzoneContextType {
   src?: File[];
   accept?: DropzoneOptions['accept'];
   maxSize?: DropzoneOptions['maxSize'];
   minSize?: DropzoneOptions['minSize'];
   maxFiles?: DropzoneOptions['maxFiles'];
-};
+}
 
 const DropzoneContext = createContext<DropzoneContextType | undefined>(
   undefined

@@ -12,17 +12,17 @@ import { MotionTab } from './motion-tab';
 
 import type { Route } from 'next';
 
-type Tab<T extends string> = {
+interface Tab<T extends string> {
   label: string;
   href: Route<T>;
   subRoutes?: string[];
   external?: boolean;
   isNew?: boolean;
-};
+}
 
-type Props<T extends string = string> = {
+interface Props<T extends string = string> {
   tabs: Tab<T>[];
-};
+}
 
 export const Nav = <T extends string>({ tabs }: Props<T>) => {
   const [buttonRefs, setButtonRefs] = useState<(HTMLAnchorElement | null)[]>(

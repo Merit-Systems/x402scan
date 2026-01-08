@@ -18,9 +18,9 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
 
-type Props = {
+interface Props {
   chain?: Chain;
-};
+}
 
 export const TopServers: React.FC<Props> = ({ chain }) => {
   void api.public.sellers.bazaar.list.prefetch({

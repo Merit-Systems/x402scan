@@ -20,10 +20,10 @@ import { useForm } from 'react-hook-form';
 import { agentConfigurationSchema } from '@/services/db/agent-config/mutate/schema';
 import type z from 'zod';
 
-type Props = {
+interface Props {
   initialStep?: number;
   initialResourceIds?: string[];
-};
+}
 
 export const CreateAgentForm: React.FC<Props> = ({
   initialStep = 0,

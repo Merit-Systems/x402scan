@@ -28,22 +28,22 @@ import type { ParsedX402Response } from '@/lib/x402/schema';
 import type { X402FetchResponse } from '@/app/_hooks/x402/types';
 import type { JsonValue } from '@/components/ai-elements/json-viewer';
 
-type PropertyDefinition = {
+interface PropertyDefinition {
   type: string;
   description?: string;
   enum?: string[];
   isRequired: boolean;
-};
+}
 
 type Accept = NonNullable<ParsedX402Response['accepts']>[number];
 
-type Props = {
+interface Props {
   x402Response: ParsedX402Response;
   inputSchema: NonNullable<Accept['outputSchema']>['input'];
   maxAmountRequired: bigint;
   method: Methods;
   resource: string;
-};
+}
 
 export function Form({
   x402Response,

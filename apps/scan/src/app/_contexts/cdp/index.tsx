@@ -11,9 +11,9 @@ const CDPHooksProviderBase = dynamic(
   }
 );
 
-type Props = {
+interface Props {
   children: React.ReactNode;
-};
+}
 
 export const CDPHooksProvider = ({ children }: Props) => {
   return (

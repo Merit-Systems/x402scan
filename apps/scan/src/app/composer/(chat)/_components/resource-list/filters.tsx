@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
-type Props<T> = {
+interface Props<T> {
   title: string;
   items: T[];
   isLoading: boolean;
@@ -9,7 +9,7 @@ type Props<T> = {
   isSelected: (item: T) => boolean;
   itemKey: (item: T) => string;
   itemComponent: (item: T) => React.ReactNode;
-};
+}
 
 export const Filters = <T,>({
   title,

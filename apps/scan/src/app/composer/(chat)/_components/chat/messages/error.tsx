@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { AlertCircleIcon, RefreshCwIcon } from 'lucide-react';
 
-type Props = {
+interface Props {
   onRegenerate: () => void;
   message: string;
-};
+}
 
 export const ErrorState: React.FC<Props> = ({
   message = 'You need to regenerate the message to continue.',

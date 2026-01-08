@@ -22,11 +22,11 @@ import { Chain } from '@/types/chain';
 import type { User } from '@coinbase/cdp-hooks';
 import type { ConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
-type Props = {
+interface Props {
   connectedWallets: ConnectedWallets;
   user?: User;
   defaultTab?: 'wallet' | 'deposit' | 'withdraw';
-};
+}
 
 export const DisplayWalletDialogContent: React.FC<Props> = ({
   connectedWallets,

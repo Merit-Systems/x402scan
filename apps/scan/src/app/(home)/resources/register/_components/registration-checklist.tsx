@@ -8,12 +8,12 @@ import {
 } from '@/components/ui/table';
 import { CheckCircle, XCircle } from 'lucide-react';
 
-type RegistrationChecklistProps = {
+interface RegistrationChecklistProps {
   methodUsed?: string;
   hasAccepts: boolean;
   hasEnhancedSchema: boolean;
   hasOriginMetadata: boolean;
-};
+}
 
 const Icon = ({ success }: { success: boolean }) =>
   success ? (

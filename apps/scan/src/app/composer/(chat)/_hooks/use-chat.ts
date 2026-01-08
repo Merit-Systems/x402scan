@@ -21,12 +21,12 @@ import type { ChatConfig, SelectedResource } from '../_types/chat-config';
 import type { LanguageModel } from '../_components/chat/input/model-select/types';
 import type { Message } from '@x402scan/scan-db/types';
 
-type Props = {
+interface Props {
   id: string;
   initialMessages: Message[];
   agentConfig?: RouterOutputs['public']['agents']['get'];
   initialConfig?: ChatConfig;
-};
+}
 
 export const useChat = ({
   id,

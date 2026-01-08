@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { FilterQuestion } from '@/services/resource-search/types';
 
-type SearchStatsProps = {
+interface SearchStatsProps {
   totalResults: number;
   sqlCondition?: string;
   keywords?: string[];
@@ -16,7 +16,7 @@ type SearchStatsProps = {
   filterExplanation?: string;
   className?: string;
   isLoading?: boolean;
-};
+}
 
 const SearchStatsComponent = ({
   totalResults,

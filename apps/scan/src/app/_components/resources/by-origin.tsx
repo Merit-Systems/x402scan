@@ -34,11 +34,11 @@ import {
 
 import { useChain } from '@/app/_contexts/chain/hook';
 
-type Props = {
+interface Props {
   emptyText: string;
   defaultOpenOrigins?: string[];
   address?: string;
-};
+}
 
 export const ResourcesByOrigin: React.FC<Props> = ({
   emptyText,
@@ -110,9 +110,9 @@ export const ResourcesByOrigin: React.FC<Props> = ({
   );
 };
 
-type LoadingResourcesByOriginProps = {
+interface LoadingResourcesByOriginProps {
   loadingRowCount?: number;
-};
+}
 
 export const LoadingResourcesByOrigin: React.FC<
   LoadingResourcesByOriginProps

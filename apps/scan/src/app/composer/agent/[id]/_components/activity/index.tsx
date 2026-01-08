@@ -6,9 +6,9 @@ import { Card } from '@/components/ui/card';
 import { HydrateClient } from '@/trpc/server';
 import { ActivityContent } from './content';
 
-type Props = {
+interface Props {
   agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
-};
+}
 
 export const Activity: React.FC<Props> = ({ agentConfiguration }) => {
   return (

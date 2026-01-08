@@ -1,11 +1,11 @@
 import z from 'zod';
 
-type ToPaginatedResponseParams<T> = {
+interface ToPaginatedResponseParams<T> {
   items: T[];
   page: number;
   page_size: number;
   total_count: number;
-};
+}
 
 export const paginatedQuerySchema = z.object({
   page: z.number().optional().default(0),
@@ -29,25 +29,25 @@ export const toPaginatedResponse = <T>({
   };
 };
 
-type PaginatedResponse<T> = {
+interface PaginatedResponse<T> {
   items: T[];
   hasNextPage: boolean;
   total_count: number;
   total_pages: number;
   page: number;
-};
+}
 
 /**
  * "Peek ahead" pagination - no COUNT query needed!
  * Expects items to include page_size + 1 items if there's a next page.
  * Returns page_size items and determines hasNextPage from the extra item.
  */
-type ToPeekAheadResponseParams<T> = {
+interface ToPeekAheadResponseParams<T> {
   /** Items fetched with LIMIT page_size + 1 */
   items: T[];
   page: number;
   page_size: number;
-};
+}
 
 export const toPeekAheadResponse = <T>({
   items,
@@ -62,8 +62,8 @@ export const toPeekAheadResponse = <T>({
   };
 };
 
-type PeekAheadResponse<T> = {
+interface PeekAheadResponse<T> {
   items: T[];
   hasNextPage: boolean;
   page: number;
-};
+}

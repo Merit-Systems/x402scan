@@ -9,14 +9,14 @@ import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';
 import type { UiWalletAccount } from '@wallet-standard/react';
 import type { Signer } from 'x402-fetch';
 
-type UseSvmX402FetchParams<TData = unknown> = {
+interface UseSvmX402FetchParams<TData = unknown> {
   targetUrl: string;
   value: bigint;
   account: UiWalletAccount;
   init?: RequestInit;
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
-};
+}
 
 export const useSvmX402Fetch = <TData = unknown>({
   account,

@@ -6,14 +6,14 @@ import { Area } from 'recharts';
 import { simulateChartData } from '@/components/ui/charts/chart/simulate';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
-type LegendItem = {
+interface LegendItem {
   label: string;
-};
+}
 
-type Props = {
+interface Props {
   legendItems: LegendItem[];
   title: string;
-};
+}
 
 export const LoadingChart: React.FC<Props> = ({ legendItems, title }) => {
   const simulatedData = useMemo(() => simulateChartData({ days: 48 }), []);

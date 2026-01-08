@@ -4,10 +4,10 @@ import { useMemo, useState } from 'react';
 import type { LanguageModel, LanguageModelCapability } from './types';
 import { languageModels } from './models';
 
-type UseModelSelectProps = {
+interface UseModelSelectProps {
   model: LanguageModel | undefined;
   setModel: (model: LanguageModel) => void;
-};
+}
 
 export const useModelSelect = ({ setModel }: UseModelSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);

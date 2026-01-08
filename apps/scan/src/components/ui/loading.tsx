@@ -1,10 +1,10 @@
-type Props<T> = {
+interface Props<T> {
   value: T | undefined;
   isLoading: boolean;
   component: (value: T) => React.ReactNode;
   loadingComponent?: React.ReactNode;
   errorComponent?: React.ReactNode;
-};
+}
 
 export const Loading = <T,>({
   value,

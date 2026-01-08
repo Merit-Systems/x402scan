@@ -3,9 +3,9 @@ import { join } from 'path';
 import { notFound } from 'next/navigation';
 import { MarkdownContent } from './markdown-content';
 
-type MarkdownPageProps = {
+interface MarkdownPageProps {
   filename: string;
-};
+}
 
 export async function MarkdownPage({ filename }: MarkdownPageProps) {
   let content: string;

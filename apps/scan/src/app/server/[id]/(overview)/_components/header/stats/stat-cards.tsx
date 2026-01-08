@@ -12,14 +12,14 @@ import { Tags } from '@/app/_components/tags';
 import type { LucideIcon } from 'lucide-react';
 import type { Tag as TagType } from '@x402scan/scan-db/types';
 
-type Props = {
+interface Props {
   originId: string;
-};
+}
 
-type Stat = {
+interface Stat {
   title: string;
   Icon: LucideIcon;
-};
+}
 
 const stats: Stat[] = [
   { title: 'Resources', Icon: HardDrive },
