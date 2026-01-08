@@ -1,6 +1,6 @@
 import { z as z3 } from 'zod3';
 
-import { FieldDefSchema } from '../shared';
+import { outputSchemaV1 } from '../v1';
 
 const ChainIdSchema = z3.union([
   z3.string().regex(/^eip155:\d+$/, 'Invalid EIP-155 chain ID format'),
@@ -9,30 +9,13 @@ const ChainIdSchema = z3.union([
 
 const AddressSchema = z3.string();
 
-export const outputSchemaV2 = z3.object({
-  input: z3.object({
-    type: z3.string(),
-    method: z3
-      .enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'])
-      .optional(),
-    bodyType: z3
-      .enum(['json', 'form-data', 'multipart-form-data', 'text', 'binary'])
-      .optional(),
-    queryParams: z3.record(FieldDefSchema).optional(),
-    bodyFields: z3.record(FieldDefSchema).optional(),
-    headerFields: z3.record(FieldDefSchema).optional(),
-  }),
-  output: z3.record(z3.string(), z3.any()).optional().nullable(),
-});
-
 // V2 resource info schema (per x402-rs spec)
 // Note: outputSchema is NOT part of official V2 spec, but we accept it for compatibility
 const resourceSchemaV2 = z3.object({
   url: z3.string(),
   description: z3.string().optional(),
   mimeType: z3.string().optional(),
-  // Extension: outputSchema is not in official spec but some implementations include it
-  outputSchema: outputSchemaV2.optional(),
+  outputSchema: outputSchemaV1.optional(), // NOTE(shafu): we use v1 outputSchema for compatibility
 });
 
 export const paymentRequirementsSchemaV2 = z3.object({
@@ -68,4 +51,3 @@ export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
 export type PaymentRequirementsV2 = z3.infer<
   typeof paymentRequirementsSchemaV2
 >;
-export type OutputSchemaV2 = z3.infer<typeof outputSchemaV2>;

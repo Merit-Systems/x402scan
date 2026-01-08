@@ -15,13 +15,11 @@ import {
 import {
   parseV2,
   paymentRequirementsSchemaV2,
-  outputSchemaV2,
   type X402ResponseV2,
   type PaymentRequirementsV2,
-  type OutputSchemaV2,
 } from './v2';
 
-export type OutputSchema = OutputSchemaV1 | OutputSchemaV2;
+export type OutputSchema = OutputSchemaV1;
 export type InputSchema = OutputSchema['input'];
 import { normalizeChainId } from './v2/normalize';
 import type { ParseResult } from './shared';
@@ -41,7 +39,7 @@ export const normalizedAcceptSchema = z3.object({
   resource: z3.string().optional(),
   description: z3.string().optional(),
   mimeType: z3.string().optional(),
-  outputSchema: z3.union([outputSchemaV1, outputSchemaV2]).optional(),
+  outputSchema: outputSchemaV1.optional(),
 });
 
 export type NormalizedAccept = z3.infer<typeof normalizedAcceptSchema>;

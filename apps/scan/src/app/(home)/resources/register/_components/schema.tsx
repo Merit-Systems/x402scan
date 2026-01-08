@@ -129,7 +129,7 @@ type Extensions = {
 type OutputSchema = {
     input: {
         type: "http",
-        method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD",
+        method: "GET" | "POST",
         bodyType?: "json" | "form-data" | "multipart-form-data" | "text" | "binary",
         queryParams?: Record<string, FieldDef>,
         bodyFields?: Record<string, FieldDef>,
