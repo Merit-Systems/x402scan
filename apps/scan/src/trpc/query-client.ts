@@ -24,7 +24,7 @@ export const createQueryClient = () =>
       dehydrate: {
         serializeData: SuperJSON.serialize,
         // Include pending queries in dehydration so that Suspense boundaries
-        // can properly resume on the client during navigation.
+        // can properly resume on the client during navigation
         // @see https://trpc.io/docs/client/tanstack-react-query/server-components
         shouldDehydrateQuery: query =>
           defaultShouldDehydrateQuery(query) ||
