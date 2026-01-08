@@ -59,9 +59,7 @@ function isV2PaymentRequirement(
 
 /**
  * NOTE(shafu): we do this because we want to store the payment requirements
- * in the database in a common format.
- * maps v2's 'amount' to 'maxAmountRequired' and normalizes chain IDs.
- * NOT GREAT
+ * in the database in a common format, which for legacy reasons is v1.
  */
 export function normalizePaymentRequirement(
   accept: PaymentRequirements,

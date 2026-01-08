@@ -50,6 +50,8 @@ export const ResourceExecutor: React.FC<Props> = ({
 
   if (!inputSchema) return null;
 
+  // TODO(shafu): just show the amount from the first accept for now, probably
+  // needs to be refactored
   const maxAmountStr = getMaxAmount(response);
   if (!maxAmountStr) return null;
   const maxAmountRequired = BigInt(maxAmountStr);
