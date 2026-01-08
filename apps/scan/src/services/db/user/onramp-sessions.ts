@@ -13,7 +13,7 @@ export const getOnrampSessionByToken = async (
   });
 };
 
-export const createOnrampSessionSchema = z.object({
+const createOnrampSessionSchema = z.object({
   token: z.string(),
   amount: z.number(),
   userId: z.string(),
