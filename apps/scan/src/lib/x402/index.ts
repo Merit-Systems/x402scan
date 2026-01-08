@@ -18,11 +18,11 @@ import {
   type X402ResponseV2,
   type PaymentRequirementsV2,
 } from './v2';
+import { ChainIdToNetwork } from 'x402/types';
+import type { ParseResult } from './shared';
 
 export type OutputSchema = OutputSchemaV1;
 export type InputSchema = OutputSchema['input'];
-import { normalizeChainId } from './v2/normalize';
-import type { ParseResult } from './shared';
 
 /**
  * NOTE(shafu): we need this because we want to store the accept in
@@ -69,6 +69,7 @@ export function normalizePaymentRequirement(
     // V2: amount field, chain ID format, resource at top level
     return {
       scheme: accept.scheme,
+      // NOTE(shafu): we save the network name!
       network: normalizeChainId(accept.network),
       maxAmountRequired: accept.amount,
       payTo: accept.payTo,
@@ -185,4 +186,13 @@ export async function extractX402Data(response: Response): Promise<unknown> {
   } catch {
     return text;
   }
+}
+
+function normalizeChainId(chainId: string): string {
+  if (chainId.startsWith('eip155:')) {
+    const id = Number(chainId.split(':')[1]);
+    const network = ChainIdToNetwork[id];
+    return network ?? chainId;
+  }
+  return chainId;
 }
