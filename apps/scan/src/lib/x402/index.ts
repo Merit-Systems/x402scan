@@ -65,15 +65,10 @@ function isV2PaymentRequirement(
  */
 export function normalizePaymentRequirement(
   accept: PaymentRequirements,
-  resource?: X402ResponseV2['resource'],
-  extensions?: X402ResponseV2['extensions']
+  resource?: X402ResponseV2['resource']
 ): NormalizedAccept {
   if (isV2PaymentRequirement(accept)) {
     // V2: amount field, chain ID format, resource at top level
-    // Note: outputSchema can come from resource.outputSchema or extensions.bazaar.schema
-    const outputSchema = (resource?.outputSchema ??
-      extensions?.bazaar?.schema ??
-      undefined) as OutputSchema | undefined;
     return {
       scheme: accept.scheme,
       network: normalizeChainId(accept.network),
@@ -85,7 +80,7 @@ export function normalizePaymentRequirement(
       resource: resource?.url,
       description: resource?.description,
       mimeType: resource?.mimeType,
-      outputSchema,
+      outputSchema: resource?.outputSchema,
     };
   }
   // V1: maxAmountRequired field, named network, per-accept resource info
@@ -126,14 +121,13 @@ function detectVersion(data: unknown): 1 | 2 {
 /**
  * NOTE(shafu): get the output schema from a parsed x402 response
  * V1: schema is in accepts[0].outputSchema
- * V2: schema is in resource.outputSchema OR extensions.bazaar.schema
+ * V2: schema is in resource.outputSchema
  */
 export function getOutputSchema(
   response: ParsedX402Response
 ): OutputSchema | undefined {
   if (response.x402Version === 2) {
-    return (response.resource?.outputSchema ??
-      response.extensions?.bazaar?.schema) as OutputSchema | undefined;
+    return response.resource?.outputSchema;
   }
   return response.accepts?.[0]?.outputSchema;
 }

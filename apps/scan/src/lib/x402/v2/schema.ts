@@ -10,7 +10,7 @@ const ChainIdSchema = z3.union([
 const AddressSchema = z3.string();
 
 // V2 resource info schema (per x402-rs spec)
-// Note: outputSchema is NOT part of official V2 spec, but we accept it for compatibility
+// Note(shafu): outputSchema is NOT part of official V2 spec, but we accept it for compatibility
 const resourceSchemaV2 = z3.object({
   url: z3.string(),
   description: z3.string().optional(),
@@ -33,18 +33,7 @@ export const x402ResponseSchemaV2 = z3.object({
   error: z3.string().optional(),
   payer: z3.string().optional(),
   accepts: z3.array(paymentRequirementsSchemaV2).optional(),
-  resource: resourceSchemaV2.optional(), // V2 uses "resource" not "resourceInfo"
-  // Extension: bazaar schema info
-  extensions: z3
-    .object({
-      bazaar: z3
-        .object({
-          info: z3.any().optional(),
-          schema: z3.any().optional(),
-        })
-        .optional(),
-    })
-    .optional(),
+  resource: resourceSchemaV2.optional(),
 });
 
 export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
