@@ -139,12 +139,12 @@ export const registerResource = async (url: string, data: unknown) => {
     accepts: normalizedAccepts
       .filter(accept =>
         (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(
-          accept.network!.replace('-', '_')
+          accept.network.replace('-', '_')
         )
       )
       .map(accept => ({
         ...accept,
-        network: accept.network!.replace('-', '_') as AcceptsNetwork,
+        network: accept.network.replace('-', '_') as AcceptsNetwork,
         maxAmountRequired: accept.maxAmountRequired,
         outputSchema: accept.outputSchema,
         extra: accept.extra,

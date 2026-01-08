@@ -179,7 +179,7 @@ export const resourcesRouter = createTRPCRouter({
           lastUpdated: new Date(),
           accepts: normalizedAccepts.map(accept => ({
             ...accept,
-            network: accept.network!.replace('-', '_') as AcceptsNetwork,
+            network: accept.network.replace('-', '_') as AcceptsNetwork,
           })),
         });
 
