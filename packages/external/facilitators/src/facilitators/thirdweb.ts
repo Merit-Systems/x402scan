@@ -6,9 +6,9 @@ import type {
   FacilitatorConfigConstructor,
 } from '../types';
 
-type ThirdwebConfig = {
+interface ThirdwebConfig {
   secretKey: string;
-};
+}
 
 const FACILITATOR_URL = 'https://api.thirdweb.com/v1/payments/x402';
 

@@ -1,7 +1,7 @@
-type Env = {
+interface Env {
   HELIUS_API_KEY: string;
   CORS_ALLOW_ORIGIN?: string;
-};
+}
 
 // Configuration - adjust as needed
 const BUFFER_TIMEOUT_MS = 10000;

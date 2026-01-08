@@ -7,9 +7,9 @@ import type {
   FacilitatorConfigConstructor,
 } from '../types';
 
-type QuestflowProps = {
+interface QuestflowProps {
   apiKey: string;
-};
+}
 
 export const questflow: FacilitatorConfigConstructor<QuestflowProps> = ({
   apiKey,

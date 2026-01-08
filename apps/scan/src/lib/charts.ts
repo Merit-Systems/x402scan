@@ -45,7 +45,10 @@ interface Item {
   color: string;
 }
 
-interface CreateTabOptions<T extends Record<string, number>, TItem extends Item> {
+interface CreateTabOptions<
+  T extends Record<string, number>,
+  TItem extends Item,
+> {
   label: string;
   stackOffset?: 'expand' | 'none';
   amount: string;

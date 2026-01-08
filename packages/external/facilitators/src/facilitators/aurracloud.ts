@@ -7,9 +7,9 @@ import type {
   FacilitatorConfigConstructor,
 } from '../types';
 
-type AurraCloudProps = {
+interface AurraCloudProps {
   apiKey: string;
-};
+}
 
 export const aurracloud: FacilitatorConfigConstructor<AurraCloudProps> = ({
   apiKey,

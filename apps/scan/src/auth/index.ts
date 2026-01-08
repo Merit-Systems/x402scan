@@ -16,7 +16,6 @@ import type { DefaultSession } from 'next-auth';
 import type { Account, Role } from '@x402scan/scan-db/types';
 
 declare module 'next-auth' {
-   
   interface Session {
     user: {
       id: string;
@@ -32,7 +31,6 @@ declare module 'next-auth' {
     accounts: Account[];
   }
 
-   
   interface User {
     id?: string;
     email?: string | null;

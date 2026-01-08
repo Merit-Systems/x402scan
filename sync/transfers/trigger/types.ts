@@ -2,19 +2,19 @@ import { Network, type Token } from 'facilitators';
 
 export { Network, type Token };
 
-export type FacilitatorConfig = {
+export interface FacilitatorConfig {
   address: string;
   token: Token;
   syncStartDate: Date;
   enabled: boolean;
-};
+}
 
-export type Facilitator = {
+export interface Facilitator {
   id: string;
   addresses: Partial<Record<Network, FacilitatorConfig[]>>;
-};
+}
 
-export type TransferEventData = {
+export interface TransferEventData {
   address: string;
   transaction_from: string;
   sender: string;
@@ -28,7 +28,7 @@ export type TransferEventData = {
   facilitator_id: string;
 
   log_index?: number;
-};
+}
 
 export enum PaginationStrategy {
   TIME_WINDOW = 'time-window',
@@ -41,7 +41,7 @@ export enum QueryProvider {
   CDP = 'cdp',
 }
 
-type BaseQueryConfig = {
+interface BaseQueryConfig {
   chain: string;
   provider: QueryProvider;
   apiUrl?: string;
@@ -58,7 +58,7 @@ type BaseQueryConfig = {
     facilitator: Facilitator,
     facilitatorConfig: FacilitatorConfig
   ) => TransferEventData[] | Promise<TransferEventData[]>;
-};
+}
 
 type TimeWindowQueryConfig = BaseQueryConfig & {
   paginationStrategy: PaginationStrategy.TIME_WINDOW;
@@ -82,16 +82,16 @@ export type SyncConfig = QueryConfig & {
   splitSyncByFacilitator?: boolean;
 };
 
-export type EvmChainConfig = {
+export interface EvmChainConfig {
   cron: string;
   maxDuration: number;
   network: string;
   chain: string;
   facilitators: Facilitator[];
   enabled: boolean;
-};
+}
 
-export type CdpTransferRow = {
+export interface CdpTransferRow {
   contract_address: string;
   sender: string;
   transaction_from: string;
@@ -100,9 +100,9 @@ export type CdpTransferRow = {
   block_timestamp: string;
   amount: string;
   log_index: number;
-};
+}
 
-export type BigQueryTransferRow = {
+export interface BigQueryTransferRow {
   address: string;
   transaction_from: string;
   sender: string;
@@ -113,9 +113,9 @@ export type BigQueryTransferRow = {
   chain: string;
   facilitator_id: string;
   transfer_index?: number;
-};
+}
 
-export type BitQueryTransferRow = {
+export interface BitQueryTransferRow {
   block: {
     timestamp: { time: string };
     height: number;
@@ -125,9 +125,9 @@ export type BitQueryTransferRow = {
   amount: string;
   currency: { address: string };
   transaction: { feePayer: string; signature: string };
-};
+}
 
-export type BitQueryTransferRowStream = {
+export interface BitQueryTransferRowStream {
   Transfer: {
     Amount: string;
     Sender: string;
@@ -146,4 +146,4 @@ export type BitQueryTransferRowStream = {
     Hash: string;
     From: string;
   };
-};
+}

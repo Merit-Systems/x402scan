@@ -17,9 +17,10 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { api } from '@/trpc/client';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
-interface ToolCallData {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type ToolCallData = {
   total_tool_calls: number;
-}
+};
 
 interface ToolCallsChartProps {
   resourceId: string;

@@ -17,9 +17,10 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { api } from '@/trpc/client';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
-interface ResourceCreationData {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type ResourceCreationData = {
   total_resources: number;
-}
+};
 
 interface ResourceCreationsChartProps {
   selectedTagIds: string[];

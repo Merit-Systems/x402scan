@@ -9,32 +9,32 @@ type FacilitatorConfigProp<Props = void> =
   | FacilitatorConfig
   | FacilitatorConfigConstructor<Props>;
 
-export type Facilitator<Props = void> = {
+export interface Facilitator<Props = void> {
   id: string;
   metadata: FacilitatorMetadata;
   config: FacilitatorConfigProp<Props>;
   addresses: Partial<Record<Network, FacilitatorAddress[]>>;
   discoveryConfig?: FacilitatorConfig;
-};
+}
 
-export type FacilitatorMetadata = {
+export interface FacilitatorMetadata {
   name: string;
   image: string;
   docsUrl: string;
   color: string;
-};
+}
 
-export type FacilitatorAddress = {
+export interface FacilitatorAddress {
   address: string;
   tokens: Token[];
   dateOfFirstTransaction: Date;
-};
+}
 
-export type Token = {
+export interface Token {
   address: string;
   decimals: number;
   symbol: string;
-};
+}
 
 export enum Network {
   BASE = 'base',
