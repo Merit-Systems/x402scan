@@ -37,4 +37,5 @@ model TransferEvent {
   @@index([recipient, block_timestamp])
   @@index([recipient, sender, block_timestamp], map: "TransferEvent_recipient_sender_ts_idx")
   @@index([sender, block_timestamp])
+  @@index([chain, transaction_from, provider, block_timestamp(sort: Desc)])
 }

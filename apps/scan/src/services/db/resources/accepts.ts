@@ -3,8 +3,7 @@ import { scanDb } from '@x402scan/scan-db';
 import { mixedAddressSchema } from '@/lib/schemas';
 
 import type { Chain } from '@/types/chain';
-import type { AcceptsNetwork } from '@x402scan/scan-db/types';
-import type { Prisma } from '@x402scan/scan-db';
+import type { AcceptsNetwork, ResourceOrigin } from '@x402scan/scan-db';
 
 type GetAcceptsAddressesInput = {
   chain?: Chain;
@@ -17,29 +16,7 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
     include: {
       resourceRel: {
         select: {
-          origin: {
-            include: {
-              originMetrics: {
-                take: 1,
-                orderBy: {
-                  updatedAt: 'desc',
-                },
-                select: {
-                  uptime24hPct: true,
-                  totalCount24h: true,
-                  count_5xx_24h: true,
-                  count_4xx_24h: true,
-                  count_2xx_24h: true,
-                  p50_24hMs: true,
-                  p90_24hMs: true,
-                  p99_24hMs: true,
-                  updatedAt: true,
-                },
-              },
-            },
-          },
-          _count: true,
-          tags: true,
+          origin: true,
         },
       },
     },
@@ -58,28 +35,6 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
         : {}),
     },
   });
-
-  type OriginWithMetrics = Prisma.ResourceOriginGetPayload<{
-    include: {
-      originMetrics: {
-        take: 1;
-        orderBy: {
-          updatedAt: 'desc';
-        };
-        select: {
-          uptime24hPct: true;
-          totalCount24h: true;
-          count_5xx_24h: true;
-          count_4xx_24h: true;
-          count_2xx_24h: true;
-          p50_24hMs: true;
-          p90_24hMs: true;
-          p99_24hMs: true;
-          updatedAt: true;
-        };
-      };
-    };
-  }>;
 
   return accepts
     .filter(accept => mixedAddressSchema.safeParse(accept.payTo).success)
@@ -100,6 +55,6 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
         }
         return acc;
       },
-      {} as Record<string, OriginWithMetrics[]>
+      {} as Record<string, ResourceOrigin[]>
     );
 };

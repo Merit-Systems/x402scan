@@ -12,8 +12,6 @@ import { OriginStats, LoadingOriginStats } from './stats';
 import { cn } from '@/lib/utils';
 
 import { HeaderButtons, LoadingHeaderButtons } from './buttons';
-import { scanDb } from '@x402scan/scan-db';
-import { HealthIndicator } from '@/app/_components/health/indicator';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -22,24 +20,6 @@ type Props = {
 };
 
 export const HeaderCard: React.FC<Props> = async ({ origin }) => {
-  const originMetrics = await scanDb.resourceOriginMetrics.findFirst({
-    where: {
-      originId: origin.id,
-    },
-    orderBy: { updatedAt: 'desc' },
-    select: {
-      uptime24hPct: true,
-      totalCount24h: true,
-      count_5xx_24h: true,
-      count_4xx_24h: true,
-      count_2xx_24h: true,
-      p50_24hMs: true,
-      p90_24hMs: true,
-      p99_24hMs: true,
-      updatedAt: true,
-    },
-  });
-
   return (
     <Card className={cn('relative mt-10 md:mt-12')}>
       <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
@@ -64,7 +44,6 @@ export const HeaderCard: React.FC<Props> = async ({ origin }) => {
               >
                 {origin.origin}
               </a>
-              <HealthIndicator metrics={originMetrics} />
             </div>
             <p
               className={cn(
