@@ -9,13 +9,65 @@ import { env } from '@/env';
 import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
 import { Signer } from 'x402-fetch';
 import { searchResourcesCombined } from '@/services/resource-search/combined-search';
-import {
-  EnhancedPaymentRequirementsSchema,
-  parseX402Response,
-} from '@/lib/x402/schema';
+import { buildRequest } from '@/lib/x402/build-request';
+import { parseX402Response } from '@/lib/x402/schema';
+import { formatCurrency } from '@/lib/utils';
 
 const handler = createMcpHandler(
   server => {
+    server.registerTool(
+      'get_address',
+      {
+        title: 'Get Address',
+        description: 'Gets the address for the current user.',
+        inputSchema: {},
+      },
+      async ({}, extra) => {
+        const accessToken = extra.authInfo?.token;
+        if (!accessToken) {
+          throw new Error('No access token provided');
+        }
+        const permi = new Permi({
+          getAccessToken: () => accessToken,
+          baseUrl: `${env.PERMI_APP_URL}/api`,
+        });
+        console.log('permi', permi);
+        try {
+          const address = await permi.address();
+          console.log('address', address);
+          return {
+            content: [{ type: 'text', text: address }],
+          };
+        } catch (error) {
+          console.error(error);
+          throw new Error('Failed to get address');
+        }
+      }
+    );
+
+    server.registerTool(
+      'get_balance',
+      {
+        title: 'Get Balance',
+        description: 'Gets the user&apos;s USDC balance.',
+        inputSchema: {},
+      },
+      async ({}, extra) => {
+        const accessToken = extra.authInfo?.token;
+        if (!accessToken) {
+          throw new Error('No access token provided');
+        }
+        const permi = new Permi({
+          getAccessToken: () => accessToken,
+          baseUrl: `${env.PERMI_APP_URL}/api`,
+        });
+        const balance = await permi.balance();
+        return {
+          content: [{ type: 'text', text: formatCurrency(balance) }],
+        };
+      }
+    );
+
     server.registerTool(
       'sign_message',
       {
@@ -64,19 +116,19 @@ const handler = createMcpHandler(
           }
         );
 
-        response.results.slice(0, limit).map(result => {
-          return {
-            id: result.id,
-            resource: result.resource,
-            type: result.type,
-          };
-        });
-
         return {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(response.results.slice(0, limit)),
+              text: JSON.stringify(
+                response.results.slice(0, limit).map(result => {
+                  return {
+                    id: result.id,
+                    resource: result.resource,
+                    type: result.type,
+                  };
+                })
+              ),
             },
           ],
         };
@@ -94,9 +146,7 @@ const handler = createMcpHandler(
       },
       async ({ resource }) => {
         const response = await fetch(resource.toString());
-        const body = await response.json();
-        console.log(body);
-        const parsed = parseX402Response(body);
+        const parsed = parseX402Response(await response.json());
         if (!parsed.success) {
           throw new Error(
             'Invalid resource data: ' + JSON.stringify(parsed.errors)
@@ -122,7 +172,8 @@ const handler = createMcpHandler(
       'x402_fetch',
       {
         title: 'x402 Fetch',
-        description: 'Fetches data from a x402 resource.',
+        description:
+          'Fetches data from a x402 resource. You must provide the bodyFields and queryParams if the resource expects them.',
         inputSchema: {
           url: z.url(),
           method: z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']),
@@ -133,11 +184,11 @@ const handler = createMcpHandler(
             'text',
             'binary',
           ]),
-          body: z.record(z.string(), z.any()).optional(),
-          query: z.record(z.string(), z.any()).optional(),
+          bodyFields: z.record(z.string(), z.unknown()).optional(),
+          queryParams: z.record(z.string(), z.any()).optional(),
         },
       },
-      async ({ url, method, bodyType, body, query }, extra) => {
+      async ({ url, method, bodyType, bodyFields, queryParams }, extra) => {
         const accessToken = extra.authInfo?.token;
         if (!accessToken) {
           throw new Error('No access token provided');
@@ -151,103 +202,27 @@ const handler = createMcpHandler(
 
         const fetchWithPay = wrapFetchWithPayment(fetch, signer as Signer);
 
-        const requestUrl = new URL(url.toString());
-        const requestMethod = method.toUpperCase();
+        const { url: requestUrl, requestInit } = buildRequest({
+          url,
+          method,
+          bodyType,
+          body: bodyFields ?? undefined,
+          query: queryParams,
+        });
 
-        // Append query parameters to URL
-        if (query) {
-          for (const [key, value] of Object.entries(query)) {
-            if (value !== undefined && value !== null) {
-              if (typeof value === 'object') {
-                requestUrl.searchParams.append(key, JSON.stringify(value));
-              } else if (typeof value === 'number') {
-                requestUrl.searchParams.append(key, String(value));
-              } else {
-                requestUrl.searchParams.append(key, String(value));
-              }
-            }
+        try {
+          const response = await fetchWithPay(requestUrl, requestInit);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch data: ${response.statusText}`);
           }
+          const data = (await response.json()) as unknown;
+          return {
+            content: [{ type: 'text', text: JSON.stringify(data) }],
+          };
+        } catch (error) {
+          console.error(error);
+          throw new Error('Failed to fetch data');
         }
-
-        const requestInit: RequestInit = {
-          method: requestMethod,
-        };
-
-        // For GET/HEAD/OPTIONS, query params are already in URL, no body needed
-        if (
-          requestMethod === 'GET' ||
-          requestMethod === 'HEAD' ||
-          requestMethod === 'OPTIONS'
-        ) {
-          // No body for these methods
-        } else if (body) {
-          // Handle different body types
-          switch (bodyType) {
-            case 'json':
-              requestInit.body = JSON.stringify(body);
-              requestInit.headers = {
-                'Content-Type': 'application/json',
-              };
-              break;
-            case 'form-data':
-              // Form data (application/x-www-form-urlencoded)
-              const formData = new URLSearchParams();
-              for (const [key, value] of Object.entries(body)) {
-                if (value !== undefined && value !== null) {
-                  formData.append(key, String(value));
-                }
-              }
-              requestInit.body = formData.toString();
-              requestInit.headers = {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              };
-              break;
-            case 'multipart-form-data':
-              // Multipart form data
-              const multipartFormData = new FormData();
-              for (const [key, value] of Object.entries(body)) {
-                if (value !== undefined && value !== null) {
-                  if (value instanceof Blob || value instanceof File) {
-                    multipartFormData.append(key, value);
-                  } else {
-                    multipartFormData.append(key, String(value));
-                  }
-                }
-              }
-              requestInit.body = multipartFormData;
-              // Don't set Content-Type header for FormData, browser will set it with boundary
-              break;
-            case 'text':
-              requestInit.body = typeof body === 'string' ? body : String(body);
-              requestInit.headers = {
-                'Content-Type': 'text/plain',
-              };
-              break;
-            case 'binary':
-              // Binary data - expect body to be a Blob, ArrayBuffer, or similar
-              requestInit.body = body as BodyInit;
-              requestInit.headers = {
-                'Content-Type': 'application/octet-stream',
-              };
-              break;
-            default:
-              // Default to JSON if bodyType is not recognized
-              requestInit.body = JSON.stringify(body);
-              requestInit.headers = {
-                'Content-Type': 'application/json',
-              };
-          }
-        }
-
-        const response = await fetchWithPay(requestUrl.toString(), requestInit);
-
-        const data = (await response.json()) as unknown;
-
-        console.log(data);
-
-        return {
-          content: [{ type: 'text', text: JSON.stringify(data) }],
-        };
       }
     );
   },
@@ -260,7 +235,7 @@ const handler = createMcpHandler(
 );
 
 const verifyToken = async (
-  req: Request,
+  _: Request,
   bearerToken?: string
 ): Promise<AuthInfo | undefined> => {
   if (!bearerToken) return undefined;
