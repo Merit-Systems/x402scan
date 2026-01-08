@@ -53,7 +53,7 @@ export const paymentRequirementsSchemaV1 = PaymentRequirementsSchema.extend({
 export const x402ResponseSchemaV1 = x402ResponseSchema
   .omit({ error: true, accepts: true, x402Version: true })
   .extend({
-    x402Version: z3.literal(1), // Required, must be exactly 1
+    x402Version: z3.literal(1).default(1),
     error: z3.string().optional(),
     accepts: z3.array(paymentRequirementsSchemaV1).optional(),
   });
