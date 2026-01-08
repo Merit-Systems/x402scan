@@ -26,13 +26,13 @@ type Props = {
 };
 
 export const AllSellers: React.FC<Props> = ({ chain }) => {
-  const limit = 100;
+  const pageSize = 10;
 
   void api.public.sellers.all.list.prefetch({
     chain,
     sorting: defaultSellersSorting,
     pagination: {
-      page_size: limit,
+      page_size: pageSize,
       page: 0,
     },
     timeframe: ActivityTimeframe.OneDay,

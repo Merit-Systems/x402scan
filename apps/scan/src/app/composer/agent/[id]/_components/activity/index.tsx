@@ -1,25 +1,24 @@
+import { Suspense } from 'react';
 import { Section } from '@/app/_components/layout/page-utils';
 import type { RouterOutputs } from '@/trpc/client';
-import { api } from '@/trpc/server';
-import { ActivityCharts, LoadingActivityCharts } from './charts';
+import { LoadingActivityCharts } from './charts';
 import { Card } from '@/components/ui/card';
+import { HydrateClient } from '@/trpc/server';
+import { ActivityContent } from './content';
 
 type Props = {
   agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
 };
 
-export const Activity: React.FC<Props> = async ({ agentConfiguration }) => {
-  const bucketedActivity = await api.public.agents.activity.agent.bucketed({
-    agentConfigurationId: agentConfiguration.id,
-  });
-
+export const Activity: React.FC<Props> = ({ agentConfiguration }) => {
   return (
-    <ActivityContainer>
-      <ActivityCharts
-        agentConfiguration={agentConfiguration}
-        bucketedActivity={bucketedActivity}
-      />
-    </ActivityContainer>
+    <HydrateClient>
+      <ActivityContainer>
+        <Suspense fallback={<LoadingActivityCharts />}>
+          <ActivityContent agentConfiguration={agentConfiguration} />
+        </Suspense>
+      </ActivityContainer>
+    </HydrateClient>
   );
 };
 

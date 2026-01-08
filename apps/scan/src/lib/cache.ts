@@ -1,5 +1,5 @@
 import superjson from 'superjson';
-import type { PaginatedQueryParams, PaginatedResponse } from './pagination';
+import type { PaginatedQueryParams } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
 
@@ -107,7 +107,11 @@ async function withRedisCache<T>(
 ): Promise<T> {
   const redis = getRedisClient();
   if (!redis) {
-    throw new Error('Redis client not available');
+    // Fallback: execute query directly without caching
+    console.log(
+      `[Cache] NO REDIS: Executing query directly for ${fullCacheKey}`
+    );
+    return await queryFn();
   }
 
   const lockKey = `${fullCacheKey}:lock`;
@@ -192,11 +196,6 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
     const fullCacheKey = `${config.cacheKeyPrefix}:${cacheKey}`;
     const ttl = config.revalidate ?? CACHE_TTL_SECONDS;
 
-    const redis = getRedisClient();
-    if (!redis) {
-      throw new Error('Redis client not available');
-    }
-
     return await withRedisCache(
       fullCacheKey,
       async () => {
@@ -253,16 +252,28 @@ export const createCachedArrayQuery = <
 };
 
 /**
- * Generic cached query wrapper for paginated responses with dates
+ * Base response shape for paginated queries (items + hasNextPage + page)
+ */
+type BasePaginatedResponse<TItem> = {
+  items: TItem[];
+  hasNextPage: boolean;
+  page: number;
+};
+
+/**
+ * Generic cached query wrapper for paginated responses with dates.
+ * Works with both PaginatedResponse (with total_count/total_pages) and
+ * PeekAheadResponse (without counts) - preserves the exact return type.
  */
 export const createCachedPaginatedQuery = <
   TInput,
   TItem extends Record<string, unknown>,
+  TResponse extends BasePaginatedResponse<TItem>,
 >(config: {
   queryFn: (
     input: TInput,
     pagination: PaginatedQueryParams
-  ) => Promise<PaginatedResponse<TItem>>;
+  ) => Promise<TResponse>;
   cacheKeyPrefix: string;
   createCacheKey: (input: TInput) => string;
   dateFields: (keyof TItem)[];
@@ -271,11 +282,11 @@ export const createCachedPaginatedQuery = <
 }) => {
   return createCachedQueryBase({
     ...config,
-    serialize: data => ({
+    serialize: (data: TResponse): TResponse => ({
       ...data,
       items: data.items.map(item => serializeDates(item, config.dateFields)),
     }),
-    deserialize: data => ({
+    deserialize: (data: TResponse): TResponse => ({
       ...data,
       items: data.items.map(item => deserializeDates(item, config.dateFields)),
     }),

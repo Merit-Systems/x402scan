@@ -1,37 +1,34 @@
+import { Suspense } from 'react';
 import { Section } from '@/app/_components/layout/page-utils';
-import { api } from '@/trpc/server';
-import { AgentCard } from '../lib/agent-card';
-import { ActivityTimeframe } from '@/types/timeframes';
-import { auth } from '@/auth';
+import { YourAgentsContent } from './content';
+import { LoadingAgentCard } from '../lib/agent-card';
 
-export const YourAgents = async () => {
-  const session = await auth();
+type Props = {
+  userId: string;
+};
 
-  if (!session?.user?.id) {
-    return null;
-  }
+// Note: No HydrateClient here - parent page.tsx provides it
+export const YourAgents: React.FC<Props> = ({ userId }) => {
+  return (
+    <Suspense fallback={<LoadingYourAgents />}>
+      <YourAgentsWrapper userId={userId} />
+    </Suspense>
+  );
+};
 
-  const yourAgents = await api.public.agents.list({
-    timeframe: ActivityTimeframe.ThirtyDays,
-    pagination: {
-      page: 0,
-      page_size: 100,
-    },
-    userId: session.user.id,
-  });
-
-  if (yourAgents.items.length === 0) {
-    return null;
-  }
-
+const YourAgentsWrapper: React.FC<Props> = ({ userId }) => {
   return (
     <AgentsContainer>
-      {yourAgents.items.map(agent => (
-        <AgentCard
-          key={agent.id}
-          agentConfiguration={agent}
-          href={`/composer/agent/${agent.id}/chat`}
-        />
+      <YourAgentsContent userId={userId} />
+    </AgentsContainer>
+  );
+};
+
+const LoadingYourAgents = () => {
+  return (
+    <AgentsContainer>
+      {Array.from({ length: 4 }).map((_, index) => (
+        <LoadingAgentCard key={index} />
       ))}
     </AgentsContainer>
   );

@@ -14,10 +14,22 @@ import { CalendarDays } from 'lucide-react';
 export const RangeSelector = () => {
   const { selectTimeframe, timeframe } = useTimeRangeContext();
 
-  // Get only the numeric enum values
-  const timeframeValues = Object.values(ActivityTimeframe).filter(
-    value => typeof value === 'number'
-  ) as ActivityTimeframe[];
+  // Define ordered timeframe options (All Time at the end)
+  const timeframeValues = [
+    ActivityTimeframe.OneDay,
+    ActivityTimeframe.SevenDays,
+    ActivityTimeframe.FifteenDays,
+    ActivityTimeframe.ThirtyDays,
+    ActivityTimeframe.AllTime,
+  ];
+
+  const timeframeNames = {
+    [ActivityTimeframe.AllTime]: 'All Time',
+    [ActivityTimeframe.OneDay]: 'Past 24 Hours',
+    [ActivityTimeframe.SevenDays]: 'Past 7 Days',
+    [ActivityTimeframe.FifteenDays]: 'Past 15 Days',
+    [ActivityTimeframe.ThirtyDays]: 'Past 30 Days',
+  };
 
   return (
     <Select
@@ -28,18 +40,12 @@ export const RangeSelector = () => {
     >
       <SelectTrigger className="border shadow-xs dark:border-input">
         <CalendarDays />
-        <span>
-          {timeframe === ActivityTimeframe.OneDay
-            ? 'Past 24 Hours'
-            : `Past ${timeframe} Days`}
-        </span>
+        <span>{timeframeNames[timeframe]}</span>
       </SelectTrigger>
       <SelectContent align="end">
         {timeframeValues.map(value => (
           <SelectItem key={value} value={value.toString()}>
-            {value === ActivityTimeframe.OneDay
-              ? 'Past 24 Hours'
-              : `Past ${value} Days`}
+            {timeframeNames[value]}
           </SelectItem>
         ))}
       </SelectContent>

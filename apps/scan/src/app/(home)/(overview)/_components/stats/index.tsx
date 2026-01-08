@@ -20,14 +20,14 @@ type Props = {
   chain?: Chain;
 };
 
-export const OverallStats: React.FC<Props> = ({ chain }) => {
-  void api.public.stats.overallMV.prefetch({
+export const OverallStats = ({ chain }: Props) => {
+  void api.public.stats.overall.prefetch({
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });
-  void api.public.stats.bucketedMV.prefetch({
+  void api.public.stats.bucketed.prefetch({
     timeframe: ActivityTimeframe.OneDay,
-    numBuckets: 32,
+    numBuckets: 48,
     chain,
   });
 

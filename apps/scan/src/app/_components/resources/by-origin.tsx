@@ -42,7 +42,7 @@ type Props = {
 
 export const ResourcesByOrigin: React.FC<Props> = ({
   emptyText,
-  defaultOpenOrigins = [],
+  defaultOpenOrigins,
   address,
 }) => {
   const { chain } = useChain();
@@ -50,7 +50,10 @@ export const ResourcesByOrigin: React.FC<Props> = ({
   const [originsWithResources] =
     api.public.origins.list.withResources.useSuspenseQuery({ chain, address });
 
-  const [openOrigins, setOpenOrigins] = useState<string[]>(defaultOpenOrigins);
+  // Default to opening all origins if not specified
+  const [openOrigins, setOpenOrigins] = useState<string[]>(
+    () => defaultOpenOrigins ?? originsWithResources.map(o => o.id)
+  );
 
   if (originsWithResources.length === 0) {
     return (

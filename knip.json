@@ -11,11 +11,8 @@
       "ignoreDependencies": [
         "postcss",
         "redis",
-        "facilitators",
         "tailwindcss",
-        "tw-animate-css",
-        "@x402scan/transfers-db",
-        "@x402scan/scan-db"
+        "tw-animate-css"
       ],
       "ignore": ["src/scripts/**", "src/components/ui/charts/chart/**"]
     },

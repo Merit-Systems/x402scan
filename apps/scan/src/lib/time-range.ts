@@ -8,6 +8,13 @@ export function getTimeRangeFromTimeframe(
   timeframe: z.infer<typeof timeframeSchema>
 ) {
   const now = new Date();
+
+  // Handle All Time (0) - no date restrictions
+  const period = typeof timeframe === 'number' ? timeframe : timeframe.period;
+  if (period === 0) {
+    return { startDate: null, endDate: null };
+  }
+
   const endDate =
     typeof timeframe === 'number' || !timeframe.offset
       ? now
@@ -35,7 +42,11 @@ export const getBucketedTimeRangeFromTimeframe = async ({
   const now = new Date();
   const endDate = now;
 
-  if (period === Number(ActivityTimeframe.ThirtyDays)) {
+  // Handle All Time (0) and ThirtyDays - use creation date as start
+  if (
+    period === Number(ActivityTimeframe.AllTime) ||
+    period === Number(ActivityTimeframe.ThirtyDays)
+  ) {
     return {
       startDate:
         typeof creationDate === 'function'

@@ -71,3 +71,6 @@ catalogs:
     '@types/express': ^5.0.1
   clickhouse:
     '@clickhouse/client': ^1.12.1
+  react-query:
+    '@tanstack/react-query': ^5.90.16
+    '@tanstack/react-query-devtools': ^5.91.2

@@ -174,7 +174,9 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <div className="text-right font-mono text-xs">
-        {formatCompactAgo(row.original.latest_block_timestamp)}
+        {row.original.latest_block_timestamp
+          ? formatCompactAgo(row.original.latest_block_timestamp)
+          : '–'}
       </div>
     ),
     size: 150, // Fixed width for buyers count

@@ -9,7 +9,7 @@ export default function LoadingFacilitatorPage() {
     <Body className="gap-0 pt-0">
       <LoadingHeaderCard />
       <LoadingActivity />
-      <LoadingLatestTransactions />
+      <LoadingLatestTransactions loadingRowCount={10} />
     </Body>
   );
 }

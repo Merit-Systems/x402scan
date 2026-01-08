@@ -44,7 +44,6 @@ export const LatestTransactionsTable: React.FC<Props> = ({
       page={page}
       onPageChange={setPage}
       hasNextPage={latestTransactions.hasNextPage}
-      totalPages={latestTransactions.total_pages}
     />
   );
 };
