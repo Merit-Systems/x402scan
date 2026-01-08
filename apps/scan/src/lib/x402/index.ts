@@ -15,6 +15,7 @@ import {
 import {
   parseV2,
   paymentRequirementsSchemaV2,
+  outputSchemaV2,
   type X402ResponseV2,
   type PaymentRequirementsV2,
   type OutputSchemaV2,
@@ -40,9 +41,10 @@ export const normalizedAcceptSchema = z3.object({
   resource: z3.string().optional(),
   description: z3.string().optional(),
   mimeType: z3.string().optional(),
-  // NOTE(shafu): use V1 outputSchema since it's the same structure
-  outputSchema: outputSchemaV1.optional(),
+  outputSchema: z3.union([outputSchemaV1, outputSchemaV2]).optional(),
 });
+
+export type NormalizedAccept = z3.infer<typeof normalizedAcceptSchema>;
 
 export const paymentRequirementsSchema = z3.union([
   paymentRequirementsSchemaV1,
@@ -67,26 +69,13 @@ export function normalizePaymentRequirement(
   accept: PaymentRequirements,
   resource?: X402ResponseV2['resource'],
   extensions?: X402ResponseV2['extensions']
-): {
-  scheme: 'exact';
-  network: string;
-  maxAmountRequired: string;
-  payTo: string;
-  asset: string;
-  maxTimeoutSeconds: number;
-  extra?: Record<string, unknown>;
-  // these come from accept in v1, from resource in v2
-  resource?: string;
-  description?: string;
-  mimeType?: string;
-  outputSchema?: OutputSchemaV1 | OutputSchemaV2;
-} {
+): NormalizedAccept {
   if (isV2PaymentRequirement(accept)) {
     // V2: amount field, chain ID format, resource at top level
     // Note: outputSchema can come from resource.outputSchema or extensions.bazaar.schema
     const outputSchema = (resource?.outputSchema ??
       extensions?.bazaar?.schema ??
-      undefined) as OutputSchemaV1 | OutputSchemaV2 | undefined;
+      undefined) as OutputSchema | undefined;
     return {
       scheme: accept.scheme,
       network: normalizeChainId(accept.network),
@@ -95,7 +84,6 @@ export function normalizePaymentRequirement(
       asset: accept.asset,
       maxTimeoutSeconds: accept.maxTimeoutSeconds,
       extra: accept.extra,
-      // V2 resource fields (note: url not resource)
       resource: resource?.url,
       description: resource?.description,
       mimeType: resource?.mimeType,
@@ -144,13 +132,10 @@ function detectVersion(data: unknown): 1 | 2 {
  */
 export function getOutputSchema(
   response: ParsedX402Response
-): OutputSchemaV1 | OutputSchemaV2 | undefined {
+): OutputSchema | undefined {
   if (response.x402Version === 2) {
     return (response.resource?.outputSchema ??
-      response.extensions?.bazaar?.schema) as
-      | OutputSchemaV1
-      | OutputSchemaV2
-      | undefined;
+      response.extensions?.bazaar?.schema) as OutputSchema | undefined;
   }
   return response.accepts?.[0]?.outputSchema;
 }

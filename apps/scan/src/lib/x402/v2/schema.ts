@@ -9,7 +9,7 @@ const ChainIdSchema = z3.union([
 
 const AddressSchema = z3.string();
 
-const outputSchemaV2 = z3.object({
+export const outputSchemaV2 = z3.object({
   input: z3.object({
     type: z3.string(),
     method: z3
