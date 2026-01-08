@@ -120,12 +120,20 @@ function detectVersion(data: unknown): 1 | 2 {
 /**
  * NOTE(shafu): get the output schema from a parsed x402 response
  * V1: schema is in accepts[0].outputSchema
- * V2: schema is in resource.outputSchema
+ * V2: schema is in extensions.bazaar.schema
  */
 export function getOutputSchema(
   response: ParsedX402Response
 ): OutputSchema | undefined {
   if (response.x402Version === 2) {
+    const bazaar = response.extensions?.bazaar;
+    if (bazaar?.info) {
+      return bazaar.info as OutputSchema;
+    }
+    if (bazaar?.schema) {
+      // NOTE(shafu): bazaar.schema is a raw JSON Schema - wrap it as input schema
+      return { input: bazaar.schema as InputSchema } as OutputSchema;
+    }
     return response.resource?.outputSchema;
   }
   return response.accepts?.[0]?.outputSchema;

@@ -26,12 +26,27 @@ export const paymentRequirementsSchemaV2 = z3.object({
   extra: z3.record(z3.string(), z3.any()).optional(),
 });
 
+const extensionsSchemaV2 = z3.object({
+  bazaar: z3
+    .object({
+      info: z3
+        .object({
+          input: z3.any(),
+          output: z3.any().optional(),
+        })
+        .optional(),
+      schema: z3.any().optional(), // JSON Schema format
+    })
+    .optional(),
+});
+
 export const x402ResponseSchemaV2 = z3.object({
   x402Version: z3.literal(2),
   error: z3.string().optional(),
   payer: z3.string().optional(),
   accepts: z3.array(paymentRequirementsSchemaV2).optional(),
   resource: resourceSchemaV2.optional(),
+  extensions: extensionsSchemaV2.optional(),
 });
 
 export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
