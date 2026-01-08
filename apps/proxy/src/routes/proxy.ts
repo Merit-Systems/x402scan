@@ -6,7 +6,6 @@ import { randomUUID } from 'crypto';
 import type { Context } from 'hono';
 
 const RESPONSE_HEADER_BLOCKLIST = new Set([
-  'content-encoding',
   'transfer-encoding',
   'content-length',
 ]);
