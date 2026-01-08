@@ -1,29 +1,20 @@
 import { Section } from '@/app/_components/layout/page-utils';
-import { api, HydrateClient } from '@/trpc/server';
 import { ToolsSortingProvider } from '@/app/_contexts/sorting/tools/provider';
 import { defaultToolsSorting } from '@/app/_contexts/sorting/tools/default';
 import { LoadingToolsTable, ToolsTable } from './table';
 import { Suspense } from 'react';
 
-export const Tools = async () => {
-  void api.public.tools.top.prefetch({
-    pagination: {
-      page: 0,
-      page_size: 10,
-    },
-    sorting: defaultToolsSorting,
-  });
-
+// Note: No HydrateClient here - parent page.tsx provides it
+// Prefetch is done in page.tsx
+export const Tools = () => {
   return (
-    <HydrateClient>
-      <ToolsContainer>
-        <ToolsSortingProvider initialSorting={defaultToolsSorting}>
-          <Suspense fallback={<LoadingToolsTable />}>
-            <ToolsTable />
-          </Suspense>
-        </ToolsSortingProvider>
-      </ToolsContainer>
-    </HydrateClient>
+    <ToolsContainer>
+      <ToolsSortingProvider initialSorting={defaultToolsSorting}>
+        <Suspense fallback={<LoadingToolsTable />}>
+          <ToolsTable />
+        </Suspense>
+      </ToolsSortingProvider>
+    </ToolsContainer>
   );
 };
 

@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 import { Section } from '@/app/_components/layout/page-utils';
-import { HydrateClient } from '@/trpc/server';
 import { YourAgentsContent } from './content';
 import { LoadingAgentCard } from '../lib/agent-card';
 
@@ -8,13 +7,12 @@ interface Props {
   userId: string;
 }
 
+// Note: No HydrateClient here - parent page.tsx provides it
 export const YourAgents: React.FC<Props> = ({ userId }) => {
   return (
-    <HydrateClient>
-      <Suspense fallback={<LoadingYourAgents />}>
-        <YourAgentsWrapper userId={userId} />
-      </Suspense>
-    </HydrateClient>
+    <Suspense fallback={<LoadingYourAgents />}>
+      <YourAgentsWrapper userId={userId} />
+    </Suspense>
   );
 };
 

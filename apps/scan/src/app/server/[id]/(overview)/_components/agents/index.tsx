@@ -1,6 +1,4 @@
-import { Suspense } from 'react';
 import { OriginOverviewSection } from '../section';
-import { HydrateClient } from '@/trpc/server';
 import { LoadingAgentCard } from '@/app/composer/(home)/_components/lib/agent-card';
 import { OriginAgentsContent } from './content';
 
@@ -10,13 +8,9 @@ interface Props {
 
 export const OriginAgents: React.FC<Props> = ({ originId }) => {
   return (
-    <HydrateClient>
-      <OriginOverviewSection title="Agents">
-        <Suspense fallback={<LoadingAgentsContent />}>
-          <OriginAgentsContent originId={originId} />
-        </Suspense>
-      </OriginOverviewSection>
-    </HydrateClient>
+    <OriginOverviewSection title="Agents">
+      <OriginAgentsContent originId={originId} />
+    </OriginOverviewSection>
   );
 };
 

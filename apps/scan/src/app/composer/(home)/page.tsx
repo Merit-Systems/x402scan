@@ -8,19 +8,44 @@ import { OverallStats } from './_components/stats';
 import { Feed } from './_components/feed';
 import { auth } from '@/auth';
 import { YourAgents } from './_components/your-agents';
-import { api } from '@/trpc/server';
+import { api, HydrateClient } from '@/trpc/server';
 import { ActivityTimeframe } from '@/types/timeframes';
+import { defaultToolsSorting } from '@/app/_contexts/sorting/tools/default';
 
 export default async function ComposerPage() {
   const session = await auth();
 
-  // Prefetch agents data for hydration
+  // Prefetch all data for hydration
   const prefetches = [
+    // Agents
     api.public.agents.list.prefetch({
       timeframe: ActivityTimeframe.OneDay,
       pagination: {
         page: 0,
         page_size: 10,
+      },
+    }),
+    // Tools
+    api.public.tools.top.prefetch({
+      pagination: {
+        page: 0,
+        page_size: 10,
+      },
+      sorting: defaultToolsSorting,
+    }),
+    // Overall Stats
+    api.public.agents.activity.overall.prefetch({
+      timeframe: ActivityTimeframe.SevenDays,
+    }),
+    api.public.agents.activity.bucketed.prefetch({
+      timeframe: ActivityTimeframe.SevenDays,
+      numBuckets: 32,
+    }),
+    // Feed
+    api.public.agents.activity.feed.prefetch({
+      pagination: {
+        page_size: 10,
+        page: 0,
       },
     }),
   ];
@@ -42,7 +67,7 @@ export default async function ComposerPage() {
   await Promise.all(prefetches);
 
   return (
-    <div>
+    <HydrateClient>
       <ComposerHomeHeading />
       <Body>
         {session?.user?.id && (
@@ -57,6 +82,6 @@ export default async function ComposerPage() {
         <Feed />
         <OverallStats />
       </Body>
-    </div>
+    </HydrateClient>
   );
 }

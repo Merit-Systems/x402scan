@@ -1,13 +1,18 @@
 import { Section } from '@/app/_components/layout/page-utils';
 import {
-  FeedTable,
-  LoadingFeedTable,
-} from '@/app/composer/_components/feed-table';
+  FeedTableContent,
+  LoadingFeedTableContent,
+} from '@/app/composer/_components/feed-table/table';
+import { Suspense } from 'react';
 
+// Note: No HydrateClient here - parent page.tsx provides it
+// Prefetch is done in page.tsx
 export const Feed = () => {
   return (
     <FeedContainer>
-      <FeedTable />
+      <Suspense fallback={<LoadingFeedTableContent />}>
+        <FeedTableContent />
+      </Suspense>
     </FeedContainer>
   );
 };
@@ -15,7 +20,7 @@ export const Feed = () => {
 export const LoadingFeed = () => {
   return (
     <FeedContainer>
-      <LoadingFeedTable />
+      <LoadingFeedTableContent />
     </FeedContainer>
   );
 };

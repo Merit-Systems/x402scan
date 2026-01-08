@@ -1,18 +1,16 @@
 import { Suspense } from 'react';
 import { Section } from '@/app/_components/layout/page-utils';
 import { LoadingAgentCard } from '../lib/agent-card';
-import { HydrateClient } from '@/trpc/server';
 import { AgentsContent } from './content';
 
+// Note: No HydrateClient here - parent page.tsx provides it
 export const Agents = () => {
   return (
-    <HydrateClient>
-      <AgentsContainer>
-        <Suspense fallback={<LoadingAgentsContent />}>
-          <AgentsContent />
-        </Suspense>
-      </AgentsContainer>
-    </HydrateClient>
+    <AgentsContainer>
+      <Suspense fallback={<LoadingAgentsContent />}>
+        <AgentsContent />
+      </Suspense>
+    </AgentsContainer>
   );
 };
 
