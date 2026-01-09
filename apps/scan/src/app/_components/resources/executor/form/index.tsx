@@ -23,7 +23,7 @@ import { ResourceFetch } from '../../../resource-fetch';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
-import type { FieldDefinition, FieldValue, Methods } from '@/types/x402';
+import { Methods, type FieldDefinition, type FieldValue } from '@/types/x402';
 import {
   normalizeChainId,
   type ParsedX402Response,
@@ -54,14 +54,88 @@ export function Form({
   method,
   resource,
 }: Props) {
-  const queryFields = useMemo(
-    () => getFields(inputSchema.queryParams),
-    [inputSchema]
-  );
-  const bodyFields = useMemo(
-    () => getFields(inputSchema.bodyFields),
-    [inputSchema]
-  );
+  // Handle both v1 format (queryParams/bodyFields) and v2 raw JSON Schema (properties)
+  // For v2: if method is GET, treat properties as query params; if POST, treat as body fields
+  const isV2RawSchema =
+    !inputSchema.queryParams &&
+    !inputSchema.bodyFields &&
+    'properties' in inputSchema;
+
+  // v2 body schema: body is a JSON Schema object with properties
+  // Cast to allow v2 schema fields that aren't in the v1 type definition
+  const v2Body = (inputSchema as Record<string, unknown>).body as Record<string, unknown> | undefined;
+  const isV2BodySchema =
+    !inputSchema.bodyFields &&
+    v2Body &&
+    typeof v2Body === 'object' &&
+    'properties' in v2Body;
+
+  // v2 query schema: queryParams is a JSON Schema object with properties
+  const isV2QuerySchema =
+    inputSchema.queryParams &&
+    typeof inputSchema.queryParams === 'object' &&
+    'properties' in (inputSchema.queryParams as object);
+
+  // DEBUG: Log schema detection
+  console.log('[Form] inputSchema:', inputSchema);
+  console.log('[Form] isV2RawSchema:', isV2RawSchema);
+  console.log('[Form] isV2BodySchema:', isV2BodySchema);
+  console.log('[Form] isV2QuerySchema:', isV2QuerySchema);
+  console.log('[Form] method:', method);
+  console.log('[Form] has queryParams:', !!inputSchema.queryParams);
+  console.log('[Form] has bodyFields:', !!inputSchema.bodyFields);
+  console.log('[Form] has body:', !!v2Body);
+  console.log('[Form] has properties:', 'properties' in inputSchema);
+
+  const queryFields = useMemo(() => {
+    // v2: queryParams is a JSON Schema with properties
+    if (isV2QuerySchema) {
+      const querySchema = inputSchema.queryParams as { properties?: Record<string, unknown>; required?: string[] };
+      const fields = getFields(querySchema.properties, querySchema.required);
+      console.log('[Form] queryFields from v2 queryParams schema:', fields);
+      return fields;
+    }
+    // v1: queryParams is a flat map
+    if (inputSchema.queryParams) {
+      const fields = getFields(inputSchema.queryParams);
+      console.log('[Form] queryFields from queryParams:', fields);
+      return fields;
+    }
+    // v2 raw JSON Schema: GET methods use properties as query params
+    if (isV2RawSchema && method === Methods.GET) {
+      const schema = inputSchema as { properties?: Record<string, unknown>; required?: string[] };
+      const fields = getFields(schema.properties, schema.required);
+      console.log('[Form] queryFields from v2 properties:', fields);
+      return fields;
+    }
+    console.log('[Form] queryFields: empty');
+    return [];
+  }, [inputSchema, isV2RawSchema, isV2QuerySchema, method]);
+
+  const bodyFields = useMemo(() => {
+    // v2: body is a JSON Schema with properties
+    if (isV2BodySchema && v2Body && method !== Methods.GET) {
+      const bodySchema = v2Body as { properties?: Record<string, unknown>; required?: string[] };
+      const fields = getFields(bodySchema.properties, bodySchema.required);
+      console.log('[Form] bodyFields from v2 body schema:', fields);
+      return fields;
+    }
+    // v1: bodyFields is a flat map
+    if (inputSchema.bodyFields) {
+      const fields = getFields(inputSchema.bodyFields);
+      console.log('[Form] bodyFields from bodyFields:', fields);
+      return fields;
+    }
+    // v2 raw JSON Schema: POST/PUT/PATCH methods use properties as body fields
+    if (isV2RawSchema && method !== Methods.GET) {
+      const schema = inputSchema as { properties?: Record<string, unknown>; required?: string[] };
+      const fields = getFields(schema.properties, schema.required);
+      console.log('[Form] bodyFields from v2 properties:', fields);
+      return fields;
+    }
+    console.log('[Form] bodyFields: empty');
+    return [];
+  }, [inputSchema, v2Body, isV2RawSchema, isV2BodySchema, method]);
 
   const [queryValues, setQueryValues] = useState<Record<string, FieldValue>>(
     {}
@@ -69,10 +143,12 @@ export function Form({
   const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>({});
 
   const handleQueryChange = (name: string, value: FieldValue) => {
+    console.log('[Form] handleQueryChange:', name, value);
     setQueryValues(prev => ({ ...prev, [name]: value }));
   };
 
   const handleBodyChange = (name: string, value: FieldValue) => {
+    console.log('[Form] handleBodyChange:', name, value);
     setBodyValues(prev => ({ ...prev, [name]: value }));
   };
 
@@ -120,8 +196,12 @@ export function Form({
 
   const bodyEntries = useMemo(
     () =>
-      Object.entries(bodyValues).reduce<Array<[string, FieldValue]>>(
+      Object.entries(bodyValues).reduce<Array<[string, FieldValue | number | boolean]>>(
         (acc, [key, value]) => {
+          // Find the field definition to get the type
+          const field = bodyFields.find(f => f.name === key);
+          const fieldType = field?.type;
+
           if (Array.isArray(value)) {
             if (value.length > 0) {
               acc.push([key, value]);
@@ -129,14 +209,24 @@ export function Form({
           } else if (typeof value === 'string') {
             const trimmed = value.trim();
             if (trimmed.length > 0) {
-              acc.push([key, trimmed]);
+              // Convert based on field type
+              if (fieldType === 'number' || fieldType === 'integer') {
+                const num = Number(trimmed);
+                if (!isNaN(num)) {
+                  acc.push([key, num]);
+                }
+              } else if (fieldType === 'boolean') {
+                acc.push([key, trimmed === 'true']);
+              } else {
+                acc.push([key, trimmed]);
+              }
             }
           }
           return acc;
         },
         []
       ),
-    [bodyValues]
+    [bodyValues, bodyFields]
   );
 
   const reconstructedBody = reconstructNestedObject(
@@ -148,6 +238,13 @@ export function Form({
     body:
       bodyEntries.length > 0 ? JSON.stringify(reconstructedBody) : undefined,
   };
+
+  // DEBUG: Log request building
+  console.log('[Form] bodyValues:', bodyValues);
+  console.log('[Form] bodyEntries:', bodyEntries);
+  console.log('[Form] reconstructedBody:', reconstructedBody);
+  console.log('[Form] requestInit:', requestInit);
+  console.log('[Form] targetUrl:', targetUrl);
 
   const hasQueryFields = queryFields.length > 0;
   const hasBodyFields = bodyFields.length > 0;
@@ -495,13 +592,14 @@ function FieldInput({
 }
 
 function getFields(
-  record: Record<string, unknown> | null | undefined
+  record: Record<string, unknown> | null | undefined,
+  requiredFields?: string[]
 ): FieldDefinition[] {
   if (!record) {
     return [];
   }
 
-  return expandFields(record);
+  return expandFields(record, '', requiredFields);
 }
 
 function expandFields(
@@ -610,7 +708,7 @@ function isValidFieldValue(value: FieldValue): boolean {
 }
 
 function reconstructNestedObject(
-  flatObject: Record<string, FieldValue>
+  flatObject: Record<string, FieldValue | number | boolean>
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 

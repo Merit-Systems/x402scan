@@ -120,7 +120,7 @@ function detectVersion(data: unknown): 1 | 2 {
 /**
  * NOTE(shafu): get the output schema from a parsed x402 response
  * V1: schema is in accepts[0].outputSchema
- * V2: schema is in extensions.bazaar.schema
+ * V2: schema is in extensions.bazaar.schema or extensions.bazaar.info
  */
 export function getOutputSchema(
   response: ParsedX402Response
@@ -128,7 +128,46 @@ export function getOutputSchema(
   if (response.x402Version === 2) {
     const bazaar = response.extensions?.bazaar;
     if (bazaar?.info) {
-      return bazaar.info as OutputSchema;
+      const info = bazaar.info as OutputSchema;
+      const input = info.input;
+
+      // If input.body exists but is empty, try to get schema from bazaar.schema
+      if (
+        input &&
+        'body' in input &&
+        input.body &&
+        typeof input.body === 'object' &&
+        Object.keys(input.body).length === 0 &&
+        bazaar.schema
+      ) {
+        // Extract body schema from bazaar.schema.properties.input.properties.body
+        const schemaObj = bazaar.schema as Record<string, unknown>;
+        const schemaProps = schemaObj.properties as
+          | Record<string, unknown>
+          | undefined;
+        const inputSchema = schemaProps?.input as
+          | Record<string, unknown>
+          | undefined;
+        const inputProps = inputSchema?.properties as
+          | Record<string, unknown>
+          | undefined;
+        const bodySchema = inputProps?.body as
+          | Record<string, unknown>
+          | undefined;
+
+        if (bodySchema && 'properties' in bodySchema) {
+          // Merge the body schema into input
+          return {
+            ...info,
+            input: {
+              ...input,
+              body: bodySchema,
+            },
+          } as OutputSchema;
+        }
+      }
+
+      return info;
     }
     if (bazaar?.schema) {
       // NOTE(shafu): bazaar.schema is a raw JSON Schema - wrap it as input schema
