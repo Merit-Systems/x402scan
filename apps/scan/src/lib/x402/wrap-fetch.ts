@@ -15,35 +15,12 @@ import {
   type X402Config,
   type Network,
 } from 'x402/types';
-import { extractX402Data, transformV2AcceptToV1 } from './index';
-import type { V2Accept, V2Resource } from './v2';
-
-async function parse402Response(response: Response): Promise<{
-  x402Version: number;
-  accepts: unknown[];
-  resource?: V2Resource;
-  extensions?: Record<string, unknown>;
-}> {
-  const data = await extractX402Data(response);
-
-  if (!data || typeof data !== 'object') {
-    throw new Error('Failed to parse 402 response');
-  }
-
-  const parsed = data as {
-    x402Version?: number;
-    accepts?: unknown[];
-    resource?: V2Resource;
-    extensions?: Record<string, unknown>;
-  };
-
-  return {
-    x402Version: parsed.x402Version ?? 1,
-    accepts: parsed.accepts ?? [],
-    resource: parsed.resource,
-    extensions: parsed.extensions,
-  };
-}
+import {
+  extractX402Data,
+  parseX402Response,
+  isV2Response,
+  normalizePaymentRequirement,
+} from './index';
 
 /**
  * Wraps fetch with x402 payment support for both v1 and v2 protocols.
@@ -70,28 +47,33 @@ export const wrapFetchWithPayment = (
       return response;
     }
 
-    const {
-      x402Version,
-      accepts,
-      resource: v2Resource,
-      extensions: v2Extensions,
-    } = await parse402Response(response);
+    // Parse x402 response (handles both v1 body and v2 header)
+    const rawData = await extractX402Data(response);
+    const parseResult = parseX402Response(rawData);
 
-    if (!accepts || accepts.length === 0) {
+    if (!parseResult.success) {
+      throw new Error(
+        `Failed to parse 402 response: ${parseResult.errors.join(', ')}`
+      );
+    }
+
+    const x402Response = parseResult.data;
+    const isV2 = isV2Response(x402Response);
+    const x402Version = x402Response.x402Version;
+
+    if (!x402Response.accepts || x402Response.accepts.length === 0) {
       throw new Error('No payment requirements found in 402 response');
     }
 
-    // Parse and validate payment requirements
-    // For v2, transform to v1 format first, but keep original accepts for the response
-    const originalV2Accepts =
-      x402Version >= 2 ? (accepts as V2Accept[]) : undefined;
+    // Normalize and validate payment requirements
+    // Keep original accepts for v2 response reconstruction
+    const originalAccepts = x402Response.accepts;
+    const v2Resource = isV2 ? x402Response.resource : undefined;
+    const v2Extensions = isV2 ? x402Response.extensions : undefined;
 
-    const parsedPaymentRequirements = accepts.map(x => {
-      let acceptToValidate = x;
-      if (x402Version >= 2) {
-        acceptToValidate = transformV2AcceptToV1(x as V2Accept, v2Resource);
-      }
-      return PaymentRequirementsSchema.parse(acceptToValidate);
+    const parsedPaymentRequirements = originalAccepts.map(accept => {
+      const normalized = normalizePaymentRequirement(accept, v2Resource);
+      return PaymentRequirementsSchema.parse(normalized);
     });
 
     // Determine network from wallet type
@@ -116,11 +98,11 @@ export const wrapFetchWithPayment = (
       'exact'
     );
 
-    // Find the index of the selected requirement to get the original v2 accept
+    // Find the index of the selected requirement to get the original accept
     const selectedIndex = parsedPaymentRequirements.findIndex(
       pr => pr === selectedPaymentRequirements
     );
-    const originalSelectedAccept = originalV2Accepts?.[selectedIndex];
+    const originalSelectedAccept = originalAccepts[selectedIndex];
 
     // Check payment amount
     if (BigInt(selectedPaymentRequirements.maxAmountRequired) > maxValue) {
@@ -129,7 +111,7 @@ export const wrapFetchWithPayment = (
       );
     }
 
-    // Create payment header using v1 library
+    // Create payment header
     const v1PaymentHeader = await createPaymentHeader(
       walletClient,
       x402Version,
@@ -139,7 +121,7 @@ export const wrapFetchWithPayment = (
 
     // For v2, reconstruct the header with proper structure
     let paymentHeader: string;
-    if (x402Version >= 2 && originalSelectedAccept) {
+    if (isV2 && originalSelectedAccept) {
       try {
         // Decode the v1-style header to extract the payload
         const decodedV1Header = JSON.parse(atob(v1PaymentHeader)) as {
@@ -180,8 +162,7 @@ export const wrapFetchWithPayment = (
     }
 
     // Use correct header based on version
-    const paymentHeaderName =
-      x402Version >= 2 ? 'PAYMENT-SIGNATURE' : 'X-PAYMENT';
+    const paymentHeaderName = isV2 ? 'PAYMENT-SIGNATURE' : 'X-PAYMENT';
 
     const newInit: RequestInit = {
       ...init,

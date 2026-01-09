@@ -218,9 +218,7 @@ export async function extractX402Data(response: Response): Promise<unknown> {
   const paymentRequiredHeader = response.headers.get('Payment-Required');
   if (paymentRequiredHeader) {
     try {
-      const decoded = Buffer.from(paymentRequiredHeader, 'base64').toString(
-        'utf-8'
-      );
+      const decoded = atob(paymentRequiredHeader);
       return JSON.parse(decoded);
     } catch {
       // fall through to body parsing if header decoding fails
@@ -244,18 +242,4 @@ export function normalizeChainId(chainId: string): string {
     return network ?? chainId;
   }
   return chainId;
-}
-
-export function transformV2AcceptToV1(
-  accept: V2Accept,
-  resource?: V2Resource
-): Record<string, unknown> {
-  return {
-    ...accept,
-    network: normalizeChainId(accept.network),
-    maxAmountRequired: accept.amount ?? accept.maxAmountRequired,
-    resource: accept.resource ?? resource?.url ?? '',
-    description: accept.description ?? resource?.description ?? '',
-    mimeType: accept.mimeType ?? resource?.mimeType ?? '',
-  };
 }
