@@ -14,6 +14,7 @@ import { SIWS_PROVIDER_ID } from './providers/siws/constants';
 
 import type { DefaultSession } from 'next-auth';
 import type { Account, Role } from '@x402scan/scan-db/types';
+import { env } from '@/env';
 
 declare module 'next-auth' {
   interface Session {
@@ -82,6 +83,62 @@ const { handlers, auth: uncachedAuth } = NextAuth({
   trustHost: true,
   callbacks: {
     async session({ session, user }) {
+      const permiAccount = await scanDb.account.findFirst({
+        where: {
+          provider: 'permi',
+          userId: user.id,
+        },
+      });
+      if (
+        permiAccount?.expires_at &&
+        permiAccount.expires_at * 1000 < Date.now()
+      ) {
+        try {
+          const response = await fetch(
+            'https://www.permi.xyz/api/oauth/token',
+            {
+              method: 'POST',
+              body: new URLSearchParams({
+                client_id: env.PERMI_APP_ID,
+                grant_type: 'refresh_token',
+                refresh_token: permiAccount.refresh_token!,
+              }),
+            }
+          );
+          const tokensOrError = (await response.json()) as unknown;
+
+          if (!response.ok) throw tokensOrError;
+
+          const newTokens = tokensOrError as {
+            access_token: string;
+            expires_in: number;
+            refresh_token?: string;
+          };
+
+          const updatedAccount = await scanDb.account.update({
+            where: {
+              provider_providerAccountId: {
+                provider: 'permi',
+                providerAccountId: permiAccount.providerAccountId,
+              },
+            },
+            data: {
+              access_token: newTokens.access_token,
+              expires_at: newTokens.expires_in,
+              refresh_token: newTokens.refresh_token,
+            },
+          });
+          if (!updatedAccount) {
+            throw new Error('Failed to update account');
+          }
+          user.accounts = [
+            ...user.accounts.filter(account => account.provider !== 'permi'),
+            updatedAccount,
+          ];
+        } catch (error) {
+          console.error('Error refreshing access_token', error);
+        }
+      }
       return Promise.resolve({
         ...session,
         user: user,

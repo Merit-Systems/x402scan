@@ -59,7 +59,11 @@ export const Chat: React.FC<Props> = async ({
         storeConfig={storeConfig}
         agentConfig={agentConfig}
       />
-      {session ? <Onboarding /> : <ConnectDialog agentConfig={agentConfig} />}
+      {session?.user.accounts.find(account => account.provider === 'permi') ? (
+        <Onboarding />
+      ) : (
+        <ConnectDialog agentConfig={agentConfig} />
+      )}
     </>
   );
 };

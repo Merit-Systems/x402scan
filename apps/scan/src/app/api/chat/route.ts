@@ -49,6 +49,13 @@ const bodySchema = z.object({
 export async function POST(request: NextRequest) {
   const session = await auth();
 
+  const permiAccount = session?.user.accounts.find(
+    account => account.provider === 'permi'
+  );
+  if (!permiAccount) {
+    return new ChatError('unauthorized:auth').toResponse();
+  }
+
   if (!session) {
     return new ChatError('unauthorized:auth').toResponse();
   }
@@ -149,7 +156,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const tools = await createX402AITools(resourceIds);
+  const tools = await createX402AITools(resourceIds, permiAccount);
 
   const getSystemPrompt = async () => {
     if (agentConfigurationId) {
