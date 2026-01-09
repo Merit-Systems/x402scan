@@ -23,7 +23,7 @@ import {
 } from './index';
 
 /**
- * Wraps fetch with x402 payment support for both v1 and v2 protocols.
+ * NOTE(shafu): wraps fetch with x402 payment support for both v1 and v2 protocols
  *
  * v1: Payment requirements in JSON body with `accepts` array
  * v2: Payment requirements in `Payment-Required` header (base64 encoded)
@@ -47,7 +47,6 @@ export const wrapFetchWithPayment = (
       return response;
     }
 
-    // Parse x402 response (handles both v1 body and v2 header)
     const rawData = await extractX402Data(response);
     const parseResult = parseX402Response(rawData);
 
@@ -65,8 +64,6 @@ export const wrapFetchWithPayment = (
       throw new Error('No payment requirements found in 402 response');
     }
 
-    // Normalize and validate payment requirements
-    // Keep original accepts for v2 response reconstruction
     const originalAccepts = x402Response.accepts;
     const v2Resource = isV2 ? x402Response.resource : undefined;
     const v2Extensions = isV2 ? x402Response.extensions : undefined;
@@ -76,7 +73,6 @@ export const wrapFetchWithPayment = (
       return PaymentRequirementsSchema.parse(normalized);
     });
 
-    // Determine network from wallet type
     let network: Network | Network[] | undefined;
     if (isMultiNetworkSigner(walletClient)) {
       network = undefined;
@@ -91,27 +87,23 @@ export const wrapFetchWithPayment = (
       network = ['solana', 'solana-devnet'] as Network[];
     }
 
-    // Select the appropriate payment requirement
     const selectedPaymentRequirements = paymentRequirementsSelector(
       parsedPaymentRequirements,
       network,
       'exact'
     );
 
-    // Find the index of the selected requirement to get the original accept
     const selectedIndex = parsedPaymentRequirements.findIndex(
       pr => pr === selectedPaymentRequirements
     );
     const originalSelectedAccept = originalAccepts[selectedIndex];
 
-    // Check payment amount
     if (BigInt(selectedPaymentRequirements.maxAmountRequired) > maxValue) {
       throw new Error(
         `Payment amount ${selectedPaymentRequirements.maxAmountRequired} exceeds maximum allowed ${maxValue}`
       );
     }
 
-    // Create payment header
     const v1PaymentHeader = await createPaymentHeader(
       walletClient,
       x402Version,
@@ -119,11 +111,10 @@ export const wrapFetchWithPayment = (
       config
     );
 
-    // For v2, reconstruct the header with proper structure
+    // NOTE(shafu): for v2, reconstruct the header
     let paymentHeader: string;
     if (isV2 && originalSelectedAccept) {
       try {
-        // Decode the v1-style header to extract the payload
         const decodedV1Header = JSON.parse(atob(v1PaymentHeader)) as {
           payload?: {
             signature?: string;
@@ -131,7 +122,6 @@ export const wrapFetchWithPayment = (
           };
         };
 
-        // Construct proper v2 header structure
         const v2PaymentPayload = {
           x402Version: 2,
           resource: v2Resource,
@@ -152,7 +142,6 @@ export const wrapFetchWithPayment = (
       paymentHeader = v1PaymentHeader;
     }
 
-    // Check for retry loop
     const existingHeaders = new Headers(init?.headers);
     if (
       existingHeaders.has('X-PAYMENT') ||
@@ -161,7 +150,6 @@ export const wrapFetchWithPayment = (
       throw new Error('Payment already attempted');
     }
 
-    // Use correct header based on version
     const paymentHeaderName = isV2 ? 'PAYMENT-SIGNATURE' : 'X-PAYMENT';
 
     const newInit: RequestInit = {
