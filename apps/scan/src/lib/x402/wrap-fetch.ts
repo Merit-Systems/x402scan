@@ -15,88 +15,34 @@ import {
   type X402Config,
   type Network,
 } from 'x402/types';
-import { normalizeChainId } from './index';
+import { extractX402Data, transformV2AcceptToV1 } from './index';
 import type { V2Accept, V2Resource } from './v2';
 
-/**
- * Transform v2 accept to v1 format for compatibility with PaymentRequirementsSchema
- */
-function transformV2AcceptToV1(
-  accept: V2Accept,
-  resource?: V2Resource
-): Record<string, unknown> {
-  return {
-    ...accept,
-    network: normalizeChainId(accept.network),
-    maxAmountRequired: accept.amount ?? accept.maxAmountRequired,
-    resource: accept.resource ?? resource?.url ?? '',
-    description: accept.description ?? resource?.description ?? '',
-    mimeType: accept.mimeType ?? resource?.mimeType ?? '',
-  };
-}
-
-/**
- * Parse 402 response to extract payment requirements.
- * v2: from Payment-Required header (base64 encoded)
- * v1: from response body
- */
 async function parse402Response(response: Response): Promise<{
   x402Version: number;
   accepts: unknown[];
   resource?: V2Resource;
   extensions?: Record<string, unknown>;
 }> {
-  const paymentRequiredHeader = response.headers.get('Payment-Required');
+  const data = await extractX402Data(response);
 
-  if (paymentRequiredHeader) {
-    // v2: decode from base64 header
-    try {
-      const decoded = atob(paymentRequiredHeader);
-      const parsed = JSON.parse(decoded) as {
-        x402Version?: number;
-        accepts?: unknown[];
-        resource?: V2Resource;
-        extensions?: Record<string, unknown>;
-      };
-      return {
-        x402Version: parsed.x402Version ?? 2,
-        accepts: parsed.accepts ?? [],
-        resource: parsed.resource,
-        extensions: parsed.extensions,
-      };
-    } catch (error) {
-      console.error(
-        '[wrapFetchWithPayment] Failed to parse Payment-Required header:',
-        error
-      );
-      throw new Error('Failed to parse Payment-Required header');
-    }
+  if (!data || typeof data !== 'object') {
+    throw new Error('Failed to parse 402 response');
   }
 
-  // v1 or v2 from body
-  try {
-    const clonedResponse = response.clone();
-    const rawText = await clonedResponse.text();
+  const parsed = data as {
+    x402Version?: number;
+    accepts?: unknown[];
+    resource?: V2Resource;
+    extensions?: Record<string, unknown>;
+  };
 
-    const body = JSON.parse(rawText) as {
-      x402Version?: number;
-      accepts?: unknown[];
-      resource?: V2Resource;
-      extensions?: Record<string, unknown>;
-    };
-    return {
-      x402Version: body.x402Version ?? 1,
-      accepts: body.accepts ?? [],
-      resource: body.resource,
-      extensions: body.extensions,
-    };
-  } catch (error) {
-    console.error(
-      '[wrapFetchWithPayment] Failed to parse 402 response body:',
-      error
-    );
-    throw new Error('Failed to parse 402 response body');
-  }
+  return {
+    x402Version: parsed.x402Version ?? 1,
+    accepts: parsed.accepts ?? [],
+    resource: parsed.resource,
+    extensions: parsed.extensions,
+  };
 }
 
 /**

@@ -17,6 +17,8 @@ import {
   paymentRequirementsSchemaV2,
   type X402ResponseV2,
   type PaymentRequirementsV2,
+  type V2Accept,
+  type V2Resource,
 } from './v2';
 import { ChainIdToNetwork } from 'x402/types';
 import type { ParseResult } from './shared';
@@ -242,4 +244,18 @@ export function normalizeChainId(chainId: string): string {
     return network ?? chainId;
   }
   return chainId;
+}
+
+export function transformV2AcceptToV1(
+  accept: V2Accept,
+  resource?: V2Resource
+): Record<string, unknown> {
+  return {
+    ...accept,
+    network: normalizeChainId(accept.network),
+    maxAmountRequired: accept.amount ?? accept.maxAmountRequired,
+    resource: accept.resource ?? resource?.url ?? '',
+    description: accept.description ?? resource?.description ?? '',
+    mimeType: accept.mimeType ?? resource?.mimeType ?? '',
+  };
 }
