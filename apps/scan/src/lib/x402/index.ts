@@ -196,7 +196,7 @@ export async function extractX402Data(response: Response): Promise<unknown> {
   }
 }
 
-function normalizeChainId(chainId: string): string {
+export function normalizeChainId(chainId: string): string {
   if (chainId.startsWith('eip155:')) {
     const id = Number(chainId.split(':')[1]);
     const network = ChainIdToNetwork[id];
