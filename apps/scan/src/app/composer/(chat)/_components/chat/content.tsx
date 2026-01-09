@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { EmptyMessages, LoadingMessages, Messages } from './messages';
 import { LoadingPromptInputSection, PromptInputSection } from './input';
 
-import type { Message } from '@x402scan/scan-db';
+import type { Message } from '@x402scan/scan-db/types';
 import type { ChatConfig } from '../../_types/chat-config';
 import type { RouterOutputs } from '@/trpc/client';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -63,7 +63,7 @@ export const ChatContent: React.FC<Props> = ({
         errorMessage={errorMessage}
         chatId={id}
         addToolResult={addToolResult}
-        onRegenerate={regenerate}
+        onRegenerate={() => void regenerate()}
         emptyState={
           agentConfig
             ? {

@@ -15,7 +15,7 @@ const ogImageSchema = z.object({
   description: z.string().optional(),
 });
 
-export const originSchema = z.object({
+const originSchema = z.object({
   origin: z.url(),
   title: z.string().optional(),
   description: z.string().optional(),

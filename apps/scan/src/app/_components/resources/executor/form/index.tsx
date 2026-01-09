@@ -142,7 +142,7 @@ export function Form({
 
   const queryEntries = useMemo(
     () =>
-      Object.entries(queryValues).reduce<Array<[string, string]>>(
+      Object.entries(queryValues).reduce<[string, string][]>(
         (acc, [key, value]) => {
           if (typeof value === 'string') {
             const trimmed = value.trim();

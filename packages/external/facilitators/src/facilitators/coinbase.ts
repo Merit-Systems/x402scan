@@ -120,12 +120,62 @@ export const coinbaseFacilitator = {
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-11'),
       },
+      {
+        address: '0x8f5cb67b49555e614892b7233cfddebfb746e531',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-16'),
+      },
+      {
+        address: '0x67b9ce703d9ce658d7c4ac3c289cea112fe662af',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-16'),
+      },
+      {
+        address: '0x68a96f41ff1e9f2e7b591a931a4ad224e7c07863',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-16'),
+      },
+      {
+        address: '0x97acce27d5069544480bde0f04d9f47d7422a016',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-16'),
+      },
+      {
+        address: '0xa32ccda98ba7529705a059bd2d213da8de10d101',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-16'),
+      },
     ],
     [Network.SOLANA]: [
       {
         address: 'L54zkaPQFeTn1UsEqieEXBqWrPShiaZEPD7mS5WXfQg',
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-24'),
+      },
+      {
+        address: 'BENrLoUbndxoNMUS5JXApGMtNykLjFXXixMtpDwDR9SP',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-16'),
+      },
+      {
+        address: 'BFK9TLC3edb13K6v4YyH3DwPb5DSUpkWvb7XnqCL9b4F',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-16'),
+      },
+      {
+        address: 'D6ZhtNQ5nT9ZnTHUbqXZsTx5MH2rPFiBBggX4hY1WePM',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-16'),
+      },
+      {
+        address: 'GVJJ7rdGiXr5xaYbRwRbjfaJL7fmwRygFi1H6aGqDveb',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-16'),
+      },
+      {
+        address: 'Hc3sdEAsCGQcpgfivywog9uwtk8gUBUZgsxdME1EJy88',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2025-12-16'),
       },
     ],
   },

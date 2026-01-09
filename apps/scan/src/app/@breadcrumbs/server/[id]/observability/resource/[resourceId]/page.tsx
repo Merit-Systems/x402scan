@@ -1,3 +1,3 @@
-export default async function OriginResourceObservabilityPage() {
+export default function OriginResourceObservabilityPage() {
   return null;
 }

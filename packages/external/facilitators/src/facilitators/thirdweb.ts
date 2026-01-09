@@ -6,9 +6,9 @@ import type {
   FacilitatorConfigConstructor,
 } from '../types';
 
-type ThirdwebConfig = {
+interface ThirdwebConfig {
   secretKey: string;
-};
+}
 
 const FACILITATOR_URL = 'https://api.thirdweb.com/v1/payments/x402';
 
@@ -17,7 +17,7 @@ export const thirdweb: FacilitatorConfigConstructor<ThirdwebConfig> = ({
 }) => ({
   url: FACILITATOR_URL,
   createAuthHeaders: async () => {
-    return {
+    return Promise.resolve({
       verify: {
         'x-secret-key': secretKey,
       },
@@ -30,7 +30,7 @@ export const thirdweb: FacilitatorConfigConstructor<ThirdwebConfig> = ({
       list: {
         'x-secret-key': secretKey,
       },
-    };
+    });
   },
 });
 

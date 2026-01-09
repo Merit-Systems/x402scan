@@ -13,13 +13,13 @@ import {
 } from '@/components/ui/tooltip';
 import { CheckCircle, XCircle } from 'lucide-react';
 
-type AcceptStatus = {
+interface AcceptStatus {
   network: string;
   payTo: string;
   description?: string;
   asset?: string;
   isSupported: boolean;
-};
+}
 
 export function AcceptsBreakdownTable({
   accepts,

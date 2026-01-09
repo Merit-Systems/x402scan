@@ -25,14 +25,14 @@ interface Props {
   chain?: Chain;
 }
 
-export const AllSellers: React.FC<Props> = async ({ chain }) => {
-  const limit = 100;
+export const AllSellers: React.FC<Props> = ({ chain }) => {
+  const pageSize = 10;
 
   void api.public.sellers.all.list.prefetch({
     chain,
     sorting: defaultSellersSorting,
     pagination: {
-      page_size: limit,
+      page_size: pageSize,
       page: 0,
     },
     timeframe: ActivityTimeframe.OneDay,

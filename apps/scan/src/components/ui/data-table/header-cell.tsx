@@ -11,9 +11,9 @@ interface BaseProps {
   className?: string;
 }
 
-interface Props<SortKey extends string> extends BaseProps {
+type Props<SortKey extends string> = {
   sorting?: SortingProps<SortKey>;
-}
+} & BaseProps;
 
 export const HeaderCell = <SortKey extends string>({
   Icon,
@@ -80,10 +80,10 @@ const SortableHeaderCell = <SortKey extends string>({
   );
 };
 
-interface HeaderCellInternalProps extends BaseProps {
+type HeaderCellInternalProps = {
   onClick?: () => void;
   children?: React.ReactNode;
-}
+} & BaseProps;
 
 const HeaderCellInternal: React.FC<HeaderCellInternalProps> = ({
   Icon,

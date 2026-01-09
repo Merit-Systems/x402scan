@@ -1,3 +1,5 @@
+import { skipToken } from '@tanstack/react-query';
+
 import { Chain } from '@/types/chain';
 import { useWalletChain } from '../../../../../_contexts/wallet-chain/hook';
 import { ItemContainer } from './item';
@@ -6,6 +8,7 @@ import { api } from '@/trpc/client';
 import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
 import { usdc } from '@/lib/tokens/usdc';
 import { Skeleton } from '@/components/ui/skeleton';
+import { solanaAddressSchema } from '@/lib/schemas';
 
 interface Props {
   address: string;
@@ -22,16 +25,18 @@ export const Balance: React.FC<Props> = ({ address }) => {
 };
 
 const SolanaBalance: React.FC<Props> = ({ address }) => {
-  const { data: balance, isLoading } = api.public.solana.balance.useQuery({
-    ownerAddress: address,
-  });
+  const isValidAddress = solanaAddressSchema.safeParse(address).success;
+
+  const { data: balance, isLoading } = api.public.solana.balance.useQuery(
+    isValidAddress ? { ownerAddress: address } : skipToken
+  );
 
   return <BalanceItem balance={balance} isLoading={isLoading} />;
 };
 
-interface EvmBalanceProps extends Props {
+type EvmBalanceProps = {
   chain: Chain;
-}
+} & Props;
 
 const EvmBalance: React.FC<EvmBalanceProps> = ({ chain }) => {
   const { data: balance, isLoading } = useEvmTokenBalance({

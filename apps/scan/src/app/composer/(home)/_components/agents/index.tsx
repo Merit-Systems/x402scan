@@ -1,22 +1,15 @@
+import { Suspense } from 'react';
 import { Section } from '@/app/_components/layout/page-utils';
-import { api } from '@/trpc/server';
-import { AgentCard, LoadingAgentCard } from '../lib/agent-card';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { LoadingAgentCard } from '../lib/agent-card';
+import { AgentsContent } from './content';
 
-export const Agents = async () => {
-  const topAgents = await api.public.agents.list({
-    timeframe: ActivityTimeframe.OneDay,
-    pagination: {
-      page: 0,
-      page_size: 4,
-    },
-  });
-
+// Note: No HydrateClient here - parent page.tsx provides it
+export const Agents = () => {
   return (
     <AgentsContainer>
-      {topAgents.items.map(agent => (
-        <AgentCard key={agent.id} agentConfiguration={agent} />
-      ))}
+      <Suspense fallback={<LoadingAgentsContent />}>
+        <AgentsContent />
+      </Suspense>
     </AgentsContainer>
   );
 };
@@ -24,10 +17,18 @@ export const Agents = async () => {
 export const LoadingAgents = () => {
   return (
     <AgentsContainer>
+      <LoadingAgentsContent />
+    </AgentsContainer>
+  );
+};
+
+const LoadingAgentsContent = () => {
+  return (
+    <>
       {Array.from({ length: 4 }).map((_, index) => (
         <LoadingAgentCard key={index} />
       ))}
-    </AgentsContainer>
+    </>
   );
 };
 

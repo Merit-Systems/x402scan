@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { scanDb } from '@x402scan/scan-db';
 
-import type { OnrampSession } from '@x402scan/scan-db';
+import type { OnrampSession } from '@x402scan/scan-db/types';
 
 export const getOnrampSessionByToken = async (
   token: string,
@@ -13,7 +13,7 @@ export const getOnrampSessionByToken = async (
   });
 };
 
-export const createOnrampSessionSchema = z.object({
+const createOnrampSessionSchema = z.object({
   token: z.string(),
   amount: z.number(),
   userId: z.string(),

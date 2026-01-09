@@ -92,7 +92,7 @@ export const WalletContent: React.FC<Props> = ({ user, address }) => {
         />
       )}
       <Button
-        onClick={() => handleSignOut()}
+        onClick={() => void handleSignOut()}
         className="w-full"
         disabled={!isInitialized || isSigningOut || status === 'loading'}
       >

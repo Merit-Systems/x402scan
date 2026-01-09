@@ -11,11 +11,8 @@
       "ignoreDependencies": [
         "postcss",
         "redis",
-        "facilitators",
         "tailwindcss",
-        "tw-animate-css",
-        "@x402scan/transfers-db",
-        "@x402scan/scan-db"
+        "tw-animate-css"
       ],
       "ignore": ["src/scripts/**", "src/components/ui/charts/chart/**"]
     },
@@ -34,7 +31,7 @@
     },
     "packages/internal/databases/transfers": {
       "project": ["src/**/*.ts", "prisma/schema.prisma"],
-      "ignoreDependencies": ["rimraf"],
+      "ignoreDependencies": ["rimraf", "@prisma/client"],
       "ignore": ["generated/**"]
     },
     "packages/internal/configurations/eslint": {

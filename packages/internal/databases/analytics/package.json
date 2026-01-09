@@ -22,13 +22,13 @@
     "check:format": "pnpm -w check:format-dir ./packages/internal/databases/analytics"
   },
   "dependencies": {
-    "@clickhouse/client": "^1.12.1"
+    "@clickhouse/client": "catalog:clickhouse"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "catalog:",
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "eslint": "^9.39.1",
-    "typescript": "5.5.4"
+    "eslint": "catalog:",
+    "typescript": "catalog:"
   }
 }

@@ -7,7 +7,7 @@ export enum LanguageModelCapability {
   ToolCalling = 'tool-calling',
 }
 
-export type LanguageModel = {
+export interface LanguageModel {
   name: string;
   provider: string;
   modelId: string;
@@ -17,4 +17,4 @@ export type LanguageModel = {
   contextLength?: number;
   isNew?: boolean;
   providerOptions?: ProviderMetadata;
-};
+}

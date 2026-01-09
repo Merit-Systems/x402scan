@@ -47,12 +47,18 @@ export const transfersWhereObject = (
 
   const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
 
+  // Only include block_timestamp filter if we have dates (not All Time)
+  const blockTimestampFilter =
+    startDate || endDate
+      ? {
+          ...(startDate && { gte: startDate }),
+          ...(endDate && { lte: endDate }),
+        }
+      : undefined;
+
   return {
     chain,
-    block_timestamp: {
-      gte: startDate,
-      lte: endDate,
-    },
+    block_timestamp: blockTimestampFilter,
     sender: {
       in: senders?.include,
       notIn: senders?.exclude,

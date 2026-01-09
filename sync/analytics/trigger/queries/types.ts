@@ -1,4 +1,4 @@
-export type Metrics = {
+export interface Metrics {
   total_count_1h: number;
   total_count_6h: number;
   total_count_24h: number;
@@ -71,7 +71,7 @@ export type Metrics = {
   count_5xx_15d: number;
   count_5xx_30d: number;
   count_5xx_all_time: number;
-};
+}
 
 export type MetricsByResource = Metrics & {
   resource: string;

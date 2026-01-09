@@ -52,9 +52,9 @@ export const LoadingStatsCards = () => {
   return statsData.map(stat => <LoadingStatCard {...stat} key={stat.title} />);
 };
 
-interface StatsCardProps extends Stat {
+type StatsCardProps = {
   value: string;
-}
+} & Stat;
 
 const StatCard = ({ value, ...stat }: StatsCardProps) => {
   return (

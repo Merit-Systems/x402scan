@@ -56,7 +56,7 @@ function SiwsProvider(options?: Partial<CredentialsConfig>) {
 
       const session = await auth();
 
-      if (session) {
+      if (session?.user?.id) {
         // link account to user
         const { user } = await scanDb.account.upsert({
           where: {

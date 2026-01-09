@@ -56,7 +56,7 @@ import { isLocalUrl, extractPort } from '@/lib/url-helpers';
 import { NgrokAlert } from './ngrok-alert';
 
 import type { SupportedChain } from '@/types/chain';
-import type { OgImage, ResourceOrigin } from '@x402scan/scan-db';
+import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 
 export const TestEndpointForm = () => {
   const queryClient = useQueryClient();
@@ -159,13 +159,13 @@ export const TestEndpointForm = () => {
 
   // Process accepts from both GET and POST
   const acceptsData = useMemo(() => {
-    const allAccepts: Array<{
+    const allAccepts: {
       network: string;
       payTo: string;
       asset: string;
       method: 'GET' | 'POST';
       isSupported: boolean;
-    }> = [];
+    }[] = [];
 
     [
       { pair: getPair, method: 'GET' as const },
