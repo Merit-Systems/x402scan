@@ -16,6 +16,8 @@ const resourceSchemaV2 = z3.object({
   outputSchema: outputSchemaV1.optional(), // NOTE(shafu): we use v1 outputSchema for compatibility
 });
 
+export type ResourceV2 = z3.infer<typeof resourceSchemaV2>;
+
 export const paymentRequirementsSchemaV2 = z3.object({
   scheme: z3.literal('exact'),
   network: ChainIdSchema,

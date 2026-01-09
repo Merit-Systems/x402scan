@@ -16,32 +16,19 @@ import {
   type Network,
 } from 'x402/types';
 import { normalizeChainId } from './index';
+import type { PaymentRequirementsV2, ResourceV2 } from './v2';
 
-/**
- * v2 accept format (CAIP-2 networks, different field names)
- */
-interface V2Accept {
-  scheme: string;
-  network: string;
-  amount?: string;
+type V2Accept = PaymentRequirementsV2 & {
   maxAmountRequired?: string;
-  payTo: string;
-  maxTimeoutSeconds: number;
-  asset: string;
-  extra?: Record<string, unknown>;
   resource?: string;
   description?: string;
   mimeType?: string;
-}
+};
 
 /**
  * v2 resource info (at top level, not in each accept)
  */
-interface V2Resource {
-  url?: string;
-  description?: string;
-  mimeType?: string;
-}
+type V2Resource = Partial<ResourceV2>;
 
 /**
  * Transform v2 accept to v1 format for compatibility with PaymentRequirementsSchema
