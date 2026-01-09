@@ -38,4 +38,4 @@ export {
   SessionStatus,
   ServerWalletType,
   Visibility,
-} from '../generated/prisma';
+} from '../generated/prisma/enums';
