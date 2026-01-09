@@ -63,7 +63,9 @@ export function Form({
 
   // v2 body schema: body is a JSON Schema object with properties
   // Cast to allow v2 schema fields that aren't in the v1 type definition
-  const v2Body = (inputSchema as Record<string, unknown>).body as Record<string, unknown> | undefined;
+  const v2Body = (inputSchema as Record<string, unknown>).body as
+    | Record<string, unknown>
+    | undefined;
   const isV2BodySchema =
     !inputSchema.bodyFields &&
     v2Body &&
@@ -79,7 +81,10 @@ export function Form({
   const queryFields = useMemo(() => {
     // v2: queryParams is a JSON Schema with properties
     if (isV2QuerySchema) {
-      const querySchema = inputSchema.queryParams as { properties?: Record<string, unknown>; required?: string[] };
+      const querySchema = inputSchema.queryParams as {
+        properties?: Record<string, unknown>;
+        required?: string[];
+      };
       return getFields(querySchema.properties, querySchema.required);
     }
     // v1: queryParams is a flat map
@@ -88,7 +93,10 @@ export function Form({
     }
     // v2 raw JSON Schema: GET methods use properties as query params
     if (isV2RawSchema && method === Methods.GET) {
-      const schema = inputSchema as { properties?: Record<string, unknown>; required?: string[] };
+      const schema = inputSchema as {
+        properties?: Record<string, unknown>;
+        required?: string[];
+      };
       return getFields(schema.properties, schema.required);
     }
     return [];
@@ -97,7 +105,10 @@ export function Form({
   const bodyFields = useMemo(() => {
     // v2: body is a JSON Schema with properties
     if (isV2BodySchema && v2Body && method !== Methods.GET) {
-      const bodySchema = v2Body as { properties?: Record<string, unknown>; required?: string[] };
+      const bodySchema = v2Body as {
+        properties?: Record<string, unknown>;
+        required?: string[];
+      };
       return getFields(bodySchema.properties, bodySchema.required);
     }
     // v1: bodyFields is a flat map
@@ -106,7 +117,10 @@ export function Form({
     }
     // v2 raw JSON Schema: POST/PUT/PATCH methods use properties as body fields
     if (isV2RawSchema && method !== Methods.GET) {
-      const schema = inputSchema as { properties?: Record<string, unknown>; required?: string[] };
+      const schema = inputSchema as {
+        properties?: Record<string, unknown>;
+        required?: string[];
+      };
       return getFields(schema.properties, schema.required);
     }
     return [];
@@ -169,36 +183,35 @@ export function Form({
 
   const bodyEntries = useMemo(
     () =>
-      Object.entries(bodyValues).reduce<Array<[string, FieldValue | number | boolean]>>(
-        (acc, [key, value]) => {
-          // Find the field definition to get the type
-          const field = bodyFields.find(f => f.name === key);
-          const fieldType = field?.type;
+      Object.entries(bodyValues).reduce<
+        Array<[string, FieldValue | number | boolean]>
+      >((acc, [key, value]) => {
+        // Find the field definition to get the type
+        const field = bodyFields.find(f => f.name === key);
+        const fieldType = field?.type;
 
-          if (Array.isArray(value)) {
-            if (value.length > 0) {
-              acc.push([key, value]);
-            }
-          } else if (typeof value === 'string') {
-            const trimmed = value.trim();
-            if (trimmed.length > 0) {
-              // Convert based on field type
-              if (fieldType === 'number' || fieldType === 'integer') {
-                const num = Number(trimmed);
-                if (!isNaN(num)) {
-                  acc.push([key, num]);
-                }
-              } else if (fieldType === 'boolean') {
-                acc.push([key, trimmed === 'true']);
-              } else {
-                acc.push([key, trimmed]);
+        if (Array.isArray(value)) {
+          if (value.length > 0) {
+            acc.push([key, value]);
+          }
+        } else if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (trimmed.length > 0) {
+            // Convert based on field type
+            if (fieldType === 'number' || fieldType === 'integer') {
+              const num = Number(trimmed);
+              if (!isNaN(num)) {
+                acc.push([key, num]);
               }
+            } else if (fieldType === 'boolean') {
+              acc.push([key, trimmed === 'true']);
+            } else {
+              acc.push([key, trimmed]);
             }
           }
-          return acc;
-        },
-        []
-      ),
+        }
+        return acc;
+      }, []),
     [bodyValues, bodyFields]
   );
 

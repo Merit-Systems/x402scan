@@ -15,9 +15,7 @@ import {
   type X402Config,
   type Network,
 } from 'x402/types';
-
-// Re-export types for consumers
-export type { Signer, MultiNetworkSigner, PaymentRequirementsSelector };
+import { normalizeChainId } from './index';
 
 /**
  * v2 accept format (CAIP-2 networks, different field names)
@@ -31,7 +29,6 @@ interface V2Accept {
   maxTimeoutSeconds: number;
   asset: string;
   extra?: Record<string, unknown>;
-  // v1 fields that might be present
   resource?: string;
   description?: string;
   mimeType?: string;
@@ -53,36 +50,80 @@ function transformV2AcceptToV1(
   accept: V2Accept,
   resource?: V2Resource
 ): Record<string, unknown> {
-  // Convert CAIP-2 network (eip155:8453) to named network (base)
-  let network: string = accept.network;
-  if (typeof network === 'string' && network.startsWith('eip155:')) {
-    const chainIdStr = network.split(':')[1];
-    if (chainIdStr) {
-      const chainId = parseInt(chainIdStr, 10);
-      const namedNetwork = ChainIdToNetwork[chainId];
-      if (namedNetwork) {
-        network = namedNetwork;
-      }
-    }
-  }
-  // Handle Solana CAIP-2 format
-  if (network === 'solana:mainnet' || network === 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp') {
-    network = 'solana';
-  }
-  if (network === 'solana:devnet' || network === 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1') {
-    network = 'solana-devnet';
-  }
-
   return {
     ...accept,
-    network,
-    // v2 uses 'amount', v1 uses 'maxAmountRequired'
+    network: normalizeChainId(accept.network),
     maxAmountRequired: accept.amount ?? accept.maxAmountRequired,
-    // v2 has resource info at top level, v1 has it in each accept
     resource: accept.resource ?? resource?.url ?? '',
     description: accept.description ?? resource?.description ?? '',
     mimeType: accept.mimeType ?? resource?.mimeType ?? '',
   };
+}
+
+/**
+ * Parse 402 response to extract payment requirements.
+ * v2: from Payment-Required header (base64 encoded)
+ * v1: from response body
+ */
+async function parse402Response(response: Response): Promise<{
+  x402Version: number;
+  accepts: unknown[];
+  resource?: V2Resource;
+  extensions?: Record<string, unknown>;
+}> {
+  const paymentRequiredHeader = response.headers.get('Payment-Required');
+
+  if (paymentRequiredHeader) {
+    // v2: decode from base64 header
+    try {
+      const decoded = Buffer.from(paymentRequiredHeader, 'base64').toString(
+        'utf-8'
+      );
+      const parsed = JSON.parse(decoded) as {
+        x402Version?: number;
+        accepts?: unknown[];
+        resource?: V2Resource;
+        extensions?: Record<string, unknown>;
+      };
+      return {
+        x402Version: parsed.x402Version ?? 2,
+        accepts: parsed.accepts ?? [],
+        resource: parsed.resource,
+        extensions: parsed.extensions,
+      };
+    } catch (error) {
+      console.error(
+        '[wrapFetchWithPayment] Failed to parse Payment-Required header:',
+        error
+      );
+      throw new Error('Failed to parse Payment-Required header');
+    }
+  }
+
+  // v1 or v2 from body
+  try {
+    const clonedResponse = response.clone();
+    const rawText = await clonedResponse.text();
+
+    const body = JSON.parse(rawText) as {
+      x402Version?: number;
+      accepts?: unknown[];
+      resource?: V2Resource;
+      extensions?: Record<string, unknown>;
+    };
+    return {
+      x402Version: body.x402Version ?? 1,
+      accepts: body.accepts ?? [],
+      resource: body.resource,
+      extensions: body.extensions,
+    };
+  } catch (error) {
+    console.error(
+      '[wrapFetchWithPayment] Failed to parse 402 response body:',
+      error
+    );
+    throw new Error('Failed to parse 402 response body');
+  }
 }
 
 /**
@@ -110,61 +151,12 @@ export const wrapFetchWithPayment = (
       return response;
     }
 
-    // Parse payment requirements - try v2 header first, then v1 body
-    let x402Version: number;
-    let accepts: unknown[];
-    let v2Resource: V2Resource | undefined;
-    let v2Extensions: Record<string, unknown> | undefined;
-
-    const paymentRequiredHeader = response.headers.get('Payment-Required');
-
-    if (paymentRequiredHeader) {
-      // v2: decode from base64 header
-      try {
-        const decoded = Buffer.from(paymentRequiredHeader, 'base64').toString(
-          'utf-8'
-        );
-        const parsed = JSON.parse(decoded) as {
-          x402Version?: number;
-          accepts?: unknown[];
-          resource?: V2Resource;
-          extensions?: Record<string, unknown>;
-        };
-        x402Version = parsed.x402Version ?? 2;
-        accepts = parsed.accepts ?? [];
-        v2Resource = parsed.resource;
-        v2Extensions = parsed.extensions;
-      } catch (error) {
-        console.error(
-          '[wrapFetchWithPayment] Failed to parse Payment-Required header:',
-          error
-        );
-        throw new Error('Failed to parse Payment-Required header');
-      }
-    } else {
-      // v1 or v2 from body
-      try {
-        const clonedResponse = response.clone();
-        const rawText = await clonedResponse.text();
-        
-        const body = JSON.parse(rawText) as {
-          x402Version?: number;
-          accepts?: unknown[];
-          resource?: V2Resource;
-          extensions?: Record<string, unknown>;
-        };
-        x402Version = body.x402Version ?? 1;
-        accepts = body.accepts ?? [];
-        v2Resource = body.resource;
-        v2Extensions = body.extensions;
-      } catch (error) {
-        console.error(
-          '[wrapFetchWithPayment] Failed to parse 402 response body:',
-          error
-        );
-        throw new Error('Failed to parse 402 response body');
-      }
-    }
+    const {
+      x402Version,
+      accepts,
+      resource: v2Resource,
+      extensions: v2Extensions,
+    } = await parse402Response(response);
 
     if (!accepts || accepts.length === 0) {
       throw new Error('No payment requirements found in 402 response');
@@ -172,20 +164,18 @@ export const wrapFetchWithPayment = (
 
     // Parse and validate payment requirements
     // For v2, transform to v1 format first, but keep original accepts for the response
-    const originalV2Accepts = x402Version >= 2 ? (accepts as V2Accept[]) : undefined;
-    
-    const parsedPaymentRequirements = accepts.map((x) => {
-      // Transform v2 format to v1 format if needed
+    const originalV2Accepts =
+      x402Version >= 2 ? (accepts as V2Accept[]) : undefined;
+
+    const parsedPaymentRequirements = accepts.map(x => {
       let acceptToValidate = x;
       if (x402Version >= 2) {
         acceptToValidate = transformV2AcceptToV1(x as V2Accept, v2Resource);
       }
-      
       return PaymentRequirementsSchema.parse(acceptToValidate);
     });
 
     // Determine network from wallet type
-    // Note: Type casting needed due to complex union types in x402
     let network: Network | Network[] | undefined;
     if (isMultiNetworkSigner(walletClient)) {
       network = undefined;
@@ -235,8 +225,13 @@ export const wrapFetchWithPayment = (
         // Decode the v1-style header to extract the payload
         const decodedV1Header = JSON.parse(
           Buffer.from(v1PaymentHeader, 'base64').toString('utf-8')
-        ) as { payload?: { signature?: string; authorization?: Record<string, unknown> } };
-        
+        ) as {
+          payload?: {
+            signature?: string;
+            authorization?: Record<string, unknown>;
+          };
+        };
+
         // Construct proper v2 header structure
         const v2PaymentPayload = {
           x402Version: 2,
@@ -245,11 +240,15 @@ export const wrapFetchWithPayment = (
           payload: decodedV1Header.payload,
           ...(v2Extensions ? { extensions: v2Extensions } : {}),
         };
-        
-        paymentHeader = Buffer.from(JSON.stringify(v2PaymentPayload)).toString('base64');
+
+        paymentHeader = Buffer.from(JSON.stringify(v2PaymentPayload)).toString(
+          'base64'
+        );
       } catch (error) {
-        console.error('[wrapFetchWithPayment] Failed to construct v2 header:', error);
-        // Fall back to v1 header
+        console.error(
+          '[wrapFetchWithPayment] Failed to construct v2 header:',
+          error
+        );
         paymentHeader = v1PaymentHeader;
       }
     } else {
