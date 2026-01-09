@@ -76,39 +76,21 @@ export function Form({
     typeof inputSchema.queryParams === 'object' &&
     'properties' in (inputSchema.queryParams as object);
 
-  // DEBUG: Log schema detection
-  console.log('[Form] inputSchema:', inputSchema);
-  console.log('[Form] isV2RawSchema:', isV2RawSchema);
-  console.log('[Form] isV2BodySchema:', isV2BodySchema);
-  console.log('[Form] isV2QuerySchema:', isV2QuerySchema);
-  console.log('[Form] method:', method);
-  console.log('[Form] has queryParams:', !!inputSchema.queryParams);
-  console.log('[Form] has bodyFields:', !!inputSchema.bodyFields);
-  console.log('[Form] has body:', !!v2Body);
-  console.log('[Form] has properties:', 'properties' in inputSchema);
-
   const queryFields = useMemo(() => {
     // v2: queryParams is a JSON Schema with properties
     if (isV2QuerySchema) {
       const querySchema = inputSchema.queryParams as { properties?: Record<string, unknown>; required?: string[] };
-      const fields = getFields(querySchema.properties, querySchema.required);
-      console.log('[Form] queryFields from v2 queryParams schema:', fields);
-      return fields;
+      return getFields(querySchema.properties, querySchema.required);
     }
     // v1: queryParams is a flat map
     if (inputSchema.queryParams) {
-      const fields = getFields(inputSchema.queryParams);
-      console.log('[Form] queryFields from queryParams:', fields);
-      return fields;
+      return getFields(inputSchema.queryParams);
     }
     // v2 raw JSON Schema: GET methods use properties as query params
     if (isV2RawSchema && method === Methods.GET) {
       const schema = inputSchema as { properties?: Record<string, unknown>; required?: string[] };
-      const fields = getFields(schema.properties, schema.required);
-      console.log('[Form] queryFields from v2 properties:', fields);
-      return fields;
+      return getFields(schema.properties, schema.required);
     }
-    console.log('[Form] queryFields: empty');
     return [];
   }, [inputSchema, isV2RawSchema, isV2QuerySchema, method]);
 
@@ -116,24 +98,17 @@ export function Form({
     // v2: body is a JSON Schema with properties
     if (isV2BodySchema && v2Body && method !== Methods.GET) {
       const bodySchema = v2Body as { properties?: Record<string, unknown>; required?: string[] };
-      const fields = getFields(bodySchema.properties, bodySchema.required);
-      console.log('[Form] bodyFields from v2 body schema:', fields);
-      return fields;
+      return getFields(bodySchema.properties, bodySchema.required);
     }
     // v1: bodyFields is a flat map
     if (inputSchema.bodyFields) {
-      const fields = getFields(inputSchema.bodyFields);
-      console.log('[Form] bodyFields from bodyFields:', fields);
-      return fields;
+      return getFields(inputSchema.bodyFields);
     }
     // v2 raw JSON Schema: POST/PUT/PATCH methods use properties as body fields
     if (isV2RawSchema && method !== Methods.GET) {
       const schema = inputSchema as { properties?: Record<string, unknown>; required?: string[] };
-      const fields = getFields(schema.properties, schema.required);
-      console.log('[Form] bodyFields from v2 properties:', fields);
-      return fields;
+      return getFields(schema.properties, schema.required);
     }
-    console.log('[Form] bodyFields: empty');
     return [];
   }, [inputSchema, v2Body, isV2RawSchema, isV2BodySchema, method]);
 
@@ -143,12 +118,10 @@ export function Form({
   const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>({});
 
   const handleQueryChange = (name: string, value: FieldValue) => {
-    console.log('[Form] handleQueryChange:', name, value);
     setQueryValues(prev => ({ ...prev, [name]: value }));
   };
 
   const handleBodyChange = (name: string, value: FieldValue) => {
-    console.log('[Form] handleBodyChange:', name, value);
     setBodyValues(prev => ({ ...prev, [name]: value }));
   };
 
@@ -238,13 +211,6 @@ export function Form({
     body:
       bodyEntries.length > 0 ? JSON.stringify(reconstructedBody) : undefined,
   };
-
-  // DEBUG: Log request building
-  console.log('[Form] bodyValues:', bodyValues);
-  console.log('[Form] bodyEntries:', bodyEntries);
-  console.log('[Form] reconstructedBody:', reconstructedBody);
-  console.log('[Form] requestInit:', requestInit);
-  console.log('[Form] targetUrl:', targetUrl);
 
   const hasQueryFields = queryFields.length > 0;
   const hasBodyFields = bodyFields.length > 0;
