@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'sync/transfers/**'
-      - 'packages/facilitators/**'
+      - 'packages/external/facilitators/**'
       - 'pnpm-lock.yaml'
       - '.github/workflows/deploy-sync.yml'
 
