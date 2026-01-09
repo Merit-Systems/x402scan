@@ -12,6 +12,7 @@ import { auth } from '@/auth';
 
 import { messageSchema } from '@/lib/message-schema';
 import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
+import { buildRequest } from '@/lib/x402/build-request';
 import {
   EnhancedPaymentRequirementsSchema,
   enhancedOutputSchema,
@@ -158,8 +159,6 @@ export const POST = async (request: NextRequest) => {
 
   const method = parsedAccept.data.outputSchema.input.method.toUpperCase();
 
-  let url = resource.resource;
-
   // Filter out headers that should be set automatically by fetch
   const headersToExclude = new Set(['content-length', 'transfer-encoding']);
 
@@ -170,34 +169,22 @@ export const POST = async (request: NextRequest) => {
     }
   });
 
-  const requestInit: RequestInit = { method, headers: filteredHeaders };
+  const bodyType = parsedAccept.data.outputSchema.input.bodyType ?? 'json';
 
-  if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
-    const queryParams = new URLSearchParams();
-    for (const [key, value] of Object.entries(parameters)) {
-      if (value !== undefined && value !== null) {
-        if (typeof value === 'object') {
-          queryParams.append(key, JSON.stringify(value));
-        } else if (typeof value === 'number') {
-          queryParams.append(key, String(value));
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string
-          queryParams.append(key, String(value));
-        }
-      }
-    }
-    url = `${resource.resource}?${queryParams.toString()}`;
-  }
-  // For POST/PUT/PATCH/DELETE: send as JSON body
-  else {
-    requestInit.body = JSON.stringify({ ...parameters });
-    requestInit.headers = {
-      ...(requestInit.headers instanceof Headers
-        ? Object.fromEntries(requestInit.headers.entries())
-        : requestInit.headers),
-      'Content-Type': 'application/json',
-    };
-  }
+  const { url, requestInit } = buildRequest({
+    url: resource.resource,
+    method,
+    bodyType,
+    body:
+      method === 'GET' || method === 'HEAD' || method === 'OPTIONS'
+        ? undefined
+        : parameters,
+    query:
+      method === 'GET' || method === 'HEAD' || method === 'OPTIONS'
+        ? parameters
+        : undefined,
+    existingHeaders: filteredHeaders,
+  });
 
   if (
     resource.requestMetadata &&

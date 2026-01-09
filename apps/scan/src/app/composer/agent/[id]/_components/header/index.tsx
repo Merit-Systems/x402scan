@@ -34,7 +34,7 @@ export const HeaderCard: React.FC<Props> = ({ agentConfiguration }) => {
           <div className="">
             <h1
               className={cn(
-                'text-3xl font-bold break-words line-clamp-2',
+                'text-3xl font-bold wrap-break-word line-clamp-2',
                 agentConfiguration.name
                   ? 'text-foreground'
                   : 'text-muted-foreground'
@@ -44,7 +44,7 @@ export const HeaderCard: React.FC<Props> = ({ agentConfiguration }) => {
             </h1>
             <p
               className={cn(
-                'break-words line-clamp-2',
+                'wrap-break-word line-clamp-2',
                 agentConfiguration.description &&
                   agentConfiguration.description.length > 0
                   ? 'text-foreground'

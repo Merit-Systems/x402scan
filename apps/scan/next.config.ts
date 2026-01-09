@@ -1,5 +1,11 @@
 import type { NextConfig } from 'next';
 
+const CORS_HEADERS = [
+  { key: 'Access-Control-Allow-Origin', value: '*' },
+  { key: 'Access-Control-Allow-Methods', value: 'GET,POST,PUT,DELETE,OPTIONS' },
+  { key: 'Access-Control-Allow-Headers', value: '*' },
+];
+
 const nextConfig: NextConfig = {
   typedRoutes: true,
   async rewrites() {
@@ -33,6 +39,18 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ['@lmnr-ai/lmnr'],
   devIndicators: false,
+  headers: () => {
+    return [
+      {
+        source: '/.well-known/:path*',
+        headers: CORS_HEADERS,
+      },
+      {
+        source: '/api/oauth/:path*',
+        headers: CORS_HEADERS,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
