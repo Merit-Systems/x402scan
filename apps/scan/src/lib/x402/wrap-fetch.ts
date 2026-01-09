@@ -16,19 +16,7 @@ import {
   type Network,
 } from 'x402/types';
 import { normalizeChainId } from './index';
-import type { PaymentRequirementsV2, ResourceV2 } from './v2';
-
-type V2Accept = PaymentRequirementsV2 & {
-  maxAmountRequired?: string;
-  resource?: string;
-  description?: string;
-  mimeType?: string;
-};
-
-/**
- * v2 resource info (at top level, not in each accept)
- */
-type V2Resource = Partial<ResourceV2>;
+import type { V2Accept, V2Resource } from './v2';
 
 /**
  * Transform v2 accept to v1 format for compatibility with PaymentRequirementsSchema
