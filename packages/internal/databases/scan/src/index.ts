@@ -36,5 +36,5 @@ export {
   SessionStatus,
   ServerWalletType,
   Visibility,
-} from '../generated/prisma/enums';
+} from '../generated/prisma';
 export { scanDb } from './client';
