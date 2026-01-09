@@ -1,6 +1,5 @@
 import { z as z3 } from 'zod3';
 
-// Shared FieldDefSchema for both v1 and v2
 export const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
   z3.preprocess(
     val => (typeof val === 'string' ? { type: val } : val),
@@ -15,7 +14,14 @@ export const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
   )
 );
 
-// Shared parse result type
 export type ParseResult<T> =
   | { success: true; data: T }
   | { success: false; errors: string[] };
+
+export const basePaymentRequirementsSchema = z3.object({
+  scheme: z3.literal('exact'),
+  payTo: z3.string(),
+  maxTimeoutSeconds: z3.number(),
+  asset: z3.string(),
+  extra: z3.record(z3.string(), z3.any()).optional(),
+});

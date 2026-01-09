@@ -15,6 +15,7 @@ import {
 import {
   parseV2,
   paymentRequirementsSchemaV2,
+  extractBazaarInfo,
   type X402ResponseV2,
   type PaymentRequirementsV2,
   type V2Accept,
@@ -68,10 +69,8 @@ export function normalizePaymentRequirement(
   resource?: X402ResponseV2['resource']
 ): NormalizedAccept {
   if (isV2PaymentRequirement(accept)) {
-    // V2: amount field, chain ID format, resource at top level
     return {
       scheme: accept.scheme,
-      // NOTE(shafu): we save the network name!
       network: normalizeChainId(accept.network),
       maxAmountRequired: accept.amount,
       payTo: accept.payTo,
@@ -84,7 +83,6 @@ export function normalizePaymentRequirement(
       outputSchema: resource?.outputSchema,
     };
   }
-  // V1: maxAmountRequired field, named network, per-accept resource info
   return {
     scheme: accept.scheme,
     network: accept.network ?? '',
@@ -127,57 +125,24 @@ function detectVersion(data: unknown): 1 | 2 {
 export function getOutputSchema(
   response: ParsedX402Response
 ): OutputSchema | undefined {
-  if (response.x402Version === 2) {
-    const bazaar = response.extensions?.bazaar;
-    if (bazaar?.info) {
-      const info = bazaar.info as OutputSchema;
-      const input = info.input;
+  if (response.x402Version !== 2) {
+    return response.accepts?.[0]?.outputSchema;
+  }
 
-      // If input.body exists but is empty, try to get schema from bazaar.schema
-      if (
-        input &&
-        'body' in input &&
-        input.body &&
-        typeof input.body === 'object' &&
-        Object.keys(input.body).length === 0 &&
-        bazaar.schema
-      ) {
-        // Extract body schema from bazaar.schema.properties.input.properties.body
-        const schemaObj = bazaar.schema as Record<string, unknown>;
-        const schemaProps = schemaObj.properties as
-          | Record<string, unknown>
-          | undefined;
-        const inputSchema = schemaProps?.input as
-          | Record<string, unknown>
-          | undefined;
-        const inputProps = inputSchema?.properties as
-          | Record<string, unknown>
-          | undefined;
-        const bodySchema = inputProps?.body as
-          | Record<string, unknown>
-          | undefined;
-
-        if (bodySchema && 'properties' in bodySchema) {
-          // Merge the body schema into input
-          return {
-            ...info,
-            input: {
-              ...input,
-              body: bodySchema,
-            },
-          } as OutputSchema;
-        }
-      }
-
-      return info;
-    }
-    if (bazaar?.schema) {
-      // NOTE(shafu): bazaar.schema is a raw JSON Schema - wrap it as input schema
-      return { input: bazaar.schema as InputSchema } as OutputSchema;
-    }
+  const bazaar = response.extensions?.bazaar;
+  if (!bazaar) {
     return response.resource?.outputSchema;
   }
-  return response.accepts?.[0]?.outputSchema;
+
+  if (bazaar.info) {
+    return extractBazaarInfo(bazaar.info as OutputSchema, bazaar.schema);
+  }
+
+  if (bazaar.schema) {
+    return { input: bazaar.schema as InputSchema } as OutputSchema;
+  }
+
+  return response.resource?.outputSchema;
 }
 
 export function isV2Response(

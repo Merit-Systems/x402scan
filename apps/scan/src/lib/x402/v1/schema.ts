@@ -1,7 +1,7 @@
 import { ChainIdToNetwork } from 'x402/types';
 import { z as z3 } from 'zod3';
 
-import { FieldDefSchema } from '../shared';
+import { FieldDefSchema, basePaymentRequirementsSchema } from '../shared';
 
 export const outputSchemaV1 = z3.object({
   input: z3.object({
@@ -41,17 +41,12 @@ const networkSchemaV1 = z3.union([
     .transform(v => ChainIdToNetwork[Number(v.split(':')[1])]),
 ]);
 
-export const paymentRequirementsSchemaV1 = z3.object({
-  scheme: z3.literal('exact'),
+export const paymentRequirementsSchemaV1 = basePaymentRequirementsSchema.extend({
   network: networkSchemaV1,
   maxAmountRequired: z3.string(),
   resource: z3.string(),
   description: z3.string(),
   mimeType: z3.string(),
-  payTo: z3.string(),
-  maxTimeoutSeconds: z3.number(),
-  asset: z3.string(),
-  extra: z3.record(z3.string(), z3.any()).optional(),
   outputSchema: outputSchemaV1.optional(),
 });
 

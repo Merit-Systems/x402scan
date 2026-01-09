@@ -39,6 +39,53 @@ interface PropertyDefinition {
   isRequired: boolean;
 }
 
+type JsonSchema = { properties?: Record<string, unknown>; required?: string[] };
+
+function extractFieldsFromSchema(
+  inputSchema: InputSchema,
+  method: Methods,
+  fieldType: 'query' | 'body'
+): FieldDefinition[] {
+  const schema = inputSchema as Record<string, unknown>;
+  const v2Body = schema.body as JsonSchema | undefined;
+
+  // Check for v2 JSON Schema format (has properties at top level or nested)
+  const hasV2QuerySchema =
+    inputSchema.queryParams &&
+    typeof inputSchema.queryParams === 'object' &&
+    'properties' in (inputSchema.queryParams as object);
+  const hasV2BodySchema =
+    v2Body && typeof v2Body === 'object' && 'properties' in v2Body;
+  const hasV2RawSchema =
+    !inputSchema.queryParams && !inputSchema.bodyFields && 'properties' in schema;
+
+  if (fieldType === 'query') {
+    if (hasV2QuerySchema) {
+      const qs = inputSchema.queryParams as JsonSchema;
+      return getFields(qs.properties, qs.required);
+    }
+    if (inputSchema.queryParams) {
+      return getFields(inputSchema.queryParams);
+    }
+    if (hasV2RawSchema && method === Methods.GET) {
+      return getFields((schema as JsonSchema).properties, (schema as JsonSchema).required);
+    }
+    return [];
+  }
+
+  // fieldType === 'body'
+  if (hasV2BodySchema && method !== Methods.GET) {
+    return getFields(v2Body!.properties, v2Body!.required);
+  }
+  if (inputSchema.bodyFields) {
+    return getFields(inputSchema.bodyFields);
+  }
+  if (hasV2RawSchema && method !== Methods.GET) {
+    return getFields((schema as JsonSchema).properties, (schema as JsonSchema).required);
+  }
+  return [];
+}
+
 interface Props {
   x402Response: ParsedX402Response;
   inputSchema: InputSchema;
@@ -54,77 +101,15 @@ export function Form({
   method,
   resource,
 }: Props) {
-  // Handle both v1 format (queryParams/bodyFields) and v2 raw JSON Schema (properties)
-  // For v2: if method is GET, treat properties as query params; if POST, treat as body fields
-  const isV2RawSchema =
-    !inputSchema.queryParams &&
-    !inputSchema.bodyFields &&
-    'properties' in inputSchema;
+  const queryFields = useMemo(
+    () => extractFieldsFromSchema(inputSchema, method, 'query'),
+    [inputSchema, method]
+  );
 
-  // v2 body schema: body is a JSON Schema object with properties
-  // Cast to allow v2 schema fields that aren't in the v1 type definition
-  const v2Body = (inputSchema as Record<string, unknown>).body as
-    | Record<string, unknown>
-    | undefined;
-  const isV2BodySchema =
-    !inputSchema.bodyFields &&
-    v2Body &&
-    typeof v2Body === 'object' &&
-    'properties' in v2Body;
-
-  // v2 query schema: queryParams is a JSON Schema object with properties
-  const isV2QuerySchema =
-    inputSchema.queryParams &&
-    typeof inputSchema.queryParams === 'object' &&
-    'properties' in (inputSchema.queryParams as object);
-
-  const queryFields = useMemo(() => {
-    // v2: queryParams is a JSON Schema with properties
-    if (isV2QuerySchema) {
-      const querySchema = inputSchema.queryParams as {
-        properties?: Record<string, unknown>;
-        required?: string[];
-      };
-      return getFields(querySchema.properties, querySchema.required);
-    }
-    // v1: queryParams is a flat map
-    if (inputSchema.queryParams) {
-      return getFields(inputSchema.queryParams);
-    }
-    // v2 raw JSON Schema: GET methods use properties as query params
-    if (isV2RawSchema && method === Methods.GET) {
-      const schema = inputSchema as {
-        properties?: Record<string, unknown>;
-        required?: string[];
-      };
-      return getFields(schema.properties, schema.required);
-    }
-    return [];
-  }, [inputSchema, isV2RawSchema, isV2QuerySchema, method]);
-
-  const bodyFields = useMemo(() => {
-    // v2: body is a JSON Schema with properties
-    if (isV2BodySchema && v2Body && method !== Methods.GET) {
-      const bodySchema = v2Body as {
-        properties?: Record<string, unknown>;
-        required?: string[];
-      };
-      return getFields(bodySchema.properties, bodySchema.required);
-    }
-    // v1: bodyFields is a flat map
-    if (inputSchema.bodyFields) {
-      return getFields(inputSchema.bodyFields);
-    }
-    // v2 raw JSON Schema: POST/PUT/PATCH methods use properties as body fields
-    if (isV2RawSchema && method !== Methods.GET) {
-      const schema = inputSchema as {
-        properties?: Record<string, unknown>;
-        required?: string[];
-      };
-      return getFields(schema.properties, schema.required);
-    }
-    return [];
-  }, [inputSchema, v2Body, isV2RawSchema, isV2BodySchema, method]);
+  const bodyFields = useMemo(
+    () => extractFieldsFromSchema(inputSchema, method, 'body'),
+    [inputSchema, method]
+  );
 
   const [queryValues, setQueryValues] = useState<Record<string, FieldValue>>(
     {}

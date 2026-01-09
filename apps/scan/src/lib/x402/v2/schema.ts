@@ -1,5 +1,6 @@
 import { z as z3 } from 'zod3';
 
+import { basePaymentRequirementsSchema } from '../shared';
 import { outputSchemaV1 } from '../v1';
 
 // NOTE(shafu): this was changed in V2, it does not support network names like base
@@ -18,14 +19,9 @@ const resourceSchemaV2 = z3.object({
 
 export type ResourceV2 = z3.infer<typeof resourceSchemaV2>;
 
-export const paymentRequirementsSchemaV2 = z3.object({
-  scheme: z3.literal('exact'),
+export const paymentRequirementsSchemaV2 = basePaymentRequirementsSchema.extend({
   network: ChainIdSchema,
   amount: z3.string(), // V2 uses 'amount' instead of 'maxAmountRequired'
-  payTo: z3.string(),
-  maxTimeoutSeconds: z3.number(),
-  asset: z3.string(),
-  extra: z3.record(z3.string(), z3.any()).optional(),
 });
 
 const extensionsSchemaV2 = z3.object({
