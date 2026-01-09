@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'sync/alerts/**'
-      - 'packages/facilitators/**'
+      - 'packages/external/facilitators/**'
       - 'pnpm-lock.yaml'
       - '.github/workflows/deploy-alerts.yml'
 
