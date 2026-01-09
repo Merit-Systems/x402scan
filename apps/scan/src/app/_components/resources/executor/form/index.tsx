@@ -24,7 +24,7 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
 import type { FieldDefinition, FieldValue, Methods } from '@/types/x402';
-import type { ParsedX402Response, InputSchema } from '@/lib/x402';
+import { normalizeChainId, type ParsedX402Response, type InputSchema } from '@/lib/x402';
 import type { X402FetchResponse } from '@/app/_hooks/x402/types';
 import type { JsonValue } from '@/components/ai-elements/json-viewer';
 
@@ -215,9 +215,9 @@ export function Form({
       <ResourceFetch
         chains={
           (x402Response.accepts
-            ?.map(accept => accept.network)
+            ?.map(accept => normalizeChainId(accept.network ?? ''))
             .filter(network =>
-              (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(network!)
+              (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(network)
             ) ?? []) as SupportedChain[]
         }
         allRequiredFieldsFilled={allRequiredFieldsFilled}
