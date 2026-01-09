@@ -18,8 +18,6 @@ const bodySchema = z.object({
 export const POST = async (request: NextRequest) => {
   const { redirect_uris, ...rest } = bodySchema.parse(await request.json());
 
-  console.log(rest);
-
   redirect_uris.forEach(uri => {
     const isValid = true; // this should check a list of valid redirect_uris
     if (!isValid) {
@@ -31,7 +29,7 @@ export const POST = async (request: NextRequest) => {
   });
 
   return NextResponse.json({
-    client_id: env.PERMI_CLIENT_ID,
+    client_id: env.PERMI_APP_ID,
     client_id_issued_at: Date.now(),
     redirect_uris: [`${env.NEXT_PUBLIC_APP_URL}/api/oauth/callback`],
     scope: 'openid',

@@ -13,6 +13,17 @@ import { buildRequest } from '@/lib/x402/build-request';
 import { parseX402Response } from '@/lib/x402/schema';
 import { formatCurrency } from '@/lib/utils';
 
+const getPermi = (accessToken: string) => {
+  return new Permi({
+    getAccessToken: () => accessToken,
+  });
+};
+
+const getPermiSigner = async (accessToken: string) => {
+  const permi = getPermi(accessToken);
+  return await toViemAccount(permi);
+};
+
 const handler = createMcpHandler(
   server => {
     server.registerTool(
@@ -27,14 +38,9 @@ const handler = createMcpHandler(
         if (!accessToken) {
           throw new Error('No access token provided');
         }
-        const permi = new Permi({
-          getAccessToken: () => accessToken,
-          baseUrl: `${env.PERMI_APP_URL}/api`,
-        });
-        console.log('permi', permi);
+        const permi = getPermi(accessToken);
         try {
           const address = await permi.address();
-          console.log('address', address);
           return {
             content: [{ type: 'text', text: address }],
           };
@@ -57,10 +63,7 @@ const handler = createMcpHandler(
         if (!accessToken) {
           throw new Error('No access token provided');
         }
-        const permi = new Permi({
-          getAccessToken: () => accessToken,
-          baseUrl: `${env.PERMI_APP_URL}/api`,
-        });
+        const permi = getPermi(accessToken);
         const balance = await permi.balance();
         return {
           content: [{ type: 'text', text: formatCurrency(balance) }],
@@ -82,10 +85,7 @@ const handler = createMcpHandler(
         if (!accessToken) {
           throw new Error('No access token provided');
         }
-        const permi = new Permi({
-          getAccessToken: () => accessToken,
-          baseUrl: `${env.PERMI_APP_URL}/api`,
-        });
+        const permi = getPermi(accessToken);
 
         const signature = await permi.signMessage({
           message,
@@ -193,12 +193,7 @@ const handler = createMcpHandler(
         if (!accessToken) {
           throw new Error('No access token provided');
         }
-        const permi = new Permi({
-          getAccessToken: () => accessToken,
-          baseUrl: `${env.PERMI_APP_URL}/api`,
-        });
-
-        const signer = await toViemAccount(permi);
+        const signer = await getPermiSigner(accessToken);
 
         const fetchWithPay = wrapFetchWithPayment(fetch, signer as Signer);
 
@@ -243,7 +238,7 @@ const verifyToken = async (
   return Promise.resolve({
     token: bearerToken,
     scopes: ['openid'],
-    clientId: env.PERMI_CLIENT_ID,
+    clientId: env.PERMI_APP_ID,
     extra: { userId: '123' },
   });
 };

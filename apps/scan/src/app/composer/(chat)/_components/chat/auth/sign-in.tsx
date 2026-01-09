@@ -15,7 +15,7 @@ export const SignIn = () => {
           <img
             src="https://www.permi.xyz/logo.svg"
             alt="Permi"
-            className="size-4"
+            className="size-4 invert"
           />
           Sign In with Permi
         </Button>

@@ -293,8 +293,8 @@ importers:
         specifier: ^0.0.3
         version: 0.0.3(@auth/core@0.40.0)
       '@permi/ts':
-        specifier: ^0.0.9
-        version: 0.0.9(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
+        specifier: ^0.0.11
+        version: 0.0.11(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
       '@prisma/client':
         specifier: catalog:prisma
         version: 7.2.0(prisma@7.2.0(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.9.3))(typescript@5.9.3)
@@ -3262,8 +3262,8 @@ packages:
     peerDependencies:
       '@auth/core': 0.40.0
 
-  '@permi/ts@0.0.9':
-    resolution: {integrity: sha512-IjSzTniBWg/t4QJlmxJsXUxtnHnvvuXc9bxup6mpIsfYs1PDw203nHZaXNd+z5v7/Wja2ANjUBu5V+HItpWYwg==}
+  '@permi/ts@0.0.11':
+    resolution: {integrity: sha512-Xx3Fwd3a10tNohMyogF2JQ8Eeqzvg7nUj3UcaAmTNiQPV680P0RfHzz6CE+IEoOSWwET9vHqTxfwnee6+/8+hQ==}
 
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
@@ -13680,7 +13680,7 @@ snapshots:
     dependencies:
       '@auth/core': 0.40.0
 
-  '@permi/ts@0.0.9(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)':
+  '@permi/ts@0.0.11(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)':
     dependencies:
       viem: 2.44.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
     transitivePeerDependencies:

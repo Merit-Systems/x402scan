@@ -1,6 +1,8 @@
 import { env } from '@/env';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export const GET = () => {
   return NextResponse.json({
     resource: env.NEXT_PUBLIC_APP_URL,
