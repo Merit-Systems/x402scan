@@ -6,9 +6,9 @@ import { TopServers } from './_components/sellers/known-sellers';
 import { TopFacilitators } from './_components/top-facilitators';
 import { LatestTransactions } from './_components/latest-transactions';
 import { AllSellers } from './_components/sellers/all-sellers';
-import { ComposerCallout } from './_components/composer-callout';
 import { getChainForPage } from '@/app/_lib/chain/page';
 import { TopAgents } from './_components/top-agents';
+import { V2Callout } from './_components/v2-callout';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
   const chain = await getChainForPage(await searchParams);
@@ -17,7 +17,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
     <div>
       <HomeHeading />
       <Body>
-        <ComposerCallout />
+        <V2Callout />
         <OverallStats chain={chain} />
         <TopServers chain={chain} />
         <TopFacilitators chain={chain} />

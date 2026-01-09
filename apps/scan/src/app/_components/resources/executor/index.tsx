@@ -16,7 +16,11 @@ import { Form } from './form';
 import { cn } from '@/lib/utils';
 
 import type { Methods } from '@/types/x402';
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import {
+  getOutputSchema,
+  getMaxAmount,
+  type ParsedX402Response,
+} from '@/lib/x402';
 import type { Resources, Tag } from '@x402scan/scan-db';
 
 interface Props {
@@ -41,15 +45,16 @@ export const ResourceExecutor: React.FC<Props> = ({
 }) => {
   if (!response) return null;
 
-  const accept = response.accepts?.[0];
-
-  if (!accept) return null;
-
-  const inputSchema = accept.outputSchema?.input;
+  const outputSchema = getOutputSchema(response);
+  const inputSchema = outputSchema?.input;
 
   if (!inputSchema) return null;
 
-  const maxAmountRequired = BigInt(accept.maxAmountRequired);
+  // TODO(shafu): just show the amount from the first accept for now, probably
+  // needs to be refactored
+  const maxAmountStr = getMaxAmount(response);
+  if (!maxAmountStr) return null;
+  const maxAmountRequired = BigInt(maxAmountStr);
 
   return (
     <AccordionItem

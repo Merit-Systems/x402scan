@@ -6,7 +6,7 @@ import { Tags } from '@/app/_components/tags';
 
 import type { Resources, Tag } from '@x402scan/scan-db/types';
 import type { Methods } from '@/types/x402';
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import { getDescription, type ParsedX402Response } from '@/lib/x402';
 
 interface Props {
   resource: Resources;
@@ -37,11 +37,7 @@ export const Header: React.FC<Props> = ({
         </div>
       </div>
       <p className="text-xs text-muted-foreground">
-        {response.accepts &&
-        response.accepts.length > 0 &&
-        response.accepts.some(accept => accept.description)
-          ? response.accepts.find(accept => accept.description)?.description
-          : null}
+        {getDescription(response)}
       </p>
     </div>
   );
