@@ -63,9 +63,7 @@ async function parse402Response(response: Response): Promise<{
   if (paymentRequiredHeader) {
     // v2: decode from base64 header
     try {
-      const decoded = Buffer.from(paymentRequiredHeader, 'base64').toString(
-        'utf-8'
-      );
+      const decoded = atob(paymentRequiredHeader);
       const parsed = JSON.parse(decoded) as {
         x402Version?: number;
         accepts?: unknown[];
@@ -210,9 +208,7 @@ export const wrapFetchWithPayment = (
     if (x402Version >= 2 && originalSelectedAccept) {
       try {
         // Decode the v1-style header to extract the payload
-        const decodedV1Header = JSON.parse(
-          Buffer.from(v1PaymentHeader, 'base64').toString('utf-8')
-        ) as {
+        const decodedV1Header = JSON.parse(atob(v1PaymentHeader)) as {
           payload?: {
             signature?: string;
             authorization?: Record<string, unknown>;
@@ -228,9 +224,7 @@ export const wrapFetchWithPayment = (
           ...(v2Extensions ? { extensions: v2Extensions } : {}),
         };
 
-        paymentHeader = Buffer.from(JSON.stringify(v2PaymentPayload)).toString(
-          'base64'
-        );
+        paymentHeader = btoa(JSON.stringify(v2PaymentPayload));
       } catch (error) {
         console.error(
           '[wrapFetchWithPayment] Failed to construct v2 header:',
@@ -242,12 +236,8 @@ export const wrapFetchWithPayment = (
       paymentHeader = v1PaymentHeader;
     }
 
-    if (!init) {
-      throw new Error('Missing fetch request configuration');
-    }
-
     // Check for retry loop
-    const existingHeaders = new Headers(init.headers);
+    const existingHeaders = new Headers(init?.headers);
     if (
       existingHeaders.has('X-PAYMENT') ||
       existingHeaders.has('PAYMENT-SIGNATURE')
@@ -258,15 +248,12 @@ export const wrapFetchWithPayment = (
     // Use correct header based on version
     const paymentHeaderName =
       x402Version >= 2 ? 'PAYMENT-SIGNATURE' : 'X-PAYMENT';
-    const exposeHeaderName =
-      x402Version >= 2 ? 'PAYMENT-RESPONSE' : 'X-PAYMENT-RESPONSE';
 
     const newInit: RequestInit = {
       ...init,
       headers: {
         ...Object.fromEntries(existingHeaders.entries()),
         [paymentHeaderName]: paymentHeader,
-        'Access-Control-Expose-Headers': `${exposeHeaderName},X-PAYMENT-RESPONSE,PAYMENT-RESPONSE`,
       },
     };
 
