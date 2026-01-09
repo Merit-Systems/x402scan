@@ -24,7 +24,11 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
 import type { FieldDefinition, FieldValue, Methods } from '@/types/x402';
-import { normalizeChainId, type ParsedX402Response, type InputSchema } from '@/lib/x402';
+import {
+  normalizeChainId,
+  type ParsedX402Response,
+  type InputSchema,
+} from '@/lib/x402';
 import type { X402FetchResponse } from '@/app/_hooks/x402/types';
 import type { JsonValue } from '@/components/ai-elements/json-viewer';
 
@@ -212,23 +216,40 @@ export function Form({
         </div>
       )}
 
-      <ResourceFetch
-        chains={
-          (x402Response.accepts
-            ?.map(accept => normalizeChainId(accept.network ?? ''))
-            .filter(network =>
-              (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(network)
-            ) ?? []) as SupportedChain[]
+      {(() => {
+        const networks = x402Response.accepts?.map(a => a.network ?? '') ?? [];
+        const normalized = networks.map(n => normalizeChainId(n));
+        const supported = normalized.filter(n =>
+          (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(n)
+        ) as SupportedChain[];
+
+        if (supported.length === 0) {
+          return (
+            <div className="text-sm text-muted-foreground p-3 bg-muted rounded-md">
+              No supported payment networks found.
+              {networks.length > 0 && (
+                <span className="block text-xs mt-1">
+                  Networks in response: {networks.join(', ')}
+                </span>
+              )}
+            </div>
+          );
         }
-        allRequiredFieldsFilled={allRequiredFieldsFilled}
-        maxAmountRequired={maxAmountRequired}
-        targetUrl={targetUrl}
-        requestInit={requestInit}
-        options={{
-          onSuccess: data => setData(data),
-          onError: error => setError(error),
-        }}
-      />
+
+        return (
+          <ResourceFetch
+            chains={supported}
+            allRequiredFieldsFilled={allRequiredFieldsFilled}
+            maxAmountRequired={maxAmountRequired}
+            targetUrl={targetUrl}
+            requestInit={requestInit}
+            options={{
+              onSuccess: data => setData(data),
+              onError: error => setError(error),
+            }}
+          />
+        );
+      })()}
 
       {error && (
         <p className="text-xs text-red-600 bg-red-50 p-3 rounded-md">
