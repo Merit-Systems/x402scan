@@ -7,13 +7,13 @@ import { nanoid } from 'nanoid';
 import { addSeconds, isAfter } from 'date-fns';
 import { env } from '@/env';
 
-export const accessTokenInputSchema = z.object({
+const accessTokenInputSchema = z.object({
   user_id: z.uuid(),
   scope: z.string(),
   key_version: z.number().default(1),
 });
 
-export const accessTokenPayloadSchema = accessTokenInputSchema.extend({
+const accessTokenPayloadSchema = accessTokenInputSchema.extend({
   exp: z.number(),
   iat: z.number(),
   jti: z.string(),
@@ -71,26 +71,4 @@ export const verifyAccessToken = async (jwt: string) => {
   }
 
   return parsedPayload.data;
-};
-
-export const parseAccessTokenFromHeaders = async (headers: Headers) => {
-  const authHeader = headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    return null;
-  }
-
-  const token = authHeader.substring(7);
-
-  const isJWT = token.split('.').length === 3;
-
-  if (!isJWT) {
-    return null;
-  }
-
-  try {
-    return await verifyAccessToken(token);
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
 };

@@ -9,7 +9,7 @@ import { nanoid } from 'nanoid';
 import { env } from '@/env';
 import { OAuthErrorType } from './oauth-error';
 
-export const authCodeJwtInputSchema = z.object({
+const authCodeJwtInputSchema = z.object({
   user_id: z.uuid({
     error: JSON.stringify({
       error: OAuthErrorType.INVALID_REQUEST,
@@ -57,7 +57,7 @@ export const authCodeJwtInputSchema = z.object({
   nonce: z.string().optional(),
 });
 
-export const authCodeJwtPayloadSchema = authCodeJwtInputSchema.extend({
+const authCodeJwtPayloadSchema = authCodeJwtInputSchema.extend({
   exp: z.number(),
   iat: z.number(),
   jti: z.string(),

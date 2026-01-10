@@ -6,7 +6,7 @@ import { createHash } from 'crypto';
 
 import { differenceInSeconds } from 'date-fns';
 
-import { oauthRoute } from '@/app/(mcp)/_lib/oauth-route';
+import { oauthRoute, oauthValidationError } from '@/app/(mcp)/_lib/oauth-route';
 import { OAuthError, OAuthErrorType } from '@/app/(mcp)/_lib/oauth-error';
 import { verifyAuthCodeJwt } from '@/app/(mcp)/_lib/auth-code';
 import { isValidRedirectUri } from '@/app/(mcp)/_lib/redirect-uri';
@@ -16,44 +16,44 @@ import { getUserWithAccounts } from '@/services/db/user/user';
 
 export const bodySchema = z.object({
   grant_type: z.literal('authorization_code', {
-    error: JSON.stringify({
+    error: oauthValidationError({
       error: OAuthErrorType.INVALID_REQUEST,
       error_description: 'grant_type must be authorization_code',
     }),
   }),
   redirect_uri: z.string({
-    error: JSON.stringify({
+    error: oauthValidationError({
       error: OAuthErrorType.INVALID_REQUEST,
       error_description: 'redirect_uri must be a valid URL',
     }),
   }),
   code: z.string({
-    error: JSON.stringify({
+    error: oauthValidationError({
       error: OAuthErrorType.INVALID_REQUEST,
       error_description: 'code must be a string',
     }),
   }),
   code_verifier: z
     .string({
-      error: JSON.stringify({
+      error: oauthValidationError({
         error: OAuthErrorType.INVALID_REQUEST,
         error_description: 'code_verifier must be a string',
       }),
     })
     .min(43, {
-      error: JSON.stringify({
+      error: oauthValidationError({
         error: OAuthErrorType.INVALID_REQUEST,
         error_description: 'code_verifier must be at least 43 characters',
       }),
     })
     .max(128, {
-      error: JSON.stringify({
+      error: oauthValidationError({
         error: OAuthErrorType.INVALID_REQUEST,
         error_description: 'code_verifier must be at most 128 characters',
       }),
     })
     .regex(/^[A-Za-z0-9._~-]+$/, {
-      error: JSON.stringify({
+      error: oauthValidationError({
         error: OAuthErrorType.INVALID_REQUEST,
         error_description: 'code_verifier contains invalid characters',
       }),

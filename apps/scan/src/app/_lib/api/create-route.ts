@@ -1,10 +1,10 @@
-import { RouteHandlerBuilder } from "./handler-builder";
+import { RouteHandlerBuilder } from './handler-builder';
 import type {
   HandleInternalErrorFn,
   HandlerServerErrorFn,
   InternalErrorBody,
   ServerErrorBody,
-} from "./types";
+} from './types';
 
 export function createZodRoute<
   TServerErrorBody = ServerErrorBody,

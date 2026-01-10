@@ -1,4 +1,4 @@
-import type z from "zod";
+import type z from 'zod';
 
 import type {
   HandleInternalErrorFn,
@@ -10,9 +10,9 @@ import type {
   NextFunction,
   OriginalRouteHandler,
   ServerErrorBody,
-} from "./types";
-import { InternalRouteHandlerError } from "./types";
-import { NextResponse } from "next/server";
+} from './types';
+import { InternalRouteHandlerError } from './types';
+import { NextResponse } from 'next/server';
 
 export class RouteHandlerBuilder<
   TParams extends z.Schema = z.Schema,
@@ -188,7 +188,7 @@ export class RouteHandlerBuilder<
       TContext,
       TNestContext & TContext,
       z.infer<TMetadata>
-    >,
+    >
   ) {
     type MergedContext = TContext & TNestContext;
 
@@ -221,7 +221,7 @@ export class RouteHandlerBuilder<
       z.infer<TMetadata>,
       TResponseBody,
       TServerErrorBody
-    >,
+    >
   ): OriginalRouteHandler<
     TParams,
     TQuery,
@@ -239,29 +239,29 @@ export class RouteHandlerBuilder<
 
         const searchParams = request.nextUrl.searchParams;
         let query = Object.fromEntries(
-          [...searchParams.keys()].map((key) => {
+          [...searchParams.keys()].map(key => {
             const values = searchParams.getAll(key);
             return values.length === 1 ? [key, values[0]] : [key, values];
-          }),
+          })
         ) as z.infer<TQuery>;
         let metadata = this.metadataValue;
 
         // Support both JSON and FormData parsing
         let body: unknown = {};
-        if (request.method !== "GET" && request.method !== "DELETE") {
+        if (request.method !== 'GET' && request.method !== 'DELETE') {
           try {
-            const contentType = request.headers.get("content-type") ?? "";
+            const contentType = request.headers.get('content-type') ?? '';
             if (
-              contentType.includes("multipart/form-data") ||
-              contentType.includes("application/x-www-form-urlencoded")
+              contentType.includes('multipart/form-data') ||
+              contentType.includes('application/x-www-form-urlencoded')
             ) {
               const formData = await request.formData();
               body = Object.fromEntries(formData.entries());
-            } else if (contentType.includes("application/json")) {
+            } else if (contentType.includes('application/json')) {
               body = await request.json();
             } else {
               throw new InternalRouteHandlerError({
-                message: "Invalid content-type",
+                message: 'Invalid content-type',
                 errors: [],
               });
             }
@@ -271,7 +271,7 @@ export class RouteHandlerBuilder<
             }
             if (this.config.bodySchema) {
               throw new InternalRouteHandlerError({
-                message: "Invalid body",
+                message: 'Invalid body',
                 errors: [],
               });
             }
@@ -284,7 +284,7 @@ export class RouteHandlerBuilder<
           const paramsResult = this.config.paramsSchema.safeParse(params);
           if (!paramsResult.success) {
             throw new InternalRouteHandlerError({
-              message: "Invalid params",
+              message: 'Invalid params',
               errors: paramsResult.error.issues,
             });
           }
@@ -296,7 +296,7 @@ export class RouteHandlerBuilder<
           const queryResult = this.config.querySchema.safeParse(query);
           if (!queryResult.success) {
             throw new InternalRouteHandlerError({
-              message: "Invalid query",
+              message: 'Invalid query',
               errors: queryResult.error.issues,
             });
           }
@@ -308,7 +308,7 @@ export class RouteHandlerBuilder<
           const bodyResult = this.config.bodySchema.safeParse(body);
           if (!bodyResult.success) {
             throw new InternalRouteHandlerError({
-              message: "Invalid body",
+              message: 'Invalid body',
               errors: bodyResult.error.issues,
             });
           }
@@ -320,7 +320,7 @@ export class RouteHandlerBuilder<
           const metadataResult = this.config.metadataSchema.safeParse(metadata);
           if (!metadataResult.success) {
             throw new InternalRouteHandlerError({
-              message: "Invalid metadata",
+              message: 'Invalid metadata',
               errors: metadataResult.error.issues,
             });
           }
@@ -372,13 +372,13 @@ export class RouteHandlerBuilder<
             middlewareContext = { ...middlewareContext };
             return NextResponse.json(result, {
               status: 200,
-              headers: { "Content-Type": "application/json" },
+              headers: { 'Content-Type': 'application/json' },
             });
           } catch (error) {
             return handleError(
               error as Error,
               this.handleServerError,
-              this.handleInternalError,
+              this.handleInternalError
             );
           }
         };
@@ -388,7 +388,7 @@ export class RouteHandlerBuilder<
         return handleError(
           error as Error,
           this.handleServerError,
-          this.handleInternalError,
+          this.handleInternalError
         );
       }
     };
@@ -401,7 +401,7 @@ const handleError = <
 >(
   error: Error,
   handleServerError?: HandlerServerErrorFn<TServerErrorBody>,
-  handleInternalError?: HandleInternalErrorFn<TInternalErrorBody>,
+  handleInternalError?: HandleInternalErrorFn<TInternalErrorBody>
 ): NextResponse<TInternalErrorBody | TServerErrorBody | InternalErrorBody> => {
   if (error instanceof InternalRouteHandlerError) {
     if (handleInternalError) {
@@ -415,7 +415,7 @@ const handleError = <
   }
 
   return NextResponse.json(
-    { message: "Internal server error" },
-    { status: 500 },
+    { message: 'Internal server error' },
+    { status: 500 }
   );
 };
