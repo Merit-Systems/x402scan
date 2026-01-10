@@ -2,6 +2,8 @@ import { getBalance, readContract } from 'wagmi/actions';
 
 import { cdpClient } from '../client';
 
+import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
+
 import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
 import { convertTokenAmount } from '@/lib/token';
 import { toAccount } from 'viem/accounts';
@@ -9,7 +11,6 @@ import { toAccount } from 'viem/accounts';
 import type { EvmChain } from '@/types/chain';
 import type { Address } from 'viem';
 import type { NetworkServerWallet } from './types';
-import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
 
 export const evmServerWallet =
   <T extends EvmChain>(chain: T): NetworkServerWallet<EvmChain> =>

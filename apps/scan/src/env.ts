@@ -35,6 +35,10 @@ export const env = createEnv({
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
     PERMI_APP_ID: z.string(),
+    MCP_ACCESS_TOKEN_SIGNING_JWT_SECRET: z.string(),
+    MCP_ACCESS_TOKEN_EXPIRY_SECONDS: z.number().default(60 * 60 * 24 * 30),
+    MCP_CODE_SIGNING_JWT_SECRET: z.string(),
+    MCP_CODE_EXPIRY_SECONDS: z.number().default(60 * 5),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z

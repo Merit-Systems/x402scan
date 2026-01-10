@@ -89,7 +89,6 @@ export async function createX402AITools(
 
             const permi = new Permi({
               getAccessToken: () => permiAccount.access_token!,
-              baseUrl: 'https://www.permi.xyz/api/v1',
             });
             const signer = await toViemAccount(permi);
             const fetchWithPayment = wrapFetchWithPayment(

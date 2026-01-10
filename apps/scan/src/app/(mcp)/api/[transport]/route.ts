@@ -12,6 +12,8 @@ import { searchResourcesCombined } from '@/services/resource-search/combined-sea
 import { buildRequest } from '@/lib/x402/build-request';
 import { parseX402Response } from '@/lib/x402/schema';
 import { formatCurrency } from '@/lib/utils';
+import { verifyAccessToken } from '../../_lib/access-token';
+import { getUserWithAccounts } from '@/services/db/user/user';
 
 const getPermi = (accessToken: string) => {
   return new Permi({
@@ -235,17 +237,33 @@ const verifyToken = async (
 ): Promise<AuthInfo | undefined> => {
   if (!bearerToken) return undefined;
 
-  return Promise.resolve({
+  const { user_id } = await verifyAccessToken(bearerToken);
+
+  const userWithAccounts = await getUserWithAccounts(user_id);
+
+  if (!userWithAccounts) {
+    throw new Error('User not found');
+  }
+
+  console.log('userWithAccounts', userWithAccounts);
+
+  if (
+    !userWithAccounts.accounts.some(account => account.provider === 'permi')
+  ) {
+    throw new Error('User does not have a Permi account');
+  }
+
+  return {
     token: bearerToken,
-    scopes: ['openid'],
+    scopes: ['spend'],
     clientId: env.PERMI_APP_ID,
-    extra: { userId: '123' },
-  });
+    extra: { userId: userWithAccounts.id },
+  };
 };
 
 const authHandler = withMcpAuth(handler, verifyToken, {
   required: true,
-  requiredScopes: ['openid'],
+  requiredScopes: ['spend'],
   resourceMetadataPath: '/.well-known/oauth-protected-resource',
 });
 

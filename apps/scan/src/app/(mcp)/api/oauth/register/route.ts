@@ -2,6 +2,7 @@ import z from 'zod';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { env } from '@/env';
+import { isValidRedirectUri } from '@/app/(mcp)/_lib/redirect-uri';
 
 const bodySchema = z.object({
   redirect_uris: z.array(z.string()),
@@ -19,12 +20,8 @@ export const POST = async (request: NextRequest) => {
   const { redirect_uris, ...rest } = bodySchema.parse(await request.json());
 
   redirect_uris.forEach(uri => {
-    const isValid = true; // this should check a list of valid redirect_uris
-    if (!isValid) {
-      return NextResponse.json(
-        { error: 'Invalid redirect_uri' },
-        { status: 400 }
-      );
+    if (!isValidRedirectUri(uri)) {
+      throw new Error(`Invalid redirect URI: ${uri}`);
     }
   });
 
