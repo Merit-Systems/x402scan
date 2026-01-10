@@ -77,6 +77,18 @@ export const Response = memo(
             <li className="ml-2 space-y-2 text-xs md:text-sm">{children}</li>
           );
         },
+        a({ children, href }) {
+          return (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-foreground underline hover:opacity-80"
+            >
+              {children}
+            </a>
+          );
+        },
       }}
       {...props}
     />
