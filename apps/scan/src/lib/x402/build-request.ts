@@ -9,19 +9,19 @@ type BodyType =
   | 'text'
   | 'binary';
 
-type BuildRequestOptions = {
+interface BuildRequestOptions {
   url: string | URL;
   method: string;
   bodyType?: BodyType;
   body?: Record<string, unknown> | BodyInit;
   query?: Record<string, unknown>;
   existingHeaders?: HeadersInit;
-};
+}
 
-type BuildRequestResult = {
+interface BuildRequestResult {
   url: string;
   requestInit: RequestInit;
-};
+}
 
 /**
  * Appends query parameters to a URL, handling different value types
