@@ -4,16 +4,23 @@ import { Permi, toViemAccount } from '@permi/ts';
 
 import { z } from 'zod';
 
-import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
-import { env } from '@/env';
-import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
-import { Signer } from 'x402-fetch';
 import { searchResourcesCombined } from '@/services/resource-search/combined-search';
+
+import { getPermiAccountForUser } from '@/services/db/user/user';
+import { refreshPermiAccount } from '@/services/permi/refresh-account';
+
+import { wrapFetchWithPayment } from '@/lib/x402/wrap-fetch';
 import { buildRequest } from '@/lib/x402/build-request';
 import { parseX402Response } from '@/lib/x402/schema';
+
 import { formatCurrency } from '@/lib/utils';
+
 import { verifyAccessToken } from '../../_lib/access-token';
-import { getUserWithAccounts } from '@/services/db/user/user';
+
+import { env } from '@/env';
+
+import type { Signer } from 'x402-fetch';
+import type { AuthInfo } from '@modelcontextprotocol/sdk/server/auth/types.js';
 
 const getPermi = (accessToken: string) => {
   return new Permi({
@@ -239,25 +246,23 @@ const verifyToken = async (
 
   const { user_id } = await verifyAccessToken(bearerToken);
 
-  const userWithAccounts = await getUserWithAccounts(user_id);
+  const permiAccount = await getPermiAccountForUser(user_id);
 
-  if (!userWithAccounts) {
+  if (!permiAccount) {
     throw new Error('User not found');
   }
 
-  console.log('userWithAccounts', userWithAccounts);
+  const refreshedPermiAccount = await refreshPermiAccount(permiAccount);
 
-  if (
-    !userWithAccounts.accounts.some(account => account.provider === 'permi')
-  ) {
+  if (!refreshedPermiAccount.access_token) {
     throw new Error('User does not have a Permi account');
   }
 
   return {
-    token: bearerToken,
+    token: refreshedPermiAccount.access_token,
     scopes: ['spend'],
     clientId: env.PERMI_APP_ID,
-    extra: { userId: userWithAccounts.id },
+    extra: { userId: permiAccount.userId },
   };
 };
 

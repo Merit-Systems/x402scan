@@ -6,3 +6,12 @@ export const getUserWithAccounts = async (userId: string) => {
     include: { accounts: true },
   });
 };
+
+export const getPermiAccountForUser = async (userId: string) => {
+  return await scanDb.account.findFirst({
+    where: {
+      userId,
+      provider: 'permi',
+    },
+  });
+};
