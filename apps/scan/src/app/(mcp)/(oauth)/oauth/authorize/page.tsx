@@ -47,33 +47,45 @@ export default async function AuthorizePage({
 
   const session = await auth();
 
-  if (!session) {
-    return signIn('permi');
-  }
-
-  const permiAccount = session.user.accounts.find(
+  const permiAccount = session?.user.accounts.find(
     account => account.provider === 'permi'
   );
 
   if (!permiAccount) {
     return (
-      <div>
-        <p>Tell user they will be redirected to Permit to sign in</p>
+      <div className="flex-1 justify-center items-center flex flex-col gap-4 max-w-sm mx-auto text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://www.permi.xyz/logo.svg"
+          alt="Permi"
+          className="size-12"
+        />
+        <h1 className="text-2xl font-bold">x402scan MCP</h1>
+        <p className="text-muted-foreground text-sm">
+          The x402scan MCP server uses Permi to manage non-custodial agentic
+          wallets.
+        </p>
+        <Button
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          onClick={async () => {
+            'use server';
+            return await signIn('permi');
+          }}
+        >
+          Continue to Permi
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="h-4 bg-card border-b" />
-      <div className="flex-1 justify-center items-center flex flex-col gap-4 max-w-sm mx-auto text-center">
-        <Logo className="size-12" />
-        <h1 className="text-2xl font-bold">Authorize Cursor</h1>
-        <p className="text-muted-foreground text-sm">
-          A Cursor MCP wants to use your Permi wallet to sign x402 transactions.
-        </p>
-        <AuthorizeButtons params={parseResult.data} />
-      </div>
+    <div className="flex-1 justify-center items-center flex flex-col gap-4 max-w-sm mx-auto text-center">
+      <Logo className="size-12" />
+      <h1 className="text-2xl font-bold">Authorize Cursor</h1>
+      <p className="text-muted-foreground text-sm">
+        A Cursor MCP wants to use your Permi wallet to sign x402 transactions.
+      </p>
+      <AuthorizeButtons params={parseResult.data} />
     </div>
   );
 }
