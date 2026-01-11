@@ -57,7 +57,9 @@ function extractFieldsFromSchema(
   const hasV2BodySchema =
     v2Body && typeof v2Body === 'object' && 'properties' in v2Body;
   const hasV2RawSchema =
-    !inputSchema.queryParams && !inputSchema.bodyFields && 'properties' in schema;
+    !inputSchema.queryParams &&
+    !inputSchema.bodyFields &&
+    'properties' in schema;
 
   if (fieldType === 'query') {
     if (hasV2QuerySchema) {
@@ -68,7 +70,10 @@ function extractFieldsFromSchema(
       return getFields(inputSchema.queryParams);
     }
     if (hasV2RawSchema && method === Methods.GET) {
-      return getFields((schema as JsonSchema).properties, (schema as JsonSchema).required);
+      return getFields(
+        (schema as JsonSchema).properties,
+        (schema as JsonSchema).required
+      );
     }
     return [];
   }
@@ -81,7 +86,10 @@ function extractFieldsFromSchema(
     return getFields(inputSchema.bodyFields);
   }
   if (hasV2RawSchema && method !== Methods.GET) {
-    return getFields((schema as JsonSchema).properties, (schema as JsonSchema).required);
+    return getFields(
+      (schema as JsonSchema).properties,
+      (schema as JsonSchema).required
+    );
   }
   return [];
 }

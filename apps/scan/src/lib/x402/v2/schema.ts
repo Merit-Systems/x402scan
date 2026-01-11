@@ -19,10 +19,12 @@ const resourceSchemaV2 = z3.object({
 
 export type ResourceV2 = z3.infer<typeof resourceSchemaV2>;
 
-export const paymentRequirementsSchemaV2 = basePaymentRequirementsSchema.extend({
-  network: ChainIdSchema,
-  amount: z3.string(), // V2 uses 'amount' instead of 'maxAmountRequired'
-});
+export const paymentRequirementsSchemaV2 = basePaymentRequirementsSchema.extend(
+  {
+    network: ChainIdSchema,
+    amount: z3.string(), // V2 uses 'amount' instead of 'maxAmountRequired'
+  }
+);
 
 const extensionsSchemaV2 = z3.object({
   bazaar: z3

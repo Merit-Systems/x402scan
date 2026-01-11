@@ -20,7 +20,8 @@ export function extractBazaarInfo(
     return info;
   }
 
-  const bodySchema = (schema as BazaarSchema).properties?.input?.properties?.body;
+  const bodySchema = (schema as BazaarSchema).properties?.input?.properties
+    ?.body;
   if (bodySchema && 'properties' in bodySchema) {
     return { ...info, input: { ...input, body: bodySchema } } as OutputSchemaV1;
   }

@@ -41,14 +41,16 @@ const networkSchemaV1 = z3.union([
     .transform(v => ChainIdToNetwork[Number(v.split(':')[1])]),
 ]);
 
-export const paymentRequirementsSchemaV1 = basePaymentRequirementsSchema.extend({
-  network: networkSchemaV1,
-  maxAmountRequired: z3.string(),
-  resource: z3.string(),
-  description: z3.string(),
-  mimeType: z3.string(),
-  outputSchema: outputSchemaV1.optional(),
-});
+export const paymentRequirementsSchemaV1 = basePaymentRequirementsSchema.extend(
+  {
+    network: networkSchemaV1,
+    maxAmountRequired: z3.string(),
+    resource: z3.string(),
+    description: z3.string(),
+    mimeType: z3.string(),
+    outputSchema: outputSchemaV1.optional(),
+  }
+);
 
 export const x402ResponseSchemaV1 = z3.object({
   x402Version: z3.literal(1).default(1),
