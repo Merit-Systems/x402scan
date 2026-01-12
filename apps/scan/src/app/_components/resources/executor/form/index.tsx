@@ -39,7 +39,10 @@ interface PropertyDefinition {
   isRequired: boolean;
 }
 
-interface JsonSchema { properties?: Record<string, unknown>; required?: string[] }
+interface JsonSchema {
+  properties?: Record<string, unknown>;
+  required?: string[];
+}
 
 function extractFieldsFromSchema(
   inputSchema: InputSchema,

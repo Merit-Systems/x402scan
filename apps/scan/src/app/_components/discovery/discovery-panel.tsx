@@ -414,7 +414,9 @@ function FailedResourceCard({
   const hasAccepts = x402Parsed
     ? Boolean(testedResponse?.parsed?.accepts?.length)
     : false;
-  const outputSchema = testedResponse ? getOutputSchema(testedResponse.parsed) : null;
+  const outputSchema = testedResponse
+    ? getOutputSchema(testedResponse.parsed)
+    : null;
   const hasInputSchema = Boolean(outputSchema?.input);
   const hasOutputSchema = Boolean(outputSchema?.output);
 

@@ -33,6 +33,7 @@ import {
 import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
 import { getOriginFromUrl } from '@/lib/url';
+import { extractX402Data } from '@/lib/x402';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 
 import type { Prisma } from '@x402scan/scan-db';
@@ -152,10 +153,10 @@ export const resourcesRouter = createTRPCRouter({
           continue;
         }
 
-        const result = await registerResource(
-          input.url.toString(),
-          await response.json()
-        );
+        // Extract x402 data (handles v2 header and v1 body, with JSON parse fallback)
+        const x402Data = await extractX402Data(response);
+
+        const result = await registerResource(input.url.toString(), x402Data);
 
         if (result.success === false) {
           if (result.error.type === 'parseResponse') {
@@ -262,7 +263,9 @@ export const resourcesRouter = createTRPCRouter({
               });
 
               if (response.status === 402) {
-                return registerResource(resourceUrl, await response.json());
+                // Extract x402 data (handles v2 header and v1 body, with JSON parse fallback)
+                const x402Data = await extractX402Data(response);
+                return registerResource(resourceUrl, x402Data);
               }
             } catch {
               // Continue to next method
