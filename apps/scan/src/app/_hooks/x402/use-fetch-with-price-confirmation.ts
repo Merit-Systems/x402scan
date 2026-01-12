@@ -96,9 +96,7 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(
-          errorText || `Failed to fetch: ${response.statusText}`
-        );
+        throw new Error(errorText || `Failed to fetch: ${response.statusText}`);
       }
 
       // Reset confirmation state on success

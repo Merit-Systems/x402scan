@@ -36,7 +36,10 @@ export const useEvmX402Fetch = <TData = unknown>({
     if (!walletClient?.account) throw new Error('Wallet client not available');
 
     const client = new x402Client();
-    registerExactEvmScheme(client, { signer: toEvmSigner(walletClient) });
+    const signer = toEvmSigner(
+      walletClient as Parameters<typeof toEvmSigner>[0]
+    );
+    registerExactEvmScheme(client, { signer });
 
     return wrapFetchWithPayment(baseFetch, client);
   };
