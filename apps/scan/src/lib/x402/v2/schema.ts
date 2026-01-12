@@ -13,7 +13,6 @@ const ChainIdSchema = z3.custom<Network>(
   { message: 'Invalid CAIP-2 network format' }
 );
 
-// Note(shafu): outputSchema is NOT part of official V2 spec, but we accept it for compatibility
 const resourceSchemaV2 = z3.object({
   url: z3.string(),
   description: z3.string(),

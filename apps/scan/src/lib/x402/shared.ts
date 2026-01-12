@@ -17,11 +17,3 @@ export const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
 export type ParseResult<T> =
   | { success: true; data: T }
   | { success: false; errors: string[] };
-
-export const basePaymentRequirementsSchema = z3.object({
-  scheme: z3.literal('exact'),
-  payTo: z3.string(),
-  maxTimeoutSeconds: z3.number(),
-  asset: z3.string(),
-  extra: z3.record(z3.string(), z3.any()).optional(),
-});

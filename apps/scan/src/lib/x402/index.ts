@@ -20,15 +20,10 @@ import {
 } from './v2';
 import {
   extractDiscoveryInfoFromExtension,
-  extractDiscoveryInfoV1,
   type DiscoveryExtension,
   type DiscoveryInfo,
 } from '@x402/extensions/bazaar';
 import { decodePaymentRequiredHeader } from '@x402/core/http';
-// NOTE(shafu): Library type expects CAIP-2 network format (e.g., "eip155:8453"),
-// but real v1 payloads use named networks (e.g., "base", "base-sepolia").
-// We use this type only for library function calls with a cast.
-import type { PaymentRequirementsV1 as LibraryPaymentRequirementsV1 } from '@x402/core/types';
 import { ChainIdToNetwork } from 'x402/types';
 import type { ParseResult } from './shared';
 
@@ -127,7 +122,7 @@ function detectVersion(data: unknown): 1 | 2 {
 
 /**
  * NOTE(shafu): get the output schema from a parsed x402 response
- * V1: uses extractDiscoveryInfoV1 from @x402/extensions/bazaar
+ * V1: returns raw outputSchema directly (has bodyFields format for form rendering)
  * V2: uses extractDiscoveryInfoFromExtension from @x402/extensions/bazaar
  */
 export function getOutputSchema(
@@ -135,16 +130,7 @@ export function getOutputSchema(
 ): OutputSchema | undefined {
   if (response.x402Version !== 2) {
     const firstAccept = response.accepts?.[0];
-    if (!firstAccept) return undefined;
-
-    const discoveryInfo = extractDiscoveryInfoV1(
-      firstAccept as unknown as LibraryPaymentRequirementsV1
-    );
-    if (discoveryInfo) {
-      return convertDiscoveryInfoToOutputSchema(discoveryInfo);
-    }
-
-    return firstAccept.outputSchema;
+    return firstAccept?.outputSchema;
   }
 
   const bazaar = response.extensions?.bazaar;
