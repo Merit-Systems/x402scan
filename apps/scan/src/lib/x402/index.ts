@@ -20,8 +20,12 @@ import {
 } from './v2';
 import {
   extractDiscoveryInfoFromExtension,
+  extractDiscoveryInfoV1,
   type DiscoveryExtension,
+  type DiscoveryInfo,
 } from '@x402/extensions/bazaar';
+import { decodePaymentRequiredHeader } from '@x402/core/http';
+import type { PaymentRequirementsV1 as OfficialPaymentRequirementsV1 } from '@x402/core/types';
 import { ChainIdToNetwork } from 'x402/types';
 import type { ParseResult } from './shared';
 
@@ -120,59 +124,49 @@ function detectVersion(data: unknown): 1 | 2 {
 
 /**
  * NOTE(shafu): get the output schema from a parsed x402 response
- * V1: schema is in accepts[0].outputSchema
- * V2: schema is in extensions.bazaar using official @x402/extensions/bazaar
+ * V1: uses extractDiscoveryInfoV1 from @x402/extensions/bazaar
+ * V2: uses extractDiscoveryInfoFromExtension from @x402/extensions/bazaar
  */
 export function getOutputSchema(
   response: ParsedX402Response
 ): OutputSchema | undefined {
+  // V1: Use official extractDiscoveryInfoV1 from @x402/extensions/bazaar
   if (response.x402Version !== 2) {
-    return response.accepts?.[0]?.outputSchema;
+    const firstAccept = response.accepts?.[0];
+    if (!firstAccept) return undefined;
+
+    // Try official v1 extraction first
+    const discoveryInfo = extractDiscoveryInfoV1(
+      firstAccept as unknown as OfficialPaymentRequirementsV1
+    );
+    if (discoveryInfo) {
+      return convertDiscoveryInfoToOutputSchema(discoveryInfo);
+    }
+
+    // Fallback to raw outputSchema if extraction fails
+    return firstAccept.outputSchema;
   }
 
+  // V2: Extract from extensions.bazaar
   const bazaar = response.extensions?.bazaar;
   if (!bazaar) {
     return response.resource?.outputSchema;
   }
 
+  // Use official extractDiscoveryInfoFromExtension
   if (bazaar.info && bazaar.schema) {
     try {
       const discoveryInfo = extractDiscoveryInfoFromExtension(
         bazaar as DiscoveryExtension,
         false // skip validation for parsing
       );
-
-      const input = discoveryInfo.input as Record<string, unknown>;
-      const bodyData = input.body as Record<string, unknown> | undefined;
-      const bodyNeedsSchema =
-        bodyData && typeof bodyData === 'object' && !('properties' in bodyData);
-
-      if (bodyNeedsSchema) {
-        type BazaarSchema = {
-          properties?: {
-            input?: { properties?: { body?: Record<string, unknown> } };
-          };
-        };
-        const schema = bazaar.schema as BazaarSchema;
-        const bodySchema = schema.properties?.input?.properties?.body;
-        if (bodySchema && 'properties' in bodySchema) {
-          return {
-            input: { ...input, body: bodySchema },
-            output: discoveryInfo.output,
-          } as unknown as OutputSchema;
-        }
-      }
-
-      return {
-        input: discoveryInfo.input,
-        output: discoveryInfo.output,
-      } as OutputSchema;
+      return convertDiscoveryInfoToOutputSchema(discoveryInfo, bazaar.schema);
     } catch {
       // Fall through to legacy handling if extraction fails
     }
   }
 
-  // NOTE(shafu): legacy fallback for non-standard bazaar formats
+  // Legacy fallback for non-standard bazaar formats
   if (bazaar.info) {
     const info = bazaar.info as { input?: unknown; output?: unknown };
     return { input: info.input, output: info.output } as OutputSchema;
@@ -183,6 +177,43 @@ export function getOutputSchema(
   }
 
   return response.resource?.outputSchema;
+}
+
+/**
+ * Converts DiscoveryInfo from @x402/extensions/bazaar to our OutputSchema format.
+ * Handles the case where body contains example data instead of schema properties.
+ */
+function convertDiscoveryInfoToOutputSchema(
+  discoveryInfo: DiscoveryInfo,
+  bazaarSchema?: unknown
+): OutputSchema {
+  const input = discoveryInfo.input as Record<string, unknown>;
+  const bodyData = input.body as Record<string, unknown> | undefined;
+
+  // Check if body needs schema enrichment (has example data, not properties)
+  const bodyNeedsSchema =
+    bodyData && typeof bodyData === 'object' && !('properties' in bodyData);
+
+  if (bodyNeedsSchema && bazaarSchema) {
+    interface BazaarSchema {
+      properties?: {
+        input?: { properties?: { body?: Record<string, unknown> } };
+      };
+    }
+    const schema = bazaarSchema as BazaarSchema;
+    const bodySchemaFromExt = schema.properties?.input?.properties?.body;
+    if (bodySchemaFromExt && 'properties' in bodySchemaFromExt) {
+      return {
+        input: { ...input, body: bodySchemaFromExt },
+        output: discoveryInfo.output,
+      } as unknown as OutputSchema;
+    }
+  }
+
+  return {
+    input: discoveryInfo.input,
+    output: discoveryInfo.output,
+  } as OutputSchema;
 }
 
 export function isV2Response(
@@ -219,18 +250,17 @@ export function getMaxAmount(response: ParsedX402Response): string | undefined {
 }
 
 export async function extractX402Data(response: Response): Promise<unknown> {
-  // v2 - check header first
+  // v2 - check header first using official @x402/core/http decoder
   const paymentRequiredHeader = response.headers.get('Payment-Required');
   if (paymentRequiredHeader) {
     try {
-      const decoded = atob(paymentRequiredHeader);
-      return JSON.parse(decoded);
+      return decodePaymentRequiredHeader(paymentRequiredHeader);
     } catch {
       // fall through to body parsing if header decoding fails
     }
   }
 
-  // v1 fallback
+  // v1 fallback - response body contains the payment required data
   const text = await response.text();
   if (!text) return null;
   try {
