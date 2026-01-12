@@ -18,11 +18,7 @@ import {
   type X402ResponseV2,
   type PaymentRequirementsV2,
 } from './v2';
-import {
-  extractDiscoveryInfoFromExtension,
-  type DiscoveryExtension,
-  type DiscoveryInfo,
-} from '@x402/extensions/bazaar';
+import type { DiscoveryExtension } from '@x402/extensions/bazaar';
 import { decodePaymentRequiredHeader } from '@x402/core/http';
 import { ChainIdToNetwork } from 'x402/types';
 import type { ParseResult } from './shared';
@@ -121,78 +117,49 @@ function detectVersion(data: unknown): 1 | 2 {
 
 /**
  * NOTE(shafu): get the output schema from a parsed x402 response
- * V1: returns raw outputSchema directly (has bodyFields format for form rendering)
- * V2: uses extractDiscoveryInfoFromExtension from @x402/extensions/bazaar
+ * V1: outputSchema is in accepts[].outputSchema (bodyFields format)
+ * V2: outputSchema comes from extensions.bazaar (info + schema)
  */
 export function getOutputSchema(
   response: ParsedX402Response
 ): OutputSchema | undefined {
   if (response.x402Version !== 2) {
-    const firstAccept = response.accepts?.[0];
-    return firstAccept?.outputSchema;
+    return response.accepts?.[0]?.outputSchema;
   }
 
-  const bazaar = response.extensions?.bazaar;
-  if (!bazaar) {
-    return undefined; // v2 outputSchema only comes from extensions.bazaar
+  const bazaar = response.extensions?.bazaar as DiscoveryExtension | undefined;
+  if (!bazaar?.info) {
+    return undefined;
   }
 
-  if (bazaar.info && bazaar.schema) {
-    try {
-      const discoveryInfo = extractDiscoveryInfoFromExtension(
-        bazaar as DiscoveryExtension,
-        false // skip validation for parsing
-      );
-      return convertDiscoveryInfoToOutputSchema(discoveryInfo, bazaar.schema);
-    } catch {
-      // Fall through to legacy handling if extraction fails
-    }
-  }
+  const info = bazaar.info;
+  const input = info.input as Record<string, unknown>;
 
-  if (bazaar.info) {
-    const info = bazaar.info as { input?: unknown; output?: unknown };
-    return { input: info.input, output: info.output } as OutputSchema;
-  }
-
-  if (bazaar.schema) {
-    return { input: bazaar.schema as InputSchema } as OutputSchema;
-  }
-
-  return undefined;
-}
-
-// NOTE(shafu): Converts DiscoveryInfo from x402/extensions/bazaar to our OutputSchema format.
-function convertDiscoveryInfoToOutputSchema(
-  discoveryInfo: DiscoveryInfo,
-  bazaarSchema?: unknown
-): OutputSchema {
-  const input = discoveryInfo.input as Record<string, unknown>;
-  const bodyData = input.body as Record<string, unknown> | undefined;
-
-  // Check if body needs schema enrichment (has example data, not properties)
-  const bodyNeedsSchema =
-    bodyData && typeof bodyData === 'object' && !('properties' in bodyData);
-
-  if (bodyNeedsSchema && bazaarSchema) {
-    interface BazaarSchema {
-      properties?: {
-        input?: { properties?: { body?: Record<string, unknown> } };
-      };
-    }
-    const schema = bazaarSchema as BazaarSchema;
-    const bodySchemaFromExt = schema.properties?.input?.properties?.body;
-    if (bodySchemaFromExt && 'properties' in bodySchemaFromExt) {
+  // Enrich body with schema if info.body has example data (no properties)
+  const body = input.body;
+  if (
+    bazaar.schema &&
+    body &&
+    typeof body === 'object' &&
+    !('properties' in body)
+  ) {
+    const schema = bazaar.schema as {
+      properties?: { input?: { properties?: { body?: unknown } } };
+    };
+    const bodySchema = schema.properties?.input?.properties?.body;
+    if (
+      bodySchema &&
+      typeof bodySchema === 'object' &&
+      'properties' in bodySchema
+    ) {
       return {
-        input: { ...input, body: bodySchemaFromExt },
-        output: discoveryInfo.output,
+        input: { ...input, body: bodySchema },
+        output: info.output,
       } as unknown as OutputSchema;
     }
   }
 
-  return {
-    input: discoveryInfo.input,
-    output: discoveryInfo.output,
-  } as OutputSchema;
+  return { input: info.input, output: info.output } as OutputSchema;
 }
 
 export function isV2Response(
