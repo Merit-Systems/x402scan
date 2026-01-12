@@ -15,6 +15,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts",
+    "view:facilitators": "tsx src/scripts/view-facilitators.ts",
+    "test:sync": "tsx src/scripts/test-sync.ts",
     "knip": "pnpm -w knip --workspace ./apps/scan",
     "format": "pnpm -w format-dir ./apps/scan",
     "check:format": "pnpm -w check:format-dir ./apps/scan"
@@ -68,6 +70,8 @@
     "@vercel/speed-insights": "^1.2.0",
     "@wallet-standard/base": "^1.1.0",
     "@wallet-standard/react": "^1.0.1",
+    "@x402/core": "^2.2.0",
+    "@x402/extensions": "^2.2.0",
     "@x402scan/analytics-db": "workspace:*",
     "@x402scan/scan-db": "workspace:*",
     "@x402scan/transfers-db": "workspace:*",

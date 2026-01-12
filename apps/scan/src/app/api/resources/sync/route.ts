@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 
+import { HTTPFacilitatorClient } from '@x402/core/http';
+import { withBazaar } from '@x402/extensions/bazaar';
 import { Prisma, scanDb } from '@x402scan/scan-db';
-import {
-  discoverableFacilitators,
-  listAllFacilitatorResources,
-} from 'facilitators';
+import { discoverableFacilitators } from 'facilitators';
 
 import { checkCronSecret } from '@/lib/cron';
 import { getOriginFromUrl } from '@/lib/url';
@@ -16,16 +15,15 @@ import type { z } from 'zod';
 import type { AcceptsNetwork } from '@x402scan/scan-db/types';
 import type { SupportedChain } from '@/types/chain';
 import type { NextRequest } from 'next/server';
+import type { FacilitatorConfig } from 'x402/types';
 
 // ============================================================================
 // Constants
 // ============================================================================
 
-/** Max concurrent HTTP scraping operations (I/O bound, can be higher) */
 const SCRAPE_CONCURRENCY = 10;
-
-/** Batch size for SQL operations to avoid query size limits */
 const DB_BATCH_SIZE = 100;
+const PAGE_LIMIT = 100;
 
 // ============================================================================
 // Types
@@ -45,30 +43,131 @@ interface ScrapedOrigin {
   }[];
 }
 
-interface OriginUpsertResult {
-  originsUpserted: number;
-  ogImagesUpserted: number;
-}
-
-interface ResourceUpsertResult {
-  resourcesUpserted: number;
-  acceptsUpserted: number;
-  skipped: number;
-}
-
 interface ValidatedResource {
   parsed: z.output<typeof upsertResourceSchema>;
   originUrl: string;
 }
 
+// Resource from facilitator discovery API
+interface FacilitatorResource {
+  resource: string;
+  type: string;
+  x402Version: number;
+  lastUpdated: string;
+  accepts: {
+    scheme: string;
+    network: string;
+    payTo: string;
+    description: string;
+    maxAmountRequired: string;
+    mimeType: string;
+    maxTimeoutSeconds: number;
+    asset: string;
+    outputSchema?: unknown;
+    extra?: Record<string, unknown>;
+  }[];
+}
+
 // ============================================================================
-// Batch Operations
+// Facilitator Resource Fetching
 // ============================================================================
 
 /**
- * Scrapes origin metadata with controlled concurrency.
- * Processes origins in batches to avoid overwhelming external servers.
+ * Create a bazaar-enabled facilitator client
  */
+function createBazaarClient(facilitator: FacilitatorConfig) {
+  return withBazaar(new HTTPFacilitatorClient({ url: facilitator.url }));
+}
+
+/**
+ * Fetch all resources from a single facilitator using the Bazaar extension
+ */
+async function fetchFacilitatorResources(
+  facilitator: FacilitatorConfig
+): Promise<FacilitatorResource[]> {
+  const client = createBazaarClient(facilitator);
+  const allResources: FacilitatorResource[] = [];
+  let offset = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    const response = await client.extensions.discovery.listResources({
+      type: 'http',
+      limit: PAGE_LIMIT,
+      offset,
+    });
+
+    // The response may have different shapes depending on facilitator
+    // Handle both { resources } and { items } formats
+    const items =
+      (response as unknown as { items?: FacilitatorResource[] }).items ??
+      (response.resources as unknown as FacilitatorResource[]);
+
+    if (!items || items.length === 0) {
+      hasMore = false;
+      break;
+    }
+
+    allResources.push(...items);
+
+    // Check pagination
+    const total = response.total ?? 0;
+    if (offset + PAGE_LIMIT >= total || items.length < PAGE_LIMIT) {
+      hasMore = false;
+    } else {
+      offset += PAGE_LIMIT;
+    }
+  }
+
+  return allResources;
+}
+
+/**
+ * Fetch resources from all facilitators
+ */
+async function fetchAllResources(skip: string[] = []): Promise<{
+  resources: FacilitatorResource[];
+  errors: { facilitator: string; error: string }[];
+  skippedFacilitators: string[];
+}> {
+  const resources: FacilitatorResource[] = [];
+  const errors: { facilitator: string; error: string }[] = [];
+  const skippedFacilitators: string[] = [];
+
+  for (const facilitator of discoverableFacilitators) {
+    // Check if this facilitator should be skipped
+    if (
+      skip.some(s => facilitator.url.toLowerCase().includes(s.toLowerCase()))
+    ) {
+      skippedFacilitators.push(facilitator.url);
+      continue;
+    }
+
+    try {
+      console.log(`[sync] Fetching from ${facilitator.url}`);
+      const facilitatorResources = await fetchFacilitatorResources(facilitator);
+      console.log(
+        `[sync] Fetched ${facilitatorResources.length} from ${facilitator.url}`
+      );
+      resources.push(...facilitatorResources);
+    } catch (error) {
+      console.error(`[sync] Failed to fetch from ${facilitator.url}`, {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      errors.push({
+        facilitator: facilitator.url,
+        error: error instanceof Error ? error.message : 'Unknown',
+      });
+    }
+  }
+
+  return { resources, errors, skippedFacilitators };
+}
+
+// ============================================================================
+// Origin Scraping
+// ============================================================================
+
 async function scrapeOriginsInBatches(
   origins: string[],
   concurrency: number
@@ -84,7 +183,6 @@ async function scrapeOriginsInBatches(
           metadata,
           origin: scrapedOrigin,
         } = await scrapeOriginData(origin);
-
         return {
           origin,
           title: metadata?.title ?? og?.ogTitle,
@@ -116,16 +214,12 @@ async function scrapeOriginsInBatches(
   return results;
 }
 
-/**
- * Batch upsert origins using raw SQL INSERT ... ON CONFLICT.
- * Uses a single DB round-trip per batch instead of N individual upserts.
- */
-async function batchUpsertOrigins(
-  origins: ScrapedOrigin[]
-): Promise<OriginUpsertResult> {
-  if (origins.length === 0) {
-    return { originsUpserted: 0, ogImagesUpserted: 0 };
-  }
+// ============================================================================
+// Database Operations
+// ============================================================================
+
+async function batchUpsertOrigins(origins: ScrapedOrigin[]) {
+  if (origins.length === 0) return { originsUpserted: 0, ogImagesUpserted: 0 };
 
   let totalOriginsUpserted = 0;
   let totalOgImagesUpserted = 0;
@@ -149,7 +243,6 @@ async function batchUpsertOrigins(
     `;
     totalOriginsUpserted += upsertedOrigins;
 
-    // Collect OG images with their origin URLs for the join
     const ogImagesWithOrigins = batch.flatMap(o =>
       o.ogImages.map(img => ({ ...img, originUrl: o.origin }))
     );
@@ -162,17 +255,8 @@ async function batchUpsertOrigins(
 
       const upsertedImages = await scanDb.$executeRaw`
         INSERT INTO "public"."OgImage" (id, "originId", url, height, width, title, description)
-        SELECT 
-          v.id,
-          ro.id as "originId",
-          v.url,
-          v.height,
-          v.width,
-          v.title,
-          v.description
-        FROM (
-          VALUES ${Prisma.join(ogImageValues)}
-        ) AS v(id, origin_url, url, height, width, title, description)
+        SELECT v.id, ro.id as "originId", v.url, v.height, v.width, v.title, v.description
+        FROM (VALUES ${Prisma.join(ogImageValues)}) AS v(id, origin_url, url, height, width, title, description)
         JOIN "public"."ResourceOrigin" ro ON ro.origin = v.origin_url
         ON CONFLICT (url) DO UPDATE SET
           height = COALESCE(EXCLUDED.height, "OgImage".height),
@@ -190,15 +274,19 @@ async function batchUpsertOrigins(
   };
 }
 
-/**
- * Validates and parses resources, filtering to supported chains.
- * Returns validated resources with their origin URLs.
- */
-function validateResources(
-  resources: Awaited<ReturnType<typeof listAllFacilitatorResources>>
-): { validated: ValidatedResource[]; skipped: number } {
+function validateResources(resources: FacilitatorResource[]): {
+  validated: ValidatedResource[];
+  skipped: number;
+  skipReasons: Record<string, number>;
+} {
   const validated: ValidatedResource[] = [];
   let skipped = 0;
+  const skipReasons: Record<string, number> = {};
+
+  const addSkipReason = (reason: string) => {
+    skipped++;
+    skipReasons[reason] = (skipReasons[reason] ?? 0) + 1;
+  };
 
   for (const resource of resources) {
     const parsed = upsertResourceSchema.safeParse({
@@ -210,7 +298,8 @@ function validateResources(
     });
 
     if (!parsed.success) {
-      skipped++;
+      const errorPath = parsed.error.issues[0]?.path.join('.') ?? 'unknown';
+      addSkipReason(`validation_failed:${errorPath}`);
       continue;
     }
 
@@ -219,7 +308,8 @@ function validateResources(
     );
 
     if (supportedAccepts.length === 0) {
-      skipped++;
+      const networks = parsed.data.accepts.map(a => a.network).join(',');
+      addSkipReason(`unsupported_network:${networks}`);
       continue;
     }
 
@@ -230,26 +320,24 @@ function validateResources(
         originUrl,
       });
     } catch {
-      skipped++;
+      addSkipReason('invalid_url');
     }
   }
 
-  return { validated, skipped };
+  return { validated, skipped, skipReasons };
 }
 
-/**
- * Batch upsert resources and accepts using raw SQL.
- * Uses a single DB round-trip per batch instead of N individual upserts.
- */
-async function batchUpsertResources(
-  resources: Awaited<ReturnType<typeof listAllFacilitatorResources>>
-): Promise<ResourceUpsertResult> {
+async function batchUpsertResources(resources: FacilitatorResource[]) {
   if (resources.length === 0) {
-    return { resourcesUpserted: 0, acceptsUpserted: 0, skipped: 0 };
+    return {
+      resourcesUpserted: 0,
+      acceptsUpserted: 0,
+      skipped: 0,
+      skipReasons: {},
+    };
   }
 
-  const { validated, skipped } = validateResources(resources);
-
+  const { validated, skipped, skipReasons } = validateResources(resources);
   let totalResourcesUpserted = 0;
   let totalAcceptsUpserted = 0;
 
@@ -263,17 +351,8 @@ async function batchUpsertResources(
 
     const upsertedResources = await scanDb.$executeRaw`
       INSERT INTO "public"."Resources" (id, resource, type, "x402Version", "lastUpdated", metadata, "originId")
-      SELECT 
-        v.id,
-        v.resource,
-        v.type,
-        v.x402_version,
-        v.last_updated,
-        v.metadata,
-        ro.id as "originId"
-      FROM (
-        VALUES ${Prisma.join(resourceValues)}
-      ) AS v(id, resource, type, x402_version, last_updated, metadata, origin_url)
+      SELECT v.id, v.resource, v.type, v.x402_version, v.last_updated, v.metadata, ro.id as "originId"
+      FROM (VALUES ${Prisma.join(resourceValues)}) AS v(id, resource, type, x402_version, last_updated, metadata, origin_url)
       JOIN "public"."ResourceOrigin" ro ON ro.origin = v.origin_url
       ON CONFLICT (resource) DO UPDATE SET
         type = EXCLUDED.type,
@@ -283,7 +362,6 @@ async function batchUpsertResources(
     `;
     totalResourcesUpserted += upsertedResources;
 
-    // Collect accepts with their resource URLs for the join
     const acceptsWithResources = batch.flatMap(r =>
       r.parsed.accepts.map(accept => ({
         ...accept,
@@ -299,23 +377,8 @@ async function batchUpsertResources(
 
       const upsertedAccepts = await scanDb.$executeRaw`
         INSERT INTO "public"."Accepts" (id, "resourceId", scheme, description, network, "maxAmountRequired", resource, "mimeType", "payTo", "maxTimeoutSeconds", asset, "outputSchema", extra)
-        SELECT 
-          v.id,
-          r.id as "resourceId",
-          v.scheme,
-          v.description,
-          v.network,
-          v.max_amount_required,
-          v.resource_url,
-          v.mime_type,
-          v.pay_to,
-          v.max_timeout_seconds,
-          v.asset,
-          v.output_schema,
-          v.extra
-        FROM (
-          VALUES ${Prisma.join(acceptValues)}
-        ) AS v(id, resource_url, scheme, description, network, max_amount_required, resource_url_2, mime_type, pay_to, max_timeout_seconds, asset, output_schema, extra)
+        SELECT v.id, r.id as "resourceId", v.scheme, v.description, v.network, v.max_amount_required, v.resource_url, v.mime_type, v.pay_to, v.max_timeout_seconds, v.asset, v.output_schema, v.extra
+        FROM (VALUES ${Prisma.join(acceptValues)}) AS v(id, resource_url, scheme, description, network, max_amount_required, resource_url_2, mime_type, pay_to, max_timeout_seconds, asset, output_schema, extra)
         JOIN "public"."Resources" r ON r.resource = v.resource_url
         ON CONFLICT ("resourceId", scheme, network) DO UPDATE SET
           description = EXCLUDED.description,
@@ -335,6 +398,7 @@ async function batchUpsertResources(
     resourcesUpserted: totalResourcesUpserted,
     acceptsUpserted: totalAcceptsUpserted,
     skipped,
+    skipReasons,
   };
 }
 
@@ -342,127 +406,93 @@ async function batchUpsertResources(
 // Route Handler
 // ============================================================================
 
+export const maxDuration = 300;
+
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);
-  if (cronCheck) {
-    return cronCheck;
-  }
+  if (cronCheck) return cronCheck;
 
   const startTime = Date.now();
+  const skipParam = request.nextUrl.searchParams.get('skip');
+  const skip = skipParam ? skipParam.split(',').map(s => s.trim()) : [];
 
   try {
-    // Step 1: Fetch resources from all discoverable facilitators
-    console.log('[sync] Fetching facilitator resources');
-    const resources: Awaited<ReturnType<typeof listAllFacilitatorResources>> =
-      [];
-
-    for (const facilitator of discoverableFacilitators) {
-      try {
-        const facilitatorResources =
-          await listAllFacilitatorResources(facilitator);
-        resources.push(...facilitatorResources);
-      } catch (error) {
-        console.error('[sync] Failed to fetch facilitator resources', {
-          facilitator: facilitator.url,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        });
-      }
-    }
-
-    console.log('[sync] Fetched facilitator resources', {
+    // Step 1: Fetch resources from facilitators
+    console.log('[sync] Starting resource fetch', {
+      skip: skip.length > 0 ? skip : 'none',
+    });
+    const {
+      resources,
+      errors: fetchErrors,
+      skippedFacilitators,
+    } = await fetchAllResources(skip);
+    console.log('[sync] Fetched resources', {
       count: resources.length,
+      errors: fetchErrors.length,
     });
 
     if (resources.length === 0) {
-      console.warn('[sync] No resources found');
-      return NextResponse.json(
-        {
-          success: true as const,
-          message: 'No resources to sync',
-          resourcesProcessed: 0,
-          originsProcessed: 0,
-        },
-        { status: 200 }
-      );
+      return NextResponse.json({
+        success: true,
+        message: 'No resources to sync',
+        skippedFacilitators,
+        facilitatorErrors: fetchErrors,
+      });
     }
 
-    // Step 2: Extract unique origins from resources
+    // Step 2: Extract and scrape unique origins
     const originsSet = new Set<string>();
     for (const resource of resources) {
       try {
         originsSet.add(getOriginFromUrl(resource.resource));
-      } catch (error) {
-        console.warn('[sync] Failed to extract origin', {
-          resource: resource.resource,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        });
+      } catch {
+        // Skip invalid URLs
       }
     }
     const uniqueOrigins = Array.from(originsSet);
 
-    // Step 3: Scrape origin metadata (parallelized with concurrency limit)
-    console.log('[sync] Scraping origins', {
-      count: uniqueOrigins.length,
-      concurrency: SCRAPE_CONCURRENCY,
-    });
-    const scrapeStart = Date.now();
+    console.log('[sync] Scraping origins', { count: uniqueOrigins.length });
     const scrapedOrigins = await scrapeOriginsInBatches(
       uniqueOrigins,
       SCRAPE_CONCURRENCY
     );
-    console.log('[sync] Scraped origins', {
-      scraped: scrapedOrigins.length,
-      failed: uniqueOrigins.length - scrapedOrigins.length,
-      durationMs: Date.now() - scrapeStart,
-    });
 
-    // Step 4: Batch upsert origins to database
-    console.log('[sync] Upserting origins', {
-      count: scrapedOrigins.length,
-      batchSize: DB_BATCH_SIZE,
-    });
-    const originDbStart = Date.now();
+    // Step 3: Upsert origins
     const { originsUpserted, ogImagesUpserted } =
       await batchUpsertOrigins(scrapedOrigins);
     console.log('[sync] Upserted origins', {
       originsUpserted,
       ogImagesUpserted,
-      durationMs: Date.now() - originDbStart,
     });
 
-    // Step 5: Batch upsert resources to database
-    console.log('[sync] Upserting resources', {
-      count: resources.length,
-      batchSize: DB_BATCH_SIZE,
-    });
-    const resourceDbStart = Date.now();
-    const { resourcesUpserted, acceptsUpserted, skipped } =
+    // Step 4: Upsert resources
+    const { resourcesUpserted, acceptsUpserted, skipped, skipReasons } =
       await batchUpsertResources(resources);
     console.log('[sync] Upserted resources', {
       resourcesUpserted,
       acceptsUpserted,
       skipped,
-      durationMs: Date.now() - resourceDbStart,
+      skipReasons,
     });
 
     const totalDuration = Date.now() - startTime;
     console.log('[sync] Completed', { durationMs: totalDuration });
 
-    return NextResponse.json(
-      {
-        success: true as const,
-        message: 'Sync completed successfully',
-        originsScraped: scrapedOrigins.length,
-        originsScrapesFailed: uniqueOrigins.length - scrapedOrigins.length,
-        originsUpserted,
-        ogImagesUpserted,
-        resourcesUpserted,
-        acceptsUpserted,
-        resourcesSkipped: skipped,
-        durationMs: totalDuration,
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      success: true,
+      message: 'Sync completed successfully',
+      skippedFacilitators,
+      facilitatorErrors: fetchErrors,
+      originsScraped: scrapedOrigins.length,
+      originsScrapesFailed: uniqueOrigins.length - scrapedOrigins.length,
+      originsUpserted,
+      ogImagesUpserted,
+      resourcesUpserted,
+      acceptsUpserted,
+      resourcesSkipped: skipped,
+      resourcesSkipReasons: skipReasons,
+      durationMs: totalDuration,
+    });
   } catch (error) {
     console.error('[sync] Failed', {
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -470,9 +500,9 @@ export const GET = async (request: NextRequest) => {
     });
     return NextResponse.json(
       {
-        success: false as const,
-        message: 'Sync task failed with error',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        success: false,
+        message: 'Sync failed',
+        error: error instanceof Error ? error.message : 'Unknown',
       },
       { status: 500 }
     );
