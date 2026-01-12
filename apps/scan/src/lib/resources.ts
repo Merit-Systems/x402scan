@@ -123,7 +123,7 @@ export const registerResource = async (url: string, data: unknown) => {
     lastUpdated: new Date(),
     accepts: normalizedAccepts
       .filter(accept =>
-        (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(
+        (SUPPORTED_CHAINS as readonly string[]).includes(
           accept.network.replace('-', '_')
         )
       )

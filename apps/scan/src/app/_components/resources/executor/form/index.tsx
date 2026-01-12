@@ -39,7 +39,10 @@ interface PropertyDefinition {
   isRequired: boolean;
 }
 
-type JsonSchema = { properties?: Record<string, unknown>; required?: string[] };
+interface JsonSchema {
+  properties?: Record<string, unknown>;
+  required?: string[];
+}
 
 function extractFieldsFromSchema(
   inputSchema: InputSchema,
@@ -80,7 +83,7 @@ function extractFieldsFromSchema(
 
   // fieldType === 'body'
   if (hasV2BodySchema && method !== Methods.GET) {
-    return getFields(v2Body!.properties, v2Body!.required);
+    return getFields(v2Body.properties, v2Body.required);
   }
   if (inputSchema.bodyFields) {
     return getFields(inputSchema.bodyFields);
@@ -177,7 +180,7 @@ export function Form({
   const bodyEntries = useMemo(
     () =>
       Object.entries(bodyValues).reduce<
-        Array<[string, FieldValue | number | boolean]>
+        [string, FieldValue | number | boolean][]
       >((acc, [key, value]) => {
         // Find the field definition to get the type
         const field = bodyFields.find(f => f.name === key);
@@ -289,7 +292,7 @@ export function Form({
         const networks = x402Response.accepts?.map(a => a.network ?? '') ?? [];
         const normalized = networks.map(n => normalizeChainId(n));
         const supported = normalized.filter(n =>
-          (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(n)
+          (SUPPORTED_CHAINS as readonly string[]).includes(n)
         ) as SupportedChain[];
 
         if (supported.length === 0) {
