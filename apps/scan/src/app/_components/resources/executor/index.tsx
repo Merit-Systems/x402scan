@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDownIcon } from 'lucide-react';
+import { AlertTriangle, ChevronDownIcon } from 'lucide-react';
 
 import {
   AccordionContent,
@@ -9,6 +9,11 @@ import {
 } from '@/components/ui/accordion';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import { Header } from './header';
 import { Form } from './form';
@@ -32,6 +37,8 @@ interface Props {
   hideOrigin?: boolean;
   defaultOpen?: boolean;
   isFlat?: boolean;
+  /** Optional warnings to show as a tooltip icon */
+  warnings?: string[];
 }
 
 export const ResourceExecutor: React.FC<Props> = ({
@@ -42,6 +49,7 @@ export const ResourceExecutor: React.FC<Props> = ({
   className,
   hideOrigin = false,
   isFlat = false,
+  warnings = [],
 }) => {
   if (!response) return null;
 
@@ -75,7 +83,24 @@ export const ResourceExecutor: React.FC<Props> = ({
               response={response}
               hideOrigin={hideOrigin}
             />
-            <ChevronDownIcon className="size-4" />
+            <div className="flex items-center gap-2">
+              {warnings.length > 0 && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertTriangle className="size-4 text-yellow-500" />
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="max-w-xs">
+                    <p className="font-medium text-xs mb-1">Missing:</p>
+                    <ul className="text-xs list-disc list-inside">
+                      {warnings.map((warning, i) => (
+                        <li key={i}>{warning}</li>
+                      ))}
+                    </ul>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              <ChevronDownIcon className="size-4" />
+            </div>
           </CardHeader>
         </AccordionTrigger>
         <AccordionContent className="pb-0">

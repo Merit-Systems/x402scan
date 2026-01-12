@@ -179,7 +179,7 @@ export function DiscoveryPanel({
 
       {/* Resources display - shows when we have resources (discovery or direct test) */}
       {!isLoading && resourceCount > 0 && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col">
           {/* Header with refresh button */}
           {onRefresh && (
             <div className="flex items-center justify-end">
@@ -249,6 +249,7 @@ export function DiscoveryPanel({
                           resourceUrl={resourceUrl}
                           tested={tested}
                           idx={idx}
+                          preview={preview}
                         />
                       );
                     }
@@ -348,15 +349,23 @@ function DiscoveredResourceExecutor({
   resourceUrl,
   tested,
   idx,
+  preview,
 }: {
   resourceUrl: string;
   tested: TestedResource;
   idx: number;
+  preview?: OriginPreview | null;
 }) {
   const outputSchema = getOutputSchema(tested.parsed);
   const method =
     (outputSchema?.input?.method?.toUpperCase() as Methods) ??
     (tested.method as Methods);
+
+  // Collect warnings for missing optional items
+  const warnings: string[] = [];
+  if (!outputSchema?.output) warnings.push('Output schema');
+  if (!preview?.ogImages?.[0]?.url) warnings.push('OG image');
+  if (!preview?.favicon) warnings.push('Favicon');
 
   return (
     <ResourceExecutor
@@ -371,6 +380,7 @@ function DiscoveredResourceExecutor({
       bazaarMethod={method}
       hideOrigin
       isFlat={false}
+      warnings={warnings}
     />
   );
 }
