@@ -580,7 +580,7 @@ function RegisterModeResourceList({
                     {isRegistered ? (
                       <span className="flex items-center gap-1 text-xs text-green-600">
                         <CheckCircle className="size-3" />
-                        Registered
+                        Already Registered
                       </span>
                     ) : (
                       <span className="text-xs text-muted-foreground">New</span>
