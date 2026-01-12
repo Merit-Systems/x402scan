@@ -101,18 +101,7 @@ export type ParsedX402Response = X402ResponseV1 | X402ResponseV2;
 export function parseX402Response(
   data: unknown
 ): ParseResult<ParsedX402Response> {
-  const version = detectVersion(data);
-  if (version === 2) {
-    return parseV2(data);
-  }
-  return parseV1(data);
-}
-
-function detectVersion(data: unknown): 1 | 2 {
-  if (typeof data === 'object' && data !== null && 'x402Version' in data) {
-    return (data as { x402Version: number }).x402Version === 2 ? 2 : 1;
-  }
-  return 1;
+  return isV2Response(data) ? parseV2(data) : parseV1(data);
 }
 
 /**
@@ -144,12 +133,21 @@ function getOutputSchemaFromBazaar(
   const body = input.body;
 
   // Enrich body with schema if info.body has example data (no properties)
-  if (bazaar.schema && body && typeof body === 'object' && !('properties' in body)) {
+  if (
+    bazaar.schema &&
+    body &&
+    typeof body === 'object' &&
+    !('properties' in body)
+  ) {
     const schema = bazaar.schema as {
       properties?: { input?: { properties?: { body?: unknown } } };
     };
     const bodySchema = schema.properties?.input?.properties?.body;
-    if (bodySchema && typeof bodySchema === 'object' && 'properties' in bodySchema) {
+    if (
+      bodySchema &&
+      typeof bodySchema === 'object' &&
+      'properties' in bodySchema
+    ) {
       return {
         input: { ...input, body: bodySchema },
         output: info.output,
@@ -160,10 +158,13 @@ function getOutputSchemaFromBazaar(
   return { input: info.input, output: info.output } as OutputSchema;
 }
 
-export function isV2Response(
-  response: ParsedX402Response
-): response is X402ResponseV2 {
-  return response.x402Version === 2;
+export function isV2Response(data: unknown): data is X402ResponseV2 {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'x402Version' in data &&
+    data.x402Version === 2
+  );
 }
 
 /**
