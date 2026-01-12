@@ -1,30 +1,37 @@
+import type {
+  Network,
+  PaymentRequired,
+  PaymentRequirements,
+} from '@x402/core/types';
 import { z as z3 } from 'zod3';
 
-import { basePaymentRequirementsSchema } from '../shared';
 import { outputSchemaV1 } from '../v1';
 
 // NOTE(shafu): this was changed in V2, it does not support network names like base
-const ChainIdSchema = z3.union([
-  z3.string().regex(/^eip155:\d+$/, 'Invalid EIP-155 chain ID format'),
-  z3.enum(['solana', 'solana-devnet']),
-]);
+const ChainIdSchema = z3.custom<Network>(
+  val => typeof val === 'string' && /^(eip155:\d+|solana:.+)$/.test(val),
+  { message: 'Invalid CAIP-2 network format' }
+);
 
 // Note(shafu): outputSchema is NOT part of official V2 spec, but we accept it for compatibility
 const resourceSchemaV2 = z3.object({
   url: z3.string(),
-  description: z3.string().optional(),
-  mimeType: z3.string().optional(),
+  description: z3.string(),
+  mimeType: z3.string(),
   outputSchema: outputSchemaV1.optional(), // NOTE(shafu): we use v1 outputSchema for compatibility
 });
 
-export type ResourceV2 = z3.infer<typeof resourceSchemaV2>;
+export type ResourceV2 = PaymentRequired['resource'];
 
-export const paymentRequirementsSchemaV2 = basePaymentRequirementsSchema.extend(
-  {
-    network: ChainIdSchema,
-    amount: z3.string(), // V2 uses 'amount' instead of 'maxAmountRequired'
-  }
-);
+export const paymentRequirementsSchemaV2 = z3.object({
+  scheme: z3.string(),
+  network: ChainIdSchema,
+  asset: z3.string(),
+  amount: z3.string(),
+  payTo: z3.string(),
+  maxTimeoutSeconds: z3.number(),
+  extra: z3.record(z3.string(), z3.any()), // Using any() for Prisma JSON compatibility
+});
 
 const extensionsSchemaV2 = z3.object({
   bazaar: z3
@@ -50,9 +57,7 @@ export const x402ResponseSchemaV2 = z3.object({
 });
 
 export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
-export type PaymentRequirementsV2 = z3.infer<
-  typeof paymentRequirementsSchemaV2
->;
+export type PaymentRequirementsV2 = PaymentRequirements;
 
 export type V2Accept = PaymentRequirementsV2 & {
   maxAmountRequired?: string;

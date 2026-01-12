@@ -394,6 +394,9 @@ importers:
       '@wallet-standard/react':
         specifier: ^1.0.1
         version: 1.0.1(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
+      '@x402/core':
+        specifier: ^2.2.0
+        version: 2.2.0
       '@x402scan/analytics-db':
         specifier: workspace:*
         version: link:../../packages/internal/databases/analytics
@@ -783,6 +786,8 @@ importers:
 
   packages/internal/databases/scan/generated/client: {}
 
+  packages/internal/databases/scan/generated/prisma: {}
+
   packages/internal/databases/transfers:
     dependencies:
       '@neondatabase/serverless':
@@ -830,6 +835,8 @@ importers:
         version: 5.5.4
 
   packages/internal/databases/transfers/generated/client: {}
+
+  packages/internal/databases/transfers/generated/prisma: {}
 
   sync/alerts:
     dependencies:
@@ -5885,6 +5892,9 @@ packages:
 
   '@walletconnect/window-metadata@1.0.1':
     resolution: {integrity: sha512-9koTqyGrM2cqFRW517BPY/iEtUDx2r1+Pwwu5m7sJ7ka79wi3EyqhqcICk/yDmv6jAS1rjKgTKXlEhanYjijcA==}
+
+  '@x402/core@2.2.0':
+    resolution: {integrity: sha512-UyPX7UVrqCyFTMeDWAx9cn9LvcaRlUoAknSehuxJ07vXLVhC7Wx5R1h2CV12YkdB+hE6K48Qvfd4qrvbpqqYfw==}
 
   abitype@1.0.6:
     resolution: {integrity: sha512-MMSqYh4+C/aVqI2RQaWqbvI4Kxo5cQV40WQ4QFtDnNzCkqChm8MuENhElmynZlO0qUy/ObkEUaXtKqYnx1Kp3A==}
@@ -19078,6 +19088,10 @@ snapshots:
     dependencies:
       '@walletconnect/window-getters': 1.0.1
       tslib: 1.14.1
+
+  '@x402/core@2.2.0':
+    dependencies:
+      zod: 3.25.76
 
   abitype@1.0.6(typescript@5.9.3)(zod@3.25.76):
     optionalDependencies:

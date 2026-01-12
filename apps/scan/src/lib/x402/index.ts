@@ -18,8 +18,6 @@ import {
   extractBazaarInfo,
   type X402ResponseV2,
   type PaymentRequirementsV2,
-  type V2Accept,
-  type V2Resource,
 } from './v2';
 import { ChainIdToNetwork } from 'x402/types';
 import type { ParseResult } from './shared';
@@ -70,7 +68,7 @@ export function normalizePaymentRequirement(
 ): NormalizedAccept {
   if (isV2PaymentRequirement(accept)) {
     return {
-      scheme: accept.scheme,
+      scheme: accept.scheme as 'exact',
       network: normalizeChainId(accept.network),
       maxAmountRequired: accept.amount,
       payTo: accept.payTo,

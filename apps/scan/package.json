@@ -112,6 +112,7 @@
     "vaul": "^1.1.2",
     "viem": "^2.37.9",
     "wagmi": "^2.17.5",
+    "@x402/core": "^2.2.0",
     "x402": "catalog:x402",
     "x402-fetch": "catalog:x402",
     "x402-next": "catalog:x402",
