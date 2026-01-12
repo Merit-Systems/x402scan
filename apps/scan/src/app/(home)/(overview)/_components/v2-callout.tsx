@@ -15,7 +15,7 @@ export const V2Callout = () => {
             V2 Support
           </h2>
           <p className="text-xs md:text-sm text-muted-foreground">
-            We now support x402 protocol version 2 resources.
+            We now support x402 V2 resources.
           </p>
         </div>
       </div>
