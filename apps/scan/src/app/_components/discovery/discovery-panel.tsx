@@ -199,10 +199,10 @@ export function DiscoveryPanel({
 
           {/* Resources list using ResourceExecutor */}
           {isBatchTestLoading ? (
-            <div className="flex flex-col gap-2 pl-4 border-l">
+            <div className="flex flex-col gap-2">
               {[1, 2, 3].map(i => (
-                <div key={i} className="pt-4 relative">
-                  <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border -ml-4" />
+                <div key={i} className="pl-4 border-l pt-4 relative">
+                  <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border" />
                   <Card className="overflow-hidden">
                     <CardHeader className="bg-muted px-4 py-2">
                       <div className="flex items-center gap-2">
@@ -216,36 +216,34 @@ export function DiscoveryPanel({
               ))}
             </div>
           ) : (
-            <div className="pl-4 border-l">
-              <Accordion type="single" collapsible className="flex flex-col gap-2">
-                {paginatedResources.map((resourceUrl, idx) => {
-                const tested = testedResourceMap.get(resourceUrl);
+            <Accordion type="single" collapsible className="flex flex-col gap-2">
+              {paginatedResources.map((resourceUrl, idx) => {
+              const tested = testedResourceMap.get(resourceUrl);
 
-                if (tested) {
-                  // Render working resource with ResourceExecutor
-                  return (
-                    <DiscoveredResourceExecutor
-                      key={resourceUrl}
-                      resourceUrl={resourceUrl}
-                      tested={tested}
-                      idx={idx}
-                    />
-                  );
-                }
-
-                // Render failed resource with checklist
-                const failedDetails = failedResourceMap.get(resourceUrl);
+              if (tested) {
+                // Render working resource with ResourceExecutor
                 return (
-                  <FailedResourceCard
+                  <DiscoveredResourceExecutor
                     key={resourceUrl}
                     resourceUrl={resourceUrl}
-                    preview={preview}
-                    failedDetails={failedDetails}
+                    tested={tested}
+                    idx={idx}
                   />
                 );
-                })}
-              </Accordion>
-            </div>
+              }
+
+              // Render failed resource with checklist
+              const failedDetails = failedResourceMap.get(resourceUrl);
+              return (
+                <FailedResourceCard
+                  key={resourceUrl}
+                  resourceUrl={resourceUrl}
+                  preview={preview}
+                  failedDetails={failedDetails}
+                />
+              );
+              })}
+            </Accordion>
           )}
 
           {/* Pagination */}
@@ -319,22 +317,19 @@ function DiscoveredResourceExecutor({
     (tested.method as Methods);
 
   return (
-    <div className="pt-4 relative">
-      <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border -ml-4" />
-      <ResourceExecutor
-        resource={createDummyResources({
-          id: `discovered-${idx}`,
-          resource: resourceUrl,
-          x402Version: 1,
-          originId: 'discovered',
-        })}
-        tags={[]}
-        response={tested.parsed}
-        bazaarMethod={method}
-        hideOrigin
-        isFlat={false}
-      />
-    </div>
+    <ResourceExecutor
+      resource={createDummyResources({
+        id: `discovered-${idx}`,
+        resource: resourceUrl,
+        x402Version: 1,
+        originId: 'discovered',
+      })}
+      tags={[]}
+      response={tested.parsed}
+      bazaarMethod={method}
+      hideOrigin
+      isFlat={false}
+    />
   );
 }
 
@@ -364,8 +359,8 @@ function FailedResourceCard({
   const errorMessage = failedDetails?.error ?? 'Unknown error';
 
   return (
-    <div className="pt-4 relative">
-      <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border -ml-4" />
+    <div className="pl-4 border-l pt-4 relative">
+      <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border" />
       <Card className="overflow-hidden border-red-500/30">
         <button
           type="button"
