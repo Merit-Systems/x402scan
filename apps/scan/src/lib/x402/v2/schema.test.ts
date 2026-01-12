@@ -13,26 +13,48 @@ const v2Responses = {
         payTo: '0x1234567890123456789012345678901234567890',
         maxTimeoutSeconds: 60,
         asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        extra: {},
       },
     ],
     resource: {
       url: 'https://api.example.com/endpoint',
       description: 'A test API endpoint',
       mimeType: 'application/json',
-      outputSchema: {
-        input: {
-          type: 'http',
-          method: 'GET' as const,
-          queryParams: {
-            query: {
-              type: 'string',
-              description: 'Search query',
-              required: true,
+    },
+    extensions: {
+      bazaar: {
+        info: {
+          input: {
+            type: 'http',
+            method: 'GET',
+            queryParams: {
+              query: 'example search',
             },
           },
+          output: {
+            results: [],
+          },
         },
-        output: {
-          results: { type: 'array', description: 'Search results' },
+        schema: {
+          $schema: 'https://json-schema.org/draft/2020-12/schema',
+          type: 'object',
+          properties: {
+            input: {
+              type: 'object',
+              properties: {
+                queryParams: {
+                  type: 'object',
+                  properties: {
+                    query: {
+                      type: 'string',
+                      description: 'Search query',
+                    },
+                  },
+                  required: ['query'],
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -47,29 +69,54 @@ const v2Responses = {
         payTo: '0xabcdef1234567890abcdef1234567890abcdef12',
         maxTimeoutSeconds: 300,
         asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        extra: {},
       },
     ],
     resource: {
       url: 'https://api.example.com/submit',
       description: 'Submit data endpoint',
       mimeType: 'application/json',
-      outputSchema: {
-        input: {
-          type: 'http',
-          method: 'POST' as const,
-          bodyType: 'json' as const,
-          bodyFields: {
-            message: {
-              type: 'string',
-              description: 'User message',
-              required: true,
+    },
+    extensions: {
+      bazaar: {
+        info: {
+          input: {
+            type: 'http',
+            method: 'POST',
+            bodyType: 'json',
+            body: {
+              message: 'Hello world',
             },
-            context: { type: 'object', description: 'Optional context' },
+          },
+          output: {
+            id: 'abc123',
+            status: 'success',
           },
         },
-        output: {
-          id: { type: 'string', description: 'Response ID' },
-          status: { type: 'string', description: 'Processing status' },
+        schema: {
+          $schema: 'https://json-schema.org/draft/2020-12/schema',
+          type: 'object',
+          properties: {
+            input: {
+              type: 'object',
+              properties: {
+                body: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      description: 'User message',
+                    },
+                    context: {
+                      type: 'object',
+                      description: 'Optional context',
+                    },
+                  },
+                  required: ['message'],
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -79,16 +126,18 @@ const v2Responses = {
     accepts: [
       {
         scheme: 'exact' as const,
-        network: 'solana',
+        network: 'solana:mainnet',
         amount: '1000000',
         payTo: '7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV',
         maxTimeoutSeconds: 120,
         asset: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC on Solana
+        extra: {},
       },
     ],
     resource: {
       url: 'https://api.solana-example.com/data',
       description: 'Solana data endpoint',
+      mimeType: 'application/json',
     },
   },
   withMultipleAccepts: {
@@ -101,19 +150,22 @@ const v2Responses = {
         payTo: '0x1234567890123456789012345678901234567890',
         maxTimeoutSeconds: 60,
         asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        extra: {},
       },
       {
         scheme: 'exact' as const,
-        network: 'solana',
+        network: 'solana:mainnet',
         amount: '10000',
         payTo: '7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV',
         maxTimeoutSeconds: 60,
         asset: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+        extra: {},
       },
     ],
     resource: {
       url: 'https://api.multi-chain.com/endpoint',
       description: 'Multi-chain endpoint',
+      mimeType: 'application/json',
     },
   },
   withError: {
@@ -127,8 +179,14 @@ const v2Responses = {
         payTo: '0x1234567890123456789012345678901234567890',
         maxTimeoutSeconds: 60,
         asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        extra: {},
       },
     ],
+    resource: {
+      url: 'https://api.example.com/error',
+      description: 'Error endpoint',
+      mimeType: 'application/json',
+    },
   },
   minimal: {
     x402Version: 2,
@@ -140,8 +198,14 @@ const v2Responses = {
         payTo: '0x1234567890123456789012345678901234567890',
         maxTimeoutSeconds: 30,
         asset: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC on mainnet
+        extra: {},
       },
     ],
+    resource: {
+      url: 'https://api.minimal.com/endpoint',
+      description: 'Minimal endpoint',
+      mimeType: 'application/json',
+    },
   },
 };
 
@@ -159,9 +223,11 @@ describe('parseV2', () => {
         'https://api.example.com/endpoint'
       );
       expect(result.data.resource?.description).toBe('A test API endpoint');
-      expect(result.data.resource?.outputSchema?.input.method).toBe('GET');
+      // V2: schema comes from extensions.bazaar, not resource.outputSchema
+      expect(result.data.extensions?.bazaar?.info?.input.method).toBe('GET');
       expect(
-        result.data.resource?.outputSchema?.input.queryParams?.query
+        result.data.extensions?.bazaar?.schema?.properties?.input?.properties
+          ?.queryParams
       ).toBeDefined();
     }
   });
@@ -171,12 +237,14 @@ describe('parseV2', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.resource?.outputSchema?.input.method).toBe('POST');
-      expect(result.data.resource?.outputSchema?.input.bodyType).toBe('json');
+      // V2: schema comes from extensions.bazaar, not resource.outputSchema
+      expect(result.data.extensions?.bazaar?.info?.input.method).toBe('POST');
+      expect(result.data.extensions?.bazaar?.info?.input.bodyType).toBe('json');
       expect(
-        result.data.resource?.outputSchema?.input.bodyFields?.message
+        result.data.extensions?.bazaar?.schema?.properties?.input?.properties
+          ?.body?.properties?.message
       ).toBeDefined();
-      expect(result.data.resource?.outputSchema?.output?.id).toBeDefined();
+      expect(result.data.extensions?.bazaar?.info?.output?.id).toBeDefined();
     }
   });
 
@@ -185,7 +253,7 @@ describe('parseV2', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.accepts?.[0]?.network).toBe('solana');
+      expect(result.data.accepts?.[0]?.network).toBe('solana:mainnet');
       expect(result.data.accepts?.[0]?.amount).toBe('1000000');
     }
   });
@@ -197,7 +265,7 @@ describe('parseV2', () => {
     if (result.success) {
       expect(result.data.accepts).toHaveLength(2);
       expect(result.data.accepts?.[0]?.network).toBe('eip155:8453');
-      expect(result.data.accepts?.[1]?.network).toBe('solana');
+      expect(result.data.accepts?.[1]?.network).toBe('solana:mainnet');
     }
   });
 
@@ -217,7 +285,9 @@ describe('parseV2', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.x402Version).toBe(2);
-      expect(result.data.resource).toBeUndefined();
+      expect(result.data.resource?.url).toBe(
+        'https://api.minimal.com/endpoint'
+      );
       expect(result.data.accepts).toHaveLength(1);
     }
   });
@@ -334,7 +404,7 @@ describe('parseV2', () => {
 });
 
 describe('V2 schema validation edge cases', () => {
-  it('should handle nested object fields in bodyFields', () => {
+  it('should handle nested object fields in bazaar schema', () => {
     const response = {
       x402Version: 2,
       accepts: [
@@ -345,21 +415,43 @@ describe('V2 schema validation edge cases', () => {
           payTo: '0x1234567890123456789012345678901234567890',
           maxTimeoutSeconds: 60,
           asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          extra: {},
         },
       ],
       resource: {
         url: 'https://api.example.com/endpoint',
-        outputSchema: {
-          input: {
-            type: 'http',
-            method: 'POST' as const,
-            bodyType: 'json' as const,
-            bodyFields: {
-              data: {
+        description: 'Test endpoint',
+        mimeType: 'application/json',
+      },
+      extensions: {
+        bazaar: {
+          info: {
+            input: {
+              type: 'http',
+              method: 'POST',
+              bodyType: 'json',
+              body: { data: { name: 'test', value: 42 } },
+            },
+          },
+          schema: {
+            type: 'object',
+            properties: {
+              input: {
                 type: 'object',
                 properties: {
-                  name: { type: 'string', required: true },
-                  value: { type: 'number' },
+                  body: {
+                    type: 'object',
+                    properties: {
+                      data: {
+                        type: 'object',
+                        properties: {
+                          name: { type: 'string' },
+                          value: { type: 'number' },
+                        },
+                        required: ['name'],
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -372,8 +464,10 @@ describe('V2 schema validation edge cases', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const bodyFields = result.data.resource?.outputSchema?.input.bodyFields;
-      expect(bodyFields?.data).toBeDefined();
+      const bodySchema =
+        result.data.extensions?.bazaar?.schema?.properties?.input?.properties
+          ?.body?.properties?.data;
+      expect(bodySchema).toBeDefined();
     }
   });
 
@@ -388,23 +482,49 @@ describe('V2 schema validation edge cases', () => {
           payTo: '0x1234567890123456789012345678901234567890',
           maxTimeoutSeconds: 60,
           asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          extra: {},
         },
       ],
       resource: {
         url: 'https://api.example.com/endpoint',
-        outputSchema: {
-          input: {
-            type: 'http',
-            method: 'POST' as const,
-            bodyType: 'json' as const,
-            bodyFields: {
-              messages: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    role: { type: 'string', enum: ['user', 'assistant'] },
-                    content: { type: 'string' },
+        description: 'Test endpoint',
+        mimeType: 'application/json',
+      },
+      extensions: {
+        bazaar: {
+          info: {
+            input: {
+              type: 'http',
+              method: 'POST',
+              bodyType: 'json',
+              body: {
+                messages: [{ role: 'user', content: 'Hello' }],
+              },
+            },
+          },
+          schema: {
+            type: 'object',
+            properties: {
+              input: {
+                type: 'object',
+                properties: {
+                  body: {
+                    type: 'object',
+                    properties: {
+                      messages: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            role: {
+                              type: 'string',
+                              enum: ['user', 'assistant'],
+                            },
+                            content: { type: 'string' },
+                          },
+                        },
+                      },
+                    },
                   },
                 },
               },
@@ -418,8 +538,10 @@ describe('V2 schema validation edge cases', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const bodyFields = result.data.resource?.outputSchema?.input.bodyFields;
-      expect(bodyFields?.messages).toBeDefined();
+      const messagesSchema =
+        result.data.extensions?.bazaar?.schema?.properties?.input?.properties
+          ?.body?.properties?.messages;
+      expect(messagesSchema).toBeDefined();
     }
   });
 
@@ -429,20 +551,26 @@ describe('V2 schema validation edge cases', () => {
       accepts: [
         {
           scheme: 'exact' as const,
-          network: 'solana-devnet',
+          network: 'solana:devnet',
           amount: '10000',
           payTo: '7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV',
           maxTimeoutSeconds: 60,
           asset: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+          extra: {},
         },
       ],
+      resource: {
+        url: 'https://api.solana-devnet.com/endpoint',
+        description: 'Solana devnet endpoint',
+        mimeType: 'application/json',
+      },
     };
 
     const result = parseV2(response);
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.accepts?.[0]?.network).toBe('solana-devnet');
+      expect(result.data.accepts?.[0]?.network).toBe('solana:devnet');
     }
   });
 });

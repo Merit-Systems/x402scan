@@ -83,7 +83,6 @@ export function normalizePaymentRequirement(
       resource: resource?.url,
       description: resource?.description,
       mimeType: resource?.mimeType,
-      outputSchema: resource?.outputSchema,
     };
   }
   return {
@@ -135,7 +134,7 @@ export function getOutputSchema(
 
   const bazaar = response.extensions?.bazaar;
   if (!bazaar) {
-    return response.resource?.outputSchema;
+    return undefined; // v2 outputSchema only comes from extensions.bazaar
   }
 
   if (bazaar.info && bazaar.schema) {
@@ -159,7 +158,7 @@ export function getOutputSchema(
     return { input: bazaar.schema as InputSchema } as OutputSchema;
   }
 
-  return response.resource?.outputSchema;
+  return undefined;
 }
 
 // NOTE(shafu): Converts DiscoveryInfo from x402/extensions/bazaar to our OutputSchema format.
