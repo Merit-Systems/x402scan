@@ -1,18 +1,22 @@
-import { ChainIdToNetwork } from 'x402/types';
+import {
+  ChainIdToNetwork,
+  HTTPRequestStructureSchema,
+  PaymentRequirementsSchema,
+  x402ResponseSchema,
+} from 'x402/types';
 import { z as z3 } from 'zod3';
 
-import { FieldDefSchema, basePaymentRequirementsSchema } from '../shared';
+import { FieldDefSchema } from '../shared';
 
 export const outputSchemaV1 = z3.object({
-  input: z3.object({
-    type: z3.literal('http'),
-    method: z3.enum(['GET', 'POST']),
-    bodyType: z3
-      .enum(['json', 'form-data', 'multipart-form-data', 'text', 'binary'])
-      .optional(),
+  input: HTTPRequestStructureSchema.omit({
+    queryParams: true,
+    bodyFields: true,
+    headerFields: true,
+  }).extend({
+    headerFields: z3.record(FieldDefSchema).optional(),
     queryParams: z3.record(FieldDefSchema).optional(),
     bodyFields: z3.record(FieldDefSchema).optional(),
-    headerFields: z3.record(FieldDefSchema).optional(),
   }),
   output: z3.record(z3.string(), z3.any()).optional().nullable(),
 });
@@ -41,23 +45,21 @@ const networkSchemaV1 = z3.union([
     .transform(v => ChainIdToNetwork[Number(v.split(':')[1])]),
 ]);
 
-export const paymentRequirementsSchemaV1 = basePaymentRequirementsSchema.extend(
-  {
-    network: networkSchemaV1,
-    maxAmountRequired: z3.string(),
-    resource: z3.string(),
-    description: z3.string(),
-    mimeType: z3.string(),
-    outputSchema: outputSchemaV1.optional(),
-  }
-);
-
-export const x402ResponseSchemaV1 = z3.object({
-  x402Version: z3.literal(1).default(1),
-  error: z3.string().optional(),
-  accepts: z3.array(paymentRequirementsSchemaV1).optional(),
-  payer: z3.string().optional(),
+export const paymentRequirementsSchemaV1 = PaymentRequirementsSchema.extend({
+  network: networkSchemaV1,
+  outputSchema: outputSchemaV1.optional(),
 });
+
+export const x402ResponseSchemaV1 = x402ResponseSchema
+  .omit({
+    error: true,
+    accepts: true,
+  })
+  .extend({
+    x402Version: z3.literal(1).default(1),
+    error: z3.string().optional(),
+    accepts: z3.array(paymentRequirementsSchemaV1).optional(),
+  });
 
 export type X402ResponseV1 = z3.infer<typeof x402ResponseSchemaV1>;
 export type PaymentRequirementsV1 = z3.infer<
