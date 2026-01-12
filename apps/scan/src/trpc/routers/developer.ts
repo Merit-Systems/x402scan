@@ -26,13 +26,16 @@ async function testSingleResource(
   };
 
   // Use specified method or try GET then POST
-  const methodsToTry = specifiedMethod ? [specifiedMethod] : (['GET', 'POST'] as const);
+  const methodsToTry = specifiedMethod
+    ? [specifiedMethod]
+    : (['GET', 'POST'] as const);
 
   for (const method of methodsToTry) {
     try {
       const response = await fetch(url, {
         method,
-        headers: method === 'POST' ? { 'Content-Type': 'application/json' } : {},
+        headers:
+          method === 'POST' ? { 'Content-Type': 'application/json' } : {},
         body: method === 'POST' ? '{}' : undefined,
         redirect: 'follow',
         signal: AbortSignal.timeout(10000),
@@ -61,7 +64,8 @@ async function testSingleResource(
       const parsed = parseX402Response(body);
       if (parsed?.success) {
         const accepts = parsed.data.accepts ?? [];
-        const description = accepts.find(a => a.description)?.description ?? null;
+        const description =
+          accepts.find(a => a.description)?.description ?? null;
         return {
           success: true as const,
           url,
@@ -189,12 +193,16 @@ export const developerRouter = createTRPCRouter({
   batchTest: publicProcedure
     .input(
       z.object({
-        resources: z.array(
-          z.object({
-            url: z.string().url(),
-            method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional(),
-          })
-        ).max(20),
+        resources: z
+          .array(
+            z.object({
+              url: z.string().url(),
+              method: z
+                .enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+                .optional(),
+            })
+          )
+          .max(20),
       })
     )
     .query(async ({ input }) => {
@@ -206,9 +214,7 @@ export const developerRouter = createTRPCRouter({
         resources: results.filter(
           (r): r is Extract<typeof r, { success: true }> => r.success
         ),
-        failed: results.filter(
-          (r): r is FailedResourceDetails => !r.success
-        ),
+        failed: results.filter((r): r is FailedResourceDetails => !r.success),
       };
     }),
 });

@@ -12,17 +12,28 @@ type HttpMethod = (typeof VALID_METHODS)[number];
  * - Prefixed with method: "POST /api/resource" or "GET https://example.com/api"
  */
 const resourceEntrySchema = z3.string().refine(
-  (val) => {
+  val => {
     // Check if it starts with a method prefix
     const parts = val.split(' ');
     if (parts.length === 2 && VALID_METHODS.includes(parts[0] as HttpMethod)) {
       const urlPart = parts[1]!;
-      return urlPart.startsWith('/') || urlPart.startsWith('https://') || urlPart.startsWith('http://');
+      return (
+        urlPart.startsWith('/') ||
+        urlPart.startsWith('https://') ||
+        urlPart.startsWith('http://')
+      );
     }
     // Otherwise must be a URL or path directly
-    return val.startsWith('/') || val.startsWith('https://') || val.startsWith('http://');
+    return (
+      val.startsWith('/') ||
+      val.startsWith('https://') ||
+      val.startsWith('http://')
+    );
   },
-  { message: 'Resource must be a full URL, a path starting with /, or prefixed with HTTP method (e.g., "POST /api/resource")' }
+  {
+    message:
+      'Resource must be a full URL, a path starting with /, or prefixed with HTTP method (e.g., "POST /api/resource")',
+  }
 );
 
 /**
@@ -75,11 +86,15 @@ export function resolveResourceUrl(resource: string, origin: string): string {
 /**
  * Resolve a resource entry to a full URL and extract method if specified.
  */
-export function resolveResourceWithMethod(resource: string, origin: string): ParsedResource {
+export function resolveResourceWithMethod(
+  resource: string,
+  origin: string
+): ParsedResource {
   const { url, method } = parseResourceEntry(resource);
-  const resolvedUrl = url.startsWith('http://') || url.startsWith('https://')
-    ? url
-    : `${origin.replace(/\/$/, '')}${url}`;
+  const resolvedUrl =
+    url.startsWith('http://') || url.startsWith('https://')
+      ? url
+      : `${origin.replace(/\/$/, '')}${url}`;
   return { url: resolvedUrl, method };
 }
 
@@ -88,7 +103,9 @@ export function resolveResourceWithMethod(resource: string, origin: string): Par
  */
 export function parseDiscoveryDocument(
   data: unknown
-): { success: true; data: X402DiscoveryDocument } | { success: false; error: string } {
+):
+  | { success: true; data: X402DiscoveryDocument }
+  | { success: false; error: string } {
   const result = x402DiscoveryDocumentSchema.safeParse(data);
 
   if (result.success) {
@@ -99,7 +116,10 @@ export function parseDiscoveryDocument(
     .map(issue => `${issue.path.join('.')}: ${issue.message}`)
     .join(', ');
 
-  return { success: false, error: `Invalid discovery document: ${errorMessage}` };
+  return {
+    success: false,
+    error: `Invalid discovery document: ${errorMessage}`,
+  };
 }
 
 /**

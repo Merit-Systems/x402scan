@@ -55,7 +55,7 @@ export interface FailedResource {
 export interface DiscoveryPanelProps {
   /** The origin being checked */
   origin: string | null;
-  /** The URL the user entered (to highlight in list) */
+  /** The URL the user entered (if not in discovery, shown separately) */
   enteredUrl?: string;
   /** Whether discovery is loading */
   isLoading: boolean;
@@ -94,13 +94,17 @@ export interface DiscoveryPanelProps {
   isBatchTestLoading?: boolean;
   /** Called when refresh is clicked */
   onRefresh?: () => void;
+  /** URLs that are already registered */
+  registeredUrls?: string[];
 }
 
 const ITEMS_PER_PAGE = 10;
 
 export function DiscoveryPanel({
   origin,
+  enteredUrl,
   isLoading,
+  source,
   resources,
   resourceCount,
   isRegisteringAll,
@@ -114,6 +118,7 @@ export function DiscoveryPanel({
   failedResources = [],
   isBatchTestLoading,
   onRefresh,
+  registeredUrls = [],
 }: DiscoveryPanelProps) {
   const [page, setPage] = useState(0);
 
@@ -130,8 +135,8 @@ export function DiscoveryPanel({
         <div>
           <h2 className="font-semibold">Registration Complete</h2>
           <p className="text-sm text-muted-foreground">
-            Successfully registered {bulkResult.registered} of {bulkResult.total}{' '}
-            resources
+            Successfully registered {bulkResult.registered} of{' '}
+            {bulkResult.total} resources
             {bulkResult.failed > 0 && (
               <span className="text-yellow-600">
                 {' '}
@@ -184,7 +189,9 @@ export function DiscoveryPanel({
                 disabled={isBatchTestLoading}
                 className="gap-1"
               >
-                <RefreshCw className={cn('size-3', isBatchTestLoading && 'animate-spin')} />
+                <RefreshCw
+                  className={cn('size-3', isBatchTestLoading && 'animate-spin')}
+                />
                 Refresh
               </Button>
             </div>
@@ -194,7 +201,10 @@ export function DiscoveryPanel({
           {isPreviewLoading ? (
             <LoadingOriginCard />
           ) : (
-            <OriginPreviewCard origin={originData} resourceCount={resourceCount} />
+            <OriginPreviewCard
+              origin={originData}
+              resourceCount={resourceCount}
+            />
           )}
 
           {/* Resources list - detailed testing UI only in test mode */}
@@ -217,56 +227,47 @@ export function DiscoveryPanel({
                 ))}
               </div>
             ) : (
-              <Accordion type="single" collapsible className="flex flex-col gap-2">
+              <Accordion
+                type="single"
+                collapsible
+                className="flex flex-col gap-2"
+              >
                 {paginatedResources.map((resourceUrl, idx) => {
-                const tested = testedResourceMap.get(resourceUrl);
+                  const tested = testedResourceMap.get(resourceUrl);
 
-                if (tested) {
-                  // Render working resource with ResourceExecutor
+                  if (tested) {
+                    // Render working resource with ResourceExecutor
+                    return (
+                      <DiscoveredResourceExecutor
+                        key={resourceUrl}
+                        resourceUrl={resourceUrl}
+                        tested={tested}
+                        idx={idx}
+                      />
+                    );
+                  }
+
+                  // Render failed resource with checklist
+                  const failedDetails = failedResourceMap.get(resourceUrl);
                   return (
-                    <DiscoveredResourceExecutor
+                    <FailedResourceCard
                       key={resourceUrl}
                       resourceUrl={resourceUrl}
-                      tested={tested}
-                      idx={idx}
+                      preview={preview}
+                      failedDetails={failedDetails}
                     />
                   );
-                }
-
-                // Render failed resource with checklist
-                const failedDetails = failedResourceMap.get(resourceUrl);
-                return (
-                  <FailedResourceCard
-                    key={resourceUrl}
-                    resourceUrl={resourceUrl}
-                    preview={preview}
-                    failedDetails={failedDetails}
-                  />
-                );
                 })}
               </Accordion>
             )
           ) : (
-            // Simple URL list for register mode
-            <div className="pl-4 border-l">
-              <ul className="flex flex-col gap-1">
-                {paginatedResources.map(resourceUrl => {
-                  const pathname = (() => {
-                    try {
-                      return new URL(resourceUrl).pathname;
-                    } catch {
-                      return resourceUrl;
-                    }
-                  })();
-                  return (
-                    <li key={resourceUrl} className="flex items-center gap-2 py-1">
-                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
-                      <span className="font-mono text-sm text-muted-foreground">{pathname}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            // Unified resource list for register mode
+            <RegisterModeResourceList
+              enteredUrl={enteredUrl}
+              discoveredResources={paginatedResources}
+              source={source}
+              registeredUrls={registeredUrls}
+            />
           )}
 
           {/* Pagination */}
@@ -475,12 +476,133 @@ function ValidationChecklist({
             ) : (
               <XCircle className="size-3 text-red-500" />
             )}
-            <span className={cn(ok ? 'text-foreground' : 'text-muted-foreground')}>
+            <span
+              className={cn(ok ? 'text-foreground' : 'text-muted-foreground')}
+            >
               {label}
             </span>
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+/** Unified resource list for register mode */
+function RegisterModeResourceList({
+  enteredUrl,
+  discoveredResources,
+  source,
+  registeredUrls,
+}: {
+  enteredUrl?: string;
+  discoveredResources: string[];
+  source?: 'dns' | 'well-known';
+  registeredUrls: string[];
+}) {
+  const [showAll, setShowAll] = useState(false);
+  const registeredSet = new Set(registeredUrls);
+  const INITIAL_LIMIT = 5;
+
+  // Build unified list: entered URL first (if exists), then discovered
+  const allResources: {
+    url: string;
+    source: 'entered' | 'dns' | 'well-known';
+    isRegistered: boolean;
+  }[] = [];
+
+  if (enteredUrl) {
+    allResources.push({
+      url: enteredUrl,
+      source: 'entered',
+      isRegistered: registeredSet.has(enteredUrl),
+    });
+  }
+
+  for (const url of discoveredResources) {
+    allResources.push({
+      url,
+      source: source ?? 'well-known',
+      isRegistered: registeredSet.has(url),
+    });
+  }
+
+  if (allResources.length === 0) return null;
+
+  const displayedResources = showAll
+    ? allResources
+    : allResources.slice(0, INITIAL_LIMIT);
+  const hasMore = allResources.length > INITIAL_LIMIT;
+
+  return (
+    <div className="border rounded-md overflow-hidden">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="bg-muted text-muted-foreground text-xs">
+            <th className="text-left px-3 py-2 font-medium">Resource</th>
+            <th className="text-left px-3 py-2 font-medium">Source</th>
+            <th className="text-left px-3 py-2 font-medium">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {displayedResources.map(
+            ({ url, source: resourceSource, isRegistered }) => {
+              const pathname = (() => {
+                try {
+                  return new URL(url).pathname;
+                } catch {
+                  return url;
+                }
+              })();
+
+              return (
+                <tr key={url} className="border-t">
+                  <td className="px-3 py-2">
+                    <span className="font-mono text-sm">{pathname}</span>
+                  </td>
+                  <td className="px-3 py-2">
+                    <span
+                      className={cn(
+                        'text-xs px-1.5 py-0.5 rounded',
+                        resourceSource === 'entered'
+                          ? 'bg-blue-500/10 text-blue-600'
+                          : 'bg-muted text-muted-foreground'
+                      )}
+                    >
+                      {resourceSource === 'entered'
+                        ? 'Manually Entered'
+                        : resourceSource === 'dns'
+                          ? '_x402 DNS TXT'
+                          : '/.well-known/x402'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2">
+                    {isRegistered ? (
+                      <span className="flex items-center gap-1 text-xs text-green-600">
+                        <CheckCircle className="size-3" />
+                        Registered
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">New</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            }
+          )}
+        </tbody>
+      </table>
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setShowAll(!showAll)}
+          className="w-full py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 border-t transition-colors"
+        >
+          {showAll
+            ? 'Show less'
+            : `Show ${allResources.length - INITIAL_LIMIT} more`}
+        </button>
+      )}
     </div>
   );
 }

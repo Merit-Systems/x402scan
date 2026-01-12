@@ -268,12 +268,20 @@ export const resourcesRouter = createTRPCRouter({
               // Continue to next method
             }
           }
-          return { success: false as const, url: resourceUrl, error: 'No 402 response' };
+          return {
+            success: false as const,
+            url: resourceUrl,
+            error: 'No 402 response',
+          };
         })
       );
 
       const successful = results.filter(
-        r => r.status === 'fulfilled' && r.value && 'success' in r.value && r.value.success
+        r =>
+          r.status === 'fulfilled' &&
+          r.value &&
+          'success' in r.value &&
+          r.value.success
       ).length;
       const failed = results.length - successful;
 
@@ -312,6 +320,34 @@ export const resourcesRouter = createTRPCRouter({
         resourceCount: discoveryResult.resources.length,
         resources: discoveryResult.resources,
         discoveryUrls: discoveryResult.discoveryUrls,
+      };
+    }),
+
+  /**
+   * Check which URLs are already registered.
+   */
+  checkRegistered: publicProcedure
+    .input(
+      z.object({
+        urls: z.array(z.string().url()).max(50),
+      })
+    )
+    .query(async ({ input }) => {
+      const registered = await scanDb.resources.findMany({
+        where: {
+          resource: {
+            in: input.urls,
+          },
+        },
+        select: {
+          resource: true,
+        },
+      });
+
+      const registeredUrls = new Set(registered.map(r => r.resource));
+      return {
+        registered: input.urls.filter(url => registeredUrls.has(url)),
+        unregistered: input.urls.filter(url => !registeredUrls.has(url)),
       };
     }),
 

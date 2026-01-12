@@ -34,12 +34,20 @@ export interface UseDiscoveryOptions {
   /** The URL to check discovery for */
   url: string;
   /** Called when bulk registration succeeds */
-  onRegisterAllSuccess?: (data: { registered: number; total: number; failed: number }) => void;
+  onRegisterAllSuccess?: (data: {
+    registered: number;
+    total: number;
+    failed: number;
+  }) => void;
   /** Called when bulk registration fails */
   onRegisterAllError?: () => void;
 }
 
-export function useDiscovery({ url, onRegisterAllSuccess, onRegisterAllError }: UseDiscoveryOptions) {
+export function useDiscovery({
+  url,
+  onRegisterAllSuccess,
+  onRegisterAllError,
+}: UseDiscoveryOptions) {
   const utils = api.useUtils();
 
   // Check if URL is valid and extract origin
@@ -68,7 +76,8 @@ export function useDiscovery({ url, onRegisterAllSuccess, onRegisterAllError }: 
     () => (discoveryQuery.data?.found ? discoveryQuery.data.resources : []),
     [discoveryQuery.data]
   );
-  const discoveryCheckComplete = !discoveryQuery.isLoading && discoveryQuery.isFetched;
+  const discoveryCheckComplete =
+    !discoveryQuery.isLoading && discoveryQuery.isFetched;
 
   // Check if the entered URL is in the discovered resources
   const enteredUrlInDiscovery = useMemo(() => {
@@ -95,7 +104,14 @@ export function useDiscovery({ url, onRegisterAllSuccess, onRegisterAllError }: 
     }
 
     return [];
-  }, [isValidUrl, isOriginOnly, discoveryFound, discoveryResources, enteredUrlInDiscovery, url]);
+  }, [
+    isValidUrl,
+    isOriginOnly,
+    discoveryFound,
+    discoveryResources,
+    enteredUrlInDiscovery,
+    url,
+  ]);
 
   // Origin preview query - runs when we have a valid URL (always, for favicon/OG)
   const previewQuery = api.developer.preview.useQuery(
@@ -106,11 +122,31 @@ export function useDiscovery({ url, onRegisterAllSuccess, onRegisterAllError }: 
     }
   );
 
+  // Extract URLs for display (string[])
+  const resourceUrls = useMemo(
+    () => effectiveResources.map(r => r.url),
+    [effectiveResources]
+  );
+  // Only the actually discovered resources (not the prepended user-entered URL)
+  const actualDiscoveredUrls = useMemo(
+    () => discoveryResources.map(r => r.url),
+    [discoveryResources]
+  );
+
   // Batch test query - runs when we have resources to test
   const batchTestQuery = api.developer.batchTest.useQuery(
     { resources: effectiveResources },
     {
       enabled: discoveryCheckComplete && effectiveResources.length > 0,
+      staleTime: 60000, // Cache for 1 min
+    }
+  );
+
+  // Check which resources are already registered
+  const registeredCheckQuery = api.public.resources.checkRegistered.useQuery(
+    { urls: resourceUrls },
+    {
+      enabled: discoveryCheckComplete && resourceUrls.length > 0,
       staleTime: 60000, // Cache for 1 min
     }
   );
@@ -147,23 +183,27 @@ export function useDiscovery({ url, onRegisterAllSuccess, onRegisterAllError }: 
     registerFromOrigin({ origin: urlOrigin });
   };
 
-  // Extract URLs for display (string[])
-  const resourceUrls = effectiveResources.map(r => r.url);
-
   return {
     // URL info
     isValidUrl,
     urlOrigin,
     isOriginOnly,
+    enteredUrlInDiscovery,
 
     // Discovery state
     discoveryQuery,
     isDiscoveryLoading: discoveryQuery.isLoading,
     discoveryFound,
-    discoverySource: discoveryQuery.data?.found ? discoveryQuery.data.source : undefined,
+    discoverySource: discoveryQuery.data?.found
+      ? discoveryQuery.data.source
+      : undefined,
     discoveryResources: resourceUrls,
+    actualDiscoveredResources: actualDiscoveredUrls,
     discoveryResourceCount: effectiveResources.length,
-    discoveryError: discoveryQuery.data?.found === false ? discoveryQuery.data.error : undefined,
+    discoveryError:
+      discoveryQuery.data?.found === false
+        ? discoveryQuery.data.error
+        : undefined,
 
     // Origin preview
     isPreviewLoading: previewQuery.isLoading,
@@ -173,6 +213,10 @@ export function useDiscovery({ url, onRegisterAllSuccess, onRegisterAllError }: 
     isBatchTestLoading: batchTestQuery.isLoading,
     testedResources: batchTestQuery.data?.resources ?? [],
     failedResources: batchTestQuery.data?.failed ?? [],
+
+    // Registration status
+    isCheckingRegistered: registeredCheckQuery.isLoading,
+    registeredUrls: registeredCheckQuery.data?.registered ?? [],
 
     // Bulk registration
     isRegisteringAll,

@@ -72,11 +72,13 @@ export const RegisterResourceForm = () => {
     isValidUrl,
     urlOrigin,
     isOriginOnly,
+    enteredUrlInDiscovery,
     isDiscoveryLoading,
     discoveryFound,
     discoverySource,
     discoveryResources,
-    discoveryResourceCount,
+    actualDiscoveredResources,
+    registeredUrls,
     isRegisteringAll,
     bulkData,
     handleRegisterAll,
@@ -460,16 +462,19 @@ export const RegisterResourceForm = () => {
             {/* Discovery Results */}
             <DiscoveryPanel
               origin={urlOrigin}
-              enteredUrl={url}
+              enteredUrl={
+                !isOriginOnly && !enteredUrlInDiscovery ? url : undefined
+              }
               isLoading={isDiscoveryLoading}
               found={discoveryFound}
               source={discoverySource}
-              resources={discoveryResources}
-              resourceCount={discoveryResourceCount}
+              resources={actualDiscoveredResources}
+              resourceCount={discoveryResources.length}
               isRegisteringAll={isRegisteringAll}
               bulkResult={bulkData}
               onRegisterAll={handleRegisterAll}
               showRegisterButton={false}
+              registeredUrls={registeredUrls}
             />
           </div>
         )}
@@ -511,7 +516,7 @@ export const RegisterResourceForm = () => {
                   Registering...
                 </>
               ) : (
-                `Register All ${discoveryResourceCount} Resources`
+                `Register All ${discoveryResources.length} Resources`
               )}
             </Button>
             {!isOriginOnly && (

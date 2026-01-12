@@ -1,10 +1,16 @@
-import { parseDiscoveryDocument, resolveResourceWithMethod } from '@/lib/x402/discovery-schema';
+import {
+  parseDiscoveryDocument,
+  resolveResourceWithMethod,
+} from '@/lib/x402/discovery-schema';
 import { getOriginFromUrl } from '@/lib/url';
 import { isLocalUrl } from '@/lib/url-helpers';
 
 import { lookupX402TxtRecord } from './dns-lookup';
 
-import type { DiscoveredResource, X402DiscoveryResult } from '@/types/discovery';
+import type {
+  DiscoveredResource,
+  X402DiscoveryResult,
+} from '@/types/discovery';
 
 const FETCH_TIMEOUT_MS = 10000;
 

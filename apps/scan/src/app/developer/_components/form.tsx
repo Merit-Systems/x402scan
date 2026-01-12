@@ -138,9 +138,7 @@ export const TestEndpointForm = () => {
                         onChange={e =>
                           setHeaders(
                             headers.map((h, i) =>
-                              i === index
-                                ? { ...h, value: e.target.value }
-                                : h
+                              i === index ? { ...h, value: e.target.value } : h
                             )
                           )
                         }
