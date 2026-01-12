@@ -40,6 +40,8 @@ export interface X402DnsLookupResult {
 export interface X402DiscoveryDocument {
   version: 1;
   resources: string[];
+  /** Optional instructions for AI agents consuming this API */
+  instructions?: string;
 }
 
 /**
@@ -51,6 +53,8 @@ export interface X402DiscoveryResult {
   /** Resources with URLs and optional methods */
   resources: DiscoveredResource[];
   discoveryUrls: string[];
+  /** Optional instructions for AI agents consuming this API */
+  instructions?: string;
   error?: string;
 }
 

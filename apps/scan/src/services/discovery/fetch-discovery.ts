@@ -51,6 +51,7 @@ export async function fetchDiscoveryDocument(
   if (dnsResult.found && dnsResult.records.length > 0) {
     const discoveryUrls = dnsResult.records.map(r => r.url);
     const allResources: DiscoveredResource[] = [];
+    let instructions: string | undefined;
     const errors: string[] = [];
 
     // Fetch documents from all DNS-specified URLs
@@ -62,6 +63,10 @@ export async function fetchDiscoveryDocument(
     for (const [i, result] of results.entries()) {
       if (result.status === 'fulfilled' && result.value.success) {
         allResources.push(...result.value.resources);
+        // Use first instructions found
+        if (!instructions && result.value.instructions) {
+          instructions = result.value.instructions;
+        }
       } else if (result.status === 'fulfilled' && !result.value.success) {
         errors.push(`${discoveryUrls[i]}: ${result.value.error}`);
       } else if (result.status === 'rejected') {
@@ -83,6 +88,7 @@ export async function fetchDiscoveryDocument(
         source: 'dns',
         resources: uniqueResources,
         discoveryUrls,
+        instructions,
       };
     }
 
@@ -102,6 +108,7 @@ export async function fetchDiscoveryDocument(
       source: 'well-known',
       resources: wellKnownResult.resources,
       discoveryUrls: [wellKnownUrl],
+      instructions: wellKnownResult.instructions,
     };
   }
 
@@ -122,7 +129,7 @@ async function fetchAndParseDocument(
   url: string,
   resolveOrigin: string
 ): Promise<
-  | { success: true; resources: DiscoveredResource[] }
+  | { success: true; resources: DiscoveredResource[]; instructions?: string }
   | { success: false; error: string }
 > {
   try {
@@ -148,7 +155,11 @@ async function fetchAndParseDocument(
       resolveResourceWithMethod(resource, resolveOrigin)
     );
 
-    return { success: true, resources: resolvedResources };
+    return {
+      success: true,
+      resources: resolvedResources,
+      instructions: parsed.data.instructions,
+    };
   } catch (error) {
     return {
       success: false,

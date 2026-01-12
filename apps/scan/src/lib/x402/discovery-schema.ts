@@ -43,6 +43,8 @@ const resourceEntrySchema = z3.string().refine(
 export const x402DiscoveryDocumentSchema = z3.object({
   version: z3.literal(1),
   resources: z3.array(resourceEntrySchema),
+  /** Optional instructions for AI agents consuming this API */
+  instructions: z3.string().optional(),
 });
 
 export interface ParsedResource {
