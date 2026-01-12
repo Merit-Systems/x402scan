@@ -207,7 +207,7 @@ export function getMaxAmount(response: ParsedX402Response): string | undefined {
 }
 
 export async function extractX402Data(response: Response): Promise<unknown> {
-  // v2 - check header first using official @x402/core/http decoder
+  // v2 - check header first using @x402/core
   const paymentRequiredHeader = response.headers.get('Payment-Required');
   if (paymentRequiredHeader) {
     try {
