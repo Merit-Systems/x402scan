@@ -1,166 +1,52 @@
-import { env } from '@/env';
-import {
-  createPaymentHeader,
-  selectPaymentRequirements,
-  type PaymentRequirementsSelector,
-} from 'x402/client';
-import {
-  ChainIdToNetwork,
-  PaymentRequirementsSchema,
-  isMultiNetworkSigner,
-  isSvmSignerWallet,
-  evm,
-  type Signer,
-  type MultiNetworkSigner,
-  type X402Config,
-  type Network,
-} from 'x402/types';
-import {
-  extractX402Data,
-  parseX402Response,
-  isV2Response,
-  normalizePaymentRequirement,
-} from './index';
+/**
+ * x402 v2 Payment-enabled fetch wrapper
+ *
+ * Simplified wrapper using the official @x402 library.
+ * Handles both v1 and v2 protocols automatically.
+ */
+export {
+  x402Client,
+  wrapFetchWithPayment,
+  x402HTTPClient,
+} from '@x402/fetch';
+
+export {
+  registerExactEvmScheme,
+  type EvmClientConfig,
+} from '@x402/evm/exact/client';
+
+export {
+  registerExactSvmScheme,
+  type SvmClientConfig,
+} from '@x402/svm/exact/client';
 
 /**
- * NOTE(shafu): wraps fetch with x402 payment support for both v1 and v2 protocols
+ * Adapts a wagmi WalletClient to the ClientEvmSigner interface
+ * expected by @x402/evm.
  *
- * v1: Payment requirements in JSON body with `accepts` array
- * v2: Payment requirements in `Payment-Required` header (base64 encoded)
+ * The main difference is that WalletClient has `account.address`
+ * while ClientEvmSigner expects `address` directly.
  */
-export const wrapFetchWithPayment = (
-  fetch: typeof globalThis.fetch,
-  walletClient: Signer | MultiNetworkSigner,
-  maxValue = BigInt(0.1 * 10 ** 6),
-  paymentRequirementsSelector: PaymentRequirementsSelector = selectPaymentRequirements
-) => {
-  const config: X402Config = {
-    svmConfig: {
-      rpcUrl: env.NEXT_PUBLIC_SOLANA_RPC_URL,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function toEvmSigner(walletClient: any) {
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    address: walletClient.account.address as `0x${string}`,
+    signTypedData: async (message: {
+      domain: Record<string, unknown>;
+      types: Record<string, unknown>;
+      primaryType: string;
+      message: Record<string, unknown>;
+    }): Promise<`0x${string}`> => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      return walletClient.signTypedData({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        account: walletClient.account,
+        domain: message.domain,
+        types: message.types,
+        primaryType: message.primaryType,
+        message: message.message,
+      }) as Promise<`0x${string}`>;
     },
   };
-
-  return async (input: RequestInfo | URL, init?: RequestInit) => {
-    const response = await fetch(input, init);
-
-    if (response.status !== 402) {
-      return response;
-    }
-
-    const rawData = await extractX402Data(response);
-    const parseResult = parseX402Response(rawData);
-
-    if (!parseResult.success) {
-      throw new Error(
-        `Failed to parse 402 response: ${parseResult.errors.join(', ')}`
-      );
-    }
-
-    const x402Response = parseResult.data;
-    const isV2 = isV2Response(x402Response);
-    const x402Version = x402Response.x402Version;
-
-    if (!x402Response.accepts || x402Response.accepts.length === 0) {
-      throw new Error('No payment requirements found in 402 response');
-    }
-
-    const originalAccepts = x402Response.accepts;
-    const v2Resource = isV2 ? x402Response.resource : undefined;
-    const v2Extensions = isV2 ? x402Response.extensions : undefined;
-
-    const parsedPaymentRequirements = originalAccepts.map(accept => {
-      const normalized = normalizePaymentRequirement(accept, v2Resource);
-      return PaymentRequirementsSchema.parse(normalized);
-    });
-
-    let network: Network | Network[] | undefined;
-    if (isMultiNetworkSigner(walletClient)) {
-      network = undefined;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-    } else if (evm.isSignerWallet(walletClient as any)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-      const chainId = (walletClient as any).chain?.id as number | undefined;
-      if (chainId !== undefined && chainId in ChainIdToNetwork) {
-        network = ChainIdToNetwork[chainId];
-      }
-    } else if (isSvmSignerWallet(walletClient)) {
-      network = ['solana', 'solana-devnet'] as Network[];
-    }
-
-    const selectedPaymentRequirements = paymentRequirementsSelector(
-      parsedPaymentRequirements,
-      network,
-      'exact'
-    );
-
-    const selectedIndex = parsedPaymentRequirements.findIndex(
-      pr => pr === selectedPaymentRequirements
-    );
-    const originalSelectedAccept = originalAccepts[selectedIndex];
-
-    if (BigInt(selectedPaymentRequirements.maxAmountRequired) > maxValue) {
-      throw new Error(
-        `Payment amount ${selectedPaymentRequirements.maxAmountRequired} exceeds maximum allowed ${maxValue}`
-      );
-    }
-
-    const v1PaymentHeader = await createPaymentHeader(
-      walletClient,
-      x402Version,
-      selectedPaymentRequirements,
-      config
-    );
-
-    // NOTE(shafu): for v2, reconstruct the header
-    let paymentHeader: string;
-    if (isV2 && originalSelectedAccept) {
-      try {
-        const decodedV1Header = JSON.parse(atob(v1PaymentHeader)) as {
-          payload?: {
-            signature?: string;
-            authorization?: Record<string, unknown>;
-          };
-        };
-
-        const v2PaymentPayload = {
-          x402Version: 2,
-          resource: v2Resource,
-          accepted: originalSelectedAccept,
-          payload: decodedV1Header.payload,
-          ...(v2Extensions ? { extensions: v2Extensions } : {}),
-        };
-
-        paymentHeader = btoa(JSON.stringify(v2PaymentPayload));
-      } catch (error) {
-        console.error(
-          '[wrapFetchWithPayment] Failed to construct v2 header:',
-          error
-        );
-        paymentHeader = v1PaymentHeader;
-      }
-    } else {
-      paymentHeader = v1PaymentHeader;
-    }
-
-    const existingHeaders = new Headers(init?.headers);
-    if (
-      existingHeaders.has('X-PAYMENT') ||
-      existingHeaders.has('PAYMENT-SIGNATURE')
-    ) {
-      throw new Error('Payment already attempted');
-    }
-
-    const paymentHeaderName = isV2 ? 'PAYMENT-SIGNATURE' : 'X-PAYMENT';
-
-    const newInit: RequestInit = {
-      ...init,
-      headers: {
-        ...Object.fromEntries(existingHeaders.entries()),
-        [paymentHeaderName]: paymentHeader,
-      },
-    };
-
-    const secondResponse = await fetch(input, newInit);
-    return secondResponse;
-  };
-};
+}
