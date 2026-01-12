@@ -3,7 +3,12 @@ import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
-import { parseX402Response } from '@/lib/x402/schema';
+import {
+  parseX402Response,
+  getOutputSchema,
+  extractX402Data,
+  getDescription,
+} from '@/lib/x402';
 import { scrapeOriginData } from '@/services/scraper';
 
 interface FailedResourceDetails {
@@ -63,9 +68,7 @@ async function testSingleResource(
 
       const parsed = parseX402Response(body);
       if (parsed?.success) {
-        const accepts = parsed.data.accepts ?? [];
-        const description =
-          accepts.find(a => a.description)?.description ?? null;
+        const description = getDescription(parsed.data) ?? null;
         return {
           success: true as const,
           url,
@@ -155,34 +158,27 @@ export const developerRouter = createTRPCRouter({
         redirect: 'follow',
       });
 
-      const text = await response.text();
-      let body: unknown = null;
-      try {
-        body = text ? JSON.parse(text) : null;
-      } catch {
-        body = text;
-      }
-
       const hdrs: Record<string, string> = {};
       response.headers.forEach((v, k) => (hdrs[k] = v));
+
+      const x402Data = await extractX402Data(response);
 
       const result = {
         ok: response.ok,
         status: response.status,
         statusText: response.statusText,
         headers: hdrs,
-        body,
+        body: x402Data,
       };
 
-      const parsed = parseX402Response(result.body);
+      const parsed = parseX402Response(x402Data);
       const info = (() => {
         if (!parsed?.success)
           return { hasAccepts: false, hasInputSchema: false };
         const accepts = parsed.data.accepts ?? [];
         const hasAccepts = accepts.length > 0;
-        const hasInputSchema = Boolean(
-          accepts.find(accept => accept.outputSchema)?.outputSchema?.input
-        );
+        const outputSchema = getOutputSchema(parsed.data);
+        const hasInputSchema = Boolean(outputSchema?.input);
         return { hasAccepts, hasInputSchema };
       })();
 

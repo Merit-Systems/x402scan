@@ -1,6 +1,6 @@
 import { scanDb } from '@x402scan/scan-db';
 
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import type { ParsedX402Response } from '@/lib/x402';
 
 export const upsertResourceResponse = async (
   resourceId: string,

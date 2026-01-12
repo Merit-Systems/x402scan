@@ -26,7 +26,8 @@ import {
 } from '@/app/developer/_components/dummy';
 
 import type { Methods } from '@/types/x402';
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import type { ParsedX402Response } from '@/lib/x402';
+import { getOutputSchema } from '@/lib/x402';
 import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 
 export interface OriginPreview {
@@ -336,8 +337,9 @@ function DiscoveredResourceExecutor({
   tested: TestedResource;
   idx: number;
 }) {
+  const outputSchema = getOutputSchema(tested.parsed);
   const method =
-    (tested.parsed.accepts?.[0]?.outputSchema?.input?.method?.toUpperCase() as Methods) ??
+    (outputSchema?.input?.method?.toUpperCase() as Methods) ??
     (tested.method as Methods);
 
   return (

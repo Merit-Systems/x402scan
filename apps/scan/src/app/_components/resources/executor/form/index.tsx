@@ -23,8 +23,12 @@ import { ResourceFetch } from '../../../resource-fetch';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
-import type { FieldDefinition, FieldValue, Methods } from '@/types/x402';
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import { Methods, type FieldDefinition, type FieldValue } from '@/types/x402';
+import {
+  normalizeChainId,
+  type ParsedX402Response,
+  type InputSchema,
+} from '@/lib/x402';
 import type { X402FetchResponse } from '@/app/_hooks/x402/types';
 import type { JsonValue } from '@/components/ai-elements/json-viewer';
 
@@ -35,11 +39,64 @@ interface PropertyDefinition {
   isRequired: boolean;
 }
 
-type Accept = NonNullable<ParsedX402Response['accepts']>[number];
+interface JsonSchema { properties?: Record<string, unknown>; required?: string[] }
+
+function extractFieldsFromSchema(
+  inputSchema: InputSchema,
+  method: Methods,
+  fieldType: 'query' | 'body'
+): FieldDefinition[] {
+  const schema = inputSchema as Record<string, unknown>;
+  const v2Body = schema.body as JsonSchema | undefined;
+
+  // Check for v2 JSON Schema format (has properties at top level or nested)
+  const hasV2QuerySchema =
+    inputSchema.queryParams &&
+    typeof inputSchema.queryParams === 'object' &&
+    'properties' in (inputSchema.queryParams as object);
+  const hasV2BodySchema =
+    v2Body && typeof v2Body === 'object' && 'properties' in v2Body;
+  const hasV2RawSchema =
+    !inputSchema.queryParams &&
+    !inputSchema.bodyFields &&
+    'properties' in schema;
+
+  if (fieldType === 'query') {
+    if (hasV2QuerySchema) {
+      const qs = inputSchema.queryParams as JsonSchema;
+      return getFields(qs.properties, qs.required);
+    }
+    if (inputSchema.queryParams) {
+      return getFields(inputSchema.queryParams);
+    }
+    if (hasV2RawSchema && method === Methods.GET) {
+      return getFields(
+        (schema as JsonSchema).properties,
+        (schema as JsonSchema).required
+      );
+    }
+    return [];
+  }
+
+  // fieldType === 'body'
+  if (hasV2BodySchema && method !== Methods.GET) {
+    return getFields(v2Body.properties, v2Body.required);
+  }
+  if (inputSchema.bodyFields) {
+    return getFields(inputSchema.bodyFields);
+  }
+  if (hasV2RawSchema && method !== Methods.GET) {
+    return getFields(
+      (schema as JsonSchema).properties,
+      (schema as JsonSchema).required
+    );
+  }
+  return [];
+}
 
 interface Props {
   x402Response: ParsedX402Response;
-  inputSchema: NonNullable<Accept['outputSchema']>['input'];
+  inputSchema: InputSchema;
   maxAmountRequired: bigint;
   method: Methods;
   resource: string;
@@ -53,12 +110,13 @@ export function Form({
   resource,
 }: Props) {
   const queryFields = useMemo(
-    () => getFields(inputSchema.queryParams),
-    [inputSchema]
+    () => extractFieldsFromSchema(inputSchema, method, 'query'),
+    [inputSchema, method]
   );
+
   const bodyFields = useMemo(
-    () => getFields(inputSchema.bodyFields),
-    [inputSchema]
+    () => extractFieldsFromSchema(inputSchema, method, 'body'),
+    [inputSchema, method]
   );
 
   const [queryValues, setQueryValues] = useState<Record<string, FieldValue>>(
@@ -118,23 +176,36 @@ export function Form({
 
   const bodyEntries = useMemo(
     () =>
-      Object.entries(bodyValues).reduce<[string, FieldValue][]>(
-        (acc, [key, value]) => {
-          if (Array.isArray(value)) {
-            if (value.length > 0) {
-              acc.push([key, value]);
-            }
-          } else if (typeof value === 'string') {
-            const trimmed = value.trim();
-            if (trimmed.length > 0) {
+      Object.entries(bodyValues).reduce<
+        [string, FieldValue | number | boolean][]
+      >((acc, [key, value]) => {
+        // Find the field definition to get the type
+        const field = bodyFields.find(f => f.name === key);
+        const fieldType = field?.type;
+
+        if (Array.isArray(value)) {
+          if (value.length > 0) {
+            acc.push([key, value]);
+          }
+        } else if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (trimmed.length > 0) {
+            // Convert based on field type
+            if (fieldType === 'number' || fieldType === 'integer') {
+              const num = Number(trimmed);
+              if (!isNaN(num)) {
+                acc.push([key, num]);
+              }
+            } else if (fieldType === 'boolean') {
+              acc.push([key, trimmed === 'true']);
+            } else {
               acc.push([key, trimmed]);
             }
           }
-          return acc;
-        },
-        []
-      ),
-    [bodyValues]
+        }
+        return acc;
+      }, []),
+    [bodyValues, bodyFields]
   );
 
   const reconstructedBody = reconstructNestedObject(
@@ -214,23 +285,40 @@ export function Form({
         </div>
       )}
 
-      <ResourceFetch
-        chains={
-          (x402Response.accepts
-            ?.map(accept => accept.network)
-            .filter(network =>
-              (SUPPORTED_CHAINS as readonly string[]).includes(network!)
-            ) ?? []) as SupportedChain[]
+      {(() => {
+        const networks = x402Response.accepts?.map(a => a.network ?? '') ?? [];
+        const normalized = networks.map(n => normalizeChainId(n));
+        const supported = normalized.filter(n =>
+          (SUPPORTED_CHAINS as readonly string[]).includes(n)
+        ) as SupportedChain[];
+
+        if (supported.length === 0) {
+          return (
+            <div className="text-sm text-muted-foreground p-3 bg-muted rounded-md">
+              No supported payment networks found.
+              {networks.length > 0 && (
+                <span className="block text-xs mt-1">
+                  Networks in response: {networks.join(', ')}
+                </span>
+              )}
+            </div>
+          );
         }
-        allRequiredFieldsFilled={allRequiredFieldsFilled}
-        maxAmountRequired={maxAmountRequired}
-        targetUrl={targetUrl}
-        requestInit={requestInit}
-        options={{
-          onSuccess: data => setData(data),
-          onError: error => setError(error),
-        }}
-      />
+
+        return (
+          <ResourceFetch
+            chains={supported}
+            allRequiredFieldsFilled={allRequiredFieldsFilled}
+            maxAmountRequired={maxAmountRequired}
+            targetUrl={targetUrl}
+            requestInit={requestInit}
+            options={{
+              onSuccess: data => setData(data),
+              onError: error => setError(error),
+            }}
+          />
+        );
+      })()}
 
       {error && (
         <p className="text-xs text-red-600 bg-red-50 p-3 rounded-md">
@@ -476,13 +564,14 @@ function FieldInput({
 }
 
 function getFields(
-  record: Record<string, unknown> | null | undefined
+  record: Record<string, unknown> | null | undefined,
+  requiredFields?: string[]
 ): FieldDefinition[] {
   if (!record) {
     return [];
   }
 
-  return expandFields(record);
+  return expandFields(record, '', requiredFields);
 }
 
 function expandFields(
@@ -591,7 +680,7 @@ function isValidFieldValue(value: FieldValue): boolean {
 }
 
 function reconstructNestedObject(
-  flatObject: Record<string, FieldValue>
+  flatObject: Record<string, FieldValue | number | boolean>
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 

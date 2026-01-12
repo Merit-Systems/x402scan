@@ -51,7 +51,7 @@
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "db:generate": {
-      "outputs": ["generated/**"]
+      "cache": false
     },
     "db:migrate": {
       "cache": false,
