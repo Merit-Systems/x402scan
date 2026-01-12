@@ -1,5 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { parseV2 } from './parser';
+import { parseX402Response, isV2Response } from '../index';
+
+// Helper to parse and narrow to V2 type for tests
+function parseV2(data: unknown) {
+  const result = parseX402Response(data);
+  if (!result.success) {
+    return result;
+  }
+  if (!isV2Response(result.data)) {
+    return { success: false as const, errors: ['Not a V2 response'] };
+  }
+  return { success: true as const, data: result.data };
+}
 
 // Sample V2 responses for testing
 const v2Responses = {

@@ -5,7 +5,7 @@ export * from './v2';
 export { fetchWithProxy } from './proxy-fetch';
 
 import {
-  parseV1,
+  x402ResponseSchemaV1,
   paymentRequirementsSchemaV1,
   outputSchemaV1,
   type X402ResponseV1,
@@ -13,7 +13,7 @@ import {
   type OutputSchemaV1,
 } from './v1';
 import {
-  parseV2,
+  x402ResponseSchemaV2,
   paymentRequirementsSchemaV2,
   type X402ResponseV2,
   type PaymentRequirementsV2,
@@ -101,7 +101,16 @@ export type ParsedX402Response = X402ResponseV1 | X402ResponseV2;
 export function parseX402Response(
   data: unknown
 ): ParseResult<ParsedX402Response> {
-  return isV2Response(data) ? parseV2(data) : parseV1(data);
+  const schema = isV2Response(data) ? x402ResponseSchemaV2 : x402ResponseSchemaV1;
+  const result = schema.safeParse(data);
+
+  if (!result.success) {
+    return {
+      success: false,
+      errors: result.error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
+    };
+  }
+  return { success: true, data: result.data as ParsedX402Response };
 }
 
 /**

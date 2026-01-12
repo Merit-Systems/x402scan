@@ -1,11 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { parseV1 } from './parser';
-import type { X402ResponseV1 } from './schema';
+import { parseX402Response, getOutputSchema } from '../index';
 
-// Local helper for V1 tests
-function getOutputSchema(response: X402ResponseV1) {
-  return response.accepts?.[0]?.outputSchema;
-}
+// Alias for v1 tests
+const parseV1 = parseX402Response;
 
 // Raw bodies from the test data file
 const rawBodies = [
