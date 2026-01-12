@@ -29,8 +29,8 @@
       "schedule": "*/1 * * * *"
     },
     {
-      "path": "/api/resources/sync",
-      "schedule": "*/1 * * * *"
+      "path": "/api/resources/sync?skip=coinbase",
+      "schedule": "*/10 * * * *"
     },
     {
       "path": "/api/resources/label",

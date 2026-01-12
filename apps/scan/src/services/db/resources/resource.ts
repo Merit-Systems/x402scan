@@ -59,7 +59,18 @@ export const upsertResourceSchema = z.object({
       ]),
       payTo: mixedAddressSchema,
       description: z.string(),
-      maxAmountRequired: z.string(),
+      maxAmountRequired: z.string().refine(
+        v => {
+          if (!v || v.trim() === '') return false;
+          try {
+            BigInt(v);
+            return true;
+          } catch {
+            return false;
+          }
+        },
+        { message: 'maxAmountRequired must be a valid numeric string' }
+      ),
       mimeType: z.string(),
       maxTimeoutSeconds: z.number(),
       asset: z.string(),
