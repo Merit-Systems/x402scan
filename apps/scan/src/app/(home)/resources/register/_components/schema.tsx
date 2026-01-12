@@ -96,45 +96,34 @@ const schemaV2 = `type X402Response = {
     x402Version: 2,
     error?: string,
     accepts?: Array<Accepts>,
-    payer?: string,
-    resource?: Resource
+    resource?: Resource,
+    extensions?: Extensions
 }
 
 type Accepts = {
     scheme: "exact",
-    network: string,  // Chain ID Example for Base: "eip155:8453"
+    network: string,  // CAIP-2 format. Example for Base: "eip155:8453"
     amount: string,   // V2 uses "amount" instead of "maxAmountRequired"
     payTo: string,
     maxTimeoutSeconds: number,
     asset: string,
-    extra?: Record<string, any>
+    extra: Record<string, any>  // Required in V2
 }
 
 type Resource = {
     url: string,
-    description?: string,
-    mimeType?: string,
-    outputSchema?: OutputSchema  // x402scan extension for UI invocation
+    description: string,
+    mimeType: string
 }
 
-type OutputSchema = {
-    input: {
-        type: "http",
-        method: "GET" | "POST",
-        bodyType?: "json" | "form-data" | "multipart-form-data" | "text" | "binary",
-        queryParams?: Record<string, FieldDef>,
-        bodyFields?: Record<string, FieldDef>,
-        headerFields?: Record<string, FieldDef>
-    },
-    output?: Record<string, any>
-}
-
-type FieldDef = {
-    type?: string,
-    required?: boolean | string[],
-    description?: string,
-    enum?: string[],
-    properties?: Record<string, FieldDef>,
-    items?: FieldDef
+// Bazaar extension for discoverable APIs (x402scan uses this for UI)
+type Extensions = {
+    bazaar?: {
+        info?: {
+            input: any,   // Example request data
+            output?: any  // Example response data
+        },
+        schema?: any      // JSON Schema for input/output validation
+    }
 }
 `;

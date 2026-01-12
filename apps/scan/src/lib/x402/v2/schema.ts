@@ -1,8 +1,4 @@
-import type {
-  Network,
-  PaymentRequired,
-  PaymentRequirements,
-} from '@x402/core/types';
+import type { Network, PaymentRequirements } from '@x402/core/types';
 import { z as z3 } from 'zod3';
 
 // NOTE(shafu): this was changed in V2, it does not support network names like base
@@ -16,8 +12,6 @@ const resourceSchemaV2 = z3.object({
   description: z3.string(),
   mimeType: z3.string(),
 });
-
-export type ResourceV2 = PaymentRequired['resource'];
 
 export const paymentRequirementsSchemaV2 = z3.object({
   scheme: z3.string(),
@@ -53,12 +47,3 @@ export const x402ResponseSchemaV2 = z3.object({
 
 export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
 export type PaymentRequirementsV2 = PaymentRequirements;
-
-export type V2Accept = PaymentRequirementsV2 & {
-  maxAmountRequired?: string;
-  resource?: string;
-  description?: string;
-  mimeType?: string;
-};
-
-export type V2Resource = Partial<ResourceV2>;

@@ -101,7 +101,9 @@ export type ParsedX402Response = X402ResponseV1 | X402ResponseV2;
 export function parseX402Response(
   data: unknown
 ): ParseResult<ParsedX402Response> {
-  const schema = isV2Response(data) ? x402ResponseSchemaV2 : x402ResponseSchemaV1;
+  const schema = isV2Response(data)
+    ? x402ResponseSchemaV2
+    : x402ResponseSchemaV1;
   const result = schema.safeParse(data);
 
   if (!result.success) {
