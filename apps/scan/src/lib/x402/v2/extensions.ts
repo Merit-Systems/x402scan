@@ -9,21 +9,25 @@ export function extractBazaarInfo(
   schema: unknown
 ): OutputSchemaV1 {
   const input = info.input;
-  const hasEmptyBody =
-    input &&
-    'body' in input &&
-    input.body &&
-    typeof input.body === 'object' &&
-    Object.keys(input.body).length === 0;
 
-  if (!hasEmptyBody || !schema) {
+  const bodyNeedsSchema =
+    !input ||
+    !('body' in input) ||
+    !input.body ||
+    typeof input.body !== 'object' ||
+    !('properties' in input.body);
+
+  if (!bodyNeedsSchema || !schema) {
     return info;
   }
 
   const bodySchema = (schema as BazaarSchema).properties?.input?.properties
     ?.body;
   if (bodySchema && 'properties' in bodySchema) {
-    return { ...info, input: { ...input, body: bodySchema } } as OutputSchemaV1;
+    return {
+      ...info,
+      input: { ...input, body: bodySchema },
+    } as OutputSchemaV1;
   }
 
   return info;
