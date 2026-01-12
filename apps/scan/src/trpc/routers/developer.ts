@@ -8,6 +8,7 @@ import {
   getOutputSchema,
   extractX402Data,
   getDescription,
+  isV2Response,
 } from '@/lib/x402';
 import { scrapeOriginData } from '@/services/scraper';
 
@@ -46,12 +47,19 @@ async function testSingleResource(
         signal: AbortSignal.timeout(10000),
       });
 
+      // Clone response so we can read headers and body separately
+      const clonedResponse = response.clone();
+
+      // Extract x402 data (checks Payment-Required header for v2, then body for v1)
+      const x402Data = await extractX402Data(clonedResponse);
+
+      // Also read raw body for error reporting
       const text = await response.text();
-      let body: unknown = null;
+      let rawBody: unknown = null;
       try {
-        body = text ? JSON.parse(text) : null;
+        rawBody = text ? JSON.parse(text) : null;
       } catch {
-        body = text;
+        rawBody = text;
       }
 
       if (response.status !== 402) {
@@ -61,12 +69,12 @@ async function testSingleResource(
           error: `Expected 402, got ${response.status}`,
           status: response.status,
           statusText: response.statusText,
-          body,
+          body: rawBody,
         };
         continue;
       }
 
-      const parsed = parseX402Response(body);
+      const parsed = parseX402Response(x402Data);
       if (parsed?.success) {
         const description = getDescription(parsed.data) ?? null;
         return {
@@ -77,13 +85,17 @@ async function testSingleResource(
           parsed: parsed.data,
         };
       } else {
+        // For debugging: include both x402Data and rawBody in error
+        const errorBody = isV2Response(x402Data)
+          ? { x402Data, rawBody }
+          : rawBody;
         lastError = {
           success: false,
           url,
           error: 'Invalid x402 response format',
           status: response.status,
           statusText: response.statusText,
-          body,
+          body: errorBody,
         };
       }
     } catch (err) {

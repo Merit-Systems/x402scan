@@ -237,13 +237,29 @@ export function DiscoveryPanel({
                   const tested = testedResourceMap.get(resourceUrl);
 
                   if (tested) {
-                    // Render working resource with ResourceExecutor
+                    // Check if we have a valid schema for ResourceExecutor
+                    const outputSchema = getOutputSchema(tested.parsed);
+                    const hasValidSchema = Boolean(outputSchema?.input);
+
+                    if (hasValidSchema) {
+                      // Render working resource with ResourceExecutor
+                      return (
+                        <DiscoveredResourceExecutor
+                          key={resourceUrl}
+                          resourceUrl={resourceUrl}
+                          tested={tested}
+                          idx={idx}
+                        />
+                      );
+                    }
+
+                    // x402 parses but no input schema - show as incomplete
                     return (
-                      <DiscoveredResourceExecutor
+                      <FailedResourceCard
                         key={resourceUrl}
                         resourceUrl={resourceUrl}
-                        tested={tested}
-                        idx={idx}
+                        preview={preview}
+                        testedResponse={tested}
                       />
                     );
                   }
@@ -364,10 +380,13 @@ function FailedResourceCard({
   resourceUrl,
   preview,
   failedDetails,
+  testedResponse,
 }: {
   resourceUrl: string;
   preview?: OriginPreview | null;
   failedDetails?: FailedResource;
+  /** If provided, x402 parsed successfully but is missing schema */
+  testedResponse?: TestedResource;
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const [showRawResponse, setShowRawResponse] = useState(false);
@@ -380,9 +399,20 @@ function FailedResourceCard({
     }
   })();
 
-  // Determine checklist status based on error details
-  const returns402 = failedDetails?.status === 402;
-  const errorMessage = failedDetails?.error ?? 'Unknown error';
+  // If we have a tested response, x402 parsed but missing schema
+  const x402Parsed = Boolean(testedResponse);
+  const hasAccepts = x402Parsed
+    ? Boolean(testedResponse?.parsed?.accepts?.length)
+    : false;
+  const outputSchema = testedResponse ? getOutputSchema(testedResponse.parsed) : null;
+  const hasInputSchema = Boolean(outputSchema?.input);
+  const hasOutputSchema = Boolean(outputSchema?.output);
+
+  // Determine checklist status based on error details or tested response
+  const returns402 = x402Parsed || failedDetails?.status === 402;
+  const errorMessage = x402Parsed
+    ? 'Missing input schema'
+    : (failedDetails?.error ?? 'Unknown error');
 
   return (
     <div className="pl-4 border-l pt-4 relative">
@@ -420,17 +450,17 @@ function FailedResourceCard({
             <ValidationChecklist
               checks={[
                 { label: 'Returns 402', ok: returns402 },
-                { label: 'x402 parses', ok: false },
-                { label: 'Has accepts', ok: false },
-                { label: 'Input schema', ok: false },
-                { label: 'Output schema', ok: false },
+                { label: 'x402 parses', ok: x402Parsed },
+                { label: 'Has accepts', ok: hasAccepts },
+                { label: 'Input schema', ok: hasInputSchema },
+                { label: 'Output schema', ok: hasOutputSchema },
                 { label: 'OG image', ok: Boolean(preview?.ogImages?.[0]?.url) },
                 { label: 'Favicon', ok: Boolean(preview?.favicon) },
               ]}
             />
 
             {/* Raw response - nested collapsible */}
-            {failedDetails?.body !== undefined && (
+            {(failedDetails?.body !== undefined || testedResponse?.parsed) && (
               <div className="border rounded-md bg-muted/30">
                 <button
                   type="button"
@@ -447,9 +477,11 @@ function FailedResourceCard({
                 </button>
                 {showRawResponse && (
                   <pre className="text-xs overflow-auto max-h-48 bg-background p-2 mx-2 mb-2 rounded border">
-                    {typeof failedDetails.body === 'string'
-                      ? failedDetails.body
-                      : JSON.stringify(failedDetails.body, null, 2)}
+                    {testedResponse?.parsed
+                      ? JSON.stringify(testedResponse.parsed, null, 2)
+                      : typeof failedDetails?.body === 'string'
+                        ? failedDetails.body
+                        : JSON.stringify(failedDetails?.body, null, 2)}
                   </pre>
                 )}
               </div>
