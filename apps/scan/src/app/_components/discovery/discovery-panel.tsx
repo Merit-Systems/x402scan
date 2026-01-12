@@ -197,53 +197,76 @@ export function DiscoveryPanel({
             <OriginPreviewCard origin={originData} resourceCount={resourceCount} />
           )}
 
-          {/* Resources list using ResourceExecutor */}
-          {isBatchTestLoading ? (
-            <div className="flex flex-col gap-2">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="pl-4 border-l pt-4 relative">
-                  <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border" />
-                  <Card className="overflow-hidden">
-                    <CardHeader className="bg-muted px-4 py-2">
-                      <div className="flex items-center gap-2">
-                        <Skeleton className="w-10 h-5" />
-                        <Skeleton className="w-48 h-4" />
-                      </div>
-                      <Skeleton className="w-full h-3 mt-2" />
-                    </CardHeader>
-                  </Card>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <Accordion type="single" collapsible className="flex flex-col gap-2">
-              {paginatedResources.map((resourceUrl, idx) => {
-              const tested = testedResourceMap.get(resourceUrl);
+          {/* Resources list - detailed testing UI only in test mode */}
+          {isTestMode ? (
+            isBatchTestLoading ? (
+              <div className="flex flex-col gap-2">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="pl-4 border-l pt-4 relative">
+                    <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border" />
+                    <Card className="overflow-hidden">
+                      <CardHeader className="bg-muted px-4 py-2">
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="w-10 h-5" />
+                          <Skeleton className="w-48 h-4" />
+                        </div>
+                        <Skeleton className="w-full h-3 mt-2" />
+                      </CardHeader>
+                    </Card>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Accordion type="single" collapsible className="flex flex-col gap-2">
+                {paginatedResources.map((resourceUrl, idx) => {
+                const tested = testedResourceMap.get(resourceUrl);
 
-              if (tested) {
-                // Render working resource with ResourceExecutor
+                if (tested) {
+                  // Render working resource with ResourceExecutor
+                  return (
+                    <DiscoveredResourceExecutor
+                      key={resourceUrl}
+                      resourceUrl={resourceUrl}
+                      tested={tested}
+                      idx={idx}
+                    />
+                  );
+                }
+
+                // Render failed resource with checklist
+                const failedDetails = failedResourceMap.get(resourceUrl);
                 return (
-                  <DiscoveredResourceExecutor
+                  <FailedResourceCard
                     key={resourceUrl}
                     resourceUrl={resourceUrl}
-                    tested={tested}
-                    idx={idx}
+                    preview={preview}
+                    failedDetails={failedDetails}
                   />
                 );
-              }
-
-              // Render failed resource with checklist
-              const failedDetails = failedResourceMap.get(resourceUrl);
-              return (
-                <FailedResourceCard
-                  key={resourceUrl}
-                  resourceUrl={resourceUrl}
-                  preview={preview}
-                  failedDetails={failedDetails}
-                />
-              );
-              })}
-            </Accordion>
+                })}
+              </Accordion>
+            )
+          ) : (
+            // Simple URL list for register mode
+            <div className="pl-4 border-l">
+              <ul className="flex flex-col gap-1">
+                {paginatedResources.map(resourceUrl => {
+                  const pathname = (() => {
+                    try {
+                      return new URL(resourceUrl).pathname;
+                    } catch {
+                      return resourceUrl;
+                    }
+                  })();
+                  return (
+                    <li key={resourceUrl} className="flex items-center gap-2 py-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
+                      <span className="font-mono text-sm text-muted-foreground">{pathname}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           )}
 
           {/* Pagination */}
