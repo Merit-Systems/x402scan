@@ -1,7 +1,6 @@
 import { USDC_ADDRESS } from '../utils';
 
-import { Chain } from '@/types/chain';
-
+import type { Chain } from '@/types/chain';
 import type { Token } from '@/types/token';
 
 export const usdc = (chain: Chain): Token => ({
@@ -12,5 +11,3 @@ export const usdc = (chain: Chain): Token => ({
   chain: chain,
   address: USDC_ADDRESS[chain],
 });
-
-export const BASE_USDC = usdc(Chain.BASE);

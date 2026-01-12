@@ -12,12 +12,28 @@ import { usdc } from '@/lib/tokens/usdc';
 import { Chain, CHAIN_ICONS, CHAIN_LABELS } from '@/types/chain';
 import { WithdrawEVM } from './evm';
 import { WithdrawSolana } from './svm';
+import { WithdrawSuccess } from './success';
 
 export const Withdraw: React.FC = () => {
   const [toAddress, setToAddress] = useState('');
   const [amount, setAmount] = useState(0);
+  const [isSuccessful, setIsSuccessful] = useState(false);
 
   const { chain } = useWalletChain();
+
+  if (isSuccessful) {
+    return (
+      <WithdrawSuccess
+        amount={amount}
+        toAddress={toAddress}
+        onReset={() => {
+          setIsSuccessful(false);
+          setToAddress('');
+          setAmount(0);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -49,23 +65,27 @@ export const Withdraw: React.FC = () => {
       <div className="flex flex-col gap-1">
         <span className="font-medium text-sm">Address</span>
         <Input
-          placeholder={chain === Chain.BASE ? '0x...' : 'Solana Address'}
+          placeholder={chain === Chain.SOLANA ? 'Solana Address' : '0x...'}
           value={toAddress}
           onChange={e => setToAddress(e.target.value)}
           className="border-2 shadow-none placeholder:text-muted-foreground/60 font-mono"
         />
       </div>
-      {chain === Chain.BASE ? (
+      {chain === Chain.SOLANA ? (
+        <WithdrawSolana
+          amount={amount}
+          toAddress={toAddress}
+          onSuccess={() => {
+            setIsSuccessful(true);
+          }}
+        />
+      ) : (
         <WithdrawEVM
           amount={amount}
           toAddress={toAddress}
-          setAmount={setAmount}
-        />
-      ) : (
-        <WithdrawSolana
-          amount={amount}
-          setAmount={setAmount}
-          toAddress={toAddress}
+          onSuccess={() => {
+            setIsSuccessful(true);
+          }}
         />
       )}
     </div>

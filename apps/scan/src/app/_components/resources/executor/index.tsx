@@ -18,8 +18,6 @@ import { cn } from '@/lib/utils';
 import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
 import type { Resources, Tag } from '@x402scan/scan-db';
-import { HealthIndicator } from '@/app/_components/health/indicator';
-import { api } from '@/trpc/client';
 
 interface Props {
   resource: Resources;
@@ -41,18 +39,6 @@ export const ResourceExecutor: React.FC<Props> = ({
   hideOrigin = false,
   isFlat = false,
 }) => {
-  const { data: resourceMetrics } = api.public.resources.getMetrics.useQuery(
-    {
-      resourceId: resource.id,
-    },
-    {
-      enabled:
-        !!response &&
-        (response.accepts?.length ?? 0) > 0 &&
-        !!response.accepts?.[0]?.outputSchema?.input,
-    }
-  );
-
   if (!response) return null;
 
   const accept = response.accepts?.[0];
@@ -72,7 +58,7 @@ export const ResourceExecutor: React.FC<Props> = ({
       className={cn('border-b-0 pt-4 relative', !isFlat && 'pl-4 border-l')}
     >
       {!isFlat && (
-        <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-[1px] bg-border" />
+        <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border" />
       )}
       <Card className={cn(className, 'overflow-hidden')}>
         <AccordionTrigger asChild>
@@ -84,7 +70,6 @@ export const ResourceExecutor: React.FC<Props> = ({
               response={response}
               hideOrigin={hideOrigin}
             />
-            <HealthIndicator metrics={resourceMetrics} />
             <ChevronDownIcon className="size-4" />
           </CardHeader>
         </AccordionTrigger>

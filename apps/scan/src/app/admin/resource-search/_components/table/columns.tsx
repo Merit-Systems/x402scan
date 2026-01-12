@@ -114,7 +114,9 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
     size: 65,
     cell: ({ row }) => {
       const accepts = row.original.accepts;
-      const description = accepts[0]?.description ?? 'No description available';
+      const description =
+        accepts.find(accept => accept.description)?.description ??
+        'No description available';
 
       return (
         <div className="min-h-[100px] py-2">

@@ -4,7 +4,7 @@ import { getOriginFromUrl } from '@/lib/url';
 import { z } from 'zod';
 import { toPaginatedResponse } from '@/lib/pagination';
 
-import { mixedAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema, supportedChainSchema } from '@/lib/schemas';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
 import { ChainIdToNetwork } from 'x402/types';
@@ -213,10 +213,10 @@ export const listResources = createCachedArrayQuery({
 
 export type ResourceSortId = 'lastUpdated' | 'toolCalls';
 
-type ResourceSorting = {
+interface ResourceSorting {
   id: ResourceSortId;
   desc: boolean;
-};
+}
 
 export const listResourcesWithPaginationUncached = async (
   input: { where?: Prisma.ResourcesWhereInput; sorting?: ResourceSorting },
@@ -294,20 +294,24 @@ export const searchResourcesSchema = z.object({
   tagIds: z.array(z.string()).optional(),
   resourceIds: z.array(z.string()).optional(),
   showExcluded: z.boolean().optional().default(false),
+  chains: z.array(supportedChainSchema).optional(),
 });
 
 const searchResourcesUncached = async (
   input: z.infer<typeof searchResourcesSchema>
 ) => {
-  const { search, limit, tagIds, resourceIds, showExcluded } = input;
+  const { search, limit, tagIds, resourceIds, showExcluded, chains } = input;
   return await scanDb.resources.findMany({
     where: {
       accepts: {
-        some: {
-          network: {
-            equals: 'base',
-          },
-        },
+        some:
+          chains !== undefined
+            ? {
+                network: {
+                  in: chains,
+                },
+              }
+            : {},
       },
       ...(search
         ? {
@@ -347,8 +351,8 @@ const searchResourcesUncached = async (
       origin: true,
       accepts: {
         where: {
-          network: {
-            equals: 'base',
+          payTo: {
+            not: '',
           },
         },
       },

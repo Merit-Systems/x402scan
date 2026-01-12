@@ -2,10 +2,10 @@ import 'server-only';
 
 import { cdpClient } from './client';
 
-type ServerAccount = {
+interface ServerAccount {
   address: string;
   name?: string;
-};
+}
 
 export const listAllServerAccounts = async (): Promise<ServerAccount[]> => {
   const allAccounts: ServerAccount[] = [];

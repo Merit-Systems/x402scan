@@ -111,11 +111,11 @@ export const ServersCharts = () => {
         ]}
       />
 
-      {/* Bazaar sellers */}
+      {/* Registered origins (bazaar) */}
       <OverallStatsCard
         title="Active Registered Merchants"
         value={
-          bazaarOverallStats?.total_sellers?.toLocaleString(undefined, {
+          bazaarOverallStats?.total_origins?.toLocaleString(undefined, {
             notation: 'compact',
             minimumFractionDigits: 0,
             maximumFractionDigits: 2,
@@ -123,18 +123,18 @@ export const ServersCharts = () => {
         }
         items={{
           type: 'bar',
-          bars: [{ dataKey: 'bazaarSellers', color: 'var(--color-primary)' }],
+          bars: [{ dataKey: 'bazaarOrigins', color: 'var(--color-primary)' }],
         }}
         data={
           (bazaarBucketedStats?.map(stat => ({
             timestamp: stat.bucket_start.toISOString(),
-            bazaarSellers: stat.total_sellers,
-          })) ?? []) as ChartData<{ bazaarSellers: number }>[]
+            bazaarOrigins: stat.total_origins,
+          })) ?? []) as ChartData<{ bazaarOrigins: number }>[]
         }
         tooltipRows={[
           {
-            key: 'bazaarSellers',
-            label: 'Bazaar Sellers',
+            key: 'bazaarOrigins',
+            label: 'Registered Merchants',
             getValue: data =>
               data.toLocaleString(undefined, {
                 notation: 'compact',
@@ -145,11 +145,11 @@ export const ServersCharts = () => {
         ]}
       />
 
-      {/* Bazaar new sellers */}
+      {/* Bazaar unique buyers */}
       <OverallStatsCard
-        title="New Registered Merchants"
+        title="Unique Buyers (Registered)"
         value={
-          bazaarOverallStats?.new_sellers?.toLocaleString(undefined, {
+          bazaarOverallStats?.unique_buyers?.toLocaleString(undefined, {
             notation: 'compact',
             minimumFractionDigits: 0,
             maximumFractionDigits: 2,
@@ -157,20 +157,18 @@ export const ServersCharts = () => {
         }
         items={{
           type: 'bar',
-          bars: [
-            { dataKey: 'bazaarNewSellers', color: 'var(--color-primary)' },
-          ],
+          bars: [{ dataKey: 'bazaarBuyers', color: 'var(--color-primary)' }],
         }}
         data={
           (bazaarBucketedStats?.map(stat => ({
             timestamp: stat.bucket_start.toISOString(),
-            bazaarNewSellers: stat.new_sellers,
-          })) ?? []) as ChartData<{ bazaarNewSellers: number }>[]
+            bazaarBuyers: stat.unique_buyers,
+          })) ?? []) as ChartData<{ bazaarBuyers: number }>[]
         }
         tooltipRows={[
           {
-            key: 'bazaarNewSellers',
-            label: 'Bazaar New Sellers',
+            key: 'bazaarBuyers',
+            label: 'Unique Buyers',
             getValue: data =>
               data.toLocaleString(undefined, {
                 notation: 'compact',

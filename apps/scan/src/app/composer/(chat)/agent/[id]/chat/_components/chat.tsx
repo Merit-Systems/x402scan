@@ -1,6 +1,6 @@
 import { Chat } from '../../../../_components/chat';
 
-import type { Message } from '@x402scan/scan-db';
+import type { Message } from '@x402scan/scan-db/types';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
   isReadOnly?: boolean;
 }
 
-export const AgentChat: React.FC<Props> = async ({
+export const AgentChat: React.FC<Props> = ({
   id,
   initialMessages,
   agentConfig,

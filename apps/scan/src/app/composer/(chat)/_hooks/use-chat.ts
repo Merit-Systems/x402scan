@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
-import { DefaultChatTransport } from 'ai';
+import {
+  DefaultChatTransport,
+  lastAssistantMessageIsCompleteWithToolCalls,
+} from 'ai';
 import { useChat as useAiChat } from '@ai-sdk/react';
-
-import { useSession } from 'next-auth/react';
 
 import { toast } from 'sonner';
 
@@ -18,7 +19,7 @@ import { convertToUIMessages } from '@/lib/utils';
 import type { RouterOutputs } from '@/trpc/client';
 import type { ChatConfig, SelectedResource } from '../_types/chat-config';
 import type { LanguageModel } from '../_components/chat/input/model-select/types';
-import type { Message } from '@x402scan/scan-db';
+import type { Message } from '@x402scan/scan-db/types';
 
 interface Props {
   id: string;
@@ -35,52 +36,6 @@ export const useChat = ({
 }: Props) => {
   const utils = api.useUtils();
 
-  const { data: session } = useSession();
-
-  const { data: usdcBalance } = api.user.serverWallet.usdcBaseBalance.useQuery(
-    undefined,
-    {
-      enabled: !!session,
-    }
-  );
-  const hasBalance = (usdcBalance ?? 0) > 0;
-
-  const { messages, sendMessage, status, regenerate, error } = useAiChat({
-    messages: initialMessages ? convertToUIMessages(initialMessages) : [],
-    resume: true,
-    id,
-    onError: ({ message }) => toast.error(message),
-    onFinish: ({ messages }) => {
-      if (messages.length > 0) {
-        window.history.replaceState(
-          {},
-          '',
-          agentConfig
-            ? `/composer/agent/${agentConfig.id}/chat/${id}`
-            : `/composer/chat/${id}`
-        );
-        void utils.user.chats.list.invalidate();
-        setTimeout(() => {
-          void utils.user.serverWallet.usdcBaseBalance.invalidate();
-        }, 3000);
-      }
-    },
-    transport: new DefaultChatTransport({
-      api: '/api/chat',
-      prepareSendMessagesRequest({ messages }) {
-        return {
-          body: {
-            chatId: id,
-            model: `${model.provider}/${model.modelId}`,
-            message: messages[messages.length - 1],
-            resourceIds: selectedResources.map(resource => resource.id),
-            agentConfigurationId: agentConfig?.id,
-          },
-        };
-      },
-    }),
-  });
-
   const [input, setInput] = useState('');
   const [model, setModel] = useState<LanguageModel>(
     initialConfig?.model
@@ -92,6 +47,58 @@ export const useChat = ({
   const [selectedResources, setSelectedResources] = useState<
     SelectedResource[]
   >(initialConfig?.resources ?? []);
+
+  // Use refs to ensure the callback always has access to the latest values
+  const modelRef = useRef(model);
+  const selectedResourcesRef = useRef(selectedResources);
+
+  useEffect(() => {
+    modelRef.current = model;
+  }, [model]);
+
+  useEffect(() => {
+    selectedResourcesRef.current = selectedResources;
+  }, [selectedResources]);
+
+  const { messages, sendMessage, status, regenerate, error, addToolResult } =
+    useAiChat({
+      messages: initialMessages ? convertToUIMessages(initialMessages) : [],
+      resume: true,
+      id,
+      onError: ({ message }) => toast.error(message),
+      onFinish: ({ messages }) => {
+        if (messages.length > 0) {
+          window.history.replaceState(
+            {},
+            '',
+            agentConfig
+              ? `/composer/agent/${agentConfig.id}/chat/${id}`
+              : `/composer/chat/${id}`
+          );
+          void utils.user.chats.list.invalidate();
+        }
+      },
+      // eslint-disable-next-line react-hooks/refs
+      transport: new DefaultChatTransport({
+        api: '/api/chat',
+        prepareSendMessagesRequest({ messages }) {
+          const currentModel = modelRef.current;
+          const currentSelectedResources = selectedResourcesRef.current;
+          return {
+            body: {
+              chatId: id,
+              model: `${currentModel.provider}/${currentModel.modelId}`,
+              message: messages[messages.length - 1],
+              resourceIds: currentSelectedResources.map(
+                resource => resource.id
+              ),
+              agentConfigurationId: agentConfig?.id,
+            },
+          };
+        },
+      }),
+      sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+    });
 
   const errorMessage =
     error?.message ??
@@ -108,10 +115,6 @@ export const useChat = ({
     }
     if (errorMessage) {
       toast.error(errorMessage);
-      return;
-    }
-    if (!hasBalance) {
-      toast.error('Please fund your wallet to continue');
       return;
     }
     if (!text.trim()) {
@@ -162,5 +165,6 @@ export const useChat = ({
     selectedResources,
     input,
     setInput,
+    addToolResult,
   };
 };

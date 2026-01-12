@@ -147,7 +147,7 @@ export default async function RootLayout({
                         >
                           <div className="min-h-screen flex flex-col relative">
                             <LogoContainer>
-                              <Link href="/" prefetch={false}>
+                              <Link href="/">
                                 <Logo className="size-full aspect-square" />
                               </Link>
                             </LogoContainer>
@@ -182,7 +182,8 @@ export default async function RootLayout({
                             <div className="bg-background flex-1 flex flex-col">
                               {children}
                             </div>
-                            {env.NEXT_PUBLIC_NODE_ENV === 'development' && (
+                            {(env.NEXT_PUBLIC_NODE_ENV === 'development' ||
+                              env.NEXT_PUBLIC_VERCEL_ENV !== 'production') && (
                               <ReactQueryDevtools />
                             )}
                           </div>

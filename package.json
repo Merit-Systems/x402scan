@@ -2,7 +2,7 @@
   "name": "x402scan-monorepo",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.27.0",
   "scripts": {
     "dev:scan": "turbo run dev --filter=x402scan",
     "build:scan": "turbo run build --filter=x402scan",
@@ -22,10 +22,10 @@
     "trigger:deploy:alerts": "turbo run trigger:deploy --filter=sync-alerts"
   },
   "devDependencies": {
-    "knip": "^5.69.0",
-    "prettier": "^3.6.2",
-    "turbo": "^2.5.1",
-    "typescript": "^5"
+    "knip": "^5.80.0",
+    "prettier": "^3.7.4",
+    "turbo": "^2.7.3",
+    "typescript": "catalog:"
   },
   "pnpm": {
     "overrides": {

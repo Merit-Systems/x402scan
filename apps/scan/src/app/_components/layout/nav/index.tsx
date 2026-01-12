@@ -25,7 +25,7 @@ interface Props<T extends string = string> {
 }
 
 export const Nav = <T extends string>({ tabs }: Props<T>) => {
-  const [buttonRefs, setButtonRefs] = useState<Array<HTMLAnchorElement | null>>(
+  const [buttonRefs, setButtonRefs] = useState<(HTMLAnchorElement | null)[]>(
     []
   );
 
@@ -38,6 +38,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
   }, [tabs.length]);
 
   const navRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line react-hooks/refs
   const navRect = navRef.current?.getBoundingClientRect();
 
   const [hoveredTabIndex, setHoveredTabIndex] = useState<number | null>(null);
@@ -68,7 +69,6 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
                     buttonRefs[index] = el;
                   }
                 }}
-                prefetch={false}
               >
                 <MotionTab href={tab.href} subRoutes={tab.subRoutes}>
                   <span className="flex items-center gap-2 whitespace-nowrap">

@@ -6,7 +6,7 @@ import { serverCookieUtils } from '../../chat/_lib/cookies/server';
 
 import { auth } from '@/auth';
 
-import type { Message } from '@x402scan/scan-db';
+import type { Message } from '@x402scan/scan-db/types';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
@@ -59,8 +59,7 @@ export const Chat: React.FC<Props> = async ({
         storeConfig={storeConfig}
         agentConfig={agentConfig}
       />
-      {!session && <ConnectDialog agentConfig={agentConfig} />}
-      {session && <Onboarding />}
+      {session ? <Onboarding /> : <ConnectDialog agentConfig={agentConfig} />}
     </>
   );
 };

@@ -87,8 +87,8 @@ export const createColumns = (
     cell: ({ row }) => {
       const isFreeTier = Boolean(
         freeTierWalletAddress &&
-          row.original.walletName.toLowerCase() ===
-            freeTierWalletAddress.toLowerCase()
+        row.original.walletName.toLowerCase() ===
+          freeTierWalletAddress.toLowerCase()
       );
 
       return (

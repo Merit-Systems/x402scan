@@ -29,7 +29,7 @@ export const listTopNetworksInputSchema = baseQuerySchema.extend({
   }),
 });
 
-type NetworkItem = {
+interface NetworkItem {
   chain: Chain;
   label: string;
   icon: string;
@@ -39,7 +39,7 @@ type NetworkItem = {
   unique_buyers: number;
   unique_sellers: number;
   unique_facilitators: number;
-};
+}
 
 const listTopNetworksUncached = async (
   input: z.input<typeof listTopNetworksInputSchema>

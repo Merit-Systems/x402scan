@@ -16,7 +16,6 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Verify } from './verify';
 import { ConnectWalletForm } from '@/app/_components/wallet/connect/form';
 import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
-import { Chain } from '@/types/chain';
 import { useConnectedWallets } from '@/app/_hooks/use-connected-wallets';
 
 interface Props {
@@ -27,7 +26,7 @@ export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
   const connectedWallets = useConnectedWallets();
 
   return (
-    <WalletChainProvider initialChain={Chain.BASE} isFixed>
+    <WalletChainProvider>
       <AlertDialog open={true}>
         <AlertDialogContent className="p-0 overflow-hidden gap-0">
           <AlertDialogHeader className="flex flex-row items-center gap-4 space-y-0 bg-muted border-b p-4">
@@ -50,7 +49,7 @@ export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
               </AlertDialogTitle>
               <AlertDialogDescription className="text-xs font-mono">
                 {agentConfig?.description ??
-                  'Build agents that pay for their inference and invoke resources and pay for them with x402.'}
+                  'A playground for building agents that use x402 resources'}
               </AlertDialogDescription>
             </div>
           </AlertDialogHeader>

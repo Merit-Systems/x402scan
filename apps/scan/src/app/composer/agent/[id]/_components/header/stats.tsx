@@ -100,9 +100,9 @@ const BaseStatCard: React.FC<BaseStatCardProps> = ({ title, value, Icon }) => {
   );
 };
 
-interface StatsCardProps extends Omit<BaseStatCardProps, 'value'> {
+type StatsCardProps = {
   value: string;
-}
+} & Omit<BaseStatCardProps, 'value'>;
 
 const StatCard: React.FC<StatsCardProps> = ({ title, Icon, value }) => {
   return (

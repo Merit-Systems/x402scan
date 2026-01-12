@@ -5,10 +5,9 @@ export type Bar<T extends Record<string, number>> = Series<T, BarProps>;
 
 export type StackOffset = 'expand' | 'none' | 'wiggle' | 'silhouette';
 
-export interface BarChartProps<T extends Record<string, number>>
-  extends ChartProps<T> {
-  bars: Array<Bar<T>>;
+export type BarChartProps<T extends Record<string, number>> = {
+  bars: Bar<T>[];
   stacked?: boolean;
   solid?: boolean;
   stackOffset?: StackOffset;
-}
+} & ChartProps<T>;

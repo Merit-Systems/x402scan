@@ -16,7 +16,7 @@ interface Props<T extends string> {
   hideCount?: boolean;
 }
 
-export const OriginsCarousel = async <T extends string>({
+export const OriginsCarousel = <T extends string>({
   sectionProps,
   input,
   hideCount,
@@ -53,7 +53,7 @@ export const OriginsCarousel = async <T extends string>({
   );
 };
 
-export const LoadingOriginsCarousel = async <T extends string>({
+export const LoadingOriginsCarousel = <T extends string>({
   sectionProps,
 }: Omit<Props<T>, 'input' | 'hideCount' | 'startDate' | 'endDate'>) => {
   const { title, Icon, ...rest } = sectionProps;

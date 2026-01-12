@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { Hono } from 'hono';
 
 import { insertResourceInvocation } from '@x402scan/analytics-db';

@@ -39,13 +39,12 @@ export const Breadcrumb = <T extends string>({
       href={href}
       className={cn(disabled && 'pointer-events-none', className)}
       aria-disabled={disabled}
-      prefetch={false}
     >
       <div className="flex items-center gap-2 cursor-pointer min-w-0">
         {(Fallback !== null || image !== null) && (
           <Avatar
             className={cn(
-              'rounded-md overflow-hidden bg-card size-5 flex-shrink-0',
+              'rounded-md overflow-hidden bg-card size-5 shrink-0',
               mobileHideImage && 'hidden md:block'
             )}
           >

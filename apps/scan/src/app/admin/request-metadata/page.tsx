@@ -7,7 +7,7 @@ export default async function RequestMetadataPage() {
   const session = await auth();
 
   if (session?.user.role !== 'admin') {
-    return forbidden();
+    forbidden();
   }
 
   return (

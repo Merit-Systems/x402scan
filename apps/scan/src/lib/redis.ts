@@ -7,7 +7,7 @@ import { env } from '@/env';
 let redis: Redis | null = null;
 
 export function getRedisClient(): Redis | null {
-  if (!env.REDIS_URL) {
+  if (!env.REDIS_URL || env.REDIS_DISABLE) {
     return null;
   }
 

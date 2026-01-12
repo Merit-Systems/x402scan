@@ -18,16 +18,23 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Code } from '@/components/ui/code';
 import { type parseX402Response } from '@/lib/x402/schema';
-import { CheckCircle, Minus, XCircle } from 'lucide-react';
+import { CheckCircle, ChevronDown, Minus, XCircle } from 'lucide-react';
 
-type TestResult = {
+interface TestResult {
   ok: boolean;
   status: number;
   statusText: string;
   headers: Record<string, string>;
   body: unknown;
-};
+}
 
 type ParsedPair = {
   result: TestResult;
@@ -41,6 +48,47 @@ type PreviewData = {
   ogImages: { url: string | null }[];
   origin: string;
 } | null;
+
+const Icon = ({ ok, message }: { ok?: boolean; message?: string }) =>
+  ok === undefined ? (
+    <Minus className="size-4 text-muted-foreground" />
+  ) : ok ? (
+    <CheckCircle className="size-4 text-green-600" />
+  ) : message ? (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <XCircle className="size-4 text-red-600" />
+      </TooltipTrigger>
+      <TooltipContent sideOffset={6}>{message}</TooltipContent>
+    </Tooltip>
+  ) : (
+    <XCircle className="size-4 text-red-600" />
+  );
+
+// Helper to render a row with GET/POST icons
+const Row = ({
+  label,
+  gOk,
+  pOk,
+  gMsg,
+  pMsg,
+}: {
+  label: string;
+  gOk?: boolean;
+  pOk?: boolean;
+  gMsg?: string;
+  pMsg?: string;
+}) => (
+  <TableRow>
+    <TableCell className="pr-2">{label}</TableCell>
+    <TableCell className="pr-2">
+      <Icon ok={gOk} message={gMsg} />
+    </TableCell>
+    <TableCell>
+      <Icon ok={pOk} message={pMsg} />
+    </TableCell>
+  </TableRow>
+);
 
 export function Checklist({
   preview,
@@ -67,47 +115,6 @@ export function Checklist({
   };
   const gInfo = g?.parsed?.success ? analyze(g.parsed) : undefined;
   const pInfo = p?.parsed?.success ? analyze(p.parsed) : undefined;
-
-  const Icon = ({ ok, message }: { ok?: boolean; message?: string }) =>
-    ok === undefined ? (
-      <Minus className="size-4 text-muted-foreground" />
-    ) : ok ? (
-      <CheckCircle className="size-4 text-green-600" />
-    ) : message ? (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <XCircle className="size-4 text-red-600" />
-        </TooltipTrigger>
-        <TooltipContent sideOffset={6}>{message}</TooltipContent>
-      </Tooltip>
-    ) : (
-      <XCircle className="size-4 text-red-600" />
-    );
-
-  // Helper to render a row with GET/POST icons
-  const Row = ({
-    label,
-    gOk,
-    pOk,
-    gMsg,
-    pMsg,
-  }: {
-    label: string;
-    gOk?: boolean;
-    pOk?: boolean;
-    gMsg?: string;
-    pMsg?: string;
-  }) => (
-    <TableRow>
-      <TableCell className="pr-2">{label}</TableCell>
-      <TableCell className="pr-2">
-        <Icon ok={gOk} message={gMsg} />
-      </TableCell>
-      <TableCell>
-        <Icon ok={pOk} message={pMsg} />
-      </TableCell>
-    </TableRow>
-  );
 
   const joinErrors = (errors?: string[]) =>
     errors?.length ? errors.join('\n') : undefined;
@@ -259,6 +266,42 @@ export function Checklist({
             />
           </TableBody>
         </Table>
+        {(!!g?.result?.body || !!p?.result?.body) && (
+          <Accordion type="single" collapsible className="w-full border-t mt-2">
+            {!!g?.result?.body && (
+              <AccordionItem value="get-response" className="border-b-0 px-2">
+                <AccordionTrigger className="py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium hover:no-underline hover:text-foreground">
+                  GET Response
+                  <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="rounded-md bg-muted/50 border">
+                    <Code
+                      lang="json"
+                      value={JSON.stringify(g.result.body, null, 2)}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+            {!!p?.result?.body && (
+              <AccordionItem value="post-response" className="border-b-0 px-2">
+                <AccordionTrigger className="py-3 text-xs text-muted-foreground uppercase tracking-wide font-medium hover:no-underline hover:text-foreground">
+                  POST Response
+                  <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="rounded-md bg-muted/50 border">
+                    <Code
+                      lang="json"
+                      value={JSON.stringify(p.result.body, null, 2)}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )}
+          </Accordion>
+        )}
       </CardContent>
     </Card>
   );

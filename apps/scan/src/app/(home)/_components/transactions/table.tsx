@@ -41,7 +41,6 @@ export const Table: React.FC<Props> = ({ pageSize }) => {
       page={page}
       onPageChange={setPage}
       hasNextPage={latestTransactions.hasNextPage}
-      totalPages={latestTransactions.total_pages}
     />
   );
 };

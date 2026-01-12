@@ -71,7 +71,7 @@ export const LoadingAreaChart = ({
 }: {
   height?: number | string;
 }) => {
-  const simulatedData = useMemo(simulateChartData, []);
+  const simulatedData = useMemo(() => simulateChartData(), []);
 
   return (
     <div className="animate-pulse" style={{ height }}>

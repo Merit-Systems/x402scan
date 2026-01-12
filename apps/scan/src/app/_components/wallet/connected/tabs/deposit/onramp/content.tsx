@@ -4,8 +4,6 @@ import { useCallback, useState } from 'react';
 
 import { Check, Loader2 } from 'lucide-react';
 
-import { toast } from 'sonner';
-
 import { Button } from '@/components/ui/button';
 import { TokenInput } from '@/components/ui/token/token-input';
 
@@ -14,8 +12,6 @@ import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 import { api } from '@/trpc/client';
 
 import { usdc } from '@/lib/tokens/usdc';
-
-import { Chain } from '@/types/chain';
 
 export const OnrampContent = () => {
   const { chain } = useWalletChain();
@@ -33,10 +29,6 @@ export const OnrampContent = () => {
   const [amount, setAmount] = useState(0);
 
   const handleSubmit = useCallback(() => {
-    if (chain !== Chain.SOLANA && chain !== Chain.BASE) {
-      toast.error('Only Base and Solana are supported for onramp');
-      return;
-    }
     createOnrampSession({
       amount,
       redirect: window.location.href,

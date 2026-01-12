@@ -30,7 +30,11 @@ import {
   listTagsSchema,
 } from '@/services/db/resources/tag';
 
+import { convertTokenAmount } from '@/lib/token';
+import { usdc } from '@/lib/tokens/usdc';
+
 import type { Prisma } from '@x402scan/scan-db';
+import type { SupportedChain } from '@/types/chain';
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
@@ -41,7 +45,16 @@ export const resourcesRouter = createTRPCRouter({
         message: 'Resource not found',
       });
     }
-    return resource;
+    return {
+      ...resource,
+      accepts: resource.accepts.map(accept => ({
+        ...accept,
+        maxAmountRequired: convertTokenAmount(
+          accept.maxAmountRequired,
+          usdc(accept.network as SupportedChain).decimals
+        ),
+      })),
+    };
   }),
   list: {
     all: publicProcedure.query(async () => {
@@ -189,23 +202,4 @@ export const resourcesRouter = createTRPCRouter({
       return await listResourceTags(input);
     }),
   },
-  getMetrics: publicProcedure
-    .input(z.object({ resourceId: z.string() }))
-    .query(async ({ input }) => {
-      return await scanDb.resourceMetrics.findFirst({
-        where: { resourceId: input.resourceId },
-        orderBy: { updatedAt: 'desc' },
-        select: {
-          uptime24hPct: true,
-          totalCount24h: true,
-          count_5xx_24h: true,
-          count_4xx_24h: true,
-          count_2xx_24h: true,
-          p50_24hMs: true,
-          p90_24hMs: true,
-          p99_24hMs: true,
-          updatedAt: true,
-        },
-      });
-    }),
 });

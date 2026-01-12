@@ -14,18 +14,14 @@ import {
 
 import { createResumableStreamContext } from 'resumable-stream';
 
-import { toAccount } from 'viem/accounts';
-
 import { createChat, getChat, updateChat } from '@/services/db/composer/chat';
 
 import { auth } from '@/auth';
 
 import { createX402AITools } from '@/services/agent/create-tools';
 
+import { ChatError } from '@/lib/errors';
 import { messageSchema } from '@/lib/message-schema';
-
-import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
-import { ChatSDKError } from '@/lib/errors';
 
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
 import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
@@ -54,29 +50,20 @@ export async function POST(request: NextRequest) {
   const session = await auth();
 
   if (!session) {
-    return new ChatSDKError('unauthorized:chat').toResponse();
+    return new ChatError('unauthorized:auth').toResponse();
   }
 
   const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
     console.error('Bad request:', requestBody.error);
-    return new ChatSDKError('bad_request:chat').toResponse();
+    return new ChatError('bad_request:chat').toResponse();
   }
 
   const { model, resourceIds, message, chatId, agentConfigurationId } =
     requestBody.data;
 
   let chat = await getChat(chatId, session.user.id);
-
-  const wallet = await getWalletForUserId(session.user.id).then(
-    wallet => wallet.wallet
-  );
-
-  if (!wallet) {
-    return new ChatSDKError('not_found:chat').toResponse();
-  }
-  const signer = toAccount(wallet);
 
   const lastMessage = message;
 
@@ -162,11 +149,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const tools = await createX402AITools({
-    resourceIds,
-    walletClient: signer,
-    chatId,
-  });
+  const tools = await createX402AITools(resourceIds);
 
   const getSystemPrompt = async () => {
     if (agentConfigurationId) {
@@ -210,11 +193,21 @@ export async function POST(request: NextRequest) {
       if (responseMessage.parts.length > 0) {
         await updateChat(session.user.id, chatId, {
           messages: {
-            create: {
-              id: responseMessage.id,
-              role: responseMessage.role,
-              parts: JSON.stringify(responseMessage.parts),
-              attachments: {},
+            upsert: {
+              where: {
+                id: responseMessage.id,
+              },
+              create: {
+                id: responseMessage.id,
+                role: responseMessage.role,
+                parts: JSON.stringify(responseMessage.parts),
+                attachments: {},
+              },
+              update: {
+                role: responseMessage.role,
+                parts: JSON.stringify(responseMessage.parts),
+                attachments: {},
+              },
             },
           },
         });
@@ -223,13 +216,13 @@ export async function POST(request: NextRequest) {
     onError: error => {
       if (error instanceof APICallError) {
         if (error.statusCode === 402) {
-          return new ChatSDKError('payment_required:chat').message;
+          return new ChatError('payment_required:chat').message;
         }
       }
-      if (error instanceof ChatSDKError) {
+      if (error instanceof ChatError) {
         return error.message;
       }
-      return new ChatSDKError('bad_request:chat').message;
+      return new ChatError('bad_request:chat').message;
     },
     async consumeSseStream({ stream }) {
       const streamId = generateId();
@@ -278,6 +271,6 @@ async function generateTitleFromUserMessage({
     return title;
   } catch {
     console.error('Error generating title:');
-    throw new ChatSDKError('server:chat');
+    throw new ChatError('server:chat');
   }
 }

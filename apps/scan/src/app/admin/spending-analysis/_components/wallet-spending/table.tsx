@@ -30,8 +30,7 @@ export const WalletSpendingTable = () => {
     },
     sorting,
   });
-  const { data: freeTierWallet } =
-    api.admin.freeTier.getWalletBalances.useQuery();
+  const { data: freeTierWallet } = api.admin.freeTier.address.useQuery();
   const wallets = data?.items ?? [];
   const hasNextPage = data?.hasNextPage ?? false;
 
@@ -56,15 +55,15 @@ export const WalletSpendingTable = () => {
   };
 
   const columns = useMemo(
-    () => createColumns(freeTierWallet?.address),
-    [freeTierWallet?.address]
+    () => createColumns(freeTierWallet),
+    [freeTierWallet]
   );
 
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
         <Button
-          onClick={handleDownloadCsv}
+          onClick={() => void handleDownloadCsv()}
           disabled={isDownloading}
           variant="outline"
           size="sm"

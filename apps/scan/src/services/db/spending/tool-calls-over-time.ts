@@ -76,9 +76,9 @@ const getToolCallsOverTimeUncached = async (
   `;
 
   const rawResult =
-    await scanDb.$queryRaw<
-      Array<{ bucket_start: Date; total_tool_calls: number }>
-    >(sql);
+    await scanDb.$queryRaw<{ bucket_start: Date; total_tool_calls: number }[]>(
+      sql
+    );
 
   return bucketedToolCallsResultSchema.parse(rawResult);
 };

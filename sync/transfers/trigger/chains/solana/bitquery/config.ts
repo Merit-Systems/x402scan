@@ -5,8 +5,8 @@ import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 import { buildQuery, transformResponse } from './query';
 
 export const solanaChainConfig: SyncConfig = {
-  cron: '*/10 * * * *',
-  maxDurationInSeconds: ONE_MINUTE_IN_SECONDS * 10,
+  cron: '*/30 * * * *',
+  maxDurationInSeconds: ONE_MINUTE_IN_SECONDS * 30,
   chain: 'solana',
   provider: QueryProvider.BITQUERY,
   apiUrl: 'https://graphql.bitquery.io',
@@ -16,5 +16,5 @@ export const solanaChainConfig: SyncConfig = {
   buildQuery,
   transformResponse,
   enabled: true,
-  machine: 'medium-1x',
+  machine: 'large-2x',
 };

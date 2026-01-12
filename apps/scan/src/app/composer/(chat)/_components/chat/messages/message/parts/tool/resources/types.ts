@@ -9,9 +9,9 @@ export type OutputComponent = React.FC<{
   errorText: ToolUIPart['errorText'];
 }>;
 
-export type ResourceComponent = {
+export interface ResourceComponent {
   input: InputComponent;
   output: OutputComponent;
-};
+}
 
 export type ResourceComponentMap = Record<string, ResourceComponent>;

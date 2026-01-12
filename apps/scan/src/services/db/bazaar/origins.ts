@@ -1,4 +1,4 @@
-import { listTopSellers } from '@/services/transfers/sellers/list';
+import { listTopSellersMVUncached } from '@/services/transfers/sellers/list-mv';
 import { getAcceptsAddresses } from '../resources/accepts';
 import { mixedAddressSchema } from '@/lib/schemas';
 
@@ -24,7 +24,9 @@ const listBazaarOriginsUncached = async (
     tags: input.tags,
   });
 
-  const result = await listTopSellers(
+  // Use uncached version since listBazaarOrigins is already cached
+  // This avoids creating a massive cache key with 100+ addresses
+  const result = await listTopSellersMVUncached(
     {
       ...input,
       recipients: {
@@ -46,7 +48,7 @@ const listBazaarOriginsUncached = async (
       facilitators: string[];
       tx_count: number;
       total_amount: number;
-      latest_block_timestamp: Date;
+      latest_block_timestamp: Date | null;
       unique_buyers: number;
       chains: Set<Chain>;
     }
@@ -67,7 +69,11 @@ const listBazaarOriginsUncached = async (
       existing.total_amount += item.total_amount;
       existing.unique_buyers += item.unique_buyers;
       // Keep the latest timestamp
-      if (item.latest_block_timestamp > existing.latest_block_timestamp) {
+      if (
+        item.latest_block_timestamp &&
+        (!existing.latest_block_timestamp ||
+          item.latest_block_timestamp > existing.latest_block_timestamp)
+      ) {
         existing.latest_block_timestamp = item.latest_block_timestamp;
       }
       // Merge facilitators (deduplicated)

@@ -15,7 +15,7 @@ export const ComposerCallout = () => {
             Introducing The Composer
           </h2>
           <p className="text-xs md:text-sm text-muted-foreground">
-            Build and use agents that pay for resources and inference with x402.
+            A playground for building agents that use x402 resources.
           </p>
         </div>
       </div>

@@ -10,7 +10,7 @@ import type { RouterInputs } from '@/trpc/client';
 import type { LucideIcon } from 'lucide-react';
 import { ActivityTimeframe } from '@/types/timeframes';
 
-type MarketplaceCarousel = {
+interface MarketplaceCarousel {
   sectionProps: {
     title: string;
     description?: string;
@@ -18,7 +18,7 @@ type MarketplaceCarousel = {
   };
   input: RouterInputs['public']['sellers']['bazaar']['list'];
   hideCount?: boolean;
-};
+}
 
 export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
   {

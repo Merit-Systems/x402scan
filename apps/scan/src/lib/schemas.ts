@@ -2,18 +2,13 @@ import z from 'zod';
 
 import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
 
-import type { Address, Hash } from 'viem';
+import type { Address } from 'viem';
 import type { MixedAddress, SolanaAddress } from '@/types/address';
 
 export const ethereumAddressSchema = z
   .string()
   .regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid Ethereum address')
   .transform(address => address.toLowerCase() as Address);
-
-export const ethereumHashSchema = z
-  .string()
-  .regex(/^0x[a-fA-F0-9]{64}$/, 'Invalid transaction hash')
-  .transform(hash => hash.toLowerCase() as Hash);
 
 export const sortingSchema = (sortIds: string[] | readonly string[]) =>
   z.object({
@@ -33,17 +28,21 @@ export const mixedAddressSchema = z
 
 export const chainSchema = z.enum(Chain);
 export const optionalChainSchema = chainSchema.optional();
-const supportedChainSchema = z.enum(SUPPORTED_CHAINS);
+export const supportedChainSchema = z.enum(SUPPORTED_CHAINS);
 export const optionalSupportedChainSchema = supportedChainSchema.optional();
 
 export const timePeriodSchema = z.number().nonnegative();
 
-export const timeframeSchema = z
-  .union([
-    timePeriodSchema,
-    z.object({
-      period: timePeriodSchema,
-      offset: timePeriodSchema.optional(),
-    }),
-  ])
-  .default(0);
+export const timeframeSchema = z.union([
+  timePeriodSchema,
+  z.object({
+    period: timePeriodSchema,
+    offset: timePeriodSchema.optional(),
+  }),
+]);
+
+export const sendUsdcQueryParamsSchema = z.object({
+  amount: z.coerce.number(),
+  address: mixedAddressSchema,
+  chain: supportedChainSchema,
+});

@@ -2,7 +2,14 @@
 
 import { useState } from 'react';
 
-import { AlertTriangle, ChevronDown, Eye, Plus, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  Plus,
+  X,
+} from 'lucide-react';
 
 import z from 'zod';
 
@@ -120,8 +127,10 @@ export const RegisterResourceForm = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{data ? 'Resource Added' : 'Add Resource'}</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-lg md:text-xl">
+          {data ? 'Resource Added' : 'Add Resource'}
+        </CardTitle>
+        <CardDescription className="text-sm md:text-base">
           {data
             ? 'This resource is now registered on and available throughout x402scan.'
             : "Know of an x402 resource that isn't listed? Add it here."}
@@ -129,29 +138,28 @@ export const RegisterResourceForm = () => {
       </CardHeader>
       <CardContent>
         {data && !data.error ? (
-          <div className="flex flex-col gap-6 overflow-hidden w-full max-w-full">
-            {/* Origin Header Card */}
-            <div className="border rounded-lg p-4 bg-gradient-to-br from-muted/30 to-muted/10">
-              <div className="flex items-start gap-3">
+          <div className="flex flex-col gap-2 overflow-hidden w-full max-w-full">
+            <div className="border rounded-lg p-4 bg-gradient-to-br from-muted/30 to-muted/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+              <div className="flex items-center gap-4">
                 <Favicon
                   url={data.resource.origin.favicon}
                   className="size-10 rounded-lg border bg-background shrink-0"
                 />
-                <div className="flex-1 min-w-0">
-                  <h2 className="font-bold text-lg mb-1 truncate">
-                    {data.resource.origin.title ??
-                      new URL(data.resource.origin.origin).hostname}
+                <div className="flex-1 min-w-0 flex flex-col">
+                  <h2 className="font-bold text-lg truncate">
+                    {data.resource.resource.resource}
                   </h2>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Resource successfully registered on x402scan
+                  <p className="text-sm text-muted-foreground">
+                    {data.resource.accepts.find(accept => accept.description)
+                      ?.description ?? 'No description'}
                   </p>
-                  <Link href={`/server/${data.resource.origin.id}`}>
-                    <Button variant="outline" size="sm">
-                      View Server Page →
-                    </Button>
-                  </Link>
                 </div>
               </div>
+              <Link href={`/server/${data.resource.origin.id}`}>
+                <Button variant="outline" size="sm" className="w-full md:w-fit">
+                  View Server Page <ChevronRight className="size-4" />
+                </Button>
+              </Link>
             </div>
 
             {/* Registration status alert */}
@@ -211,7 +219,7 @@ export const RegisterResourceForm = () => {
                     hasEnhancedSchema={!data.enhancedParseWarnings}
                     hasOriginMetadata={Boolean(
                       data.registrationDetails?.originMetadata?.title ??
-                        data.registrationDetails?.originMetadata?.description
+                      data.registrationDetails?.originMetadata?.description
                     )}
                   />
                 </AccordionContent>

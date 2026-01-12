@@ -11,14 +11,14 @@ import type { SolanaAddress } from '@/types/address';
 
 interface Props {
   amount: number;
-  setAmount: (amount: number) => void;
   toAddress: string;
+  onSuccess: () => void;
 }
 
 export const WithdrawSolana: React.FC<Props> = ({
   amount,
-  setAmount,
   toAddress,
+  onSuccess,
 }) => {
   const { connectedWallet } = useSolanaWallet();
 
@@ -30,48 +30,43 @@ export const WithdrawSolana: React.FC<Props> = ({
     <WithdrawSolanaContent
       account={connectedWallet.account}
       amount={amount}
-      setAmount={setAmount}
+      onSuccess={onSuccess}
       toAddress={toAddress}
     />
   );
 };
 
-interface WithdrawContentProps extends Props {
+type WithdrawContentProps = {
   account: UiWalletAccount;
-}
+} & Props;
 
 const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
   account,
   amount,
   toAddress,
+  onSuccess,
 }) => {
-  const { handleSubmit, isPending, isInvalid, statusText, isSent, solBalance } =
-    useSvmSend({
+  const { handleSubmit, isPending, isInvalid, statusText, isSent } = useSvmSend(
+    {
       account,
       amount: amount,
       address: toAddress as SolanaAddress,
-    });
+      onSuccess,
+    }
+  );
 
   return (
-    <>
-      {solBalance === 0 && (
-        <p className="text-yellow-600 bg-yellow-600/10 p-2 rounded-md text-xs">
-          Insufficient SOL to pay for this transaction. Please add some SOL to
-          your wallet.
-        </p>
-      )}
-      <Button
-        variant="turbo"
-        disabled={isInvalid || isPending}
-        onClick={handleSubmit}
-      >
-        {isPending ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : isSent ? (
-          <Check className="size-4" />
-        ) : null}
-        {statusText}
-      </Button>
-    </>
+    <Button
+      variant="turbo"
+      disabled={isInvalid || isPending}
+      onClick={handleSubmit}
+    >
+      {isPending ? (
+        <Loader2 className="size-4 animate-spin" />
+      ) : isSent ? (
+        <Check className="size-4" />
+      ) : null}
+      {statusText}
+    </Button>
   );
 };

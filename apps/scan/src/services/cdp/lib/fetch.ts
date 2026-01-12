@@ -42,5 +42,6 @@ export const cdpFetch = async <T>(
       status: response.status,
     });
   }
+
   return outputSchema.parse(await response.json());
 };

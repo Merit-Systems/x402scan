@@ -26,15 +26,30 @@ import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-bal
 
 import { cn, formatCurrency } from '@/lib/utils';
 
-import { SessionStatus, type OnrampSession } from '@x402scan/scan-db';
+import { SessionStatus, type OnrampSession } from '@x402scan/scan-db/types';
 
 import { api } from '@/trpc/client';
+import { usdc } from '@/lib/tokens/usdc';
+
+import { Chain } from '@/types/chain';
+import { optionalSupportedChainSchema } from '@/lib/schemas';
 
 export const OnrampSessionDialog: React.FC = () => {
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
 
+  const searchParams = useSearchParams();
+
+  const networkParamResult = optionalSupportedChainSchema.safeParse(
+    searchParams.get('network')
+  );
+
+  const networkParam = networkParamResult.success
+    ? networkParamResult.data
+    : undefined;
+
   const { invalidate: invalidateEvmBalance } = useEvmTokenBalance({
+    token: usdc(networkParam ?? Chain.BASE),
     query: {
       enabled: false,
     },
@@ -43,10 +58,9 @@ export const OnrampSessionDialog: React.FC = () => {
     enabled: false,
   });
 
-  const searchParams = useSearchParams();
-
   useEffect(() => {
     if (searchParams.get('onramp_token')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSessionToken(searchParams.get('onramp_token') ?? null);
       setIsSessionDialogOpen(true);
     }
@@ -67,25 +81,30 @@ export const OnrampSessionDialog: React.FC = () => {
 
   useEffect(() => {
     if (isErrorSession) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsError(true);
     }
   }, [isErrorSession]);
 
   useEffect(() => {
     if (session && ['succeeded', 'failed'].includes(session.status)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsCompleted(true);
 
       // Invalidate balance query when session is completed
       if (session.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS) {
         for (let i = 0; i < 3; i++) {
           setTimeout(() => {
-            void invalidateEvmBalance();
-            void invalidateSolanaBalance();
+            if (networkParam === Chain.SOLANA) {
+              void invalidateSolanaBalance();
+            } else {
+              void invalidateEvmBalance();
+            }
           }, i * 1000);
         }
       }
     }
-  }, [session, invalidateEvmBalance, invalidateSolanaBalance]);
+  }, [session, invalidateEvmBalance, invalidateSolanaBalance, networkParam]);
 
   const handleOnOpenChange = (open: boolean) => {
     setIsSessionDialogOpen(open);
@@ -174,7 +193,7 @@ export const OnrampSessionDialog: React.FC = () => {
                 <Button
                   variant="outline"
                   className="w-full font-bold"
-                  onClick={() => refetchSession()}
+                  onClick={() => void refetchSession()}
                 >
                   Refresh
                 </Button>

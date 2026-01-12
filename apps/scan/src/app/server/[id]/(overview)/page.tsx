@@ -7,8 +7,10 @@ import {
   LoadingOriginResources,
   OriginResources,
 } from './_components/resources';
-import { OriginActivity } from './_components/activity';
-import { OriginAgents } from './_components/agents';
+import { LoadingOriginActivity, OriginActivity } from './_components/activity';
+import { LoadingOriginAgents, OriginAgents } from './_components/agents';
+import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
+import { defaultAgentsSorting } from '@/app/_contexts/sorting/agents/default';
 
 export default async function OriginPage({
   params,
@@ -22,6 +24,12 @@ export default async function OriginPage({
   await Promise.all([
     api.public.origins.getMetadata.prefetch(id),
     api.public.origins.list.withResources.prefetch({ originIds: [id] }),
+    api.public.agents.list.prefetch({
+      originId: id,
+      timeframe: ALL_TIME_TIMEFRAME,
+      pagination: { page: 0, page_size: 6 },
+      sorting: defaultAgentsSorting,
+    }),
   ]);
 
   return (
@@ -30,7 +38,9 @@ export default async function OriginPage({
         <Suspense fallback={<LoadingHeaderCard />}>
           <HeaderCard origin={origin} />
         </Suspense>
-        <OriginActivity originId={id} />
+        <Suspense fallback={<LoadingOriginActivity />}>
+          <OriginActivity originId={id} />
+        </Suspense>
         <div className="md:grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="col-span-1 md:col-span-2 flex flex-col gap-8">
             <Suspense fallback={<LoadingOriginResources />}>
@@ -38,7 +48,9 @@ export default async function OriginPage({
             </Suspense>
           </div>
           <div className="col-span-1">
-            <OriginAgents originId={id} />
+            <Suspense fallback={<LoadingOriginAgents />}>
+              <OriginAgents originId={id} />
+            </Suspense>
           </div>
         </div>
       </Body>

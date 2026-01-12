@@ -15,7 +15,7 @@ export default async function TransactionsPage({
 }: PageProps<'/transactions'>) {
   const chain = await getChainForPage(await searchParams);
 
-  const pageSize = 15;
+  const pageSize = 10;
 
   void api.public.transfers.list.prefetch({
     sorting: defaultTransfersSorting,
@@ -32,7 +32,7 @@ export default async function TransactionsPage({
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
         <Heading
           title="Transactions"
-          description="All x402 transactions through the Coinbase facilitator"
+          description="All x402 transactions through facilitators we track"
         />
         <Body>
           <Suspense

@@ -16,7 +16,7 @@ import { formatTokenAmount } from './token';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { EnhancedPaymentRequirements } from '@/lib/x402/schema';
-import type { AcceptsNetwork } from '@x402scan/scan-db';
+import type { AcceptsNetwork } from '@x402scan/scan-db/types';
 
 export const registerResource = async (url: string, data: unknown) => {
   // Strip the query params from the incoming URL
@@ -104,7 +104,7 @@ export const registerResource = async (url: string, data: unknown) => {
     accepts:
       baseX402ParsedResponse.data.accepts
         ?.filter(accept =>
-          (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(
+          (SUPPORTED_CHAINS as readonly string[]).includes(
             accept.network!.replace('-', '_')
           )
         )

@@ -1,7 +1,7 @@
 'use client';
 
 import type { ToolUIPart } from 'ai';
-import { Check, ChevronDownIcon, Loader2, X } from 'lucide-react';
+import { Check, ChevronDownIcon, CircleDot, Loader2, X } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import {
   Collapsible,
@@ -15,10 +15,11 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Skeleton } from '../ui/skeleton';
 import { Favicon } from '../../app/_components/favicon';
 import { Loading } from '../ui/loading';
-import { formatTokenAmount } from '@/lib/token';
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
-type JsonObject = { [key: string]: JsonValue };
+interface JsonObject {
+  [key: string]: JsonValue;
+}
 type JsonArray = JsonValue[];
 
 const Tool = ({ className, ...props }: ComponentProps<typeof Collapsible>) => (
@@ -69,16 +70,15 @@ const ToolHeader = ({
                 <span className="font-semibold text-xs md:text-sm font-mono text-left truncate">
                   {resource.resource}
                 </span>
-                <span className="text-xs md:text-sm font-semibold text-primary font-mono">
-                  {formatTokenAmount(resource.accepts[0]!.maxAmountRequired)}
-                </span>
-                {state === 'output-available' ? (
-                  <Check className="size-3 text-green-600" />
+                {state === 'input-streaming' ? (
+                  <Loader2 className="size-3 shrink-0 animate-spin" />
+                ) : state === 'input-available' ? (
+                  <CircleDot className="size-3 shrink-0" />
+                ) : state === 'output-available' ? (
+                  <Check className="size-3 shrink-0 text-green-600" />
                 ) : state === 'output-error' ? (
-                  <X className="size-3 text-red-600" />
-                ) : (
-                  <Loader2 className="size-3 animate-spin" />
-                )}
+                  <X className="size-3 shrink-0 text-red-600" />
+                ) : null}
               </div>
             )}
             loadingComponent={<Skeleton className="h-[14px] my-[3px] w-32" />}
@@ -89,7 +89,10 @@ const ToolHeader = ({
             isLoading={isResourceLoading ?? state === 'input-streaming'}
             component={resource => (
               <span className="text-[10px] md:text-xs text-muted-foreground text-left">
-                {resource.accepts[0]!.description}
+                {
+                  resource.accepts.find(accept => accept.description)
+                    ?.description
+                }
               </span>
             )}
             loadingComponent={<Skeleton className="h-[12px] my-[2px] w-32" />}
@@ -121,27 +124,34 @@ const ToolInput = ({
   ...props
 }: ComponentProps<'div'> & {
   input: ToolUIPart['input'];
-}) => (
-  <div className={cn('space-y-2 overflow-hidden px-4', className)} {...props}>
-    <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
-      Parameters
-    </h4>
-    <div className="rounded-md bg-muted">
-      <JsonViewer data={input as JsonValue} />
+}) => {
+  if (Object.keys(input as Record<string, unknown>).length === 0) {
+    return (
+      <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
+        No Parameters
+      </h4>
+    );
+  }
+  return (
+    <div className={cn('space-y-2 overflow-hidden', className)} {...props}>
+      <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
+        Parameters
+      </h4>
+      <div className="rounded-md bg-muted">
+        <JsonViewer data={input as JsonValue} />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const ToolOutput = ({
   className,
   output,
-  errorText,
   ...props
 }: ComponentProps<'div'> & {
   output: ReactNode;
-  errorText: ToolUIPart['errorText'];
 }) => {
-  if (!(output || errorText)) {
+  if (!output) {
     return null;
   }
 
@@ -166,19 +176,16 @@ const ToolOutput = ({
   const { raw, parsed } = result;
 
   return (
-    <div className={cn('space-y-2 px-4', className)} {...props}>
+    <div className={cn('space-y-2', className)} {...props}>
       <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
-        {errorText ? 'Error' : 'Result'}
+        Result
       </h4>
       <div
         className={cn(
           'overflow-x-auto rounded-md text-xs [&_table]:w-full font-mono',
-          errorText
-            ? 'bg-destructive/10 text-destructive'
-            : 'bg-muted text-foreground'
+          'bg-muted text-foreground'
         )}
       >
-        {errorText && <div className="p-3">{errorText}</div>}
         {parsed && <JsonViewer data={parsed} defaultCollapsed={true} />}
         {!parsed && raw && (
           <Code value={JSON.stringify(raw, null, 2)} lang="json" />
