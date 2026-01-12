@@ -15,10 +15,13 @@ import {
 import {
   parseV2,
   paymentRequirementsSchemaV2,
-  extractBazaarInfo,
   type X402ResponseV2,
   type PaymentRequirementsV2,
 } from './v2';
+import {
+  extractDiscoveryInfoFromExtension,
+  type DiscoveryExtension,
+} from '@x402/extensions/bazaar';
 import { ChainIdToNetwork } from 'x402/types';
 import type { ParseResult } from './shared';
 
@@ -118,7 +121,7 @@ function detectVersion(data: unknown): 1 | 2 {
 /**
  * NOTE(shafu): get the output schema from a parsed x402 response
  * V1: schema is in accepts[0].outputSchema
- * V2: schema is in extensions.bazaar.schema or extensions.bazaar.info
+ * V2: schema is in extensions.bazaar using official @x402/extensions/bazaar
  */
 export function getOutputSchema(
   response: ParsedX402Response
@@ -132,8 +135,47 @@ export function getOutputSchema(
     return response.resource?.outputSchema;
   }
 
+  if (bazaar.info && bazaar.schema) {
+    try {
+      const discoveryInfo = extractDiscoveryInfoFromExtension(
+        bazaar as DiscoveryExtension,
+        false // skip validation for parsing
+      );
+
+      const input = discoveryInfo.input as Record<string, unknown>;
+      const bodyData = input.body as Record<string, unknown> | undefined;
+      const bodyNeedsSchema =
+        bodyData && typeof bodyData === 'object' && !('properties' in bodyData);
+
+      if (bodyNeedsSchema) {
+        type BazaarSchema = {
+          properties?: {
+            input?: { properties?: { body?: Record<string, unknown> } };
+          };
+        };
+        const schema = bazaar.schema as BazaarSchema;
+        const bodySchema = schema.properties?.input?.properties?.body;
+        if (bodySchema && 'properties' in bodySchema) {
+          return {
+            input: { ...input, body: bodySchema },
+            output: discoveryInfo.output,
+          } as unknown as OutputSchema;
+        }
+      }
+
+      return {
+        input: discoveryInfo.input,
+        output: discoveryInfo.output,
+      } as OutputSchema;
+    } catch {
+      // Fall through to legacy handling if extraction fails
+    }
+  }
+
+  // NOTE(shafu): legacy fallback for non-standard bazaar formats
   if (bazaar.info) {
-    return extractBazaarInfo(bazaar.info as OutputSchema, bazaar.schema);
+    const info = bazaar.info as { input?: unknown; output?: unknown };
+    return { input: info.input, output: info.output } as OutputSchema;
   }
 
   if (bazaar.schema) {
