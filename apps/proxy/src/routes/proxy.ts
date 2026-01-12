@@ -197,7 +197,25 @@ async function proxyHandler(c: Context) {
 
     const responseHeaders = new Headers();
     upstreamResponse.headers.forEach((value: string, key: string) => {
-      if (!RESPONSE_HEADER_BLOCKLIST.has(key.toLowerCase())) {
+      const lowerKey = key.toLowerCase();
+
+      // NOTE: Node's fetch (undici) transparently decompresses gzip/deflate/br by default,
+      // but may still expose the upstream Content-Encoding header. If we forward that header
+      // alongside a decompressed body, browsers will attempt to decode again and fail with
+      // ERR_CONTENT_DECODING_FAILED. For zstd, undici generally does NOT transparently
+      // decompress, so we preserve it to allow browsers to decode if supported.
+      if (lowerKey === 'content-encoding') {
+        const normalizedEncoding = value.trim().toLowerCase();
+        if (
+          normalizedEncoding === 'br' ||
+          normalizedEncoding === 'gzip' ||
+          normalizedEncoding === 'deflate'
+        ) {
+          return;
+        }
+      }
+
+      if (!RESPONSE_HEADER_BLOCKLIST.has(lowerKey)) {
         responseHeaders.set(key, value);
       }
     });
