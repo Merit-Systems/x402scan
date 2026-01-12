@@ -25,7 +25,10 @@ import {
   type DiscoveryInfo,
 } from '@x402/extensions/bazaar';
 import { decodePaymentRequiredHeader } from '@x402/core/http';
-import type { PaymentRequirementsV1 as OfficialPaymentRequirementsV1 } from '@x402/core/types';
+// NOTE(shafu): Library type expects CAIP-2 network format (e.g., "eip155:8453"),
+// but real v1 payloads use named networks (e.g., "base", "base-sepolia").
+// We use this type only for library function calls with a cast.
+import type { PaymentRequirementsV1 as LibraryPaymentRequirementsV1 } from '@x402/core/types';
 import { ChainIdToNetwork } from 'x402/types';
 import type { ParseResult } from './shared';
 
@@ -130,30 +133,25 @@ function detectVersion(data: unknown): 1 | 2 {
 export function getOutputSchema(
   response: ParsedX402Response
 ): OutputSchema | undefined {
-  // V1: Use official extractDiscoveryInfoV1 from @x402/extensions/bazaar
   if (response.x402Version !== 2) {
     const firstAccept = response.accepts?.[0];
     if (!firstAccept) return undefined;
 
-    // Try official v1 extraction first
     const discoveryInfo = extractDiscoveryInfoV1(
-      firstAccept as unknown as OfficialPaymentRequirementsV1
+      firstAccept as unknown as LibraryPaymentRequirementsV1
     );
     if (discoveryInfo) {
       return convertDiscoveryInfoToOutputSchema(discoveryInfo);
     }
 
-    // Fallback to raw outputSchema if extraction fails
     return firstAccept.outputSchema;
   }
 
-  // V2: Extract from extensions.bazaar
   const bazaar = response.extensions?.bazaar;
   if (!bazaar) {
     return response.resource?.outputSchema;
   }
 
-  // Use official extractDiscoveryInfoFromExtension
   if (bazaar.info && bazaar.schema) {
     try {
       const discoveryInfo = extractDiscoveryInfoFromExtension(
@@ -166,7 +164,6 @@ export function getOutputSchema(
     }
   }
 
-  // Legacy fallback for non-standard bazaar formats
   if (bazaar.info) {
     const info = bazaar.info as { input?: unknown; output?: unknown };
     return { input: info.input, output: info.output } as OutputSchema;
@@ -179,10 +176,7 @@ export function getOutputSchema(
   return response.resource?.outputSchema;
 }
 
-/**
- * Converts DiscoveryInfo from @x402/extensions/bazaar to our OutputSchema format.
- * Handles the case where body contains example data instead of schema properties.
- */
+// NOTE(shafu): Converts DiscoveryInfo from x402/extensions/bazaar to our OutputSchema format.
 function convertDiscoveryInfoToOutputSchema(
   discoveryInfo: DiscoveryInfo,
   bazaarSchema?: unknown
