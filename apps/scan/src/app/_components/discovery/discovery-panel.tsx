@@ -579,7 +579,7 @@ function RegisterModeResourceList({
   const hasMore = allResources.length > INITIAL_LIMIT;
 
   return (
-    <div className="border rounded-md overflow-hidden">
+    <div className="border rounded-md overflow-hidden mt-3">
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-muted text-muted-foreground text-xs">
