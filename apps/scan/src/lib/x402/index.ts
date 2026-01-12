@@ -233,5 +233,9 @@ export function normalizeChainId(chainId: string): string {
     const network = ChainIdToNetwork[id];
     return network ?? chainId;
   }
+  if (chainId.startsWith('solana:')) {
+    const suffix = chainId.split(':')[1];
+    return suffix === 'mainnet' ? 'solana' : `solana-${suffix}`;
+  }
   return chainId;
 }
