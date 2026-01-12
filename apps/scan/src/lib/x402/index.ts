@@ -123,35 +123,33 @@ function detectVersion(data: unknown): 1 | 2 {
 export function getOutputSchema(
   response: ParsedX402Response
 ): OutputSchema | undefined {
-  if (response.x402Version !== 2) {
+  if (!isV2Response(response)) {
     return response.accepts?.[0]?.outputSchema;
   }
 
   const bazaar = response.extensions?.bazaar as DiscoveryExtension | undefined;
-  if (!bazaar?.info) {
+  return bazaar ? getOutputSchemaFromBazaar(bazaar) : undefined;
+}
+
+// NOTE(shafu): merge example data from info with field definitions from schema.
+function getOutputSchemaFromBazaar(
+  bazaar: DiscoveryExtension
+): OutputSchema | undefined {
+  if (!bazaar.info) {
     return undefined;
   }
 
   const info = bazaar.info;
   const input = info.input as Record<string, unknown>;
+  const body = input.body;
 
   // Enrich body with schema if info.body has example data (no properties)
-  const body = input.body;
-  if (
-    bazaar.schema &&
-    body &&
-    typeof body === 'object' &&
-    !('properties' in body)
-  ) {
+  if (bazaar.schema && body && typeof body === 'object' && !('properties' in body)) {
     const schema = bazaar.schema as {
       properties?: { input?: { properties?: { body?: unknown } } };
     };
     const bodySchema = schema.properties?.input?.properties?.body;
-    if (
-      bodySchema &&
-      typeof bodySchema === 'object' &&
-      'properties' in bodySchema
-    ) {
+    if (bodySchema && typeof bodySchema === 'object' && 'properties' in bodySchema) {
       return {
         input: { ...input, body: bodySchema },
         output: info.output,
@@ -176,7 +174,7 @@ export function isV2Response(
 export function getDescription(
   response: ParsedX402Response
 ): string | undefined {
-  if (response.x402Version === 2) {
+  if (isV2Response(response)) {
     return response.resource?.description;
   }
   return response.accepts?.find(a => a.description)?.description;
