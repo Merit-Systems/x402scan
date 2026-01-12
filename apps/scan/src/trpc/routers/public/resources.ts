@@ -32,9 +32,12 @@ import {
 
 import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
+import { getOriginFromUrl } from '@/lib/url';
+import { fetchDiscoveryDocument } from '@/services/discovery';
 
 import type { Prisma } from '@x402scan/scan-db';
 import type { SupportedChain } from '@/types/chain';
+import type { DiscoveryInfo } from '@/types/discovery';
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
@@ -166,9 +169,37 @@ export const resourcesRouter = createTRPCRouter({
           }
         }
 
+        // Check for additional resources via discovery
+        const origin = getOriginFromUrl(input.url);
+        let discovery: DiscoveryInfo = {
+          found: false,
+          otherResourceCount: 0,
+          origin,
+        };
+
+        try {
+          const discoveryResult = await fetchDiscoveryDocument(origin);
+          if (discoveryResult.success) {
+            // Filter out the URL that was just registered
+            const otherResources = discoveryResult.resources.filter(
+              r => r.url !== input.url
+            );
+            discovery = {
+              found: true,
+              source: discoveryResult.source,
+              otherResourceCount: otherResources.length,
+              origin,
+              resources: otherResources.map(r => r.url),
+            };
+          }
+        } catch {
+          // Discovery check failed, continue without discovery info
+        }
+
         return {
           ...result,
           methodUsed: method,
+          discovery,
         };
       }
 
@@ -191,6 +222,99 @@ export const resourcesRouter = createTRPCRouter({
         type: 'no402' as const,
       };
     }),
+
+  /**
+   * Register all x402 resources discovered from an origin.
+   * Uses DNS TXT records (_x402.{hostname}) or /.well-known/x402 for discovery.
+   */
+  registerFromOrigin: publicProcedure
+    .input(
+      z.object({
+        origin: z.url(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const discoveryResult = await fetchDiscoveryDocument(input.origin);
+
+      if (!discoveryResult.success) {
+        return {
+          success: false as const,
+          error: {
+            type: 'noDiscovery' as const,
+            message: discoveryResult.error ?? 'No discovery document found',
+          },
+        };
+      }
+
+      const results = await Promise.allSettled(
+        discoveryResult.resources.map(async resource => {
+          const resourceUrl = resource.url;
+          // Use specified method or try POST then GET
+          const methodsToTry = resource.method
+            ? [resource.method as Methods]
+            : [Methods.POST, Methods.GET];
+
+          for (const method of methodsToTry) {
+            try {
+              const response = await fetch(resourceUrl, {
+                method,
+                signal: AbortSignal.timeout(15000),
+              });
+
+              if (response.status === 402) {
+                return registerResource(resourceUrl, await response.json());
+              }
+            } catch {
+              // Continue to next method
+            }
+          }
+          return { success: false as const, url: resourceUrl, error: 'No 402 response' };
+        })
+      );
+
+      const successful = results.filter(
+        r => r.status === 'fulfilled' && r.value && 'success' in r.value && r.value.success
+      ).length;
+      const failed = results.length - successful;
+
+      return {
+        success: true as const,
+        registered: successful,
+        failed,
+        total: results.length,
+        source: discoveryResult.source,
+      };
+    }),
+
+  /**
+   * Check discovery for an origin without registering any resources.
+   * Returns the list of discovered resource URLs.
+   */
+  checkDiscovery: publicProcedure
+    .input(
+      z.object({
+        origin: z.url(),
+      })
+    )
+    .query(async ({ input }) => {
+      const discoveryResult = await fetchDiscoveryDocument(input.origin);
+
+      if (!discoveryResult.success) {
+        return {
+          found: false as const,
+          error: discoveryResult.error,
+        };
+      }
+
+      return {
+        found: true as const,
+        source: discoveryResult.source,
+        resourceCount: discoveryResult.resources.length,
+        resources: discoveryResult.resources,
+        discoveryUrls: discoveryResult.discoveryUrls,
+      };
+    }),
+
   tags: {
     list: publicProcedure
       .input(listTagsSchema.optional())

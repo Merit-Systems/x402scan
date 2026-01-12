@@ -7,11 +7,10 @@ import {
   ChevronDown,
   ChevronRight,
   Eye,
+  Loader2,
   Plus,
   X,
 } from 'lucide-react';
-
-import z from 'zod';
 
 import { toast } from 'sonner';
 
@@ -27,6 +26,7 @@ import {
 import { api } from '@/trpc/client';
 
 import { Favicon } from '@/app/_components/favicon';
+import { DiscoveryPanel, useDiscovery } from '@/app/_components/discovery';
 import {
   Card,
   CardContent,
@@ -66,6 +66,30 @@ export const RegisterResourceForm = () => {
   >([]);
 
   const utils = api.useUtils();
+
+  // Use shared discovery hook
+  const {
+    isValidUrl,
+    urlOrigin,
+    isOriginOnly,
+    isDiscoveryLoading,
+    discoveryFound,
+    discoverySource,
+    discoveryResources,
+    discoveryResourceCount,
+    isRegisteringAll,
+    bulkData,
+    handleRegisterAll,
+    resetBulk,
+  } = useDiscovery({
+    url,
+    onRegisterAllSuccess: data => {
+      toast.success(`Registered ${data.registered} of ${data.total} resources`);
+    },
+    onRegisterAllError: () => {
+      toast.error('Failed to register resources');
+    },
+  });
 
   const {
     mutate: addResource,
@@ -122,6 +146,16 @@ export const RegisterResourceForm = () => {
     setUrl('');
     setHeaders([]);
     reset();
+    resetBulk();
+  };
+
+  // Handle registering a single resource
+  const handleRegisterSingle = () => {
+    if (!isValidUrl) return;
+    addResource({
+      url,
+      headers: Object.fromEntries(headers.map(h => [h.name, h.value])),
+    });
   };
 
   return (
@@ -422,12 +456,27 @@ export const RegisterResourceForm = () => {
                 </div>
               </div>
             )}
+
+            {/* Discovery Results */}
+            <DiscoveryPanel
+              origin={urlOrigin}
+              enteredUrl={url}
+              isLoading={isDiscoveryLoading}
+              found={discoveryFound}
+              source={discoverySource}
+              resources={discoveryResources}
+              resourceCount={discoveryResourceCount}
+              isRegisteringAll={isRegisteringAll}
+              bulkResult={bulkData}
+              onRegisterAll={handleRegisterAll}
+              showRegisterButton={false}
+            />
           </div>
         )}
       </CardContent>
-      <CardFooter className="gap-2">
+      <CardFooter className="flex-col gap-2">
         {data && !data.error ? (
-          <>
+          <div className="flex gap-2 w-full">
             <Link href="/resources" className="flex-1">
               <Button variant="outline" className="w-full">
                 Back to Home
@@ -436,19 +485,51 @@ export const RegisterResourceForm = () => {
             <Button variant="turbo" onClick={onReset} className="flex-1">
               Add Another
             </Button>
-          </>
+          </div>
+        ) : bulkData?.success ? (
+          <div className="flex gap-2 w-full">
+            <Link href="/resources" className="flex-1">
+              <Button variant="outline" className="w-full">
+                Back to Home
+              </Button>
+            </Link>
+            <Button variant="turbo" onClick={onReset} className="flex-1">
+              Add Another
+            </Button>
+          </div>
+        ) : discoveryFound ? (
+          <div className="flex flex-col gap-2 w-full">
+            <Button
+              variant="turbo"
+              disabled={isRegisteringAll}
+              onClick={handleRegisterAll}
+              className="w-full"
+            >
+              {isRegisteringAll ? (
+                <>
+                  <Loader2 className="size-4 animate-spin mr-2" />
+                  Registering...
+                </>
+              ) : (
+                `Register All ${discoveryResourceCount} Resources`
+              )}
+            </Button>
+            {!isOriginOnly && (
+              <Button
+                variant="outline"
+                disabled={isPending}
+                onClick={handleRegisterSingle}
+                className="w-full"
+              >
+                {isPending ? 'Adding...' : 'Register Only This URL'}
+              </Button>
+            )}
+          </div>
         ) : (
           <Button
             variant="turbo"
-            disabled={isPending || !z.url().safeParse(url).success}
-            onClick={() =>
-              addResource({
-                url,
-                headers: Object.fromEntries(
-                  headers.map(h => [h.name, h.value])
-                ),
-              })
-            }
+            disabled={isPending || !isValidUrl}
+            onClick={handleRegisterSingle}
             className="w-full"
           >
             {isPending ? 'Adding...' : 'Add'}

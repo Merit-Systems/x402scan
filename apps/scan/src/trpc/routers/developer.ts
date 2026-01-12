@@ -6,6 +6,91 @@ import { getOriginFromUrl } from '@/lib/url';
 import { parseX402Response } from '@/lib/x402/schema';
 import { scrapeOriginData } from '@/services/scraper';
 
+interface FailedResourceDetails {
+  success: false;
+  url: string;
+  error: string;
+  status?: number;
+  statusText?: string;
+  body?: unknown;
+}
+
+async function testSingleResource(
+  url: string,
+  specifiedMethod?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+) {
+  let lastError: FailedResourceDetails = {
+    success: false,
+    url,
+    error: 'No valid x402 response found',
+  };
+
+  // Use specified method or try GET then POST
+  const methodsToTry = specifiedMethod ? [specifiedMethod] : (['GET', 'POST'] as const);
+
+  for (const method of methodsToTry) {
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: method === 'POST' ? { 'Content-Type': 'application/json' } : {},
+        body: method === 'POST' ? '{}' : undefined,
+        redirect: 'follow',
+        signal: AbortSignal.timeout(10000),
+      });
+
+      const text = await response.text();
+      let body: unknown = null;
+      try {
+        body = text ? JSON.parse(text) : null;
+      } catch {
+        body = text;
+      }
+
+      if (response.status !== 402) {
+        lastError = {
+          success: false,
+          url,
+          error: `Expected 402, got ${response.status}`,
+          status: response.status,
+          statusText: response.statusText,
+          body,
+        };
+        continue;
+      }
+
+      const parsed = parseX402Response(body);
+      if (parsed?.success) {
+        const accepts = parsed.data.accepts ?? [];
+        const description = accepts.find(a => a.description)?.description ?? null;
+        return {
+          success: true as const,
+          url,
+          method,
+          description,
+          parsed: parsed.data,
+        };
+      } else {
+        lastError = {
+          success: false,
+          url,
+          error: 'Invalid x402 response format',
+          status: response.status,
+          statusText: response.statusText,
+          body,
+        };
+      }
+    } catch (err) {
+      lastError = {
+        success: false,
+        url,
+        error: err instanceof Error ? err.message : 'Fetch failed',
+      };
+    }
+  }
+
+  return lastError;
+}
+
 export const developerRouter = createTRPCRouter({
   preview: publicProcedure
     .input(z.object({ url: z.string().url() }))
@@ -98,5 +183,32 @@ export const developerRouter = createTRPCRouter({
       })();
 
       return { result, parsed, info };
+    }),
+
+  /** Batch test multiple resources to get their x402 responses */
+  batchTest: publicProcedure
+    .input(
+      z.object({
+        resources: z.array(
+          z.object({
+            url: z.string().url(),
+            method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional(),
+          })
+        ).max(20),
+      })
+    )
+    .query(async ({ input }) => {
+      const results = await Promise.all(
+        input.resources.map(r => testSingleResource(r.url, r.method))
+      );
+
+      return {
+        resources: results.filter(
+          (r): r is Extract<typeof r, { success: true }> => r.success
+        ),
+        failed: results.filter(
+          (r): r is FailedResourceDetails => !r.success
+        ),
+      };
     }),
 });
