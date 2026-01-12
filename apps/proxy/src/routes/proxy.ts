@@ -260,8 +260,8 @@ async function proxyHandler(c: Context) {
           originalBodyUsed: upstreamResponse.bodyUsed,
           originalBody: upstreamResponse.body ? 'present' : 'null',
         });
-        // If clone fails, use original for both
-        clonedUpstreamResponse = upstreamResponse;
+        // If clone fails, don't run async handler to avoid consuming the body twice
+        clonedUpstreamResponse = null;
         returnResponse = upstreamResponse;
       }
     } else {
