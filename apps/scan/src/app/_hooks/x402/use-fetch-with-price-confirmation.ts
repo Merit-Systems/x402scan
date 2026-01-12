@@ -19,11 +19,12 @@ interface PriceIncreaseInfo {
 }
 
 /**
- * Type definition for x402 payment acceptance options
+ * Type definition for x402 payment acceptance options (v1 and v2)
  */
 interface X402Accept {
   maxAmountRequired?: string | number;
   max_amount_required?: string | number;
+  amount?: string | number;
 }
 
 /**
@@ -37,7 +38,7 @@ interface X402Response {
  * Hook for handling x402 payments with dynamic price confirmation.
  *
  * When a resource's actual price exceeds the initially estimated price,
- * this hook intercepts the error, extracts the new price from the 402 response,
+ * this hook checks the 402 response first, extracts the actual price,
  * and prompts the user to confirm payment at the higher amount.
  *
  * @example
@@ -65,7 +66,7 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
 }: UseX402FetchWithPriceConfirmationParams<TData>) => {
   const [priceIncreaseInfo, setPriceIncreaseInfo] =
     useState<PriceIncreaseInfo | null>(null);
-  const confirmedMaxValueRef = useRef<bigint | null>(null);
+  const confirmedRef = useRef<boolean>(false);
 
   const { onSuccess, onError, onSettled, onMutate, ...restOptions } =
     options ?? {};
@@ -73,83 +74,62 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
   const mutation = useMutation<
     X402FetchResponse<TData>,
     Error,
-    bigint | undefined
+    boolean | undefined
   >({
-    mutationFn: async (overrideMaxValue?: bigint) => {
-      const maxValue =
-        overrideMaxValue ?? confirmedMaxValueRef.current ?? initialMaxValue;
-      const fetchWithPayment = wrapperFn(fetchFn, maxValue);
+    mutationFn: async (skipPriceCheck?: boolean) => {
+      // Check price first (unless already confirmed)
+      if (!skipPriceCheck && !confirmedRef.current) {
+        const actualPrice = await checkPrice(fetchFn, targetUrl, init);
 
-      try {
-        const response = await fetchWithPayment(targetUrl, init);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(
-            errorText || `Failed to fetch: ${response.statusText}`
-          );
+        if (actualPrice && actualPrice > initialMaxValue) {
+          setPriceIncreaseInfo({
+            oldPrice: initialMaxValue,
+            newPrice: actualPrice,
+          });
+          throw new Error('PRICE_CONFIRMATION_REQUIRED');
         }
+      }
 
-        // Reset confirmation state on success
-        setPriceIncreaseInfo(null);
-        confirmedMaxValueRef.current = null;
+      // Make actual payment
+      const fetchWithPayment = wrapperFn(fetchFn);
+      const response = await fetchWithPayment(targetUrl, init);
 
-        const contentType = response.headers.get('content-type') ?? '';
-        let result: X402FetchResponse<TData>;
-        if (contentType.includes('application/json')) {
-          try {
-            result = {
-              data: (await response.json()) as TData,
-              type: 'json' as const,
-            };
-          } catch {
-            result = {
-              data: await response.text(),
-              type: 'unknown' as const,
-            };
-          }
-        } else if (contentType.includes('text/')) {
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || `Failed to fetch: ${response.statusText}`);
+      }
+
+      // Reset confirmation state on success
+      setPriceIncreaseInfo(null);
+      confirmedRef.current = false;
+
+      const contentType = response.headers.get('content-type') ?? '';
+      let result: X402FetchResponse<TData>;
+      if (contentType.includes('application/json')) {
+        try {
           result = {
-            data: await response.text(),
-            type: 'text' as const,
+            data: (await response.json()) as TData,
+            type: 'json' as const,
           };
-        } else {
+        } catch {
           result = {
             data: await response.text(),
             type: 'unknown' as const,
           };
         }
-
-        return result;
-      } catch (error) {
-        // Check if this is a price exceeded error from x402-fetch
-        if (
-          error instanceof Error &&
-          (error.message.includes('exceeds maximum') ||
-            error.message.includes('Payment amount exceeds') ||
-            error.message.includes('max value') ||
-            error.message.includes('exceeds the maximum'))
-        ) {
-          // Extract the actual required price from the 402 response
-          const newPrice = await extractNewPriceFromError(
-            error,
-            targetUrl,
-            init
-          );
-
-          // Only prompt for confirmation if we successfully extracted a higher price
-          if (newPrice && newPrice > maxValue) {
-            setPriceIncreaseInfo({
-              oldPrice: maxValue,
-              newPrice,
-            });
-            // Throw special error to prevent calling onError callback
-            // The component will show a confirmation dialog instead
-            throw new Error('PRICE_CONFIRMATION_REQUIRED');
-          }
-        }
-        throw error;
+      } else if (contentType.includes('text/')) {
+        result = {
+          data: await response.text(),
+          type: 'text' as const,
+        };
+      } else {
+        result = {
+          data: await response.text(),
+          type: 'unknown' as const,
+        };
       }
+
+      return result;
     },
     onSuccess: (data, _variables, ...rest) => {
       onSuccess?.(data, undefined, ...rest);
@@ -178,14 +158,13 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
    */
   const confirmPriceIncrease = useCallback(() => {
     if (priceIncreaseInfo) {
-      const newPrice = priceIncreaseInfo.newPrice;
-      confirmedMaxValueRef.current = newPrice;
+      confirmedRef.current = true;
       setPriceIncreaseInfo(null);
       mutation.reset();
 
       // Small delay to ensure state is reset before retry
       setTimeout(() => {
-        mutation.mutate(newPrice);
+        mutation.mutate(true);
       }, 100);
     }
   }, [priceIncreaseInfo, mutation]);
@@ -195,7 +174,7 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
    */
   const cancelPriceIncrease = useCallback(() => {
     setPriceIncreaseInfo(null);
-    confirmedMaxValueRef.current = null;
+    confirmedRef.current = false;
     mutation.reset();
   }, [mutation]);
 
@@ -208,42 +187,37 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
 };
 
 /**
- * Extracts the actual required price from a 402 Payment Required response.
+ * Checks the price from a 402 response without making a payment.
  *
- * This function attempts to fetch the 402 response to read the payment requirements
- * and extract the maximum amount required. It handles both camelCase and snake_case
- * field names for compatibility with different x402 implementations.
- *
- * @param error - The error thrown by x402-fetch
- * @param targetUrl - The URL that returned 402
+ * @param fetchFn - The fetch function to use
+ * @param targetUrl - The URL to check
  * @param init - Optional fetch request initialization
- * @returns The extracted price as bigint (in token base units), or null if extraction fails
+ * @returns The price as bigint, or null if extraction fails
  */
-async function extractNewPriceFromError(
-  error: Error,
+async function checkPrice(
+  fetchFn: typeof fetch,
   targetUrl: string,
   init?: RequestInit
 ): Promise<bigint | null> {
   try {
-    // Fetch the 402 response to read payment requirements
-    const response = await fetch(targetUrl, init);
+    const response = await fetchFn(targetUrl, init);
 
     if (response.status === 402) {
       const data = (await response.json()) as X402Response;
 
-      // Extract maxAmountRequired from all accepts entries
       if (data.accepts && Array.isArray(data.accepts)) {
         const amounts: bigint[] = data.accepts
           .map((accept: X402Accept): bigint | null => {
-            // Support both camelCase and snake_case
+            // Support v1 (maxAmountRequired) and v2 (amount) formats
             const amountValue =
-              accept.maxAmountRequired ?? accept.max_amount_required;
+              accept.amount ??
+              accept.maxAmountRequired ??
+              accept.max_amount_required;
 
             if (typeof amountValue === 'string') {
               return BigInt(amountValue);
             } else if (typeof amountValue === 'number') {
-              // Convert decimal to base units (assuming 6 decimals for USDC)
-              return BigInt(Math.floor(amountValue * 1e6));
+              return BigInt(Math.floor(amountValue));
             }
             return null;
           })
@@ -255,16 +229,8 @@ async function extractNewPriceFromError(
         }
       }
     }
-
-    // Fallback: attempt to parse amount from error message
-    const regex = /(\d+(?:\.\d+)?)/;
-    const match = regex.exec(error.message);
-    if (match?.[1]) {
-      const amount = parseFloat(match[1]);
-      return BigInt(Math.floor(amount * 1e6));
-    }
   } catch {
-    // Silently fail - we'll return null and let the original error propagate
+    // Silently fail - we'll return null and proceed with payment
   }
 
   return null;
