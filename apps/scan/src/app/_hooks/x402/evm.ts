@@ -11,23 +11,10 @@ import {
 
 import { CHAIN_ID } from '@/types/chain';
 
-import type { UseMutationOptions } from '@tanstack/react-query';
-import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';
+import type { FetchWithPaymentWrapper, UseEvmX402FetchParams } from './types';
 import type { Chain } from '@/types/chain';
 
-interface UseEvmX402FetchParams<TData = unknown> {
-  targetUrl: string;
-  value: bigint;
-  chain: Chain;
-  init?: RequestInit;
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
-  isTool?: boolean;
-}
-
-export const useEvmX402Fetch = <TData = unknown>({
-  chain,
-  ...params
-}: UseEvmX402FetchParams<TData>) => {
+export const useEvmPaymentWrapper = (chain: Chain) => {
   const { data: walletClient } = useWalletClient({
     chainId: CHAIN_ID[chain],
   });
@@ -43,6 +30,15 @@ export const useEvmX402Fetch = <TData = unknown>({
 
     return wrapFetchWithPayment(baseFetch, client);
   };
+
+  return { wrapperFn, walletClient };
+};
+
+export const useEvmX402Fetch = <TData = unknown>({
+  chain,
+  ...params
+}: UseEvmX402FetchParams<TData>) => {
+  const { wrapperFn } = useEvmPaymentWrapper(chain);
 
   return useX402Fetch<TData>({
     wrapperFn,

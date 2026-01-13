@@ -4,19 +4,12 @@
  * Simplified wrapper using the official @x402 library.
  * Handles both v1 and v2 protocols automatically.
  */
-export { x402Client, wrapFetchWithPayment, x402HTTPClient } from '@x402/fetch';
+export { x402Client, wrapFetchWithPayment } from '@x402/fetch';
 
-export {
-  registerExactEvmScheme,
-  type EvmClientConfig,
-} from '@x402/evm/exact/client';
+export { registerExactEvmScheme } from '@x402/evm/exact/client';
 
-export {
-  registerExactSvmScheme,
-  type SvmClientConfig,
-} from '@x402/svm/exact/client';
+export { registerExactSvmScheme } from '@x402/svm/exact/client';
 
-// ClientEvmSigner interface expected by @x402/evm
 export interface ClientEvmSigner {
   readonly address: `0x${string}`;
   signTypedData(message: {
@@ -28,10 +21,7 @@ export interface ClientEvmSigner {
 }
 
 /**
- * Adapts a wagmi WalletClient to the ClientEvmSigner interface
- * expected by @x402/evm.
- *
- * The main difference is that WalletClient has `account.address`
+ * NOTE(shafu): main difference is that WalletClient has `account.address`
  * while ClientEvmSigner expects `address` directly.
  */
 export function toEvmSigner(walletClient: {
