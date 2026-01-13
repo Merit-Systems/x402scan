@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   CheckCircle,
   ChevronDown,
@@ -12,6 +11,7 @@ import {
   ShieldCheck,
   XCircle,
 } from 'lucide-react';
+import { useState } from 'react';
 
 import { Accordion } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
@@ -27,15 +27,21 @@ import { cn } from '@/lib/utils';
 import { Favicon } from '@/app/_components/favicon';
 import { ResourceExecutor } from '@/app/_components/resources/executor';
 import {
-  createDummyResources,
-  createDummyResourceOrigin,
   createDummyOgImage,
+  createDummyResourceOrigin,
+  createDummyResources,
 } from '@/app/developer/_components/dummy';
 
-import type { Methods } from '@/types/x402';
-import type { ParsedX402Response } from '@/lib/x402';
 import { getOutputSchema } from '@/lib/x402';
+import type {
+  FailedResource as FailedResourceType,
+  TestedResource as TestedResourceType,
+} from '@/types/batch-test';
+import type { Methods } from '@/types/x402';
 import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
+
+export type TestedResource = TestedResourceType;
+export type FailedResource = FailedResourceType;
 
 export interface OriginPreview {
   title: string | null;
@@ -43,21 +49,6 @@ export interface OriginPreview {
   favicon: string | null;
   ogImages: { url: string; height?: number; width?: number }[];
   origin: string;
-}
-
-export interface TestedResource {
-  url: string;
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  description: string | null;
-  parsed: ParsedX402Response;
-}
-
-export interface FailedResource {
-  url: string;
-  error: string;
-  status?: number;
-  statusText?: string;
-  body?: unknown;
 }
 
 export interface DiscoveryPanelProps {
@@ -129,7 +120,7 @@ export function DiscoveryPanel({
   showRegisterButton = true,
   mode = 'register',
   preview,
-  isPreviewLoading,
+  isPreviewLoading = false,
   testedResources = [],
   failedResources = [],
   isBatchTestLoading,

@@ -15,18 +15,25 @@ import {
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 import { api } from '@/trpc/client';
 
-import { Favicon } from '@/app/_components/favicon';
 import { DiscoveryPanel, useDiscovery } from '@/app/_components/discovery';
+import { Favicon } from '@/app/_components/favicon';
+import { parseChain } from '@/app/_lib/chain/parse';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import {
   Card,
   CardContent,
@@ -35,8 +42,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -45,15 +50,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { parseChain } from '@/app/_lib/chain/parse';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { RegistrationAlert } from './registration-alert';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 import { AcceptsBreakdownTable } from './accepts-breakdown-table';
+import { RegistrationAlert } from './registration-alert';
 import { RegistrationChecklist } from './registration-checklist';
 
 export const RegisterResourceForm = () => {
@@ -76,7 +76,6 @@ export const RegisterResourceForm = () => {
     isDiscoveryLoading,
     discoveryFound,
     discoverySource,
-    discoveryResources,
     actualDiscoveredResources,
     registeredUrls,
     isRegisteringAll,
@@ -87,6 +86,8 @@ export const RegisterResourceForm = () => {
     ownershipProofs,
     payToAddresses,
     recoveredAddresses,
+    preview,
+    isPreviewLoading,
   } = useDiscovery({
     url,
     onRegisterAllSuccess: data => {
@@ -164,6 +165,15 @@ export const RegisterResourceForm = () => {
     });
   };
 
+  // Sanitize possibly loosely-typed values from discovery for strict props
+  const safeOwnershipVerified = Boolean(ownershipVerified);
+  const safeOwnershipProofs: string[] = Array.isArray(ownershipProofs)
+    ? ownershipProofs.filter((s): s is string => typeof s === 'string')
+    : [];
+  const safeRecoveredAddresses: string[] = Array.isArray(recoveredAddresses)
+    ? recoveredAddresses.filter((s): s is string => typeof s === 'string')
+    : [];
+
   return (
     <Card>
       <CardHeader>
@@ -179,7 +189,7 @@ export const RegisterResourceForm = () => {
       <CardContent>
         {data && !data.error ? (
           <div className="flex flex-col gap-2 overflow-hidden w-full max-w-full">
-            <div className="border rounded-lg p-4 bg-gradient-to-br from-muted/30 to-muted/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+            <div className="border rounded-lg p-4 bg-linear-to-br from-muted/30 to-muted/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
               <div className="flex items-center gap-4">
                 <Favicon
                   url={data.resource.origin.favicon}
@@ -473,16 +483,18 @@ export const RegisterResourceForm = () => {
               found={discoveryFound}
               source={discoverySource}
               resources={actualDiscoveredResources}
-              resourceCount={discoveryResources.length}
+              resourceCount={actualDiscoveredResources.length}
               isRegisteringAll={isRegisteringAll}
               bulkResult={bulkData}
               onRegisterAll={handleRegisterAll}
               showRegisterButton={false}
               registeredUrls={registeredUrls}
-              ownershipVerified={ownershipVerified}
-              ownershipProofs={ownershipProofs}
+              ownershipVerified={safeOwnershipVerified}
+              ownershipProofs={safeOwnershipProofs}
               payToAddresses={payToAddresses}
-              recoveredAddresses={recoveredAddresses}
+              recoveredAddresses={safeRecoveredAddresses}
+              preview={preview}
+              isPreviewLoading={isPreviewLoading}
             />
           </div>
         )}
@@ -524,7 +536,7 @@ export const RegisterResourceForm = () => {
                   Registering...
                 </>
               ) : (
-                `Register All ${discoveryResources.length} Resources`
+                `Register All ${actualDiscoveredResources.length} Resources`
               )}
             </Button>
             {!isOriginOnly && (

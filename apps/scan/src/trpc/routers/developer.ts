@@ -11,15 +11,9 @@ import {
   isV2Response,
 } from '@/lib/x402';
 import { scrapeOriginData } from '@/services/scraper';
+import type { FailedResource } from '@/types/batch-test';
 
-interface FailedResourceDetails {
-  success: false;
-  url: string;
-  error: string;
-  status?: number;
-  statusText?: string;
-  body?: unknown;
-}
+type FailedResourceDetails = FailedResource;
 
 async function testSingleResource(
   url: string,

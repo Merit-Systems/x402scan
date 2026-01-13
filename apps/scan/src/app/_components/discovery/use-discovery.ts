@@ -5,7 +5,11 @@ import z from 'zod';
 
 import { api } from '@/trpc/client';
 
+import type { FailedResource, TestedResource } from '@/types/batch-test';
 import type { DiscoveredResource } from '@/types/discovery';
+import type { OriginPreview } from './discovery-panel';
+import { useBatchTest } from './use-batch-test';
+import { useOwnership } from './use-ownership';
 
 /**
  * Get the origin from a URL
@@ -43,11 +47,64 @@ export interface UseDiscoveryOptions {
   onRegisterAllError?: () => void;
 }
 
+export interface UseDiscoveryReturn {
+  // URL info
+  isValidUrl: boolean;
+  urlOrigin: string | null;
+  isOriginOnly: boolean;
+  enteredUrlInDiscovery: boolean;
+
+  // Discovery state
+  discoveryQuery: unknown;
+  isDiscoveryLoading: boolean;
+  discoveryFound: boolean;
+  discoverySource?: 'dns' | 'well-known';
+  discoveryResources: string[];
+  actualDiscoveredResources: string[];
+  discoveryResourceCount: number;
+  discoveryError?: string;
+
+  // Origin preview
+  isPreviewLoading: boolean;
+  preview: OriginPreview | null;
+
+  // Test results
+  isBatchTestLoading: boolean;
+  testedResources: TestedResource[];
+  failedResources: FailedResource[];
+
+  // Ownership verification
+  hasOwnershipProofs: boolean;
+  ownershipProofs: string[];
+  payToAddresses: string[];
+  ownershipVerified: boolean;
+  recoveredAddresses: string[];
+  isVerifyingOwnership: boolean;
+
+  // Registration status
+  isCheckingRegistered: boolean;
+  registeredUrls: string[];
+
+  // Bulk registration
+  isRegisteringAll: boolean;
+  bulkData: {
+    success: true;
+    registered: number;
+    total: number;
+    failed: number;
+  } | null;
+  handleRegisterAll: () => void;
+  resetBulk: () => void;
+
+  // Refresh
+  refreshDiscovery: () => void;
+}
+
 export function useDiscovery({
   url,
   onRegisterAllSuccess,
   onRegisterAllError,
-}: UseDiscoveryOptions) {
+}: UseDiscoveryOptions): UseDiscoveryReturn {
   const utils = api.useUtils();
 
   // Check if URL is valid and extract origin
@@ -133,49 +190,17 @@ export function useDiscovery({
     [discoveryResources]
   );
 
-  // Batch test query - runs when we have resources to test
-  const batchTestQuery = api.developer.batchTest.useQuery(
-    { resources: effectiveResources },
-    {
-      enabled: discoveryCheckComplete && effectiveResources.length > 0,
-      staleTime: 60000, // Cache for 1 min
-    }
+  // Batch test query - uses wrapper hook for proper typing
+  const batchTest = useBatchTest(
+    effectiveResources,
+    discoveryCheckComplete && effectiveResources.length > 0
   );
 
-  // Extract payTo addresses from tested resources for ownership verification
-  const payToAddresses = useMemo(() => {
-    const addresses: string[] = [];
-    for (const resource of batchTestQuery.data?.resources ?? []) {
-      for (const accept of resource.parsed.accepts ?? []) {
-        if ('payTo' in accept && accept.payTo) {
-          addresses.push(accept.payTo);
-        }
-      }
-    }
-    return [...new Set(addresses)]; // Deduplicate
-  }, [batchTestQuery.data?.resources]);
-
-  // Get ownership proofs from discovery
-  const ownershipProofs = useMemo(
-    () =>
-      discoveryQuery.data?.found
-        ? (discoveryQuery.data.ownershipProofs ?? [])
-        : [],
-    [discoveryQuery.data]
-  );
-
-  // Verify ownership proofs against payTo addresses
-  const ownershipQuery = api.public.resources.verifyOwnership.useQuery(
-    {
-      ownershipProofs,
-      origin: urlOrigin!,
-      payToAddresses,
-    },
-    {
-      enabled:
-        !!urlOrigin && ownershipProofs.length > 0 && payToAddresses.length > 0,
-      staleTime: 60000,
-    }
+  // Ownership verification - uses wrapper hook to isolate tRPC type issues
+  const ownership = useOwnership(
+    discoveryQuery.data,
+    urlOrigin,
+    batchTest.payToAddresses
   );
 
   // Check which resources are already registered
@@ -243,20 +268,20 @@ export function useDiscovery({
 
     // Origin preview
     isPreviewLoading: previewQuery.isLoading,
-    preview: previewQuery.data?.preview ?? null,
+    preview: (previewQuery.data?.preview ?? null) as OriginPreview | null,
 
-    // Test results (x402 responses for resources)
-    isBatchTestLoading: batchTestQuery.isLoading,
-    testedResources: batchTestQuery.data?.resources ?? [],
-    failedResources: batchTestQuery.data?.failed ?? [],
+    // Test results
+    isBatchTestLoading: batchTest.isLoading,
+    testedResources: batchTest.resources,
+    failedResources: batchTest.failed,
 
     // Ownership verification
-    hasOwnershipProofs: ownershipProofs.length > 0,
-    ownershipProofs,
-    payToAddresses,
-    ownershipVerified: ownershipQuery.data?.verified ?? false,
-    recoveredAddresses: ownershipQuery.data?.recoveredAddresses ?? [],
-    isVerifyingOwnership: ownershipQuery.isLoading,
+    hasOwnershipProofs: ownership.ownershipProofs.length > 0,
+    ownershipProofs: ownership.ownershipProofs,
+    payToAddresses: batchTest.payToAddresses,
+    ownershipVerified: ownership.ownershipVerified,
+    recoveredAddresses: ownership.recoveredAddresses,
+    isVerifyingOwnership: ownership.isVerifyingOwnership,
 
     // Registration status
     isCheckingRegistered: registeredCheckQuery.isLoading,
@@ -279,7 +304,7 @@ export function useDiscovery({
     refreshDiscovery: () => {
       void discoveryQuery.refetch();
       void previewQuery.refetch();
-      void batchTestQuery.refetch();
+      batchTest.refetch();
     },
   };
 }
