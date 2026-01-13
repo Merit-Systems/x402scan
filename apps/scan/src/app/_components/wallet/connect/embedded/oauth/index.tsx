@@ -15,7 +15,7 @@ export const ConnectEmbeddedWalletOAuth = () => {
         <Button
           key={provider.id}
           variant="outline"
-          onClick={() => signInWithOAuth(provider.id)}
+          onClick={() => void signInWithOAuth(provider.id)}
           className="w-full h-12 md:h-12"
         >
           <Image

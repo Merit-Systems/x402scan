@@ -60,15 +60,15 @@ interface BaseQueryConfig {
   ) => TransferEventData[] | Promise<TransferEventData[]>;
 }
 
-interface TimeWindowQueryConfig extends BaseQueryConfig {
+type TimeWindowQueryConfig = BaseQueryConfig & {
   paginationStrategy: PaginationStrategy.TIME_WINDOW;
   timeWindowInMs: number;
-}
+};
 
-interface OffsetQueryConfig extends BaseQueryConfig {
+type OffsetQueryConfig = BaseQueryConfig & {
   paginationStrategy: PaginationStrategy.OFFSET;
   timeWindowInMs?: never;
-}
+};
 
 export type QueryConfig = TimeWindowQueryConfig | OffsetQueryConfig;
 

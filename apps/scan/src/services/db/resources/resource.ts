@@ -11,7 +11,7 @@ import { ChainIdToNetwork } from 'x402/types';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
-import type { EnhancedOutputSchema } from '@/lib/x402/schema';
+import type { OutputSchema } from '@/lib/x402';
 import type { SupportedChain } from '@/types/chain';
 
 import {
@@ -58,12 +58,12 @@ export const upsertResourceSchema = z.object({
           ),
       ]),
       payTo: mixedAddressSchema,
-      description: z.string(),
+      description: z.string().optional().default(''),
       maxAmountRequired: z.string(),
-      mimeType: z.string(),
+      mimeType: z.string().optional().default(''),
       maxTimeoutSeconds: z.number(),
       asset: z.string(),
-      outputSchema: z.custom<EnhancedOutputSchema>().optional(),
+      outputSchema: z.custom<OutputSchema>().optional(),
       extra: z.record(z.string(), z.any()).optional(),
     })
   ),
@@ -213,10 +213,10 @@ export const listResources = createCachedArrayQuery({
 
 export type ResourceSortId = 'lastUpdated' | 'toolCalls';
 
-type ResourceSorting = {
+interface ResourceSorting {
   id: ResourceSortId;
   desc: boolean;
-};
+}
 
 export const listResourcesWithPaginationUncached = async (
   input: { where?: Prisma.ResourcesWhereInput; sorting?: ResourceSorting },

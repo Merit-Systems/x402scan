@@ -11,8 +11,10 @@ export const DeveloperToolBanner = () => {
   const [isDismissed, setIsDismissed] = useState(true); // Default to true to avoid flash
 
   useEffect(() => {
-    // Check localStorage on mount
+    // Check localStorage on mount (only runs on client)
+    if (typeof window === 'undefined') return;
     const dismissed = localStorage.getItem(STORAGE_KEY);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsDismissed(dismissed === 'true');
   }, []);
 

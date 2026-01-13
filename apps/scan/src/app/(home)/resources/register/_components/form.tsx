@@ -219,7 +219,7 @@ export const RegisterResourceForm = () => {
                     hasEnhancedSchema={!data.enhancedParseWarnings}
                     hasOriginMetadata={Boolean(
                       data.registrationDetails?.originMetadata?.title ??
-                        data.registrationDetails?.originMetadata?.description
+                      data.registrationDetails?.originMetadata?.description
                     )}
                   />
                 </AccordionContent>

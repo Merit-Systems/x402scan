@@ -6,7 +6,7 @@ import { LoadingFacilitatorsChart } from './_components/chart';
 import { LoadingFacilitatorsTable } from './_components/facilitators';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 
-export default async function FacilitatorsPage() {
+export default function LoadingFacilitatorsPage() {
   return (
     <div>
       <Heading
@@ -18,7 +18,7 @@ export default async function FacilitatorsPage() {
         <Card className="overflow-hidden">
           <LoadingFacilitatorsChart />
         </Card>
-        <LoadingFacilitatorsTable />
+        <LoadingFacilitatorsTable pageSize={10} />
       </Body>
     </div>
   );

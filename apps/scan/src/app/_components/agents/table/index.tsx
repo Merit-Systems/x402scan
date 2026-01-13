@@ -19,7 +19,7 @@ interface Props {
   limit?: number;
 }
 
-export const AgentsTable: React.FC<Props> = async ({ input, limit = 10 }) => {
+export const AgentsTable: React.FC<Props> = ({ input, limit = 10 }) => {
   void api.public.agents.list.prefetch({
     ...input,
     pagination: { page: 0, page_size: limit },

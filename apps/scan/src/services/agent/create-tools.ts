@@ -5,11 +5,11 @@ import { listResourcesForTools } from '@/services/db/resources/resource';
 import { inputSchemaToZodSchema } from './utils';
 
 import {
-  EnhancedPaymentRequirementsSchema,
-  enhancedOutputSchema,
-} from '@/lib/x402/schema';
+  paymentRequirementsSchemaV1,
+  outputSchemaV1,
+  type OutputSchemaV1,
+} from '@/lib/x402';
 
-import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { ResourceRequestMetadata } from '@x402scan/scan-db';
 import type { Tool } from 'ai';
 
@@ -23,12 +23,15 @@ export async function createX402AITools(
   for (const resource of resources) {
     if (resource.accepts) {
       for (const accept of resource.accepts) {
-        const parsedAccept = EnhancedPaymentRequirementsSchema.extend({
-          outputSchema: enhancedOutputSchema,
-        }).safeParse({
-          ...accept,
-          maxAmountRequired: accept.maxAmountRequired.toString(),
-        });
+        const parsedAccept = paymentRequirementsSchemaV1
+          .extend({
+            outputSchema: outputSchemaV1,
+          })
+          .safeParse({
+            ...accept,
+            network: accept.network,
+            maxAmountRequired: accept.maxAmountRequired.toString(),
+          });
         if (!parsedAccept.success) {
           continue;
         }
@@ -58,7 +61,7 @@ export async function createX402AITools(
 }
 
 const mergeInputSchemaAndRequestMetadata = (
-  inputSchema: EnhancedOutputSchema['input'],
+  inputSchema: OutputSchemaV1['input'],
   requestMetadata?: ResourceRequestMetadata
 ) => {
   return {

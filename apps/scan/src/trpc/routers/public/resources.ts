@@ -23,6 +23,7 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import { Methods } from '@/types/x402';
 
 import { registerResource } from '@/lib/resources';
+import { extractX402Data } from '@/lib/x402';
 import { TRPCError } from '@trpc/server';
 import {
   listResourceTags,
@@ -151,7 +152,7 @@ export const resourcesRouter = createTRPCRouter({
 
         const result = await registerResource(
           input.url.toString(),
-          await response.json()
+          await extractX402Data(response)
         );
 
         if (result.success === false) {
@@ -202,23 +203,4 @@ export const resourcesRouter = createTRPCRouter({
       return await listResourceTags(input);
     }),
   },
-  getMetrics: publicProcedure
-    .input(z.object({ resourceId: z.string() }))
-    .query(async ({ input }) => {
-      return await scanDb.resourceMetrics.findFirst({
-        where: { resourceId: input.resourceId },
-        orderBy: { updatedAt: 'desc' },
-        select: {
-          uptime24hPct: true,
-          totalCount24h: true,
-          count_5xx_24h: true,
-          count_4xx_24h: true,
-          count_2xx_24h: true,
-          p50_24hMs: true,
-          p90_24hMs: true,
-          p99_24hMs: true,
-          updatedAt: true,
-        },
-      });
-    }),
 });

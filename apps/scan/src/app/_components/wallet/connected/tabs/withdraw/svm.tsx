@@ -36,9 +36,9 @@ export const WithdrawSolana: React.FC<Props> = ({
   );
 };
 
-interface WithdrawContentProps extends Props {
+type WithdrawContentProps = {
   account: UiWalletAccount;
-}
+} & Props;
 
 const WithdrawSolanaContent: React.FC<WithdrawContentProps> = ({
   account,

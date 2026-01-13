@@ -22,3 +22,5 @@ export { polymer, polymerFacilitator } from './polymer';
 export { meridian, meridianFacilitator } from './meridian';
 export { openmid, openmidFacilitator } from './openmid';
 export { primer, primerFacilitator } from './primer';
+export { x402jobs, x402jobsFacilitator } from './x402jobs';
+export { openfacilitator, openfacilitatorFacilitator } from './openfacilitator';

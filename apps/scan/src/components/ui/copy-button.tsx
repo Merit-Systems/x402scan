@@ -12,13 +12,13 @@ import { cn } from '@/lib/utils';
 
 import type { ButtonProps } from './button';
 
-interface Props extends ButtonProps {
+type Props = {
   text: string;
   toastMessage?: string;
   onCopy?: () => void;
   className?: string;
   isLoading?: boolean;
-}
+} & ButtonProps;
 
 export const CopyButton: React.FC<Props> = ({
   text,
@@ -37,7 +37,7 @@ export const CopyButton: React.FC<Props> = ({
 
   return (
     <Button
-      onClick={() => copyToClipboard(text)}
+      onClick={() => void copyToClipboard(text)}
       variant="outline"
       className={cn('shrink-0 size-fit md:size-fit p-2', className)}
       size="icon"

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { listTopSellersInputSchema } from '@/services/transfers/sellers/list';
+import { listTopSellersMVInputSchema } from '@/services/transfers/sellers/list-mv';
 
-export const listBazaarOriginsInputSchema = listTopSellersInputSchema.extend({
+export const listBazaarOriginsInputSchema = listTopSellersMVInputSchema.extend({
   tags: z.array(z.string()).optional(),
 });

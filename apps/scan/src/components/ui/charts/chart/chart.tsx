@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   BarChart,
   LineChart,
@@ -24,7 +25,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
   stackOffset,
   xAxis,
 }: ChartProps<T> & { type: 'bar' | 'area' | 'line' | 'composed' }) => {
-  const getContainer = () => {
+  const Container = useMemo(() => {
     switch (type) {
       case 'bar':
         return BarChart;
@@ -37,9 +38,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
       default:
         return BarChart;
     }
-  };
-
-  const Container = getContainer();
+  }, [type]);
 
   return (
     <ResponsiveContainer width="100%" height={height}>

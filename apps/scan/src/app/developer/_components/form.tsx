@@ -32,7 +32,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import {
+  getOutputSchema,
+  normalizeChainId,
+  type ParsedX402Response,
+} from '@/lib/x402';
 import { Methods } from '@/types/x402';
 import { Checklist } from './checklist';
 import {
@@ -52,7 +56,7 @@ import { isLocalUrl, extractPort } from '@/lib/url-helpers';
 import { NgrokAlert } from './ngrok-alert';
 
 import type { SupportedChain } from '@/types/chain';
-import type { OgImage, ResourceOrigin } from '@x402scan/scan-db';
+import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 
 export const TestEndpointForm = () => {
   const queryClient = useQueryClient();
@@ -155,13 +159,13 @@ export const TestEndpointForm = () => {
 
   // Process accepts from both GET and POST
   const acceptsData = useMemo(() => {
-    const allAccepts: Array<{
+    const allAccepts: {
       network: string;
       payTo: string;
       asset: string;
       method: 'GET' | 'POST';
       isSupported: boolean;
-    }> = [];
+    }[] = [];
 
     [
       { pair: getPair, method: 'GET' as const },
@@ -170,14 +174,16 @@ export const TestEndpointForm = () => {
       if (pair?.parsed?.success) {
         const accepts = pair.parsed.data.accepts ?? [];
         accepts.forEach(accept => {
+          const normalizedNetwork = normalizeChainId(accept.network ?? '');
+          const isSupported = SUPPORTED_CHAINS.includes(
+            normalizedNetwork as SupportedChain
+          );
           allAccepts.push({
-            network: accept.network!,
+            network: normalizedNetwork,
             payTo: accept.payTo,
             asset: accept.asset,
             method,
-            isSupported: SUPPORTED_CHAINS.includes(
-              accept.network as SupportedChain
-            ),
+            isSupported,
           });
         });
       }
@@ -402,7 +408,9 @@ export const TestEndpointForm = () => {
                             tags={[]}
                             response={entry.data}
                             bazaarMethod={
-                              (entry.data.accepts?.[0]?.outputSchema?.input.method?.toUpperCase?.() as Methods) ??
+                              (getOutputSchema(
+                                entry.data
+                              )?.input.method?.toUpperCase?.() as Methods) ??
                               entry.method
                             }
                             hideOrigin

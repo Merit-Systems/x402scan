@@ -67,7 +67,7 @@ export const DisplayStep: React.FC<Props> = ({
                   }}
                   maxFiles={1}
                   maxSize={5 * 1024 * 1024}
-                  onDrop={async files => {
+                  onDrop={files => {
                     if (files.length === 0) {
                       toast.error('No file selected');
                       return;

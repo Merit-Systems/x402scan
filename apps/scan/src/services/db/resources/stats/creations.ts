@@ -76,9 +76,9 @@ const getBucketedResourceCreationsUncached = async (
   `;
 
   const rawResult =
-    await scanDb.$queryRaw<
-      Array<{ bucket_start: Date; total_resources: number }>
-    >(sql);
+    await scanDb.$queryRaw<{ bucket_start: Date; total_resources: number }[]>(
+      sql
+    );
 
   return bucketedCreationsResultSchema.parse(rawResult);
 };

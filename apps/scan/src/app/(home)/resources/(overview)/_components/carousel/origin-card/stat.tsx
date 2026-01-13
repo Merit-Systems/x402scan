@@ -27,9 +27,9 @@ export const FooterStat: React.FC<Props> = ({ Icon, value, className }) => {
   );
 };
 
-interface FooterStatContainerProps extends Omit<Props, 'value'> {
+type FooterStatContainerProps = {
   children: React.ReactNode;
-}
+} & Omit<Props, 'value'>;
 
 const FooterStatContainer: React.FC<FooterStatContainerProps> = ({
   Icon,

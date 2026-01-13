@@ -83,7 +83,7 @@ const getBucketedToolCallsByTagsUncached = async (
   `;
 
   const rawResult = await scanDb.$queryRaw<
-    Array<{
+    {
       bucket_start: Date;
       tags: Record<
         string,
@@ -92,7 +92,7 @@ const getBucketedToolCallsByTagsUncached = async (
           total_tool_calls: number;
         }
       >;
-    }>
+    }[]
   >(sql);
 
   return bucketedToolCallsByTagsResultSchema.parse(rawResult);

@@ -1,6 +1,6 @@
 type NextError = Error & { digest?: string };
 
-export type NextErrorProps = {
+export interface NextErrorProps {
   error: NextError;
   reset: () => void;
-};
+}

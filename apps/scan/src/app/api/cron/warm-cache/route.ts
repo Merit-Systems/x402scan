@@ -84,19 +84,19 @@ function getHomePageTasks(
   timeframe: ActivityTimeframe,
   chain?: Chain
 ): (() => Promise<unknown>)[] {
-  const limit = 100;
+  const transactionsLimit = 15;
 
   return [
     // Overall Stats - current period
     () =>
-      api.public.stats.overallMV({
+      api.public.stats.overall({
         timeframe,
         chain,
       }),
 
     // Bucketed Statistics - for charts
     () =>
-      api.public.stats.bucketedMV({
+      api.public.stats.bucketed({
         timeframe,
         numBuckets: 48,
         chain,
@@ -124,7 +124,7 @@ function getHomePageTasks(
     () =>
       api.public.transfers.list({
         pagination: {
-          page_size: limit,
+          page_size: transactionsLimit,
         },
         sorting: defaultTransfersSorting,
         timeframe,

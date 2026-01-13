@@ -94,9 +94,9 @@ interface Stat {
   Icon: LucideIcon;
 }
 
-interface StatsCardProps extends Stat {
+type StatsCardProps = {
   children: React.ReactNode;
-}
+} & Stat;
 
 const StatCard = ({ children, ...stat }: StatsCardProps) => {
   return <BaseStatCard {...stat}>{children}</BaseStatCard>;

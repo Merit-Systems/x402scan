@@ -16,7 +16,7 @@ export default async function TransactionsPage({
 }: PageProps<'/recipient/[address]/transactions'>) {
   const { address } = await params;
 
-  const pageSize = 15;
+  const pageSize = 10;
 
   return (
     <HydrateClient>
@@ -27,7 +27,9 @@ export default async function TransactionsPage({
         />
         <Body>
           <Suspense
-            fallback={<LoadingLatestTransactionsTable loadingRowCount={15} />}
+            fallback={
+              <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
+            }
           >
             <LatestTransactionsTable address={address} pageSize={pageSize} />
           </Suspense>

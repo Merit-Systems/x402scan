@@ -7,27 +7,55 @@ export const fetchWithProxy = async (
   requestInit?: RequestInit
 ) => {
   let url: string;
+  let effectiveInit: RequestInit | undefined = requestInit;
+
   if (input instanceof Request) {
     url = input.url;
+    if (!requestInit) {
+      const clonedRequest = input.clone();
+
+      let body: string | undefined;
+      if (input.method !== 'GET' && input.method !== 'HEAD') {
+        try {
+          body = await clonedRequest.text();
+          if (!body) body = undefined;
+        } catch {
+          body = undefined;
+        }
+      }
+
+      effectiveInit = {
+        method: input.method,
+        headers: input.headers,
+        body,
+        credentials: input.credentials,
+        cache: input.cache,
+        redirect: input.redirect,
+        referrer: input.referrer,
+        integrity: input.integrity,
+      };
+    }
   } else {
     url = input.toString();
   }
+
   const proxyUrl = new URL(PROXY_ENDPOINT, env.NEXT_PUBLIC_PROXY_URL);
   proxyUrl.searchParams.set('url', encodeURIComponent(url));
   proxyUrl.searchParams.set('share_data', 'true');
 
-  const { method = 'GET', ...restInit } = requestInit ?? {};
+  const { method = 'GET', ...restInit } = effectiveInit ?? {};
   const normalizedMethod = method.toString().toUpperCase();
 
-  const headers = new Headers(requestInit?.headers);
+  const headers = new Headers(effectiveInit?.headers);
 
-  // Auto-add Content-Type for requests with body
   if (
     normalizedMethod !== 'GET' &&
     normalizedMethod !== 'HEAD' &&
     restInit.body
   ) {
-    headers.set('Content-Type', 'application/json');
+    if (!headers.has('Content-Type')) {
+      headers.set('Content-Type', 'application/json');
+    }
   }
 
   // Clear body for GET/HEAD requests

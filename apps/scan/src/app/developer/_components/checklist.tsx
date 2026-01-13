@@ -25,16 +25,20 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Code } from '@/components/ui/code';
-import { type parseX402Response } from '@/lib/x402/schema';
+import {
+  getOutputSchema,
+  type parseX402Response,
+  type ParsedX402Response,
+} from '@/lib/x402';
 import { CheckCircle, ChevronDown, Minus, XCircle } from 'lucide-react';
 
-type TestResult = {
+interface TestResult {
   ok: boolean;
   status: number;
   statusText: string;
   headers: Record<string, string>;
   body: unknown;
-};
+}
 
 type ParsedPair = {
   result: TestResult;
@@ -49,6 +53,47 @@ type PreviewData = {
   origin: string;
 } | null;
 
+const Icon = ({ ok, message }: { ok?: boolean; message?: string }) =>
+  ok === undefined ? (
+    <Minus className="size-4 text-muted-foreground" />
+  ) : ok ? (
+    <CheckCircle className="size-4 text-green-600" />
+  ) : message ? (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <XCircle className="size-4 text-red-600" />
+      </TooltipTrigger>
+      <TooltipContent sideOffset={6}>{message}</TooltipContent>
+    </Tooltip>
+  ) : (
+    <XCircle className="size-4 text-red-600" />
+  );
+
+// Helper to render a row with GET/POST icons
+const Row = ({
+  label,
+  gOk,
+  pOk,
+  gMsg,
+  pMsg,
+}: {
+  label: string;
+  gOk?: boolean;
+  pOk?: boolean;
+  gMsg?: string;
+  pMsg?: string;
+}) => (
+  <TableRow>
+    <TableCell className="pr-2">{label}</TableCell>
+    <TableCell className="pr-2">
+      <Icon ok={gOk} message={gMsg} />
+    </TableCell>
+    <TableCell>
+      <Icon ok={pOk} message={pMsg} />
+    </TableCell>
+  </TableRow>
+);
+
 export function Checklist({
   preview,
   getPair,
@@ -61,60 +106,17 @@ export function Checklist({
   const g = getPair;
   const p = postPair;
 
-  const analyze = (parsed: ReturnType<typeof parseX402Response>) => {
-    if (!parsed?.success)
-      return { hasAccepts: false, hasInput: false, hasOutput: false };
-    const acc = parsed.data.accepts ?? [];
-    const firstAcc = acc[0];
+  const analyze = (data: ParsedX402Response) => {
+    const acc = data.accepts ?? [];
+    const outputSchema = getOutputSchema(data);
     return {
       hasAccepts: acc.length > 0,
-      hasInput: Boolean(firstAcc?.outputSchema?.input),
-      hasOutput: firstAcc?.outputSchema?.output !== undefined,
+      hasInput: Boolean(outputSchema?.input),
+      hasOutput: outputSchema?.output !== undefined,
     };
   };
-  const gInfo = g?.parsed?.success ? analyze(g.parsed) : undefined;
-  const pInfo = p?.parsed?.success ? analyze(p.parsed) : undefined;
-
-  const Icon = ({ ok, message }: { ok?: boolean; message?: string }) =>
-    ok === undefined ? (
-      <Minus className="size-4 text-muted-foreground" />
-    ) : ok ? (
-      <CheckCircle className="size-4 text-green-600" />
-    ) : message ? (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <XCircle className="size-4 text-red-600" />
-        </TooltipTrigger>
-        <TooltipContent sideOffset={6}>{message}</TooltipContent>
-      </Tooltip>
-    ) : (
-      <XCircle className="size-4 text-red-600" />
-    );
-
-  // Helper to render a row with GET/POST icons
-  const Row = ({
-    label,
-    gOk,
-    pOk,
-    gMsg,
-    pMsg,
-  }: {
-    label: string;
-    gOk?: boolean;
-    pOk?: boolean;
-    gMsg?: string;
-    pMsg?: string;
-  }) => (
-    <TableRow>
-      <TableCell className="pr-2">{label}</TableCell>
-      <TableCell className="pr-2">
-        <Icon ok={gOk} message={gMsg} />
-      </TableCell>
-      <TableCell>
-        <Icon ok={pOk} message={pMsg} />
-      </TableCell>
-    </TableRow>
-  );
+  const gInfo = g?.parsed?.success ? analyze(g.parsed.data) : undefined;
+  const pInfo = p?.parsed?.success ? analyze(p.parsed.data) : undefined;
 
   const joinErrors = (errors?: string[]) =>
     errors?.length ? errors.join('\n') : undefined;
@@ -125,9 +127,9 @@ export function Checklist({
   ) => {
     if (!pair?.parsed) return undefined;
     if (pair.parsed.success === false) return joinErrors(pair.parsed.errors);
-    const acc = pair.parsed.data.accepts?.[0];
-    const hasInput = Boolean(acc?.outputSchema?.input);
-    const hasOutput = acc?.outputSchema?.output !== undefined;
+    const outputSchema = getOutputSchema(pair.parsed.data);
+    const hasInput = Boolean(outputSchema?.input);
+    const hasOutput = outputSchema?.output !== undefined;
     if (which === 'input')
       return hasInput ? undefined : 'Missing outputSchema.input';
     if (which === 'output')
@@ -209,36 +211,41 @@ export function Checklist({
                   : undefined
               }
             />
-            {/* Valid schema: collapse if input/output match across GET & POST */}
-            {(gInfo?.hasInput ?? undefined) ===
-              (gInfo?.hasOutput ?? undefined) &&
-            (pInfo?.hasInput ?? undefined) ===
-              (pInfo?.hasOutput ?? undefined) ? (
-              <Row
-                label="Valid schema"
-                gOk={gInfo?.hasInput}
-                pOk={pInfo?.hasInput}
-                gMsg={buildSchemaMessage(g, 'both')}
-                pMsg={buildSchemaMessage(p, 'both')}
-              />
-            ) : (
-              <>
-                <Row
-                  label="Valid input schema"
-                  gOk={gInfo?.hasInput}
-                  pOk={pInfo?.hasInput}
-                  gMsg={buildSchemaMessage(g, 'input')}
-                  pMsg={buildSchemaMessage(p, 'input')}
-                />
-                <Row
-                  label="Valid output schema"
-                  gOk={gInfo?.hasOutput}
-                  pOk={pInfo?.hasOutput}
-                  gMsg={buildSchemaMessage(g, 'output')}
-                  pMsg={buildSchemaMessage(p, 'output')}
-                />
-              </>
-            )}
+            <TableRow>
+              <TableCell className="pr-2">Version</TableCell>
+              <TableCell className="pr-2">
+                {g?.parsed?.success ? (
+                  <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-muted">
+                    v{g.parsed.data.x402Version ?? 1}
+                  </span>
+                ) : (
+                  <Minus className="size-4 text-muted-foreground" />
+                )}
+              </TableCell>
+              <TableCell>
+                {p?.parsed?.success ? (
+                  <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-muted">
+                    v{p.parsed.data.x402Version ?? 1}
+                  </span>
+                ) : (
+                  <Minus className="size-4 text-muted-foreground" />
+                )}
+              </TableCell>
+            </TableRow>
+            <Row
+              label="Input schema"
+              gOk={gInfo?.hasInput}
+              pOk={pInfo?.hasInput}
+              gMsg={buildSchemaMessage(g, 'input')}
+              pMsg={buildSchemaMessage(p, 'input')}
+            />
+            <Row
+              label="Output schema"
+              gOk={gInfo?.hasOutput}
+              pOk={pInfo?.hasOutput}
+              gMsg={buildSchemaMessage(g, 'output')}
+              pMsg={buildSchemaMessage(p, 'output')}
+            />
 
             {/* Section: Page metadata */}
             <TableRow>

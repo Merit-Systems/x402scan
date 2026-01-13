@@ -83,7 +83,7 @@ export const CreateAgentForm: React.FC<Props> = ({
 
   return (
     <form
-      onSubmit={form.handleSubmit(handleSubmit)}
+      onSubmit={void form.handleSubmit(handleSubmit)}
       className="flex flex-col gap-4"
     >
       <Stepper steps={stepsConfig} currentStep={step} />

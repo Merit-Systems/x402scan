@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { scanDb } from '@x402scan/scan-db';
 
-import { parseX402Response } from '@/lib/x402/schema';
+import { parseX402Response } from '@/lib/x402';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
 
 import type { Prisma } from '@x402scan/scan-db';
@@ -15,7 +15,7 @@ const ogImageSchema = z.object({
   description: z.string().optional(),
 });
 
-export const originSchema = z.object({
+const originSchema = z.object({
   origin: z.url(),
   title: z.string().optional(),
   description: z.string().optional(),
@@ -93,25 +93,6 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
               ...(chain ? { network: chain } : {}),
             },
           },
-        },
-      },
-    },
-    include: {
-      originMetrics: {
-        take: 1,
-        orderBy: {
-          updatedAt: 'desc',
-        },
-        select: {
-          uptime24hPct: true,
-          totalCount24h: true,
-          count_5xx_24h: true,
-          count_4xx_24h: true,
-          count_2xx_24h: true,
-          p50_24hMs: true,
-          p90_24hMs: true,
-          p99_24hMs: true,
-          updatedAt: true,
         },
       },
     },

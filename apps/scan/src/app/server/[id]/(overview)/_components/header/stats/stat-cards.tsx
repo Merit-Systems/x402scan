@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tags } from '@/app/_components/tags';
 
 import type { LucideIcon } from 'lucide-react';
-import type { Tag as TagType } from '@x402scan/scan-db';
+import type { Tag as TagType } from '@x402scan/scan-db/types';
 
 interface Props {
   originId: string;
@@ -81,9 +81,9 @@ export const LoadingStatsCards = () => {
   return stats.map(stat => <LoadingStatCard {...stat} key={stat.title} />);
 };
 
-interface StatsCardProps extends Stat {
+type StatsCardProps = {
   value: React.ReactNode;
-}
+} & Stat;
 
 const StatCard = ({ value, ...stat }: StatsCardProps) => {
   return (

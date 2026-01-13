@@ -21,6 +21,17 @@ interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
 }
 
+const NoResourcesTooltip = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent>
+        <p>No resources for this server are compatible with Composer</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+};
+
 export const HeaderButtons: React.FC<Props> = ({ origin }) => {
   const [[originWithResources]] =
     api.public.origins.list.withResources.useSuspenseQuery({
@@ -38,17 +49,6 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
   const onTryInChat = () => {
     clientCookieUtils.setResources(resources);
     router.push(`/composer/chat`);
-  };
-
-  const NoResourcesTooltip = ({ children }: { children: React.ReactNode }) => {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>{children}</TooltipTrigger>
-        <TooltipContent>
-          <p>No resources for this server are compatible with Composer</p>
-        </TooltipContent>
-      </Tooltip>
-    );
   };
 
   const tryInChatButton = (

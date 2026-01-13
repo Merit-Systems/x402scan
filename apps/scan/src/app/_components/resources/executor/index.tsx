@@ -16,10 +16,12 @@ import { Form } from './form';
 import { cn } from '@/lib/utils';
 
 import type { Methods } from '@/types/x402';
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import {
+  getOutputSchema,
+  getMaxAmount,
+  type ParsedX402Response,
+} from '@/lib/x402';
 import type { Resources, Tag } from '@x402scan/scan-db';
-import { HealthIndicator } from '@/app/_components/health/indicator';
-import { api } from '@/trpc/client';
 
 interface Props {
   resource: Resources;
@@ -41,29 +43,16 @@ export const ResourceExecutor: React.FC<Props> = ({
   hideOrigin = false,
   isFlat = false,
 }) => {
-  const { data: resourceMetrics } = api.public.resources.getMetrics.useQuery(
-    {
-      resourceId: resource.id,
-    },
-    {
-      enabled:
-        !!response &&
-        (response.accepts?.length ?? 0) > 0 &&
-        !!response.accepts?.[0]?.outputSchema?.input,
-    }
-  );
-
   if (!response) return null;
 
-  const accept = response.accepts?.[0];
-
-  if (!accept) return null;
-
-  const inputSchema = accept.outputSchema?.input;
+  const outputSchema = getOutputSchema(response);
+  const inputSchema = outputSchema?.input;
 
   if (!inputSchema) return null;
 
-  const maxAmountRequired = BigInt(accept.maxAmountRequired);
+  const maxAmountStr = getMaxAmount(response);
+  if (!maxAmountStr) return null;
+  const maxAmountRequired = BigInt(maxAmountStr);
 
   return (
     <AccordionItem
@@ -84,7 +73,6 @@ export const ResourceExecutor: React.FC<Props> = ({
               response={response}
               hideOrigin={hideOrigin}
             />
-            <HealthIndicator metrics={resourceMetrics} />
             <ChevronDownIcon className="size-4" />
           </CardHeader>
         </AccordionTrigger>

@@ -6,14 +6,24 @@ import {
   LatestTransactions,
   LoadingLatestTransactions,
 } from './_components/transactions';
-import { connection } from 'next/server';
+import { api } from '@/trpc/server';
+import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
 
 export default async function RecipientPage({
   params,
 }: PageProps<'/recipient/[address]'>) {
   const { address } = await params;
 
-  await connection();
+  // Prefetch data for hydration
+  await Promise.all([
+    api.public.origins.list.origins.prefetch({ address }),
+    api.public.stats.overall.prefetch({
+      recipients: {
+        include: [address],
+      },
+      timeframe: ALL_TIME_TIMEFRAME,
+    }),
+  ]);
 
   return (
     <Body className="gap-8 pt-0">

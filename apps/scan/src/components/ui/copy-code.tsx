@@ -3,12 +3,12 @@ import { Skeleton } from './skeleton';
 
 import { cn } from '@/lib/utils';
 
-type Props = {
+interface Props {
   className?: string;
   toastMessage: string;
   isLoading?: boolean;
   code: string;
-};
+}
 
 export const CopyCode: React.FC<Props> = ({ className, ...props }) => {
   return (
