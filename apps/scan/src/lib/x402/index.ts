@@ -52,7 +52,7 @@ export const paymentRequirementsSchema = z3.union([
   paymentRequirementsSchemaV2,
 ]);
 
-export type PaymentRequirements = PaymentRequirementsV1 | PaymentRequirementsV2;
+type PaymentRequirements = PaymentRequirementsV1 | PaymentRequirementsV2;
 
 function isV2PaymentRequirement(
   accept: PaymentRequirements
