@@ -9,15 +9,11 @@ export const fetchWithProxy = async (
   let url: string;
   let effectiveInit: RequestInit | undefined = requestInit;
 
-  // Handle Request objects by extracting url and converting to init
   if (input instanceof Request) {
     url = input.url;
-    // If no requestInit provided, extract from Request object
     if (!requestInit) {
-      // Clone the request to safely read the body
       const clonedRequest = input.clone();
 
-      // Read body as text if it exists (converts ReadableStream to string)
       let body: string | undefined;
       if (input.method !== 'GET' && input.method !== 'HEAD') {
         try {
@@ -52,7 +48,6 @@ export const fetchWithProxy = async (
 
   const headers = new Headers(effectiveInit?.headers);
 
-  // Auto-add Content-Type for requests with body
   if (
     normalizedMethod !== 'GET' &&
     normalizedMethod !== 'HEAD' &&

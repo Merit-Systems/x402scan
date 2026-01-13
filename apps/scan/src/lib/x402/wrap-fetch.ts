@@ -10,7 +10,6 @@ export { registerExactEvmScheme } from '@x402/evm/exact/client';
 
 export { registerExactSvmScheme } from '@x402/svm/exact/client';
 
-// ClientEvmSigner interface expected by @x402/evm
 export interface ClientEvmSigner {
   readonly address: `0x${string}`;
   signTypedData(message: {
@@ -22,10 +21,7 @@ export interface ClientEvmSigner {
 }
 
 /**
- * Adapts a wagmi WalletClient to the ClientEvmSigner interface
- * expected by @x402/evm.
- *
- * The main difference is that WalletClient has `account.address`
+ * NOTE(shafu): main difference is that WalletClient has `account.address`
  * while ClientEvmSigner expects `address` directly.
  */
 export function toEvmSigner(walletClient: {
