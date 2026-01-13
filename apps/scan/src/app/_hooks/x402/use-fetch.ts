@@ -18,17 +18,13 @@ interface UseX402FetchParams<TData = unknown> {
 export const useX402Fetch = <TData = unknown>({
   wrapperFn,
   targetUrl,
-  value,
   init,
   options,
   isTool = false,
 }: UseX402FetchParams<TData>) => {
   return useMutation({
     mutationFn: async () => {
-      const fetchWithPayment = wrapperFn(
-        isTool ? fetch : fetchWithProxy,
-        value
-      );
+      const fetchWithPayment = wrapperFn(isTool ? fetch : fetchWithProxy);
       const response = await fetchWithPayment(targetUrl, init);
 
       if (!response.ok) {

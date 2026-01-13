@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { stripe } from './client';
 
 import { env } from '@/env';
-import { OnrampSessionResult } from '@stripe/crypto';
 
 const OnrampSessionResource = Stripe.StripeResource.extend({
   create: Stripe.StripeResource.method({

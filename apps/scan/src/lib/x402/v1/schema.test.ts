@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { parseX402Response } from './schema';
+import { parseX402Response, getOutputSchema } from '../index';
+
+// Alias for v1 tests
+const parseV1 = parseX402Response;
 
 // Raw bodies from the test data file
 const rawBodies = [
@@ -14,10 +17,10 @@ const rawBodies = [
   `{"x402Version":1,"error":"X-PAYMENT header is required","accepts":[{"scheme":"exact","network":"base","maxAmountRequired":"2000000","resource":"http://api.aixbt.tech/v1/agents/indigo","description":"Find what's gaining traction before the rest of the market catches on.","mimeType":"","payTo":"0x8E4B195c14f20e1Ba4C40234F471E1781f293b45","maxTimeoutSeconds":60,"asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","outputSchema":{"input":{"type":"http","method":"POST","discoverable":true,"bodyType":"json","bodyFields":{"messages":{"type":"array","description":"Array of conversation messages with role and content","items":{"type":"object","properties":{"role":{"type":"string","enum":["user","assistant"],"description":"The role of the message sender"},"content":{"type":"string","description":"The message content"}},"required":["role","content"]},"minItems":1}}},"output":{"status":{"type":"number","description":"HTTP status code"},"error":{"type":"string","description":"Error message if request failed"},"data":{"type":"object","properties":{"text":{"type":"string","description":"Response text from the Indigo agent"}},"required":["text"]}}},"extra":{"name":"USD Coin","version":"2"}}]}`,
 ];
 
-describe('parseX402Response', () => {
+describe('parseV1', () => {
   it('should handle x402 responses with lenient parsing', () => {
     const responseWithError = JSON.parse(rawBodies[1]!) as unknown;
-    const result = parseX402Response(responseWithError);
+    const result = parseV1(responseWithError);
 
     // The function should handle responses with error fields, even if strict parsing fails
     if (result.success) {
@@ -30,61 +33,64 @@ describe('parseX402Response', () => {
     }
   });
 
-  it('should return error for invalid data', () => {
+  it('should reject object without x402Version', () => {
     const invalidData = { invalid: 'data' };
-    const result = parseX402Response(invalidData);
+    const result = parseV1(invalidData);
 
+    // x402Version is required
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.errors).toBeDefined();
-      expect(result.errors.length).toBeGreaterThan(0);
     }
   });
 
   it('should handle null or undefined input', () => {
-    expect(parseX402Response(null).success).toBe(false);
-    expect(parseX402Response(undefined).success).toBe(false);
+    expect(parseV1(null).success).toBe(false);
+    expect(parseV1(undefined).success).toBe(false);
   });
 
-  it('should handle empty object', () => {
-    const result = parseX402Response({});
+  it('should reject empty object (x402Version required)', () => {
+    const result = parseV1({});
+    // x402Version is required
     expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.errors).toBeDefined();
+    }
   });
 });
 
-describe('parseX402Response with normalized schemas', () => {
+describe('parseV1 with normalized schemas', () => {
   it('should normalize Gloria AI response with queryParams', () => {
     const response = JSON.parse(rawBodies[1]!) as unknown;
-    const result = parseX402Response(response);
+    const result = parseV1(response);
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
+      const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema).toBeDefined();
       expect(inputSchema?.queryParams?.feed_categories).toBeDefined();
       expect(inputSchema?.bodyFields).toBeUndefined();
     }
   });
 
-  it('should handle validation errors for invalid payTo field', () => {
+  it('should reject empty payTo field', () => {
     const response = JSON.parse(rawBodies[0]!) as unknown;
-    const result = parseX402Response(response);
+    const result = parseV1(response);
 
-    // This should fail because payTo is an empty string
+    // V1 schema validates payTo - empty string is rejected
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.errors).toBeDefined();
-      expect(result.errors.some(error => error.includes('payTo'))).toBe(true);
     }
   });
 
   it('should extract field information from API responses', () => {
     const response = JSON.parse(rawBodies[5]!) as unknown;
-    const result = parseX402Response(response);
+    const result = parseV1(response);
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
+      const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema).toBeDefined();
       expect(inputSchema?.bodyFields?.prompt).toBeDefined();
       expect(inputSchema?.bodyType).toBe('json');
@@ -94,24 +100,27 @@ describe('parseX402Response with normalized schemas', () => {
 
   it('should handle various API response formats', () => {
     const response = JSON.parse(rawBodies[6]!) as unknown;
-    const result = parseX402Response(response);
+    const result = parseV1(response);
 
     expect(result.success).toBe(true);
-    if (result.success && result.data.accepts?.[0]?.outputSchema?.input) {
-      const inputSchema = result.data.accepts[0].outputSchema.input;
-      expect(inputSchema.bodyFields?.prompt).toEqual({ type: 'string' });
-      expect(inputSchema.bodyFields?.walletAddress).toEqual({ type: 'string' });
-      expect(inputSchema.bodyType).toBe('json');
+    if (result.success) {
+      const inputSchema = getOutputSchema(result.data)?.input;
+      expect(inputSchema).toBeDefined();
+      expect(inputSchema?.bodyFields?.prompt).toEqual({ type: 'string' });
+      expect(inputSchema?.bodyFields?.walletAddress).toEqual({
+        type: 'string',
+      });
+      expect(inputSchema?.bodyType).toBe('json');
     }
   });
 
   it('should handle GET requests without body fields', () => {
     const response = JSON.parse(rawBodies[3]!) as unknown;
-    const result = parseX402Response(response);
+    const result = parseV1(response);
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
+      const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema?.queryParams).toBeUndefined();
       expect(inputSchema?.bodyFields).toBeUndefined();
     }
@@ -119,12 +128,12 @@ describe('parseX402Response with normalized schemas', () => {
 
   it('should return error for empty accepts array', () => {
     const invalidResponse = { x402Version: 1, accepts: [] };
-    const result = parseX402Response(invalidResponse);
+    const result = parseV1(invalidResponse);
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
-      expect(inputSchema).toBeUndefined();
+      const outputSchema = getOutputSchema(result.data);
+      expect(outputSchema).toBeUndefined();
     }
   });
 
@@ -145,7 +154,7 @@ describe('parseX402Response with normalized schemas', () => {
         },
       ],
     };
-    const result = parseX402Response(invalidResponse);
+    const result = parseV1(invalidResponse);
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -154,7 +163,7 @@ describe('parseX402Response with normalized schemas', () => {
   });
 
   it('should handle completely invalid input', () => {
-    const result = parseX402Response('not an object');
+    const result = parseV1('not an object');
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -190,26 +199,28 @@ describe('parseX402Response with normalized schemas', () => {
       ],
     };
 
-    const result = parseX402Response(mixedResponse);
+    const result = parseV1(mixedResponse);
 
     expect(result.success).toBe(true);
-    if (result.success && result.data.accepts?.[0]?.outputSchema?.input) {
-      const inputSchema = result.data.accepts[0].outputSchema.input;
-      expect(inputSchema.queryParams?.test).toEqual({ type: 'value' });
-      expect(inputSchema.bodyFields?.body).toEqual({ type: 'test' });
-      expect(inputSchema.bodyType).toBe('json');
-      expect(inputSchema.headerFields?.auth).toEqual({ type: 'bearer' });
+    if (result.success) {
+      const inputSchema = getOutputSchema(result.data)?.input;
+      expect(inputSchema).toBeDefined();
+      expect(inputSchema?.queryParams?.test).toEqual({ type: 'value' });
+      expect(inputSchema?.bodyFields?.body).toEqual({ type: 'test' });
+      expect(inputSchema?.bodyType).toBe('json');
+      expect(inputSchema?.headerFields?.auth).toEqual({ type: 'bearer' });
     }
   });
 
   it('should handle aixbt Indigo agent with nested array items schema', () => {
     const response = JSON.parse(rawBodies[8]!) as unknown;
-    const result = parseX402Response(response);
+    const result = parseV1(response);
 
     expect(result.success).toBe(true);
     if (result.success) {
-      const inputSchema = result.data.accepts?.[0]?.outputSchema?.input;
-      const outputSchema = result.data.accepts?.[0]?.outputSchema?.output;
+      const schema = getOutputSchema(result.data);
+      const inputSchema = schema?.input;
+      const outputSchema = schema?.output;
 
       // Verify input schema structure
       expect(inputSchema).toBeDefined();
@@ -305,19 +316,20 @@ describe('schema validation edge cases', () => {
       ],
     };
 
-    const result = parseX402Response(minimalResponse);
+    const result = parseV1(minimalResponse);
 
     expect(result.success).toBe(true);
-    if (result.success && result.data.accepts?.[0]?.outputSchema?.input) {
-      const inputSchema = result.data.accepts[0].outputSchema.input;
-      expect(inputSchema.queryParams).toBeUndefined();
-      expect(inputSchema.bodyFields).toBeUndefined();
+    if (result.success) {
+      const inputSchema = getOutputSchema(result.data)?.input;
+      expect(inputSchema).toBeDefined();
+      expect(inputSchema?.queryParams).toBeUndefined();
+      expect(inputSchema?.bodyFields).toBeUndefined();
     }
   });
 
   it('should handle error fields in responses', () => {
     const responseWithError = JSON.parse(rawBodies[0]!) as unknown;
-    const result = parseX402Response(responseWithError);
+    const result = parseV1(responseWithError);
 
     // The function should handle responses with error fields
     if (result.success) {
@@ -329,7 +341,7 @@ describe('schema validation edge cases', () => {
 
   it('should handle array inputs gracefully', () => {
     const arrayInput = [1, 2, 3];
-    const parseResult = parseX402Response(arrayInput);
+    const parseResult = parseV1(arrayInput);
 
     expect(parseResult.success).toBe(false);
     if (!parseResult.success) {

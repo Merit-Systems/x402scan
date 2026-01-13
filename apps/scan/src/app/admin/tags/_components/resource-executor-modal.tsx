@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { api } from '@/trpc/client';
 import { ResourceExecutor } from '@/app/_components/resources/executor';
-import { parseX402Response } from '@/lib/x402/schema';
+import { parseX402Response } from '@/lib/x402';
 import { Loader2 } from 'lucide-react';
 import { getBazaarMethod } from '@/app/_components/resources/executor/utils';
 import {
