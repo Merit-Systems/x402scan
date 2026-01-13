@@ -6,6 +6,10 @@ import { Check, Wallet, X } from 'lucide-react';
 
 import Image from 'next/image';
 
+import { Loading } from '@/components/ui/loading';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+
 import { AnimatedBeam, Circle } from '@/components/magicui/animated-beam';
 
 import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
@@ -19,10 +23,11 @@ import { Chain } from '@/types/chain';
 import { OnrampMethods } from '@/services/onramp/types';
 
 import type { Methods } from '../_types';
-import { Loading } from '@/components/ui/loading';
-import { Skeleton } from '@/components/ui/skeleton';
 
-enum Status {
+import type { Address } from 'viem';
+import Link from 'next/link';
+
+export enum Status {
   SUCCESS = 'success',
   ERROR = 'error',
   PENDING = 'pending',
@@ -36,6 +41,8 @@ interface Props {
   isSuccess: boolean;
   isError: boolean;
   method: Methods;
+  address: Address;
+  subtext?: Record<Status, string | undefined>;
 }
 
 export const DepositStatus: React.FC<Props> = ({
@@ -43,6 +50,14 @@ export const DepositStatus: React.FC<Props> = ({
   isError,
   amount,
   method,
+  address,
+  subtext = {
+    [Status.SUCCESS]:
+      'You can close this page and return to your MCP client to continue.',
+    [Status.ERROR]:
+      'There was an error processing your payment. Please try again.',
+    [Status.PENDING]: undefined,
+  },
 }) => {
   const { invalidate: invalidateBalance } = useEvmTokenBalance({
     token: usdc(Chain.BASE),
@@ -81,7 +96,8 @@ export const DepositStatus: React.FC<Props> = ({
           component={amount => (
             <h1 className="text-primary text-4xl font-bold">{amount} USDC</h1>
           )}
-          loadingComponent={<Skeleton className="h-10 w-24" />}
+          loadingComponent={<Skeleton className="h-9 my-0.5 w-24" />}
+          errorComponent={<p>Error loading amount</p>}
         />
         <p className="text-muted-foreground text-center text-base font-semibold">
           {status === Status.SUCCESS
@@ -92,6 +108,18 @@ export const DepositStatus: React.FC<Props> = ({
         </p>
       </div>
       <SessionGraphic status={status} method={method} />
+      <div className="flex flex-col gap-4">
+        {status === Status.ERROR && (
+          <Link href={`/deposit/${address}`}>
+            <Button className="w-full">Go Back</Button>
+          </Link>
+        )}
+        {subtext[status] && (
+          <p className="text-muted-foreground text-center text-sm">
+            {subtext[status]}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

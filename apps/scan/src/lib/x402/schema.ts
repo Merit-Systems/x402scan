@@ -6,6 +6,7 @@ import {
 } from 'x402/types';
 import { z as z3 } from 'zod3';
 import { normalizeX402Fields } from './utils';
+import z from 'zod';
 
 // ==================== TYPES ====================
 
@@ -121,3 +122,10 @@ export function parseX402Response(data: unknown): Result<ParsedX402Response> {
   );
   return { success: false, errors };
 }
+
+export const paymentResponseHeaderSchema = z.object({
+  success: z.boolean(),
+  transaction: z.string(),
+  network: z.string(),
+  payer: z.string(),
+});

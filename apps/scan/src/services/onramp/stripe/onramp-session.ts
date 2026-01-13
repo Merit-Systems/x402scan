@@ -4,16 +4,19 @@ import { headers } from 'next/headers';
 
 import { z } from 'zod';
 
-import { auth } from '@/auth';
-
 import { stripe } from './client';
 
 import { env } from '@/env';
+import { OnrampSessionResult } from '@stripe/crypto';
 
 const OnrampSessionResource = Stripe.StripeResource.extend({
   create: Stripe.StripeResource.method({
     method: 'POST',
     path: 'crypto/onramp_sessions',
+  }),
+  get: Stripe.StripeResource.method({
+    method: 'GET',
+    path: 'crypto/onramp_sessions/{id}',
   }),
 });
 
@@ -46,3 +49,17 @@ export const createOnrampSession = async (
 
   return (onrampSession as unknown as { client_secret: string }).client_secret;
 };
+
+export const getStripeOnrampSession = async (id: string) => {
+  // eslint-disable-next-line @typescript-eslint/await-thenable
+  const onrampSession = await new OnrampSessionResource(stripe).get(id);
+  return stripeOnrampSessionSchema.parse(onrampSession);
+};
+
+const stripeOnrampSessionSchema = z.object({
+  id: z.string(),
+  status: z.enum(['fulfillment_processing', 'fulfillment_complete', 'error']),
+  transaction_details: z.object({
+    destination_amount: z.string(),
+  }),
+});

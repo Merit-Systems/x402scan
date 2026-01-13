@@ -1,17 +1,26 @@
 'use client';
 
-import z from 'zod';
-import { MethodComponentProps } from '../../_types';
-import { api } from '@/trpc/client';
-import { DepositStatus } from '../status';
 import { useEffect, useState } from 'react';
+
+import z from 'zod';
+
+import { DepositStatus } from '../status';
+
+import { api } from '@/trpc/client';
+
 import { OnrampProviders } from '@/services/onramp/types';
+
+import type { Address } from 'viem';
+import type { MethodComponentProps } from '../../_types';
 
 const paramsSchema = z.object({
   id: z.string(),
 });
 
-export const Coinbase: React.FC<MethodComponentProps> = ({ searchParams }) => {
+export const Coinbase: React.FC<MethodComponentProps> = ({
+  searchParams,
+  address,
+}) => {
   const parsedParams = paramsSchema.safeParse(searchParams);
 
   if (!parsedParams.success) {
@@ -20,10 +29,13 @@ export const Coinbase: React.FC<MethodComponentProps> = ({ searchParams }) => {
 
   const { id } = parsedParams.data;
 
-  return <CoinbaseSessionContent id={id} />;
+  return <CoinbaseSessionContent id={id} address={address} />;
 };
 
-const CoinbaseSessionContent: React.FC<{ id: string }> = ({ id }) => {
+const CoinbaseSessionContent: React.FC<{ id: string; address: Address }> = ({
+  id,
+  address,
+}) => {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const { data: session, isLoading } = api.onramp.coinbase.session.get.useQuery(
@@ -52,6 +64,7 @@ const CoinbaseSessionContent: React.FC<{ id: string }> = ({ id }) => {
       isSuccess={session?.status === 'ONRAMP_TRANSACTION_STATUS_SUCCESS'}
       isError={session?.status === 'ONRAMP_TRANSACTION_STATUS_FAILED'}
       method={OnrampProviders.COINBASE}
+      address={address}
     />
   );
 };

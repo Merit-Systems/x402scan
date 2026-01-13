@@ -1,9 +1,13 @@
 import { Check, Loader2 } from 'lucide-react';
 
+import { useRouter } from 'next/navigation';
+
 import { Button } from '@/components/ui/button';
 
 import { useEvmSend } from '@/app/_hooks/send/use-evm-send';
 import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
+
+import { OnrampMethods } from '@/services/onramp/types';
 
 import { usdc } from '@/lib/tokens/usdc';
 
@@ -11,6 +15,7 @@ import { Chain } from '@/types/chain';
 
 import type { Address } from 'viem';
 import type { Connection } from 'wagmi';
+import type { Route } from 'next';
 
 interface Props {
   connection: Connection;
@@ -23,6 +28,8 @@ export const TransferButton: React.FC<Props> = ({
   address,
   amount,
 }) => {
+  const router = useRouter();
+
   const { invalidate: invalidateToBalance } = useEvmTokenBalance({
     token: usdc(Chain.BASE),
     address,
@@ -41,12 +48,19 @@ export const TransferButton: React.FC<Props> = ({
     address,
     amount,
     connection,
-    onSuccess: () => {
-      for (let i = 0; i < 4; i++) {
+    onSuccess: ({ paymentResponse }) => {
+      for (let i = 0; i < 3; i++) {
         setTimeout(() => {
           void invalidateBalance();
           void invalidateToBalance();
         }, i * 1000);
+      }
+      if (paymentResponse) {
+        setTimeout(() => {
+          router.push(
+            `/deposit/${address}/${OnrampMethods.WALLET}?hash=${paymentResponse.transaction}` as Route
+          );
+        }, 3000);
       }
     },
   });

@@ -13,10 +13,11 @@ import { useEvmX402Fetch } from '../x402/evm';
 
 import type { Token } from '@/types/token';
 import type { Connection } from 'wagmi';
+import { X402FetchResponse } from '../x402/types';
 
 interface Props {
   token?: Token;
-  onSuccess?: () => void;
+  onSuccess?: (data: X402FetchResponse<unknown>) => void;
   toastMessage?: (amount: number) => string;
   address?: string;
   amount?: number;
@@ -71,7 +72,7 @@ export const useEvmSend = (props?: Props) => {
       method: 'POST',
     },
     options: {
-      onSuccess: () => {
+      onSuccess: data => {
         toast.success(
           toastMessage ? toastMessage(amountProp!) : `${amountProp} USDC sent`
         );
@@ -80,7 +81,7 @@ export const useEvmSend = (props?: Props) => {
             void invalidateBalance();
           }, i * 1000);
         }
-        onSuccess?.();
+        onSuccess?.(data);
         setTimeout(() => {
           reset();
         }, 3000);
