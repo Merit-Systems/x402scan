@@ -164,10 +164,12 @@ export const resourcesRouter = createTRPCRouter({
           continue;
         }
 
-        await upsertResourceResponse(
-          resource.resource.id,
-          data as Parameters<typeof upsertResourceResponse>[1]
-        );
+        if (parsedResponse.success) {
+          await upsertResourceResponse(
+            resource.resource.id,
+            parsedResponse.data
+          );
+        }
 
         return {
           error: false as const,
