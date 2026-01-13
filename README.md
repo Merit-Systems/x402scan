@@ -48,6 +48,10 @@ pnpm dev
 pnpm dev:sync
 ```
 
+## Documentation
+
+- **[x402 Discovery Document Guide](./docs/DISCOVERY.md)** - Learn how to implement discovery for your x402 server to enable automatic resource registration
+
 ## Contributing
 
 We're actively seeking contributors to help build x402scan. We believe an ecosystem explorer will shed light on the activities happening over x402, build trust, and help standardize interaction patterns to grow the ecosystem massively.

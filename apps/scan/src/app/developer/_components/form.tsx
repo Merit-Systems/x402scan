@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import { ChevronDown, Loader2, Plus, X } from 'lucide-react';
+import { ChevronDown, Info, Loader2, Plus, X } from 'lucide-react';
 
 import { DiscoveryPanel, useDiscovery } from '@/app/_components/discovery';
 import { Button } from '@/components/ui/button';
@@ -82,6 +82,31 @@ export const TestEndpointForm = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
+            {/* Discovery Tip */}
+            <div className="flex items-start gap-3 p-3 bg-muted/50 border rounded-md">
+              <Info className="size-5 text-muted-foreground shrink-0 mt-0.5" />
+              <div className="flex-1 text-sm">
+                <p className="font-medium">
+                  Tip: Enable automatic discovery
+                </p>
+                <p className="text-muted-foreground mt-1">
+                  Implement a discovery document at{' '}
+                  <code className="px-1 py-0.5 bg-muted rounded text-xs">
+                    /.well-known/x402
+                  </code>{' '}
+                  to enable automatic resource discovery.{' '}
+                  <a
+                    href="https://github.com/Merit-Systems/x402scan/blob/main/docs/DISCOVERY.md"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:no-underline font-medium"
+                  >
+                    Learn more
+                  </a>
+                </p>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-1">
               <Label>Endpoint URL</Label>
               <div className="relative">
