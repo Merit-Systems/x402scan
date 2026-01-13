@@ -158,7 +158,9 @@ export function useDiscovery({
   // Get ownership proofs from discovery
   const ownershipProofs = useMemo(
     () =>
-      discoveryQuery.data?.found ? discoveryQuery.data.ownershipProofs ?? [] : [],
+      discoveryQuery.data?.found
+        ? (discoveryQuery.data.ownershipProofs ?? [])
+        : [],
     [discoveryQuery.data]
   );
 
@@ -171,9 +173,7 @@ export function useDiscovery({
     },
     {
       enabled:
-        !!urlOrigin &&
-        ownershipProofs.length > 0 &&
-        payToAddresses.length > 0,
+        !!urlOrigin && ownershipProofs.length > 0 && payToAddresses.length > 0,
       staleTime: 60000,
     }
   );
