@@ -69,54 +69,15 @@
  */
 
 // Constants
-export { SIGN_IN_WITH_X, SIWxPayloadSchema } from "./types";
-export { SOLANA_MAINNET, SOLANA_DEVNET, SOLANA_TESTNET } from "./solana";
-
-// Types
-export type {
-  SIWxExtension,
-  SIWxExtensionInfo,
-  SIWxExtensionSchema,
-  SIWxPayload,
-  DeclareSIWxOptions,
-  SignatureScheme,
-  SignatureType,
-  SIWxValidationResult,
-  SIWxValidationOptions,
-  SIWxVerifyResult,
-  EVMMessageVerifier,
-  SIWxVerifyOptions,
-} from "./types";
+export { SIGN_IN_WITH_X } from './types';
+export { SOLANA_MAINNET, SOLANA_DEVNET } from './solana';
 
 // Server
-export { declareSIWxExtension } from "./declare";
-export { parseSIWxHeader } from "./parse";
-export { validateSIWxMessage } from "./validate";
-export { verifySIWxSignature } from "./verify";
-export { buildSIWxSchema } from "./schema";
+export { declareSIWxExtension } from './declare';
+export { parseSIWxHeader } from './parse';
+export { validateSIWxMessage } from './validate';
+export { verifySIWxSignature } from './verify';
 
 // Client
-export { createSIWxMessage } from "./message";
-export { createSIWxPayload } from "./client";
-export { encodeSIWxHeader } from "./encode";
-export {
-  getEVMAddress,
-  getSolanaAddress,
-  signEVMMessage,
-  signSolanaMessage,
-  type SIWxSigner,
-  type EVMSigner,
-  type SolanaSigner,
-} from "./sign";
-
-// Chain utilities - EVM
-export { formatSIWEMessage, verifyEVMSignature, extractEVMChainId } from "./evm";
-
-// Chain utilities - Solana
-export {
-  formatSIWSMessage,
-  verifySolanaSignature,
-  decodeBase58,
-  encodeBase58,
-  extractSolanaChainReference,
-} from "./solana";
+export { createSIWxPayload } from './client';
+export { encodeSIWxHeader } from './encode';

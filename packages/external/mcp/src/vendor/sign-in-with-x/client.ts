@@ -5,10 +5,15 @@
  * Supports both EVM and Solana wallets.
  */
 
-import type { SIWxExtensionInfo, SIWxPayload } from "./types";
-import type { SIWxSigner, EVMSigner, SolanaSigner } from "./sign";
-import { getEVMAddress, getSolanaAddress, signEVMMessage, signSolanaMessage } from "./sign";
-import { createSIWxMessage } from "./message";
+import type { SIWxExtensionInfo, SIWxPayload } from './types';
+import type { SIWxSigner, EVMSigner, SolanaSigner } from './sign';
+import {
+  getEVMAddress,
+  getSolanaAddress,
+  signEVMMessage,
+  signSolanaMessage,
+} from './sign';
+import { createSIWxMessage } from './message';
 
 /**
  * Create a complete SIWX payload from server extension info.
@@ -32,9 +37,9 @@ import { createSIWxMessage } from "./message";
  */
 export async function createSIWxPayload(
   serverExtension: SIWxExtensionInfo,
-  signer: SIWxSigner,
+  signer: SIWxSigner
 ): Promise<SIWxPayload> {
-  const isSolana = serverExtension.chainId.startsWith("solana:");
+  const isSolana = serverExtension.chainId.startsWith('solana:');
 
   // Get address and sign based on chain type
   const address = isSolana

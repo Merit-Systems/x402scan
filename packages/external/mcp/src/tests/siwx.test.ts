@@ -30,10 +30,10 @@ describe('authed_call Solana Detection', () => {
 
   it('does not flag EVM chainIds as Solana', () => {
     const evmChainIds = [
-      'eip155:1',      // Ethereum mainnet
-      'eip155:8453',   // Base
-      'eip155:84532',  // Base Sepolia
-      'eip155:10',     // Optimism
+      'eip155:1', // Ethereum mainnet
+      'eip155:8453', // Base
+      'eip155:84532', // Base Sepolia
+      'eip155:10', // Optimism
     ];
 
     for (const chainId of evmChainIds) {

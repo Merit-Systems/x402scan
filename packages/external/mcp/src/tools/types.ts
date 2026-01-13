@@ -1,5 +1,5 @@
-import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { PrivateKeyAccount } from "viem";
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { PrivateKeyAccount } from 'viem';
 
 interface RegisterToolsProps {
   server: McpServer;

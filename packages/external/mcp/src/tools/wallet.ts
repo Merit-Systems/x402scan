@@ -2,27 +2,27 @@
  * Wallet tools - balance checking
  */
 
-import { mcpSuccess, mcpError } from "../response";
-import { getUSDCBalance } from "../lib/balance";
+import { mcpSuccess, mcpError } from '../response';
+import { getUSDCBalance } from '../lib/balance';
 import {
   DEFAULT_NETWORK,
   getChainName,
   getExplorerUrl,
   getUSDCAddress,
   isTestnet,
-} from "../lib/networks";
+} from '../lib/networks';
 
-import type { RegisterTools } from "./types";
+import type { RegisterTools } from './types';
 
 export const registerWalletTools: RegisterTools = ({
   server,
   account: { address },
 }) => {
   server.registerTool(
-    "check_balance",
+    'check_balance',
     {
       description:
-        "Check wallet address and USDC balance. Creates wallet if needed.",
+        'Check wallet address and USDC balance. Creates wallet if needed.',
     },
     async () => {
       try {
@@ -45,8 +45,8 @@ export const registerWalletTools: RegisterTools = ({
                   ),
                   suggestion:
                     balance.formatted === 0
-                      ? "Your wallet has no USDC. Send USDC to the address above to start making paid API calls."
-                      : "Your balance is low. Consider topping up.",
+                      ? 'Your wallet has no USDC. Send USDC to the address above to start making paid API calls.'
+                      : 'Your balance is low. Consider topping up.',
                 }
               : {}),
           });
@@ -57,7 +57,7 @@ export const registerWalletTools: RegisterTools = ({
             networkName: getChainName(DEFAULT_NETWORK),
             balanceUSDC: null,
             balanceError:
-              err instanceof Error ? err.message : "Failed to fetch balance",
+              err instanceof Error ? err.message : 'Failed to fetch balance',
             isNewWallet: false,
             fundingInstructions: getFundingInstructions(
               address,
@@ -66,7 +66,7 @@ export const registerWalletTools: RegisterTools = ({
           });
         }
       } catch (err) {
-        return mcpError(err, { tool: "check_balance" });
+        return mcpError(err, { tool: 'check_balance' });
       }
     }
   );

@@ -21,7 +21,7 @@ export interface ChainConfig {
   usdcAddress: `0x${string}`;
 }
 
-export const CHAIN_CONFIGS: Record<string, ChainConfig> = {
+const CHAIN_CONFIGS: Record<string, ChainConfig> = {
   'eip155:8453': {
     chain: base,
     caip2: 'eip155:8453',

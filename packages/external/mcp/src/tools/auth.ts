@@ -7,15 +7,13 @@ import { mcpSuccess, mcpError } from '../response';
 import { getParseClient } from '../x402/client';
 import { normalizePaymentRequired } from '../x402/protocol';
 
-import {
-  createSIWxPayload,
-  encodeSIWxHeader,
-  type SIWxExtensionInfo,
-} from '../vendor/sign-in-with-x/index';
+import { createSIWxPayload } from '../vendor/sign-in-with-x/client';
+import { encodeSIWxHeader } from '../vendor/sign-in-with-x/encode';
 
 import { requestWithHeadersSchema } from '../lib/schemas';
 
 import type { RegisterTools } from './types';
+import type { SIWxExtensionInfo } from '../vendor/sign-in-with-x/types';
 
 export const registerAuthTools: RegisterTools = ({ server, account }) => {
   // authed_call - server-driven SIWX authentication (x402 v2)

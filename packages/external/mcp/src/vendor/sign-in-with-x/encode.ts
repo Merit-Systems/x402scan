@@ -5,8 +5,8 @@
  * Per CHANGELOG-v2.md line 335: header should be base64-encoded.
  */
 
-import { safeBase64Encode } from "@x402/core/utils";
-import type { SIWxPayload } from "./types";
+import { safeBase64Encode } from '@x402/core/utils';
+import type { SIWxPayload } from './types';
 
 /**
  * Encode SIWX payload for SIGN-IN-WITH-X header.

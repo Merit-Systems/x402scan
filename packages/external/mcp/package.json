@@ -12,14 +12,17 @@
   ],
   "scripts": {
     "dev": "tsx src/index.ts",
-    "lint": "eslint . --max-warnings 0",
     "build": "tsup",
     "build:mcpb": "tsx scripts/build-mcpb.ts",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
     "dev:bun": "bun run src/index.ts",
-    "typecheck": "tsc --noEmit",
+    "check:types": "tsc --noEmit",
     "test": "bun test",
-    "publish-package": "tsx scripts/publish.ts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "knip": "pnpm -w knip --workspace ./packages/external/mcp",
+    "format": "pnpm -w format-dir ./packages/external/mcp",
+    "check:format": "pnpm -w check:format-dir ./packages/external/mcp"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.2",

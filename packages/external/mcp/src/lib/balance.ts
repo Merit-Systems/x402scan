@@ -2,13 +2,13 @@
  * USDC balance reader
  */
 
-import { createPublicClient, http, erc20Abi } from "viem";
+import { createPublicClient, http, erc20Abi } from 'viem';
 
-import { getChain, getUSDCAddress, DEFAULT_NETWORK, toCaip2 } from "./networks";
+import { getChain, getUSDCAddress, DEFAULT_NETWORK, toCaip2 } from './networks';
 
-import { log } from "./log";
+import { log } from './log';
 
-import type { Address } from "viem";
+import type { Address } from 'viem';
 
 interface GetUSDCBalanceProps {
   address: Address;
@@ -33,7 +33,7 @@ export async function getUSDCBalance({
   const balance = await client.readContract({
     address: usdcAddress,
     abi: erc20Abi,
-    functionName: "balanceOf",
+    functionName: 'balanceOf',
     args: [address],
   });
 

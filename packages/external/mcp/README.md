@@ -28,6 +28,7 @@ codex mcp add x402scan -- npx -y x402scan-mcp@latest
 <summary>Manual installation</summary>
 
 **Codex** - Add to `~/.codex/config.toml`:
+
 ```toml
 [mcp_servers.x402scan]
 command = "npx"
@@ -35,24 +36,32 @@ args = ["-y", "x402scan-mcp@latest"]
 ```
 
 **Cursor** - Add to `.cursor/mcp.json`:
+
 ```json
 {
   "mcpServers": {
     "x402scan": {
       "command": "/bin/bash",
-      "args": ["-c", "source $HOME/.nvm/nvm.sh 2>/dev/null; exec npx -y x402scan-mcp@latest"]
+      "args": [
+        "-c",
+        "source $HOME/.nvm/nvm.sh 2>/dev/null; exec npx -y x402scan-mcp@latest"
+      ]
     }
   }
 }
 ```
 
 **Claude Desktop** - Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
 ```json
 {
   "mcpServers": {
     "x402scan": {
       "command": "/bin/bash",
-      "args": ["-c", "source $HOME/.nvm/nvm.sh 2>/dev/null; exec npx -y x402scan-mcp@latest"]
+      "args": [
+        "-c",
+        "source $HOME/.nvm/nvm.sh 2>/dev/null; exec npx -y x402scan-mcp@latest"
+      ]
     }
   }
 }
@@ -65,25 +74,26 @@ args = ["-y", "x402scan-mcp@latest"]
 On first run, a wallet is generated at `~/.x402scan-mcp/wallet.json`. Deposit USDC on Base to the wallet address before making paid API calls.
 
 **Workflow:**
+
 1. `check_balance` - Check wallet and get deposit address
 2. `query_endpoint` - Probe endpoint for pricing/schema (optional)
 3. `execute_call` - Make the paid request
 
 ## Tools (4)
 
-| Tool | Description |
-|------|-------------|
-| `check_balance` | Get wallet address and USDC balance |
-| `query_endpoint` | Probe x402 endpoint for pricing/schema without payment |
-| `validate_payment` | Pre-flight check if payment would succeed |
-| `execute_call` | Make paid request to x402 endpoint |
+| Tool               | Description                                            |
+| ------------------ | ------------------------------------------------------ |
+| `check_balance`    | Get wallet address and USDC balance                    |
+| `query_endpoint`   | Probe x402 endpoint for pricing/schema without payment |
+| `validate_payment` | Pre-flight check if payment would succeed              |
+| `execute_call`     | Make paid request to x402 endpoint                     |
 
 ## Environment
 
-| Variable | Description |
-|----------|-------------|
-| `X402_PRIVATE_KEY` | Override wallet (optional) |
-| `X402_DEBUG` | Set to `true` for verbose logging |
+| Variable           | Description                       |
+| ------------------ | --------------------------------- |
+| `X402_PRIVATE_KEY` | Override wallet (optional)        |
+| `X402_DEBUG`       | Set to `true` for verbose logging |
 
 ## Supported Networks
 

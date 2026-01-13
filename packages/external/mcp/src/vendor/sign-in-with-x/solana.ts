@@ -5,17 +5,16 @@
  * for Solana wallets.
  */
 
-import { base58 } from "@scure/base";
-import nacl from "tweetnacl";
-import type { SIWxExtensionInfo } from "./types";
+import { base58 } from '@scure/base';
+import nacl from 'tweetnacl';
+import type { SIWxExtensionInfo } from './types';
 
 /**
  * Common Solana network CAIP-2 identifiers.
  * Uses genesis hash as the chain reference per CAIP-30.
  */
-export const SOLANA_MAINNET = "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp";
-export const SOLANA_DEVNET = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1";
-export const SOLANA_TESTNET = "solana:4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z";
+export const SOLANA_MAINNET = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp';
+export const SOLANA_DEVNET = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
 
 /**
  * Extract chain reference from CAIP-2 Solana chainId.
@@ -28,9 +27,9 @@ export const SOLANA_TESTNET = "solana:4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z";
  * extractSolanaChainReference("solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp") // "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
  * ```
  */
-export function extractSolanaChainReference(chainId: string): string {
-  const [, reference] = chainId.split(":");
-  return reference;
+function extractSolanaChainReference(chainId: string): string {
+  const [, reference] = chainId.split(':');
+  return reference!;
 }
 
 /**
@@ -66,12 +65,12 @@ export function formatSIWSMessage(
   const lines: string[] = [
     `${info.domain} wants you to sign in with your Solana account:`,
     address,
-    "",
+    '',
   ];
 
   // Statement (optional, with blank line after)
   if (info.statement) {
-    lines.push(info.statement, "");
+    lines.push(info.statement, '');
   }
 
   // Required fields
@@ -96,13 +95,13 @@ export function formatSIWSMessage(
 
   // Resources (optional)
   if (info.resources && info.resources.length > 0) {
-    lines.push("Resources:");
+    lines.push('Resources:');
     for (const resource of info.resources) {
       lines.push(`- ${resource}`);
     }
   }
 
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
 /**

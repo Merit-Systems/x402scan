@@ -17,11 +17,6 @@ import type { PrivateKeyAccount } from 'viem/accounts';
 import type { PaymentRequired, PaymentPayload } from '@x402/core/types';
 import type { NormalizedPaymentRequired } from './protocol';
 
-export type {
-  NormalizedPaymentRequired,
-  NormalizedRequirement,
-} from './protocol';
-
 // Cached parse-only client (no real signing needed)
 let parseClient: x402HTTPClient | null = null;
 const DUMMY_KEY =
@@ -44,7 +39,7 @@ export function createClient(
     preferredNetwork
       ? (_v, accepts) =>
           accepts.find(a => toCaip2(a.network) === toCaip2(preferredNetwork)) ??
-          accepts[0]
+          accepts[0]!
       : undefined
   );
   registerExactEvmScheme(core, { signer: account });

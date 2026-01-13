@@ -4,10 +4,15 @@
  * Helps servers declare SIWX authentication requirements in PaymentRequired responses.
  */
 
-import { randomBytes } from "crypto";
-import type { SIWxExtension, SIWxExtensionInfo, DeclareSIWxOptions, SignatureType } from "./types";
-import { SIGN_IN_WITH_X } from "./types";
-import { buildSIWxSchema } from "./schema";
+import { randomBytes } from 'crypto';
+import type {
+  SIWxExtension,
+  SIWxExtensionInfo,
+  DeclareSIWxOptions,
+  SignatureType,
+} from './types';
+import { SIGN_IN_WITH_X } from './types';
+import { buildSIWxSchema } from './schema';
 
 /**
  * Derive signature type from network.
@@ -16,7 +21,7 @@ import { buildSIWxSchema } from "./schema";
  * @returns Signature algorithm type
  */
 function getSignatureType(network: string): SignatureType {
-  return network.startsWith("solana:") ? "ed25519" : "eip191";
+  return network.startsWith('solana:') ? 'ed25519' : 'eip191';
 }
 
 /**
@@ -49,17 +54,20 @@ function getSignatureType(network: string): SignatureType {
  * };
  * ```
  */
-export function declareSIWxExtension(options: DeclareSIWxOptions): Record<string, SIWxExtension> {
+export function declareSIWxExtension(
+  options: DeclareSIWxOptions
+): Record<string, SIWxExtension> {
   // Auto-generate fields per spec
-  const nonce = randomBytes(16).toString("hex");
+  const nonce = randomBytes(16).toString('hex');
   const issuedAt = new Date().toISOString();
   const expirationTime =
-    options.expirationTime ?? new Date(Date.now() + 5 * 60 * 1000).toISOString();
+    options.expirationTime ??
+    new Date(Date.now() + 5 * 60 * 1000).toISOString();
 
   const info: SIWxExtensionInfo = {
     domain: options.domain,
     uri: options.resourceUri,
-    version: options.version ?? "1",
+    version: options.version ?? '1',
     chainId: options.network,
     type: getSignatureType(options.network),
     nonce,

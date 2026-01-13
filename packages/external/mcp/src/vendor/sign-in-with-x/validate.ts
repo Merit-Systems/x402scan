@@ -5,7 +5,11 @@
  * Per CHANGELOG-v2.md validation rules (lines 318-329).
  */
 
-import type { SIWxPayload, SIWxValidationResult, SIWxValidationOptions } from "./types";
+import type {
+  SIWxPayload,
+  SIWxValidationResult,
+  SIWxValidationOptions,
+} from './types';
 
 /** Default maximum age for issuedAt: 5 minutes per spec */
 const DEFAULT_MAX_AGE_MS = 5 * 60 * 1000;
@@ -44,7 +48,7 @@ const DEFAULT_MAX_AGE_MS = 5 * 60 * 1000;
 export async function validateSIWxMessage(
   message: SIWxPayload,
   expectedResourceUri: string,
-  options: SIWxValidationOptions = {},
+  options: SIWxValidationOptions = {}
 ): Promise<SIWxValidationResult> {
   const expectedUrl = new URL(expectedResourceUri);
   const maxAge = options.maxAge ?? DEFAULT_MAX_AGE_MS;
@@ -71,7 +75,7 @@ export async function validateSIWxMessage(
   if (isNaN(issuedAt.getTime())) {
     return {
       valid: false,
-      error: "Invalid issuedAt timestamp",
+      error: 'Invalid issuedAt timestamp',
     };
   }
 
@@ -85,7 +89,7 @@ export async function validateSIWxMessage(
   if (age < 0) {
     return {
       valid: false,
-      error: "issuedAt is in the future",
+      error: 'issuedAt is in the future',
     };
   }
 
@@ -95,13 +99,13 @@ export async function validateSIWxMessage(
     if (isNaN(expiration.getTime())) {
       return {
         valid: false,
-        error: "Invalid expirationTime timestamp",
+        error: 'Invalid expirationTime timestamp',
       };
     }
     if (expiration < new Date()) {
       return {
         valid: false,
-        error: "Message expired",
+        error: 'Message expired',
       };
     }
   }
@@ -112,13 +116,13 @@ export async function validateSIWxMessage(
     if (isNaN(notBefore.getTime())) {
       return {
         valid: false,
-        error: "Invalid notBefore timestamp",
+        error: 'Invalid notBefore timestamp',
       };
     }
     if (new Date() < notBefore) {
       return {
         valid: false,
-        error: "Message not yet valid (notBefore is in the future)",
+        error: 'Message not yet valid (notBefore is in the future)',
       };
     }
   }
@@ -129,7 +133,7 @@ export async function validateSIWxMessage(
     if (!nonceValid) {
       return {
         valid: false,
-        error: "Nonce validation failed (possible replay attack)",
+        error: 'Nonce validation failed (possible replay attack)',
       };
     }
   }

@@ -5,7 +5,7 @@
  * Supports both EVM (viem) and Solana wallet adapters.
  */
 
-import { encodeBase58 } from "./solana";
+import { encodeBase58 } from './solana';
 
 /**
  * Signer interface for EVM SIWX message signing.
@@ -13,7 +13,10 @@ import { encodeBase58 } from "./solana";
  */
 export interface EVMSigner {
   /** Sign a message and return hex-encoded signature */
-  signMessage: (args: { message: string; account?: unknown }) => Promise<string>;
+  signMessage: (args: {
+    message: string;
+    account?: unknown;
+  }) => Promise<string>;
   /** Account object (for WalletClient) */
   account?: { address: string };
   /** Direct address (for PrivateKeyAccount) */
@@ -49,7 +52,7 @@ export function getEVMAddress(signer: EVMSigner): string {
   if (signer.address) {
     return signer.address;
   }
-  throw new Error("EVM signer missing address");
+  throw new Error('EVM signer missing address');
 }
 
 /**
@@ -60,7 +63,7 @@ export function getEVMAddress(signer: EVMSigner): string {
  */
 export function getSolanaAddress(signer: SolanaSigner): string {
   const pk = signer.publicKey;
-  return typeof pk === "string" ? pk : pk.toBase58();
+  return typeof pk === 'string' ? pk : pk.toBase58();
 }
 
 /**
@@ -71,7 +74,10 @@ export function getSolanaAddress(signer: SolanaSigner): string {
  * @param signer - EVM wallet signer instance
  * @returns Hex-encoded signature
  */
-export async function signEVMMessage(message: string, signer: EVMSigner): Promise<string> {
+export async function signEVMMessage(
+  message: string,
+  signer: EVMSigner
+): Promise<string> {
   if (signer.account) {
     return signer.signMessage({ message, account: signer.account });
   }
@@ -86,7 +92,10 @@ export async function signEVMMessage(message: string, signer: EVMSigner): Promis
  * @param signer - Solana wallet signer instance
  * @returns Base58-encoded signature
  */
-export async function signSolanaMessage(message: string, signer: SolanaSigner): Promise<string> {
+export async function signSolanaMessage(
+  message: string,
+  signer: SolanaSigner
+): Promise<string> {
   const messageBytes = new TextEncoder().encode(message);
   const signatureBytes = await signer.signMessage(messageBytes);
   return encodeBase58(signatureBytes);

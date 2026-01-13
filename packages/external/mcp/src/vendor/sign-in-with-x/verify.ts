@@ -6,9 +6,18 @@
  * - Solana (solana:*): Ed25519 signature verification via tweetnacl
  */
 
-import { formatSIWEMessage, verifyEVMSignature } from "./evm";
-import { formatSIWSMessage, verifySolanaSignature, decodeBase58 } from "./solana";
-import type { SIWxPayload, SIWxVerifyResult, SIWxVerifyOptions, EVMMessageVerifier } from "./types";
+import { formatSIWEMessage, verifyEVMSignature } from './evm';
+import {
+  formatSIWSMessage,
+  verifySolanaSignature,
+  decodeBase58,
+} from './solana';
+import type {
+  SIWxPayload,
+  SIWxVerifyResult,
+  SIWxVerifyOptions,
+  EVMMessageVerifier,
+} from './types';
 
 /**
  * Verify SIWX signature cryptographically.
@@ -45,15 +54,15 @@ import type { SIWxPayload, SIWxVerifyResult, SIWxVerifyOptions, EVMMessageVerifi
  */
 export async function verifySIWxSignature(
   payload: SIWxPayload,
-  options?: SIWxVerifyOptions,
+  options?: SIWxVerifyOptions
 ): Promise<SIWxVerifyResult> {
   try {
     // Route by chain namespace
-    if (payload.chainId.startsWith("eip155:")) {
+    if (payload.chainId.startsWith('eip155:')) {
       return verifyEVMPayload(payload, options?.evmVerifier);
     }
 
-    if (payload.chainId.startsWith("solana:")) {
+    if (payload.chainId.startsWith('solana:')) {
       return verifySolanaPayload(payload);
     }
 
@@ -64,7 +73,7 @@ export async function verifySIWxSignature(
   } catch (error) {
     return {
       valid: false,
-      error: error instanceof Error ? error.message : "Verification failed",
+      error: error instanceof Error ? error.message : 'Verification failed',
     };
   }
 }
@@ -78,7 +87,7 @@ export async function verifySIWxSignature(
  */
 async function verifyEVMPayload(
   payload: SIWxPayload,
-  verifier?: EVMMessageVerifier,
+  verifier?: EVMMessageVerifier
 ): Promise<SIWxVerifyResult> {
   // Reconstruct SIWE message for verification
   const message = formatSIWEMessage(
@@ -96,16 +105,21 @@ async function verifyEVMPayload(
       requestId: payload.requestId,
       resources: payload.resources,
     },
-    payload.address,
+    payload.address
   );
 
   try {
-    const valid = await verifyEVMSignature(message, payload.address, payload.signature, verifier);
+    const valid = await verifyEVMSignature(
+      message,
+      payload.address,
+      payload.signature,
+      verifier
+    );
 
     if (!valid) {
       return {
         valid: false,
-        error: "Signature verification failed",
+        error: 'Signature verification failed',
       };
     }
 
@@ -116,7 +130,10 @@ async function verifyEVMPayload(
   } catch (error) {
     return {
       valid: false,
-      error: error instanceof Error ? error.message : "Signature verification failed",
+      error:
+        error instanceof Error
+          ? error.message
+          : 'Signature verification failed',
     };
   }
 }
@@ -146,7 +163,7 @@ function verifySolanaPayload(payload: SIWxPayload): SIWxVerifyResult {
       requestId: payload.requestId,
       resources: payload.resources,
     },
-    payload.address,
+    payload.address
   );
 
   // Decode Base58 signature and public key
@@ -159,7 +176,7 @@ function verifySolanaPayload(payload: SIWxPayload): SIWxVerifyResult {
   } catch (error) {
     return {
       valid: false,
-      error: `Invalid Base58 encoding: ${error instanceof Error ? error.message : "decode failed"}`,
+      error: `Invalid Base58 encoding: ${error instanceof Error ? error.message : 'decode failed'}`,
     };
   }
 
@@ -185,7 +202,7 @@ function verifySolanaPayload(payload: SIWxPayload): SIWxVerifyResult {
   if (!valid) {
     return {
       valid: false,
-      error: "Solana signature verification failed",
+      error: 'Solana signature verification failed',
     };
   }
 

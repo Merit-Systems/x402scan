@@ -5,9 +5,9 @@
  * Routes to chain-specific formatters based on chainId namespace.
  */
 
-import { formatSIWEMessage } from "./evm";
-import { formatSIWSMessage } from "./solana";
-import type { SIWxExtensionInfo } from "./types";
+import { formatSIWEMessage } from './evm';
+import { formatSIWSMessage } from './solana';
+import type { SIWxExtensionInfo } from './types';
 
 /**
  * Construct CAIP-122 compliant message string for signing.
@@ -31,18 +31,21 @@ import type { SIWxExtensionInfo } from "./types";
  * const solMessage = createSIWxMessage(serverInfo, "BSmWDg...");
  * ```
  */
-export function createSIWxMessage(serverInfo: SIWxExtensionInfo, address: string): string {
+export function createSIWxMessage(
+  serverInfo: SIWxExtensionInfo,
+  address: string
+): string {
   // Route by chain namespace
-  if (serverInfo.chainId.startsWith("eip155:")) {
+  if (serverInfo.chainId.startsWith('eip155:')) {
     return formatSIWEMessage(serverInfo, address);
   }
 
-  if (serverInfo.chainId.startsWith("solana:")) {
+  if (serverInfo.chainId.startsWith('solana:')) {
     return formatSIWSMessage(serverInfo, address);
   }
 
   throw new Error(
     `Unsupported chain namespace: ${serverInfo.chainId}. ` +
-      `Supported: eip155:* (EVM), solana:* (Solana)`,
+      `Supported: eip155:* (EVM), solana:* (Solana)`
   );
 }

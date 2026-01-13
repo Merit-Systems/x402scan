@@ -5,12 +5,12 @@
  * Per x402 v2 spec: typescript/site/CHANGELOG-v2.md lines 237-341
  */
 
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * Extension identifier constant
  */
-export const SIGN_IN_WITH_X = "sign-in-with-x";
+export const SIGN_IN_WITH_X = 'sign-in-with-x';
 
 /**
  * Supported signature schemes per CHANGELOG-v2.md line 271.
@@ -24,13 +24,13 @@ export const SIGN_IN_WITH_X = "sign-in-with-x";
  * the appropriate signing UX.
  */
 export type SignatureScheme =
-  | "eip191" // personal_sign (default for EVM EOAs)
-  | "eip1271" // smart contract wallet verification
-  | "eip6492" // counterfactual smart wallet verification
-  | "siws"; // Sign-In-With-Solana
+  | 'eip191' // personal_sign (default for EVM EOAs)
+  | 'eip1271' // smart contract wallet verification
+  | 'eip6492' // counterfactual smart wallet verification
+  | 'siws'; // Sign-In-With-Solana
 
 /** Signature algorithm type per CAIP-122 */
-export type SignatureType = "eip191" | "ed25519";
+export type SignatureType = 'eip191' | 'ed25519';
 
 /**
  * Server-declared extension info included in PaymentRequired.extensions
@@ -71,22 +71,22 @@ export interface SIWxExtensionInfo {
  */
 export interface SIWxExtensionSchema {
   $schema: string;
-  type: "object";
+  type: 'object';
   properties: {
-    domain: { type: "string" };
-    address: { type: "string" };
-    statement?: { type: "string" };
-    uri: { type: "string"; format: "uri" };
-    version: { type: "string" };
-    chainId: { type: "string" };
-    type: { type: "string" };
-    nonce: { type: "string" };
-    issuedAt: { type: "string"; format: "date-time" };
-    expirationTime?: { type: "string"; format: "date-time" };
-    notBefore?: { type: "string"; format: "date-time" };
-    requestId?: { type: "string" };
-    resources?: { type: "array"; items: { type: "string"; format: "uri" } };
-    signature: { type: "string" };
+    domain: { type: 'string' };
+    address: { type: 'string' };
+    statement?: { type: 'string' };
+    uri: { type: 'string'; format: 'uri' };
+    version: { type: 'string' };
+    chainId: { type: 'string' };
+    type: { type: 'string' };
+    nonce: { type: 'string' };
+    issuedAt: { type: 'string'; format: 'date-time' };
+    expirationTime?: { type: 'string'; format: 'date-time' };
+    notBefore?: { type: 'string'; format: 'date-time' };
+    requestId?: { type: 'string' };
+    resources?: { type: 'array'; items: { type: 'string'; format: 'uri' } };
+    signature: { type: 'string' };
   };
   required: string[];
 }
@@ -112,14 +112,14 @@ export const SIWxPayloadSchema = z.object({
   uri: z.string(),
   version: z.string(),
   chainId: z.string(),
-  type: z.enum(["eip191", "ed25519"]),
+  type: z.enum(['eip191', 'ed25519']),
   nonce: z.string(),
   issuedAt: z.string(),
   expirationTime: z.string().optional(),
   notBefore: z.string().optional(),
   requestId: z.string().optional(),
   resources: z.array(z.string()).optional(),
-  signatureScheme: z.enum(["eip191", "eip1271", "eip6492", "siws"]).optional(),
+  signatureScheme: z.enum(['eip191', 'eip1271', 'eip6492', 'siws']).optional(),
   signature: z.string(),
 });
 

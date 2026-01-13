@@ -5,8 +5,8 @@
  * Requires base64-encoded JSON per x402 v2 spec.
  */
 
-import { Base64EncodedRegex, safeBase64Decode } from "@x402/core/utils";
-import { SIWxPayloadSchema, type SIWxPayload } from "./types";
+import { Base64EncodedRegex, safeBase64Decode } from '@x402/core/utils';
+import { SIWxPayloadSchema, type SIWxPayload } from './types';
 
 /**
  * Parse SIGN-IN-WITH-X header into structured payload.
@@ -28,7 +28,7 @@ import { SIWxPayloadSchema, type SIWxPayload } from "./types";
  */
 export function parseSIWxHeader(header: string): SIWxPayload {
   if (!Base64EncodedRegex.test(header)) {
-    throw new Error("Invalid SIWX header: not valid base64");
+    throw new Error('Invalid SIWX header: not valid base64');
   }
 
   const jsonStr = safeBase64Decode(header);
@@ -38,7 +38,7 @@ export function parseSIWxHeader(header: string): SIWxPayload {
     rawPayload = JSON.parse(jsonStr);
   } catch (error) {
     if (error instanceof SyntaxError) {
-      throw new Error("Invalid SIWX header: not valid JSON");
+      throw new Error('Invalid SIWX header: not valid JSON');
     }
     throw error;
   }
@@ -46,7 +46,9 @@ export function parseSIWxHeader(header: string): SIWxPayload {
   const parsed = SIWxPayloadSchema.safeParse(rawPayload);
 
   if (!parsed.success) {
-    const issues = parsed.error.issues.map(i => `${i.path.join(".")}: ${i.message}`).join(", ");
+    const issues = parsed.error.issues
+      .map(i => `${i.path.join('.')}: ${i.message}`)
+      .join(', ');
     throw new Error(`Invalid SIWX header: ${issues}`);
   }
 
