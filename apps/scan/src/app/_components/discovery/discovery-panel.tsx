@@ -160,6 +160,11 @@ export function DiscoveryPanel({
     );
   }
 
+  // Don't render anything if loading or no resources to show
+  if (!isLoading && resourceCount === 0) {
+    return null;
+  }
+
   // Create maps for quick lookup
   const testedResourceMap = new Map(testedResources.map(r => [r.url, r]));
   const failedResourceMap = new Map(failedResources.map(r => [r.url, r]));

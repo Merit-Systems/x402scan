@@ -46,8 +46,7 @@ export function useOwnership(
   return {
     ownershipProofs,
     ownershipVerified: Boolean(ownershipQuery.data?.verified),
-    recoveredAddresses: (ownershipQuery.data?.recoveredAddresses ??
-      []) as string[],
+    recoveredAddresses: ownershipQuery.data?.recoveredAddresses ?? [],
     isVerifyingOwnership: ownershipQuery.isLoading,
   };
 }

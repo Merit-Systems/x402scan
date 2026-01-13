@@ -337,12 +337,20 @@ export const RegisterResourceForm = () => {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <Label>Resource URL</Label>
-              <Input
-                type="text"
-                placeholder="https://"
-                value={url}
-                onChange={e => setUrl(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="https://"
+                  value={url}
+                  onChange={e => setUrl(e.target.value)}
+                  className="pr-10"
+                />
+                {isDiscoveryLoading && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                  </div>
+                )}
+              </div>
             </div>
             <Collapsible>
               <CollapsibleTrigger asChild>
@@ -479,7 +487,7 @@ export const RegisterResourceForm = () => {
               enteredUrl={
                 !isOriginOnly && !enteredUrlInDiscovery ? url : undefined
               }
-              isLoading={isDiscoveryLoading}
+              isLoading={false}
               found={discoveryFound}
               source={discoverySource}
               resources={actualDiscoveredResources}

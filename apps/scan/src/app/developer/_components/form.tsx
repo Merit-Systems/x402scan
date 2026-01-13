@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import { ChevronDown, Plus, X } from 'lucide-react';
+import { ChevronDown, Loader2, Plus, X } from 'lucide-react';
 
 import { DiscoveryPanel, useDiscovery } from '@/app/_components/discovery';
 import { Button } from '@/components/ui/button';
@@ -84,12 +84,20 @@ export const TestEndpointForm = () => {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <Label>Endpoint URL</Label>
-              <Input
-                type="text"
-                placeholder="https://"
-                value={url}
-                onChange={e => setUrl(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="https://"
+                  value={url}
+                  onChange={e => setUrl(e.target.value)}
+                  className="pr-10"
+                />
+                {isDiscoveryLoading && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                  </div>
+                )}
+              </div>
             </div>
 
             {isLocalhost && <NgrokAlert port={localPort} />}
@@ -171,7 +179,7 @@ export const TestEndpointForm = () => {
       <DiscoveryPanel
         origin={urlOrigin}
         enteredUrl={url}
-        isLoading={isDiscoveryLoading}
+        isLoading={false}
         found={discoveryFound}
         source={discoverySource}
         resources={discoveryResources}
