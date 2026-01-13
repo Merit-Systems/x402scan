@@ -12,6 +12,7 @@ import { useWalletChain } from '@/app/_contexts/wallet-chain/hook';
 import { useEvmX402Fetch } from '../x402/evm';
 
 import type { Token } from '@/types/token';
+import type { Connector } from 'wagmi';
 
 interface Props {
   token?: Token;
@@ -19,6 +20,7 @@ interface Props {
   toastMessage?: (amount: number) => string;
   address?: string;
   amount?: number;
+  connector?: Connector;
 }
 
 export const useEvmSend = (props?: Props) => {
@@ -60,6 +62,7 @@ export const useEvmSend = (props?: Props) => {
     reset,
   } = useEvmX402Fetch({
     chain,
+    connector: props?.connector,
     targetUrl: `${window.location.origin}/api/send?address=${toAddress}&amount=${amount}&chain=${chain}`,
     value: amount ? BigInt(amount * 10 ** token.decimals) : BigInt(0),
     init: {

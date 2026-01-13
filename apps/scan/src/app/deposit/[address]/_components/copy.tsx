@@ -1,13 +1,16 @@
 'use client';
 
+import { Check, Copy } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import { Check, Wallet } from 'lucide-react';
+
 import { toast } from 'sonner';
 
 import type { Address } from 'viem';
@@ -32,7 +35,7 @@ export const CopyAddress: React.FC<Props> = ({ address }) => {
           {isCopied ? (
             <Check className="size-3" />
           ) : (
-            <Wallet className="size-3" />
+            <Copy className="size-3" />
           )}
         </Button>
       </TooltipTrigger>

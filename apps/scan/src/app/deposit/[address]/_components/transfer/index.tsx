@@ -25,6 +25,7 @@ import type { SetStateAction, Dispatch } from 'react';
 import type { Address } from 'viem';
 import type { Connector } from 'wagmi';
 import { Chain, CHAIN_ID } from '@/types/chain';
+import { SwitchChain } from './switch-chain';
 
 interface Props {
   connectors: Connector[];
@@ -111,15 +112,22 @@ export const Transfer: React.FC<Props> = ({
       </AccordionItem>
       {connections !== undefined &&
         (connection ? (
-          <TransferButton
-            connector={selectedConnector}
-            address={address}
-            amount={amount}
-            balance={{
-              isLoading: isLoadingBalance,
-              value: balance,
-            }}
-          />
+          connection.chainId !== CHAIN_ID[Chain.BASE] ? (
+            <SwitchChain
+              connector={selectedConnector}
+              targetChain={Chain.BASE}
+            />
+          ) : (
+            <TransferButton
+              connector={selectedConnector}
+              address={address}
+              amount={amount}
+              balance={{
+                isLoading: isLoadingBalance,
+                value: balance,
+              }}
+            />
+          )
         ) : (
           <ConnectButton connector={selectedConnector} />
         ))}

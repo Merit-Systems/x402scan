@@ -1,24 +1,13 @@
-import { useCallback, useEffect } from 'react';
-
 import { Check, Loader2 } from 'lucide-react';
-
-import {
-  useSwitchAccount,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from 'wagmi';
-import { erc20Abi, parseUnits } from 'viem';
 
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-import { usdc } from '@/lib/tokens/usdc';
-
-import { api } from '@/trpc/client';
-
 import type { Address } from 'viem';
 import type { Connector } from 'wagmi';
 import { useEvmSend } from '@/app/_hooks/send/use-evm-send';
+import { useCallback } from 'react';
+import { Chain, CHAIN_ID } from '@/types/chain';
 
 interface Props {
   connector: Connector;
@@ -39,14 +28,24 @@ export const TransferButton: React.FC<Props> = ({
   const { handleSubmit, isPending, isSent } = useEvmSend({
     address,
     amount,
+    connector,
     onSuccess: () => {
       toast.success('Transfer successful');
     },
   });
 
+  const onClick = useCallback(async () => {
+    if (connector.chainId !== CHAIN_ID[Chain.BASE]) {
+      await connector.switchChain?.({
+        chainId: CHAIN_ID[Chain.BASE],
+      });
+    }
+    handleSubmit();
+  }, [handleSubmit, connector]);
+
   return (
     <Button
-      onClick={handleSubmit}
+      onClick={() => void onClick()}
       disabled={
         isPending ||
         amount === 0 ||
