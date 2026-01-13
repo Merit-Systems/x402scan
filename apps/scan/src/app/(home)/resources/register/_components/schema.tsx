@@ -59,14 +59,14 @@ const schemaV1 = `type X402Response = {
 type Accepts = {
     scheme: "exact",
     network: "base" | "base-sepolia" | "solana" | ...,  // Named network
-    maxAmountRequired: string,  // V1 uses maxAmountRequired
+    maxAmountRequired: string,
     resource: string,
     description: string,
     mimeType: string,
     payTo: string,
     maxTimeoutSeconds: number,
     asset: string,
-    outputSchema?: OutputSchema,  // Schema is per-accept in V1
+    outputSchema?: OutputSchema,
     extra?: Record<string, any>
 }
 
