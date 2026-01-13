@@ -38,7 +38,6 @@ export const TestEndpointForm = () => {
     discoveryResources,
     discoveryResourceCount,
     discoveryError,
-    invalidResourcesMap,
     preview: discoveryPreview,
     isPreviewLoading: isDiscoveryPreviewLoading,
     testedResources,

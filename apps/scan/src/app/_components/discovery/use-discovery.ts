@@ -204,7 +204,7 @@ export function useDiscovery({
           invalid: true,
         };
         if (resource.invalidReason) {
-          entry.reason = resource.invalidReason as string;
+          entry.reason = resource.invalidReason;
         }
         map[resource.url] = entry;
       }
@@ -304,7 +304,7 @@ export function useDiscovery({
     payToAddresses: batchTest.payToAddresses,
     ownershipVerified: ownership.ownershipVerified,
     recoveredAddresses: ownership.recoveredAddresses,
-    verifiedAddresses: ownership.verifiedAddresses as Record<string, boolean>,
+    verifiedAddresses: ownership.verifiedAddresses,
     isVerifyingOwnership: ownership.isVerifyingOwnership,
 
     // Registration status

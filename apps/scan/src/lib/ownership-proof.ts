@@ -139,13 +139,10 @@ class SolanaVerifier implements ChainVerifier {
     }
   }
 
-  async recoverAddress(
-    _signature: string,
-    _message: string
-  ): Promise<string | null> {
+  recoverAddress(): Promise<string | null> {
     // Solana Ed25519 signatures don't support address recovery
     // This is a fundamental difference from ECDSA (used by EVM)
-    return null;
+    return Promise.resolve(null);
   }
 }
 

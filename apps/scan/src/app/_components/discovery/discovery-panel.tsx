@@ -110,6 +110,8 @@ export interface DiscoveryPanelProps {
   recoveredAddresses?: string[];
   /** Map of payTo address to verification status */
   verifiedAddresses?: Record<string, boolean>;
+  /** Whether overall ownership is verified */
+  ownershipVerified?: boolean;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -658,7 +660,7 @@ function FailedResourceCard({
                     </div>
                   )}
                   {(() => {
-                    const methods = failedDetails.triedMethods as string[] | undefined;
+                    const methods = failedDetails.triedMethods;
                     return Array.isArray(methods) && methods.length > 0 && (
                       <div className="flex gap-2">
                         <span className="text-muted-foreground">Tried Methods:</span>
@@ -674,7 +676,7 @@ function FailedResourceCard({
 
             {/* Parse Errors */}
             {(() => {
-              const errors = failedDetails?.parseErrors as string[] | undefined;
+              const errors = failedDetails?.parseErrors;
               return Array.isArray(errors) && errors.length > 0 && (
                 <div className="border rounded-md bg-red-500/5 border-red-500/30 p-3 text-xs space-y-2">
                   <p className="font-medium text-red-600">Validation Errors</p>
@@ -690,21 +692,24 @@ function FailedResourceCard({
             })()}
 
             {/* Headers - collapsible */}
-            {failedDetails?.headers && typeof failedDetails.headers === 'object' && Object.keys(failedDetails.headers as Record<string, string>).length > 0 && (
-              <details className="border rounded-md bg-muted/30">
-                <summary className="p-2 text-xs font-medium cursor-pointer hover:bg-muted/50">
-                  HTTP Headers ({Object.keys(failedDetails.headers as Record<string, string>).length})
-                </summary>
-                <div className="p-2 pt-0 space-y-1">
-                  {Object.entries(failedDetails.headers as Record<string, string>).map(([key, value]) => (
-                    <div key={key} className="flex gap-2 text-[10px] font-mono">
-                      <span className="text-muted-foreground">{key}:</span>
-                      <span className="break-all">{value}</span>
-                    </div>
-                  ))}
-                </div>
-              </details>
-            )}
+            {(() => {
+              const headers = failedDetails?.headers;
+              return headers && typeof headers === 'object' && Object.keys(headers).length > 0 && (
+                <details className="border rounded-md bg-muted/30">
+                  <summary className="p-2 text-xs font-medium cursor-pointer hover:bg-muted/50">
+                    HTTP Headers ({Object.keys(headers).length})
+                  </summary>
+                  <div className="p-2 pt-0 space-y-1">
+                    {Object.entries(headers).map(([key, value]) => (
+                      <div key={key} className="flex gap-2 text-[10px] font-mono">
+                        <span className="text-muted-foreground">{key}:</span>
+                        <span className="break-all">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              );
+            })()}
 
             {/* Raw response - nested collapsible */}
             {(failedDetails?.body !== undefined || testedResponse?.parsed) && (

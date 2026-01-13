@@ -130,7 +130,7 @@ export async function verifyAcceptsOwnership(
       verified,
       verifiedAddress,
       verificationProof,
-      error: verified ? undefined : error || 'No matching proof found',
+      error: verified ? undefined : error ?? 'No matching proof found',
     });
   }
 

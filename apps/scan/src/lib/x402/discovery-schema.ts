@@ -175,7 +175,7 @@ export function parseDiscoveryDocument(
       version: 1,
       resources: [...validResources, ...invalidResources],
       instructions,
-      ownershipProofs: ownershipProofs as string[] | undefined,
+      ownershipProofs: ownershipProofs,
     },
     invalidResources: invalidResources.length > 0 ? invalidResources : undefined,
   };

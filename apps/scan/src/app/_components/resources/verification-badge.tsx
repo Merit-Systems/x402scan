@@ -28,7 +28,6 @@ export function ResourceVerificationBadge({
 }: ResourceVerificationBadgeProps) {
   const allVerified = totalAccepts > 0 && verifiedAccepts === totalAccepts;
   const partiallyVerified = verifiedAccepts > 0 && verifiedAccepts < totalAccepts;
-  const unverified = verifiedAccepts === 0;
 
   // Verified state
   if (allVerified) {
