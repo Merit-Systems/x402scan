@@ -3,6 +3,7 @@ import { Deposit } from './_components';
 import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
 import { Chain } from '@/types/chain';
 import { Body, Heading } from '@/app/_components/layout/page-utils';
+import { CopyCode } from '@/components/ui/copy-code';
 
 export default async function DepositPage({
   params,
@@ -27,6 +28,10 @@ export default async function DepositPage({
                 Add USDC to your x402scan MCP to call resources
               </p>
             </div>
+            <CopyCode
+              code={parsedAddress.data}
+              toastMessage="Address copied to clipboard"
+            />
 
             <Deposit address={parsedAddress.data} />
           </Body>
