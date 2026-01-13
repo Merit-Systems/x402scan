@@ -61,4 +61,3 @@ function parseRecords(rawRecords: string[]): X402DnsLookupResult {
     records: validRecords,
   };
 }
-

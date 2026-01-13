@@ -52,6 +52,7 @@ export async function fetchDiscoveryDocument(
     const discoveryUrls = dnsResult.records.map(r => r.url);
     const allResources: DiscoveredResource[] = [];
     let instructions: string | undefined;
+    let ownershipProofs: string[] | undefined;
     const errors: string[] = [];
 
     // Fetch documents from all DNS-specified URLs
@@ -66,6 +67,13 @@ export async function fetchDiscoveryDocument(
         // Use first instructions found
         if (!instructions && result.value.instructions) {
           instructions = result.value.instructions;
+        }
+        // Merge ownership proofs from all documents
+        if (result.value.ownershipProofs?.length) {
+          ownershipProofs = [
+            ...(ownershipProofs ?? []),
+            ...result.value.ownershipProofs,
+          ];
         }
       } else if (result.status === 'fulfilled' && !result.value.success) {
         errors.push(`${discoveryUrls[i]}: ${result.value.error}`);
@@ -89,6 +97,7 @@ export async function fetchDiscoveryDocument(
         resources: uniqueResources,
         discoveryUrls,
         instructions,
+        ownershipProofs,
       };
     }
 
@@ -109,6 +118,7 @@ export async function fetchDiscoveryDocument(
       resources: wellKnownResult.resources,
       discoveryUrls: [wellKnownUrl],
       instructions: wellKnownResult.instructions,
+      ownershipProofs: wellKnownResult.ownershipProofs,
     };
   }
 
@@ -129,7 +139,12 @@ async function fetchAndParseDocument(
   url: string,
   resolveOrigin: string
 ): Promise<
-  | { success: true; resources: DiscoveredResource[]; instructions?: string }
+  | {
+      success: true;
+      resources: DiscoveredResource[];
+      instructions?: string;
+      ownershipProofs?: string[];
+    }
   | { success: false; error: string }
 > {
   try {
@@ -159,6 +174,7 @@ async function fetchAndParseDocument(
       success: true,
       resources: resolvedResources,
       instructions: parsed.data.instructions,
+      ownershipProofs: parsed.data.ownershipProofs,
     };
   } catch (error) {
     return {

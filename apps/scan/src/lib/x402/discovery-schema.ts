@@ -45,6 +45,8 @@ export const x402DiscoveryDocumentSchema = z3.object({
   resources: z3.array(resourceEntrySchema),
   /** Optional instructions for AI agents consuming this API */
   instructions: z3.string().optional(),
+  /** Optional ownership proofs (e.g., signed messages, verification URLs) */
+  ownershipProofs: z3.array(z3.string()).optional(),
 });
 
 export interface ParsedResource {

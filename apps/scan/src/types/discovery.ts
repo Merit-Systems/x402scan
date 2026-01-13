@@ -42,6 +42,8 @@ export interface X402DiscoveryDocument {
   resources: string[];
   /** Optional instructions for AI agents consuming this API */
   instructions?: string;
+  /** Optional ownership proofs (e.g., signed messages, verification URLs) */
+  ownershipProofs?: string[];
 }
 
 /**
@@ -55,6 +57,8 @@ export interface X402DiscoveryResult {
   discoveryUrls: string[];
   /** Optional instructions for AI agents consuming this API */
   instructions?: string;
+  /** Optional ownership proofs (e.g., signed messages, verification URLs) */
+  ownershipProofs?: string[];
   error?: string;
 }
 
