@@ -23,6 +23,7 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import { Methods } from '@/types/x402';
 
 import { registerResource } from '@/lib/resources';
+import { extractX402Data } from '@/lib/x402';
 import { TRPCError } from '@trpc/server';
 import {
   listResourceTags,
@@ -151,7 +152,7 @@ export const resourcesRouter = createTRPCRouter({
 
         const result = await registerResource(
           input.url.toString(),
-          await response.json()
+          await extractX402Data(response)
         );
 
         if (result.success === false) {

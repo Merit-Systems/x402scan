@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { EnhancedOutputSchema } from '@/lib/x402/schema';
+import type { OutputSchemaV1 } from '@/lib/x402';
 
 interface FieldDef {
   type?: string;
@@ -60,9 +60,9 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
 }
 
 export const inputSchemaToZodSchema = (
-  inputSchema: EnhancedOutputSchema['input']
+  inputSchema: OutputSchemaV1['input']
 ) => {
-  const method = inputSchema.method.toUpperCase();
+  const method = (inputSchema.method ?? 'GET').toUpperCase();
   const shape: Record<string, z.ZodTypeAny> = {};
 
   // For GET/HEAD/OPTIONS: use query params
