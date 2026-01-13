@@ -42,7 +42,7 @@ export const CopyAddress: React.FC<Props> = ({ address }) => {
           variant="outline"
           className="shrink-0 size-fit md:size-fit px-2 py-1"
         >
-          {balance ? (
+          {balance !== undefined ? (
             <span>{formatCurrency(balance)}</span>
           ) : (
             <Skeleton className="h-[14px] my-[3px] w-8" />

@@ -14,6 +14,10 @@ import { Transfer } from './transfer';
 
 import { OnrampMethods } from '@/services/onramp/types';
 
+import { WalletChainProvider } from '@/app/_contexts/wallet-chain/provider';
+
+import { Chain } from '@/types/chain';
+
 import type { Connector } from 'wagmi';
 import type { Address } from 'viem';
 
@@ -87,33 +91,37 @@ const DepositWithConnectorsContent: React.FC<DepositContentProps> = ({
   const [accordionValue, setAccordionValue] = useState<string[]>([]);
 
   return (
-    <Accordion
-      type="multiple"
-      value={accordionValue}
-      onValueChange={setAccordionValue}
-      className="w-full flex flex-col gap-4"
-    >
-      <MethodSelect
-        selectedMethod={selectedMethod}
-        onMethodChange={setSelectedMethod}
-        onClose={() =>
-          setAccordionValue(accordionValue.filter(value => value !== 'methods'))
-        }
-        hasInjectedWallets={connectors.length > 0}
-      />
-      {selectedMethod === OnrampMethods.WALLET ? (
-        <Transfer
-          connectors={connectors}
-          address={address}
-          setAccordionValue={setAccordionValue}
-        />
-      ) : (
-        <Onramp
+    <WalletChainProvider initialChain={Chain.BASE} isFixed>
+      <Accordion
+        type="multiple"
+        value={accordionValue}
+        onValueChange={setAccordionValue}
+        className="w-full flex flex-col gap-4"
+      >
+        <MethodSelect
           selectedMethod={selectedMethod}
-          setAccordionValue={setAccordionValue}
-          address={address}
+          onMethodChange={setSelectedMethod}
+          onClose={() =>
+            setAccordionValue(
+              accordionValue.filter(value => value !== 'methods')
+            )
+          }
+          hasInjectedWallets={connectors.length > 0}
         />
-      )}
-    </Accordion>
+        {selectedMethod === OnrampMethods.WALLET ? (
+          <Transfer
+            connectors={connectors}
+            address={address}
+            setAccordionValue={setAccordionValue}
+          />
+        ) : (
+          <Onramp
+            selectedMethod={selectedMethod}
+            setAccordionValue={setAccordionValue}
+            address={address}
+          />
+        )}
+      </Accordion>
+    </WalletChainProvider>
   );
 };
