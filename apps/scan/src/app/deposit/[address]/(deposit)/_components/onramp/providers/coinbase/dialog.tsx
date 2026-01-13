@@ -33,7 +33,8 @@ export const CoinbaseOnrampDialogContent: React.FC<
         onClick={() =>
           createCoinbaseOnrampSession({
             amount,
-            redirect: window.location.href,
+            redirect: `${window.location.href}/coinbase`,
+            tokenKey: 'id',
             address,
           })
         }

@@ -4,7 +4,7 @@ export enum OnrampProviders {
 }
 
 export enum OnrampMethods {
-  DEBIT_CARD = 'DEBIT_CARD',
-  ACH = 'ACH_BANK_ACCOUNT',
-  WALLET = 'WALLET',
+  DEBIT_CARD = 'debit-card',
+  ACH = 'ach-bank-account',
+  WALLET = 'wallet',
 }

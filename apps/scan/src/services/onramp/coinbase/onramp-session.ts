@@ -50,7 +50,6 @@ export const createOnrampUrl = async (
 
   const redirectUrl = new URL(redirect);
   redirectUrl.searchParams.set(tokenKey, token);
-  redirectUrl.searchParams.set('network', 'base');
 
   if (redirectSearchParams) {
     Object.entries(redirectSearchParams).forEach(([key, value]) => {
