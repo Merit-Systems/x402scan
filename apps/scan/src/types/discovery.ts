@@ -42,7 +42,11 @@ export interface X402DiscoveryDocument {
   resources: string[];
   /** Optional instructions for AI agents consuming this API */
   instructions?: string;
-  /** Optional ownership proofs (e.g., signed messages, verification URLs) */
+  /**
+   * Optional ownership proofs - signatures of the origin string using the payTo address private key.
+   * Used to verify the resource owner is the actual recipient of funds (prevents spoofing attacks).
+   * Each proof is a signature that can be verified against the payTo address in the resource's accepts.
+   */
   ownershipProofs?: string[];
 }
 
@@ -57,8 +61,16 @@ export interface X402DiscoveryResult {
   discoveryUrls: string[];
   /** Optional instructions for AI agents consuming this API */
   instructions?: string;
-  /** Optional ownership proofs (e.g., signed messages, verification URLs) */
+  /**
+   * Ownership proofs - signatures of the origin string using the payTo address private key.
+   * Verifies the resource owner is the actual recipient of funds (prevents spoofing attacks).
+   */
   ownershipProofs?: string[];
+  /**
+   * Whether ownership was verified (at least one proof matched a payTo address).
+   * Only set after verification against actual resource payTo addresses.
+   */
+  ownershipVerified?: boolean;
   error?: string;
 }
 

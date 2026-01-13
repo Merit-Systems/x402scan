@@ -42,6 +42,10 @@ export const TestEndpointForm = () => {
     failedResources,
     isBatchTestLoading,
     refreshDiscovery,
+    ownershipVerified,
+    ownershipProofs,
+    payToAddresses,
+    recoveredAddresses,
   } = useDiscovery({
     url,
   });
@@ -180,6 +184,10 @@ export const TestEndpointForm = () => {
         failedResources={failedResources}
         isBatchTestLoading={isBatchTestLoading}
         onRefresh={refreshDiscovery}
+        ownershipVerified={ownershipVerified}
+        ownershipProofs={ownershipProofs}
+        payToAddresses={payToAddresses}
+        recoveredAddresses={recoveredAddresses}
       />
     </div>
   );

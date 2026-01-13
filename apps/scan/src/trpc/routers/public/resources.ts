@@ -323,6 +323,7 @@ export const resourcesRouter = createTRPCRouter({
         resourceCount: discoveryResult.resources.length,
         resources: discoveryResult.resources,
         discoveryUrls: discoveryResult.discoveryUrls,
+        ownershipProofs: discoveryResult.ownershipProofs,
       };
     }),
 
@@ -352,6 +353,30 @@ export const resourcesRouter = createTRPCRouter({
         registered: input.urls.filter(url => registeredUrls.has(url)),
         unregistered: input.urls.filter(url => !registeredUrls.has(url)),
       };
+    }),
+
+  /**
+   * Verify ownership proofs against payTo addresses.
+   * Checks if any proof is a valid signature of the origin by any payTo address.
+   */
+  verifyOwnership: publicProcedure
+    .input(
+      z.object({
+        ownershipProofs: z.array(z.string()),
+        origin: z.string(),
+        payToAddresses: z.array(z.string()),
+      })
+    )
+    .query(async ({ input }) => {
+      const { verifyAnyOwnershipProof } = await import('@/lib/ownership-proof');
+
+      const result = await verifyAnyOwnershipProof(
+        input.ownershipProofs,
+        input.origin,
+        input.payToAddresses
+      );
+
+      return result;
     }),
 
   tags: {

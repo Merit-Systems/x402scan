@@ -45,7 +45,10 @@ export const x402DiscoveryDocumentSchema = z3.object({
   resources: z3.array(resourceEntrySchema),
   /** Optional instructions for AI agents consuming this API */
   instructions: z3.string().optional(),
-  /** Optional ownership proofs (e.g., signed messages, verification URLs) */
+  /**
+   * Ownership proofs - signatures of the origin string using the payTo address private key.
+   * Used to verify the resource owner is the actual recipient of funds (prevents spoofing attacks).
+   */
   ownershipProofs: z3.array(z3.string()).optional(),
 });
 

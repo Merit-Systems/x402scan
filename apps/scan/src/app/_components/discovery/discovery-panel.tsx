@@ -8,6 +8,8 @@ import {
   ChevronRight,
   Loader2,
   RefreshCw,
+  ShieldAlert,
+  ShieldCheck,
   XCircle,
 } from 'lucide-react';
 
@@ -15,6 +17,11 @@ import { Accordion } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 import { Favicon } from '@/app/_components/favicon';
@@ -97,6 +104,14 @@ export interface DiscoveryPanelProps {
   onRefresh?: () => void;
   /** URLs that are already registered */
   registeredUrls?: string[];
+  /** Whether ownership was verified (proof matched a payTo address) */
+  ownershipVerified?: boolean;
+  /** Ownership proofs from discovery document */
+  ownershipProofs?: string[];
+  /** PayTo addresses from tested resources */
+  payToAddresses?: string[];
+  /** Addresses recovered from ownership proof signatures */
+  recoveredAddresses?: string[];
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -120,6 +135,10 @@ export function DiscoveryPanel({
   isBatchTestLoading,
   onRefresh,
   registeredUrls = [],
+  ownershipVerified = false,
+  ownershipProofs = [],
+  payToAddresses = [],
+  recoveredAddresses = [],
 }: DiscoveryPanelProps) {
   const [page, setPage] = useState(0);
 
@@ -182,7 +201,7 @@ export function DiscoveryPanel({
         <div className="flex flex-col">
           {/* Header with refresh button */}
           {onRefresh && (
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end pb-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -205,6 +224,10 @@ export function DiscoveryPanel({
             <OriginPreviewCard
               origin={originData}
               resourceCount={resourceCount}
+              ownershipVerified={ownershipVerified}
+              ownershipProofs={ownershipProofs}
+              payToAddresses={payToAddresses}
+              recoveredAddresses={recoveredAddresses}
             />
           )}
 
@@ -261,6 +284,7 @@ export function DiscoveryPanel({
                         resourceUrl={resourceUrl}
                         preview={preview}
                         testedResponse={tested}
+                        ownershipVerified={ownershipVerified}
                       />
                     );
                   }
@@ -273,6 +297,7 @@ export function DiscoveryPanel({
                       resourceUrl={resourceUrl}
                       preview={preview}
                       failedDetails={failedDetails}
+                      ownershipVerified={ownershipVerified}
                     />
                   );
                 })}
@@ -391,12 +416,15 @@ function FailedResourceCard({
   preview,
   failedDetails,
   testedResponse,
+  ownershipVerified = false,
 }: {
   resourceUrl: string;
   preview?: OriginPreview | null;
   failedDetails?: FailedResource;
   /** If provided, x402 parsed successfully but is missing schema */
   testedResponse?: TestedResource;
+  /** Whether ownership was verified via signature */
+  ownershipVerified?: boolean;
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const [showRawResponse, setShowRawResponse] = useState(false);
@@ -466,6 +494,7 @@ function FailedResourceCard({
                 { label: 'Has accepts', ok: hasAccepts },
                 { label: 'Input schema', ok: hasInputSchema },
                 { label: 'Output schema', ok: hasOutputSchema },
+                { label: 'Ownership verified', ok: ownershipVerified },
                 { label: 'OG image', ok: Boolean(preview?.ogImages?.[0]?.url) },
                 { label: 'Favicon', ok: Boolean(preview?.favicon) },
               ]}
@@ -684,9 +713,17 @@ function createOriginFromPreview(
 function OriginPreviewCard({
   origin,
   resourceCount,
+  ownershipVerified = false,
+  ownershipProofs = [],
+  payToAddresses = [],
+  recoveredAddresses = [],
 }: {
   origin: ResourceOrigin & { ogImages: OgImage[] };
   resourceCount: number;
+  ownershipVerified?: boolean;
+  ownershipProofs?: string[];
+  payToAddresses?: string[];
+  recoveredAddresses?: string[];
 }) {
   const hostname = (() => {
     try {
@@ -701,6 +738,41 @@ function OriginPreviewCard({
     origin.description !== null ||
     origin.ogImages.length > 0;
 
+  const hasProofs = ownershipProofs.length > 0;
+  const hasPayTo = payToAddresses.length > 0;
+
+  const truncateAddress = (a: string) => `${a.slice(0, 6)}...${a.slice(-4)}`;
+
+  // Determine the specific reason for unverified status
+  const getUnverifiedReason = () => {
+    if (!hasProofs) {
+      return {
+        title: 'Missing ownership proof',
+        description:
+          'Ownership proofs verify you control the payTo address. Sign your origin URL with your payTo private key and add it to the ownershipProofs array in your discovery document.',
+      };
+    }
+    if (!hasPayTo) {
+      return {
+        title: 'No payTo addresses found',
+        description:
+          'Could not extract payTo addresses from resource accepts to verify against.',
+      };
+    }
+    // Has proofs and payTo but still unverified = mismatch
+    const recoveredStr =
+      recoveredAddresses.length > 0
+        ? recoveredAddresses.map(truncateAddress).join(', ')
+        : 'unknown';
+    const expectedStr = payToAddresses.map(truncateAddress).join(', ');
+    return {
+      title: 'Proof mismatch',
+      description: `Recovered: ${recoveredStr}. Expected: ${expectedStr}`,
+    };
+  };
+
+  const unverifiedReason = getUnverifiedReason();
+
   return (
     <Card className="overflow-hidden flex w-full items-stretch">
       <div className="flex-1">
@@ -711,9 +783,30 @@ function OriginPreviewCard({
           )}
         >
           <Favicon url={origin.favicon} className="size-6" />
-          <CardTitle className="font-bold text-base md:text-lg">
-            {hostname}{' '}
-            <span className="text-muted-foreground text-xs md:text-sm ml-2">
+          <CardTitle className="font-bold text-base md:text-lg flex items-center gap-2">
+            {hostname}
+            {ownershipVerified ? (
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-600/10 border border-green-600/30 rounded-full px-2 py-0.5">
+                <ShieldCheck className="size-3" />
+                Verified
+              </span>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-secondary border border-border rounded-full px-2 py-0.5 cursor-help">
+                    <ShieldAlert className="size-3" />
+                    Unverified
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-72">
+                  <p className="font-medium">{unverifiedReason.title}</p>
+                  <p className="text-muted-foreground">
+                    {unverifiedReason.description}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            <span className="text-muted-foreground text-xs md:text-sm font-normal">
               {resourceCount} resource{resourceCount === 1 ? '' : 's'}
             </span>
           </CardTitle>

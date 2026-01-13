@@ -83,6 +83,10 @@ export const RegisterResourceForm = () => {
     bulkData,
     handleRegisterAll,
     resetBulk,
+    ownershipVerified,
+    ownershipProofs,
+    payToAddresses,
+    recoveredAddresses,
   } = useDiscovery({
     url,
     onRegisterAllSuccess: data => {
@@ -475,6 +479,10 @@ export const RegisterResourceForm = () => {
               onRegisterAll={handleRegisterAll}
               showRegisterButton={false}
               registeredUrls={registeredUrls}
+              ownershipVerified={ownershipVerified}
+              ownershipProofs={ownershipProofs}
+              payToAddresses={payToAddresses}
+              recoveredAddresses={recoveredAddresses}
             />
           </div>
         )}

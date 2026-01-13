@@ -142,6 +142,42 @@ export function useDiscovery({
     }
   );
 
+  // Extract payTo addresses from tested resources for ownership verification
+  const payToAddresses = useMemo(() => {
+    const addresses: string[] = [];
+    for (const resource of batchTestQuery.data?.resources ?? []) {
+      for (const accept of resource.parsed.accepts ?? []) {
+        if ('payTo' in accept && accept.payTo) {
+          addresses.push(accept.payTo);
+        }
+      }
+    }
+    return [...new Set(addresses)]; // Deduplicate
+  }, [batchTestQuery.data?.resources]);
+
+  // Get ownership proofs from discovery
+  const ownershipProofs = useMemo(
+    () =>
+      discoveryQuery.data?.found ? discoveryQuery.data.ownershipProofs ?? [] : [],
+    [discoveryQuery.data]
+  );
+
+  // Verify ownership proofs against payTo addresses
+  const ownershipQuery = api.public.resources.verifyOwnership.useQuery(
+    {
+      ownershipProofs,
+      origin: urlOrigin!,
+      payToAddresses,
+    },
+    {
+      enabled:
+        !!urlOrigin &&
+        ownershipProofs.length > 0 &&
+        payToAddresses.length > 0,
+      staleTime: 60000,
+    }
+  );
+
   // Check which resources are already registered
   const registeredCheckQuery = api.public.resources.checkRegistered.useQuery(
     { urls: resourceUrls },
@@ -213,6 +249,14 @@ export function useDiscovery({
     isBatchTestLoading: batchTestQuery.isLoading,
     testedResources: batchTestQuery.data?.resources ?? [],
     failedResources: batchTestQuery.data?.failed ?? [],
+
+    // Ownership verification
+    hasOwnershipProofs: ownershipProofs.length > 0,
+    ownershipProofs,
+    payToAddresses,
+    ownershipVerified: ownershipQuery.data?.verified ?? false,
+    recoveredAddresses: ownershipQuery.data?.recoveredAddresses ?? [],
+    isVerifyingOwnership: ownershipQuery.isLoading,
 
     // Registration status
     isCheckingRegistered: registeredCheckQuery.isLoading,
