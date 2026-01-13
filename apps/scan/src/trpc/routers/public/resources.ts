@@ -23,6 +23,7 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import { Methods } from '@/types/x402';
 
 import { registerResource } from '@/lib/resources';
+import { extractX402Data } from '@/lib/x402';
 import { TRPCError } from '@trpc/server';
 import {
   listResourceTags,
@@ -33,7 +34,6 @@ import {
 import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
 import { getOriginFromUrl } from '@/lib/url';
-import { extractX402Data } from '@/lib/x402';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 
 import type { Prisma } from '@x402scan/scan-db';

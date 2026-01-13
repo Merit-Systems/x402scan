@@ -4,6 +4,5 @@ export interface X402FetchResponse<TData = unknown> {
 }
 
 export type FetchWithPaymentWrapper = (
-  baseFetch: typeof fetch,
-  value: bigint
+  baseFetch: typeof fetch
 ) => (url: string, init?: RequestInit) => Promise<Response>;

@@ -2,6 +2,7 @@ import { z as z3 } from 'zod3';
 
 export * from './v1';
 export * from './v2';
+export * from './schema';
 export { fetchWithProxy } from './proxy-fetch';
 
 import {
@@ -206,7 +207,7 @@ export function getMaxAmount(response: ParsedX402Response): string | undefined {
 }
 
 export async function extractX402Data(response: Response): Promise<unknown> {
-  // v2 - check header first using official @x402/core/http decoder
+  // v2 - check header first using @x402/core
   const paymentRequiredHeader = response.headers.get('Payment-Required');
   if (paymentRequiredHeader) {
     try {
@@ -231,6 +232,10 @@ export function normalizeChainId(chainId: string): string {
     const id = Number(chainId.split(':')[1]);
     const network = ChainIdToNetwork[id];
     return network ?? chainId;
+  }
+  if (chainId.startsWith('solana:')) {
+    const suffix = chainId.split(':')[1];
+    return suffix === 'mainnet' ? 'solana' : `solana-${suffix}`;
   }
   return chainId;
 }

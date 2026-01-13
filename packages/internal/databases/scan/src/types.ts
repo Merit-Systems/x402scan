@@ -28,7 +28,7 @@ export type {
   UserAcknowledgement,
   ResourceOriginMetrics,
   ResourceMetrics,
-} from '../generated/prisma/browser';
+} from '../generated/prisma/client';
 
 export {
   Role,
@@ -38,4 +38,4 @@ export {
   SessionStatus,
   ServerWalletType,
   Visibility,
-} from '../generated/prisma/browser';
+} from '../generated/prisma/client';
