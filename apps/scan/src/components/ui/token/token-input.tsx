@@ -24,8 +24,7 @@ import { Chain } from '@/types/chain';
 import type { Token } from '@/types/token';
 import type { MixedAddress, SolanaAddress } from '@/types/address';
 
-interface Props
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+type Props = {
   onChange: (value: number) => void;
   label: string;
   selectedToken: Token;
@@ -40,7 +39,7 @@ interface Props
     balance: number | undefined;
     isLoading: boolean;
   };
-}
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>;
 
 export const TokenInput: React.FC<Props> = ({
   onChange,

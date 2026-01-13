@@ -10,33 +10,23 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 
-import { api, HydrateClient } from '@/trpc/server';
-
 import { ActivityTimeframe } from '@/types/timeframes';
 
-export const OverallStats = async () => {
-  void api.public.agents.activity.overall.prefetch({
-    timeframe: ActivityTimeframe.SevenDays,
-  });
-  void api.public.agents.activity.bucketed.prefetch({
-    timeframe: ActivityTimeframe.SevenDays,
-    numBuckets: 32,
-  });
-
+// Note: No HydrateClient here - parent page.tsx provides it
+// Prefetch is done in page.tsx
+export const OverallStats = () => {
   return (
-    <HydrateClient>
-      <TimeRangeProvider initialTimeframe={ActivityTimeframe.SevenDays}>
-        <ActivityContainer>
-          <ErrorBoundary
-            fallback={<p>There was an error loading the activity data</p>}
-          >
-            <Suspense fallback={<LoadingOverallCharts />}>
-              <OverallCharts />
-            </Suspense>
-          </ErrorBoundary>
-        </ActivityContainer>
-      </TimeRangeProvider>
-    </HydrateClient>
+    <TimeRangeProvider initialTimeframe={ActivityTimeframe.SevenDays}>
+      <ActivityContainer>
+        <ErrorBoundary
+          fallback={<p>There was an error loading the activity data</p>}
+        >
+          <Suspense fallback={<LoadingOverallCharts />}>
+            <OverallCharts />
+          </Suspense>
+        </ErrorBoundary>
+      </ActivityContainer>
+    </TimeRangeProvider>
   );
 };
 

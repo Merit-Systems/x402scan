@@ -13,10 +13,10 @@ import { SIWE_PROVIDER_ID } from './providers/siwe/constants';
 import { SIWS_PROVIDER_ID } from './providers/siws/constants';
 
 import type { DefaultSession } from 'next-auth';
-import type { Account, Role } from '@x402scan/scan-db';
+import type { Account, Role } from '@x402scan/scan-db/types';
 
 declare module 'next-auth' {
-  interface Session extends DefaultSession {
+  interface Session {
     user: {
       id: string;
       role: Role;
@@ -82,10 +82,10 @@ const { handlers, auth: uncachedAuth } = NextAuth({
   trustHost: true,
   callbacks: {
     async session({ session, user }) {
-      return {
+      return Promise.resolve({
         ...session,
         user: user,
-      };
+      });
     },
     async jwt({ token, account }) {
       if (
@@ -94,7 +94,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
       ) {
         token.credentials = true;
       }
-      return token;
+      return Promise.resolve(token);
     },
   },
   jwt: {

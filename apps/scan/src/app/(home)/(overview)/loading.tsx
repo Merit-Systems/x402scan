@@ -11,6 +11,7 @@ import { env } from '@/env';
 import { LoadingTopAgents } from './_components/top-agents';
 
 export default function LoadingOverview() {
+  const pageSize = 10;
   return (
     <div>
       <HomeHeading />
@@ -20,7 +21,7 @@ export default function LoadingOverview() {
         <LoadingTopServers />
         <LoadingTopFacilitators />
         <LoadingTopAgents />
-        <LoadingLatestTransactions />
+        <LoadingLatestTransactions loadingRowCount={pageSize} />
         <LoadingAllSellers />
       </Body>
     </div>

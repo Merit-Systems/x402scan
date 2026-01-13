@@ -28,13 +28,13 @@ import { Code } from '@/components/ui/code';
 import { type parseX402Response } from '@/lib/x402/schema';
 import { CheckCircle, ChevronDown, Minus, XCircle } from 'lucide-react';
 
-type TestResult = {
+interface TestResult {
   ok: boolean;
   status: number;
   statusText: string;
   headers: Record<string, string>;
   body: unknown;
-};
+}
 
 type ParsedPair = {
   result: TestResult;
@@ -48,6 +48,47 @@ type PreviewData = {
   ogImages: { url: string | null }[];
   origin: string;
 } | null;
+
+const Icon = ({ ok, message }: { ok?: boolean; message?: string }) =>
+  ok === undefined ? (
+    <Minus className="size-4 text-muted-foreground" />
+  ) : ok ? (
+    <CheckCircle className="size-4 text-green-600" />
+  ) : message ? (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <XCircle className="size-4 text-red-600" />
+      </TooltipTrigger>
+      <TooltipContent sideOffset={6}>{message}</TooltipContent>
+    </Tooltip>
+  ) : (
+    <XCircle className="size-4 text-red-600" />
+  );
+
+// Helper to render a row with GET/POST icons
+const Row = ({
+  label,
+  gOk,
+  pOk,
+  gMsg,
+  pMsg,
+}: {
+  label: string;
+  gOk?: boolean;
+  pOk?: boolean;
+  gMsg?: string;
+  pMsg?: string;
+}) => (
+  <TableRow>
+    <TableCell className="pr-2">{label}</TableCell>
+    <TableCell className="pr-2">
+      <Icon ok={gOk} message={gMsg} />
+    </TableCell>
+    <TableCell>
+      <Icon ok={pOk} message={pMsg} />
+    </TableCell>
+  </TableRow>
+);
 
 export function Checklist({
   preview,
@@ -74,47 +115,6 @@ export function Checklist({
   };
   const gInfo = g?.parsed?.success ? analyze(g.parsed) : undefined;
   const pInfo = p?.parsed?.success ? analyze(p.parsed) : undefined;
-
-  const Icon = ({ ok, message }: { ok?: boolean; message?: string }) =>
-    ok === undefined ? (
-      <Minus className="size-4 text-muted-foreground" />
-    ) : ok ? (
-      <CheckCircle className="size-4 text-green-600" />
-    ) : message ? (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <XCircle className="size-4 text-red-600" />
-        </TooltipTrigger>
-        <TooltipContent sideOffset={6}>{message}</TooltipContent>
-      </Tooltip>
-    ) : (
-      <XCircle className="size-4 text-red-600" />
-    );
-
-  // Helper to render a row with GET/POST icons
-  const Row = ({
-    label,
-    gOk,
-    pOk,
-    gMsg,
-    pMsg,
-  }: {
-    label: string;
-    gOk?: boolean;
-    pOk?: boolean;
-    gMsg?: string;
-    pMsg?: string;
-  }) => (
-    <TableRow>
-      <TableCell className="pr-2">{label}</TableCell>
-      <TableCell className="pr-2">
-        <Icon ok={gOk} message={gMsg} />
-      </TableCell>
-      <TableCell>
-        <Icon ok={pOk} message={pMsg} />
-      </TableCell>
-    </TableRow>
-  );
 
   const joinErrors = (errors?: string[]) =>
     errors?.length ? errors.join('\n') : undefined;

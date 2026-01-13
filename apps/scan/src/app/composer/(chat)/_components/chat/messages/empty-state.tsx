@@ -3,12 +3,12 @@ import { Card } from '@/components/ui/card';
 import { ConversationEmptyState } from '@/components/ai-elements/conversation';
 import { Logo } from '@/components/logo';
 
-export type EmptyStateProps = {
+export interface EmptyStateProps {
   title?: string;
   description?: string;
   icon?: React.ReactNode;
   button?: React.ReactNode;
-};
+}
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
   title = 'x402scan Composer',

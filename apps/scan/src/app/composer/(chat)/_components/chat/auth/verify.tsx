@@ -75,8 +75,8 @@ const VerifyContent: React.FC<VerifyProps> = ({ signIn, isPending }) => {
       </div>
       <div className="p-4 bg-muted border-t">
         <p className="text-muted-foreground text-xs text-center font-mono">
-          Sign a message to confirm you own this wallet and create a server
-          wallet for your agent. This will refresh the page.
+          Sign a message to confirm you own this wallet. This will refresh the
+          page.
         </p>
       </div>
     </div>

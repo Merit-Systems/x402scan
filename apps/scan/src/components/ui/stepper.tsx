@@ -79,14 +79,14 @@ export const Stepper: React.FC<Props> = ({
   );
 };
 
-interface StepProps extends StepType {
+type StepProps = {
   isActive: boolean;
   isCompleted: boolean;
   className?: string;
   completedClassName?: string;
   activeClassName?: string;
   onClick?: () => void;
-}
+} & StepType;
 
 const Step: React.FC<StepProps> = ({
   title,

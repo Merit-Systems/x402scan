@@ -94,7 +94,7 @@ const getBucketedToolCallsByResourcesUncached = async (
   `;
 
   const rawResult = await scanDb.$queryRaw<
-    Array<{
+    {
       bucket_start: Date;
       resources: Record<
         string,
@@ -103,7 +103,7 @@ const getBucketedToolCallsByResourcesUncached = async (
           total_tool_calls: number;
         }
       >;
-    }>
+    }[]
   >(sql);
 
   return bucketedToolCallsByResourcesResultSchema.parse(rawResult);

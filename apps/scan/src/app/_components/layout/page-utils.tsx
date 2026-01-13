@@ -106,6 +106,31 @@ export interface SectionProps<T extends string> {
   href?: Route<T>;
 }
 
+const SectionHeader = ({
+  title,
+  href,
+}: {
+  title: string | ReactNode;
+  href?: string;
+}) => {
+  return (
+    <div
+      className={cn('flex items-center gap-1', href && 'group cursor-pointer')}
+    >
+      {typeof title === 'string' ? (
+        <h1 className="font-bold text-xl md:text-2xl">{title}</h1>
+      ) : (
+        title
+      )}
+      {href && (
+        <div className="flex items-center gap-2 bg-muted/0 hover:bg-muted rounded-md p-0.5 transition-all hover:scale-105 group-hover:translate-x-1">
+          <ChevronRight className="size-4 text-foreground/60 group-hover:text-muted-foreground" />
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const Section = <T extends string>({
   children,
   title,
@@ -114,38 +139,16 @@ export const Section = <T extends string>({
   className,
   href,
 }: SectionProps<T>) => {
-  const Header = () => {
-    return (
-      <div
-        className={cn(
-          'flex items-center gap-1',
-          href && 'group cursor-pointer'
-        )}
-      >
-        {typeof title === 'string' ? (
-          <h1 className="font-bold text-xl md:text-2xl">{title}</h1>
-        ) : (
-          title
-        )}
-        {href && (
-          <div className="flex items-center gap-2 bg-muted/0 hover:bg-muted rounded-md p-0.5 transition-all hover:scale-105 group-hover:translate-x-1">
-            <ChevronRight className="size-4 text-foreground/60 group-hover:text-muted-foreground" />
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className={cn('flex flex-col gap-4 md:gap-6', className)}>
       <div className="flex flex-col gap-1">
         <div className="flex justify-between items-center">
           {href ? (
             <Link href={href}>
-              <Header />
+              <SectionHeader title={title} href={href} />
             </Link>
           ) : (
-            <Header />
+            <SectionHeader title={title} href={href} />
           )}
           {actions}
         </div>

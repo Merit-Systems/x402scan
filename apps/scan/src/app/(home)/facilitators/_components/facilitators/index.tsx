@@ -7,17 +7,20 @@ import { DataTable } from '@/components/ui/data-table';
 import { columns } from './columns';
 import { useFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/hook';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
-import { facilitatorAddresses } from '@/lib/facilitators';
 import { useChain } from '@/app/_contexts/chain/hook';
 
-export const FacilitatorsTable: React.FC = () => {
+interface Props {
+  pageSize: number;
+}
+
+export const FacilitatorsTable: React.FC<Props> = ({ pageSize }) => {
   const { sorting } = useFacilitatorsSorting();
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
   const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
     pagination: {
-      page_size: facilitatorAddresses.length,
+      page_size: pageSize,
     },
     sorting,
     timeframe,
@@ -28,18 +31,18 @@ export const FacilitatorsTable: React.FC = () => {
     <DataTable
       columns={columns}
       data={facilitatorsData.items}
-      pageSize={facilitatorAddresses.length}
+      pageSize={pageSize}
     />
   );
 };
 
-export const LoadingFacilitatorsTable = () => {
+export const LoadingFacilitatorsTable: React.FC<Props> = ({ pageSize }) => {
   return (
     <DataTable
       columns={columns}
       data={[]}
       isLoading
-      loadingRowCount={facilitatorAddresses.length}
+      loadingRowCount={pageSize}
     />
   );
 };

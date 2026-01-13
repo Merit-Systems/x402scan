@@ -28,11 +28,12 @@ export default async function NetworksPage({
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });
-  void api.public.stats.overallMV.prefetch({
+  void api.public.stats.overall.prefetch({
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });
   void api.networks.list.prefetch({
+    sorting: defaultNetworksSorting,
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });

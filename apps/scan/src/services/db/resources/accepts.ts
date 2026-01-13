@@ -55,6 +55,6 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
         }
         return acc;
       },
-      {} as Record<string, Array<ResourceOrigin>>
+      {} as Record<string, ResourceOrigin[]>
     );
 };

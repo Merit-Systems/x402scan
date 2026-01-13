@@ -80,11 +80,11 @@ export const FetchSvm: React.FC<Props> = ({
   );
 };
 
-interface FetchContentProps extends Omit<Props, 'chain'> {
+type FetchContentProps = {
   account: UiWalletAccount;
   isTool?: boolean;
   balance: number;
-}
+} & Omit<Props, 'chain'>;
 
 const FetchContent: React.FC<FetchContentProps> = ({
   account,

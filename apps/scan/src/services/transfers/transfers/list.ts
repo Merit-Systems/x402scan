@@ -1,7 +1,7 @@
 import type z from 'zod';
 
 import {
-  toPaginatedResponse,
+  toPeekAheadResponse,
   type paginatedQuerySchema,
 } from '@/lib/pagination';
 import { baseListQuerySchema } from '../schemas';
@@ -30,19 +30,14 @@ const listFacilitatorTransfersUncached = async (
   const { page_size, page } = pagination;
 
   const where = transfersWhereObject(input);
-  const [count, transfers] = await Promise.all([
-    transfersDb.transferEvent.count({
-      where,
-    }),
-    transfersDb.transferEvent.findMany({
-      where,
-      orderBy: {
-        [sorting.id]: sorting.desc ? 'desc' : 'asc',
-      },
-      take: page_size + 1,
-      skip: page * page_size,
-    }),
-  ]);
+  const transfers = await transfersDb.transferEvent.findMany({
+    where,
+    orderBy: {
+      [sorting.id]: sorting.desc ? 'desc' : 'asc',
+    },
+    take: page_size + 1,
+    skip: page * page_size,
+  });
 
   // Map to expected output format
   const items = transfers.map(transfer => ({
@@ -54,9 +49,8 @@ const listFacilitatorTransfersUncached = async (
     chain: transfer.chain as Chain,
   }));
 
-  return toPaginatedResponse({
+  return toPeekAheadResponse({
     items,
-    total_count: count,
     ...pagination,
   });
 };

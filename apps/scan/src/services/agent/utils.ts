@@ -2,14 +2,14 @@ import { z } from 'zod';
 
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 
-type FieldDef = {
+interface FieldDef {
   type?: string;
   required?: boolean | string[];
   description?: string;
   enum?: string[];
   properties?: Record<string, FieldDef>;
   items?: FieldDef;
-};
+}
 
 function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
   let zodType: z.ZodTypeAny;

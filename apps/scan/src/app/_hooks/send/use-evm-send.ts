@@ -89,7 +89,7 @@ export const useEvmSend = (props?: Props) => {
     isTool: true,
   });
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(() => {
     if (!amount) {
       toast.error('Amount is required');
       return;

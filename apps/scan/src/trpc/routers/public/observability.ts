@@ -48,13 +48,13 @@ export const observabilityRouter = createTRPCRouter({
       });
 
       const data = await resultSet.json();
-      return data as Array<{
+      return data as {
         ts: string;
         r_2xx: string;
         r_3xx: string;
         r_4xx: string;
         r_5xx: string;
-      }>;
+      }[];
     }),
 
   errorRate: publicProcedure
@@ -101,12 +101,12 @@ export const observabilityRouter = createTRPCRouter({
       });
 
       const data = await resultSet.json();
-      return data as Array<{
+      return data as {
         ts: string;
         total_requests: string;
         error_requests: string;
         error_rate: string;
-      }>;
+      }[];
     }),
 
   latency: publicProcedure
@@ -151,12 +151,12 @@ export const observabilityRouter = createTRPCRouter({
       });
 
       const data = await resultSet.json();
-      return data as Array<{
+      return data as {
         ts: string;
         p50: string;
         p90: string;
         p99: string;
-      }>;
+      }[];
     }),
 
   resources: publicProcedure
@@ -200,13 +200,13 @@ export const observabilityRouter = createTRPCRouter({
       });
 
       const data = await resultSet.json();
-      return data as Array<{
+      return data as {
         url: string;
         total_requests: string;
         error_count: string;
         avg_duration: string;
         last_seen: string;
-      }>;
+      }[];
     }),
 
   invocations: publicProcedure
@@ -259,7 +259,7 @@ export const observabilityRouter = createTRPCRouter({
       });
 
       const countData = await countResultSet.json();
-      const totalStr = (countData as Array<{ total: string }>)[0]?.total ?? '0';
+      const totalStr = (countData as { total: string }[])[0]?.total ?? '0';
       const total = parseInt(totalStr);
 
       const dataQuery = `
@@ -299,7 +299,7 @@ export const observabilityRouter = createTRPCRouter({
       const data = await dataResultSet.json();
 
       return {
-        data: data as Array<{
+        data: data as {
           id: string;
           url: string;
           method: string;
@@ -310,7 +310,7 @@ export const observabilityRouter = createTRPCRouter({
           request_content_type: string;
           response_content_type: string;
           response_body: string;
-        }>,
+        }[],
         total,
         page,
         pageSize,

@@ -7,7 +7,7 @@ import { api } from '@/trpc/client';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 
-type EndUserCSVRow = {
+interface EndUserCSVRow {
   userId: string;
   email: string;
   phoneNumber: string;
@@ -16,7 +16,7 @@ type EndUserCSVRow = {
   evmSmartAccounts: string;
   solanaAccounts: string;
   createdAt: string;
-};
+}
 
 const convertToCSV = (data: EndUserCSVRow[]): string => {
   if (data.length === 0) return '';

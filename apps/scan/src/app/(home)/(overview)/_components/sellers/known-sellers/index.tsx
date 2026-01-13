@@ -22,7 +22,7 @@ interface Props {
   chain?: Chain;
 }
 
-export const TopServers = async ({ chain }: Props) => {
+export const TopServers: React.FC<Props> = ({ chain }) => {
   void api.public.sellers.bazaar.list.prefetch({
     chain,
     pagination: {

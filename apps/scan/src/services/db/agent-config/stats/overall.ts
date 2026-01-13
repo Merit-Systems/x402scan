@@ -31,8 +31,8 @@ const getOverallActivityUncached = async (
       SELECT
         COUNT(DISTINCT c."userId") AS user_count,
         COUNT(DISTINCT acu."agentConfigurationId") AS agent_count,
-        COALESCE((SELECT COUNT(*) FROM "Message"), 0) AS message_count,
-        COALESCE((SELECT COUNT(*) FROM "ToolCall"), 0) AS tool_call_count
+        COALESCE((SELECT COUNT(*) FROM "Message" WHERE "createdAt" >= ${startDate} AND "createdAt" <= ${endDate}), 0) AS message_count,
+        COALESCE((SELECT COUNT(*) FROM "ToolCall" WHERE "createdAt" >= ${startDate} AND "createdAt" <= ${endDate}), 0) AS tool_call_count
       FROM "Chat" c
       LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
       WHERE c."createdAt" >= ${startDate}

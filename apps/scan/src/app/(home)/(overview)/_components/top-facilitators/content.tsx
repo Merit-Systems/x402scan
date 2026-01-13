@@ -5,15 +5,19 @@ import { useChain } from '@/app/_contexts/chain/hook';
 import { FacilitatorCard, LoadingFacilitatorCard } from './_components/card';
 import { cn } from '@/lib/utils';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
+import { facilitatorAddresses, facilitators } from '@/lib/facilitators';
 
 export const TopFacilitatorsContent = () => {
   const { chain } = useChain();
   const { timeframe } = useTimeRangeContext();
+  const chainFacilitators = chain
+    ? facilitators.filter(f => f.addresses[chain])
+    : facilitatorAddresses;
 
   const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
     chain,
     pagination: {
-      page_size: 3,
+      page_size: chainFacilitators.length,
     },
     timeframe,
   });
@@ -26,7 +30,7 @@ export const TopFacilitatorsContent = () => {
         facilitatorsData.items.length < 3 ? 'md:grid-cols-2' : 'md:grid-cols-3'
       )}
     >
-      {facilitatorsData.items.map(stats => (
+      {facilitatorsData.items.slice(0, 3).map(stats => (
         <FacilitatorCard
           key={stats.facilitator_id}
           facilitator={stats.facilitator}

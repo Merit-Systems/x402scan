@@ -61,7 +61,7 @@ export const Send: React.FC = () => {
   const schema =
     chain === ChainType.SOLANA ? solanaAddressSchema : ethereumAddressSchema;
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(() => {
     const parseResult = schema.safeParse(address);
     if (!parseResult.success) {
       toast.error('Invalid address');

@@ -70,7 +70,7 @@ const ConnectSVMInjectedWalletButton: React.FC<
       icon={wallet.icon}
       name={wallet.name}
       isPending={isConnecting}
-      onClick={handleConnect}
+      onClick={() => void handleConnect()}
     />
   );
 };

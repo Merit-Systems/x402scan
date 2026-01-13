@@ -1,3 +1,3 @@
-export default async function RecipientTransactionsPage() {
+export default function RecipientTransactionsPage() {
   return null;
 }
