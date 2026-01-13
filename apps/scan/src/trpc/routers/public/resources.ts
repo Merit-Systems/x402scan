@@ -259,6 +259,9 @@ export const resourcesRouter = createTRPCRouter({
             ? [resource.method as Methods]
             : [Methods.POST, Methods.GET];
 
+          let lastError = 'No 402 response';
+          let lastStatus: number | undefined;
+
           for (const method of methodsToTry) {
             try {
               const response = await fetch(resourceUrl, {
@@ -266,38 +269,94 @@ export const resourcesRouter = createTRPCRouter({
                 signal: AbortSignal.timeout(15000),
               });
 
+              lastStatus = response.status;
+
               if (response.status === 402) {
                 // Extract x402 data (handles v2 header and v1 body, with JSON parse fallback)
                 const x402Data = await extractX402Data(response);
-                return registerResource(resourceUrl, x402Data);
+                const result = await registerResource(resourceUrl, x402Data);
+
+                // If registration succeeded, return it
+                if (result.success) {
+                  return result;
+                }
+
+                // Registration failed, capture error
+                lastError = result.error ?? 'Registration failed';
+                break; // Don't try other methods if we got a 402
+              } else {
+                lastError = `Expected 402, got ${response.status}`;
               }
-            } catch {
-              // Continue to next method
+            } catch (err) {
+              lastError = err instanceof Error ? err.message : 'Request failed';
             }
           }
+
           return {
             success: false as const,
             url: resourceUrl,
-            error: 'No 402 response',
+            error: lastError,
+            status: lastStatus,
           };
         })
       );
 
-      const successful = results.filter(
-        r =>
-          r.status === 'fulfilled' &&
-          r.value &&
-          'success' in r.value &&
-          r.value.success
-      ).length;
-      const failed = results.length - successful;
+      // Helper to extract error message
+      function getErrorMessage(err: unknown): string {
+        if (typeof err === 'string') return err;
+        if (!err || typeof err !== 'object') return 'Unknown error';
+
+        if ('type' in err && typeof err.type === 'string') {
+          const details: string[] = [];
+          if ('parseErrors' in err && Array.isArray(err.parseErrors)) {
+            details.push(...(err.parseErrors as string[]));
+          } else if ('upsertErrors' in err && Array.isArray(err.upsertErrors)) {
+            details.push(...(err.upsertErrors as string[]));
+          }
+          return details.length > 0 ? `${err.type}: ${details.join(', ')}` : err.type;
+        }
+
+        return 'Unknown error';
+      }
+
+      // Separate successful and failed results with details
+      const successfulResults: { url: string }[] = [];
+      const failedResults: { url: string; error: string; status?: number }[] = [];
+
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+        const resourceUrl = discoveryResult.resources[i]?.url ?? 'unknown';
+
+        if (!result) continue;
+
+        if (result.status === 'fulfilled' && result.value) {
+          const value = result.value;
+          if ('success' in value && value.success) {
+            successfulResults.push({
+              url: value.resource.resource.resource
+            });
+          } else if ('success' in value && !value.success) {
+            failedResults.push({
+              url: resourceUrl,
+              error: getErrorMessage(value.error),
+              status: 'status' in value ? value.status : undefined,
+            });
+          }
+        } else if (result.status === 'rejected') {
+          failedResults.push({
+            url: resourceUrl,
+            error: result.reason instanceof Error ? result.reason.message : 'Promise rejected',
+          });
+        }
+      }
 
       return {
         success: true as const,
-        registered: successful,
-        failed,
+        registered: successfulResults.length,
+        failed: failedResults.length,
         total: results.length,
         source: discoveryResult.source,
+        failedDetails: failedResults,
       };
     }),
 

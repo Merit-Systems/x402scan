@@ -81,6 +81,7 @@ export interface DiscoveryPanelProps {
     registered: number;
     total: number;
     failed: number;
+    failedDetails?: { url: string; error: string; status?: number }[];
   } | null;
   /** Called when "Register All" is clicked (required in register mode) */
   onRegisterAll?: () => void;
@@ -150,8 +151,55 @@ export function DiscoveryPanel({
 
   const isTestMode = mode === 'test';
 
-  // Show bulk registration success (only in register mode)
+  // Show bulk registration result (only in register mode)
   if (!isTestMode && bulkResult?.success) {
+    // Show error state if no resources were registered
+    if (bulkResult.registered === 0) {
+      return (
+        <div className="space-y-4">
+          <div className="flex items-start gap-3 p-4 border rounded-md bg-red-500/10 border-red-500/30">
+            <XCircle className="size-6 text-red-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h2 className="font-semibold text-red-600">Registration Failed</h2>
+              <p className="text-sm text-muted-foreground">
+                Failed to register all {bulkResult.total} resources
+              </p>
+            </div>
+          </div>
+
+          {bulkResult.failedDetails && bulkResult.failedDetails.length > 0 && (
+            <div className="border rounded-md p-4 space-y-3">
+              <h3 className="font-medium text-sm">Failed Resources:</h3>
+              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                {bulkResult.failedDetails.map((failed, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">URL:</span>
+                      <span className="font-mono break-all">{failed.url}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">Error:</span>
+                      <span className="text-red-600 break-words">{failed.error}</span>
+                    </div>
+                    {failed.status && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-muted-foreground shrink-0">Status:</span>
+                        <span className="font-mono">{failed.status}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Show success state if some/all resources were registered
     return (
       <div className="flex items-center gap-3 p-4 border rounded-md bg-green-600/10 border-green-600/30">
         <CheckCircle className="size-6 text-green-600" />

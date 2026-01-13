@@ -554,7 +554,7 @@ export const RegisterResourceForm = () => {
               Add Another
             </Button>
           </div>
-        ) : bulkData?.success ? (
+        ) : bulkData?.success && bulkData.registered > 0 ? (
           <div className="flex gap-2 w-full">
             <Link href="/resources" className="flex-1">
               <Button variant="outline" className="w-full">
@@ -564,6 +564,17 @@ export const RegisterResourceForm = () => {
             <Button variant="turbo" onClick={onReset} className="flex-1">
               Add Another
             </Button>
+          </div>
+        ) : bulkData?.success && bulkData.registered === 0 ? (
+          <div className="flex gap-2 w-full">
+            <Button variant="outline" onClick={resetBulk} className="flex-1">
+              Try Again
+            </Button>
+            <Link href="/" className="flex-1">
+              <Button variant="turbo" className="w-full">
+                Back to Home
+              </Button>
+            </Link>
           </div>
         ) : discoveryFound ? (
           <div className="flex flex-col gap-2 w-full">
