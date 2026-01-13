@@ -51,6 +51,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
+  "version": 1,
   "resources": [
     "https://yourdomain.com/api/endpoint1",
     "https://yourdomain.com/api/endpoint2"
