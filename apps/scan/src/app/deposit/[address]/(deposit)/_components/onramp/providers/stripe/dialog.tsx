@@ -1,8 +1,9 @@
 'use client';
 
-import { use, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { loadStripeOnramp } from '@stripe/crypto';
+import type { StripeOnramp } from '@stripe/crypto';
 
 import { api } from '@/trpc/client';
 
@@ -17,35 +18,55 @@ const stripeOnrampPromise = loadStripeOnramp(
 export const StripeOnrampDialogContent: React.FC<
   OnrampProviderDialogContentProps
 > = ({ quote, address }) => {
-  const [clientSecret] = api.onramp.stripe.getSession.useSuspenseQuery({
-    amount: quote,
-    address,
-  });
-  const onramp = use(stripeOnrampPromise);
+  const [onramp, setOnramp] = useState<StripeOnramp | null>(null);
+
+  const { data: clientSecret, error: sessionError } =
+    api.onramp.stripe.getSession.useQuery({
+      amount: quote,
+      address,
+    });
 
   const onrampElementRef = useRef<HTMLDivElement>(null);
 
+  // Load Stripe onramp
+  useEffect(() => {
+    if (onramp === null) {
+      void stripeOnrampPromise.then(stripeOnramp => {
+        setOnramp(stripeOnramp);
+      });
+    }
+  }, [onramp]);
+
+  // Mount Stripe onramp session
   useEffect(() => {
     const containerRef = onrampElementRef.current;
-    if (containerRef) {
+    if (containerRef && clientSecret && onramp) {
       containerRef.innerHTML = '';
 
-      if (clientSecret && onramp) {
-        onramp
-          .createSession({
-            clientSecret,
-            appearance: {
-              theme: 'light',
-            },
-          })
-          .mount(containerRef);
-      }
+      onramp
+        .createSession({
+          clientSecret,
+          appearance: {
+            theme: 'light',
+          },
+        })
+        .mount(containerRef);
     }
   }, [clientSecret, onramp]);
 
+  if (sessionError) {
+    return (
+      <div className="flex items-center justify-center p-8 text-red-500">
+        Failed to create onramp session. Please try again.
+      </div>
+    );
+  }
+
   return (
-    <div className="relative">
-      <Loader2 className="size-4 animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+    <div className="relative min-h-[574px]">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <Loader2 className="size-6 animate-spin" />
+      </div>
       <div ref={onrampElementRef} />
     </div>
   );
