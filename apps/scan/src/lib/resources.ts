@@ -2,12 +2,7 @@ import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
-import {
-  parseX402Response,
-  normalizePaymentRequirement,
-  isV2Response,
-  getOutputSchema,
-} from '@/lib/x402';
+import { parseX402Response, normalizeAccepts } from '@/lib/x402';
 import { getOriginFromUrl } from '@/lib/url';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
@@ -50,10 +45,6 @@ export const registerResource = async (url: string, data: unknown) => {
     };
   }
 
-  const isV2 = isV2Response(x402Data);
-  const v2Resource = isV2 ? x402Data.resource : undefined;
-  const v2OutputSchema = isV2 ? getOutputSchema(x402Data) : undefined;
-
   const origin = getOriginFromUrl(cleanUrl);
   const {
     og,
@@ -78,9 +69,7 @@ export const registerResource = async (url: string, data: unknown) => {
       })) ?? [],
   });
 
-  const normalizedAccepts = x402Data.accepts.map(accept =>
-    normalizePaymentRequirement(accept, v2Resource, v2OutputSchema)
-  );
+  const normalizedAccepts = normalizeAccepts(x402Data);
 
   const resource = await upsertResource({
     resource: cleanUrl,

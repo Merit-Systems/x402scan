@@ -18,11 +18,8 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import {
   paymentRequirementsSchema,
   parseX402Response,
-  normalizePaymentRequirement,
-  isV2Response,
+  normalizeAccepts,
   extractX402Data,
-  getOutputSchema,
-  type PaymentRequirements,
 } from '@/lib/x402';
 import { formatTokenAmount } from '@/lib/token';
 import { getOriginFromUrl } from '@/lib/url';
@@ -148,20 +145,10 @@ export const resourcesRouter = createTRPCRouter({
         });
 
         const parsedResponse = parseX402Response(data);
-        const v2Resource =
-          parsedResponse.success && isV2Response(parsedResponse.data)
-            ? parsedResponse.data.resource
-            : undefined;
-        const v2OutputSchema =
-          parsedResponse.success && isV2Response(parsedResponse.data)
-            ? getOutputSchema(parsedResponse.data)
-            : undefined;
+        const normalizedAccepts = parsedResponse.success
+          ? normalizeAccepts(parsedResponse.data)
+          : [];
 
-        // NOTE(shafu): normalize accepts for both v1 and v2
-        const accepts = baseX402ParsedResponse.data.accepts ?? [];
-        const normalizedAccepts = accepts.map((accept: PaymentRequirements) =>
-          normalizePaymentRequirement(accept, v2Resource, v2OutputSchema)
-        );
         const resource = await upsertResource({
           resource: input.url.toString(),
           type: 'http',

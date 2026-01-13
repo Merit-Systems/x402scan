@@ -64,7 +64,7 @@ function isV2PaymentRequirement(
  * NOTE(shafu): we do this because we want to store the payment requirements
  * in the database in a common format, which for legacy reasons is v1.
  */
-export function normalizePaymentRequirement(
+function normalizePaymentRequirement(
   accept: PaymentRequirements,
   resource?: X402ResponseV2['resource'],
   outputSchema?: OutputSchemaV1
@@ -100,6 +100,20 @@ export function normalizePaymentRequirement(
 }
 
 export type ParsedX402Response = X402ResponseV1 | X402ResponseV2;
+
+export function normalizeAccepts(
+  response: ParsedX402Response
+): NormalizedAccept[] {
+  const isV2 = isV2Response(response);
+  const resource = isV2 ? response.resource : undefined;
+  const outputSchema = isV2 ? getOutputSchema(response) : undefined;
+
+  return (
+    response.accepts?.map(accept =>
+      normalizePaymentRequirement(accept, resource, outputSchema)
+    ) ?? []
+  );
+}
 
 export function parseX402Response(
   data: unknown
