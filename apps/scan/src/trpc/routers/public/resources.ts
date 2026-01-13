@@ -35,6 +35,10 @@ import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
 import { getOriginFromUrl } from '@/lib/url';
 import { fetchDiscoveryDocument } from '@/services/discovery';
+import {
+  getResourceVerificationStatus,
+  getOriginVerificationStatus,
+} from '@/services/verification/accepts-verification';
 
 import type { Prisma } from '@x402scan/scan-db';
 import type { SupportedChain } from '@/types/chain';
@@ -305,10 +309,15 @@ export const resourcesRouter = createTRPCRouter({
     .input(
       z.object({
         origin: z.url(),
+        /** If true, bypasses HTTP cache to get fresh discovery document */
+        bustCache: z.boolean().optional(),
       })
     )
     .query(async ({ input }) => {
-      const discoveryResult = await fetchDiscoveryDocument(input.origin);
+      const discoveryResult = await fetchDiscoveryDocument(
+        input.origin,
+        input.bustCache ?? false
+      );
 
       if (!discoveryResult.success) {
         return {
@@ -377,6 +386,40 @@ export const resourcesRouter = createTRPCRouter({
       );
 
       return result;
+    }),
+
+  /**
+   * Get verification status for resources or origin.
+   * Returns counts of verified vs total accepts.
+   */
+  verificationStatus: publicProcedure
+    .input(
+      z.object({
+        resourceIds: z.array(z.string().uuid()).optional(),
+        originId: z.string().uuid().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      // Return origin-level verification if originId provided
+      if (input.originId) {
+        return await getOriginVerificationStatus(input.originId);
+      }
+
+      // Return resource-level verification if resourceIds provided
+      if (input.resourceIds && input.resourceIds.length > 0) {
+        const results = await Promise.all(
+          input.resourceIds.map(async id => ({
+            resourceId: id,
+            ...(await getResourceVerificationStatus(id)),
+          }))
+        );
+        return results;
+      }
+
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Either resourceIds or originId must be provided',
+      });
     }),
 
   tags: {

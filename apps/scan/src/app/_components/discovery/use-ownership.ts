@@ -7,6 +7,7 @@ interface OwnershipResult {
   ownershipProofs: string[];
   ownershipVerified: boolean;
   recoveredAddresses: string[];
+  verifiedAddresses: Record<string, boolean>;
   isVerifyingOwnership: boolean;
 }
 
@@ -43,10 +44,14 @@ export function useOwnership(
     }
   );
 
+  const verifiedAddresses: Record<string, boolean> =
+    ownershipQuery.data?.verifiedAddresses ?? {};
+
   return {
     ownershipProofs,
     ownershipVerified: Boolean(ownershipQuery.data?.verified),
     recoveredAddresses: ownershipQuery.data?.recoveredAddresses ?? [],
+    verifiedAddresses,
     isVerifyingOwnership: ownershipQuery.isLoading,
   };
 }

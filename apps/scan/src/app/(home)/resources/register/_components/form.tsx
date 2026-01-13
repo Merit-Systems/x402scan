@@ -77,7 +77,9 @@ export const RegisterResourceForm = () => {
     isDiscoveryLoading,
     discoveryFound,
     discoverySource,
+    discoveryError,
     actualDiscoveredResources,
+    invalidResourcesMap,
     registeredUrls,
     isRegisteringAll,
     bulkData,
@@ -87,8 +89,10 @@ export const RegisterResourceForm = () => {
     ownershipProofs,
     payToAddresses,
     recoveredAddresses,
+    verifiedAddresses,
     preview,
     isPreviewLoading,
+    refreshDiscovery,
   } = useDiscovery({
     url,
     onRegisterAllSuccess: data => {
@@ -514,20 +518,24 @@ export const RegisterResourceForm = () => {
               enteredUrl={
                 !isOriginOnly && !enteredUrlInDiscovery ? url : undefined
               }
-              isLoading={false}
+              isLoading={isDiscoveryLoading}
               found={discoveryFound}
               source={discoverySource}
               resources={actualDiscoveredResources}
               resourceCount={actualDiscoveredResources.length}
+              discoveryError={discoveryError}
+              invalidResourcesMap={invalidResourcesMap}
               isRegisteringAll={isRegisteringAll}
               bulkResult={bulkData}
               onRegisterAll={handleRegisterAll}
+              onRefresh={refreshDiscovery}
               showRegisterButton={false}
               registeredUrls={registeredUrls}
               ownershipVerified={safeOwnershipVerified}
               ownershipProofs={safeOwnershipProofs}
               payToAddresses={payToAddresses}
               recoveredAddresses={safeRecoveredAddresses}
+              verifiedAddresses={verifiedAddresses}
               preview={preview}
               isPreviewLoading={isPreviewLoading}
             />

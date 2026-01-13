@@ -30,12 +30,15 @@ export const TestEndpointForm = () => {
 
   // Use shared discovery hook (test mode - no registration)
   const {
+    isValidUrl,
     urlOrigin,
     isDiscoveryLoading,
     discoveryFound,
     discoverySource,
     discoveryResources,
     discoveryResourceCount,
+    discoveryError,
+    invalidResourcesMap,
     preview: discoveryPreview,
     isPreviewLoading: isDiscoveryPreviewLoading,
     testedResources,
@@ -46,6 +49,7 @@ export const TestEndpointForm = () => {
     ownershipProofs,
     payToAddresses,
     recoveredAddresses,
+    verifiedAddresses,
   } = useDiscovery({
     url,
   });
@@ -201,27 +205,31 @@ export const TestEndpointForm = () => {
       </Card>
 
       {/* Results Panel - shows below input when we have results */}
-      <DiscoveryPanel
-        origin={urlOrigin}
-        enteredUrl={url}
-        isLoading={false}
-        found={discoveryFound}
-        source={discoverySource}
-        resources={discoveryResources}
-        resourceCount={discoveryResourceCount}
-        isRegisteringAll={false}
-        mode="test"
-        preview={discoveryPreview}
-        isPreviewLoading={isDiscoveryPreviewLoading}
-        testedResources={testedResources}
-        failedResources={failedResources}
-        isBatchTestLoading={isBatchTestLoading}
-        onRefresh={refreshDiscovery}
-        ownershipVerified={ownershipVerified}
-        ownershipProofs={ownershipProofs}
-        payToAddresses={payToAddresses}
-        recoveredAddresses={recoveredAddresses}
-      />
+      {isValidUrl && (
+        <DiscoveryPanel
+          origin={urlOrigin}
+          enteredUrl={url}
+          isLoading={isDiscoveryLoading}
+          found={discoveryFound}
+          source={discoverySource}
+          resources={discoveryResources}
+          resourceCount={discoveryResourceCount}
+          discoveryError={discoveryError}
+          isRegisteringAll={false}
+          mode="test"
+          preview={discoveryPreview}
+          isPreviewLoading={isDiscoveryPreviewLoading}
+          testedResources={testedResources}
+          failedResources={failedResources}
+          isBatchTestLoading={isBatchTestLoading}
+          onRefresh={refreshDiscovery}
+          ownershipVerified={ownershipVerified}
+          ownershipProofs={ownershipProofs}
+          payToAddresses={payToAddresses}
+          recoveredAddresses={recoveredAddresses}
+          verifiedAddresses={verifiedAddresses}
+        />
+      )}
     </div>
   );
 };

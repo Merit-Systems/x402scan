@@ -107,25 +107,77 @@ export function resolveResourceWithMethod(
 
 /**
  * Parse and validate an x402 discovery document.
+ * Individual invalid resources are marked but included instead of failing the entire parse.
  */
 export function parseDiscoveryDocument(
   data: unknown
 ):
-  | { success: true; data: X402DiscoveryDocument }
+  | { success: true; data: X402DiscoveryDocument; invalidResources?: string[] }
   | { success: false; error: string } {
-  const result = x402DiscoveryDocumentSchema.safeParse(data);
-
-  if (result.success) {
-    return { success: true, data: result.data };
+  // First validate basic structure (version, instructions, ownershipProofs)
+  if (!data || typeof data !== 'object') {
+    return { success: false, error: 'Invalid discovery document: not an object' };
   }
 
-  const errorMessage = result.error.issues
-    .map(issue => `${issue.path.join('.')}: ${issue.message}`)
-    .join(', ');
+  const doc = data as Record<string, unknown>;
 
+  // Validate version
+  if (doc.version !== 1) {
+    return { success: false, error: 'Invalid discovery document: version must be 1' };
+  }
+
+  // Validate resources array exists
+  if (!Array.isArray(doc.resources)) {
+    return { success: false, error: 'Invalid discovery document: resources must be an array' };
+  }
+
+  // Validate each resource individually - keep both valid and invalid
+  const validResources: string[] = [];
+  const invalidResources: string[] = [];
+
+  for (const resource of doc.resources) {
+    if (typeof resource !== 'string') {
+      invalidResources.push(String(resource));
+      continue;
+    }
+
+    // Try to validate the resource format
+    const resourceResult = resourceEntrySchema.safeParse(resource);
+    if (resourceResult.success) {
+      validResources.push(resource);
+    } else {
+      invalidResources.push(resource);
+    }
+  }
+
+  // If we have no valid resources at all, fail
+  if (validResources.length === 0 && invalidResources.length === 0) {
+    return { success: false, error: 'Invalid discovery document: no resources provided' };
+  }
+
+  // Validate optional fields
+  const instructions = doc.instructions;
+  if (instructions !== undefined && typeof instructions !== 'string') {
+    return { success: false, error: 'Invalid discovery document: instructions must be a string' };
+  }
+
+  const ownershipProofs = doc.ownershipProofs;
+  if (ownershipProofs !== undefined) {
+    if (!Array.isArray(ownershipProofs) || !ownershipProofs.every(p => typeof p === 'string')) {
+      return { success: false, error: 'Invalid discovery document: ownershipProofs must be an array of strings' };
+    }
+  }
+
+  // Return all resources (both valid and invalid will be handled downstream)
   return {
-    success: false,
-    error: `Invalid discovery document: ${errorMessage}`,
+    success: true,
+    data: {
+      version: 1,
+      resources: [...validResources, ...invalidResources],
+      instructions,
+      ownershipProofs: ownershipProofs as string[] | undefined,
+    },
+    invalidResources: invalidResources.length > 0 ? invalidResources : undefined,
   };
 }
 

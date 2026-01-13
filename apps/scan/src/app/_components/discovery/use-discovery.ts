@@ -63,6 +63,7 @@ export interface UseDiscoveryReturn {
   actualDiscoveredResources: string[];
   discoveryResourceCount: number;
   discoveryError?: string;
+  invalidResourcesMap: Record<string, { invalid: boolean; reason?: string }>;
 
   // Origin preview
   isPreviewLoading: boolean;
@@ -79,6 +80,7 @@ export interface UseDiscoveryReturn {
   payToAddresses: string[];
   ownershipVerified: boolean;
   recoveredAddresses: string[];
+  verifiedAddresses: Record<string, boolean>;
   isVerifyingOwnership: boolean;
 
   // Registration status
@@ -119,8 +121,9 @@ export function useDiscovery({
   );
 
   // Discovery query - runs automatically when we have a valid URL
+  // Note: bustCache is not used in initial query, only on manual refresh
   const discoveryQuery = api.public.resources.checkDiscovery.useQuery(
-    { origin: urlOrigin! },
+    { origin: urlOrigin!, bustCache: false },
     {
       enabled: !!urlOrigin,
       retry: false,
@@ -189,6 +192,25 @@ export function useDiscovery({
     () => discoveryResources.map(r => r.url),
     [discoveryResources]
   );
+  // Create map of URL -> invalid status for displaying badges
+  const invalidResourcesMap: Record<
+    string,
+    { invalid: boolean; reason?: string }
+  > = useMemo(() => {
+    const map: Record<string, { invalid: boolean; reason?: string }> = {};
+    for (const resource of effectiveResources) {
+      if (resource.invalid) {
+        const entry: { invalid: boolean; reason?: string } = {
+          invalid: true,
+        };
+        if (resource.invalidReason) {
+          entry.reason = resource.invalidReason as string;
+        }
+        map[resource.url] = entry;
+      }
+    }
+    return map;
+  }, [effectiveResources]);
 
   // Batch test query - uses wrapper hook for proper typing
   const batchTest = useBatchTest(
@@ -253,7 +275,7 @@ export function useDiscovery({
 
     // Discovery state
     discoveryQuery,
-    isDiscoveryLoading: discoveryQuery.isLoading,
+    isDiscoveryLoading: discoveryQuery.isLoading || discoveryQuery.isFetching,
     discoveryFound,
     discoverySource: discoveryQuery.data?.found
       ? discoveryQuery.data.source
@@ -265,6 +287,7 @@ export function useDiscovery({
       discoveryQuery.data?.found === false
         ? discoveryQuery.data.error
         : undefined,
+    invalidResourcesMap,
 
     // Origin preview
     isPreviewLoading: previewQuery.isLoading,
@@ -281,6 +304,7 @@ export function useDiscovery({
     payToAddresses: batchTest.payToAddresses,
     ownershipVerified: ownership.ownershipVerified,
     recoveredAddresses: ownership.recoveredAddresses,
+    verifiedAddresses: ownership.verifiedAddresses as Record<string, boolean>,
     isVerifyingOwnership: ownership.isVerifyingOwnership,
 
     // Registration status
@@ -300,11 +324,26 @@ export function useDiscovery({
     handleRegisterAll,
     resetBulk,
 
-    // Refresh discovery data
+    // Refresh discovery data with cache busting
     refreshDiscovery: () => {
-      void discoveryQuery.refetch();
-      void previewQuery.refetch();
-      batchTest.refetch();
+      if (!urlOrigin) return;
+
+      // Fetch fresh data with cache busting
+      // The isFetching state will show loading indicator
+      void utils.public.resources.checkDiscovery
+        .fetch({
+          origin: urlOrigin,
+          bustCache: true,
+        })
+        .then(() => {
+          // Invalidate to ensure the query picks up the new data
+          void utils.public.resources.checkDiscovery.invalidate({
+            origin: urlOrigin,
+          });
+          // Refresh other queries after discovery is fetched
+          void previewQuery.refetch();
+          batchTest.refetch();
+        });
     },
   };
 }

@@ -12,6 +12,10 @@
 export interface DiscoveredResource {
   url: string;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  /** If true, this resource failed validation */
+  invalid?: boolean;
+  /** Error message if resource is invalid */
+  invalidReason?: string;
 }
 
 /**

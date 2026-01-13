@@ -29,8 +29,10 @@ async function testSingleResource(
   const methodsToTry = specifiedMethod
     ? [specifiedMethod]
     : (['GET', 'POST'] as const);
+  const triedMethods: string[] = [];
 
   for (const method of methodsToTry) {
+    triedMethods.push(method);
     try {
       const response = await fetch(url, {
         method,
@@ -56,6 +58,12 @@ async function testSingleResource(
         rawBody = text;
       }
 
+      // Capture headers for debugging
+      const headers: Record<string, string> = {};
+      response.headers.forEach((v, k) => {
+        headers[k] = v;
+      });
+
       if (response.status !== 402) {
         lastError = {
           success: false,
@@ -63,7 +71,9 @@ async function testSingleResource(
           error: `Expected 402, got ${response.status}`,
           status: response.status,
           statusText: response.statusText,
+          headers,
           body: rawBody,
+          triedMethods,
         };
         continue;
       }
@@ -89,7 +99,10 @@ async function testSingleResource(
           error: 'Invalid x402 response format',
           status: response.status,
           statusText: response.statusText,
+          headers,
           body: errorBody,
+          parseErrors: parsed?.errors,
+          triedMethods,
         };
       }
     } catch (err) {
@@ -97,6 +110,7 @@ async function testSingleResource(
         success: false,
         url,
         error: err instanceof Error ? err.message : 'Fetch failed',
+        triedMethods,
       };
     }
   }
@@ -202,21 +216,39 @@ export const developerRouter = createTRPCRouter({
               method: z
                 .enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
                 .optional(),
+              /** If true, this resource is invalid and should not be tested */
+              invalid: z.boolean().optional(),
+              /** Reason why resource is invalid */
+              invalidReason: z.string().optional(),
             })
           )
           .max(20),
       })
     )
     .query(async ({ input }) => {
-      const results = await Promise.all(
-        input.resources.map(r => testSingleResource(r.url, r.method))
+      // Separate invalid resources from valid ones
+      const invalidResults: FailedResourceDetails[] = input.resources
+        .filter(r => r.invalid)
+        .map(r => ({
+          success: false as const,
+          url: r.url,
+          error: r.invalidReason ?? 'Invalid resource format',
+        }));
+
+      // Only test valid resources
+      const validResources = input.resources.filter(r => !r.invalid);
+      const testResults = await Promise.all(
+        validResources.map(r => testSingleResource(r.url, r.method))
       );
 
+      // Combine test results with invalid results
+      const allResults = [...testResults, ...invalidResults];
+
       return {
-        resources: results.filter(
+        resources: allResults.filter(
           (r): r is Extract<typeof r, { success: true }> => r.success
         ),
-        failed: results.filter((r): r is FailedResourceDetails => !r.success),
+        failed: allResults.filter((r): r is FailedResourceDetails => !r.success),
       };
     }),
 });

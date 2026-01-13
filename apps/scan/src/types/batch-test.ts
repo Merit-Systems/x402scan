@@ -14,5 +14,8 @@ export interface FailedResource {
   error: string;
   status?: number;
   statusText?: string;
+  headers?: Record<string, string>;
   body?: unknown;
+  parseErrors?: string[];
+  triedMethods?: string[];
 }

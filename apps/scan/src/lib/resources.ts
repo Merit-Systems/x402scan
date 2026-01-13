@@ -12,6 +12,8 @@ import { getOriginFromUrl } from '@/lib/url';
 import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
 import { SUPPORTED_CHAINS } from '@/types/chain';
+import { fetchDiscoveryDocument } from '@/services/discovery';
+import { verifyAcceptsOwnership } from '@/services/verification/accepts-verification';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
@@ -112,6 +114,29 @@ export const registerResource = async (url: string, data: unknown) => {
   }
 
   await upsertResourceResponse(resource.resource.id, x402Data);
+
+  // Attempt ownership verification (non-blocking)
+  // This runs in the background and won't block registration success
+  void (async () => {
+    try {
+      const discoveryResult = await fetchDiscoveryDocument(origin);
+      if (
+        discoveryResult.success &&
+        discoveryResult.ownershipProofs &&
+        discoveryResult.ownershipProofs.length > 0
+      ) {
+        const acceptIds = resource.accepts.map(accept => accept.id);
+        await verifyAcceptsOwnership({
+          acceptIds,
+          ownershipProofs: discoveryResult.ownershipProofs,
+          origin,
+        });
+      }
+    } catch (error) {
+      // Log verification errors but don't fail registration
+      console.error('Ownership verification failed during registration:', error);
+    }
+  })();
 
   return {
     success: true as const,

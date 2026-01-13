@@ -23,10 +23,12 @@ const FETCH_TIMEOUT_MS = 10000;
  * 3. Fall back to {origin}/.well-known/x402 if no DNS records
  *
  * @param originOrUrl - Origin URL or full URL (origin will be extracted)
+ * @param bustCache - If true, adds cache-busting parameter to bypass HTTP cache
  * @returns Merged list of discovered resource URLs
  */
 export async function fetchDiscoveryDocument(
-  originOrUrl: string
+  originOrUrl: string,
+  bustCache = false
 ): Promise<X402DiscoveryResult> {
   // Extract origin from URL if full URL provided
   const origin = originOrUrl.includes('://')
@@ -58,7 +60,7 @@ export async function fetchDiscoveryDocument(
     // Fetch documents from all DNS-specified URLs
     // Pass the origin so paths can be resolved relative to it
     const results = await Promise.allSettled(
-      discoveryUrls.map(url => fetchAndParseDocument(url, origin))
+      discoveryUrls.map(url => fetchAndParseDocument(url, origin, bustCache))
     );
 
     for (const [i, result] of results.entries()) {
@@ -109,7 +111,7 @@ export async function fetchDiscoveryDocument(
 
   // Step 2: Fall back to /.well-known/x402
   const wellKnownUrl = `${origin}/.well-known/x402`;
-  const wellKnownResult = await fetchAndParseDocument(wellKnownUrl, origin);
+  const wellKnownResult = await fetchAndParseDocument(wellKnownUrl, origin, bustCache);
 
   if (wellKnownResult.success) {
     return {
@@ -134,10 +136,12 @@ export async function fetchDiscoveryDocument(
  * Fetch and parse a single discovery document.
  * @param url - URL to fetch the discovery document from
  * @param resolveOrigin - Origin to resolve relative paths against
+ * @param bustCache - If true, adds cache-busting parameter to bypass HTTP cache
  */
 async function fetchAndParseDocument(
   url: string,
-  resolveOrigin: string
+  resolveOrigin: string,
+  bustCache = false
 ): Promise<
   | {
       success: true;
@@ -148,9 +152,19 @@ async function fetchAndParseDocument(
   | { success: false; error: string }
 > {
   try {
-    const response = await fetch(url, {
+    // Add cache-busting parameter if requested
+    let fetchUrl = url;
+    if (bustCache) {
+      const urlObj = new URL(url);
+      urlObj.searchParams.set('_t', Date.now().toString());
+      fetchUrl = urlObj.toString();
+    }
+
+    const response = await fetch(fetchUrl, {
       headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      // Also use cache: 'no-store' when busting cache
+      cache: bustCache ? 'no-store' : 'default',
     });
 
     if (!response.ok) {
@@ -164,11 +178,26 @@ async function fetchAndParseDocument(
       return { success: false, error: parsed.error };
     }
 
+    // Get set of invalid resource strings for quick lookup
+    const invalidSet = new Set(parsed.invalidResources ?? []);
+
     // Resolve paths relative to the origin being checked (not the discovery document URL)
     // Also extract method if specified in the resource string
-    const resolvedResources = parsed.data.resources.map(resource =>
-      resolveResourceWithMethod(resource, resolveOrigin)
-    );
+    // Mark resources as invalid if they failed validation
+    const resolvedResources = parsed.data.resources.map(resource => {
+      const resolved = resolveResourceWithMethod(resource, resolveOrigin);
+
+      // If this resource was in the invalid list, mark it
+      if (invalidSet.has(resource)) {
+        return {
+          ...resolved,
+          invalid: true,
+          invalidReason: 'Resource format is invalid (must be a URL, path starting with /, or prefixed with HTTP method)',
+        };
+      }
+
+      return resolved;
+    });
 
     return {
       success: true,

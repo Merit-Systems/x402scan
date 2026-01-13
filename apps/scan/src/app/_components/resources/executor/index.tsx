@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertTriangle, ChevronDownIcon } from 'lucide-react';
+import { AlertTriangle, ChevronDownIcon, Shield } from 'lucide-react';
 
 import {
   AccordionContent,
@@ -39,6 +39,8 @@ interface Props {
   isFlat?: boolean;
   /** Optional warnings to show as a tooltip icon */
   warnings?: string[];
+  /** Whether ownership is verified for this resource */
+  ownershipVerified?: boolean;
 }
 
 export const ResourceExecutor: React.FC<Props> = ({
@@ -50,6 +52,7 @@ export const ResourceExecutor: React.FC<Props> = ({
   hideOrigin = false,
   isFlat = false,
   warnings = [],
+  ownershipVerified = false,
 }) => {
   if (!response) return null;
 
@@ -82,18 +85,29 @@ export const ResourceExecutor: React.FC<Props> = ({
               hideOrigin={hideOrigin}
             />
             <div className="flex items-center gap-2">
+              {ownershipVerified && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Shield className="size-4 text-green-600" />
+                  </TooltipTrigger>
+                  <TooltipContent side="left">
+                    <div className="text-xs">Ownership verified</div>
+                  </TooltipContent>
+                </Tooltip>
+              )}
               {warnings.length > 0 && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <AlertTriangle className="size-4 text-yellow-500" />
                   </TooltipTrigger>
-                  <TooltipContent side="left" className="max-w-xs">
-                    <p className="font-medium text-xs mb-1">Missing:</p>
-                    <ul className="text-xs list-disc list-inside">
+                  <TooltipContent side="left" className="max-w-md">
+                    <div className="text-xs space-y-1">
                       {warnings.map((warning, i) => (
-                        <li key={i}>{warning}</li>
+                        <div key={i} className="text-muted-foreground break-all">
+                          {warning}
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </TooltipContent>
                 </Tooltip>
               )}
