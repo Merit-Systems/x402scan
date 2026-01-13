@@ -39,8 +39,8 @@ export const CopyAddress: React.FC<Props> = ({ address }) => {
       <TooltipTrigger asChild disabled={isLoadingBalance}>
         <Button
           onClick={() => void copyToClipboard(address)}
-          variant="outline"
-          className="shrink-0 size-fit md:size-fit px-2 py-1"
+          variant="secondary"
+          className="shrink-0 size-fit md:size-fit px-3 py-1.5"
         >
           {balance !== undefined ? (
             <span>{formatCurrency(balance)}</span>
@@ -55,7 +55,9 @@ export const CopyAddress: React.FC<Props> = ({ address }) => {
         </p>
         <div className="p-2 flex flex-col gap-1 border-b">
           <p className="font-semibold text-xs">Balance</p>
-          <p>{balance ? formatCurrency(balance) : 'Loading...'}</p>
+          <p>
+            {balance !== undefined ? formatCurrency(balance) : 'Loading...'}
+          </p>
         </div>
         <div className="p-2 flex flex-col gap-1">
           <p className="font-medium text-xs">Address</p>
