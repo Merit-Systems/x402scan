@@ -268,7 +268,7 @@ export async function verifyAnyOwnershipProof(
         if (isValid) {
           verifiedAddresses[payTo] = true;
 
-          // For EVM, try to recover and add to list
+          // For EVM, try to recover the address from signature
           if (chainType === 'evm' && proof.startsWith('0x')) {
             const recovered = await recoverProofSigner(
               proof as `0x${string}`,
@@ -277,6 +277,11 @@ export async function verifyAnyOwnershipProof(
             if (recovered && !recoveredAddresses.includes(recovered)) {
               recoveredAddresses.push(recovered);
             }
+          }
+
+          // For Solana, add the verified payTo address (can't recover from signature)
+          if (chainType === 'solana' && !recoveredAddresses.includes(payTo)) {
+            recoveredAddresses.push(payTo);
           }
         }
       } catch (error) {

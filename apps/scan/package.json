@@ -78,6 +78,7 @@
     "@x402scan/transfers-db": "workspace:*",
     "ai": "^5.0.68",
     "autonumeric": "^4.10.9",
+    "bs58": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -112,6 +113,7 @@
     "streamdown": "^1.4.0",
     "superjson": "catalog:",
     "tailwind-merge": "^3.3.1",
+    "tweetnacl": "^1.0.3",
     "use-stick-to-bottom": "^1.1.1",
     "uuid": "^13.0.0",
     "vaul": "^1.1.2",
@@ -126,6 +128,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "catalog:tailwind",
     "@tanstack/react-query-devtools": "catalog:react-query",
+    "@types/bs58": "^5.0.0",
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",
