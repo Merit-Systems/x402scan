@@ -66,7 +66,8 @@ function isV2PaymentRequirement(
  */
 export function normalizePaymentRequirement(
   accept: PaymentRequirements,
-  resource?: X402ResponseV2['resource']
+  resource?: X402ResponseV2['resource'],
+  outputSchema?: OutputSchemaV1
 ): NormalizedAccept {
   if (isV2PaymentRequirement(accept)) {
     return {
@@ -80,6 +81,7 @@ export function normalizePaymentRequirement(
       resource: resource?.url,
       description: resource?.description,
       mimeType: resource?.mimeType,
+      outputSchema,
     };
   }
   return {

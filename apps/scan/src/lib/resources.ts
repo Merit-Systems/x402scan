@@ -6,6 +6,7 @@ import {
   parseX402Response,
   normalizePaymentRequirement,
   isV2Response,
+  getOutputSchema,
 } from '@/lib/x402';
 import { getOriginFromUrl } from '@/lib/url';
 
@@ -51,6 +52,7 @@ export const registerResource = async (url: string, data: unknown) => {
 
   const isV2 = isV2Response(x402Data);
   const v2Resource = isV2 ? x402Data.resource : undefined;
+  const v2OutputSchema = isV2 ? getOutputSchema(x402Data) : undefined;
 
   const origin = getOriginFromUrl(cleanUrl);
   const {
@@ -77,7 +79,7 @@ export const registerResource = async (url: string, data: unknown) => {
   });
 
   const normalizedAccepts = x402Data.accepts.map(accept =>
-    normalizePaymentRequirement(accept, v2Resource)
+    normalizePaymentRequirement(accept, v2Resource, v2OutputSchema)
   );
 
   const resource = await upsertResource({
@@ -121,7 +123,6 @@ export const registerResource = async (url: string, data: unknown) => {
       maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
     })),
     response: data,
-    enhancedParseWarnings: null as string[] | null,
     registrationDetails: {
       providedAccepts: normalizedAccepts,
       supportedAccepts: resource.accepts,

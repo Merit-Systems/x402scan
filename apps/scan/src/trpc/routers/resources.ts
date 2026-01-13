@@ -21,6 +21,7 @@ import {
   normalizePaymentRequirement,
   isV2Response,
   extractX402Data,
+  getOutputSchema,
   type PaymentRequirements,
 } from '@/lib/x402';
 import { formatTokenAmount } from '@/lib/token';
@@ -151,11 +152,15 @@ export const resourcesRouter = createTRPCRouter({
           parsedResponse.success && isV2Response(parsedResponse.data)
             ? parsedResponse.data.resource
             : undefined;
+        const v2OutputSchema =
+          parsedResponse.success && isV2Response(parsedResponse.data)
+            ? getOutputSchema(parsedResponse.data)
+            : undefined;
 
         // NOTE(shafu): normalize accepts for both v1 and v2
         const accepts = baseX402ParsedResponse.data.accepts ?? [];
         const normalizedAccepts = accepts.map((accept: PaymentRequirements) =>
-          normalizePaymentRequirement(accept, v2Resource)
+          normalizePaymentRequirement(accept, v2Resource, v2OutputSchema)
         );
         const resource = await upsertResource({
           resource: input.url.toString(),
@@ -172,15 +177,10 @@ export const resourcesRouter = createTRPCRouter({
           continue;
         }
 
-        let enhancedParseWarnings: string[] | null = null;
-        if (parsedResponse.success) {
-          await upsertResourceResponse(
-            resource.resource.id,
-            parsedResponse.data
-          );
-        } else {
-          enhancedParseWarnings = parsedResponse.errors;
-        }
+        await upsertResourceResponse(
+          resource.resource.id,
+          data as Parameters<typeof upsertResourceResponse>[1]
+        );
 
         return {
           error: false as const,
@@ -189,7 +189,6 @@ export const resourcesRouter = createTRPCRouter({
             ...accept,
             maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
           })),
-          enhancedParseWarnings,
           response: data,
         };
       }
