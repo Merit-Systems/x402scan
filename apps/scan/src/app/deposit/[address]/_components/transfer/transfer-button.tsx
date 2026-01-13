@@ -1,64 +1,72 @@
 import { Check, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+
+import { useEvmSend } from '@/app/_hooks/send/use-evm-send';
+import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
+
+import { usdc } from '@/lib/tokens/usdc';
+
+import { Chain } from '@/types/chain';
 
 import type { Address } from 'viem';
-import type { Connector } from 'wagmi';
-import { useEvmSend } from '@/app/_hooks/send/use-evm-send';
-import { useCallback } from 'react';
-import { Chain, CHAIN_ID } from '@/types/chain';
+import type { Connection } from 'wagmi';
 
 interface Props {
-  connector: Connector;
+  connection: Connection;
   address: Address;
   amount: number;
-  balance: {
-    isLoading: boolean;
-    value: number | undefined;
-  };
 }
 
 export const TransferButton: React.FC<Props> = ({
-  connector,
+  connection,
   address,
   amount,
-  balance,
 }) => {
+  const { invalidate: invalidateToBalance } = useEvmTokenBalance({
+    token: usdc(Chain.BASE),
+    address,
+  });
+
+  const {
+    data: balance,
+    isLoading: isBalanceLoading,
+    invalidate: invalidateBalance,
+  } = useEvmTokenBalance({
+    token: usdc(Chain.BASE),
+    address: connection?.accounts[0],
+  });
+
   const { handleSubmit, isPending, isSent } = useEvmSend({
     address,
     amount,
-    connector,
+    connection,
     onSuccess: () => {
-      toast.success('Transfer successful');
+      for (let i = 0; i < 4; i++) {
+        setTimeout(() => {
+          void invalidateBalance();
+          void invalidateToBalance();
+        }, i * 1000);
+      }
     },
   });
 
-  const onClick = useCallback(async () => {
-    if (connector.chainId !== CHAIN_ID[Chain.BASE]) {
-      await connector.switchChain?.({
-        chainId: CHAIN_ID[Chain.BASE],
-      });
-    }
-    handleSubmit();
-  }, [handleSubmit, connector]);
-
   return (
     <Button
-      onClick={() => void onClick()}
+      onClick={handleSubmit}
       disabled={
         isPending ||
         amount === 0 ||
         isSent ||
-        balance.value === undefined ||
-        balance.value < amount
+        balance === undefined ||
+        balance < amount
       }
     >
-      {balance.isLoading ? (
+      {isBalanceLoading ? (
         <>
           <Loader2 className="size-4 animate-spin" /> <span>Loading...</span>
         </>
-      ) : balance.value === undefined || balance.value < amount ? (
+      ) : balance === undefined || balance < amount ? (
         <>
           <span>Insufficient balance</span>
         </>

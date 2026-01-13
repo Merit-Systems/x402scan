@@ -10,7 +10,7 @@ import type { UseMutationOptions } from '@tanstack/react-query';
 import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';
 import type { Chain } from '@/types/chain';
 import type { Signer } from 'x402-fetch';
-import type { Connector } from 'wagmi';
+import type { Connection } from 'wagmi';
 
 interface UseEvmX402FetchParams<TData = unknown> {
   targetUrl: string;
@@ -19,7 +19,7 @@ interface UseEvmX402FetchParams<TData = unknown> {
   init?: RequestInit;
   options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
   isTool?: boolean;
-  connector?: Connector;
+  connection?: Connection;
 }
 
 export const useEvmX402Fetch = <TData = unknown>({
@@ -28,7 +28,7 @@ export const useEvmX402Fetch = <TData = unknown>({
 }: UseEvmX402FetchParams<TData>) => {
   const { data: walletClient } = useWalletClient({
     chainId: CHAIN_ID[chain],
-    connector: params.connector,
+    connector: params.connection?.connector,
   });
 
   const wrapperFn: FetchWithPaymentWrapper = (baseFetch, value) => {

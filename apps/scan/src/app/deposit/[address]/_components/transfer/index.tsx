@@ -2,8 +2,7 @@ import { useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 
-import { useConnections, useReadContract } from 'wagmi';
-import { erc20Abi, formatUnits } from 'viem';
+import { useConnections } from 'wagmi';
 
 import {
   AccordionContent,
@@ -52,22 +51,6 @@ export const Transfer: React.FC<Props> = ({
 
   const usdcToken = usdc(Chain.BASE);
 
-  const { data: balanceUnits, isLoading: isLoadingBalance } = useReadContract({
-    address: usdcToken.address as Address,
-    abi: erc20Abi,
-    functionName: 'balanceOf',
-    args: [connectionAddress!],
-    chainId: CHAIN_ID[usdcToken.chain],
-    query: {
-      enabled: Boolean(connectionAddress),
-    },
-  });
-
-  const balance =
-    balanceUnits !== undefined
-      ? Number(formatUnits(balanceUnits, usdcToken.decimals))
-      : undefined;
-
   return (
     <>
       <TokenInput
@@ -75,15 +58,9 @@ export const Transfer: React.FC<Props> = ({
         selectedToken={usdcToken}
         onChange={setAmount}
         defaultValue={amount}
-        balanceProp={
-          connectionAddress !== undefined
-            ? {
-                balance: balance ?? 0,
-                isLoading: isLoadingBalance,
-              }
-            : undefined
-        }
-        isBalanceMax={connectionAddress !== undefined}
+        chain={Chain.BASE}
+        address={connectionAddress}
+        isBalanceMax={true}
       />
       <AccordionItem
         value="wallets"
@@ -119,13 +96,9 @@ export const Transfer: React.FC<Props> = ({
             />
           ) : (
             <TransferButton
-              connector={selectedConnector}
+              connection={connection}
               address={address}
               amount={amount}
-              balance={{
-                isLoading: isLoadingBalance,
-                value: balance,
-              }}
             />
           )
         ) : (
