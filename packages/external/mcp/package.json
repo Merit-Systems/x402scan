@@ -1,0 +1,63 @@
+{
+  "name": "@x402scan/mcp",
+  "version": "0.0.1",
+  "description": "Generic MCP server for calling x402-protected APIs with automatic payment handling",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "@x402scan/mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "lint": "eslint . --max-warnings 0",
+    "build": "tsup",
+    "build:mcpb": "tsx scripts/build-mcpb.ts",
+    "dev:bun": "bun run src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "publish-package": "tsx scripts/publish.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "@scure/base": "^2.0.0",
+    "@x402/core": "catalog:x402",
+    "@x402/evm": "catalog:x402",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "siwe": "catalog:",
+    "tweetnacl": "^1.0.3",
+    "viem": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsup": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "mcp",
+    "x402",
+    "payments",
+    "ai",
+    "claude",
+    "model-context-protocol"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/merit-systems/x402scan-mcp"
+  }
+}

@@ -45,9 +45,9 @@
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "eslint": "^9.38.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.6.0"
+    "eslint": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
   },
   "engines": {
     "node": ">=18.0.0"

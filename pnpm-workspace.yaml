@@ -17,6 +17,10 @@ catalog:
   zod: ^4.3.5
   tsx: ^4.21.0
   tsup: ^8.5.1
+  viem: ^2.44.2
+  siwe: ^3.0.0
+  vitest: ^4.0.16
+  rimraf: ^5.0.5
 
 catalogs:
   env:
@@ -27,12 +31,9 @@ catalogs:
     eslint-config-next: *NEXT_VERSION
     next-themes: ^0.4.6
   prisma:
-    '@prisma/adapter-pg': &PRISMA_VERSION ^7.2.0
+    prisma: &PRISMA_VERSION ^7.2.0
     '@prisma/client': *PRISMA_VERSION
     '@prisma/adapter-neon': *PRISMA_VERSION
-    prisma: *PRISMA_VERSION
-    '@types/pg': &PG_VERSION ^8.16.3
-    pg: *PG_VERSION
   react:
     '@types/react': &REACT_VERSION 19.2.2
     '@types/react-dom': *REACT_VERSION
@@ -54,12 +55,18 @@ catalogs:
     '@trpc/client': &TRPC_VERSION ^11.8.1
     '@trpc/react-query': *TRPC_VERSION
     '@trpc/server': *TRPC_VERSION
-  x402:
+  x402-v1:
     'x402': &X402_VERSION ^0.7.1
     'x402-fetch': *X402_VERSION
     'x402-next': *X402_VERSION
     'x402-express': *X402_VERSION
     'x402-hono': *X402_VERSION
+  x402:
+    '@x402/core': &X402_CORE_VERSION ^2.2.0
+    '@x402/evm': *X402_CORE_VERSION
+    '@x402/extensions': *X402_CORE_VERSION
+    '@x402/fetch': *X402_CORE_VERSION
+    '@x402/svm': *X402_CORE_VERSION
   tailwind:
     '@tailwindcss/postcss': &TAILWIND_VERSION ^4
     tailwindcss: *TAILWIND_VERSION
@@ -74,3 +81,7 @@ catalogs:
   react-query:
     '@tanstack/react-query': ^5.90.16
     '@tanstack/react-query-devtools': ^5.91.2
+  trigger:
+    '@trigger.dev/sdk': &TRIGGER_SDK_VERSION ^4.3.2
+    '@trigger.dev/build': *TRIGGER_SDK_VERSION
+    trigger.dev: *TRIGGER_SDK_VERSION

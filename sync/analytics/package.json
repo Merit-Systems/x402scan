@@ -18,15 +18,15 @@
   "dependencies": {
     "@x402scan/analytics-db": "workspace:*",
     "@x402scan/scan-db": "workspace:*",
-    "@trigger.dev/sdk": "4.0.5"
+    "@trigger.dev/sdk": "catalog:trigger"
   },
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "@trigger.dev/build": "4.0.5",
-    "@types/node": "^20",
-    "eslint": "^9.39.1",
-    "trigger.dev": "^4.0.4",
-    "typescript": "^5.9.3"
+    "@trigger.dev/build": "catalog:trigger",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "trigger.dev": "catalog:trigger",
+    "typescript": "catalog:"
   }
 }

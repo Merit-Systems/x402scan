@@ -9,12 +9,7 @@ const config: KnipConfig = {
         'src/app/**/route.{js,jsx,ts,tsx}',
       ],
       project: ['src/**/*.{ts,tsx}', '*.{ts,tsx,js,mjs}'],
-      ignoreDependencies: [
-        'postcss',
-        'redis',
-        'tailwindcss',
-        'tw-animate-css',
-      ],
+      ignoreDependencies: ['postcss', 'redis', 'tailwindcss', 'tw-animate-css'],
       ignore: ['src/scripts/**', 'src/components/ui/charts/chart/**'],
     },
     'apps/proxy': {},
@@ -23,7 +18,7 @@ const config: KnipConfig = {
       project: ['src/**/*.ts'],
     },
     'packages/internal/databases/scan': {
-      project: ['src/**/*.ts', 'prisma/schema.prisma'],
+      project: ['src/**/*.ts'],
       ignoreDependencies: ['rimraf', '@prisma/client'],
       ignore: ['generated/**'],
     },
@@ -31,7 +26,7 @@ const config: KnipConfig = {
       project: ['src/**/*.ts'],
     },
     'packages/internal/databases/transfers': {
-      project: ['src/**/*.ts', 'prisma/schema.prisma'],
+      project: ['src/**/*.ts'],
       ignoreDependencies: ['rimraf', '@prisma/client'],
       ignore: ['generated/**'],
     },

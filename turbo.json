@@ -34,7 +34,8 @@
         "ADDRESS",
         "PORT",
         "DISCORD_WEBHOOK_URL",
-        "OPENROUTER_API_KEY"
+        "OPENROUTER_API_KEY",
+        "X402_*"
       ]
     },
     "dev": {

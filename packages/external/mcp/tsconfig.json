@@ -1,0 +1,9 @@
+{
+  "extends": "@x402scan/typescript-config/base.json",
+  "include": ["src/**/*", "tsup.config.ts", "test/**/*", "scripts/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler"
+  }
+}
