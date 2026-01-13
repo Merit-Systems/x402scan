@@ -121,6 +121,7 @@ export const registerResource = async (url: string, data: unknown) => {
       maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
     })),
     response: data,
+    enhancedParseWarnings: null as string[] | null,
     registrationDetails: {
       providedAccepts: normalizedAccepts,
       supportedAccepts: resource.accepts,
