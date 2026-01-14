@@ -25,6 +25,7 @@ export const getClient = async (flagClient: string | undefined) => {
         value: client,
       };
     }),
+    theme: {},
   });
   if (clients.length === 0) {
     consola.info('No client selected. Exiting...');

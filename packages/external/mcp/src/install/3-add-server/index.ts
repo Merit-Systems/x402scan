@@ -55,7 +55,7 @@ export function addServer(client: Clients) {
   }
 
   const clientFileTarget = getClientConfigFile(client);
-  const error: string | undefined = undefined;
+  let error: string | undefined = undefined;
 
   try {
     let config: ClientConfigObject = {};

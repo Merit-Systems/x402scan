@@ -12,12 +12,12 @@ const HEX = '#2563eb';
 const SPACER = 6;
 const PADDING = 3;
 
-const CHARACTER = '+';
+const CHARACTER = '*';
 const SPACE = ' ';
 
-const OUTTER_LINE = `  ${CHARACTER.repeat(7)}`;
-const INNER_LINE = `${CHARACTER.repeat(2)}${SPACE.repeat(2)}${CHARACTER.repeat(3)}`;
-const MIDDLE_LINE = `${CHARACTER.repeat(4)}`;
+const OUTTER_LINE = `  ${CHARACTER.repeat(6)}`;
+const INNER_LINE = `${CHARACTER.repeat(2)}${SPACE.repeat(2)}${CHARACTER.repeat(2)}`;
+const MIDDLE_LINE = `${CHARACTER.repeat(3)}`;
 
 const line = (text: string) => `${chalk.bold.hex(HEX)(text)}`;
 
