@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { formatConsoleLog, ConsoleLog, log } from '@/lib/log';
+import { log } from '@/lib/log';
 
 import { clientMetadata, Clients } from '../clients';
 import { getNestedValue, setNestedValue } from './lib';
