@@ -101,6 +101,9 @@ export interface UseDiscoveryReturn {
 
   // Refresh
   refreshDiscovery: () => void;
+
+  // Retry single resource
+  retryResource: (url: string) => Promise<void>;
 }
 
 export function useDiscovery({
@@ -346,6 +349,22 @@ export function useDiscovery({
           void previewQuery.refetch();
           batchTest.refetch();
         });
+    },
+
+    // Retry a single resource with cache busting
+    retryResource: async (resourceUrl: string) => {
+      // Invalidate ALL batch test query caches to force fresh fetch
+      // This ensures React Query doesn't return cached results
+      await utils.developer.batchTest.invalidate();
+
+      // Fetch fresh data for this resource
+      // The testSingleResource function already uses cache: 'no-store' and Cache-Control: 'no-cache'
+      await utils.developer.batchTest.fetch({
+        resources: [{ url: resourceUrl }],
+      });
+
+      // Refetch all batch tests to update the UI with fresh data
+      batchTest.refetch();
     },
   };
 }

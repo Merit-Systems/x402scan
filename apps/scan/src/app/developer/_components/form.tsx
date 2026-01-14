@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import { ChevronDown, Info, Loader2, Plus, X } from 'lucide-react';
+import { ChevronDown, Info, Loader2, Plus, RefreshCw, X } from 'lucide-react';
 
 import { DiscoveryPanel, useDiscovery } from '@/app/_components/discovery';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import { cn } from '@/lib/utils';
 import { isLocalUrl, extractPort } from '@/lib/url-helpers';
 import { NgrokAlert } from './ngrok-alert';
 
@@ -44,6 +45,7 @@ export const TestEndpointForm = () => {
     failedResources,
     isBatchTestLoading,
     refreshDiscovery,
+    retryResource,
     ownershipVerified,
     ownershipProofs,
     payToAddresses,
@@ -203,29 +205,48 @@ export const TestEndpointForm = () => {
 
       {/* Results Panel - shows below input when we have results */}
       {isValidUrl && (
-        <DiscoveryPanel
-          origin={urlOrigin}
-          enteredUrl={url}
-          isLoading={isDiscoveryLoading}
-          found={discoveryFound}
-          source={discoverySource}
-          resources={discoveryResources}
-          resourceCount={discoveryResourceCount}
-          discoveryError={discoveryError}
-          isRegisteringAll={false}
-          mode="test"
-          preview={discoveryPreview}
-          isPreviewLoading={isDiscoveryPreviewLoading}
-          testedResources={testedResources}
-          failedResources={failedResources}
-          isBatchTestLoading={isBatchTestLoading}
-          onRefresh={refreshDiscovery}
-          ownershipVerified={ownershipVerified}
-          ownershipProofs={ownershipProofs}
-          payToAddresses={payToAddresses}
-          recoveredAddresses={recoveredAddresses}
-          verifiedAddresses={verifiedAddresses}
-        />
+        <>
+          {!isDiscoveryLoading && discoveryResourceCount > 0 && (
+            <div className="flex items-center justify-end">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={refreshDiscovery}
+                disabled={isBatchTestLoading}
+                className="gap-1"
+              >
+                <RefreshCw
+                  className={cn('size-3', isBatchTestLoading && 'animate-spin')}
+                />
+                Refresh
+              </Button>
+            </div>
+          )}
+          <DiscoveryPanel
+            origin={urlOrigin}
+            enteredUrl={url}
+            isLoading={isDiscoveryLoading}
+            found={discoveryFound}
+            source={discoverySource}
+            resources={discoveryResources}
+            resourceCount={discoveryResourceCount}
+            discoveryError={discoveryError}
+            isRegisteringAll={false}
+            mode="test"
+            preview={discoveryPreview}
+            isPreviewLoading={isDiscoveryPreviewLoading}
+            testedResources={testedResources}
+            failedResources={failedResources}
+            isBatchTestLoading={isBatchTestLoading}
+            onRefresh={refreshDiscovery}
+            onRetryResource={retryResource}
+            ownershipVerified={ownershipVerified}
+            ownershipProofs={ownershipProofs}
+            payToAddresses={payToAddresses}
+            recoveredAddresses={recoveredAddresses}
+            verifiedAddresses={verifiedAddresses}
+          />
+        </>
       )}
     </div>
   );

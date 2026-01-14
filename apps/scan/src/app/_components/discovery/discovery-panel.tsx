@@ -101,6 +101,8 @@ export interface DiscoveryPanelProps {
   isBatchTestLoading?: boolean;
   /** Called when refresh is clicked */
   onRefresh?: () => void;
+  /** Called when retry is clicked for a single resource */
+  onRetryResource?: (url: string) => Promise<void>;
   /** URLs that are already registered */
   registeredUrls?: string[];
   /** Ownership proofs from discovery document */
@@ -138,6 +140,7 @@ export function DiscoveryPanel({
   failedResources = [],
   isBatchTestLoading,
   onRefresh,
+  onRetryResource,
   registeredUrls = [],
   ownershipProofs = [],
   payToAddresses = [],
@@ -439,6 +442,7 @@ export function DiscoveryPanel({
                         testedResponse={tested}
                         invalidInfo={invalidInfo}
                         verifiedAddresses={verifiedAddresses}
+                        onRetry={onRetryResource}
                       />
                     );
                   }
@@ -453,6 +457,7 @@ export function DiscoveryPanel({
                       failedDetails={failedDetails}
                       invalidInfo={invalidInfo}
                       verifiedAddresses={verifiedAddresses}
+                      onRetry={onRetryResource}
                     />
                   );
                 })}
@@ -650,6 +655,7 @@ function FailedResourceCard({
   testedResponse,
   invalidInfo,
   verifiedAddresses = {},
+  onRetry,
 }: {
   resourceUrl: string;
   preview?: OriginPreview | null;
@@ -658,9 +664,11 @@ function FailedResourceCard({
   testedResponse?: TestedResource;
   invalidInfo?: { invalid: boolean; reason?: string };
   verifiedAddresses?: Record<string, boolean>;
+  onRetry?: (url: string) => Promise<void>;
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const [showRawResponse, setShowRawResponse] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   const pathname = (() => {
     try {
@@ -758,6 +766,27 @@ function FailedResourceCard({
                 { label: 'Favicon', ok: Boolean(preview?.favicon) },
               ]}
             />
+
+            {/* Try Again Button */}
+            {onRetry && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsRetrying(true);
+                  void onRetry(resourceUrl).finally(() => {
+                    setIsRetrying(false);
+                  });
+                }}
+                disabled={isRetrying}
+                className="gap-1 w-full"
+              >
+                <RefreshCw
+                  className={cn('size-3', isRetrying && 'animate-spin')}
+                />
+                Try Again
+              </Button>
+            )}
 
             {/* HTTP Response Details */}
             {failedDetails && (
