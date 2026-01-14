@@ -2,7 +2,7 @@
   "name": "x402scan-monorepo",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@10.27.0",
+  "packageManager": "pnpm@10.28.0",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
