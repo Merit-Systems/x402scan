@@ -43,8 +43,8 @@ import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 
 import { api } from '@/trpc/client';
 
-export type TestedResource = TestedResourceType;
-export type FailedResource = FailedResourceType;
+type TestedResource = TestedResourceType;
+type FailedResource = FailedResourceType;
 
 export interface OriginPreview {
   title: string | null;

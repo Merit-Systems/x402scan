@@ -9,16 +9,16 @@
 
 import { recoverMessageAddress, type Address } from 'viem';
 
-export type ChainType = 'evm' | 'solana';
+type ChainType = 'evm' | 'solana';
 
-export interface VerificationConfig {
+interface VerificationConfig {
   signature: string;
   message: string;
   expectedAddress: string;
   chainType: ChainType;
 }
 
-export interface ChainVerifier {
+interface ChainVerifier {
   verify(config: VerificationConfig): Promise<boolean>;
   recoverAddress(signature: string, message: string): Promise<string | null>;
 }
@@ -29,7 +29,7 @@ export interface ChainVerifier {
  * @param address - The address to check
  * @returns 'evm' for Ethereum addresses, 'solana' for Solana addresses
  */
-export function detectChainType(address: string): ChainType {
+function detectChainType(address: string): ChainType {
   // EVM: 0x + 40 hex chars
   if (/^0x[a-fA-F0-9]{40}$/i.test(address)) {
     return 'evm';
@@ -189,7 +189,7 @@ export async function verifyOwnershipProofMultichain(
  * @param payToAddress - The expected signer address (payTo from resource accepts)
  * @returns true if signature was signed by the payTo address
  */
-export async function verifyOwnershipProof(
+async function verifyOwnershipProof(
   signature: `0x${string}`,
   origin: string,
   payToAddress: Address
@@ -210,7 +210,7 @@ export interface OwnershipVerificationResult {
  *
  * @deprecated Use verifyOwnershipProofMultichain instead (Solana doesn't support recovery)
  */
-export async function recoverProofSigner(
+async function recoverProofSigner(
   signature: `0x${string}`,
   origin: string
 ): Promise<string | null> {

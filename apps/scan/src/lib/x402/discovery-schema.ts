@@ -40,7 +40,7 @@ const resourceEntrySchema = z3.string().refine(
  * Zod schema for x402 discovery document validation.
  * Documents are served at /.well-known/x402 or a URL from DNS TXT record.
  */
-export const x402DiscoveryDocumentSchema = z3.object({
+const x402DiscoveryDocumentSchema = z3.object({
   version: z3.literal(1),
   resources: z3.array(resourceEntrySchema),
   /** Optional instructions for AI agents consuming this API */
@@ -65,7 +65,7 @@ export interface ParsedResource {
  * - "POST /path" -> { url: "/path", method: "POST" }
  * - "GET https://..." -> { url: "https://...", method: "GET" }
  */
-export function parseResourceEntry(resource: string): ParsedResource {
+function parseResourceEntry(resource: string): ParsedResource {
   const parts = resource.split(' ');
   if (parts.length === 2 && VALID_METHODS.includes(parts[0] as HttpMethod)) {
     return {
@@ -81,7 +81,7 @@ export function parseResourceEntry(resource: string): ParsedResource {
  * - If it's already a full URL, return as-is
  * - If it's a path, prepend the origin
  */
-export function resolveResourceUrl(resource: string, origin: string): string {
+function resolveResourceUrl(resource: string, origin: string): string {
   const { url } = parseResourceEntry(resource);
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;

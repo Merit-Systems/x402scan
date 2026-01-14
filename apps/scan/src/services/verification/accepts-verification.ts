@@ -201,7 +201,7 @@ export async function getOriginVerificationStatus(originId: string) {
  * @param origin - Origin URL
  * @returns Verification results
  */
-export async function reverifyResourceAccepts(
+async function reverifyResourceAccepts(
   resourceId: string,
   ownershipProofs: string[],
   origin: string

@@ -1,6 +1,2 @@
-export {
-  useDiscovery,
-  type UseDiscoveryOptions,
-  type UseDiscoveryReturn,
-} from './use-discovery';
-export { DiscoveryPanel, type DiscoveryPanelProps } from './discovery-panel';
+export { useDiscovery } from './use-discovery';
+export { DiscoveryPanel } from './discovery-panel';
