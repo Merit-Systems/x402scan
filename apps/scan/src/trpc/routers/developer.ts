@@ -4,11 +4,11 @@ import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
 import {
-  parseX402Response,
-  getOutputSchema,
   extractX402Data,
   getDescription,
+  getOutputSchema,
   isV2Response,
+  parseX402Response,
 } from '@/lib/x402';
 import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource } from '@/types/batch-test';
@@ -32,10 +32,16 @@ async function testSingleResource(url: string) {
       const response = await fetch(url, {
         method,
         headers:
-          method === 'POST' ? { 'Content-Type': 'application/json' } : {},
+          method === 'POST'
+            ? {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache',
+              }
+            : { 'Cache-Control': 'no-cache' },
         body: method === 'POST' ? '{}' : undefined,
         redirect: 'follow',
         signal: AbortSignal.timeout(10000),
+        cache: 'no-store',
       });
 
       // Clone response so we can read headers and body separately
@@ -167,10 +173,15 @@ export const developerRouter = createTRPCRouter({
         method,
         headers:
           method === 'POST'
-            ? { ...headers, 'Content-Type': 'application/json' }
-            : headers,
+            ? {
+                ...headers,
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache',
+              }
+            : { ...headers, 'Cache-Control': 'no-cache' },
         body: method === 'POST' ? '{}' : undefined,
         redirect: 'follow',
+        cache: 'no-store',
       });
 
       const hdrs: Record<string, string> = {};

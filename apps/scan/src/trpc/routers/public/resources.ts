@@ -149,13 +149,18 @@ export const resourcesRouter = createTRPCRouter({
             method,
             headers:
               method === Methods.POST
-                ? { ...input.headers, 'Content-Type': 'application/json' }
-                : input.headers,
+                ? {
+                    ...input.headers,
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache',
+                  }
+                : { ...input.headers, 'Cache-Control': 'no-cache' },
             body: input.body
               ? JSON.stringify(input.body)
               : method === Methods.POST
                 ? '{}'
                 : undefined,
+            cache: 'no-store',
           }
         );
 
@@ -200,12 +205,20 @@ export const resourcesRouter = createTRPCRouter({
 
         try {
           const discoveryResult = await fetchDiscoveryDocument(origin);
-          if (discoveryResult.success && Array.isArray(discoveryResult.resources)) {
+          if (
+            discoveryResult.success &&
+            Array.isArray(discoveryResult.resources)
+          ) {
             // Filter out the URL that was just registered (normalize URLs for comparison)
             const inputUrlStr = String(input.url);
             const normalizedInputUrl = normalizeUrl(inputUrlStr);
             const otherResources = discoveryResult.resources.filter(r => {
-              if (!r || typeof r !== 'object' || !('url' in r) || typeof r.url !== 'string') {
+              if (
+                !r ||
+                typeof r !== 'object' ||
+                !('url' in r) ||
+                typeof r.url !== 'string'
+              ) {
                 return false;
               }
               const resourceUrl = String(r.url);
@@ -309,10 +322,14 @@ export const resourcesRouter = createTRPCRouter({
                 method,
                 headers:
                   method === Methods.POST
-                    ? { 'Content-Type': 'application/json' }
-                    : {},
+                    ? {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache',
+                      }
+                    : { 'Cache-Control': 'no-cache' },
                 body: method === Methods.POST ? '{}' : undefined,
                 signal: AbortSignal.timeout(15000),
+                cache: 'no-store',
               });
 
               lastStatus = response.status;

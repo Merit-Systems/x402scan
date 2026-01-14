@@ -115,7 +115,7 @@ export interface DiscoveryPanelProps {
   ownershipVerified?: boolean;
 }
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
 
 export function DiscoveryPanel({
   origin,
@@ -949,9 +949,7 @@ function RegisterModeResourceList({
   registeredUrls: string[];
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
 }) {
-  const [showAll, setShowAll] = useState(false);
   const registeredSet = new Set(registeredUrls);
-  const INITIAL_LIMIT = 5;
 
   // Build unified list: entered URL first (if exists), then discovered
   const allResources: {
@@ -978,11 +976,6 @@ function RegisterModeResourceList({
 
   if (allResources.length === 0) return null;
 
-  const displayedResources = showAll
-    ? allResources
-    : allResources.slice(0, INITIAL_LIMIT);
-  const hasMore = allResources.length > INITIAL_LIMIT;
-
   return (
     <div className="border rounded-md overflow-hidden mt-3">
       <table className="w-full text-sm">
@@ -994,84 +987,69 @@ function RegisterModeResourceList({
           </tr>
         </thead>
         <tbody>
-          {displayedResources.map(
-            ({ url, source: resourceSource, isRegistered }) => {
-              const pathname = (() => {
-                try {
-                  return new URL(url).pathname;
-                } catch {
-                  return url;
-                }
-              })();
+          {allResources.map(({ url, source: resourceSource, isRegistered }) => {
+            const pathname = (() => {
+              try {
+                return new URL(url).pathname;
+              } catch {
+                return url;
+              }
+            })();
 
-              return (
-                <tr key={url} className="border-t">
-                  <td className="px-3 py-2">
-                    <span className="font-mono text-sm">{pathname}</span>
-                  </td>
-                  <td className="px-3 py-2">
-                    <span
-                      className={cn(
-                        'text-xs px-1.5 py-0.5 rounded',
-                        resourceSource === 'entered'
-                          ? 'bg-blue-500/10 text-blue-600'
-                          : 'bg-muted text-muted-foreground'
-                      )}
-                    >
-                      {resourceSource === 'entered'
-                        ? 'Manually Entered'
-                        : resourceSource === 'dns'
-                          ? '_x402 DNS TXT'
-                          : '/.well-known/x402'}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      {isRegistered ? (
-                        <span className="flex items-center gap-1 text-xs text-green-600">
-                          <CheckCircle className="size-3" />
-                          Already Registered
-                        </span>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">
-                          New
-                        </span>
-                      )}
-                      {invalidResourcesMap[url]?.invalid && (
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-yellow-600/10 border border-yellow-600 text-yellow-600">
-                              <AlertCircle className="size-3" />
-                              INVALID
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-xs">
-                              {invalidResourcesMap[url]?.reason ??
-                                'Invalid format'}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            }
-          )}
+            return (
+              <tr key={url} className="border-t">
+                <td className="px-3 py-2">
+                  <span className="font-mono text-sm">{pathname}</span>
+                </td>
+                <td className="px-3 py-2">
+                  <span
+                    className={cn(
+                      'text-xs px-1.5 py-0.5 rounded',
+                      resourceSource === 'entered'
+                        ? 'bg-blue-500/10 text-blue-600'
+                        : 'bg-muted text-muted-foreground'
+                    )}
+                  >
+                    {resourceSource === 'entered'
+                      ? 'Manually Entered'
+                      : resourceSource === 'dns'
+                        ? '_x402 DNS TXT'
+                        : '/.well-known/x402'}
+                  </span>
+                </td>
+                <td className="px-3 py-2">
+                  <div className="flex items-center gap-2">
+                    {isRegistered ? (
+                      <span className="flex items-center gap-1 text-xs text-green-600">
+                        <CheckCircle className="size-3" />
+                        Already Registered
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">New</span>
+                    )}
+                    {invalidResourcesMap[url]?.invalid && (
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-yellow-600/10 border border-yellow-600 text-yellow-600">
+                            <AlertCircle className="size-3" />
+                            INVALID
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">
+                            {invalidResourcesMap[url]?.reason ??
+                              'Invalid format'}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
-      {hasMore && (
-        <button
-          type="button"
-          onClick={() => setShowAll(!showAll)}
-          className="w-full py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 border-t transition-colors"
-        >
-          {showAll
-            ? 'Show less'
-            : `Show ${allResources.length - INITIAL_LIMIT} more`}
-        </button>
-      )}
     </div>
   );
 }
