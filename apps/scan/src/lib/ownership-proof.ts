@@ -7,7 +7,7 @@
  * Supports both EVM (Ethereum) and Solana addresses.
  */
 
-import { recoverMessageAddress, type Address } from 'viem';
+import { recoverMessageAddress } from 'viem';
 
 type ChainType = 'evm' | 'solana';
 
@@ -178,23 +178,6 @@ export async function verifyOwnershipProofMultichain(
     expectedAddress: payToAddress,
     chainType,
   });
-}
-
-/**
- * Verify an ownership proof signature against a payTo address (EVM only - legacy).
- *
- * @deprecated Use verifyOwnershipProofMultichain for multi-chain support
- * @param signature - The signature (hex string with 0x prefix)
- * @param origin - The origin string that was signed
- * @param payToAddress - The expected signer address (payTo from resource accepts)
- * @returns true if signature was signed by the payTo address
- */
-async function verifyOwnershipProof(
-  signature: `0x${string}`,
-  origin: string,
-  payToAddress: Address
-): Promise<boolean> {
-  return verifyOwnershipProofMultichain(signature, origin, payToAddress);
 }
 
 export interface OwnershipVerificationResult {

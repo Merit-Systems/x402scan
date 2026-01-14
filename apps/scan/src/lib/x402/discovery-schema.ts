@@ -36,22 +36,6 @@ const resourceEntrySchema = z3.string().refine(
   }
 );
 
-/**
- * Zod schema for x402 discovery document validation.
- * Documents are served at /.well-known/x402 or a URL from DNS TXT record.
- */
-const x402DiscoveryDocumentSchema = z3.object({
-  version: z3.literal(1),
-  resources: z3.array(resourceEntrySchema),
-  /** Optional instructions for AI agents consuming this API */
-  instructions: z3.string().optional(),
-  /**
-   * Ownership proofs - signatures of the origin string using the payTo address private key.
-   * Used to verify the resource owner is the actual recipient of funds (prevents spoofing attacks).
-   */
-  ownershipProofs: z3.array(z3.string()).optional(),
-});
-
 export interface ParsedResource {
   url: string;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -74,20 +58,6 @@ function parseResourceEntry(resource: string): ParsedResource {
     };
   }
   return { url: resource };
-}
-
-/**
- * Resolve a resource entry to a full URL.
- * - If it's already a full URL, return as-is
- * - If it's a path, prepend the origin
- */
-function resolveResourceUrl(resource: string, origin: string): string {
-  const { url } = parseResourceEntry(resource);
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
-  }
-  // It's a path - append to origin
-  return `${origin.replace(/\/$/, '')}${url}`;
 }
 
 /**

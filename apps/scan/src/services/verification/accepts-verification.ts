@@ -191,36 +191,3 @@ export async function getOriginVerificationStatus(originId: string) {
     unverified: verified === 0,
   };
 }
-
-/**
- * Re-verify all accepts for a resource using new ownership proofs.
- * Useful when ownership proofs are updated.
- *
- * @param resourceId - Resource ID
- * @param ownershipProofs - New ownership proofs
- * @param origin - Origin URL
- * @returns Verification results
- */
-async function reverifyResourceAccepts(
-  resourceId: string,
-  ownershipProofs: string[],
-  origin: string
-): Promise<VerificationResult[]> {
-  // Fetch all accepts for this resource
-  const accepts = await scanDb.accepts.findMany({
-    where: {
-      resourceId,
-    },
-    select: {
-      id: true,
-    },
-  });
-
-  const acceptIds = accepts.map(a => a.id);
-
-  return verifyAcceptsOwnership({
-    acceptIds,
-    ownershipProofs,
-    origin,
-  });
-}
