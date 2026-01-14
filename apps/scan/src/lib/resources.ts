@@ -46,19 +46,13 @@ export const registerResource = async (url: string, data: unknown) => {
   }
 
   const origin = getOriginFromUrl(cleanUrl);
-  const {
-    og,
-    metadata,
-    origin: scrapedOrigin,
-  } = await scrapeOriginData(origin);
+  const { og, metadata, favicon } = await scrapeOriginData(origin);
 
   await upsertOrigin({
     origin: origin,
     title: metadata?.title ?? og?.ogTitle,
     description: metadata?.description ?? og?.ogDescription,
-    favicon: og?.favicon
-      ? new URL(og.favicon, scrapedOrigin).toString()
-      : undefined,
+    favicon: favicon ?? undefined,
     ogImages:
       og?.ogImage?.map(image => ({
         url: image.url,
@@ -119,9 +113,7 @@ export const registerResource = async (url: string, data: unknown) => {
       originMetadata: {
         title: metadata?.title ?? og?.ogTitle ?? null,
         description: metadata?.description ?? og?.ogDescription ?? null,
-        favicon: og?.favicon
-          ? new URL(og.favicon, scrapedOrigin).toString()
-          : null,
+        favicon: favicon ?? null,
         ogImages:
           og?.ogImage?.map(image => ({
             url: image.url,

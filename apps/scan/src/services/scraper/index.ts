@@ -1,72 +1,47 @@
 import type { OgObject } from 'open-graph-scraper/types';
 import { scrapeMetadata } from './metadata';
 import { scrapeOg } from './og';
-import { getFaviconUrl } from '@/lib/favicon';
+import { scrapeFaviconWithFallback } from './favicon';
 
 export const scrapeOriginData = async (inputOrigin: string) => {
   let origin = inputOrigin;
 
-  let [og, metadata] = await Promise.all([
-    scrapeOg(origin).catch(() => {
-      return null;
-    }),
-    scrapeMetadata(origin).catch(() => {
-      return null;
-    }),
+  // Scrape OG, metadata, and high-quality favicon in parallel
+  let [og, metadata, favicon] = await Promise.all([
+    scrapeOg(origin).catch(() => null),
+    scrapeMetadata(origin).catch(() => null),
+    scrapeFaviconWithFallback(origin).catch(() => null),
   ]);
 
+  // Handle API subdomain fallback for OG and metadata
   if (origin.startsWith('https://api.')) {
-    origin = `https://${origin.slice(12)}`;
+    const baseOrigin = `https://${origin.slice(12)}`;
 
+    // If OG data is missing, try the base domain
     if (
       !['ogTitle', 'ogDescription', 'ogImage'].some(
         key => og?.[key as keyof OgObject]
       )
     ) {
-      og = await scrapeOg(origin);
-    } else {
-      if (og?.favicon) {
-        const faviconUrl = getFaviconUrl(og.favicon, inputOrigin);
-
-        try {
-          const res = await fetch(faviconUrl);
-          if (res.status !== 200) {
-            // try to get a favicon from the base origin
-            const ogResponse = await scrapeOg(origin);
-
-            if (ogResponse?.favicon) {
-              try {
-                const baseFaviconResponse = await fetch(
-                  getFaviconUrl(ogResponse.favicon, origin)
-                );
-                if (baseFaviconResponse.status === 200) {
-                  og = {
-                    ...og,
-                    favicon: getFaviconUrl(ogResponse.favicon, origin),
-                  };
-                }
-              } catch {
-                // do nothing
-              }
-            }
-          }
-        } catch {
-          // do nothing
-        }
-      }
+      og = await scrapeOg(baseOrigin).catch(() => null);
     }
 
+    // If metadata is missing, try the base domain
     if (
       !metadata ||
       !(['title', 'description'] as const).some(key => key in (metadata ?? {}))
     ) {
-      metadata = await scrapeMetadata(origin);
+      metadata = await scrapeMetadata(baseOrigin).catch(() => null);
     }
+
+    // Update origin to base for URL resolution
+    origin = baseOrigin;
   }
 
   return {
     og,
     metadata,
     origin,
+    favicon,
   };
 };

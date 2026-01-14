@@ -24,13 +24,11 @@ export const developerRouter = createTRPCRouter({
         og,
         metadata,
         origin: scrapedOrigin,
+        favicon,
       } = await scrapeOriginData(origin);
 
       const title = metadata?.title ?? og?.ogTitle ?? null;
       const description = metadata?.description ?? og?.ogDescription ?? null;
-      const favicon = og?.favicon
-        ? new URL(og.favicon, scrapedOrigin).toString()
-        : null;
       const ogImages = (og?.ogImage ?? []).map(image => ({
         url: image.url,
         height: image.height,
