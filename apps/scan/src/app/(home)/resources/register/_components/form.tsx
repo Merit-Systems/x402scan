@@ -90,28 +90,14 @@ export const RegisterResourceForm = () => {
         });
       }
       void utils.public.sellers.bazaar.list.invalidate();
-      if (data.enhancedParseWarnings) {
-        toast.warning(
-          'Resource added successfully, but is not available for use',
-          {
-            action: {
-              label: 'View Server',
-              onClick: () => {
-                window.location.href = `/server/${data.resource.origin.id}`;
-              },
-            },
-          }
-        );
-      } else {
-        toast.success('Resource added successfully', {
-          action: {
-            label: 'View Server',
-            onClick: () => {
-              window.location.href = `/server/${data.resource.origin.id}`;
-            },
+      toast.success('Resource added successfully', {
+        action: {
+          label: 'View Server',
+          onClick: () => {
+            window.location.href = `/server/${data.resource.origin.id}`;
           },
-        });
-      }
+        },
+      });
     },
     onError: () => {
       toast.error('Failed to add resource');
@@ -182,8 +168,6 @@ export const RegisterResourceForm = () => {
                 const hasErrors =
                   // No accepts registered
                   data.registrationDetails?.supportedAccepts.length === 0 ||
-                  // Enhanced schema failed
-                  !!data.enhancedParseWarnings ||
                   // No metadata scraped
                   (!data.registrationDetails?.originMetadata?.title &&
                     !data.registrationDetails?.originMetadata?.description);
@@ -216,7 +200,6 @@ export const RegisterResourceForm = () => {
                         ? data.registrationDetails.supportedAccepts.length > 0
                         : false
                     }
-                    hasEnhancedSchema={!data.enhancedParseWarnings}
                     hasOriginMetadata={Boolean(
                       data.registrationDetails?.originMetadata?.title ??
                       data.registrationDetails?.originMetadata?.description

@@ -2,11 +2,7 @@ import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
-import {
-  parseX402Response,
-  normalizePaymentRequirement,
-  isV2Response,
-} from '@/lib/x402';
+import { parseX402Response, normalizeAccepts } from '@/lib/x402';
 import { getOriginFromUrl } from '@/lib/url';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
@@ -49,9 +45,6 @@ export const registerResource = async (url: string, data: unknown) => {
     };
   }
 
-  const isV2 = isV2Response(x402Data);
-  const v2Resource = isV2 ? x402Data.resource : undefined;
-
   const origin = getOriginFromUrl(cleanUrl);
   const {
     og,
@@ -76,9 +69,7 @@ export const registerResource = async (url: string, data: unknown) => {
       })) ?? [],
   });
 
-  const normalizedAccepts = x402Data.accepts.map(accept =>
-    normalizePaymentRequirement(accept, v2Resource)
-  );
+  const normalizedAccepts = normalizeAccepts(x402Data);
 
   const resource = await upsertResource({
     resource: cleanUrl,
@@ -121,7 +112,6 @@ export const registerResource = async (url: string, data: unknown) => {
       maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
     })),
     response: data,
-    enhancedParseWarnings: null as string[] | null,
     registrationDetails: {
       providedAccepts: normalizedAccepts,
       supportedAccepts: resource.accepts,
