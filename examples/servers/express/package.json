@@ -4,12 +4,12 @@
   "type": "module",
   "scripts": {
     "dev": "tsx index.ts",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
-    "check:types": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "types:check": "tsc --noEmit",
     "knip": "pnpm -w knip --workspace ./examples/servers/express",
-    "format": "pnpm -w format-dir ./examples/servers/express",
-    "check:format": "pnpm -w check:format-dir ./examples/servers/express"
+    "format": "pnpm -w format:dir ./examples/servers/express",
+    "format:check": "pnpm -w format:check:dir ./examples/servers/express"
   },
   "dependencies": {
     "dotenv": "catalog:env",

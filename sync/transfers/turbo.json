@@ -1,0 +1,12 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "trigger:dev": {
+      "env": ["CDP_*", "BITQUERY_*", "SOLANA_RPC_*", "GOOGLE_CLOUD_*"]
+    },
+    "trigger:deploy": {
+      "env": ["CDP_*", "BITQUERY_*", "SOLANA_RPC_*", "GOOGLE_CLOUD_*"]
+    }
+  }
+}
