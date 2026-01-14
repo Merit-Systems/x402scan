@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { mcpSuccess, mcpError, formatUSDC, parseUSDC } from '../src/response';
+import {
+  mcpSuccess,
+  mcpError,
+  formatUSDC,
+  parseUSDC,
+} from '../src/server/lib/response';
 
 describe('mcpSuccess', () => {
   it('wraps data in MCP content format', () => {

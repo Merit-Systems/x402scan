@@ -28,7 +28,9 @@ function write(level: string, msg: string, args: unknown[]): void {
   try {
     appendFileSync(LOG_FILE, line);
   } catch {}
-  console.error(`[x402scan] ${formatted}`);
+  if (process.env.X402_DEBUG === 'true') {
+    console.error(`[x402scan] ${formatted}`);
+  }
 }
 
 export const log = {

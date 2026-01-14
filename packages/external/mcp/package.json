@@ -32,6 +32,7 @@
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",
+    "open": "^11.0.0",
     "siwe": "catalog:",
     "tweetnacl": "^1.0.3",
     "viem": "catalog:",

@@ -6,10 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-  SOLANA_MAINNET,
-  SOLANA_DEVNET,
-} from '../vendor/sign-in-with-x/index.js';
+import { SOLANA_MAINNET, SOLANA_DEVNET } from '@/server/vendor/sign-in-with-x';
 
 describe('authed_call Solana Detection', () => {
   /**

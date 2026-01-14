@@ -2,15 +2,19 @@
  * Payment tools - query, validate, execute
  */
 
-import { mcpSuccess, mcpError, formatUSDC } from '../response';
+import { mcpSuccess, mcpError, formatUSDC } from '@/server/lib/response';
 
-import { createClient, makeRequest, queryEndpoint } from '../x402/client';
+import {
+  createClient,
+  makeRequest,
+  queryEndpoint,
+} from '@/server/lib/x402/client';
 
-import { extractV1Schema } from '../x402/protocol';
-import { getChainName } from '../lib/networks';
-import { requestSchema, requestWithHeadersSchema } from '../lib/schemas';
+import { extractV1Schema } from '@/server/lib/x402/protocol';
+import { getChainName } from '@/server/lib/networks';
+import { requestSchema, requestWithHeadersSchema } from '@/server/lib/schemas';
 
-import type { RegisterTools } from './types';
+import type { RegisterTools } from '@/server/types';
 
 export const registerPaymentTools: RegisterTools = ({ server, account }) => {
   // query_endpoint - probe for pricing without payment

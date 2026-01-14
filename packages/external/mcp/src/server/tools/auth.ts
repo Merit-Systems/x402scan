@@ -2,17 +2,17 @@
  * Auth tools - server-driven SIWX authentication
  */
 
-import { mcpSuccess, mcpError } from '../response';
+import { mcpSuccess, mcpError } from '../lib/response';
 
-import { getParseClient } from '../x402/client';
-import { normalizePaymentRequired } from '../x402/protocol';
+import { getParseClient } from '../lib/x402/client';
+import { normalizePaymentRequired } from '../lib/x402/protocol';
 
 import { createSIWxPayload } from '../vendor/sign-in-with-x/client';
 import { encodeSIWxHeader } from '../vendor/sign-in-with-x/encode';
 
-import { requestWithHeadersSchema } from '../lib/schemas';
+import { requestWithHeadersSchema } from '@/server/lib/schemas';
 
-import type { RegisterTools } from './types';
+import type { RegisterTools } from '@/server/types';
 import type { SIWxExtensionInfo } from '../vendor/sign-in-with-x/types';
 
 export const registerAuthTools: RegisterTools = ({ server, account }) => {

@@ -14,8 +14,11 @@ import { homedir } from 'os';
 
 import { privateKeyToAccount } from 'viem/accounts';
 
-import { log } from './lib/log';
-import { ethereumAddressSchema, ethereumPrivateKeySchema } from './lib/schemas';
+import { log } from './log';
+import {
+  ethereumAddressSchema,
+  ethereumPrivateKeySchema,
+} from '../server/lib/schemas';
 import { Hex } from 'viem';
 
 const KEYSTORE_DIR = join(homedir(), '.x402scan-mcp');

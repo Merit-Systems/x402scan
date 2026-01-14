@@ -3,7 +3,7 @@ import {
   normalizePaymentRequired,
   isV1Response,
   extractV1Schema,
-} from '../src/x402/protocol';
+} from '@/server/lib/x402/protocol';
 
 describe('isV1Response', () => {
   it('detects v1 response by x402Version field', () => {

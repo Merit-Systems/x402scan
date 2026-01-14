@@ -13,7 +13,7 @@ export const ethereumPrivateKeySchema = z
   .transform(privateKey => privateKey as Hex);
 
 export const requestSchema = z.object({
-  url: z.string().url().describe('The endpoint URL'),
+  url: z.url().describe('The endpoint URL'),
   method: z
     .enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
     .default('GET')

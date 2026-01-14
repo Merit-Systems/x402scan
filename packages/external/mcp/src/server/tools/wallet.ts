@@ -2,17 +2,17 @@
  * Wallet tools - balance checking
  */
 
-import { mcpSuccess, mcpError } from '../response';
-import { getUSDCBalance } from '../lib/balance';
+import { mcpSuccess, mcpError } from '@/server/lib/response';
+import { getUSDCBalance } from '@/server/lib/balance';
 import {
   DEFAULT_NETWORK,
   getChainName,
   getExplorerUrl,
   getUSDCAddress,
   isTestnet,
-} from '../lib/networks';
+} from '@/server/lib/networks';
 
-import type { RegisterTools } from './types';
+import type { RegisterTools } from '@/server/types';
 
 export const registerWalletTools: RegisterTools = ({
   server,

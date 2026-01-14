@@ -10,8 +10,8 @@ import { privateKeyToAccount } from 'viem/accounts';
 
 import { normalizePaymentRequired } from './protocol';
 
-import { log } from '../lib/log';
-import { toCaip2 } from '../lib/networks';
+import { log } from '@/lib/log';
+import { toCaip2 } from '../networks';
 
 import type { PrivateKeyAccount } from 'viem/accounts';
 import type { PaymentRequired, PaymentPayload } from '@x402/core/types';
