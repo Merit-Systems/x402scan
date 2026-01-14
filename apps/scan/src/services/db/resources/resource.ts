@@ -155,6 +155,11 @@ export const upsertResource = async (
             asset: baseAccepts.asset,
             outputSchema: baseAccepts.outputSchema,
             extra: baseAccepts.extra,
+            // Clear verification when payTo or other critical fields change
+            verified: false,
+            verifiedAddress: null,
+            verificationProof: null,
+            verifiedAt: null,
           },
         })
       )
