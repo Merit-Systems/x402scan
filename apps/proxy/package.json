@@ -7,12 +7,12 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "check:types": "tsc --noEmit",
-    "lint": "eslint .",
+    "types:check": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./apps/proxy",
-    "format": "pnpm -w format-dir ./apps/proxy",
-    "check:format": "pnpm -w check:format-dir ./apps/proxy"
+    "format": "pnpm -w format:dir ./apps/proxy",
+    "format:check": "pnpm -w format:check:dir ./apps/proxy"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",

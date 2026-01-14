@@ -1,0 +1,33 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": [
+        "NEXT_PUBLIC_*",
+        "NODE_ENV",
+        "NEXT_RUNTIME",
+        "LMNR_PROJECT_API_KEY",
+        "GITHUB_TOKEN"
+      ]
+    },
+    "build:deploy": {
+      "env": [
+        "NEXT_PUBLIC_*",
+        "NODE_ENV",
+        "NEXT_RUNTIME",
+        "LMNR_PROJECT_API_KEY",
+        "GITHUB_TOKEN"
+      ]
+    },
+    "dev": {
+      "env": [
+        "NEXT_PUBLIC_*",
+        "NODE_ENV",
+        "NEXT_RUNTIME",
+        "LMNR_PROJECT_API_KEY",
+        "GITHUB_TOKEN"
+      ]
+    }
+  }
+}

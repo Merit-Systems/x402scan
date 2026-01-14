@@ -18,8 +18,8 @@
     "predev": "npm run db:generate",
     "studio": "prisma studio",
     "knip": "pnpm -w knip --workspace ./packages/internal/databases/scan",
-    "format": "pnpm -w format-dir ./packages/internal/databases/scan",
-    "check:format": "pnpm -w check:format-dir ./packages/internal/databases/scan"
+    "format": "pnpm -w format:dir ./packages/internal/databases/scan",
+    "format:check": "pnpm -w format:check:dir ./packages/internal/databases/scan"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
