@@ -25,6 +25,7 @@
     "check:format": "pnpm -w check:format-dir ./packages/external/mcp"
   },
   "dependencies": {
+    "@iarna/toml": "^2.2.5",
     "@modelcontextprotocol/sdk": "^1.25.2",
     "@scure/base": "^2.0.0",
     "@x402/core": "catalog:x402",
@@ -33,6 +34,8 @@
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",
+    "js-yaml": "^4.1.1",
+    "jsonc-parser": "^3.3.1",
     "open": "^11.0.0",
     "siwe": "catalog:",
     "tweetnacl": "^1.0.3",
@@ -41,6 +44,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "catalog:",
     "@types/yargs": "^17.0.35",
     "tsup": "catalog:",

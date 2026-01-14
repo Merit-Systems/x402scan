@@ -35,7 +35,10 @@
         "PORT",
         "DISCORD_WEBHOOK_URL",
         "OPENROUTER_API_KEY",
-        "X402_*"
+        "X402_*",
+        "APPDATA",
+        "CODEX_HOME",
+        "XDG_CONFIG_HOME"
       ]
     },
     "dev": {

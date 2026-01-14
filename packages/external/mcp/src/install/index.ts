@@ -3,6 +3,7 @@ import open from 'open';
 import { getUSDCBalance } from '@/lib/balance';
 
 import type { Command } from '@/types';
+import { addServer } from './install';
 
 interface InstallFlags {
   client: string;
@@ -24,6 +25,7 @@ export const installMcpServer: Command<InstallFlags> = async (
     console.log('Welcome back to the x402scan MCP server!');
   }
 
+  addServer(client);
   console.log(
     `All of the necessary configuration has been added to ${client}!`
   );

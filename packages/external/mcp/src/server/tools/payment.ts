@@ -13,7 +13,6 @@ import { wrapFetchWithPayment } from '@x402/fetch';
 import { log } from '@/lib/log';
 
 export const registerPaymentTools: RegisterTools = ({ server, account }) => {
-  // query_endpoint - probe for pricing without payment
   server.registerTool(
     'query_endpoint',
     {
