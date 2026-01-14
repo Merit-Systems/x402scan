@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
+    "@inquirer/prompts": "^8.2.0",
     "@modelcontextprotocol/sdk": "^1.25.2",
     "@scure/base": "^2.0.0",
     "@x402/core": "catalog:x402",
@@ -33,6 +34,9 @@
     "@x402/fetch": "catalog:x402",
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
+    "boxen": "^8.0.1",
+    "chalk": "^5.6.2",
+    "consola": "^3.4.2",
     "eslint": "catalog:",
     "js-yaml": "^4.1.1",
     "jsonc-parser": "^3.3.1",

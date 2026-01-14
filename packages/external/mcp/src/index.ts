@@ -29,7 +29,7 @@ void yargs(hideBin(process.argv))
       yargs.option('client', {
         type: 'string',
         description: 'The client name',
-        required: true,
+        required: false,
       }),
     async args => {
       const { account, isNew } = await getWallet();

@@ -1,12 +1,19 @@
 import open from 'open';
+import consola from 'consola';
 
 import { getUSDCBalance } from '@/lib/balance';
 
-import type { Command } from '@/types';
 import { addServer } from './install';
+import { printBanner } from '@/lib/banner';
+
+import { select } from '@inquirer/prompts';
+import { Clients } from './clients/types';
+
+import type { Command } from '@/types';
+import z from 'zod';
 
 interface InstallFlags {
-  client: string;
+  client?: string;
   isNew: boolean;
 }
 
@@ -14,21 +21,27 @@ export const installMcpServer: Command<InstallFlags> = async (
   wallet,
   flags
 ) => {
-  const { isNew, client, dev } = flags;
+  const { isNew, client: flagClient, dev } = flags;
 
-  const baseUrl = dev ? 'http://localhost:3000' : 'https://x402scan.com';
+  printBanner(
+    flags.isNew
+      ? {
+          heading: `Welcome to the x402scan MCP server!`,
+          description:
+            'A tool for calling x402-protected APIs with automatic payment handling.',
+        }
+      : {
+          heading: `Welcome back to the x402scan MCP server!`,
+          description:
+            'A tool for calling x402-protected APIs with automatic payment handling.',
+        }
+  );
 
-  if (flags.isNew) {
-    console.log('Welcome to the x402scan-mcp!');
-    console.log("You're new here, so we've created a new wallet for you.");
-  } else {
-    console.log('Welcome back to the x402scan MCP server!');
-  }
+  const client = await getClient(flagClient);
 
   addServer(client);
-  console.log(
-    `All of the necessary configuration has been added to ${client}!`
-  );
+
+  const baseUrl = dev ? 'http://localhost:3000' : 'https://x402scan.com';
 
   if (isNew) {
     console.log(
@@ -44,4 +57,23 @@ export const installMcpServer: Command<InstallFlags> = async (
       await open(`${baseUrl}/deposit/${wallet.address}`);
     }
   }
+};
+
+const getClient = async (flagClient: string | undefined) => {
+  const parsedClient = z.enum(Clients).safeParse(flagClient);
+  if (parsedClient.success) {
+    return parsedClient.data;
+  }
+  if (flagClient) {
+    consola.error(
+      `${flagClient} is not a valid client. Please select a client`
+    );
+  }
+  return await select({
+    message: 'What client would you like to install?',
+    choices: Object.values(Clients).map(client => ({
+      name: client,
+      value: client,
+    })),
+  });
 };
