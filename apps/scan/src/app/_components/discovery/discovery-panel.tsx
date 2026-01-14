@@ -217,7 +217,7 @@ export function DiscoveryPanel({
               Successfully registered {bulkResult.registered} of{' '}
               {bulkResult.total} resources
               {bulkResult.failed > 0 && (
-                <span className="text-yellow-600">
+                <span className="text-red-600">
                   {' '}
                   ({bulkResult.failed} failed)
                 </span>
