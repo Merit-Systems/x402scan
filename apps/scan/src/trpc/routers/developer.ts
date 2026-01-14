@@ -25,10 +25,8 @@ async function testSingleResource(
     error: 'No valid x402 response found',
   };
 
-  // Use specified method or try GET then POST
-  const methodsToTry = specifiedMethod
-    ? [specifiedMethod]
-    : (['GET', 'POST'] as const);
+  // Always try both GET and POST to find which method works
+  const methodsToTry = ['GET', 'POST'] as const;
   const triedMethods: string[] = [];
 
   for (const method of methodsToTry) {

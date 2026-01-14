@@ -156,7 +156,7 @@ export function DiscoveryPanel({
     // Show error state if no resources were registered
     if (bulkResult.registered === 0) {
       return (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex items-start gap-3 p-4 border rounded-md bg-red-500/10 border-red-500/30">
             <XCircle className="size-6 text-red-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
@@ -167,11 +167,14 @@ export function DiscoveryPanel({
             </div>
           </div>
 
-          {bulkResult.failedDetails && bulkResult.failedDetails.length > 0 && (
-            <div className="border rounded-md p-4 space-y-3">
-              <h3 className="font-medium text-sm">Failed Resources:</h3>
-              <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                {bulkResult.failedDetails.map((failed, idx) => (
+          <details className="border rounded-md group">
+            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+              More Info ({bulkResult.failedDetails?.length ?? bulkResult.total} failed resources)
+            </summary>
+            <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
+              {bulkResult.failedDetails && bulkResult.failedDetails.length > 0 ? (
+                bulkResult.failedDetails.map((failed, idx) => (
                   <div
                     key={idx}
                     className="p-3 bg-muted/50 rounded border text-xs space-y-1"
@@ -191,37 +194,76 @@ export function DiscoveryPanel({
                       </div>
                     )}
                   </div>
-                ))}
-              </div>
+                ))
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  No detailed error information available. Check the console for more details.
+                </div>
+              )}
             </div>
-          )}
+          </details>
         </div>
       );
     }
 
     // Show success state if some/all resources were registered
     return (
-      <div className="flex items-center gap-3 p-4 border rounded-md bg-green-600/10 border-green-600/30">
-        <CheckCircle className="size-6 text-green-600" />
-        <div>
-          <h2 className="font-semibold">Registration Complete</h2>
-          <p className="text-sm text-muted-foreground">
-            Successfully registered {bulkResult.registered} of{' '}
-            {bulkResult.total} resources
-            {bulkResult.failed > 0 && (
-              <span className="text-yellow-600">
-                {' '}
-                ({bulkResult.failed} failed)
-              </span>
-            )}
-          </p>
+      <div className="space-y-3">
+        <div className="flex items-center gap-3 p-4 border rounded-md bg-green-600/10 border-green-600/30">
+          <CheckCircle className="size-6 text-green-600" />
+          <div>
+            <h2 className="font-semibold">Registration Complete</h2>
+            <p className="text-sm text-muted-foreground">
+              Successfully registered {bulkResult.registered} of{' '}
+              {bulkResult.total} resources
+              {bulkResult.failed > 0 && (
+                <span className="text-yellow-600">
+                  {' '}
+                  ({bulkResult.failed} failed)
+                </span>
+              )}
+            </p>
+          </div>
         </div>
+
+        {bulkResult.failed > 0 && bulkResult.failedDetails && bulkResult.failedDetails.length > 0 && (
+          <details className="border rounded-md group">
+            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+              More Info ({bulkResult.failedDetails.length} failed resources)
+            </summary>
+            <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
+              {bulkResult.failedDetails.map((failed, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground shrink-0">URL:</span>
+                    <span className="font-mono break-all">{failed.url}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground shrink-0">Error:</span>
+                    <span className="text-red-600 break-words">{failed.error}</span>
+                  </div>
+                  {failed.status && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">Status:</span>
+                      <span className="font-mono">{failed.status}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
       </div>
     );
   }
 
   // Show "not found" or "invalid" message if discovery was checked but nothing found
-  if (!isLoading && resourceCount === 0 && !found) {
+  // Only show in test mode (developer page), not on register page
+  if (isTestMode && !isLoading && resourceCount === 0 && !found) {
     // Check if document was found but invalid (vs not found at all)
     const isInvalidDocument = discoveryError?.includes('Invalid discovery document');
 

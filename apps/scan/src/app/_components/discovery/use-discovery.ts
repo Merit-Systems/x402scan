@@ -94,6 +94,7 @@ export interface UseDiscoveryReturn {
     registered: number;
     total: number;
     failed: number;
+    failedDetails?: { url: string; error: string; status?: number }[];
   } | null;
   handleRegisterAll: () => void;
   resetBulk: () => void;
@@ -319,6 +320,7 @@ export function useDiscovery({
           registered: bulkData.registered,
           total: bulkData.total,
           failed: bulkData.failed,
+          failedDetails: bulkData.failedDetails,
         }
       : null,
     handleRegisterAll,

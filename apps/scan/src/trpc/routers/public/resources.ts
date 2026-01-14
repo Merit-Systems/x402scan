@@ -147,12 +147,14 @@ export const resourcesRouter = createTRPCRouter({
           input.url.replace('{', '').replace('}', ''),
           {
             method,
-            headers: input.headers,
-            body: input.body ? JSON.stringify(input.body) : undefined,
+            headers: method === Methods.POST
+              ? { ...input.headers, 'Content-Type': 'application/json' }
+              : input.headers,
+            body: input.body ? JSON.stringify(input.body) : (method === Methods.POST ? '{}' : undefined),
           }
         );
 
-        // if it doesn't respond with a 402, return error
+        // if it doesn't respond with a 402, continue to try next method
         if (response.status !== 402) {
           continue;
         }
@@ -170,7 +172,15 @@ export const resourcesRouter = createTRPCRouter({
             };
             continue;
           } else {
-            return result;
+            // Continue trying other methods instead of returning immediately
+            parseErrorData = {
+              data: result.data ?? null,
+              parseErrors:
+                'parseErrors' in result.error && Array.isArray(result.error.parseErrors)
+                  ? result.error.parseErrors
+                  : [JSON.stringify(result.error)],
+            };
+            continue;
           }
         }
 
@@ -251,56 +261,6 @@ export const resourcesRouter = createTRPCRouter({
         };
       }
 
-      const results = await Promise.allSettled(
-        discoveryResult.resources.map(async resource => {
-          const resourceUrl = resource.url;
-          // Use specified method or try POST then GET
-          const methodsToTry = resource.method
-            ? [resource.method as Methods]
-            : [Methods.POST, Methods.GET];
-
-          let lastError = 'No 402 response';
-          let lastStatus: number | undefined;
-
-          for (const method of methodsToTry) {
-            try {
-              const response = await fetch(resourceUrl, {
-                method,
-                signal: AbortSignal.timeout(15000),
-              });
-
-              lastStatus = response.status;
-
-              if (response.status === 402) {
-                // Extract x402 data (handles v2 header and v1 body, with JSON parse fallback)
-                const x402Data = await extractX402Data(response);
-                const result = await registerResource(resourceUrl, x402Data);
-
-                // If registration succeeded, return it
-                if (result.success) {
-                  return result;
-                }
-
-                // Registration failed, capture error
-                lastError = result.error ?? 'Registration failed';
-                break; // Don't try other methods if we got a 402
-              } else {
-                lastError = `Expected 402, got ${response.status}`;
-              }
-            } catch (err) {
-              lastError = err instanceof Error ? err.message : 'Request failed';
-            }
-          }
-
-          return {
-            success: false as const,
-            url: resourceUrl,
-            error: lastError,
-            status: lastStatus,
-          };
-        })
-      );
-
       // Helper to extract error message
       function getErrorMessage(err: unknown): string {
         if (typeof err === 'string') return err;
@@ -319,6 +279,63 @@ export const resourcesRouter = createTRPCRouter({
         return 'Unknown error';
       }
 
+      const results = await Promise.allSettled(
+        discoveryResult.resources.map(async resource => {
+          const resourceUrl = resource.url;
+          // Always try both POST and GET to find which method works
+          const methodsToTry = [Methods.POST, Methods.GET];
+
+          let lastError = 'No 402 response';
+          let lastStatus: number | undefined;
+          const errors: string[] = [];
+
+          for (const method of methodsToTry) {
+            try {
+              const response = await fetch(resourceUrl, {
+                method,
+                headers: method === Methods.POST ? { 'Content-Type': 'application/json' } : {},
+                body: method === Methods.POST ? '{}' : undefined,
+                signal: AbortSignal.timeout(15000),
+              });
+
+              lastStatus = response.status;
+
+              if (response.status === 402) {
+                // Extract x402 data (handles v2 header and v1 body, with JSON parse fallback)
+                const x402Data = await extractX402Data(response);
+                const result = await registerResource(resourceUrl, x402Data);
+
+                // If registration succeeded, return it
+                if (result.success) {
+                  return result;
+                }
+
+                // Registration failed, capture error but continue trying other methods
+                const errorMsg = getErrorMessage(result.error) || 'Registration failed';
+                errors.push(`${method}: ${errorMsg}`);
+                lastError = errors.join('; ');
+                // Continue to try next method - don't break
+              } else {
+                const errorMsg = `Expected 402, got ${response.status}`;
+                errors.push(`${method}: ${errorMsg}`);
+                lastError = errors.join('; ');
+              }
+            } catch (err) {
+              const errorMsg = err instanceof Error ? err.message : 'Request failed';
+              errors.push(`${method}: ${errorMsg}`);
+              lastError = errors.join('; ');
+            }
+          }
+
+          return {
+            success: false as const,
+            url: resourceUrl,
+            error: lastError,
+            status: lastStatus,
+          };
+        })
+      );
+
       // Separate successful and failed results with details
       const successfulResults: { url: string }[] = [];
       const failedResults: { url: string; error: string; status?: number }[] = [];
@@ -333,12 +350,12 @@ export const resourcesRouter = createTRPCRouter({
           const value = result.value;
           if ('success' in value && value.success) {
             successfulResults.push({
-              url: value.resource.resource.resource
+              url: resourceUrl
             });
           } else if ('success' in value && !value.success) {
             failedResults.push({
               url: resourceUrl,
-              error: getErrorMessage(value.error),
+              error: value.error,
               status: 'status' in value ? value.status : undefined,
             });
           }
