@@ -48,7 +48,7 @@ export function useBatchTest(
     queries: chunks.map(chunk => ({
       queryKey: ['developer.batchTest', { resources: chunk }],
       queryFn: () =>
-        utils.client.developer.batchTest.query({ resources: chunk }),
+        utils.developer.batchTest.fetch({ resources: chunk }),
       enabled: enabled && chunks.length > 0,
       staleTime: 60000,
     })),
