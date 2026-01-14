@@ -35,7 +35,7 @@ export async function getWallet() {
   if (process.env.X402_PRIVATE_KEY) {
     const account = privateKeyToAccount(process.env.X402_PRIVATE_KEY as Hex);
     log.info(`Using wallet from env: ${account.address}`);
-    return account;
+    return { account, isNew: false };
   }
 
   // Try loading existing
@@ -44,7 +44,7 @@ export async function getWallet() {
     const stored = storedWalletSchema.parse(JSON.parse(data));
     const account = privateKeyToAccount(stored.privateKey);
     log.info(`Loaded wallet: ${account.address}`);
-    return account;
+    return { account, isNew: false };
   } catch {
     // File doesn't exist or is invalid, generate new wallet
   }
@@ -66,5 +66,5 @@ export async function getWallet() {
 
   log.info(`Created wallet: ${account.address}`);
   log.info(`Saved to: ${KEYSTORE_FILE}`);
-  return account;
+  return { account, isNew: true };
 }

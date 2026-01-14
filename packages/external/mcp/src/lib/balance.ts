@@ -6,7 +6,7 @@ import { createPublicClient, http, erc20Abi } from 'viem';
 
 import { getChain, getUSDCAddress, DEFAULT_NETWORK, toCaip2 } from './networks';
 
-import { log } from '../../lib/log';
+import { log } from './log';
 
 import type { Address } from 'viem';
 

@@ -7,7 +7,7 @@ import {
   getUSDCAddress,
   isTestnet,
   DEFAULT_NETWORK,
-} from '../src/server/lib/networks';
+} from '../src/lib/networks';
 
 describe('toCaip2', () => {
   it('returns CAIP-2 format unchanged', () => {

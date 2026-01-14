@@ -7,3 +7,11 @@ interface RegisterToolsProps {
 }
 
 export type RegisterTools = (props: RegisterToolsProps) => void;
+
+export enum FetchStates {
+  INITIAL_REQUEST = 'initial_request',
+  PAYMENT_REQUIRED = 'payment_required',
+  PAYMENT_CREATED = 'payment_created',
+  PAYMENT_FAILED = 'payment_failed',
+  PAYMENT_SETTLED = 'payment_settled',
+}

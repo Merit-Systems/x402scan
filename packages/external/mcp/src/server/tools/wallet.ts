@@ -3,14 +3,14 @@
  */
 
 import { mcpSuccess, mcpError } from '@/server/lib/response';
-import { getUSDCBalance } from '@/server/lib/balance';
+import { getUSDCBalance } from '@/lib/balance';
 import {
   DEFAULT_NETWORK,
   getChainName,
   getExplorerUrl,
   getUSDCAddress,
   isTestnet,
-} from '@/server/lib/networks';
+} from '@/lib/networks';
 
 import type { RegisterTools } from '@/server/types';
 
@@ -26,45 +26,29 @@ export const registerWalletTools: RegisterTools = ({
     },
     async () => {
       try {
-        try {
-          const balance = await getUSDCBalance({
-            address,
-          });
-          return mcpSuccess({
-            address,
-            network: balance.network,
-            networkName: getChainName(balance.network),
-            balanceUSDC: balance.formatted,
-            balanceFormatted: balance.formattedString,
-            isNewWallet: balance.formatted === 0,
-            ...(balance.formatted < 1
-              ? {
-                  fundingInstructions: getFundingInstructions(
-                    address,
-                    balance.network
-                  ),
-                  suggestion:
-                    balance.formatted === 0
-                      ? 'Your wallet has no USDC. Send USDC to the address above to start making paid API calls.'
-                      : 'Your balance is low. Consider topping up.',
-                }
-              : {}),
-          });
-        } catch (err) {
-          return mcpSuccess({
-            address,
-            network: DEFAULT_NETWORK,
-            networkName: getChainName(DEFAULT_NETWORK),
-            balanceUSDC: null,
-            balanceError:
-              err instanceof Error ? err.message : 'Failed to fetch balance',
-            isNewWallet: false,
-            fundingInstructions: getFundingInstructions(
-              address,
-              DEFAULT_NETWORK
-            ),
-          });
-        }
+        const balance = await getUSDCBalance({
+          address,
+        });
+        return mcpSuccess({
+          address,
+          network: balance.network,
+          networkName: getChainName(balance.network),
+          balanceUSDC: balance.formatted,
+          balanceFormatted: balance.formattedString,
+          isNewWallet: balance.formatted === 0,
+          ...(balance.formatted < 1
+            ? {
+                fundingInstructions: getFundingInstructions(
+                  address,
+                  balance.network
+                ),
+                suggestion:
+                  balance.formatted === 0
+                    ? 'Your wallet has no USDC. Send USDC to the address above to start making paid API calls.'
+                    : 'Your balance is low. Consider topping up.',
+              }
+            : {}),
+        });
       } catch (err) {
         return mcpError(err, { tool: 'check_balance' });
       }

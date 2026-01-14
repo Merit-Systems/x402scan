@@ -4,7 +4,6 @@
 
 import { mcpSuccess, mcpError } from '../lib/response';
 
-import { getParseClient } from '../lib/x402/client';
 import { normalizePaymentRequired } from '../lib/x402/protocol';
 
 import { createSIWxPayload } from '../vendor/sign-in-with-x/client';
@@ -14,9 +13,9 @@ import { requestWithHeadersSchema } from '@/server/lib/schemas';
 
 import type { RegisterTools } from '@/server/types';
 import type { SIWxExtensionInfo } from '../vendor/sign-in-with-x/types';
+import { x402Client, x402HTTPClient } from '@x402/core/client';
 
 export const registerAuthTools: RegisterTools = ({ server, account }) => {
-  // authed_call - server-driven SIWX authentication (x402 v2)
   server.registerTool(
     'authed_call',
     {
@@ -26,7 +25,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
     },
     async ({ url, method, body, headers }) => {
       try {
-        const httpClient = getParseClient();
+        const httpClient = new x402HTTPClient(new x402Client());
 
         // Step 1: Make initial request
         const firstResponse = await fetch(url, {

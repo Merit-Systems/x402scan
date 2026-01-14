@@ -1,9 +1,9 @@
-import { BASE_URL } from '@/lib/constants';
 import { Command } from '@/types';
 import open from 'open';
 
-export const fundMcpServer: Command = async wallet => {
-  console.log(`${BASE_URL}/deposit/${wallet.address}`);
-  const url = `${BASE_URL}/deposit/${wallet.address}`;
+export const fundMcpServer: Command = async (wallet, args) => {
+  const baseUrl = args.dev ? 'http://localhost:3000' : 'https://x402scan.com';
+  console.log(`${baseUrl}/deposit/${wallet.address}`);
+  const url = `${baseUrl}/deposit/${wallet.address}`;
   await open(url);
 };

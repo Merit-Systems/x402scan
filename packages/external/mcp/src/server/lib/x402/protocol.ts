@@ -5,7 +5,7 @@
 import type { PaymentRequired, PaymentRequirements } from '@x402/core/types';
 
 // Normalized types - use these downstream
-export interface NormalizedRequirement {
+interface NormalizedRequirement {
   scheme: string;
   network: string;
   amount: string;
