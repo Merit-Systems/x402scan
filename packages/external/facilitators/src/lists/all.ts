@@ -21,6 +21,7 @@ import {
   polymerFacilitator,
   meridianFacilitator,
   openmidFacilitator,
+  primerFacilitator,
   x402jobsFacilitator,
   openfacilitatorFacilitator,
 } from '../facilitators';
@@ -52,6 +53,7 @@ const FACILITATORS = validateUniqueFacilitators([
   polymerFacilitator,
   meridianFacilitator,
   openmidFacilitator,
+  primerFacilitator,
   x402jobsFacilitator,
   openfacilitatorFacilitator,
 ]);

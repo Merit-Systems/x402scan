@@ -119,6 +119,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Polymer**          | BASE          | No        | Yes - API key                |
 | **Meridian**         | BASE          | No        | No                           |
 | **Openmid**          | BASE          | No        | No                           |
+| **Primer**           | BASE          | No        | No                           |
 
 ### Import Individual Facilitators
 
@@ -144,6 +145,7 @@ import {
   polymer,
   meridian,
   openmid,
+  primer,
 } from 'facilitators';
 
 // Facilitators requiring setup
