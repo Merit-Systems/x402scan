@@ -96,13 +96,33 @@ _x402.yourdomain.com. TXT "https://yourdomain.com/.well-known/x402"
 
 ```typescript
 {
-  resources: string[];           // Array of full x402 endpoint URLs
+  version: 1;                    // REQUIRED: Discovery document version (must be 1)
+  resources: string[];           // REQUIRED: Array of full x402 endpoint URLs
   ownershipProofs?: string[];    // Optional cryptographic signatures proving ownership
   instructions?: string;         // Optional markdown instructions for users
 }
 ```
 
 ### Field Descriptions
+
+#### `version` (required)
+
+The version number of the discovery document schema. Currently must be `1`.
+
+**Requirements:**
+- Must be the number `1` (not a string)
+- Required field - document will fail validation without it
+
+**Example:**
+
+```json
+{
+  "version": 1,
+  "resources": [
+    "https://api.example.com/v1/generate"
+  ]
+}
+```
 
 #### `resources` (required)
 
@@ -117,6 +137,7 @@ An array of strings, where each string is a full URL to an x402-enabled endpoint
 
 ```json
 {
+  "version": 1,
   "resources": [
     "https://api.example.com/v1/generate-image",
     "https://api.example.com/v1/translate",
@@ -138,6 +159,7 @@ An array of cryptographic signatures that prove you control the `payTo` addresse
 
 ```json
 {
+  "version": 1,
   "resources": [
     "https://api.example.com/v1/endpoint"
   ],
@@ -162,6 +184,7 @@ A markdown-formatted string containing instructions or information for users of 
 
 ```json
 {
+  "version": 1,
   "resources": [
     "https://api.example.com/v1/generate",
     "https://api.example.com/v1/analyze"
@@ -222,6 +245,7 @@ If your resources accept payments to multiple addresses, you should provide an o
 
 ```json
 {
+  "version": 1,
   "resources": [
     "https://api.example.com/v1/endpoint"
   ],
@@ -250,6 +274,7 @@ A minimal discovery document with two resources:
 
 ```json
 {
+  "version": 1,
   "resources": [
     "https://api.example.com/v1/generate",
     "https://api.example.com/v1/analyze"
@@ -263,6 +288,7 @@ A discovery document with ownership verification:
 
 ```json
 {
+  "version": 1,
   "resources": [
     "https://api.example.com/v1/generate",
     "https://api.example.com/v1/analyze",
@@ -280,6 +306,7 @@ A full discovery document with ownership proof and user instructions:
 
 ```json
 {
+  "version": 1,
   "resources": [
     "https://api.example.com/v1/generate-image",
     "https://api.example.com/v1/analyze-text",
@@ -302,6 +329,7 @@ const app = express();
 // Serve discovery document at /.well-known/x402
 app.get('/.well-known/x402', (req, res) => {
   res.json({
+    version: 1,
     resources: [
       'https://api.example.com/api/v1/generate-image',
       'https://api.example.com/api/v1/analyze-text',
@@ -326,6 +354,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   return NextResponse.json({
+    version: 1,
     resources: [
       'https://yourapp.com/api/v1/generate',
       'https://yourapp.com/api/v1/analyze'
@@ -402,7 +431,7 @@ curl $(dig +short _x402.yourdomain.com TXT | tr -d '"')
 ### Ownership Verification Failing
 
 - **Signature Format**: Ensure signatures are hex strings starting with `0x`
-- **Message Signed**: Verify you signed the exact origin URL (including protocol, no trailing slash)
+- **Message Signed**: Verify you signed the exact origin URL (including protocol, no trailing slash. Ex https://api.example.com)
 - **Correct Key**: Confirm you used the private key corresponding to your `payTo` address
 - **Chain Compatibility**: Make sure you're using the correct signing method for your blockchain (EVM vs Solana)
 
@@ -411,9 +440,3 @@ curl $(dig +short _x402.yourdomain.com TXT | tr -d '"')
 - [x402 Specification](https://www.x402.org/)
 - [x402scan Platform](https://x402scan.com)
 - [Example Implementations](https://github.com/Merit-Systems/x402scan/tree/main/examples)
-
-## Questions or Issues?
-
-- Join our [Discord community](https://discord.gg/JuKt7tPnNc)
-- Open an issue on [GitHub](https://github.com/Merit-Systems/x402scan/issues)
-- Follow us on [X/Twitter](https://twitter.com/merit_systems)
