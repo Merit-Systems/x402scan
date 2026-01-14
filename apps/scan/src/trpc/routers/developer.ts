@@ -246,7 +246,9 @@ export const developerRouter = createTRPCRouter({
         resources: allResults.filter(
           (r): r is Extract<typeof r, { success: true }> => r.success
         ),
-        failed: allResults.filter((r): r is FailedResourceDetails => !r.success),
+        failed: allResults.filter(
+          (r): r is FailedResourceDetails => !r.success
+        ),
       };
     }),
 });

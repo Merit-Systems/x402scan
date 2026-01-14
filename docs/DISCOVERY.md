@@ -21,12 +21,14 @@ The x402 discovery document is a JSON file that lists all x402-enabled endpoints
 ## Why Use Discovery?
 
 **Benefits for Server Operators:**
+
 - **Automatic Registration**: Platforms like x402scan can automatically discover and register all your resources in one step
 - **Better Visibility**: Your resources are more discoverable by users and applications
 - **Ownership Verification**: Prove ownership of your resources through cryptographic signatures
 - **Easier Updates**: Update your discovery document to add new resources without manual registration
 
 **Benefits for Clients:**
+
 - **One-Click Discovery**: Users can register all your resources at once instead of one-by-one
 - **Trust**: Verify server ownership through cryptographic proofs
 - **Efficiency**: Reduced network requests compared to testing each endpoint individually
@@ -85,6 +87,7 @@ _x402.yourdomain.com. TXT "https://yourdomain.com/.well-known/x402"
 ```
 
 **How it works:**
+
 - Clients look up the `_x402` TXT record for your domain
 - The TXT record contains a URL pointing to your discovery document
 - Clients then fetch the discovery document from that URL
@@ -110,6 +113,7 @@ _x402.yourdomain.com. TXT "https://yourdomain.com/.well-known/x402"
 The version number of the discovery document schema. Currently must be `1`.
 
 **Requirements:**
+
 - Must be the number `1` (not a string)
 - Required field - document will fail validation without it
 
@@ -118,9 +122,7 @@ The version number of the discovery document schema. Currently must be `1`.
 ```json
 {
   "version": 1,
-  "resources": [
-    "https://api.example.com/v1/generate"
-  ]
+  "resources": ["https://api.example.com/v1/generate"]
 }
 ```
 
@@ -129,6 +131,7 @@ The version number of the discovery document schema. Currently must be `1`.
 An array of strings, where each string is a full URL to an x402-enabled endpoint.
 
 **Requirements:**
+
 - Must be valid URLs (including protocol)
 - Must return a valid x402 402 response when accessed
 - Should be publicly accessible
@@ -151,6 +154,7 @@ An array of strings, where each string is a full URL to an x402-enabled endpoint
 An array of cryptographic signatures that prove you control the `payTo` addresses in your x402 responses. This helps establish trust and verify ownership.
 
 **How it works:**
+
 1. Sign your origin URL (e.g., `https://api.example.com`) with the private key corresponding to your `payTo` address
 2. Include the signature(s) in the `ownershipProofs` array
 3. Platforms like x402scan will verify that the recovered address matches one of your `payTo` addresses
@@ -160,9 +164,7 @@ An array of cryptographic signatures that prove you control the `payTo` addresse
 ```json
 {
   "version": 1,
-  "resources": [
-    "https://api.example.com/v1/endpoint"
-  ],
+  "resources": ["https://api.example.com/v1/endpoint"],
   "ownershipProofs": [
     "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1b"
   ]
@@ -174,6 +176,7 @@ An array of cryptographic signatures that prove you control the `payTo` addresse
 A markdown-formatted string containing instructions or information for users of your resources. This can be displayed to users when they discover your resources, providing context, usage guidelines, or other helpful information.
 
 **Use cases:**
+
 - Explain how to use your resources
 - Provide API documentation links
 - List rate limits or usage restrictions
@@ -189,9 +192,7 @@ A markdown-formatted string containing instructions or information for users of 
     "https://api.example.com/v1/generate",
     "https://api.example.com/v1/analyze"
   ],
-  "ownershipProofs": [
-    "0x1234567890abcdef..."
-  ],
+  "ownershipProofs": ["0x1234567890abcdef..."],
   "instructions": "Example app instructions. Always call analyze first before calling generate."
 }
 ```
@@ -246,12 +247,10 @@ If your resources accept payments to multiple addresses, you should provide an o
 ```json
 {
   "version": 1,
-  "resources": [
-    "https://api.example.com/v1/endpoint"
-  ],
+  "resources": ["https://api.example.com/v1/endpoint"],
   "ownershipProofs": [
-    "0x1234...abcd",  // Signature from address 1
-    "0x5678...ef01"   // Signature from address 2
+    "0x1234...abcd", // Signature from address 1
+    "0x5678...ef01" // Signature from address 2
   ]
 }
 ```
@@ -333,13 +332,14 @@ app.get('/.well-known/x402', (req, res) => {
     resources: [
       'https://api.example.com/api/v1/generate-image',
       'https://api.example.com/api/v1/analyze-text',
-      'https://api.example.com/api/v1/translate'
+      'https://api.example.com/api/v1/translate',
     ],
     ownershipProofs: [
       // Generated using your private key
-      '0x8f6d4e3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e1b'
+      '0x8f6d4e3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e1b',
     ],
-    instructions: '# API Documentation\n\nVisit https://docs.example.com for full documentation.\n\n## Rate Limits\n- 1000 requests/hour\n\n## Support\nEmail: support@example.com'
+    instructions:
+      '# API Documentation\n\nVisit https://docs.example.com for full documentation.\n\n## Rate Limits\n- 1000 requests/hour\n\n## Support\nEmail: support@example.com',
   });
 });
 
@@ -357,13 +357,14 @@ export async function GET() {
     version: 1,
     resources: [
       'https://yourapp.com/api/v1/generate',
-      'https://yourapp.com/api/v1/analyze'
+      'https://yourapp.com/api/v1/analyze',
     ],
     ownershipProofs: [
       // Your ownership proof signature
-      '0x1234567890abcdef...'
+      '0x1234567890abcdef...',
     ],
-    instructions: '# API Usage\n\nSee [documentation](https://yourapp.com/docs) for details.\n\nContact: api@yourapp.com'
+    instructions:
+      '# API Usage\n\nSee [documentation](https://yourapp.com/docs) for details.\n\nContact: api@yourapp.com',
   });
 }
 ```

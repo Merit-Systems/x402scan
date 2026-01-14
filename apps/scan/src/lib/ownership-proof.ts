@@ -68,8 +68,7 @@ class EVMVerifier implements ChainVerifier {
       });
 
       return (
-        recoveredAddress.toLowerCase() ===
-        config.expectedAddress.toLowerCase()
+        recoveredAddress.toLowerCase() === config.expectedAddress.toLowerCase()
       );
     } catch {
       return false;
@@ -114,9 +113,7 @@ class SolanaVerifier implements ChainVerifier {
       } catch {
         // Try hex decoding as fallback
         const hex = config.signature.replace(/^0x/, '');
-        signatureBytes = Uint8Array.from(
-          Buffer.from(hex, 'hex')
-        );
+        signatureBytes = Uint8Array.from(Buffer.from(hex, 'hex'));
       }
 
       // Convert message to bytes

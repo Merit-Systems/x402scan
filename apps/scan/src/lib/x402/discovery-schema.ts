@@ -116,19 +116,28 @@ export function parseDiscoveryDocument(
   | { success: false; error: string } {
   // First validate basic structure (version, instructions, ownershipProofs)
   if (!data || typeof data !== 'object') {
-    return { success: false, error: 'Invalid discovery document: not an object' };
+    return {
+      success: false,
+      error: 'Invalid discovery document: not an object',
+    };
   }
 
   const doc = data as Record<string, unknown>;
 
   // Validate version
   if (doc.version !== 1) {
-    return { success: false, error: 'Invalid discovery document: version must be 1' };
+    return {
+      success: false,
+      error: 'Invalid discovery document: version must be 1',
+    };
   }
 
   // Validate resources array exists
   if (!Array.isArray(doc.resources)) {
-    return { success: false, error: 'Invalid discovery document: resources must be an array' };
+    return {
+      success: false,
+      error: 'Invalid discovery document: resources must be an array',
+    };
   }
 
   // Validate each resource individually - keep both valid and invalid
@@ -152,19 +161,32 @@ export function parseDiscoveryDocument(
 
   // If we have no valid resources at all, fail
   if (validResources.length === 0 && invalidResources.length === 0) {
-    return { success: false, error: 'Invalid discovery document: no resources provided' };
+    return {
+      success: false,
+      error: 'Invalid discovery document: no resources provided',
+    };
   }
 
   // Validate optional fields
   const instructions = doc.instructions;
   if (instructions !== undefined && typeof instructions !== 'string') {
-    return { success: false, error: 'Invalid discovery document: instructions must be a string' };
+    return {
+      success: false,
+      error: 'Invalid discovery document: instructions must be a string',
+    };
   }
 
   const ownershipProofs = doc.ownershipProofs;
   if (ownershipProofs !== undefined) {
-    if (!Array.isArray(ownershipProofs) || !ownershipProofs.every(p => typeof p === 'string')) {
-      return { success: false, error: 'Invalid discovery document: ownershipProofs must be an array of strings' };
+    if (
+      !Array.isArray(ownershipProofs) ||
+      !ownershipProofs.every(p => typeof p === 'string')
+    ) {
+      return {
+        success: false,
+        error:
+          'Invalid discovery document: ownershipProofs must be an array of strings',
+      };
     }
   }
 
@@ -177,7 +199,8 @@ export function parseDiscoveryDocument(
       instructions,
       ownershipProofs: ownershipProofs,
     },
-    invalidResources: invalidResources.length > 0 ? invalidResources : undefined,
+    invalidResources:
+      invalidResources.length > 0 ? invalidResources : undefined,
   };
 }
 

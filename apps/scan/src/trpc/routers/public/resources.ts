@@ -147,10 +147,15 @@ export const resourcesRouter = createTRPCRouter({
           input.url.replace('{', '').replace('}', ''),
           {
             method,
-            headers: method === Methods.POST
-              ? { ...input.headers, 'Content-Type': 'application/json' }
-              : input.headers,
-            body: input.body ? JSON.stringify(input.body) : (method === Methods.POST ? '{}' : undefined),
+            headers:
+              method === Methods.POST
+                ? { ...input.headers, 'Content-Type': 'application/json' }
+                : input.headers,
+            body: input.body
+              ? JSON.stringify(input.body)
+              : method === Methods.POST
+                ? '{}'
+                : undefined,
           }
         );
 
@@ -176,7 +181,8 @@ export const resourcesRouter = createTRPCRouter({
             parseErrorData = {
               data: result.data ?? null,
               parseErrors:
-                'parseErrors' in result.error && Array.isArray(result.error.parseErrors)
+                'parseErrors' in result.error &&
+                Array.isArray(result.error.parseErrors)
                   ? result.error.parseErrors
                   : [JSON.stringify(result.error)],
             };
@@ -273,7 +279,9 @@ export const resourcesRouter = createTRPCRouter({
           } else if ('upsertErrors' in err && Array.isArray(err.upsertErrors)) {
             details.push(...(err.upsertErrors as string[]));
           }
-          return details.length > 0 ? `${err.type}: ${details.join(', ')}` : err.type;
+          return details.length > 0
+            ? `${err.type}: ${details.join(', ')}`
+            : err.type;
         }
 
         return 'Unknown error';
@@ -293,7 +301,10 @@ export const resourcesRouter = createTRPCRouter({
             try {
               const response = await fetch(resourceUrl, {
                 method,
-                headers: method === Methods.POST ? { 'Content-Type': 'application/json' } : {},
+                headers:
+                  method === Methods.POST
+                    ? { 'Content-Type': 'application/json' }
+                    : {},
                 body: method === Methods.POST ? '{}' : undefined,
                 signal: AbortSignal.timeout(15000),
               });
@@ -311,7 +322,8 @@ export const resourcesRouter = createTRPCRouter({
                 }
 
                 // Registration failed, capture error but continue trying other methods
-                const errorMsg = getErrorMessage(result.error) || 'Registration failed';
+                const errorMsg =
+                  getErrorMessage(result.error) || 'Registration failed';
                 errors.push(`${method}: ${errorMsg}`);
                 lastError = errors.join('; ');
                 // Continue to try next method - don't break
@@ -321,7 +333,8 @@ export const resourcesRouter = createTRPCRouter({
                 lastError = errors.join('; ');
               }
             } catch (err) {
-              const errorMsg = err instanceof Error ? err.message : 'Request failed';
+              const errorMsg =
+                err instanceof Error ? err.message : 'Request failed';
               errors.push(`${method}: ${errorMsg}`);
               lastError = errors.join('; ');
             }
@@ -338,7 +351,8 @@ export const resourcesRouter = createTRPCRouter({
 
       // Separate successful and failed results with details
       const successfulResults: { url: string }[] = [];
-      const failedResults: { url: string; error: string; status?: number }[] = [];
+      const failedResults: { url: string; error: string; status?: number }[] =
+        [];
 
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
@@ -350,7 +364,7 @@ export const resourcesRouter = createTRPCRouter({
           const value = result.value;
           if ('success' in value && value.success) {
             successfulResults.push({
-              url: resourceUrl
+              url: resourceUrl,
             });
           } else if ('success' in value && !value.success) {
             failedResults.push({
@@ -362,7 +376,10 @@ export const resourcesRouter = createTRPCRouter({
         } else if (result.status === 'rejected') {
           failedResults.push({
             url: resourceUrl,
-            error: result.reason instanceof Error ? result.reason.message : 'Promise rejected',
+            error:
+              result.reason instanceof Error
+                ? result.reason.message
+                : 'Promise rejected',
           });
         }
       }

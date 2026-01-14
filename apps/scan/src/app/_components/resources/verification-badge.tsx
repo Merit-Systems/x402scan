@@ -27,7 +27,8 @@ export function ResourceVerificationBadge({
   className,
 }: ResourceVerificationBadgeProps) {
   const allVerified = totalAccepts > 0 && verifiedAccepts === totalAccepts;
-  const partiallyVerified = verifiedAccepts > 0 && verifiedAccepts < totalAccepts;
+  const partiallyVerified =
+    verifiedAccepts > 0 && verifiedAccepts < totalAccepts;
 
   // Verified state
   if (allVerified) {
@@ -92,10 +93,12 @@ export function ResourceVerificationBadge({
           </span>
         </TooltipTrigger>
         <TooltipContent>
-          <p className="font-medium">Only some payment addresses are verified</p>
+          <p className="font-medium">
+            Only some payment addresses are verified
+          </p>
           <p className="text-muted-foreground">
-            {verifiedAccepts} out of {totalAccepts} payment addresses have verified
-            ownership proofs.
+            {verifiedAccepts} out of {totalAccepts} payment addresses have
+            verified ownership proofs.
           </p>
         </TooltipContent>
       </Tooltip>
@@ -113,9 +116,7 @@ export function ResourceVerificationBadge({
         </TooltipTrigger>
         <TooltipContent>
           <p className="font-medium">Unverified</p>
-          <p className="text-muted-foreground">
-            No verified ownership proofs
-          </p>
+          <p className="text-muted-foreground">No verified ownership proofs</p>
         </TooltipContent>
       </Tooltip>
     );

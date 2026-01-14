@@ -160,7 +160,9 @@ export function DiscoveryPanel({
           <div className="flex items-start gap-3 p-4 border rounded-md bg-red-500/10 border-red-500/30">
             <XCircle className="size-6 text-red-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h2 className="font-semibold text-red-600">Registration Failed</h2>
+              <h2 className="font-semibold text-red-600">
+                Registration Failed
+              </h2>
               <p className="text-sm text-muted-foreground">
                 Failed to register all {bulkResult.total} resources
               </p>
@@ -170,26 +172,36 @@ export function DiscoveryPanel({
           <details className="border rounded-md group">
             <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
               <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              More Info ({bulkResult.failedDetails?.length ?? bulkResult.total} failed resources)
+              More Info ({bulkResult.failedDetails?.length ?? bulkResult.total}{' '}
+              failed resources)
             </summary>
             <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
-              {bulkResult.failedDetails && bulkResult.failedDetails.length > 0 ? (
+              {bulkResult.failedDetails &&
+              bulkResult.failedDetails.length > 0 ? (
                 bulkResult.failedDetails.map((failed, idx) => (
                   <div
                     key={idx}
                     className="p-3 bg-muted/50 rounded border text-xs space-y-1"
                   >
                     <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">URL:</span>
+                      <span className="text-muted-foreground shrink-0">
+                        URL:
+                      </span>
                       <span className="font-mono break-all">{failed.url}</span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">Error:</span>
-                      <span className="text-red-600 break-words">{failed.error}</span>
+                      <span className="text-muted-foreground shrink-0">
+                        Error:
+                      </span>
+                      <span className="text-red-600 break-words">
+                        {failed.error}
+                      </span>
                     </div>
                     {failed.status && (
                       <div className="flex items-start gap-2">
-                        <span className="text-muted-foreground shrink-0">Status:</span>
+                        <span className="text-muted-foreground shrink-0">
+                          Status:
+                        </span>
                         <span className="font-mono">{failed.status}</span>
                       </div>
                     )}
@@ -197,7 +209,8 @@ export function DiscoveryPanel({
                 ))
               ) : (
                 <div className="text-sm text-muted-foreground">
-                  No detailed error information available. Check the console for more details.
+                  No detailed error information available. Check the console for
+                  more details.
                 </div>
               )}
             </div>
@@ -226,37 +239,47 @@ export function DiscoveryPanel({
           </div>
         </div>
 
-        {bulkResult.failed > 0 && bulkResult.failedDetails && bulkResult.failedDetails.length > 0 && (
-          <details className="border rounded-md group">
-            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
-              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              More Info ({bulkResult.failedDetails.length} failed resources)
-            </summary>
-            <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
-              {bulkResult.failedDetails.map((failed, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 bg-muted/50 rounded border text-xs space-y-1"
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-muted-foreground shrink-0">URL:</span>
-                    <span className="font-mono break-all">{failed.url}</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-muted-foreground shrink-0">Error:</span>
-                    <span className="text-red-600 break-words">{failed.error}</span>
-                  </div>
-                  {failed.status && (
+        {bulkResult.failed > 0 &&
+          bulkResult.failedDetails &&
+          bulkResult.failedDetails.length > 0 && (
+            <details className="border rounded-md group">
+              <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+                <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+                More Info ({bulkResult.failedDetails.length} failed resources)
+              </summary>
+              <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
+                {bulkResult.failedDetails.map((failed, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                  >
                     <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">Status:</span>
-                      <span className="font-mono">{failed.status}</span>
+                      <span className="text-muted-foreground shrink-0">
+                        URL:
+                      </span>
+                      <span className="font-mono break-all">{failed.url}</span>
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </details>
-        )}
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">
+                        Error:
+                      </span>
+                      <span className="text-red-600 break-words">
+                        {failed.error}
+                      </span>
+                    </div>
+                    {failed.status && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-muted-foreground shrink-0">
+                          Status:
+                        </span>
+                        <span className="font-mono">{failed.status}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
       </div>
     );
   }
@@ -265,24 +288,42 @@ export function DiscoveryPanel({
   // Only show in test mode (developer page), not on register page
   if (isTestMode && !isLoading && resourceCount === 0 && !found) {
     // Check if document was found but invalid (vs not found at all)
-    const isInvalidDocument = discoveryError?.includes('Invalid discovery document');
+    const isInvalidDocument = discoveryError?.includes(
+      'Invalid discovery document'
+    );
 
-    const icon = isInvalidDocument
-      ? <ShieldAlert className="size-4 text-red-600 shrink-0" />
-      : <XCircle className="size-4 text-muted-foreground shrink-0" />;
+    const icon = isInvalidDocument ? (
+      <ShieldAlert className="size-4 text-red-600 shrink-0" />
+    ) : (
+      <XCircle className="size-4 text-muted-foreground shrink-0" />
+    );
 
     return (
-      <div className={cn(
-        "flex items-center justify-between gap-3 p-3 border rounded-md",
-        isInvalidDocument ? "bg-red-600/10 border-red-600/30" : "bg-muted/30"
-      )}>
+      <div
+        className={cn(
+          'flex items-center justify-between gap-3 p-3 border rounded-md',
+          isInvalidDocument ? 'bg-red-600/10 border-red-600/30' : 'bg-muted/30'
+        )}
+      >
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {icon}
           <span className="text-sm text-muted-foreground">
             {isInvalidDocument ? (
-              <>Found <code className="px-1 py-0.5 bg-muted rounded text-xs">/.well-known/x402</code> but invalid: {discoveryError}</>
+              <>
+                Found{' '}
+                <code className="px-1 py-0.5 bg-muted rounded text-xs">
+                  /.well-known/x402
+                </code>{' '}
+                but invalid: {discoveryError}
+              </>
             ) : (
-              <>No <code className="px-1 py-0.5 bg-muted rounded text-xs">/.well-known/x402</code> found</>
+              <>
+                No{' '}
+                <code className="px-1 py-0.5 bg-muted rounded text-xs">
+                  /.well-known/x402
+                </code>{' '}
+                found
+              </>
             )}
           </span>
         </div>
@@ -534,7 +575,9 @@ function getResourceVerificationStatus(
     return { verified: false, partial: false, addresses: [] };
   }
 
-  const verifiedCount = addresses.filter(addr => verifiedAddresses[addr] === true).length;
+  const verifiedCount = addresses.filter(
+    addr => verifiedAddresses[addr] === true
+  ).length;
 
   return {
     verified: verifiedCount === addresses.length && addresses.length > 0,
@@ -564,14 +607,18 @@ function DiscoveredResourceExecutor({
     (outputSchema?.input?.method?.toUpperCase() as Methods) ??
     (tested.method as Methods);
 
-  const verificationStatus = getResourceVerificationStatus(tested.parsed, verifiedAddresses);
+  const verificationStatus = getResourceVerificationStatus(
+    tested.parsed,
+    verifiedAddresses
+  );
 
   // Collect warnings for missing optional items
   const warnings: string[] = [];
   if (!outputSchema?.output) warnings.push('Output schema');
   if (!preview?.ogImages?.[0]?.url) warnings.push('OG image');
   if (!preview?.favicon) warnings.push('Favicon');
-  if (invalidInfo?.invalid) warnings.push(`Invalid: ${invalidInfo.reason ?? 'Unknown format error'}`);
+  if (invalidInfo?.invalid)
+    warnings.push(`Invalid: ${invalidInfo.reason ?? 'Unknown format error'}`);
 
   // Add verification warnings only for unverified resources
   if (verificationStatus.addresses.length > 0 && !verificationStatus.verified) {
@@ -593,16 +640,14 @@ function DiscoveredResourceExecutor({
 
       warnings.push(
         `${verifiedList.length} of ${verificationStatus.addresses.length} addresses verified. ` +
-        `Verified: ${verifiedShort}. Unverified: ${unverifiedShort}`
+          `Verified: ${verifiedShort}. Unverified: ${unverifiedShort}`
       );
     } else {
       // Show only unverified for fully unverified
       const addressList = unverifiedAddresses
         .map(addr => `${addr.slice(0, 6)}...${addr.slice(-4)}`)
         .join(', ');
-      warnings.push(
-        `No ownership proof for payTo address: ${addressList}`
-      );
+      warnings.push(`No ownership proof for payTo address: ${addressList}`);
     }
   }
 
@@ -676,16 +721,18 @@ function FailedResourceCard({
   const errorMessage = isInvalid
     ? (invalidInfo?.reason ?? 'Invalid format')
     : x402Parsed
-    ? 'Missing input schema'
-    : (failedDetails?.error ?? 'Unknown error');
+      ? 'Missing input schema'
+      : (failedDetails?.error ?? 'Unknown error');
 
   return (
     <div className="pl-4 border-l pt-4 relative">
       <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border" />
-      <Card className={cn(
-        "overflow-hidden",
-        isInvalid ? "border-yellow-500/30" : "border-red-500/30"
-      )}>
+      <Card
+        className={cn(
+          'overflow-hidden',
+          isInvalid ? 'border-yellow-500/30' : 'border-red-500/30'
+        )}
+      >
         <button
           type="button"
           onClick={() => setShowDetails(!showDetails)}
@@ -694,21 +741,25 @@ function FailedResourceCard({
           <CardHeader className="bg-muted px-4 py-2">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
-                <div className={cn(
-                  "font-mono px-1 rounded-md text-xs shrink-0",
-                  isInvalid
-                    ? "bg-yellow-600/10 border border-yellow-600 text-yellow-600"
-                    : "bg-red-600/10 border border-red-600 text-red-600"
-                )}>
+                <div
+                  className={cn(
+                    'font-mono px-1 rounded-md text-xs shrink-0',
+                    isInvalid
+                      ? 'bg-yellow-600/10 border border-yellow-600 text-yellow-600'
+                      : 'bg-red-600/10 border border-red-600 text-red-600'
+                  )}
+                >
                   {isInvalid ? 'INVALID' : 'ERR'}
                 </div>
                 <span className="font-mono text-sm truncate">{pathname}</span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <span className={cn(
-                  "text-xs truncate max-w-[200px]",
-                  isInvalid ? "text-yellow-500" : "text-red-500"
-                )}>
+                <span
+                  className={cn(
+                    'text-xs truncate max-w-[200px]',
+                    isInvalid ? 'text-yellow-500' : 'text-red-500'
+                  )}
+                >
                   {errorMessage}
                 </span>
                 <ChevronDown
@@ -751,13 +802,18 @@ function FailedResourceCard({
                   )}
                   {(() => {
                     const methods = failedDetails.triedMethods;
-                    return Array.isArray(methods) && methods.length > 0 && (
-                      <div className="flex gap-2">
-                        <span className="text-muted-foreground">Tried Methods:</span>
-                        <span className="font-mono">
-                          {methods.join(', ')}
-                        </span>
-                      </div>
+                    return (
+                      Array.isArray(methods) &&
+                      methods.length > 0 && (
+                        <div className="flex gap-2">
+                          <span className="text-muted-foreground">
+                            Tried Methods:
+                          </span>
+                          <span className="font-mono">
+                            {methods.join(', ')}
+                          </span>
+                        </div>
+                      )
                     );
                   })()}
                 </div>
@@ -767,37 +823,52 @@ function FailedResourceCard({
             {/* Parse Errors */}
             {(() => {
               const errors = failedDetails?.parseErrors;
-              return Array.isArray(errors) && errors.length > 0 && (
-                <div className="border rounded-md bg-red-500/5 border-red-500/30 p-3 text-xs space-y-2">
-                  <p className="font-medium text-red-600">Validation Errors</p>
-                  <ul className="space-y-1 list-disc list-inside">
-                    {errors.map((error: string, i: number) => (
-                      <li key={i} className="text-red-600 font-mono text-[10px]">
-                        {error}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              return (
+                Array.isArray(errors) &&
+                errors.length > 0 && (
+                  <div className="border rounded-md bg-red-500/5 border-red-500/30 p-3 text-xs space-y-2">
+                    <p className="font-medium text-red-600">
+                      Validation Errors
+                    </p>
+                    <ul className="space-y-1 list-disc list-inside">
+                      {errors.map((error: string, i: number) => (
+                        <li
+                          key={i}
+                          className="text-red-600 font-mono text-[10px]"
+                        >
+                          {error}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )
               );
             })()}
 
             {/* Headers - collapsible */}
             {(() => {
               const headers = failedDetails?.headers;
-              return headers && typeof headers === 'object' && Object.keys(headers).length > 0 && (
-                <details className="border rounded-md bg-muted/30">
-                  <summary className="p-2 text-xs font-medium cursor-pointer hover:bg-muted/50">
-                    HTTP Headers ({Object.keys(headers).length})
-                  </summary>
-                  <div className="p-2 pt-0 space-y-1">
-                    {Object.entries(headers).map(([key, value]) => (
-                      <div key={key} className="flex gap-2 text-[10px] font-mono">
-                        <span className="text-muted-foreground">{key}:</span>
-                        <span className="break-all">{value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </details>
+              return (
+                headers &&
+                typeof headers === 'object' &&
+                Object.keys(headers).length > 0 && (
+                  <details className="border rounded-md bg-muted/30">
+                    <summary className="p-2 text-xs font-medium cursor-pointer hover:bg-muted/50">
+                      HTTP Headers ({Object.keys(headers).length})
+                    </summary>
+                    <div className="p-2 pt-0 space-y-1">
+                      {Object.entries(headers).map(([key, value]) => (
+                        <div
+                          key={key}
+                          className="flex gap-2 text-[10px] font-mono"
+                        >
+                          <span className="text-muted-foreground">{key}:</span>
+                          <span className="break-all">{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                )
               );
             })()}
 
@@ -962,7 +1033,9 @@ function RegisterModeResourceList({
                           Already Registered
                         </span>
                       ) : (
-                        <span className="text-xs text-muted-foreground">New</span>
+                        <span className="text-xs text-muted-foreground">
+                          New
+                        </span>
                       )}
                       {invalidResourcesMap[url]?.invalid && (
                         <Tooltip>
@@ -1065,13 +1138,18 @@ function OriginPreviewCard({
   const truncateAddress = (a: string) => `${a.slice(0, 6)}...${a.slice(-4)}`;
 
   // Check if this is a real origin (has a valid UUID) vs discovered preview
-  const isRealOrigin = origin.id !== 'discovered' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(origin.id);
+  const isRealOrigin =
+    origin.id !== 'discovered' &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      origin.id
+    );
 
   // Query database verification status for real origins
-  const { data: dbVerificationStatus } = api.public.resources.verificationStatus.useQuery(
-    { originId: origin.id },
-    { enabled: isRealOrigin }
-  );
+  const { data: dbVerificationStatus } =
+    api.public.resources.verificationStatus.useQuery(
+      { originId: origin.id },
+      { enabled: isRealOrigin }
+    );
 
   // Determine verification state
   const getVerificationState = () => {
@@ -1108,9 +1186,12 @@ function OriginPreviewCard({
                 </span>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-72">
-                <p className="font-medium">Only some payment addresses are verified</p>
+                <p className="font-medium">
+                  Only some payment addresses are verified
+                </p>
                 <p className="text-muted-foreground">
-                  {verified} out of {total} payment addresses have verified ownership proofs.
+                  {verified} out of {total} payment addresses have verified
+                  ownership proofs.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -1132,7 +1213,8 @@ function OriginPreviewCard({
             <TooltipContent side="bottom" className="max-w-72">
               <p className="font-medium">No verified ownership proofs</p>
               <p className="text-muted-foreground">
-                Add ownership proofs to your discovery document to verify control of payment addresses.
+                Add ownership proofs to your discovery document to verify
+                control of payment addresses.
               </p>
             </TooltipContent>
           </Tooltip>
@@ -1142,10 +1224,13 @@ function OriginPreviewCard({
 
     // Fall back to runtime ownership verification for discovered (not yet registered) origins
     // Count verified addresses from the verifiedAddresses map
-    const verifiedCount = Object.values(verifiedAddresses).filter(v => v).length;
+    const verifiedCount = Object.values(verifiedAddresses).filter(
+      v => v
+    ).length;
     const totalAddresses = Object.keys(verifiedAddresses).length;
     const allVerified = totalAddresses > 0 && verifiedCount === totalAddresses;
-    const partiallyVerified = verifiedCount > 0 && verifiedCount < totalAddresses;
+    const partiallyVerified =
+      verifiedCount > 0 && verifiedCount < totalAddresses;
 
     // Show fully verified if all addresses are verified
     if (allVerified) {
@@ -1163,8 +1248,12 @@ function OriginPreviewCard({
     // Show partially verified if some addresses are verified
     if (partiallyVerified) {
       // Get verified and unverified addresses for tooltip
-      const verifiedList = payToAddresses.filter(addr => verifiedAddresses[addr]);
-      const unverifiedList = payToAddresses.filter(addr => !verifiedAddresses[addr]);
+      const verifiedList = payToAddresses.filter(
+        addr => verifiedAddresses[addr]
+      );
+      const unverifiedList = payToAddresses.filter(
+        addr => !verifiedAddresses[addr]
+      );
 
       return {
         status: 'partial' as const,
@@ -1177,13 +1266,18 @@ function OriginPreviewCard({
               </span>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-96">
-              <p className="font-medium">Only some payment addresses are verified</p>
+              <p className="font-medium">
+                Only some payment addresses are verified
+              </p>
               <p className="text-muted-foreground text-xs mt-1">
-                {verifiedCount} out of {totalAddresses} payment addresses have verified ownership proofs.
+                {verifiedCount} out of {totalAddresses} payment addresses have
+                verified ownership proofs.
               </p>
               {verifiedList.length > 0 && (
                 <div className="mt-2">
-                  <p className="text-xs font-medium text-green-600">Verified:</p>
+                  <p className="text-xs font-medium text-green-600">
+                    Verified:
+                  </p>
                   <ul className="text-xs text-muted-foreground list-disc list-inside">
                     {verifiedList.map(addr => (
                       <li key={addr}>{truncateAddress(addr)}</li>
@@ -1193,7 +1287,9 @@ function OriginPreviewCard({
               )}
               {unverifiedList.length > 0 && (
                 <div className="mt-2">
-                  <p className="text-xs font-medium text-red-600">Unverified:</p>
+                  <p className="text-xs font-medium text-red-600">
+                    Unverified:
+                  </p>
                   <ul className="text-xs text-muted-foreground list-disc list-inside">
                     {unverifiedList.map(addr => (
                       <li key={addr}>{truncateAddress(addr)}</li>

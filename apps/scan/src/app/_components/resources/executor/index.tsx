@@ -103,7 +103,10 @@ export const ResourceExecutor: React.FC<Props> = ({
                   <TooltipContent side="left" className="max-w-md">
                     <div className="text-xs space-y-1">
                       {warnings.map((warning, i) => (
-                        <div key={i} className="text-muted-foreground break-all">
+                        <div
+                          key={i}
+                          className="text-muted-foreground break-all"
+                        >
                           {warning}
                         </div>
                       ))}

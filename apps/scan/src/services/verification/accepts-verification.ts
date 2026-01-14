@@ -93,10 +93,7 @@ export async function verifyAcceptsOwnership(
           break; // Found valid proof, stop trying
         }
       } catch (err) {
-        console.error(
-          `Error verifying proof for accept ${accept.id}:`,
-          err
-        );
+        console.error(`Error verifying proof for accept ${accept.id}:`, err);
         error = err instanceof Error ? err.message : 'Verification error';
       }
     }
@@ -130,7 +127,7 @@ export async function verifyAcceptsOwnership(
       verified,
       verifiedAddress,
       verificationProof,
-      error: verified ? undefined : error ?? 'No matching proof found',
+      error: verified ? undefined : (error ?? 'No matching proof found'),
     });
   }
 

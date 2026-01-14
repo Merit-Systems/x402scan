@@ -89,9 +89,7 @@ export const TestEndpointForm = () => {
             <div className="flex items-start gap-3 p-3 bg-muted/50 border rounded-md">
               <Info className="size-5 text-muted-foreground shrink-0 mt-0.5" />
               <div className="flex-1 text-sm">
-                <p className="font-medium">
-                  Tip: Enable automatic discovery
-                </p>
+                <p className="font-medium">Tip: Enable automatic discovery</p>
                 <p className="text-muted-foreground mt-1">
                   Implement a discovery document at{' '}
                   <code className="px-1 py-0.5 bg-muted rounded text-xs">

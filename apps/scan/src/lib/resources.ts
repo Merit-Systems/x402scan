@@ -134,7 +134,10 @@ export const registerResource = async (url: string, data: unknown) => {
       }
     } catch (error) {
       // Log verification errors but don't fail registration
-      console.error('Ownership verification failed during registration:', error);
+      console.error(
+        'Ownership verification failed during registration:',
+        error
+      );
     }
   })();
 

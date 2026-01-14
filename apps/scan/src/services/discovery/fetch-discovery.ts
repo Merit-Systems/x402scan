@@ -111,7 +111,11 @@ export async function fetchDiscoveryDocument(
 
   // Step 2: Fall back to /.well-known/x402
   const wellKnownUrl = `${origin}/.well-known/x402`;
-  const wellKnownResult = await fetchAndParseDocument(wellKnownUrl, origin, bustCache);
+  const wellKnownResult = await fetchAndParseDocument(
+    wellKnownUrl,
+    origin,
+    bustCache
+  );
 
   if (wellKnownResult.success) {
     return {
@@ -192,7 +196,8 @@ async function fetchAndParseDocument(
         return {
           ...resolved,
           invalid: true,
-          invalidReason: 'Resource format is invalid (must be a URL, path starting with /, or prefixed with HTTP method)',
+          invalidReason:
+            'Resource format is invalid (must be a URL, path starting with /, or prefixed with HTTP method)',
         };
       }
 
