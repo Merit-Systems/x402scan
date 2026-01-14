@@ -8,12 +8,12 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "check:types": "tsc --noEmit",
-    "lint": "eslint .",
+    "types:check": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./sync/transfers",
-    "format": "pnpm -w format-dir ./sync/transfers",
-    "check:format": "pnpm -w check:format-dir ./sync/transfers"
+    "format": "pnpm -w format:dir ./sync/transfers",
+    "format:check": "pnpm -w format:check:dir ./sync/transfers"
   },
   "dependencies": {
     "@coinbase/cdp-sdk": "^1.38.4",

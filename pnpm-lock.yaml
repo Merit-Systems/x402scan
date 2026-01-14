@@ -802,6 +802,8 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
+  packages/internal/databases/scan/generated/client: {}
+
   packages/internal/databases/transfers:
     dependencies:
       '@neondatabase/serverless':
@@ -847,6 +849,8 @@ importers:
       typescript:
         specifier: 5.5.4
         version: 5.5.4
+
+  packages/internal/databases/transfers/generated/client: {}
 
   sync/alerts:
     dependencies:

@@ -5,19 +5,20 @@
   "private": true,
   "scripts": {
     "postinstall": "cp -f ../facilitators/images/* public/ 2>/dev/null || true",
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
+    "build:deploy": "pnpm build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint --fix",
-    "typegen": "next typegen",
-    "check:types": "tsc --noEmit",
+    "types:generate": "next typegen",
+    "types:check": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
     "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts",
     "knip": "pnpm -w knip --workspace ./apps/scan",
-    "format": "pnpm -w format-dir ./apps/scan",
-    "check:format": "pnpm -w check:format-dir ./apps/scan"
+    "format": "pnpm -w format:dir ./apps/scan",
+    "format:check": "pnpm -w format:check:dir ./apps/scan"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.52",

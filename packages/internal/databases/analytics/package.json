@@ -16,10 +16,11 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint . --max-warnings 0",
-    "check:types": "tsc --noEmit",
+    "lint:fix": "eslint . --fix",
+    "types:check": "tsc --noEmit",
     "knip": "pnpm -w knip --workspace ./packages/internal/databases/analytics",
-    "format": "pnpm -w format-dir ./packages/internal/databases/analytics",
-    "check:format": "pnpm -w check:format-dir ./packages/internal/databases/analytics"
+    "format": "pnpm -w format:dir ./packages/internal/databases/analytics",
+    "format:check": "pnpm -w format:check:dir ./packages/internal/databases/analytics"
   },
   "dependencies": {
     "@clickhouse/client": "catalog:clickhouse"

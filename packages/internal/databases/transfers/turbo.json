@@ -1,0 +1,18 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["TRANSFERS_DB_*"]
+    },
+    "db:deploy": {
+      "env": ["TRANSFERS_DB_*"]
+    },
+    "types:check": {
+      "dependsOn": ["db:generate"]
+    },
+    "lint": {
+      "dependsOn": ["db:generate"]
+    }
+  }
+}
