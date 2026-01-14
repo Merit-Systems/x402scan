@@ -14,4 +14,5 @@ export const printInstallBanner = (isNew: boolean) => {
         'A tool for calling x402-protected APIs with automatic payment handling.',
     });
   }
+  console.log('');
 };

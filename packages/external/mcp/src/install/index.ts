@@ -1,3 +1,4 @@
+import consola from 'consola';
 import { printInstallBanner } from './1-print-banner';
 import { getClient } from './2-get-client';
 import { addServer } from './3-add-server';
@@ -16,15 +17,13 @@ export const installMcpServer: Command<InstallFlags> = async (
 ) => {
   printInstallBanner(flags.isNew);
 
-  console.log('');
+  const client = await getClient(flags.client);
 
-  const clients = await getClient(flags.client);
-
-  for (const client of clients) {
-    addServer(client);
-  }
-
-  console.log('');
+  addServer(client);
 
   await addFunds({ account: wallet, isNew: flags.isNew, dev: flags.dev });
+
+  console.log();
+  consola.success('Your x402scan MCP server is ready to use!');
+  console.log();
 };

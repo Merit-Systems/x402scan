@@ -1,7 +1,8 @@
-import open from 'open';
-
 import { getUSDCBalance } from '@/lib/balance';
 import { PrivateKeyAccount } from 'viem';
+import consola from 'consola';
+import chalk from 'chalk';
+import { promptDeposit } from '@/lib/deposit';
 
 interface AddFundsFlags {
   account: PrivateKeyAccount;
@@ -10,20 +11,23 @@ interface AddFundsFlags {
 }
 
 export const addFunds = async ({ account, isNew, dev }: AddFundsFlags) => {
-  const baseUrl = dev ? 'http://localhost:3000' : 'https://x402scan.com';
-
   if (isNew) {
-    console.log(
-      'To use the MCP server, you will need USDC in your wallet to make paid API calls.'
+    consola.info(
+      chalk.bold('To call paid API tools, you will need USDC in your wallet.')
     );
-    // this should be confirmed by the user
-    await open(`${baseUrl}/deposit/${account.address}`);
+    console.log();
+
+    await promptDeposit(account.address, dev);
   } else {
     const balance = await getUSDCBalance({ address: account.address });
-    if (balance.formatted < 0.5) {
-      console.log('Your balance is low. Consider topping up.');
-      // this should be confirmed by the user
-      await open(`${baseUrl}/deposit/${account.address}`);
+    if (balance.formatted < 10) {
+      consola.info(
+        chalk.bold(
+          `Your balance is low (${balance.formatted} USDC). Consider topping up.`
+        )
+      );
+      console.log();
+      await promptDeposit(account.address, dev);
     }
   }
 };
