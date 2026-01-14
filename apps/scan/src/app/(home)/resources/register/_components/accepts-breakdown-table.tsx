@@ -19,6 +19,7 @@ interface AcceptStatus {
   description?: string;
   asset?: string;
   isSupported: boolean;
+  verified?: boolean;
 }
 
 export function AcceptsBreakdownTable({
@@ -36,6 +37,7 @@ export function AcceptsBreakdownTable({
         <TableHeader>
           <TableRow className="bg-muted/50">
             <TableHead className="w-[120px] font-semibold">Status</TableHead>
+            <TableHead className="w-[100px] font-semibold">Verified</TableHead>
             <TableHead className="font-semibold">Network</TableHead>
             <TableHead className="font-semibold">Address</TableHead>
             <TableHead className="font-semibold">Asset</TableHead>
@@ -63,6 +65,31 @@ export function AcceptsBreakdownTable({
                         Only Base and Solana networks are currently supported
                         for registration
                       </p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </TableCell>
+              <TableCell className="py-3">
+                {accept.verified ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center justify-center cursor-help">
+                        <CheckCircle className="size-4 text-green-600 dark:text-green-500" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Ownership verified</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center justify-center cursor-help">
+                        <XCircle className="size-4 text-muted-foreground" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Not verified</p>
                     </TooltipContent>
                   </Tooltip>
                 )}

@@ -131,9 +131,17 @@ model Accepts {
   outputSchema      Json?
   extra             Json?
 
+  // Ownership verification fields
+  verified          Boolean   @default(false)
+  verifiedAddress   String?
+  verificationProof String?
+  verifiedAt        DateTime?
+
   resourceRel Resources @relation(fields: [resourceId], references: [id])
 
   @@unique([resourceId, scheme, network])
+  @@index([verified])
+  @@index([resourceId, verified])
 }
 
 model News {

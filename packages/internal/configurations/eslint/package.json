@@ -10,8 +10,8 @@
   },
   "scripts": {
     "knip": "pnpm -w knip --workspace ./packages/internal/configurations/eslint",
-    "format": "pnpm -w format-dir ./packages/internal/configurations/eslint",
-    "check:format": "pnpm -w check:format-dir ./packages/internal/configurations/eslint"
+    "format": "pnpm -w format:dir ./packages/internal/configurations/eslint",
+    "format:check": "pnpm -w format:check:dir ./packages/internal/configurations/eslint"
   },
   "devDependencies": {
     "eslint": "catalog:",
