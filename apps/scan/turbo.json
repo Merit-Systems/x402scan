@@ -8,7 +8,12 @@
         "NODE_ENV",
         "NEXT_RUNTIME",
         "LMNR_PROJECT_API_KEY",
-        "GITHUB_TOKEN"
+        "GITHUB_TOKEN",
+        "SCAN_DATABASE_*",
+        "CDP_*",
+        "CRON_*",
+        "FREE_TIER_*",
+        "TRANSFERS_*"
       ]
     },
     "build:deploy": {
@@ -17,7 +22,12 @@
         "NODE_ENV",
         "NEXT_RUNTIME",
         "LMNR_PROJECT_API_KEY",
-        "GITHUB_TOKEN"
+        "GITHUB_TOKEN",
+        "SCAN_DATABASE_*",
+        "CDP_*",
+        "CRON_*",
+        "FREE_TIER_*",
+        "TRANSFERS_*"
       ]
     },
     "dev": {
@@ -26,7 +36,12 @@
         "NODE_ENV",
         "NEXT_RUNTIME",
         "LMNR_PROJECT_API_KEY",
-        "GITHUB_TOKEN"
+        "GITHUB_TOKEN",
+        "SCAN_DATABASE_*",
+        "CDP_*",
+        "CRON_*",
+        "FREE_TIER_*",
+        "TRANSFERS_*"
       ]
     }
   }
