@@ -161,15 +161,13 @@ export const listOriginsWithResources = async (
   return origins
     .map(origin => ({
       ...origin,
-      resources: origin.resources
-        .map(resource => {
-          const response = parseX402Response(resource.response?.response);
-          return {
-            ...resource,
-            ...response,
-          };
-        })
-        .filter(response => response.success),
+      resources: origin.resources.map(resource => {
+        const response = parseX402Response(resource.response?.response);
+        return {
+          ...resource,
+          ...response,
+        };
+      }),
     }))
     .filter(origin => origin.resources.length > 0);
 };
