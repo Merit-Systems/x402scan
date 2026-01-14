@@ -363,7 +363,7 @@ export function DiscoveryPanel({
   const originData = createOriginFromPreview(origin, preview);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       {/* Resources display - shows when we have resources (discovery or direct test) */}
       {!isLoading && resourceCount > 0 && (
         <div className="flex flex-col">
