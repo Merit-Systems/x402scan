@@ -33,7 +33,7 @@ import {
 
 import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
-import { getOriginFromUrl } from '@/lib/url';
+import { getOriginFromUrl, normalizeUrl } from '@/lib/url';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import {
   getResourceVerificationStatus,
@@ -201,9 +201,10 @@ export const resourcesRouter = createTRPCRouter({
         try {
           const discoveryResult = await fetchDiscoveryDocument(origin);
           if (discoveryResult.success) {
-            // Filter out the URL that was just registered
+            // Filter out the URL that was just registered (normalize URLs for comparison)
+            const normalizedInputUrl = normalizeUrl(input.url);
             const otherResources = discoveryResult.resources.filter(
-              r => r.url !== input.url
+              r => normalizeUrl(r.url) !== normalizedInputUrl
             );
             discovery = {
               found: true,
