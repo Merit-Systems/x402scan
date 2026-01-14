@@ -200,12 +200,15 @@ export const resourcesRouter = createTRPCRouter({
 
         try {
           const discoveryResult = await fetchDiscoveryDocument(origin);
-          if (discoveryResult.success) {
+          if (discoveryResult.success && Array.isArray(discoveryResult.resources)) {
             // Filter out the URL that was just registered (normalize URLs for comparison)
             const normalizedInputUrl = normalizeUrl(input.url);
-            const otherResources = discoveryResult.resources.filter(
-              r => normalizeUrl(r.url) !== normalizedInputUrl
-            );
+            const otherResources = discoveryResult.resources.filter(r => {
+              if (!r || typeof r !== 'object' || !('url' in r) || typeof r.url !== 'string') {
+                return false;
+              }
+              return normalizeUrl(r.url) !== normalizedInputUrl;
+            });
             discovery = {
               found: true,
               source: discoveryResult.source,
