@@ -7,7 +7,6 @@
   "scripts": {
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev --skip-generate",
-    "db:deploy": "prisma migrate deploy",
     "db:format": "prisma format",
     "dev": "tsup src/* --watch",
     "lint": "eslint . --max-warnings 0",
@@ -16,8 +15,8 @@
     "predev": "npm run db:generate",
     "studio": "prisma studio",
     "knip": "pnpm -w knip --workspace ./packages/internal/databases/transfers",
-    "format": "pnpm -w format-dir ./packages/internal/databases/transfers",
-    "check:format": "pnpm -w check:format-dir ./packages/internal/databases/transfers"
+    "format": "pnpm -w format:dir ./packages/internal/databases/transfers",
+    "format:check": "pnpm -w format:check:dir ./packages/internal/databases/transfers"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",

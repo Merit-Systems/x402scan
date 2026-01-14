@@ -24,8 +24,8 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./packages/external/facilitators",
-    "format": "pnpm -w format-dir ./packages/external/facilitators",
-    "check:format": "pnpm -w check:format-dir ./packages/external/facilitators"
+    "format": "pnpm -w format:dir ./packages/external/facilitators",
+    "format:check": "pnpm -w format:check:dir ./packages/external/facilitators"
   },
   "keywords": [
     "x402",

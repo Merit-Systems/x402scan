@@ -161,10 +161,8 @@ export const resourcesRouter = createTRPCRouter({
               data: result.data,
               parseErrors: result.error.parseErrors,
             };
-            continue;
-          } else {
-            return result;
           }
+          continue;
         }
 
         return {
