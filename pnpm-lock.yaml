@@ -569,9 +569,6 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: catalog:react-query
         version: 5.91.2(@tanstack/react-query@5.90.16(react@19.2.2))(react@19.2.2)
-      '@types/bs58':
-        specifier: ^5.0.0
-        version: 5.0.0
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.27
@@ -5353,10 +5350,6 @@ packages:
 
   '@types/body-parser@1.19.6':
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
-
-  '@types/bs58@5.0.0':
-    resolution: {integrity: sha512-cAw/jKBzo98m6Xz1X5ETqymWfIMbXbu6nK15W4LQYjeHJkVqSmM5PO8Bd9KVHQJ/F4rHcSso9LcjtgCW6TGu2w==}
-    deprecated: This is a stub types definition. bs58 provides its own type definitions, so you do not need this installed.
 
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
@@ -17450,10 +17443,6 @@ snapshots:
     dependencies:
       '@types/connect': 3.4.38
       '@types/node': 20.19.27
-
-  '@types/bs58@5.0.0':
-    dependencies:
-      bs58: 6.0.0
 
   '@types/chai@5.2.3':
     dependencies:
