@@ -15,10 +15,7 @@ import type { FailedResource } from '@/types/batch-test';
 
 type FailedResourceDetails = FailedResource;
 
-async function testSingleResource(
-  url: string,
-  specifiedMethod?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-) {
+async function testSingleResource(url: string) {
   let lastError: FailedResourceDetails = {
     success: false,
     url,
@@ -236,7 +233,7 @@ export const developerRouter = createTRPCRouter({
       // Only test valid resources
       const validResources = input.resources.filter(r => !r.invalid);
       const testResults = await Promise.all(
-        validResources.map(r => testSingleResource(r.url, r.method))
+        validResources.map(r => testSingleResource(r.url))
       );
 
       // Combine test results with invalid results
