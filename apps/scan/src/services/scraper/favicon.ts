@@ -66,6 +66,25 @@ const getIconPriority = (
 };
 
 /**
+ * Extracts an attribute value, handling both double and single quotes
+ * This allows values to contain the opposite quote character (e.g., apostrophes in double-quoted values)
+ */
+const extractAttributeValue = (
+  attrs: string,
+  attrName: string
+): string | null => {
+  // Try double-quoted value first
+  let match = new RegExp(`${attrName}\\s*=\\s*"([^"]*)"`).exec(attrs);
+  if (match?.[1] !== undefined) return match[1];
+
+  // Try single-quoted value
+  match = new RegExp(`${attrName}\\s*=\\s*'([^']*)'`).exec(attrs);
+  if (match?.[1] !== undefined) return match[1];
+
+  return null;
+};
+
+/**
  * Extracts all icon candidates from HTML
  */
 const extractIconCandidates = (html: string): IconCandidate[] => {
@@ -80,22 +99,17 @@ const extractIconCandidates = (html: string): IconCandidate[] => {
     const attrs = match[1]!;
 
     // Extract href
-    const hrefMatch = /href\s*=\s*["']([^"']+)["']/i.exec(attrs);
-    if (!hrefMatch) continue;
-
-    const href = hrefMatch[1]!;
+    const href = extractAttributeValue(attrs, 'href');
+    if (!href) continue;
 
     // Extract rel
-    const relMatch = /rel\s*=\s*["']([^"']+)["']/i.exec(attrs);
-    const rel = relMatch?.[1]?.toLowerCase() ?? 'icon';
+    const rel = extractAttributeValue(attrs, 'rel')?.toLowerCase() ?? 'icon';
 
     // Extract type
-    const typeMatch = /type\s*=\s*["']([^"']+)["']/i.exec(attrs);
-    const type = typeMatch?.[1]?.toLowerCase() ?? null;
+    const type = extractAttributeValue(attrs, 'type')?.toLowerCase() ?? null;
 
     // Extract sizes
-    const sizesMatch = /sizes\s*=\s*["']([^"']+)["']/i.exec(attrs);
-    const sizes = sizesMatch?.[1] ?? null;
+    const sizes = extractAttributeValue(attrs, 'sizes') ?? null;
 
     const sizeValue = parseSizeValue(sizes);
     const priority = getIconPriority(rel, type, sizeValue);

@@ -6,33 +6,59 @@ interface Metadata {
 
 /**
  * Extracts the content from a meta tag
+ * Uses separate patterns for double-quoted and single-quoted values to handle quotes in content
  */
 const extractMetaContent = (
   html: string,
   nameOrProperty: string
 ): string | null => {
   // Match meta tags with name or property attribute
+  // Use separate patterns for each quote type to properly handle quotes in values
   const patterns = [
+    // name attribute with double-quoted content
     new RegExp(
-      `<meta\\s+[^>]*name\\s*=\\s*["']${nameOrProperty}["'][^>]*content\\s*=\\s*["']([^"']+)["'][^>]*>`,
+      `<meta\\s+[^>]*name\\s*=\\s*["']${nameOrProperty}["'][^>]*content\\s*=\\s*"([^"]*)"`,
       'i'
     ),
+    // name attribute with single-quoted content
     new RegExp(
-      `<meta\\s+[^>]*content\\s*=\\s*["']([^"']+)["'][^>]*name\\s*=\\s*["']${nameOrProperty}["'][^>]*>`,
+      `<meta\\s+[^>]*name\\s*=\\s*["']${nameOrProperty}["'][^>]*content\\s*=\\s*'([^']*)'`,
       'i'
     ),
+    // content before name with double quotes
     new RegExp(
-      `<meta\\s+[^>]*property\\s*=\\s*["']${nameOrProperty}["'][^>]*content\\s*=\\s*["']([^"']+)["'][^>]*>`,
+      `<meta\\s+[^>]*content\\s*=\\s*"([^"]*)"[^>]*name\\s*=\\s*["']${nameOrProperty}["']`,
       'i'
     ),
+    // content before name with single quotes
     new RegExp(
-      `<meta\\s+[^>]*content\\s*=\\s*["']([^"']+)["'][^>]*property\\s*=\\s*["']${nameOrProperty}["'][^>]*>`,
+      `<meta\\s+[^>]*content\\s*=\\s*'([^']*)'[^>]*name\\s*=\\s*["']${nameOrProperty}["']`,
+      'i'
+    ),
+    // property attribute with double-quoted content
+    new RegExp(
+      `<meta\\s+[^>]*property\\s*=\\s*["']${nameOrProperty}["'][^>]*content\\s*=\\s*"([^"]*)"`,
+      'i'
+    ),
+    // property attribute with single-quoted content
+    new RegExp(
+      `<meta\\s+[^>]*property\\s*=\\s*["']${nameOrProperty}["'][^>]*content\\s*=\\s*'([^']*)'`,
+      'i'
+    ),
+    // content before property with double quotes
+    new RegExp(
+      `<meta\\s+[^>]*content\\s*=\\s*"([^"]*)"[^>]*property\\s*=\\s*["']${nameOrProperty}["']`,
+      'i'
+    ),
+    // content before property with single quotes
+    new RegExp(
+      `<meta\\s+[^>]*content\\s*=\\s*'([^']*)'[^>]*property\\s*=\\s*["']${nameOrProperty}["']`,
       'i'
     ),
   ];
 
   for (const pattern of patterns) {
-    const match = html.match(pattern);
+    const match = pattern.exec(html);
     if (match?.[1]) {
       return match[1];
     }

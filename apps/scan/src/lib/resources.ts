@@ -49,7 +49,7 @@ export const registerResource = async (url: string, data: unknown) => {
   const { og, metadata, favicon } = await scrapeOriginData(origin);
 
   await upsertOrigin({
-    origin: origin,
+    origin,
     title: metadata?.title ?? og?.ogTitle,
     description: metadata?.description ?? og?.ogDescription,
     favicon: favicon ?? undefined,

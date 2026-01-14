@@ -86,7 +86,7 @@ export const GET = async (request: NextRequest) => {
 
           // Prepare origin data
           const originData = {
-            origin: origin,
+            origin,
             title: metadata?.title ?? og?.ogTitle,
             description: metadata?.description ?? og?.ogDescription,
             favicon: favicon ?? undefined,
