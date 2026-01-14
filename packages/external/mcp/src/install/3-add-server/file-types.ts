@@ -4,28 +4,33 @@ import * as TOML from '@iarna/toml';
 import yaml from 'js-yaml';
 import * as jsonc from 'jsonc-parser';
 
-import { ClientConfig, ClientFileTarget } from '../types';
-import { FileFormat } from './types';
+import type { ClientConfigObject, ClientConfigFile } from './types';
+
+export enum FileFormat {
+  JSON = 'json',
+  YAML = 'yaml',
+  TOML = 'toml',
+}
 
 /**
  * Parse file content based on format
  */
-export const parseClientConfig = ({ format, path }: ClientFileTarget) => {
+export const parseClientConfig = ({ format, path }: ClientConfigFile) => {
   const fileContent = fs.readFileSync(path, 'utf8');
 
-  let config: ClientConfig = {};
+  let config: ClientConfigObject = {};
   if (format === FileFormat.YAML) {
-    config = yaml.load(fileContent) as ClientConfig;
+    config = yaml.load(fileContent) as ClientConfigObject;
   }
   if (format === FileFormat.TOML) {
-    config = TOML.parse(fileContent) as ClientConfig;
+    config = TOML.parse(fileContent) as ClientConfigObject;
   }
   if (path.endsWith('.jsonc')) {
     // Use jsonc-parser for .jsonc files to support comments
-    config = jsonc.parse(fileContent) as ClientConfig;
+    config = jsonc.parse(fileContent) as ClientConfigObject;
   }
   // Default to JSON
-  config = JSON.parse(fileContent) as ClientConfig;
+  config = JSON.parse(fileContent) as ClientConfigObject;
 
   return {
     config,
@@ -33,9 +38,9 @@ export const parseClientConfig = ({ format, path }: ClientFileTarget) => {
   };
 };
 
-export const serializeConfig = (
-  { format, path }: ClientFileTarget,
-  config: ClientConfig,
+export const serializeClientConfig = (
+  { format, path }: ClientConfigFile,
+  config: ClientConfigObject,
   originalContent?: string
 ): string => {
   if (format === FileFormat.YAML) {

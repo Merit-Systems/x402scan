@@ -1,11 +1,11 @@
-import { ClientConfig } from './types';
+import { ClientConfigObject } from './types';
 
-export const getNestedValue = (obj: ClientConfig, path: string) => {
+export const getNestedValue = (obj: ClientConfigObject, path: string) => {
   const keys = path.split('.');
-  let current: ClientConfig | undefined = obj;
+  let current: ClientConfigObject | undefined = obj;
   for (const key of keys) {
     if (current && typeof current === 'object' && key in current) {
-      current = current[key] as ClientConfig;
+      current = current[key] as ClientConfigObject;
     } else {
       return undefined;
     }
@@ -14,9 +14,9 @@ export const getNestedValue = (obj: ClientConfig, path: string) => {
 };
 
 export const setNestedValue = (
-  obj: ClientConfig,
+  obj: ClientConfigObject,
   path: string,
-  value: ClientConfig
+  value: ClientConfigObject
 ) => {
   const keys = path.split('.');
   const lastKey = keys.pop();
@@ -29,8 +29,11 @@ export const setNestedValue = (
   target[lastKey] = value;
 };
 
-export const deepMerge = (target: ClientConfig, source: ClientConfig) => {
-  const result: ClientConfig = { ...target };
+export const deepMerge = (
+  target: ClientConfigObject,
+  source: ClientConfigObject
+) => {
+  const result: ClientConfigObject = { ...target };
 
   for (const key in source) {
     if (
@@ -39,7 +42,10 @@ export const deepMerge = (target: ClientConfig, source: ClientConfig) => {
       !Array.isArray(source[key])
     ) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      result[key] = deepMerge(result[key] ?? {}, source[key] as ClientConfig);
+      result[key] = deepMerge(
+        result[key] ?? {},
+        source[key] as ClientConfigObject
+      );
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       result[key] = source[key];

@@ -3,9 +3,13 @@ import path from 'path';
 import process from 'process';
 import z from 'zod';
 
-import { PlatformPaths, Platforms } from './types';
+export enum Platforms {
+  Windows = 'win32',
+  MacOS = 'darwin',
+  Linux = 'linux',
+}
 
-export const getPlatformPath = (): PlatformPaths => {
+export const getPlatformPath = () => {
   const platform = z.enum(Platforms).safeParse(process.platform);
   if (!platform.success) {
     throw new Error(`Invalid platform: ${process.platform}`);

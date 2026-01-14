@@ -1,4 +1,3 @@
-import z from 'zod';
 import os from 'os';
 import path from 'path';
 import process from 'process';
@@ -7,24 +6,24 @@ import fs from 'fs';
 import { getPlatformPath } from './platforms';
 import { log } from '@/lib/log';
 
-import { ClientFileTarget, Clients } from './types';
-import { FileFormat } from './file-types/types';
+import { Clients } from '../clients';
 
-export const getClientFileTarget = (client: Clients): ClientFileTarget => {
+import type { ClientConfigFile } from './types';
+import { FileFormat } from './file-types';
+
+export const getClientConfigFile = (client: Clients): ClientConfigFile => {
   const homeDir = os.homedir();
   const { baseDir, vscodePath } = getPlatformPath();
 
   switch (client) {
     case Clients.Claude:
       return {
-        type: 'file',
         path: path.join(baseDir, 'Claude', 'claude_desktop_config.json'),
         configKey: 'mcpServers',
         format: FileFormat.JSON,
       };
     case Clients.Cline:
       return {
-        type: 'file',
         path: path.join(
           baseDir,
           vscodePath,
@@ -38,7 +37,6 @@ export const getClientFileTarget = (client: Clients): ClientFileTarget => {
       };
     case Clients.RooCline:
       return {
-        type: 'file',
         path: path.join(
           baseDir,
           vscodePath,
@@ -52,56 +50,48 @@ export const getClientFileTarget = (client: Clients): ClientFileTarget => {
       };
     case Clients.Windsurf:
       return {
-        type: 'file',
         path: path.join(homeDir, '.codeium', 'windsurf', 'mcp_config.json'),
         configKey: 'mcpServers',
         format: FileFormat.JSON,
       };
     case Clients.Cursor:
       return {
-        type: 'file',
         path: path.join(homeDir, '.cursor', 'mcp.json'),
         configKey: 'mcpServers',
         format: FileFormat.JSON,
       };
     case Clients.Warp:
       return {
-        type: 'file',
         path: 'no-local-config', // it's okay this isn't a real path, we never use it
         configKey: 'mcpServers',
         format: FileFormat.JSON,
       };
     case Clients.GeminiCli:
       return {
-        type: 'file',
         path: path.join(homeDir, '.gemini', 'settings.json'),
         configKey: 'mcpServers',
         format: FileFormat.JSON,
       };
     case Clients.Vscode:
       return {
-        type: 'file',
         path: path.join(baseDir, vscodePath, 'mcp.json'),
         configKey: 'mcpServers',
         format: FileFormat.JSON,
       };
     case Clients.ClaudeCode:
       return {
-        type: 'file',
         path: path.join(homeDir, '.claude.json'),
         configKey: 'mcpServers',
         format: FileFormat.JSON,
       };
     case Clients.Goose:
       return {
-        type: 'file',
         path: path.join(homeDir, '.config', 'goose', 'config.yaml'),
         configKey: 'extensions',
         format: FileFormat.YAML,
       };
     case Clients.Zed:
       return {
-        type: 'file',
         path:
           process.platform === 'win32'
             ? path.join(
@@ -115,7 +105,6 @@ export const getClientFileTarget = (client: Clients): ClientFileTarget => {
       };
     case Clients.Codex:
       return {
-        type: 'file',
         path: path.join(
           process.env.CODEX_HOME ?? path.join(homeDir, '.codex'),
           'config.toml'
@@ -136,7 +125,6 @@ export const getClientFileTarget = (client: Clients): ClientFileTarget => {
       if (fs.existsSync(jsoncPath)) {
         log.info(`Found .jsonc file for OpenCode, using: ${jsoncPath}`);
         return {
-          type: 'file',
           path: jsoncPath,
           configKey: 'mcp',
           format: FileFormat.JSON,
@@ -144,7 +132,6 @@ export const getClientFileTarget = (client: Clients): ClientFileTarget => {
       }
 
       return {
-        type: 'file',
         path: jsonPath,
         configKey: 'mcp',
         format: FileFormat.JSON,
@@ -154,5 +141,3 @@ export const getClientFileTarget = (client: Clients): ClientFileTarget => {
       throw new Error(`Unknown client: ${String(client)}`);
   }
 };
-
-export const clientSchema = z.enum(Clients);

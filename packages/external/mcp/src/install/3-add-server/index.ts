@@ -1,21 +1,22 @@
 import fs from 'fs';
 import path from 'path';
 
-import { Clients, ClientConfig } from './types';
+import { Clients } from '../clients';
+import type { ClientConfigObject } from './types';
 import { log } from '@/lib/log';
-import { getClientFileTarget } from './data';
-import { parseClientConfig, serializeConfig } from './file-types';
+import { getClientConfigFile } from './client-config-file';
+import { parseClientConfig, serializeClientConfig } from './file-types';
 import { getNestedValue, setNestedValue, deepMerge } from './lib';
 
-export function readConfig(client: Clients): ClientConfig {
+export function readConfig(client: Clients): ClientConfigObject {
   log.info(`Reading config for client: ${client}`);
   try {
-    const clientFileTarget = getClientFileTarget(client);
+    const clientFileTarget = getClientConfigFile(client);
 
     log.info(`Checking if config file exists at: ${clientFileTarget.path}`);
     if (!fs.existsSync(clientFileTarget.path)) {
       log.info('Config file not found, returning default empty config');
-      const defaultConfig: ClientConfig = {};
+      const defaultConfig: ClientConfigObject = {};
       setNestedValue(defaultConfig, clientFileTarget.configKey, {});
       return defaultConfig;
     }
@@ -28,9 +29,12 @@ export function readConfig(client: Clients): ClientConfig {
     );
 
     // Ensure the nested structure exists
-    const existingValue = getNestedValue(rawConfig, clientFileTarget.configKey);
+    const existingValue = getNestedValue(
+      rawConfig.config,
+      clientFileTarget.configKey
+    );
     if (!existingValue) {
-      setNestedValue(rawConfig, clientFileTarget.configKey, {});
+      setNestedValue(rawConfig.config, clientFileTarget.configKey, {});
     }
 
     return rawConfig;
@@ -38,18 +42,18 @@ export function readConfig(client: Clients): ClientConfig {
     log.error(
       `Error reading config: ${error instanceof Error ? error.stack : JSON.stringify(error)}`
     );
-    const configPath = getClientFileTarget(client);
-    const defaultConfig: ClientConfig = {};
+    const configPath = getClientConfigFile(client);
+    const defaultConfig: ClientConfigObject = {};
     setNestedValue(defaultConfig, configPath.configKey, {});
     return defaultConfig;
   }
 }
 
-export function writeConfig(config: ClientConfig, client: Clients): void {
+export function writeConfig(config: ClientConfigObject, client: Clients): void {
   log.info(`Writing config for client: ${client}`);
   log.info(`Config data: ${JSON.stringify(config, null, 2)}`);
 
-  const clientFileTarget = getClientFileTarget(client);
+  const clientFileTarget = getClientConfigFile(client);
 
   const servers = getNestedValue(config, clientFileTarget.configKey);
   if (!servers || typeof servers !== 'object') {
@@ -103,7 +107,7 @@ export function writeConfig(config: ClientConfig, client: Clients): void {
 
 // Helper to set a server config in a nested structure
 function setServerConfig(client: Clients, config: ClientConfig) {
-  const clientFileTarget = getClientFileTarget(client);
+  const clientFileTarget = getClientConfigFile(client);
 
   let servers = getNestedValue(config, configKey);
   if (!servers) {

@@ -4,7 +4,7 @@ import { consola } from 'consola';
 
 import { select } from '@inquirer/prompts';
 
-import { Clients } from '../clients/types';
+import { Clients } from '../3-add-server/types';
 
 export const getClient = async (flagClient: string | undefined) => {
   const parsedClient = z.enum(Clients).safeParse(flagClient);

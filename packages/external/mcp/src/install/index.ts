@@ -1,16 +1,9 @@
-import open from 'open';
-import consola from 'consola';
-
-import { getUSDCBalance } from '@/lib/balance';
-
-import { addServer } from './install';
-import { printBanner } from '@/lib/banner';
-
-import { select } from '@inquirer/prompts';
-import { Clients } from './clients/types';
+import { printInstallBanner } from './1-print-banner';
+import { getClient } from './2-get-client';
+import { addServer } from './3-add-server';
+import { addFunds } from './4-add-funds';
 
 import type { Command } from '@/types';
-import z from 'zod';
 
 interface InstallFlags {
   client?: string;
@@ -21,59 +14,17 @@ export const installMcpServer: Command<InstallFlags> = async (
   wallet,
   flags
 ) => {
-  const { isNew, client: flagClient, dev } = flags;
+  printInstallBanner(flags.isNew);
 
-  printBanner(
-    flags.isNew
-      ? {
-          heading: `Welcome to the x402scan MCP server!`,
-          description:
-            'A tool for calling x402-protected APIs with automatic payment handling.',
-        }
-      : {
-          heading: `Welcome back to the x402scan MCP server!`,
-          description:
-            'A tool for calling x402-protected APIs with automatic payment handling.',
-        }
-  );
+  console.log('');
 
-  const client = await getClient(flagClient);
+  const client = await getClient(flags.client);
+
+  console.log();
 
   addServer(client);
 
-  const baseUrl = dev ? 'http://localhost:3000' : 'https://x402scan.com';
+  console.log('');
 
-  if (isNew) {
-    console.log(
-      'To use the MCP server, you will need USDC in your wallet to make paid API calls.'
-    );
-    // this should be confirmed by the user
-    await open(`${baseUrl}/deposit/${wallet.address}`);
-  } else {
-    const balance = await getUSDCBalance({ address: wallet.address });
-    if (balance.formatted < 0.5) {
-      console.log('Your balance is low. Consider topping up.');
-      // this should be confirmed by the user
-      await open(`${baseUrl}/deposit/${wallet.address}`);
-    }
-  }
-};
-
-const getClient = async (flagClient: string | undefined) => {
-  const parsedClient = z.enum(Clients).safeParse(flagClient);
-  if (parsedClient.success) {
-    return parsedClient.data;
-  }
-  if (flagClient) {
-    consola.error(
-      `${flagClient} is not a valid client. Please select a client`
-    );
-  }
-  return await select({
-    message: 'What client would you like to install?',
-    choices: Object.values(Clients).map(client => ({
-      name: client,
-      value: client,
-    })),
-  });
+  await addFunds({ account: wallet, isNew: flags.isNew, dev: flags.dev });
 };
