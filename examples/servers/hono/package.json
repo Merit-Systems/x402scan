@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx index.ts",
-    "lint": "eslint . --ext .ts --max-warnings 0",
-    "lint:fix": "eslint . --ext .ts --fix",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
     "types:check": "tsc --noEmit",
     "knip": "pnpm -w knip --workspace ./examples/servers/hono",
     "format": "pnpm -w format:dir ./examples/servers/hono",

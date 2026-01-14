@@ -15,7 +15,8 @@
         "^types:generate",
         "^build",
         "^db:generate",
-        "types:generate"
+        "types:generate",
+        "^build"
       ]
     },
     "lint:fix": {
@@ -23,7 +24,8 @@
         "^types:generate",
         "^build",
         "^db:generate",
-        "types:generate"
+        "types:generate",
+        "^build"
       ]
     },
     "dev": {
@@ -42,7 +44,8 @@
         "^types:check",
         "^types:generate",
         "^db:generate",
-        "types:generate"
+        "types:generate",
+        "^build"
       ]
     },
     "format": {
