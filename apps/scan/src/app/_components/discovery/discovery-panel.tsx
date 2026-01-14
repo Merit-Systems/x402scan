@@ -367,24 +367,6 @@ export function DiscoveryPanel({
       {/* Resources display - shows when we have resources (discovery or direct test) */}
       {!isLoading && resourceCount > 0 && (
         <div className="flex flex-col">
-          {/* Header with refresh button */}
-          {onRefresh && (
-            <div className="flex items-center justify-end pb-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onRefresh}
-                disabled={isBatchTestLoading}
-                className="gap-1"
-              >
-                <RefreshCw
-                  className={cn('size-3', isBatchTestLoading && 'animate-spin')}
-                />
-                Refresh
-              </Button>
-            </div>
-          )}
-
           {/* Origin Card */}
           {isPreviewLoading ? (
             <LoadingOriginCard />
