@@ -5,6 +5,7 @@
 import { appendFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { homedir } from 'os';
+import chalk from 'chalk';
 
 const LOG_DIR = join(homedir(), '.x402scan-mcp');
 const LOG_FILE = join(LOG_DIR, 'mcp.log');
@@ -39,4 +40,23 @@ export const log = {
   debug: (msg: string, ...args: unknown[]) =>
     DEBUG && write('DEBUG', msg, args),
   path: LOG_FILE,
+};
+
+export interface ConsoleLog {
+  type: 'info' | 'error' | 'success' | 'log';
+  message: string;
+}
+
+export const formatConsoleLog = (log: ConsoleLog, prefix?: string) => {
+  const text = prefix ? `${prefix} ${log.message}` : log.message;
+  switch (log.type) {
+    case 'info':
+      return chalk.blue(text);
+    case 'error':
+      return chalk.red(text);
+    case 'success':
+      return chalk.green(text);
+    case 'log':
+      return text;
+  }
 };

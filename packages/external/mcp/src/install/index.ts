@@ -18,11 +18,11 @@ export const installMcpServer: Command<InstallFlags> = async (
 
   console.log('');
 
-  const client = await getClient(flags.client);
+  const clients = await getClient(flags.client);
 
-  console.log();
-
-  addServer(client);
+  for (const client of clients) {
+    addServer(client);
+  }
 
   console.log('');
 

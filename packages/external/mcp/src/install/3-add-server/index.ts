@@ -1,124 +1,96 @@
 import fs from 'fs';
-import path from 'path';
 
-import { Clients } from '../clients';
-import type { ClientConfigObject } from './types';
-import { log } from '@/lib/log';
-import { getClientConfigFile } from './client-config-file';
+import { formatConsoleLog, ConsoleLog, log } from '@/lib/log';
+
+import { clientMetadata, Clients } from '../clients';
+import { getNestedValue, setNestedValue } from './lib';
 import { parseClientConfig, serializeClientConfig } from './file-types';
-import { getNestedValue, setNestedValue, deepMerge } from './lib';
+import { getClientConfigFile } from './client-config-file';
 
-export function readConfig(client: Clients): ClientConfigObject {
-  log.info(`Reading config for client: ${client}`);
+import type { ClientConfigObject } from './types';
+import boxen from 'boxen';
+import chalk from 'chalk';
+import consola from 'consola';
+
+const SERVER_NAME = 'x402scann';
+const command = 'npx';
+const args = ['-y', '@x402scan/mcp@latest'];
+
+export function addServer(client: Clients) {
+  if (client === Clients.Warp) {
+    consola.info(
+      chalk.bold.yellow('Warp requires a manual installation through their UI.')
+    );
+    console.log();
+    consola.log(
+      '  Please copy the following configuration object and add it to your Warp MCP config:\n'
+    );
+    console.log(
+      boxen(
+        JSON.stringify(
+          {
+            [SERVER_NAME]: {
+              command,
+              args,
+              working_directory: null,
+              start_on_launch: true,
+            },
+          },
+          null,
+          2
+        ),
+        {
+          borderStyle: 'round',
+          borderColor: '#2563eb',
+          title: chalk.bold('Warp MCP'),
+          padding: 1,
+        }
+      )
+    );
+    console.log();
+    console.log(
+      `Read Warp's documentation at https://docs.warp.dev/knowledge-and-collaboration/mcp`
+    );
+    return;
+  }
+
+  const clientFileTarget = getClientConfigFile(client);
+  const error: string | undefined = undefined;
+
   try {
-    const clientFileTarget = getClientConfigFile(client);
+    let config: ClientConfigObject = {};
+    let content: string | undefined = undefined;
 
     log.info(`Checking if config file exists at: ${clientFileTarget.path}`);
     if (!fs.existsSync(clientFileTarget.path)) {
-      log.info('Config file not found, returning default empty config');
-      const defaultConfig: ClientConfigObject = {};
-      setNestedValue(defaultConfig, clientFileTarget.configKey, {});
-      return defaultConfig;
-    }
-
-    log.info('Reading config file content');
-    const rawConfig = parseClientConfig(clientFileTarget);
-
-    log.info(
-      `Config loaded successfully: ${JSON.stringify(rawConfig, null, 2)}`
-    );
-
-    // Ensure the nested structure exists
-    const existingValue = getNestedValue(
-      rawConfig.config,
-      clientFileTarget.configKey
-    );
-    if (!existingValue) {
-      setNestedValue(rawConfig.config, clientFileTarget.configKey, {});
-    }
-
-    return rawConfig;
-  } catch (error) {
-    log.error(
-      `Error reading config: ${error instanceof Error ? error.stack : JSON.stringify(error)}`
-    );
-    const configPath = getClientConfigFile(client);
-    const defaultConfig: ClientConfigObject = {};
-    setNestedValue(defaultConfig, configPath.configKey, {});
-    return defaultConfig;
-  }
-}
-
-export function writeConfig(config: ClientConfigObject, client: Clients): void {
-  log.info(`Writing config for client: ${client}`);
-  log.info(`Config data: ${JSON.stringify(config, null, 2)}`);
-
-  const clientFileTarget = getClientConfigFile(client);
-
-  const servers = getNestedValue(config, clientFileTarget.configKey);
-  if (!servers || typeof servers !== 'object') {
-    console.log(`Invalid ${clientFileTarget.configKey} structure in config`);
-    throw new Error(`Invalid ${clientFileTarget.configKey} structure`);
-  }
-
-  const configDir = path.dirname(clientFileTarget.path);
-
-  log.info(`Ensuring config directory exists: ${configDir}`);
-  if (!fs.existsSync(configDir)) {
-    log.info(`Creating directory: ${configDir}`);
-    fs.mkdirSync(configDir, { recursive: true });
-  }
-
-  let existingConfig: ClientConfig = {};
-  setNestedValue(existingConfig, clientFileTarget.configKey, {});
-
-  try {
-    if (fs.existsSync(clientFileTarget.path)) {
-      existingConfig = parseClientConfig(clientFileTarget);
-
+      log.info('Config file not found, creating default empty config');
+      setNestedValue(config, clientFileTarget.configKey, {});
+      log.info('Config created successfully');
+    } else {
+      log.info('Config file found, reading config file content');
+      const { config: rawConfig, fileContent } =
+        parseClientConfig(clientFileTarget);
+      config = rawConfig;
+      content = fileContent;
+      const existingValue = getNestedValue(
+        rawConfig,
+        clientFileTarget.configKey
+      );
+      if (!existingValue) {
+        setNestedValue(rawConfig, clientFileTarget.configKey, {});
+      }
       log.info(
-        `Existing config loaded: ${JSON.stringify(existingConfig, null, 2)}`
+        `Config loaded successfully: ${JSON.stringify(rawConfig, null, 2)}`
       );
     }
-  } catch (error) {
-    console.log(
-      `Error reading existing config for merge: ${error instanceof Error ? error.message : String(error)}`
-    );
-    // If reading fails, continue with empty existing config
-  }
 
-  console.log('Merging configs');
-  const mergedConfig = deepMerge(existingConfig, config);
-  console.log(`Merged config: ${JSON.stringify(mergedConfig, null, 2)}`);
+    const servers = getNestedValue(config, clientFileTarget.configKey);
+    if (!servers || typeof servers !== 'object') {
+      log.error(`Invalid ${clientFileTarget.configKey} structure in config`);
+      throw new Error(`Invalid ${clientFileTarget.configKey} structure`);
+    }
 
-  log.info(`Writing config to file: ${clientFileTarget.path}`);
-
-  const configContent = serializeConfig(
-    mergedConfig,
-    target.format,
-    target.path,
-    originalFileContent
-  );
-
-  fs.writeFileSync(target.path, configContent);
-  console.log(`Config written to: ${target.path}`);
-  console.log('Config successfully written');
-}
-
-// Helper to set a server config in a nested structure
-function setServerConfig(client: Clients, config: ClientConfig) {
-  const clientFileTarget = getClientConfigFile(client);
-
-  let servers = getNestedValue(config, configKey);
-  if (!servers) {
-    setNestedValue(config, configKey, {});
-    servers = getNestedValue(config, configKey);
-  }
-
-  // Set the server config
-  if (servers) {
     if (client === Clients.Goose) {
-      // Goose has a different config structure and uses 'envs' instead of 'env'
       servers[SERVER_NAME] = {
         name: SERVER_NAME,
         cmd: command,
@@ -132,18 +104,51 @@ function setServerConfig(client: Clients, config: ClientConfig) {
       // Zed has a different config structure
       servers[SERVER_NAME] = {
         source: 'custom',
+        command,
+        args,
         env: {},
-        ...serverConfig, // Allow overriding defaults
       };
     } else if (client === Clients.Opencode) {
       servers[SERVER_NAME] = {
         type: 'local',
+        command,
+        args,
         enabled: true,
         environment: {},
-        ...serverConfig,
       };
     } else {
-      servers[SERVER_NAME] = serverConfig;
+      servers[SERVER_NAME] = {
+        command,
+        args,
+      };
     }
+
+    const configContent = serializeClientConfig(
+      clientFileTarget,
+      config,
+      content
+    );
+
+    fs.writeFileSync(clientFileTarget.path, configContent);
+  } catch (e) {
+    error = (e as Error).message;
+    throw e;
   }
+
+  const isError = error !== undefined;
+  const { name } = clientMetadata[client];
+
+  console.log(
+    boxen(`Configuration added to ${clientFileTarget.path}`, {
+      borderStyle: 'round',
+      borderColor: isError ? 'red' : 'green',
+      title: chalk.bold(
+        isError
+          ? `Error adding x402scan MCP to ${name}`
+          : `Added x402scan MCP to ${name}`
+      ),
+      padding: 1,
+    })
+  );
+  console.log();
 }
