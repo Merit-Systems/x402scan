@@ -27,12 +27,9 @@ catalogs:
     eslint-config-next: *NEXT_VERSION
     next-themes: ^0.4.6
   prisma:
-    '@prisma/adapter-pg': &PRISMA_VERSION ^7.2.0
-    '@prisma/client': *PRISMA_VERSION
+    '@prisma/client': &PRISMA_VERSION ^7.2.0
     '@prisma/adapter-neon': *PRISMA_VERSION
     prisma: *PRISMA_VERSION
-    '@types/pg': &PG_VERSION ^8.16.3
-    pg: *PG_VERSION
   react:
     '@types/react': &REACT_VERSION 19.2.2
     '@types/react-dom': *REACT_VERSION

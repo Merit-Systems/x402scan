@@ -342,8 +342,8 @@ export function DiscoveryPanel({
     );
   }
 
-  // Don't render anything if no resources to show (shouldn't happen after above check)
-  if (!isLoading && resourceCount === 0) {
+  // Don't render anything if no resources to show
+  if (resourceCount === 0) {
     return null;
   }
 
@@ -364,16 +364,6 @@ export function DiscoveryPanel({
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Loading state */}
-      {isLoading && (
-        <div className="flex items-center gap-2 p-4 border rounded-md bg-muted/30">
-          <Loader2 className="size-4 animate-spin" />
-          <span className="text-sm text-muted-foreground">
-            Checking for discovery document...
-          </span>
-        </div>
-      )}
-
       {/* Resources display - shows when we have resources (discovery or direct test) */}
       {!isLoading && resourceCount > 0 && (
         <div className="flex flex-col">
