@@ -14,19 +14,3 @@ export const parseOgFromHtml = async (html: string) => {
     return null;
   }
 };
-
-/**
- * Fetches and parses Open Graph data from a URL
- * @deprecated Use parseOgFromHtml with fetchHtml for better efficiency
- */
-export const scrapeOg = async (url: string) => {
-  try {
-    const result = await ogs({ url });
-    if (result.error) {
-      return null;
-    }
-    return result.result;
-  } catch {
-    return null;
-  }
-};

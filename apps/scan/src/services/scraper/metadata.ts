@@ -89,20 +89,3 @@ export const parseMetadataFromHtml = (html: string): Metadata | null => {
     return null;
   }
 };
-
-/**
- * Fetches and parses metadata from a URL
- * @deprecated Use parseMetadataFromHtml with fetchHtml for better efficiency
- */
-export const scrapeMetadata = async (url: string) => {
-  const { fetchHtml } = await import('./html');
-
-  try {
-    const html = await fetchHtml(url);
-    if (!html) return null;
-
-    return parseMetadataFromHtml(html);
-  } catch {
-    return null;
-  }
-};

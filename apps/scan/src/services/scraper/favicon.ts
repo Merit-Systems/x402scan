@@ -1,5 +1,5 @@
 import { getFaviconUrl } from '@/lib/favicon';
-import { checkUrlExists, fetchHtml } from './html';
+import { checkUrlExists } from './html';
 
 interface IconCandidate {
   href: string;
@@ -163,47 +163,4 @@ export const parseFaviconFromHtml = async (
   } catch {
     return null;
   }
-};
-
-/**
- * Scrapes the best quality favicon from a URL by fetching HTML first
- * @deprecated Use parseFaviconFromHtml with pre-fetched HTML for better efficiency
- */
-export const scrapeFavicon = async (origin: string): Promise<string | null> => {
-  try {
-    const html = await fetchHtml(origin);
-    if (!html) return null;
-
-    return parseFaviconFromHtml(html, origin);
-  } catch {
-    return null;
-  }
-};
-
-/**
- * Scrapes favicon with subdomain fallback logic
- * If the origin is an API subdomain, tries the base domain as fallback
- * @deprecated Use parseFaviconFromHtml with pre-fetched HTML for better efficiency
- */
-export const scrapeFaviconWithFallback = async (
-  inputOrigin: string
-): Promise<string | null> => {
-  // First try the input origin
-  let favicon = await scrapeFavicon(inputOrigin);
-
-  if (favicon) {
-    return favicon;
-  }
-
-  // If it's an API subdomain, try the base domain
-  if (inputOrigin.startsWith('https://api.')) {
-    const baseOrigin = `https://${inputOrigin.slice(12)}`;
-    favicon = await scrapeFavicon(baseOrigin);
-
-    if (favicon) {
-      return favicon;
-    }
-  }
-
-  return null;
 };
