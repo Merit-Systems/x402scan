@@ -13,6 +13,7 @@ import { log } from '@/lib/log';
 import { checkBalance } from '../lib/check-balance';
 
 import type { RegisterTools } from '@/server/types';
+import { DEFAULT_NETWORK } from '@/lib/networks';
 
 export const registerPaymentTools: RegisterTools = ({
   server,
@@ -74,16 +75,16 @@ export const registerPaymentTools: RegisterTools = ({
 
   // execute_call - make paid request
   server.registerTool(
-    'execute_call',
+    'fetch',
     {
       description:
-        'Make a paid request to an x402-protected endpoint. Handles 402 payment flow automatically.',
+        'Make a paid request to any HTTP endpoint. If the resource is x402-protected, it will handle the 402 payment flow automatically.',
       inputSchema: requestWithHeadersSchema,
     },
     async ({ url, method, body, headers }) => {
       const coreClient = x402Client.fromConfig({
         schemes: [
-          { network: 'eip155:8453', client: new ExactEvmScheme(account) },
+          { network: DEFAULT_NETWORK, client: new ExactEvmScheme(account) },
         ],
       });
 
