@@ -12,10 +12,11 @@ import {
   parseClientConfig,
   serializeClientConfig,
   stringifyObject,
-} from './file-types';
-import { getClientConfigFile } from './client-config-file';
+  getClientConfigFile,
+  getNestedValue,
+  setNestedValue,
+} from './lib';
 
-import { getNestedValue, setNestedValue } from './lib';
 import { wait } from '@/lib/wait';
 
 import type { ClientConfigObject } from './types';
@@ -26,7 +27,7 @@ const getMcpConfig = (globalFlags: GlobalFlags) => {
     return {
       serverName: 'x402scan-dev',
       command: 'node',
-      args: [`${process.cwd()}/dist/index.js`],
+      args: [`${process.cwd()}/dist/index.js`, '--dev'],
     };
   }
   return {

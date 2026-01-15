@@ -6,9 +6,9 @@ import fs from 'fs';
 import { getPlatformPath } from './platforms';
 import { log } from '@/lib/log';
 
-import { Clients } from '../clients';
+import { Clients } from '../../clients';
 
-import type { ClientConfigFile } from './types';
+import type { ClientConfigFile } from '../types';
 import { FileFormat } from './file-types';
 
 export const getClientConfigFile = (client: Clients): ClientConfigFile => {

@@ -4,7 +4,7 @@ import * as TOML from '@iarna/toml';
 import yaml from 'js-yaml';
 import * as jsonc from 'jsonc-parser';
 
-import type { ClientConfigObject, ClientConfigFile } from './types';
+import type { ClientConfigObject, ClientConfigFile } from '../types';
 
 export enum FileFormat {
   JSON = 'json',

@@ -63,7 +63,5 @@ export const promptDeposit = async (address: string, flags: GlobalFlags) => {
         }
       )
     );
-  } else {
-    log.message('Skipping deposit process...');
   }
 };

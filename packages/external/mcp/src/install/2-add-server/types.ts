@@ -1,4 +1,4 @@
-import type { FileFormat } from './file-types';
+import type { FileFormat } from './lib/file-types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ClientConfigObject = Record<string, any>;

@@ -15,7 +15,7 @@ interface AddFundsProps {
 }
 
 export const addFunds = async ({ flags, address, isNew }: AddFundsProps) => {
-  if (isNew || 0 == 0) {
+  if (isNew) {
     await new Promise(resolve => setTimeout(resolve, 1000));
     log.info('To use paid API tools, you will need USDC in your wallet.');
     await promptDeposit(address, flags);
@@ -26,7 +26,7 @@ export const addFunds = async ({ flags, address, isNew }: AddFundsProps) => {
       stopText: `Balance: ${chalk.bold(`${balance} USDC`)} `,
       ms: 1000,
     });
-    if (balance < 10) {
+    if (balance < 1) {
       log.warning(
         chalk.bold(
           `Your balance is low (${balance} USDC). Consider topping up.`
