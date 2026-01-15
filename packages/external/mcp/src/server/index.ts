@@ -8,9 +8,12 @@ import { registerWalletTools } from './tools/wallet';
 import { log } from '@/lib/log';
 
 import type { Command } from '@/types';
+import { getWallet } from '@/lib/wallet';
 
-export const startServer: Command = async account => {
+export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
+
+  const { account } = await getWallet();
 
   const server = new McpServer({
     name: 'x402scan',
@@ -20,6 +23,7 @@ export const startServer: Command = async account => {
   const props = {
     server,
     account,
+    flags,
   };
 
   registerPaymentTools(props);

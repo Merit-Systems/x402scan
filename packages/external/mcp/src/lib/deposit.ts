@@ -1,14 +1,25 @@
 import boxen from 'boxen';
 import chalk from 'chalk';
-import { select } from '@clack/prompts';
+import { select, log } from '@clack/prompts';
 import open from 'open';
+
 import { DEFAULT_NETWORK, getChainName } from './networks';
-import { log } from '@clack/prompts';
 import { wait } from './wait';
 
-export const promptDeposit = async (address: string, isDev?: boolean) => {
-  const baseUrl = isDev ? 'http://localhost:3000' : 'https://x402scan.com';
-  const depositLink = `${baseUrl}/deposit/${address}`;
+import type { GlobalFlags } from '@/types';
+
+const getDepositLink = (address: string, flags: GlobalFlags) => {
+  const baseUrl = flags.dev ? 'http://localhost:3000' : 'https://x402scan.com';
+  return `${baseUrl}/deposit/${address}`;
+};
+
+export const openDepositLink = async (address: string, flags: GlobalFlags) => {
+  const depositLink = getDepositLink(address, flags);
+  await open(depositLink);
+};
+
+export const promptDeposit = async (address: string, flags: GlobalFlags) => {
+  const depositLink = getDepositLink(address, flags);
 
   const guidedDeposit = await select({
     message: chalk.bold('How would you like to deposit?'),

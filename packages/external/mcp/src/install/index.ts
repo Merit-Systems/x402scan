@@ -1,27 +1,29 @@
-import { getClient } from './2-get-client';
-import { addServer } from './3-add-server';
-import { addFunds } from './4-add-funds';
+import { getWallet } from '@/lib/wallet';
+import { getClient } from './1-get-client';
+import { addServer } from './2-add-server';
+import { addFunds } from './3-add-funds';
 
-import type { Command } from '@/types';
+import type { Command, GlobalFlags } from '@/types';
 import { intro, outro } from '@clack/prompts';
 import chalk from 'chalk';
 
-interface InstallFlags {
+export type InstallFlags = GlobalFlags<{
   client?: string;
-  isNew: boolean;
-}
+}>;
 
-export const installMcpServer: Command<InstallFlags> = async (
-  wallet,
-  flags
-) => {
+export const installMcpServer: Command<InstallFlags> = async flags => {
+  const {
+    account: { address },
+    isNew,
+  } = await getWallet();
+
   intro(chalk.bold(`Install ${chalk.hex('#2563eb')('x402scan MCP')}`));
 
-  const client = await getClient(flags.client);
+  const client = await getClient(flags);
 
-  await addServer(client, flags.dev);
+  await addServer(client, flags);
 
-  await addFunds({ account: wallet, isNew: flags.isNew, dev: flags.dev });
+  await addFunds({ flags, address, isNew });
 
   outro(chalk.bold.green('Your x402scan MCP server is ready to use!'));
 };

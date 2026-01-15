@@ -2,10 +2,13 @@ import z from 'zod';
 
 import { select, log, outro } from '@clack/prompts';
 
-import { clientMetadata, Clients } from '../clients';
 import chalk from 'chalk';
 
-export const getClient = async (flagClient: string | undefined) => {
+import { clientMetadata, Clients } from '../clients';
+
+import type { InstallFlags } from '..';
+
+export const getClient = async ({ client: flagClient }: InstallFlags) => {
   const parsedClient = z.enum(Clients).safeParse(flagClient);
   if (parsedClient.success) {
     return parsedClient.data;

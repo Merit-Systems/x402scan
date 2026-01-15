@@ -2,7 +2,7 @@
  * USDC balance reader
  */
 
-import { createPublicClient, http, erc20Abi } from 'viem';
+import { createPublicClient, http, erc20Abi, formatUnits } from 'viem';
 
 import { getChain, getUSDCAddress, DEFAULT_NETWORK, toCaip2 } from './networks';
 
@@ -37,15 +37,5 @@ export async function getUSDCBalance({
     args: [address],
   });
 
-  const decimals = 6;
-  const formatted = Number(balance) / 1_000_000;
-
-  return {
-    balance,
-    formatted,
-    formattedString: `$${formatted.toFixed(2)}`,
-    decimals,
-    network: caip2,
-    usdcAddress,
-  };
+  return parseFloat(formatUnits(balance, 6));
 }

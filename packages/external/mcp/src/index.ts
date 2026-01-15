@@ -3,8 +3,6 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { getWallet } from './lib/wallet';
-
 void yargs(hideBin(process.argv))
   .scriptName('@x402scan/mcp')
   .option('dev', {
@@ -17,9 +15,8 @@ void yargs(hideBin(process.argv))
     'Start the MCP server',
     yargs => yargs,
     async args => {
-      const { account } = await getWallet();
       const { startServer } = await import('@/server');
-      await startServer(account, args);
+      await startServer(args);
     }
   )
   .command(
@@ -32,9 +29,8 @@ void yargs(hideBin(process.argv))
         required: false,
       }),
     async args => {
-      const { account, isNew } = await getWallet();
       const { installMcpServer } = await import('@/install');
-      await installMcpServer(account, { ...args, isNew });
+      await installMcpServer({ ...args });
     }
   )
   .command(
@@ -42,9 +38,8 @@ void yargs(hideBin(process.argv))
     'Open the funding page',
     yargs => yargs,
     async args => {
-      const { account } = await getWallet();
       const { fundMcpServer } = await import('@/fund');
-      await fundMcpServer(account, args);
+      await fundMcpServer(args);
     }
   )
   .strict()

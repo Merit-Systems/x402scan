@@ -1,9 +1,12 @@
 import fs from 'fs';
 
+import chalk from 'chalk';
+
+import { log as clackLog, confirm, outro, stream } from '@clack/prompts';
+
 import { log } from '@/lib/log';
 
 import { clientMetadata, Clients } from '../clients';
-import { getNestedValue, setNestedValue } from './lib';
 import {
   FileFormat,
   parseClientConfig,
@@ -12,15 +15,14 @@ import {
 } from './file-types';
 import { getClientConfigFile } from './client-config-file';
 
-import chalk from 'chalk';
-
-import { log as clackLog, confirm, outro, stream } from '@clack/prompts';
-
-import type { ClientConfigObject } from './types';
+import { getNestedValue, setNestedValue } from './lib';
 import { wait } from '@/lib/wait';
 
-const getMcpConfig = (isDev?: boolean) => {
-  if (isDev) {
+import type { ClientConfigObject } from './types';
+import type { GlobalFlags } from '@/types';
+
+const getMcpConfig = (globalFlags: GlobalFlags) => {
+  if (globalFlags.dev) {
     return {
       serverName: 'x402scan-dev',
       command: 'node',
@@ -34,8 +36,8 @@ const getMcpConfig = (isDev?: boolean) => {
   };
 };
 
-export async function addServer(client: Clients, isDev?: boolean) {
-  const { serverName, command, args } = getMcpConfig(isDev);
+export async function addServer(client: Clients, globalFlags: GlobalFlags) {
+  const { serverName, command, args } = getMcpConfig(globalFlags);
 
   if (client === Clients.Warp) {
     clackLog.info(
