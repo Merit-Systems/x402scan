@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.28.0",
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --filter=x402scan",
     "build": "turbo run build",
     "build:deploy": "turbo run build:deploy",
     "lint": "turbo run lint",
