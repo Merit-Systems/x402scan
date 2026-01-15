@@ -15,7 +15,6 @@
     "build": "tsup",
     "build:watch": "tsup --watch",
     "build:mcpb": "tsx scripts/build-mcpb.ts",
-    "dev:bun": "bun run src/index.ts",
     "check:types": "tsc --noEmit",
     "test": "bun test",
     "prepublishOnly": "npm run build",
