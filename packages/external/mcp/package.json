@@ -21,9 +21,9 @@
     "prepublishOnly": "npm run build",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
-    "knip": "pnpm -w knip --workspace ./packages/external/facilitators",
-    "format": "pnpm -w format:dir ./packages/external/facilitators",
-    "format:check": "pnpm -w format:check:dir ./packages/external/facilitators"
+    "knip": "pnpm -w knip --workspace ./packages/external/mcp",
+    "format": "pnpm -w format:dir ./packages/external/mcp",
+    "format:check": "pnpm -w format:check:dir ./packages/external/mcp"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
