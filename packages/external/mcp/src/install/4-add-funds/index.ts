@@ -3,6 +3,7 @@ import { PrivateKeyAccount } from 'viem';
 import consola from 'consola';
 import chalk from 'chalk';
 import { promptDeposit } from '@/lib/deposit';
+import { log as clackLog } from '@clack/prompts';
 
 interface AddFundsFlags {
   account: PrivateKeyAccount;
@@ -12,10 +13,10 @@ interface AddFundsFlags {
 
 export const addFunds = async ({ account, isNew, dev }: AddFundsFlags) => {
   if (isNew) {
-    consola.info(
+    clackLog.info(
       chalk.bold('To call paid API tools, you will need USDC in your wallet.')
     );
-    console.log();
+    clackLog.message('');
 
     await promptDeposit(account.address, dev);
   } else {

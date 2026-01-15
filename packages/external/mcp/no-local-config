@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "x402scann": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@x402scan/mcp@latest"
+      ]
+    },
+    "x402scan": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@x402scan/mcp@latest"
+      ]
+    }
+  }
+}

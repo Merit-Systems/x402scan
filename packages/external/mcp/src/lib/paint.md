@@ -1,29 +1,11 @@
-  ++++++++++++   
-++  ++++++++
-++++  ++++     Welcome to the x402scan
-++++++ 
-++++  ++++     aaaaa
-++  ++++++++
-  ++++++++++++
-
-  ++++++
-++  ++     Welcome to the x402scan MCP Server
-++++         Your 
-++  ++
-  ++++++
-
-
-◥
-◤
-◣
-◢
-■
-
-⟍
- ⟍
-
-
- ╱
-╱
-	╱
-╱
+{
+│    "x402scan": {
+│      "command": "npx",
+│      "args": [
+│        "-y",
+│        "@x402scan/mcp@latest"
+│      ],
+│      "working_directory": null,
+│      "start_on_launch": true
+│    }
+│  }

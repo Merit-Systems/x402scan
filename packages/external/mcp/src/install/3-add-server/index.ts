@@ -7,55 +7,54 @@ import { getNestedValue, setNestedValue } from './lib';
 import { parseClientConfig, serializeClientConfig } from './file-types';
 import { getClientConfigFile } from './client-config-file';
 
-import type { ClientConfigObject } from './types';
-import boxen from 'boxen';
 import chalk from 'chalk';
-import consola from 'consola';
 
-const SERVER_NAME = 'x402scann';
+import { log as clackLog, confirm } from '@clack/prompts';
+
+import type { ClientConfigObject } from './types';
+
+const SERVER_NAME = 'x402scan';
 const command = 'npx';
 const args = ['-y', '@x402scan/mcp@latest'];
 
-export function addServer(client: Clients) {
+export async function addServer(client: Clients) {
   if (client === Clients.Warp) {
-    consola.info(
+    clackLog.info(
       chalk.bold.yellow('Warp requires a manual installation through their UI.')
     );
-    console.log();
-    consola.log(
-      '  Please copy the following configuration object and add it to your Warp MCP config:\n'
+    clackLog.message(
+      'Please copy the following configuration object and add it to your Warp MCP config:'
     );
+    console.log();
     console.log(
-      boxen(
-        JSON.stringify(
-          {
-            [SERVER_NAME]: {
-              command,
-              args,
-              working_directory: null,
-              start_on_launch: true,
-            },
-          },
-          null,
-          2
-        ),
+      JSON.stringify(
         {
-          borderStyle: 'round',
-          borderColor: '#2563eb',
-          title: chalk.bold('Warp MCP'),
-          padding: 1,
-        }
+          [SERVER_NAME]: {
+            command,
+            args,
+            working_directory: null,
+            start_on_launch: true,
+          },
+        },
+        null,
+        2
       )
     );
     console.log();
-    console.log(
+    clackLog.message(
       `Read Warp's documentation at https://docs.warp.dev/knowledge-and-collaboration/mcp`
     );
-    return;
+    const addedToWarp = await confirm({
+      message: 'Did you add the MCP server to your Warp config?',
+    });
+    if (!addedToWarp) {
+      throw new Error('Warp MCP server not added');
+    }
   }
 
   const clientFileTarget = getClientConfigFile(client);
   let error: string | undefined = undefined;
+  const { name } = clientMetadata[client];
 
   try {
     let config: ClientConfigObject = {};
@@ -66,6 +65,9 @@ export function addServer(client: Clients) {
       log.info('Config file not found, creating default empty config');
       setNestedValue(config, clientFileTarget.configKey, {});
       log.info('Config created successfully');
+      clackLog.info(
+        `No config found at ${clientFileTarget.path}, creating default empty config`
+      );
     } else {
       log.info('Config file found, reading config file content');
       const { config: rawConfig, fileContent } =
@@ -82,6 +84,7 @@ export function addServer(client: Clients) {
       log.info(
         `Config loaded successfully: ${JSON.stringify(rawConfig, null, 2)}`
       );
+      clackLog.success(`Config loaded from ${clientFileTarget.path}`);
     }
 
     const servers = getNestedValue(config, clientFileTarget.configKey);
@@ -130,25 +133,19 @@ export function addServer(client: Clients) {
     );
 
     fs.writeFileSync(clientFileTarget.path, configContent);
+
+    clackLog.message(`Configuration file updated at ${clientFileTarget.path}`);
   } catch (e) {
     error = (e as Error).message;
     throw e;
   }
 
   const isError = error !== undefined;
-  const { name } = clientMetadata[client];
 
-  console.log(
-    boxen(`Configuration added to ${clientFileTarget.path}`, {
-      borderStyle: 'round',
-      borderColor: isError ? 'red' : 'green',
-      title: chalk.bold(
-        isError
-          ? `Error adding x402scan MCP to ${name}`
-          : `Added x402scan MCP to ${name}`
-      ),
-      padding: 1,
-    })
-  );
-  console.log();
+  if (isError) {
+    clackLog.error(chalk.bold.red(`Error adding x402scan MCP to ${name}`));
+  } else {
+    clackLog.success(chalk.bold.green(`Added x402scan MCP to ${name}`));
+  }
+  clackLog.message('');
 }

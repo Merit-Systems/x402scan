@@ -25,6 +25,7 @@
     "check:format": "pnpm -w check:format-dir ./packages/external/mcp"
   },
   "dependencies": {
+    "@clack/prompts": "^0.11.0",
     "@iarna/toml": "^2.2.5",
     "@inquirer/prompts": "^8.2.0",
     "@modelcontextprotocol/sdk": "^1.25.2",

@@ -21,20 +21,21 @@ const MIDDLE_LINE = `${CHARACTER.repeat(3)}`;
 
 const line = (text: string) => `${chalk.bold.hex(HEX)(text)}`;
 
-export const printBanner = ({ heading, description }: BannerProps) =>
-  console.log(
-    boxen(
-      `${line(OUTTER_LINE)}
+export const banner = ({ heading, description }: BannerProps) =>
+  boxen(
+    `${line(OUTTER_LINE)}
 ${line(INNER_LINE)}${' '.repeat(SPACER)}${chalk.bold(heading)}${SPACE.repeat(PADDING)}
 ${line(MIDDLE_LINE)}
 ${line(INNER_LINE)}${' '.repeat(SPACER)}${description}${SPACE.repeat(PADDING)}
 ${line(OUTTER_LINE)}`,
-      {
-        borderStyle: 'round',
-        borderColor: '#2563eb',
-        title: chalk.bold('x402scan MCP'),
-        padding: 1,
-        //   fullscreen: width => [width, 9],
-      }
-    )
+    {
+      borderStyle: 'round',
+      borderColor: '#2563eb',
+      title: chalk.bold('x402scan MCP'),
+      padding: 1,
+      //   fullscreen: width => [width, 9],
+    }
   );
+
+export const printBanner = ({ heading, description }: BannerProps) =>
+  console.log(banner({ heading, description }));
