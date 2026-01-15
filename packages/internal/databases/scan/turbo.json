@@ -3,10 +3,10 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["SCAN_DATABASE_URL*"]
+      "env": ["SCAN_DATABASE_*"]
     },
     "db:deploy": {
-      "env": ["SCAN_DATABASE_URL*"]
+      "env": ["SCAN_DATABASE_*"]
     },
     "types:check": {
       "dependsOn": ["db:generate"]
