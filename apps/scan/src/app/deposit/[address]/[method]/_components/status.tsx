@@ -26,6 +26,7 @@ import type { Methods } from '../_types';
 
 import type { Address } from 'viem';
 import Link from 'next/link';
+import { DepositSearchParams } from '../../_lib/params';
 
 export enum Status {
   SUCCESS = 'success',
@@ -43,6 +44,7 @@ interface Props {
   method: Methods;
   address: Address;
   subtext?: Record<Status, string | undefined>;
+  searchParams?: DepositSearchParams;
 }
 
 export const DepositStatus: React.FC<Props> = ({
@@ -58,6 +60,7 @@ export const DepositStatus: React.FC<Props> = ({
       'There was an error processing your payment. Please try again.',
     [Status.PENDING]: undefined,
   },
+  searchParams,
 }) => {
   const { invalidate: invalidateBalance } = useEvmTokenBalance({
     token: usdc(Chain.BASE),
@@ -79,13 +82,16 @@ export const DepositStatus: React.FC<Props> = ({
 
   useEffect(() => {
     if (isSuccess) {
+      if (searchParams?.redirectUri) {
+        window.location.href = searchParams.redirectUri;
+      }
       for (let i = 0; i < 3; i++) {
         setTimeout(() => {
           void invalidateBalance();
         }, i * 1000);
       }
     }
-  }, [isSuccess, invalidateBalance]);
+  }, [isSuccess, invalidateBalance, searchParams]);
 
   return (
     <div className="flex flex-col gap-8 sm:max-w-sm max-w-lg w-full">
@@ -114,7 +120,7 @@ export const DepositStatus: React.FC<Props> = ({
             <Button className="w-full">Go Back</Button>
           </Link>
         )}
-        {subtext[status] && (
+        {subtext[status] && !searchParams?.redirectUri && (
           <p className="text-muted-foreground text-center text-sm">
             {subtext[status]}
           </p>

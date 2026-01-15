@@ -12,7 +12,7 @@ import type { OnrampProviderDialogContentProps } from '../types';
 
 export const CoinbaseOnrampDialogContent: React.FC<
   OnrampProviderDialogContentProps
-> = ({ amount, address }) => {
+> = ({ amount, address, searchParams }) => {
   const { mutate: createCoinbaseOnrampSession, isPending } =
     api.onramp.coinbase.session.create.useMutation({
       onSuccess: data => {
@@ -34,6 +34,7 @@ export const CoinbaseOnrampDialogContent: React.FC<
           createCoinbaseOnrampSession({
             amount,
             redirect: `${window.location.href}/coinbase`,
+            redirectSearchParams: searchParams,
             tokenKey: 'id',
             address,
           })

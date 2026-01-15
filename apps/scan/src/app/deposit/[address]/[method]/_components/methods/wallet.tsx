@@ -2,6 +2,8 @@
 
 import z from 'zod';
 
+import { useMemo } from 'react';
+
 import { useWaitForTransactionReceipt } from 'wagmi';
 import { decodeEventLog, erc20Abi, formatUnits } from 'viem';
 
@@ -9,11 +11,13 @@ import { DepositStatus } from '../status';
 
 import { OnrampMethods } from '@/services/onramp/types';
 
+import { depositSearchParamsSchema } from '../../../_lib/params';
+
 import type { Address } from 'viem';
 import type { MethodComponentProps } from '../../_types';
-import { useMemo } from 'react';
+import type { DepositSearchParams } from '../../../_lib/params';
 
-const paramsSchema = z.object({
+const paramsSchema = depositSearchParamsSchema.extend({
   hash: z.string(),
 });
 
@@ -27,15 +31,18 @@ export const Wallet: React.FC<MethodComponentProps> = ({
     return <p>Invalid parameters</p>;
   }
 
-  const { hash } = parsedParams.data;
+  const { hash, ...rest } = parsedParams.data;
 
-  return <WalletSessionContent hash={hash} address={address} />;
+  return (
+    <WalletSessionContent hash={hash} address={address} searchParams={rest} />
+  );
 };
 
-const WalletSessionContent: React.FC<{ hash: string; address: Address }> = ({
-  hash,
-  address,
-}) => {
+const WalletSessionContent: React.FC<{
+  hash: string;
+  address: Address;
+  searchParams: DepositSearchParams;
+}> = ({ hash, address, searchParams }) => {
   const { data: txnReceipt, isLoading } = useWaitForTransactionReceipt({
     hash: hash as `0x${string}`,
   });
@@ -68,6 +75,7 @@ const WalletSessionContent: React.FC<{ hash: string; address: Address }> = ({
       isError={txnReceipt?.status === 'reverted'}
       method={OnrampMethods.WALLET}
       address={address}
+      searchParams={searchParams}
     />
   );
 };

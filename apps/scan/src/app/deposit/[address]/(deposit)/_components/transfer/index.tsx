@@ -15,27 +15,32 @@ import { TokenInput } from '@/components/ui/token/token-input';
 
 import { ConnectButton } from './connect-button';
 import { TransferButton } from './transfer-button';
+import { SwitchChain } from './switch-chain';
 
 import { Item } from '../utils/item';
 
 import { usdc } from '@/lib/tokens/usdc';
 
+import { Chain, CHAIN_ID } from '@/types/chain';
+
 import type { SetStateAction, Dispatch } from 'react';
 import type { Address } from 'viem';
 import type { Connector } from 'wagmi';
-import { Chain, CHAIN_ID } from '@/types/chain';
-import { SwitchChain } from './switch-chain';
+
+import type { DepositSearchParams } from '../../../_lib/params';
 
 interface Props {
   connectors: Connector[];
   address: Address;
   setAccordionValue: Dispatch<SetStateAction<string[]>>;
+  searchParams?: DepositSearchParams;
 }
 
 export const Transfer: React.FC<Props> = ({
   connectors,
   setAccordionValue,
   address,
+  searchParams,
 }) => {
   const [amount, setAmount] = useState<number>(5);
   const [selectedConnector, setSelectedConnector] = useState<Connector>(
@@ -99,6 +104,7 @@ export const Transfer: React.FC<Props> = ({
               connection={connection}
               address={address}
               amount={amount}
+              searchParams={searchParams}
             />
           )
         ) : (

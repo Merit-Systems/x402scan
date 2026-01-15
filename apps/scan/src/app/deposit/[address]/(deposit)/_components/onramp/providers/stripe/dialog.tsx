@@ -6,10 +6,13 @@ import { useRouter } from 'next/navigation';
 
 import { loadStripeOnramp } from '@stripe/crypto';
 
+import { Loader2 } from 'lucide-react';
+
 import { api } from '@/trpc/client';
 
 import { env } from '@/env';
-import { Loader2 } from 'lucide-react';
+
+import { OnrampProviders } from '@/services/onramp/types';
 
 import type { OnrampProviderDialogContentProps } from '../types';
 import type {
@@ -18,7 +21,6 @@ import type {
   OnrampUIEventMap,
   StripeOnramp,
 } from '@stripe/crypto';
-import { OnrampProviders } from '@/services/onramp/types';
 import type { Route } from 'next';
 
 const stripeOnrampPromise = loadStripeOnramp(
@@ -27,7 +29,7 @@ const stripeOnrampPromise = loadStripeOnramp(
 
 export const StripeOnrampDialogContent: React.FC<
   OnrampProviderDialogContentProps
-> = ({ quote, address }) => {
+> = ({ quote, address, searchParams }) => {
   const router = useRouter();
 
   const [onramp, setOnramp] = useState<StripeOnramp | null>(null);
@@ -74,9 +76,11 @@ export const StripeOnrampDialogContent: React.FC<
     session,
     callback: session => {
       if (session.status === 'fulfillment_processing') {
+        const params = new URLSearchParams(searchParams ?? {});
+        params.set('id', session.id);
         setTimeout(() => {
           router.push(
-            `/deposit/${address}/${OnrampProviders.STRIPE}?id=${session.id}` as Route
+            `/deposit/${address}/${OnrampProviders.STRIPE}?${params.toString()}` as Route
           );
         }, 3000);
       }

@@ -20,9 +20,11 @@ import { Chain } from '@/types/chain';
 
 import type { Connector } from 'wagmi';
 import type { Address } from 'viem';
+import type { DepositSearchParams } from '../../_lib/params';
 
 interface Props {
   address: Address;
+  searchParams?: DepositSearchParams;
 }
 
 export const Deposit: React.FC<Props> = ({ address }) => {
@@ -79,11 +81,13 @@ export const Deposit: React.FC<Props> = ({ address }) => {
 interface DepositContentProps {
   connectors: Connector[];
   address: Address;
+  searchParams?: DepositSearchParams;
 }
 
 const DepositWithConnectorsContent: React.FC<DepositContentProps> = ({
   connectors,
   address,
+  searchParams,
 }) => {
   const [selectedMethod, setSelectedMethod] = useState<OnrampMethods>(
     connectors.length > 0 ? OnrampMethods.WALLET : OnrampMethods.DEBIT_CARD
@@ -113,6 +117,7 @@ const DepositWithConnectorsContent: React.FC<DepositContentProps> = ({
             connectors={connectors}
             address={address}
             setAccordionValue={setAccordionValue}
+            searchParams={searchParams}
           />
         ) : (
           <Onramp
