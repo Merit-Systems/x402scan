@@ -18,6 +18,14 @@ export const config = [
         projectService: true,
       },
     },
+    rules: {
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          fixStyle: 'separate-type-imports',
+        },
+      ],
+    },
   },
   eslintConfigPrettier,
   {
