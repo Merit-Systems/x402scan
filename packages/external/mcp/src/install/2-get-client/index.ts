@@ -7,7 +7,6 @@ import { clientMetadata, Clients } from '../clients';
 export const getClient = async (flagClient: string | undefined) => {
   const parsedClient = z.enum(Clients).safeParse(flagClient);
   if (parsedClient.success) {
-    log.info(`Configuring MCP server for ${parsedClient.data}`);
     return parsedClient.data;
   }
   if (flagClient) {

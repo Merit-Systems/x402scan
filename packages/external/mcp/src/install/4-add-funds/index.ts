@@ -3,7 +3,7 @@ import { PrivateKeyAccount } from 'viem';
 import consola from 'consola';
 import chalk from 'chalk';
 import { promptDeposit } from '@/lib/deposit';
-import { log as clackLog } from '@clack/prompts';
+import { log as clackLog, spinner } from '@clack/prompts';
 
 interface AddFundsFlags {
   account: PrivateKeyAccount;
@@ -20,7 +20,11 @@ export const addFunds = async ({ account, isNew, dev }: AddFundsFlags) => {
 
     await promptDeposit(account.address, dev);
   } else {
+    const { start, stop } = spinner();
+    start('Checking balance...');
     const balance = await getUSDCBalance({ address: account.address });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    stop(`Balance: ${balance.formattedString} USDC`);
     if (balance.formatted < 10) {
       consola.info(
         chalk.bold(

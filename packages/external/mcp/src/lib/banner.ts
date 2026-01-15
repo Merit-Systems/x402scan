@@ -12,7 +12,7 @@ const HEX = '#2563eb';
 const SPACER = 6;
 const PADDING = 3;
 
-const CHARACTER = '*';
+const CHARACTER = '#';
 const SPACE = ' ';
 
 const OUTTER_LINE = `  ${CHARACTER.repeat(7)}`;

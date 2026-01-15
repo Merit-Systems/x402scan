@@ -12,6 +12,7 @@ import chalk from 'chalk';
 import { log as clackLog, confirm } from '@clack/prompts';
 
 import type { ClientConfigObject } from './types';
+import boxen from 'boxen';
 
 const SERVER_NAME = 'x402scan';
 const command = 'npx';
@@ -65,7 +66,7 @@ export async function addServer(client: Clients) {
       log.info('Config file not found, creating default empty config');
       setNestedValue(config, clientFileTarget.configKey, {});
       log.info('Config created successfully');
-      clackLog.info(
+      clackLog.step(
         `No config found at ${clientFileTarget.path}, creating default empty config`
       );
     } else {
@@ -84,7 +85,7 @@ export async function addServer(client: Clients) {
       log.info(
         `Config loaded successfully: ${JSON.stringify(rawConfig, null, 2)}`
       );
-      clackLog.success(`Config loaded from ${clientFileTarget.path}`);
+      clackLog.step(`Config loaded from ${clientFileTarget.path}`);
     }
 
     const servers = getNestedValue(config, clientFileTarget.configKey);
@@ -126,6 +127,57 @@ export async function addServer(client: Clients) {
       };
     }
 
+    const linesToPrint = JSON.stringify(
+      {
+        [clientFileTarget.configKey]: {
+          [SERVER_NAME]: servers[SERVER_NAME] as object,
+        },
+      },
+      null,
+      2
+    ).split('\n');
+
+    clackLog.step(
+      `The following configuration will be added to ${clientFileTarget.path} client:\n\n${boxen(
+        JSON.stringify(
+          {
+            [clientFileTarget.configKey]: {
+              [SERVER_NAME]: servers[SERVER_NAME] as object,
+            },
+          },
+          null,
+          2
+        )
+          .split('\n')
+          .map((line, index) => {
+            const isDiffLine = ![
+              0,
+              1,
+              linesToPrint.length - 2,
+              linesToPrint.length - 1,
+            ].includes(index);
+            if (isDiffLine) {
+              return `${chalk.bold.green(`+ ${line.slice(2)}`)}`;
+            }
+            return line;
+          })
+          .join('\n'),
+        {
+          borderStyle: 'round',
+          borderColor: 'green',
+          title: clientFileTarget.path,
+          padding: 1,
+        }
+      )}`
+    );
+
+    const isConfirmed = await confirm({
+      message: 'Are you sure you want to update the configuration file?',
+    });
+    if (!isConfirmed) {
+      throw new Error('Configuration file not updated');
+    }
+
     const configContent = serializeClientConfig(
       clientFileTarget,
       config,
@@ -133,8 +185,6 @@ export async function addServer(client: Clients) {
     );
 
     fs.writeFileSync(clientFileTarget.path, configContent);
-
-    clackLog.message(`Configuration file updated at ${clientFileTarget.path}`);
   } catch (e) {
     error = (e as Error).message;
     throw e;
