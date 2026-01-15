@@ -5,6 +5,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { useSellersSorting } from '@/app/_contexts/sorting/sellers/hook';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { useChain } from '@/app/_contexts/chain/hook';
+import { useVerifiedFilter } from '@/app/_contexts/verified-filter/hook';
 
 import { columns } from './columns';
 import { api } from '@/trpc/client';
@@ -13,6 +14,7 @@ export const KnownSellersTable = () => {
   const { sorting } = useSellersSorting();
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
+  const { verifiedOnly } = useVerifiedFilter();
 
   const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
     chain,
@@ -21,6 +23,7 @@ export const KnownSellersTable = () => {
     },
     timeframe,
     sorting,
+    verifiedOnly,
   });
 
   return <DataTable columns={columns} data={topSellers.items} pageSize={10} />;

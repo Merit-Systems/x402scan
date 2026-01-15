@@ -2,9 +2,8 @@ import { Suspense } from 'react';
 
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { Section } from '@/app/_components/layout/page-utils';
-
 import { KnownSellersTable, LoadingKnownSellersTable } from './table';
+import { TopServersContainer } from './container';
 
 import { api, HydrateClient } from '@/trpc/server';
 
@@ -12,7 +11,8 @@ import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
 import { SellersSortingProvider } from '@/app/_contexts/sorting/sellers/provider';
 
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
-import { RangeSelector } from '@/app/_contexts/time-range/component';
+
+import { VerifiedFilterProvider } from '@/app/_contexts/verified-filter/provider';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
@@ -34,21 +34,23 @@ export const TopServers: React.FC<Props> = ({ chain }) => {
 
   return (
     <HydrateClient>
-      <SellersSortingProvider initialSorting={defaultSellersSorting}>
-        <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
-          <TopServersContainer>
-            <ErrorBoundary
-              fallback={
-                <p>There was an error loading the known sellers data</p>
-              }
-            >
-              <Suspense fallback={<LoadingKnownSellersTable />}>
-                <KnownSellersTable />
-              </Suspense>
-            </ErrorBoundary>
-          </TopServersContainer>
-        </TimeRangeProvider>
-      </SellersSortingProvider>
+      <VerifiedFilterProvider>
+        <SellersSortingProvider initialSorting={defaultSellersSorting}>
+          <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
+            <TopServersContainer>
+              <ErrorBoundary
+                fallback={
+                  <p>There was an error loading the known sellers data</p>
+                }
+              >
+                <Suspense fallback={<LoadingKnownSellersTable />}>
+                  <KnownSellersTable />
+                </Suspense>
+              </ErrorBoundary>
+            </TopServersContainer>
+          </TimeRangeProvider>
+        </SellersSortingProvider>
+      </VerifiedFilterProvider>
     </HydrateClient>
   );
 };
@@ -58,21 +60,5 @@ export const LoadingTopServers = () => {
     <TopServersContainer>
       <LoadingKnownSellersTable />
     </TopServersContainer>
-  );
-};
-
-const TopServersContainer = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <Section
-      title="Top Servers"
-      description="Top addresses that have received x402 transfers and are listed in the Bazaar"
-      actions={
-        <div className="flex items-center gap-2">
-          <RangeSelector />
-        </div>
-      }
-    >
-      {children}
-    </Section>
   );
 };
