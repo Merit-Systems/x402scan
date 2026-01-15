@@ -5,7 +5,7 @@ import { getUSDCBalance } from '@/lib/balance';
 import { promptDeposit } from '@/lib/deposit';
 import { wait } from '@/lib/wait';
 
-import { PrivateKeyAccount } from 'viem';
+import type { PrivateKeyAccount } from 'viem';
 
 interface AddFundsFlags {
   account: PrivateKeyAccount;

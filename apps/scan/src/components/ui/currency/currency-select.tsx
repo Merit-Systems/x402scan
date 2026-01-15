@@ -30,7 +30,7 @@ export const CurrencySelect: React.FC<Props> = ({
 
   const onClick = (currencyCode: string) => {
     setSelectedCurrency(
-      CURRENCIES.find(currency => currency.code === currencyCode)!
+      CURRENCIES.find(currency => currency.code === currencyCode)
     );
     setOpen(false);
   };

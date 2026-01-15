@@ -1,6 +1,7 @@
 import z from 'zod';
 
-import { getAddress, Hex } from 'viem';
+import type { Hex } from 'viem';
+import { getAddress } from 'viem';
 
 export const ethereumAddressSchema = z
   .string()

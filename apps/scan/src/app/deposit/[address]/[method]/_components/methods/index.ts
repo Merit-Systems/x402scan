@@ -1,4 +1,4 @@
-import { MethodComponentProps, Methods } from '../../_types';
+import type { MethodComponentProps, Methods } from '../../_types';
 import { OnrampMethods } from '@/services/onramp/types';
 import { OnrampProviders } from '@/services/onramp/types';
 import { Coinbase } from './coinbase';

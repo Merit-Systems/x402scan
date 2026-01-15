@@ -16,6 +16,7 @@ export const config = [
     languageOptions: {
       parserOptions: {
         projectService: true,
+        allowDefaultProject: ['**/tsup.config.ts'],
       },
     },
     rules: {

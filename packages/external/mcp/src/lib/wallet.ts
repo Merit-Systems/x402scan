@@ -19,7 +19,7 @@ import {
   ethereumAddressSchema,
   ethereumPrivateKeySchema,
 } from '../server/lib/schemas';
-import { Hex } from 'viem';
+import type { Hex } from 'viem';
 
 const KEYSTORE_DIR = join(homedir(), '.x402scan-mcp');
 const KEYSTORE_FILE = join(KEYSTORE_DIR, 'wallet.json');

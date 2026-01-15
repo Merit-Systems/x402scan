@@ -19,7 +19,7 @@ import type {
   StripeOnramp,
 } from '@stripe/crypto';
 import { OnrampProviders } from '@/services/onramp/types';
-import { Route } from 'next';
+import type { Route } from 'next';
 
 const stripeOnrampPromise = loadStripeOnramp(
   env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY

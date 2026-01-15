@@ -6,7 +6,8 @@ import { mcpSuccess, mcpError } from '@/server/lib/response';
 
 import { requestSchema, requestWithHeadersSchema } from '@/server/lib/schemas';
 
-import { FetchStates, RegisterTools } from '@/server/types';
+import type { RegisterTools } from '@/server/types';
+import { FetchStates } from '@/server/types';
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { ExactEvmScheme } from '@x402/evm/exact/client';
 import { wrapFetchWithPayment } from '@x402/fetch';

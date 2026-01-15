@@ -1,4 +1,4 @@
-import { ClientConfigObject } from './types';
+import type { ClientConfigObject } from './types';
 
 export const getNestedValue = (obj: ClientConfigObject, path: string) => {
   const keys = path.split('.');

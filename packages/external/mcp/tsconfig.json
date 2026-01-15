@@ -1,6 +1,6 @@
 {
   "extends": "@x402scan/typescript-config/base.json",
-  "include": ["src/**/*", "scripts/**/*"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "module": "esnext",
