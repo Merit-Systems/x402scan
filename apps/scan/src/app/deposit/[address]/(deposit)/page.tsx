@@ -1,5 +1,3 @@
-import z from 'zod';
-
 import { Body } from '@/app/_components/layout/page-utils';
 
 import { CopyAddress } from './_components/copy';
@@ -30,7 +28,7 @@ export default async function DepositPage({
         </div>
         <CopyAddress address={address} />
       </div>
-      <Deposit address={address} />
+      <Deposit address={address} searchParams={parsedSearchParams.data} />
     </Body>
   );
 }
