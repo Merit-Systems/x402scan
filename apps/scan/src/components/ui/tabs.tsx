@@ -5,10 +5,9 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 // Add a new interface for the Tabs component to include the disableKeyboardNavigation prop
-interface TabsProps
-  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root> {
+type TabsProps = {
   disableKeyboardNavigation?: boolean;
-}
+} & React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>;
 
 // Modify the Tabs component to be a forwardRef component that accepts the new prop
 const Tabs = React.forwardRef<
@@ -105,11 +104,10 @@ const tabsTriggerVariants = cva(
   }
 );
 
-interface TabsTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>,
-    VariantProps<typeof tabsTriggerVariants> {
+type TabsTriggerProps = {
   color?: 'primary' | 'secondary';
-}
+} & React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> &
+  VariantProps<typeof tabsTriggerVariants>;
 
 const TabsTrigger = React.forwardRef<
   React.ComponentRef<typeof TabsPrimitive.Trigger>,

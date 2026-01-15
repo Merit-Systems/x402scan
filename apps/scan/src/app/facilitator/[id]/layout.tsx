@@ -18,10 +18,6 @@ export default async function RecipientLayout({
             label: 'Transactions',
             href: `/facilitator/${id}/transactions`,
           },
-          {
-            label: 'Observability',
-            href: `/facilitator/${id}/observability`,
-          },
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>

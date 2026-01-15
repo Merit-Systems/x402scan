@@ -4,53 +4,61 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build", "^db:generate"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", "generated/**"],
-      "env": [
-        "ANALYTICS_CLICKHOUSE_*",
-        "POSTGRES_*",
-        "CDP_*",
-        "*_RPC_URL",
-        "TRANSFERS_DB_*",
-        "HIDE_TRPC_LOGS",
-        "GITHUB_TOKEN",
-        "CRON_SECRET",
-        "FREEPIK_API_KEY",
-        "BLOB_READ_WRITE_TOKEN",
-        "FREE_TIER_WALLET_NAME",
-        "REDIS_URL",
-        "LMNR_PROJECT_API_KEY",
-        "NODE_ENV",
-        "NEXT_RUNTIME",
-        "AUTH_SECRET",
-        "OPENAI_API_KEY",
-        "DATABASE_URL",
-        "ECHO_PROXY_URL",
-        "JINA_API_KEY",
-        "HELIUS_API_KEY",
-        "GOOGLE_CLOUD_CREDENTIALS",
-        "BITQUERY_API_KEY",
-        "ADDRESS",
-        "PORT",
-        "DISCORD_WEBHOOK_URL",
-        "OPENROUTER_API_KEY"
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "build:deploy": {
+      "dependsOn": ["^build", "^db:generate", "^db:deploy"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "lint": {
+      "dependsOn": [
+        "^types:generate",
+        "^build",
+        "^db:generate",
+        "types:generate",
+        "db:generate"
+      ]
+    },
+    "lint:fix": {
+      "dependsOn": [
+        "^types:generate",
+        "^build",
+        "^db:generate",
+        "types:generate",
+        "db:generate"
       ]
     },
     "dev": {
-      "dependsOn": ["^db:generate", "^build"],
+      "dependsOn": ["^build", "^db:generate"],
       "persistent": true
     },
     "start": {
       "cache": false,
-      "persistent": true,
-      "env": ["ANALYTICS_CLICKHOUSE_*"]
+      "persistent": true
     },
-
-    "typegen": {
+    "types:generate": {
       "outputs": [".next/**", "!.next/cache/**"]
     },
+    "types:check": {
+      "dependsOn": [
+        "^types:check",
+        "^types:generate",
+        "^db:generate",
+        "types:generate",
+        "^build",
+        "db:generate"
+      ]
+    },
+    "format": {
+      "dependsOn": ["^format"]
+    },
+    "format:check": {
+      "dependsOn": ["^format:check"]
+    },
+    "knip": {},
+    "knip:check": {},
     "db:generate": {
-      "outputs": ["generated/**"]
+      "cache": false
     },
     "db:migrate": {
       "cache": false,
@@ -61,22 +69,8 @@
     },
     "trigger:deploy": {
       "dependsOn": ["^build", "^db:generate"],
-      "cache": false,
-      "env": [
-        "TRIGGER_ACCESS_TOKEN",
-        "ANALYTICS_CLICKHOUSE_*",
-        "POSTGRES_*",
-        "TRANSFERS_DB_*"
-      ]
-    },
-    "lint": {
-      "dependsOn": ["^db:generate", "typegen", "^build"]
-    },
-    "check:types": {
-      "dependsOn": ["^db:generate", "typegen", "^build"]
-    },
-    "check:format": {},
-    "knip": {}
+      "cache": false
+    }
   },
   "globalEnv": ["TURBO_*"],
   "globalPassThroughEnv": [

@@ -15,7 +15,7 @@ interface Props {
   chain?: Chain;
 }
 
-export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
+export const LatestTransactions: React.FC<Props> = ({ chain }) => {
   const pageSize = 10;
 
   void api.public.transfers.list.prefetch({
@@ -32,7 +32,11 @@ export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
     <HydrateClient>
       <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
         <LatestTransactionsTableContainer>
-          <Suspense fallback={<LoadingLatestTransactionsTable />}>
+          <Suspense
+            fallback={
+              <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
+            }
+          >
             <LatestTransactionsTable pageSize={pageSize} />
           </Suspense>
         </LatestTransactionsTableContainer>
@@ -41,10 +45,14 @@ export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
   );
 };
 
-export const LoadingLatestTransactions = () => {
+export const LoadingLatestTransactions = ({
+  loadingRowCount,
+}: {
+  loadingRowCount: number;
+}) => {
   return (
     <LatestTransactionsTableContainer>
-      <LoadingLatestTransactionsTable />
+      <LoadingLatestTransactionsTable loadingRowCount={loadingRowCount} />
     </LatestTransactionsTableContainer>
   );
 };

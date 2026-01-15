@@ -16,7 +16,7 @@ interface Props {
   address: string;
 }
 
-export const LatestTransactions: React.FC<Props> = async ({ address }) => {
+export const LatestTransactions: React.FC<Props> = ({ address }) => {
   const pageSize = 10;
 
   void api.public.transfers.list.prefetch({

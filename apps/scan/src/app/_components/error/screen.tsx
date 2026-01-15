@@ -4,9 +4,9 @@ import { cn } from '@/lib/utils';
 
 import type { ErrorComponentProps } from './types';
 
-interface Props extends ErrorComponentProps {
+type Props = {
   className?: string;
-}
+} & ErrorComponentProps;
 
 export const NotFoundScreen: React.FC<Props> = ({ className, ...props }) => {
   return (

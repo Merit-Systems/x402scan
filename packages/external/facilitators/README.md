@@ -1,5 +1,8 @@
 ![X402 Facilitators](assets/banner.gif)
 
+> [!WARNING]  
+> As of January 2026, the auto facilitator has been deprecated. Please use any of the other facilitators shown below.
+
 # facilitators
 
 The `facilitators` package offers a unified, drop-in configuration for all x402 facilitators
@@ -34,7 +37,7 @@ paymentMiddleware(
 );
 ```
 
-## Auto Facilitator
+## Auto Facilitator (DEPRECATED)
 
 The `auto` facilitator is a proxy that load-balances between other facilitators to guarantee uptime. Simply import and use it directly - no configuration required:
 
@@ -114,6 +117,10 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Treasure**         | BASE          | No        | No                           |
 | **AnySpend**         | BASE, SOLANA  | ✅ Yes    | No                           |
 | **WorldFun by AWE**  | BASE          | No        | No                           |
+| **Polymer**          | BASE          | No        | Yes - API key                |
+| **Meridian**         | BASE          | No        | No                           |
+| **Openmid**          | BASE          | No        | No                           |
+| **Primer**           | BASE          | No        | No                           |
 
 ### Import Individual Facilitators
 
@@ -137,6 +144,10 @@ import {
   treasure,
   anyspend,
   worldfun,
+  polymer,
+  meridian,
+  openmid,
+  primer,
 } from 'facilitators';
 
 // Facilitators requiring setup

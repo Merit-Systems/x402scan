@@ -75,6 +75,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
   const isServerSidePagination =
     page !== undefined && onPageChange !== undefined;
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: isLoading ? (Array(loadingRowCount).fill(null) as TData[]) : data,
     columns,

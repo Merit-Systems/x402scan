@@ -38,26 +38,26 @@ export const OriginResources: React.FC<Props> = ({
     >
       {resources.filter(
         resource =>
-          resource.data &&
-          resource.accepts &&
-          resource.accepts.length > 0 &&
-          resource.accepts.some(accept => accept.outputSchema)
+          resource.success && resource.accepts && resource.accepts.length > 0
       ).length > 0 ? (
-        resources.map(resource => (
-          <ResourceExecutor
-            key={resource.id}
-            resource={resource}
-            tags={resource.tags.map(tag => tag.tag)}
-            bazaarMethod={getBazaarMethod(
-              resource.accepts.find(accept => accept.outputSchema)?.outputSchema
-            )}
-            className="bg-transparent"
-            response={resource.data}
-            hideOrigin={hideOrigin}
-            defaultOpen={defaultOpen}
-            isFlat={isFlat}
-          />
-        ))
+        resources
+          .filter(resource => resource.success)
+          .map(resource => (
+            <ResourceExecutor
+              key={resource.id}
+              resource={resource}
+              tags={resource.tags.map(tag => tag.tag)}
+              bazaarMethod={getBazaarMethod(
+                resource.accepts.find(accept => accept.outputSchema)
+                  ?.outputSchema
+              )}
+              className="bg-transparent"
+              response={resource.data}
+              hideOrigin={hideOrigin}
+              defaultOpen={defaultOpen}
+              isFlat={isFlat}
+            />
+          ))
       ) : (
         <Empty className="bg-card border mt-4">
           <EmptyHeader>

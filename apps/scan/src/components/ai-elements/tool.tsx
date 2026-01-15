@@ -17,7 +17,9 @@ import { Favicon } from '../../app/_components/favicon';
 import { Loading } from '../ui/loading';
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
-type JsonObject = { [key: string]: JsonValue };
+interface JsonObject {
+  [key: string]: JsonValue;
+}
 type JsonArray = JsonValue[];
 
 const Tool = ({ className, ...props }: ComponentProps<typeof Collapsible>) => (

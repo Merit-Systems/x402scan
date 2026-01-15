@@ -6,7 +6,7 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 
-export default async function AgentsPage() {
+export default function AgentsPage() {
   return (
     <AgentsSortingProvider initialSorting={defaultAgentsSorting}>
       <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>

@@ -158,10 +158,10 @@ export const ecosystemItems: EcosystemItem[] = [
   },
   {
     name: 'Meridian',
-    description: 'Multi-chain facilitator with developer-first features.',
+    description: 'Cross-chain facilitator with developer-first features.',
     logoUrl: 'https://www.x402.org/logos/meridian-logo.png',
     websiteUrl: 'https://mrdn.finance',
-    category: 'Infrastructure & Tooling',
+    category: 'Facilitators',
   },
   {
     name: 'Mogami examples',

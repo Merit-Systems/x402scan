@@ -1,10 +1,10 @@
 import { AlertTriangle, Info } from 'lucide-react';
 
-type RegistrationAlertProps = {
+interface RegistrationAlertProps {
   registeredCount: number;
   filteredCount: number;
   totalCount: number;
-};
+}
 
 export function RegistrationAlert({
   registeredCount,

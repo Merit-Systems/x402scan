@@ -7,13 +7,13 @@ interface JinaRerankerResponse {
     total_tokens: number;
     prompt_tokens: number;
   };
-  results: Array<{
+  results: {
     index: number;
     document?: {
       text: string;
     };
     relevance_score: number;
-  }>;
+  }[];
 }
 
 /**

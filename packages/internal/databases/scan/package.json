@@ -2,10 +2,12 @@
   "name": "@x402scan/scan-db",
   "version": "1.0.0",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts"
   },
+  "type": "module",
   "scripts": {
-    "dev": "tsc --watch",
+    "dev": "tsup src/* --watch",
     "lint": "eslint . --max-warnings 0",
     "check:types": "tsc --noEmit",
     "db:generate": "prisma generate",
@@ -14,29 +16,30 @@
     "db:format": "prisma format",
     "prebuild": "npm run db:generate",
     "predev": "npm run db:generate",
-    "postinstall": "npm run db:generate",
     "studio": "prisma studio",
     "knip": "pnpm -w knip --workspace ./packages/internal/databases/scan",
-    "format": "pnpm -w format-dir ./packages/internal/databases/scan",
-    "check:format": "pnpm -w check:format-dir ./packages/internal/databases/scan"
+    "format": "pnpm -w format:dir ./packages/internal/databases/scan",
+    "format:check": "pnpm -w format:check:dir ./packages/internal/databases/scan"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
-    "@prisma/adapter-neon": "^6.19.0",
-    "@prisma/client": "^6.19.0",
+    "@prisma/adapter-neon": "catalog:prisma",
+    "@prisma/client": "catalog:prisma",
+    "dotenv": "catalog:env",
     "ws": "^8.18.3"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/ws": "^8.18.1",
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "@types/node": "^20",
-    "@types/ws": "^8.18.1",
-    "eslint": "^9.39.1",
-    "prisma": "^6.19.0",
+    "eslint": "catalog:",
+    "prisma": "catalog:prisma",
     "rimraf": "^5.0.5",
-    "typescript": "5.5.4"
+    "tsup": "catalog:",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
-    "zod": "^4.0.0"
+    "zod": "catalog:"
   }
 }

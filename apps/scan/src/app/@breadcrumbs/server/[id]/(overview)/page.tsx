@@ -1,3 +1,3 @@
-export default async function OriginPage() {
+export default function OriginPage() {
   return null;
 }

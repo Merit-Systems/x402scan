@@ -21,7 +21,7 @@ export const OriginResources: React.FC<Props> = ({ originId }) => {
     <OriginOverviewSection title="Resources" className="gap-0">
       <OriginResourcesComponent
         resources={origin?.resources ?? []}
-        defaultOpen
+        defaultOpen={false}
         hideOrigin
         isFlat
       />
@@ -31,7 +31,7 @@ export const OriginResources: React.FC<Props> = ({ originId }) => {
 
 export const LoadingOriginResources = () => {
   return (
-    <OriginOverviewSection title="Resources">
+    <OriginOverviewSection title="Resources" className="gap-0">
       <LoadingOriginResourcesComponent />
     </OriginOverviewSection>
   );

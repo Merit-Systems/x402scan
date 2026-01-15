@@ -1,3 +1,3 @@
-export default async function ChatBreadcrumb() {
+export default function ChatBreadcrumb() {
   return null;
 }

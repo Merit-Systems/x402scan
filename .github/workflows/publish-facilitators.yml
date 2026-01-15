@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'packages/facilitators/package.json'
+      - 'packages/external/facilitators/package.json'
 
 jobs:
   check-version-change:
@@ -23,18 +23,18 @@ jobs:
       - name: Get current version
         id: get-version
         run: |
-          VERSION=$(node -p "require('./packages/facilitators/package.json').version")
+          VERSION=$(node -p "require('./packages/external/facilitators/package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Current version: $VERSION"
 
       - name: Get previous version
         id: get-prev-version
         run: |
-          git checkout HEAD~1 -- packages/facilitators/package.json 2>/dev/null || echo "No previous version"
-          PREV_VERSION=$(node -p "require('./packages/facilitators/package.json').version" 2>/dev/null || echo "none")
+          git checkout HEAD~1 -- packages/external/facilitators/package.json 2>/dev/null || echo "No previous version"
+          PREV_VERSION=$(node -p "require('./packages/external/facilitators/package.json').version" 2>/dev/null || echo "none")
           echo "prev-version=$PREV_VERSION" >> $GITHUB_OUTPUT
           echo "Previous version: $PREV_VERSION"
-          git checkout HEAD -- packages/facilitators/package.json
+          git checkout HEAD -- packages/external/facilitators/package.json
 
       - name: Check if version changed
         id: check-version
@@ -71,19 +71,19 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-        working-directory: packages/facilitators
+        working-directory: packages/external/facilitators
         run: pnpm install --frozen-lockfile
 
       - name: Run type check
-        working-directory: packages/facilitators
+        working-directory: packages/external/facilitators
         run: pnpm check:types
 
       - name: Build package
-        working-directory: packages/facilitators
+        working-directory: packages/external/facilitators
         run: pnpm build
 
       - name: Publish to npm
-        working-directory: packages/facilitators
+        working-directory: packages/external/facilitators
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -11,26 +11,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Address, Addresses } from '@/components/ui/address';
 
 import { Favicon } from '@/app/_components/favicon';
-import { HealthDot } from '@/app/_components/health/dot';
-
 import { cn } from '@/lib/utils';
 
-import type { ResourceOrigin } from '@x402scan/scan-db';
+import type { ResourceOrigin } from '@x402scan/scan-db/types';
 import type { MixedAddress } from '@/types/address';
-import type { OriginHealthMetrics } from '@/app/_components/health/types';
 
 interface Props {
   addresses: MixedAddress[];
   origins: ResourceOrigin[];
   disableCopy?: boolean;
-  healthMetrics?: OriginHealthMetrics | null;
 }
 
 export const Origins: React.FC<Props> = ({
   origins,
   addresses,
   disableCopy,
-  healthMetrics,
 }) => {
   if (!origins || origins.length === 0) {
     if (addresses.length === 0) {
@@ -60,8 +55,6 @@ export const Origins: React.FC<Props> = ({
               <Addresses addresses={addresses} />
             )
           }
-          healthMetrics={healthMetrics}
-          originId={origin!.id}
         />
       </Link>
     );
@@ -83,9 +76,6 @@ export const Origins: React.FC<Props> = ({
               {new URL(origins[0]!.origin).hostname}
             </span>
           </Link>
-          {healthMetrics && (
-            <HealthDot metrics={healthMetrics} originId={origins[0]!.id} />
-          )}
           <Tooltip>
             <TooltipTrigger className="cursor-pointer hover:bg-muted text-muted-foreground hover:text-foreground rounded-md transition-colors text-xs font-mono shrink-0">
               +{origins.length - 1} more
@@ -168,26 +158,15 @@ interface OriginsContainerProps {
   Icon: ({ className }: { className: string }) => React.ReactNode;
   title: React.ReactNode;
   address: React.ReactNode;
-  healthMetrics?: OriginHealthMetrics | null;
-  originId?: string;
 }
 
-const OriginsContainer = ({
-  Icon,
-  title,
-  address,
-  healthMetrics,
-  originId,
-}: OriginsContainerProps) => {
+const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
   return (
     <div className="flex items-center gap-2 w-full overflow-hidden">
       <Icon className="size-6" />
       <div className="flex-1 overflow-hidden">
         <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full flex items-center gap-2">
           {title}
-          {healthMetrics && (
-            <HealthDot metrics={healthMetrics} originId={originId} />
-          )}
         </div>
         <div>{address}</div>
       </div>

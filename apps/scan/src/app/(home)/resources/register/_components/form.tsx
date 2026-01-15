@@ -7,26 +7,34 @@ import {
   ChevronDown,
   ChevronRight,
   Eye,
+  Info,
+  Loader2,
   Plus,
   X,
 } from 'lucide-react';
 
-import z from 'zod';
-
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 import { api } from '@/trpc/client';
 
+import { DiscoveryPanel, useDiscovery } from '@/app/_components/discovery';
 import { Favicon } from '@/app/_components/favicon';
+import { parseChain } from '@/app/_lib/chain/parse';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import {
   Card,
   CardContent,
@@ -35,8 +43,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -45,15 +51,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { parseChain } from '@/app/_lib/chain/parse';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { RegistrationAlert } from './registration-alert';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 import { AcceptsBreakdownTable } from './accepts-breakdown-table';
+import { RegistrationAlert } from './registration-alert';
 import { RegistrationChecklist } from './registration-checklist';
 
 export const RegisterResourceForm = () => {
@@ -66,6 +67,41 @@ export const RegisterResourceForm = () => {
   >([]);
 
   const utils = api.useUtils();
+
+  // Use shared discovery hook
+  const {
+    isValidUrl,
+    urlOrigin,
+    isOriginOnly,
+    enteredUrlInDiscovery,
+    isDiscoveryLoading,
+    discoveryFound,
+    discoverySource,
+    discoveryError,
+    actualDiscoveredResources,
+    invalidResourcesMap,
+    registeredUrls,
+    isRegisteringAll,
+    bulkData,
+    handleRegisterAll,
+    resetBulk,
+    ownershipVerified,
+    ownershipProofs,
+    payToAddresses,
+    recoveredAddresses,
+    verifiedAddresses,
+    preview,
+    isPreviewLoading,
+    refreshDiscovery,
+  } = useDiscovery({
+    url,
+    onRegisterAllSuccess: data => {
+      toast.success(`Registered ${data.registered} of ${data.total} resources`);
+    },
+    onRegisterAllError: () => {
+      toast.error('Failed to register resources');
+    },
+  });
 
   const {
     mutate: addResource,
@@ -90,28 +126,14 @@ export const RegisterResourceForm = () => {
         });
       }
       void utils.public.sellers.bazaar.list.invalidate();
-      if (data.enhancedParseWarnings) {
-        toast.warning(
-          'Resource added successfully, but is not available for use',
-          {
-            action: {
-              label: 'View Server',
-              onClick: () => {
-                window.location.href = `/server/${data.resource.origin.id}`;
-              },
-            },
-          }
-        );
-      } else {
-        toast.success('Resource added successfully', {
-          action: {
-            label: 'View Server',
-            onClick: () => {
-              window.location.href = `/server/${data.resource.origin.id}`;
-            },
+      toast.success('Resource added successfully', {
+        action: {
+          label: 'View Server',
+          onClick: () => {
+            window.location.href = `/server/${data.resource.origin.id}`;
           },
-        });
-      }
+        },
+      });
     },
     onError: () => {
       toast.error('Failed to add resource');
@@ -122,7 +144,26 @@ export const RegisterResourceForm = () => {
     setUrl('');
     setHeaders([]);
     reset();
+    resetBulk();
   };
+
+  // Handle registering a single resource
+  const handleRegisterSingle = () => {
+    if (!isValidUrl) return;
+    addResource({
+      url,
+      headers: Object.fromEntries(headers.map(h => [h.name, h.value])),
+    });
+  };
+
+  // Sanitize possibly loosely-typed values from discovery for strict props
+  const safeOwnershipVerified = Boolean(ownershipVerified);
+  const safeOwnershipProofs: string[] = Array.isArray(ownershipProofs)
+    ? ownershipProofs.filter((s): s is string => typeof s === 'string')
+    : [];
+  const safeRecoveredAddresses: string[] = Array.isArray(recoveredAddresses)
+    ? recoveredAddresses.filter((s): s is string => typeof s === 'string')
+    : [];
 
   return (
     <Card>
@@ -139,7 +180,7 @@ export const RegisterResourceForm = () => {
       <CardContent>
         {data && !data.error ? (
           <div className="flex flex-col gap-2 overflow-hidden w-full max-w-full">
-            <div className="border rounded-lg p-4 bg-gradient-to-br from-muted/30 to-muted/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+            <div className="border rounded-lg p-4 bg-linear-to-br from-muted/30 to-muted/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
               <div className="flex items-center gap-4">
                 <Favicon
                   url={data.resource.origin.favicon}
@@ -182,8 +223,6 @@ export const RegisterResourceForm = () => {
                 const hasErrors =
                   // No accepts registered
                   data.registrationDetails?.supportedAccepts.length === 0 ||
-                  // Enhanced schema failed
-                  !!data.enhancedParseWarnings ||
                   // No metadata scraped
                   (!data.registrationDetails?.originMetadata?.title &&
                     !data.registrationDetails?.originMetadata?.description);
@@ -216,10 +255,9 @@ export const RegisterResourceForm = () => {
                         ? data.registrationDetails.supportedAccepts.length > 0
                         : false
                     }
-                    hasEnhancedSchema={!data.enhancedParseWarnings}
                     hasOriginMetadata={Boolean(
                       data.registrationDetails?.originMetadata?.title ??
-                        data.registrationDetails?.originMetadata?.description
+                      data.registrationDetails?.originMetadata?.description
                     )}
                   />
                 </AccordionContent>
@@ -285,15 +323,47 @@ export const RegisterResourceForm = () => {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
+            {/* Discovery Tip */}
+            <div className="flex items-start gap-3 p-3 bg-muted/50 border rounded-md">
+              <Info className="size-5 text-muted-foreground shrink-0 mt-0.5" />
+              <div className="flex-1 text-sm">
+                <p className="font-medium">Tip: Enable automatic discovery</p>
+                <p className="text-muted-foreground mt-1">
+                  Implement a discovery document at{' '}
+                  <code className="px-1 py-0.5 bg-muted rounded text-xs">
+                    /.well-known/x402
+                  </code>{' '}
+                  to register all your resources at once.{' '}
+                  <a
+                    href="https://github.com/Merit-Systems/x402scan/blob/main/docs/DISCOVERY.md"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:no-underline font-medium"
+                  >
+                    Learn more
+                  </a>
+                </p>
+              </div>
+            </div>
+
             <div className="flex flex-col gap-1">
               <Label>Resource URL</Label>
-              <Input
-                type="text"
-                placeholder="https://"
-                value={url}
-                onChange={e => setUrl(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="https://"
+                  value={url}
+                  onChange={e => setUrl(e.target.value)}
+                  className="pr-10"
+                />
+                {isDiscoveryLoading && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                  </div>
+                )}
+              </div>
             </div>
+
             <Collapsible>
               <CollapsibleTrigger asChild>
                 <Button
@@ -422,12 +492,40 @@ export const RegisterResourceForm = () => {
                 </div>
               </div>
             )}
+
+            {/* Discovery Results */}
+            <DiscoveryPanel
+              origin={urlOrigin}
+              enteredUrl={
+                !isOriginOnly && !enteredUrlInDiscovery ? url : undefined
+              }
+              isLoading={isDiscoveryLoading}
+              found={discoveryFound}
+              source={discoverySource}
+              resources={actualDiscoveredResources}
+              resourceCount={actualDiscoveredResources.length}
+              discoveryError={discoveryError}
+              invalidResourcesMap={invalidResourcesMap}
+              isRegisteringAll={isRegisteringAll}
+              bulkResult={bulkData}
+              onRegisterAll={handleRegisterAll}
+              onRefresh={refreshDiscovery}
+              showRegisterButton={false}
+              registeredUrls={registeredUrls}
+              ownershipVerified={safeOwnershipVerified}
+              ownershipProofs={safeOwnershipProofs}
+              payToAddresses={payToAddresses}
+              recoveredAddresses={safeRecoveredAddresses}
+              verifiedAddresses={verifiedAddresses}
+              preview={preview}
+              isPreviewLoading={isPreviewLoading}
+            />
           </div>
         )}
       </CardContent>
-      <CardFooter className="gap-2">
+      <CardFooter className="flex-col gap-2">
         {data && !data.error ? (
-          <>
+          <div className="flex gap-2 w-full">
             <Link href="/resources" className="flex-1">
               <Button variant="outline" className="w-full">
                 Back to Home
@@ -436,19 +534,62 @@ export const RegisterResourceForm = () => {
             <Button variant="turbo" onClick={onReset} className="flex-1">
               Add Another
             </Button>
-          </>
+          </div>
+        ) : bulkData?.success && bulkData.registered > 0 ? (
+          <div className="flex gap-2 w-full">
+            <Link href="/resources" className="flex-1">
+              <Button variant="outline" className="w-full">
+                Back to Home
+              </Button>
+            </Link>
+            <Button variant="turbo" onClick={onReset} className="flex-1">
+              Add Another
+            </Button>
+          </div>
+        ) : bulkData?.success && bulkData.registered === 0 ? (
+          <div className="flex gap-2 w-full">
+            <Button variant="outline" onClick={resetBulk} className="flex-1">
+              Try Again
+            </Button>
+            <Link href="/" className="flex-1">
+              <Button variant="turbo" className="w-full">
+                Back to Home
+              </Button>
+            </Link>
+          </div>
+        ) : discoveryFound ? (
+          <div className="flex flex-col gap-2 w-full">
+            <Button
+              variant="turbo"
+              disabled={isRegisteringAll}
+              onClick={handleRegisterAll}
+              className="w-full"
+            >
+              {isRegisteringAll ? (
+                <>
+                  <Loader2 className="size-4 animate-spin mr-2" />
+                  Registering...
+                </>
+              ) : (
+                `Register All ${actualDiscoveredResources.length} Resources`
+              )}
+            </Button>
+            {!isOriginOnly && (
+              <Button
+                variant="outline"
+                disabled={isPending}
+                onClick={handleRegisterSingle}
+                className="w-full"
+              >
+                {isPending ? 'Adding...' : 'Register Only This URL'}
+              </Button>
+            )}
+          </div>
         ) : (
           <Button
             variant="turbo"
-            disabled={isPending || !z.url().safeParse(url).success}
-            onClick={() =>
-              addResource({
-                url,
-                headers: Object.fromEntries(
-                  headers.map(h => [h.name, h.value])
-                ),
-              })
-            }
+            disabled={isPending || !isValidUrl}
+            onClick={handleRegisterSingle}
             className="w-full"
           >
             {isPending ? 'Adding...' : 'Add'}

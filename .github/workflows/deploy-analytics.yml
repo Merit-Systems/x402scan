@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'sync/analytics/**'
-      - 'packages/facilitators/**'
+      - 'packages/external/facilitators/**'
       - 'pnpm-lock.yaml'
       - '.github/workflows/deploy-analytics.yml'
 

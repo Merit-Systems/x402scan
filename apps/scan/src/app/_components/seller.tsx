@@ -49,13 +49,10 @@ export const Seller: React.FC<Props> = ({
     );
   }
 
-  const healthMetrics = origins[0]?.originMetrics?.[0];
-
   return (
     <Origins
       origins={origins}
       addresses={[address]}
-      healthMetrics={healthMetrics}
       disableCopy={disableCopy}
     />
   );

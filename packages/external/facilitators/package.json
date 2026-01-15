@@ -20,12 +20,12 @@
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "pnpm run build",
-    "check:types": "tsc --noEmit",
+    "types:check": "tsc --noEmit",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "knip": "pnpm -w knip --workspace ./packages/external/facilitators",
-    "format": "pnpm -w format-dir ./packages/external/facilitators",
-    "check:format": "pnpm -w check:format-dir ./packages/external/facilitators"
+    "format": "pnpm -w format:dir ./packages/external/facilitators",
+    "format:check": "pnpm -w format:check:dir ./packages/external/facilitators"
   },
   "keywords": [
     "x402",

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["ANALYTICS_CLICKHOUSE_*"],
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "env": ["ANALYTICS_CLICKHOUSE_*"],
+      "persistent": true
+    }
+  }
+}

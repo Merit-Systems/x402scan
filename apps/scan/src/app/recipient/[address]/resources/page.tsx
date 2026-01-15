@@ -17,26 +17,17 @@ export default async function ResourcesPage({
   const { address } = await params;
   const chain = await getChainForPage(await searchParams);
 
-  const origins = await api.public.origins.list.origins({
-    chain,
-    address,
-  });
-
+  // Prefetch resources for hydration
   void api.public.origins.list.withResources.prefetch({ chain, address });
 
   return (
     <HydrateClient>
       <ResourcesHeading />
       <Body className="gap-0">
-        <Suspense
-          fallback={
-            <LoadingResourcesByOrigin loadingRowCount={origins.length} />
-          }
-        >
+        <Suspense fallback={<LoadingResourcesByOrigin />}>
           <ResourcesByOrigin
             emptyText="No resources found for this address"
             address={address}
-            defaultOpenOrigins={origins.map(origin => origin.id)}
           />
         </Suspense>
       </Body>

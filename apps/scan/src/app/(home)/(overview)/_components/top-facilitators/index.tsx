@@ -22,12 +22,12 @@ interface Props {
   chain?: Chain;
 }
 
-export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
+export const TopFacilitators: React.FC<Props> = ({ chain }) => {
   const chainFacilitators = chain
     ? facilitators.filter(f => f.addresses[chain])
     : facilitatorAddresses;
 
-  void api.public.stats.overallMV.prefetch({
+  void api.public.stats.overall.prefetch({
     chain,
     timeframe: ActivityTimeframe.OneDay,
   });

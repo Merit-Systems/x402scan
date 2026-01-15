@@ -4,7 +4,7 @@ import { Chat } from '../_components/chat';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ChatPage() {
+export default function ChatPage() {
   const id = uuidv4();
 
   return <Chat id={id} initialMessages={[]} />;

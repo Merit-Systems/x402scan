@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 import { sendUsdcQueryParamsSchema } from '@/lib/schemas';
 
-export const POST = async (request: NextRequest) => {
+export const POST = (request: NextRequest) => {
   const { amount, address, chain } = sendUsdcQueryParamsSchema.parse(
     Object.fromEntries(request.nextUrl.searchParams)
   );

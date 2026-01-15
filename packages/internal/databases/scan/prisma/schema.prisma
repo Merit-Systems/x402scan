@@ -1,13 +1,11 @@
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../generated/client"
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  provider      = "prisma-client"
+  output        = "../generated/prisma"
+  importFileExtension = "ts"
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 enum Role {
@@ -133,9 +131,17 @@ model Accepts {
   outputSchema      Json?
   extra             Json?
 
+  // Ownership verification fields
+  verified          Boolean   @default(false)
+  verifiedAddress   String?
+  verificationProof String?
+  verifiedAt        DateTime?
+
   resourceRel Resources @relation(fields: [resourceId], references: [id])
 
   @@unique([resourceId, scheme, network])
+  @@index([verified])
+  @@index([resourceId, verified])
 }
 
 model News {

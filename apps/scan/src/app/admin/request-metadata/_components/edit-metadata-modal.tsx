@@ -88,6 +88,7 @@ export const EditMetadataModal = ({
   useEffect(() => {
     if (open) {
       if (existingMetadata) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHeaders(JSON.stringify(existingMetadata.headers, null, 2));
         setBody(JSON.stringify(existingMetadata.body, null, 2));
         setQueryParams(JSON.stringify(existingMetadata.queryParams, null, 2));

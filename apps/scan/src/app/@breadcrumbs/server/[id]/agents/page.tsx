@@ -1,3 +1,3 @@
-export default async function OriginAgentsPage() {
+export default function OriginAgentsPage() {
   return null;
 }

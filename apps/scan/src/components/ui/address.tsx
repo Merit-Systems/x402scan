@@ -51,9 +51,9 @@ export const Address: React.FC<Props> = ({
   );
 };
 
-interface AddressesProps extends Omit<Props, 'address'> {
+type AddressesProps = {
   addresses: string[];
-}
+} & Omit<Props, 'address'>;
 
 export const Addresses = ({
   addresses,

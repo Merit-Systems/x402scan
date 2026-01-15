@@ -1,0 +1,18 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["SCAN_DATABASE_*"]
+    },
+    "db:deploy": {
+      "env": ["SCAN_DATABASE_*"]
+    },
+    "types:check": {
+      "dependsOn": ["db:generate"]
+    },
+    "lint": {
+      "dependsOn": ["db:generate"]
+    }
+  }
+}

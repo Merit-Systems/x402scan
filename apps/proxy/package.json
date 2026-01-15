@@ -7,25 +7,25 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "check:types": "tsc --noEmit",
-    "lint": "eslint .",
+    "types:check": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./apps/proxy",
-    "format": "pnpm -w format-dir ./apps/proxy",
-    "check:format": "pnpm -w check:format-dir ./apps/proxy"
+    "format": "pnpm -w format:dir ./apps/proxy",
+    "format:check": "pnpm -w format:check:dir ./apps/proxy"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
     "@x402scan/analytics-db": "workspace:*",
-    "dotenv": "^16.4.5",
+    "dotenv": "catalog:env",
     "hono": "^4.6.14"
   },
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "@types/node": "^20",
-    "eslint": "^9.39.1",
-    "tsx": "^4.7.0",
-    "typescript": "^5.6.3"
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
   }
 }

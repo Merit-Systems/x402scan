@@ -8,26 +8,24 @@ import {
 } from '@/components/ui/table';
 import { CheckCircle, XCircle } from 'lucide-react';
 
-type RegistrationChecklistProps = {
+interface RegistrationChecklistProps {
   methodUsed?: string;
   hasAccepts: boolean;
-  hasEnhancedSchema: boolean;
   hasOriginMetadata: boolean;
-};
+}
+
+const Icon = ({ success }: { success: boolean }) =>
+  success ? (
+    <CheckCircle className="size-4 text-green-600" />
+  ) : (
+    <XCircle className="size-4 text-red-600" />
+  );
 
 export function RegistrationChecklist({
   methodUsed,
   hasAccepts,
-  hasEnhancedSchema,
   hasOriginMetadata,
 }: RegistrationChecklistProps) {
-  const Icon = ({ success }: { success: boolean }) =>
-    success ? (
-      <CheckCircle className="size-4 text-green-600" />
-    ) : (
-      <XCircle className="size-4 text-red-600" />
-    );
-
   return (
     <div className="rounded-md border overflow-hidden">
       <Table>
@@ -79,12 +77,6 @@ export function RegistrationChecklist({
             <TableCell>Has accepts</TableCell>
             <TableCell>
               <Icon success={hasAccepts} />
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Enhanced schema (for invocation)</TableCell>
-            <TableCell>
-              <Icon success={hasEnhancedSchema} />
             </TableCell>
           </TableRow>
 

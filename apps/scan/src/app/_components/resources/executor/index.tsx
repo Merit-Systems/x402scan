@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDownIcon } from 'lucide-react';
+import { AlertTriangle, ChevronDownIcon, Shield } from 'lucide-react';
 
 import {
   AccordionContent,
@@ -9,6 +9,11 @@ import {
 } from '@/components/ui/accordion';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import { Header } from './header';
 import { Form } from './form';
@@ -16,10 +21,12 @@ import { Form } from './form';
 import { cn } from '@/lib/utils';
 
 import type { Methods } from '@/types/x402';
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import {
+  getOutputSchema,
+  getMaxAmount,
+  type ParsedX402Response,
+} from '@/lib/x402';
 import type { Resources, Tag } from '@x402scan/scan-db';
-import { HealthIndicator } from '@/app/_components/health/indicator';
-import { api } from '@/trpc/client';
 
 interface Props {
   resource: Resources;
@@ -30,6 +37,10 @@ interface Props {
   hideOrigin?: boolean;
   defaultOpen?: boolean;
   isFlat?: boolean;
+  /** Optional warnings to show as a tooltip icon */
+  warnings?: string[];
+  /** Whether ownership is verified for this resource */
+  ownershipVerified?: boolean;
 }
 
 export const ResourceExecutor: React.FC<Props> = ({
@@ -40,30 +51,19 @@ export const ResourceExecutor: React.FC<Props> = ({
   className,
   hideOrigin = false,
   isFlat = false,
+  warnings = [],
+  ownershipVerified = false,
 }) => {
-  const { data: resourceMetrics } = api.public.resources.getMetrics.useQuery(
-    {
-      resourceId: resource.id,
-    },
-    {
-      enabled:
-        !!response &&
-        (response.accepts?.length ?? 0) > 0 &&
-        !!response.accepts?.[0]?.outputSchema?.input,
-    }
-  );
-
   if (!response) return null;
 
-  const accept = response.accepts?.[0];
-
-  if (!accept) return null;
-
-  const inputSchema = accept.outputSchema?.input;
+  const outputSchema = getOutputSchema(response);
+  const inputSchema = outputSchema?.input;
 
   if (!inputSchema) return null;
 
-  const maxAmountRequired = BigInt(accept.maxAmountRequired);
+  const maxAmountStr = getMaxAmount(response);
+  if (!maxAmountStr) return null;
+  const maxAmountRequired = BigInt(maxAmountStr);
 
   return (
     <AccordionItem
@@ -84,8 +84,38 @@ export const ResourceExecutor: React.FC<Props> = ({
               response={response}
               hideOrigin={hideOrigin}
             />
-            <HealthIndicator metrics={resourceMetrics} />
-            <ChevronDownIcon className="size-4" />
+            <div className="flex items-center gap-2">
+              {ownershipVerified && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Shield className="size-4 text-green-600" />
+                  </TooltipTrigger>
+                  <TooltipContent side="left">
+                    <div className="text-xs">Ownership verified</div>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              {warnings.length > 0 && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertTriangle className="size-4 text-yellow-500" />
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="max-w-md">
+                    <div className="text-xs space-y-1">
+                      {warnings.map((warning, i) => (
+                        <div
+                          key={i}
+                          className="text-muted-foreground break-all"
+                        >
+                          {warning}
+                        </div>
+                      ))}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              <ChevronDownIcon className="size-4" />
+            </div>
           </CardHeader>
         </AccordionTrigger>
         <AccordionContent className="pb-0">

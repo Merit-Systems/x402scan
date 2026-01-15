@@ -19,7 +19,7 @@ import { convertToUIMessages } from '@/lib/utils';
 import type { RouterOutputs } from '@/trpc/client';
 import type { ChatConfig, SelectedResource } from '../_types/chat-config';
 import type { LanguageModel } from '../_components/chat/input/model-select/types';
-import type { Message } from '@x402scan/scan-db';
+import type { Message } from '@x402scan/scan-db/types';
 
 interface Props {
   id: string;
@@ -78,6 +78,7 @@ export const useChat = ({
           void utils.user.chats.list.invalidate();
         }
       },
+      // eslint-disable-next-line react-hooks/refs
       transport: new DefaultChatTransport({
         api: '/api/chat',
         prepareSendMessagesRequest({ messages }) {

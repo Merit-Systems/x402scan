@@ -2,11 +2,11 @@ import { useAccount } from 'wagmi';
 import { useSolanaWallet } from '../_contexts/solana/hook';
 import type { EthereumAddress, SolanaAddress } from '@/types/address';
 
-type NotConnectedWallets = {
+interface NotConnectedWallets {
   isConnected: false;
   evmAddress: undefined;
   solanaAddress: undefined;
-};
+}
 
 export type ConnectedWallets = {
   isConnected: true;

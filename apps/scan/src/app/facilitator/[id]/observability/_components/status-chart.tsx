@@ -51,13 +51,13 @@ export const StatusChart: React.FC<Props> = ({ facilitatorName }) => {
 };
 
 const StatusChartInner: React.FC<{
-  data: Array<{
+  data: {
     ts: string;
     r_2xx: string;
     r_3xx: string;
     r_4xx: string;
     r_5xx: string;
-  }>;
+  }[];
 }> = ({ data }) => {
   const chartData: ChartData<{
     success: number;
