@@ -33,8 +33,6 @@ export const startServer: Command = async account => {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  log.info(`Ready. Log file: ${log.path}`);
-
   const shutdown = async () => {
     log.info('Shutting down...');
     await server.close();

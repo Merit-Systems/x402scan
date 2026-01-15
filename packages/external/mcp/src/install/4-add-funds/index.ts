@@ -15,11 +15,8 @@ interface AddFundsFlags {
 
 export const addFunds = async ({ account, isNew, dev }: AddFundsFlags) => {
   if (isNew || 0 == 0) {
-    await wait({
-      startText: 'Checking balance...',
-      stopText: `To call paid API tools, you will need USDC in your wallet.`,
-      ms: 1000,
-    });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    log.info('To use paid API tools, you will need USDC in your wallet.');
     await promptDeposit(account.address, dev);
   } else {
     const balance = await getUSDCBalance({ address: account.address });

@@ -17,14 +17,26 @@ import chalk from 'chalk';
 import { log as clackLog, confirm, outro, stream } from '@clack/prompts';
 
 import type { ClientConfigObject } from './types';
-import boxen from 'boxen';
 import { wait } from '@/lib/wait';
 
-const SERVER_NAME = 'x402scan';
-const command = 'npx';
-const args = ['-y', '@x402scan/mcp@latest'];
+const getMcpConfig = (isDev?: boolean) => {
+  if (isDev) {
+    return {
+      serverName: 'x402scan-dev',
+      command: 'node',
+      args: [`${process.cwd()}/dist/index.js`],
+    };
+  }
+  return {
+    serverName: 'x402scan',
+    command: 'npx',
+    args: ['-y', '@x402scan/mcp@latest'],
+  };
+};
 
-export async function addServer(client: Clients) {
+export async function addServer(client: Clients, isDev?: boolean) {
+  const { serverName, command, args } = getMcpConfig(isDev);
+
   if (client === Clients.Warp) {
     clackLog.info(
       chalk.bold.yellow('Warp requires a manual installation through their UI.')
@@ -36,7 +48,7 @@ export async function addServer(client: Clients) {
     console.log(
       JSON.stringify(
         {
-          [SERVER_NAME]: {
+          [serverName]: {
             command,
             args,
             working_directory: null,
@@ -111,8 +123,8 @@ export async function addServer(client: Clients) {
     }
 
     if (client === Clients.Goose) {
-      servers[SERVER_NAME] = {
-        name: SERVER_NAME,
+      servers[serverName] = {
+        name: serverName,
         cmd: command,
         args,
         enabled: true,
@@ -122,14 +134,14 @@ export async function addServer(client: Clients) {
       };
     } else if (client === Clients.Zed) {
       // Zed has a different config structure
-      servers[SERVER_NAME] = {
+      servers[serverName] = {
         source: 'custom',
         command,
         args,
         env: {},
       };
     } else if (client === Clients.Opencode) {
-      servers[SERVER_NAME] = {
+      servers[serverName] = {
         type: 'local',
         command,
         args,
@@ -137,7 +149,7 @@ export async function addServer(client: Clients) {
         environment: {},
       };
     } else {
-      servers[SERVER_NAME] = {
+      servers[serverName] = {
         command,
         args,
       };
@@ -145,28 +157,20 @@ export async function addServer(client: Clients) {
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const configStr = boxen(
-      formatDiffByFormat(
-        {
-          [clientFileTarget.configKey]: {
-            [SERVER_NAME]: servers[SERVER_NAME] as object,
-          },
-        },
-        clientFileTarget.format
-      ),
-      {
-        borderStyle: 'round',
-        borderColor: 'green',
-        title: chalk.bold(chalk.underline(clientFileTarget.path)),
-        padding: 1,
-      }
-    );
-
     await wait({
-      startText: `The following configuration will be added to ${chalk.underline(clientFileTarget.path)} client`,
-      stopText: `The following configuration will be added to ${chalk.underline(clientFileTarget.path)} client:`,
+      startText: `The following configuration will be added to ${chalk.bold.underline(clientFileTarget.path)}`,
+      stopText: `The following configuration will be added to ${chalk.bold.underline(clientFileTarget.path)}:`,
       ms: 500,
     });
+
+    const configStr = formatDiffByFormat(
+      {
+        [clientFileTarget.configKey]: {
+          [serverName]: servers[serverName] as object,
+        },
+      },
+      clientFileTarget.format
+    );
 
     await stream.message(
       (async function* () {

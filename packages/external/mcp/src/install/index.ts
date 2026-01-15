@@ -1,4 +1,3 @@
-import { printInstallBanner } from './1-print-banner';
 import { getClient } from './2-get-client';
 import { addServer } from './3-add-server';
 import { addFunds } from './4-add-funds';
@@ -16,13 +15,11 @@ export const installMcpServer: Command<InstallFlags> = async (
   wallet,
   flags
 ) => {
-  printInstallBanner(flags.isNew);
-
-  intro(chalk.bold('Install MCP server'));
+  intro(chalk.bold(`Install ${chalk.hex('#2563eb')('x402scan MCP')}`));
 
   const client = await getClient(flags.client);
 
-  await addServer(client);
+  await addServer(client, flags.dev);
 
   await addFunds({ account: wallet, isNew: flags.isNew, dev: flags.dev });
 
