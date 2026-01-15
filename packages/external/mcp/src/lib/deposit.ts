@@ -1,29 +1,58 @@
 import boxen from 'boxen';
 import chalk from 'chalk';
-import { confirm } from '@inquirer/prompts';
+import { select } from '@clack/prompts';
 import open from 'open';
 import { DEFAULT_NETWORK, getChainName } from './networks';
+import { log } from '@clack/prompts';
+import { wait } from './wait';
 
 export const promptDeposit = async (address: string, isDev?: boolean) => {
   const baseUrl = isDev ? 'http://localhost:3000' : 'https://x402scan.com';
   const depositLink = `${baseUrl}/deposit/${address}`;
-  console.log(
-    boxen(
-      `${chalk.bold('Quick Deposit (recommended)')}\n${chalk.underline(depositLink)}\n\n${chalk.bold('Manual Deposit')}\nAddress: ${address}\nNetwork: ${getChainName(DEFAULT_NETWORK)}`,
+
+  const guidedDeposit = await select({
+    message: 'How would you like to deposit?',
+    initialValue: true,
+    options: [
       {
-        borderStyle: 'round',
-        borderColor: '#2563eb',
-        title: chalk.bold('Deposit Details'),
-        padding: 1,
-      }
-    )
-  );
-  console.log();
-  const shouldOpen = await confirm({
-    message: 'Would you like to visit the deposit page?',
-    default: true,
+        label: `Guided Deposit - ${chalk.bold.green('Recommended')}`,
+        value: true,
+        hint: 'Deposit online using a dedicated x402scan deposit page',
+      },
+      {
+        label: 'Manual Deposit',
+        value: false,
+        hint: 'Enter the deposit address and network manually.',
+      },
+      {
+        label: 'Skip',
+        value: undefined,
+        hint: 'Skip the deposit process and start using the MCP server without depositing.',
+      },
+    ],
   });
-  if (shouldOpen) {
+
+  if (guidedDeposit === true) {
+    await wait({
+      startText: 'Opening deposit page...',
+      stopText: `Opening ${chalk.underline.hex('#2563eb')(depositLink)}`,
+      ms: 1000,
+    });
+
     await open(depositLink);
+  } else if (guidedDeposit === false) {
+    log.message(
+      boxen(
+        `${chalk.bold('Account Information')}\nAddress: ${address}\nNetwork: ${getChainName(DEFAULT_NETWORK)}\n\n${chalk.bold('Online Portal')}\n${chalk.underline(depositLink)}`,
+        {
+          borderStyle: 'round',
+          borderColor: '#2563eb',
+          title: 'Deposit Instructions',
+          padding: 1,
+        }
+      )
+    );
+  } else if (guidedDeposit === undefined) {
+    log.message('Skipping deposit process...');
   }
 };

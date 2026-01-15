@@ -9,10 +9,11 @@ import { getClientConfigFile } from './client-config-file';
 
 import chalk from 'chalk';
 
-import { log as clackLog, confirm } from '@clack/prompts';
+import { log as clackLog, confirm, stream } from '@clack/prompts';
 
 import type { ClientConfigObject } from './types';
 import boxen from 'boxen';
+import { wait } from '@/lib/wait';
 
 const SERVER_NAME = 'x402scan';
 const command = 'npx';
@@ -66,9 +67,11 @@ export async function addServer(client: Clients) {
       log.info('Config file not found, creating default empty config');
       setNestedValue(config, clientFileTarget.configKey, {});
       log.info('Config created successfully');
-      clackLog.step(
-        `No config found at ${clientFileTarget.path}, creating default empty config`
-      );
+      await wait({
+        startText: 'Locating config file',
+        stopText: `No config found, creating default empty config`,
+        ms: 1000,
+      });
     } else {
       log.info('Config file found, reading config file content');
       const { config: rawConfig, fileContent } =
@@ -85,12 +88,21 @@ export async function addServer(client: Clients) {
       log.info(
         `Config loaded successfully: ${JSON.stringify(rawConfig, null, 2)}`
       );
-      clackLog.step(`Config loaded from ${clientFileTarget.path}`);
+      await wait({
+        startText: `Locating config file`,
+        stopText: `Config loaded from ${clientFileTarget.path}`,
+        ms: 1000,
+      });
     }
 
     const servers = getNestedValue(config, clientFileTarget.configKey);
     if (!servers || typeof servers !== 'object') {
       log.error(`Invalid ${clientFileTarget.configKey} structure in config`);
+      clackLog.error(
+        chalk.bold.red(
+          `Invalid ${clientFileTarget.configKey} structure in config`
+        )
+      );
       throw new Error(`Invalid ${clientFileTarget.configKey} structure`);
     }
 
@@ -127,6 +139,8 @@ export async function addServer(client: Clients) {
       };
     }
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     const linesToPrint = JSON.stringify(
       {
         [clientFileTarget.configKey]: {
@@ -137,42 +151,67 @@ export async function addServer(client: Clients) {
       2
     ).split('\n');
 
-    clackLog.step(
-      `The following configuration will be added to ${clientFileTarget.path} client:\n\n${boxen(
-        JSON.stringify(
-          {
-            [clientFileTarget.configKey]: {
-              [SERVER_NAME]: servers[SERVER_NAME] as object,
-            },
-          },
-          null,
-          2
-        )
-          .split('\n')
-          .map((line, index) => {
-            const isDiffLine = ![
-              0,
-              1,
-              linesToPrint.length - 2,
-              linesToPrint.length - 1,
-            ].includes(index);
-            if (isDiffLine) {
-              return `${chalk.bold.green(`+ ${line.slice(2)}`)}`;
-            }
-            return line;
-          })
-          .join('\n'),
+    const configStr = boxen(
+      JSON.stringify(
         {
-          borderStyle: 'round',
-          borderColor: 'green',
-          title: clientFileTarget.path,
-          padding: 1,
-        }
-      )}`
+          [clientFileTarget.configKey]: {
+            [SERVER_NAME]: servers[SERVER_NAME] as object,
+          },
+        },
+        null,
+        2
+      )
+        .split('\n')
+        .map((line, index) => {
+          const isDiffLine = ![
+            0,
+            1,
+            linesToPrint.length - 2,
+            linesToPrint.length - 1,
+          ].includes(index);
+          if (isDiffLine) {
+            return `${chalk.bold.green(`+ ${line.slice(2)}`)}`;
+          }
+          return line;
+        })
+        .join('\n'),
+      {
+        borderStyle: 'round',
+        borderColor: 'green',
+        title: chalk.bold(chalk.underline(clientFileTarget.path)),
+        padding: 1,
+      }
     );
 
+    await wait({
+      startText: `The following configuration will be added to ${chalk.underline(clientFileTarget.path)} client`,
+      stopText: `The following configuration will be added to ${chalk.underline(clientFileTarget.path)} client:`,
+      ms: 1000,
+    });
+
+    await stream.message(
+      (async function* () {
+        for (const num of Array.from(
+          { length: configStr.length },
+          (_, i) => i
+        )) {
+          const char = configStr[num]!;
+          yield char;
+          if (!['\n', ' ', '─', '╮', '╭', '╰', '╯', '│'].includes(char)) {
+            await new Promise(resolve => setTimeout(resolve, 5));
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 2));
+          }
+        }
+      })()
+    );
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     const isConfirmed = await confirm({
-      message: 'Are you sure you want to update the configuration file?',
+      message: `Would you like to proceed?`,
+      active: 'Install MCP',
+      inactive: 'Cancel',
     });
     if (!isConfirmed) {
       throw new Error('Configuration file not updated');

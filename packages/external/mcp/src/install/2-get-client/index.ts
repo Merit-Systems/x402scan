@@ -21,6 +21,7 @@ export const getClient = async (flagClient: string | undefined) => {
         value: client,
       };
     }),
+    maxItems: 7,
   });
   return client;
 };

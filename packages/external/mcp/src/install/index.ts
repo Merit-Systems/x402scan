@@ -1,4 +1,3 @@
-import consola from 'consola';
 import { printInstallBanner } from './1-print-banner';
 import { getClient } from './2-get-client';
 import { addServer } from './3-add-server';
@@ -6,6 +5,7 @@ import { addFunds } from './4-add-funds';
 
 import type { Command } from '@/types';
 import { intro, outro } from '@clack/prompts';
+import chalk from 'chalk';
 
 interface InstallFlags {
   client?: string;
@@ -18,7 +18,7 @@ export const installMcpServer: Command<InstallFlags> = async (
 ) => {
   printInstallBanner(flags.isNew);
 
-  intro('Install MCP server');
+  intro(chalk.bold('Install MCP server'));
 
   const client = await getClient(flags.client);
 
