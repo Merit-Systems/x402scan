@@ -27,66 +27,52 @@ export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
 ) => {
   const origin = originSchema.parse(originInput);
-  return await scanDb.$transaction(async tx => {
-    const upsertedOrigin = await tx.resourceOrigin.upsert({
-      where: { origin: origin.origin },
-      update: {
-        title: origin.title,
-        description: origin.description,
-        favicon: origin.favicon,
-      },
-      create: {
-        origin: origin.origin,
-        title: origin.title,
-        description: origin.description,
-        favicon: origin.favicon,
-      },
-    });
-
-    const originId = upsertedOrigin.id;
-    const newImageUrls = origin.ogImages.map(img => img.url);
-
-    // NOTE(shafu): delete any old OgImage records for this origin that are no longer present
-    await tx.ogImage.deleteMany({
-      where: {
-        originId: originId,
-        url: {
-          notIn: newImageUrls,
-        },
-      },
-    });
-
-    await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
-        tx.ogImage.upsert({
-          where: {
-            originId_url: {
-              originId: originId,
-              url: url,
+  return await scanDb.resourceOrigin.upsert({
+    where: { origin: origin.origin },
+    update: {
+      title: origin.title,
+      description: origin.description,
+      favicon: origin.favicon,
+      ogImages: {
+        upsert: origin.ogImages.map(
+          ({ url, height, width, title, description }) => ({
+            where: {
+              url,
             },
-          },
-          update: {
-            height,
-            width,
-            title,
-            description,
-          },
-          create: {
-            originId: originId,
+            create: {
+              url,
+              height,
+              width,
+              title,
+              description,
+            },
+            update: {
+              height,
+              width,
+              title,
+              description,
+            },
+          })
+        ),
+      },
+    },
+    create: {
+      origin: origin.origin,
+      title: origin.title,
+      description: origin.description,
+      favicon: origin.favicon,
+      ogImages: {
+        create: origin.ogImages.map(
+          ({ url, height, width, title, description }) => ({
             url,
             height,
             width,
             title,
             description,
-          },
-        })
-      )
-    );
-
-    return tx.resourceOrigin.findUnique({
-      where: { id: originId },
-      include: { ogImages: true },
-    });
+          })
+        ),
+      },
+    },
   });
 };
 
