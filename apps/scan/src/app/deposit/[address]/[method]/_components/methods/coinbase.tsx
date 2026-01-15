@@ -12,8 +12,12 @@ import { OnrampProviders } from '@/services/onramp/types';
 
 import type { Address } from 'viem';
 import type { MethodComponentProps } from '../../_types';
+import {
+  DepositSearchParams,
+  depositSearchParamsSchema,
+} from '../../../_lib/params';
 
-const paramsSchema = z.object({
+const paramsSchema = depositSearchParamsSchema.extend({
   id: z.string(),
 });
 
@@ -27,15 +31,18 @@ export const Coinbase: React.FC<MethodComponentProps> = ({
     return <p>Invalid parameters</p>;
   }
 
-  const { id } = parsedParams.data;
+  const { id, ...rest } = parsedParams.data;
 
-  return <CoinbaseSessionContent id={id} address={address} />;
+  return (
+    <CoinbaseSessionContent id={id} address={address} searchParams={rest} />
+  );
 };
 
-const CoinbaseSessionContent: React.FC<{ id: string; address: Address }> = ({
-  id,
-  address,
-}) => {
+const CoinbaseSessionContent: React.FC<{
+  id: string;
+  address: Address;
+  searchParams: DepositSearchParams;
+}> = ({ id, address, searchParams }) => {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const { data: session, isLoading } = api.onramp.coinbase.session.get.useQuery(
@@ -65,6 +72,7 @@ const CoinbaseSessionContent: React.FC<{ id: string; address: Address }> = ({
       isError={session?.status === 'ONRAMP_TRANSACTION_STATUS_FAILED'}
       method={OnrampProviders.COINBASE}
       address={address}
+      searchParams={searchParams}
     />
   );
 };

@@ -26,17 +26,20 @@ import type { Dispatch, SetStateAction } from 'react';
 import type { Country, Currency } from '@/types/currency';
 import type { OnrampMethods } from '@/services/onramp/types';
 import type { Address } from 'viem';
+import type { DepositSearchParams } from '../../../_lib/params';
 
 interface Props {
   selectedMethod: OnrampMethods;
   setAccordionValue: Dispatch<SetStateAction<string[]>>;
   address: Address;
+  searchParams?: DepositSearchParams;
 }
 
 export const Onramp: React.FC<Props> = ({
   selectedMethod,
   setAccordionValue,
   address,
+  searchParams,
 }) => {
   const [amount, setAmount] = useState(5);
   const [selectedCountry, setSelectedCountry] =
@@ -118,6 +121,7 @@ export const Onramp: React.FC<Props> = ({
                     ?.quote ?? 0
                 }
                 address={address}
+                searchParams={searchParams}
               />
             </DialogContent>
           </Dialog>

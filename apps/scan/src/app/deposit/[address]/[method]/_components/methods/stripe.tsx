@@ -10,10 +10,13 @@ import { api } from '@/trpc/client';
 
 import { OnrampProviders } from '@/services/onramp/types';
 
+import { depositSearchParamsSchema } from '../../../_lib/params';
+
 import type { Address } from 'viem';
 import type { MethodComponentProps } from '../../_types';
+import type { DepositSearchParams } from '../../../_lib/params';
 
-const paramsSchema = z.object({
+const paramsSchema = depositSearchParamsSchema.extend({
   id: z.string(),
 });
 
@@ -27,15 +30,16 @@ export const Stripe: React.FC<MethodComponentProps> = ({
     return <p>Invalid parameters</p>;
   }
 
-  const { id } = parsedParams.data;
+  const { id, ...rest } = parsedParams.data;
 
-  return <StripeSessionContent id={id} address={address} />;
+  return <StripeSessionContent id={id} address={address} searchParams={rest} />;
 };
 
-const StripeSessionContent: React.FC<{ id: string; address: Address }> = ({
-  id,
-  address,
-}) => {
+const StripeSessionContent: React.FC<{
+  id: string;
+  address: Address;
+  searchParams: DepositSearchParams;
+}> = ({ id, address, searchParams }) => {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const { data: session, isLoading } = api.onramp.stripe.session.get.useQuery(
@@ -74,6 +78,7 @@ const StripeSessionContent: React.FC<{ id: string; address: Address }> = ({
           'There was an error processing your payment. Please try again.',
         [Status.PENDING]: 'This can take up to 10 minutes to complete.',
       }}
+      searchParams={searchParams}
     />
   );
 };

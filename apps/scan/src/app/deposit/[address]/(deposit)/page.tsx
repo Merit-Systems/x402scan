@@ -1,16 +1,23 @@
+import z from 'zod';
+
 import { Body } from '@/app/_components/layout/page-utils';
 
 import { CopyAddress } from './_components/copy';
 import { Deposit } from './_components';
 
 import type { Address } from 'viem';
+import { depositSearchParamsSchema } from '../_lib/params';
 
 export default async function DepositPage({
   params,
+  searchParams,
 }: PageProps<'/deposit/[address]'>) {
   const { address: untypedAddress } = await params;
-
   const address = untypedAddress as Address;
+
+  const parsedSearchParams = depositSearchParamsSchema.safeParse(
+    await searchParams
+  );
 
   return (
     <Body className="max-w-lg mx-auto">

@@ -19,7 +19,8 @@ import type {
   StripeOnramp,
 } from '@stripe/crypto';
 import { OnrampProviders } from '@/services/onramp/types';
-import { Route } from 'next';
+
+import type { Route } from 'next';
 
 const stripeOnrampPromise = loadStripeOnramp(
   env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -27,7 +28,7 @@ const stripeOnrampPromise = loadStripeOnramp(
 
 export const StripeOnrampDialogContent: React.FC<
   OnrampProviderDialogContentProps
-> = ({ quote, address }) => {
+> = ({ quote, address, searchParams }) => {
   const router = useRouter();
 
   const [onramp, setOnramp] = useState<StripeOnramp | null>(null);
@@ -74,9 +75,11 @@ export const StripeOnrampDialogContent: React.FC<
     session,
     callback: session => {
       if (session.status === 'fulfillment_processing') {
+        const params = new URLSearchParams(searchParams ?? {});
+        params.set('id', session.id);
         setTimeout(() => {
           router.push(
-            `/deposit/${address}/${OnrampProviders.STRIPE}?id=${session.id}` as Route
+            `/deposit/${address}/${OnrampProviders.STRIPE}?${params.toString()}` as Route
           );
         }, 3000);
       }

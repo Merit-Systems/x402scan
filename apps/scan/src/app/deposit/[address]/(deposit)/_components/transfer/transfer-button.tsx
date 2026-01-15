@@ -16,17 +16,20 @@ import { Chain } from '@/types/chain';
 import type { Address } from 'viem';
 import type { Connection } from 'wagmi';
 import type { Route } from 'next';
+import type { DepositSearchParams } from '../../../_lib/params';
 
 interface Props {
   connection: Connection;
   address: Address;
   amount: number;
+  searchParams?: DepositSearchParams;
 }
 
 export const TransferButton: React.FC<Props> = ({
   connection,
   address,
   amount,
+  searchParams,
 }) => {
   const router = useRouter();
 
@@ -57,8 +60,10 @@ export const TransferButton: React.FC<Props> = ({
       }
       if (paymentResponse) {
         setTimeout(() => {
+          const params = new URLSearchParams(searchParams ?? {});
+          params.set('hash', paymentResponse.transaction);
           router.push(
-            `/deposit/${address}/${OnrampMethods.WALLET}?hash=${paymentResponse.transaction}` as Route
+            `/deposit/${address}/${OnrampMethods.WALLET}?${params.toString()}` as Route
           );
         }, 3000);
       }
