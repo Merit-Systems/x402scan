@@ -2,7 +2,9 @@
  * Wallet tools - balance checking
  */
 
-import { mcpSuccess, mcpError } from '@/server/lib/response';
+import open from 'open';
+
+import { mcpSuccess } from '@/server/lib/response';
 import { getUSDCBalance } from '@/lib/balance';
 import {
   DEFAULT_NETWORK,
@@ -25,33 +27,43 @@ export const registerWalletTools: RegisterTools = ({
         'Check wallet address and USDC balance. Creates wallet if needed.',
     },
     async () => {
-      try {
-        const balance = await getUSDCBalance({
-          address,
-        });
-        return mcpSuccess({
-          address,
-          network: balance.network,
-          networkName: getChainName(balance.network),
-          balanceUSDC: balance.formatted,
-          balanceFormatted: balance.formattedString,
-          isNewWallet: balance.formatted === 0,
-          ...(balance.formatted < 1
-            ? {
-                fundingInstructions: getFundingInstructions(
-                  address,
-                  balance.network
-                ),
-                suggestion:
-                  balance.formatted === 0
-                    ? 'Your wallet has no USDC. Send USDC to the address above to start making paid API calls.'
-                    : 'Your balance is low. Consider topping up.',
-              }
-            : {}),
-        });
-      } catch (err) {
-        return mcpError(err, { tool: 'check_balance' });
+      const result = await server.server.elicitInput({
+        mode: 'form',
+        message: '**Enter your wallet address\n\nHello world**',
+        requestedSchema: {
+          type: 'object',
+          properties: {
+            address: { type: 'string' },
+          },
+          required: ['address'],
+        },
+      });
+      if (result.action === 'accept') {
+        await open(`https://x402scan.com`);
       }
+      const balance = await getUSDCBalance({
+        address,
+      });
+      return mcpSuccess({
+        address,
+        network: balance.network,
+        networkName: getChainName(balance.network),
+        balanceUSDC: balance.formatted,
+        balanceFormatted: balance.formattedString,
+        isNewWallet: balance.formatted === 0,
+        ...(balance.formatted < 1
+          ? {
+              fundingInstructions: getFundingInstructions(
+                address,
+                balance.network
+              ),
+              suggestion:
+                balance.formatted === 0
+                  ? 'Your wallet has no USDC. Send USDC to the address above to start making paid API calls.'
+                  : 'Your balance is low. Consider topping up.',
+            }
+          : {}),
+      });
     }
   );
 };

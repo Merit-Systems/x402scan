@@ -1,6 +1,6 @@
 {
   "extends": "@x402scan/typescript-config/base.json",
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "scripts/**/*"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "module": "esnext",
@@ -8,7 +8,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "dist"
   }
 }

@@ -36,7 +36,7 @@ function main() {
   rmSync(bundleDir, { recursive: true, force: true });
   mkdirSync(bundleDir, { recursive: true });
 
-  // Build the server with dependencies bundled (tsup creates dist-bundle/)
+  // Build the server with dependencies bundled (tsup creates dist/bundle/)
   console.log('1. Building server bundle with all dependencies...');
   run('bun run build');
 
@@ -44,8 +44,8 @@ function main() {
   const serverDir = join(bundleDir, 'server');
   mkdirSync(serverDir, { recursive: true });
 
-  // Copy the bundled dist-bundle/index.cjs to server/index.cjs
-  cpSync(join(ROOT, 'dist-bundle', 'index.cjs'), join(serverDir, 'index.cjs'));
+  // Copy the bundled dist/bundle/index.cjs to server/index.cjs
+  cpSync(join(ROOT, 'dist', 'bundle', 'index.cjs'), join(serverDir, 'index.cjs'));
 
   // Copy manifest.json to bundle root
   cpSync(join(ROOT, 'manifest.json'), join(bundleDir, 'manifest.json'));
