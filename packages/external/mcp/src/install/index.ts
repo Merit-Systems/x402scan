@@ -26,5 +26,5 @@ export const installMcpServer: Command<InstallFlags> = async (
 
   await addFunds({ account: wallet, isNew: flags.isNew, dev: flags.dev });
 
-  outro('Your x402scan MCP server is ready to use!');
+  outro(chalk.bold.green('Your x402scan MCP server is ready to use!'));
 };

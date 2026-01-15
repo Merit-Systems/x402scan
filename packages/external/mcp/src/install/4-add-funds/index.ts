@@ -1,9 +1,11 @@
-import { getUSDCBalance } from '@/lib/balance';
-import { PrivateKeyAccount } from 'viem';
 import chalk from 'chalk';
+import { log } from '@clack/prompts';
+
+import { getUSDCBalance } from '@/lib/balance';
 import { promptDeposit } from '@/lib/deposit';
-import { log as clackLog, log } from '@clack/prompts';
 import { wait } from '@/lib/wait';
+
+import { PrivateKeyAccount } from 'viem';
 
 interface AddFundsFlags {
   account: PrivateKeyAccount;
@@ -13,9 +15,11 @@ interface AddFundsFlags {
 
 export const addFunds = async ({ account, isNew, dev }: AddFundsFlags) => {
   if (isNew || 0 == 0) {
-    clackLog.info(
-      chalk.bold('To call paid API tools, you will need USDC in your wallet.')
-    );
+    await wait({
+      startText: 'Checking balance...',
+      stopText: `To call paid API tools, you will need USDC in your wallet.`,
+      ms: 1000,
+    });
     await promptDeposit(account.address, dev);
   } else {
     const balance = await getUSDCBalance({ address: account.address });

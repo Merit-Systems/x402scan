@@ -4,12 +4,17 @@ import { log } from '@/lib/log';
 
 import { clientMetadata, Clients } from '../clients';
 import { getNestedValue, setNestedValue } from './lib';
-import { parseClientConfig, serializeClientConfig } from './file-types';
+import {
+  FileFormat,
+  parseClientConfig,
+  serializeClientConfig,
+  stringifyObject,
+} from './file-types';
 import { getClientConfigFile } from './client-config-file';
 
 import chalk from 'chalk';
 
-import { log as clackLog, confirm, stream } from '@clack/prompts';
+import { log as clackLog, confirm, outro, stream } from '@clack/prompts';
 
 import type { ClientConfigObject } from './types';
 import boxen from 'boxen';
@@ -55,7 +60,6 @@ export async function addServer(client: Clients) {
   }
 
   const clientFileTarget = getClientConfigFile(client);
-  let error: string | undefined = undefined;
   const { name } = clientMetadata[client];
 
   try {
@@ -141,40 +145,15 @@ export async function addServer(client: Clients) {
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const linesToPrint = JSON.stringify(
-      {
-        [clientFileTarget.configKey]: {
-          [SERVER_NAME]: servers[SERVER_NAME] as object,
-        },
-      },
-      null,
-      2
-    ).split('\n');
-
     const configStr = boxen(
-      JSON.stringify(
+      formatDiffByFormat(
         {
           [clientFileTarget.configKey]: {
             [SERVER_NAME]: servers[SERVER_NAME] as object,
           },
         },
-        null,
-        2
-      )
-        .split('\n')
-        .map((line, index) => {
-          const isDiffLine = ![
-            0,
-            1,
-            linesToPrint.length - 2,
-            linesToPrint.length - 1,
-          ].includes(index);
-          if (isDiffLine) {
-            return `${chalk.bold.green(`+ ${line.slice(2)}`)}`;
-          }
-          return line;
-        })
-        .join('\n'),
+        clientFileTarget.format
+      ),
       {
         borderStyle: 'round',
         borderColor: 'green',
@@ -186,7 +165,7 @@ export async function addServer(client: Clients) {
     await wait({
       startText: `The following configuration will be added to ${chalk.underline(clientFileTarget.path)} client`,
       stopText: `The following configuration will be added to ${chalk.underline(clientFileTarget.path)} client:`,
-      ms: 1000,
+      ms: 500,
     });
 
     await stream.message(
@@ -214,7 +193,8 @@ export async function addServer(client: Clients) {
       inactive: 'Cancel',
     });
     if (!isConfirmed) {
-      throw new Error('Configuration file not updated');
+      outro(chalk.bold.red('Installation cancelled'));
+      process.exit(0);
     }
 
     const configContent = serializeClientConfig(
@@ -224,17 +204,51 @@ export async function addServer(client: Clients) {
     );
 
     fs.writeFileSync(clientFileTarget.path, configContent);
+    clackLog.success(chalk.bold.green(`Added x402scan MCP to ${name}`));
   } catch (e) {
-    error = (e as Error).message;
+    clackLog.error(chalk.bold.red(`Error adding x402scan MCP to ${name}`));
     throw e;
   }
-
-  const isError = error !== undefined;
-
-  if (isError) {
-    clackLog.error(chalk.bold.red(`Error adding x402scan MCP to ${name}`));
-  } else {
-    clackLog.success(chalk.bold.green(`Added x402scan MCP to ${name}`));
-  }
-  clackLog.message('');
 }
+
+const formatDiffByFormat = (obj: object, format: FileFormat) => {
+  const str = stringifyObject(obj, format);
+  switch (format) {
+    case FileFormat.JSON: {
+      const numLines = str.split('\n').length;
+      return str
+        .split('\n')
+        .map((line, index) => {
+          const diffLines = [0, 1, numLines - 2, numLines - 1];
+          const isDiffLine = !diffLines.includes(index);
+          if (isDiffLine) {
+            return `${chalk.bold.green(`+ ${line.slice(2)}`)}`;
+          }
+          return line;
+        })
+        .join('\n');
+    }
+    case FileFormat.YAML: {
+      return str
+        .split('\n')
+        .map((line, index) => {
+          const diffLines = [0, 1, str.length - 2, str.length - 1];
+          const isDiffLine = !diffLines.includes(index);
+          if (isDiffLine) {
+            return `${chalk.bold.green(`+ ${line.slice(2)}`)}`;
+          }
+          return line;
+        })
+        .join('\n');
+    }
+    case FileFormat.TOML: {
+      return str
+        .split('\n')
+        .filter(line => line.trim() !== '')
+        .map(line => {
+          return `${chalk.bold.green(`+ ${line.trim()}`)}`;
+        })
+        .join('\n');
+    }
+  }
+};

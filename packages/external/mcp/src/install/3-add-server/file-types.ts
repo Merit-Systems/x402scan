@@ -21,16 +21,15 @@ export const parseClientConfig = ({ format, path }: ClientConfigFile) => {
   let config: ClientConfigObject = {};
   if (format === FileFormat.YAML) {
     config = yaml.load(fileContent) as ClientConfigObject;
-  }
-  if (format === FileFormat.TOML) {
+  } else if (format === FileFormat.TOML) {
     config = TOML.parse(fileContent) as ClientConfigObject;
-  }
-  if (path.endsWith('.jsonc')) {
+  } else if (path.endsWith('.jsonc')) {
     // Use jsonc-parser for .jsonc files to support comments
     config = jsonc.parse(fileContent) as ClientConfigObject;
+  } else {
+    // Default to JSON
+    config = JSON.parse(fileContent) as ClientConfigObject;
   }
-  // Default to JSON
-  config = JSON.parse(fileContent) as ClientConfigObject;
 
   return {
     config,
@@ -81,5 +80,22 @@ export const serializeClientConfig = (
     }
   }
   // Default to JSON
+  return JSON.stringify(config, null, 2);
+};
+
+export const stringifyObject = (
+  config: ClientConfigObject,
+  format: FileFormat
+) => {
+  if (format === FileFormat.YAML) {
+    return yaml.dump(config, {
+      indent: 2,
+      lineWidth: -1,
+      noRefs: true,
+    });
+  }
+  if (format === FileFormat.TOML) {
+    return TOML.stringify(config);
+  }
   return JSON.stringify(config, null, 2);
 };

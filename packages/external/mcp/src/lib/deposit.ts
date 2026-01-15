@@ -11,23 +11,23 @@ export const promptDeposit = async (address: string, isDev?: boolean) => {
   const depositLink = `${baseUrl}/deposit/${address}`;
 
   const guidedDeposit = await select({
-    message: 'How would you like to deposit?',
+    message: chalk.bold('How would you like to deposit?'),
     initialValue: true,
     options: [
       {
-        label: `Guided Deposit - ${chalk.bold.green('Recommended')}`,
+        label: `Guided - Recommended`,
         value: true,
-        hint: 'Deposit online using a dedicated x402scan deposit page',
+        hint: 'Online portal in x402scan',
       },
       {
-        label: 'Manual Deposit',
+        label: 'Manual',
         value: false,
-        hint: 'Enter the deposit address and network manually.',
+        hint: 'Print deposit instructions',
       },
       {
         label: 'Skip',
         value: undefined,
-        hint: 'Skip the deposit process and start using the MCP server without depositing.',
+        hint: 'Skip deposit process - functionality limited',
       },
     ],
   });
@@ -52,7 +52,7 @@ export const promptDeposit = async (address: string, isDev?: boolean) => {
         }
       )
     );
-  } else if (guidedDeposit === undefined) {
+  } else {
     log.message('Skipping deposit process...');
   }
 };

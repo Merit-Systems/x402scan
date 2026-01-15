@@ -1,8 +1,9 @@
 import z from 'zod';
 
-import { select, log } from '@clack/prompts';
+import { select, log, outro } from '@clack/prompts';
 
 import { clientMetadata, Clients } from '../clients';
+import chalk from 'chalk';
 
 export const getClient = async (flagClient: string | undefined) => {
   const parsedClient = z.enum(Clients).safeParse(flagClient);
@@ -23,5 +24,11 @@ export const getClient = async (flagClient: string | undefined) => {
     }),
     maxItems: 7,
   });
-  return client;
+
+  const parsedClientSelection = z.enum(Clients).safeParse(client);
+  if (parsedClientSelection.success) {
+    return parsedClientSelection.data;
+  }
+  outro(chalk.bold.red('No MCP client selected'));
+  process.exit(0);
 };
