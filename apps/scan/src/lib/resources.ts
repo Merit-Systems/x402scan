@@ -2,16 +2,14 @@ import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
-import {
-  parseX402Response,
-  normalizePaymentRequirement,
-  isV2Response,
-} from '@/lib/x402';
+import { parseX402Response, normalizeAccepts } from '@/lib/x402';
 import { getOriginFromUrl } from '@/lib/url';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
 import { SUPPORTED_CHAINS } from '@/types/chain';
+import { fetchDiscoveryDocument } from '@/services/discovery';
+import { verifyAcceptsOwnership } from '@/services/verification/accepts-verification';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
@@ -49,9 +47,6 @@ export const registerResource = async (url: string, data: unknown) => {
     };
   }
 
-  const isV2 = isV2Response(x402Data);
-  const v2Resource = isV2 ? x402Data.resource : undefined;
-
   const origin = getOriginFromUrl(cleanUrl);
   const {
     og,
@@ -76,9 +71,7 @@ export const registerResource = async (url: string, data: unknown) => {
       })) ?? [],
   });
 
-  const normalizedAccepts = x402Data.accepts.map(accept =>
-    normalizePaymentRequirement(accept, v2Resource)
-  );
+  const normalizedAccepts = normalizeAccepts(x402Data);
 
   const resource = await upsertResource({
     resource: cleanUrl,
@@ -113,6 +106,32 @@ export const registerResource = async (url: string, data: unknown) => {
 
   await upsertResourceResponse(resource.resource.id, x402Data);
 
+  // Attempt ownership verification (non-blocking)
+  // This runs in the background and won't block registration success
+  void (async () => {
+    try {
+      const discoveryResult = await fetchDiscoveryDocument(origin);
+      if (
+        discoveryResult.success &&
+        discoveryResult.ownershipProofs &&
+        discoveryResult.ownershipProofs.length > 0
+      ) {
+        const acceptIds = resource.accepts.map(accept => accept.id);
+        await verifyAcceptsOwnership({
+          acceptIds,
+          ownershipProofs: discoveryResult.ownershipProofs,
+          origin,
+        });
+      }
+    } catch (error) {
+      // Log verification errors but don't fail registration
+      console.error(
+        'Ownership verification failed during registration:',
+        error
+      );
+    }
+  })();
+
   return {
     success: true as const,
     resource,
@@ -121,7 +140,6 @@ export const registerResource = async (url: string, data: unknown) => {
       maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
     })),
     response: data,
-    enhancedParseWarnings: null as string[] | null,
     registrationDetails: {
       providedAccepts: normalizedAccepts,
       supportedAccepts: resource.accepts,

@@ -11,7 +11,6 @@ import { CheckCircle, XCircle } from 'lucide-react';
 interface RegistrationChecklistProps {
   methodUsed?: string;
   hasAccepts: boolean;
-  hasEnhancedSchema: boolean;
   hasOriginMetadata: boolean;
 }
 
@@ -25,7 +24,6 @@ const Icon = ({ success }: { success: boolean }) =>
 export function RegistrationChecklist({
   methodUsed,
   hasAccepts,
-  hasEnhancedSchema,
   hasOriginMetadata,
 }: RegistrationChecklistProps) {
   return (
@@ -79,12 +77,6 @@ export function RegistrationChecklist({
             <TableCell>Has accepts</TableCell>
             <TableCell>
               <Icon success={hasAccepts} />
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Enhanced schema (for invocation)</TableCell>
-            <TableCell>
-              <Icon success={hasEnhancedSchema} />
             </TableCell>
           </TableRow>
 
