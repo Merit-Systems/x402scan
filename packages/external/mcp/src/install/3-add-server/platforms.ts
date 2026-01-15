@@ -3,7 +3,7 @@ import path from 'path';
 import process from 'process';
 import z from 'zod';
 
-export enum Platforms {
+enum Platforms {
   Windows = 'win32',
   MacOS = 'darwin',
   Linux = 'linux',

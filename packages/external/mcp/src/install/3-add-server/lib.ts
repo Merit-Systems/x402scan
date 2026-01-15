@@ -28,29 +28,3 @@ export const setNestedValue = (
   }, obj);
   target[lastKey] = value;
 };
-
-export const deepMerge = (
-  target: ClientConfigObject,
-  source: ClientConfigObject
-) => {
-  const result: ClientConfigObject = { ...target };
-
-  for (const key in source) {
-    if (
-      source[key] &&
-      typeof source[key] === 'object' &&
-      !Array.isArray(source[key])
-    ) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      result[key] = deepMerge(
-        result[key] ?? {},
-        source[key] as ClientConfigObject
-      );
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      result[key] = source[key];
-    }
-  }
-
-  return result;
-};

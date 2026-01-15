@@ -14,7 +14,7 @@ export enum Clients {
   Opencode = 'opencode',
 }
 
-export interface ClientMetadata {
+interface ClientMetadata {
   name: string;
   description: string;
   website: string;

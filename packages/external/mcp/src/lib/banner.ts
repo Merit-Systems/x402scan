@@ -21,7 +21,7 @@ const MIDDLE_LINE = `${CHARACTER.repeat(3)}`;
 
 const line = (text: string) => `${chalk.bold.hex(HEX)(text)}`;
 
-export const banner = ({ heading, description }: BannerProps) =>
+const banner = ({ heading, description }: BannerProps) =>
   boxen(
     `${line(OUTTER_LINE)}
 ${line(INNER_LINE)}${' '.repeat(SPACER)}${chalk.bold(heading)}${SPACE.repeat(PADDING)}
