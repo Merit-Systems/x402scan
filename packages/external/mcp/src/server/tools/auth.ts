@@ -1,6 +1,4 @@
-/**
- * Auth tools - server-driven SIWX authentication
- */
+import { x402Client, x402HTTPClient } from '@x402/core/client';
 
 import { mcpSuccess, mcpError } from '../lib/response';
 
@@ -13,7 +11,6 @@ import { requestWithHeadersSchema } from '@/server/lib/schemas';
 
 import type { RegisterTools } from '@/server/types';
 import type { SIWxExtensionInfo } from '../vendor/sign-in-with-x/types';
-import { x402Client, x402HTTPClient } from '@x402/core/client';
 
 export const registerAuthTools: RegisterTools = ({ server, account }) => {
   server.registerTool(

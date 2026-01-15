@@ -1,19 +1,24 @@
-/**
- * Payment tools - query, validate, execute
- */
+import { formatUnits } from 'viem';
 
-import { mcpSuccess, mcpError } from '@/server/lib/response';
-
-import { requestSchema, requestWithHeadersSchema } from '@/server/lib/schemas';
-
-import type { RegisterTools } from '@/server/types';
-import { FetchStates } from '@/server/types';
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { ExactEvmScheme } from '@x402/evm/exact/client';
 import { wrapFetchWithPayment } from '@x402/fetch';
+
+import { mcpSuccess, mcpError } from '@/server/lib/response';
+import { requestSchema, requestWithHeadersSchema } from '@/server/lib/schemas';
+import { FetchStates } from '@/server/types';
+
 import { log } from '@/lib/log';
 
-export const registerPaymentTools: RegisterTools = ({ server, account }) => {
+import { checkBalance } from '../lib/check-balance';
+
+import type { RegisterTools } from '@/server/types';
+
+export const registerPaymentTools: RegisterTools = ({
+  server,
+  account,
+  flags,
+}) => {
   server.registerTool(
     'query_endpoint',
     {
@@ -84,10 +89,19 @@ export const registerPaymentTools: RegisterTools = ({ server, account }) => {
 
       let fetchState: FetchStates = FetchStates.INITIAL_REQUEST;
 
-      coreClient.onBeforePaymentCreation(async ctx => {
+      coreClient.onBeforePaymentCreation(async ({ selectedRequirements }) => {
+        const amount = parseFloat(
+          formatUnits(BigInt(selectedRequirements.amount), 6)
+        );
+        await checkBalance({
+          server,
+          address: account.address,
+          amountNeeded: amount,
+          message: balance =>
+            `You need ${amount} USDC to make this request. Your current balance is ${balance} USDC.`,
+          flags,
+        });
         fetchState = FetchStates.PAYMENT_REQUIRED;
-        log.info('Before payment creation', ctx);
-        return Promise.resolve();
       });
 
       coreClient.onAfterPaymentCreation(async ctx => {
