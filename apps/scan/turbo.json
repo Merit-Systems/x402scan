@@ -13,7 +13,8 @@
         "CDP_*",
         "CRON_*",
         "FREE_TIER_*",
-        "TRANSFERS_*"
+        "TRANSFERS_*",
+        "STRIPE_*"
       ]
     },
     "build:deploy": {
@@ -27,7 +28,8 @@
         "CDP_*",
         "CRON_*",
         "FREE_TIER_*",
-        "TRANSFERS_*"
+        "TRANSFERS_*",
+        "STRIPE_*"
       ]
     },
     "dev": {
@@ -41,7 +43,8 @@
         "CDP_*",
         "CRON_*",
         "FREE_TIER_*",
-        "TRANSFERS_*"
+        "TRANSFERS_*",
+        "STRIPE_*"
       ]
     }
   }
