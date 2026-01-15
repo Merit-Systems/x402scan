@@ -25,12 +25,13 @@
   "devDependencies": {
     "knip": "^5.80.0",
     "prettier": "^3.7.4",
-    "turbo": "^2.7.3",
+    "turbo": "^2.7.4",
     "typescript": "catalog:"
   },
   "pnpm": {
     "overrides": {
-      "@auth/core": "0.40.0"
+      "@auth/core": "0.40.0",
+      "viem": "2.44.1"
     },
     "onlyBuiltDependencies": [
       "@coinbase/x402"
