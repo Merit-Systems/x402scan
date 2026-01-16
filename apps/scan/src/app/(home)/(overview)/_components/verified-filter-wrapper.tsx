@@ -11,10 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { CheckCircle, Smartphone } from 'lucide-react';
-
-const MOTION_PERMISSION_KEY = 'motion-permission-requested';
+import { CheckCircle } from 'lucide-react';
 
 export const VerifiedFilterWrapper = ({
   children,
@@ -23,75 +20,9 @@ export const VerifiedFilterWrapper = ({
 }) => {
   return (
     <VerifiedFilterProvider>
-      <MotionPermissionPrompt />
       <VerifiedFilterDialog />
       {children}
     </VerifiedFilterProvider>
-  );
-};
-
-// Prompt for motion permission on iOS
-const MotionPermissionPrompt = () => {
-  const [showPrompt, setShowPrompt] = useState(false);
-
-  useEffect(() => {
-    // Check if permission was already requested
-    const requested = localStorage.getItem(MOTION_PERMISSION_KEY);
-    if (requested) return;
-
-    // Check if device supports motion events and requires permission
-    if (
-      typeof DeviceMotionEvent !== 'undefined' &&
-      typeof (DeviceMotionEvent as any).requestPermission === 'function'
-    ) {
-      // Show prompt after a short delay
-      setTimeout(() => setShowPrompt(true), 2000);
-    } else {
-      // No permission needed, mark as completed
-      localStorage.setItem(MOTION_PERMISSION_KEY, 'true');
-    }
-  }, []);
-
-  const handleRequestPermission = async () => {
-    try {
-      const permission = await (DeviceMotionEvent as any).requestPermission();
-      localStorage.setItem(MOTION_PERMISSION_KEY, 'true');
-      setShowPrompt(false);
-    } catch (error) {
-      console.error('Error requesting motion permission:', error);
-      localStorage.setItem(MOTION_PERMISSION_KEY, 'true'); // Don't show again
-      setShowPrompt(false);
-    }
-  };
-
-  const handleDismiss = () => {
-    localStorage.setItem(MOTION_PERMISSION_KEY, 'true');
-    setShowPrompt(false);
-  };
-
-  if (!showPrompt) return null;
-
-  return (
-    <Dialog open={showPrompt} onOpenChange={handleDismiss}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Smartphone className="size-4" />
-            Enable Shake Gesture
-          </DialogTitle>
-          <DialogDescription>
-            Allow motion access to use shake gesture for opening the verified
-            filter. This is an optional feature for mobile devices.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex gap-2 justify-end">
-          <Button variant="outline" onClick={handleDismiss}>
-            Skip
-          </Button>
-          <Button onClick={handleRequestPermission}>Enable</Button>
-        </div>
-      </DialogContent>
-    </Dialog>
   );
 };
 
@@ -128,11 +59,11 @@ const VerifiedToggleSwitch = () => {
   );
 };
 
-// Dialog with keyboard shortcut (desktop) and shake detection (mobile)
+// Dialog with keyboard shortcut (triple tap 'v') and logo click (5 times)
 const VerifiedFilterDialog = () => {
   const [showModal, setShowModal] = useState(false);
 
-  // Keyboard shortcut for desktop (triple tap 'v')
+  // Keyboard shortcut (triple tap 'v')
   useEffect(() => {
     let tapCount = 0;
     let tapTimeout: NodeJS.Timeout;
@@ -169,30 +100,15 @@ const VerifiedFilterDialog = () => {
     };
   }, []);
 
-  // Shake detection for mobile
+  // Listen for custom event from logo clicks
   useEffect(() => {
-    // Only set up if permission was granted
-    const permissionGranted = localStorage.getItem(MOTION_PERMISSION_KEY);
-    if (!permissionGranted) return;
-
-    // Use shake.js library
-    const Shake = require('shake.js');
-    const myShakeEvent = new Shake({
-      threshold: 15, // Sensitivity of shake detection
-      timeout: 1000, // Time between shakes
-    });
-
-    myShakeEvent.start();
-
-    const handleShake = () => {
+    const handleOpenModal = () => {
       setShowModal(true);
     };
 
-    window.addEventListener('shake', handleShake, false);
-
+    window.addEventListener('open-verified-filter-modal', handleOpenModal);
     return () => {
-      window.removeEventListener('shake', handleShake, false);
-      myShakeEvent.stop();
+      window.removeEventListener('open-verified-filter-modal', handleOpenModal);
     };
   }, []);
 

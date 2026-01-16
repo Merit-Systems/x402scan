@@ -4,7 +4,7 @@ import { scanDb } from '@x402scan/scan-db';
 
 import { parseX402Response } from '@/lib/x402';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
-import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 
 import type { Prisma } from '@x402scan/scan-db';
 
@@ -130,7 +130,7 @@ const listOriginsUncached = async (input: z.infer<typeof listOriginsSchema>) => 
   }));
 };
 
-export const listOrigins = createCachedQuery({
+export const listOrigins = createCachedArrayQuery({
   queryFn: listOriginsUncached,
   cacheKeyPrefix: 'origins-list',
   createCacheKey: input => createStandardCacheKey(input),
