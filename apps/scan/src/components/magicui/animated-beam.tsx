@@ -141,9 +141,14 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
             d = `M ${startX},${startY} L ${startX},${verticalEnd} Q ${startX},${controlPointY} ${horizontalStart},${controlPointY} L ${horizontalEnd},${controlPointY} Q ${endX},${controlPointY} ${endX},${verticalStart} L ${endX},${endY}`;
           }
         } else {
-          // Original curved path
-          const controlY = startY - curvature;
-          d = `M ${startX},${startY} Q ${(startX + endX) / 2},${controlY} ${endX},${endY}`;
+          // Smooth S-curve: horizontal at both ends, curves down then up
+          // Single cubic bezier with control points at same Y as their respective endpoints
+          const cp1x = startX + (endX - startX) * 0.5;
+          const cp1y = startY + curvature;
+          const cp2x = startX + (endX - startX) * 0.5;
+          const cp2y = endY - curvature;
+
+          d = `M ${startX},${startY} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`;
         }
         setPathD(d);
       }
