@@ -4,6 +4,7 @@ import { scanDb } from '@x402scan/scan-db';
 
 import { parseX402Response } from '@/lib/x402';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
+import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 
 import type { Prisma } from '@x402scan/scan-db';
 
@@ -81,29 +82,36 @@ export const listOriginsSchema = z.object({
   address: mixedAddressSchema.optional(),
 });
 
-export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
+const listOriginsUncached = async (input: z.infer<typeof listOriginsSchema>) => {
   const { chain, address } = input;
+
+  // Build where clause for accepts
+  const acceptsWhere = {
+    ...(address ? { payTo: address } : {}),
+    ...(chain ? { network: chain } : {}),
+  };
+
   const origins = await scanDb.resourceOrigin.findMany({
     where: {
       resources: {
         some: {
           accepts: {
-            some: {
-              ...(address ? { payTo: address } : {}),
-              ...(chain ? { network: chain } : {}),
-            },
+            some: acceptsWhere,
           },
         },
       },
     },
     include: {
       resources: {
-        include: {
+        where: {
           accepts: {
-            where: {
-              ...(address ? { payTo: address } : {}),
-              ...(chain ? { network: chain } : {}),
-            },
+            some: acceptsWhere,
+          },
+        },
+        select: {
+          id: true,
+          accepts: {
+            where: acceptsWhere,
             select: {
               verified: true,
             },
@@ -121,6 +129,14 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
     ),
   }));
 };
+
+export const listOrigins = createCachedQuery({
+  queryFn: listOriginsUncached,
+  cacheKeyPrefix: 'origins-list',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: [],
+  tags: ['origins'],
+});
 
 export const listOriginsWithResourcesSchema = z.object({
   chain: optionalChainSchema,
