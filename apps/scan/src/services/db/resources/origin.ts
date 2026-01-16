@@ -215,6 +215,7 @@ export const searchOrigins = async (
 export const getOrigin = async (id: string) => {
   return await scanDb.resourceOrigin.findUnique({
     where: { id },
+    include: { ogImages: true },
   });
 };
 
