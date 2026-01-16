@@ -1,7 +1,7 @@
 import z3 from 'zod3';
 
 import { searchResources } from '../db/resources/resource';
-import { paymentRequirementsSchemaV1, outputSchemaV1 } from '@/lib/x402';
+import { paymentRequirementsSchemaV1 } from '@/lib/x402';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
@@ -34,7 +34,7 @@ export async function searchX402Tools(
       const parsedAccepts = z3
         .array(
           paymentRequirementsSchemaV1.extend({
-            outputSchema: outputSchemaV1,
+            outputSchema: z3.any().optional(),
           })
         )
         .safeParse(
