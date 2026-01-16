@@ -3,7 +3,8 @@ import { x402Client } from '@x402/core/client';
 
 import { getWebPageMetadata } from './_lib';
 
-import type { DiscoveryExtension } from '@x402/extensions/bazaar';
+import { getSchema } from '../lib/x402/get-route-details';
+
 import type { RegisterResources } from './types';
 
 const origins = ['enrichx402.com'];
@@ -61,14 +62,14 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
                   description: metadata?.description,
                   resources: resources.filter(Boolean).map(resource => {
                     if (!resource) return null;
-                    const bazaarInfo = resource.paymentRequired?.extensions
-                      ?.bazaar as DiscoveryExtension | undefined;
-                    if (!bazaarInfo) return null;
+                    const schema = getSchema(
+                      resource.paymentRequired?.extensions
+                    );
 
                     return {
                       url: resource.resource,
-                      schema: bazaarInfo.schema.properties.input,
-                      mimeType: 'application/json',
+                      schema,
+                      mimeType: resource.paymentRequired.resource.mimeType,
                     };
                   }),
                 }),

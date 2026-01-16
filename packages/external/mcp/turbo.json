@@ -11,6 +11,12 @@
       "env": ["X402_*", "X402_PRIVATE_KEY"],
       "persistent": true,
       "passThroughEnv": ["APPDATA", "CODEX_HOME", "XDG_CONFIG_HOME"]
+    },
+    "build:mcpb": {
+      "env": ["X402_*", "X402_PRIVATE_KEY"],
+      "dependsOn": ["^build"],
+      "outputs": ["bundle/**"],
+      "passThroughEnv": ["APPDATA", "CODEX_HOME", "XDG_CONFIG_HOME"]
     }
   }
 }

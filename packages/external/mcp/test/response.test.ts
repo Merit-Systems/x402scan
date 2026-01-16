@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  mcpSuccess,
-  mcpError,
-  formatUSDC,
-  parseUSDC,
-} from '../src/server/lib/response';
+import { mcpSuccess, mcpError } from '../src/server/lib/response';
 
 describe('mcpSuccess', () => {
   it('wraps data in MCP content format', () => {
@@ -70,44 +65,5 @@ describe('mcpError', () => {
       details?: { cause: string };
     };
     expect(parsed.details?.cause).toBe('Inner cause');
-  });
-});
-
-describe('formatUSDC', () => {
-  it('formats whole dollars', () => {
-    expect(formatUSDC(1_000_000n)).toBe('$1.00');
-    expect(formatUSDC(10_000_000n)).toBe('$10.00');
-    expect(formatUSDC(100_000_000n)).toBe('$100.00');
-  });
-
-  it('formats cents', () => {
-    expect(formatUSDC(1_500_000n)).toBe('$1.50');
-    expect(formatUSDC(1_990_000n)).toBe('$1.99');
-    expect(formatUSDC(10_000n)).toBe('$0.01');
-  });
-
-  it('formats zero', () => {
-    expect(formatUSDC(0n)).toBe('$0.00');
-  });
-
-  it('formats small amounts', () => {
-    expect(formatUSDC(100n)).toBe('$0.00'); // Rounds down
-    expect(formatUSDC(5_000n)).toBe('$0.01'); // Rounds up
-  });
-});
-
-describe('parseUSDC', () => {
-  it('parses dollar string', () => {
-    expect(parseUSDC('$1.00')).toBe(1_000_000n);
-    expect(parseUSDC('$10.50')).toBe(10_500_000n);
-  });
-
-  it('parses without dollar sign', () => {
-    expect(parseUSDC('1.00')).toBe(1_000_000n);
-    expect(parseUSDC('0.01')).toBe(10_000n);
-  });
-
-  it('handles whitespace', () => {
-    expect(parseUSDC(' $5.00 ')).toBe(5_000_000n);
   });
 });

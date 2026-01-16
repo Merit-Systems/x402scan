@@ -2,13 +2,14 @@
  * USDC balance reader
  */
 
-import { createPublicClient, http, erc20Abi, formatUnits } from 'viem';
+import { createPublicClient, http, erc20Abi } from 'viem';
 
 import { getChain, getUSDCAddress, DEFAULT_NETWORK, toCaip2 } from './networks';
 
 import { log } from './log';
 
 import type { Address } from 'viem';
+import { tokenBigIntToNumber } from './token';
 
 interface GetUSDCBalanceProps {
   address: Address;
@@ -37,5 +38,5 @@ export async function getUSDCBalance({
     args: [address],
   });
 
-  return parseFloat(formatUnits(balance, 6));
+  return tokenBigIntToNumber(balance);
 }

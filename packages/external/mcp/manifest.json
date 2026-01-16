@@ -1,0 +1,50 @@
+{
+  "manifest_version": "0.3",
+  "name": "x402scan",
+  "display_name": "x402scan",
+  "version": "0.0.1",
+  "description": "Generic MCP server for calling x402-protected APIs with automatic payment handling",
+  "long_description": "Make paid API calls to any x402-protected endpoint. Automatic wallet management, v1/v2 protocol support, and verbose debugging. Pay per call with USDC on Base - no API keys needed.",
+  "author": {
+    "name": "Merit Systems",
+    "url": "https://github.com/merit-systems"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/merit-systems/x402scan-mcp"
+  },
+  "homepage": "https://x402scan.com",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.cjs",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.cjs"]
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "tools": [
+    {
+      "name": "check_balance",
+      "description": "Check wallet address and USDC balance"
+    },
+    {
+      "name": "query_endpoint",
+      "description": "Probe x402 endpoint for pricing and schema"
+    },
+    {
+      "name": "validate_payment",
+      "description": "Pre-flight check if payment would succeed"
+    },
+    {
+      "name": "execute_call",
+      "description": "Make paid request to x402 endpoint"
+    }
+  ]
+}

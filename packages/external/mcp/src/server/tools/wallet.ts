@@ -30,4 +30,12 @@ export const registerWalletTools: RegisterTools = ({
       });
     }
   );
+
+  server.registerTool(
+    'get_wallet_address',
+    {
+      description: 'Get the wallet address.',
+    },
+    () => mcpSuccess({ address })
+  );
 };

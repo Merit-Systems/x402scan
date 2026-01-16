@@ -1,15 +1,17 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
-import { registerPaymentTools } from './tools/payment';
+import { registerFetchX402ResourceTool } from './tools/fetch-x402-resource';
 import { registerAuthTools } from './tools/auth';
 import { registerWalletTools } from './tools/wallet';
+import { registerCheckX402EndpointTool } from './tools/check-endpoint-schema';
+
+import { registerOrigins } from './resources/origins';
 
 import { log } from '@/lib/log';
+import { getWallet } from '@/lib/wallet';
 
 import type { Command } from '@/types';
-import { getWallet } from '@/lib/wallet';
-import { registerOrigins } from './resources/origins';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
@@ -20,6 +22,8 @@ export const startServer: Command = async flags => {
     {
       name: '@x402scan/mcp',
       version: '0.0.1',
+      websiteUrl: 'https://x402scan.com',
+      icons: [{ src: 'https://x402scan.com/logo.svg' }],
     },
     {
       capabilities: {
@@ -37,9 +41,10 @@ export const startServer: Command = async flags => {
     flags,
   };
 
-  registerPaymentTools(props);
+  registerFetchX402ResourceTool(props);
   registerAuthTools(props);
   registerWalletTools(props);
+  registerCheckX402EndpointTool(props);
 
   await registerOrigins({ server, flags });
 
