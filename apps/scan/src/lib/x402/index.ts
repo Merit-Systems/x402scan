@@ -187,44 +187,7 @@ function getOutputSchemaFromBazaar(
 }
 
 // NOTE(shafu): we need this for the agent tools
-function coerceV2BazaarOutputSchemaToV1(
-  outputSchema: unknown
-): OutputSchemaV1 | undefined {
-  if (!outputSchema || typeof outputSchema !== 'object') return undefined;
-  if (!('input' in outputSchema)) return undefined;
-
-  const schemaObj = outputSchema as { input?: unknown; output?: unknown };
-  if (!schemaObj.input || typeof schemaObj.input !== 'object') return undefined;
-
-  const input = { ...(schemaObj.input as Record<string, unknown>) };
-
-  // Infer method if missing (bazaar often omits it)
-  let inferredMethod: 'GET' | 'POST' = 'GET';
-  if (input.body) inferredMethod = 'POST';
-  else if (input.queryParams) inferredMethod = 'GET';
-  if (!('method' in input)) input.method = inferredMethod;
-
-  // Convert `body.properties` -> `bodyFields` (v1 expects Record<string, FieldDef>)
-  if (
-    input.body &&
-    typeof input.body === 'object' &&
-    input.body !== null &&
-    'properties' in (input.body as Record<string, unknown>)
-  ) {
-    input.bodyFields = (
-      input.body as { properties?: Record<string, unknown> }
-    ).properties;
-    delete input.body;
-  }
-
-  const parsed = outputSchemaV1.safeParse({
-    input,
-    output: schemaObj.output ?? null,
-  });
-  return parsed.success ? parsed.data : undefined;
-}
-
-// NOTE(shafu): we need this for the agent tools
+// obviously sloped up, should be fine though because the interface won't change
 export function coerceAcceptForV1Schema(params: {
   x402Version: number;
   accept: unknown;
@@ -243,7 +206,44 @@ export function coerceAcceptForV1Schema(params: {
   }
 
   if (x402Version === 2) {
-    const coerced = coerceV2BazaarOutputSchemaToV1(base.outputSchema);
+    const outputSchema = base.outputSchema;
+    const coerced = (() => {
+      if (!outputSchema || typeof outputSchema !== 'object') return undefined;
+      if (!('input' in outputSchema)) return undefined;
+
+      const schemaObj = outputSchema as { input?: unknown; output?: unknown };
+      if (!schemaObj.input || typeof schemaObj.input !== 'object') {
+        return undefined;
+      }
+
+      const input = { ...(schemaObj.input as Record<string, unknown>) };
+
+      // Infer method if missing (bazaar often omits it)
+      let inferredMethod: 'GET' | 'POST' = 'GET';
+      if (input.body) inferredMethod = 'POST';
+      else if (input.queryParams) inferredMethod = 'GET';
+      if (!('method' in input)) input.method = inferredMethod;
+
+      // Convert `body.properties` -> `bodyFields` (v1 expects Record<string, FieldDef>)
+      if (
+        input.body &&
+        typeof input.body === 'object' &&
+        input.body !== null &&
+        'properties' in (input.body as Record<string, unknown>)
+      ) {
+        input.bodyFields = (
+          input.body as { properties?: Record<string, unknown> }
+        ).properties;
+        delete input.body;
+      }
+
+      const parsed = outputSchemaV1.safeParse({
+        input,
+        output: schemaObj.output ?? null,
+      });
+      return parsed.success ? parsed.data : undefined;
+    })();
+
     if (coerced) base.outputSchema = coerced;
     else if ('outputSchema' in base) base.outputSchema = undefined;
   }
