@@ -73,17 +73,9 @@ export async function createX402AITools(
             outputSchema: outputSchemaV1,
           })
           .safeParse(acceptToParse);
-        // #region agent log
-        const parseErrors = parsedAccept.success ? null : parsedAccept.error.issues.map(i => ({path:i.path.join('.'),message:i.message}));
-        const parsedOutputSchemaInputKeys = parsedAccept.success && parsedAccept.data.outputSchema?.input ? Object.keys(parsedAccept.data.outputSchema.input) : null;
-        fetch('http://127.0.0.1:7242/ingest/b580f9ca-6e18-4c38-9de1-256e6503a55a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-tools.ts:42',message:'Parse result',data:{success:parsedAccept.success,errors:parseErrors,hasOutputSchema:parsedAccept.success?!!parsedAccept.data.outputSchema:null,parsedOutputSchemaInputKeys},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         if (!parsedAccept.success) {
           continue;
         }
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b580f9ca-6e18-4c38-9de1-256e6503a55a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-tools.ts:45',message:'Before accessing outputSchema.input',data:{hasOutputSchema:!!parsedAccept.data.outputSchema,hasInput:!!parsedAccept.data.outputSchema?.input},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         const urlParts = new URL(resource.resource);
         const toolName = urlParts.pathname
           .split('/')
@@ -98,9 +90,6 @@ export async function createX402AITools(
           )
         );
 
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b580f9ca-6e18-4c38-9de1-256e6503a55a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-tools.ts:60',message:'Tool created successfully',data:{resourceId:resource.id,toolName},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         aiTools[resource.id] = tool({
           description: `${toolName}: ${parsedAccept.data.description} (Paid API - ${parsedAccept.data.maxAmountRequired} on ${parsedAccept.data.network})`,
           inputSchema: parametersSchema,
@@ -109,9 +98,6 @@ export async function createX402AITools(
     }
   }
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b580f9ca-6e18-4c38-9de1-256e6503a55a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'create-tools.ts:68',message:'createX402AITools exit',data:{toolsCreated:Object.keys(aiTools).length,toolIds:Object.keys(aiTools)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
   return aiTools;
 }
 
