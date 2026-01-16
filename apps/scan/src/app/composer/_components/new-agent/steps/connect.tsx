@@ -81,6 +81,7 @@ const VerifyContent: React.FC<VerifyProps> = ({ signIn, isPending }) => {
     <div className="flex flex-col gap-4 pt-4 ">
       <div className="px-4">
         <Button
+          type="button"
           onClick={() => signIn()}
           disabled={isPending}
           className="w-full h-12 md:h-12"
