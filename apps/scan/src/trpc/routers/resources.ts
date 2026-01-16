@@ -28,7 +28,6 @@ import { Methods } from '@/types/x402';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db/types';
 import { x402ResponseSchema } from 'x402/types';
-import { getFaviconUrl } from '@/lib/favicon';
 import type { ImageObject } from 'open-graph-scraper/types';
 
 export const resourcesRouter = createTRPCRouter({
@@ -121,19 +120,13 @@ export const resourcesRouter = createTRPCRouter({
 
         const origin = getOriginFromUrl(input.url);
 
-        const {
-          og,
-          metadata,
-          origin: scrapedOrigin,
-        } = await scrapeOriginData(origin);
+        const { og, metadata, favicon } = await scrapeOriginData(origin);
 
         await upsertOrigin({
-          origin: origin,
+          origin,
           title: metadata?.title ?? og?.ogTitle,
           description: metadata?.description ?? og?.ogDescription,
-          favicon: og?.favicon
-            ? getFaviconUrl(og.favicon, scrapedOrigin)
-            : undefined,
+          favicon: favicon ?? undefined,
           ogImages:
             og?.ogImage?.map((image: ImageObject) => ({
               url: image.url,
