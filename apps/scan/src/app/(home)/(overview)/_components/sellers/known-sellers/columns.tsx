@@ -4,7 +4,6 @@ import {
   Activity,
   ArrowLeftRight,
   Calendar,
-  CheckCircle,
   DollarSign,
   Globe,
   Server,
@@ -12,11 +11,6 @@ import {
 } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 
 import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
 
@@ -43,33 +37,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className="flex items-end gap-1.5">
-          <Origins
-            origins={row.original.origins}
-            addresses={row.original.recipients}
-            disableCopy
-          />
-          {row.original.hasVerifiedAccept && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <CheckCircle className="size-3.5 text-green-500 flex-shrink-0 mb-[2px]" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="flex flex-col gap-1">
-                  <p className="font-medium">This address has been verified</p>
-                  <a
-                    href="https://docs.x402.org/discovery"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline text-xs"
-                  >
-                    Learn how to verify your address →
-                  </a>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </div>
+        <Origins
+          origins={row.original.origins}
+          addresses={row.original.recipients}
+          disableCopy
+          hasVerifiedAccept={row.original.hasVerifiedAccept}
+        />
       );
     },
     size: 225,

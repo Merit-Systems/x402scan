@@ -5,13 +5,38 @@ import { baseQuerySchema } from '../schemas';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { getAcceptsAddresses } from '@/services/db/resources/accepts';
+import { mixedAddressSchema } from '@/lib/schemas';
 
-export const overallStatisticsMVInputSchema = baseQuerySchema;
+export const overallStatisticsMVInputSchema = baseQuerySchema.extend({
+  verifiedOnly: z.boolean().optional(),
+});
 
 const getOverallStatisticsMVUncached = async (
   input: z.infer<typeof overallStatisticsMVInputSchema>
 ) => {
-  const { timeframe, recipients } = input;
+  // When verifiedOnly is true, get only verified addresses
+  let modifiedInput = input;
+  if (input.verifiedOnly) {
+    const { addressToOrigins } = await getAcceptsAddresses({
+      chain: input.chain,
+      verified: true,
+    });
+    const verifiedAddresses = Object.keys(addressToOrigins).map(addr =>
+      mixedAddressSchema.parse(addr)
+    );
+
+    // Add verified addresses to recipients.include
+    modifiedInput = {
+      ...input,
+      recipients: {
+        ...input.recipients,
+        include: verifiedAddresses,
+      },
+    };
+  }
+
+  const { timeframe, recipients } = modifiedInput;
   const mvTimeframe = getMaterializedViewSuffix(timeframe);
 
   // Use recipient-specific materialized view when filtering by recipients
@@ -26,21 +51,21 @@ const getOverallStatisticsMVUncached = async (
   // Build WHERE clause for materialized view
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
 
-  if (input.facilitatorIds && input.facilitatorIds.length > 0) {
+  if (modifiedInput.facilitatorIds && modifiedInput.facilitatorIds.length > 0) {
     // Recipient stats tables use facilitator_ids array, aggregated stats use facilitator_id
     if (hasRecipientFilter) {
       conditions.push(
-        Prisma.sql`AND ${input.facilitatorIds}::text[] && facilitator_ids`
+        Prisma.sql`AND ${modifiedInput.facilitatorIds}::text[] && facilitator_ids`
       );
     } else {
       conditions.push(
-        Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`
+        Prisma.sql`AND facilitator_id = ANY(${modifiedInput.facilitatorIds})`
       );
     }
   }
 
-  if (input.chain) {
-    conditions.push(Prisma.sql`AND chain = ${input.chain}`);
+  if (modifiedInput.chain) {
+    conditions.push(Prisma.sql`AND chain = ${modifiedInput.chain}`);
   }
 
   if (recipients?.include && recipients.include.length > 0) {

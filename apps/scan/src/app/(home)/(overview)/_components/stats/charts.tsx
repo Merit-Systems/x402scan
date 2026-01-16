@@ -3,6 +3,7 @@
 import { api } from '@/trpc/client';
 
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
+import { useVerifiedFilter } from '@/app/_contexts/verified-filter/hook';
 
 import { LoadingOverallStatsCard, OverallStatsCard } from './card';
 
@@ -14,16 +15,19 @@ import { useChain } from '@/app/_contexts/chain/hook';
 export const OverallCharts = () => {
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
+  const { verifiedOnly } = useVerifiedFilter();
 
   const [overallStats] = api.public.stats.overall.useSuspenseQuery({
     chain,
     timeframe,
+    verifiedOnly,
   });
 
   const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
     numBuckets: 48,
     timeframe,
     chain,
+    verifiedOnly,
   });
 
   const chartData: ChartData<{

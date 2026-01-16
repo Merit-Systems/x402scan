@@ -8,6 +8,7 @@ import { LatestTransactions } from './_components/latest-transactions';
 import { AllSellers } from './_components/sellers/all-sellers';
 import { getChainForPage } from '@/app/_lib/chain/page';
 import { TopAgents } from './_components/top-agents';
+import { VerifiedFilterWrapper } from './_components/verified-filter-wrapper';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
   const chain = await getChainForPage(await searchParams);
@@ -15,14 +16,16 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
   return (
     <div>
       <HomeHeading />
-      <Body>
-        <OverallStats chain={chain} />
-        <TopServers chain={chain} />
-        <TopFacilitators chain={chain} />
-        <TopAgents />
-        <LatestTransactions chain={chain} />
-        <AllSellers chain={chain} />
-      </Body>
+      <VerifiedFilterWrapper>
+        <Body>
+          <OverallStats chain={chain} />
+          <TopServers chain={chain} />
+          <TopFacilitators chain={chain} />
+          <TopAgents />
+          <LatestTransactions chain={chain} />
+          <AllSellers chain={chain} />
+        </Body>
+      </VerifiedFilterWrapper>
     </div>
   );
 }

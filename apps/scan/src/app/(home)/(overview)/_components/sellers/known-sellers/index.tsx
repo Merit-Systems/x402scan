@@ -12,8 +12,6 @@ import { SellersSortingProvider } from '@/app/_contexts/sorting/sellers/provider
 
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 
-import { VerifiedFilterProvider } from '@/app/_contexts/verified-filter/provider';
-
 import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
@@ -34,23 +32,21 @@ export const TopServers: React.FC<Props> = ({ chain }) => {
 
   return (
     <HydrateClient>
-      <VerifiedFilterProvider>
-        <SellersSortingProvider initialSorting={defaultSellersSorting}>
-          <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
-            <TopServersContainer>
-              <ErrorBoundary
-                fallback={
-                  <p>There was an error loading the known sellers data</p>
-                }
-              >
-                <Suspense fallback={<LoadingKnownSellersTable />}>
-                  <KnownSellersTable />
-                </Suspense>
-              </ErrorBoundary>
-            </TopServersContainer>
-          </TimeRangeProvider>
-        </SellersSortingProvider>
-      </VerifiedFilterProvider>
+      <SellersSortingProvider initialSorting={defaultSellersSorting}>
+        <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
+          <TopServersContainer>
+            <ErrorBoundary
+              fallback={
+                <p>There was an error loading the known sellers data</p>
+              }
+            >
+              <Suspense fallback={<LoadingKnownSellersTable />}>
+                <KnownSellersTable />
+              </Suspense>
+            </ErrorBoundary>
+          </TopServersContainer>
+        </TimeRangeProvider>
+      </SellersSortingProvider>
     </HydrateClient>
   );
 };

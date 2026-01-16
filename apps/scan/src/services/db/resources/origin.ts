@@ -96,8 +96,30 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
         },
       },
     },
+    include: {
+      resources: {
+        include: {
+          accepts: {
+            where: {
+              ...(address ? { payTo: address } : {}),
+              ...(chain ? { network: chain } : {}),
+            },
+            select: {
+              verified: true,
+            },
+          },
+        },
+      },
+    },
   });
-  return origins;
+
+  // Map to include hasVerifiedAccept field
+  return origins.map(origin => ({
+    ...origin,
+    hasVerifiedAccept: origin.resources.some(resource =>
+      resource.accepts.some(accept => accept.verified)
+    ),
+  }));
 };
 
 export const listOriginsWithResourcesSchema = z.object({
