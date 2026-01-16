@@ -33,6 +33,7 @@ export const ConnectWalletForm = () => {
             onClick={() => setIsEmailFlow(true)}
             className="w-full h-12 md:h-12"
             variant="outline"
+            type="button"
           >
             <Mail className="size-4" />
             Continue with Email
@@ -40,7 +41,11 @@ export const ConnectWalletForm = () => {
         </div>
       )}
       {isEmailFlow && (
-        <Button onClick={() => setIsEmailFlow(false)} variant="ghost">
+        <Button
+          onClick={() => setIsEmailFlow(false)}
+          variant="ghost"
+          type="button"
+        >
           Back
         </Button>
       )}
