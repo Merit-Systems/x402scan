@@ -7,6 +7,7 @@ import { inputSchemaToZodSchema } from './utils';
 import {
   paymentRequirementsSchemaV1,
   outputSchemaV1,
+  coerceAcceptForV1Schema,
   type OutputSchemaV1,
 } from '@/lib/x402';
 
@@ -23,51 +24,11 @@ export async function createX402AITools(
   for (const resource of resources) {
     if (resource.accepts) {
       for (const accept of resource.accepts) {
-        // Fix for v2 resources: transform outputSchema to v1 format
-        const acceptBase: Record<string, unknown> = { 
-          ...accept, 
-          network: accept.network, 
-          maxAmountRequired: accept.maxAmountRequired.toString() 
-        };
-        const acceptToParse = (() => {
-          if (resource.x402Version === 2 && accept.outputSchema && typeof accept.outputSchema === 'object' && 'input' in accept.outputSchema) {
-            const outputSchema = accept.outputSchema as { input?: Record<string, unknown>; output?: unknown };
-            if (outputSchema.input && typeof outputSchema.input === 'object') {
-              const input = { ...outputSchema.input };
-              let inferredMethod = 'GET';
-              
-              // Infer method: POST if body exists, GET if queryParams exists
-              if (input.body) {
-                inferredMethod = 'POST';
-              } else if (input.queryParams) {
-                inferredMethod = 'GET';
-              }
-              
-              // Transform v2 body format to v1 bodyFields format
-              if (input.body && typeof input.body === 'object' && 'properties' in input.body) {
-                // Convert body.properties to bodyFields format
-                input.bodyFields = (input.body as { properties?: Record<string, unknown> }).properties;
-                delete input.body;
-              }
-              
-              // Add method if missing
-              if (!('method' in input)) {
-                input.method = inferredMethod;
-              }
-              
-              const modifiedOutputSchema = {
-                ...outputSchema,
-                input,
-              };
-              return {
-                ...acceptBase,
-                outputSchema: modifiedOutputSchema,
-              };
-            }
-          }
-          return acceptBase;
-        })();
-        
+        const acceptToParse = coerceAcceptForV1Schema({
+          x402Version: resource.x402Version,
+          accept,
+        });
+
         const parsedAccept = paymentRequirementsSchemaV1
           .extend({
             outputSchema: outputSchemaV1,
