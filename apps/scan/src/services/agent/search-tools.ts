@@ -1,7 +1,11 @@
 import z3 from 'zod3';
 
 import { searchResources } from '../db/resources/resource';
-import { paymentRequirementsSchemaV1, outputSchemaV1 } from '@/lib/x402';
+import {
+  coerceAcceptForV1Schema,
+  outputSchemaV1,
+  paymentRequirementsSchemaV1,
+} from '@/lib/x402';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
@@ -38,11 +42,12 @@ export async function searchX402Tools(
           })
         )
         .safeParse(
-          resource.accepts.map(accept => ({
-            ...accept,
-            network: accept.network,
-            maxAmountRequired: accept.maxAmountRequired.toString(),
-          }))
+          resource.accepts.map(accept =>
+            coerceAcceptForV1Schema({
+              x402Version: resource.x402Version,
+              accept,
+            })
+          )
         );
       if (!parsedAccepts.success) {
         continue;
