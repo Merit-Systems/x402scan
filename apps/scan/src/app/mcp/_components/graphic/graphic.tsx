@@ -2,12 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { TrendingUp } from 'lucide-react';
-
 import Image from 'next/image';
 
 import { Card } from '@/components/ui/card';
-import { Logo } from '@/components/logo';
 
 import { AnimatedBeam } from '@/components/magicui/animated-beam';
 

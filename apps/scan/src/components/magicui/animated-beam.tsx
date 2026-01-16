@@ -140,8 +140,17 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
 
             d = `M ${startX},${startY} L ${startX},${verticalEnd} Q ${startX},${controlPointY} ${horizontalStart},${controlPointY} L ${horizontalEnd},${controlPointY} Q ${endX},${controlPointY} ${endX},${verticalStart} L ${endX},${endY}`;
           }
+        } else if (isVertical) {
+          // Vertical S-curve: vertical at ends, horizontal at midpoint
+          // Single cubic bezier with control points at same X as their respective endpoints
+          const cp1x = startX + curvature;
+          const cp1y = startY + (endY - startY) * 0.5;
+          const cp2x = endX - curvature;
+          const cp2y = startY + (endY - startY) * 0.5;
+
+          d = `M ${startX},${startY} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`;
         } else {
-          // Smooth S-curve: horizontal at both ends, curves down then up
+          // Horizontal S-curve: horizontal at ends, vertical at midpoint
           // Single cubic bezier with control points at same Y as their respective endpoints
           const cp1x = startX + (endX - startX) * 0.5;
           const cp1y = startY + curvature;
