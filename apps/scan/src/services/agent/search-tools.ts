@@ -38,7 +38,7 @@ export async function searchX402Tools(
       const parsedAccepts = z3
         .array(
           paymentRequirementsSchemaV1.extend({
-            outputSchema: outputSchemaV1.optional(),
+            outputSchema: outputSchemaV1,
           })
         )
         .safeParse(
