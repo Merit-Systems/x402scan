@@ -27,52 +27,55 @@ export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
 ) => {
   const origin = originSchema.parse(originInput);
-  return await scanDb.resourceOrigin.upsert({
-    where: { origin: origin.origin },
-    update: {
-      title: origin.title,
-      description: origin.description,
-      favicon: origin.favicon,
-      ogImages: {
-        upsert: origin.ogImages.map(
-          ({ url, height, width, title, description }) => ({
-            where: {
-              url,
-            },
-            create: {
-              url,
-              height,
-              width,
-              title,
-              description,
-            },
-            update: {
-              height,
-              width,
-              title,
-              description,
-            },
-          })
-        ),
+  return await scanDb.$transaction(async tx => {
+    const upsertedOrigin = await tx.resourceOrigin.upsert({
+      where: { origin: origin.origin },
+      update: {
+        title: origin.title,
+        description: origin.description,
+        favicon: origin.favicon,
       },
-    },
-    create: {
-      origin: origin.origin,
-      title: origin.title,
-      description: origin.description,
-      favicon: origin.favicon,
-      ogImages: {
-        create: origin.ogImages.map(
-          ({ url, height, width, title, description }) => ({
+      create: {
+        origin: origin.origin,
+        title: origin.title,
+        description: origin.description,
+        favicon: origin.favicon,
+      },
+    });
+
+    const originId = upsertedOrigin.id;
+
+    await Promise.all(
+      origin.ogImages.map(({ url, height, width, title, description }) =>
+        tx.ogImage.upsert({
+          where: {
+            originId_url: {
+              originId,
+              url,
+            },
+          },
+          update: {
+            height,
+            width,
+            title,
+            description,
+          },
+          create: {
+            originId,
             url,
             height,
             width,
             title,
             description,
-          })
-        ),
-      },
-    },
+          },
+        })
+      )
+    );
+
+    return tx.resourceOrigin.findUnique({
+      where: { id: originId },
+      include: { ogImages: true },
+    });
   });
 };
 
@@ -212,6 +215,7 @@ export const searchOrigins = async (
 export const getOrigin = async (id: string) => {
   return await scanDb.resourceOrigin.findUnique({
     where: { id },
+    include: { ogImages: true },
   });
 };
 
