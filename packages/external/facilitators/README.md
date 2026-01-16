@@ -120,6 +120,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Meridian**         | BASE          | No        | No                           |
 | **Openmid**          | BASE          | No        | No                           |
 | **Primer**           | BASE          | No        | No                           |
+| **AutoIncentive**    | BASE, SOLANA  | No        | No                           |
 
 ### Import Individual Facilitators
 
@@ -127,6 +128,7 @@ This package includes pre-configured integrations for the following X402 facilit
 // Simple facilitators (no setup)
 import {
   auto,
+  autoincentive,
   coinbase,
   payai,
   daydreams,
