@@ -1,17 +1,17 @@
-import { neon } from "@neondatabase/serverless";
+import { neon } from '@neondatabase/serverless';
 
 const MAX_RETRIES = 30;
-const RETRY_INTERVAL_MS = 2000;
+const RETRY_INTERVAL_MS = 1000;
 
 async function waitForDatabase() {
   const databaseUrl = process.env.SCAN_DATABASE_URL_UNPOOLED;
 
   if (!databaseUrl) {
-    console.log("SCAN_DATABASE_URL_UNPOOLED not set, skipping wait");
+    console.log('SCAN_DATABASE_URL_UNPOOLED not set, skipping wait');
     process.exit(0);
   }
 
-  console.log("Waiting for Neon database to be ready...");
+  console.log('Waiting for Neon database to be ready...');
 
   const sql = neon(databaseUrl);
 
@@ -20,12 +20,12 @@ async function waitForDatabase() {
       await sql`SELECT 1`;
       console.log(`Database ready after ${attempt} attempt(s)`);
       process.exit(0);
-    } catch (error) {
+    } catch {
       console.log(
         `Attempt ${attempt}/${MAX_RETRIES}: Database not ready, retrying in ${RETRY_INTERVAL_MS / 1000}s...`
       );
       if (attempt < MAX_RETRIES) {
-        await new Promise((resolve) => setTimeout(resolve, RETRY_INTERVAL_MS));
+        await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL_MS));
       }
     }
   }
