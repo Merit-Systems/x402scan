@@ -40,6 +40,10 @@ export async function generateMetadata({
   const title = origin.title ?? origin.origin;
   const description = origin.description ?? `Explore ${title} on x402scan`;
 
+  const imageUrl = origin.ogImages?.[0]?.url
+    ? new URL(origin.ogImages[0].url, env.NEXT_PUBLIC_APP_URL).toString()
+    : `${env.NEXT_PUBLIC_APP_URL}/opengraph-image.png`;
+
   return {
     title,
     description,
@@ -47,10 +51,12 @@ export async function generateMetadata({
       title,
       description,
       url: `${env.NEXT_PUBLIC_APP_URL}/server/${id}`,
+      images: [imageUrl],
     },
     twitter: {
       title,
       description,
+      images: [imageUrl],
     },
   };
 }
