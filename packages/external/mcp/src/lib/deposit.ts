@@ -8,7 +8,7 @@ import { wait } from './wait';
 
 import type { GlobalFlags } from '@/types';
 
-const getDepositLink = (address: string, flags: GlobalFlags) => {
+export const getDepositLink = (address: string, flags: GlobalFlags) => {
   const baseUrl = flags.dev ? 'http://localhost:3000' : 'https://x402scan.com';
   return `${baseUrl}/deposit/${address}`;
 };

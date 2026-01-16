@@ -9,7 +9,7 @@ import { log } from '@/lib/log';
 
 import type { Command } from '@/types';
 import { getWallet } from '@/lib/wallet';
-import { registerWellKnownResourceTemplate } from './resources/well-known';
+import { registerOrigins } from './resources/origins';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
@@ -18,8 +18,8 @@ export const startServer: Command = async flags => {
 
   const server = new McpServer(
     {
-      name: 'x402scan',
-      version: '0.0.7',
+      name: '@x402scan/mcp',
+      version: '0.0.1',
     },
     {
       capabilities: {
@@ -41,11 +41,7 @@ export const startServer: Command = async flags => {
   registerAuthTools(props);
   registerWalletTools(props);
 
-  registerWellKnownResourceTemplate({ server, flags });
-
-  log.info(
-    'Registered 5 tools: check_balance, query_endpoint, execute_call, authed_call'
-  );
+  await registerOrigins({ server, flags });
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

@@ -1,4 +1,5 @@
 import { mcpSuccess } from '@/server/lib/response';
+
 import { getUSDCBalance } from '@/lib/balance';
 import { DEFAULT_NETWORK, getChainName } from '@/lib/networks';
 
@@ -18,6 +19,7 @@ export const registerWalletTools: RegisterTools = ({
       const balance = await getUSDCBalance({
         address,
       });
+
       return mcpSuccess({
         address,
         network: DEFAULT_NETWORK,

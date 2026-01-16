@@ -1,5 +1,5 @@
 import { getUSDCBalance } from '@/lib/balance';
-import { openDepositLink } from '@/lib/deposit';
+import { getDepositLink, openDepositLink } from '@/lib/deposit';
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Address } from 'viem';
@@ -25,6 +25,13 @@ export const checkBalance = async ({
   });
 
   if (balance < amountNeeded) {
+    const capabilities = server.server.getClientCapabilities();
+    if (!capabilities?.elicitation) {
+      throw new Error(
+        `${message(balance)}\n\nYou can deposit USDC at ${getDepositLink(address, flags)}`
+      );
+    }
+
     const result = await server.server.elicitInput({
       mode: 'form',
       message: message(balance),
@@ -38,4 +45,6 @@ export const checkBalance = async ({
       await openDepositLink(address, flags);
     }
   }
+
+  return balance;
 };

@@ -111,11 +111,6 @@ export function getChainName(network: string): string {
   return getChainConfig(network)?.chain.name ?? network;
 }
 
-/** Get block explorer URL for a network */
-export function getExplorerUrl(network: string): string | undefined {
-  return getChainConfig(network)?.chain.blockExplorers?.default.url;
-}
-
 /** Check if network is a testnet */
 export function isTestnet(network: string): boolean {
   return getChainConfig(network)?.chain.testnet === true;

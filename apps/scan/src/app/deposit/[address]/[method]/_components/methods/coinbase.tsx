@@ -12,10 +12,8 @@ import { OnrampProviders } from '@/services/onramp/types';
 
 import type { Address } from 'viem';
 import type { MethodComponentProps } from '../../_types';
-import {
-  DepositSearchParams,
-  depositSearchParamsSchema,
-} from '../../../_lib/params';
+import type { DepositSearchParams } from '../../../_lib/params';
+import { depositSearchParamsSchema } from '../../../_lib/params';
 
 const paramsSchema = depositSearchParamsSchema.extend({
   id: z.string(),

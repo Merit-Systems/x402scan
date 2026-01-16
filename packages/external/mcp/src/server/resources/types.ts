@@ -6,4 +6,6 @@ interface RegisterResourcesProps {
   flags: GlobalFlags;
 }
 
-export type RegisterResources = (props: RegisterResourcesProps) => void;
+export type RegisterResources = (
+  props: RegisterResourcesProps
+) => Promise<void> | void;

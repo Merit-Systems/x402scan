@@ -25,13 +25,13 @@ import type { GlobalFlags } from '@/types';
 const getMcpConfig = (globalFlags: GlobalFlags) => {
   if (globalFlags.dev) {
     return {
-      serverName: 'x402scan-dev',
+      serverName: 'x402',
       command: 'node',
       args: [`${process.cwd()}/dist/index.js`, '--dev'],
     };
   }
   return {
-    serverName: 'x402scan',
+    serverName: 'x402',
     command: 'npx',
     args: ['-y', '@x402scan/mcp@latest'],
   };
