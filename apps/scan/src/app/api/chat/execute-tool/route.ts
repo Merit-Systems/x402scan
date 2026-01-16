@@ -137,11 +137,53 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const parsedAccept = normalizedAcceptSchema.safeParse({
-    ...accept,
-    network: accept.network,
-    maxAmountRequired: accept.maxAmountRequired.toString(),
-  });
+  // Transform v2 outputSchema to v1 format before parsing
+  const acceptToParse = (() => {
+    const acceptBase = {
+      ...accept,
+      network: accept.network,
+      maxAmountRequired: accept.maxAmountRequired.toString(),
+    };
+    
+    if (resource.x402Version === 2 && accept.outputSchema && typeof accept.outputSchema === 'object' && 'input' in accept.outputSchema) {
+      const outputSchema = accept.outputSchema as { input?: Record<string, unknown>; output?: unknown };
+      if (outputSchema.input && typeof outputSchema.input === 'object') {
+        const input = { ...outputSchema.input };
+        let inferredMethod = 'GET';
+        
+        // Infer method: POST if body exists, GET if queryParams exists
+        if (input.body) {
+          inferredMethod = 'POST';
+        } else if (input.queryParams) {
+          inferredMethod = 'GET';
+        }
+        
+        // Transform v2 body format to v1 bodyFields format
+        if (input.body && typeof input.body === 'object' && 'properties' in input.body) {
+          // Convert body.properties to bodyFields format
+          input.bodyFields = (input.body as { properties?: Record<string, unknown> }).properties;
+          delete input.body;
+        }
+        
+        // Add method if missing
+        if (!('method' in input)) {
+          input.method = inferredMethod;
+        }
+        
+        return {
+          ...acceptBase,
+          outputSchema: {
+            ...outputSchema,
+            input,
+          },
+        };
+      }
+    }
+    
+    return acceptBase;
+  })();
+
+  const parsedAccept = normalizedAcceptSchema.safeParse(acceptToParse);
   if (!parsedAccept.success) {
     return NextResponse.json(
       {
