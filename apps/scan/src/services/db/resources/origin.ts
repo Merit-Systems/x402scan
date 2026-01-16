@@ -82,7 +82,9 @@ export const listOriginsSchema = z.object({
   address: mixedAddressSchema.optional(),
 });
 
-const listOriginsUncached = async (input: z.infer<typeof listOriginsSchema>) => {
+const listOriginsUncached = async (
+  input: z.infer<typeof listOriginsSchema>
+) => {
   const { chain, address } = input;
 
   // Build where clause for accepts

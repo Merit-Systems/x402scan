@@ -172,7 +172,7 @@ const VerifiedBadge = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline text-xs"
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             Learn how to verify your address →
           </a>
