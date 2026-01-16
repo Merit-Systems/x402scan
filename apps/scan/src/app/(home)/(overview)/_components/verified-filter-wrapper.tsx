@@ -175,63 +175,24 @@ const VerifiedFilterDialog = () => {
     const permissionGranted = localStorage.getItem(MOTION_PERMISSION_KEY);
     if (!permissionGranted) return;
 
-    let lastX = 0;
-    let lastY = 0;
-    let lastZ = 0;
-    let lastTime = Date.now();
-    let shakeCount = 0;
-    const SHAKE_THRESHOLD = 15; // Acceleration threshold
-    const SHAKE_TIMEOUT = 1000; // Time window for detecting shake
-    const SHAKE_COUNT_REQUIRED = 2; // Number of shakes required
+    // Use shake.js library
+    const Shake = require('shake.js');
+    const myShakeEvent = new Shake({
+      threshold: 15, // Sensitivity of shake detection
+      timeout: 1000, // Time between shakes
+    });
 
-    const handleMotion = (event: DeviceMotionEvent) => {
-      const { x, y, z } = event.accelerationIncludingGravity || {};
+    myShakeEvent.start();
 
-      if (x === null || y === null || z === null) return;
-
-      const currentTime = Date.now();
-      const timeDiff = currentTime - lastTime;
-
-      // Only check if enough time has passed (avoid too frequent checks)
-      if (timeDiff > 100) {
-        const deltaX = Math.abs(x - lastX);
-        const deltaY = Math.abs(y - lastY);
-        const deltaZ = Math.abs(z - lastZ);
-
-        // Check if acceleration change is significant
-        if (
-          deltaX > SHAKE_THRESHOLD ||
-          deltaY > SHAKE_THRESHOLD ||
-          deltaZ > SHAKE_THRESHOLD
-        ) {
-          shakeCount++;
-
-          // Reset shake count after timeout
-          setTimeout(() => {
-            shakeCount = Math.max(0, shakeCount - 1);
-          }, SHAKE_TIMEOUT);
-
-          // Open modal if shake threshold is met
-          if (shakeCount >= SHAKE_COUNT_REQUIRED) {
-            setShowModal(true);
-            shakeCount = 0; // Reset counter
-          }
-        }
-
-        lastX = x;
-        lastY = y;
-        lastZ = z;
-        lastTime = currentTime;
-      }
+    const handleShake = () => {
+      setShowModal(true);
     };
 
-    // Set up listener (permission already granted)
-    if (typeof DeviceMotionEvent !== 'undefined') {
-      window.addEventListener('devicemotion', handleMotion);
-    }
+    window.addEventListener('shake', handleShake, false);
 
     return () => {
-      window.removeEventListener('devicemotion', handleMotion);
+      window.removeEventListener('shake', handleShake, false);
+      myShakeEvent.stop();
     };
   }, []);
 

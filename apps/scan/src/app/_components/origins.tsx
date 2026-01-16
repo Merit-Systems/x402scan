@@ -168,10 +168,11 @@ const VerifiedBadge = () => {
         <div className="flex flex-col gap-1">
           <p className="font-medium">This address has been verified</p>
           <a
-            href="https://docs.x402.org/discovery"
+            href="https://github.com/Merit-Systems/x402scan/blob/main/docs/DISCOVERY.md#ownership-verification"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline text-xs"
+            onClick={(e) => e.stopPropagation()}
           >
             Learn how to verify your address →
           </a>
