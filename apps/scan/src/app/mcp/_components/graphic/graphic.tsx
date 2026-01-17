@@ -9,7 +9,7 @@ import { AnimatedBeam } from '@/components/magicui/animated-beam';
 
 import { cn } from '@/lib/utils';
 import { Chip } from './chip';
-import { ClientIcon } from './icons';
+import { ClientIcon } from '../clients/icons';
 import { Clients } from '../clients/data';
 
 export const HeroGraphic = () => {

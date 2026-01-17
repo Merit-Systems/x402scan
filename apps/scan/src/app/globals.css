@@ -409,23 +409,23 @@
       transform: scale(1.0);
     }
     25% {
-      background-color: oklch(from var(--primary) l c h / 0.1);
-      box-shadow: 0 0 0px 0px oklch(from var(--primary) l c h / 0);
-      transform: scale(1.025);
+      background-color: var(--card);
+      box-shadow: 0 0 24px 0px oklch(from var(--primary) l c h / 0.2);
+      transform: scale(1.01);
     }
     50% {
-      background-color: oklch(from var(--primary) l c h / 0.2);
-      box-shadow: 0 0 0px 0px oklch(from var(--primary) l c h / 0.6);
-      transform: scale(1.05);
+      background-color: oklch(from var(--primary) l c h / 0.1);
+      box-shadow: 0 0 48px 0px oklch(from var(--primary) l c h / 0.4);
+      transform: scale(1.02);
     }
     75% {
-      background-color: oklch(from var(--primary) l c h / 0.2);
-      box-shadow: 0 0 48px 0px oklch(from var(--primary) l c h / 0.4);
-      transform: scale(1.05);
+      background-color: var(--card);
+      box-shadow: 0 0 64px 0px oklch(from var(--primary) l c h / 0.2);
+      transform: scale(1.01);
     }
     100% {
       background-color: var(--card);
-      box-shadow: 0 0 64px 0px oklch(from var(--primary) l c h / 0);
+      box-shadow: 0 0 80px 0px oklch(from var(--primary) l c h / 0);
       transform: scale(1.0);
     }
   }
