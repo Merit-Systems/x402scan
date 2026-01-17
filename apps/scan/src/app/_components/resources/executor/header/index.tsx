@@ -7,6 +7,7 @@ import { Tags } from '@/app/_components/tags';
 import type { Resources, Tag } from '@x402scan/scan-db/types';
 import type { Methods } from '@/types/x402';
 import { getDescription, type ParsedX402Response } from '@/lib/x402';
+import { Badge } from '@/components/ui/badge';
 
 interface Props {
   resource: Resources;
@@ -34,6 +35,11 @@ export const Header: React.FC<Props> = ({
               : resource.resource}
           </span>
           <Tags tags={tags} />
+          {resource.x402Version === 2 && (
+            <Badge variant="fancy" className="text-[10px] size-fit px-2 py-0">
+              v2
+            </Badge>
+          )}
         </div>
       </div>
       <p className="text-xs text-muted-foreground">
