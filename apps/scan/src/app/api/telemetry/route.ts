@@ -145,7 +145,7 @@ async function sendDiscordNotification(
 
 export const POST = async (request: NextRequest) => {
   try {
-    const body = await request.json();
+    const body: unknown = await request.json();
     const parsed = errorReportSchema.safeParse(body);
 
     if (!parsed.success) {
