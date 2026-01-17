@@ -213,19 +213,26 @@ export const searchOrigins = async (
 };
 
 export const getOrigin = async (id: string) => {
-  return await scanDb.resourceOrigin.findUnique({
+  const origin = await scanDb.resourceOrigin.findUnique({
     where: { id },
-    include: { ogImages: true },
+    include: {
+      ogImages: true,
+      resources: {
+        where: { x402Version: 2 },
+        select: { id: true },
+        take: 1,
+      },
+    },
   });
-};
 
-export const getOriginHasX402V2Resource = async (id: string) => {
-  const match = await scanDb.resources.findFirst({
-    where: { originId: id, x402Version: 2 },
-    select: { id: true },
-  });
+  if (!origin) return null;
 
-  return !!match;
+  const { resources, ...originWithoutResources } = origin;
+
+  return {
+    ...originWithoutResources,
+    hasX402V2Resource: resources.length > 0,
+  };
 };
 
 export const getOriginMetadata = async (id: string) => {
