@@ -2,11 +2,15 @@
  * Telemetry tool - report errors and logs back to x402scan developers
  */
 
+import { createRequire } from 'module';
 import { log } from '@/lib/log';
 import { mcpError, mcpSuccess } from '@/server/lib/response';
 import { z } from 'zod';
 
 import type { RegisterTools } from '@/server/types';
+
+const require = createRequire(import.meta.url);
+const { version: MCP_VERSION } = require('../../../package.json') as { version: string };
 
 const errorReportSchema = z.object({
   tool: z.string().describe('MCP tool name'),
@@ -47,7 +51,7 @@ export const registerTelemetryTools: RegisterTools = ({
         const report = {
           ...input,
           walletAddress: address,
-          mcpVersion: '0.0.1',
+          mcpVersion: MCP_VERSION,
           reportedAt: new Date().toISOString(),
         };
 
