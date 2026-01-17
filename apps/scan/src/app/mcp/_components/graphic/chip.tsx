@@ -36,11 +36,11 @@ export const Chip: React.FC<Props> = ({ children }) => {
     <div ref={containerRef} className="relative flex flex-col gap-8 h-full">
       <div className="flex flex-col gap-4">
         <div
-          className="bg-background border-primary border-2 size-2 rounded-full z-10"
+          className="bg-background border-primary/40 border-2 size-2 rounded-full z-10"
           ref={topCircle1Ref}
         />
         <div
-          className="bg-background border-primary border-2 size-2 rounded-full ml-auto z-10"
+          className="bg-background border-primary/40 border-2 size-2 rounded-full ml-auto z-10"
           ref={topCircle2Ref}
         />
       </div>
@@ -52,11 +52,11 @@ export const Chip: React.FC<Props> = ({ children }) => {
       </Card>
       <div className="flex flex-col gap-4">
         <div
-          className="bg-background border-primary border-2 size-2 rounded-full z-10"
+          className="bg-background border-primary/40 border-2 size-2 rounded-full z-10"
           ref={bottomCircle1Ref}
         />
         <div
-          className="bg-background border-primary border-2 size-2 rounded-full ml-auto z-10"
+          className="bg-background border-primary/40 border-2 size-2 rounded-full ml-auto z-10"
           ref={bottomCircle2Ref}
         />
       </div>
