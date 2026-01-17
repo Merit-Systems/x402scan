@@ -227,10 +227,10 @@ export const getOrigin = async (id: string) => {
 
   if (!origin) return null;
 
-  const { resources, ...originWithoutResources } = origin;
+  const { resources, ...originData } = origin;
 
   return {
-    ...originWithoutResources,
+    ...originData,
     hasX402V2Resource: resources.length > 0,
   };
 };
