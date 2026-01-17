@@ -362,6 +362,9 @@ importers:
       '@solana/transactions':
         specifier: catalog:solana
         version: 5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)
+      '@stripe/crypto':
+        specifier: ^0.0.4
+        version: 0.0.4(@stripe/stripe-js@1.54.2)
       '@t3-oss/env-nextjs':
         specifier: catalog:env
         version: 0.13.10(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3))(zod@4.3.5)
@@ -440,6 +443,9 @@ importers:
       cookies-next:
         specifier: ^6.1.0
         version: 6.1.1(next@16.1.1(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(react@19.2.2)
+      country-data-list:
+        specifier: ^1.5.5
+        version: 1.5.5
       date-fns:
         specifier: 'catalog:'
         version: 4.1.0
@@ -485,6 +491,9 @@ importers:
       react:
         specifier: catalog:react
         version: 19.2.2
+      react-circle-flags:
+        specifier: ^0.0.25
+        version: 0.0.25(react@19.2.2)
       react-dom:
         specifier: catalog:react
         version: 19.2.2(react@19.2.2)
@@ -521,6 +530,9 @@ importers:
       streamdown:
         specifier: ^1.4.0
         version: 1.4.0(@types/react@19.2.2)(react@19.2.2)
+      stripe:
+        specifier: ^20.1.2
+        version: 20.1.2(@types/node@20.19.27)
       superjson:
         specifier: 'catalog:'
         version: 2.2.6
@@ -5069,6 +5081,14 @@ packages:
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
+  '@stripe/crypto@0.0.4':
+    resolution: {integrity: sha512-gcD/aG0N90ZrNVppWYf9ADPECptw6PVtF67VIeaFP7fhgd2NvNx8erkzlcvk3VIVSY+bZ6YGX7c7cASoySX74Q==}
+    peerDependencies:
+      '@stripe/stripe-js': ^1.46.0
+
+  '@stripe/stripe-js@1.54.2':
+    resolution: {integrity: sha512-R1PwtDvUfs99cAjfuQ/WpwJ3c92+DAMy9xGApjqlWQMj0FKQabUAys2swfTRNzuYAYJh7NqK2dzcYVNkKLEKUg==}
+
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
 
@@ -6678,6 +6698,9 @@ packages:
 
   cose-base@2.2.0:
     resolution: {integrity: sha512-AzlgcsCbUMymkADOJtQm3wO9S3ltPfYOFD5033keQn9NJzIbtnZj+UdBJe7DYml/8TdbtHJW3j58SOnKhWY/5g==}
+
+  country-data-list@1.5.5:
+    resolution: {integrity: sha512-igoAbJvlD/foOq4+aB3t24Hndvb5y/DasXcrVOtJMZ0UFLgfYq/mPMcCcSjJAIykLcTWOHZehZgNUJyaKMz1iA==}
 
   crc-32@1.2.2:
     resolution: {integrity: sha512-ROmzCKrTnOwybPcJApAA6WBWij23HVfGVNKqqrZpuyZOHqK2CwHSvpGuyt/UNNvaIjEd8X5IFGp4Mh+Ie1IHJQ==}
@@ -9564,8 +9587,8 @@ packages:
     resolution: {integrity: sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==}
     engines: {node: '>=0.6'}
 
-  qs@6.14.0:
-    resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==}
+  qs@6.14.1:
+    resolution: {integrity: sha512-4EK3+xJl8Ts67nLYNwqw/dsFVnCf+qR7RgXSK9jEEm9unao3njwMDdmsdvoKBKHzxd7tCYz5e5M+SnMjdtXGQQ==}
     engines: {node: '>=0.6'}
 
   quansync@0.2.11:
@@ -9598,6 +9621,12 @@ packages:
 
   rc9@2.1.2:
     resolution: {integrity: sha512-btXCnMmRIBINM2LDZoEmOogIZU7Qe7zn4BpomSKZ/ykbLObuBdvG+mFq11DL6fjH1DRwHhrlgtYWG96bJiC7Cg==}
+
+  react-circle-flags@0.0.25:
+    resolution: {integrity: sha512-qdfCo3okpvK5/s/2ptmFfU3vfPgwBHvAkSJ+CB4DG6FS1iFzgdmT06MMQi/2ZxkGM6YK1KfmyilPO3QOhEs3DA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16.0.0 || 17.x || 18.x || 19.x
 
   react-dom@19.2.2:
     resolution: {integrity: sha512-fhyD2BLrew6qYf4NNtHff1rLXvzR25rq49p+FeqByOazc6TcSi2n8EYulo5C1PbH+1uBW++5S1SG7FcUU6mlDg==}
@@ -10198,6 +10227,15 @@ packages:
 
   strip-literal@3.1.0:
     resolution: {integrity: sha512-8r3mkIM/2+PpjHoOtiAW8Rg3jJLHaV7xPwG+YRGrv6FP0wwk/toTpATxWYOW0BKdWwl82VT2tFYi5DlROa0Mxg==}
+
+  stripe@20.1.2:
+    resolution: {integrity: sha512-qU+lQRRJnTxmyvglYBPE24/IepncmywsAg0GDTsTdP2pb+3e3RdREHJZjKgqCmv0phPxN/nmgNPnIPPH8w0P4A==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@types/node': '>=16'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
 
   stubs@3.0.0:
     resolution: {integrity: sha512-PdHt7hHUJKxvTCgbKX9C1V/ftOcjJQgz8BZwNfV5c4B6dcGqlpelTbJ999jBGZ2jYiPAwcX5dP6oBwVlBlUbxw==}
@@ -16952,6 +16990,12 @@ snapshots:
 
   '@standard-schema/utils@0.3.0': {}
 
+  '@stripe/crypto@0.0.4(@stripe/stripe-js@1.54.2)':
+    dependencies:
+      '@stripe/stripe-js': 1.54.2
+
+  '@stripe/stripe-js@1.54.2': {}
+
   '@swc/helpers@0.5.15':
     dependencies:
       tslib: 2.8.1
@@ -19654,7 +19698,7 @@ snapshots:
       http-errors: 2.0.0
       iconv-lite: 0.7.0
       on-finished: 2.4.1
-      qs: 6.14.0
+      qs: 6.14.1
       raw-body: 3.0.1
       type-is: 2.0.1
     transitivePeerDependencies:
@@ -20049,6 +20093,8 @@ snapshots:
   cose-base@2.2.0:
     dependencies:
       layout-base: 2.0.1
+
+  country-data-list@1.5.5: {}
 
   crc-32@1.2.2: {}
 
@@ -21252,7 +21298,7 @@ snapshots:
       once: 1.4.0
       parseurl: 1.3.3
       proxy-addr: 2.0.7
-      qs: 6.14.0
+      qs: 6.14.1
       range-parser: 1.2.1
       router: 2.2.0(supports-color@10.2.2)
       send: 1.2.0(supports-color@10.2.2)
@@ -23797,7 +23843,7 @@ snapshots:
     dependencies:
       side-channel: 1.1.0
 
-  qs@6.14.0:
+  qs@6.14.1:
     dependencies:
       side-channel: 1.1.0
 
@@ -23836,6 +23882,10 @@ snapshots:
     dependencies:
       defu: 6.1.4
       destr: 2.0.5
+
+  react-circle-flags@0.0.25(react@19.2.2):
+    dependencies:
+      react: 19.2.2
 
   react-dom@19.2.2(react@19.2.2):
     dependencies:
@@ -24694,6 +24744,12 @@ snapshots:
   strip-literal@3.1.0:
     dependencies:
       js-tokens: 9.0.1
+
+  stripe@20.1.2(@types/node@20.19.27):
+    dependencies:
+      qs: 6.14.1
+    optionalDependencies:
+      '@types/node': 20.19.27
 
   stubs@3.0.0: {}
 

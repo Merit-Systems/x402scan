@@ -1,6 +1,8 @@
-import type { FieldDefinition, FieldValue } from '@/types/x402';
+import z from 'zod';
 import { Methods } from '@/types/x402';
-import type { InputSchema } from './index';
+
+import type { FieldDefinition, FieldValue } from '@/types/x402';
+import type { InputSchema } from '.';
 
 interface JsonSchema {
   properties?: Record<string, unknown>;
@@ -215,3 +217,10 @@ export function reconstructNestedObject(
 
   return result;
 }
+
+export const paymentResponseHeaderSchema = z.object({
+  success: z.boolean(),
+  transaction: z.string(),
+  network: z.string(),
+  payer: z.string(),
+});

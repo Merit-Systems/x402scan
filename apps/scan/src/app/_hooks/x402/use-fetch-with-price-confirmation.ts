@@ -110,22 +110,26 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
           result = {
             data: (await response.json()) as TData,
             type: 'json' as const,
+            paymentResponse: null,
           };
         } catch {
           result = {
             data: await response.text(),
             type: 'unknown' as const,
+            paymentResponse: null,
           };
         }
       } else if (contentType.includes('text/')) {
         result = {
           data: await response.text(),
           type: 'text' as const,
+          paymentResponse: null,
         };
       } else {
         result = {
           data: await response.text(),
           type: 'unknown' as const,
+          paymentResponse: null,
         };
       }
 

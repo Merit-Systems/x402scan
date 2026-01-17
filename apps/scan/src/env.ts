@@ -34,6 +34,7 @@ export const env = createEnv({
     ANALYTICS_CLICKHOUSE_DATABASE: z.string().optional(),
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
+    STRIPE_SECRET_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
@@ -60,6 +61,7 @@ export const env = createEnv({
     NEXT_PUBLIC_VERCEL_ENV: z
       .enum(['development', 'preview', 'production'])
       .optional(),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL:
@@ -79,6 +81,8 @@ export const env = createEnv({
     NEXT_PUBLIC_SOLANA_RPC_URL: process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
     NEXT_PUBLIC_BASE_RPC_URL: process.env.NEXT_PUBLIC_BASE_RPC_URL,
     NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
   emptyStringAsUndefined: true,
 });
