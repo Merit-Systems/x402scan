@@ -160,11 +160,7 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    await wait({
-      startText: `The following configuration will be added to ${chalk.bold.underline(clientFileTarget.path)}`,
-      stopText: `The following configuration will be added to ${chalk.bold.underline(clientFileTarget.path)}:`,
-      ms: 500,
-    });
+    clackLog.step(`The following will be added to ${chalk.bold.underline(clientFileTarget.path)}`);
 
     const configStr = formatDiffByFormat(
       {
@@ -199,7 +195,7 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
       active: 'Install MCP',
       inactive: 'Cancel',
     });
-    if (!isConfirmed) {
+    if (isConfirmed !== true) {
       outro(chalk.bold.red('Installation cancelled'));
       process.exit(0);
     }

@@ -17,7 +17,7 @@ export const installMcpServer: Command<InstallFlags> = async flags => {
     isNew,
   } = await getWallet();
 
-  intro(chalk.bold(`Install ${chalk.hex('#2563eb')('x402scan MCP')}`));
+  intro(chalk.green.bold(`Install x402scan MCP`));
 
   const client = await getClient(flags);
 
