@@ -12,6 +12,7 @@ import { log } from '@/lib/log';
 import { getWallet } from '@/lib/wallet';
 
 import type { Command } from '@/types';
+import { registerDiscoveryTools } from './tools/discover-resources';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
@@ -22,7 +23,7 @@ export const startServer: Command = async flags => {
     {
       name: '@x402scan/mcp',
       version: '0.0.1',
-      websiteUrl: 'https://x402scan.com',
+      websiteUrl: 'https://x402scan.com/mcp',
       icons: [{ src: 'https://x402scan.com/logo.svg' }],
     },
     {
@@ -45,6 +46,7 @@ export const startServer: Command = async flags => {
   registerAuthTools(props);
   registerWalletTools(props);
   registerCheckX402EndpointTool(props);
+  registerDiscoveryTools(server);
 
   await registerOrigins({ server, flags });
 

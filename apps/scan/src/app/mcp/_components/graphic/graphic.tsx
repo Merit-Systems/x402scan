@@ -34,9 +34,7 @@ export const HeroGraphic = () => {
   const cardProps = (isActive: boolean, side: 'left' | 'right') => ({
     className: cn(
       'flex flex-col items-center justify-center p-2 z-10 bg-card relative transition-all duration-500 border-2',
-      isActive
-        ? `border-primary/80`
-        : 'opacity-50',
+      isActive ? `border-primary/80` : 'opacity-50',
       isActive &&
         ((side === 'left' && !isReverse) ||
           (side === 'right' && isReverse && !isPending)) &&

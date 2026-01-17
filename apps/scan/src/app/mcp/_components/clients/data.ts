@@ -5,13 +5,13 @@ export enum Clients {
   Claude = 'claude',
 }
 
-export interface ClientMetadata {
+interface ClientMetadata {
   name: string;
   description: string;
   image: string;
 }
 
-export const clientsList: Record<Clients, ClientMetadata> = {
+export const clients: Record<Clients, ClientMetadata> = {
   [Clients.ClaudeCode]: {
     name: 'Claude Code',
     description: 'Claude Code is a code editor that uses the Claude API.',

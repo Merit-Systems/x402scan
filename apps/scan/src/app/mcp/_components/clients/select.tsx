@@ -9,7 +9,7 @@ import {
   CommandEmpty,
   CommandItem,
 } from '@/components/ui/command';
-import { clientsList } from './data';
+import { clients } from './data';
 
 import type { Clients as ClientsEnum } from './data';
 
@@ -31,7 +31,7 @@ export const ClientsSelect = ({ onClientSelect }: Props) => {
       />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        {Object.entries(clientsList).map(([key, client]) => (
+        {Object.entries(clients).map(([key, client]) => (
           <CommandItem
             key={client.name}
             className="p-4 gap-3 cursor-pointer hover:bg-accent hover:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"

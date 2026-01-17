@@ -1,13 +1,15 @@
 import Image from 'next/image';
 
-import { clientsList, type Clients as ClientsEnum } from './data';
+import { clients } from './data';
+
+import type { Clients as ClientsEnum } from './data';
 
 interface Props {
   client: ClientsEnum;
 }
 
 export const SelectedClient: React.FC<Props> = ({ client }) => {
-  const { image, name } = clientsList[client];
+  const { image, name } = clients[client];
 
   return (
     <div>
