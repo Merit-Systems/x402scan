@@ -352,10 +352,18 @@ export function registerDiscoveryTools(server: McpServer): void {
   server.registerTool(
     'discover_resources',
     {
-      description: `Discover x402-protected resources from an origin. Fetches the /.well-known/x402 discovery document and optionally tests each resource to get pricing and requirements. 
-        
+      description: `Discover x402-protected resources on an origin.
+         NEVER use 'fanOut = true' on the first try.
+         NEVER use 'fanOut = true' when there are more than 8 resources.
+
         Known default origins with resource packs. Discover if more needed:
-        - https://enrichx402.com -> People + Org search, Google Maps (places + locations), grok twitter search, exa web search, clado linkedin data, firecrawl web scrape
+        - https://enrichx402.com ->
+            People + Org search
+            Google Maps (places + locations)
+            Grok twitter search
+            Exa web search
+            Clado linkedin data
+            Firecrawl web scrape
         - https://stablestudio.io -> generate images / videos
         `,
       inputSchema: {
@@ -364,11 +372,11 @@ export function registerDiscoveryTools(server: McpServer): void {
           .describe(
             'The origin URL or any URL on the origin to discover resources from'
           ),
-        testResources: z
+        fanOut: z
           .boolean()
           .default(false)
           .describe(
-            'Whether to query each discovered resource for full pricing/schema info (default: false - just return URLs from discovery doc)'
+            'Whether to query each discovered resource for full pricing/schema info. NEVER use on first try.'
           ),
         concurrency: z
           .number()
