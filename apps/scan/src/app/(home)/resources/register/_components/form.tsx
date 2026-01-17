@@ -526,25 +526,27 @@ export const RegisterResourceForm = () => {
       <CardFooter className="flex-col gap-2">
         {data && !data.error ? (
           <div className="flex gap-2 w-full">
-            <Link href="/resources" className="flex-1">
-              <Button variant="outline" className="w-full">
-                Back to Home
-              </Button>
-            </Link>
-            <Button variant="turbo" onClick={onReset} className="flex-1">
+            <Button variant="outline" onClick={onReset} className="flex-1">
               Add Another
             </Button>
+            <Link href={`/server/${data.resource.origin.id}`} className="flex-1">
+              <Button variant="turbo" className="w-full">
+                View Server
+              </Button>
+            </Link>
           </div>
         ) : bulkData?.success && bulkData.registered > 0 ? (
           <div className="flex gap-2 w-full">
-            <Link href="/resources" className="flex-1">
-              <Button variant="outline" className="w-full">
-                Back to Home
-              </Button>
-            </Link>
-            <Button variant="turbo" onClick={onReset} className="flex-1">
+            <Button variant="outline" onClick={onReset} className="flex-1">
               Add Another
             </Button>
+            {bulkData.originId && (
+              <Link href={`/server/${bulkData.originId}`} className="flex-1">
+                <Button variant="turbo" className="w-full">
+                  View Server
+                </Button>
+              </Link>
+            )}
           </div>
         ) : bulkData?.success && bulkData.registered === 0 ? (
           <div className="flex gap-2 w-full">
