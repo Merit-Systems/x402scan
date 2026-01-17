@@ -2,6 +2,7 @@ import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../../trpc';
 import {
   getOrigin,
+  getOriginHasX402V2Resource,
   getOriginMetadata,
   listOrigins,
   listOriginsSchema,
@@ -13,7 +14,17 @@ import {
 
 export const originsRouter = createTRPCRouter({
   get: publicProcedure.input(z.uuid()).query(async ({ input }) => {
-    return await getOrigin(input);
+    const [origin, hasX402V2Resource] = await Promise.all([
+      getOrigin(input),
+      getOriginHasX402V2Resource(input),
+    ]);
+
+    if (!origin) return null;
+
+    return {
+      ...origin,
+      hasX402V2Resource,
+    };
   }),
   getMetadata: publicProcedure.input(z.uuid()).query(async ({ input }) => {
     return await getOriginMetadata(input);

@@ -219,6 +219,15 @@ export const getOrigin = async (id: string) => {
   });
 };
 
+export const getOriginHasX402V2Resource = async (id: string) => {
+  const match = await scanDb.resources.findFirst({
+    where: { originId: id, x402Version: 2 },
+    select: { id: true },
+  });
+
+  return !!match;
+};
+
 export const getOriginMetadata = async (id: string) => {
   return await scanDb.resourceOrigin.findUnique({
     where: { id },
