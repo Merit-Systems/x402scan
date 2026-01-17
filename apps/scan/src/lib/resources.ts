@@ -2,7 +2,7 @@ import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
-import { parseX402Response, normalizeAccepts } from '@/lib/x402';
+import { getOutputSchema, normalizeAccepts, parseX402Response } from '@/lib/x402';
 import { getOriginFromUrl } from '@/lib/url';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
@@ -43,6 +43,17 @@ export const registerResource = async (url: string, data: unknown) => {
         parseErrors: [
           'Accepts must contain at least one valid payment requirement',
         ],
+      },
+    };
+  }
+
+  if (!getOutputSchema(x402Data)?.input) {
+    return {
+      success: false as const,
+      data,
+      error: {
+        type: 'parseResponse' as const,
+        parseErrors: ['Missing input schema'],
       },
     };
   }
