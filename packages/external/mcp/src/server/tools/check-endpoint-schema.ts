@@ -22,7 +22,11 @@ export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
         log.info('Querying endpoint', { url, method, body });
         const response = await fetch(url, {
           method,
-          body: body ? JSON.stringify(body) : undefined,
+          body: body
+            ? typeof body === 'string'
+              ? body
+              : JSON.stringify(body)
+            : undefined,
           headers: {
             'Content-Type': 'application/json',
           },

@@ -17,12 +17,13 @@
     "build:mcpb": "tsx scripts/build-mcpb.ts",
     "types:check": "tsc --noEmit",
     "test": "bun test",
-    "prepublishOnly": "npm run build",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./packages/external/mcp",
     "format": "pnpm -w format:dir ./packages/external/mcp",
-    "format:check": "pnpm -w format:check:dir ./packages/external/mcp"
+    "format:check": "pnpm -w format:check:dir ./packages/external/mcp",
+    "prepublishOnly": "pnpm build",
+    "publish:check": "pnpm pack --dry-run"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
@@ -57,7 +58,7 @@
     "vitest": "catalog:"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "publishConfig": {
     "access": "public"
@@ -73,6 +74,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/merit-systems/x402scan-mcp"
+    "url": "https://github.com/merit-systems/x402scan/tree/main/packages/external/mcp"
   }
 }

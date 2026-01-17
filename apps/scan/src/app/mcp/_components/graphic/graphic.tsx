@@ -35,7 +35,7 @@ export const HeroGraphic = () => {
     className: cn(
       'flex flex-col items-center justify-center p-2 z-10 bg-card relative transition-all duration-500 border-2',
       isActive
-        ? `border-primary/80 shadow-primary/60 shadow-[0_0_8px]`
+        ? `border-primary/80`
         : 'opacity-50',
       isActive &&
         ((side === 'left' && !isReverse) ||

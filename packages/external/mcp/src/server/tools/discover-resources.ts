@@ -6,14 +6,14 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { log } from '@/lib/log';
 import { mcpError, mcpSuccess } from '@/server/lib/response';
-import { formatUSDC, tokenBigIntToNumber } from '@/lib/token';
-import { queryEndpoint } from '@/server/lib/x402/client';
+import { tokenStringToNumber } from '@/lib/token';
 import { getChainName } from '@/lib/networks';
+import { x402Client, x402HTTPClient } from '@x402/core/client';
 
 // Discovery document schema per spec
 const DiscoveryDocumentSchema = z.object({
   version: z.number().refine(v => v === 1, { message: 'version must be 1' }),
-  resources: z.array(z.string().url()),
+  resources: z.array(z.url()),
   ownershipProofs: z.array(z.string()).optional(),
   instructions: z.string().optional(),
 });
@@ -26,7 +26,7 @@ interface DiscoveredResource {
   url: string;
   isX402Endpoint?: boolean;
   description?: string;
-  price?: string;
+  price?: number;
   priceRaw?: string;
   network?: string;
   networkName?: string;
@@ -87,7 +87,7 @@ async function lookupDnsTxtRecord(hostname: string): Promise<string | null> {
     }
 
     // TXT record data comes with quotes, strip them
-    const txtValue = data.Answer[0].data.replace(/^"|"$/g, '');
+    const txtValue = data.Answer[0]!.data.replace(/^"|"$/g, '');
     log.debug(`Found DNS TXT record: ${txtValue}`);
 
     // Validate it's a URL
@@ -284,31 +284,35 @@ async function queryResource(url: string): Promise<DiscoveredResource> {
   log.debug(`Querying resource: ${url}`);
 
   try {
-    const result = await queryEndpoint(url, { method: 'GET' });
+    const result = await fetch(url, { method: 'GET' });
 
-    if (!result.success) {
+    if (!result.ok) {
       return {
         url,
         isX402Endpoint: false,
-        error: result.error || 'Failed to query endpoint',
+        error: result.statusText ?? 'Failed to query endpoint',
       };
     }
 
-    if (result.statusCode !== 402) {
+    if (result.status !== 402) {
       return {
         url,
         isX402Endpoint: false,
       };
     }
 
-    const pr = result.paymentRequired!;
-    const firstReq = pr.accepts[0];
+    const pr = new x402HTTPClient(new x402Client()).getPaymentRequiredResponse(
+      name => result.headers.get(name),
+      JSON.parse(await result.text())
+    );
+
+    const firstReq = pr.accepts[0]!;
 
     const resource: DiscoveredResource = {
       url,
       isX402Endpoint: true,
       x402Version: pr.x402Version,
-      price: tokenBigIntToNumber(BigInt(firstReq.amount)),
+      price: tokenStringToNumber(firstReq.amount),
       priceRaw: firstReq.amount,
       network: firstReq.network,
       networkName: getChainName(firstReq.network),

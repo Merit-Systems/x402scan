@@ -57,6 +57,7 @@
     },
     "knip": {},
     "knip:check": {},
+    "publish:check": {},
     "db:generate": {
       "cache": false
     },

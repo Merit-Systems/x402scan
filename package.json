@@ -17,7 +17,7 @@
     "format:check:dir": "prettier --check",
     "knip": "knip",
     "knip:check": "turbo run knip",
-    "check": "turbo run format types:check lint knip",
+    "check": "turbo run format types:check lint knip publish:check",
     "trigger:deploy:analytics": "turbo run trigger:deploy --filter=sync-analytics",
     "trigger:deploy:transfers": "turbo run trigger:deploy --filter=sync-transfers",
     "trigger:deploy:alerts": "turbo run trigger:deploy --filter=sync-alerts"
