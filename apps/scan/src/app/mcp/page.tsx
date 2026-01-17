@@ -1,6 +1,5 @@
 import { CopyCode } from '@/components/ui/copy-code';
 import { Body } from '../_components/layout/page-utils';
-import { TextSeparator } from '@/components/ui/text-separator';
 import { Clients } from './_components/clients/clients';
 import { HeroGraphic } from './_components/graphic/graphic';
 import { Badge } from '@/components/ui/badge';

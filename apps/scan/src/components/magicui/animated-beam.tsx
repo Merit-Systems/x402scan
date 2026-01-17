@@ -222,6 +222,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
           duration: 2,
           ease: 'linear',
         }}
+        className="transition-all duration-500"
       />
       <path
         d={pathD}

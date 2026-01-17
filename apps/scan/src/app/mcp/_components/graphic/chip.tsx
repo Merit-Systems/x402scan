@@ -5,6 +5,7 @@ import { useRef } from 'react';
 import { Logo } from '@/components/logo';
 import { Card } from '@/components/ui/card';
 import { AnimatedBeam } from '@/components/magicui/animated-beam';
+import { cn } from '@/lib/utils';
 
 interface Props {
   children: React.ReactNode;
@@ -30,33 +31,28 @@ export const Chip: React.FC<Props> = ({ children }) => {
     isVertical: true,
     pathWidth: 2,
     beamWidth: 0,
+    pathOpacity: 0.1,
   };
+
+  const circleClassName =
+    'bg-background border-primary/20 border-2 size-2 rounded-full z-10';
 
   return (
     <div ref={containerRef} className="relative flex flex-col gap-8 h-full">
       <div className="flex flex-col gap-4">
-        <div
-          className="bg-background border-primary/40 border-2 size-2 rounded-full z-10"
-          ref={topCircle1Ref}
-        />
-        <div
-          className="bg-background border-primary/40 border-2 size-2 rounded-full ml-auto z-10"
-          ref={topCircle2Ref}
-        />
+        <div className={circleClassName} ref={topCircle1Ref} />
+        <div className={cn(circleClassName, 'ml-auto')} ref={topCircle2Ref} />
       </div>
-      <Card className="size-24 flex flex-col items-center justify-center border-primary shadow-primary shadow-[0_0_8px] border-2 relative z-10">
-        <Logo className="size-16" />
+      <Card className="size-24 flex flex-col items-center justify-center border-primary shadow-primary shadow-[0_0_8px] border-2 relative z-10 rounded-xl">
+        <Logo className="size-12" />
         {/* Top edge anchor points */}
         <div ref={topChipRef} className="absolute top-0 w-full" />
         <div ref={bottomChipRef} className="absolute bottom-0 w-full" />
       </Card>
       <div className="flex flex-col gap-4">
+        <div className={circleClassName} ref={bottomCircle1Ref} />
         <div
-          className="bg-background border-primary/40 border-2 size-2 rounded-full z-10"
-          ref={bottomCircle1Ref}
-        />
-        <div
-          className="bg-background border-primary/40 border-2 size-2 rounded-full ml-auto z-10"
+          className={cn(circleClassName, 'ml-auto')}
           ref={bottomCircle2Ref}
         />
       </div>
