@@ -7,18 +7,18 @@ MCP server for calling [x402](https://x402.org)-protected APIs with automatic pa
 ### Claude Code
 
 ```bash
-claude mcp add x402scan --scope user -- npx -y x402scan-mcp@latest
+claude mcp add x402scan --scope user -- npx -y @x402scan/mcp@latest
 ```
 
 ### Codex
 
 ```bash
-codex mcp add x402scan -- npx -y x402scan-mcp@latest
+codex mcp add x402scan -- npx -y @x402scan/mcp@latest
 ```
 
 ### Cursor
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=x402scan&config=eyJjb21tYW5kIjoiL2Jpbi9iYXNoIiwiYXJncyI6WyItYyIsInNvdXJjZSAkSE9NRS8ubnZtL252bS5zaCAyPi9kZXYvbnVsbDsgZXhlYyBucHggLXkgeDQwMnNjYW4tbWNwQGxhdGVzdCJdfQ%3D%3D)
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=x402scan&config=eyJjb21tYW5kIjoiL2Jpbi9iYXNoIiwiYXJncyI6WyItYyIsInNvdXJjZSAkSE9NRS8ubnZtL252bS5zaCAyPi9kZXYvbnVsbDsgZXhlYyBucHggLXkgQHg0MDJzY2FuL21jcEBsYXRlc3QiXX0%3D)
 
 ### Claude Desktop
 
@@ -32,7 +32,7 @@ codex mcp add x402scan -- npx -y x402scan-mcp@latest
 ```toml
 [mcp_servers.x402scan]
 command = "npx"
-args = ["-y", "x402scan-mcp@latest"]
+args = ["-y", "@x402scan/mcp@latest"]
 ```
 
 **Cursor** - Add to `.cursor/mcp.json`:
@@ -44,7 +44,7 @@ args = ["-y", "x402scan-mcp@latest"]
       "command": "/bin/bash",
       "args": [
         "-c",
-        "source $HOME/.nvm/nvm.sh 2>/dev/null; exec npx -y x402scan-mcp@latest"
+        "source $HOME/.nvm/nvm.sh 2>/dev/null; exec npx -y @x402scan/mcp@latest"
       ]
     }
   }
@@ -60,7 +60,7 @@ args = ["-y", "x402scan-mcp@latest"]
       "command": "/bin/bash",
       "args": [
         "-c",
-        "source $HOME/.nvm/nvm.sh 2>/dev/null; exec npx -y x402scan-mcp@latest"
+        "source $HOME/.nvm/nvm.sh 2>/dev/null; exec npx -y @x402scan/mcp@latest"
       ]
     }
   }
@@ -76,17 +76,20 @@ On first run, a wallet is generated at `~/.x402scan-mcp/wallet.json`. Deposit US
 **Workflow:**
 
 1. `check_balance` - Check wallet and get deposit address
-2. `query_endpoint` - Probe endpoint for pricing/schema (optional)
-3. `execute_call` - Make the paid request
+2. `discover_resources` - Find available x402 endpoints on an origin
+3. `check_x402_endpoint` - Probe endpoint for pricing/schema (optional)
+4. `fetch` - Make the paid request (or `authed_call` for SIWX auth)
 
-## Tools (4)
+## Tools (6)
 
-| Tool               | Description                                            |
-| ------------------ | ------------------------------------------------------ |
-| `check_balance`    | Get wallet address and USDC balance                    |
-| `query_endpoint`   | Probe x402 endpoint for pricing/schema without payment |
-| `validate_payment` | Pre-flight check if payment would succeed              |
-| `execute_call`     | Make paid request to x402 endpoint                     |
+| Tool                 | Description                                                      |
+| -------------------- | ---------------------------------------------------------------- |
+| `fetch`              | Fetch x402-protected resource with automatic payment             |
+| `authed_call`        | Make request to SIWX-protected endpoint with automatic auth      |
+| `check_balance`      | Get wallet address and USDC balance                              |
+| `get_wallet_address` | Get the wallet address                                           |
+| `check_x402_endpoint`| Check if endpoint is x402-protected, get pricing/schema/auth     |
+| `discover_resources` | Discover x402 resources from origin's .well-known/x402           |
 
 ## Environment
 
