@@ -59,6 +59,10 @@
   animation: pulseShadow var(--duration) infinite;
 }
 
+@utility animate-pulse-active {
+  animation: pulseActive 0.6s ease-out;
+}
+
 :root {
   --background: oklch(0.99 0 0);
   --foreground: oklch(0 0 0);
@@ -395,6 +399,19 @@
     }
     50% {
       box-shadow: 0 0 0 var(--pulse-size) var(--pulse-color);
+    }
+  }
+
+  @keyframes pulseActive {
+    0%,
+    100% {
+      background-color: var(--card);
+      box-shadow: 0 0 8px 0px oklch(from var(--primary) l c h / 0.6);
+    }
+    33%,
+    66% {
+      background-color: oklch(from var(--primary) l c h / 0.05);
+      box-shadow: 0 0 16px 0px oklch(from var(--primary) l c h / 0.9);
     }
   }
 }
