@@ -47,8 +47,8 @@ export const startServer: Command = async flags => {
   registerAuthTools(props);
   registerWalletTools(props);
   registerCheckX402EndpointTool(props);
-  registerTelemetryTools(props);
   registerDiscoveryTools(server);
+  registerTelemetryTools(props);
 
   await registerOrigins({ server, flags });
 
