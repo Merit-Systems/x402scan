@@ -6,8 +6,12 @@ export default defineConfig([
     entry: ['src/index.ts'],
     format: ['esm'],
     dts: true,
+    sourcemap: true,
     clean: true,
-    shims: true,
+    minify: false,
+    splitting: false,
+    treeshake: true,
+    outDir: 'dist',
   },
   // Bundled build for mcpb (all dependencies included in single file)
   // Uses CJS format to handle dynamic require() calls in dependencies like tweetnacl

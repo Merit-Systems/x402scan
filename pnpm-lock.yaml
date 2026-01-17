@@ -779,21 +779,12 @@ importers:
       '@x402/fetch':
         specifier: catalog:x402
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      '@x402scan/eslint-config':
-        specifier: workspace:*
-        version: link:../../internal/configurations/eslint
-      '@x402scan/typescript-config':
-        specifier: workspace:*
-        version: link:../../internal/configurations/typescript
       boxen:
         specifier: ^8.0.1
         version: 8.0.1
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1
@@ -831,6 +822,15 @@ importers:
       '@x402/extensions':
         specifier: catalog:x402
         version: 2.2.0
+      '@x402scan/eslint-config':
+        specifier: workspace:*
+        version: link:../../internal/configurations/eslint
+      '@x402scan/typescript-config':
+        specifier: workspace:*
+        version: link:../../internal/configurations/typescript
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
       tsup:
         specifier: 'catalog:'
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
