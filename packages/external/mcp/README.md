@@ -80,7 +80,7 @@ On first run, a wallet is generated at `~/.x402scan-mcp/wallet.json`. Deposit US
 3. `check_x402_endpoint` - Probe endpoint for pricing/schema (optional)
 4. `fetch` - Make the paid request (or `authed_call` for SIWX auth)
 
-## Tools (6)
+## Tools (7)
 
 | Tool                  | Description                                                  |
 | --------------------- | ------------------------------------------------------------ |
@@ -90,6 +90,7 @@ On first run, a wallet is generated at `~/.x402scan-mcp/wallet.json`. Deposit US
 | `get_wallet_address`  | Get the wallet address                                       |
 | `check_x402_endpoint` | Check if endpoint is x402-protected, get pricing/schema/auth |
 | `discover_resources`  | Discover x402 resources from origin's .well-known/x402       |
+| `report_error`        | Emergency: report critical MCP bugs to developers            |
 
 ## Environment
 
