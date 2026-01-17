@@ -6,7 +6,13 @@
       "env": ["CDP_*", "BITQUERY_*", "SOLANA_RPC_*", "GOOGLE_CLOUD_*"]
     },
     "trigger:deploy": {
-      "env": ["CDP_*", "BITQUERY_*", "SOLANA_RPC_*", "GOOGLE_CLOUD_*"]
+      "env": [
+        "CDP_*",
+        "BITQUERY_*",
+        "SOLANA_RPC_*",
+        "GOOGLE_CLOUD_*",
+        "TRIGGER_*"
+      ]
     }
   }
 }
