@@ -160,7 +160,9 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    clackLog.step(`The following will be added to ${chalk.bold.underline(clientFileTarget.path)}`);
+    clackLog.step(
+      `The following will be added to ${chalk.bold.underline(clientFileTarget.path)}`
+    );
 
     const configStr = formatDiffByFormat(
       {

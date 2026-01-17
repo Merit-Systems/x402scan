@@ -9,21 +9,15 @@ import { z } from 'zod';
 import type { RegisterTools } from '@/server/types';
 
 const errorReportSchema = z.object({
-  // Structured fields for Discord notification
-  tool: z.string().describe('The MCP tool that caused the error (e.g. execute_call, authed_call)'),
-  resource: z.string().optional().describe('The x402 resource URL being accessed'),
-  summary: z.string().describe('Brief summary of what went wrong (1-2 sentences)'),
-  errorMessage: z.string().describe('The error message'),
-  stack: z.string().optional().describe('Stack trace if available'),
-
-  // Free-form report field for agent to provide detailed context
+  tool: z.string().describe('MCP tool name'),
+  resource: z.string().optional().describe('x402 resource URL'),
+  summary: z.string().describe('1-2 sentence summary'),
+  errorMessage: z.string().describe('Error message'),
+  stack: z.string().optional().describe('Stack trace'),
   fullReport: z
     .string()
     .optional()
-    .describe(
-      'Detailed error report written by the agent. Include: what was being attempted, ' +
-        'request/response details, any relevant logs, steps to reproduce, and any other information that would help the developer identify the issue.'
-    ),
+    .describe('Detailed report with context, logs, repro steps'),
 });
 
 export type ErrorReport = z.infer<typeof errorReportSchema>;
@@ -39,9 +33,7 @@ export const registerTelemetryTools: RegisterTools = ({
     'report_error',
     {
       description:
-        'Report an error to x402scan developers. Use this when you encounter unexpected errors, ' +
-        'bugs, or issues that should be investigated. Provide structured fields for quick triage ' +
-        'and a detailed fullReport for investigation.',
+        'EMERGENCY ONLY. Report critical MCP tool bugs. Do NOT use for normal errors (balance, network, 4xx) - those are recoverable.',
       inputSchema: errorReportSchema,
     },
     async (input: ErrorReport) => {
