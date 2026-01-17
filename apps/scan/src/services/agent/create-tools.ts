@@ -7,6 +7,7 @@ import { inputSchemaToZodSchema } from './utils';
 import {
   paymentRequirementsSchemaV1,
   outputSchemaV1,
+  coerceAcceptForV1Schema,
   type OutputSchemaV1,
 } from '@/lib/x402';
 
@@ -23,15 +24,16 @@ export async function createX402AITools(
   for (const resource of resources) {
     if (resource.accepts) {
       for (const accept of resource.accepts) {
+        const acceptToParse = coerceAcceptForV1Schema({
+          x402Version: resource.x402Version,
+          accept,
+        });
+
         const parsedAccept = paymentRequirementsSchemaV1
           .extend({
             outputSchema: outputSchemaV1,
           })
-          .safeParse({
-            ...accept,
-            network: accept.network,
-            maxAmountRequired: accept.maxAmountRequired.toString(),
-          });
+          .safeParse(acceptToParse);
         if (!parsedAccept.success) {
           continue;
         }

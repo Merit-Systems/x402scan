@@ -11,7 +11,11 @@ import { getChat, updateChat } from '@/services/db/composer/chat';
 import { auth } from '@/auth';
 
 import { messageSchema } from '@/lib/message-schema';
-import { fetchWithProxy, normalizedAcceptSchema } from '@/lib/x402';
+import {
+  coerceAcceptForV1Schema,
+  fetchWithProxy,
+  normalizedAcceptSchema,
+} from '@/lib/x402';
 import { supportedChainSchema } from '@/lib/schemas';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
@@ -137,11 +141,12 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const parsedAccept = normalizedAcceptSchema.safeParse({
-    ...accept,
-    network: accept.network,
-    maxAmountRequired: accept.maxAmountRequired.toString(),
+  const acceptToParse = coerceAcceptForV1Schema({
+    x402Version: resource.x402Version,
+    accept,
   });
+
+  const parsedAccept = normalizedAcceptSchema.safeParse(acceptToParse);
   if (!parsedAccept.success) {
     return NextResponse.json(
       {

@@ -1,4 +1,7 @@
 import { Nav } from '@/app/_components/layout/nav';
+import { env } from '@/env';
+import { api } from '@/trpc/server';
+import type { Metadata } from 'next';
 
 export default async function OriginLayout({
   children,
@@ -22,4 +25,38 @@ export default async function OriginLayout({
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>
     </div>
   );
+}
+
+export async function generateMetadata({
+  params,
+}: LayoutProps<'/server/[id]'>): Promise<Metadata> {
+  const { id } = await params;
+  const origin = await api.public.origins.get(id);
+
+  if (!origin) {
+    return { title: 'Server not found' };
+  }
+
+  const title = origin.title ?? origin.origin;
+  const description = origin.description ?? `Explore ${title} on x402scan`;
+
+  const imageUrl = origin.ogImages?.[0]?.url
+    ? new URL(origin.ogImages[0].url, env.NEXT_PUBLIC_APP_URL).toString()
+    : `${env.NEXT_PUBLIC_APP_URL}/opengraph-image.png`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${env.NEXT_PUBLIC_APP_URL}/server/${id}`,
+      images: [imageUrl],
+    },
+    twitter: {
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
 }

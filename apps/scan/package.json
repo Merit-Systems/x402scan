@@ -91,7 +91,6 @@
     "embla-carousel-wheel-gestures": "^8.1.0",
     "facilitators": "workspace:*",
     "hast-util-to-jsx-runtime": "^2.3.6",
-    "html-metadata-parser": "^2.0.4",
     "input-otp": "^1.4.2",
     "ioredis": "^5.8.2",
     "lucide-react": "catalog:",

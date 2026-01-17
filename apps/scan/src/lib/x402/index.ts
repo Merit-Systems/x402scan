@@ -186,6 +186,71 @@ function getOutputSchemaFromBazaar(
   return { input: info.input, output: info.output } as OutputSchema;
 }
 
+// NOTE(shafu): we need this for the agent tools
+// obviously sloped up, should be fine though because the interface won't change
+export function coerceAcceptForV1Schema(params: {
+  x402Version: number;
+  accept: unknown;
+}): Record<string, unknown> {
+  const { x402Version, accept } = params;
+
+  const base =
+    accept && typeof accept === 'object'
+      ? ({ ...(accept as Record<string, unknown>) } as Record<string, unknown>)
+      : ({} as Record<string, unknown>);
+
+  if ('maxAmountRequired' in base) {
+    const v = base.maxAmountRequired;
+    if (typeof v === 'bigint') base.maxAmountRequired = v.toString();
+    else if (typeof v === 'number') base.maxAmountRequired = String(v);
+  }
+
+  if (x402Version === 2) {
+    const outputSchema = base.outputSchema;
+    const coerced = (() => {
+      if (!outputSchema || typeof outputSchema !== 'object') return undefined;
+      if (!('input' in outputSchema)) return undefined;
+
+      const schemaObj = outputSchema as { input?: unknown; output?: unknown };
+      if (!schemaObj.input || typeof schemaObj.input !== 'object') {
+        return undefined;
+      }
+
+      const input = { ...(schemaObj.input as Record<string, unknown>) };
+
+      // Infer method if missing (bazaar often omits it)
+      let inferredMethod: 'GET' | 'POST' = 'GET';
+      if (input.body) inferredMethod = 'POST';
+      else if (input.queryParams) inferredMethod = 'GET';
+      if (!('method' in input)) input.method = inferredMethod;
+
+      // Convert `body.properties` -> `bodyFields` (v1 expects Record<string, FieldDef>)
+      if (
+        input.body &&
+        typeof input.body === 'object' &&
+        input.body !== null &&
+        'properties' in (input.body as Record<string, unknown>)
+      ) {
+        input.bodyFields = (
+          input.body as { properties?: Record<string, unknown> }
+        ).properties;
+        delete input.body;
+      }
+
+      const parsed = outputSchemaV1.safeParse({
+        input,
+        output: schemaObj.output ?? null,
+      });
+      return parsed.success ? parsed.data : undefined;
+    })();
+
+    if (coerced) base.outputSchema = coerced;
+    else if ('outputSchema' in base) base.outputSchema = undefined;
+  }
+
+  return base;
+}
+
 export function isV2Response(data: unknown): data is X402ResponseV2 {
   return (
     typeof data === 'object' &&
