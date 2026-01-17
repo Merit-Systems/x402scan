@@ -376,6 +376,7 @@ export const resourcesRouter = createTRPCRouter({
       const successfulResults: { url: string }[] = [];
       const failedResults: { url: string; error: string; status?: number }[] =
         [];
+      let originId: string | undefined;
 
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
@@ -389,6 +390,10 @@ export const resourcesRouter = createTRPCRouter({
             successfulResults.push({
               url: resourceUrl,
             });
+            // Capture origin ID from the first successful registration
+            if (!originId && 'resource' in value && value.resource?.origin?.id) {
+              originId = value.resource.origin.id;
+            }
           } else if ('success' in value && !value.success) {
             failedResults.push({
               url: resourceUrl,
@@ -414,6 +419,7 @@ export const resourcesRouter = createTRPCRouter({
         total: results.length,
         source: discoveryResult.source,
         failedDetails: failedResults,
+        originId,
       };
     }),
 
