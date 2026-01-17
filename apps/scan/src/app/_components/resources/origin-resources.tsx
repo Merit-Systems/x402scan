@@ -31,7 +31,7 @@ export const OriginResources: React.FC<Props> = ({
   return (
     <Accordion
       type="multiple"
-      className="border-b-0"
+      className="border-b-0 gap-0"
       defaultValue={
         defaultOpen ? resources.map(resource => resource.id) : undefined
       }
