@@ -3,34 +3,41 @@ export enum Clients {
   Cursor = 'cursor',
   Codex = 'codex',
   Claude = 'claude',
+  GeminiCli = 'gemini-cli',
+  Vscode = 'vscode',
 }
 
 interface ClientMetadata {
   name: string;
   description: string;
-  image: string;
+  recommended?: boolean;
 }
 
 export const clients: Record<Clients, ClientMetadata> = {
   [Clients.ClaudeCode]: {
     name: 'Claude Code',
     description: 'Claude Code is a code editor that uses the Claude API.',
-    image: '/icons/anthropic.png',
+    recommended: true,
   },
   [Clients.Cursor]: {
     name: 'Cursor',
     description: 'Cursor is a code editor that uses the Cursor API.',
-    image: '/icons/cursor.png',
   },
   [Clients.Codex]: {
     name: 'Codex',
     description: 'Codex is a code editor that uses the Codex API.',
-    image: '/icons/openai.png',
   },
   [Clients.Claude]: {
     name: 'Claude Desktop',
     description:
       'Claude Desktop is a code editor that uses the Claude Desktop API.',
-    image: '/icons/claude.png',
+  },
+  [Clients.GeminiCli]: {
+    name: 'Gemini CLI',
+    description: 'Gemini CLI is a code editor that uses the Gemini CLI API.',
+  },
+  [Clients.Vscode]: {
+    name: 'VSCode',
+    description: 'VSCode is a code editor that uses the VSCode API.',
   },
 };

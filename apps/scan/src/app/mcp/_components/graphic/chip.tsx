@@ -3,8 +3,8 @@
 import { useRef } from 'react';
 
 import { Logo } from '@/components/logo';
-import { Card } from '@/components/ui/card';
 import { AnimatedBeam } from '@/components/magicui/animated-beam';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -43,7 +43,7 @@ export const Chip: React.FC<Props> = ({ children }) => {
         <div className={circleClassName} ref={topCircle1Ref} />
         <div className={cn(circleClassName, 'ml-auto')} ref={topCircle2Ref} />
       </div>
-      <Card className="size-24 flex flex-col items-center justify-center border-primary shadow-primary shadow-[0_0_8px] border-2 relative z-10 rounded-xl">
+      <Card className="size-24 flex flex-col items-center justify-center border-primary/40 border-2 relative z-10 rounded-xl">
         <Logo className="size-12" />
         {/* Top edge anchor points */}
         <div ref={topChipRef} className="absolute top-0 w-full" />
