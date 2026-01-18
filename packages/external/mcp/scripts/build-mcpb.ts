@@ -11,13 +11,13 @@
 import { execSync } from 'child_process';
 import {
   cpSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-  writeFileSync,
   existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
 } from 'fs';
-import { join, dirname } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -36,9 +36,11 @@ function main() {
   rmSync(bundleDir, { recursive: true, force: true });
   mkdirSync(bundleDir, { recursive: true });
 
+  run("pnpm install")
+
   // Build the server with dependencies bundled (tsup creates dist/bundle/)
   console.log('1. Building server bundle with all dependencies...');
-  run('bun run build');
+  run('pnpm build');
 
   // Create server directory in bundle
   const serverDir = join(bundleDir, 'server');
@@ -46,7 +48,7 @@ function main() {
 
   // Copy the bundled dist/bundle/index.cjs to server/index.cjs
   cpSync(
-    join(ROOT, 'dist', 'bundle', 'index.cjs'),
+    join(ROOT, 'dist', 'cjs', 'run-server.cjs'),
     join(serverDir, 'index.cjs')
   );
 
