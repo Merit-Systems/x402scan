@@ -11,7 +11,7 @@ export const tsexFacilitator = {
   id: 'tsex',
   metadata: {
     name: 'TSE-X IoT Network',
-    image: 'https://x402scan.com/tsex.png',
+    image: 'https://raw.githubusercontent.com/TSE-Sol/tse-assets/main/Transparent%20Logo%20(200%20x%20200%20px).png',
     docsUrl: 'https://tse-sol.github.io/tse-assets/tse-x-demo-interactive.html',
     color: '#8B5CF6',
   },
