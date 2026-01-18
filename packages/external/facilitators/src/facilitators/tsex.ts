@@ -19,7 +19,7 @@ export const tsexFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0x8469a3A136AE586356bAA89C61191D8E2d84B92f',
+        address: '0x8469a3a136ae586356baa89c61191d8e2d84b92f',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-01-01'),
       },
