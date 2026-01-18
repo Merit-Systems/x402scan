@@ -1,6 +1,6 @@
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 
-import { mcpSuccess, mcpError } from '@/server/lib/response';
+import { mcpError, mcpSuccess } from '@/server/lib/response';
 import { requestSchema } from '@/server/lib/schemas';
 
 import { log } from '@/lib/log';

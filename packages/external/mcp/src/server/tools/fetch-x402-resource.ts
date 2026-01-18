@@ -2,7 +2,7 @@ import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { ExactEvmScheme } from '@x402/evm/exact/client';
 import { wrapFetchWithPayment } from '@x402/fetch';
 
-import { mcpSuccess, mcpError } from '@/server/lib/response';
+import { mcpError, mcpSuccess } from '@/server/lib/response';
 import { requestWithHeadersSchema } from '@/server/lib/schemas';
 import { FetchStates } from '@/server/types';
 
@@ -66,7 +66,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
       try {
         const response = await fetchWithPay(url, {
           method,
-          body: body ? JSON.stringify(body) : undefined,
+          body: typeof body === 'string' ? body : body ? JSON.stringify(body) : undefined,
           headers: {
             ...(body ? { 'Content-Type': 'application/json' } : {}),
             ...headers,
