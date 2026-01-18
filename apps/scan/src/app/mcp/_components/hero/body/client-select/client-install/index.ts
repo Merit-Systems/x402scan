@@ -1,10 +1,10 @@
 import type React from "react";
 
-import { Clients } from "../../clients/data";
+import { Clients } from "../../../../clients/data";
 
 import { ClaudeCodeInstall } from "./claude-code";
-import { CursorInstall } from "./cursor";
 import { CodexInstall } from "./codex";
+import { CursorInstall } from "./cursor";
 import { VscodeInstall } from "./vscode";
 
 

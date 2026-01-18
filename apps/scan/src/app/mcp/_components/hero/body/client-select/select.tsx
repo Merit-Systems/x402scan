@@ -1,18 +1,19 @@
 'use client';
 
+import { Badge } from '@/components/ui/badge';
 import {
   Command,
-  CommandInput,
-  CommandList,
   CommandEmpty,
+  CommandInput,
   CommandItem,
+  CommandList,
 } from '@/components/ui/command';
-import { clients } from '../clients/data';
 
-import { ClientIcon } from '../clients/icons';
+import { clients } from '../../../clients/data';
 
-import type { Clients } from '../clients/data';
-import { Badge } from '@/components/ui/badge';
+import { ClientIcon } from '../../../clients/icons';
+
+import type { Clients } from '../../../clients/data';
 
 interface Props {
   onClientSelect: (client: Clients) => void;
@@ -27,8 +28,7 @@ export const ClientsSelect = ({ onClientSelect }: Props) => {
     >
       <CommandInput
         placeholder="Search Clients"
-        containerClassName="py-1 px-3 h-fit"
-        className="py-1"
+        containerClassName="py-0.5 px-3 h-fit"
       />
       <CommandList className="max-h-[198px]">
         <CommandEmpty>No results found.</CommandEmpty>
@@ -45,12 +45,12 @@ export const ClientsSelect = ({ onClientSelect }: Props) => {
               height={20}
             />
             <div className="flex gap-2 justify-between w-full">
-            <span className="text-sm font-medium">{client.name}</span>
-            {client.recommended && (
-              <Badge variant="primary" className="text-[10px]">
-                Recommended
-              </Badge>
-            )}
+              <span className="text-sm font-medium">{client.name}</span>
+              {client.recommended && (
+                <Badge variant="primary" className="text-[10px]">
+                  Recommended
+                </Badge>
+              )}
             </div>
           </CommandItem>
         ))}

@@ -10,7 +10,7 @@ export const Cta = () => {
   const { isCopied, copyToClipboard } = useCopyToClipboard();
 
   return (
-    <div className="flex gap-4 justify-center">
+    <div className="flex gap-4 justify-start">
       <Button size='lg' className="px-6 h-12 text-white rounded-xl font-semibold">
         Get Started
       </Button>
@@ -32,9 +32,6 @@ export const Cta = () => {
           {/* <Copy className="size-4 text-muted-foreground/80 hover:text-foreground transition-all duration-300" /> */}
         </div>
       </Card>
-      <Button variant="outline" size="lg" className="h-12 rounded-xl px-6 font-semibold">
-        Learn More
-      </Button>
     </div>
   );
 };

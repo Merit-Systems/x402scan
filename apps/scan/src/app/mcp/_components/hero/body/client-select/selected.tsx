@@ -1,14 +1,16 @@
-import Image from 'next/image';
-
-import { clients } from '../clients/data';
-
-import type { Clients as ClientsEnum } from '../clients/data';
-import { ClientIcon } from '../clients/icons';
-import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import { CopyCode } from '@/components/ui/copy-code';
-import { clientInstall } from './client-install';
 import { TextSeparator } from '@/components/ui/text-separator';
+
+import { ClientIcon } from '../../../clients/icons';
+
+import { clientInstall } from './client-install';
+
+import { clients } from '../../../clients/data';
+
+import type { Clients as ClientsEnum } from '../../../clients/data';
 
 interface Props {
   client: ClientsEnum;

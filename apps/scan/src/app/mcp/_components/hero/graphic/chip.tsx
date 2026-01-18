@@ -38,7 +38,7 @@ export const Chip: React.FC<Props> = ({ children }) => {
     'bg-background border-primary/20 border-2 size-2 rounded-full z-10';
 
   return (
-    <div ref={containerRef} className="relative flex flex-col gap-8 h-full">
+    <div ref={containerRef} className="relative flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className={circleClassName} ref={topCircle1Ref} />
         <div className={cn(circleClassName, 'ml-auto')} ref={topCircle2Ref} />

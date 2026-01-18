@@ -408,10 +408,10 @@
       box-shadow: 0 0 0px 0px oklch(from var(--primary) l c h / 0);
       transform: scale(1.0);
     }
-    15% {
+    20% {
       transform: scale(1.025);
       background-color: oklch(from var(--primary) l c h / 0.2);
-      box-shadow: 0 0 48px 0px oklch(from var(--primary) l c h / 0.2);
+      box-shadow: 0 0 48px 0px oklch(from var(--primary) l c h / 0.4);
     }
     100% {
       background-color: var(--card);
