@@ -8,9 +8,6 @@ export default function McpPage() {
     <Body className="max-w-lg mx-auto gap-20 py-16">
       <div className="flex flex-col gap-12">
         <div className="flex flex-col gap-6 items-center justify-center text-center">
-          <div className="text-primary border font-mono text-sm px-4 py-1 rounded-xl">
-            Public Beta
-          </div>
           <h1 className="text-6xl font-semibold">x402scan MCP</h1>
           <p className="text-xl text-muted-foreground/60 font-mono">
             Give your agents the ability to make paid API requests to any x402 endpoint.

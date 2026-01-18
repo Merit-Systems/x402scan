@@ -11,6 +11,9 @@ export const Cta = () => {
 
   return (
     <div className="flex gap-4 justify-center">
+      <Button size='lg' className="px-6 h-12 text-white rounded-xl font-semibold">
+        Get Started
+      </Button>
       <Card className="h-12 flex gap-6 items-center w-fit rounded-xl px-4">
         <div className="flex items-center gap-12 cursor-pointer" onClick={() => void copyToClipboard('npx @x402scan/mcp install')}>
           <AnimatePresence mode="wait">
@@ -29,8 +32,8 @@ export const Cta = () => {
           {/* <Copy className="size-4 text-muted-foreground/80 hover:text-foreground transition-all duration-300" /> */}
         </div>
       </Card>
-      <Button size='lg' className="px-6 h-12 text-white rounded-xl">
-        Get Started
+      <Button variant="outline" size="lg" className="h-12 rounded-xl px-6 font-semibold">
+        Learn More
       </Button>
     </div>
   );
