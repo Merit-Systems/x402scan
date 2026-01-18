@@ -16,7 +16,7 @@ export default defineConfig([
   // Bundled build for mcpb (all dependencies included in single file)
   // Uses CJS format to handle dynamic require() calls in dependencies like tweetnacl
   {
-    entry: ['src/index.ts'],
+    entry: ['src/run-server.ts'],
     outDir: 'dist/bundle',
     format: ['cjs'],
     dts: false,

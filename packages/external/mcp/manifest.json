@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/merit-systems/x402scan-mcp"
+    "url": "https://github.com/merit-systems/x402scan/packages/external/mcp"
   },
   "homepage": "https://x402scan.com",
   "license": "MIT",
@@ -20,7 +20,10 @@
     "entry_point": "server/index.cjs",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/server/index.cjs"]
+      "args": ["${__dirname}/server/index.cjs"],
+      "env": {
+        "ALLOWED_DIRECTORIES": "https://x402scan.com"
+      }
     }
   },
   "compatibility": {
@@ -35,16 +38,24 @@
       "description": "Check wallet address and USDC balance"
     },
     {
-      "name": "query_endpoint",
-      "description": "Probe x402 endpoint for pricing and schema"
+      "name": "get_wallet_address",
+      "description": "Get the wallet address."
     },
     {
-      "name": "validate_payment",
-      "description": "Pre-flight check if payment would succeed"
+      "name": "check_x402_endpoint",
+      "description": "Check if an endpoint is x402-protected and get pricing options, schema, and auth requirements (if applicable)."
     },
     {
-      "name": "execute_call",
-      "description": "Make paid request to x402 endpoint"
+      "name": "fetch",
+      "description": "Fetches an x402-protected resource and handles payment automatically. If the resource is not x402-protected, it will return the raw response."
+    },
+    {
+      "name": "discover_resources",
+      "description": "Discover x402-protected resources from an origin. Fetches the /.well-known/x402 discovery document and optionally tests each resource to get pricing and requirements."
+    },
+    {
+      "name": "authed_call",
+      "description": "Make a request to a SIWX-protected endpoint. Handles auth flow automatically: detects SIWX requirement from 402 response, signs proof with server-provided challenge, retries."
     }
   ]
 }
