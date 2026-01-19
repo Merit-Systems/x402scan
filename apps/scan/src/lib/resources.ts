@@ -2,7 +2,7 @@ import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
-import { validateX402ForScan } from '@/lib/x402/validate';
+import { validateX402 } from '@/lib/x402/validate';
 import { getOriginFromUrl } from '@/lib/url';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
@@ -18,7 +18,7 @@ export const registerResource = async (url: string, data: unknown) => {
   urlObj.search = '';
   const cleanUrl = urlObj.toString();
 
-  const validated = validateX402ForScan(data);
+  const validated = validateX402(data);
   if (!validated.success) {
     console.error(validated.errors);
     return {

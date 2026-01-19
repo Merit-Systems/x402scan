@@ -4,7 +4,7 @@ import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { extractX402Data, getDescription, isV2Response } from '@/lib/x402';
-import { validateX402ForScan } from '@/lib/x402/validate';
+import { validateX402 } from '@/lib/x402/validate';
 import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource } from '@/types/batch-test';
 
@@ -74,7 +74,7 @@ async function testSingleResource(url: string) {
         continue;
       }
 
-      const validated = validateX402ForScan(x402Data);
+      const validated = validateX402(x402Data);
       if (validated.success) {
         const description = getDescription(validated.parsed) ?? null;
         return {
@@ -191,7 +191,7 @@ export const developerRouter = createTRPCRouter({
         body: x402Data,
       };
 
-      const validated = validateX402ForScan(x402Data);
+      const validated = validateX402(x402Data);
       const info = {
         hasAccepts: validated.success
           ? (validated.parsed.accepts?.length ?? 0) > 0

@@ -21,7 +21,7 @@ export type X402ScanValidationResult =
   | X402ScanValidationSuccess
   | X402ScanValidationFailure;
 
-export function validateX402ForScan(data: unknown): X402ScanValidationResult {
+export function validateX402(data: unknown): X402ScanValidationResult {
   const parsed = parseX402Response(data);
   if (!parsed.success) {
     return { success: false, errors: parsed.errors };
