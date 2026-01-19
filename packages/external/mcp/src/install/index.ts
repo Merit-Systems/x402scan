@@ -2,6 +2,7 @@ import { getWallet } from '@/lib/wallet';
 import { getClient } from './1-get-client';
 import { addServer } from './2-add-server';
 import { addFunds } from './3-add-funds';
+import { redeemInviteCode } from './4-redeem-invite';
 
 import type { Command, GlobalFlags } from '@/types';
 import { intro, outro } from '@clack/prompts';
@@ -9,6 +10,7 @@ import chalk from 'chalk';
 
 export type InstallFlags = GlobalFlags<{
   client?: string;
+  invite?: string;
 }>;
 
 export const installMcpServer: Command<InstallFlags> = async flags => {
@@ -23,7 +25,13 @@ export const installMcpServer: Command<InstallFlags> = async flags => {
 
   await addServer(client, flags);
 
-  await addFunds({ flags, address, isNew });
+  // Try to redeem invite code if provided
+  const inviteRedeemed = await redeemInviteCode({ flags, address });
+
+  // Only prompt for funds if invite code wasn't successfully redeemed
+  if (!inviteRedeemed) {
+    await addFunds({ flags, address, isNew });
+  }
 
   outro(chalk.bold.green('Your x402scan MCP server is ready to use!'));
 };

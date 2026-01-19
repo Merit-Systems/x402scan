@@ -11,6 +11,7 @@ import { Accordion } from '@/components/ui/accordion';
 import { MethodSelect } from './methods';
 import { Onramp } from './onramp';
 import { Transfer } from './transfer';
+import { InviteCodeRedemption } from './invite';
 
 import { OnrampMethods } from '@/services/onramp/types';
 
@@ -118,6 +119,11 @@ const DepositWithConnectorsContent: React.FC<DepositContentProps> = ({
             address={address}
             setAccordionValue={setAccordionValue}
             searchParams={searchParams}
+          />
+        ) : selectedMethod === OnrampMethods.INVITE_CODE ? (
+          <InviteCodeRedemption
+            address={address}
+            setAccordionValue={setAccordionValue}
           />
         ) : (
           <Onramp

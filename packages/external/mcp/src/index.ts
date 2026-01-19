@@ -23,11 +23,17 @@ void yargs(hideBin(process.argv))
     'install',
     'Install the MCP server',
     yargs =>
-      yargs.option('client', {
-        type: 'string',
-        description: 'The client name',
-        required: false,
-      }),
+      yargs
+        .option('client', {
+          type: 'string',
+          description: 'The client name',
+          required: false,
+        })
+        .option('invite', {
+          type: 'string',
+          description: 'Invite code to redeem for free USDC',
+          required: false,
+        }),
     async args => {
       const { installMcpServer } = await import('@/install');
       await installMcpServer({ ...args });

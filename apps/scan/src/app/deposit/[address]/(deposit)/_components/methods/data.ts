@@ -1,6 +1,6 @@
 import { OnrampMethods } from '@/services/onramp/types';
 import type { LucideIcon } from 'lucide-react';
-import { CreditCard, Landmark, Wallet } from 'lucide-react';
+import { CreditCard, Landmark, Wallet, Gift } from 'lucide-react';
 
 interface MethodMetadata {
   label: string;
@@ -23,5 +23,10 @@ export const METHOD_METADATA: Record<OnrampMethods, MethodMetadata> = {
     label: 'Wallet',
     icon: Wallet,
     description: 'Deposit funds directly into your account using your wallet',
+  },
+  [OnrampMethods.INVITE_CODE]: {
+    label: 'Invite Code',
+    icon: Gift,
+    description: 'Redeem an invite code for free USDC',
   },
 };
