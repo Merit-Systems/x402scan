@@ -4,12 +4,17 @@
  * Simplified wrapper using the official @x402 library.
  * Handles both v1 and v2 protocols automatically.
  */
-export { x402Client, wrapFetchWithPayment } from '@x402/fetch';
+import type { x402Client as X402Client } from '@x402/core/client';
+import type { ClientSvmSigner } from '@x402/svm';
+import { registerExactEvmScheme } from '@x402/evm/exact/client';
+import { x402Client, wrapFetchWithPayment } from '@x402/fetch';
+import { ExactSvmScheme } from '@x402/svm/exact/client';
+import { ExactSvmSchemeV1 } from '@x402/svm/exact/v1/client';
 
-export { registerExactEvmScheme } from '@x402/evm/exact/client';
-
-export { ExactSvmScheme } from '@x402/svm/exact/client';
-export { ExactSvmSchemeV1 } from '@x402/svm/exact/v1/client';
+export { x402Client, wrapFetchWithPayment };
+export { registerExactEvmScheme };
+export { ExactSvmScheme, ExactSvmSchemeV1 };
+export type { ClientSvmSigner };
 
 export interface ClientEvmSigner {
   readonly address: `0x${string}`;
@@ -46,4 +51,22 @@ export function toEvmSigner(walletClient: {
       });
     },
   };
+}
+
+export function registerSvmX402Client(params: {
+  signer: ClientSvmSigner;
+  rpcUrl: string;
+}): X402Client {
+  const { signer, rpcUrl } = params;
+  const client = new x402Client();
+
+  // v2
+  client.register('solana:*', new ExactSvmScheme(signer, { rpcUrl }));
+
+  // v1
+  client.registerV1('solana', new ExactSvmSchemeV1(signer, { rpcUrl }));
+  client.registerV1('solana-devnet', new ExactSvmSchemeV1(signer, { rpcUrl }));
+  client.registerV1('solana-testnet', new ExactSvmSchemeV1(signer, { rpcUrl }));
+
+  return client;
 }
