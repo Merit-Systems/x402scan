@@ -117,7 +117,7 @@ export const HeroGraphic = () => {
   return (
     <div
       ref={containerRef}
-      className="relative size-full flex items-center justify-between max-w-lg w-full"
+      className="relative size-full flex items-center justify-between w-full"
     >
       <div className="flex flex-col gap-8">
         <Card {...cardProps(activeClientIndex === 0, 'left')}>
