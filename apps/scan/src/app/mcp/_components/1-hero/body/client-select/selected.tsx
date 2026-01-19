@@ -21,16 +21,15 @@ export const SelectedClient: React.FC<Props> = ({ client, reset }) => {
   const ClientInstall = clientInstall[client];
   const { name } = clients[client];
 
+  if (!ClientInstall) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2 shrink-0">
-          <ClientIcon
-            client={client}
-            width={24}
-            height={24}
-            className="shrink-0"
-          />
+          <ClientIcon client={client} className="shrink-0 size-5" />
           <span className="font-medium shrink-0">{name}</span>
         </div>
         <Button

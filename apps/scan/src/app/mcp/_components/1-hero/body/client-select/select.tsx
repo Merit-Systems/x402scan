@@ -4,12 +4,13 @@ import { Badge } from '@/components/ui/badge';
 import {
   Command,
   CommandEmpty,
+  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
 
-import { clients } from '../../../lib/clients/data';
+import { clients, ClientTypes } from '../../../lib/clients/data';
 
 import { ClientIcon } from '../../../lib/clients/icons';
 
@@ -26,31 +27,62 @@ export const ClientsSelect = ({ onClientSelect }: Props) => {
       disablePointerSelection
       value={''}
     >
-      <CommandInput
-        placeholder="Search Clients"
-        containerClassName="py-0.5 px-3 h-fit"
-      />
-      <CommandList className="max-h-[198px]">
+      <CommandList className="max-h-52">
         <CommandEmpty>No results found.</CommandEmpty>
-        {Object.entries(clients).map(([key, client]) => (
-          <CommandItem
-            key={client.name}
-            className="px-4 py-3 gap-3 cursor-pointer hover:bg-accent hover:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground rounded-none"
-            defaultChecked={false}
-            onSelect={() => onClientSelect(key as Clients)}
-          >
-            <ClientIcon client={key as Clients} width={20} height={20} />
-            <div className="flex gap-2 justify-between w-full">
-              <span className="text-sm font-medium">{client.name}</span>
-              {client.recommended && (
-                <Badge variant="primary" className="text-[10px]">
-                  Recommended
-                </Badge>
-              )}
-            </div>
-          </CommandItem>
-        ))}
+        <CommandGroup heading="For Knowledge Workers">
+          {Object.entries(clients)
+            .filter(([, client]) => client.type === ClientTypes.DESKTOP)
+            .map(([key]) => (
+              <Item
+                key={key}
+                client={key as Clients}
+                onClientSelect={onClientSelect}
+              />
+            ))}
+        </CommandGroup>
+        <CommandGroup heading="For Developers">
+          {Object.entries(clients)
+            .filter(
+              ([, client]) =>
+                client.type === ClientTypes.IDE ||
+                client.type === ClientTypes.TERMINAL
+            )
+            .map(([key, client]) => (
+              <Item
+                key={client.name}
+                client={key as Clients}
+                onClientSelect={onClientSelect}
+              />
+            ))}
+        </CommandGroup>
       </CommandList>
     </Command>
+  );
+};
+
+const Item = ({
+  client,
+  onClientSelect,
+}: {
+  client: Clients;
+  onClientSelect: (client: Clients) => void;
+}) => {
+  const { name, recommended } = clients[client];
+  return (
+    <CommandItem
+      className="gap-3 cursor-pointer hover:bg-accent transition-colors"
+      defaultChecked={false}
+      onSelect={() => onClientSelect(client)}
+    >
+      <ClientIcon client={client} width={20} height={20} />
+      <div className="flex gap-2 justify-between w-full">
+        <span className="text-sm font-medium">{name}</span>
+        {recommended && (
+          <Badge variant="primary" className="text-[10px]">
+            Recommended
+          </Badge>
+        )}
+      </div>
+    </CommandItem>
   );
 };
