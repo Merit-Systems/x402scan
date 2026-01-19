@@ -18,7 +18,7 @@ export const ClientSelect = () => {
   return (
     <Popover>
       <PopoverTrigger>
-        <Button size="lg" className="px-6 h-12 text-white rounded-xl font-semibold">
+        <Button size="xl" className="w-fit font-semibold">
           Get Started
         </Button>
       </PopoverTrigger>

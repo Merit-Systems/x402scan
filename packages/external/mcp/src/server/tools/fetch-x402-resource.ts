@@ -13,6 +13,7 @@ import { tokenStringToNumber } from '@/lib/token';
 import { checkBalance } from '../lib/check-balance';
 
 import type { RegisterTools } from '@/server/types';
+import { parseResponse } from '../lib/parse-response';
 
 export const registerFetchX402ResourceTool: RegisterTools = ({
   server,
@@ -74,9 +75,8 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
         });
 
         if (!response.ok) {
-          const errorData = await response.text();
           const errorResponse = {
-            data: errorData,
+            data: await parseResponse(response),
             statusCode: response.status,
             state,
           };
@@ -102,7 +102,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
         const settlement = getSettlement();
 
         return mcpSuccess({
-          data: await response.text().catch(() => undefined),
+          data: await parseResponse(response),
           payment: settlement,
         });
       } catch (err) {
