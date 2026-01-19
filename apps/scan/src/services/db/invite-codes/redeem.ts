@@ -131,6 +131,9 @@ export const redeemInviteCode = async ({
       amount: formatUnits(inviteCode.amount, token.decimals),
     };
   } catch (error) {
+    // Log the actual error for debugging
+    console.error('Invite code redemption failed:', error);
+
     // Update redemption as failed
     await scanDb.inviteRedemption.update({
       where: { id: redemption.id },
@@ -143,7 +146,7 @@ export const redeemInviteCode = async ({
 
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Transfer failed',
+      error: 'Unable to process redemption. Please try again later.',
       redemptionId: redemption.id,
     };
   }

@@ -122,7 +122,7 @@ export const createColumns = (
     ),
     cell: ({ row }) => (
       <div className="text-center text-xs text-muted-foreground truncate max-w-[120px]">
-        {row.original.createdBy.email || row.original.createdBy.name || 'N/A'}
+        {row.original.createdBy.email ?? row.original.createdBy.name ?? 'N/A'}
       </div>
     ),
     size: 120,
@@ -187,7 +187,7 @@ export const createColumns = (
               </DropdownMenuItem>
             )}
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(row.original.code)}
+              onClick={() => void navigator.clipboard.writeText(row.original.code)}
             >
               Copy Code
             </DropdownMenuItem>

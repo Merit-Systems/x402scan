@@ -15,7 +15,7 @@ const validateSchema = z.object({
 
 export const POST = async (request: NextRequest) => {
   try {
-    const body = await request.json();
+    const body: unknown = await request.json();
     const { code, recipientAddr } = redeemSchema.parse(body);
 
     const result = await redeemInviteCode({
@@ -61,7 +61,7 @@ export const GET = async (request: NextRequest) => {
     const { code: validatedCode, recipientAddr: validatedAddr } =
       validateSchema.parse({
         code,
-        recipientAddr: recipientAddr || undefined,
+        recipientAddr: recipientAddr ?? undefined,
       });
 
     const result = await validateInviteCode(validatedCode, validatedAddr);

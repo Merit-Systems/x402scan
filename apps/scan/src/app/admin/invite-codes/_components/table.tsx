@@ -18,13 +18,13 @@ export const InviteCodesTable = () => {
 
   const disableMutation = api.admin.inviteCodes.disable.useMutation({
     onSuccess: () => {
-      utils.admin.inviteCodes.list.invalidate();
+      void utils.admin.inviteCodes.list.invalidate();
     },
   });
 
   const reactivateMutation = api.admin.inviteCodes.reactivate.useMutation({
     onSuccess: () => {
-      utils.admin.inviteCodes.list.invalidate();
+      void utils.admin.inviteCodes.list.invalidate();
     },
   });
 

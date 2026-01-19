@@ -32,7 +32,7 @@ export const CreateInviteCodeButton = () => {
 
   const createMutation = api.admin.inviteCodes.create.useMutation({
     onSuccess: () => {
-      utils.admin.inviteCodes.list.invalidate();
+      void utils.admin.inviteCodes.list.invalidate();
       setOpen(false);
       resetForm();
     },

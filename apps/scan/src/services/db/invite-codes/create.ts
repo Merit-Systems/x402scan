@@ -27,7 +27,7 @@ export type CreateInviteCodeInput = z.infer<typeof createInviteCodeSchema>;
 export const createInviteCode = async (input: CreateInviteCodeInput) => {
   const validated = createInviteCodeSchema.parse(input);
 
-  const code = validated.code || generateInviteCode();
+  const code = validated.code ?? generateInviteCode();
 
   return scanDb.inviteCode.create({
     data: {

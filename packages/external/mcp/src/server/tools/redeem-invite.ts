@@ -3,6 +3,18 @@ import { mcpSuccess, mcpError } from '@/server/lib/response';
 
 import type { RegisterTools } from '@/server/types';
 
+interface RedeemResponse {
+  success: boolean;
+  error?: string;
+  amount?: string;
+  txHash?: string;
+}
+
+interface ValidateResponse {
+  valid: boolean;
+  error?: string;
+}
+
 const inviteCodeSchema = z.object({
   code: z.string().min(1).describe('The invite code to redeem or validate'),
 });
@@ -34,16 +46,16 @@ export const registerRedeemInviteTool: RegisterTools = ({
           }),
         });
 
-        const data = await response.json();
+        const data = (await response.json()) as RedeemResponse;
 
         if (!data.success) {
-          return mcpError(data.error || 'Failed to redeem invite code');
+          return mcpError(data.error ?? 'Failed to redeem invite code');
         }
 
         return mcpSuccess({
           success: true,
           message: `Successfully redeemed invite code "${code}"!`,
-          amount: `${data.amount} USDC`,
+          amount: `${data.amount ?? '0'} USDC`,
           txHash: data.txHash,
           recipientAddress: address,
         });
@@ -69,12 +81,12 @@ export const registerRedeemInviteTool: RegisterTools = ({
           }
         );
 
-        const data = await response.json();
+        const data = (await response.json()) as ValidateResponse;
 
         if (!data.valid) {
           return mcpSuccess({
             valid: false,
-            reason: data.error || 'Invalid invite code',
+            reason: data.error ?? 'Invalid invite code',
           });
         }
 

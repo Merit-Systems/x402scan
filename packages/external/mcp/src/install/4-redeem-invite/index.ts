@@ -43,12 +43,12 @@ export const redeemInviteCode = async ({
       }),
     });
 
-    const data: RedeemResponse = await response.json();
+    const data = (await response.json()) as RedeemResponse;
 
     if (!data.success) {
       s.stop('Invite code redemption failed');
       log.warning(
-        chalk.yellow(`Failed to redeem invite code: ${data.error || 'Unknown error'}`)
+        chalk.yellow(`Failed to redeem invite code: ${data.error ?? 'Unknown error'}`)
       );
       return false;
     }

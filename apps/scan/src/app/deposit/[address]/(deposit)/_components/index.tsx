@@ -121,10 +121,7 @@ const DepositWithConnectorsContent: React.FC<DepositContentProps> = ({
             searchParams={searchParams}
           />
         ) : selectedMethod === OnrampMethods.INVITE_CODE ? (
-          <InviteCodeRedemption
-            address={address}
-            setAccordionValue={setAccordionValue}
-          />
+          <InviteCodeRedemption address={address} />
         ) : (
           <Onramp
             selectedMethod={selectedMethod}

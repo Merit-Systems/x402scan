@@ -1,4 +1,4 @@
-import { scanDb, InviteCodeStatus } from '@x402scan/scan-db';
+import { scanDb, type InviteCodeStatus } from '@x402scan/scan-db';
 
 export const updateInviteCodeStatus = async (
   id: string,
