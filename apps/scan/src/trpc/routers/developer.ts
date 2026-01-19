@@ -3,13 +3,8 @@ import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
-import {
-  extractX402Data,
-  getDescription,
-  getOutputSchema,
-  isV2Response,
-  parseX402Response,
-} from '@/lib/x402';
+import { extractX402Data, getDescription, isV2Response } from '@/lib/x402';
+import { validateX402 } from '@/lib/x402/validate';
 import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource } from '@/types/batch-test';
 
@@ -79,15 +74,15 @@ async function testSingleResource(url: string) {
         continue;
       }
 
-      const parsed = parseX402Response(x402Data);
-      if (parsed?.success) {
-        const description = getDescription(parsed.data) ?? null;
+      const validated = validateX402(x402Data);
+      if (validated.success) {
+        const description = getDescription(validated.parsed) ?? null;
         return {
           success: true as const,
           url,
           method,
           description,
-          parsed: parsed.data,
+          parsed: validated.parsed,
         };
       } else {
         // For debugging: include both x402Data and rawBody in error
@@ -102,7 +97,7 @@ async function testSingleResource(url: string) {
           statusText: response.statusText,
           headers,
           body: errorBody,
-          parseErrors: parsed?.errors,
+          parseErrors: validated.errors,
           triedMethods,
         };
         break;
@@ -196,16 +191,18 @@ export const developerRouter = createTRPCRouter({
         body: x402Data,
       };
 
-      const parsed = parseX402Response(x402Data);
-      const info = (() => {
-        if (!parsed?.success)
-          return { hasAccepts: false, hasInputSchema: false };
-        const accepts = parsed.data.accepts ?? [];
-        const hasAccepts = accepts.length > 0;
-        const outputSchema = getOutputSchema(parsed.data);
-        const hasInputSchema = Boolean(outputSchema?.input);
-        return { hasAccepts, hasInputSchema };
-      })();
+      const validated = validateX402(x402Data);
+      const info = {
+        hasAccepts: validated.success
+          ? (validated.parsed.accepts?.length ?? 0) > 0
+          : false,
+        hasInputSchema: validated.success
+          ? Boolean(validated.outputSchema?.input)
+          : false,
+      };
+      const parsed = validated.success
+        ? { success: true as const, data: validated.parsed }
+        : { success: false as const, errors: validated.errors };
 
       return { result, parsed, info };
     }),
