@@ -1,5 +1,6 @@
 import { LandingPageSection } from '../lib/section';
 import { ClaudeDesktopDemo } from './claude-desktop';
+import { IdeDemo } from './ide';
 import { TerminalDemo } from './terminal';
 
 export const ClientDemos = () => {
@@ -15,6 +16,7 @@ export const ClientDemos = () => {
       <div className="flex flex-col gap-16">
         <ClaudeDesktopDemo />
         <TerminalDemo />
+        <IdeDemo />
       </div>
     </LandingPageSection>
   );

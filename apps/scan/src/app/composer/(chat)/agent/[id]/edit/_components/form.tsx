@@ -90,11 +90,11 @@ export const AgentForm: React.FC<Props> = ({
               <Field>
                 <div className="border rounded-md">
                   <ResourceList
-                    selectedResourceIds={field.value as string[]}
+                    selectedResourceIds={field.value}
                     onSelectResource={resource => {
                       field.onChange(
-                        (field.value as string[]).includes(resource.id)
-                          ? (field.value as string[]).filter(
+                        field.value.includes(resource.id)
+                          ? field.value.filter(
                               (id: string) => id !== resource.id
                             )
                           : [...field.value, resource.id]
