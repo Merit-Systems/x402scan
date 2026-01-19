@@ -2,7 +2,11 @@ import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
-import { getOutputSchema, normalizeAccepts, parseX402Response } from '@/lib/x402';
+import {
+  getOutputSchema,
+  normalizeAccepts,
+  parseX402Response,
+} from '@/lib/x402';
 import { getOriginFromUrl } from '@/lib/url';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';

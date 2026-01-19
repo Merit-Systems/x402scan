@@ -39,8 +39,14 @@ export const useSvmX402Fetch = <TData = unknown>({
 
     const client = new x402Client();
     const rpcUrl = env.NEXT_PUBLIC_SOLANA_RPC_URL;
-    client.register('solana:*', new ExactSvmScheme(transactionSigner, { rpcUrl }));
-    client.registerV1('solana', new ExactSvmSchemeV1(transactionSigner, { rpcUrl }));
+    client.register(
+      'solana:*',
+      new ExactSvmScheme(transactionSigner, { rpcUrl })
+    );
+    client.registerV1(
+      'solana',
+      new ExactSvmSchemeV1(transactionSigner, { rpcUrl })
+    );
     client.registerV1(
       'solana-devnet',
       new ExactSvmSchemeV1(transactionSigner, { rpcUrl })
