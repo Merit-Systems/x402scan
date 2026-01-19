@@ -13,8 +13,6 @@ import { ExactSvmSchemeV1 } from '@x402/svm/exact/v1/client';
 
 export { x402Client, wrapFetchWithPayment };
 export { registerExactEvmScheme };
-export { ExactSvmScheme, ExactSvmSchemeV1 };
-export type { ClientSvmSigner };
 
 export interface ClientEvmSigner {
   readonly address: `0x${string}`;
