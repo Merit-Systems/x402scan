@@ -11,6 +11,7 @@ import {
 } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { getAcceptsAddresses } from '@/services/db/resources/accepts';
 
 import type { paginatedQuerySchema } from '@/lib/pagination';
 
@@ -26,6 +27,8 @@ export type SellerSortId = (typeof SELLERS_SORT_IDS)[number];
 export const listTopSellersMVInputSchema = baseListQuerySchema({
   sortIds: SELLERS_SORT_IDS,
   defaultSortId: 'tx_count',
+}).extend({
+  verifiedOnly: z.boolean().optional(),
 });
 
 // Exported for use in listBazaarOrigins to avoid double-caching
@@ -37,6 +40,25 @@ export const listTopSellersMVUncached = async (
 
   const mvTimeframe = getMaterializedViewSuffix(timeframe);
   const tableName = `recipient_stats_aggregated_${mvTimeframe}`;
+
+  // When verifiedOnly is true, get only verified addresses
+  let verifiedAddresses: string[] | undefined;
+  if (input.verifiedOnly) {
+    const { addressToOrigins } = await getAcceptsAddresses({
+      chain: input.chain,
+      verified: true,
+    });
+    verifiedAddresses = Object.keys(addressToOrigins);
+
+    // If no verified addresses exist, return empty result
+    if (verifiedAddresses.length === 0) {
+      return toPaginatedResponse({
+        items: [],
+        total_count: 0,
+        ...pagination,
+      });
+    }
+  }
 
   // Build WHERE clause for materialized view
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
@@ -51,7 +73,10 @@ export const listTopSellersMVUncached = async (
     conditions.push(Prisma.sql`AND chain = ${input.chain}`);
   }
 
-  if (input.recipients?.include && input.recipients.include.length > 0) {
+  // Use verified addresses if verifiedOnly is true, otherwise use provided recipients
+  if (verifiedAddresses && verifiedAddresses.length > 0) {
+    conditions.push(Prisma.sql`AND recipient = ANY(${verifiedAddresses})`);
+  } else if (input.recipients?.include && input.recipients.include.length > 0) {
     conditions.push(
       Prisma.sql`AND recipient = ANY(${input.recipients.include})`
     );

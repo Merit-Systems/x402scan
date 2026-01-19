@@ -5,8 +5,12 @@ import { baseBucketedQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { getAcceptsAddresses } from '@/services/db/resources/accepts';
+import { mixedAddressSchema } from '@/lib/schemas';
 
-export const bucketedStatisticsMVInputSchema = baseBucketedQuerySchema;
+export const bucketedStatisticsMVInputSchema = baseBucketedQuerySchema.extend({
+  verifiedOnly: z.boolean().optional(),
+});
 
 const bucketedResultSchema = z.array(
   z.object({
@@ -21,7 +25,28 @@ const bucketedResultSchema = z.array(
 const getBucketedStatisticsMVUncached = async (
   input: z.infer<typeof bucketedStatisticsMVInputSchema>
 ) => {
-  const { timeframe, recipients } = input;
+  // When verifiedOnly is true, get only verified addresses
+  let modifiedInput = input;
+  if (input.verifiedOnly) {
+    const { addressToOrigins } = await getAcceptsAddresses({
+      chain: input.chain,
+      verified: true,
+    });
+    const verifiedAddresses = Object.keys(addressToOrigins).map(addr =>
+      mixedAddressSchema.parse(addr)
+    );
+
+    // Add verified addresses to recipients.include
+    modifiedInput = {
+      ...input,
+      recipients: {
+        ...input.recipients,
+        include: verifiedAddresses,
+      },
+    };
+  }
+
+  const { timeframe, recipients } = modifiedInput;
 
   const mvTimeframe = getMaterializedViewSuffix(timeframe);
 
@@ -37,17 +62,17 @@ const getBucketedStatisticsMVUncached = async (
   // Build WHERE clause for materialized view
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE 1=1`];
 
-  if (input.facilitatorIds && input.facilitatorIds.length > 0) {
+  if (modifiedInput.facilitatorIds && modifiedInput.facilitatorIds.length > 0) {
     // Note: bucketed views may not have facilitator_ids column
     if (!hasRecipientFilter) {
       conditions.push(
-        Prisma.sql`AND facilitator_id = ANY(${input.facilitatorIds})`
+        Prisma.sql`AND facilitator_id = ANY(${modifiedInput.facilitatorIds})`
       );
     }
   }
 
-  if (input.chain) {
-    conditions.push(Prisma.sql`AND chain = ${input.chain}`);
+  if (modifiedInput.chain) {
+    conditions.push(Prisma.sql`AND chain = ${modifiedInput.chain}`);
   }
 
   if (recipients?.include && recipients.include.length > 0) {

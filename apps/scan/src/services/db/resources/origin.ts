@@ -4,6 +4,7 @@ import { scanDb } from '@x402scan/scan-db';
 
 import { parseX402Response } from '@/lib/x402';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 
 import type { Prisma } from '@x402scan/scan-db';
 
@@ -84,24 +85,63 @@ export const listOriginsSchema = z.object({
   address: mixedAddressSchema.optional(),
 });
 
-export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
+const listOriginsUncached = async (
+  input: z.infer<typeof listOriginsSchema>
+) => {
   const { chain, address } = input;
+
+  // Build where clause for accepts
+  const acceptsWhere = {
+    ...(address ? { payTo: address } : {}),
+    ...(chain ? { network: chain } : {}),
+  };
+
   const origins = await scanDb.resourceOrigin.findMany({
     where: {
       resources: {
         some: {
           accepts: {
-            some: {
-              ...(address ? { payTo: address } : {}),
-              ...(chain ? { network: chain } : {}),
+            some: acceptsWhere,
+          },
+        },
+      },
+    },
+    include: {
+      resources: {
+        where: {
+          accepts: {
+            some: acceptsWhere,
+          },
+        },
+        select: {
+          id: true,
+          accepts: {
+            where: acceptsWhere,
+            select: {
+              verified: true,
             },
           },
         },
       },
     },
   });
-  return origins;
+
+  // Map to include hasVerifiedAccept field
+  return origins.map(origin => ({
+    ...origin,
+    hasVerifiedAccept: origin.resources.some(resource =>
+      resource.accepts.some(accept => accept.verified)
+    ),
+  }));
 };
+
+export const listOrigins = createCachedArrayQuery({
+  queryFn: listOriginsUncached,
+  cacheKeyPrefix: 'origins-list',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: [],
+  tags: ['origins'],
+});
 
 export const listOriginsWithResourcesSchema = z.object({
   chain: optionalChainSchema,

@@ -19,18 +19,21 @@ const listBazaarOriginsUncached = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
-  const originsByAddress = await getAcceptsAddresses({
+  // When verifiedOnly is true, only get verified addresses
+  // This filters at the Accepts level before querying TransferEvents
+  const { addressToOrigins, originVerification } = await getAcceptsAddresses({
     chain: input.chain,
     tags: input.tags,
+    verified: input.verifiedOnly ? true : undefined,
   });
 
-  // Use uncached version since listBazaarOrigins is already cached
-  // This avoids creating a massive cache key with 100+ addresses
+  // Use the standard materialized view query
+  // When verifiedOnly is true, we already filtered to only verified addresses above
   const result = await listTopSellersMVUncached(
     {
       ...input,
       recipients: {
-        include: Object.keys(originsByAddress).map(addr =>
+        include: Object.keys(addressToOrigins).map(addr =>
           mixedAddressSchema.parse(addr)
         ),
       },
@@ -43,7 +46,7 @@ const listBazaarOriginsUncached = async (
     string,
     {
       originId: string;
-      origins: (typeof originsByAddress)[string];
+      origins: (typeof addressToOrigins)[string];
       recipients: MixedAddress[];
       facilitators: string[];
       tx_count: number;
@@ -51,11 +54,12 @@ const listBazaarOriginsUncached = async (
       latest_block_timestamp: Date | null;
       unique_buyers: number;
       chains: Set<Chain>;
+      hasVerifiedAccept: boolean;
     }
   >();
 
   for (const item of result.items) {
-    const origins = originsByAddress[item.recipient];
+    const origins = addressToOrigins[item.recipient];
     if (!origins || origins.length === 0) continue;
 
     // Use the first origin's ID as the grouping key
@@ -97,6 +101,7 @@ const listBazaarOriginsUncached = async (
         latest_block_timestamp: item.latest_block_timestamp,
         unique_buyers: item.unique_buyers,
         chains: new Set(item.chains),
+        hasVerifiedAccept: originVerification.get(originId) ?? false,
       });
     }
   }
@@ -111,11 +116,12 @@ const listBazaarOriginsUncached = async (
     latest_block_timestamp: item.latest_block_timestamp,
     unique_buyers: item.unique_buyers,
     chains: Array.from(item.chains),
+    hasVerifiedAccept: item.hasVerifiedAccept,
   }));
 
   return toPaginatedResponse({
     items: groupedItems,
-    total_count: Object.keys(originsByAddress).length,
+    total_count: Object.keys(addressToOrigins).length,
     ...pagination,
   });
 };

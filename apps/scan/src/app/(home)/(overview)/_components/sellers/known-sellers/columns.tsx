@@ -37,13 +37,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className="flex items-center gap-2">
-          <Origins
-            origins={row.original.origins}
-            addresses={row.original.recipients}
-            disableCopy
-          />
-        </div>
+        <Origins
+          origins={row.original.origins}
+          addresses={row.original.recipients}
+          disableCopy
+          hasVerifiedAccept={row.original.hasVerifiedAccept}
+        />
       );
     },
     size: 225,

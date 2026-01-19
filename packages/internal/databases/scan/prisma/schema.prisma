@@ -142,6 +142,9 @@ model Accepts {
   @@unique([resourceId, scheme, network])
   @@index([verified])
   @@index([resourceId, verified])
+  @@index([payTo])
+  @@index([payTo, network])
+  @@index([payTo, verified])
 }
 
 model News {

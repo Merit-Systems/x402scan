@@ -4,4 +4,5 @@ import { listTopSellersMVInputSchema } from '@/services/transfers/sellers/list-m
 
 export const listBazaarOriginsInputSchema = listTopSellersMVInputSchema.extend({
   tags: z.array(z.string()).optional(),
+  verifiedOnly: z.boolean().optional(),
 });

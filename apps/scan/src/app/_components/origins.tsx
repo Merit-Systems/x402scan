@@ -1,4 +1,4 @@
-import { Globe } from 'lucide-react';
+import { Globe, CheckCircle } from 'lucide-react';
 
 import Link from 'next/link';
 
@@ -20,12 +20,14 @@ interface Props {
   addresses: MixedAddress[];
   origins: ResourceOrigin[];
   disableCopy?: boolean;
+  hasVerifiedAccept?: boolean;
 }
 
 export const Origins: React.FC<Props> = ({
   origins,
   addresses,
   disableCopy,
+  hasVerifiedAccept,
 }) => {
   if (!origins || origins.length === 0) {
     if (addresses.length === 0) {
@@ -55,6 +57,7 @@ export const Origins: React.FC<Props> = ({
               <Addresses addresses={addresses} />
             )
           }
+          hasVerifiedAccept={hasVerifiedAccept}
         />
       </Link>
     );
@@ -104,6 +107,7 @@ export const Origins: React.FC<Props> = ({
           <Addresses addresses={addresses} disableCopy={disableCopy} />
         )
       }
+      hasVerifiedAccept={hasVerifiedAccept}
     />
   );
 };
@@ -154,19 +158,50 @@ export const OriginsSkeleton = () => {
   );
 };
 
+const VerifiedBadge = () => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <CheckCircle className="size-3 text-green-500 flex-shrink-0" />
+      </TooltipTrigger>
+      <TooltipContent>
+        <div className="flex flex-col gap-1">
+          <p className="font-medium">This address has been verified</p>
+          <a
+            href="https://github.com/Merit-Systems/x402scan/blob/main/docs/DISCOVERY.md#ownership-verification"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline text-xs"
+            onClick={e => e.stopPropagation()}
+          >
+            Learn how to verify your address →
+          </a>
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  );
+};
+
 interface OriginsContainerProps {
   Icon: ({ className }: { className: string }) => React.ReactNode;
   title: React.ReactNode;
   address: React.ReactNode;
+  hasVerifiedAccept?: boolean;
 }
 
-const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
+const OriginsContainer = ({
+  Icon,
+  title,
+  address,
+  hasVerifiedAccept,
+}: OriginsContainerProps) => {
   return (
     <div className="flex items-center gap-2 w-full overflow-hidden">
       <Icon className="size-6" />
       <div className="flex-1 overflow-hidden">
-        <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full flex items-center gap-2">
+        <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap w-full max-w-full flex items-center gap-1.5">
           {title}
+          {hasVerifiedAccept && <VerifiedBadge />}
         </div>
         <div>{address}</div>
       </div>

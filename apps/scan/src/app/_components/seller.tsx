@@ -49,11 +49,17 @@ export const Seller: React.FC<Props> = ({
     );
   }
 
+  // Check if any origin has a verified accept
+  const hasVerifiedAccept = origins.some(
+    origin => 'hasVerifiedAccept' in origin && origin.hasVerifiedAccept
+  );
+
   return (
     <Origins
       origins={origins}
       addresses={[address]}
       disableCopy={disableCopy}
+      hasVerifiedAccept={hasVerifiedAccept}
     />
   );
 };

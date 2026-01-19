@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 
 import { Plus } from 'lucide-react';
@@ -8,12 +10,31 @@ import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 
 import { SearchButton } from './search-button';
+import { useState } from 'react';
 
 export const HomeHeading = () => {
+  const [clickCount, setClickCount] = useState(0);
+
+  const handleLogoClick = () => {
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+
+    if (newCount === 5) {
+      // Dispatch custom event to open modal
+      window.dispatchEvent(new CustomEvent('open-verified-filter-modal'));
+      setClickCount(0); // Reset counter
+    }
+
+    // Reset counter after 1 second of no clicks
+    setTimeout(() => {
+      setClickCount(0);
+    }, 1000);
+  };
+
   return (
     <HeadingContainer className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" onClick={handleLogoClick}>
           <Logo className="size-8" />
           <h1 className="text-2xl md:text-4xl font-bold font-mono">x402scan</h1>
         </div>

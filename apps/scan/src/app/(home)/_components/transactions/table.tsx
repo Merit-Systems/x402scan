@@ -8,6 +8,7 @@ import { DataTable } from '@/components/ui/data-table';
 
 import { useChain } from '@/app/_contexts/chain/hook';
 import { useTransfersSorting } from '@/app/_contexts/sorting/transfers/hook';
+import { useVerifiedFilter } from '@/app/_contexts/verified-filter/hook';
 
 import { columns } from './columns';
 
@@ -20,6 +21,7 @@ interface Props {
 export const Table: React.FC<Props> = ({ pageSize }) => {
   const { sorting } = useTransfersSorting();
   const { chain } = useChain();
+  const { verifiedOnly } = useVerifiedFilter();
 
   const [page, setPage] = useState(0);
 
@@ -31,6 +33,7 @@ export const Table: React.FC<Props> = ({ pageSize }) => {
     },
     sorting,
     timeframe: ActivityTimeframe.ThirtyDays,
+    verifiedOnly,
   });
 
   return (
