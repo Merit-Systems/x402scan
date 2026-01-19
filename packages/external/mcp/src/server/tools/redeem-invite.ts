@@ -30,7 +30,7 @@ export const registerRedeemInviteTool: RegisterTools = ({
     'redeem_invite',
     {
       description:
-        'Redeem an invite code to receive USDC in your wallet. Use this when you have an invite code to claim free USDC.',
+        'Redeem an invite code to receive USDC in your wallet. Use this when you have an invite code for starter money.',
       inputSchema: inviteCodeSchema,
     },
     async ({ code }: z.infer<typeof inviteCodeSchema>) => {

@@ -31,7 +31,7 @@ void yargs(hideBin(process.argv))
         })
         .option('invite', {
           type: 'string',
-          description: 'Invite code to redeem for free USDC',
+          description: 'Invite code to redeem for starter money',
           required: false,
         }),
     async args => {

@@ -27,6 +27,6 @@ export const METHOD_METADATA: Record<OnrampMethods, MethodMetadata> = {
   [OnrampMethods.INVITE_CODE]: {
     label: 'Invite Code',
     icon: Gift,
-    description: 'Redeem an invite code for free USDC',
+    description: 'Redeem an invite code for starter money',
   },
 };
