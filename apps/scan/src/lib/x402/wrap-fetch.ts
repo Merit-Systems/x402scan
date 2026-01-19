@@ -8,8 +8,6 @@ export { x402Client, wrapFetchWithPayment } from '@x402/fetch';
 
 export { registerExactEvmScheme } from '@x402/evm/exact/client';
 
-export { registerExactSvmScheme } from '@x402/svm/exact/client';
-
 export interface ClientEvmSigner {
   readonly address: `0x${string}`;
   signTypedData(message: {

@@ -5,8 +5,10 @@ import { useX402Fetch } from './use-fetch';
 import {
   x402Client,
   wrapFetchWithPayment,
-  registerExactSvmScheme,
+  ExactSvmScheme,
+  ExactSvmSchemeV1,
 } from '@/lib/x402/wrap-fetch';
+import { env } from '@/env';
 
 import type { UseMutationOptions } from '@tanstack/react-query';
 import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';
@@ -36,7 +38,17 @@ export const useSvmX402Fetch = <TData = unknown>({
     }
 
     const client = new x402Client();
-    registerExactSvmScheme(client, { signer: transactionSigner });
+    const rpcUrl = env.NEXT_PUBLIC_SOLANA_RPC_URL;
+    client.register('solana:*', new ExactSvmScheme(transactionSigner, { rpcUrl }));
+    client.registerV1('solana', new ExactSvmSchemeV1(transactionSigner, { rpcUrl }));
+    client.registerV1(
+      'solana-devnet',
+      new ExactSvmSchemeV1(transactionSigner, { rpcUrl })
+    );
+    client.registerV1(
+      'solana-testnet',
+      new ExactSvmSchemeV1(transactionSigner, { rpcUrl })
+    );
 
     return wrapFetchWithPayment(baseFetch, client);
   };
