@@ -46,7 +46,7 @@ export const useSvmX402FetchWithConfirmation = <TData = unknown>({
 
     const client = registerSvmX402Client({
       signer: transactionSigner,
-      rpcUrl: env.NEXT_PUBLIC_SOLANA_RPC_URL!,
+      rpcUrl: env.NEXT_PUBLIC_SOLANA_RPC_URL,
     });
 
     return wrapFetchWithPayment(baseFetch, client);
