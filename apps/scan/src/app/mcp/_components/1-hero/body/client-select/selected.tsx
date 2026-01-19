@@ -25,10 +25,20 @@ export const SelectedClient: React.FC<Props> = ({ client, reset }) => {
     <div className="flex flex-col">
       <div className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center gap-2 shrink-0">
-          <ClientIcon client={client} width={24} height={24} className="shrink-0" />
+          <ClientIcon
+            client={client}
+            width={24}
+            height={24}
+            className="shrink-0"
+          />
           <span className="font-medium shrink-0">{name}</span>
         </div>
-        <Button variant="ghost" size="icon" className="p-1 size-fit md:size-fit" onClick={reset}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="p-1 size-fit md:size-fit"
+          onClick={reset}
+        >
           <X className="size-4" />
         </Button>
       </div>

@@ -9,6 +9,5 @@ export default function McpPage() {
       <ClientDemos />
       <Integrations />
     </div>
-
   );
 }

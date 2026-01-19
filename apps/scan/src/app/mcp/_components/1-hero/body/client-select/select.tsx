@@ -39,11 +39,7 @@ export const ClientsSelect = ({ onClientSelect }: Props) => {
             defaultChecked={false}
             onSelect={() => onClientSelect(key as Clients)}
           >
-            <ClientIcon
-              client={key as Clients}
-              width={20}
-              height={20}
-            />
+            <ClientIcon client={key as Clients} width={20} height={20} />
             <div className="flex gap-2 justify-between w-full">
               <span className="text-sm font-medium">{client.name}</span>
               {client.recommended && (

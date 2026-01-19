@@ -1,4 +1,4 @@
-import { CopyCode } from "@/components/ui/copy-code";
+import { CopyCode } from '@/components/ui/copy-code';
 
 export const VscodeInstall = () => {
   return (

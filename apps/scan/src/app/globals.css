@@ -403,10 +403,11 @@
   }
 
   @keyframes pulseActive {
-    0%, 10% {
+    0%,
+    10% {
       background-color: var(--card);
       box-shadow: 0 0 0px 0px oklch(from var(--primary) l c h / 0);
-      transform: scale(1.0);
+      transform: scale(1);
     }
     20% {
       transform: scale(1.025);
@@ -416,7 +417,7 @@
     100% {
       background-color: var(--card);
       box-shadow: 0 0 80px 0px oklch(from var(--primary) l c h / 0);
-      transform: scale(1.0);
+      transform: scale(1);
     }
   }
 }

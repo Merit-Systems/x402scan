@@ -17,9 +17,7 @@
     "entry_point": "server/index.cjs",
     "mcp_config": {
       "command": "node",
-      "args": [
-        "${__dirname}/server/index.cjs"
-      ],
+      "args": ["${__dirname}/server/index.cjs"],
       "env": {}
     }
   },
@@ -51,11 +49,7 @@
   ],
   "prompts_generated": true,
   "compatibility": {
-    "platforms": [
-      "darwin",
-      "win32",
-      "linux"
-    ],
+    "platforms": ["darwin", "win32", "linux"],
     "runtimes": {
       "node": ">=18.0.0"
     }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { startServer } from "./server";
+import { startServer } from './server';
 
 startServer({ dev: false }).catch(err => {
   console.error(err);

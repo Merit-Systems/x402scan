@@ -36,7 +36,7 @@ function main() {
   rmSync(bundleDir, { recursive: true, force: true });
   mkdirSync(bundleDir, { recursive: true });
 
-  run("pnpm install")
+  run('pnpm install');
 
   // Build the server with dependencies bundled (tsup creates dist/bundle/)
   console.log('1. Building server bundle with all dependencies...');
