@@ -105,6 +105,7 @@ async function testSingleResource(url: string) {
           parseErrors: parsed?.errors,
           triedMethods,
         };
+        break;
       }
     } catch (err) {
       lastError = {
