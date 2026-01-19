@@ -200,8 +200,6 @@ export const developerRouter = createTRPCRouter({
           ? Boolean(validated.outputSchema?.input)
           : false,
       };
-      // Preserve the historical `parsed` shape while enforcing strict validation
-      // (so callers still see `success/errors`).
       const parsed = validated.success
         ? { success: true as const, data: validated.parsed }
         : { success: false as const, errors: validated.errors };
