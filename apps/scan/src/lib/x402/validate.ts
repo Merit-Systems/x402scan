@@ -5,14 +5,14 @@ export type ParsedX402ResponseWithAccepts = ParsedX402Response & {
   accepts: NonNullable<ParsedX402Response['accepts']>;
 };
 
-export interface X402ScanValidationSuccess {
+interface X402ScanValidationSuccess {
   success: true;
   parsed: ParsedX402ResponseWithAccepts;
   normalizedAccepts: ReturnType<typeof normalizeAccepts>;
   outputSchema: NonNullable<ReturnType<typeof getOutputSchema>>;
 }
 
-export interface X402ScanValidationFailure {
+interface X402ScanValidationFailure {
   success: false;
   errors: string[];
 }
