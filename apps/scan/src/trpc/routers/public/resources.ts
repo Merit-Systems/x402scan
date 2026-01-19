@@ -391,7 +391,11 @@ export const resourcesRouter = createTRPCRouter({
               url: resourceUrl,
             });
             // Capture origin ID from the first successful registration
-            if (!originId && 'resource' in value && value.resource?.origin?.id) {
+            if (
+              !originId &&
+              'resource' in value &&
+              value.resource?.origin?.id
+            ) {
               originId = value.resource.origin.id;
             }
           } else if ('success' in value && !value.success) {

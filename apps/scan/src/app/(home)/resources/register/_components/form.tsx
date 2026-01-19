@@ -529,7 +529,10 @@ export const RegisterResourceForm = () => {
             <Button variant="outline" onClick={onReset} className="flex-1">
               Add Another
             </Button>
-            <Link href={`/server/${data.resource.origin.id}`} className="flex-1">
+            <Link
+              href={`/server/${data.resource.origin.id}`}
+              className="flex-1"
+            >
               <Button variant="turbo" className="w-full">
                 View Server
               </Button>
