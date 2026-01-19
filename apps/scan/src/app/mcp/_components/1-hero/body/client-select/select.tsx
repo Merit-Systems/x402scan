@@ -9,11 +9,11 @@ import {
   CommandList,
 } from '@/components/ui/command';
 
-import { clients } from '../../../clients/data';
+import { clients } from '../../../lib/clients/data';
 
-import { ClientIcon } from '../../../clients/icons';
+import { ClientIcon } from '../../../lib/clients/icons';
 
-import type { Clients } from '../../../clients/data';
+import type { Clients } from '../../../lib/clients/data';
 
 interface Props {
   onClientSelect: (client: Clients) => void;

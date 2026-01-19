@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { CopyCode } from '@/components/ui/copy-code';
 import { TextSeparator } from '@/components/ui/text-separator';
 
-import { ClientIcon } from '../../../clients/icons';
+import { ClientIcon } from '../../../lib/clients/icons';
 
 import { clientInstall } from './client-install';
 
-import { clients } from '../../../clients/data';
+import { clients } from '../../../lib/clients/data';
 
-import type { Clients as ClientsEnum } from '../../../clients/data';
+import type { Clients as ClientsEnum } from '../../../lib/clients/data';
 
 interface Props {
   client: ClientsEnum;

@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { Clients } from "../../../../clients/data";
+import { Clients } from "../../../../lib/clients/data";
 
 import { ClaudeCodeInstall } from "./claude-code";
 import { CodexInstall } from "./codex";

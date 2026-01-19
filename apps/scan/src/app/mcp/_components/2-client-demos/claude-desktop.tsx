@@ -1,6 +1,6 @@
 import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
-import { Clients } from "../clients/data"
+import { Clients } from "../lib/clients/data"
 import { ClientDemosSection } from "./section"
 
 export const ClaudeDesktopDemo = () => {

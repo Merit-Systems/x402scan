@@ -1,5 +1,5 @@
+import { CopyCommandButton } from "../../lib/copy-button"
 import { ClientSelect } from "./client-select"
-import { CopyCommandButton } from "./copy-button"
 
 export const HeroBody = () => {
     return (
@@ -14,7 +14,6 @@ export const HeroBody = () => {
                 <ClientSelect />
                 <CopyCommandButton />
             </div>
-
         </div>
     )
 }
