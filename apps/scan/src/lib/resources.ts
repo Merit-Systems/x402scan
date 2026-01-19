@@ -2,11 +2,7 @@ import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
-import {
-  getOutputSchema,
-  normalizeAccepts,
-  parseX402Response,
-} from '@/lib/x402';
+import { validateX402ForScan } from '@/lib/x402/validate';
 import { getOriginFromUrl } from '@/lib/url';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
@@ -22,45 +18,20 @@ export const registerResource = async (url: string, data: unknown) => {
   urlObj.search = '';
   const cleanUrl = urlObj.toString();
 
-  const parsedResponse = parseX402Response(data);
-
-  if (!parsedResponse.success) {
-    console.error(parsedResponse.errors);
+  const validated = validateX402ForScan(data);
+  if (!validated.success) {
+    console.error(validated.errors);
     return {
       success: false as const,
       data,
       error: {
         type: 'parseResponse' as const,
-        parseErrors: parsedResponse.errors,
+        parseErrors: validated.errors,
       },
     };
   }
 
-  const x402Data = parsedResponse.data;
-
-  if (!x402Data.accepts?.length) {
-    return {
-      success: false as const,
-      data,
-      error: {
-        type: 'parseResponse' as const,
-        parseErrors: [
-          'Accepts must contain at least one valid payment requirement',
-        ],
-      },
-    };
-  }
-
-  if (!getOutputSchema(x402Data)?.input) {
-    return {
-      success: false as const,
-      data,
-      error: {
-        type: 'parseResponse' as const,
-        parseErrors: ['Missing input schema'],
-      },
-    };
-  }
+  const x402Data = validated.parsed;
 
   const origin = getOriginFromUrl(cleanUrl);
   const { og, metadata, favicon } = await scrapeOriginData(origin);
@@ -80,7 +51,7 @@ export const registerResource = async (url: string, data: unknown) => {
       })) ?? [],
   });
 
-  const normalizedAccepts = normalizeAccepts(x402Data);
+  const normalizedAccepts = validated.normalizedAccepts;
 
   const resource = await upsertResource({
     resource: cleanUrl,
