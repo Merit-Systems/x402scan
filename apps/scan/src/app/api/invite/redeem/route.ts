@@ -17,16 +17,20 @@ export const POST = async (request: NextRequest) => {
       recipientAddr,
     });
 
-    return NextResponse.json(
-      result
-        .map(data => ({
-          success: true,
+    return result.match(
+      data =>
+        NextResponse.json({
+          success: true as const,
           data,
-        }))
-        .mapErr(error => ({
-          success: false,
-          error: error.message,
-        }))
+        }),
+      error =>
+        NextResponse.json(
+          {
+            success: false as const,
+            error: error.message,
+          },
+          { status: 500 }
+        )
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
