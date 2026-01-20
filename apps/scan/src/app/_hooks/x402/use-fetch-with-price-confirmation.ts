@@ -77,6 +77,9 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
     boolean | undefined
   >({
     mutationFn: async (skipPriceCheck?: boolean) => {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/b580f9ca-6e18-4c38-9de1-256e6503a55a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'apps/scan/src/app/_hooks/x402/use-fetch-with-price-confirmation.ts:79',message:'x402 mutationFn entry',data:{targetUrl:targetUrl.slice(0,200),skipPriceCheck:Boolean(skipPriceCheck),initMethod:init?.method,initBodyType:typeof init?.body,initBodyPreview:typeof init?.body==='string'?init.body.slice(0,120):undefined,initContentType:init?.headers?new Headers(init.headers).get('content-type'):undefined,fetchFnName:fetchFn===fetch?'fetch':'custom'},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1'})}).catch(()=>{});
+      // #endregion
       // Check price first (unless already confirmed)
       if (!skipPriceCheck && !confirmedRef.current) {
         const actualPrice = await checkPrice(fetchFn, targetUrl, init);
@@ -92,6 +95,9 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
 
       // Make actual payment
       const fetchWithPayment = wrapperFn(fetchFn);
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/b580f9ca-6e18-4c38-9de1-256e6503a55a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'apps/scan/src/app/_hooks/x402/use-fetch-with-price-confirmation.ts:95',message:'x402 calling wrapped fetch',data:{targetUrl:targetUrl.slice(0,200),initMethod:init?.method,initBodyType:typeof init?.body,initBodyPreview:typeof init?.body==='string'?init.body.slice(0,120):undefined,initContentType:init?.headers?new Headers(init.headers).get('content-type'):undefined,fetchFnName:fetchFn===fetch?'fetch':'custom'},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1'})}).catch(()=>{});
+      // #endregion
       const response = await fetchWithPayment(targetUrl, init);
 
       if (!response.ok) {
