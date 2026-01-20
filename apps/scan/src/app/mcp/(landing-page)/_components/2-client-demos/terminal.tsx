@@ -13,7 +13,7 @@ export const TerminalDemo = () => {
   return (
     <ClientDemosSection
       heading="In Your Terminal"
-      description="Use powerful APIs to build agents for knowledge work."
+      description="Give your favorite agent harness payment capabilities"
       cta={<CopyCommandButton />}
       graphic={<TerminalGraphic />}
       imageSide="right"

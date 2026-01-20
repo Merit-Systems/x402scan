@@ -1,6 +1,7 @@
 import { Hero } from './_components/1-hero';
 import { ClientDemos } from './_components/2-client-demos';
 import { Integrations } from './_components/3-integrations';
+import { Contact } from './_components/4-contact';
 
 export default function McpPage() {
   return (
@@ -8,6 +9,7 @@ export default function McpPage() {
       <Hero />
       <ClientDemos />
       <Integrations />
+      <Contact />
     </div>
   );
 }

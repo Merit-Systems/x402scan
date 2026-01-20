@@ -13,7 +13,7 @@ export const IdeDemo = () => {
   return (
     <ClientDemosSection
       heading="In Your IDE"
-      description="Seamlessly integrate paid APIs into your coding workflow with automatic micropayments."
+      description="Integrate any x402 resource into your coding workflow with automatic micropayments"
       cta={
         <Button size="xl" className="w-fit font-semibold">
           Add to Cursor
