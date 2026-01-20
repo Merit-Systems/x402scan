@@ -23,6 +23,7 @@ type ColumnType = RouterOutputs['admin']['inviteCodes']['list'][number];
 interface ColumnHandlers {
   onDisable?: (id: string) => void;
   onReactivate?: (id: string) => void;
+  onEditMaxRedemptions?: (id: string, currentMax: number) => void;
 }
 
 const getStatusVariant = (
@@ -89,9 +90,7 @@ export const createColumns = (
   },
   {
     accessorKey: 'status',
-    header: () => (
-      <HeaderCell Icon={Hash} label="Status" className="mx-auto" />
-    ),
+    header: () => <HeaderCell Icon={Hash} label="Status" className="mx-auto" />,
     cell: ({ row }) => (
       <div className="text-center">
         <Badge variant={getStatusVariant(row.original.status)}>
@@ -159,10 +158,9 @@ export const createColumns = (
   {
     id: 'actions',
     cell: ({ row }) => {
-      const { status, id } = row.original;
+      const { status, id, maxRedemptions } = row.original;
       const canDisable = status === 'ACTIVE';
-      const canReactivate =
-        status === 'DISABLED' || status === 'EXPIRED';
+      const canReactivate = status === 'DISABLED' || status === 'EXPIRED';
 
       return (
         <DropdownMenu>
@@ -173,6 +171,13 @@ export const createColumns = (
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() =>
+                handlers?.onEditMaxRedemptions?.(id, maxRedemptions)
+              }
+            >
+              Edit Max Redemptions
+            </DropdownMenuItem>
             {canDisable && (
               <DropdownMenuItem
                 onClick={() => handlers?.onDisable?.(id)}
@@ -187,7 +192,9 @@ export const createColumns = (
               </DropdownMenuItem>
             )}
             <DropdownMenuItem
-              onClick={() => void navigator.clipboard.writeText(row.original.code)}
+              onClick={() =>
+                void navigator.clipboard.writeText(row.original.code)
+              }
             >
               Copy Code
             </DropdownMenuItem>

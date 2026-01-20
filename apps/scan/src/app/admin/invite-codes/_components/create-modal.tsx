@@ -171,7 +171,10 @@ export const CreateInviteCodeButton = () => {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={createMutation.isPending || !amount}>
+            <Button
+              type="submit"
+              disabled={createMutation.isPending || !amount}
+            >
               {createMutation.isPending ? 'Creating...' : 'Create'}
             </Button>
           </DialogFooter>

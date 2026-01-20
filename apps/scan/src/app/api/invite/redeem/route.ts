@@ -1,6 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import z from 'zod';
-import { redeemInviteCode, validateInviteCode } from '@/services/db/invite-codes';
+import {
+  redeemInviteCode,
+  validateInviteCode,
+} from '@/services/db/invite-codes';
 import { mixedAddressSchema } from '@/lib/schemas';
 
 const redeemSchema = z.object({
@@ -39,7 +42,11 @@ export const POST = async (request: NextRequest) => {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Invalid request body', details: error.issues },
+        {
+          success: false,
+          error: 'Invalid request body',
+          details: error.issues,
+        },
         { status: 400 }
       );
     }

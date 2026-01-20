@@ -1,6 +1,9 @@
 import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/trpc/trpc';
-import { validateInviteCode, redeemInviteCode } from '@/services/db/invite-codes';
+import {
+  validateInviteCode,
+  redeemInviteCode,
+} from '@/services/db/invite-codes';
 import { mixedAddressSchema } from '@/lib/schemas';
 
 export const inviteRouter = createTRPCRouter({

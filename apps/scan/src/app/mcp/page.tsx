@@ -6,8 +6,6 @@ export default function McpPage() {
     <div className="flex flex-col gap-36 py-16 px-4 max-w-7xl mx-auto w-full">
       <Hero />
       <ClientDemos />
-
     </div>
-
   );
 }

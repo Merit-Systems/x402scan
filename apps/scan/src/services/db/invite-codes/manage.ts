@@ -44,3 +44,46 @@ export const updateInviteCodeNote = async (id: string, note: string | null) => {
     data: { note },
   });
 };
+
+export const updateMaxRedemptions = async (
+  id: string,
+  maxRedemptions: number
+) => {
+  const inviteCode = await scanDb.inviteCode.findUnique({
+    where: { id },
+  });
+
+  if (!inviteCode) {
+    throw new Error('Invite code not found');
+  }
+
+  const updated = await scanDb.inviteCode.update({
+    where: { id },
+    data: { maxRedemptions },
+  });
+
+  // If code was exhausted but now has room, reactivate it
+  if (
+    updated.status === 'EXHAUSTED' &&
+    (maxRedemptions === 0 || updated.redemptionCount < maxRedemptions)
+  ) {
+    return scanDb.inviteCode.update({
+      where: { id },
+      data: { status: 'ACTIVE' },
+    });
+  }
+
+  // If code was active but now exhausted, mark it
+  if (
+    updated.status === 'ACTIVE' &&
+    maxRedemptions > 0 &&
+    updated.redemptionCount >= maxRedemptions
+  ) {
+    return scanDb.inviteCode.update({
+      where: { id },
+      data: { status: 'EXHAUSTED' },
+    });
+  }
+
+  return updated;
+};

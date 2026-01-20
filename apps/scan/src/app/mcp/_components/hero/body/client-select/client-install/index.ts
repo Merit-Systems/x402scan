@@ -1,12 +1,11 @@
-import type React from "react";
+import type React from 'react';
 
-import { Clients } from "../../../../clients/data";
+import { Clients } from '../../../../clients/data';
 
-import { ClaudeCodeInstall } from "./claude-code";
-import { CodexInstall } from "./codex";
-import { CursorInstall } from "./cursor";
-import { VscodeInstall } from "./vscode";
-
+import { ClaudeCodeInstall } from './claude-code';
+import { CodexInstall } from './codex';
+import { CursorInstall } from './cursor';
+import { VscodeInstall } from './vscode';
 
 type ClientInstall = Record<Clients, React.FC>;
 

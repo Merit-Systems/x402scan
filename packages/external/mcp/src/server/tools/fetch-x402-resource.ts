@@ -66,7 +66,12 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
       try {
         const response = await fetchWithPay(url, {
           method,
-          body: typeof body === 'string' ? body : body ? JSON.stringify(body) : undefined,
+          body:
+            typeof body === 'string'
+              ? body
+              : body
+                ? JSON.stringify(body)
+                : undefined,
           headers: {
             ...(body ? { 'Content-Type': 'application/json' } : {}),
             ...headers,

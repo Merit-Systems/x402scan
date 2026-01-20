@@ -36,9 +36,9 @@ export const HeroGraphic = () => {
       'flex flex-col items-center justify-center p-2 z-10 bg-card relative transition-all duration-500 border-2',
       isActive ? `border-primary/40` : 'opacity-50',
       isActive &&
-      ((side === 'left' && !isReverse) ||
-        (side === 'right' && isReverse && !isPending)) &&
-      'animate-pulse-active'
+        ((side === 'left' && !isReverse) ||
+          (side === 'right' && isReverse && !isPending)) &&
+        'animate-pulse-active'
     ),
   });
   const imageSize = 32;

@@ -74,19 +74,56 @@ export const adminInviteCodesRouter = createTRPCRouter({
       return reactivateInviteCode(input.id);
     }),
 
+  updateMaxRedemptions: adminProcedure
+    .input(
+      z.object({
+        id: z.string().uuid(),
+        maxRedemptions: z.number().int().min(0),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { updateMaxRedemptions } =
+        await import('@/services/db/invite-codes/manage');
+      return updateMaxRedemptions(input.id, input.maxRedemptions);
+    }),
+
   walletInfo: adminProcedure.query(async () => {
-    const wallet = inviteWallets[Chain.BASE];
-    const token = usdc(Chain.BASE);
+    try {
+      const wallet = inviteWallets[Chain.BASE];
+      const token = usdc(Chain.BASE);
 
-    const [address, balance] = await Promise.all([
-      wallet.address(),
-      wallet.getTokenBalance({ token }),
-    ]);
+      // Get address first to validate wallet is configured
+      const address = await wallet.address();
 
-    return {
-      address,
-      balance,
-      chain: Chain.BASE,
-    };
+      if (!address) {
+        return {
+          configured: false,
+          error:
+            'Invite wallet not configured. Check CDP credentials and INVITE_WALLET_NAME env variable.',
+          chain: Chain.BASE,
+        };
+      }
+
+      // Fetch both USDC and ETH balances
+      const [usdcBalance, ethBalance] = await Promise.all([
+        wallet.getTokenBalance({ token }),
+        wallet.getNativeTokenBalance(),
+      ]);
+
+      return {
+        configured: true,
+        address,
+        usdcBalance,
+        ethBalance,
+        chain: Chain.BASE,
+      };
+    } catch (error) {
+      console.error('Failed to get invite wallet info:', error);
+      return {
+        configured: false,
+        error: 'Failed to load invite wallet. Check CDP configuration.',
+        chain: Chain.BASE,
+      };
+    }
   }),
 });
