@@ -59,9 +59,6 @@ export function Form({
   const sendQueryValuesInJsonBodyFallback = useMemo(() => {
     const m = method.toString().toUpperCase();
     if (m === 'GET' || m === 'HEAD') return false;
-    // If the schema only exposes "query" fields for a non-GET request, many upstream
-    // handlers still expect JSON bodies (common in x402 resources). In that case,
-    // mirror the query values into the JSON body so `req.body` isn't undefined.
     if (bodyFields.length > 0) return false;
     if (queryFields.length === 0) return false;
     return true;

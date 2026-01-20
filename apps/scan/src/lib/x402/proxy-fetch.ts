@@ -62,8 +62,7 @@ export const fetchWithProxy = async (
     restInit.body
   ) {
     const ct = headers.get('Content-Type');
-    // Some wrappers (e.g. payment wrappers) default string bodies to text/plain.
-    // If we are sending JSON, force application/json so upstream body parsers run.
+    // NOTE(shafu): if we are sending JSON, force application/json 
     if (!ct || ct.toLowerCase().startsWith('text/plain')) {
       if (looksLikeJson) {
         headers.set('Content-Type', 'application/json');
