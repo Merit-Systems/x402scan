@@ -69,8 +69,6 @@ export const fetchWithProxy = async (
     finalInit.body = undefined;
   }
 
-  // Normalize JSON bodies coming through as text/plain (seen when x402 wrapper passes a Request)
-  // Also unwrap double-stringified JSON if detected (e.g. "\"{\\\"token\\\":\\\"BTC\\\"}\"")
   if (
     normalizedMethod !== 'GET' &&
     normalizedMethod !== 'HEAD' &&
