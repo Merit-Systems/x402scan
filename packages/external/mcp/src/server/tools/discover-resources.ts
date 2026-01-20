@@ -87,7 +87,7 @@ async function lookupDnsTxtRecord(hostname: string): Promise<string | null> {
     }
 
     // TXT record data comes with quotes, strip them
-    const txtValue = data.Answer[0]!.data.replace(/^"|"$/g, '');
+    const txtValue = data.Answer[0].data.replace(/^"|"$/g, '');
     log.debug(`Found DNS TXT record: ${txtValue}`);
 
     // Validate it's a URL
@@ -364,6 +364,7 @@ export function registerDiscoveryTools(server: McpServer): void {
             Exa web search
             Clado linkedin data
             Firecrawl web scrape
+            Serper Google search
         - https://stablestudio.io -> generate images / videos
         `,
       inputSchema: {
