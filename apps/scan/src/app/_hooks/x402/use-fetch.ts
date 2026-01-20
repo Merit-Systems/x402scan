@@ -24,9 +24,6 @@ export const useX402Fetch = <TData = unknown>({
 }: UseX402FetchParams<TData>) => {
   return useMutation({
     mutationFn: async () => {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b580f9ca-6e18-4c38-9de1-256e6503a55a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'apps/scan/src/app/_hooks/x402/use-fetch.ts:26',message:'useX402Fetch mutationFn entry',data:{targetUrl:targetUrl.slice(0,200),isTool,initMethod:init?.method,initBodyType:typeof init?.body,initBodyPreview:typeof init?.body==='string'?init.body.slice(0,120):undefined,initContentType:init?.headers?new Headers(init.headers).get('content-type'):undefined,baseFetch:isTool?'fetch':'fetchWithProxy'},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1'})}).catch(()=>{});
-      // #endregion
       const fetchWithPayment = wrapperFn(isTool ? fetch : fetchWithProxy);
       const response = await fetchWithPayment(targetUrl, init);
 
