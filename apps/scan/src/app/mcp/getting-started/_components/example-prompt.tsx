@@ -76,7 +76,8 @@ export function ExamplePrompt({
     let result = prompt;
     templateVars.forEach(v => {
       // Replace with value if filled, otherwise show just the label in template syntax
-      const replacement = values[v.raw] ? values[v.raw] : `{{${v.label}}}`;
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally treating empty string as falsy
+      const replacement = values[v.raw] || `{{${v.label}}}`;
       result = result.replaceAll(v.raw, replacement);
     });
     return result;
@@ -104,7 +105,8 @@ export function ExamplePrompt({
         const value = values[part];
         result.push(
           <span key={i} className="text-primary font-semibold">
-            {value ? value : `{{${templateVar.label}}}`}
+            {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally treating empty string as falsy */}
+            {value || `{{${templateVar.label}}}`}
           </span>
         );
       } else {
