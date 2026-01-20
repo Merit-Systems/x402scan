@@ -3,6 +3,7 @@
 import { Body } from '@/app/_components/layout/page-utils';
 import { Clients } from '@/app/mcp/_components/clients/data';
 import {
+  Film,
   Globe,
   Linkedin,
   MessageSquare,
@@ -20,11 +21,9 @@ export default function GettingStartedPage() {
         <div className="flex flex-col gap-2">
           <h1 className="text-4xl font-bold">Getting Started</h1>
           <p className="text-muted-foreground/80 text-lg">
-            Tips and example prompts to help you get the most out of{' '}
-            <span className="text-primary font-mono font-bold">
-              x402scan MCP
-            </span>
-            .
+            Claude Code + x402scan MCP enables you to automate any knowledge
+            work task. Here are some example prompts to help you get the most
+            out of this combination.
           </p>
         </div>
 
@@ -86,8 +85,9 @@ Final report:
             tools={[
               { name: 'Web Search', icon: Globe },
               { name: 'Video Gen', icon: Video },
+              { name: 'FFmpeg', icon: Film },
             ]}
-            recommendedClient={Clients.Claude}
+            recommendedClient={Clients.ClaudeCode}
             prompt={`Goal: Generate a video ad for {{Product or Service|eg. a new AI tool}}.
 
 Use the tools in enrichx402 to find information about the product or service.
