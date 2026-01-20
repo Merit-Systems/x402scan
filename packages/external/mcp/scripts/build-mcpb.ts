@@ -22,6 +22,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
+const SCAN_PUBLIC_DIR = join(ROOT, '..', '..', '..', 'apps', 'scan', 'public');
 
 function run(cmd: string, cwd = ROOT) {
   console.log(`$ ${cmd}`);
@@ -84,6 +85,14 @@ function main() {
   rmSync(outputFile, { force: true });
 
   run(`npx -y @anthropic-ai/mcpb pack ${bundleDir} ${outputFile}`);
+
+  // If the file doesn't exist, create it
+  const scanMcpbPath = join(SCAN_PUBLIC_DIR, 'x402scan.mcpb');
+  if (!existsSync(scanMcpbPath)) {
+    writeFileSync(scanMcpbPath, '');
+    console.log('   Created empty x402scan.mcpb in SCAN_PUBLIC_DIR.');
+  }
+  cpSync(outputFile, scanMcpbPath);
 
   // Clean up bundle directory
   rmSync(bundleDir, { recursive: true, force: true });
