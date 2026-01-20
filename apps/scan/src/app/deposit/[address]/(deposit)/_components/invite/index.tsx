@@ -25,8 +25,8 @@ export const InviteCodeRedemption: React.FC<Props> = ({ address }) => {
       if (data.success) {
         setStatus('success');
         setMessage('Invite code redeemed successfully!');
-        setTxHash(data.txHash ?? null);
-        setAmount(data.amount ?? null);
+        setTxHash(data.data.txHash ?? null);
+        setAmount(data.data.amount ?? null);
         setCode('');
       } else {
         setStatus('error');

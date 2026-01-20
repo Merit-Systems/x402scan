@@ -10,7 +10,6 @@ import chalk from 'chalk';
 
 export type InstallFlags = GlobalFlags<{
   client?: string;
-  invite?: string;
 }>;
 
 export const installMcpServer: Command<InstallFlags> = async flags => {
@@ -25,10 +24,14 @@ export const installMcpServer: Command<InstallFlags> = async flags => {
 
   await addServer(client, flags);
 
-  // Try to redeem invite code if provided
-  const inviteRedeemed = await redeemInviteCode({ flags, address });
+  const inviteRedeemed = flags.invite
+    ? await redeemInviteCode({
+        code: flags.invite,
+        dev: flags.dev,
+        address,
+      })
+    : false;
 
-  // Only prompt for funds if invite code wasn't successfully redeemed
   if (!inviteRedeemed) {
     await addFunds({ flags, address, isNew });
   }

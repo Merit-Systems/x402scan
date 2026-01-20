@@ -17,19 +17,21 @@ export const POST = async (request: NextRequest) => {
       recipientAddr,
     });
 
-    if (!result.success) {
-      return NextResponse.json(
-        { success: false, error: result.error },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      redemptionId: result.redemptionId,
-      txHash: result.txHash,
-      amount: result.amount,
-    });
+    return result.match(
+      data =>
+        NextResponse.json({
+          success: true as const,
+          data,
+        }),
+      error =>
+        NextResponse.json(
+          {
+            success: false as const,
+            message: error.message,
+          },
+          { status: 500 }
+        )
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -67,7 +69,14 @@ export const GET = async (request: NextRequest) => {
       recipientAddr: validatedAddr,
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json(
+      result
+        .map(message => ({
+          valid: true,
+          message,
+        }))
+        .unwrapOr({ valid: false, error: 'Invalid invite code' })
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

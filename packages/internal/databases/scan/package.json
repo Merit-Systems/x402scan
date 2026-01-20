@@ -11,7 +11,7 @@
     "lint": "eslint . --max-warnings 0",
     "check:types": "tsc --noEmit",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev --skip-generate",
+    "db:migrate": "prisma migrate dev",
     "db:deploy": "node scripts/wait-for-db.mjs && prisma migrate deploy",
     "db:format": "prisma format",
     "prebuild": "npm run db:generate",

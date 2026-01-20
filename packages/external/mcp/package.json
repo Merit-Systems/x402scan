@@ -36,6 +36,7 @@
     "chalk": "^5.6.2",
     "js-yaml": "^4.1.1",
     "jsonc-parser": "^3.3.1",
+    "neverthrow": "^8.2.0",
     "open": "^11.0.0",
     "siwe": "catalog:",
     "tweetnacl": "^1.0.3",

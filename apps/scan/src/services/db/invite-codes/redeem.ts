@@ -1,10 +1,21 @@
-import { scanDb } from '@x402scan/scan-db';
-import { inviteWallets } from '@/services/cdp/server-wallet/invite';
-import { usdc } from '@/lib/tokens/usdc';
-import { Chain } from '@/types/chain';
-import { formatUnits } from 'viem';
-import { mixedAddressSchema } from '@/lib/schemas';
 import z from 'zod';
+
+import { formatUnits } from 'viem';
+
+import type { Result } from 'neverthrow';
+import { err, ok, ResultAsync } from 'neverthrow';
+
+import { scanDb } from '@x402scan/scan-db';
+
+import { inviteWallets } from '@/services/cdp/server-wallet/invite';
+
+import { usdc } from '@/lib/tokens/usdc';
+import { mixedAddressSchema } from '@/lib/schemas';
+
+import { Chain } from '@/types/chain';
+import { dbErr, dbOk } from '../lib';
+
+import type { DatabaseError } from '../lib';
 
 export const validateInviteCodeSchema = z.object({
   code: z.string().min(1),
@@ -15,30 +26,46 @@ export const validateInviteCode = async ({
   code,
   recipientAddr,
 }: z.infer<typeof validateInviteCodeSchema>) => {
-  const inviteCode = await scanDb.inviteCode.findUnique({
-    where: { code },
-  });
+  const result = await ResultAsync.fromPromise(
+    scanDb.inviteCode.findUnique({
+      where: { code },
+    }),
+    (error): DatabaseError => ({
+      type: 'internal',
+      message:
+        error instanceof Error ? error.message : 'Failed to find invite code',
+    })
+  );
+
+  if (result.isErr()) {
+    return result;
+  }
+
+  const inviteCode = result.value;
 
   if (!inviteCode) {
-    return { valid: false, error: 'Invalid invite code' };
+    return dbErr({ type: 'not_found', message: 'Invalid invite code' });
   }
 
   if (inviteCode.status !== 'ACTIVE') {
-    return {
-      valid: false,
-      error: `Invite code is ${inviteCode.status.toLowerCase()}`,
-    };
+    return dbErr({
+      type: 'conflict',
+      message: `Invite code is ${inviteCode.status.toLowerCase()}`,
+    });
   }
 
   if (inviteCode.expiresAt && inviteCode.expiresAt < new Date()) {
-    return { valid: false, error: 'Invite code has expired' };
+    return dbErr({ type: 'conflict', message: 'Invite code has expired' });
   }
 
   if (
     inviteCode.maxRedemptions > 0 &&
     inviteCode.redemptionCount >= inviteCode.maxRedemptions
   ) {
-    return { valid: false, error: 'Invite code has been fully redeemed' };
+    return dbErr({
+      type: 'conflict',
+      message: 'Invite code has been fully redeemed',
+    });
   }
 
   if (recipientAddr && inviteCode.uniqueRecipients) {
@@ -50,14 +77,14 @@ export const validateInviteCode = async ({
       },
     });
     if (existingRedemption) {
-      return {
-        valid: false,
-        error: 'You have already redeemed this invite code',
-      };
+      return dbErr({
+        type: 'conflict',
+        message: 'You have already redeemed this invite code',
+      });
     }
   }
 
-  return { valid: true };
+  return dbOk('Invite code is valid');
 };
 
 export const redeemInviteCodeSchema = z.object({
@@ -65,10 +92,15 @@ export const redeemInviteCodeSchema = z.object({
   recipientAddr: mixedAddressSchema,
 });
 
+type RedeemInviteCodeResult = Result<
+  { redemptionId: string; txHash: string; amount: string },
+  { message: string }
+>;
+
 export const redeemInviteCode = async ({
   code,
   recipientAddr,
-}: z.infer<typeof redeemInviteCodeSchema>) => {
+}: z.infer<typeof redeemInviteCodeSchema>): Promise<RedeemInviteCodeResult> => {
   const normalizedAddr = recipientAddr.toLowerCase();
 
   // Use a transaction with serializable isolation to prevent race conditions
@@ -82,14 +114,15 @@ export const redeemInviteCode = async ({
         });
 
         if (!inviteCode) {
-          return { success: false, error: 'Invalid invite code' } as const;
+          return err({
+            message: 'Invalid invite code',
+          });
         }
 
         if (inviteCode.status !== 'ACTIVE') {
-          return {
-            success: false,
-            error: `Invite code is ${inviteCode.status.toLowerCase()}`,
-          } as const;
+          return err({
+            message: `Invite code is ${inviteCode.status.toLowerCase()}`,
+          });
         }
 
         if (inviteCode.expiresAt && inviteCode.expiresAt < new Date()) {
@@ -98,17 +131,18 @@ export const redeemInviteCode = async ({
             where: { id: inviteCode.id },
             data: { status: 'EXPIRED' },
           });
-          return { success: false, error: 'Invite code has expired' } as const;
+          return err({
+            message: 'Invite code has expired',
+          });
         }
 
         if (
           inviteCode.maxRedemptions > 0 &&
           inviteCode.redemptionCount >= inviteCode.maxRedemptions
         ) {
-          return {
-            success: false,
-            error: 'Invite code has been fully redeemed',
-          } as const;
+          return err({
+            message: 'Invite code has been fully redeemed',
+          });
         }
 
         // Check unique recipients constraint
@@ -121,10 +155,9 @@ export const redeemInviteCode = async ({
             },
           });
           if (existingRedemption) {
-            return {
-              success: false,
-              error: 'You have already redeemed this invite code',
-            } as const;
+            return err({
+              message: 'You have already redeemed this invite code',
+            });
           }
         }
 
@@ -168,23 +201,18 @@ export const redeemInviteCode = async ({
           });
         }
 
-        return {
-          success: true,
-          inviteCode,
-          redemption,
-          updatedCode,
-        } as const;
+        return ok({ inviteCode, redemption, updatedCode });
       },
       {
         isolationLevel: 'Serializable',
       }
     );
 
-    if (!result.success) {
+    if (result.isErr()) {
       return result;
     }
 
-    const { inviteCode, redemption } = result;
+    const { inviteCode, redemption } = result.value;
 
     // Now send the tokens (outside transaction - can't roll back blockchain tx)
     try {
@@ -216,12 +244,11 @@ export const redeemInviteCode = async ({
         },
       });
 
-      return {
-        success: true,
+      return ok({
         redemptionId: redemption.id,
         txHash,
         amount: formatUnits(inviteCode.amount, token.decimals),
-      };
+      });
     } catch (error) {
       // Log the actual error for debugging
       console.error('Invite code redemption transfer failed:', error);
@@ -257,11 +284,10 @@ export const redeemInviteCode = async ({
         });
       }
 
-      return {
-        success: false,
-        error: 'Unable to process redemption. Please try again later.',
+      return err({
+        message: 'Unable to process redemption. Please try again later.',
         redemptionId: redemption.id,
-      };
+      });
     }
   } catch (error) {
     console.error('Invite code redemption transaction failed:', error);
@@ -275,15 +301,13 @@ export const redeemInviteCode = async ({
       error.code === 'P2025';
 
     if (isPrismaNotFound) {
-      return {
-        success: false,
-        error: 'Invite code has been fully redeemed',
-      };
+      return err({
+        message: 'Invite code has been fully redeemed',
+      });
     }
 
-    return {
-      success: false,
-      error: 'Unable to process redemption. Please try again later.',
-    };
+    return err({
+      message: 'Unable to process redemption. Please try again later.',
+    });
   }
 };
