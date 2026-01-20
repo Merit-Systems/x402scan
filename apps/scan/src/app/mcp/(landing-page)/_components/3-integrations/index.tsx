@@ -14,7 +14,7 @@ export const Integrations = () => {
       }
       description="Integrate x402 with your favorite tools and platforms."
     >
-      <div className="grid grid-cols-3 gap-4 mt-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-4 mt-2">
         <IntegrationCard
           icon={<Search className="size-10" />}
           title="EnrichX402"

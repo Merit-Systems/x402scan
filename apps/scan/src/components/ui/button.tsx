@@ -55,7 +55,7 @@ export const buttonVariants = cva(
         xs: 'h-6 rounded-md px-1 text-xs md:text-xs gap-1',
         sm: 'h-8 rounded-md px-3 text-xs',
         lg: 'h-10 rounded-md px-8',
-        xl: 'h-12 rounded-xl px-8',
+        xl: 'h-12 rounded-xl px-8 text-sm md:text-base',
         icon: 'size-8 md:size-9',
         navbar: 'size-8 md:h-9 md:w-auto md:px-4 md:py-2',
       },

@@ -32,15 +32,15 @@ export const ClientDemosSection: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        'flex items-center gap-4',
-        imageSide === 'right' ? 'flex-row-reverse' : 'flex-row'
+        'flex items-start flex-col-reverse md:flex-col md:items-center gap-4',
+        imageSide === 'right' ? 'md:flex-row-reverse' : 'md:flex-row'
       )}
     >
-      <div className="flex-1 bg-muted rounded-xl overflow-hidden">
+      <div className="flex-1 bg-muted rounded-xl overflow-hidden w-full md:w-auto">
         {graphic}
       </div>
       <div className="flex-1">
-        <div className="flex flex-col gap-4 px-12">
+        <div className="flex flex-col gap-4 px-2 md:px-12">
           <div className="flex gap-2">
             {clients.map(client => (
               <ClientIcon
@@ -55,8 +55,8 @@ export const ClientDemosSection: React.FC<Props> = ({
             ))}
           </div>
           <div className="flex flex-col gap-2">
-            <h2 className="text-3xl font-bold">{heading}</h2>
-            <p className="font-mono max-w-md text-muted-foreground/60">
+            <h2 className="text-2xl md:text-3xl font-bold">{heading}</h2>
+            <p className="font-mono max-w-md text-muted-foreground/60 text-sm md:text-base">
               {description}
             </p>
           </div>
