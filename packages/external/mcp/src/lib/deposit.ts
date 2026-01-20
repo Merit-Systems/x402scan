@@ -1,4 +1,3 @@
-import boxen from 'boxen';
 import chalk from 'chalk';
 import { select, log } from '@clack/prompts';
 import open from 'open';
@@ -52,16 +51,10 @@ export const promptDeposit = async (address: string, flags: GlobalFlags) => {
 
     await open(depositLink);
   } else if (guidedDeposit === false) {
-    log.message(
-      boxen(
-        `${chalk.bold('Account Information')}\nAddress: ${address}\nNetwork: ${getChainName(DEFAULT_NETWORK)}\n\n${chalk.bold('Online Portal')}\n${chalk.underline(depositLink)}`,
-        {
-          borderStyle: 'round',
-          borderColor: '#2563eb',
-          title: 'Deposit Instructions',
-          padding: 1,
-        }
-      )
-    );
+    log.step(chalk.bold('Account Information'));
+    log.message(`Address: ${address}`);
+    log.message(`Network: ${getChainName(DEFAULT_NETWORK)}`);
+    log.step(chalk.bold('Online Portal'));
+    log.message(`${chalk.underline(depositLink)}`);
   }
 };
