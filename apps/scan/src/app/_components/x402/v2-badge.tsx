@@ -11,7 +11,7 @@ export function X402V2Badge({ className, ...props }: Props) {
     <Badge
       variant="fancy"
       className={cn(
-        'text-xs font-bold size-fit px-2 py-0.5 relative overflow-hidden border-none',
+        'text-[10px] font-semibold size-fit px-2 py-0.5 relative overflow-hidden border-none',
         className
       )}
       {...props}
