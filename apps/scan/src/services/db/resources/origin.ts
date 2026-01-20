@@ -213,10 +213,26 @@ export const searchOrigins = async (
 };
 
 export const getOrigin = async (id: string) => {
-  return await scanDb.resourceOrigin.findUnique({
+  const origin = await scanDb.resourceOrigin.findUnique({
     where: { id },
-    include: { ogImages: true },
+    include: {
+      ogImages: true,
+      resources: {
+        where: { x402Version: 2 },
+        select: { id: true },
+        take: 1,
+      },
+    },
   });
+
+  if (!origin) return null;
+
+  const { resources, ...originData } = origin;
+
+  return {
+    ...originData,
+    hasX402V2Resource: resources.length > 0,
+  };
 };
 
 export const getOriginMetadata = async (id: string) => {

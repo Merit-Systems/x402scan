@@ -57,7 +57,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
     NEXT_PUBLIC_ENABLE_COMPOSER: z.string().optional().default('true'),
-    NEXT_PUBLIC_SOLANA_RPC_URL: z.url().optional(),
+    NEXT_PUBLIC_SOLANA_RPC_URL: z.url(),
     NEXT_PUBLIC_BASE_RPC_URL: z.url().optional(),
     NEXT_PUBLIC_VERCEL_ENV: z
       .enum(['development', 'preview', 'production'])

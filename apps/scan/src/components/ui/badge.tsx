@@ -23,6 +23,8 @@ const badgeVariants = cva(
         primary: 'border-transparent bg-primary/30 text-primary',
         glass: 'border-primary/60 bg-primary/10 text-primary',
         warning: 'border-transparent bg-yellow-500/20 text-yellow-500',
+        fancy:
+          'relative overflow-hidden border-primary/50 bg-gradient-to-r from-primary/25 via-fuchsia-500/15 to-cyan-500/20 text-primary hover:from-primary/35 hover:via-fuchsia-500/25 hover:to-cyan-500/30 before:pointer-events-none before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:opacity-80 motion-safe:before:animate-shimmer',
       },
     },
     defaultVariants: {

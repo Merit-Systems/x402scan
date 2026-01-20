@@ -105,7 +105,7 @@
     "react-dom": "catalog:react",
     "react-dropzone": "^14.3.8",
     "react-error-boundary": "catalog:react",
-    "react-hook-form": "^7.65.0",
+    "react-hook-form": "^7.71.1",
     "recharts": "2.15.4",
     "redis": "^5.8.3",
     "resumable-stream": "^2.2.8",

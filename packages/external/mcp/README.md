@@ -90,7 +90,6 @@ On first run, a wallet is generated at `~/.x402scan-mcp/wallet.json`. Deposit US
 | `get_wallet_address`  | Get the wallet address                                       |
 | `check_x402_endpoint` | Check if endpoint is x402-protected, get pricing/schema/auth |
 | `discover_resources`  | Discover x402 resources from origin's .well-known/x402       |
-| `report_error`        | Emergency only: report critical MCP bugs to developers       |
 
 ## Environment
 

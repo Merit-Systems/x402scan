@@ -4,10 +4,10 @@ import { useX402FetchWithPriceConfirmation } from './use-fetch-with-price-confir
 import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
 
 import {
-  x402Client,
   wrapFetchWithPayment,
-  registerExactSvmScheme,
+  registerSvmX402Client,
 } from '@/lib/x402/wrap-fetch';
+import { env } from '@/env';
 
 import type { UseMutationOptions } from '@tanstack/react-query';
 import type { FetchWithPaymentWrapper, X402FetchResponse } from './types';
@@ -44,8 +44,10 @@ export const useSvmX402FetchWithConfirmation = <TData = unknown>({
       throw new Error('Solana wallet not available');
     }
 
-    const client = new x402Client();
-    registerExactSvmScheme(client, { signer: transactionSigner });
+    const client = registerSvmX402Client({
+      signer: transactionSigner,
+      rpcUrl: env.NEXT_PUBLIC_SOLANA_RPC_URL,
+    });
 
     return wrapFetchWithPayment(baseFetch, client);
   };

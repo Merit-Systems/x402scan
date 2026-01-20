@@ -54,11 +54,10 @@ export const ResourceExecutor: React.FC<Props> = ({
   warnings = [],
   ownershipVerified = false,
 }) => {
-  if (!response) return null;
-
-  const outputSchema = getOutputSchema(response);
+  const outputSchema = response ? getOutputSchema(response) : undefined;
   const inputSchema = outputSchema?.input;
 
+  if (!response) return null;
   if (!inputSchema) return null;
 
   const maxAmountStr = getMaxAmount(response);

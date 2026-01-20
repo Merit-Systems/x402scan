@@ -2,7 +2,7 @@ import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { ExactEvmScheme } from '@x402/evm/exact/client';
 import { wrapFetchWithPayment } from '@x402/fetch';
 
-import { mcpSuccess, mcpError } from '@/server/lib/response';
+import { mcpError, mcpSuccess } from '@/server/lib/response';
 import { requestWithHeadersSchema } from '@/server/lib/schemas';
 import { FetchStates } from '@/server/types';
 
@@ -13,6 +13,7 @@ import { tokenStringToNumber } from '@/lib/token';
 import { checkBalance } from '../lib/check-balance';
 
 import type { RegisterTools } from '@/server/types';
+import { parseResponse } from '../lib/parse-response';
 
 export const registerFetchX402ResourceTool: RegisterTools = ({
   server,
@@ -66,7 +67,12 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
       try {
         const response = await fetchWithPay(url, {
           method,
-          body: body ? JSON.stringify(body) : undefined,
+          body:
+            typeof body === 'string'
+              ? body
+              : body
+                ? JSON.stringify(body)
+                : undefined,
           headers: {
             ...(body ? { 'Content-Type': 'application/json' } : {}),
             ...headers,
@@ -74,9 +80,8 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
         });
 
         if (!response.ok) {
-          const errorData = await response.text();
           const errorResponse = {
-            data: errorData,
+            data: await parseResponse(response),
             statusCode: response.status,
             state,
           };
@@ -102,7 +107,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
         const settlement = getSettlement();
 
         return mcpSuccess({
-          data: await response.text().catch(() => undefined),
+          data: await parseResponse(response),
           payment: settlement,
         });
       } catch (err) {

@@ -159,6 +159,47 @@ function getOutputSchemaFromBazaar(
   const info = bazaar.info;
   const input = info.input as Record<string, unknown>;
   const body = input.body;
+  const schemaUnknown: unknown = bazaar.schema;
+
+  // If bazaar `info.input` is "flattened" payload fields (no `body` wrapper),
+  // and bazaar.schema is a standard JSON Schema `{type, properties, required}`,
+  // treat it as a POST JSON body schema so the UI can render fields.
+  if (schemaUnknown && typeof schemaUnknown === 'object') {
+    const schemaObj = schemaUnknown as Record<string, unknown>;
+    const properties = schemaObj.properties;
+    const required = schemaObj.required;
+
+    const reservedKeys = new Set([
+      'method',
+      'body',
+      'bodyFields',
+      'queryParams',
+      'headerFields',
+      'headers',
+      'pathParams',
+      'params',
+    ]);
+    const inputKeys = Object.keys(input);
+    const hasReservedKey = inputKeys.some(k => reservedKeys.has(k));
+    const hasNonReservedKeys = inputKeys.some(k => !reservedKeys.has(k));
+
+    const isJsonSchemaLike =
+      properties && typeof properties === 'object' && properties !== null;
+
+    if (!hasReservedKey && hasNonReservedKeys && isJsonSchemaLike) {
+      return {
+        input: {
+          method: 'POST',
+          body: {
+            ...schemaObj,
+            properties,
+            required: Array.isArray(required) ? required : undefined,
+          },
+        },
+        output: info.output,
+      } as unknown as OutputSchema;
+    }
+  }
 
   // Enrich body with schema if info.body has example data (no properties)
   if (

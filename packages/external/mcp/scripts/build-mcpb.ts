@@ -11,17 +11,18 @@
 import { execSync } from 'child_process';
 import {
   cpSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-  writeFileSync,
   existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
 } from 'fs';
-import { join, dirname } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
+const SCAN_PUBLIC_DIR = join(ROOT, '..', '..', '..', 'apps', 'scan', 'public');
 
 function run(cmd: string, cwd = ROOT) {
   console.log(`$ ${cmd}`);
@@ -36,9 +37,11 @@ function main() {
   rmSync(bundleDir, { recursive: true, force: true });
   mkdirSync(bundleDir, { recursive: true });
 
+  run('pnpm install');
+
   // Build the server with dependencies bundled (tsup creates dist/bundle/)
   console.log('1. Building server bundle with all dependencies...');
-  run('bun run build');
+  run('pnpm build');
 
   // Create server directory in bundle
   const serverDir = join(bundleDir, 'server');
@@ -46,7 +49,7 @@ function main() {
 
   // Copy the bundled dist/bundle/index.cjs to server/index.cjs
   cpSync(
-    join(ROOT, 'dist', 'bundle', 'index.cjs'),
+    join(ROOT, 'dist', 'cjs', 'run-server.cjs'),
     join(serverDir, 'index.cjs')
   );
 
@@ -82,6 +85,14 @@ function main() {
   rmSync(outputFile, { force: true });
 
   run(`npx -y @anthropic-ai/mcpb pack ${bundleDir} ${outputFile}`);
+
+  // If the file doesn't exist, create it
+  const scanMcpbPath = join(SCAN_PUBLIC_DIR, 'x402scan.mcpb');
+  if (!existsSync(scanMcpbPath)) {
+    writeFileSync(scanMcpbPath, '');
+    console.log('   Created empty x402scan.mcpb in SCAN_PUBLIC_DIR.');
+  }
+  cpSync(outputFile, scanMcpbPath);
 
   // Clean up bundle directory
   rmSync(bundleDir, { recursive: true, force: true });

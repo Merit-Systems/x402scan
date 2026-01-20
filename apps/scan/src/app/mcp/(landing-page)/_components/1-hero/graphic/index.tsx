@@ -2,15 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { ChartCandlestick, ImageIcon, Search } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { ChartCandlestick, ImageIcon, Search } from 'lucide-react';
 
 import { AnimatedBeam } from '@/components/magicui/animated-beam';
 
 import { cn } from '@/lib/utils';
+import { Clients } from '../../../../_components/clients/data';
+import { ClientIcon } from '../../../../_components/clients/icons';
 import { Chip } from './chip';
-import { ClientIcon } from './icons';
-import { Clients } from '../clients/data';
 
 export const HeroGraphic = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,7 +34,7 @@ export const HeroGraphic = () => {
   const cardProps = (isActive: boolean, side: 'left' | 'right') => ({
     className: cn(
       'flex flex-col items-center justify-center p-2 z-10 bg-card relative transition-all duration-500 border-2',
-      isActive ? `border-primary/80` : 'opacity-50',
+      isActive ? `border-primary/40` : 'opacity-50',
       isActive &&
         ((side === 'left' && !isReverse) ||
           (side === 'right' && isReverse && !isPending)) &&
@@ -50,14 +50,14 @@ export const HeroGraphic = () => {
   const targetClassName = (isActive: boolean) =>
     cn(
       'absolute w-0 rounded-full size-1.5 bg-card border-2 z-10 transition-all duration-500',
-      isActive ? 'border-primary/80' : 'border-border'
+      isActive ? 'border-primary/40' : 'border-border'
     );
   const targetLeftClassName = (isActive: boolean) =>
     cn(targetClassName(isActive), '-left-1');
   const targetRightClassName = (isActive: boolean) =>
     cn(targetClassName(isActive), '-right-1');
 
-  const beamDuration = 3;
+  const beamDuration = 2.5;
 
   const [isReverse, setIsReverse] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -87,7 +87,7 @@ export const HeroGraphic = () => {
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    const offset = (beamDuration / 8) * 1000;
+    const offset = 10;
     const intervalTime = beamDuration * 2 * 1000;
 
     // Initial timeout to offset the interval by duration/2
@@ -108,7 +108,7 @@ export const HeroGraphic = () => {
     duration: beamDuration,
     reverse: isReverse,
     beamWidth: isActive && !isPending ? 10 : 0,
-    pathOpacity: isActive ? 0.5 : 0.05,
+    pathOpacity: isActive ? 0.2 : 0.05,
     delay: 0.5,
   });
 
@@ -117,7 +117,7 @@ export const HeroGraphic = () => {
   return (
     <div
       ref={containerRef}
-      className="relative size-full flex items-center justify-between max-w-lg w-full"
+      className="relative size-full flex items-center justify-between w-full"
     >
       <div className="flex flex-col gap-8">
         <Card {...cardProps(activeClientIndex === 0, 'left')}>
@@ -126,7 +126,7 @@ export const HeroGraphic = () => {
             {...imageProps}
             className={cn(
               imageProps.className,
-              activeClientIndex === 0 ? 'fill-primary' : 'fill-current'
+              activeClientIndex === 0 ? 'fill-primary/80' : 'fill-current'
             )}
           />
           <div
@@ -140,7 +140,7 @@ export const HeroGraphic = () => {
             {...imageProps}
             className={cn(
               imageProps.className,
-              activeClientIndex === 1 ? 'fill-primary' : 'fill-current'
+              activeClientIndex === 1 ? 'fill-primary/80' : 'fill-current'
             )}
           />
           <div
@@ -154,7 +154,7 @@ export const HeroGraphic = () => {
             {...imageProps}
             className={cn(
               imageProps.className,
-              activeClientIndex === 2 ? 'fill-primary' : 'fill-current'
+              activeClientIndex === 2 ? 'fill-primary/80' : 'fill-current'
             )}
           />
           <div
@@ -174,7 +174,7 @@ export const HeroGraphic = () => {
             className={cn(
               imageProps.className,
               activeServerIndices.includes(0)
-                ? 'stroke-primary'
+                ? 'stroke-primary/80'
                 : 'stroke-current'
             )}
           />
@@ -189,7 +189,7 @@ export const HeroGraphic = () => {
             className={cn(
               imageProps.className,
               activeServerIndices.includes(1)
-                ? 'stroke-primary'
+                ? 'stroke-primary/80'
                 : 'stroke-current'
             )}
           />
@@ -204,7 +204,7 @@ export const HeroGraphic = () => {
             className={cn(
               imageProps.className,
               activeServerIndices.includes(2)
-                ? 'stroke-primary'
+                ? 'stroke-primary/80'
                 : 'stroke-current'
             )}
           />

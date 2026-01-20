@@ -31,7 +31,7 @@ export const OriginResources: React.FC<Props> = ({
   return (
     <Accordion
       type="multiple"
-      className="border-b-0"
+      className="border-b-0 gap-0"
       defaultValue={
         defaultOpen ? resources.map(resource => resource.id) : undefined
       }
@@ -42,22 +42,26 @@ export const OriginResources: React.FC<Props> = ({
       ).length > 0 ? (
         resources
           .filter(resource => resource.success)
-          .map(resource => (
-            <ResourceExecutor
-              key={resource.id}
-              resource={resource}
-              tags={resource.tags.map(tag => tag.tag)}
-              bazaarMethod={getBazaarMethod(
-                resource.accepts.find(accept => accept.outputSchema)
-                  ?.outputSchema
-              )}
-              className="bg-transparent"
-              response={resource.data}
-              hideOrigin={hideOrigin}
-              defaultOpen={defaultOpen}
-              isFlat={isFlat}
-            />
-          ))
+          .map(resource => {
+            const outputSchema = resource.accepts.find(
+              accept => accept.outputSchema
+            )?.outputSchema;
+            const bazaarMethod = getBazaarMethod(outputSchema);
+
+            return (
+              <ResourceExecutor
+                key={resource.id}
+                resource={resource}
+                tags={resource.tags.map(tag => tag.tag)}
+                bazaarMethod={bazaarMethod}
+                className="bg-transparent"
+                response={resource.data}
+                hideOrigin={hideOrigin}
+                defaultOpen={defaultOpen}
+                isFlat={isFlat}
+              />
+            );
+          })
       ) : (
         <Empty className="bg-card border mt-4">
           <EmptyHeader>
