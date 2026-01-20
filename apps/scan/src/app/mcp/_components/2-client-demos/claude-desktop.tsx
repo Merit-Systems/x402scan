@@ -1,6 +1,6 @@
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
-import { Clients } from '../lib/clients/data';
+import { ClientTypes } from '../lib/clients/data';
 import { ClientDemosSection } from './section';
 
 export const ClaudeDesktopDemo = () => {
@@ -15,7 +15,7 @@ export const ClaudeDesktopDemo = () => {
       }
       graphic={<ChatGraphic />}
       imageSide="left"
-      clients={[Clients.Claude]}
+      clientType={ClientTypes.DESKTOP}
     />
   );
 };

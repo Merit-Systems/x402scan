@@ -6,8 +6,8 @@ import { Code } from '@/components/ui/code';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { File, FileCode2, X } from 'lucide-react';
 
-import { Clients } from '../lib/clients/data';
 import { ClientDemosSection } from './section';
+import { ClientTypes } from '../lib/clients/data';
 
 export const IdeDemo = () => {
   return (
@@ -21,7 +21,7 @@ export const IdeDemo = () => {
       }
       graphic={<IdeGraphic />}
       imageSide="left"
-      clients={[Clients.Cursor]}
+      clientType={ClientTypes.IDE}
     />
   );
 };

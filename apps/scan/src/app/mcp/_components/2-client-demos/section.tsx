@@ -1,7 +1,10 @@
 import { cn } from '@/lib/utils';
 
-import type { Clients } from '../lib/clients/data';
 import { ClientIcon } from '../lib/clients/icons';
+
+import { clients as clientsData } from '../lib/clients/data';
+
+import type { Clients, ClientTypes } from '../lib/clients/data';
 
 interface Props {
   heading: string;
@@ -9,7 +12,7 @@ interface Props {
   cta: React.ReactNode;
   graphic: React.ReactNode;
   imageSide: 'left' | 'right';
-  clients: Clients[];
+  clientType: ClientTypes;
   clientIconClassName?: string;
 }
 
@@ -19,9 +22,13 @@ export const ClientDemosSection: React.FC<Props> = ({
   cta,
   graphic,
   imageSide,
-  clients,
+  clientType,
   clientIconClassName,
 }) => {
+  const clients = Object.entries(clientsData)
+    .filter(([, client]) => client.type === clientType)
+    .map(([key]) => key as Clients);
+
   return (
     <div
       className={cn(
@@ -33,13 +40,17 @@ export const ClientDemosSection: React.FC<Props> = ({
         {graphic}
       </div>
       <div className="flex-1">
-        <div className="flex flex-col gap-4 px-16">
+        <div className="flex flex-col gap-4 px-12">
           <div className="flex gap-2">
             {clients.map(client => (
               <ClientIcon
                 key={client}
                 client={client}
-                className={cn('size-10 fill-primary', clientIconClassName)}
+                className={cn(
+                  'fill-primary',
+                  clients.length > 1 ? 'size-8' : 'size-10',
+                  clientIconClassName
+                )}
               />
             ))}
           </div>

@@ -5,7 +5,7 @@ import {
   TypingAnimation,
 } from '@/components/magicui/terminal';
 import { CircleDot } from 'lucide-react';
-import { Clients } from '../lib/clients/data';
+import { ClientTypes } from '../lib/clients/data';
 import { CopyCommandButton } from '../lib/copy-button';
 import { ClientDemosSection } from './section';
 
@@ -17,7 +17,7 @@ export const TerminalDemo = () => {
       cta={<CopyCommandButton />}
       graphic={<TerminalGraphic />}
       imageSide="right"
-      clients={[Clients.ClaudeCode, Clients.Codex]}
+      clientType={ClientTypes.TERMINAL}
       clientIconClassName="size-8"
     />
   );
