@@ -2,6 +2,7 @@ import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { ClientTypes } from '../../../_components/clients/data';
 import { ClientDemosSection } from './section';
+import Link from 'next/link';
 
 export const ClaudeDesktopDemo = () => {
   return (
@@ -9,9 +10,11 @@ export const ClaudeDesktopDemo = () => {
       heading="In Claude Desktop"
       description="Use powerful APIs to build agents for knowledge work."
       cta={
-        <Button size="xl" className="w-fit font-semibold">
-          Get Started
-        </Button>
+        <Link href="/mcp/claude">
+          <Button size="xl" className="w-fit font-semibold">
+            Get Started
+          </Button>
+        </Link>
       }
       graphic={<ChatGraphic />}
       imageSide="left"
