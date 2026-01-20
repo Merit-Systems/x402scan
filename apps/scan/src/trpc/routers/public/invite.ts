@@ -1,34 +1,21 @@
-import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/trpc/trpc';
 import {
   validateInviteCode,
   redeemInviteCode,
+  redeemInviteCodeSchema,
+  validateInviteCodeSchema,
 } from '@/services/db/invite-codes';
-import { mixedAddressSchema } from '@/lib/schemas';
 
 export const inviteRouter = createTRPCRouter({
   validate: publicProcedure
-    .input(
-      z.object({
-        code: z.string().min(1),
-        recipientAddr: mixedAddressSchema.optional(),
-      })
-    )
+    .input(validateInviteCodeSchema)
     .query(async ({ input }) => {
-      return validateInviteCode(input.code, input.recipientAddr);
+      return validateInviteCode(input);
     }),
 
   redeem: publicProcedure
-    .input(
-      z.object({
-        code: z.string().min(1),
-        recipientAddr: mixedAddressSchema,
-      })
-    )
+    .input(redeemInviteCodeSchema)
     .mutation(async ({ input }) => {
-      return redeemInviteCode({
-        code: input.code,
-        recipientAddr: input.recipientAddr,
-      });
+      return redeemInviteCode(input);
     }),
 });

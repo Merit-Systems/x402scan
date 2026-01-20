@@ -1,92 +1,63 @@
-import z from 'zod';
+import { erc20Abi, formatEther, createPublicClient, http } from 'viem';
+import { getBalance, readContract } from 'viem/actions';
+import { base } from 'viem/chains';
+
 import { createTRPCRouter, adminProcedure } from '../../trpc';
+
+import { inviteCodeByIdSchema } from '@/services/db/invite-codes/schemas';
 import {
   createInviteCode,
   listInviteCodes,
   getInviteCodeById,
   disableInviteCode,
   reactivateInviteCode,
+  listInviteCodesSchema,
+  updateMaxRedemptionsSchema,
+  updateMaxRedemptions,
+  createInviteCodeSchema,
 } from '@/services/db/invite-codes';
 import { inviteWallets } from '@/services/cdp/server-wallet/invite';
+
 import { usdc } from '@/lib/tokens/usdc';
-import { Chain } from '@/types/chain';
-import { getBalance, readContract } from 'wagmi/actions';
-import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
-import { erc20Abi, formatEther, parseUnits } from 'viem';
 import { convertTokenAmount } from '@/lib/token';
 
+import { env } from '@/env';
+
+import { Chain } from '@/types/chain';
+
 export const adminInviteCodesRouter = createTRPCRouter({
-  list: adminProcedure
-    .input(
-      z
-        .object({
-          status: z
-            .enum(['ACTIVE', 'EXHAUSTED', 'EXPIRED', 'DISABLED'])
-            .optional(),
-          limit: z.number().int().min(1).max(100).default(100),
-          offset: z.number().int().min(0).default(0),
-        })
-        .optional()
-    )
-    .query(async ({ input }) => {
-      return listInviteCodes(input);
-    }),
+  list: adminProcedure.input(listInviteCodesSchema).query(async ({ input }) => {
+    return listInviteCodes(input);
+  }),
 
   getById: adminProcedure
-    .input(z.object({ id: z.string().uuid() }))
+    .input(inviteCodeByIdSchema)
     .query(async ({ input }) => {
-      return getInviteCodeById(input.id);
+      return getInviteCodeById(input);
     }),
 
   create: adminProcedure
-    .input(
-      z.object({
-        code: z.string().min(1).max(50).optional(),
-        amount: z.string(), // Amount in USDC (string to preserve precision)
-        maxRedemptions: z.number().int().min(0).default(1),
-        uniqueRecipients: z.boolean().default(false),
-        expiresAt: z.string().datetime().optional(),
-        note: z.string().optional(),
-      })
-    )
+    .input(createInviteCodeSchema)
     .mutation(async ({ ctx, input }) => {
-      // Convert USDC amount to smallest unit (6 decimals)
-      const amountInSmallestUnit = parseUnits(input.amount, 6);
-
-      return createInviteCode({
-        code: input.code,
-        amount: amountInSmallestUnit,
-        maxRedemptions: input.maxRedemptions,
-        uniqueRecipients: input.uniqueRecipients,
-        expiresAt: input.expiresAt ? new Date(input.expiresAt) : undefined,
-        note: input.note,
-        createdById: ctx.session.user.id,
-      });
+      return createInviteCode(ctx.session.user.id, input);
     }),
 
   disable: adminProcedure
-    .input(z.object({ id: z.string().uuid() }))
+    .input(inviteCodeByIdSchema)
     .mutation(async ({ input }) => {
-      return disableInviteCode(input.id);
+      return disableInviteCode(input);
     }),
 
   reactivate: adminProcedure
-    .input(z.object({ id: z.string().uuid() }))
+    .input(inviteCodeByIdSchema)
     .mutation(async ({ input }) => {
-      return reactivateInviteCode(input.id);
+      return reactivateInviteCode(input);
     }),
 
   updateMaxRedemptions: adminProcedure
-    .input(
-      z.object({
-        id: z.string().uuid(),
-        maxRedemptions: z.number().int().min(0),
-      })
-    )
+    .input(updateMaxRedemptionsSchema)
     .mutation(async ({ input }) => {
-      const { updateMaxRedemptions } =
-        await import('@/services/db/invite-codes/manage');
-      return updateMaxRedemptions(input.id, input.maxRedemptions);
+      return updateMaxRedemptions(input);
     }),
 
   walletInfo: adminProcedure.query(async () => {
@@ -107,22 +78,25 @@ export const adminInviteCodesRouter = createTRPCRouter({
       }
 
       // Fetch balances directly using the address we already have
-      const wagmiConfig = createWagmiConfig();
+      const client = createPublicClient({
+        chain: base,
+        transport: http(env.NEXT_PUBLIC_BASE_RPC_URL),
+      });
       const [usdcBalanceRaw, ethBalanceRaw] = await Promise.all([
-        readContract(wagmiConfig, {
+        readContract(client, {
           abi: erc20Abi,
           address: token.address as `0x${string}`,
           args: [address],
           functionName: 'balanceOf',
         }),
-        getBalance(wagmiConfig, { address }),
+        getBalance(client, { address }),
       ]);
 
       return {
         configured: true,
         address,
         usdcBalance: convertTokenAmount(usdcBalanceRaw),
-        ethBalance: parseFloat(formatEther(ethBalanceRaw.value)),
+        ethBalance: parseFloat(formatEther(ethBalanceRaw)),
         chain: Chain.BASE,
       };
     } catch (error) {

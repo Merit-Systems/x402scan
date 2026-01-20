@@ -1,24 +1,23 @@
-import { scanDb, type InviteCodeStatus } from '@x402scan/scan-db';
+import z from 'zod';
 
-export const updateInviteCodeStatus = async (
-  id: string,
-  status: InviteCodeStatus
-) => {
+import { scanDb, InviteCodeStatus } from '@x402scan/scan-db';
+
+import { inviteCodeByIdSchema } from './schemas';
+
+import type { InviteCodeById } from './schemas';
+
+const updateInviteCodeStatus = async (id: string, status: InviteCodeStatus) => {
   return scanDb.inviteCode.update({
     where: { id },
     data: { status },
   });
 };
 
-export const disableInviteCode = async (id: string) => {
-  return updateInviteCodeStatus(id, 'DISABLED');
+export const disableInviteCode = async ({ id }: InviteCodeById) => {
+  return updateInviteCodeStatus(id, InviteCodeStatus.DISABLED);
 };
 
-export const expireInviteCode = async (id: string) => {
-  return updateInviteCodeStatus(id, 'EXPIRED');
-};
-
-export const reactivateInviteCode = async (id: string) => {
+export const reactivateInviteCode = async ({ id }: InviteCodeById) => {
   const inviteCode = await scanDb.inviteCode.findUnique({
     where: { id },
   });
@@ -35,20 +34,17 @@ export const reactivateInviteCode = async (id: string) => {
     throw new Error('Cannot reactivate exhausted invite code');
   }
 
-  return updateInviteCodeStatus(id, 'ACTIVE');
+  return updateInviteCodeStatus(id, InviteCodeStatus.ACTIVE);
 };
 
-export const updateInviteCodeNote = async (id: string, note: string | null) => {
-  return scanDb.inviteCode.update({
-    where: { id },
-    data: { note },
-  });
-};
+export const updateMaxRedemptionsSchema = inviteCodeByIdSchema.extend({
+  maxRedemptions: z.number().int().min(0),
+});
 
-export const updateMaxRedemptions = async (
-  id: string,
-  maxRedemptions: number
-) => {
+export const updateMaxRedemptions = async ({
+  id,
+  maxRedemptions,
+}: z.infer<typeof updateMaxRedemptionsSchema>) => {
   const inviteCode = await scanDb.inviteCode.findUnique({
     where: { id },
   });
@@ -69,19 +65,19 @@ export const updateMaxRedemptions = async (
   ) {
     return scanDb.inviteCode.update({
       where: { id },
-      data: { status: 'ACTIVE' },
+      data: { status: InviteCodeStatus.ACTIVE },
     });
   }
 
   // If code was active but now exhausted, mark it
   if (
-    updated.status === 'ACTIVE' &&
+    updated.status === InviteCodeStatus.ACTIVE &&
     maxRedemptions > 0 &&
     updated.redemptionCount >= maxRedemptions
   ) {
     return scanDb.inviteCode.update({
       where: { id },
-      data: { status: 'EXHAUSTED' },
+      data: { status: InviteCodeStatus.EXHAUSTED },
     });
   }
 
