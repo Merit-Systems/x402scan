@@ -69,5 +69,38 @@ export const fetchWithProxy = async (
     finalInit.body = undefined;
   }
 
+  if (
+    normalizedMethod !== 'GET' &&
+    normalizedMethod !== 'HEAD' &&
+    typeof finalInit.body === 'string'
+  ) {
+    const ct = headers.get('content-type') ?? '';
+    const bodyText = finalInit.body;
+
+    const tryParse = (s: string): unknown => {
+      try {
+        return JSON.parse(s) as unknown;
+      } catch {
+        return undefined;
+      }
+    };
+
+    const parsedOnce = tryParse(bodyText);
+    // If body is a JSON string literal whose contents are JSON, unwrap one layer.
+    if (typeof parsedOnce === 'string') {
+      const parsedTwice = tryParse(parsedOnce);
+      if (parsedTwice !== undefined && typeof parsedTwice === 'object') {
+        finalInit.body = parsedOnce;
+        headers.set('Content-Type', 'application/json');
+      }
+    } else if (
+      parsedOnce !== undefined &&
+      typeof parsedOnce === 'object' &&
+      (ct.toLowerCase().startsWith('text/plain') || ct === '')
+    ) {
+      headers.set('Content-Type', 'application/json');
+    }
+  }
+
   return fetch(proxyUrl.toString(), finalInit);
 };
