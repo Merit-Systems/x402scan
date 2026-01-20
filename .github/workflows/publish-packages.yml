@@ -1,4 +1,4 @@
-name: Release SDKs
+name: Publish Packages
 
 on:
   push:
