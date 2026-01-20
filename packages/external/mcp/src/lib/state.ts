@@ -2,6 +2,7 @@ import z from 'zod';
 import fs from 'fs';
 
 import { configFile } from './fs';
+import { log } from './log';
 
 const STATE_FILE = configFile('state.json');
 
@@ -13,10 +14,17 @@ const stateSchema = z
 
 export const getState = () => {
   if (!fs.existsSync(STATE_FILE)) {
-    fs.writeFileSync(STATE_FILE, '{}');
-    return stateSchema.parse({});
+    fs.writeFileSync(STATE_FILE, JSON.stringify({}));
+    return {};
   }
-  return stateSchema.parse(JSON.parse(fs.readFileSync(STATE_FILE, 'utf-8')));
+  const result = stateSchema.safeParse(
+    JSON.parse(fs.readFileSync(STATE_FILE, 'utf-8'))
+  );
+  if (!result.success) {
+    log.error('Failed to parse state', { error: result.error });
+    return {};
+  }
+  return result.data;
 };
 
 export const setState = (state: z.infer<typeof stateSchema>) => {

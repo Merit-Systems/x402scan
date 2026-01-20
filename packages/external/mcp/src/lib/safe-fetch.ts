@@ -13,7 +13,7 @@ type HttpError<E = unknown> = Error<{
   type: 'http';
   status: number;
   headers: Headers;
-  json: E;
+  json: E | undefined;
 }>;
 
 type ParseError = Error<{
@@ -43,14 +43,17 @@ export const safeFetchJson = <T, E = unknown>(
   return safeFetch(input, init).andThen(response => {
     if (!response.ok) {
       return ResultAsync.fromSafePromise(
-        response.json().catch(() => undefined)
+        response.json().catch(() => undefined) as Promise<E | undefined>
       ).andThen(json =>
-        err({
+        err<never, HttpError<E>>({
           type: 'http' as const,
-          message: errorMessage?.(json as E) ?? response.statusText,
+          message:
+            json !== undefined && errorMessage
+              ? errorMessage(json)
+              : response.statusText,
           status: response.status,
           headers: response.headers,
-          json: json as E,
+          json,
         })
       );
     }
