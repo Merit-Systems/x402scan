@@ -389,7 +389,7 @@ export function registerDiscoveryTools(server: McpServer): void {
           ),
       },
     },
-    async ({ url, testResources, concurrency }) => {
+    async ({ url, fanOut, concurrency }) => {
       try {
         const origin = getOrigin(url);
         log.info(`Discovering resources for origin: ${origin}`);
@@ -436,7 +436,7 @@ export function registerDiscoveryTools(server: McpServer): void {
         };
 
         // If not testing resources, just return the URLs from discovery doc
-        if (!testResources) {
+        if (!fanOut) {
           result.resources = doc.resources.map(resourceUrl => ({
             url: resourceUrl,
           }));

@@ -8,8 +8,8 @@ import { ChartCandlestick, ImageIcon, Search } from 'lucide-react';
 import { AnimatedBeam } from '@/components/magicui/animated-beam';
 
 import { cn } from '@/lib/utils';
-import { Clients } from '../../clients/data';
-import { ClientIcon } from '../../clients/icons';
+import { Clients } from '../../../../_components/clients/data';
+import { ClientIcon } from '../../../../_components/clients/icons';
 import { Chip } from './chip';
 
 export const HeroGraphic = () => {
