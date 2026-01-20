@@ -2,7 +2,15 @@
 
 import { Body } from '@/app/_components/layout/page-utils';
 import { Clients } from '@/app/mcp/_components/clients/data';
-import { Globe, Linkedin, MessageSquare, Twitter, UserSearch, Users, Video, } from 'lucide-react';
+import {
+  Globe,
+  Linkedin,
+  MessageSquare,
+  Twitter,
+  UserSearch,
+  Users,
+  Video,
+} from 'lucide-react';
 import { ExamplePrompt } from './_components/example-prompt';
 
 export default function GettingStartedPage() {
@@ -13,10 +21,12 @@ export default function GettingStartedPage() {
           <h1 className="text-4xl font-bold">Getting Started</h1>
           <p className="text-muted-foreground/80 text-lg">
             Tips and example prompts to help you get the most out of{' '}
-            <span className="text-primary font-mono font-bold">x402scan MCP</span>.
+            <span className="text-primary font-mono font-bold">
+              x402scan MCP
+            </span>
+            .
           </p>
         </div>
-
 
         <section className="flex flex-col gap-8">
           <ExamplePrompt
@@ -24,8 +34,8 @@ export default function GettingStartedPage() {
             title="Research an outbound sales lead and personalize your outreach"
             description="Get information for someone you're about to reach out to and personalize your outreach with a hook."
             tools={[
-              { name: 'Twitter', icon: Twitter},
-              { name: 'LinkedIn', icon: Linkedin},
+              { name: 'Twitter', icon: Twitter },
+              { name: 'LinkedIn', icon: Linkedin },
             ]}
             recommendedClient={Clients.Claude}
             prompt={`Goal: Research an outbound sales lead and generate 5 personalized outreach messages based on information you find.
@@ -47,8 +57,8 @@ Generate 5 personalized outreach messages based on their bio and information you
             title="Identify influencers in a niche developer community"
             description="Identify leaders in a developer community and find their most popular projects on GitHub and their top co-contributors."
             tools={[
-              { name: 'Twitter', icon: Twitter},
-              { name: 'LinkedIn', icon: Linkedin},
+              { name: 'Twitter', icon: Twitter },
+              { name: 'LinkedIn', icon: Linkedin },
             ]}
             recommendedClient={Clients.ClaudeCode}
             prompt={`Goal: Identify 20 leaders in the {{Developer Niche|eg. embedded systems, frontend programming}} developer community and find their most popular projects on GitHub and their top co-contributors.

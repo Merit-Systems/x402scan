@@ -10,7 +10,9 @@ import { z } from 'zod';
 import type { RegisterTools } from '@/server/types';
 
 const require = createRequire(import.meta.url);
-const { version: MCP_VERSION } = require('../../../package.json') as { version: string };
+const { version: MCP_VERSION } = require('../../../package.json') as {
+  version: string;
+};
 
 const errorReportSchema = z.object({
   tool: z.string().describe('MCP tool name'),

@@ -33,12 +33,12 @@ function parseTemplateVariables(prompt: string): TemplateVar[] {
   // Return unique template variables (preserving order of first occurrence)
   const seen = new Set<string>();
   return matches
-    .filter((match) => {
+    .filter(match => {
       if (seen.has(match)) return false;
       seen.add(match);
       return true;
     })
-    .map((raw) => {
+    .map(raw => {
       const inner = raw.slice(2, -2);
       const pipeIndex = inner.indexOf('|');
       if (pipeIndex === -1) {
@@ -52,16 +52,23 @@ function parseTemplateVariables(prompt: string): TemplateVar[] {
     });
 }
 
-export function ExamplePrompt({ title, description, prompt, icon: Icon, tools, recommendedClient }: ExamplePromptProps) {
+export function ExamplePrompt({
+  title,
+  description,
+  prompt,
+  icon: Icon,
+  tools,
+  recommendedClient,
+}: ExamplePromptProps) {
   const templateVars = useMemo(() => parseTemplateVariables(prompt), [prompt]);
 
   const [values, setValues] = useState<Record<string, string>>({});
 
   // Sync values state when template variables change
   useEffect(() => {
-    setValues((prev) => {
+    setValues(prev => {
       const updated: Record<string, string> = {};
-      templateVars.forEach((v) => {
+      templateVars.forEach(v => {
         updated[v.raw] = prev[v.raw] ?? '';
       });
       return updated;
@@ -71,7 +78,7 @@ export function ExamplePrompt({ title, description, prompt, icon: Icon, tools, r
   // Plain text version for copying
   const filledPrompt = useMemo(() => {
     let result = prompt;
-    templateVars.forEach((v) => {
+    templateVars.forEach(v => {
       // Replace with value if filled, otherwise show just the label in template syntax
       const replacement = values[v.raw] || `{{${v.label}}}`;
       result = result.replaceAll(v.raw, replacement);
@@ -83,11 +90,11 @@ export function ExamplePrompt({ title, description, prompt, icon: Icon, tools, r
   const renderedPrompt = useMemo(() => {
     if (templateVars.length === 0) return prompt;
 
-    const rawVars = templateVars.map((v) => v.raw);
+    const rawVars = templateVars.map(v => v.raw);
 
     // Build a regex that matches any of the template variables
     const pattern = new RegExp(
-      `(${rawVars.map((v) => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`,
+      `(${rawVars.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`,
       'g'
     );
 
@@ -95,7 +102,7 @@ export function ExamplePrompt({ title, description, prompt, icon: Icon, tools, r
     const result: ReactNode[] = [];
 
     parts.forEach((part, i) => {
-      const templateVar = templateVars.find((v) => v.raw === part);
+      const templateVar = templateVars.find(v => v.raw === part);
       if (templateVar) {
         // Show filled value in blue, or show just the label in template syntax if empty
         const value = values[part];
@@ -126,12 +133,19 @@ export function ExamplePrompt({ title, description, prompt, icon: Icon, tools, r
 
       {hasTemplateVars && (
         <div className="flex flex-wrap gap-3">
-          {templateVars.map((v) => (
-            <div key={v.raw} className="flex flex-col gap-1 flex-1 min-w-[200px]">
-              <label className="text-xs font-medium text-muted-foreground">{v.label}</label>
+          {templateVars.map(v => (
+            <div
+              key={v.raw}
+              className="flex flex-col gap-1 flex-1 min-w-[200px]"
+            >
+              <label className="text-xs font-medium text-muted-foreground">
+                {v.label}
+              </label>
               <Input
                 value={values[v.raw]}
-                onChange={(e) => setValues((prev) => ({ ...prev, [v.raw]: e.target.value }))}
+                onChange={e =>
+                  setValues(prev => ({ ...prev, [v.raw]: e.target.value }))
+                }
                 placeholder={v.example}
               />
             </div>
@@ -140,7 +154,9 @@ export function ExamplePrompt({ title, description, prompt, icon: Icon, tools, r
       )}
 
       <div className="relative rounded-md bg-muted p-3 pr-12">
-        <pre className="whitespace-pre-wrap text-sm font-mono">{renderedPrompt}</pre>
+        <pre className="whitespace-pre-wrap text-sm font-mono">
+          {renderedPrompt}
+        </pre>
         <CopyButton
           text={filledPrompt}
           toastMessage="Prompt copied to clipboard"
@@ -153,7 +169,7 @@ export function ExamplePrompt({ title, description, prompt, icon: Icon, tools, r
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">Tools:</span>
             <div className="flex items-center gap-1.5">
-              {tools.map((tool) => (
+              {tools.map(tool => (
                 <div
                   key={tool.name}
                   className="flex items-center gap-1 text-xs bg-muted px-2 py-1 rounded-md"
@@ -171,7 +187,10 @@ export function ExamplePrompt({ title, description, prompt, icon: Icon, tools, r
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">Best with:</span>
             <div className="flex items-center gap-1.5 text-xs bg-primary/10 text-primary px-2 py-1 rounded-md">
-              <ClientIcon client={recommendedClient} className="size-3.5 fill-current" />
+              <ClientIcon
+                client={recommendedClient}
+                className="size-3.5 fill-current"
+              />
               <span>{clients[recommendedClient].name}</span>
             </div>
           </div>
