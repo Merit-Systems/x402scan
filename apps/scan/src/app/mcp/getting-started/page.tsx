@@ -40,7 +40,7 @@ export default function GettingStartedPage() {
             recommendedClient={Clients.Claude}
             prompt={`Goal: Research an outbound sales lead and generate 5 personalized outreach messages based on information you find.
 
-Get all the additional information you can about {{Name|Sam Altman}}.
+Get all the additional information you can about {{Name|Sam Ragsdale}}.
 
 Use the tools in enrichx402 to get more information about them.
 Look for their twitter handle and see what they like to tweet about.
@@ -61,9 +61,9 @@ Generate 5 personalized outreach messages based on their bio and information you
               { name: 'LinkedIn', icon: Linkedin },
             ]}
             recommendedClient={Clients.ClaudeCode}
-            prompt={`Goal: Identify 20 leaders in the {{Developer Niche|eg. embedded systems, frontend programming}} developer community and find their most popular projects on GitHub and their top co-contributors.
+            prompt={`Goal: Identify 10 leaders in the {{Developer Niche|eg. embedded systems, frontend programming}} developer community and find their most popular projects on GitHub and their top co-contributors.
 
-Use the enrichx402 twitter search to find 20 thought leaders in the space on X. More niche the better. 
+Use the enrichx402 twitter search to find 10 thought leaders in the space on X. More niche the better. 
 For each person, create a subtask to research them individually.
 Find out where they work and any public work they've done, focusing on GitHub.
 
