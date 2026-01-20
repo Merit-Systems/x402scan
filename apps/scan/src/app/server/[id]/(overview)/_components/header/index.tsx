@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { HeaderButtons, LoadingHeaderButtons } from './buttons';
 
 import type { RouterOutputs } from '@/trpc/client';
+import { X402V2Badge } from '@/app/_components/x402/v2-badge';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
@@ -32,9 +33,14 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
       <div className="grid grid-cols-1 md:grid-cols-7">
         <div className="flex flex-col gap-4 p-4 pt-8 md:pt-10 col-span-5">
           <div className="">
-            <h1 className="text-xl md:text-3xl font-bold break-words line-clamp-2">
-              {origin.title ?? new URL(origin.origin).hostname}
-            </h1>
+            <div className="flex items-start gap-2 min-w-0">
+              <h1 className="text-xl md:text-3xl font-bold wrap-break-word line-clamp-2 min-w-0">
+                {origin.title ?? new URL(origin.origin).hostname}
+              </h1>
+              {origin.hasX402V2Resource && (
+                <X402V2Badge className="mt-1 shrink-0" />
+              )}
+            </div>
             <div className="flex items-center gap-2">
               <a
                 href={origin.origin}
@@ -47,7 +53,7 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
             </div>
             <p
               className={cn(
-                'break-words line-clamp-2 text-sm md:text-base',
+                'wrap-break-word line-clamp-2 text-sm md:text-base',
                 !origin.description
                   ? 'text-muted-foreground/60'
                   : 'text-muted-foreground'
