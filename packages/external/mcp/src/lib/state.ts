@@ -6,7 +6,7 @@ import { configFile } from './fs';
 const STATE_FILE = configFile('state.json');
 
 const stateSchema = z
-  .object({
+  .looseObject({
     redeemedCodes: z.array(z.string()),
   })
   .partial();
