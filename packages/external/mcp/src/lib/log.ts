@@ -2,17 +2,12 @@
  * Logger - writes to ~/.x402scan-mcp/mcp.log and stderr
  */
 
-import { appendFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
-import { homedir } from 'os';
+import { appendFileSync } from 'fs';
 
-const LOG_DIR = join(homedir(), '.x402scan-mcp');
-const LOG_FILE = join(LOG_DIR, 'mcp.log');
+import { configFile } from './fs';
+
+const LOG_FILE = configFile('mcp.log');
 const DEBUG = process.env.X402_DEBUG === 'true';
-
-try {
-  mkdirSync(LOG_DIR, { recursive: true });
-} catch {}
 
 function format(args: unknown[]): string {
   return args

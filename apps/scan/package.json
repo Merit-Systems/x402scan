@@ -95,6 +95,7 @@
     "ioredis": "^5.8.2",
     "lucide-react": "catalog:",
     "motion": "catalog:",
+    "neverthrow": "^8.2.0",
     "next": "catalog:next",
     "next-auth": "5.0.0-beta.29",
     "next-themes": "catalog:next",

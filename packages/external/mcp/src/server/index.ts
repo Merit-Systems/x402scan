@@ -15,11 +15,22 @@ import { getWallet } from '@/lib/wallet';
 
 import type { Command } from '@/types';
 import { registerDiscoveryTools } from './tools/discover-resources';
+import { redeemInviteCode } from '@/lib/redeem-invite';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
 
+  const { dev, invite } = flags;
+
   const { account } = await getWallet();
+
+  if (invite) {
+    await redeemInviteCode({
+      code: invite,
+      dev,
+      address: account.address,
+    });
+  }
 
   const server = new McpServer(
     {

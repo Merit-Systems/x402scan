@@ -9,8 +9,6 @@ import z from 'zod';
 
 import { randomBytes } from 'crypto';
 import * as fs from 'fs/promises';
-import { join } from 'path';
-import { homedir } from 'os';
 
 import { privateKeyToAccount } from 'viem/accounts';
 
@@ -20,9 +18,9 @@ import {
   ethereumPrivateKeySchema,
 } from '../server/lib/schemas';
 import type { Hex } from 'viem';
+import { configFile } from './fs';
 
-const KEYSTORE_DIR = join(homedir(), '.x402scan-mcp');
-const KEYSTORE_FILE = join(KEYSTORE_DIR, 'wallet.json');
+const WALLET_FILE = configFile('wallet.json');
 
 const storedWalletSchema = z.object({
   privateKey: ethereumPrivateKeySchema,
@@ -40,7 +38,7 @@ export async function getWallet() {
 
   // Try loading existing
   try {
-    const data = await fs.readFile(KEYSTORE_FILE, 'utf-8');
+    const data = await fs.readFile(WALLET_FILE, 'utf-8');
     const stored = storedWalletSchema.parse(JSON.parse(data));
     const account = privateKeyToAccount(stored.privateKey);
     log.info(`Loaded wallet: ${account.address}`);
@@ -58,13 +56,12 @@ export async function getWallet() {
     createdAt: new Date().toISOString(),
   };
 
-  await fs.mkdir(KEYSTORE_DIR, { recursive: true });
-  await fs.writeFile(KEYSTORE_FILE, JSON.stringify(stored, null, 2));
+  await fs.writeFile(WALLET_FILE, JSON.stringify(stored, null, 2));
   try {
-    await fs.chmod(KEYSTORE_FILE, 0o600);
+    await fs.chmod(WALLET_FILE, 0o600);
   } catch {}
 
   log.info(`Created wallet: ${account.address}`);
-  log.info(`Saved to: ${KEYSTORE_FILE}`);
+  log.info(`Saved to: ${WALLET_FILE}`);
   return { account, isNew: true };
 }

@@ -16,6 +16,16 @@ export const inviteRouter = createTRPCRouter({
   redeem: publicProcedure
     .input(redeemInviteCodeSchema)
     .mutation(async ({ input }) => {
-      return redeemInviteCode(input);
+      const result = await redeemInviteCode(input);
+      return result.match(
+        data => ({
+          success: true as const,
+          data,
+        }),
+        error => ({
+          success: false as const,
+          error: error.message,
+        })
+      );
     }),
 });
