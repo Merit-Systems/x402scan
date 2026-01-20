@@ -10,6 +10,10 @@ import {
 import { inviteWallets } from '@/services/cdp/server-wallet/invite';
 import { usdc } from '@/lib/tokens/usdc';
 import { Chain } from '@/types/chain';
+import { getBalance, readContract } from 'wagmi/actions';
+import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
+import { erc20Abi, formatEther } from 'viem';
+import { convertTokenAmount } from '@/lib/token';
 
 export const adminInviteCodesRouter = createTRPCRouter({
   list: adminProcedure
@@ -104,17 +108,23 @@ export const adminInviteCodesRouter = createTRPCRouter({
         };
       }
 
-      // Fetch both USDC and ETH balances
-      const [usdcBalance, ethBalance] = await Promise.all([
-        wallet.getTokenBalance({ token }),
-        wallet.getNativeTokenBalance(),
+      // Fetch balances directly using the address we already have
+      const wagmiConfig = createWagmiConfig();
+      const [usdcBalanceRaw, ethBalanceRaw] = await Promise.all([
+        readContract(wagmiConfig, {
+          abi: erc20Abi,
+          address: token.address as `0x${string}`,
+          args: [address],
+          functionName: 'balanceOf',
+        }),
+        getBalance(wagmiConfig, { address }),
       ]);
 
       return {
         configured: true,
         address,
-        usdcBalance,
-        ethBalance,
+        usdcBalance: convertTokenAmount(usdcBalanceRaw),
+        ethBalance: parseFloat(formatEther(ethBalanceRaw.value)),
         chain: Chain.BASE,
       };
     } catch (error) {

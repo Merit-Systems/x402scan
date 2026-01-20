@@ -14,15 +14,8 @@ import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
 export const evmServerWallet =
   <T extends EvmChain>(chain: T): NetworkServerWallet<EvmChain> =>
   (name: string) => {
-    let accountPromise: ReturnType<
-      typeof cdpClient.evm.getOrCreateAccount
-    > | null = null;
-
     const getAccount = async () => {
-      if (!accountPromise) {
-        accountPromise = cdpClient.evm.getOrCreateAccount({ name });
-      }
-      return accountPromise;
+      return await cdpClient.evm.getOrCreateAccount({ name });
     };
 
     const getAddress = async () => (await getAccount()).address;
