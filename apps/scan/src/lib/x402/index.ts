@@ -224,6 +224,37 @@ function getOutputSchemaFromBazaar(
     }
   }
 
+  // Enrich queryParams with schema if info.queryParams is missing/empty (GET endpoints)
+  if (bazaar.schema) {
+    const qpVal = input.queryParams;
+    const qpObj =
+      qpVal && typeof qpVal === 'object' && !Array.isArray(qpVal)
+        ? (qpVal as Record<string, unknown>)
+        : undefined;
+    const qpHasProperties = qpObj ? 'properties' in qpObj : false;
+    const qpKeys = qpObj ? Object.keys(qpObj) : [];
+
+    if (
+      !qpHasProperties &&
+      (qpVal === undefined || qpVal === null || qpKeys.length === 0)
+    ) {
+      const schema = bazaar.schema as {
+        properties?: { input?: { properties?: { queryParams?: unknown } } };
+      };
+      const querySchema = schema.properties?.input?.properties?.queryParams;
+      const querySchemaObj =
+        querySchema && typeof querySchema === 'object'
+          ? (querySchema as Record<string, unknown>)
+          : undefined;
+      if (querySchemaObj && 'properties' in querySchemaObj) {
+        return {
+          input: { ...input, queryParams: querySchemaObj },
+          output: info.output,
+        } as unknown as OutputSchema;
+      }
+    }
+  }
+
   return { input: info.input, output: info.output } as OutputSchema;
 }
 
