@@ -39,7 +39,7 @@ export default function GettingStartedPage() {
             recommendedClient={Clients.Claude}
             prompt={`Goal: Research an outbound sales lead and generate 5 personalized outreach messages based on information you find.
 
-Get all the additional information you can about {{Name|Sam Ragsdale}}.
+Get all the additional information you can about the key decision maker at {{Company Name|Merit Systems}}.
 
 Use the tools in enrichx402 to get more information about them.
 Look for their twitter handle and see what they like to tweet about.

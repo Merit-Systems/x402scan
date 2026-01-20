@@ -76,7 +76,7 @@ export function ExamplePrompt({
     let result = prompt;
     templateVars.forEach(v => {
       // Replace with value if filled, otherwise show just the label in template syntax
-      const replacement = values[v.raw] ?? `{{${v.label}}}`;
+      const replacement = values[v.raw] ? values[v.raw] : `{{${v.label}}}`;
       result = result.replaceAll(v.raw, replacement);
     });
     return result;
@@ -104,7 +104,7 @@ export function ExamplePrompt({
         const value = values[part];
         result.push(
           <span key={i} className="text-primary font-semibold">
-            {value ?? `{{${templateVar.label}}}`}
+            {value ? value : `{{${templateVar.label}}}`}
           </span>
         );
       } else {
@@ -138,7 +138,7 @@ export function ExamplePrompt({
                 {v.label}
               </label>
               <Input
-                value={values[v.raw]}
+                value={values[v.raw] ?? ''}
                 onChange={e =>
                   setValues(prev => ({ ...prev, [v.raw]: e.target.value }))
                 }
