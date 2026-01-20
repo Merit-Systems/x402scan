@@ -56,6 +56,17 @@ export function Form({
   );
   const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>({});
 
+  const sendQueryValuesInJsonBodyFallback = useMemo(() => {
+    const m = method.toString().toUpperCase();
+    if (m === 'GET' || m === 'HEAD') return false;
+    // If the schema only exposes "query" fields for a non-GET request, many upstream
+    // handlers still expect JSON bodies (common in x402 resources). In that case,
+    // mirror the query values into the JSON body so `req.body` isn't undefined.
+    if (bodyFields.length > 0) return false;
+    if (queryFields.length === 0) return false;
+    return true;
+  }, [method, bodyFields.length, queryFields.length]);
+
   const handleQueryChange = (name: string, value: FieldValue) => {
     setQueryValues(prev => ({ ...prev, [name]: value }));
   };
@@ -101,10 +112,24 @@ export function Form({
   }, [resource, queryValues]);
 
   const requestInit = useMemo((): RequestInit => {
-    const bodyEntries = Object.entries(bodyValues).reduce<
+    const allBodyValues = sendQueryValuesInJsonBodyFallback
+      ? { ...queryValues, ...bodyValues }
+      : bodyValues;
+
+    const fieldIndex = new Map<string, (typeof bodyFields)[number]>();
+    for (const f of [
+      ...bodyFields,
+      ...(sendQueryValuesInJsonBodyFallback ? queryFields : []),
+    ]) {
+      if (typeof f.name === 'string' && f.name.length > 0) {
+        fieldIndex.set(f.name, f);
+      }
+    }
+
+    const bodyEntries = Object.entries(allBodyValues).reduce<
       [string, FieldValue | number | boolean][]
     >((acc, [key, value]) => {
-      const field = bodyFields.find(f => f.name === key);
+      const field = fieldIndex.get(key);
       const fieldType = field?.type;
 
       if (Array.isArray(value)) {
@@ -138,7 +163,14 @@ export function Form({
       body:
         bodyEntries.length > 0 ? JSON.stringify(reconstructedBody) : undefined,
     };
-  }, [method, bodyValues, bodyFields]);
+  }, [
+    method,
+    queryValues,
+    bodyValues,
+    bodyFields,
+    queryFields,
+    sendQueryValuesInJsonBodyFallback,
+  ]);
 
   const supportedChains = useMemo(() => {
     const networks = x402Response.accepts?.map(a => a.network ?? '') ?? [];

@@ -48,13 +48,28 @@ export const fetchWithProxy = async (
 
   const headers = new Headers(effectiveInit?.headers);
 
+  const bodyString =
+    typeof restInit.body === 'string' ? restInit.body.trim() : undefined;
+  const looksLikeJson =
+    typeof bodyString === 'string' &&
+    bodyString.length > 0 &&
+    ((bodyString.startsWith('{') && bodyString.endsWith('}')) ||
+      (bodyString.startsWith('[') && bodyString.endsWith(']')));
+
   if (
     normalizedMethod !== 'GET' &&
     normalizedMethod !== 'HEAD' &&
     restInit.body
   ) {
-    if (!headers.has('Content-Type')) {
-      headers.set('Content-Type', 'application/json');
+    const ct = headers.get('Content-Type');
+    // Some wrappers (e.g. payment wrappers) default string bodies to text/plain.
+    // If we are sending JSON, force application/json so upstream body parsers run.
+    if (!ct || ct.toLowerCase().startsWith('text/plain')) {
+      if (looksLikeJson) {
+        headers.set('Content-Type', 'application/json');
+      } else if (!ct) {
+        headers.set('Content-Type', 'application/json');
+      }
     }
   }
 

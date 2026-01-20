@@ -33,7 +33,6 @@ import {
   createDummyResources,
 } from '@/app/developer/_components/dummy';
 
-import { getOutputSchema } from '@/lib/x402';
 import type {
   FailedResource as FailedResourceType,
   TestedResource as TestedResourceType,
@@ -414,35 +413,15 @@ export function DiscoveryPanel({
                   const invalidInfo = invalidResourcesMap[resourceUrl];
 
                   if (tested) {
-                    // Check if we have a valid schema for ResourceExecutor
-                    const outputSchema = getOutputSchema(tested.parsed);
-                    const hasValidSchema = Boolean(outputSchema?.input);
-
-                    if (hasValidSchema) {
-                      // Render working resource with ResourceExecutor
-                      return (
-                        <DiscoveredResourceExecutor
-                          key={resourceUrl}
-                          resourceUrl={resourceUrl}
-                          tested={tested}
-                          idx={idx}
-                          preview={preview}
-                          invalidInfo={invalidInfo}
-                          verifiedAddresses={verifiedAddresses}
-                        />
-                      );
-                    }
-
-                    // x402 parses but no input schema - show as incomplete
                     return (
-                      <FailedResourceCard
+                      <DiscoveredResourceExecutor
                         key={resourceUrl}
                         resourceUrl={resourceUrl}
                         preview={preview}
-                        testedResponse={tested}
+                        tested={tested}
                         invalidInfo={invalidInfo}
                         verifiedAddresses={verifiedAddresses}
-                        onRetry={onRetryResource}
+                        idx={idx}
                       />
                     );
                   }
@@ -456,7 +435,6 @@ export function DiscoveryPanel({
                       preview={preview}
                       failedDetails={failedDetails}
                       invalidInfo={invalidInfo}
-                      verifiedAddresses={verifiedAddresses}
                       onRetry={onRetryResource}
                     />
                   );
@@ -534,7 +512,7 @@ export function DiscoveryPanel({
  * Compute verification status for a specific resource based on its payTo addresses
  */
 function getResourceVerificationStatus(
-  parsed: TestedResource['parsed'],
+  parsed: TestedResource['validation']['parsed'],
   verifiedAddresses: Record<string, boolean>
 ): { verified: boolean; partial: boolean; addresses: string[] } {
   const addresses: string[] = [];
@@ -579,13 +557,13 @@ function DiscoveredResourceExecutor({
   invalidInfo?: { invalid: boolean; reason?: string };
   verifiedAddresses?: Record<string, boolean>;
 }) {
-  const outputSchema = getOutputSchema(tested.parsed);
+  const outputSchema = tested.validation.outputSchema;
   const method =
     (outputSchema?.input?.method?.toUpperCase() as Methods) ??
     (tested.method as Methods);
 
   const verificationStatus = getResourceVerificationStatus(
-    tested.parsed,
+    tested.validation.parsed,
     verifiedAddresses
   );
 
@@ -637,7 +615,7 @@ function DiscoveredResourceExecutor({
         originId: 'discovered',
       })}
       tags={[]}
-      response={tested.parsed}
+      response={tested.validation.parsed}
       bazaarMethod={method}
       hideOrigin
       isFlat={false}
@@ -652,18 +630,13 @@ function FailedResourceCard({
   resourceUrl,
   preview,
   failedDetails,
-  testedResponse,
   invalidInfo,
-  verifiedAddresses = {},
   onRetry,
 }: {
   resourceUrl: string;
   preview?: OriginPreview | null;
   failedDetails?: FailedResource;
-  /** If provided, x402 parsed successfully but is missing schema */
-  testedResponse?: TestedResource;
   invalidInfo?: { invalid: boolean; reason?: string };
-  verifiedAddresses?: Record<string, boolean>;
   onRetry?: (url: string) => Promise<void>;
 }) {
   const [showDetails, setShowDetails] = useState(false);
@@ -678,31 +651,18 @@ function FailedResourceCard({
     }
   })();
 
-  // If we have a tested response, x402 parsed but missing schema
-  const x402Parsed = Boolean(testedResponse);
-  const hasAccepts = x402Parsed
-    ? Boolean(testedResponse?.parsed?.accepts?.length)
-    : false;
-  const outputSchema = testedResponse
-    ? getOutputSchema(testedResponse.parsed)
-    : null;
-  const hasInputSchema = Boolean(outputSchema?.input);
-  const hasOutputSchema = Boolean(outputSchema?.output);
-
-  // Compute per-resource verification status
-  const verificationStatus = testedResponse
-    ? getResourceVerificationStatus(testedResponse.parsed, verifiedAddresses)
-    : { verified: false, partial: false, addresses: [] };
-  const resourceOwnershipVerified = verificationStatus.verified;
+  const x402Parsed = false;
+  const hasAccepts = false;
+  const hasInputSchema = false;
+  const hasOutputSchema = false;
+  const resourceOwnershipVerified = false;
 
   // Determine checklist status based on error details or tested response
-  const returns402 = x402Parsed || failedDetails?.status === 402;
+  const returns402 = failedDetails?.status === 402;
   const isInvalid = invalidInfo?.invalid ?? false;
   const errorMessage = isInvalid
     ? (invalidInfo?.reason ?? 'Invalid format')
-    : x402Parsed
-      ? 'Missing input schema'
-      : (failedDetails?.error ?? 'Unknown error');
+    : (failedDetails?.error ?? 'Unknown error');
 
   return (
     <div className="pl-4 border-l pt-4 relative">
@@ -874,7 +834,7 @@ function FailedResourceCard({
             })()}
 
             {/* Raw response - nested collapsible */}
-            {(failedDetails?.body !== undefined || testedResponse?.parsed) && (
+            {failedDetails?.body !== undefined && (
               <div className="border rounded-md bg-muted/30">
                 <button
                   type="button"
@@ -891,11 +851,9 @@ function FailedResourceCard({
                 </button>
                 {showRawResponse && (
                   <pre className="text-xs overflow-auto max-h-48 bg-background p-2 mx-2 mb-2 rounded border">
-                    {testedResponse?.parsed
-                      ? JSON.stringify(testedResponse.parsed, null, 2)
-                      : typeof failedDetails?.body === 'string'
-                        ? failedDetails.body
-                        : JSON.stringify(failedDetails?.body, null, 2)}
+                    {typeof failedDetails?.body === 'string'
+                      ? failedDetails.body
+                      : JSON.stringify(failedDetails?.body, null, 2)}
                   </pre>
                 )}
               </div>
