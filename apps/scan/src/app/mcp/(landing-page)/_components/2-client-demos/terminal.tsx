@@ -8,13 +8,14 @@ import { CircleDot } from 'lucide-react';
 import { ClientTypes } from '../../../_components/clients/data';
 import { CopyCommandButton } from '../lib/copy-button';
 import { ClientDemosSection } from './section';
+import type { McpSearchParams } from '../../_lib/params';
 
-export const TerminalDemo = () => {
+export const TerminalDemo: React.FC<McpSearchParams> = props => {
   return (
     <ClientDemosSection
       heading="In Your Terminal"
       description="Give your favorite agent harness payment capabilities"
-      cta={<CopyCommandButton />}
+      cta={<CopyCommandButton {...props} />}
       graphic={<TerminalGraphic />}
       imageSide="right"
       clientType={ClientTypes.TERMINAL}

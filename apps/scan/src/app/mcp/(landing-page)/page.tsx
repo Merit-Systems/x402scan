@@ -9,8 +9,8 @@ export default async function McpPage({ searchParams }: PageProps<'/mcp'>) {
 
   return (
     <div className="flex flex-col gap-24 md:gap-36 py-12 md:py-16 px-4 max-w-full md:max-w-7xl mx-auto w-full">
-      <Hero inviteCode={parsed.data?.invite} />
-      <ClientDemos />
+      <Hero {...parsed.data} />
+      <ClientDemos {...parsed.data} />
       <Integrations />
       <Contact />
     </div>

@@ -11,27 +11,23 @@ import { clientInstall } from './client-install';
 import { clients } from '../../../../_components/clients/data';
 
 import type { Clients as ClientsEnum } from '../../../../_components/clients/data';
+import type { McpSearchParams } from '../../../_lib/params';
 
-interface Props {
+interface Props extends McpSearchParams {
   client: ClientsEnum;
   reset: () => void;
-  inviteCode?: string;
 }
 
 export const SelectedClient: React.FC<Props> = ({
   client,
   reset,
-  inviteCode,
+  ...props
 }) => {
   const ClientInstall = clientInstall[client];
   const { name } = clients[client];
 
-  if (!ClientInstall) {
-    return null;
-  }
-
-  const command = inviteCode
-    ? `npx @x402scan/mcp install --client ${client} --invite ${inviteCode}`
+  const command = props.invite
+    ? `npx @x402scan/mcp install --client ${client} --invite ${props.invite}`
     : `npx @x402scan/mcp install --client ${client}`;
 
   return (
@@ -61,12 +57,16 @@ export const SelectedClient: React.FC<Props> = ({
             textClassName="text-xs"
           />
         </div>
-        <TextSeparator
-          text="or"
-          separatorClassName="bg-border"
-          textClassName="text-muted-foreground"
-        />
-        <ClientInstall />
+        {ClientInstall && (
+          <>
+            <TextSeparator
+              text="or"
+              separatorClassName="bg-border"
+              textClassName="text-muted-foreground"
+            />
+            <ClientInstall {...props} />
+          </>
+        )}
       </div>
     </div>
   );

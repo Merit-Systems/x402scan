@@ -9,19 +9,17 @@ import { Card } from '@/components/ui/card';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { cn } from '@/lib/utils';
 
-interface Props {
+import type { McpSearchParams } from '../../_lib/params';
+
+interface Props extends McpSearchParams {
   className?: string;
-  inviteCode?: string;
 }
 
-export const CopyCommandButton: React.FC<Props> = ({
-  inviteCode,
-  className,
-}) => {
+export const CopyCommandButton: React.FC<Props> = ({ invite, className }) => {
   const { isCopied, copyToClipboard } = useCopyToClipboard();
 
-  const command = inviteCode
-    ? `npx @x402scan/mcp install --invite ${inviteCode}`
+  const command = invite
+    ? `npx @x402scan/mcp install --invite ${invite}`
     : 'npx @x402scan/mcp install';
 
   return (

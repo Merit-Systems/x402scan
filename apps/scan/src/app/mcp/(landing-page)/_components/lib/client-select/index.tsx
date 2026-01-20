@@ -14,17 +14,17 @@ import { SelectedClient } from './selected';
 
 import type { Clients } from '../../../../_components/clients/data';
 import type { ClientTypes } from '../../../../_components/clients/data';
+import type { McpSearchParams } from '../../../_lib/params';
 
-interface Props {
+interface Props extends McpSearchParams {
   text?: string;
   clientType?: ClientTypes;
-  inviteCode?: string;
 }
 
 export const ClientSelect: React.FC<Props> = ({
   text = 'Get Started',
   clientType,
-  inviteCode,
+  ...props
 }) => {
   const [selectedClient, setSelectedClient] = useState<Clients | null>(null);
 
@@ -48,7 +48,7 @@ export const ClientSelect: React.FC<Props> = ({
           <SelectedClient
             client={selectedClient}
             reset={() => setSelectedClient(null)}
-            inviteCode={inviteCode}
+            {...props}
           />
         ) : (
           <ClientsSelect
