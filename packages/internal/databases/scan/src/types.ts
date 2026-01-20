@@ -28,6 +28,8 @@ export type {
   UserAcknowledgement,
   ResourceOriginMetrics,
   ResourceMetrics,
+  InviteCode,
+  InviteRedemption,
 } from '../generated/prisma/browser';
 
 export {
@@ -38,4 +40,6 @@ export {
   SessionStatus,
   ServerWalletType,
   Visibility,
+  InviteCodeStatus,
+  RedemptionStatus,
 } from '../generated/prisma/browser';
