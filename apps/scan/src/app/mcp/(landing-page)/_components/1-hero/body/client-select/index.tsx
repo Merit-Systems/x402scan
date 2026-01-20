@@ -14,7 +14,11 @@ import { SelectedClient } from './selected';
 
 import type { Clients } from '../../../../../_components/clients/data';
 
-export const ClientSelect = () => {
+interface Props {
+  inviteCode?: string;
+}
+
+export const ClientSelect: React.FC<Props> = ({ inviteCode }) => {
   const [selectedClient, setSelectedClient] = useState<Clients | null>(null);
 
   return (
@@ -34,6 +38,7 @@ export const ClientSelect = () => {
           <SelectedClient
             client={selectedClient}
             reset={() => setSelectedClient(null)}
+            inviteCode={inviteCode}
           />
         ) : (
           <ClientsSelect onClientSelect={setSelectedClient} />

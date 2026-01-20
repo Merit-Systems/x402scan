@@ -8,13 +8,21 @@ import { Card } from '@/components/ui/card';
 
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 
-export const CopyCommandButton = () => {
+interface Props {
+  inviteCode?: string;
+}
+
+export const CopyCommandButton: React.FC<Props> = ({ inviteCode }) => {
   const { isCopied, copyToClipboard } = useCopyToClipboard();
+
+  const command = inviteCode
+    ? `npx @x402scan/mcp install --invite ${inviteCode}`
+    : 'npx @x402scan/mcp install';
 
   return (
     <Card
       className="h-12 flex gap-4 items-center w-fit rounded-xl px-4 cursor-pointer"
-      onClick={() => void copyToClipboard('npx @x402scan/mcp install')}
+      onClick={() => void copyToClipboard(command)}
     >
       <span className="font-mono font-semibold">
         npx <span className="text-primary">@x402scan/mcp</span> install
