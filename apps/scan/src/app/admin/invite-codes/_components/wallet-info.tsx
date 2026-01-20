@@ -80,23 +80,21 @@ export const WalletInfo = () => {
           <CardTitle>{CHAIN_LABELS[data.chain]} Invite Wallet</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-2">
-            <code className="text-sm bg-muted p-2 rounded block break-all flex-1">
-              {data.address}
-            </code>
+          <code className="text-sm bg-muted p-2 rounded flex items-center gap-2">
+            <span className="break-all flex-1">{data.address}</span>
             <Button
               variant="ghost"
               size="icon"
               onClick={copyAddress}
-              className="shrink-0"
+              className="shrink-0 h-6 w-6"
             >
               {copied ? (
-                <Check className="h-4 w-4" />
+                <Check className="h-3 w-3" />
               ) : (
-                <Copy className="h-4 w-4" />
+                <Copy className="h-3 w-3" />
               )}
             </Button>
-          </div>
+          </code>
         </CardContent>
       </Card>
       <Card>
