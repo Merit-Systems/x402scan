@@ -23,7 +23,7 @@ export const ClientSelect: React.FC<Props> = ({ inviteCode }) => {
 
   return (
     <Popover>
-      <PopoverTrigger>
+      <PopoverTrigger asChild>
         <Button
           size="xl"
           className="w-fit font-semibold px-4 md:px-8 text-sm md:text-base"

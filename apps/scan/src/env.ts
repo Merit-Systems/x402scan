@@ -36,6 +36,7 @@ export const env = createEnv({
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
     STRIPE_SECRET_KEY: z.string(),
+    DISCORD_TELEMETRY_WEBHOOK_URL: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
