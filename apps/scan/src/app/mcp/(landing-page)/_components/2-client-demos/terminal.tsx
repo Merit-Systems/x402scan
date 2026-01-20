@@ -26,7 +26,7 @@ export const TerminalDemo = () => {
 const TerminalGraphic = () => {
   return (
     <div className="flex flex-col gap-4 items-center p-4 w-full">
-      <Terminal className="h-64 w-full">
+      <Terminal className="h-fit md:h-80 w-full max-h-none">
         <TypingAnimation duration={10} className="border px-4 py-2 rounded-sm">
           Create a logo for my app and add it to the site
         </TypingAnimation>

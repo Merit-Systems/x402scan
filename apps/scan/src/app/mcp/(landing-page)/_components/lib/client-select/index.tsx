@@ -12,9 +12,18 @@ import {
 import { ClientsSelect } from './select';
 import { SelectedClient } from './selected';
 
-import type { Clients } from '../../../../../_components/clients/data';
+import type { Clients } from '../../../../_components/clients/data';
+import type { ClientTypes } from '../../../../_components/clients/data';
 
-export const ClientSelect = () => {
+interface Props {
+  text?: string;
+  clientType?: ClientTypes;
+}
+
+export const ClientSelect: React.FC<Props> = ({
+  text = 'Get Started',
+  clientType,
+}) => {
   const [selectedClient, setSelectedClient] = useState<Clients | null>(null);
 
   return (
@@ -24,7 +33,7 @@ export const ClientSelect = () => {
           size="xl"
           className="w-fit font-semibold px-4 md:px-8 text-sm md:text-base"
         >
-          Get Started
+          {text}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -39,7 +48,10 @@ export const ClientSelect = () => {
             reset={() => setSelectedClient(null)}
           />
         ) : (
-          <ClientsSelect onClientSelect={setSelectedClient} />
+          <ClientsSelect
+            onClientSelect={setSelectedClient}
+            clientType={clientType}
+          />
         )}
       </PopoverContent>
     </Popover>

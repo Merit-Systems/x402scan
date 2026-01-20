@@ -9,7 +9,7 @@ export const CodexInstall = () => {
         toastMessage="Codex MCP install command copied to clipboard"
         className="w-full"
         copyButtonClassName="bg-transparent shadow-none border-0"
-        textClassName="text-sm"
+        textClassName="text-xs"
       />
     </div>
   );

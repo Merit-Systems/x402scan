@@ -1,5 +1,5 @@
 import { CopyCommandButton } from '../../lib/copy-button';
-import { ClientSelect } from './client-select';
+import { ClientSelect } from './../../lib/client-select';
 
 export const HeroBody = () => {
   return (
@@ -13,7 +13,7 @@ export const HeroBody = () => {
       </div>
       <div className="flex gap-2 md:gap-4 justify-start items-start md:items-center">
         <ClientSelect />
-        <CopyCommandButton />
+        <CopyCommandButton className="flex-1 md:flex-none px-0 md:px-4" />
       </div>
     </div>
   );

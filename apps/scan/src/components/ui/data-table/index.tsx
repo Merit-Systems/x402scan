@@ -102,9 +102,9 @@ export function DataTable<TData, TValue, AppRoute extends string>({
 
   return (
     <div className="flex flex-col gap-2">
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden bg-card dark:bg-muted/80">
         <Table>
-          <TableHeader className="bg-muted">
+          <TableHeader className="bg-muted dark:bg-card">
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {

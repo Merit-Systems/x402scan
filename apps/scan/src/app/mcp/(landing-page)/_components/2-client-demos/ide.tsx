@@ -1,24 +1,20 @@
 'use client';
 
 import { Logo } from '@/components/logo';
-import { Button } from '@/components/ui/button';
 import { Code } from '@/components/ui/code';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { File, FileCode2, X } from 'lucide-react';
 
 import { ClientDemosSection } from './section';
 import { ClientTypes } from '../../../_components/clients/data';
+import { ClientSelect } from '../lib/client-select';
 
 export const IdeDemo = () => {
   return (
     <ClientDemosSection
       heading="In Your IDE"
       description="Integrate any x402 resource into your coding workflow with automatic micropayments"
-      cta={
-        <Button size="xl" className="w-fit font-semibold">
-          Add to Cursor
-        </Button>
-      }
+      cta={<ClientSelect text="Install" clientType={ClientTypes.IDE} />}
       graphic={<IdeGraphic />}
       imageSide="left"
       clientType={ClientTypes.IDE}
@@ -50,7 +46,7 @@ console.log(data);`;
 
 const IdeGraphic = () => {
   return (
-    <div className="flex flex-col md:flex-row h-96 bg-background rounded-xl overflow-hidden border border-border/50">
+    <div className="flex flex-col md:flex-row h-fit md:h-96 bg-background rounded-xl overflow-hidden border border-border/50">
       <div className="flex flex-col md:flex-1 md:overflow-hidden w-full md:w-0">
         <div className="flex items-center bg-muted/50 border-b border-border/50">
           <div className="flex items-center gap-2 px-3 py-2 bg-background border-r border-border/50 text-xs">
@@ -63,7 +59,7 @@ const IdeGraphic = () => {
             <span>index.ts</span>
           </div>
         </div>
-        <ScrollArea className="h-48 md:flex-1 md:h-0">
+        <ScrollArea className="h-fit md:flex-1 md:h-0">
           <div className="w-full overflow-x-auto max-w-full">
             <Code value={codeContent} lang="typescript" />
           </div>
