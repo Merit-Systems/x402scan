@@ -92,7 +92,6 @@ export const useX402FetchWithPriceConfirmation = <TData = unknown>({
 
       // Make actual payment
       const fetchWithPayment = wrapperFn(fetchFn);
-
       const response = await fetchWithPayment(targetUrl, init);
 
       if (!response.ok) {
