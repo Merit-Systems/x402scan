@@ -15,15 +15,24 @@ import type { Clients as ClientsEnum } from '../../../../_components/clients/dat
 interface Props {
   client: ClientsEnum;
   reset: () => void;
+  inviteCode?: string;
 }
 
-export const SelectedClient: React.FC<Props> = ({ client, reset }) => {
+export const SelectedClient: React.FC<Props> = ({
+  client,
+  reset,
+  inviteCode,
+}) => {
   const ClientInstall = clientInstall[client];
   const { name } = clients[client];
 
   if (!ClientInstall) {
     return null;
   }
+
+  const command = inviteCode
+    ? `npx @x402scan/mcp install --client ${client} --invite ${inviteCode}`
+    : `npx @x402scan/mcp install --client ${client}`;
 
   return (
     <div className="flex flex-col">
@@ -45,7 +54,7 @@ export const SelectedClient: React.FC<Props> = ({ client, reset }) => {
         <div className="flex flex-col gap-1">
           <p className="text-sm font-medium">Quick Install</p>
           <CopyCode
-            code={`npx @x402scan/mcp install --client ${client}`}
+            code={command}
             toastMessage="MCP install command copied to clipboard"
             className="w-full"
             copyButtonClassName="bg-transparent shadow-none border-0"

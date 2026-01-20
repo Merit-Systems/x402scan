@@ -1,7 +1,11 @@
 import { CopyCommandButton } from '../../lib/copy-button';
 import { ClientSelect } from './../../lib/client-select';
 
-export const HeroBody = () => {
+interface Props {
+  inviteCode?: string;
+}
+
+export const HeroBody: React.FC<Props> = ({ inviteCode }) => {
   return (
     <div className="flex flex-col justify-center gap-6 md:gap-8">
       <div className="flex flex-col gap-4 md:gap-6 justify-center">
@@ -12,8 +16,11 @@ export const HeroBody = () => {
         </p>
       </div>
       <div className="flex gap-2 md:gap-4 justify-start items-start md:items-center">
-        <ClientSelect />
-        <CopyCommandButton className="flex-1 md:flex-none px-0 md:px-4" />
+        <ClientSelect inviteCode={inviteCode} />
+        <CopyCommandButton
+          inviteCode={inviteCode}
+          className="flex-1 md:flex-none px-0 md:px-4"
+        />
       </div>
     </div>
   );

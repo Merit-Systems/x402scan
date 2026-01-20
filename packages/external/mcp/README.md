@@ -76,11 +76,12 @@ On first run, a wallet is generated at `~/.x402scan-mcp/wallet.json`. Deposit US
 **Workflow:**
 
 1. `check_balance` - Check wallet and get deposit address
-2. `discover_resources` - Find available x402 endpoints on an origin
-3. `check_x402_endpoint` - Probe endpoint for pricing/schema (optional)
-4. `fetch` - Make the paid request (or `authed_call` for SIWX auth)
+2. `redeem_invite` - Redeem an invite code to fund your wallet (if you have one)
+3. `discover_resources` - Find available x402 endpoints on an origin
+4. `check_x402_endpoint` - Probe endpoint for pricing/schema (optional)
+5. `fetch` - Make the paid request (or `authed_call` for SIWX auth)
 
-## Tools (6)
+## Tools
 
 | Tool                  | Description                                                  |
 | --------------------- | ------------------------------------------------------------ |
@@ -88,8 +89,10 @@ On first run, a wallet is generated at `~/.x402scan-mcp/wallet.json`. Deposit US
 | `authed_call`         | Make request to SIWX-protected endpoint with automatic auth  |
 | `check_balance`       | Get wallet address and USDC balance                          |
 | `get_wallet_address`  | Get the wallet address                                       |
+| `redeem_invite`       | Redeem an invite code to receive USDC                        |
 | `check_x402_endpoint` | Check if endpoint is x402-protected, get pricing/schema/auth |
 | `discover_resources`  | Discover x402 resources from origin's .well-known/x402       |
+| `report_error`        | Report critical MCP tool bugs to x402scan developers         |
 
 ## Environment
 

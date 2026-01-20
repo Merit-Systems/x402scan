@@ -5,6 +5,8 @@ import { registerFetchX402ResourceTool } from './tools/fetch-x402-resource';
 import { registerAuthTools } from './tools/auth';
 import { registerWalletTools } from './tools/wallet';
 import { registerCheckX402EndpointTool } from './tools/check-endpoint-schema';
+import { registerRedeemInviteTool } from './tools/redeem-invite';
+import { registerTelemetryTools } from './tools/telemetry';
 
 import { registerOrigins } from './resources/origins';
 
@@ -46,7 +48,9 @@ export const startServer: Command = async flags => {
   registerAuthTools(props);
   registerWalletTools(props);
   registerCheckX402EndpointTool(props);
+  registerRedeemInviteTool(props);
   registerDiscoveryTools(server);
+  registerTelemetryTools(props);
 
   await registerOrigins({ server, flags });
 

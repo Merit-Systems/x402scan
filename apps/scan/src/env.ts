@@ -18,6 +18,7 @@ export const env = createEnv({
     FREEPIK_API_KEY: z.string().optional(),
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
     FREE_TIER_WALLET_NAME: z.string(),
+    INVITE_WALLET_NAME: z.string().optional(),
     TRANSFERS_DB_URL: z.url(),
     TRANSFERS_DB_URL_REPLICA_1: z.url().optional(),
     TRANSFERS_DB_URL_REPLICA_2: z.url().optional(),
@@ -35,6 +36,7 @@ export const env = createEnv({
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
     STRIPE_SECRET_KEY: z.string(),
+    DISCORD_TELEMETRY_WEBHOOK_URL: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z

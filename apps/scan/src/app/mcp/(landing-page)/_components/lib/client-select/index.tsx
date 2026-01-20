@@ -18,11 +18,13 @@ import type { ClientTypes } from '../../../../_components/clients/data';
 interface Props {
   text?: string;
   clientType?: ClientTypes;
+  inviteCode?: string;
 }
 
 export const ClientSelect: React.FC<Props> = ({
   text = 'Get Started',
   clientType,
+  inviteCode,
 }) => {
   const [selectedClient, setSelectedClient] = useState<Clients | null>(null);
 
@@ -46,6 +48,7 @@ export const ClientSelect: React.FC<Props> = ({
           <SelectedClient
             client={selectedClient}
             reset={() => setSelectedClient(null)}
+            inviteCode={inviteCode}
           />
         ) : (
           <ClientsSelect
