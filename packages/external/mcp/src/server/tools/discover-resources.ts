@@ -364,7 +364,7 @@ export function registerDiscoveryTools(server: McpServer): void {
             Exa web search
             Clado linkedin data
             Firecrawl web scrape
-            Serper Google search
+            Serper Google search and news
         - https://stablestudio.io -> generate images / videos
         `,
       inputSchema: {
