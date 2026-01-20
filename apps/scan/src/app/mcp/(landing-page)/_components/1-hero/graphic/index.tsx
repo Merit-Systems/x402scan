@@ -120,47 +120,38 @@ export const HeroGraphic = () => {
       className="relative size-full flex items-center justify-between w-full"
     >
       <div className="flex flex-col gap-8">
-        <Card {...cardProps(activeClientIndex === 0, 'left')}>
+        <Card {...cardProps(true, 'left')}>
           <ClientIcon
             client={Clients.ClaudeCode}
             {...imageProps}
             className={cn(
               imageProps.className,
-              activeClientIndex === 0 ? 'fill-primary/80' : 'fill-current'
+              true ? 'fill-primary/80' : 'fill-current'
             )}
           />
-          <div
-            className={targetRightClassName(activeClientIndex === 0)}
-            ref={client1Ref}
-          />
+          <div className={targetRightClassName(true)} ref={client1Ref} />
         </Card>
-        <Card {...cardProps(activeClientIndex === 1, 'left')}>
+        <Card {...cardProps(true, 'left')}>
           <ClientIcon
             client={Clients.Cursor}
             {...imageProps}
             className={cn(
               imageProps.className,
-              activeClientIndex === 1 ? 'fill-primary/80' : 'fill-current'
+              true ? 'fill-primary/80' : 'fill-current'
             )}
           />
-          <div
-            className={targetRightClassName(activeClientIndex === 1)}
-            ref={client2Ref}
-          />
+          <div className={targetRightClassName(true)} ref={client2Ref} />
         </Card>
-        <Card {...cardProps(activeClientIndex === 2, 'left')}>
+        <Card {...cardProps(true, 'left')}>
           <ClientIcon
             client={Clients.Codex}
             {...imageProps}
             className={cn(
               imageProps.className,
-              activeClientIndex === 2 ? 'fill-primary/80' : 'fill-current'
+              true ? 'fill-primary/80' : 'fill-current'
             )}
           />
-          <div
-            className={targetRightClassName(activeClientIndex === 2)}
-            ref={client3Ref}
-          />
+          <div className={targetRightClassName(true)} ref={client3Ref} />
         </Card>
       </div>
       <Chip>
@@ -168,50 +159,35 @@ export const HeroGraphic = () => {
         <div className={cn(echoEndClassName, 'right-10')} ref={echoRightRef} />
       </Chip>
       <div className="flex flex-col gap-8">
-        <Card {...cardProps(activeServerIndices.includes(0), 'right')}>
+        <Card {...cardProps(true, 'right')}>
           <ImageIcon
             {...imageProps}
             className={cn(
               imageProps.className,
-              activeServerIndices.includes(0)
-                ? 'stroke-primary/80'
-                : 'stroke-current'
+              true ? 'stroke-primary/80' : 'stroke-current'
             )}
           />
-          <div
-            className={targetLeftClassName(activeServerIndices.includes(0))}
-            ref={server1Ref}
-          />
+          <div className={targetLeftClassName(true)} ref={server1Ref} />
         </Card>
-        <Card {...cardProps(activeServerIndices.includes(1), 'right')}>
+        <Card {...cardProps(true, 'right')}>
           <Search
             {...imageProps}
             className={cn(
               imageProps.className,
-              activeServerIndices.includes(1)
-                ? 'stroke-primary/80'
-                : 'stroke-current'
+              true ? 'stroke-primary/80' : 'stroke-current'
             )}
           />
-          <div
-            className={targetLeftClassName(activeServerIndices.includes(1))}
-            ref={server2Ref}
-          />
+          <div className={targetLeftClassName(true)} ref={server2Ref} />
         </Card>
-        <Card {...cardProps(activeServerIndices.includes(2), 'right')}>
+        <Card {...cardProps(true, 'right')}>
           <ChartCandlestick
             {...imageProps}
             className={cn(
               imageProps.className,
-              activeServerIndices.includes(2)
-                ? 'stroke-primary/80'
-                : 'stroke-current'
+              true ? 'stroke-primary/80' : 'stroke-current'
             )}
           />
-          <div
-            className={targetLeftClassName(activeServerIndices.includes(2))}
-            ref={server3Ref}
-          />
+          <div className={targetLeftClassName(true)} ref={server3Ref} />
         </Card>
       </div>
       <AnimatedBeam
@@ -220,40 +196,40 @@ export const HeroGraphic = () => {
         startXOffset={2}
         endYOffset={-20}
         toRef={echoLeftRef}
-        {...beamProps(activeClientIndex === 0)}
+        {...beamProps(true)}
       />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={client2Ref}
         toRef={echoLeftRef}
-        {...beamProps(activeClientIndex === 1)}
+        {...beamProps(true)}
       />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={client3Ref}
         toRef={echoLeftRef}
         endYOffset={20}
-        {...beamProps(activeClientIndex === 2)}
+        {...beamProps(true)}
       />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={server1Ref}
         toRef={echoRightRef}
         endYOffset={-20}
-        {...beamProps(activeServerIndices.includes(0))}
+        {...beamProps(true)}
       />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={server2Ref}
         toRef={echoRightRef}
-        {...beamProps(activeServerIndices.includes(1))}
+        {...beamProps(true)}
       />
       <AnimatedBeam
         containerRef={containerRef}
         fromRef={server3Ref}
         toRef={echoRightRef}
         endYOffset={20}
-        {...beamProps(activeServerIndices.includes(2))}
+        {...beamProps(true)}
       />
     </div>
   );
