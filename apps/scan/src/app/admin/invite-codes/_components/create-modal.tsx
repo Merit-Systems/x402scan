@@ -92,7 +92,7 @@ export const CreateInviteCodeButton = () => {
               onChange={e => setCode(e.target.value.toUpperCase())}
             />
             <p className="text-xs text-muted-foreground">
-              Leave empty to auto-generate a code like X4-XXXXX
+              Leave empty to auto-generate a code like MRT-XXXXX
             </p>
           </div>
 

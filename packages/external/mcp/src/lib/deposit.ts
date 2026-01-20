@@ -31,7 +31,7 @@ const redeemInviteCodePrompt = async (
 ): Promise<boolean> => {
   const code = await text({
     message: 'Enter your invite code',
-    placeholder: 'X4-XXXXX',
+    placeholder: 'MRT-XXXXX',
     validate: value => {
       if (!value || value.trim().length === 0) {
         return 'Please enter an invite code';
