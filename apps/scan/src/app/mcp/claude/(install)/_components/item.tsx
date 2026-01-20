@@ -36,10 +36,9 @@ export const ClaudeAccordionItem: React.FC<Props> = ({
       <AccordionTrigger className="w-full flex items-center justify-start gap-4 hover:no-underline py-0">
         <div
           className={cn(
-            'size-6 rounded-full border text-muted-foreground flex items-center justify-center',
-            currentStep === index &&
-              'border-primary text-primary bg-primary/20',
-            isCompleted && 'border-primary text-white bg-primary'
+            'size-6 rounded-full border border-muted bg-muted text-muted-foreground flex items-center justify-center',
+            (currentStep === index || isCompleted) &&
+              'border-primary text-white bg-primary'
           )}
         >
           {isCompleted ? <Check className="size-4 text-white" /> : index + 1}

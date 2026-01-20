@@ -50,9 +50,8 @@ console.log(data);`;
 
 const IdeGraphic = () => {
   return (
-    <div className="flex h-96 bg-background rounded-xl overflow-hidden border border-border/50">
-      {/* File tabs */}
-      <div className="flex flex-col flex-1 overflow-hidden w-0">
+    <div className="flex flex-col md:flex-row h-96 bg-background rounded-xl overflow-hidden border border-border/50">
+      <div className="flex flex-col md:flex-1 md:overflow-hidden w-full md:w-0">
         <div className="flex items-center bg-muted/50 border-b border-border/50">
           <div className="flex items-center gap-2 px-3 py-2 bg-background border-r border-border/50 text-xs">
             <FileCode2 className="size-3.5 text-blue-400" />
@@ -64,19 +63,16 @@ const IdeGraphic = () => {
             <span>index.ts</span>
           </div>
         </div>
-        <ScrollArea className="flex-1">
+        <ScrollArea className="h-48 md:flex-1 md:h-0">
           <div className="w-full overflow-x-auto max-w-full">
             <Code value={codeContent} lang="typescript" />
           </div>
         </ScrollArea>
       </div>
 
-      {/* Code area */}
-
-      {/* Right: Chat Panel */}
-      <div className="w-64 flex flex-col bg-card border-l border-border/50">
+      <div className="w-full md:w-64 flex flex-col bg-card border-t md:border-l border-border/50">
         {/* Chat content */}
-        <ScrollArea className="flex-1 h-0">
+        <ScrollArea className="md:flex-1 md:h-0">
           <div className="p-3 flex flex-col gap-3 text-xs">
             {/* User message */}
             <div className="flex justify-end">
