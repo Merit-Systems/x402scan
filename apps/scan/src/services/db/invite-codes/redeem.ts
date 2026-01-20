@@ -265,12 +265,26 @@ export const redeemInviteCode = async ({
       };
     }
   } catch (error) {
-    // Transaction failed (likely due to race condition on the conditional update)
     console.error('Invite code redemption transaction failed:', error);
+
+    // Check if this is a Prisma error from the conditional update failing
+    // (i.e., redemptionCount was no longer < maxRedemptions due to race condition)
+    const isPrismaNotFound =
+      error instanceof Error &&
+      error.name === 'PrismaClientKnownRequestError' &&
+      'code' in error &&
+      error.code === 'P2025';
+
+    if (isPrismaNotFound) {
+      return {
+        success: false,
+        error: 'Invite code has been fully redeemed',
+      };
+    }
 
     return {
       success: false,
-      error: 'Invite code has been fully redeemed',
+      error: 'Unable to process redemption. Please try again later.',
     };
   }
 };
