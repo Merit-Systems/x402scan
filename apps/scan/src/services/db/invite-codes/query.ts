@@ -1,26 +1,12 @@
+import z from 'zod';
+
 import { scanDb } from '@x402scan/scan-db';
 
-import type { InviteCodeStatus } from '@x402scan/scan-db';
+import type { inviteCodeByIdSchema } from './schemas';
 
-export const getInviteCodeByCode = async (code: string) => {
-  return scanDb.inviteCode.findUnique({
-    where: { code },
-    include: {
-      createdBy: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-      redemptions: {
-        orderBy: { createdAt: 'desc' },
-      },
-    },
-  });
-};
-
-export const getInviteCodeById = async (id: string) => {
+export const getInviteCodeById = async ({
+  id,
+}: z.infer<typeof inviteCodeByIdSchema>) => {
   return scanDb.inviteCode.findUnique({
     where: { id },
     include: {
@@ -38,14 +24,18 @@ export const getInviteCodeById = async (id: string) => {
   });
 };
 
-export interface ListInviteCodesOptions {
-  status?: InviteCodeStatus;
-  limit?: number;
-  offset?: number;
-}
+export const listInviteCodesSchema = z
+  .object({
+    status: z.enum(['ACTIVE', 'EXHAUSTED', 'EXPIRED', 'DISABLED']).optional(),
+    limit: z.number().int().min(1).max(100).default(100),
+    offset: z.number().int().min(0).default(0),
+  })
+  .optional();
 
-export const listInviteCodes = async (options: ListInviteCodesOptions = {}) => {
-  const { status, limit = 100, offset = 0 } = options;
+export const listInviteCodes = async (
+  options: z.infer<typeof listInviteCodesSchema>
+) => {
+  const { status, limit = 100, offset = 0 } = options ?? {};
 
   return scanDb.inviteCode.findMany({
     where: status ? { status } : undefined,
@@ -65,32 +55,4 @@ export const listInviteCodes = async (options: ListInviteCodesOptions = {}) => {
     take: limit,
     skip: offset,
   });
-};
-
-export const getRedemptionsByCode = async (code: string) => {
-  const inviteCode = await scanDb.inviteCode.findUnique({
-    where: { code },
-    include: {
-      redemptions: {
-        orderBy: { createdAt: 'desc' },
-      },
-    },
-  });
-
-  return inviteCode?.redemptions ?? [];
-};
-
-export const hasAddressRedeemedCode = async (
-  inviteCodeId: string,
-  recipientAddr: string
-) => {
-  const redemption = await scanDb.inviteRedemption.findFirst({
-    where: {
-      inviteCodeId,
-      recipientAddr: recipientAddr.toLowerCase(),
-      status: 'SUCCESS',
-    },
-  });
-
-  return !!redemption;
 };

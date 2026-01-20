@@ -8,13 +8,14 @@ import { CircleDot } from 'lucide-react';
 import { ClientTypes } from '../../../_components/clients/data';
 import { CopyCommandButton } from '../lib/copy-button';
 import { ClientDemosSection } from './section';
+import type { McpSearchParams } from '../../_lib/params';
 
-export const TerminalDemo = () => {
+export const TerminalDemo: React.FC<McpSearchParams> = props => {
   return (
     <ClientDemosSection
       heading="In Your Terminal"
-      description="Use powerful APIs to build agents for knowledge work."
-      cta={<CopyCommandButton />}
+      description="Give your favorite agent harness payment capabilities"
+      cta={<CopyCommandButton {...props} />}
       graphic={<TerminalGraphic />}
       imageSide="right"
       clientType={ClientTypes.TERMINAL}
@@ -26,7 +27,7 @@ export const TerminalDemo = () => {
 const TerminalGraphic = () => {
   return (
     <div className="flex flex-col gap-4 items-center p-4 w-full">
-      <Terminal className="h-64 w-full">
+      <Terminal className="h-fit md:h-80 w-full max-h-none">
         <TypingAnimation duration={10} className="border px-4 py-2 rounded-sm">
           Create a logo for my app and add it to the site
         </TypingAnimation>

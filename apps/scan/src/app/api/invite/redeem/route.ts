@@ -2,24 +2,15 @@ import { NextResponse, type NextRequest } from 'next/server';
 import z from 'zod';
 import {
   redeemInviteCode,
+  redeemInviteCodeSchema,
   validateInviteCode,
+  validateInviteCodeSchema,
 } from '@/services/db/invite-codes';
-import { mixedAddressSchema } from '@/lib/schemas';
-
-const redeemSchema = z.object({
-  code: z.string().min(1),
-  recipientAddr: mixedAddressSchema,
-});
-
-const validateSchema = z.object({
-  code: z.string().min(1),
-  recipientAddr: mixedAddressSchema.optional(),
-});
 
 export const POST = async (request: NextRequest) => {
   try {
     const body: unknown = await request.json();
-    const { code, recipientAddr } = redeemSchema.parse(body);
+    const { code, recipientAddr } = redeemInviteCodeSchema.parse(body);
 
     const result = await redeemInviteCode({
       code,
@@ -66,12 +57,15 @@ export const GET = async (request: NextRequest) => {
     const recipientAddr = searchParams.get('recipientAddr');
 
     const { code: validatedCode, recipientAddr: validatedAddr } =
-      validateSchema.parse({
+      validateInviteCodeSchema.parse({
         code,
         recipientAddr: recipientAddr ?? undefined,
       });
 
-    const result = await validateInviteCode(validatedCode, validatedAddr);
+    const result = await validateInviteCode({
+      code: validatedCode,
+      recipientAddr: validatedAddr,
+    });
 
     return NextResponse.json(result);
   } catch (error) {

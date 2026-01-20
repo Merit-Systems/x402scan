@@ -117,7 +117,7 @@ function CommandList({
       </CommandPrimitive.List>
       <div
         className={cn(
-          'from-background absolute right-0 bottom-0 left-0 h-4 bg-gradient-to-t to-transparent',
+          'from-background absolute right-0 bottom-0 left-0 h-4 bg-linear-to-t to-transparent',
           gradientClassName
         )}
       />

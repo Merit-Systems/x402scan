@@ -3,7 +3,9 @@ import { ClaudeDesktopDemo } from './claude-desktop';
 import { IdeDemo } from './ide';
 import { TerminalDemo } from './terminal';
 
-export const ClientDemos = () => {
+import type { McpSearchParams } from '../../_lib/params';
+
+export const ClientDemos: React.FC<McpSearchParams> = props => {
   return (
     <LandingPageSection
       heading={
@@ -14,9 +16,9 @@ export const ClientDemos = () => {
       description="Bring the power of x402 to your favorite AI agents."
     >
       <div className="flex flex-col gap-16">
-        <ClaudeDesktopDemo />
-        <TerminalDemo />
-        <IdeDemo />
+        <ClaudeDesktopDemo {...props} />
+        <TerminalDemo {...props} />
+        <IdeDemo {...props} />
       </div>
     </LandingPageSection>
   );

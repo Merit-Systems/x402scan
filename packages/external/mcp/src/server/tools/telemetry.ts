@@ -10,7 +10,9 @@ import { z } from 'zod';
 import type { RegisterTools } from '@/server/types';
 
 const require = createRequire(import.meta.url);
-const { version: MCP_VERSION } = require('../../../package.json') as { version: string };
+const { version: MCP_VERSION } = require('../../../package.json') as {
+  version: string;
+};
 
 const errorReportSchema = z.object({
   tool: z.string().describe('MCP tool name'),
@@ -24,7 +26,7 @@ const errorReportSchema = z.object({
     .describe('Detailed report with context, logs, repro steps'),
 });
 
-export type ErrorReport = z.infer<typeof errorReportSchema>;
+type ErrorReport = z.infer<typeof errorReportSchema>;
 
 export const registerTelemetryTools: RegisterTools = ({
   server,
