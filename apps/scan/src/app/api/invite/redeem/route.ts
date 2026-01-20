@@ -27,7 +27,7 @@ export const POST = async (request: NextRequest) => {
         NextResponse.json(
           {
             success: false as const,
-            error: error.message,
+            message: error.message,
           },
           { status: 500 }
         )
