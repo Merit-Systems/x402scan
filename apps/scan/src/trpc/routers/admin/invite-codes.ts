@@ -12,7 +12,7 @@ import { usdc } from '@/lib/tokens/usdc';
 import { Chain } from '@/types/chain';
 import { getBalance, readContract } from 'wagmi/actions';
 import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
-import { erc20Abi, formatEther } from 'viem';
+import { erc20Abi, formatEther, parseUnits } from 'viem';
 import { convertTokenAmount } from '@/lib/token';
 
 export const adminInviteCodesRouter = createTRPCRouter({
@@ -51,9 +51,7 @@ export const adminInviteCodesRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // Convert USDC amount to smallest unit (6 decimals)
-      const amountInSmallestUnit = BigInt(
-        Math.round(parseFloat(input.amount) * 1_000_000)
-      );
+      const amountInSmallestUnit = parseUnits(input.amount, 6);
 
       return createInviteCode({
         code: input.code,
