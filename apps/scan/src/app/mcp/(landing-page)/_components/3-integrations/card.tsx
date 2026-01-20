@@ -14,11 +14,14 @@ export const IntegrationCard: React.FC<Props> = ({
   cta,
 }) => {
   return (
-    <Card className="flex flex-col gap-2 justify-between p-6">
+    <Card className="flex flex-col gap-2 justify-between p-6 relative">
       <div className="flex flex-col gap-4">
-        {icon}
+        <div className="absolute top-0 -translate-y-[calc(100%)] -translate-x-1 -z-1 bg-card h-7 w-14 border border-b-0 rounded-t-lg" />
+        <div className="absolute top-0 translate-y-[-50%] -z-1 translate-x-1">
+          {icon}
+        </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-1">
           <h2 className="text-lg font-semibold font-mono">{title}</h2>
           <p className="text-sm text-muted-foreground mb-2">{description}</p>
         </div>

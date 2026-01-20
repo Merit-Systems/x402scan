@@ -5,22 +5,25 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
 
-import { clients, ClientTypes } from '../../../lib/clients/data';
+import { clients, ClientTypes } from '../../../../../_components/clients/data';
 
-import { ClientIcon } from '../../../lib/clients/icons';
+import { ClientIcon } from '../../../../../_components/clients/icons';
 
-import type { Clients } from '../../../lib/clients/data';
+import type { Clients } from '../../../../../_components/clients/data';
+import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 
 interface Props {
   onClientSelect: (client: Clients) => void;
 }
 
 export const ClientsSelect = ({ onClientSelect }: Props) => {
+  const router = useRouter();
+
   return (
     <Command
       className="h-full border-none bg-transparent"
@@ -36,7 +39,11 @@ export const ClientsSelect = ({ onClientSelect }: Props) => {
               <Item
                 key={key}
                 client={key as Clients}
-                onClientSelect={onClientSelect}
+                onClientSelect={() =>
+                  router.push(
+                    `/mcp/${key.toLowerCase()}` as Route<'mcp/[client]'>
+                  )
+                }
               />
             ))}
         </CommandGroup>

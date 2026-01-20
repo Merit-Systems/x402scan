@@ -7,7 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { File, FileCode2, X } from 'lucide-react';
 
 import { ClientDemosSection } from './section';
-import { ClientTypes } from '../lib/clients/data';
+import { ClientTypes } from '../../../_components/clients/data';
 
 export const IdeDemo = () => {
   return (

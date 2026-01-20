@@ -5,7 +5,7 @@ import {
   TypingAnimation,
 } from '@/components/magicui/terminal';
 import { CircleDot } from 'lucide-react';
-import { ClientTypes } from '../lib/clients/data';
+import { ClientTypes } from '../../../_components/clients/data';
 import { CopyCommandButton } from '../lib/copy-button';
 import { ClientDemosSection } from './section';
 

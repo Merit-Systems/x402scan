@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
 
-import { ClientIcon } from '../lib/clients/icons';
+import { ClientIcon } from '../../../_components/clients/icons';
 
-import { clients as clientsData } from '../lib/clients/data';
+import { clients as clientsData } from '../../../_components/clients/data';
 
-import type { Clients, ClientTypes } from '../lib/clients/data';
+import type { Clients, ClientTypes } from '../../../_components/clients/data';
 
 interface Props {
   heading: string;

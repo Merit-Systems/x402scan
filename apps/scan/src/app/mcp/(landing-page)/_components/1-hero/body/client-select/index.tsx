@@ -12,7 +12,7 @@ import {
 import { ClientsSelect } from './select';
 import { SelectedClient } from './selected';
 
-import type { Clients } from '../../../lib/clients/data';
+import type { Clients } from '../../../../../_components/clients/data';
 
 export const ClientSelect = () => {
   const [selectedClient, setSelectedClient] = useState<Clients | null>(null);
