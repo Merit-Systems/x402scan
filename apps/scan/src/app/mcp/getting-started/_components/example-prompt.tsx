@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { CopyButton } from '@/components/ui/copy-button';
 import { Input } from '@/components/ui/input';
 import { type LucideIcon } from 'lucide-react';
-import { Clients, clients } from '@/app/mcp/_components/clients/data';
+import { type Clients, clients } from '@/app/mcp/_components/clients/data';
 import { ClientIcon } from '@/app/mcp/_components/clients/icons';
 
 interface Tool {
@@ -62,25 +62,21 @@ export function ExamplePrompt({
 }: ExamplePromptProps) {
   const templateVars = useMemo(() => parseTemplateVariables(prompt), [prompt]);
 
-  const [values, setValues] = useState<Record<string, string>>({});
-
-  // Sync values state when template variables change
-  useEffect(() => {
-    setValues(prev => {
-      const updated: Record<string, string> = {};
-      templateVars.forEach(v => {
-        updated[v.raw] = prev[v.raw] ?? '';
-      });
-      return updated;
+  // Initialize values state based on template variables
+  const [values, setValues] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    parseTemplateVariables(prompt).forEach(v => {
+      initial[v.raw] = '';
     });
-  }, [templateVars]);
+    return initial;
+  });
 
   // Plain text version for copying
   const filledPrompt = useMemo(() => {
     let result = prompt;
     templateVars.forEach(v => {
       // Replace with value if filled, otherwise show just the label in template syntax
-      const replacement = values[v.raw] || `{{${v.label}}}`;
+      const replacement = values[v.raw] ?? `{{${v.label}}}`;
       result = result.replaceAll(v.raw, replacement);
     });
     return result;
@@ -108,7 +104,7 @@ export function ExamplePrompt({
         const value = values[part];
         result.push(
           <span key={i} className="text-primary font-semibold">
-            {value || `{{${templateVar.label}}}`}
+            {value ?? `{{${templateVar.label}}}`}
           </span>
         );
       } else {
