@@ -33,7 +33,7 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
       <div className="grid grid-cols-1 md:grid-cols-7">
         <div className="flex flex-col gap-4 p-4 pt-8 md:pt-10 col-span-5">
           <div className="">
-            <div className="flex items-start gap-2 min-w-0">
+            <div className="flex items-center gap-2 min-w-0">
               <h1 className="text-xl md:text-3xl font-bold wrap-break-word line-clamp-2 min-w-0">
                 {origin.title ?? new URL(origin.origin).hostname}
               </h1>

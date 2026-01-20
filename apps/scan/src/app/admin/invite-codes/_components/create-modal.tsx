@@ -52,9 +52,9 @@ export const CreateInviteCodeButton = () => {
     if (!amount) return;
 
     // Convert datetime-local value to ISO format with timezone
-    let expiresAtISO: string | undefined;
+    let expiresAtISO: Date | undefined;
     if (expiresAt) {
-      expiresAtISO = new Date(expiresAt).toISOString();
+      expiresAtISO = new Date(expiresAt);
     }
 
     createMutation.mutate({

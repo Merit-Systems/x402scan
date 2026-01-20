@@ -3,24 +3,18 @@ import { inviteWallets } from '@/services/cdp/server-wallet/invite';
 import { usdc } from '@/lib/tokens/usdc';
 import { Chain } from '@/types/chain';
 import { formatUnits } from 'viem';
+import { mixedAddressSchema } from '@/lib/schemas';
+import z from 'zod';
 
-export interface RedeemInviteCodeInput {
-  code: string;
-  recipientAddr: string;
-}
+export const validateInviteCodeSchema = z.object({
+  code: z.string().min(1),
+  recipientAddr: mixedAddressSchema.optional(),
+});
 
-export interface RedeemInviteCodeResult {
-  success: boolean;
-  error?: string;
-  redemptionId?: string;
-  txHash?: string;
-  amount?: string;
-}
-
-export const validateInviteCode = async (
-  code: string,
-  recipientAddr?: string
-): Promise<{ valid: boolean; error?: string }> => {
+export const validateInviteCode = async ({
+  code,
+  recipientAddr,
+}: z.infer<typeof validateInviteCodeSchema>) => {
   const inviteCode = await scanDb.inviteCode.findUnique({
     where: { code },
   });
@@ -66,10 +60,15 @@ export const validateInviteCode = async (
   return { valid: true };
 };
 
+export const redeemInviteCodeSchema = z.object({
+  code: z.string().min(1),
+  recipientAddr: mixedAddressSchema,
+});
+
 export const redeemInviteCode = async ({
   code,
   recipientAddr,
-}: RedeemInviteCodeInput): Promise<RedeemInviteCodeResult> => {
+}: z.infer<typeof redeemInviteCodeSchema>) => {
   const normalizedAddr = recipientAddr.toLowerCase();
 
   // Use a transaction with serializable isolation to prevent race conditions

@@ -4,42 +4,38 @@ import { Button } from '@/components/ui/button';
 import { CopyCode } from '@/components/ui/copy-code';
 import { TextSeparator } from '@/components/ui/text-separator';
 
-import { ClientIcon } from '../../../../../_components/clients/icons';
+import { ClientIcon } from '../../../../_components/clients/icons';
 
 import { clientInstall } from './client-install';
 
-import { clients } from '../../../../../_components/clients/data';
+import { clients } from '../../../../_components/clients/data';
 
-import type { Clients as ClientsEnum } from '../../../../../_components/clients/data';
+import type { Clients as ClientsEnum } from '../../../../_components/clients/data';
+import type { McpSearchParams } from '../../../_lib/params';
 
-interface Props {
+interface Props extends McpSearchParams {
   client: ClientsEnum;
   reset: () => void;
-  inviteCode?: string;
 }
 
 export const SelectedClient: React.FC<Props> = ({
   client,
   reset,
-  inviteCode,
+  ...props
 }) => {
   const ClientInstall = clientInstall[client];
   const { name } = clients[client];
 
-  if (!ClientInstall) {
-    return null;
-  }
-
-  const command = inviteCode
-    ? `npx @x402scan/mcp install --client ${client} --invite ${inviteCode}`
+  const command = props.invite
+    ? `npx @x402scan/mcp install --client ${client} --invite ${props.invite}`
     : `npx @x402scan/mcp install --client ${client}`;
 
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-2 shrink-0">
-          <ClientIcon client={client} className="shrink-0 size-5" />
-          <span className="font-medium shrink-0">{name}</span>
+        <div className="flex items-center gap-3 shrink-0">
+          <ClientIcon client={client} className="shrink-0 size-4" />
+          <span className="font-semibold text-sm shrink-0">{name}</span>
         </div>
         <Button
           variant="ghost"
@@ -58,15 +54,19 @@ export const SelectedClient: React.FC<Props> = ({
             toastMessage="MCP install command copied to clipboard"
             className="w-full"
             copyButtonClassName="bg-transparent shadow-none border-0"
-            textClassName="text-sm"
+            textClassName="text-xs"
           />
         </div>
-        <TextSeparator
-          text="or"
-          separatorClassName="bg-border"
-          textClassName="text-muted-foreground"
-        />
-        <ClientInstall />
+        {ClientInstall && (
+          <>
+            <TextSeparator
+              text="or"
+              separatorClassName="bg-border"
+              textClassName="text-muted-foreground"
+            />
+            <ClientInstall {...props} />
+          </>
+        )}
       </div>
     </div>
   );

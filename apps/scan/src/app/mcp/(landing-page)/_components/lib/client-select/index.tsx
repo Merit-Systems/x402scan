@@ -12,13 +12,20 @@ import {
 import { ClientsSelect } from './select';
 import { SelectedClient } from './selected';
 
-import type { Clients } from '../../../../../_components/clients/data';
+import type { Clients } from '../../../../_components/clients/data';
+import type { ClientTypes } from '../../../../_components/clients/data';
+import type { McpSearchParams } from '../../../_lib/params';
 
-interface Props {
-  inviteCode?: string;
+interface Props extends McpSearchParams {
+  text?: string;
+  clientType?: ClientTypes;
 }
 
-export const ClientSelect: React.FC<Props> = ({ inviteCode }) => {
+export const ClientSelect: React.FC<Props> = ({
+  text = 'Get Started',
+  clientType,
+  ...props
+}) => {
   const [selectedClient, setSelectedClient] = useState<Clients | null>(null);
 
   return (
@@ -28,7 +35,7 @@ export const ClientSelect: React.FC<Props> = ({ inviteCode }) => {
           size="xl"
           className="w-fit font-semibold px-4 md:px-8 text-sm md:text-base"
         >
-          Get Started
+          {text}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -41,10 +48,13 @@ export const ClientSelect: React.FC<Props> = ({ inviteCode }) => {
           <SelectedClient
             client={selectedClient}
             reset={() => setSelectedClient(null)}
-            inviteCode={inviteCode}
+            {...props}
           />
         ) : (
-          <ClientsSelect onClientSelect={setSelectedClient} />
+          <ClientsSelect
+            onClientSelect={setSelectedClient}
+            clientType={clientType}
+          />
         )}
       </PopoverContent>
     </Popover>

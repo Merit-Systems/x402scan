@@ -26,7 +26,7 @@ const errorReportSchema = z.object({
     .describe('Detailed report with context, logs, repro steps'),
 });
 
-export type ErrorReport = z.infer<typeof errorReportSchema>;
+type ErrorReport = z.infer<typeof errorReportSchema>;
 
 export const registerTelemetryTools: RegisterTools = ({
   server,

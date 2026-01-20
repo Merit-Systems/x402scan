@@ -3,14 +3,17 @@ import { Button } from '@/components/ui/button';
 import { ClientTypes } from '../../../_components/clients/data';
 import { ClientDemosSection } from './section';
 import Link from 'next/link';
+import type { McpSearchParams } from '../../_lib/params';
 
-export const ClaudeDesktopDemo = () => {
+export const ClaudeDesktopDemo: React.FC<McpSearchParams> = props => {
   return (
     <ClientDemosSection
       heading="In Claude Desktop"
       description="Use powerful APIs to build agents for knowledge work."
       cta={
-        <Link href="/mcp/claude">
+        <Link
+          href={`/mcp/claude${props.invite ? `?invite=${props.invite}` : ''}`}
+        >
           <Button size="xl" className="w-fit font-semibold">
             Get Started
           </Button>
