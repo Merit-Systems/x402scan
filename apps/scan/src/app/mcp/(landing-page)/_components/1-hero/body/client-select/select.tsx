@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import { Badge } from '@/components/ui/badge';
 import {
   Command,
@@ -14,7 +16,6 @@ import { clients, ClientTypes } from '../../../../../_components/clients/data';
 import { ClientIcon } from '../../../../../_components/clients/icons';
 
 import type { Clients } from '../../../../../_components/clients/data';
-import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 
 interface Props {
