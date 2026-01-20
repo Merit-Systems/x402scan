@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { CopyButton } from '@/components/ui/copy-button';
 import { Input } from '@/components/ui/input';
 import { type LucideIcon } from 'lucide-react';
@@ -55,13 +55,18 @@ function parseTemplateVariables(prompt: string): TemplateVar[] {
 export function ExamplePrompt({ title, description, prompt, icon: Icon, tools, recommendedClient }: ExamplePromptProps) {
   const templateVars = useMemo(() => parseTemplateVariables(prompt), [prompt]);
 
-  const [values, setValues] = useState<Record<string, string>>(() => {
-    const initial: Record<string, string> = {};
-    templateVars.forEach((v) => {
-      initial[v.raw] = '';
+  const [values, setValues] = useState<Record<string, string>>({});
+
+  // Sync values state when template variables change
+  useEffect(() => {
+    setValues((prev) => {
+      const updated: Record<string, string> = {};
+      templateVars.forEach((v) => {
+        updated[v.raw] = prev[v.raw] ?? '';
+      });
+      return updated;
     });
-    return initial;
-  });
+  }, [templateVars]);
 
   // Plain text version for copying
   const filledPrompt = useMemo(() => {
