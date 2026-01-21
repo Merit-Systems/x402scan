@@ -76,7 +76,7 @@ function normalizeAccept(
     return {
       ...common,
       scheme: accept.scheme as 'exact',
-      network: normalizeChainId(accept.network),
+      network: chainIdToNetworkSlug(accept.network),
       maxAmountRequired: accept.amount,
       resource: resource?.url,
       description: resource?.description,
@@ -377,7 +377,7 @@ export async function extractX402Data(response: Response): Promise<unknown> {
   }
 }
 
-export function normalizeChainId(chainId: string): string {
+export function chainIdToNetworkSlug(chainId: string): string {
   if (chainId.startsWith('eip155:')) {
     const id = Number(chainId.split(':')[1]);
     const network = ChainIdToNetwork[id];
