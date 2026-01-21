@@ -1,20 +1,25 @@
 'use client';
 
-import type { ToolUIPart } from 'ai';
 import { Check, ChevronDownIcon, CircleDot, Loader2, X } from 'lucide-react';
-import type { ComponentProps, ReactNode } from 'react';
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
+import { Code } from '@/components/ui/code';
+import { Loading } from '@/components/ui/loading';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { Favicon } from '@/app/(app)/_components/favicon';
+
 import { JsonViewer } from './json-viewer';
-import { Code } from '../ui/code';
+
+import { cn } from '@/lib/utils';
+
+import type { ComponentProps, ReactNode } from 'react';
+import type { ToolUIPart } from 'ai';
 import type { RouterOutputs } from '@/trpc/client';
-import { Skeleton } from '../ui/skeleton';
-import { Favicon } from '../../app/_components/favicon';
-import { Loading } from '../ui/loading';
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
 interface JsonObject {
