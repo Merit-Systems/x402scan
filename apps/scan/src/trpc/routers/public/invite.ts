@@ -18,14 +18,16 @@ export const inviteRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const result = await redeemInviteCode(input);
       return result.match(
-        data => ({
-          success: true as const,
-          data,
-        }),
-        error => ({
-          success: false as const,
-          error: error.message,
-        })
+        data =>
+          ({
+            success: true,
+            data,
+          }) as const,
+        error =>
+          ({
+            success: false,
+            error: error.message,
+          }) as const
       );
     }),
 });

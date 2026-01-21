@@ -3,7 +3,7 @@ import z from 'zod';
 import { formatUnits } from 'viem';
 
 import type { Result } from 'neverthrow';
-import { err, ok, ResultAsync } from 'neverthrow';
+import { ResultAsync } from 'neverthrow';
 
 import { scanDb } from '@x402scan/scan-db';
 
@@ -92,15 +92,18 @@ export const redeemInviteCodeSchema = z.object({
   recipientAddr: mixedAddressSchema,
 });
 
-type RedeemInviteCodeResult = Result<
-  { redemptionId: string; txHash: string; amount: string },
-  { message: string }
->;
+interface RedeemInviteCodeData {
+  redemptionId: string;
+  txHash: string;
+  amount: string;
+}
 
 export const redeemInviteCode = async ({
   code,
   recipientAddr,
-}: z.infer<typeof redeemInviteCodeSchema>): Promise<RedeemInviteCodeResult> => {
+}: z.infer<typeof redeemInviteCodeSchema>): Promise<
+  Result<RedeemInviteCodeData, DatabaseError>
+> => {
   const normalizedAddr = recipientAddr.toLowerCase();
 
   // Use a transaction with serializable isolation to prevent race conditions
@@ -114,13 +117,15 @@ export const redeemInviteCode = async ({
         });
 
         if (!inviteCode) {
-          return err({
+          return dbErr({
+            type: 'not_found',
             message: 'Invalid invite code',
           });
         }
 
         if (inviteCode.status !== 'ACTIVE') {
-          return err({
+          return dbErr({
+            type: 'conflict',
             message: `Invite code is ${inviteCode.status.toLowerCase()}`,
           });
         }
@@ -131,7 +136,8 @@ export const redeemInviteCode = async ({
             where: { id: inviteCode.id },
             data: { status: 'EXPIRED' },
           });
-          return err({
+          return dbErr({
+            type: 'conflict',
             message: 'Invite code has expired',
           });
         }
@@ -140,7 +146,8 @@ export const redeemInviteCode = async ({
           inviteCode.maxRedemptions > 0 &&
           inviteCode.redemptionCount >= inviteCode.maxRedemptions
         ) {
-          return err({
+          return dbErr({
+            type: 'conflict',
             message: 'Invite code has been fully redeemed',
           });
         }
@@ -155,7 +162,8 @@ export const redeemInviteCode = async ({
             },
           });
           if (existingRedemption) {
-            return err({
+            return dbErr({
+              type: 'conflict',
               message: 'You have already redeemed this invite code',
             });
           }
@@ -201,7 +209,7 @@ export const redeemInviteCode = async ({
           });
         }
 
-        return ok({ inviteCode, redemption, updatedCode });
+        return dbOk({ inviteCode, redemption, updatedCode });
       },
       {
         isolationLevel: 'Serializable',
@@ -209,7 +217,7 @@ export const redeemInviteCode = async ({
     );
 
     if (result.isErr()) {
-      return result;
+      return dbErr<RedeemInviteCodeData>(result.error);
     }
 
     const { inviteCode, redemption } = result.value;
@@ -244,7 +252,7 @@ export const redeemInviteCode = async ({
         },
       });
 
-      return ok({
+      return dbOk({
         redemptionId: redemption.id,
         txHash,
         amount: formatUnits(inviteCode.amount, token.decimals),
@@ -284,9 +292,9 @@ export const redeemInviteCode = async ({
         });
       }
 
-      return err({
+      return dbErr({
+        type: 'internal',
         message: 'Unable to process redemption. Please try again later.',
-        redemptionId: redemption.id,
       });
     }
   } catch (error) {
@@ -301,12 +309,14 @@ export const redeemInviteCode = async ({
       error.code === 'P2025';
 
     if (isPrismaNotFound) {
-      return err({
+      return dbErr({
+        type: 'conflict',
         message: 'Invite code has been fully redeemed',
       });
     }
 
-    return err({
+    return dbErr({
+      type: 'internal',
       message: 'Unable to process redemption. Please try again later.',
     });
   }

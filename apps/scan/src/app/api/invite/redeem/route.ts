@@ -6,49 +6,23 @@ import {
   validateInviteCode,
   validateInviteCodeSchema,
 } from '@/services/db/invite-codes';
+import { toNextResponse, dbErrorResponse } from '@/services/db/lib';
 
 export const POST = async (request: NextRequest) => {
   try {
     const body: unknown = await request.json();
     const { code, recipientAddr } = redeemInviteCodeSchema.parse(body);
-
-    const result = await redeemInviteCode({
-      code,
-      recipientAddr,
-    });
-
-    return result.match(
-      data =>
-        NextResponse.json({
-          success: true as const,
-          data,
-        }),
-      error =>
-        NextResponse.json(
-          {
-            success: false as const,
-            error: error.message,
-          },
-          { status: 500 }
-        )
-    );
+    const result = await redeemInviteCode({ code, recipientAddr });
+    return toNextResponse(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid request body',
-          details: error.issues,
-        },
-        { status: 400 }
-      );
+      return dbErrorResponse({
+        type: 'invalid_request',
+        message: 'Invalid request body',
+      });
     }
-
     console.error('Failed to redeem invite code:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    );
+    return dbErrorResponse({ type: 'internal', message: 'Internal server error' });
   }
 };
 
