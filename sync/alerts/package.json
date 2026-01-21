@@ -1,5 +1,5 @@
 {
-  "name": "sync-alerts",
+  "name": "@x402scan/sync-alerts",
   "version": "1.0.0",
   "private": true,
   "description": "Balance alerts for x402scan",
