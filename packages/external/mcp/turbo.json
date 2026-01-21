@@ -1,0 +1,37 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["X402_*", "X402_PRIVATE_KEY"],
+      "outputs": ["dist/**"],
+      "passThroughEnv": [
+        "APPDATA",
+        "CODEX_HOME",
+        "XDG_CONFIG_HOME",
+        "INVITE_CODE"
+      ]
+    },
+    "dev": {
+      "env": ["X402_*", "X402_PRIVATE_KEY"],
+      "persistent": true,
+      "passThroughEnv": [
+        "APPDATA",
+        "CODEX_HOME",
+        "XDG_CONFIG_HOME",
+        "INVITE_CODE"
+      ]
+    },
+    "build:mcpb": {
+      "env": ["X402_*", "X402_PRIVATE_KEY"],
+      "dependsOn": ["^build"],
+      "outputs": ["bundle/**"],
+      "passThroughEnv": [
+        "APPDATA",
+        "CODEX_HOME",
+        "XDG_CONFIG_HOME",
+        "INVITE_CODE"
+      ]
+    }
+  }
+}

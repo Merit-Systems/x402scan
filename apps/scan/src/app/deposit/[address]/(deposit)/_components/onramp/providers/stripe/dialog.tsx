@@ -6,10 +6,13 @@ import { useRouter } from 'next/navigation';
 
 import { loadStripeOnramp } from '@stripe/crypto';
 
+import { Loader2 } from 'lucide-react';
+
 import { api } from '@/trpc/client';
 
 import { env } from '@/env';
-import { Loader2 } from 'lucide-react';
+
+import { OnrampProviders } from '@/services/onramp/types';
 
 import type { OnrampProviderDialogContentProps } from '../types';
 import type {
@@ -18,8 +21,6 @@ import type {
   OnrampUIEventMap,
   StripeOnramp,
 } from '@stripe/crypto';
-import { OnrampProviders } from '@/services/onramp/types';
-
 import type { Route } from 'next';
 
 const stripeOnrampPromise = loadStripeOnramp(

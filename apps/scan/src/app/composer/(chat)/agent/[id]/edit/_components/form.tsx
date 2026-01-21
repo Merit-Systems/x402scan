@@ -94,7 +94,9 @@ export const AgentForm: React.FC<Props> = ({
                     onSelectResource={resource => {
                       field.onChange(
                         field.value.includes(resource.id)
-                          ? field.value.filter(id => id !== resource.id)
+                          ? field.value.filter(
+                              (id: string) => id !== resource.id
+                            )
                           : [...field.value, resource.id]
                       );
                     }}

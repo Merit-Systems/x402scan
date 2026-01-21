@@ -40,6 +40,10 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
             label: 'End Users',
             href: '/admin/end-users',
           },
+          {
+            label: 'Invite Codes',
+            href: '/admin/invite-codes',
+          },
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>

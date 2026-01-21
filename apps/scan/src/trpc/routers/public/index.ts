@@ -12,6 +12,7 @@ import { resourcesRouter } from './resources';
 import { solanaRouter } from './solana';
 import { observabilityRouter } from './observability';
 import { facilitatorObservabilityRouter } from './facilitator-observability';
+import { inviteRouter } from './invite';
 
 export const publicRouter = createTRPCRouter({
   agents: publicAgentConfigurationsRouter,
@@ -26,4 +27,5 @@ export const publicRouter = createTRPCRouter({
   solana: solanaRouter,
   observability: observabilityRouter,
   facilitatorObservability: facilitatorObservabilityRouter,
+  invite: inviteRouter,
 });

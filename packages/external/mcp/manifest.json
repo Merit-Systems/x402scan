@@ -1,0 +1,73 @@
+{
+  "manifest_version": "0.3",
+  "name": "x402scan",
+  "version": "0.0.2",
+  "description": "An MCP server for calling x402-protected APIs with automatic payment handling",
+  "long_description": "An MCP server for calling x402-protected APIs with automatic payment handling. It handles the authentication flow automatically and retries the request if it fails. It also handles the payment flow automatically and retries the request if it fails.",
+  "author": {
+    "name": "Merit Systems",
+    "email": "support@merit.systems",
+    "url": "https://merit.systems"
+  },
+  "homepage": "https://x402scan.com",
+  "documentation": "https://x402scan.com/mcp",
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.cjs",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.cjs"],
+      "env": {
+        "INVITE_CODE": "${user_config.invite_code}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "fetch",
+      "description": "Fetches an x402-protected resource and handles payment automatically. If the resource is not x402-protected, it will return the raw response."
+    },
+    {
+      "name": "authed_call",
+      "description": "Make a request to a SIWX-protected endpoint. Handles auth flow automatically: detects SIWX requirement from 402 response, signs proof with server-provided challenge, retries."
+    },
+    {
+      "name": "check_balance",
+      "description": "Check wallet address and USDC balance. Creates wallet if needed."
+    },
+    {
+      "name": "get_wallet_address",
+      "description": "Get the wallet address."
+    },
+    {
+      "name": "check_x402_endpoint",
+      "description": "Check if an endpoint is x402-protected and get pricing options, schema, and auth requirements (if applicable)."
+    },
+    {
+      "name": "discover_resources",
+      "description": "Discover x402-protected resources from an origin. Fetches the /.well-known/x402 discovery document and optionally tests each resource to get pricing and requirements. Known default origins with resource packs: https://enrichx402.com (People + Org search, Google Maps, grok twitter search, exa web search, clado linkedin data, firecrawl web scrape), https://stablestudio.io (generate images / videos)."
+    }
+  ],
+  "prompts_generated": true,
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/merit-systems/x402scan/tree/main/packages/external/mcp"
+  },
+  "user_config": {
+    "invite_code": {
+      "type": "string",
+      "title": "Invite Code",
+      "description": "The invite code to redeem",
+      "required": false,
+      "default": ""
+    }
+  }
+}

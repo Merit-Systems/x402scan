@@ -26,7 +26,7 @@ import type { Methods } from '../_types';
 
 import type { Address } from 'viem';
 import Link from 'next/link';
-import { DepositSearchParams } from '../../_lib/params';
+import type { DepositSearchParams } from '../../_lib/params';
 
 export enum Status {
   SUCCESS = 'success',

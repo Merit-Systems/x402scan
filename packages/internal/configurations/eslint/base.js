@@ -16,7 +16,16 @@ export const config = [
     languageOptions: {
       parserOptions: {
         projectService: true,
+        allowDefaultProject: ['**/tsup.config.ts'],
       },
+    },
+    rules: {
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          fixStyle: 'separate-type-imports',
+        },
+      ],
     },
   },
   eslintConfigPrettier,

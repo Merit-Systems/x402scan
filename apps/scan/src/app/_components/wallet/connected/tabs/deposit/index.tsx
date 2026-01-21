@@ -1,4 +1,4 @@
-import { Separator } from '@/components/ui/separator';
+import { TextSeparator } from '@/components/ui/text-separator';
 
 import { Send } from './send';
 import { Onramp } from './onramp';
@@ -11,11 +11,7 @@ export const Deposit: React.FC<Props> = ({ address }) => {
   return (
     <div className="flex flex-col gap-4">
       <Send address={address} />
-      <div className="flex items-center gap-2">
-        <Separator className="flex-1" />
-        <p className="text-muted-foreground text-xs">or</p>
-        <Separator className="flex-1" />
-      </div>
+      <TextSeparator text="or" />
       <Onramp />
     </div>
   );

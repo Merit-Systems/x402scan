@@ -9,7 +9,7 @@ import { ResourceFetch } from '../../../resource-fetch';
 import { FieldSection } from './field-section';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
-import { Methods } from '@/types/x402';
+import type { Methods } from '@/types/x402';
 import {
   normalizeChainId,
   type ParsedX402Response,

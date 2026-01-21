@@ -13,7 +13,7 @@ import { useEvmX402Fetch } from '../x402/evm';
 
 import type { Token } from '@/types/token';
 import type { Connection } from 'wagmi';
-import { X402FetchResponse } from '../x402/types';
+import type { X402FetchResponse } from '../x402/types';
 
 interface Props {
   token?: Token;
