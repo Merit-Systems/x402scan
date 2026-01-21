@@ -1,8 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Sparkles, X, Zap, BookOpen, Layers } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { Sparkles, Zap, BookOpen, Layers } from 'lucide-react';
 import Link from 'next/link';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
 
 const STORAGE_KEY = 'x402scan-hide-v2-announcement';
 
@@ -29,19 +36,11 @@ export const V2AnnouncementBanner = () => {
   }
 
   return (
-    <div className="border border-primary bg-primary/5 p-4 rounded-md flex flex-col md:flex-row md:items-center gap-4 md:justify-between relative">
-      <button
-        onClick={handleDismiss}
-        className="absolute top-2 right-2 text-primary/60 hover:text-primary z-10"
-        aria-label="Dismiss"
-      >
-        <X className="size-4" />
-      </button>
-
+    <div className="border border-primary/40 bg-primary/5 p-4 rounded-md flex flex-col md:flex-row md:items-center gap-4 md:justify-between relative">
       <div className="flex items-center gap-4 pr-6 md:pr-0">
         <Sparkles className="size-8 text-primary shrink-0" />
         <div className="flex flex-col">
-          <h2 className="font-mono text-base md:text-lg font-bold text-primary">
+          <h2 className="text-base md:text-lg font-bold text-primary">
             Introducing x402scan v2
           </h2>
           <p className="text-xs md:text-sm text-muted-foreground">
@@ -51,34 +50,59 @@ export const V2AnnouncementBanner = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 text-sm md:mr-6 shrink-0">
-        <div className="flex items-start gap-2">
-          <Layers className="size-4 text-primary shrink-0 mt-0.5" />
-          <span className="text-muted-foreground">
-            Native support for x402 v2 resources and facilitators
-          </span>
-        </div>
-        <div className="flex items-start gap-2">
-          <BookOpen className="size-4 text-primary shrink-0 mt-0.5" />
-          <span className="text-muted-foreground">
-            New x402scan Discovery Standard —{' '}
-            <Link
-              href="https://github.com/Merit-Systems/x402scan/blob/main/docs/DISCOVERY.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary underline hover:text-primary/80"
-            >
-              learn more
-            </Link>
-          </span>
-        </div>
-        <div className="flex items-start gap-2">
-          <Zap className="size-4 text-primary shrink-0 mt-0.5" />
-          <span className="text-muted-foreground">
-            x402scan stability and performance improvements
-          </span>
-        </div>
+      <div className="flex items-center gap-2">
+        <Popover>
+          <PopoverTrigger>
+            <Button size="sm">Learn more</Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <div className="flex flex-col gap-2 text-sm md:mr-6 shrink-0">
+              <MoreInfoBullet
+                Icon={Layers}
+                text="Native support for x402 v2 resources and facilitators"
+              />
+              <MoreInfoBullet
+                Icon={BookOpen}
+                text={
+                  <>
+                    New x402scan Discovery Standard —{' '}
+                    <Link
+                      href="https://github.com/Merit-Systems/x402scan/blob/main/docs/DISCOVERY.md"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline hover:text-primary/80"
+                    >
+                      read the docs
+                    </Link>
+                  </>
+                }
+              />
+              <MoreInfoBullet
+                Icon={Zap}
+                text="x402scan stability and performance improvements"
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+        <Button size="sm" variant="outline" onClick={handleDismiss}>
+          Close
+        </Button>
       </div>
+    </div>
+  );
+};
+
+const MoreInfoBullet = ({
+  Icon,
+  text,
+}: {
+  Icon: LucideIcon;
+  text: React.ReactNode;
+}) => {
+  return (
+    <div className="flex items-center gap-3">
+      <Icon className="size-4 text-primary shrink-0 mt-0.5" />
+      <span className="text-muted-foreground">{text}</span>
     </div>
   );
 };
