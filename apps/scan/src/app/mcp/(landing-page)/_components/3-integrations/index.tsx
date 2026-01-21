@@ -12,7 +12,7 @@ export const Integrations = () => {
           <span className="text-primary">Unlimited Integrations</span>
         </>
       }
-      description="Integrate x402 with your favorite tools and platforms."
+      description="No connectors. No contracts. Just use."
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-4 mt-2">
         <IntegrationCard
