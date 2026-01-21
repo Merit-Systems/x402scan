@@ -1,0 +1,26 @@
+{
+  "name": "@x402scan/neverthrow",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    "./http": "./src/http.ts",
+    "./types": "./src/types/index.ts"
+  },
+  "scripts": {
+    "dev": "tsup src/* --watch",
+    "lint": "eslint . --max-warnings 0",
+    "check:types": "tsc --noEmit",
+    "knip": "pnpm -w knip --workspace ./packages/internal/databases/transfers",
+    "format": "pnpm -w format:dir ./packages/internal/databases/transfers",
+    "format:check": "pnpm -w format:check:dir ./packages/internal/databases/transfers"
+  },
+  "dependencies": {
+    "neverthrow": "^8.2.0"
+  },
+  "devDependencies": {
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  }
+}
