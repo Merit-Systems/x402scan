@@ -8,18 +8,16 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "x402proxy",
-    "x402-solana-rpc",
-    "x402scan",
-    "express-server-example",
-    "hono-server-example",
-    "@x402scan/eslint-config",
-    "@x402scan/typescript-config",
+    "@x402scan/app",
+    "@x402scan/proxy",
+    "@x402scan/solana-rpc",
+    "@x402scan/express-server-example",
+    "@x402scan/hono-server-example",
     "@x402scan/analytics-db",
     "@x402scan/scan-db",
     "@x402scan/transfers-db",
-    "sync-analytics",
-    "sync-transfers",
-    "sync-alerts"
+    "@x402scan/sync-analytics",
+    "@x402scan/sync-transfers",
+    "@x402scan/sync-alerts"
   ]
 }

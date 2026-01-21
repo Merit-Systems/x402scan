@@ -1,10 +1,10 @@
 {
-  "name": "x402scan-monorepo",
+  "name": "@x402scan/monorepo",
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.28.0",
   "scripts": {
-    "dev": "turbo run dev --filter=x402scan",
+    "dev": "turbo run dev --filter=@x402scan/app",
     "build": "turbo run build",
     "build:deploy": "turbo run build:deploy",
     "build:packages": "turbo run build --filter \"./packages/external/**\"",
@@ -19,12 +19,12 @@
     "knip": "knip",
     "knip:check": "turbo run knip",
     "check": "turbo run format types:check lint knip publish:check",
-    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=sync-analytics",
-    "trigger:deploy:transfers": "turbo run trigger:deploy --filter=sync-transfers",
-    "trigger:deploy:alerts": "turbo run trigger:deploy --filter=sync-alerts",
+    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=@x402scan/sync-analytics",
+    "trigger:deploy:transfers": "turbo run trigger:deploy --filter=@x402scan/sync-transfers",
+    "trigger:deploy:alerts": "turbo run trigger:deploy --filter=@x402scan/sync-alerts",
     "changeset": "changeset",
     "changeset:version": "changeset version",
-    "changeset:publish": "pnpm build:sdks && changeset publish"
+    "changeset:publish": "pnpm build:packages && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",

@@ -41,6 +41,11 @@ export function Form({
   method,
   resource,
 }: Props) {
+  const headerFields = useMemo(
+    () => extractFieldsFromSchema(inputSchema, method, 'header'),
+    [inputSchema, method]
+  );
+
   const queryFields = useMemo(
     () => extractFieldsFromSchema(inputSchema, method, 'query'),
     [inputSchema, method]
@@ -51,10 +56,17 @@ export function Form({
     [inputSchema, method]
   );
 
+  const [headerValues, setHeaderValues] = useState<Record<string, FieldValue>>(
+    {}
+  );
   const [queryValues, setQueryValues] = useState<Record<string, FieldValue>>(
     {}
   );
   const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>({});
+
+  const handleHeaderChange = (name: string, value: FieldValue) => {
+    setHeaderValues(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleQueryChange = (name: string, value: FieldValue) => {
     setQueryValues(prev => ({ ...prev, [name]: value }));
@@ -65,9 +77,14 @@ export function Form({
   };
 
   const allRequiredFieldsFilled = useMemo(() => {
+    const requiredHeader = headerFields.filter(field => field.required);
     const requiredQuery = queryFields.filter(field => field.required);
     const requiredBody = bodyFields.filter(field => field.required);
 
+    const headerFilled = requiredHeader.every(field => {
+      const value = headerValues[field.name];
+      return value && isValidFieldValue(value);
+    });
     const queryFilled = requiredQuery.every(field => {
       const value = queryValues[field.name];
       return value && isValidFieldValue(value);
@@ -77,8 +94,15 @@ export function Form({
       return value && isValidFieldValue(value);
     });
 
-    return queryFilled && bodyFilled;
-  }, [queryFields, bodyFields, queryValues, bodyValues]);
+    return headerFilled && queryFilled && bodyFilled;
+  }, [
+    headerFields,
+    queryFields,
+    bodyFields,
+    headerValues,
+    queryValues,
+    bodyValues,
+  ]);
 
   const targetUrl = useMemo(() => {
     const queryEntries = Object.entries(queryValues).reduce<[string, string][]>(
@@ -100,8 +124,27 @@ export function Form({
     return `${resource}${separator}${searchParams.toString()}`;
   }, [resource, queryValues]);
 
-  const requestInit = useMemo((): RequestInit => {
-    const bodyEntries = Object.entries(bodyValues).reduce<
+  const isReservedHeader = (name: string) =>
+    name.trim().toLowerCase() === 'x-payment';
+
+  const headerEntries = useMemo(() => {
+    return Object.entries(headerValues).reduce<[string, string][]>(
+      (acc, [key, value]) => {
+        if (isReservedHeader(key)) return acc;
+        if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (trimmed.length > 0) {
+            acc.push([key, trimmed]);
+          }
+        }
+        return acc;
+      },
+      []
+    );
+  }, [headerValues]);
+
+  const bodyEntries = useMemo(() => {
+    return Object.entries(bodyValues).reduce<
       [string, FieldValue | number | boolean][]
     >((acc, [key, value]) => {
       const field = bodyFields.find(f => f.name === key);
@@ -128,17 +171,23 @@ export function Form({
       }
       return acc;
     }, []);
+  }, [bodyValues, bodyFields]);
 
+  const requestInit = useMemo((): RequestInit => {
     const reconstructedBody = reconstructNestedObject(
       Object.fromEntries(bodyEntries)
     );
 
+    const headers = new Headers();
+    for (const [k, v] of headerEntries) headers.set(k, v);
+
     return {
       method,
+      headers: headerEntries.length > 0 ? headers : undefined,
       body:
         bodyEntries.length > 0 ? JSON.stringify(reconstructedBody) : undefined,
     };
-  }, [method, bodyValues, bodyFields]);
+  }, [method, headerEntries, bodyEntries]);
 
   const supportedChains = useMemo(() => {
     const networks = x402Response.accepts?.map(a => a.network ?? '') ?? [];
@@ -155,12 +204,20 @@ export function Form({
   const [data, setData] = useState<X402FetchResponse | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
-  const hasFields = queryFields.length > 0 || bodyFields.length > 0;
+  const hasFields =
+    headerFields.length > 0 || queryFields.length > 0 || bodyFields.length > 0;
 
   return (
     <CardContent className="flex flex-col gap-4 p-4 border-t">
       {hasFields && (
         <div className="space-y-4">
+          <FieldSection
+            fields={headerFields}
+            values={headerValues}
+            onChange={handleHeaderChange}
+            prefix="header"
+            title="Header Parameters"
+          />
           <FieldSection
             fields={queryFields}
             values={queryValues}
