@@ -18,7 +18,9 @@
     "mcp_config": {
       "command": "node",
       "args": ["${__dirname}/server/index.cjs"],
-      "env": {}
+      "env": {
+        "INVITE_CODE": "${user_config.invite_code}"
+      }
     }
   },
   "tools": [
@@ -58,5 +60,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/merit-systems/x402scan/tree/main/packages/external/mcp"
+  },
+  "user_config": {
+    "invite_code": {
+      "type": "string",
+      "title": "Invite Code",
+      "description": "The invite code to redeem",
+      "required": false,
+      "default": ""
+    }
   }
 }

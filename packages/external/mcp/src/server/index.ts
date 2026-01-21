@@ -16,6 +16,7 @@ import { getWallet } from '@/lib/wallet';
 import type { Command } from '@/types';
 import { registerDiscoveryTools } from './tools/discover-resources';
 import { redeemInviteCode } from '@/lib/redeem-invite';
+import { MCP_VERSION } from './lib/version';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
@@ -24,9 +25,11 @@ export const startServer: Command = async flags => {
 
   const { account } = await getWallet();
 
-  if (invite) {
+  const code = invite ?? process.env.INVITE_CODE;
+
+  if (code) {
     await redeemInviteCode({
-      code: invite,
+      code,
       dev,
       address: account.address,
     });
@@ -35,7 +38,7 @@ export const startServer: Command = async flags => {
   const server = new McpServer(
     {
       name: '@x402scan/mcp',
-      version: '0.0.1',
+      version: MCP_VERSION,
       websiteUrl: 'https://x402scan.com/mcp',
       icons: [{ src: 'https://x402scan.com/logo.svg' }],
     },
