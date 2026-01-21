@@ -14,7 +14,7 @@ export const TerminalDemo: React.FC<McpSearchParams> = props => {
   return (
     <ClientDemosSection
       heading="In Your Terminal"
-      description="Give your favorite agent harness payment capabilities"
+      description="Give your agent the corporate card."
       cta={<CopyCommandButton {...props} />}
       graphic={<TerminalGraphic />}
       imageSide="right"

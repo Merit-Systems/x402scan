@@ -15,7 +15,7 @@ export const ClaudeDesktopDemo: React.FC<McpSearchParams> = props => {
   return (
     <ClientDemosSection
       heading="In Claude Desktop"
-      description="Use powerful APIs to build agents for knowledge work."
+      description="The best data is behind paywalls. Now your agent can pay."
       cta={
         <Link
           href={
