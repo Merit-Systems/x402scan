@@ -126,17 +126,17 @@ export function parseX402Response(
   if (!result.success) {
     return {
       success: false,
-      errors: result.error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
+      errors: [
+        'x402scan parseX402Response() error',
+        ...result.error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
+      ],
     };
   }
+
   return { success: true, data: result.data as ParsedX402Response };
 }
 
-/**
- * NOTE(shafu): get the output schema from a parsed x402 response
- * V1: outputSchema is in accepts[].outputSchema (bodyFields format)
- * V2: outputSchema comes from extensions.bazaar (info + schema)
- */
+// NOTE(shafu): get output schema for v1 and v2
 export function getOutputSchema(
   response: ParsedX402Response
 ): OutputSchema | undefined {
@@ -144,11 +144,11 @@ export function getOutputSchema(
     return response.accepts?.[0]?.outputSchema;
   }
 
-  const bazaar = response.extensions?.bazaar as DiscoveryExtension | undefined;
-  return bazaar ? getOutputSchemaFromBazaar(bazaar) : undefined;
+  const bazaar = response.extensions?.bazaar;
+  if (!bazaar) return undefined;
+  return getOutputSchemaFromBazaar(bazaar as DiscoveryExtension);
 }
 
-// NOTE(shafu): merge example data from info with field definitions from schema.
 function getOutputSchemaFromBazaar(
   bazaar: DiscoveryExtension
 ): OutputSchema | undefined {
