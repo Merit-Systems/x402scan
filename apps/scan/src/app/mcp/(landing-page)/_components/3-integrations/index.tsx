@@ -17,7 +17,7 @@ export const Integrations = () => {
         <IntegrationCard
           icon={<Search className="size-10" />}
           title="EnrichX402"
-          description="Deep research with Google Maps, LinkedIn, Grok (X/Twitter), Exa, and Firecrawl"
+          description="Deep research with Google Maps, LinkedIn, X / Twitter, Exa, and Firecrawl"
           cta={
             <a href="https://enrichx402.com" target="_blank">
               <Button className="w-fit" variant="outline">
