@@ -8,17 +8,16 @@ export const Integrations = () => {
     <LandingPageSection
       heading={
         <>
-          One Click,{' '}
-          <span className="text-primary">Unlimited Integrations</span>
+          Move at <span className="text-primary">Agent Speed</span>
         </>
       }
-      description="Integrate x402 with your favorite tools and platforms."
+      description="No connectors. No contracts. Try anything. Iterate fast."
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-4 mt-2">
         <IntegrationCard
           icon={<Search className="size-10" />}
           title="EnrichX402"
-          description="Deep research with Google Maps, Apollo, Grok (X/Twitter), Exa, Firecrawl, and Clado"
+          description="Deep research with Google Maps, LinkedIn, X / Twitter, Exa, and Firecrawl"
           cta={
             <a href="https://enrichx402.com" target="_blank">
               <Button className="w-fit" variant="outline">
