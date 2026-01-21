@@ -24,7 +24,7 @@ export const CreateInviteCodeButton = () => {
   const [code, setCode] = useState('');
   const [amount, setAmount] = useState('');
   const [maxRedemptions, setMaxRedemptions] = useState('1');
-  const [uniqueRecipients, setUniqueRecipients] = useState(false);
+  const [uniqueRecipients, setUniqueRecipients] = useState(true);
   const [expiresAt, setExpiresAt] = useState('');
   const [note, setNote] = useState('');
 
@@ -42,7 +42,7 @@ export const CreateInviteCodeButton = () => {
     setCode('');
     setAmount('');
     setMaxRedemptions('1');
-    setUniqueRecipients(false);
+    setUniqueRecipients(true);
     setExpiresAt('');
     setNote('');
   };
@@ -89,7 +89,9 @@ export const CreateInviteCodeButton = () => {
               id="code"
               placeholder="WELCOME10 (auto-generated if empty)"
               value={code}
-              onChange={e => setCode(e.target.value.toUpperCase())}
+              onChange={e =>
+                setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))
+              }
             />
             <p className="text-xs text-muted-foreground">
               Leave empty to auto-generate a code like MRT-XXXXX
