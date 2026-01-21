@@ -10,7 +10,7 @@ export const registerWalletTools: RegisterTools = ({
   account: { address },
 }) => {
   server.registerTool(
-    'check_balance',
+    'get_wallet_info',
     {
       description:
         'Check wallet address and USDC balance. Creates wallet if needed.',
@@ -29,17 +29,7 @@ export const registerWalletTools: RegisterTools = ({
         network: DEFAULT_NETWORK,
         networkName: getChainName(DEFAULT_NETWORK),
         usdcBalance: balance,
-        balanceFormatted: balance.toString(),
-        isNewWallet: balance === 0,
       });
     }
-  );
-
-  server.registerTool(
-    'get_wallet_address',
-    {
-      description: 'Get the wallet address.',
-    },
-    () => mcpSuccess({ address })
   );
 };
