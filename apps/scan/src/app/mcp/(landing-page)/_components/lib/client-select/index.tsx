@@ -14,7 +14,7 @@ import { SelectedClient } from './selected';
 
 import type { Clients } from '../../../../_components/clients/data';
 import type { ClientTypes } from '../../../../_components/clients/data';
-import type { McpSearchParams } from '../../../_lib/params';
+import type { McpSearchParams } from '../../../../_lib/params';
 
 interface Props extends McpSearchParams {
   text?: string;

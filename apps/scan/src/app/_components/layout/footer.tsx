@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="w-full border-t mt-auto">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4">
           {/* Left side - Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2 group">
@@ -18,7 +18,7 @@ export function Footer() {
           </div>
 
           {/* Right side - Links */}
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+          <div className="flex items-center gap-4 md:gap-6 text-sm text-muted-foreground">
             <Link
               href="https://github.com/merit-systems/x402scan"
               target="_blank"

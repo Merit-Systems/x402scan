@@ -1,7 +1,7 @@
 import { CopyCommandButton } from '../../lib/copy-button';
 import { ClientSelect } from './../../lib/client-select';
 
-import type { McpSearchParams } from '../../../_lib/params';
+import type { McpSearchParams } from '../../../../_lib/params';
 
 export const HeroBody: React.FC<McpSearchParams> = props => {
   return (
