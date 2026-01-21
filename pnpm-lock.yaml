@@ -454,6 +454,9 @@ importers:
       '@x402scan/analytics-db':
         specifier: workspace:*
         version: link:../../packages/internal/databases/analytics
+      '@x402scan/neverthrow':
+        specifier: workspace:*
+        version: link:../../packages/internal/neverthrow
       '@x402scan/scan-db':
         specifier: workspace:*
         version: link:../../packages/internal/databases/scan
@@ -511,9 +514,6 @@ importers:
       motion:
         specifier: 'catalog:'
         version: 12.24.10(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
-      neverthrow:
-        specifier: ^8.2.0
-        version: 8.2.0
       next:
         specifier: catalog:next
         version: 16.1.1(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)

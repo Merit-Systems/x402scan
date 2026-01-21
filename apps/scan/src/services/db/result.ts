@@ -1,7 +1,11 @@
-import { resultFromPromise, ok, err } from '@/lib/result';
+import {
+  serverResultFromPromise,
+  serverErr,
+  serverOk,
+} from '@x402scan/neverthrow/server';
 
 const surface = 'database';
 
-export const dbOk = ok(surface);
-export const dbErr = err(surface);
-export const dbResultFromPromise = resultFromPromise(surface);
+export const dbOk = serverOk(surface);
+export const dbErr = serverErr(surface);
+export const dbResultFromPromise = serverResultFromPromise(surface);

@@ -32,7 +32,7 @@ import {
 } from '@/services/solana/balance';
 import { solanaRpc } from '@/services/rpc/solana';
 
-import { cdpResultFromPromise } from './lib';
+import { cdpResultFromPromise } from '../../result';
 
 import type { Chain } from '@/types/chain';
 import type { TransactionModifyingSigner } from '@solana/kit';

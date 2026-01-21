@@ -12,9 +12,9 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import { Chain } from '@/types/chain';
 import { dbErr, dbOk, dbResultFromPromise } from '../result';
 
-import { cdpErr } from '@/services/cdp/server-wallet/wallets/lib';
+import { cdpErr } from '@/services/cdp/result';
 
-import type { CdpError } from '@/services/cdp/server-wallet/wallets/lib';
+import type { CdpError } from '@/services/cdp/result';
 
 export const validateInviteCodeSchema = z.object({
   code: z.string().min(1),

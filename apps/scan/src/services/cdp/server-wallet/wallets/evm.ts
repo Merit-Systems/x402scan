@@ -6,7 +6,7 @@ import { cdpClient } from '../client';
 import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
 import { convertTokenAmount } from '@/lib/token';
 
-import { cdpResultFromPromise } from './lib';
+import { cdpResultFromPromise } from '../../result';
 
 import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
 

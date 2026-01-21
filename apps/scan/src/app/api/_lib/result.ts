@@ -1,12 +1,12 @@
-import { err } from '@/lib/result';
+import { serverErr } from '@x402scan/neverthrow/server';
 
 import { NextResponse } from 'next/server';
 
-import type { ErrorType, Result } from '@/types/result';
+import type { ServerErrorType, ServerResult } from '@x402scan/neverthrow/types';
 
 const surface = 'api';
 
-export const apiErr = err(surface);
+export const apiErr = serverErr(surface);
 
 const errorTypeToStatusCode = {
   invalid_request: 400,
@@ -20,9 +20,9 @@ const errorTypeToStatusCode = {
   bad_gateway: 502,
   service_unavailable: 503,
   offline: 503,
-} as const satisfies Record<ErrorType, number>;
+} as const satisfies Record<ServerErrorType, number>;
 
-export const toNextResponse = <T>(result: Result<T, string>) =>
+export const toNextResponse = <T>(result: ServerResult<T, string>) =>
   result.match(
     data => NextResponse.json(data),
     error =>

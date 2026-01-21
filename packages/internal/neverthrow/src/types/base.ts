@@ -3,19 +3,6 @@ import type {
   ResultAsync as NeverthrowResultAsync,
 } from 'neverthrow';
 
-export type HttpErrorType =
-  | 'invalid_request'
-  | 'unauthorized'
-  | 'payment_required'
-  | 'forbidden'
-  | 'not_found'
-  | 'conflict'
-  | 'rate_limit'
-  | 'internal'
-  | 'bad_gateway'
-  | 'service_unavailable'
-  | 'offline';
-
 export interface BaseError<ErrorTypes extends string> {
   type: ErrorTypes;
   message: string;
