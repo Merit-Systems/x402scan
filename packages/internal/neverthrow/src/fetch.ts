@@ -1,47 +1,41 @@
-import { errAsync, resultFromPromise, resultFromSafePromise } from '.';
+import { err, resultFromPromise } from '.';
 
 import type { BaseFetchError, FetchErrorType } from './types/fetch';
+
+export const fetchErr = <Surface extends string>(
+  surface: Surface,
+  error: BaseFetchError
+) => err<FetchErrorType, Surface, BaseFetchError>(surface, error);
 
 export const safeFetch = <Surface extends string>(
   surface: Surface,
   input: URL | string,
   init?: RequestInit
 ) => {
-  return resultFromPromise<FetchErrorType, Surface, BaseFetchError>(surface)(
-    fetch(input, init),
-    error => ({
-      type: 'network' as const,
-      message: 'Network error',
-      error: error instanceof Error ? error : new Error(String(error)),
-    })
-  );
+  return resultFromPromise(surface, fetch(input, init), error => ({
+    type: 'network' as const,
+    message: 'Network error',
+    error: error instanceof Error ? error : new Error(String(error)),
+  }));
 };
 
-export const safeFetchJson = <Surface extends string, T, E = unknown>(
+export const safeFetchJson = <Surface extends string, T>(
   surface: Surface,
   input: URL | string,
-  init?: RequestInit,
-  errorMessage?: (e: E) => string
+  init?: RequestInit
 ) => {
-  return safeFetch(surface, input, init).andThen(response => {
+  return safeFetch<Surface>(surface, input, init).andThen(response => {
     if (!response.ok) {
-      return resultFromSafePromise(surface)(
-        response.json().catch(() => undefined) as Promise<E | undefined>
-      ).andThen(json =>
-        errAsync(surface)({
-          type: 'http' as const,
-          message:
-            json !== undefined && errorMessage
-              ? errorMessage(json)
-              : response.statusText,
-          status: response.status,
-          headers: response.headers,
-          json,
-        })
-      );
+      return fetchErr(surface, {
+        type: 'http' as const,
+        message: 'HTTP error',
+        status: response.status,
+        response,
+      });
     }
 
-    return resultFromPromise<FetchErrorType, Surface, BaseFetchError>(surface)(
+    return resultFromPromise<FetchErrorType, Surface, BaseFetchError, T>(
+      surface,
       response.json() as Promise<T>,
       error => ({
         type: 'parse' as const,

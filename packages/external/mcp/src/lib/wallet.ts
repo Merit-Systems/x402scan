@@ -32,14 +32,14 @@ export async function getWallet() {
   if (process.env.X402_PRIVATE_KEY) {
     const account = privateKeyToAccount(process.env.X402_PRIVATE_KEY as Hex);
     log.info(`Using wallet from env: ${account.address}`);
-    return ok(walletSurface)({ account, isNew: false });
+    return ok(walletSurface, { account, isNew: false });
   }
 
-  const readFileResult = await safeReadFile(walletSurface)(WALLET_FILE).andThen(
+  const readFileResult = await safeReadFile(walletSurface, WALLET_FILE).andThen(
     data => {
       const stored = storedWalletSchema.safeParse(JSON.parse(data));
       if (!stored.success) {
-        return err(walletSurface)({
+        return err(walletSurface, {
           type: 'invalid_data',
           message: 'Invalid wallet data',
           error: stored.error,
@@ -47,7 +47,7 @@ export async function getWallet() {
       }
       const account = privateKeyToAccount(stored.data.privateKey);
       log.info(`Loaded wallet: ${account.address}`);
-      return ok(walletSurface)({ account, isNew: false });
+      return ok(walletSurface, { account, isNew: false });
     }
   );
 
@@ -64,11 +64,11 @@ export async function getWallet() {
     createdAt: new Date().toISOString(),
   };
 
-  safeWriteFile(walletSurface)(WALLET_FILE, JSON.stringify(stored, null, 2));
-  safeChmod(walletSurface)(WALLET_FILE, 0o600);
+  safeWriteFile(walletSurface, WALLET_FILE, JSON.stringify(stored, null, 2));
+  safeChmod(walletSurface, WALLET_FILE, 0o600);
 
   log.info(`Created wallet: ${account.address}`);
   log.info(`Saved to: ${WALLET_FILE}`);
 
-  return ok(walletSurface)({ account, isNew: true });
+  return ok(walletSurface, { account, isNew: true });
 }

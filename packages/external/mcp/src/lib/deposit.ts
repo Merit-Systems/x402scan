@@ -67,7 +67,7 @@ const redeemInviteCodePrompt = async (
     error => {
       s.stop('Invite code redemption failed');
       log.warning(
-        chalk.yellow(`Failed to redeem invite code: ${error?.message}`)
+        chalk.yellow(`Failed to redeem invite code: ${error.message}`)
       );
       return false;
     }

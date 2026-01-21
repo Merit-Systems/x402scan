@@ -2,7 +2,7 @@ import type { BaseError, Error as ErrorType, ResultAsync } from './base';
 
 export type FetchErrorType = 'network' | 'http' | 'parse';
 
-export type FetchExtra<E = unknown> =
+export type FetchExtra =
   | {
       type: 'network';
       error: Error;
@@ -10,25 +10,24 @@ export type FetchExtra<E = unknown> =
   | {
       type: 'http';
       status: number;
-      headers: Headers;
-      json: E | undefined;
+      response: Response;
     }
   | {
       type: 'parse';
       error: Error;
     };
 
-export type BaseFetchError<E = unknown> = BaseError<FetchErrorType> &
-  FetchExtra<E>;
+export type BaseFetchError = BaseError<FetchErrorType> & FetchExtra;
 
-export type FetchError<Surface extends string, E = unknown> = ErrorType<
+export type FetchError<Surface extends string> = ErrorType<
   FetchErrorType,
   Surface
 > &
-  FetchExtra<E>;
+  FetchExtra;
 
-export type FetchResultAsync<
-  Surface extends string,
+export type FetchResultAsync<Surface extends string, T> = ResultAsync<
   T,
-  E = unknown,
-> = ResultAsync<T, FetchErrorType, Surface, FetchError<Surface, E>>;
+  FetchErrorType,
+  Surface,
+  FetchError<Surface>
+>;

@@ -12,17 +12,13 @@ export interface RedeemInviteProps {
   address: Address;
 }
 
-interface RedeemError {
-  type: string;
-  message: string;
-  surface: string;
-}
-
 interface RedeemResponse {
   redemptionId: string;
   txHash: string;
   amount: string;
 }
+
+const surface = 'redeem';
 
 export const redeemInviteCode = async ({
   code,
@@ -44,8 +40,8 @@ export const redeemInviteCode = async ({
     );
   }
 
-  const result = await safeFetchJson<'redeem', RedeemResponse, RedeemError>(
-    'redeem',
+  const result = await safeFetchJson<typeof surface, RedeemResponse>(
+    surface,
     `${getBaseUrl(dev)}/api/invite/redeem`,
     {
       method: 'POST',
@@ -56,8 +52,7 @@ export const redeemInviteCode = async ({
         code,
         recipientAddr: address,
       }),
-    },
-    ({ message }) => message
+    }
   );
 
   if (result.isOk()) {

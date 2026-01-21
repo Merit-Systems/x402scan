@@ -6,7 +6,8 @@ import type { ServerErrorType, ServerResult } from '@x402scan/neverthrow/types';
 
 const surface = 'api';
 
-export const apiErr = serverErr(surface);
+export const apiErr = (error: Parameters<typeof serverErr>[1]) =>
+  serverErr(surface, error);
 
 const errorTypeToStatusCode = {
   invalid_request: 400,
