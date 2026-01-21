@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "exports": {
+    ".": "./src/index.ts",
     "./server": "./src/server.ts",
     "./fetch": "./src/fetch.ts",
-    "./types": "./src/types/index.ts"
+    "./types": "./src/types/index.ts",
+    "./fs": "./src/fs.ts"
   },
   "scripts": {
     "dev": "tsup src/* --watch",
@@ -19,6 +21,7 @@
     "neverthrow": "^8.2.0"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",

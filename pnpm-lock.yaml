@@ -1003,6 +1003,9 @@ importers:
         specifier: ^8.2.0
         version: 8.2.0
     devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.19.27
       '@x402scan/eslint-config':
         specifier: workspace:*
         version: link:../configurations/eslint

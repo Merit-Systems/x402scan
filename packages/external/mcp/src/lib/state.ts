@@ -4,7 +4,7 @@ import fs from 'fs';
 import { configFile } from './fs';
 import { log } from './log';
 
-const STATE_FILE = configFile('state.json');
+const STATE_FILE = configFile('state.json', '{}');
 
 const stateSchema = z
   .looseObject({
@@ -13,10 +13,6 @@ const stateSchema = z
   .partial();
 
 export const getState = () => {
-  if (!fs.existsSync(STATE_FILE)) {
-    fs.writeFileSync(STATE_FILE, JSON.stringify({}));
-    return {};
-  }
   const result = stateSchema.safeParse(
     JSON.parse(fs.readFileSync(STATE_FILE, 'utf-8'))
   );

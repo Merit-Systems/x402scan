@@ -44,7 +44,7 @@ export const redeemInviteCode = async ({
     );
   }
 
-  return await safeFetchJson<'redeem', RedeemResponse, RedeemError>(
+  const result = await safeFetchJson<'redeem', RedeemResponse, RedeemError>(
     'redeem',
     `${getBaseUrl(dev)}/api/invite/redeem`,
     {
@@ -58,9 +58,13 @@ export const redeemInviteCode = async ({
       }),
     },
     ({ message }) => message
-  ).andTee(() => {
+  );
+
+  if (result.isOk()) {
     setState({
       redeemedCodes: [...(state.redeemedCodes ?? []), code],
     });
-  });
+  }
+
+  return result;
 };

@@ -1,4 +1,4 @@
-import { errAsync, resultFromPromise, resultFromSafePromise } from './lib';
+import { errAsync, resultFromPromise, resultFromSafePromise } from '.';
 
 import type { BaseFetchError, FetchErrorType } from './types/fetch';
 

@@ -6,7 +6,7 @@ import { appendFileSync } from 'fs';
 
 import { configFile } from './fs';
 
-const LOG_FILE = configFile('mcp.log');
+const LOG_FILE = configFile('mcp.log', '');
 const DEBUG = process.env.X402_DEBUG === 'true';
 
 function format(args: unknown[]): string {

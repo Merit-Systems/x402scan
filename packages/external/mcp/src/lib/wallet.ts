@@ -1,26 +1,24 @@
-/**
- * Keystore - private key management
- *
- * Stores wallet at ~/.x402scan-mcp/wallet.json
- * Can be overridden via X402_PRIVATE_KEY env var
- */
-
 import z from 'zod';
 
-import { randomBytes } from 'crypto';
-import * as fs from 'fs/promises';
+import { err, ok } from '@x402scan/neverthrow';
+import {
+  safeChmod,
+  safeReadFile,
+  safeWriteFile,
+} from '@x402scan/neverthrow/fs';
 
-import { privateKeyToAccount } from 'viem/accounts';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 import { log } from './log';
 import {
   ethereumAddressSchema,
   ethereumPrivateKeySchema,
 } from '../server/lib/schemas';
-import type { Hex } from 'viem';
 import { configFile } from './fs';
 
-const WALLET_FILE = configFile('wallet.json');
+import type { Hex } from 'viem';
+
+const WALLET_FILE = configFile('wallet.json', '');
 
 const storedWalletSchema = z.object({
   privateKey: ethereumPrivateKeySchema,
@@ -28,27 +26,37 @@ const storedWalletSchema = z.object({
   createdAt: z.string(),
 });
 
+const walletSurface = 'wallet';
+
 export async function getWallet() {
-  // Environment override
   if (process.env.X402_PRIVATE_KEY) {
     const account = privateKeyToAccount(process.env.X402_PRIVATE_KEY as Hex);
     log.info(`Using wallet from env: ${account.address}`);
-    return { account, isNew: false };
+    return ok(walletSurface)({ account, isNew: false });
   }
 
-  // Try loading existing
-  try {
-    const data = await fs.readFile(WALLET_FILE, 'utf-8');
-    const stored = storedWalletSchema.parse(JSON.parse(data));
-    const account = privateKeyToAccount(stored.privateKey);
-    log.info(`Loaded wallet: ${account.address}`);
-    return { account, isNew: false };
-  } catch {
-    // File doesn't exist or is invalid, generate new wallet
+  const readFileResult = await safeReadFile(walletSurface)(WALLET_FILE).andThen(
+    data => {
+      const stored = storedWalletSchema.safeParse(JSON.parse(data));
+      if (!stored.success) {
+        return err(walletSurface)({
+          type: 'invalid_data',
+          message: 'Invalid wallet data',
+          error: stored.error,
+        });
+      }
+      const account = privateKeyToAccount(stored.data.privateKey);
+      log.info(`Loaded wallet: ${account.address}`);
+      return ok(walletSurface)({ account, isNew: false });
+    }
+  );
+
+  if (readFileResult.isOk()) {
+    return readFileResult;
   }
 
   // Generate new
-  const privateKey = `0x${randomBytes(32).toString('hex')}` as const;
+  const privateKey = generatePrivateKey();
   const account = privateKeyToAccount(privateKey);
   const stored = {
     privateKey,
@@ -56,12 +64,11 @@ export async function getWallet() {
     createdAt: new Date().toISOString(),
   };
 
-  await fs.writeFile(WALLET_FILE, JSON.stringify(stored, null, 2));
-  try {
-    await fs.chmod(WALLET_FILE, 0o600);
-  } catch {}
+  safeWriteFile(walletSurface)(WALLET_FILE, JSON.stringify(stored, null, 2));
+  safeChmod(walletSurface)(WALLET_FILE, 0o600);
 
   log.info(`Created wallet: ${account.address}`);
   log.info(`Saved to: ${WALLET_FILE}`);
-  return { account, isNew: true };
+
+  return ok(walletSurface)({ account, isNew: true });
 }

@@ -1,4 +1,4 @@
-import { err, ok, resultFromPromise } from './lib';
+import { err, ok, resultFromPromise } from '.';
 
 import type { BaseServerError, ServerErrorType } from './types/server';
 
