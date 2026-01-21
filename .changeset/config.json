@@ -13,8 +13,6 @@
     "x402scan",
     "express-server-example",
     "hono-server-example",
-    "@x402scan/eslint-config",
-    "@x402scan/typescript-config",
     "@x402scan/analytics-db",
     "@x402scan/scan-db",
     "@x402scan/transfers-db",
