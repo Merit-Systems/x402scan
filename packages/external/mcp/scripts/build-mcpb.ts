@@ -1,5 +1,6 @@
 #!/usr/bin/env npx tsx
 
+import { resultFromPromise } from '@x402scan/neverthrow';
 import { execSync } from 'child_process';
 import {
   cpSync,
@@ -96,9 +97,8 @@ function main() {
   console.log(`  open x402scan.mcpb`);
 }
 
-try {
-  main();
-} catch (err) {
-  console.error('Error:', err);
-  process.exit(1);
-}
+resultFromPromise('build-mcpb', Promise.resolve(main()), err => ({
+  type: 'error',
+  message: 'Error building MCPB bundle',
+  error: err,
+}));

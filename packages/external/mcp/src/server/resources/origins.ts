@@ -12,7 +12,8 @@ const origins = ['enrichx402.com'];
 export const registerOrigins: RegisterResources = async ({ server }) => {
   await Promise.all(
     origins.map(async origin => {
-      const metadata = await getWebPageMetadata(`https://${origin}`);
+      const metadataResult = await getWebPageMetadata(`https://${origin}`);
+      const metadata = metadataResult.isOk() ? metadataResult.value : null;
       server.registerResource(
         origin,
         `api://${origin}`,

@@ -2,9 +2,8 @@
  * Logger - writes to ~/.x402scan-mcp/mcp.log and stderr
  */
 
-import { appendFileSync } from 'fs';
-
 import { configFile } from './fs';
+import { safeAppendFile } from '@x402scan/neverthrow/fs';
 
 const LOG_FILE = configFile('mcp.log', '');
 const DEBUG = process.env.X402_DEBUG === 'true';
@@ -20,9 +19,7 @@ function format(args: unknown[]): string {
 function write(level: string, msg: string, args: unknown[]): void {
   const formatted = args.length ? `${msg} ${format(args)}` : msg;
   const line = `[${new Date().toISOString()}] [${level}] ${formatted}\n`;
-  try {
-    appendFileSync(LOG_FILE, line);
-  } catch {}
+  safeAppendFile('log', LOG_FILE, line);
   if (process.env.X402_DEBUG === 'true') {
     console.error(`[x402scan] ${formatted}`);
   }
