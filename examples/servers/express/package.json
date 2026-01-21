@@ -1,5 +1,5 @@
 {
-  "name": "express-server-example",
+  "name": "@x402scan/express-server-example",
   "private": true,
   "type": "module",
   "scripts": {

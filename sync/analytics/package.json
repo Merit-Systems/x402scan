@@ -1,5 +1,5 @@
 {
-  "name": "sync-analytics",
+  "name": "@x402scan/sync-analytics",
   "version": "1.0.0",
   "private": true,
   "description": "Analytics cron jobs for x402scan",

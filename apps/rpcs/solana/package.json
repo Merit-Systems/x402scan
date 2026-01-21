@@ -1,5 +1,5 @@
 {
-  "name": "x402-solana-rpc",
+  "name": "@x402scan/solana-rpc",
   "version": "0.0.0",
   "private": true,
   "engines": {

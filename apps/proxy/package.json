@@ -1,5 +1,5 @@
 {
-  "name": "x402proxy",
+  "name": "@x402scan/proxy",
   "version": "1.0.0",
   "private": true,
   "type": "module",
