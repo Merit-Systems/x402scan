@@ -1,51 +1,34 @@
-import { err, ResultAsync } from 'neverthrow';
+import { errAsync, resultFromPromise, resultFromSafePromise } from './lib';
 
-import type { Error } from './error';
+import type { BaseFetchError, FetchErrorType } from './types/fetch';
 
-type FetchError = NetworkError | HttpError | ParseError;
-
-type NetworkError = Error<{
-  type: 'network';
-  error: Error;
-}>;
-
-type HttpError<E = unknown> = Error<{
-  type: 'http';
-  status: number;
-  headers: Headers;
-  json: E | undefined;
-}>;
-
-type ParseError = Error<{
-  type: 'parse';
-  error: Error;
-}>;
-
-function safeFetch(
+export const safeFetch = <Surface extends string>(
+  surface: Surface,
   input: URL | string,
   init?: RequestInit
-): ResultAsync<Response, FetchError> {
-  return ResultAsync.fromPromise(
+) => {
+  return resultFromPromise<FetchErrorType, Surface, BaseFetchError>(surface)(
     fetch(input, init),
-    (error): NetworkError => ({
+    error => ({
       type: 'network' as const,
       message: 'Network error',
       error: error instanceof Error ? error : new Error(String(error)),
     })
   );
-}
+};
 
-export const safeFetchJson = <T, E = unknown>(
+export const safeFetchJson = <Surface extends string, T, E = unknown>(
+  surface: Surface,
   input: URL | string,
   init?: RequestInit,
   errorMessage?: (e: E) => string
-): ResultAsync<T, FetchError> => {
-  return safeFetch(input, init).andThen(response => {
+) => {
+  return safeFetch(surface, input, init).andThen(response => {
     if (!response.ok) {
-      return ResultAsync.fromSafePromise(
+      return resultFromSafePromise(surface)(
         response.json().catch(() => undefined) as Promise<E | undefined>
       ).andThen(json =>
-        err<never, HttpError<E>>({
+        errAsync(surface)({
           type: 'http' as const,
           message:
             json !== undefined && errorMessage
@@ -58,9 +41,9 @@ export const safeFetchJson = <T, E = unknown>(
       );
     }
 
-    return ResultAsync.fromPromise(
+    return resultFromPromise<FetchErrorType, Surface, BaseFetchError>(surface)(
       response.json() as Promise<T>,
-      (error): ParseError => ({
+      error => ({
         type: 'parse' as const,
         message: 'Could not parse JSON from response',
         error: error instanceof Error ? error : new Error(String(error)),

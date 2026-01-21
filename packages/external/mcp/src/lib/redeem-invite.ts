@@ -1,6 +1,6 @@
 import { errAsync } from 'neverthrow';
 
-import { safeFetchJson } from './safe-fetch';
+import { safeFetchJson } from '@x402scan/neverthrow/fetch';
 import { getBaseUrl } from './utils';
 import { getState, setState } from './state';
 
@@ -28,7 +28,11 @@ export const redeemInviteCode = async ({
   code,
   dev,
   address,
-}: RedeemInviteProps) => {
+}: {
+  code: string;
+  dev: boolean;
+  address: Address;
+}) => {
   const state = getState();
 
   if (state.redeemedCodes?.includes(code)) {
@@ -40,7 +44,8 @@ export const redeemInviteCode = async ({
     );
   }
 
-  return await safeFetchJson<RedeemResponse, RedeemError>(
+  return await safeFetchJson<'redeem', RedeemResponse, RedeemError>(
+    'redeem',
     `${getBaseUrl(dev)}/api/invite/redeem`,
     {
       method: 'POST',

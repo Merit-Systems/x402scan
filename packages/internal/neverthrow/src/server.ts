@@ -1,14 +1,13 @@
 import { err, ok, resultFromPromise } from './lib';
 
-import type { BaseServerError, ServerErrorType } from './types';
+import type { BaseServerError, ServerErrorType } from './types/server';
 
 export const serverResultFromPromise =
   <Surface extends string>(surface: Surface) =>
-  <T>(promise: Promise<T>, error: string | ((e: unknown) => BaseServerError)) =>
-    resultFromPromise<ServerErrorType, Surface>(surface)(
+  <T>(promise: Promise<T>, error: (e: unknown) => BaseServerError) =>
+    resultFromPromise<ServerErrorType, Surface, BaseServerError>(surface)(
       promise,
-      error,
-      'internal'
+      error
     );
 
 export const serverOk =

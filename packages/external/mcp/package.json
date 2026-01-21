@@ -33,6 +33,7 @@
     "@x402/core": "catalog:x402",
     "@x402/evm": "catalog:x402",
     "@x402/fetch": "catalog:x402",
+    "@x402scan/neverthrow": "workspace:*",
     "chalk": "^5.6.2",
     "js-yaml": "^4.1.1",
     "jsonc-parser": "^3.3.1",

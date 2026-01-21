@@ -27,7 +27,11 @@ export const evmServerWallet =
 
     return {
       address: () =>
-        cdpResultFromPromise(getAddress(), 'Failed to get wallet address'),
+        cdpResultFromPromise(getAddress(), error => ({
+          type: 'internal',
+          message: 'Failed to get wallet address',
+          error,
+        })),
       getNativeTokenBalance: () =>
         cdpResultFromPromise(
           getAddress()
@@ -37,7 +41,11 @@ export const evmServerWallet =
               })
             )
             .then(result => parseFloat(formatEther(result.value))),
-          'Failed to get native token balance'
+          error => ({
+            type: 'internal',
+            message: 'Failed to get native token balance',
+            error,
+          })
         ),
       getTokenBalance: ({ token }) =>
         cdpResultFromPromise(
@@ -51,7 +59,11 @@ export const evmServerWallet =
               })
             )
             .then(balance => convertTokenAmount(balance)),
-          'Failed to get token balance'
+          error => ({
+            type: 'internal',
+            message: 'Failed to get token balance',
+            error,
+          })
         ),
       export: () =>
         cdpResultFromPromise(
@@ -61,7 +73,11 @@ export const evmServerWallet =
               name,
             })
           ),
-          'Failed to export wallet'
+          error => ({
+            type: 'internal',
+            message: 'Failed to export wallet',
+            error,
+          })
         ),
       signer: async () => toAccount(await getAccount()),
       sendTokens: ({ address, token, amount }) =>
@@ -84,7 +100,11 @@ export const evmServerWallet =
               })
               .then(({ transactionHash }) => transactionHash)
           ),
-          'Failed to send tokens'
+          error => ({
+            type: 'internal',
+            message: 'Failed to send tokens',
+            error,
+          })
         ),
     };
   };

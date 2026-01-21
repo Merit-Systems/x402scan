@@ -53,11 +53,18 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
 
   return {
     address: () =>
-      cdpResultFromPromise(getAddress(), 'Failed to get wallet address'),
+      cdpResultFromPromise(getAddress(), error => ({
+        type: 'internal',
+        message: 'Failed to get wallet address',
+        error,
+      })),
     getNativeTokenBalance: () =>
       cdpResultFromPromise(
         getAddress().then(address => getSolanaNativeBalance(address)),
-        'Failed to get native token balance'
+        () => ({
+          type: 'internal',
+          message: 'Failed to get native token balance',
+        })
       ),
     getTokenBalance: ({ token }) =>
       cdpResultFromPromise(
@@ -67,7 +74,10 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
             tokenMint: token.address as SolanaAddress,
           })
         ),
-        'Failed to get token balance'
+        () => ({
+          type: 'internal',
+          message: 'Failed to get token balance',
+        })
       ),
     export: () =>
       cdpResultFromPromise(
@@ -77,7 +87,11 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
             name,
           })
         ),
-        'Failed to export wallet'
+        error => ({
+          type: 'internal',
+          message: 'Failed to export wallet',
+          error,
+        })
       ),
     signer: async () => getModifyingSigner(await getAccount()) as Signer,
     sendTokens: ({ address, token, amount }) =>
@@ -160,7 +174,11 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
 
           return transactionSignatureBase58;
         })(),
-        'Failed to send tokens'
+        error => ({
+          type: 'internal',
+          message: 'Failed to send tokens',
+          error,
+        })
       ),
   };
 };

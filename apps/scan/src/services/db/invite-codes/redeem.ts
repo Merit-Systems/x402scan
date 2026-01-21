@@ -29,7 +29,11 @@ export const validateInviteCode = async ({
     scanDb.inviteCode.findUnique({
       where: { code },
     }),
-    'Failed to find invite code'
+    error => ({
+      type: 'not_found',
+      message: 'Failed to find invite code',
+      error,
+    })
   );
 
   if (result.isErr()) {
@@ -202,7 +206,11 @@ export const redeemInviteCode = async ({
         isolationLevel: 'Serializable',
       }
     ),
-    'Invite code redemption failed'
+    error => ({
+      type: 'internal',
+      message: 'Invite code redemption failed',
+      error,
+    })
   );
 
   if (transactionResult.isErr()) {
@@ -274,7 +282,11 @@ export const redeemInviteCode = async ({
         completedAt: new Date(),
       },
     }),
-    'Failed to update redemption status'
+    error => ({
+      type: 'internal',
+      message: 'Failed to update redemption status',
+      error,
+    })
   );
 
   if (updateSuccessResult.isErr()) {
@@ -314,7 +326,11 @@ const handleRedemptionFailure = async ({
         completedAt: new Date(),
       },
     }),
-    'Failed to update redemption status'
+    error => ({
+      type: 'internal',
+      message: 'Failed to update redemption status',
+      error,
+    })
   );
 
   await dbResultFromPromise(
@@ -322,7 +338,11 @@ const handleRedemptionFailure = async ({
       where: { id: inviteCodeId },
       data: { redemptionCount: { decrement: 1 } },
     }),
-    'Failed to decrement redemption count'
+    error => ({
+      type: 'internal',
+      message: 'Failed to decrement redemption count',
+      error,
+    })
   ).map(async updatedCode => {
     if (
       updatedCode.status === InviteCodeStatus.EXHAUSTED &&

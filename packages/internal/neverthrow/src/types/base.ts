@@ -11,7 +11,8 @@ export interface BaseError<ErrorTypes extends string> {
 export type Error<
   ErrorTypes extends string,
   Surface extends string,
-> = BaseError<ErrorTypes> & {
+  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
+> = BE & {
   surface: Surface;
 };
 
@@ -19,10 +20,12 @@ export type Result<
   T,
   ErrorTypes extends string,
   Surface extends string,
-> = NeverthrowResult<T, Error<ErrorTypes, Surface>>;
+  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
+> = NeverthrowResult<T, Error<ErrorTypes, Surface, BE>>;
 
 export type ResultAsync<
   T,
   ErrorTypes extends string,
   Surface extends string,
-> = NeverthrowResultAsync<T, Error<ErrorTypes, Surface>>;
+  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
+> = NeverthrowResultAsync<T, Error<ErrorTypes, Surface, BE>>;

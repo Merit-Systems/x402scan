@@ -2,30 +2,28 @@ import {
   ResultAsync as NeverthrowResultAsync,
   ok as neverthrowOk,
   err as neverthrowErr,
+  okAsync as neverthrowOkAsync,
+  errAsync as neverthrowErrAsync,
 } from 'neverthrow';
 
-import type { ResultAsync, BaseError } from './types';
+import type { ResultAsync, BaseError, Error } from './types';
 
 export const resultFromPromise =
-  <ErrorTypes extends string, Surface extends string>(surface: Surface) =>
+  <
+    ErrorTypes extends string,
+    Surface extends string,
+    BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
+  >(
+    surface: Surface
+  ) =>
   <T>(
     promise: Promise<T>,
-    error: string | ((e: unknown) => BaseError<ErrorTypes>),
-    defaultError: ErrorTypes
-  ): ResultAsync<T, ErrorTypes, Surface> =>
-    NeverthrowResultAsync.fromPromise(
-      promise,
-      typeof error === 'function'
-        ? e => ({
-            ...error(e),
-            surface,
-          })
-        : () => ({
-            type: defaultError,
-            message: error,
-            surface,
-          })
-    );
+    error: (e: unknown) => BE
+  ): ResultAsync<T, ErrorTypes, Surface, BE> =>
+    NeverthrowResultAsync.fromPromise(promise, e => ({
+      ...error(e),
+      surface,
+    }));
 
 export const ok =
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -35,8 +33,28 @@ export const ok =
 
 export const err =
   <ErrorTypes extends string, Surface extends string>(surface: Surface) =>
-  (error: BaseError<ErrorTypes>) =>
-    neverthrowErr({
+  <BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>>(error: BE) =>
+    neverthrowErr<never, Error<ErrorTypes, Surface>>({
       ...error,
       surface,
     });
+
+export const okAsync =
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  <Surface extends string>(surface: Surface) =>
+    <T>(data: T): ResultAsync<T, never, Surface, never> =>
+      neverthrowOkAsync(data);
+
+export const errAsync =
+  <ErrorTypes extends string, Surface extends string>(surface: Surface) =>
+  <BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>>(error: BE) =>
+    neverthrowErrAsync({
+      ...error,
+      surface,
+    });
+
+export const resultFromSafePromise =
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  <Surface extends string>(surface: Surface) =>
+    <T>(promise: Promise<T>): ResultAsync<T, never, Surface, never> =>
+      NeverthrowResultAsync.fromSafePromise(promise);

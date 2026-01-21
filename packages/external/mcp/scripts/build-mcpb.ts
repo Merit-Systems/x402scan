@@ -1,12 +1,4 @@
 #!/usr/bin/env npx tsx
-/**
- * Build the .mcpb bundle for Claude Desktop installation.
- *
- * This script:
- * 1. Builds the server with all dependencies bundled (dist-bundle/)
- * 2. Creates the bundle/ directory structure for mcpb
- * 3. Runs mcpb pack to create the .mcpb file
- */
 
 import { execSync } from 'child_process';
 import {

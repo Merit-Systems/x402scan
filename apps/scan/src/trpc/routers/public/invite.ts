@@ -10,7 +10,19 @@ export const inviteRouter = createTRPCRouter({
   validate: publicProcedure
     .input(validateInviteCodeSchema)
     .query(async ({ input }) => {
-      return validateInviteCode(input);
+      const result = await validateInviteCode(input);
+      return result.match(
+        data =>
+          ({
+            success: true,
+            data,
+          }) as const,
+        error =>
+          ({
+            success: false,
+            error: error,
+          }) as const
+      );
     }),
 
   redeem: publicProcedure

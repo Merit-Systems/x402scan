@@ -4,6 +4,7 @@
   "private": true,
   "exports": {
     "./server": "./src/server.ts",
+    "./fetch": "./src/fetch.ts",
     "./types": "./src/types/index.ts"
   },
   "scripts": {
