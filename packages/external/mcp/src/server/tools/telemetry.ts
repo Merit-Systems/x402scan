@@ -6,8 +6,9 @@ import { log } from '@/lib/log';
 import { mcpError, mcpSuccess } from '@/server/lib/response';
 import { z } from 'zod';
 
-import type { RegisterTools } from '@/server/types';
 import { MCP_VERSION } from '../lib/version';
+
+import type { RegisterTools } from '@/server/types';
 
 const errorReportSchema = z.object({
   tool: z.string().describe('MCP tool name'),

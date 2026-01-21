@@ -1,4 +1,9 @@
+import { readFileSync } from 'fs';
 import { defineConfig } from 'tsup';
+
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as {
+  version: string;
+};
 
 export default defineConfig([
   // Default build for npm package (external dependencies)
@@ -12,6 +17,9 @@ export default defineConfig([
     splitting: false,
     treeshake: true,
     outDir: 'dist/esm',
+    define: {
+      __MCP_VERSION__: JSON.stringify(pkg.version),
+    },
   },
   // Bundled build for mcpb (all dependencies included in single file)
   // Uses CJS format to handle dynamic require() calls in dependencies like tweetnacl
@@ -25,5 +33,8 @@ export default defineConfig([
     noExternal: [/.*/], // Bundle all dependencies
     splitting: false, // Single file output
     platform: 'node', // Ensure Node.js built-ins are handled properly
+    define: {
+      __MCP_VERSION__: JSON.stringify(pkg.version),
+    },
   },
 ]);
