@@ -9,7 +9,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const NAVBAR_HEIGHT = 64;
+const NAVBAR_HEIGHT = 64;
 
 export const NavbarContainer: React.FC<Props> = ({ children }) => {
   const isMobile = useIsMobile();
@@ -61,7 +61,7 @@ export const NavbarContainer: React.FC<Props> = ({ children }) => {
         },
       }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className={`fixed top-0 z-50 flex items-center justify-between px-4 py-2 backdrop-blur-sm border-t-0 border-border`}
+      className={`fixed top-0 z-50 flex items-center justify-between px-7 pt-5 pb-4 backdrop-blur-sm border-t-0 border-border`}
       style={{
         borderStyle: 'solid',
         borderColor: 'rgba(0,0,0,0.08)',

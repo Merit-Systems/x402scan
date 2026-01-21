@@ -2,7 +2,7 @@ import { Check, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
-import { useSolanaWallet } from '@/app/(app)/_contexts/solana/hook';
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import { useSvmSend } from '@/app/(app)/_hooks/send/use-svm-send';
 

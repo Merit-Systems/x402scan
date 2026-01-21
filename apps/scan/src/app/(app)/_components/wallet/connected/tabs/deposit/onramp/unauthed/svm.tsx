@@ -2,7 +2,7 @@ import { NoSessionContent } from './component';
 
 import { useSiws } from '@/app/(app)/_hooks/sign-in/use-siws';
 
-import { useSolanaWallet } from '@/app/(app)/_contexts/solana/hook';
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import type { UiWalletAccount } from '@wallet-standard/react';
 import { Chain } from '@/types/chain';

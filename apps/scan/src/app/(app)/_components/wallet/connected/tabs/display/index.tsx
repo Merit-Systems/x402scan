@@ -19,7 +19,7 @@ import { CopyCode } from '@/components/ui/copy-code';
 import { AuthenticationMethod, ItemContainer } from './item';
 import { Balance } from './balance';
 
-import { useSolanaWallet } from '@/app/(app)/_contexts/solana/hook';
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import type { User } from '@coinbase/cdp-hooks';
 

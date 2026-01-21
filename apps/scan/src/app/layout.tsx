@@ -23,6 +23,7 @@ import type { Metadata, Viewport } from 'next';
 import { SessionProvider } from 'next-auth/react';
 
 import './globals.css';
+import { SolanaWalletProvider } from './_contexts/solana/provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -117,22 +118,24 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
           <TRPCReactProvider>
             <CDPHooksProvider>
               <WagmiProvider>
-                <PostHogProvider>
-                  <ThemeProvider
-                    attribute="class"
-                    defaultTheme="light"
-                    storageKey="x402scan-theme"
-                    enableSystem={true}
-                  >
-                    <div className="min-h-screen flex flex-col relative">
-                      {children}
-                      {(env.NEXT_PUBLIC_NODE_ENV === 'development' ||
-                        env.NEXT_PUBLIC_VERCEL_ENV !== 'production') && (
-                        <ReactQueryDevtools />
-                      )}
-                    </div>
-                  </ThemeProvider>
-                </PostHogProvider>
+                <SolanaWalletProvider>
+                  <PostHogProvider>
+                    <ThemeProvider
+                      attribute="class"
+                      defaultTheme="light"
+                      storageKey="x402scan-theme"
+                      enableSystem={true}
+                    >
+                      <div className="min-h-screen flex flex-col relative">
+                        {children}
+                        {(env.NEXT_PUBLIC_NODE_ENV === 'development' ||
+                          env.NEXT_PUBLIC_VERCEL_ENV !== 'production') && (
+                          <ReactQueryDevtools />
+                        )}
+                      </div>
+                    </ThemeProvider>
+                  </PostHogProvider>
+                </SolanaWalletProvider>
               </WagmiProvider>
             </CDPHooksProvider>
           </TRPCReactProvider>

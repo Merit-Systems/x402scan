@@ -1,6 +1,6 @@
 import { useConnect } from '@wallet-standard/react';
 
-import { useSolanaWallet } from '@/app/(app)/_contexts/solana/hook';
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import { cn } from '@/lib/utils';
 

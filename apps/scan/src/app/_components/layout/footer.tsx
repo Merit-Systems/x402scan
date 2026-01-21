@@ -5,13 +5,13 @@ import { Logo } from '@/components/logo';
 export function Footer() {
   return (
     <footer className="w-full border-t mt-auto">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
         <div className="flex items-center justify-between gap-4">
           {/* Left side - Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2 group">
               <Logo className="size-5" />
-              <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+              <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors font-mono">
                 x402scan
               </span>
             </Link>

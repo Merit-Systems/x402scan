@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useSiwe } from '@/app/(app)/_hooks/sign-in/use-siwe';
 import { useSiws } from '@/app/(app)/_hooks/sign-in/use-siws';
 
-import { useSolanaWallet } from '@/app/(app)/_contexts/solana/hook';
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import type { UiWalletAccount } from '@wallet-standard/react';
 import type { ConnectedWallets } from '@/app/(app)/_hooks/use-connected-wallets';

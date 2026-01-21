@@ -9,7 +9,7 @@ import { PriceConfirmationDialog } from '../price-confirmation-dialog';
 import { useSvmX402FetchWithConfirmation } from '@/app/(app)/_hooks/x402/svm-with-confirmation';
 import { useSPLTokenBalance } from '@/app/(app)/_hooks/balance/token/use-svm-token-balance';
 
-import { useSolanaWallet } from '@/app/(app)/_contexts/solana/hook';
+import { useSolanaWallet } from '@/app/_contexts/solana/hook';
 
 import type { SupportedChain } from '@/types/chain';
 import { Chain } from '@/types/chain';
