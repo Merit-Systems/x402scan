@@ -6,7 +6,7 @@ import z from 'zod';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 const generateInviteCode = (): string => {
-  let code = 'MRT-';
+  let code = 'MRT';
   for (let i = 0; i < 5; i++) {
     code += CODE_CHARS.charAt(Math.floor(Math.random() * CODE_CHARS.length));
   }

@@ -94,7 +94,7 @@ export const CreateInviteCodeButton = () => {
               }
             />
             <p className="text-xs text-muted-foreground">
-              Leave empty to auto-generate a code like MRT-XXXXX
+              Leave empty to auto-generate a code like MRTXXXXX
             </p>
           </div>
 
