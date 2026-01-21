@@ -7,8 +7,9 @@ import { HeadingContainer } from '../../../../_components/layout/page-utils';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 
+import { X402V2Badge } from '@/app/(app)/_components/x402/v2-badge';
+
 import { SearchButton } from './search-button';
-import { X402V2Badge } from '@/app/_components/x402/v2-badge';
 
 export const HomeHeading = () => {
   return (

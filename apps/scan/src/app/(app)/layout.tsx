@@ -15,13 +15,7 @@ import { SolanaWalletProvider } from './_contexts/solana/provider';
 
 import { ChainSelector } from './_components/layout/navbar/chain-selector';
 
-import { connection } from 'next/server';
-
-export default async function RootLayout({
-  children,
-  breadcrumbs,
-}: LayoutProps<'/'>) {
-  await connection();
+export default function AppLayout({ children, breadcrumbs }: LayoutProps<'/'>) {
   return (
     <ChainProvider>
       <SearchProvider>
