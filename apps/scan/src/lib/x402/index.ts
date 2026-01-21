@@ -54,30 +54,30 @@ export const paymentRequirementsSchema = z3.union([
 
 type PaymentRequirements = PaymentRequirementsV1 | PaymentRequirementsV2;
 
-function isV2PaymentRequirement(
+function isV2Accept(
   accept: PaymentRequirements
 ): accept is PaymentRequirementsV2 {
   return 'amount' in accept;
 }
 
-/**
- * NOTE(shafu): we do this because we want to store the payment requirements
- * in the database in a common format, which for legacy reasons is v1.
- */
-function normalizePaymentRequirement(
+// NOTE(shafu): normalize v2 and v1 to a common accept format
+function normalizeAccept(
   accept: PaymentRequirements,
   resource?: X402ResponseV2['resource'],
   outputSchema?: OutputSchemaV1
 ): NormalizedAccept {
-  if (isV2PaymentRequirement(accept)) {
+  const common = {
+    payTo: accept.payTo,
+    asset: accept.asset,
+    maxTimeoutSeconds: accept.maxTimeoutSeconds,
+    extra: accept.extra,
+  };
+  if (isV2Accept(accept)) {
     return {
+      ...common,
       scheme: accept.scheme as 'exact',
       network: normalizeChainId(accept.network),
       maxAmountRequired: accept.amount,
-      payTo: accept.payTo,
-      asset: accept.asset,
-      maxTimeoutSeconds: accept.maxTimeoutSeconds,
-      extra: accept.extra,
       resource: resource?.url,
       description: resource?.description,
       mimeType: resource?.mimeType,
@@ -85,13 +85,10 @@ function normalizePaymentRequirement(
     };
   }
   return {
+    ...common,
     scheme: accept.scheme,
     network: accept.network ?? '',
     maxAmountRequired: accept.maxAmountRequired,
-    payTo: accept.payTo,
-    asset: accept.asset,
-    maxTimeoutSeconds: accept.maxTimeoutSeconds,
-    extra: accept.extra,
     resource: accept.resource,
     description: accept.description,
     mimeType: accept.mimeType,
@@ -110,7 +107,7 @@ export function normalizeAccepts(
 
   return (
     response.accepts?.map(accept =>
-      normalizePaymentRequirement(accept, resource, outputSchema)
+      normalizeAccept(accept, resource, outputSchema)
     ) ?? []
   );
 }
