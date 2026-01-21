@@ -5,7 +5,12 @@ import { formatUnits } from 'viem';
 import type { Result } from 'neverthrow';
 import { ResultAsync } from 'neverthrow';
 
-import { scanDb } from '@x402scan/scan-db';
+import {
+  InviteCodeStatus,
+  Prisma,
+  RedemptionStatus,
+  scanDb,
+} from '@x402scan/scan-db';
 
 import { inviteWallets } from '@/services/cdp/server-wallet/invite';
 
@@ -108,8 +113,8 @@ export const redeemInviteCode = async ({
 
   // Use a transaction with serializable isolation to prevent race conditions
   // This ensures atomic check-and-increment of redemption count
-  try {
-    const result = await scanDb.$transaction(
+  const transactionResult = await ResultAsync.fromPromise(
+    scanDb.$transaction(
       async tx => {
         // Lock and fetch the invite code
         const inviteCode = await tx.inviteCode.findUnique({
@@ -123,7 +128,7 @@ export const redeemInviteCode = async ({
           });
         }
 
-        if (inviteCode.status !== 'ACTIVE') {
+        if (inviteCode.status !== InviteCodeStatus.ACTIVE) {
           return dbErr({
             type: 'conflict',
             message: `Invite code is ${inviteCode.status.toLowerCase()}`,
@@ -134,7 +139,7 @@ export const redeemInviteCode = async ({
           // Update status to expired
           await tx.inviteCode.update({
             where: { id: inviteCode.id },
-            data: { status: 'EXPIRED' },
+            data: { status: InviteCodeStatus.EXPIRED },
           });
           return dbErr({
             type: 'conflict',
@@ -194,7 +199,7 @@ export const redeemInviteCode = async ({
             inviteCodeId: inviteCode.id,
             recipientAddr: normalizedAddr,
             amount: inviteCode.amount,
-            status: 'PENDING',
+            status: RedemptionStatus.PENDING,
           },
         });
 
@@ -205,7 +210,7 @@ export const redeemInviteCode = async ({
         ) {
           await tx.inviteCode.update({
             where: { id: inviteCode.id },
-            data: { status: 'EXHAUSTED' },
+            data: { status: InviteCodeStatus.EXHAUSTED },
           });
         }
 
@@ -214,110 +219,231 @@ export const redeemInviteCode = async ({
       {
         isolationLevel: 'Serializable',
       }
-    );
+    ),
+    (error): DatabaseError => {
+      console.error('Invite code redemption transaction failed:', error);
 
-    if (result.isErr()) {
-      return dbErr<RedeemInviteCodeData>(result.error);
+      // Check if this is a Prisma error from the conditional update failing
+      // (i.e., redemptionCount was no longer < maxRedemptions due to race condition)
+      const isPrismaNotFound =
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025';
+
+      if (isPrismaNotFound) {
+        return {
+          type: 'conflict',
+          message: 'Invite code has been fully redeemed',
+        };
+      }
+
+      return {
+        type: 'internal',
+        message: 'Unable to process redemption. Please try again later.',
+      };
     }
+  );
 
-    const { inviteCode, redemption } = result.value;
+  if (transactionResult.isErr()) {
+    return dbErr(transactionResult.error);
+  }
 
-    // Now send the tokens (outside transaction - can't roll back blockchain tx)
-    try {
-      const wallet = inviteWallets[Chain.BASE];
-      const token = usdc(Chain.BASE);
-      const amountFloat = parseFloat(
-        formatUnits(inviteCode.amount, token.decimals)
-      );
+  // The transaction returned a Result - unwrap it
+  const innerResult = transactionResult.value;
+  if (innerResult.isErr()) {
+    return dbErr(innerResult.error);
+  }
 
-      const walletAddress = await wallet.address();
-      const walletBalance = await wallet.getTokenBalance({ token });
-      console.log(
-        `Invite wallet: ${walletAddress}, balance: ${walletBalance} USDC, sending: ${amountFloat} USDC to ${recipientAddr}`
-      );
+  const { inviteCode, redemption } = innerResult.value;
 
-      const txHash = await wallet.sendTokens({
-        token,
-        amount: amountFloat,
-        address: recipientAddr as `0x${string}`,
-      });
+  // Now send the tokens (outside transaction - can't roll back blockchain tx)
+  const wallet = inviteWallets[Chain.BASE];
+  const token = usdc(Chain.BASE);
+  const amountFloat = parseFloat(
+    formatUnits(inviteCode.amount, token.decimals)
+  );
 
-      // Update redemption as successful
-      await scanDb.inviteRedemption.update({
+  const walletAddressResult = await ResultAsync.fromPromise(
+    wallet.address(),
+    (e): DatabaseError => ({
+      type: 'internal',
+      message: e instanceof Error ? e.message : 'Failed to get wallet address',
+    })
+  );
+
+  if (walletAddressResult.isErr()) {
+    console.error(
+      'Invite code redemption transfer failed:',
+      walletAddressResult.error.message
+    );
+    await ResultAsync.fromPromise(
+      scanDb.inviteRedemption.update({
         where: { id: redemption.id },
         data: {
-          status: 'SUCCESS',
-          txHash,
+          status: RedemptionStatus.FAILED,
+          failureReason: walletAddressResult.error.message,
           completedAt: new Date(),
         },
-      });
-
-      return dbOk({
-        redemptionId: redemption.id,
-        txHash,
-        amount: formatUnits(inviteCode.amount, token.decimals),
-      });
-    } catch (error) {
-      // Log the actual error for debugging
-      console.error('Invite code redemption transfer failed:', error);
-
-      // Update redemption as failed
-      await scanDb.inviteRedemption.update({
-        where: { id: redemption.id },
-        data: {
-          status: 'FAILED',
-          failureReason:
-            error instanceof Error ? error.message : 'Unknown error',
-          completedAt: new Date(),
-        },
-      });
-
-      // Decrement redemption count since transfer failed
-      const updatedCode = await scanDb.inviteCode.update({
+      }),
+      () => null
+    );
+    await ResultAsync.fromPromise(
+      scanDb.inviteCode.update({
         where: { id: inviteCode.id },
-        data: {
-          redemptionCount: { decrement: 1 },
-        },
-      });
-
-      // If code was marked exhausted but now has room, reactivate it
+        data: { redemptionCount: { decrement: 1 } },
+      }),
+      () => null
+    ).map(async updatedCode => {
       if (
-        updatedCode.status === 'EXHAUSTED' &&
+        updatedCode.status === InviteCodeStatus.EXHAUSTED &&
         (updatedCode.maxRedemptions === 0 ||
           updatedCode.redemptionCount < updatedCode.maxRedemptions)
       ) {
         await scanDb.inviteCode.update({
           where: { id: inviteCode.id },
-          data: { status: 'ACTIVE' },
+          data: { status: InviteCodeStatus.ACTIVE },
         });
       }
-
-      return dbErr({
-        type: 'internal',
-        message: 'Unable to process redemption. Please try again later.',
-      });
-    }
-  } catch (error) {
-    console.error('Invite code redemption transaction failed:', error);
-
-    // Check if this is a Prisma error from the conditional update failing
-    // (i.e., redemptionCount was no longer < maxRedemptions due to race condition)
-    const isPrismaNotFound =
-      error instanceof Error &&
-      error.name === 'PrismaClientKnownRequestError' &&
-      'code' in error &&
-      error.code === 'P2025';
-
-    if (isPrismaNotFound) {
-      return dbErr({
-        type: 'conflict',
-        message: 'Invite code has been fully redeemed',
-      });
-    }
-
+    });
     return dbErr({
       type: 'internal',
       message: 'Unable to process redemption. Please try again later.',
     });
   }
+
+  const walletBalanceResult = await ResultAsync.fromPromise(
+    wallet.getTokenBalance({ token }),
+    (e): DatabaseError => ({
+      type: 'internal',
+      message: e instanceof Error ? e.message : 'Failed to get wallet balance',
+    })
+  );
+
+  if (walletBalanceResult.isErr()) {
+    console.error(
+      'Invite code redemption transfer failed:',
+      walletBalanceResult.error.message
+    );
+    await ResultAsync.fromPromise(
+      scanDb.inviteRedemption.update({
+        where: { id: redemption.id },
+        data: {
+          status: RedemptionStatus.FAILED,
+          failureReason: walletBalanceResult.error.message,
+          completedAt: new Date(),
+        },
+      }),
+      () => null
+    );
+    await ResultAsync.fromPromise(
+      scanDb.inviteCode.update({
+        where: { id: inviteCode.id },
+        data: { redemptionCount: { decrement: 1 } },
+      }),
+      () => null
+    ).map(async updatedCode => {
+      if (
+        updatedCode.status === InviteCodeStatus.EXHAUSTED &&
+        (updatedCode.maxRedemptions === 0 ||
+          updatedCode.redemptionCount < updatedCode.maxRedemptions)
+      ) {
+        await scanDb.inviteCode.update({
+          where: { id: inviteCode.id },
+          data: { status: InviteCodeStatus.ACTIVE },
+        });
+      }
+    });
+    return dbErr({
+      type: 'internal',
+      message: 'Unable to process redemption. Please try again later.',
+    });
+  }
+
+  console.log(
+    `Invite wallet: ${walletAddressResult.value}, balance: ${walletBalanceResult.value} USDC, sending: ${amountFloat} USDC to ${recipientAddr}`
+  );
+
+  const sendTokensResult = await ResultAsync.fromPromise(
+    wallet.sendTokens({
+      token,
+      amount: amountFloat,
+      address: recipientAddr as `0x${string}`,
+    }),
+    (e): DatabaseError => ({
+      type: 'internal',
+      message: e instanceof Error ? e.message : 'Failed to send tokens',
+    })
+  );
+
+  if (sendTokensResult.isErr()) {
+    console.error(
+      'Invite code redemption transfer failed:',
+      sendTokensResult.error.message
+    );
+    await ResultAsync.fromPromise(
+      scanDb.inviteRedemption.update({
+        where: { id: redemption.id },
+        data: {
+          status: RedemptionStatus.FAILED,
+          failureReason: sendTokensResult.error.message,
+          completedAt: new Date(),
+        },
+      }),
+      () => null
+    );
+    await ResultAsync.fromPromise(
+      scanDb.inviteCode.update({
+        where: { id: inviteCode.id },
+        data: { redemptionCount: { decrement: 1 } },
+      }),
+      () => null
+    ).map(async updatedCode => {
+      if (
+        updatedCode.status === InviteCodeStatus.EXHAUSTED &&
+        (updatedCode.maxRedemptions === 0 ||
+          updatedCode.redemptionCount < updatedCode.maxRedemptions)
+      ) {
+        await scanDb.inviteCode.update({
+          where: { id: inviteCode.id },
+          data: { status: InviteCodeStatus.ACTIVE },
+        });
+      }
+    });
+    return dbErr({
+      type: 'internal',
+      message: 'Unable to process redemption. Please try again later.',
+    });
+  }
+
+  const txHash = sendTokensResult.value;
+
+  // Update redemption as successful
+  const updateSuccessResult = await ResultAsync.fromPromise(
+    scanDb.inviteRedemption.update({
+      where: { id: redemption.id },
+      data: {
+        status: RedemptionStatus.SUCCESS,
+        txHash,
+        completedAt: new Date(),
+      },
+    }),
+    (e): DatabaseError => ({
+      type: 'internal',
+      message:
+        e instanceof Error ? e.message : 'Failed to update redemption status',
+    })
+  );
+
+  if (updateSuccessResult.isErr()) {
+    // Token transfer succeeded but DB update failed - log but still return success
+    console.error(
+      'Failed to update redemption status after successful transfer:',
+      updateSuccessResult.error.message
+    );
+  }
+
+  return dbOk({
+    redemptionId: redemption.id,
+    txHash,
+    amount: formatUnits(inviteCode.amount, token.decimals),
+  });
 };
