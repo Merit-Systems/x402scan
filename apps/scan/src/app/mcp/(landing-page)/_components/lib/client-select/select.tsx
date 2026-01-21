@@ -16,8 +16,9 @@ import { ClientIcon } from '../../../../_components/clients/icons';
 
 import type { Route } from 'next';
 import type { Clients } from '../../../../_components/clients/data';
+import type { McpSearchParams } from '@/app/mcp/_lib/params';
 
-interface Props {
+interface Props extends McpSearchParams {
   onClientSelect: (client: Clients) => void;
   clientType?: ClientTypes;
 }
@@ -25,6 +26,7 @@ interface Props {
 export const ClientsSelect: React.FC<Props> = ({
   onClientSelect,
   clientType,
+  invite,
 }) => {
   const router = useRouter();
 
@@ -59,7 +61,7 @@ export const ClientsSelect: React.FC<Props> = ({
                   client={key as Clients}
                   onClientSelect={() =>
                     router.push(
-                      `/mcp/${key.toLowerCase()}` as Route<'mcp/[client]'>
+                      `/mcp/${key.toLowerCase()}${invite ? `?invite=${invite}` : ''}` as Route<'mcp/[client]'>
                     )
                   }
                 />

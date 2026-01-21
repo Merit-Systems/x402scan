@@ -54,6 +54,7 @@ export const ClientSelect: React.FC<Props> = ({
           <ClientsSelect
             onClientSelect={setSelectedClient}
             clientType={clientType}
+            {...props}
           />
         )}
       </PopoverContent>
