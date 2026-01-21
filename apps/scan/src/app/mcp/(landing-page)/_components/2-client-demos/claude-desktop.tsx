@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ClientTypes } from '../../../_components/clients/data';
 import { ClientDemosSection } from './section';
 import Link from 'next/link';
-import type { McpSearchParams } from '../../_lib/params';
+import type { McpSearchParams } from '../../../_lib/params';
 
 export const ClaudeDesktopDemo: React.FC<McpSearchParams> = props => {
   return (

@@ -7,7 +7,7 @@ import { CodexInstall } from './codex';
 import { CursorInstall } from './cursor';
 import { VscodeInstall } from './vscode';
 
-import type { McpSearchParams } from '@/app/mcp/(landing-page)/_lib/params';
+import type { McpSearchParams } from '@/app/mcp/_lib/params';
 
 export type ClientInstallComponent = React.FC<McpSearchParams>;
 

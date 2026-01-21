@@ -9,7 +9,7 @@ import { ClientDemosSection } from './section';
 import { ClientTypes } from '../../../_components/clients/data';
 import { ClientSelect } from '../lib/client-select';
 
-import type { McpSearchParams } from '../../_lib/params';
+import type { McpSearchParams } from '../../../_lib/params';
 
 export const IdeDemo: React.FC<McpSearchParams> = props => {
   return (

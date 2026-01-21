@@ -11,7 +11,7 @@ import { clientInstall } from './client-install';
 import { clients } from '../../../../_components/clients/data';
 
 import type { Clients as ClientsEnum } from '../../../../_components/clients/data';
-import type { McpSearchParams } from '../../../_lib/params';
+import type { McpSearchParams } from '../../../../_lib/params';
 
 interface Props extends McpSearchParams {
   client: ClientsEnum;

@@ -1,19 +1,24 @@
+import { Check } from 'lucide-react';
+
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
 
-interface Props {
-  index: number;
-  currentStep: number;
+import { cn } from '@/lib/utils';
+
+export interface Step {
   title: string;
   content: React.ReactNode;
   continueText: string;
-  onNext?: () => void;
+  onNext: () => void;
+}
+
+interface Props extends Step {
+  index: number;
+  currentStep: number;
   onPrevious?: () => void;
 }
 
