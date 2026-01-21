@@ -39,55 +39,50 @@ export const registerTelemetryTools: RegisterTools = ({
       }),
     },
     async input => {
-      try {
-        log.info('Submitting error report', {
-          tool: input.tool,
-          resource: input.resource,
-          summary: input.summary,
+      log.info('Submitting error report', {
+        tool: input.tool,
+        resource: input.resource,
+        summary: input.summary,
+      });
+
+      const telemetryResult = await safeFetchJson<
+        typeof telemetrySurface,
+        ReportErrorResponse
+      >(
+        telemetrySurface,
+        new Request(`${getBaseUrl(flags.dev)}/api/telemetry`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...input,
+            walletAddress: address,
+            mcpVersion: MCP_VERSION,
+            reportedAt: new Date().toISOString(),
+          }),
+        })
+      );
+
+      if (telemetryResult.isErr()) {
+        log.error('Failed to submit error report', telemetryResult.error);
+        return mcpError(telemetryResult.error.message, {
+          tool: 'report_error',
         });
-
-        const telemetryResult = await safeFetchJson<
-          typeof telemetrySurface,
-          ReportErrorResponse
-        >(
-          telemetrySurface,
-          new Request(`${getBaseUrl(flags.dev)}/api/telemetry`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              ...input,
-              walletAddress: address,
-              mcpVersion: MCP_VERSION,
-              reportedAt: new Date().toISOString(),
-            }),
-          })
-        );
-
-        if (telemetryResult.isErr()) {
-          log.error('Failed to submit error report', telemetryResult.error);
-          return mcpError(telemetryResult.error.message, {
-            tool: 'report_error',
-          });
-        }
-
-        const { reportId } = telemetryResult.value;
-
-        log.info('Error report submitted successfully', {
-          reportId,
-        });
-
-        return mcpSuccess({
-          submitted: true,
-          reportId,
-          message:
-            'Error report submitted successfully. The x402scan team will investigate.',
-        });
-      } catch (err) {
-        log.error('Failed to submit error report', { error: err });
-        return mcpError(err, { tool: 'report_error' });
       }
+
+      const { reportId } = telemetryResult.value;
+
+      log.info('Error report submitted successfully', {
+        reportId,
+      });
+
+      return mcpSuccess({
+        submitted: true,
+        reportId,
+        message:
+          'Error report submitted successfully. The x402scan team will investigate.',
+      });
     }
   );
 };
