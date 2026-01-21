@@ -24,7 +24,7 @@
     "trigger:deploy:alerts": "turbo run trigger:deploy --filter=sync-alerts",
     "changeset": "changeset",
     "changeset:version": "changeset version",
-    "changeset:publish": "pnpm build:sdks && changeset publish"
+    "changeset:publish": "pnpm build:packages && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
