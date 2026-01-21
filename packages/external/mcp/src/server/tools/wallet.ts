@@ -1,6 +1,6 @@
 import { mcpSuccess } from '@/server/lib/response';
 
-import { getUSDCBalance } from '@/lib/balance';
+import { getBalance } from '@/lib/balance';
 import { DEFAULT_NETWORK, getChainName } from '@/lib/networks';
 
 import type { RegisterTools } from '@/server/types';
@@ -16,9 +16,7 @@ export const registerWalletTools: RegisterTools = ({
         'Check wallet address and USDC balance. Creates wallet if needed.',
     },
     async () => {
-      const balance = await getUSDCBalance({
-        address,
-      });
+      const balance = await getBalance(address);
 
       return mcpSuccess({
         address,

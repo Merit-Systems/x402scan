@@ -11,15 +11,7 @@ import { log } from './log';
 import type { Address } from 'viem';
 import { tokenBigIntToNumber } from './token';
 
-interface GetUSDCBalanceProps {
-  address: Address;
-  network?: string;
-}
-
-export async function getUSDCBalance({
-  address,
-  network = DEFAULT_NETWORK,
-}: GetUSDCBalanceProps) {
+export async function getBalance(address: Address, network = DEFAULT_NETWORK) {
   const caip2 = toCaip2(network);
 
   const chain = getChain(caip2);

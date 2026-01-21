@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { log } from '@clack/prompts';
 
-import { getUSDCBalance } from '@/lib/balance';
+import { getBalance } from '@/lib/balance';
 import { promptDeposit } from '@/lib/deposit';
 import { wait } from '@/lib/wait';
 
@@ -20,7 +20,7 @@ export const addFunds = async ({ flags, address, isNew }: AddFundsProps) => {
     log.info('To use paid API tools, you will need USDC in your wallet.');
     await promptDeposit(address, flags);
   } else {
-    const balance = await getUSDCBalance({ address });
+    const balance = await getBalance(address);
     await wait({
       startText: 'Checking balance...',
       stopText: `Balance: ${chalk.bold(`${balance} USDC`)} `,

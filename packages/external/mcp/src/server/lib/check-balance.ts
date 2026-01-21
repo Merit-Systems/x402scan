@@ -1,4 +1,4 @@
-import { getUSDCBalance } from '@/lib/balance';
+import { getBalance } from '@/lib/balance';
 import { getDepositLink, openDepositLink } from '@/lib/deposit';
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -20,9 +20,7 @@ export const checkBalance = async ({
   message,
   flags,
 }: CheckBalanceProps) => {
-  const balance = await getUSDCBalance({
-    address,
-  });
+  const balance = await getBalance(address);
 
   if (balance < amountNeeded) {
     const capabilities = server.server.getClientCapabilities();
