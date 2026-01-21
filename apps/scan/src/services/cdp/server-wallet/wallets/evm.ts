@@ -1,15 +1,18 @@
 import { getBalance, readContract } from 'wagmi/actions';
+import { toAccount } from 'viem/accounts';
 
 import { cdpClient } from '../client';
 
 import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
 import { convertTokenAmount } from '@/lib/token';
-import { toAccount } from 'viem/accounts';
+
+import { cdpResultFromPromise } from './lib';
+
+import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
 
 import type { EvmChain } from '@/types/chain';
 import type { Address } from 'viem';
 import type { NetworkServerWallet } from './types';
-import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
 
 export const evmServerWallet =
   <T extends EvmChain>(chain: T): NetworkServerWallet<EvmChain> =>
@@ -23,46 +26,65 @@ export const evmServerWallet =
     const wagmiConfig = createWagmiConfig();
 
     return {
-      address: getAddress,
-      getNativeTokenBalance: async () => {
-        const weiBalance = await getBalance(wagmiConfig, {
-          address: await getAddress(),
-        });
-        return parseFloat(formatEther(weiBalance.value));
-      },
-      getTokenBalance: async ({ token }) => {
-        const balance = await readContract(wagmiConfig, {
-          abi: erc20Abi,
-          address: token.address as Address,
-          args: [await getAddress()],
-          functionName: 'balanceOf',
-        });
-        return convertTokenAmount(balance);
-      },
-      export: async () => {
-        return cdpClient.evm.exportAccount({
-          address: await getAddress(),
-          name,
-        });
-      },
+      address: () =>
+        cdpResultFromPromise(getAddress(), 'Failed to get wallet address'),
+      getNativeTokenBalance: () =>
+        cdpResultFromPromise(
+          getAddress()
+            .then(address =>
+              getBalance(wagmiConfig, {
+                address,
+              })
+            )
+            .then(result => parseFloat(formatEther(result.value))),
+          'Failed to get native token balance'
+        ),
+      getTokenBalance: ({ token }) =>
+        cdpResultFromPromise(
+          getAddress()
+            .then(address =>
+              readContract(wagmiConfig, {
+                abi: erc20Abi,
+                address: token.address as Address,
+                args: [address],
+                functionName: 'balanceOf',
+              })
+            )
+            .then(balance => convertTokenAmount(balance)),
+          'Failed to get token balance'
+        ),
+      export: () =>
+        cdpResultFromPromise(
+          getAddress().then(address =>
+            cdpClient.evm.exportAccount({
+              address,
+              name,
+            })
+          ),
+          'Failed to export wallet'
+        ),
       signer: async () => toAccount(await getAccount()),
-      sendTokens: async ({ address, token, amount }) => {
-        const account = await getAccount();
-        const { transactionHash } = await account.sendTransaction({
-          network: chain,
-          transaction: {
-            to: token.address as Address,
-            data: encodeFunctionData({
-              abi: erc20Abi,
-              functionName: 'transfer',
-              args: [
-                address as Address,
-                parseUnits(amount.toString(), token.decimals),
-              ],
-            }),
-          },
-        });
-        return transactionHash;
-      },
+      sendTokens: ({ address, token, amount }) =>
+        cdpResultFromPromise(
+          getAccount().then(account =>
+            account
+              .sendTransaction({
+                network: chain,
+                transaction: {
+                  to: token.address as Address,
+                  data: encodeFunctionData({
+                    abi: erc20Abi,
+                    functionName: 'transfer',
+                    args: [
+                      address as Address,
+                      parseUnits(amount.toString(), token.decimals),
+                    ],
+                  }),
+                },
+              })
+              .then(({ transactionHash }) => transactionHash)
+          ),
+          'Failed to send tokens'
+        ),
     };
   };
