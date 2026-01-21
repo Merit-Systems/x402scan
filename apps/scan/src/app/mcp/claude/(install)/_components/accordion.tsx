@@ -142,7 +142,7 @@ export const ClaudeAccordion = () => {
         continueText="I'm Ready to Explore"
         onNext={() =>
           router.push(
-            '/mcp/claude/getting-started' as Route<'mcp/claude/getting-started'>
+            '/mcp/getting-started' as Route<'mcp/claude/getting-started'>
           )
         }
         onPrevious={() => setCurrentStep(prev => prev - 1)}
