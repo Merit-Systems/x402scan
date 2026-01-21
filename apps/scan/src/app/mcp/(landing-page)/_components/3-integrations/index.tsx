@@ -8,11 +8,10 @@ export const Integrations = () => {
     <LandingPageSection
       heading={
         <>
-          One Click,{' '}
-          <span className="text-primary">Unlimited Integrations</span>
+          Move at <span className="text-primary">Agent Speed</span>
         </>
       }
-      description="No connectors. No contracts. Just use."
+      description="No connectors. No contracts. Try anything. Iterate fast."
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-4 mt-2">
         <IntegrationCard
