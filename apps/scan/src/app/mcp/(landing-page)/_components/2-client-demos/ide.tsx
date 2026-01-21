@@ -9,13 +9,13 @@ import { ClientDemosSection } from './section';
 import { ClientTypes } from '../../../_components/clients/data';
 import { ClientSelect } from '../lib/client-select';
 
-import type { McpSearchParams } from '../../_lib/params';
+import type { McpSearchParams } from '../../../_lib/params';
 
 export const IdeDemo: React.FC<McpSearchParams> = props => {
   return (
     <ClientDemosSection
       heading="In Your IDE"
-      description="Integrate any x402 resource into your coding workflow with automatic micropayments"
+      description="Your coding agent can buy its own resources."
       cta={
         <ClientSelect {...props} text="Install" clientType={ClientTypes.IDE} />
       }

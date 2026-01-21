@@ -1,17 +1,17 @@
 'use client';
 
-import { Hash, Calendar, User, DollarSign, MoreHorizontal } from 'lucide-react';
+import { Calendar, DollarSign, Hash, MoreHorizontal, User } from 'lucide-react';
 
-import { Skeleton } from '@/components/ui/skeleton';
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Skeleton } from '@/components/ui/skeleton';
 import { formatCompactAgo, formatCurrency } from '@/lib/utils';
 import { formatUnits } from 'viem';
 
@@ -197,6 +197,15 @@ export const createColumns = (
               }
             >
               Copy Code
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                void navigator.clipboard.writeText(
+                  `${window.location.origin}/mcp?invite=${encodeURIComponent(row.original.code)}`
+                )
+              }
+            >
+              Copy Full URL
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

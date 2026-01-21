@@ -1,28 +1,34 @@
 'use client';
 
-import { Accordion } from '@/components/ui/accordion';
-import { useState } from 'react';
-import { ClaudeAccordionItem } from './item';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import type { Route } from 'next';
+import { useMemo, useState } from 'react';
 
-export const ClaudeAccordion = () => {
-  const [currentStep, setCurrentStep] = useState(0);
+import { useRouter } from 'next/navigation';
+
+import { toast } from 'sonner';
+
+import { Accordion } from '@/components/ui/accordion';
+
+import { ClaudeAccordionItem } from './item';
+
+import type { Route } from 'next';
+import type { Step } from './item';
+import type { McpSearchParams } from '@/app/mcp/_lib/params';
+import { CopyButton } from '@/components/ui/copy-button';
+
+export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
+  const [currentStep, setCurrentStep] = useState<number>(0);
   const [hasDownloadedMcpb, setHasDownloadedMcpb] = useState(false);
 
   const router = useRouter();
 
-  return (
-    <Accordion
-      type="single"
-      value={currentStep.toString()}
-      className="space-y-4   "
-    >
-      <ClaudeAccordionItem
-        index={0}
-        title="Install Claude Desktop"
-        content={
+  const goToNextStep = () => setCurrentStep(prev => prev + 1);
+  const goToPreviousStep = () => setCurrentStep(prev => prev - 1);
+
+  const steps: Step[] = useMemo(
+    () => [
+      {
+        title: 'Install Claude Desktop',
+        content: (
           <p>
             Go to the{' '}
             <a
@@ -35,16 +41,13 @@ export const ClaudeAccordion = () => {
             </a>{' '}
             website and download the latest version for your operating system.
           </p>
-        }
-        continueText="I Have Claude Desktop"
-        onNext={() => setCurrentStep(prev => prev + 1)}
-        onPrevious={() => setCurrentStep(prev => prev - 1)}
-        currentStep={currentStep}
-      />
-      <ClaudeAccordionItem
-        index={1}
-        title="Download the x402scan Extension"
-        content={
+        ),
+        continueText: 'I Have Claude Desktop',
+        onNext: goToNextStep,
+      },
+      {
+        title: 'Download the x402scan Extension',
+        content: (
           <p>
             The x402scan MCP is available as a{' '}
             <a
@@ -57,11 +60,11 @@ export const ClaudeAccordion = () => {
             </a>
             . Download it to continue the installation.
           </p>
-        }
-        continueText={hasDownloadedMcpb ? 'Continue' : 'Download'}
-        onNext={() => {
+        ),
+        continueText: hasDownloadedMcpb ? 'Continue' : 'Download',
+        onNext: () => {
           if (hasDownloadedMcpb) {
-            setCurrentStep(prev => prev + 1);
+            goToNextStep();
             return;
           }
           void fetch('/x402scan.mcpb')
@@ -76,21 +79,18 @@ export const ClaudeAccordion = () => {
               link.parentNode?.removeChild(link);
               window.URL.revokeObjectURL(url);
               setHasDownloadedMcpb(true);
-              setCurrentStep(prev => prev + 1);
+              goToNextStep();
             })
             .catch(err => {
               toast.error(
                 `Failed to download the MCP: ${err instanceof Error ? err.message : 'Unknown error'}`
               );
             });
-        }}
-        onPrevious={() => setCurrentStep(prev => prev - 1)}
-        currentStep={currentStep}
-      />
-      <ClaudeAccordionItem
-        index={2}
-        title="Open the Downloaded File"
-        content={
+        },
+      },
+      {
+        title: 'Open the Downloaded File',
+        content: (
           <div className="flex flex-col gap-2">
             <p>Open the downloaded file to install the MCP on Claude Desktop</p>
             <div className="bg-muted p-2 rounded-lg flex flex-col gap-2">
@@ -124,30 +124,69 @@ export const ClaudeAccordion = () => {
               </p>
             </div>
           </div>
-        }
-        continueText="I've Installed the MCP"
-        onNext={() => setCurrentStep(prev => prev + 1)}
-        onPrevious={() => setCurrentStep(prev => prev - 1)}
-        currentStep={currentStep}
-      />
-      <ClaudeAccordionItem
-        index={3}
-        title="Start Exploring x402"
-        content={
+        ),
+        continueText: "I've Installed the MCP",
+        onNext: goToNextStep,
+      },
+      ...(invite
+        ? [
+            {
+              title: 'Redeem Invite Code',
+              content: (
+                <div className="flex flex-col gap-2">
+                  <p>Paste the following prompt into a new chat window:</p>
+                  <div className="bg-muted p-2 rounded-lg flex justify-between items-center gap-2">
+                    <p>Redeem my invite code {invite} on the x402scan MCP</p>
+                    <CopyButton
+                      text={`Redeem my invite code ${invite} on the x402scan MCP`}
+                    />
+                  </div>
+                </div>
+              ),
+              continueText: 'Next',
+              onNext: () => {
+                goToNextStep();
+              },
+            },
+          ]
+        : []),
+      {
+        title: 'Start Exploring x402',
+        content: (
           <p>
             You can now access all x402-powered resources through the x402scan
             MCP!
           </p>
-        }
-        continueText="I'm Ready to Explore"
-        onNext={() =>
+        ),
+        continueText: "I'm Ready to Explore",
+        onNext: () =>
           router.push(
-            '/mcp/claude/getting-started' as Route<'mcp/claude/getting-started'>
-          )
-        }
-        onPrevious={() => setCurrentStep(prev => prev - 1)}
-        currentStep={currentStep}
-      />
+            '/mcp/getting-started' as Route<'mcp/claude/getting-started'>
+          ),
+      },
+    ],
+    [hasDownloadedMcpb, router, invite]
+  );
+
+  return (
+    <Accordion
+      type="single"
+      value={currentStep.toString()}
+      onValueChange={value => setCurrentStep(Number(value))}
+      className="space-y-4"
+    >
+      {steps.map((step, index) => (
+        <ClaudeAccordionItem
+          key={index}
+          index={index}
+          title={step.title}
+          content={step.content}
+          continueText={step.continueText}
+          onNext={step.onNext}
+          onPrevious={goToPreviousStep}
+          currentStep={currentStep}
+        />
+      ))}
     </Accordion>
   );
 };

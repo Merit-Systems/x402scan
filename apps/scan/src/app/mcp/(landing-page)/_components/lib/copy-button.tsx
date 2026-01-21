@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { cn } from '@/lib/utils';
 
-import type { McpSearchParams } from '../../_lib/params';
+import type { McpSearchParams } from '../../../_lib/params';
 
 interface Props extends McpSearchParams {
   className?: string;

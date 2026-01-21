@@ -18,7 +18,6 @@ export default function HomeLayout({
             label: 'Composer',
             href: '/composer' as const,
             subRoutes: ['/composer/chat', '/composer/agent'],
-            isNew: true,
           },
           {
             label: 'Marketplace',

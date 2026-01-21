@@ -1,11 +1,22 @@
+import { ChevronsLeftRight } from 'lucide-react';
+
 import { Body } from '@/app/_components/layout/page-utils';
+
+import { Logo } from '@/components/logo';
+
 import { ClientIcon } from '../../_components/clients/icons';
 import { Clients } from '../../_components/clients/data';
-import { Logo } from '@/components/logo';
-import { ChevronsLeftRight } from 'lucide-react';
-import { ClaudeAccordion } from './_components/accordion';
 
-export default function ClaudePage() {
+import { ClaudeAccordion } from './_components/accordion';
+import { mcpSearchParamsSchema } from '../../_lib/params';
+
+export default async function ClaudePage({
+  searchParams,
+}: PageProps<'/mcp/claude'>) {
+  const parsedSearchParams = mcpSearchParamsSchema.safeParse(
+    await searchParams
+  );
+
   return (
     <Body className="max-w-2xl mx-auto">
       <div className="flex flex-col gap-6">
@@ -18,13 +29,16 @@ export default function ClaudePage() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-bold">Add x402scan MCP to Claude</h1>
+          <h1 className="text-3xl md:text-4xl font-bold">
+            Add x402scan MCP to <br />
+            Claude Desktop
+          </h1>
           <p className="text-muted-foreground/80 text-lg">
             Experiment with building x402-powered agents and tools.
           </p>
         </div>
       </div>
-      <ClaudeAccordion />
+      <ClaudeAccordion {...parsedSearchParams.data} />
     </Body>
   );
 }

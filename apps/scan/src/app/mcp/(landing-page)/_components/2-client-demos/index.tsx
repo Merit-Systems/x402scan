@@ -3,7 +3,7 @@ import { ClaudeDesktopDemo } from './claude-desktop';
 import { IdeDemo } from './ide';
 import { TerminalDemo } from './terminal';
 
-import type { McpSearchParams } from '../../_lib/params';
+import type { McpSearchParams } from '../../../_lib/params';
 
 export const ClientDemos: React.FC<McpSearchParams> = props => {
   return (
@@ -13,7 +13,7 @@ export const ClientDemos: React.FC<McpSearchParams> = props => {
           Use x402 <span className="text-primary">Everywhere</span>
         </>
       }
-      description="Bring the power of x402 to your favorite AI agents."
+      description="One wallet. Every agent. No subscriptions."
     >
       <div className="flex flex-col gap-16">
         <ClaudeDesktopDemo {...props} />
