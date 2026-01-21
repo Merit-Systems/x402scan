@@ -1,9 +1,8 @@
 import chalk from 'chalk';
-import { log } from '@clack/prompts';
+import { log, spinner } from '@clack/prompts';
 
-import { getBalance } from '@/lib/balance';
-import { promptDeposit } from '@/lib/deposit';
-import { wait } from '@/lib/wait';
+import { getBalance } from '@/shared/balance';
+import { promptDeposit } from '@/cli/lib/deposit';
 
 import type { Address } from 'viem';
 import type { InstallFlags } from '..';
@@ -20,12 +19,19 @@ export const addFunds = async ({ flags, address, isNew }: AddFundsProps) => {
     log.info('To use paid API tools, you will need USDC in your wallet.');
     await promptDeposit(address, flags);
   } else {
-    const balance = await getBalance(address);
-    await wait({
-      startText: 'Checking balance...',
-      stopText: `Balance: ${chalk.bold(`${balance} USDC`)} `,
-      ms: 1000,
-    });
+    const { start, stop } = spinner();
+
+    start('Checking balance...');
+    const balanceResult = await getBalance(address);
+
+    if (balanceResult.isOk()) {
+      stop(`Balance: ${chalk.bold(`${balanceResult.value} USDC`)} `);
+    } else {
+      stop(`Error: ${balanceResult.error.message}`);
+      return;
+    }
+
+    const balance = balanceResult.value;
     if (balance < 1) {
       log.warning(
         chalk.bold(

@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 import { log as clackLog, confirm, outro, stream } from '@clack/prompts';
 
-import { log } from '@/lib/log';
+import { log } from '@/shared/log';
 
 import { clientMetadata, Clients } from '../clients';
 import {
@@ -17,7 +17,7 @@ import {
   setNestedValue,
 } from './lib';
 
-import { wait } from '@/lib/wait';
+import { wait } from '@/cli/lib/wait';
 
 import type { ClientConfigObject } from './types';
 import type { GlobalFlags } from '@/types';

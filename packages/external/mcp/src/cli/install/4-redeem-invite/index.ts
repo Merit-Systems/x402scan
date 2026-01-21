@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 import { log, spinner } from '@clack/prompts';
 
-import { wait } from '@/lib/wait';
+import { wait } from '@/cli/lib/wait';
 
-import { redeemInviteCode as redeemInviteCodeLib } from '@/lib/redeem-invite';
+import { redeemInviteCode as redeemInviteCodeLib } from '@/shared/redeem-invite';
 
-import type { RedeemInviteProps } from '@/lib/redeem-invite';
+import type { RedeemInviteProps } from '@/shared/redeem-invite';
 
 export const redeemInviteCode = async (props: RedeemInviteProps) => {
   const s = spinner();

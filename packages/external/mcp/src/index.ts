@@ -34,7 +34,7 @@ void yargs(hideBin(process.argv))
         required: false,
       }),
     async args => {
-      const { installMcpServer } = await import('@/install');
+      const { installMcpServer } = await import('@/cli/install');
       await installMcpServer(args);
     }
   )
@@ -43,7 +43,7 @@ void yargs(hideBin(process.argv))
     'Open the funding page',
     yargs => yargs,
     async args => {
-      const { fundMcpServer } = await import('@/fund');
+      const { fundMcpServer } = await import('@/cli/fund');
       await fundMcpServer(args);
     }
   )

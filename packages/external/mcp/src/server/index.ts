@@ -10,12 +10,12 @@ import { registerTelemetryTools } from './tools/telemetry';
 
 import { registerOrigins } from './resources/origins';
 
-import { log } from '@/lib/log';
-import { getWallet } from '@/lib/wallet';
+import { log } from '@/shared/log';
+import { getWallet } from '@/shared/wallet';
 
 import type { Command } from '@/types';
 import { registerDiscoveryTools } from './tools/discover-resources';
-import { redeemInviteCode } from '@/lib/redeem-invite';
+import { redeemInviteCode } from '@/shared/redeem-invite';
 import { MCP_VERSION } from './lib/version';
 import { outro } from '@clack/prompts';
 import chalk from 'chalk';

@@ -2,22 +2,13 @@ import chalk from 'chalk';
 import { select, text, log, spinner } from '@clack/prompts';
 import open from 'open';
 
-import { DEFAULT_NETWORK, getChainName } from './networks';
+import { DEFAULT_NETWORK, getChainName } from '../../shared/networks';
 import { wait } from './wait';
-import { getBaseUrl } from './utils';
-import { redeemInviteCode } from './redeem-invite';
+import { getDepositLink } from '../../shared/utils';
+import { redeemInviteCode } from '../../shared/redeem-invite';
 
 import type { GlobalFlags } from '@/types';
 import type { Address } from 'viem';
-
-export const getDepositLink = (address: string, flags: GlobalFlags) => {
-  return `${getBaseUrl(flags.dev)}/deposit/${address}`;
-};
-
-export const openDepositLink = async (address: string, flags: GlobalFlags) => {
-  const depositLink = getDepositLink(address, flags);
-  await open(depositLink);
-};
 
 export const promptDeposit = async (
   address: Address,

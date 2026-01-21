@@ -3,7 +3,7 @@ import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { mcpError, mcpSuccess } from '@/server/lib/response';
 import { requestSchema } from '@/server/lib/schemas';
 
-import { log } from '@/lib/log';
+import { log } from '@/shared/log';
 
 import { getRouteDetails } from '../lib/x402/get-route-details';
 

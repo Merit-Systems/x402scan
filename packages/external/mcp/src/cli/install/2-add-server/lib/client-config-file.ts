@@ -4,7 +4,7 @@ import process from 'process';
 import fs from 'fs';
 
 import { getPlatformPath } from './platforms';
-import { log } from '@/lib/log';
+import { log } from '@/shared/log';
 
 import { Clients } from '../../clients';
 

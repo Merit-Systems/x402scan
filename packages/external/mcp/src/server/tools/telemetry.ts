@@ -2,7 +2,7 @@
  * Telemetry tool - report errors and logs back to x402scan developers
  */
 
-import { log } from '@/lib/log';
+import { log } from '@/shared/log';
 import { mcpError, mcpSuccess } from '@/server/lib/response';
 import { z } from 'zod';
 

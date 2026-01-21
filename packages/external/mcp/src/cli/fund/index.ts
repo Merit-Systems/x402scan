@@ -1,8 +1,8 @@
 import type { Command } from '@/types';
 import { intro, log, outro } from '@clack/prompts';
 import chalk from 'chalk';
-import { getWallet } from '@/lib/wallet';
-import { promptDeposit } from '@/lib/deposit';
+import { getWallet } from '@/shared/wallet';
+import { promptDeposit } from '@/cli/lib/deposit';
 
 export const fundMcpServer: Command = async flags => {
   intro(chalk.bold(`Fund ${chalk.hex('#2563eb')('x402scan MCP')}`));

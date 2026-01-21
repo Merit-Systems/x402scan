@@ -12,11 +12,15 @@ export const safeFetch = <Surface extends string>(
   input: URL | string,
   init?: RequestInit
 ) => {
-  return resultFromPromise(surface, fetch(input, init), error => ({
-    type: 'network' as const,
-    message: 'Network error',
-    error: error instanceof Error ? error : new Error(String(error)),
-  }));
+  return resultFromPromise<FetchErrorType, Surface, BaseFetchError, Response>(
+    surface,
+    fetch(input, init),
+    error => ({
+      type: 'network' as const,
+      message: 'Network error',
+      error: error instanceof Error ? error : new Error(String(error)),
+    })
+  );
 };
 
 export const safeFetchJson = <Surface extends string, T>(

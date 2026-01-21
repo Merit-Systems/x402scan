@@ -1,3 +1,4 @@
+import type { safeFetch } from '../fetch';
 import type { BaseError, Error as ErrorType, ResultAsync } from './base';
 
 export type FetchErrorType = 'network' | 'http' | 'parse';
@@ -31,3 +32,5 @@ export type FetchResultAsync<Surface extends string, T> = ResultAsync<
   Surface,
   FetchError<Surface>
 >;
+
+export type SafeFetchResult = ReturnType<typeof safeFetch>;

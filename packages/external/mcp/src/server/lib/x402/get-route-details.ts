@@ -1,4 +1,4 @@
-import { tokenStringToNumber } from '@/lib/token';
+import { tokenStringToNumber } from '@/shared/token';
 import type { PaymentRequired } from '@x402/core/types';
 import type { DiscoveryExtension } from '@x402/extensions/bazaar';
 

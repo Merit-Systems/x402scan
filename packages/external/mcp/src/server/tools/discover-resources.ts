@@ -4,10 +4,10 @@
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { log } from '@/lib/log';
+import { log } from '@/shared/log';
 import { mcpError, mcpSuccess } from '@/server/lib/response';
-import { tokenStringToNumber } from '@/lib/token';
-import { getChainName } from '@/lib/networks';
+import { tokenStringToNumber } from '@/shared/token';
+import { getChainName } from '@/shared/networks';
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 
 // Discovery document schema per spec

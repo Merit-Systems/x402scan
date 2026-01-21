@@ -1,4 +1,4 @@
-import { getWallet } from '@/lib/wallet';
+import { getWallet } from '@/shared/wallet';
 import { getClient } from './1-get-client';
 import { addServer } from './2-add-server';
 import { addFunds } from './3-add-funds';
@@ -7,7 +7,7 @@ import { redeemInviteCode } from './4-redeem-invite';
 import type { Command, GlobalFlags } from '@/types';
 import { intro, outro } from '@clack/prompts';
 import chalk from 'chalk';
-import { log } from '@/lib/log';
+import { log } from '@/shared/log';
 
 export type InstallFlags = GlobalFlags<{
   client?: string;

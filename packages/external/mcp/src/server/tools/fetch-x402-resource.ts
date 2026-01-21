@@ -6,9 +6,9 @@ import { mcpError, mcpSuccess } from '@/server/lib/response';
 import { requestWithHeadersSchema } from '@/server/lib/schemas';
 import { FetchStates } from '@/server/types';
 
-import { log } from '@/lib/log';
-import { DEFAULT_NETWORK } from '@/lib/networks';
-import { tokenStringToNumber } from '@/lib/token';
+import { log } from '@/shared/log';
+import { DEFAULT_NETWORK } from '@/shared/networks';
+import { tokenStringToNumber } from '@/shared/token';
 
 import { checkBalance } from '../lib/check-balance';
 
