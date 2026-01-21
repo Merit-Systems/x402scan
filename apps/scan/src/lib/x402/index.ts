@@ -385,12 +385,17 @@ export function normalizeChainId(chainId: string): string {
   }
   if (chainId.startsWith('solana:')) {
     const suffix = chainId.split(':')[1];
-    if (suffix === 'mainnet') return 'solana';
-    if (suffix === 'devnet') return 'solana_devnet';
-    if (suffix === 'testnet') return 'solana_testnet';
-    if (suffix === '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp') return 'solana';
-    if (suffix === 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1') return 'solana_devnet';
-    if (suffix === '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z') return 'solana_testnet';
+    switch (suffix) {
+      case 'mainnet':
+      case '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp':
+        return 'solana';
+      case 'devnet':
+      case 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1':
+        return 'solana_devnet';
+      case 'testnet':
+      case '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z':
+        return 'solana_testnet';
+    }
     return `solana_${suffix}`;
   }
   return chainId;
