@@ -4,13 +4,12 @@ import { mcpSuccess, mcpError } from '../lib/response';
 
 import { normalizePaymentRequired } from '../lib/x402/protocol';
 
-import { createSIWxPayload } from '../vendor/sign-in-with-x/client';
-import { encodeSIWxHeader } from '../vendor/sign-in-with-x/encode';
+import { createSIWxPayload, encodeSIWxHeader } from '@x402scan/siwx';
+import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
 
 import { requestSchema } from '@/server/lib/schemas';
 
 import type { RegisterTools } from '@/server/types';
-import type { SIWxExtensionInfo } from '../vendor/sign-in-with-x/types';
 
 export const registerAuthTools: RegisterTools = ({ server, account }) => {
   server.registerTool(

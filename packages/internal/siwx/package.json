@@ -1,0 +1,35 @@
+{
+  "name": "@x402scan/siwx",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "dev": "tsup src/* --watch",
+    "lint": "eslint . --max-warnings 0",
+    "check:types": "tsc --noEmit",
+    "test": "vitest run",
+    "knip": "pnpm -w knip --workspace ./packages/internal/siwx",
+    "format": "pnpm -w format:dir ./packages/internal/siwx",
+    "format:check": "pnpm -w format:check:dir ./packages/internal/siwx"
+  },
+  "dependencies": {
+    "@scure/base": "^2.0.0",
+    "@x402/core": "catalog:x402",
+    "siwe": "catalog:",
+    "tweetnacl": "^1.0.3",
+    "viem": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

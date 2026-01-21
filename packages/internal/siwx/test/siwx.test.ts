@@ -1,5 +1,5 @@
 /**
- * Tests for vendored Sign-In-With-X implementation
+ * Tests for Sign-In-With-X implementation
  */
 
 import { describe, it, expect } from 'vitest';
@@ -12,7 +12,7 @@ import {
   validateSIWxMessage,
   verifySIWxSignature,
   SIGN_IN_WITH_X,
-} from './index.js';
+} from '../src/index.js';
 
 // Test wallet (DO NOT use in production)
 const TEST_PRIVATE_KEY =
