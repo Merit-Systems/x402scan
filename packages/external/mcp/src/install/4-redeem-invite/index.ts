@@ -14,20 +14,18 @@ export const redeemInviteCode = async (props: RedeemInviteProps) => {
   const result = await redeemInviteCodeLib(props);
 
   return result.match(
-    async ({ data }) => {
+    async ({ amount, txHash }) => {
       s.stop('Invite code redeemed successfully!');
 
       await wait({
         startText: 'Processing...',
         stopText: chalk.green(
-          `${chalk.bold(data.amount)} USDC has been sent to your wallet!`
+          `${chalk.bold(amount)} USDC has been sent to your wallet!`
         ),
         ms: 1000,
       });
 
-      log.info(
-        chalk.dim(`Transaction: https://basescan.org/tx/${data.txHash}`)
-      );
+      log.info(chalk.dim(`Transaction: https://basescan.org/tx/${txHash}`));
 
       return true;
     },

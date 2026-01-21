@@ -13,17 +13,15 @@ export interface RedeemInviteProps {
 }
 
 interface RedeemError {
-  success: false;
+  type: string;
   message: string;
+  surface: string;
 }
 
 interface RedeemResponse {
-  success: true;
-  data: {
-    redemptionId: string;
-    txHash: string;
-    amount: string;
-  };
+  redemptionId: string;
+  txHash: string;
+  amount: string;
 }
 
 export const redeemInviteCode = async ({
@@ -53,11 +51,9 @@ export const redeemInviteCode = async ({
       }),
     },
     ({ message }) => message
-  ).andTee(result => {
-    if (result.success) {
-      setState({
-        redeemedCodes: [...(state.redeemedCodes ?? []), code],
-      });
-    }
+  ).andTee(() => {
+    setState({
+      redeemedCodes: [...(state.redeemedCodes ?? []), code],
+    });
   });
 };

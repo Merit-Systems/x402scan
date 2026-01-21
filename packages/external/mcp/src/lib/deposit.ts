@@ -43,7 +43,7 @@ const redeemInviteCodePrompt = async (
   const result = await redeemInviteCode({ code, dev: flags.dev, address });
 
   return result.match(
-    async ({ data: { amount, txHash } }) => {
+    async ({ amount, txHash }) => {
       s.stop('Invite code redeemed successfully!');
 
       await wait({

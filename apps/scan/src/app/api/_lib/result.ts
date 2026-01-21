@@ -22,7 +22,7 @@ const errorTypeToStatusCode = {
   offline: 503,
 } as const satisfies Record<ErrorType, number>;
 
-export const toNextResponse = (result: Result<object, string>) =>
+export const toNextResponse = <T>(result: Result<T, string>) =>
   result.match(
     data => NextResponse.json(data),
     error =>
