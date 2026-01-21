@@ -7,7 +7,7 @@ import { normalizePaymentRequired } from '../lib/x402/protocol';
 import { createSIWxPayload } from '../vendor/sign-in-with-x/client';
 import { encodeSIWxHeader } from '../vendor/sign-in-with-x/encode';
 
-import { requestWithHeadersSchema } from '@/server/lib/schemas';
+import { requestSchema } from '@/server/lib/schemas';
 
 import type { RegisterTools } from '@/server/types';
 import type { SIWxExtensionInfo } from '../vendor/sign-in-with-x/types';
@@ -18,7 +18,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
     {
       description:
         'Make a request to a SIWX-protected endpoint. Handles auth flow automatically: detects SIWX requirement from 402 response, signs proof with server-provided challenge, retries.',
-      inputSchema: requestWithHeadersSchema,
+      inputSchema: requestSchema,
     },
     async ({ url, method, body, headers }) => {
       try {
@@ -31,7 +31,11 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
             'Content-Type': 'application/json',
             ...headers,
           },
-          body: body ? JSON.stringify(body) : undefined,
+          body: body
+            ? typeof body === 'string'
+              ? body
+              : JSON.stringify(body)
+            : undefined,
         });
 
         // If not 402, return the response directly

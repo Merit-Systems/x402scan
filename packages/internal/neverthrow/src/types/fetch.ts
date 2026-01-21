@@ -16,6 +16,8 @@ export type FetchExtra =
   | {
       type: 'parse';
       error: Error;
+      statusCode: number;
+      contentType: string;
     };
 
 export type BaseFetchError = BaseError<FetchErrorType> & FetchExtra;
@@ -34,3 +36,17 @@ export type FetchResultAsync<Surface extends string, T> = ResultAsync<
 >;
 
 export type SafeFetchResult = ReturnType<typeof safeFetch>;
+
+export type ParsedResponseType =
+  | 'json'
+  | 'arrayBuffer'
+  | 'blob'
+  | 'formData'
+  | 'text';
+
+export type ParsedResponse =
+  | { type: 'json'; data: unknown }
+  | { type: 'arrayBuffer'; data: ArrayBuffer }
+  | { type: 'blob'; data: Blob }
+  | { type: 'formData'; data: FormData }
+  | { type: 'text'; data: string };

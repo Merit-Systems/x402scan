@@ -42,8 +42,7 @@ export const redeemInviteCode = async ({
 
   const result = await safeFetchJson<typeof surface, RedeemResponse>(
     surface,
-    `${getBaseUrl(dev)}/api/invite/redeem`,
-    {
+    new Request(`${getBaseUrl(dev)}/api/invite/redeem`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +51,7 @@ export const redeemInviteCode = async ({
         code,
         recipientAddr: address,
       }),
-    }
+    })
   );
 
   if (result.isOk()) {

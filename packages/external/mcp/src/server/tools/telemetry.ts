@@ -49,18 +49,21 @@ export const registerTelemetryTools: RegisterTools = ({
         const telemetryResult = await safeFetchJson<
           typeof telemetrySurface,
           ReportErrorResponse
-        >(telemetrySurface, `${getBaseUrl(flags.dev)}/api/telemetry`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...input,
-            walletAddress: address,
-            mcpVersion: MCP_VERSION,
-            reportedAt: new Date().toISOString(),
-          }),
-        });
+        >(
+          telemetrySurface,
+          new Request(`${getBaseUrl(flags.dev)}/api/telemetry`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ...input,
+              walletAddress: address,
+              mcpVersion: MCP_VERSION,
+              reportedAt: new Date().toISOString(),
+            }),
+          })
+        );
 
         if (telemetryResult.isErr()) {
           log.error('Failed to submit error report', telemetryResult.error);

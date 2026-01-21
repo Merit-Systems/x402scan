@@ -8,57 +8,74 @@ import { log } from '@/shared/log';
 import { getRouteDetails } from '../lib/x402/get-route-details';
 
 import type { RegisterTools } from '@/server/types';
+import { safeFetch, safeParseResponse } from '@x402scan/neverthrow/fetch';
+import { buildRequest } from '../lib/build-request';
+
+const surface = 'check-x402-endpoint';
 
 export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
   server.registerTool(
-    'check_x402_endpoint',
+    'check-x402-endpoint',
     {
       description:
         'Check if an endpoint is x402-protected and get pricing options, schema, and auth requirements (if applicable).',
       inputSchema: requestSchema,
     },
-    async ({ url, method, body }) => {
-      try {
-        log.info('Querying endpoint', { url, method, body });
-        const response = await fetch(url, {
-          method,
-          body: body
-            ? typeof body === 'string'
-              ? body
-              : JSON.stringify(body)
-            : undefined,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+    async input => {
+      log.info('Querying endpoint', input);
 
-        const bodyText = await response.text().catch(() => undefined);
+      const responseResult = await safeFetch(surface, buildRequest(input));
 
-        if (response.status !== 402) {
+      if (responseResult.isErr()) {
+        return mcpError(responseResult.error);
+      }
+
+      const response = responseResult.value;
+
+      const parseResponse = await safeParseResponse(surface, response);
+
+      if (response.status !== 402) {
+        if (parseResponse.isErr()) {
           return mcpSuccess({
-            data: bodyText,
             statusCode: response.status,
             requiresPayment: false,
+            error: 'Could not parse response',
           });
         }
-
-        const paymentRequired = new x402HTTPClient(
-          new x402Client()
-        ).getPaymentRequiredResponse(
-          name => response.headers.get(name),
-          JSON.parse(bodyText ?? '{}')
-        );
-
-        const routeDetails = getRouteDetails(paymentRequired);
-
         return mcpSuccess({
-          requiresPayment: true,
           statusCode: response.status,
-          routeDetails,
+          requiresPayment: false,
+          type: parseResponse.value.type,
+          ...(['json', 'text'].includes(parseResponse.value.type)
+            ? { data: parseResponse.value.data }
+            : {}),
         });
-      } catch (err) {
-        return mcpError(err, { tool: 'query_endpoint', url });
       }
+
+      if (parseResponse.isErr()) {
+        return mcpSuccess({
+          statusCode: response.status,
+          requiresPayment: true,
+          error: 'Could not parse response',
+        });
+      }
+
+      const { type, data } = parseResponse.value;
+
+      const client = new x402HTTPClient(new x402Client());
+
+      const routeDetails = getRouteDetails(
+        client.getPaymentRequiredResponse(
+          name => response.headers.get(name),
+          type === 'json' ? data : undefined
+        )
+      );
+
+      return mcpSuccess({
+        requiresPayment: true,
+        statusCode: response.status,
+        routeDetails,
+      });
     }
   );
 };

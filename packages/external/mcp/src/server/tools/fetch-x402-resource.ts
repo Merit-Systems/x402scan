@@ -1,19 +1,25 @@
+import { safeFetch, safeParseResponse } from '@x402scan/neverthrow/fetch';
+
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { ExactEvmScheme } from '@x402/evm/exact/client';
-import { wrapFetchWithPayment } from '@x402/fetch';
 
-import { mcpError, mcpSuccess } from '@/server/lib/response';
-import { requestWithHeadersSchema } from '@/server/lib/schemas';
-import { FetchStates } from '@/server/types';
-
-import { log } from '@/shared/log';
 import { DEFAULT_NETWORK } from '@/shared/networks';
 import { tokenStringToNumber } from '@/shared/token';
 
+import { mcpError, mcpSuccess } from '@/server/lib/response';
+import { requestSchema } from '@/server/lib/schemas';
+
 import { checkBalance } from '../lib/check-balance';
+import {
+  safeCreatePaymentPayload,
+  safeGetPaymentRequired,
+  safeGetPaymentSettlement,
+} from '../lib/x402/result';
 
 import type { RegisterTools } from '@/server/types';
-import { parseResponse } from '../lib/parse-response';
+import { buildRequest } from '../lib/build-request';
+
+const surface = 'fetch-x402-resource';
 
 export const registerFetchX402ResourceTool: RegisterTools = ({
   server,
@@ -25,16 +31,14 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
     {
       description:
         'Fetches an x402-protected resource and handles payment automatically. If the resource is not x402-protected, it will return the raw response.',
-      inputSchema: requestWithHeadersSchema,
+      inputSchema: requestSchema,
     },
-    async ({ url, method, body, headers }) => {
+    async input => {
       const coreClient = x402Client.fromConfig({
         schemes: [
           { network: DEFAULT_NETWORK, client: new ExactEvmScheme(account) },
         ],
       });
-
-      let state: FetchStates = FetchStates.INITIAL_REQUEST;
 
       coreClient.onBeforePaymentCreation(async ({ selectedRequirements }) => {
         const amount = tokenStringToNumber(selectedRequirements.amount);
@@ -46,73 +50,126 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
             `This request costs ${amount} USDC. Your current balance is ${balance} USDC.`,
           flags,
         });
-        state = FetchStates.PAYMENT_REQUIRED;
       });
 
-      coreClient.onAfterPaymentCreation(async ctx => {
-        state = FetchStates.PAYMENT_CREATED;
-        log.info('After payment creation', ctx);
-        return Promise.resolve();
-      });
-
-      coreClient.onPaymentCreationFailure(async ctx => {
-        state = FetchStates.PAYMENT_FAILED;
-        log.info('Payment creation failure', ctx);
-        return Promise.resolve();
-      });
       const client = new x402HTTPClient(coreClient);
 
-      const fetchWithPay = wrapFetchWithPayment(fetch, client);
+      const fetchWithPay = safeWrapFetchWithPayment(client);
 
-      try {
-        const response = await fetchWithPay(url, {
-          method,
-          body:
-            typeof body === 'string'
-              ? body
-              : body
-                ? JSON.stringify(body)
-                : undefined,
-          headers: {
-            ...(body ? { 'Content-Type': 'application/json' } : {}),
-            ...headers,
-          },
-        });
+      const fetchResult = await fetchWithPay(buildRequest(input));
 
-        if (!response.ok) {
-          const errorResponse = {
-            data: await parseResponse(response),
-            statusCode: response.status,
-            state,
-          };
-          if (response.status === 402) {
-            return mcpError('Payment required', errorResponse);
-          }
-          return mcpError(
-            response.statusText ?? 'Request failed',
-            errorResponse
-          );
-        }
-
-        const getSettlement = () => {
-          try {
-            return client.getPaymentSettleResponse(name =>
-              response.headers.get(name)
-            );
-          } catch {
-            return undefined;
-          }
-        };
-
-        const settlement = getSettlement();
-
-        return mcpSuccess({
-          data: await parseResponse(response),
-          payment: settlement,
-        });
-      } catch (err) {
-        return mcpError(err, { state });
+      if (fetchResult.isErr()) {
+        return mcpError(fetchResult.error);
       }
+
+      const response = fetchResult.value;
+
+      const parseResponseResult = await safeParseResponse(surface, response);
+
+      if (parseResponseResult.isErr()) {
+        return mcpError({
+          ...parseResponseResult.error,
+          ...(response.status === 402
+            ? {
+                extra:
+                  'You do not have enough balance to pay for this request.',
+              }
+            : {}),
+        });
+      }
+
+      if (!response.ok) {
+        return mcpError({
+          statusCode: response.status,
+          contentType: response.headers.get('content-type') ?? 'Not specified',
+          body: ['json', 'text'].includes(parseResponseResult.value.type)
+            ? parseResponseResult.value.data
+            : undefined,
+          ...(response.status === 402
+            ? {
+                extra:
+                  'You do not have enough balance to pay for this request.',
+              }
+            : {}),
+        });
+      }
+
+      const settlementResult = await safeGetPaymentSettlement(
+        surface,
+        client,
+        response
+      );
+
+      return mcpSuccess({
+        data: parseResponseResult.value.data,
+        ...(settlementResult.isOk() ? { payment: settlementResult.value } : {}),
+      });
     }
   );
 };
+
+function safeWrapFetchWithPayment(client: x402HTTPClient) {
+  return async (input: RequestInfo | URL, init?: RequestInit) => {
+    const request = new Request(input, init);
+    const clonedRequest = request.clone();
+
+    const probeResult = await safeFetch(surface, request);
+
+    if (probeResult.isErr()) {
+      return probeResult;
+    }
+
+    if (probeResult.value.status !== 402) {
+      return probeResult;
+    }
+
+    const response = probeResult.value;
+
+    const paymentRequiredResult = await safeGetPaymentRequired(
+      surface,
+      client,
+      response
+    );
+
+    if (paymentRequiredResult.isErr()) {
+      return paymentRequiredResult;
+    }
+
+    const paymentRequired = paymentRequiredResult.value;
+
+    const paymentPayloadResult = await safeCreatePaymentPayload(
+      surface,
+      client,
+      paymentRequired
+    );
+
+    if (paymentPayloadResult.isErr()) {
+      return paymentPayloadResult;
+    }
+
+    const paymentPayload = paymentPayloadResult.value;
+
+    // Encode payment header
+    const paymentHeaders = client.encodePaymentSignatureHeader(paymentPayload);
+
+    // Check if this is already a retry to prevent infinite loops
+    if (
+      clonedRequest.headers.has('PAYMENT-SIGNATURE') ||
+      clonedRequest.headers.has('X-PAYMENT')
+    ) {
+      throw new Error('Payment already attempted');
+    }
+
+    // Add payment headers to cloned request
+    for (const [key, value] of Object.entries(paymentHeaders)) {
+      clonedRequest.headers.set(key, value);
+    }
+    clonedRequest.headers.set(
+      'Access-Control-Expose-Headers',
+      'PAYMENT-RESPONSE,X-PAYMENT-RESPONSE'
+    );
+
+    // Retry the request with payment
+    return await safeFetch(surface, clonedRequest);
+  };
+}

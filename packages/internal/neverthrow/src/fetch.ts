@@ -1,6 +1,10 @@
 import { err, resultFromPromise } from '.';
 
-import type { BaseFetchError, FetchErrorType } from './types/fetch';
+import type {
+  BaseFetchError,
+  FetchErrorType,
+  ParsedResponse,
+} from './types/fetch';
 
 export const fetchErr = <Surface extends string>(
   surface: Surface,
@@ -9,12 +13,11 @@ export const fetchErr = <Surface extends string>(
 
 export const safeFetch = <Surface extends string>(
   surface: Surface,
-  input: URL | string,
-  init?: RequestInit
+  request: Request
 ) => {
   return resultFromPromise<FetchErrorType, Surface, BaseFetchError, Response>(
     surface,
-    fetch(input, init),
+    fetch(request),
     error => ({
       type: 'network' as const,
       message: 'Network error',
@@ -25,10 +28,9 @@ export const safeFetch = <Surface extends string>(
 
 export const safeFetchJson = <Surface extends string, T>(
   surface: Surface,
-  input: URL | string,
-  init?: RequestInit
+  request: Request
 ) => {
-  return safeFetch<Surface>(surface, input, init).andThen(response => {
+  return safeFetch<Surface>(surface, request).andThen(response => {
     if (!response.ok) {
       return fetchErr(surface, {
         type: 'http' as const,
@@ -45,7 +47,51 @@ export const safeFetchJson = <Surface extends string, T>(
         type: 'parse' as const,
         message: 'Could not parse JSON from response',
         error: error instanceof Error ? error : new Error(String(error)),
+        statusCode: response.status,
+        contentType: response.headers.get('content-type') ?? 'Not specified',
       })
     );
   });
+};
+
+export const safeParseResponse = <Surface extends string>(
+  surface: Surface,
+  response: Response
+) => {
+  const parseByContentType = async (): Promise<ParsedResponse> => {
+    const contentType = response.headers.get('content-type') ?? '';
+
+    if (contentType.includes('application/json')) {
+      return { type: 'json', data: (await response.json()) as unknown };
+    }
+
+    if (
+      contentType.includes('image/') ||
+      contentType.includes('audio/') ||
+      contentType.includes('video/') ||
+      contentType.includes('application/octet-stream') ||
+      contentType.includes('application/pdf')
+    ) {
+      return { type: 'arrayBuffer', data: await response.arrayBuffer() };
+    }
+
+    if (contentType.includes('multipart/form-data')) {
+      return { type: 'formData', data: await response.formData() };
+    }
+
+    return { type: 'text', data: await response.text() };
+  };
+
+  return resultFromPromise<
+    FetchErrorType,
+    Surface,
+    BaseFetchError,
+    ParsedResponse
+  >(surface, parseByContentType(), error => ({
+    type: 'parse' as const,
+    message: 'Could not parse response',
+    error: error instanceof Error ? error : new Error(String(error)),
+    statusCode: response.status,
+    contentType: response.headers.get('content-type') ?? 'Not specified',
+  }));
 };

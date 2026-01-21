@@ -23,9 +23,6 @@ export const requestSchema = z.object({
     .unknown()
     .optional()
     .describe('Request body for POST/PUT/PATCH methods'),
-});
-
-export const requestWithHeadersSchema = requestSchema.extend({
   headers: z
     .record(z.string(), z.string())
     .optional()
