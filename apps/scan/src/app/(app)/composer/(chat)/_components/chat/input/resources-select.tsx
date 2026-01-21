@@ -19,7 +19,7 @@ import { Favicons } from '@/app/(app)/_components/favicon';
 
 import { ResourceList } from '../../resource-list';
 
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 
 import { cn } from '@/lib/utils';
 

@@ -1,6 +1,7 @@
 import { Footer } from '@/app/_components/layout/footer';
 
 import type { Metadata } from 'next';
+import { Navbar } from './_components/layout/navbar';
 
 export const metadata: Metadata = {
   title: 'MCP',
@@ -10,8 +11,10 @@ export const metadata: Metadata = {
 export default function McpLayout({ children }: LayoutProps<'/mcp'>) {
   return (
     <>
-      <div className="h-4 border-b bg-card" />
-      <div className="flex flex-col flex-1 py-6 md:py-8">{children}</div>
+      <Navbar />
+      <div className="flex flex-col flex-1 py-6 md:py-8 pt-12 md:pt-16">
+        {children}
+      </div>
       <Footer />
     </>
   );

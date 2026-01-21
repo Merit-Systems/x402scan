@@ -31,7 +31,7 @@ import type { LanguageModelCapability } from './types';
 import { useModelSelect } from './use-model-select';
 
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 import type { LanguageModel } from './types';
 import { languageModels } from './models';
 import { PromptInputButton } from '@/components/ai-elements/prompt-input';
