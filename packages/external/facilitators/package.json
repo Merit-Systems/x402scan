@@ -36,10 +36,10 @@
   ],
   "author": "",
   "license": "MIT",
-  "homepage": "https://github.com/merit-systems/x402scan/tree/main/facilitators",
+  "homepage": "https://github.com/Merit-Systems/x402scan/tree/main/facilitators",
   "repository": {
     "type": "git",
-    "url": "https://github.com/merit-systems/x402scan.git",
+    "url": "https://github.com/Merit-Systems/x402scan.git",
     "directory": "facilitators"
   },
   "devDependencies": {
