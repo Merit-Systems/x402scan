@@ -89,7 +89,7 @@ export const CreateInviteCodeButton = () => {
               id="code"
               placeholder="WELCOME10 (auto-generated if empty)"
               value={code}
-              onChange={e => setCode(e.target.value.toUpperCase())}
+              onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
             />
             <p className="text-xs text-muted-foreground">
               Leave empty to auto-generate a code like MRT-XXXXX
