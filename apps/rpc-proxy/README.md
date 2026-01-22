@@ -17,4 +17,3 @@ Set environment variables:
 ```bash
 pnpm -w -F @x402scan/rpc-proxy dev
 ```
-
