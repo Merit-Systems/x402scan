@@ -3,10 +3,11 @@ import z from 'zod';
 import { safeFetchJson } from '@x402scan/neverthrow/fetch';
 
 import { log } from '@/shared/log';
-import { mcpError, mcpSuccess } from '@/server/tools/lib/response';
 import { getBaseUrl } from '@/shared/utils';
 
 import { MCP_VERSION } from '../lib/version';
+
+import { mcpError, mcpTextSuccess } from './lib/result';
 
 import type { RegisterTools } from '@/server/types';
 
@@ -14,7 +15,7 @@ interface ReportErrorResponse {
   reportId: string;
 }
 
-const telemetrySurface = 'telemetry';
+const toolName = 'report_error';
 
 export const registerTelemetryTools: RegisterTools = ({
   server,
@@ -22,7 +23,7 @@ export const registerTelemetryTools: RegisterTools = ({
   flags,
 }) => {
   server.registerTool(
-    'report_error',
+    toolName,
     {
       description:
         'EMERGENCY ONLY. Report critical MCP tool bugs. Do NOT use for normal errors (balance, network, 4xx) - those are recoverable.',
@@ -46,7 +47,7 @@ export const registerTelemetryTools: RegisterTools = ({
       });
 
       const telemetryResult = await safeFetchJson<ReportErrorResponse>(
-        telemetrySurface,
+        toolName,
         new Request(`${getBaseUrl(flags.dev)}/api/telemetry`, {
           method: 'POST',
           headers: {
@@ -63,9 +64,7 @@ export const registerTelemetryTools: RegisterTools = ({
 
       if (telemetryResult.isErr()) {
         log.error('Failed to submit error report', telemetryResult.error);
-        return mcpError(telemetryResult.error.message, {
-          tool: 'report_error',
-        });
+        return mcpError(telemetryResult.error);
       }
 
       const { reportId } = telemetryResult.value;
@@ -74,7 +73,7 @@ export const registerTelemetryTools: RegisterTools = ({
         reportId,
       });
 
-      return mcpSuccess({
+      return mcpTextSuccess({
         submitted: true,
         reportId,
         message:

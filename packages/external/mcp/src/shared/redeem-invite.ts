@@ -1,11 +1,10 @@
-import { errAsync } from 'neverthrow';
-
 import { safeFetchJson } from '@x402scan/neverthrow/fetch';
 
 import { getBaseUrl } from './utils';
 import { getState, setState } from './state';
 
 import type { Address } from 'viem';
+import { err } from '@x402scan/neverthrow';
 
 export interface RedeemInviteProps {
   code: string;
@@ -34,8 +33,8 @@ export const redeemInviteCode = async ({
 
   if (state.redeemedCodes?.includes(code)) {
     return Promise.resolve(
-      errAsync({
-        success: false,
+      err('redeem', {
+        type: 'conflict',
         message: 'This invite code has already been redeemed',
       })
     );
