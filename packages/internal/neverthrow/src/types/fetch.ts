@@ -22,18 +22,9 @@ export type FetchExtra =
 
 export type BaseFetchError = BaseError<FetchErrorType> & FetchExtra;
 
-export type FetchError<Surface extends string> = ErrorType<
-  FetchErrorType,
-  Surface
-> &
-  FetchExtra;
+export type FetchError = ErrorType<FetchErrorType> & FetchExtra;
 
-export type FetchResultAsync<Surface extends string, T> = ResultAsync<
-  T,
-  FetchErrorType,
-  Surface,
-  FetchError<Surface>
->;
+export type FetchResultAsync<T> = ResultAsync<T, FetchErrorType, FetchError>;
 
 export type SafeFetchResult = ReturnType<typeof safeFetch>;
 

@@ -32,7 +32,7 @@ export async function getWallet() {
   if (process.env.X402_PRIVATE_KEY) {
     const account = privateKeyToAccount(process.env.X402_PRIVATE_KEY as Hex);
     log.info(`Using wallet from env: ${account.address}`);
-    return ok(walletSurface, { account, isNew: false });
+    return ok({ account, isNew: false });
   }
 
   const readFileResult = await safeReadFile(walletSurface, WALLET_FILE).andThen(
@@ -47,7 +47,7 @@ export async function getWallet() {
       }
       const account = privateKeyToAccount(stored.data.privateKey);
       log.info(`Loaded wallet: ${account.address}`);
-      return ok(walletSurface, { account, isNew: false });
+      return ok({ account, isNew: false });
     }
   );
 
@@ -77,5 +77,5 @@ export async function getWallet() {
   log.info(`Created wallet: ${account.address}`);
   log.info(`Saved to: ${WALLET_FILE}`);
 
-  return ok(walletSurface, { account, isNew: true });
+  return ok({ account, isNew: true });
 }

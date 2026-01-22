@@ -24,18 +24,17 @@ export const getWebPageMetadata = (url: string) => {
       });
     }
 
-    return resultFromPromise<
-      FetchErrorType,
-      typeof surface,
-      BaseFetchError,
-      WebPageMetadata
-    >(surface, parseMetadataFromResponse(response), error => ({
-      type: 'parse' as const,
-      message: 'Could not parse metadata from response',
-      error: error instanceof Error ? error : new Error(String(error)),
-      statusCode: response.status,
-      contentType: response.headers.get('content-type') ?? 'Not specified',
-    }));
+    return resultFromPromise<FetchErrorType, BaseFetchError, WebPageMetadata>(
+      surface,
+      parseMetadataFromResponse(response),
+      error => ({
+        type: 'parse' as const,
+        message: 'Could not parse metadata from response',
+        error: error instanceof Error ? error : new Error(String(error)),
+        statusCode: response.status,
+        contentType: response.headers.get('content-type') ?? 'Not specified',
+      })
+    );
   });
 };
 

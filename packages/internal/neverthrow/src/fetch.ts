@@ -6,16 +6,11 @@ import type {
   ParsedResponse,
 } from './types/fetch';
 
-export const fetchErr = <Surface extends string>(
-  surface: Surface,
-  error: BaseFetchError
-) => err<FetchErrorType, Surface, BaseFetchError>(surface, error);
+export const fetchErr = (surface: string, error: BaseFetchError) =>
+  err<FetchErrorType, BaseFetchError>(surface, error);
 
-export const safeFetch = <Surface extends string>(
-  surface: Surface,
-  request: Request
-) => {
-  return resultFromPromise<FetchErrorType, Surface, BaseFetchError, Response>(
+export const safeFetch = (surface: string, request: Request) => {
+  return resultFromPromise<FetchErrorType, BaseFetchError, Response>(
     surface,
     fetch(request),
     error => ({
@@ -26,11 +21,8 @@ export const safeFetch = <Surface extends string>(
   );
 };
 
-export const safeFetchJson = <Surface extends string, T>(
-  surface: Surface,
-  request: Request
-) => {
-  return safeFetch<Surface>(surface, request).andThen(response => {
+export const safeFetchJson = <T>(surface: string, request: Request) => {
+  return safeFetch(surface, request).andThen(response => {
     if (!response.ok) {
       return fetchErr(surface, {
         type: 'http' as const,
@@ -40,7 +32,7 @@ export const safeFetchJson = <Surface extends string, T>(
       });
     }
 
-    return resultFromPromise<FetchErrorType, Surface, BaseFetchError, T>(
+    return resultFromPromise<FetchErrorType, BaseFetchError, T>(
       surface,
       response.json() as Promise<T>,
       error => ({
@@ -54,10 +46,7 @@ export const safeFetchJson = <Surface extends string, T>(
   });
 };
 
-export const safeParseResponse = <Surface extends string>(
-  surface: Surface,
-  response: Response
-) => {
+export const safeParseResponse = (surface: string, response: Response) => {
   const parseByContentType = async (): Promise<ParsedResponse> => {
     const contentType = response.headers.get('content-type') ?? '';
 
@@ -82,16 +71,15 @@ export const safeParseResponse = <Surface extends string>(
     return { type: 'text', data: await response.text() };
   };
 
-  return resultFromPromise<
-    FetchErrorType,
-    Surface,
-    BaseFetchError,
-    ParsedResponse
-  >(surface, parseByContentType(), error => ({
-    type: 'parse' as const,
-    message: 'Could not parse response',
-    error: error instanceof Error ? error : new Error(String(error)),
-    statusCode: response.status,
-    contentType: response.headers.get('content-type') ?? 'Not specified',
-  }));
+  return resultFromPromise<FetchErrorType, BaseFetchError, ParsedResponse>(
+    surface,
+    parseByContentType(),
+    error => ({
+      type: 'parse' as const,
+      message: 'Could not parse response',
+      error: error instanceof Error ? error : new Error(String(error)),
+      statusCode: response.status,
+      contentType: response.headers.get('content-type') ?? 'Not specified',
+    })
+  );
 };

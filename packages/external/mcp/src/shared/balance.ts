@@ -58,5 +58,5 @@ export async function getBalance(address: Address, network = DEFAULT_NETWORK) {
     return balanceResult;
   }
 
-  return ok(balanceSurface, tokenBigIntToNumber(balanceResult.value));
+  return ok(tokenBigIntToNumber(balanceResult.value));
 }

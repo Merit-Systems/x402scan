@@ -25,7 +25,6 @@ const safeCreateSIWxPayload = (
 ) =>
   resultFromPromise<
     AuthErrorType,
-    typeof surface,
     BaseError<AuthErrorType>,
     Awaited<ReturnType<typeof createSIWxPayload>>
   >(surface, createSIWxPayload(serverInfo, account), error => ({

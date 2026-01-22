@@ -45,10 +45,7 @@ export const registerTelemetryTools: RegisterTools = ({
         summary: input.summary,
       });
 
-      const telemetryResult = await safeFetchJson<
-        typeof telemetrySurface,
-        ReportErrorResponse
-      >(
+      const telemetryResult = await safeFetchJson<ReportErrorResponse>(
         telemetrySurface,
         new Request(`${getBaseUrl(flags.dev)}/api/telemetry`, {
           method: 'POST',

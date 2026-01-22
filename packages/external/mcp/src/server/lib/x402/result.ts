@@ -16,23 +16,19 @@ type X402ErrorType =
 
 type BaseX402Error = BaseError<X402ErrorType>;
 
-const x402ResultFromPromise = <Surface extends string, T>(
-  surface: Surface,
+const x402ResultFromPromise = <T>(
+  surface: string,
   promise: Promise<T>,
   error: (e: unknown) => BaseX402Error
 ) =>
-  resultFromPromise<X402ErrorType, Surface, BaseX402Error, T>(
-    surface,
-    promise,
-    error
-  );
+  resultFromPromise<X402ErrorType, BaseX402Error, T>(surface, promise, error);
 
-export const safeGetPaymentRequired = <Surface extends string>(
-  surface: Surface,
+export const safeGetPaymentRequired = (
+  surface: string,
   client: x402HTTPClient,
   response: Response
 ) => {
-  return x402ResultFromPromise<Surface, PaymentRequired>(
+  return x402ResultFromPromise<PaymentRequired>(
     surface,
     (async () => {
       return client.getPaymentRequiredResponse(
@@ -51,12 +47,12 @@ export const safeGetPaymentRequired = <Surface extends string>(
   );
 };
 
-export const safeCreatePaymentPayload = <Surface extends string>(
-  surface: Surface,
+export const safeCreatePaymentPayload = (
+  surface: string,
   client: x402HTTPClient,
   paymentRequired: PaymentRequired
 ) => {
-  return x402ResultFromPromise<Surface, PaymentPayload>(
+  return x402ResultFromPromise<PaymentPayload>(
     surface,
     client.createPaymentPayload(paymentRequired),
     error => ({
@@ -70,12 +66,12 @@ export const safeCreatePaymentPayload = <Surface extends string>(
   );
 };
 
-export const safeGetPaymentSettlement = <Surface extends string>(
-  surface: Surface,
+export const safeGetPaymentSettlement = (
+  surface: string,
   client: x402HTTPClient,
   response: Response
 ) => {
-  return x402ResultFromPromise<Surface, SettleResponse>(
+  return x402ResultFromPromise<SettleResponse>(
     surface,
     (async () => {
       return Promise.resolve(

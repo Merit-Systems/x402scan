@@ -11,8 +11,8 @@ import type {
 
 const surface = 'cdp';
 
-export type CdpResultAsync<T> = ServerResultAsync<T, typeof surface>;
-export type CdpError = ServerError<typeof surface>;
+export type CdpResultAsync<T> = ServerResultAsync<T>;
+export type CdpError = ServerError;
 
 export const cdpErr = (error: Parameters<typeof serverErr>[1]) =>
   serverErr(surface, error);

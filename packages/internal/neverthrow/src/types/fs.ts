@@ -12,19 +12,8 @@ export type FileSystemErrorType =
 
 export type BaseFileSystemError = BaseError<FileSystemErrorType>;
 
-export type FileSystemError<Surface extends string> = Error<
-  FileSystemErrorType,
-  Surface
->;
+export type FileSystemError = Error<FileSystemErrorType>;
 
-export type FileSystemResult<T, Surface extends string> = Result<
-  T,
-  FileSystemErrorType,
-  Surface
->;
+export type FileSystemResult<T> = Result<T, FileSystemErrorType>;
 
-export type FileSystemResultAsync<T, Surface extends string> = ResultAsync<
-  T,
-  FileSystemErrorType,
-  Surface
->;
+export type FileSystemResultAsync<T> = ResultAsync<T, FileSystemErrorType>;

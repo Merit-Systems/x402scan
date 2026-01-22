@@ -15,19 +15,8 @@ export type ServerErrorType =
 
 export type BaseServerError = BaseError<ServerErrorType>;
 
-export type ServerError<Surface extends string> = Error<
-  ServerErrorType,
-  Surface
->;
+export type ServerError = Error<ServerErrorType>;
 
-export type ServerResult<T, Surface extends string> = Result<
-  T,
-  ServerErrorType,
-  Surface
->;
+export type ServerResult<T> = Result<T, ServerErrorType>;
 
-export type ServerResultAsync<T, Surface extends string> = ResultAsync<
-  T,
-  ServerErrorType,
-  Surface
->;
+export type ServerResultAsync<T> = ResultAsync<T, ServerErrorType>;

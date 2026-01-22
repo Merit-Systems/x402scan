@@ -8,8 +8,4 @@ export const configResultFromThrowable = <T>(
   fn: () => T,
   error: (e: unknown) => BaseConfigError
 ) =>
-  resultFromThrowable<ConfigErrorType, typeof surface, BaseConfigError, T>(
-    surface,
-    fn,
-    error
-  );
+  resultFromThrowable<ConfigErrorType, BaseConfigError, T>(surface, fn, error);
