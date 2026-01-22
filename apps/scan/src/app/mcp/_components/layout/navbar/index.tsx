@@ -30,7 +30,7 @@ export const Navbar: React.FC<Props> = () => {
         {/* Actions - adaptive sizing */}
         <div className="flex shrink-0 items-center gap-2">
           <a
-            href="https://github.com/merit-systems/x402scan"
+            href="https://github.com/Merit-Systems/x402scan"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"

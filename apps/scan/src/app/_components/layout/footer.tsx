@@ -20,7 +20,7 @@ export function Footer() {
           {/* Right side - Links */}
           <div className="flex items-center gap-4 md:gap-6 text-sm text-muted-foreground">
             <a
-              href="https://github.com/merit-systems/x402scan"
+              href="https://github.com/Merit-Systems/x402scan"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
