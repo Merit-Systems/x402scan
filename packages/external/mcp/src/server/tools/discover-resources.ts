@@ -356,7 +356,9 @@ export function registerDiscoveryTools(server: McpServer): void {
 
             // Extract SIWX info
             if (pr.extensions?.['sign-in-with-x']) {
-              const siwx = pr.extensions['sign-in-with-x'] as { info?: unknown };
+              const siwx = pr.extensions['sign-in-with-x'] as {
+                info?: unknown;
+              };
               resource.signInWithX = { required: true, info: siwx.info };
             }
 

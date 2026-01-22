@@ -9,7 +9,8 @@ export default [
         'error',
         {
           selector: 'TryStatement',
-          message: 'Try/catch is not allowed. Use neverthrow Result types instead.',
+          message:
+            'Try/catch is not allowed. Use neverthrow Result types instead.',
         },
       ],
     },

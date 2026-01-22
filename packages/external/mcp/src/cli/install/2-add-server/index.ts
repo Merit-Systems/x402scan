@@ -100,7 +100,7 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
     log.info('Config file found, reading config file content');
     const parseResult = await parseClientConfig(clientFileTarget);
 
-    if (!parseResult.ok) {
+    if (parseResult.isErr()) {
       clackLog.error(
         chalk.bold.red(`Error reading config: ${parseResult.error.message}`)
       );

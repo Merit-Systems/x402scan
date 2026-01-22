@@ -2,17 +2,10 @@ import * as TOML from '@iarna/toml';
 import yaml from 'js-yaml';
 import * as jsonc from 'jsonc-parser';
 
-import { resultFromThrowable } from '@x402scan/neverthrow';
 import { safeReadFile } from '@x402scan/neverthrow/fs';
-import type { BaseError } from '@x402scan/neverthrow/types';
+import { configResultFromThrowable } from './result';
 
-import type { ClientConfigObject, ClientConfigFile } from '../types';
-
-type ConfigErrorType = 'parse_config' | 'serialize_config';
-
-type ConfigError = BaseError<ConfigErrorType>;
-
-const surface = 'config_file';
+import type { ClientConfigFile, ClientConfigObject } from '../types';
 
 export enum FileFormat {
   JSON = 'json',
@@ -25,23 +18,22 @@ const parseContent = (
   format: FileFormat,
   path: string
 ) => {
-  return resultFromThrowable<
-    ConfigErrorType,
-    typeof surface,
-    ConfigError,
-    ClientConfigObject
-  >(
-    surface,
+  return configResultFromThrowable(
     () => {
+      let config: ClientConfigObject;
       if (format === FileFormat.YAML) {
-        return yaml.load(fileContent) as ClientConfigObject;
+        config = yaml.load(fileContent) as ClientConfigObject;
       } else if (format === FileFormat.TOML) {
-        return TOML.parse(fileContent) as ClientConfigObject;
+        config = TOML.parse(fileContent) as ClientConfigObject;
       } else if (path.endsWith('.jsonc')) {
-        return jsonc.parse(fileContent) as ClientConfigObject;
+        config = jsonc.parse(fileContent) as ClientConfigObject;
       } else {
-        return JSON.parse(fileContent) as ClientConfigObject;
+        config = JSON.parse(fileContent) as ClientConfigObject;
       }
+      return {
+        config,
+        fileContent,
+      };
     },
     e => ({
       type: 'parse_config',
@@ -56,16 +48,11 @@ const parseContent = (
 export const parseClientConfig = async ({ format, path }: ClientConfigFile) => {
   const readResult = await safeReadFile('config_file', path);
 
-  if (readResult.isErr()) {
-    return readResult;
-  }
+  if (readResult.isErr()) return readResult;
 
-  const fileContent = readResult.value;
-  const parseResult = parseContent(fileContent, format, path);
+  const parseResult = parseContent(readResult.value, format, path);
 
-  if (parseResult.isErr()) {
-    return parseResult;
-  }
+  if (parseResult.isErr()) return parseResult;
 
   return parseResult;
 };
@@ -74,13 +61,7 @@ const serializeJsonc = (
   config: ClientConfigObject,
   originalContent: string
 ) => {
-  return resultFromThrowable<
-    ConfigErrorType,
-    'config_file',
-    ConfigError,
-    string
-  >(
-    surface,
+  return configResultFromThrowable<string>(
     () => {
       const modifications: jsonc.Edit[] = [];
 

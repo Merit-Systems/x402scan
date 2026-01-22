@@ -29,7 +29,6 @@
     "@clack/prompts": "^0.11.0",
     "@iarna/toml": "^2.2.5",
     "@modelcontextprotocol/sdk": "^1.25.2",
-    "@scure/base": "^2.0.0",
     "@x402/core": "catalog:x402",
     "@x402/evm": "catalog:x402",
     "@x402scan/neverthrow": "workspace:*",
@@ -39,8 +38,6 @@
     "jsonc-parser": "^3.3.1",
     "neverthrow": "^8.2.0",
     "open": "^11.0.0",
-    "siwe": "catalog:",
-    "tweetnacl": "^1.0.3",
     "viem": "catalog:",
     "yargs": "^18.0.0",
     "zod": "catalog:"

@@ -1,10 +1,15 @@
-import { ok } from '@x402scan/neverthrow';
-import type { BaseError } from '@x402scan/neverthrow/types';
+import { resultFromThrowable } from '@x402scan/neverthrow';
 
-export const surface = 'config_file';
+import type { BaseConfigError, ConfigErrorType } from '../types';
 
-type ConfigErrorType = 'parse_config' | 'serialize_config';
+const surface = 'config_file';
 
-type ConfigError = BaseError<ConfigErrorType>;
-
-export const configOk = <T>(data: T) => ok<ConfigErrorType, T>(surface, data);
+export const configResultFromThrowable = <T>(
+  fn: () => T,
+  error: (e: unknown) => BaseConfigError
+) =>
+  resultFromThrowable<ConfigErrorType, typeof surface, BaseConfigError, T>(
+    surface,
+    fn,
+    error
+  );

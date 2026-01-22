@@ -1,7 +1,10 @@
 import { resultFromPromise } from '@x402scan/neverthrow';
 import { fetchErr, safeFetch } from '@x402scan/neverthrow/fetch';
 
-import type { BaseFetchError, FetchErrorType } from '@x402scan/neverthrow/types';
+import type {
+  BaseFetchError,
+  FetchErrorType,
+} from '@x402scan/neverthrow/types';
 
 const surface = 'getWebPageMetadata';
 
