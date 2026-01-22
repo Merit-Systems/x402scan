@@ -14,21 +14,18 @@ export async function register() {
       };
 
       if (!globalForOtel.__x402scanOtelLogsInitialized) {
-        const { LoggerProvider, BatchLogRecordProcessor } = await import(
-          '@opentelemetry/sdk-logs'
-        );
-        const { OTLPLogExporter } = await import(
-          '@opentelemetry/exporter-logs-otlp-http'
-        );
+        const { LoggerProvider, BatchLogRecordProcessor } =
+          await import('@opentelemetry/sdk-logs');
+        const { OTLPLogExporter } =
+          await import('@opentelemetry/exporter-logs-otlp-http');
         const { logs } = await import('@opentelemetry/api-logs');
-        const { resourceFromAttributes } = await import(
-          '@opentelemetry/resources'
-        );
-        const { ATTR_SERVICE_NAME } = await import(
-          '@opentelemetry/semantic-conventions'
-        );
+        const { resourceFromAttributes } =
+          await import('@opentelemetry/resources');
+        const { ATTR_SERVICE_NAME } =
+          await import('@opentelemetry/semantic-conventions');
 
-        const serviceName = process.env.OTEL_SERVICE_NAME ?? 'x402scan-scan-api';
+        const serviceName =
+          process.env.OTEL_SERVICE_NAME ?? 'x402scan-scan-api';
 
         const loggerProvider = new LoggerProvider({
           resource: resourceFromAttributes({

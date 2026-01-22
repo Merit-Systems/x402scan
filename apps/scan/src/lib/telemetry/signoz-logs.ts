@@ -1,4 +1,8 @@
-import { logs, SeverityNumber, type LogAttributes } from '@opentelemetry/api-logs';
+import {
+  logs,
+  SeverityNumber,
+  type LogAttributes,
+} from '@opentelemetry/api-logs';
 
 function coerceAttributes(
   attributes?: Record<string, unknown>
@@ -9,7 +13,11 @@ function coerceAttributes(
   for (const [key, value] of Object.entries(attributes)) {
     if (value === undefined || value === null) continue;
 
-    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    ) {
       out[key] = value;
       continue;
     }
@@ -29,7 +37,10 @@ function getApiLogger() {
   return logs.getLogger('scan-api');
 }
 
-export function signozLogInfo(message: string, attributes?: Record<string, unknown>) {
+export function signozLogInfo(
+  message: string,
+  attributes?: Record<string, unknown>
+) {
   getApiLogger().emit({
     body: message,
     severityNumber: SeverityNumber.INFO,
@@ -38,7 +49,10 @@ export function signozLogInfo(message: string, attributes?: Record<string, unkno
   });
 }
 
-export function signozLogWarn(message: string, attributes?: Record<string, unknown>) {
+export function signozLogWarn(
+  message: string,
+  attributes?: Record<string, unknown>
+) {
   getApiLogger().emit({
     body: message,
     severityNumber: SeverityNumber.WARN,
@@ -47,7 +61,10 @@ export function signozLogWarn(message: string, attributes?: Record<string, unkno
   });
 }
 
-export function signozLogError(message: string, attributes?: Record<string, unknown>) {
+export function signozLogError(
+  message: string,
+  attributes?: Record<string, unknown>
+) {
   getApiLogger().emit({
     body: message,
     severityNumber: SeverityNumber.ERROR,
@@ -55,4 +72,3 @@ export function signozLogError(message: string, attributes?: Record<string, unkn
     attributes: coerceAttributes(attributes),
   });
 }
-

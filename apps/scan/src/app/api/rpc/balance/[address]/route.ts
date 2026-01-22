@@ -21,16 +21,15 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid EVM address' }, { status: 400 });
   }
 
-  signozLogInfo('balance_request_received', {
-    address: parsedAddress.data,
-    chainId: base.id,
-  });
-
   const result = await getBalance(parsedAddress.data);
 
   return result.match(
-    balance =>
-      NextResponse.json(
+    balance => {
+      signozLogInfo('balance_request', {
+        address: parsedAddress.data,
+        balance: balance.toString(),
+      });
+      return NextResponse.json(
         {
           address: parsedAddress.data,
           chain: base.id,
@@ -38,7 +37,8 @@ export async function GET(
           rawBalance: balance.toString(),
         },
         { status: 200 }
-      ),
+      );
+    },
     error => {
       switch (error.type) {
         case ERROR_NO_RPC:
