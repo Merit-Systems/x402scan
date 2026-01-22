@@ -1,6 +1,6 @@
 {
   "name": "@x402scan/mcp",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Generic MCP server for calling x402-protected APIs with automatic payment handling",
   "type": "module",
   "main": "dist/esm/index.js",
