@@ -2,7 +2,6 @@ import { x402Client, x402HTTPClient } from '@x402/core/client';
 
 import { safeFetch, safeParseResponse } from '@x402scan/neverthrow/fetch';
 import { resultFromPromise } from '@x402scan/neverthrow';
-import type { BaseError } from '@x402scan/neverthrow/types';
 
 import { mcpSuccess, mcpError } from '../lib/response';
 import { safeGetPaymentRequired } from '../lib/x402/result';
@@ -17,17 +16,11 @@ import type { RegisterTools } from '@/server/types';
 
 const surface = 'authed_call';
 
-type AuthErrorType = 'siwx_create_payload' | 'siwx_missing_extension';
-
 const safeCreateSIWxPayload = (
   serverInfo: SIWxExtensionInfo,
   account: Parameters<RegisterTools>[0]['account']
 ) =>
-  resultFromPromise<
-    AuthErrorType,
-    BaseError<AuthErrorType>,
-    Awaited<ReturnType<typeof createSIWxPayload>>
-  >(surface, createSIWxPayload(serverInfo, account), error => ({
+  resultFromPromise(surface, createSIWxPayload(serverInfo, account), error => ({
     type: 'siwx_create_payload',
     message:
       error instanceof Error ? error.message : 'Failed to create SIWX payload',

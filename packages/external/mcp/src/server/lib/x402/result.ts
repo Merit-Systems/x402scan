@@ -2,11 +2,7 @@ import { resultFromPromise } from '@x402scan/neverthrow';
 
 import type { x402HTTPClient } from '@x402/core/http';
 import type { BaseError } from '@x402scan/neverthrow/types';
-import type {
-  PaymentPayload,
-  PaymentRequired,
-  SettleResponse,
-} from '@x402/core/types';
+import type { PaymentRequired } from '@x402/core/types';
 
 type X402ErrorType =
   | 'parse_payment_required'
@@ -20,15 +16,14 @@ const x402ResultFromPromise = <T>(
   surface: string,
   promise: Promise<T>,
   error: (e: unknown) => BaseX402Error
-) =>
-  resultFromPromise<X402ErrorType, BaseX402Error, T>(surface, promise, error);
+) => resultFromPromise(surface, promise, error);
 
 export const safeGetPaymentRequired = (
   surface: string,
   client: x402HTTPClient,
   response: Response
 ) => {
-  return x402ResultFromPromise<PaymentRequired>(
+  return x402ResultFromPromise(
     surface,
     (async () => {
       return client.getPaymentRequiredResponse(
@@ -52,7 +47,7 @@ export const safeCreatePaymentPayload = (
   client: x402HTTPClient,
   paymentRequired: PaymentRequired
 ) => {
-  return x402ResultFromPromise<PaymentPayload>(
+  return x402ResultFromPromise(
     surface,
     client.createPaymentPayload(paymentRequired),
     error => ({
@@ -71,7 +66,7 @@ export const safeGetPaymentSettlement = (
   client: x402HTTPClient,
   response: Response
 ) => {
-  return x402ResultFromPromise<SettleResponse>(
+  return x402ResultFromPromise(
     surface,
     (async () => {
       return Promise.resolve(

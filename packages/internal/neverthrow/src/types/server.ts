@@ -15,8 +15,8 @@ export type ServerErrorType =
 
 export type BaseServerError = BaseError<ServerErrorType>;
 
-export type ServerError = Error<ServerErrorType>;
+export type ServerError = Error<BaseServerError>;
 
-export type ServerResult<T> = Result<T, ServerErrorType>;
+export type ServerResult<T> = Result<T, BaseServerError>;
 
-export type ServerResultAsync<T> = ResultAsync<T, ServerErrorType>;
+export type ServerResultAsync<T> = ResultAsync<T, BaseServerError>;

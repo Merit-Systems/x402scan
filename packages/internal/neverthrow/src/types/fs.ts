@@ -12,8 +12,8 @@ export type FileSystemErrorType =
 
 export type BaseFileSystemError = BaseError<FileSystemErrorType>;
 
-export type FileSystemError = Error<FileSystemErrorType>;
+export type FileSystemError = Error<BaseFileSystemError>;
 
-export type FileSystemResult<T> = Result<T, FileSystemErrorType>;
+export type FileSystemResult<T> = Result<T, BaseFileSystemError>;
 
-export type FileSystemResultAsync<T> = ResultAsync<T, FileSystemErrorType>;
+export type FileSystemResultAsync<T> = ResultAsync<T, BaseFileSystemError>;

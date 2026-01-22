@@ -9,41 +9,32 @@ import {
 
 import type { ResultAsync, BaseError, Error, Result } from './types';
 
-export function resultFromPromise<
-  ErrorTypes extends string,
-  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
-  T = unknown,
->(
+// BE inferred from callback, T often needs explicit annotation
+export function resultFromPromise<E extends BaseError, T = unknown>(
   surface: string,
   promise: Promise<T>,
-  error: (e: unknown) => BE
-): ResultAsync<T, ErrorTypes, BE> {
+  error: (e: unknown) => E
+): ResultAsync<T, E> {
   return NeverthrowResultAsync.fromPromise(promise, e => ({
     ...error(e),
     surface,
   }));
 }
 
-export function resultFromThrowable<
-  ErrorTypes extends string,
-  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
-  T = unknown,
->(
+export function resultFromThrowable<E extends BaseError, T = unknown>(
   surface: string,
   fn: () => T,
-  error: (e: unknown) => BE
-): Result<T, ErrorTypes, BE> {
+  error: (e: unknown) => E
+): Result<T, E> {
   return NeverthrowResult.fromThrowable(fn, e => ({
     ...error(e),
     surface,
   }))();
 }
 
-export function resultFromSafePromise<
-  ErrorTypes extends string,
-  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
-  T = unknown,
->(promise: Promise<T>): ResultAsync<T, ErrorTypes, BE> {
+export function resultFromSafePromise<E extends BaseError, T = unknown>(
+  promise: Promise<T>
+): ResultAsync<T, E> {
   return NeverthrowResultAsync.fromSafePromise(promise);
 }
 
@@ -52,25 +43,20 @@ export function ok<T>(data: T) {
   return neverthrowOk(data);
 }
 
-export function err<
-  ErrorTypes extends string,
-  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
->(surface: string, error: BE) {
-  return neverthrowErr<never, Error<ErrorTypes, BE>>({
+// BE fully inferred from error parameter
+export function err<BE extends BaseError>(surface: string, error: BE) {
+  return neverthrowErr<never, Error<BE>>({
     ...error,
     surface,
   });
 }
 
-export function okAsync<T>(data: T): ResultAsync<T, never, never> {
+export function okAsync<T>(data: T): ResultAsync<T, never> {
   // surface is unused, included for symmetry/typing
   return neverthrowOkAsync(data);
 }
 
-export function errAsync<
-  ErrorTypes extends string,
-  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
->(surface: string, error: BE) {
+export function errAsync<E extends BaseError>(surface: string, error: E) {
   return neverthrowErrAsync({
     ...error,
     surface,

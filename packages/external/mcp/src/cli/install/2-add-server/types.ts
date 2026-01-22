@@ -10,6 +10,6 @@ export interface ClientConfigFile {
   format: FileFormat;
 }
 
-export type ConfigErrorType = 'parse_config' | 'serialize_config';
+type ConfigErrorType = 'parse_config' | 'serialize_config';
 
 export type BaseConfigError = BaseError<ConfigErrorType>;

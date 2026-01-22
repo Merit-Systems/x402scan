@@ -3,26 +3,21 @@ import type {
   ResultAsync as NeverthrowResultAsync,
 } from 'neverthrow';
 
-export interface BaseError<ErrorTypes extends string> {
+export interface BaseError<ErrorTypes extends string = string> {
   type: ErrorTypes;
   message: string;
 }
 
-export type Error<
-  ErrorTypes extends string,
-  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
-> = BE & {
-  surface: string;
-};
+// Utility to extract error type from any BaseError
+export type ErrorTypeOf<E extends BaseError> = E['type'];
 
-export type Result<
-  T,
-  ErrorTypes extends string,
-  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
-> = NeverthrowResult<T, Error<ErrorTypes, BE>>;
+// Now only needs BE
+export type Error<E extends BaseError> = E & { surface: string };
 
-export type ResultAsync<
+// Only needs T and BE - ErrorTypes derived internally
+export type Result<T, E extends BaseError> = NeverthrowResult<T, Error<E>>;
+
+export type ResultAsync<T, E extends BaseError> = NeverthrowResultAsync<
   T,
-  ErrorTypes extends string,
-  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
-> = NeverthrowResultAsync<T, Error<ErrorTypes, BE>>;
+  Error<E>
+>;

@@ -14,8 +14,7 @@ const surface = 'cdp';
 export type CdpResultAsync<T> = ServerResultAsync<T>;
 export type CdpError = ServerError;
 
-export const cdpErr = (error: Parameters<typeof serverErr>[1]) =>
-  serverErr(surface, error);
+export const cdpErr = (error: BaseServerError) => serverErr(surface, error);
 export const cdpResultFromPromise = <T>(
   promise: Promise<T>,
   error: (e: unknown) => BaseServerError

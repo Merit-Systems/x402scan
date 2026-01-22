@@ -2,18 +2,13 @@ import * as fs from 'fs/promises';
 
 import { resultFromPromise } from '.';
 
-import type { BaseFileSystemError, FileSystemErrorType } from './types/fs';
+import type { BaseFileSystemError } from './types/fs';
 
 export const fsResultFromPromise = <T>(
   surface: string,
   promise: Promise<T>,
   error: (e: unknown) => BaseFileSystemError
-) =>
-  resultFromPromise<FileSystemErrorType, BaseFileSystemError, T>(
-    surface,
-    promise,
-    error
-  );
+) => resultFromPromise(surface, promise, error);
 
 export const safeReadFile = (surface: string, path: string) =>
   fsResultFromPromise(surface, fs.readFile(path, 'utf-8'), error => ({

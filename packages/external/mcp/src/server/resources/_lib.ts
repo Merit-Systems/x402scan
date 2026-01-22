@@ -1,11 +1,6 @@
 import { resultFromPromise } from '@x402scan/neverthrow';
 import { fetchErr, safeFetch } from '@x402scan/neverthrow/fetch';
 
-import type {
-  BaseFetchError,
-  FetchErrorType,
-} from '@x402scan/neverthrow/types';
-
 const surface = 'getWebPageMetadata';
 
 interface WebPageMetadata {
@@ -24,7 +19,7 @@ export const getWebPageMetadata = (url: string) => {
       });
     }
 
-    return resultFromPromise<FetchErrorType, BaseFetchError, WebPageMetadata>(
+    return resultFromPromise(
       surface,
       parseMetadataFromResponse(response),
       error => ({
