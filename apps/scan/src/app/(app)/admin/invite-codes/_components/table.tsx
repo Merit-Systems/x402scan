@@ -1,19 +1,35 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useDeferredValue } from 'react';
+import { Search } from 'lucide-react';
 import { DataTable } from '@/components/ui/data-table';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { createColumns } from './columns';
 import { api } from '@/trpc/client';
 
 const PAGE_SIZE = 25;
 
+type StatusFilter = 'ALL' | 'ACTIVE' | 'EXHAUSTED' | 'EXPIRED' | 'DISABLED';
+
 export const InviteCodesTable = () => {
   const [page, setPage] = useState(0);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
+  const [search, setSearch] = useState('');
+  const deferredSearch = useDeferredValue(search);
   const utils = api.useUtils();
 
   const { data, isLoading } = api.admin.inviteCodes.list.useQuery({
     limit: PAGE_SIZE,
     offset: page * PAGE_SIZE,
+    ...(statusFilter !== 'ALL' && { status: statusFilter }),
+    ...(deferredSearch && { search: deferredSearch }),
   });
 
   const disableMutation = api.admin.inviteCodes.disable.useMutation({
@@ -65,8 +81,47 @@ export const InviteCodesTable = () => {
     [disableMutation, reactivateMutation, handleEditMaxRedemptions]
   );
 
+  const handleStatusChange = useCallback(
+    (value: string) => {
+      setStatusFilter(value as StatusFilter);
+      setPage(0);
+    },
+    []
+  );
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearch(e.target.value);
+      setPage(0);
+    },
+    []
+  );
+
   return (
     <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by code or creator..."
+            value={search}
+            onChange={handleSearchChange}
+            className="pl-9"
+          />
+        </div>
+        <Select value={statusFilter} onValueChange={handleStatusChange}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All Statuses</SelectItem>
+            <SelectItem value="ACTIVE">Active</SelectItem>
+            <SelectItem value="EXHAUSTED">Exhausted</SelectItem>
+            <SelectItem value="EXPIRED">Expired</SelectItem>
+            <SelectItem value="DISABLED">Disabled</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <DataTable
         columns={columns}
         data={inviteCodes}

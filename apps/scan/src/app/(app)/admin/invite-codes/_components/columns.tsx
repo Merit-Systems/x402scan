@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, DollarSign, Hash, MoreHorizontal, User } from 'lucide-react';
+import { Calendar, DollarSign, Hash, MoreHorizontal, User, Wallet } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { formatCompactAgo, formatCurrency } from '@/lib/utils';
 import { formatUnits } from 'viem';
 
@@ -25,6 +30,9 @@ interface ColumnHandlers {
   onReactivate?: (id: string) => void;
   onEditMaxRedemptions?: (id: string, currentMax: number) => void;
 }
+
+const truncateAddress = (address: string) =>
+  `${address.slice(0, 6)}...${address.slice(-4)}`;
 
 const getStatusVariant = (
   status: string
@@ -126,6 +134,68 @@ export const createColumns = (
     ),
     size: 120,
     loading: () => <Skeleton className="h-4 w-20 mx-auto" />,
+  },
+  {
+    accessorKey: 'redemptions',
+    id: 'redeemedBy',
+    header: () => (
+      <HeaderCell Icon={Wallet} label="Redeemed By" className="mx-auto" />
+    ),
+    cell: ({ row }) => {
+      const redemptions = row.original.redemptions;
+      if (!redemptions || redemptions.length === 0) {
+        return (
+          <div className="text-center text-xs text-muted-foreground">—</div>
+        );
+      }
+
+      const successfulRedemptions = redemptions.filter(
+        r => r.status === 'SUCCESS'
+      );
+      if (successfulRedemptions.length === 0) {
+        return (
+          <div className="text-center text-xs text-muted-foreground">—</div>
+        );
+      }
+
+      const firstAddr = successfulRedemptions[0]!.recipientAddr;
+      const remaining = successfulRedemptions.length - 1;
+
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="text-center text-xs font-mono">
+              <a
+                href={`/admin/mcp/users/${firstAddr}`}
+                className="hover:underline text-primary"
+              >
+                {truncateAddress(firstAddr)}
+              </a>
+              {remaining > 0 && (
+                <span className="text-muted-foreground ml-1">
+                  +{remaining}
+                </span>
+              )}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs">
+            <div className="space-y-1">
+              {successfulRedemptions.map(r => (
+                <a
+                  key={r.id}
+                  href={`/admin/mcp/users/${r.recipientAddr}`}
+                  className="block font-mono text-xs hover:underline"
+                >
+                  {r.recipientAddr}
+                </a>
+              ))}
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      );
+    },
+    size: 140,
+    loading: () => <Skeleton className="h-4 w-24 mx-auto" />,
   },
   {
     accessorKey: 'expiresAt',
