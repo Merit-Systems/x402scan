@@ -1,12 +1,13 @@
 import {
   ResultAsync as NeverthrowResultAsync,
+  Result as NeverthrowResult,
   ok as neverthrowOk,
   err as neverthrowErr,
   okAsync as neverthrowOkAsync,
   errAsync as neverthrowErrAsync,
 } from 'neverthrow';
 
-import type { ResultAsync, BaseError, Error } from './types';
+import type { ResultAsync, BaseError, Error, Result } from './types';
 
 export function resultFromPromise<
   ErrorTypes extends string,
@@ -22,6 +23,22 @@ export function resultFromPromise<
     ...error(e),
     surface,
   }));
+}
+
+export function resultFromThrowable<
+  ErrorTypes extends string,
+  Surface extends string,
+  BE extends BaseError<ErrorTypes> = BaseError<ErrorTypes>,
+  T = unknown,
+>(
+  surface: Surface,
+  fn: () => T,
+  error: (e: unknown) => BE
+): Result<T, ErrorTypes, Surface, BE> {
+  return NeverthrowResult.fromThrowable(fn, e => ({
+    ...error(e),
+    surface,
+  }))();
 }
 
 export function resultFromSafePromise<
