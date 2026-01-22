@@ -48,10 +48,9 @@ export async function getBalance(address: Address, network = DEFAULT_NETWORK) {
       functionName: 'balanceOf',
       args: [address],
     }),
-    error => ({
+    () => ({
       cause: 'internal',
       message: 'Failed to get USDC balance',
-      error,
     })
   );
 

@@ -32,12 +32,10 @@ export const redeemInviteCode = async ({
   const state = getState();
 
   if (state.redeemedCodes?.includes(code)) {
-    return Promise.resolve(
-      err('user', 'redeem', {
-        cause: 'conflict',
-        message: 'This invite code has already been redeemed',
-      })
-    );
+    return err('user', 'redeem', {
+      cause: 'conflict',
+      message: 'This invite code has already been redeemed',
+    });
   }
 
   const result = await safeFetchJson<RedeemResponse>(

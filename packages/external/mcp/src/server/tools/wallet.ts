@@ -1,7 +1,7 @@
 import { getBalance } from '@/shared/balance';
 import { DEFAULT_NETWORK, getChainName } from '@/shared/networks';
 
-import { mcpError, mcpTextSuccess } from './lib/result';
+import { mcpSuccessJson, mcpErrorJson } from './response';
 
 import type { RegisterTools } from '@/server/types';
 
@@ -19,12 +19,12 @@ export const registerWalletTools: RegisterTools = ({
       const balanceResult = await getBalance(address);
 
       if (balanceResult.isErr()) {
-        return mcpError(balanceResult.error);
+        return mcpErrorJson(balanceResult.error);
       }
 
       const balance = balanceResult.value;
 
-      return mcpTextSuccess({
+      return mcpSuccessJson({
         address,
         network: DEFAULT_NETWORK,
         networkName: getChainName(DEFAULT_NETWORK),

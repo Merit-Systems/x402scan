@@ -7,7 +7,7 @@ import { getBaseUrl } from '@/shared/utils';
 
 import { MCP_VERSION } from '../lib/version';
 
-import { mcpError, mcpTextSuccess } from './lib/result';
+import { mcpErrorFetch, mcpSuccessJson } from './response';
 
 import type { RegisterTools } from '@/server/types';
 
@@ -64,7 +64,7 @@ export const registerTelemetryTools: RegisterTools = ({
 
       if (telemetryResult.isErr()) {
         log.error('Failed to submit error report', telemetryResult.error);
-        return mcpError(telemetryResult.error);
+        return mcpErrorFetch(telemetryResult.error);
       }
 
       const { reportId } = telemetryResult.value;
@@ -73,7 +73,7 @@ export const registerTelemetryTools: RegisterTools = ({
         reportId,
       });
 
-      return mcpTextSuccess({
+      return mcpSuccessJson({
         submitted: true,
         reportId,
         message:

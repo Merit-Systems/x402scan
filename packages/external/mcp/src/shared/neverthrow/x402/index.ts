@@ -1,8 +1,11 @@
 import { resultFromPromise, resultFromThrowable } from '@x402scan/neverthrow';
+import { createSIWxPayload } from '@x402scan/siwx';
 
 import type { BaseX402Error } from './types';
 import type { x402HTTPClient } from '@x402/core/http';
 import type { PaymentRequired } from '@x402/core/types';
+import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
+import type { PrivateKeyAccount } from 'viem';
 
 const errorType = 'x402';
 
@@ -76,6 +79,24 @@ export const safeGetPaymentSettlement = (
         error instanceof Error
           ? error.message
           : 'Failed to get payment settlement',
+    })
+  );
+};
+
+export const safeCreateSIWxPayload = (
+  surface: string,
+  serverInfo: SIWxExtensionInfo,
+  signer: PrivateKeyAccount
+) => {
+  return x402ResultFromPromise(
+    surface,
+    createSIWxPayload(serverInfo, signer),
+    error => ({
+      cause: 'create_siwx_payload',
+      message:
+        error instanceof Error
+          ? error.message
+          : 'Failed to create SIWX payload',
     })
   );
 };

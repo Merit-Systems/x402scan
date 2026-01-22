@@ -2,18 +2,20 @@
  * Discovery tool - discover x402 resources from an origin's well-known endpoint
  */
 
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { safeFetch } from '@/shared/neverthrow/fetch';
-
-import { log } from '@/shared/log';
-import { mcpSuccess } from '@/server/tools/lib/response';
-import { tokenStringToNumber } from '@/shared/token';
-import { getChainName } from '@/shared/networks';
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 
-const surface = 'discover_resources';
+import { safeFetch } from '@/shared/neverthrow/fetch';
+import { mcpSuccessJson } from './response';
+
+import { log } from '@/shared/log';
+import { tokenStringToNumber } from '@/shared/token';
+import { getChainName } from '@/shared/networks';
+
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+
+const toolName = 'discover-resources';
 
 // Discovery document schema per spec
 const DiscoveryDocumentSchema = z.object({
@@ -117,7 +119,7 @@ export function registerDiscoveryTools(server: McpServer): void {
       log.debug(`Fetching discovery document from: ${wellKnownUrl}`);
 
       const wellKnownResult = await safeFetch(
-        surface,
+        toolName,
         new Request(wellKnownUrl, { headers: { Accept: 'application/json' } })
       );
 
@@ -145,7 +147,7 @@ export function registerDiscoveryTools(server: McpServer): void {
         log.debug(`Looking up DNS TXT record: ${dnsQuery}`);
 
         const dnsResult = await safeFetch(
-          surface,
+          toolName,
           new Request(
             `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(dnsQuery)}&type=TXT`,
             { headers: { Accept: 'application/dns-json' } }
@@ -178,7 +180,7 @@ export function registerDiscoveryTools(server: McpServer): void {
           log.debug(`Fetching discovery document from DNS URL: ${dnsUrl}`);
 
           const dnsDocResult = await safeFetch(
-            surface,
+            toolName,
             new Request(dnsUrl, { headers: { Accept: 'application/json' } })
           );
 
@@ -208,7 +210,7 @@ export function registerDiscoveryTools(server: McpServer): void {
         log.debug(`Fetching llms.txt from: ${llmsTxtUrl}`);
 
         const llmsResult = await safeFetch(
-          surface,
+          toolName,
           new Request(llmsTxtUrl, { headers: { Accept: 'text/plain' } })
         );
 
@@ -227,7 +229,7 @@ export function registerDiscoveryTools(server: McpServer): void {
 
       // Handle llms.txt case - return raw content for LLM to interpret
       if (!discoveryDocument && llmsTxtContent) {
-        return mcpSuccess({
+        return mcpSuccessJson({
           found: true,
           origin,
           source: 'llms-txt',
@@ -241,7 +243,7 @@ export function registerDiscoveryTools(server: McpServer): void {
 
       // Nothing found
       if (!discoveryDocument) {
-        return mcpSuccess({
+        return mcpSuccessJson({
           found: false,
           origin,
           error:
@@ -266,7 +268,7 @@ export function registerDiscoveryTools(server: McpServer): void {
         result.resources = discoveryDocument.resources.map(resourceUrl => ({
           url: resourceUrl,
         }));
-        return mcpSuccess(result);
+        return mcpSuccessJson({ ...result });
       }
 
       // ============================================================
@@ -283,7 +285,7 @@ export function registerDiscoveryTools(server: McpServer): void {
             log.debug(`Querying resource: ${resourceUrl}`);
 
             const fetchResult = await safeFetch(
-              surface,
+              toolName,
               new Request(resourceUrl, { method: 'GET' })
             );
 
@@ -370,7 +372,7 @@ export function registerDiscoveryTools(server: McpServer): void {
 
       result.resources = allResources;
 
-      return mcpSuccess(result);
+      return mcpSuccessJson({ ...result });
     }
   );
 }

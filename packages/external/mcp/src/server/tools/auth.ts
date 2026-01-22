@@ -1,12 +1,18 @@
 import { x402Client, x402HTTPClient } from '@x402/core/client';
+import { encodeSIWxHeader } from '@x402scan/siwx';
 
 import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
-import { resultFromPromise } from '@x402scan/neverthrow';
+import {
+  safeCreateSIWxPayload,
+  safeGetPaymentRequired,
+} from '@/shared/neverthrow/x402';
 
-import { mcpSuccess, mcpError } from './lib/response';
-import { safeGetPaymentRequired } from '@/shared/neverthrow/x402';
-
-import { createSIWxPayload, encodeSIWxHeader } from '@x402scan/siwx';
+import {
+  mcpErrorJson,
+  mcpErrorFetch,
+  mcpError,
+  mcpSuccessResponse,
+} from './response';
 
 import { requestSchema, buildRequest } from './lib/request';
 
@@ -35,31 +41,27 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
 
       const firstResponse = firstResult.value;
 
-      // If not 402, return the response directly
       if (firstResponse.status !== 402) {
-        const parseResult = await safeParseResponse(toolName, firstResponse);
-
-        const responseHeaders = Object.fromEntries(
-          firstResponse.headers.entries()
-        );
-
-        if (parseResult.isErr()) {
-          return mcpError(parseResult.error);
-        }
-
         if (!firstResponse.ok) {
-          return mcpError(`HTTP ${firstResponse.status}`, {
-            statusCode: firstResponse.status,
-            headers: responseHeaders,
-            body: parseResult.value.data,
+          return mcpErrorFetch({
+            cause: 'http',
+            message: `HTTP ${firstResponse.status}`,
+            response: firstResponse,
+            type: 'fetch',
+            surface: toolName,
           });
         }
 
-        return mcpSuccess({
-          statusCode: firstResponse.status,
-          headers: responseHeaders,
-          data: parseResult.value.data,
-        });
+        const parseResponseResult = await safeParseResponse(
+          toolName,
+          firstResponse
+        );
+
+        if (parseResponseResult.isErr()) {
+          return mcpError(parseResponseResult.error);
+        }
+
+        return mcpSuccessResponse(parseResponseResult.value);
       }
 
       const getPaymentRequiredResult = await safeGetPaymentRequired(
@@ -79,15 +81,13 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
         | undefined;
 
       if (!siwxExtension?.info) {
-        return mcpError(
-          'Endpoint returned 402 but no sign-in-with-x extension found',
-          {
-            statusCode: 402,
-            x402Version: paymentRequired.x402Version,
-            extensions: Object.keys(paymentRequired.extensions ?? {}),
-            hint: 'This endpoint may require payment instead of authentication. Use execute_call for paid requests.',
-          }
-        );
+        return mcpErrorJson({
+          message:
+            'Endpoint returned 402 but no sign-in-with-x extension found',
+          statusCode: 402,
+          extensions: Object.keys(paymentRequired.extensions ?? {}),
+          hint: 'This endpoint may require payment instead of authentication. Use execute_call for paid requests.',
+        });
       }
 
       const serverInfo = siwxExtension.info;
@@ -105,35 +105,27 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
         f => !serverInfo[f as keyof SIWxExtensionInfo]
       );
       if (missingFields.length > 0) {
-        return mcpError(
-          'Invalid sign-in-with-x extension: missing required fields',
-          {
-            missingFields,
-            receivedInfo: serverInfo,
-          }
-        );
+        return mcpErrorJson({
+          message: 'Invalid sign-in-with-x extension: missing required fields',
+          missingFields,
+          receivedInfo: { ...serverInfo },
+        });
       }
 
       // Step 4: Check for unsupported chain types
       if (serverInfo.chainId.startsWith('solana:')) {
-        return mcpError('Solana authentication not supported', {
+        return mcpErrorJson({
+          message: 'Solana authentication not supported',
           chainId: serverInfo.chainId,
           hint: 'This endpoint requires a Solana wallet. The MCP server currently only supports EVM wallets.',
         });
       }
 
       // Step 5: Create signed proof using server-provided challenge
-      const payloadResult = await resultFromPromise(
-        'siwx',
+      const payloadResult = await safeCreateSIWxPayload(
         toolName,
-        createSIWxPayload(serverInfo, account),
-        error => ({
-          cause: 'siwx_create_payload',
-          message:
-            error instanceof Error
-              ? error.message
-              : 'Failed to create SIWX payload',
-        })
+        serverInfo,
+        account
       );
 
       if (payloadResult.isErr()) {
@@ -153,32 +145,27 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       }
 
       const authedResponse = authedResult.value;
-      const responseHeaders = Object.fromEntries(
-        authedResponse.headers.entries()
-      );
 
-      const authedParseResult = await safeParseResponse(
+      if (!authedResponse.ok) {
+        return mcpErrorFetch({
+          cause: 'http',
+          message: `HTTP ${authedResponse.status} after authentication`,
+          response: authedResponse,
+          type: 'fetch',
+          surface: toolName,
+        });
+      }
+
+      const parseResponseResult = await safeParseResponse(
         toolName,
         authedResponse
       );
 
-      if (authedParseResult.isErr()) {
-        return mcpError(authedParseResult.error);
+      if (parseResponseResult.isErr()) {
+        return mcpError(parseResponseResult.error);
       }
 
-      if (!authedResponse.ok) {
-        return mcpError(`HTTP ${authedResponse.status} after authentication`, {
-          statusCode: authedResponse.status,
-          headers: responseHeaders,
-          body: authedParseResult.value.data,
-          authAddress: account.address,
-        });
-      }
-
-      return mcpSuccess({
-        statusCode: authedResponse.status,
-        headers: responseHeaders,
-        data: authedParseResult.value.data,
+      return mcpSuccessResponse(parseResponseResult.value, {
         authentication: {
           address: account.address,
           domain: serverInfo.domain,

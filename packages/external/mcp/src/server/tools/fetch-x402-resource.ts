@@ -6,7 +6,7 @@ import { ExactEvmScheme } from '@x402/evm/exact/client';
 import { DEFAULT_NETWORK } from '@/shared/networks';
 import { tokenStringToNumber } from '@/shared/token';
 
-import { mcpError, mcpSuccess } from '@/server/tools/lib/response';
+import { mcpError, mcpSuccessResponse } from './response';
 import { requestSchema, buildRequest } from './lib/request';
 
 import { checkBalance } from './lib/check-balance';
@@ -63,34 +63,20 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
 
       const response = fetchResult.value;
 
-      const parseResponseResult = await safeParseResponse(toolName, response);
-
-      if (parseResponseResult.isErr()) {
+      if (!response.ok) {
         return mcpError({
-          ...parseResponseResult.error,
-          ...(response.status === 402
-            ? {
-                extra:
-                  'You do not have enough balance to pay for this request.',
-              }
-            : {}),
+          cause: 'http',
+          message: `HTTP ${response.status}`,
+          response: response,
+          type: 'fetch',
+          surface: toolName,
         });
       }
 
-      if (!response.ok) {
-        return mcpError({
-          statusCode: response.status,
-          contentType: response.headers.get('content-type') ?? 'Not specified',
-          body: ['json', 'text'].includes(parseResponseResult.value.type)
-            ? parseResponseResult.value.data
-            : undefined,
-          ...(response.status === 402
-            ? {
-                extra:
-                  'You do not have enough balance to pay for this request.',
-              }
-            : {}),
-        });
+      const parseResponseResult = await safeParseResponse(toolName, response);
+
+      if (parseResponseResult.isErr()) {
+        return mcpError(parseResponseResult.error);
       }
 
       const settlementResult = safeGetPaymentSettlement(
@@ -99,10 +85,12 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
         response
       );
 
-      return mcpSuccess({
-        data: parseResponseResult.value.data,
-        ...(settlementResult.isOk() ? { payment: settlementResult.value } : {}),
-      });
+      return mcpSuccessResponse(
+        parseResponseResult.value,
+        settlementResult.isOk()
+          ? { payment: settlementResult.value }
+          : undefined
+      );
     }
   );
 };
