@@ -11,30 +11,35 @@ import {
 } from 'viem';
 import { base } from 'viem/chains';
 
+import { errAsync, ResultAsync } from 'neverthrow';
+
 const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const USDC_DECIMALS = 6;
 const USDC_SYMBOL = 'USDC';
 const BASE_CHAIN = base;
-export class NoRpcError extends Error {
-  override name = 'NoRpcError'
-  constructor(message = 'No RPC URL provided') {
-    super(message)
-  }
-}
 
-async function getBalance(address: Address): Promise<bigint> {
+type GetBalanceError =
+  | { type: 'no_rpc'; message: string }
+  | { type: 'rpc_failed'; message: string };
+
+function getBalance(address: Address): ResultAsync<bigint, GetBalanceError> {
   const rpcUrl = process.env.BASE_RPC_URL;
   if (!rpcUrl) {
-    throw new NoRpcError();
+    return errAsync({ type: 'no_rpc', message: 'No RPC URL provided' });
   }
   const client = createPublicClient({ chain: base, transport: http(rpcUrl) });
-  const balance = await client.readContract({
-    address: BASE_USDC_ADDRESS,
-    abi: erc20Abi,
-    functionName: 'balanceOf',
-    args: [address],
-  });
-  return balance;
+  return ResultAsync.fromPromise(
+    client.readContract({
+      address: BASE_USDC_ADDRESS,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
+      args: [address],
+    }),
+    (): GetBalanceError => ({
+      type: 'rpc_failed',
+      message: 'RPC balanceOf call failed',
+    })
+  );
 }
 
 async function balanceHandler(c: Context) {
@@ -44,27 +49,26 @@ async function balanceHandler(c: Context) {
   }
   const address = getAddress(addressParam);
 
-  let balance: bigint;
-  try {
-    balance = await getBalance(address);
-  } catch (error) {
-    if (error instanceof NoRpcError) {
-      return c.json({ error: error.message }, 503);
+  return await getBalance(address).match(
+    balance =>
+      c.json({
+        chain: BASE_CHAIN.id,
+        address,
+        balance: formatUnits(balance, USDC_DECIMALS),
+        rawBalance: balance.toString(),
+        token: {
+          symbol: USDC_SYMBOL,
+          decimals: USDC_DECIMALS,
+          address: BASE_USDC_ADDRESS,
+        },
+      }),
+    error => {
+      if (error.type === 'no_rpc') {
+        return c.json({ error: error.message }, 503);
+      }
+      return c.json({ error: error.message }, 500);
     }
-    return c.json({ error: 'Failed to get balance' }, 500);
-  }
-
-  return c.json({
-    chain: BASE_CHAIN.id,
-    address,
-    balance: formatUnits(balance, USDC_DECIMALS),
-    rawBalance: balance.toString(),
-    token: {
-      symbol: USDC_SYMBOL,
-      decimals: USDC_DECIMALS,
-      address: BASE_USDC_ADDRESS,
-    },
-  });
+  );
 }
 
 export function registerBalanceRouter(app: Hono) {
