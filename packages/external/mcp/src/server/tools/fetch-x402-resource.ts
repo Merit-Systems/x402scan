@@ -7,7 +7,7 @@ import { DEFAULT_NETWORK } from '@/shared/networks';
 import { tokenStringToNumber } from '@/shared/token';
 
 import { mcpError, mcpSuccess } from '@/server/lib/response';
-import { requestSchema } from '@/server/lib/schemas';
+import { requestSchema, buildRequest } from './lib/request';
 
 import { checkBalance } from '../lib/check-balance';
 import {
@@ -17,9 +17,8 @@ import {
 } from '../lib/x402/result';
 
 import type { RegisterTools } from '@/server/types';
-import { buildRequest } from '../lib/build-request';
 
-const surface = 'fetch-x402-resource';
+const toolName = 'fetch-x402-resource';
 
 export const registerFetchX402ResourceTool: RegisterTools = ({
   server,
@@ -27,7 +26,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
   flags,
 }) => {
   server.registerTool(
-    'fetch',
+    toolName,
     {
       description:
         'Fetches an x402-protected resource and handles payment automatically. If the resource is not x402-protected, it will return the raw response.',
@@ -64,7 +63,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
 
       const response = fetchResult.value;
 
-      const parseResponseResult = await safeParseResponse(surface, response);
+      const parseResponseResult = await safeParseResponse(toolName, response);
 
       if (parseResponseResult.isErr()) {
         return mcpError({
@@ -95,7 +94,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
       }
 
       const settlementResult = await safeGetPaymentSettlement(
-        surface,
+        toolName,
         client,
         response
       );
@@ -113,7 +112,7 @@ function safeWrapFetchWithPayment(client: x402HTTPClient) {
     const request = new Request(input, init);
     const clonedRequest = request.clone();
 
-    const probeResult = await safeFetch(surface, request);
+    const probeResult = await safeFetch(toolName, request);
 
     if (probeResult.isErr()) {
       return probeResult;
@@ -126,7 +125,7 @@ function safeWrapFetchWithPayment(client: x402HTTPClient) {
     const response = probeResult.value;
 
     const paymentRequiredResult = await safeGetPaymentRequired(
-      surface,
+      toolName,
       client,
       response
     );
@@ -138,7 +137,7 @@ function safeWrapFetchWithPayment(client: x402HTTPClient) {
     const paymentRequired = paymentRequiredResult.value;
 
     const paymentPayloadResult = await safeCreatePaymentPayload(
-      surface,
+      toolName,
       client,
       paymentRequired
     );
@@ -170,6 +169,6 @@ function safeWrapFetchWithPayment(client: x402HTTPClient) {
     );
 
     // Retry the request with payment
-    return await safeFetch(surface, clonedRequest);
+    return await safeFetch(toolName, clonedRequest);
   };
 }

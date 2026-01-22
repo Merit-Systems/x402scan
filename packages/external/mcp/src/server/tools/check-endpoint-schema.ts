@@ -1,21 +1,21 @@
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 
+import { safeFetch, safeParseResponse } from '@x402scan/neverthrow/fetch';
+
 import { mcpError, mcpSuccess } from '@/server/lib/response';
-import { requestSchema } from '@/server/lib/schemas';
+import { requestSchema, buildRequest } from './lib/request';
 
 import { log } from '@/shared/log';
 
 import { getRouteDetails } from '../lib/x402/get-route-details';
 
 import type { RegisterTools } from '@/server/types';
-import { safeFetch, safeParseResponse } from '@x402scan/neverthrow/fetch';
-import { buildRequest } from '../lib/build-request';
 
-const surface = 'check-x402-endpoint';
+const toolName = 'check-x402-endpoint';
 
 export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
   server.registerTool(
-    'check-x402-endpoint',
+    toolName,
     {
       description:
         'Check if an endpoint is x402-protected and get pricing options, schema, and auth requirements (if applicable).',
@@ -24,7 +24,7 @@ export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
     async input => {
       log.info('Querying endpoint', input);
 
-      const responseResult = await safeFetch(surface, buildRequest(input));
+      const responseResult = await safeFetch(toolName, buildRequest(input));
 
       if (responseResult.isErr()) {
         return mcpError(responseResult.error);
@@ -32,7 +32,7 @@ export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
 
       const response = responseResult.value;
 
-      const parseResponse = await safeParseResponse(surface, response);
+      const parseResponse = await safeParseResponse(toolName, response);
 
       if (response.status !== 402) {
         if (parseResponse.isErr()) {

@@ -7,28 +7,17 @@ import { mcpSuccess, mcpError } from '../lib/response';
 import { safeGetPaymentRequired } from '../lib/x402/result';
 
 import { createSIWxPayload, encodeSIWxHeader } from '@x402scan/siwx';
+
+import { requestSchema, buildRequest } from './lib/request';
+
 import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
-
-import { requestSchema } from '@/server/lib/schemas';
-import { buildRequest } from '@/server/lib/build-request';
-
 import type { RegisterTools } from '@/server/types';
 
-const surface = 'authed_call';
-
-const safeCreateSIWxPayload = (
-  serverInfo: SIWxExtensionInfo,
-  account: Parameters<RegisterTools>[0]['account']
-) =>
-  resultFromPromise(surface, createSIWxPayload(serverInfo, account), error => ({
-    type: 'siwx_create_payload',
-    message:
-      error instanceof Error ? error.message : 'Failed to create SIWX payload',
-  }));
+const toolName = 'authed_call';
 
 export const registerAuthTools: RegisterTools = ({ server, account }) => {
   server.registerTool(
-    'authed_call',
+    toolName,
     {
       description:
         'Make a request to a SIWX-protected endpoint. Handles auth flow automatically: detects SIWX requirement from 402 response, signs proof with server-provided challenge, retries.',
@@ -38,7 +27,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       const httpClient = new x402HTTPClient(new x402Client());
 
       // Step 1: Make initial request
-      const firstResult = await safeFetch(surface, buildRequest(input));
+      const firstResult = await safeFetch(toolName, buildRequest(input));
 
       if (firstResult.isErr()) {
         return mcpError(firstResult.error);
@@ -48,7 +37,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
 
       // If not 402, return the response directly
       if (firstResponse.status !== 402) {
-        const parseResult = await safeParseResponse(surface, firstResponse);
+        const parseResult = await safeParseResponse(toolName, firstResponse);
 
         const responseHeaders = Object.fromEntries(
           firstResponse.headers.entries()
@@ -74,7 +63,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       }
 
       const getPaymentRequiredResult = await safeGetPaymentRequired(
-        surface,
+        toolName,
         httpClient,
         firstResponse
       );
@@ -134,7 +123,17 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       }
 
       // Step 5: Create signed proof using server-provided challenge
-      const payloadResult = await safeCreateSIWxPayload(serverInfo, account);
+      const payloadResult = await resultFromPromise(
+        toolName,
+        createSIWxPayload(serverInfo, account),
+        error => ({
+          type: 'siwx_create_payload',
+          message:
+            error instanceof Error
+              ? error.message
+              : 'Failed to create SIWX payload',
+        })
+      );
 
       if (payloadResult.isErr()) {
         return mcpError(payloadResult.error);
@@ -146,7 +145,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       const authedRequest = buildRequest(input);
       authedRequest.headers.set('SIGN-IN-WITH-X', siwxHeader);
 
-      const authedResult = await safeFetch(surface, authedRequest);
+      const authedResult = await safeFetch(toolName, authedRequest);
 
       if (authedResult.isErr()) {
         return mcpError(authedResult.error);
@@ -158,7 +157,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       );
 
       const authedParseResult = await safeParseResponse(
-        surface,
+        toolName,
         authedResponse
       );
 
