@@ -16,7 +16,7 @@ import { api } from '@/trpc/client';
 
 import { useWalletChain } from '@/app/(app)/_contexts/wallet-chain/hook';
 
-import { ethereumAddressSchema, solanaAddressSchema } from '@/lib/schemas';
+import { evmAddressSchema, solanaAddressSchema } from '@/lib/schemas';
 import { usdc } from '@/lib/tokens/usdc';
 import { formatAddress } from '@/lib/utils';
 
@@ -59,7 +59,7 @@ export const Send: React.FC = () => {
   } = api.user.serverWallet.sendUsdc.useMutation();
 
   const schema =
-    chain === ChainType.SOLANA ? solanaAddressSchema : ethereumAddressSchema;
+    chain === ChainType.SOLANA ? solanaAddressSchema : evmAddressSchema;
 
   const handleSubmit = useCallback(() => {
     const parseResult = schema.safeParse(address);

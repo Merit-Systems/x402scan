@@ -1,4 +1,4 @@
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { evmAddressSchema } from '@/lib/schemas';
 
 export default async function DepositLayout({
   children,
@@ -6,7 +6,7 @@ export default async function DepositLayout({
 }: LayoutProps<'/mcp/deposit/[address]'>) {
   const { address } = await params;
 
-  const parsedAddress = ethereumAddressSchema.safeParse(address);
+  const parsedAddress = evmAddressSchema.safeParse(address);
 
   if (!parsedAddress.success) {
     throw new Error('Invalid address');

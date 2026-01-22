@@ -6,7 +6,7 @@ import { usdc } from '@/lib/tokens/usdc';
 
 import { useEvmTokenBalance } from '../balance/token/use-evm-token-balance';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { evmAddressSchema } from '@/lib/schemas';
 
 import { useWalletChain } from '@/app/(app)/_contexts/wallet-chain/hook';
 import { useEvmX402Fetch } from '../x402/evm';
@@ -100,7 +100,7 @@ export const useEvmSend = (props?: Props) => {
       toast.error('Amount is required');
       return;
     }
-    const parseResult = ethereumAddressSchema.safeParse(toAddress);
+    const parseResult = evmAddressSchema.safeParse(toAddress);
     if (!parseResult.success) {
       toast.error('Invalid address');
       return;
@@ -133,7 +133,7 @@ export const useEvmSend = (props?: Props) => {
       balance < amount ||
       isBalanceLoading ||
       isSent ||
-      !ethereumAddressSchema.safeParse(toAddress).success,
+      !evmAddressSchema.safeParse(toAddress).success,
     isPending: isSending,
     statusText,
   };
