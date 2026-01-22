@@ -268,15 +268,15 @@ importers:
       '@hono/node-server':
         specifier: ^1.13.8
         version: 1.19.9(hono@4.10.6)
-      '@solana/web3.js':
-        specifier: ^1.98.4
-        version: 1.98.4(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
       dotenv:
         specifier: catalog:env
         version: 17.2.3
       hono:
         specifier: ^4.7.1
         version: 4.10.6
+      neverthrow:
+        specifier: ^8.2.0
+        version: 8.2.0
       viem:
         specifier: 2.44.1
         version: 2.44.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
