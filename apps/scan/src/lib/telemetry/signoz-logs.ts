@@ -26,7 +26,7 @@ function coerceAttributes(
     try {
       out[key] = JSON.stringify(value);
     } catch {
-      out[key] = String(value);
+      out[key] = `[non-serializable: ${typeof value}]`;
     }
   }
 
