@@ -1,4 +1,3 @@
-import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
 import {
   cookieStorage,
   createConfig,
@@ -7,7 +6,11 @@ import {
   injected,
 } from 'wagmi';
 import { base } from 'wagmi/chains';
+
+import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
+
 import { cdpConfig } from '../cdp/config';
+
 import { env } from '@/env';
 
 const createCDPConnector = () =>

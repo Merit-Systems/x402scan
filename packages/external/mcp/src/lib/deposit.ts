@@ -11,7 +11,7 @@ import type { Address } from 'viem';
 import { getBaseUrl } from './utils';
 
 export const getDepositLink = (address: string, flags: GlobalFlags) => {
-  return `${getBaseUrl(flags.dev)}/deposit/${address}`;
+  return `${getBaseUrl(flags.dev)}/mcp/deposit/${address}`;
 };
 
 export const openDepositLink = async (address: string, flags: GlobalFlags) => {
