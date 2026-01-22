@@ -18,14 +18,17 @@ const USDC_DECIMALS = 6;
 const USDC_SYMBOL = 'USDC';
 const BASE_CHAIN = base;
 
+const ERROR_NO_RPC = 'no_rpc';
+const ERROR_RPC_FAILED = 'rpc_failed';
+
 type GetBalanceError =
-  | { type: 'no_rpc'; message: string }
-  | { type: 'rpc_failed'; message: string };
+  | { type: typeof ERROR_NO_RPC; message: string }
+  | { type: typeof ERROR_RPC_FAILED; message: string };
 
 function getBalance(address: Address): ResultAsync<bigint, GetBalanceError> {
   const rpcUrl = process.env.BASE_RPC_URL;
   if (!rpcUrl) {
-    return errAsync({ type: 'no_rpc', message: 'No RPC URL provided' });
+    return errAsync({ type: ERROR_NO_RPC, message: 'No RPC URL provided' });
   }
   const client = createPublicClient({ chain: base, transport: http(rpcUrl) });
   return ResultAsync.fromPromise(
@@ -36,7 +39,7 @@ function getBalance(address: Address): ResultAsync<bigint, GetBalanceError> {
       args: [address],
     }),
     (): GetBalanceError => ({
-      type: 'rpc_failed',
+      type: ERROR_RPC_FAILED,
       message: 'RPC balanceOf call failed',
     })
   );
@@ -63,10 +66,14 @@ async function balanceHandler(c: Context) {
         },
       }),
     error => {
-      if (error.type === 'no_rpc') {
-        return c.json({ error: error.message }, 503);
+      switch (error.type) {
+        case ERROR_NO_RPC:
+          return c.json({ error: error.message }, 503);
+        case ERROR_RPC_FAILED:
+          return c.json({ error: error.message }, 502);
+        default:
+          return c.json({ error: 'Unhandled error' }, 500);
       }
-      return c.json({ error: error.message }, 500);
     }
   );
 }
