@@ -6,6 +6,7 @@ import {
   USDC_DECIMALS,
 } from '@/services/rpc/balance';
 import { formatUnits, getAddress, isAddress } from 'viem';
+import { base } from 'wagmi/chains';
 
 export async function GET(
   _: Request,
@@ -23,6 +24,8 @@ export async function GET(
     balance =>
       NextResponse.json(
         {
+          address: parsedAddress,
+          chain: base.id,
           balance: formatUnits(balance, USDC_DECIMALS),
           rawBalance: balance.toString(),
         },
