@@ -16,25 +16,19 @@ const USDC_DECIMALS = 6;
 const USDC_SYMBOL = 'USDC';
 const BASE_CHAIN = base;
 
-async function getBalance(
-  address: Address
-): Promise<{ rawBalance: string; balance: string }> {
+async function getBalance(address: Address): Promise<bigint> {
   const rpcUrl = process.env.BASE_RPC_URL;
   if (!rpcUrl) {
     throw new Error('Missing base rpc url');
   }
   const client = createPublicClient({ chain: base, transport: http(rpcUrl) });
-  const rawBalance = await client.readContract({
+  const balance = await client.readContract({
     address: BASE_USDC_ADDRESS,
     abi: erc20Abi,
     functionName: 'balanceOf',
     args: [address],
-    authorizationList: undefined,
   });
-  return {
-    rawBalance: rawBalance.toString(),
-    balance: formatUnits(rawBalance, USDC_DECIMALS),
-  };
+  return balance;
 }
 
 async function balanceHandler(c: Context) {
@@ -43,12 +37,12 @@ async function balanceHandler(c: Context) {
     return c.json({ error: 'Invalid EVM address' }, 400);
   }
   const address = getAddress(addressParam);
-  const { rawBalance, balance } = await getBalance(address);
+  const balance = await getBalance(address);
   return c.json({
     chain: BASE_CHAIN.id,
     address,
-    balance,
-    rawBalance,
+    balance: formatUnits(balance, USDC_DECIMALS),
+    rawBalance: balance.toString(),
     token: {
       symbol: USDC_SYMBOL,
       decimals: USDC_DECIMALS,
