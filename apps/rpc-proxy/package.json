@@ -1,0 +1,33 @@
+{
+  "name": "@x402scan/rpc-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "types:check": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "knip": "pnpm -w knip --workspace ./apps/rpc-proxy",
+    "format": "pnpm -w format:dir ./apps/rpc-proxy",
+    "format:check": "pnpm -w format:check:dir ./apps/rpc-proxy"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.8",
+    "@solana/web3.js": "^1.98.4",
+    "dotenv": "catalog:env",
+    "hono": "^4.7.1",
+    "viem": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}
+
