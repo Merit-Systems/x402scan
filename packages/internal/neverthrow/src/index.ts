@@ -9,7 +9,6 @@ import {
 
 import type { ResultAsync, BaseError, Error, Result } from './types';
 
-// BE inferred from callback, T often needs explicit annotation
 export function resultFromPromise<E extends BaseError, T = unknown>(
   surface: string,
   promise: Promise<T>,
@@ -39,11 +38,9 @@ export function resultFromSafePromise<E extends BaseError, T = unknown>(
 }
 
 export function ok<T>(data: T) {
-  // surface is unused, included for symmetry/typing
   return neverthrowOk(data);
 }
 
-// BE fully inferred from error parameter
 export function err<BE extends BaseError>(surface: string, error: BE) {
   return neverthrowErr<never, Error<BE>>({
     ...error,
@@ -52,7 +49,6 @@ export function err<BE extends BaseError>(surface: string, error: BE) {
 }
 
 export function okAsync<T>(data: T): ResultAsync<T, never> {
-  // surface is unused, included for symmetry/typing
   return neverthrowOkAsync(data);
 }
 
