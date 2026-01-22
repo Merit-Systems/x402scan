@@ -13,6 +13,7 @@ const config: KnipConfig = {
       ignore: ['src/scripts/**', 'src/components/ui/charts/chart/**'],
     },
     'apps/proxy': {},
+    'apps/rpc-proxy': {},
     'apps/rpcs/solana': {},
     'packages/external/facilitators': {
       project: ['src/**/*.ts'],
