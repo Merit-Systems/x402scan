@@ -10,23 +10,27 @@ import {
 import type { ResultAsync, BaseError, Error, Result } from './types';
 
 export function resultFromPromise<E extends BaseError, T = unknown>(
+  type: string,
   surface: string,
   promise: Promise<T>,
   error: (e: unknown) => E
 ): ResultAsync<T, E> {
   return NeverthrowResultAsync.fromPromise(promise, e => ({
     ...error(e),
+    type,
     surface,
   }));
 }
 
 export function resultFromThrowable<E extends BaseError, T = unknown>(
+  type: string,
   surface: string,
   fn: () => T,
   error: (e: unknown) => E
 ): Result<T, E> {
   return NeverthrowResult.fromThrowable(fn, e => ({
     ...error(e),
+    type,
     surface,
   }))();
 }
@@ -41,9 +45,14 @@ export function ok<T>(data: T) {
   return neverthrowOk(data);
 }
 
-export function err<BE extends BaseError>(surface: string, error: BE) {
+export function err<BE extends BaseError>(
+  type: string,
+  surface: string,
+  error: BE
+) {
   return neverthrowErr<never, Error<BE>>({
     ...error,
+    type,
     surface,
   });
 }

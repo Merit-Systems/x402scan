@@ -124,10 +124,11 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
 
       // Step 5: Create signed proof using server-provided challenge
       const payloadResult = await resultFromPromise(
+        'siwx',
         toolName,
         createSIWxPayload(serverInfo, account),
         error => ({
-          type: 'siwx_create_payload',
+          cause: 'siwx_create_payload',
           message:
             error instanceof Error
               ? error.message

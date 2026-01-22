@@ -27,10 +27,9 @@ export const evmServerWallet =
 
     return {
       address: () =>
-        cdpResultFromPromise(getAddress(), error => ({
-          type: 'bad_gateway',
+        cdpResultFromPromise(getAddress(), () => ({
+          cause: 'bad_gateway',
           message: 'Failed to get wallet address',
-          error,
         })),
       getNativeTokenBalance: () =>
         cdpResultFromPromise(
@@ -41,10 +40,9 @@ export const evmServerWallet =
               })
             )
             .then(result => parseFloat(formatEther(result.value))),
-          error => ({
-            type: 'bad_gateway',
+          () => ({
+            cause: 'bad_gateway',
             message: 'Failed to get native token balance',
-            error,
           })
         ),
       getTokenBalance: ({ token }) =>
@@ -59,10 +57,9 @@ export const evmServerWallet =
               })
             )
             .then(balance => convertTokenAmount(balance)),
-          error => ({
-            type: 'bad_gateway',
+          () => ({
+            cause: 'bad_gateway',
             message: 'Failed to get token balance',
-            error,
           })
         ),
       export: () =>
@@ -73,10 +70,9 @@ export const evmServerWallet =
               name,
             })
           ),
-          error => ({
-            type: 'bad_gateway',
+          () => ({
+            cause: 'bad_gateway',
             message: 'Failed to export wallet',
-            error,
           })
         ),
       signer: async () => toAccount(await getAccount()),
@@ -100,10 +96,9 @@ export const evmServerWallet =
               })
               .then(({ transactionHash }) => transactionHash)
           ),
-          error => ({
-            type: 'bad_gateway',
+          () => ({
+            cause: 'bad_gateway',
             message: 'Failed to send tokens',
-            error,
           })
         ),
     };

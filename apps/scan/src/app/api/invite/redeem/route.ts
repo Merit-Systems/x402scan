@@ -17,7 +17,7 @@ export const POST = async (request: NextRequest) => {
   if (!parseResult.success) {
     return toNextResponse(
       apiErr({
-        type: 'invalid_request',
+        cause: 'invalid_request',
         message: JSON.stringify(z.treeifyError(parseResult.error)),
       })
     );
@@ -40,7 +40,7 @@ export const GET = async (request: NextRequest) => {
   if (!parseResult.success) {
     return toNextResponse(
       apiErr({
-        type: 'invalid_request',
+        cause: 'invalid_request',
         message: JSON.stringify(z.treeifyError(parseResult.error)),
       })
     );

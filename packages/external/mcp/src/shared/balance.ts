@@ -20,8 +20,8 @@ export async function getBalance(address: Address, network = DEFAULT_NETWORK) {
   const chain = getChain(caip2);
 
   if (!chain) {
-    return err(balanceSurface, {
-      type: 'unsupported_network',
+    return err('input', balanceSurface, {
+      cause: 'unsupported_network',
       message: `Unsupported network: ${network}`,
     });
   }
@@ -29,8 +29,8 @@ export async function getBalance(address: Address, network = DEFAULT_NETWORK) {
   const usdcAddress = getUSDCAddress(caip2);
 
   if (!usdcAddress) {
-    return err(balanceSurface, {
-      type: 'no_usdc_address',
+    return err('input', balanceSurface, {
+      cause: 'no_usdc_address',
       message: `No USDC address for network: ${network}`,
     });
   }
@@ -40,6 +40,7 @@ export async function getBalance(address: Address, network = DEFAULT_NETWORK) {
   const client = createPublicClient({ chain, transport: http() });
 
   const balanceResult = await resultFromPromise(
+    'rpc',
     balanceSurface,
     client.readContract({
       address: usdcAddress,
@@ -48,7 +49,7 @@ export async function getBalance(address: Address, network = DEFAULT_NETWORK) {
       args: [address],
     }),
     error => ({
-      type: 'internal',
+      cause: 'internal',
       message: 'Failed to get USDC balance',
       error,
     })

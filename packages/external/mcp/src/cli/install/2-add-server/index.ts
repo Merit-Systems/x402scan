@@ -73,8 +73,8 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
       message: 'Did you add the MCP server to your Warp config?',
     });
     if (!addedToWarp) {
-      return err('config_file', {
-        type: 'warp_mcp_server_not_added',
+      return err('user', 'install', {
+        cause: 'warp_mcp_server_not_added',
         message: 'Warp MCP server not added',
       });
     }

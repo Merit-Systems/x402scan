@@ -3,13 +3,13 @@ import type {
   ResultAsync as NeverthrowResultAsync,
 } from 'neverthrow';
 
-export interface BaseError<ErrorTypes extends string = string> {
-  type: ErrorTypes;
+export interface BaseError<ErrorCause extends string = string> {
+  cause: ErrorCause;
   message: string;
 }
 
 // Now only needs BE
-export type Error<E extends BaseError> = E & { surface: string };
+export type Error<E extends BaseError> = E & { type: string; surface: string };
 
 // Only needs T and BE - ErrorTypes derived internally
 export type Result<T, E extends BaseError> = NeverthrowResult<T, Error<E>>;

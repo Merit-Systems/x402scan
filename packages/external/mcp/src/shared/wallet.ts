@@ -39,8 +39,8 @@ export async function getWallet() {
     data => {
       const stored = storedWalletSchema.safeParse(JSON.parse(data));
       if (!stored.success) {
-        return err(walletSurface, {
-          type: 'invalid_data',
+        return err('parse', walletSurface, {
+          cause: 'invalid_data',
           message: 'Invalid wallet data',
           error: stored.error,
         });

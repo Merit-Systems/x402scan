@@ -1,6 +1,6 @@
 #!/usr/bin/env npx tsx
 
-import { resultFromPromise } from '@x402scan/neverthrow';
+import { resultFromThrowable } from '@x402scan/neverthrow';
 import { execSync } from 'child_process';
 import {
   cpSync,
@@ -97,8 +97,8 @@ function main() {
   console.log(`  open x402scan.mcpb`);
 }
 
-resultFromPromise('build-mcpb', Promise.resolve(main()), err => ({
-  type: 'error',
+resultFromThrowable('server', 'build-mcpb', main, () => ({
+  cause: 'server',
   message: 'Error building MCPB bundle',
-  error: err,
+  surface: 'build-mcpb',
 }));

@@ -29,10 +29,9 @@ export const validateInviteCode = async ({
     scanDb.inviteCode.findUnique({
       where: { code },
     }),
-    error => ({
-      type: 'not_found',
+    () => ({
+      cause: 'not_found',
       message: 'Failed to find invite code',
-      error,
     })
   );
 
@@ -43,18 +42,18 @@ export const validateInviteCode = async ({
   const inviteCode = result.value;
 
   if (!inviteCode) {
-    return dbErr({ type: 'not_found', message: 'Invalid invite code' });
+    return dbErr({ cause: 'not_found', message: 'Invalid invite code' });
   }
 
   if (inviteCode.status !== 'ACTIVE') {
     return dbErr({
-      type: 'conflict',
+      cause: 'conflict',
       message: `Invite code is ${inviteCode.status.toLowerCase()}`,
     });
   }
 
   if (inviteCode.expiresAt && inviteCode.expiresAt < new Date()) {
-    return dbErr({ type: 'conflict', message: 'Invite code has expired' });
+    return dbErr({ cause: 'conflict', message: 'Invite code has expired' });
   }
 
   if (
@@ -62,7 +61,7 @@ export const validateInviteCode = async ({
     inviteCode.redemptionCount >= inviteCode.maxRedemptions
   ) {
     return dbErr({
-      type: 'conflict',
+      cause: 'conflict',
       message: 'Invite code has been fully redeemed',
     });
   }
@@ -77,7 +76,7 @@ export const validateInviteCode = async ({
     });
     if (existingRedemption) {
       return dbErr({
-        type: 'conflict',
+        cause: 'conflict',
         message: 'You have already redeemed this invite code',
       });
     }
@@ -109,14 +108,14 @@ export const redeemInviteCode = async ({
 
         if (!inviteCode) {
           return dbErr({
-            type: 'not_found',
+            cause: 'not_found',
             message: 'Invalid invite code',
           });
         }
 
         if (inviteCode.status !== InviteCodeStatus.ACTIVE) {
           return dbErr({
-            type: 'conflict',
+            cause: 'conflict',
             message: `Invite code is ${inviteCode.status.toLowerCase()}`,
           });
         }
@@ -128,7 +127,7 @@ export const redeemInviteCode = async ({
             data: { status: InviteCodeStatus.EXPIRED },
           });
           return dbErr({
-            type: 'conflict',
+            cause: 'conflict',
             message: 'Invite code has expired',
           });
         }
@@ -138,7 +137,7 @@ export const redeemInviteCode = async ({
           inviteCode.redemptionCount >= inviteCode.maxRedemptions
         ) {
           return dbErr({
-            type: 'conflict',
+            cause: 'conflict',
             message: 'Invite code has been fully redeemed',
           });
         }
@@ -154,7 +153,7 @@ export const redeemInviteCode = async ({
           });
           if (existingRedemption) {
             return dbErr({
-              type: 'conflict',
+              cause: 'conflict',
               message: 'You have already redeemed this invite code',
             });
           }
@@ -206,10 +205,9 @@ export const redeemInviteCode = async ({
         isolationLevel: 'Serializable',
       }
     ),
-    error => ({
-      type: 'internal',
+    () => ({
+      cause: 'internal',
       message: 'Invite code redemption failed',
-      error,
     })
   );
 
@@ -282,10 +280,9 @@ export const redeemInviteCode = async ({
         completedAt: new Date(),
       },
     }),
-    error => ({
-      type: 'internal',
+    () => ({
+      cause: 'internal',
       message: 'Failed to update redemption status',
-      error,
     })
   );
 
@@ -326,8 +323,8 @@ const handleRedemptionFailure = async ({
         completedAt: new Date(),
       },
     }),
-    error => ({
-      type: 'internal',
+    () => ({
+      cause: 'internal',
       message: 'Failed to update redemption status',
       error,
     })
@@ -338,10 +335,9 @@ const handleRedemptionFailure = async ({
       where: { id: inviteCodeId },
       data: { redemptionCount: { decrement: 1 } },
     }),
-    error => ({
-      type: 'internal',
+    () => ({
+      cause: 'internal',
       message: 'Failed to decrement redemption count',
-      error,
     })
   ).map(async updatedCode => {
     if (

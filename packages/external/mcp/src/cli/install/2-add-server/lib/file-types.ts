@@ -36,7 +36,7 @@ const parseContent = (
       };
     },
     e => ({
-      type: 'parse_config',
+      cause: 'parse_config',
       message: e instanceof Error ? e.message : 'Failed to parse config file',
     })
   );
@@ -76,7 +76,7 @@ const serializeJsonc = (
       return jsonc.applyEdits(originalContent, modifications);
     },
     e => ({
-      type: 'serialize_config',
+      cause: 'serialize_config',
       message: e instanceof Error ? e.message : 'Failed to serialize JSONC',
     })
   );

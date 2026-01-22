@@ -2,9 +2,10 @@ import { resultFromThrowable } from '@x402scan/neverthrow';
 
 import type { BaseConfigError } from '../types';
 
+const errorType = 'config';
 const surface = 'config_file';
 
 export const configResultFromThrowable = <T>(
   fn: () => T,
   error: (e: unknown) => BaseConfigError
-) => resultFromThrowable<BaseConfigError, T>(surface, fn, error);
+) => resultFromThrowable(errorType, surface, fn, error);

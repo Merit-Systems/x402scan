@@ -2,12 +2,15 @@ import { serverErr } from '@/lib/server-result';
 
 import { NextResponse } from 'next/server';
 
-import type { ServerErrorType, ServerResult } from '@/lib/server-result';
+import type {
+  BaseServerError,
+  ServerErrorType,
+  ServerResult,
+} from '@/lib/server-result';
 
 const surface = 'api';
 
-export const apiErr = (error: Parameters<typeof serverErr>[1]) =>
-  serverErr(surface, error);
+export const apiErr = (error: BaseServerError) => serverErr(surface, error);
 
 const errorTypeToStatusCode = {
   invalid_request: 400,
@@ -27,5 +30,5 @@ export const toNextResponse = <T>(result: ServerResult<T>) =>
   result.match(
     data => NextResponse.json(data),
     error =>
-      NextResponse.json(error, { status: errorTypeToStatusCode[error.type] })
+      NextResponse.json(error, { status: errorTypeToStatusCode[error.cause] })
   );

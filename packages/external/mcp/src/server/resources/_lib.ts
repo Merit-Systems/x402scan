@@ -1,5 +1,5 @@
-import { resultFromPromise } from '@x402scan/neverthrow';
-import { fetchErr, safeFetch } from '@/shared/neverthrow/fetch';
+import { err, ok } from '@x402scan/neverthrow';
+import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
 
 const surface = 'getWebPageMetadata';
 
@@ -9,35 +9,20 @@ interface WebPageMetadata {
 }
 
 export const getWebPageMetadata = (url: string) => {
-  return safeFetch(surface, new Request(url)).andThen(response => {
-    if (!response.ok) {
-      return fetchErr(surface, {
-        type: 'http' as const,
-        message: 'HTTP error',
-        status: response.status,
-        response,
+  return safeFetch(surface, new Request(url))
+    .andThen(response => safeParseResponse(surface, response))
+    .andThen(parsedResponse => {
+      if (parsedResponse.type === 'text') {
+        return ok(parseMetadataFromResponse(parsedResponse.data));
+      }
+      return err('user', surface, {
+        cause: 'invalid_response_type',
+        message: 'Invalid response type',
       });
-    }
-
-    return resultFromPromise(
-      surface,
-      parseMetadataFromResponse(response),
-      error => ({
-        type: 'parse' as const,
-        message: 'Could not parse metadata from response',
-        error: error instanceof Error ? error : new Error(String(error)),
-        statusCode: response.status,
-        contentType: response.headers.get('content-type') ?? 'Not specified',
-      })
-    );
-  });
+    });
 };
 
-const parseMetadataFromResponse = async (
-  response: Response
-): Promise<WebPageMetadata> => {
-  const html = await response.text();
-
+const parseMetadataFromResponse = (html: string): WebPageMetadata => {
   // Extract title
   const titleMatch = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html);
   const title = titleMatch ? titleMatch[1]!.trim().replace(/\s+/g, ' ') : null;

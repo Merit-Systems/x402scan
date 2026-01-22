@@ -14,5 +14,5 @@ export type CdpError = ServerError;
 export const cdpErr = (error: BaseServerError) => serverErr(surface, error);
 export const cdpResultFromPromise = <T>(
   promise: Promise<T>,
-  error: (e: unknown) => BaseServerError
+  error: BaseServerError | ((e: unknown) => BaseServerError)
 ) => serverResultFromPromise(surface, promise, error);

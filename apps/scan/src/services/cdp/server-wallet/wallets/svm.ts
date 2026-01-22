@@ -54,7 +54,7 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
   return {
     address: () =>
       cdpResultFromPromise(getAddress(), error => ({
-        type: 'bad_gateway',
+        cause: 'bad_gateway',
         message: 'Failed to get wallet address',
         error,
       })),
@@ -62,7 +62,7 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
       cdpResultFromPromise(
         getAddress().then(address => getSolanaNativeBalance(address)),
         () => ({
-          type: 'bad_gateway',
+          cause: 'bad_gateway',
           message: 'Failed to get native token balance',
         })
       ),
@@ -75,7 +75,7 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
           })
         ),
         () => ({
-          type: 'bad_gateway',
+          cause: 'bad_gateway',
           message: 'Failed to get token balance',
         })
       ),
@@ -87,10 +87,9 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
             name,
           })
         ),
-        error => ({
-          type: 'bad_gateway',
+        () => ({
+          cause: 'bad_gateway',
           message: 'Failed to export wallet',
-          error,
         })
       ),
     signer: async () => getModifyingSigner(await getAccount()) as Signer,
@@ -174,10 +173,9 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
 
           return transactionSignatureBase58;
         })(),
-        error => ({
-          type: 'bad_gateway',
+        () => ({
+          cause: 'bad_gateway',
           message: 'Failed to send tokens',
-          error,
         })
       ),
   };

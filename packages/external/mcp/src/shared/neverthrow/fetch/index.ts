@@ -2,18 +2,19 @@ import { err, resultFromPromise } from '@x402scan/neverthrow';
 
 import type { BaseFetchError, ParsedResponse } from './types';
 
-// No generics needed - inferred from error parameter
-export const fetchErr = (surface: string, error: BaseFetchError) =>
-  err(surface, error);
+const errorType = 'fetch';
 
-// Only specify T when needed, BE inferred from callback
+const fetchErr = (surface: string, error: BaseFetchError) =>
+  err(errorType, surface, error);
+
 export const safeFetch = (surface: string, request: Request) => {
   return resultFromPromise(
+    errorType,
     surface,
     fetch(request),
     error =>
       ({
-        type: 'network' as const,
+        cause: 'network' as const,
         message: 'Network error',
         error: error instanceof Error ? error : new Error(String(error)),
       }) as BaseFetchError
@@ -24,7 +25,7 @@ export const safeFetchJson = <T>(surface: string, request: Request) => {
   return safeFetch(surface, request).andThen(response => {
     if (!response.ok) {
       return fetchErr(surface, {
-        type: 'http' as const,
+        cause: 'http' as const,
         message: 'HTTP error',
         status: response.status,
         response,
@@ -32,22 +33,22 @@ export const safeFetchJson = <T>(surface: string, request: Request) => {
     }
 
     return resultFromPromise(
+      errorType,
       surface,
       response.json() as Promise<T>,
-      error =>
-        ({
-          type: 'parse' as const,
-          message: 'Could not parse JSON from response',
-          error: error instanceof Error ? error : new Error(String(error)),
-          statusCode: response.status,
-          contentType: response.headers.get('content-type') ?? 'Not specified',
-        }) as BaseFetchError
+      () => ({
+        cause: 'parse' as const,
+        message: 'Could not parse JSON from response',
+        statusCode: response.status,
+        contentType: response.headers.get('content-type') ?? 'Not specified',
+      })
     );
   });
 };
 
 export const safeParseResponse = (surface: string, response: Response) => {
   return resultFromPromise(
+    errorType,
     surface,
     (async (): Promise<ParsedResponse> => {
       const contentType = response.headers.get('content-type') ?? '';
@@ -72,11 +73,10 @@ export const safeParseResponse = (surface: string, response: Response) => {
 
       return { type: 'text', data: await response.text() };
     })(),
-    error =>
+    () =>
       ({
-        type: 'parse' as const,
+        cause: 'parse' as const,
         message: 'Could not parse response',
-        error: error instanceof Error ? error : new Error(String(error)),
         statusCode: response.status,
         contentType: response.headers.get('content-type') ?? 'Not specified',
       }) as BaseFetchError

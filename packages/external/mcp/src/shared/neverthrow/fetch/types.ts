@@ -1,23 +1,23 @@
 import type { BaseError } from '@x402scan/neverthrow/types';
 
-type FetchErrorType = 'network' | 'http' | 'parse';
+type FetchErrorCause = 'network' | 'http' | 'parse';
 
 type FetchExtra =
   | {
-      type: 'network';
+      cause: 'network';
     }
   | {
-      type: 'http';
+      cause: 'http';
       status: number;
       response: Response;
     }
   | {
-      type: 'parse';
+      cause: 'parse';
       statusCode: number;
       contentType: string;
     };
 
-export type BaseFetchError = BaseError<FetchErrorType> & FetchExtra;
+export type BaseFetchError = BaseError<FetchErrorCause> & FetchExtra;
 
 export type ParsedResponse =
   | { type: 'json'; data: unknown }
