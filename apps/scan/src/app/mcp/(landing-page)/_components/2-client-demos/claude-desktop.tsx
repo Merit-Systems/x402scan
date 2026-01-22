@@ -1,9 +1,15 @@
-import { Logo } from '@/components/logo';
-import { Button } from '@/components/ui/button';
-import { ClientTypes } from '../../../_components/clients/data';
-import { ClientDemosSection } from './section';
 import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
+
+import { Logo } from '@/components/logo';
+
+import { ClientDemosSection } from './section';
+
+import { ClientTypes } from '../../../_components/clients/data';
+
 import type { McpSearchParams } from '../../../_lib/params';
+import type { Route } from 'next';
 
 export const ClaudeDesktopDemo: React.FC<McpSearchParams> = props => {
   return (
@@ -12,7 +18,9 @@ export const ClaudeDesktopDemo: React.FC<McpSearchParams> = props => {
       description="The best data is behind paywalls. Now your agent can pay."
       cta={
         <Link
-          href={`/mcp/claude${props.invite ? `?invite=${props.invite}` : ''}`}
+          href={
+            `/mcp/claude${props.invite ? `?invite=${props.invite}` : ''}` as Route
+          }
         >
           <Button size="xl" className="w-fit font-semibold">
             Get Started

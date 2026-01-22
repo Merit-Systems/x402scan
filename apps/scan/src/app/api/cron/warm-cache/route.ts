@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createCaller } from '@/trpc/routers';
 import { createTRPCContext } from '@/trpc/trpc';
-import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
-import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
+import { defaultSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/default';
+import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { facilitatorAddresses } from '@/lib/facilitators';
 import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';

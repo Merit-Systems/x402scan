@@ -1,11 +1,17 @@
 'use client';
 
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useState } from 'react';
+
 import { CopyButton } from '@/components/ui/copy-button';
 import { Input } from '@/components/ui/input';
-import { type LucideIcon } from 'lucide-react';
-import { type Clients, clients } from '@/app/mcp/_components/clients/data';
+
 import { ClientIcon } from '@/app/mcp/_components/clients/icons';
+
+import { clients } from '@/app/mcp/_components/clients/data';
+
+import type { ReactNode } from 'react';
+import type { Clients } from '@/app/mcp/_components/clients/data';
+import type { LucideIcon } from 'lucide-react';
 
 interface Tool {
   name: string;
