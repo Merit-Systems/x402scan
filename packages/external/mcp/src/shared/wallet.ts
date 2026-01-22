@@ -64,8 +64,15 @@ export async function getWallet() {
     createdAt: new Date().toISOString(),
   };
 
-  safeWriteFile(walletSurface, WALLET_FILE, JSON.stringify(stored, null, 2));
-  safeChmod(walletSurface, WALLET_FILE, 0o600);
+  const saveResult = await safeWriteFile(
+    walletSurface,
+    WALLET_FILE,
+    JSON.stringify(stored, null, 2)
+  ).andThen(() => safeChmod(walletSurface, WALLET_FILE, 0o600));
+
+  if (saveResult.isErr()) {
+    return saveResult;
+  }
 
   log.info(`Created wallet: ${account.address}`);
   log.info(`Saved to: ${WALLET_FILE}`);

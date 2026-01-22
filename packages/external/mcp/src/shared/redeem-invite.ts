@@ -1,6 +1,7 @@
 import { errAsync } from 'neverthrow';
 
 import { safeFetchJson } from '@x402scan/neverthrow/fetch';
+
 import { getBaseUrl } from './utils';
 import { getState, setState } from './state';
 

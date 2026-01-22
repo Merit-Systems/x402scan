@@ -1,9 +1,6 @@
-/**
- * Logger - writes to ~/.x402scan-mcp/mcp.log and stderr
- */
+import { safeAppendFile } from '@x402scan/neverthrow/fs';
 
 import { configFile } from './fs';
-import { safeAppendFile } from '@x402scan/neverthrow/fs';
 
 const LOG_FILE = configFile('mcp.log', '');
 const DEBUG = process.env.X402_DEBUG === 'true';

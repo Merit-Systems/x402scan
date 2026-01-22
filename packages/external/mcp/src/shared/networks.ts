@@ -1,7 +1,3 @@
-/**
- * Chain configurations - CAIP-2 identifiers, USDC addresses, viem chains
- */
-
 import {
   base,
   baseSepolia,
