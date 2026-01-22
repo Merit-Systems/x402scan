@@ -7,6 +7,7 @@ import {
 } from '@/services/rpc/balance';
 import { formatUnits, getAddress, isAddress } from 'viem';
 import { base } from 'wagmi/chains';
+import { evmAddressSchema } from '@/lib/schemas';
 
 export async function GET(
   _: Request,
@@ -14,12 +15,11 @@ export async function GET(
 ) {
   const { address } = await params;
 
-  if (!isAddress(address)) {
+  const parsedAddress = evmAddressSchema.safeParse(address);
+  if (!parsedAddress.success) {
     return NextResponse.json({ error: 'Invalid EVM address' }, { status: 400 });
   }
-
-  const parsedAddress = getAddress(address);
-  const result = await getBalance(parsedAddress);
+  const result = await getBalance(parsedAddress.data);
 
   return result.match(
     balance =>
