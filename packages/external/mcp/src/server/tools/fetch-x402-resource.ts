@@ -14,7 +14,7 @@ import {
   safeCreatePaymentPayload,
   safeGetPaymentRequired,
   safeGetPaymentSettlement,
-} from '../lib/x402/result';
+} from './lib/safe-x402';
 
 import type { RegisterTools } from '@/server/types';
 
@@ -93,7 +93,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
         });
       }
 
-      const settlementResult = await safeGetPaymentSettlement(
+      const settlementResult = safeGetPaymentSettlement(
         toolName,
         client,
         response

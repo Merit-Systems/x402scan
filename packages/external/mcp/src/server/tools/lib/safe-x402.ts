@@ -1,4 +1,4 @@
-import { resultFromPromise } from '@x402scan/neverthrow';
+import { resultFromPromise, resultFromThrowable } from '@x402scan/neverthrow';
 
 import type { x402HTTPClient } from '@x402/core/http';
 import type { BaseError } from '@x402scan/neverthrow/types';
@@ -18,6 +18,12 @@ const x402ResultFromPromise = <T>(
   error: (e: unknown) => BaseX402Error
 ) => resultFromPromise(surface, promise, error);
 
+const x402ResultFromThrowable = <T>(
+  surface: string,
+  fn: () => T,
+  error: (e: unknown) => BaseX402Error
+) => resultFromThrowable(surface, fn, error);
+
 export const safeGetPaymentRequired = (
   surface: string,
   client: x402HTTPClient,
@@ -25,12 +31,15 @@ export const safeGetPaymentRequired = (
 ) => {
   return x402ResultFromPromise(
     surface,
-    (async () => {
-      return client.getPaymentRequiredResponse(
-        name => response.headers.get(name),
-        await response.json().catch(() => undefined)
-      );
-    })(),
+    response.json().then(
+      json =>
+        client.getPaymentRequiredResponse(
+          name => response.headers.get(name),
+          json
+        ),
+      () =>
+        client.getPaymentRequiredResponse(name => response.headers.get(name))
+    ),
     error => ({
       type: 'parse_payment_required',
       message:
@@ -66,13 +75,9 @@ export const safeGetPaymentSettlement = (
   client: x402HTTPClient,
   response: Response
 ) => {
-  return x402ResultFromPromise(
+  return x402ResultFromThrowable(
     surface,
-    (async () => {
-      return Promise.resolve(
-        client.getPaymentSettleResponse(name => response.headers.get(name))
-      );
-    })(),
+    () => client.getPaymentSettleResponse(name => response.headers.get(name)),
     error => ({
       type: 'get_payment_settlement',
       message: 'Failed to get payment settlement',

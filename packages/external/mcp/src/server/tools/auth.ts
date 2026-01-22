@@ -4,7 +4,7 @@ import { safeFetch, safeParseResponse } from '@x402scan/neverthrow/fetch';
 import { resultFromPromise } from '@x402scan/neverthrow';
 
 import { mcpSuccess, mcpError } from './lib/response';
-import { safeGetPaymentRequired } from '../lib/x402/result';
+import { safeGetPaymentRequired } from './lib/safe-x402';
 
 import { createSIWxPayload, encodeSIWxHeader } from '@x402scan/siwx';
 

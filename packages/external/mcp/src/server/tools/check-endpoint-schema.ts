@@ -7,12 +7,12 @@ import { requestSchema, buildRequest } from './lib/request';
 
 import { log } from '@/shared/log';
 
-import { safeGetPaymentRequired } from '../lib/x402/result';
+import { safeGetPaymentRequired } from './lib/safe-x402';
 
-import { getSchema } from '../lib/x402/get-route-details';
+import { getSchema } from '../lib/extract-schema';
+import { tokenStringToNumber } from '@/shared/token';
 
 import type { RegisterTools } from '@/server/types';
-import { tokenStringToNumber } from '@/shared/token';
 
 const toolName = 'check-x402-endpoint';
 

@@ -3,7 +3,7 @@ import { x402Client } from '@x402/core/client';
 
 import { getWebPageMetadata } from './_lib';
 
-import { getSchema } from '../lib/x402/get-route-details';
+import { getSchema } from '../lib/extract-schema';
 
 import type { RegisterResources } from './types';
 
