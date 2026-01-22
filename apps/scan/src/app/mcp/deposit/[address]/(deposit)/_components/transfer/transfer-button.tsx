@@ -63,7 +63,7 @@ export const TransferButton: React.FC<Props> = ({
           const params = new URLSearchParams(searchParams ?? {});
           params.set('hash', paymentResponse.transaction);
           router.push(
-            `/deposit/${address}/${OnrampMethods.WALLET}?${params.toString()}` as Route
+            `/mcp/deposit/${address}/${OnrampMethods.WALLET}?${params.toString()}` as Route
           );
         }, 3000);
       }

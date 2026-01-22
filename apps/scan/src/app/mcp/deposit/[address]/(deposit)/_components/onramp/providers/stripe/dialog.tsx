@@ -80,7 +80,7 @@ export const StripeOnrampDialogContent: React.FC<
         params.set('id', session.id);
         setTimeout(() => {
           router.push(
-            `/deposit/${address}/${OnrampProviders.STRIPE}?${params.toString()}` as Route
+            `/mcp/deposit/${address}/${OnrampProviders.STRIPE}?${params.toString()}` as Route
           );
         }, 3000);
       }
