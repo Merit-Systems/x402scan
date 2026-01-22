@@ -4,8 +4,8 @@ import {
   ERROR_RPC_FAILED,
   getBalance,
   USDC_DECIMALS,
-} from '@/services/rpc/balance';
-import { formatUnits, getAddress, isAddress } from 'viem';
+} from '@/services/rpc/base/balance';
+import { formatUnits } from 'viem';
 import { base } from 'wagmi/chains';
 import { evmAddressSchema } from '@/lib/schemas';
 
@@ -25,7 +25,7 @@ export async function GET(
     balance =>
       NextResponse.json(
         {
-          address: parsedAddress,
+          address: parsedAddress.data,
           chain: base.id,
           balance: formatUnits(balance, USDC_DECIMALS),
           rawBalance: balance.toString(),
