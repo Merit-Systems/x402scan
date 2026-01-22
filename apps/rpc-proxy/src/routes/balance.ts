@@ -15,11 +15,17 @@ const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const USDC_DECIMALS = 6;
 const USDC_SYMBOL = 'USDC';
 const BASE_CHAIN = base;
+export class NoRpcError extends Error {
+  override name = 'NoRpcError'
+  constructor(message = 'No RPC URL provided') {
+    super(message)
+  }
+}
 
 async function getBalance(address: Address): Promise<bigint> {
   const rpcUrl = process.env.BASE_RPC_URL;
   if (!rpcUrl) {
-    throw new Error('Missing base rpc url');
+    throw new NoRpcError();
   }
   const client = createPublicClient({ chain: base, transport: http(rpcUrl) });
   const balance = await client.readContract({
@@ -37,7 +43,17 @@ async function balanceHandler(c: Context) {
     return c.json({ error: 'Invalid EVM address' }, 400);
   }
   const address = getAddress(addressParam);
-  const balance = await getBalance(address);
+
+  let balance: bigint;
+  try {
+    balance = await getBalance(address);
+  } catch (error) {
+    if (error instanceof NoRpcError) {
+      return c.json({ error: error.message }, 503);
+    }
+    return c.json({ error: 'Failed to get balance' }, 500);
+  }
+
   return c.json({
     chain: BASE_CHAIN.id,
     address,
