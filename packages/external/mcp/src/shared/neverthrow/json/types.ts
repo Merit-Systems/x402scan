@@ -10,4 +10,4 @@ export interface JsonObject {
   [key: string]: JsonValue;
 }
 
-export type JsonArray = JsonValue[];
+type JsonArray = JsonValue[];

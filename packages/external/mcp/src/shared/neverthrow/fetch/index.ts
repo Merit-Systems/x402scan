@@ -6,7 +6,7 @@ import type { JsonObject } from '../json/types';
 
 const errorType = 'fetch';
 
-export const fetchErr = (surface: string, error: BaseFetchError) =>
+const fetchErr = (surface: string, error: BaseFetchError) =>
   err(errorType, surface, error);
 
 export const safeFetch = (surface: string, request: Request) => {
