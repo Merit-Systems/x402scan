@@ -3,7 +3,7 @@ import z from 'zod';
 import { safeFetchJson } from '@x402scan/neverthrow/fetch';
 
 import { log } from '@/shared/log';
-import { mcpError, mcpSuccess } from '@/server/lib/response';
+import { mcpError, mcpSuccess } from '@/server/tools/lib/response';
 import { getBaseUrl } from '@/shared/utils';
 
 import { MCP_VERSION } from '../lib/version';

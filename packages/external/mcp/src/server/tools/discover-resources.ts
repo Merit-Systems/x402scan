@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { safeFetch } from '@x402scan/neverthrow/fetch';
 
 import { log } from '@/shared/log';
-import { mcpSuccess } from '@/server/lib/response';
+import { mcpSuccess } from '@/server/tools/lib/response';
 import { tokenStringToNumber } from '@/shared/token';
 import { getChainName } from '@/shared/networks';
 import { x402Client, x402HTTPClient } from '@x402/core/client';

@@ -10,19 +10,23 @@ import {
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 import { log } from './log';
-import {
-  ethereumAddressSchema,
-  ethereumPrivateKeySchema,
-} from '../server/lib/schemas';
 import { configFile } from './fs';
+
+import { getAddress } from 'viem';
 
 import type { Hex } from 'viem';
 
 const WALLET_FILE = configFile('wallet.json', '');
 
 const storedWalletSchema = z.object({
-  privateKey: ethereumPrivateKeySchema,
-  address: ethereumAddressSchema,
+  privateKey: z
+    .string()
+    .regex(/^0x[a-fA-F0-9]{64}$/, 'Invalid Ethereum private key')
+    .transform(privateKey => privateKey as Hex),
+  address: z
+    .string()
+    .regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid Ethereum address')
+    .transform(address => getAddress(address)),
   createdAt: z.string(),
 });
 

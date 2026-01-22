@@ -1,4 +1,4 @@
-import { mcpError, mcpSuccess } from '@/server/lib/response';
+import { mcpError, mcpSuccess } from '@/server/tools/lib/response';
 
 import { getBalance } from '@/shared/balance';
 import { DEFAULT_NETWORK, getChainName } from '@/shared/networks';

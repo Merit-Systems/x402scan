@@ -6,10 +6,10 @@ import { ExactEvmScheme } from '@x402/evm/exact/client';
 import { DEFAULT_NETWORK } from '@/shared/networks';
 import { tokenStringToNumber } from '@/shared/token';
 
-import { mcpError, mcpSuccess } from '@/server/lib/response';
+import { mcpError, mcpSuccess } from '@/server/tools/lib/response';
 import { requestSchema, buildRequest } from './lib/request';
 
-import { checkBalance } from '../lib/check-balance';
+import { checkBalance } from './lib/check-balance';
 import {
   safeCreatePaymentPayload,
   safeGetPaymentRequired,

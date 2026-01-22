@@ -1,5 +1,5 @@
 import z from 'zod';
-import { mcpSuccess, mcpError } from '@/server/lib/response';
+import { mcpSuccess, mcpError } from '@/server/tools/lib/response';
 
 import { redeemInviteCode } from '@/shared/redeem-invite';
 
