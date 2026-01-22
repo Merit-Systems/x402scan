@@ -19,8 +19,9 @@ export async function GET(
   }
 
   const parsedAddress = getAddress(address);
+  const result = await getBalance(parsedAddress);
 
-  const balance = await getBalance(parsedAddress).match(
+  return result.match(
     balance =>
       NextResponse.json(
         {
@@ -45,6 +46,4 @@ export async function GET(
       }
     }
   );
-
-  return balance;
 }
