@@ -13,14 +13,17 @@ type GetBalanceError =
   | { type: typeof ERROR_NO_RPC; message: string }
   | { type: typeof ERROR_RPC_FAILED; message: string };
 
+const rpcUrl = env.NEXT_PUBLIC_BASE_RPC_URL;
+const client = rpcUrl
+  ? createPublicClient({ chain: base, transport: http(rpcUrl) })
+  : undefined;
+
 export function getBalance(
   address: Address
 ): ResultAsync<bigint, GetBalanceError> {
-  const rpcUrl = env.NEXT_PUBLIC_BASE_RPC_URL;
-  if (!rpcUrl) {
-    return errAsync({ type: ERROR_NO_RPC, message: 'No RPC URL provided' });
+  if (!client) {
+    return errAsync({ type: ERROR_NO_RPC, message: 'No RPC client provided' });
   }
-  const client = createPublicClient({ chain: base, transport: http(rpcUrl) });
   return ResultAsync.fromPromise(
     client.readContract({
       address: BASE_USDC_ADDRESS,
@@ -28,9 +31,9 @@ export function getBalance(
       functionName: 'balanceOf',
       args: [address],
     }),
-    (): GetBalanceError => ({
+    (error): GetBalanceError => ({
       type: ERROR_RPC_FAILED,
-      message: 'RPC balanceOf call failed',
+      message: `RPC balanceOf call failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
     })
   );
 }
