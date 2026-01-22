@@ -3,10 +3,10 @@
   "extends": ["//"],
   "tasks": {
     "dev": {
-      "env": ["PORT", "BASE_RPC_URL", "SOLANA_RPC_URL"]
+      "env": ["PORT", "BASE_RPC_URL"]
     },
     "build": {
-      "env": ["PORT", "BASE_RPC_URL", "SOLANA_RPC_URL"]
+      "env": ["PORT", "BASE_RPC_URL"]
     }
   }
 }

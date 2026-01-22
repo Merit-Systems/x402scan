@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
-    "@solana/web3.js": "^1.98.4",
     "dotenv": "catalog:env",
     "hono": "^4.7.1",
     "viem": "catalog:"

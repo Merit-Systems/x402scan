@@ -3,8 +3,7 @@
 Standalone HTTP service exposing a single endpoint:
 
 - `GET /balance/:address`
-  - EVM addresses return **Base** native balance (ETH)
-  - Solana addresses return **Solana** native balance (SOL)
+  - EVM addresses return **Base USDC** (ERC-20) balance
 
 ## Configuration
 
@@ -12,7 +11,6 @@ Set environment variables:
 
 - `PORT` (default: `6970`)
 - `BASE_RPC_URL` (required for EVM/Base lookups)
-- `SOLANA_RPC_URL` (required for Solana lookups)
 
 ## Run locally
 
