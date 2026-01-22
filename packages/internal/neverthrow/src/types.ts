@@ -8,9 +8,6 @@ export interface BaseError<ErrorTypes extends string = string> {
   message: string;
 }
 
-// Utility to extract error type from any BaseError
-export type ErrorTypeOf<E extends BaseError> = E['type'];
-
 // Now only needs BE
 export type Error<E extends BaseError> = E & { surface: string };
 

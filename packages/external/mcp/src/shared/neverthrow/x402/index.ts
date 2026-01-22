@@ -1,16 +1,8 @@
 import { resultFromPromise, resultFromThrowable } from '@x402scan/neverthrow';
 
+import type { BaseX402Error } from './types';
 import type { x402HTTPClient } from '@x402/core/http';
-import type { BaseError } from '@x402scan/neverthrow/types';
 import type { PaymentRequired } from '@x402/core/types';
-
-type X402ErrorType =
-  | 'parse_payment_required'
-  | 'create_payment_payload'
-  | 'encode_payment_signature_header'
-  | 'get_payment_settlement';
-
-type BaseX402Error = BaseError<X402ErrorType>;
 
 const x402ResultFromPromise = <T>(
   surface: string,

@@ -1,11 +1,7 @@
 import z from 'zod';
 
 import { err, ok } from '@x402scan/neverthrow';
-import {
-  safeChmod,
-  safeReadFile,
-  safeWriteFile,
-} from '@x402scan/neverthrow/fs';
+import { safeChmod, safeReadFile, safeWriteFile } from '@/shared/neverthrow/fs';
 
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 

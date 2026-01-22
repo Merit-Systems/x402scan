@@ -1,9 +1,7 @@
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import type { BaseError, Error } from '@x402scan/neverthrow/types';
 
-export const mcpSuccess = (
-  content: CallToolResult['content']
-): CallToolResult => {
+const mcpSuccess = (content: CallToolResult['content']): CallToolResult => {
   return {
     content,
   };
@@ -31,9 +29,7 @@ interface JsonObject {
 
 type JsonArray = JsonValue[];
 
-export const textContent = (
-  data: JsonObject
-): CallToolResult['content'][number] => {
+const textContent = (data: JsonObject): CallToolResult['content'][number] => {
   return { type: 'text' as const, text: JSON.stringify(data, null, 2) };
 };
 

@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 import { log as clackLog, confirm, outro, stream } from '@clack/prompts';
 
-import { safeWriteFile } from '@x402scan/neverthrow/fs';
+import { safeWriteFile } from '@/shared/neverthrow/fs';
 
 import { log } from '@/shared/log';
 

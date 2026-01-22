@@ -2,7 +2,7 @@ import * as TOML from '@iarna/toml';
 import yaml from 'js-yaml';
 import * as jsonc from 'jsonc-parser';
 
-import { safeReadFile } from '@x402scan/neverthrow/fs';
+import { safeReadFile } from '@/shared/neverthrow/fs';
 import { configResultFromThrowable } from './result';
 
 import type { ClientConfigFile, ClientConfigObject } from '../types';

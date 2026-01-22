@@ -1,8 +1,8 @@
-import { serverErr } from '@x402scan/neverthrow/server';
+import { serverErr } from '@/lib/server-result';
 
 import { NextResponse } from 'next/server';
 
-import type { ServerErrorType, ServerResult } from '@x402scan/neverthrow/types';
+import type { ServerErrorType, ServerResult } from '@/lib/server-result';
 
 const surface = 'api';
 

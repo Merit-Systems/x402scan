@@ -5,7 +5,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { safeFetch } from '@x402scan/neverthrow/fetch';
+import { safeFetch } from '@/shared/neverthrow/fetch';
 
 import { log } from '@/shared/log';
 import { mcpSuccess } from '@/server/tools/lib/response';

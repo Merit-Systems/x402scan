@@ -28,7 +28,7 @@ export const evmServerWallet =
     return {
       address: () =>
         cdpResultFromPromise(getAddress(), error => ({
-          type: 'internal',
+          type: 'bad_gateway',
           message: 'Failed to get wallet address',
           error,
         })),
@@ -42,7 +42,7 @@ export const evmServerWallet =
             )
             .then(result => parseFloat(formatEther(result.value))),
           error => ({
-            type: 'internal',
+            type: 'bad_gateway',
             message: 'Failed to get native token balance',
             error,
           })
@@ -60,7 +60,7 @@ export const evmServerWallet =
             )
             .then(balance => convertTokenAmount(balance)),
           error => ({
-            type: 'internal',
+            type: 'bad_gateway',
             message: 'Failed to get token balance',
             error,
           })
@@ -74,7 +74,7 @@ export const evmServerWallet =
             })
           ),
           error => ({
-            type: 'internal',
+            type: 'bad_gateway',
             message: 'Failed to export wallet',
             error,
           })
@@ -101,7 +101,7 @@ export const evmServerWallet =
               .then(({ transactionHash }) => transactionHash)
           ),
           error => ({
-            type: 'internal',
+            type: 'bad_gateway',
             message: 'Failed to send tokens',
             error,
           })

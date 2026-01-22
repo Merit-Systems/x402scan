@@ -1,13 +1,13 @@
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 
-import { safeFetch, safeParseResponse } from '@x402scan/neverthrow/fetch';
+import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
 
 import { mcpError, mcpSuccess } from '@/server/tools/lib/response';
 import { requestSchema, buildRequest } from './lib/request';
 
 import { log } from '@/shared/log';
 
-import { safeGetPaymentRequired } from './lib/safe-x402';
+import { safeGetPaymentRequired } from '@/shared/neverthrow/x402';
 
 import { getSchema } from '../lib/extract-schema';
 import { tokenStringToNumber } from '@/shared/token';

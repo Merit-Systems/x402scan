@@ -1,10 +1,10 @@
 import * as fs from 'fs/promises';
 
-import { resultFromPromise } from '.';
+import { resultFromPromise } from '@x402scan/neverthrow';
 
-import type { BaseFileSystemError } from './types/fs';
+import type { BaseFileSystemError } from './types';
 
-export const fsResultFromPromise = <T>(
+const fsResultFromPromise = <T>(
   surface: string,
   promise: Promise<T>,
   error: (e: unknown) => BaseFileSystemError

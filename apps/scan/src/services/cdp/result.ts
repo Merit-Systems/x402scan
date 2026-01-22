@@ -1,13 +1,10 @@
-import {
-  serverResultFromPromise,
-  serverErr,
-} from '@x402scan/neverthrow/server';
+import { serverResultFromPromise, serverErr } from '@/lib/server-result';
 
 import type {
   ServerResultAsync,
   ServerError,
   BaseServerError,
-} from '@x402scan/neverthrow/types';
+} from '@/lib/server-result';
 
 const surface = 'cdp';
 

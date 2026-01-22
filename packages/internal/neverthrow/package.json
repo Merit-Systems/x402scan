@@ -5,9 +5,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./server": "./src/server.ts",
-    "./fetch": "./src/fetch.ts",
-    "./types": "./src/types/index.ts",
-    "./fs": "./src/fs.ts"
+    "./types": "./src/types.ts"
   },
   "scripts": {
     "dev": "tsup src/* --watch",

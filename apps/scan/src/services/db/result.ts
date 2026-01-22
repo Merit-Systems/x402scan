@@ -2,9 +2,9 @@ import {
   serverResultFromPromise,
   serverErr,
   serverOk,
-} from '@x402scan/neverthrow/server';
+} from '@/lib/server-result';
 
-import type { BaseServerError } from '@x402scan/neverthrow/types';
+import type { BaseServerError } from '@/lib/server-result';
 
 const surface = 'database';
 

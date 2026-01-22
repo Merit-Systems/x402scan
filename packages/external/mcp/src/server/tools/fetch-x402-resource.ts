@@ -1,4 +1,4 @@
-import { safeFetch, safeParseResponse } from '@x402scan/neverthrow/fetch';
+import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
 
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { ExactEvmScheme } from '@x402/evm/exact/client';
@@ -14,7 +14,7 @@ import {
   safeCreatePaymentPayload,
   safeGetPaymentRequired,
   safeGetPaymentSettlement,
-} from './lib/safe-x402';
+} from '@/shared/neverthrow/x402';
 
 import type { RegisterTools } from '@/server/types';
 

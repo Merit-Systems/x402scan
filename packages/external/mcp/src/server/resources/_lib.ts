@@ -1,5 +1,5 @@
 import { resultFromPromise } from '@x402scan/neverthrow';
-import { fetchErr, safeFetch } from '@x402scan/neverthrow/fetch';
+import { fetchErr, safeFetch } from '@/shared/neverthrow/fetch';
 
 const surface = 'getWebPageMetadata';
 

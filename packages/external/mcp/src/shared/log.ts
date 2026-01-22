@@ -1,4 +1,4 @@
-import { safeAppendFile } from '@x402scan/neverthrow/fs';
+import { safeAppendFile } from '@/shared/neverthrow/fs';
 
 import { configFile } from './fs';
 

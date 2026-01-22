@@ -1,10 +1,10 @@
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 
-import { safeFetch, safeParseResponse } from '@x402scan/neverthrow/fetch';
+import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
 import { resultFromPromise } from '@x402scan/neverthrow';
 
 import { mcpSuccess, mcpError } from './lib/response';
-import { safeGetPaymentRequired } from './lib/safe-x402';
+import { safeGetPaymentRequired } from '@/shared/neverthrow/x402';
 
 import { createSIWxPayload, encodeSIWxHeader } from '@x402scan/siwx';
 

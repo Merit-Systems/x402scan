@@ -1,6 +1,6 @@
-import { err, resultFromPromise } from '.';
+import { err, resultFromPromise } from '@x402scan/neverthrow';
 
-import type { BaseFetchError, ParsedResponse } from './types/fetch';
+import type { BaseFetchError, ParsedResponse } from './types';
 
 // No generics needed - inferred from error parameter
 export const fetchErr = (surface: string, error: BaseFetchError) =>

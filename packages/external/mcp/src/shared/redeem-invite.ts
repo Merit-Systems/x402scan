@@ -1,4 +1,4 @@
-import { safeFetchJson } from '@x402scan/neverthrow/fetch';
+import { safeFetchJson } from '@/shared/neverthrow/fetch';
 
 import { getBaseUrl } from './utils';
 import { getState, setState } from './state';

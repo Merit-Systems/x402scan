@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { safeFetchJson } from '@x402scan/neverthrow/fetch';
+import { safeFetchJson } from '@/shared/neverthrow/fetch';
 
 import { log } from '@/shared/log';
 import { getBaseUrl } from '@/shared/utils';
