@@ -16,7 +16,7 @@ export const POST = async (request: NextRequest) => {
   const parseResult = redeemInviteCodeSchema.safeParse(await request.json());
   if (!parseResult.success) {
     return toNextResponse(
-      apiErr({
+      apiErr('parse', {
         cause: 'invalid_request',
         message: JSON.stringify(z.treeifyError(parseResult.error)),
       })
@@ -39,7 +39,7 @@ export const GET = async (request: NextRequest) => {
 
   if (!parseResult.success) {
     return toNextResponse(
-      apiErr({
+      apiErr('validate', {
         cause: 'invalid_request',
         message: JSON.stringify(z.treeifyError(parseResult.error)),
       })

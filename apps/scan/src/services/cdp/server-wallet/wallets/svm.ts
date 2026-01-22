@@ -53,48 +53,56 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
 
   return {
     address: () =>
-      cdpResultFromPromise(getAddress(), error => ({
+      cdpResultFromPromise('getAddress', getAddress(), e => ({
         cause: 'bad_gateway',
-        message: 'Failed to get wallet address',
-        error,
+        message:
+          e instanceof Error ? e.message : 'Failed to get wallet address',
       })),
     getNativeTokenBalance: () =>
       cdpResultFromPromise(
+        'getNativeTokenBalance',
         getAddress().then(address => getSolanaNativeBalance(address)),
-        () => ({
+        e => ({
           cause: 'bad_gateway',
-          message: 'Failed to get native token balance',
+          message:
+            e instanceof Error
+              ? e.message
+              : 'Failed to get native token balance',
         })
       ),
     getTokenBalance: ({ token }) =>
       cdpResultFromPromise(
+        'getTokenBalance',
         getAddress().then(address =>
           getSolanaTokenBalance({
             ownerAddress: address,
             tokenMint: token.address as SolanaAddress,
           })
         ),
-        () => ({
+        e => ({
           cause: 'bad_gateway',
-          message: 'Failed to get token balance',
+          message:
+            e instanceof Error ? e.message : 'Failed to get token balance',
         })
       ),
     export: () =>
       cdpResultFromPromise(
+        'export',
         getAddress().then(address =>
           cdpClient.solana.exportAccount({
             address,
             name,
           })
         ),
-        () => ({
+        e => ({
           cause: 'bad_gateway',
-          message: 'Failed to export wallet',
+          message: e instanceof Error ? e.message : 'Failed to export wallet',
         })
       ),
     signer: async () => getModifyingSigner(await getAccount()) as Signer,
     sendTokens: ({ address, token, amount }) =>
       cdpResultFromPromise(
+        'sendTokens',
         (async () => {
           const account = await getAccount();
 
@@ -173,9 +181,9 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
 
           return transactionSignatureBase58;
         })(),
-        () => ({
+        e => ({
           cause: 'bad_gateway',
-          message: 'Failed to send tokens',
+          message: e instanceof Error ? e.message : 'Failed to send tokens',
         })
       ),
   };

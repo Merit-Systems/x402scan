@@ -12,9 +12,7 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import { Chain } from '@/types/chain';
 import { dbErr, dbOk, dbResultFromPromise } from '../result';
 
-import { cdpErr } from '@/services/cdp/result';
-
-import type { CdpError } from '@/services/cdp/result';
+import { cdpErr, type CdpErr } from '@/services/cdp/result';
 
 export const validateInviteCodeSchema = z.object({
   code: z.string().min(1),
@@ -26,41 +24,51 @@ export const validateInviteCode = async ({
   recipientAddr,
 }: z.infer<typeof validateInviteCodeSchema>) => {
   const result = await dbResultFromPromise(
+    'validateInviteCode',
     scanDb.inviteCode.findUnique({
       where: { code },
     }),
-    () => ({
+    e => ({
       cause: 'not_found',
-      message: 'Failed to find invite code',
+      message: e instanceof Error ? e.message : 'Failed to find invite code',
     })
   );
 
   if (result.isErr()) {
-    return dbErr(result.error);
+    return dbErr(result.error.surface, {
+      cause: result.error.cause,
+      message: result.error.message,
+    });
   }
 
   const inviteCode = result.value;
 
   if (!inviteCode) {
-    return dbErr({ cause: 'not_found', message: 'Invalid invite code' });
+    return dbErr('validateInviteCode', {
+      cause: 'not_found',
+      message: 'Invalid invite code',
+    });
   }
 
   if (inviteCode.status !== 'ACTIVE') {
-    return dbErr({
+    return dbErr('validateInviteCode', {
       cause: 'conflict',
       message: `Invite code is ${inviteCode.status.toLowerCase()}`,
     });
   }
 
   if (inviteCode.expiresAt && inviteCode.expiresAt < new Date()) {
-    return dbErr({ cause: 'conflict', message: 'Invite code has expired' });
+    return dbErr('validateInviteCode', {
+      cause: 'conflict',
+      message: 'Invite code has expired',
+    });
   }
 
   if (
     inviteCode.maxRedemptions > 0 &&
     inviteCode.redemptionCount >= inviteCode.maxRedemptions
   ) {
-    return dbErr({
+    return dbErr('validateInviteCode', {
       cause: 'conflict',
       message: 'Invite code has been fully redeemed',
     });
@@ -75,7 +83,7 @@ export const validateInviteCode = async ({
       },
     });
     if (existingRedemption) {
-      return dbErr({
+      return dbErr('validateInviteCode', {
         cause: 'conflict',
         message: 'You have already redeemed this invite code',
       });
@@ -99,6 +107,7 @@ export const redeemInviteCode = async ({
   // Use a transaction with serializable isolation to prevent race conditions
   // This ensures atomic check-and-increment of redemption count
   const transactionResult = await dbResultFromPromise(
+    'redeemInviteCode',
     scanDb.$transaction(
       async tx => {
         // Lock and fetch the invite code
@@ -107,14 +116,14 @@ export const redeemInviteCode = async ({
         });
 
         if (!inviteCode) {
-          return dbErr({
+          return dbErr('redeemInviteCode', {
             cause: 'not_found',
             message: 'Invalid invite code',
           });
         }
 
         if (inviteCode.status !== InviteCodeStatus.ACTIVE) {
-          return dbErr({
+          return dbErr('redeemInviteCode', {
             cause: 'conflict',
             message: `Invite code is ${inviteCode.status.toLowerCase()}`,
           });
@@ -126,7 +135,7 @@ export const redeemInviteCode = async ({
             where: { id: inviteCode.id },
             data: { status: InviteCodeStatus.EXPIRED },
           });
-          return dbErr({
+          return dbErr('redeemInviteCode', {
             cause: 'conflict',
             message: 'Invite code has expired',
           });
@@ -136,7 +145,7 @@ export const redeemInviteCode = async ({
           inviteCode.maxRedemptions > 0 &&
           inviteCode.redemptionCount >= inviteCode.maxRedemptions
         ) {
-          return dbErr({
+          return dbErr('redeemInviteCode', {
             cause: 'conflict',
             message: 'Invite code has been fully redeemed',
           });
@@ -152,7 +161,7 @@ export const redeemInviteCode = async ({
             },
           });
           if (existingRedemption) {
-            return dbErr({
+            return dbErr('redeemInviteCode', {
               cause: 'conflict',
               message: 'You have already redeemed this invite code',
             });
@@ -205,20 +214,23 @@ export const redeemInviteCode = async ({
         isolationLevel: 'Serializable',
       }
     ),
-    () => ({
+    e => ({
       cause: 'internal',
-      message: 'Invite code redemption failed',
+      message: e instanceof Error ? e.message : 'Invite code redemption failed',
     })
   );
 
   if (transactionResult.isErr()) {
-    return dbErr(transactionResult.error);
+    return dbErr(transactionResult.error.surface, {
+      cause: transactionResult.error.cause,
+      message: transactionResult.error.message,
+    });
   }
 
   // The transaction returned a Result - unwrap it
   const innerResult = transactionResult.value;
   if (innerResult.isErr()) {
-    return dbErr(innerResult.error);
+    return innerResult;
   }
 
   const { inviteCode, redemption } = innerResult.value;
@@ -233,20 +245,20 @@ export const redeemInviteCode = async ({
   const walletAddressResult = await wallet.address();
 
   if (walletAddressResult.isErr()) {
-    return handleRedemptionFailure({
+    return await handleRedemptionFailure({
       redemptionId: redemption.id,
       inviteCodeId: inviteCode.id,
-      error: walletAddressResult.error,
+      error: walletAddressResult,
     });
   }
 
   const walletBalanceResult = await wallet.getTokenBalance({ token });
 
   if (walletBalanceResult.isErr()) {
-    return handleRedemptionFailure({
+    return await handleRedemptionFailure({
       redemptionId: redemption.id,
       inviteCodeId: inviteCode.id,
-      error: walletBalanceResult.error,
+      error: walletBalanceResult,
     });
   }
 
@@ -261,10 +273,10 @@ export const redeemInviteCode = async ({
   });
 
   if (sendTokensResult.isErr()) {
-    return handleRedemptionFailure({
+    return await handleRedemptionFailure({
       redemptionId: redemption.id,
       inviteCodeId: inviteCode.id,
-      error: sendTokensResult.error,
+      error: sendTokensResult,
     });
   }
 
@@ -272,6 +284,7 @@ export const redeemInviteCode = async ({
 
   // Update redemption as successful
   const updateSuccessResult = await dbResultFromPromise(
+    'updateSuccess',
     scanDb.inviteRedemption.update({
       where: { id: redemption.id },
       data: {
@@ -280,9 +293,10 @@ export const redeemInviteCode = async ({
         completedAt: new Date(),
       },
     }),
-    () => ({
+    e => ({
       cause: 'internal',
-      message: 'Failed to update redemption status',
+      message:
+        e instanceof Error ? e.message : 'Failed to update redemption status',
     })
   );
 
@@ -301,43 +315,47 @@ export const redeemInviteCode = async ({
   });
 };
 
-interface HandleRedemptionFailureData {
+interface HandleRedemptionFailureData<T> {
   redemptionId: string;
   inviteCodeId: string;
-  error: CdpError;
+  error: CdpErr<T>;
 }
 
-const handleRedemptionFailure = async ({
+const handleRedemptionFailure = async <T>({
   redemptionId,
   inviteCodeId,
   error,
-}: HandleRedemptionFailureData) => {
-  console.error('Invite code redemption transfer failed:', error.message);
+}: HandleRedemptionFailureData<T>) => {
+  console.error('Invite code redemption transfer failed:', error.error.message);
 
   await dbResultFromPromise(
+    'updateRedemption',
     scanDb.inviteRedemption.update({
       where: { id: redemptionId },
       data: {
         status: RedemptionStatus.FAILED,
-        failureReason: error.message,
+        failureReason: error.error.message,
         completedAt: new Date(),
       },
     }),
-    () => ({
+    e => ({
       cause: 'internal',
-      message: 'Failed to update redemption status',
+      message:
+        e instanceof Error ? e.message : 'Failed to update redemption status',
       error,
     })
   );
 
   await dbResultFromPromise(
+    'updateInviteCode',
     scanDb.inviteCode.update({
       where: { id: inviteCodeId },
       data: { redemptionCount: { decrement: 1 } },
     }),
-    () => ({
+    e => ({
       cause: 'internal',
-      message: 'Failed to decrement redemption count',
+      message:
+        e instanceof Error ? e.message : 'Failed to decrement redemption count',
     })
   ).map(async updatedCode => {
     if (
@@ -352,5 +370,8 @@ const handleRedemptionFailure = async ({
     }
   });
 
-  return cdpErr(error);
+  return cdpErr(error.error.surface, {
+    cause: error.error.cause,
+    message: error.error.message,
+  });
 };

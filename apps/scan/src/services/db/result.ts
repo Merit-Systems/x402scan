@@ -6,11 +6,13 @@ import {
 
 import type { BaseServerError } from '@/lib/server-result';
 
-const surface = 'database';
+const type = 'database';
 
 export const dbOk = <T>(data: T) => serverOk(data);
-export const dbErr = (error: BaseServerError) => serverErr(surface, error);
+export const dbErr = (surface: string, error: BaseServerError) =>
+  serverErr(type, surface, error);
 export const dbResultFromPromise = <T>(
+  surface: string,
   promise: Promise<T>,
   error: (e: unknown) => BaseServerError
-) => serverResultFromPromise(surface, promise, error);
+) => serverResultFromPromise(type, surface, promise, error);

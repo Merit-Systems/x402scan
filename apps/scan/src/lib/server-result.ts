@@ -4,7 +4,6 @@ import type {
   BaseError,
   Result,
   ResultAsync,
-  Error,
 } from '@x402scan/neverthrow/types';
 
 export type ServerErrorType =
@@ -24,19 +23,16 @@ export type BaseServerError = BaseError<ServerErrorType>;
 
 export type ServerResult<T> = Result<T, BaseServerError>;
 
-export type ServerError = Error<BaseServerError>;
-
 export type ServerResultAsync<T> = ResultAsync<T, BaseServerError>;
 
-const errorType = 'server';
-
 export const serverResultFromPromise = <T>(
+  type: string,
   surface: string,
   promise: Promise<T>,
   error: BaseServerError | ((e: unknown) => BaseServerError)
 ) =>
   resultFromPromise(
-    errorType,
+    type,
     surface,
     promise,
     error instanceof Function ? error : () => error
@@ -44,5 +40,8 @@ export const serverResultFromPromise = <T>(
 
 export const serverOk = <T>(data: T) => ok(data);
 
-export const serverErr = (surface: string, error: BaseServerError) =>
-  err(errorType, surface, error);
+export const serverErr = (
+  type: string,
+  surface: string,
+  error: BaseServerError
+) => err(type, surface, error);

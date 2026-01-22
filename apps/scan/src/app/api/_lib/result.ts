@@ -8,9 +8,10 @@ import type {
   ServerResult,
 } from '@/lib/server-result';
 
-const surface = 'api';
+const type = 'api';
 
-export const apiErr = (error: BaseServerError) => serverErr(surface, error);
+export const apiErr = (surface: string, error: BaseServerError) =>
+  serverErr(type, surface, error);
 
 const errorTypeToStatusCode = {
   invalid_request: 400,

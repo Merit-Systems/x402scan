@@ -1,6 +1,7 @@
 import type {
   Result as NeverthrowResult,
   ResultAsync as NeverthrowResultAsync,
+  Err as NeverthrowErr,
 } from 'neverthrow';
 
 export interface BaseError<ErrorCause extends string = string> {
@@ -18,3 +19,5 @@ export type ResultAsync<T, E extends BaseError> = NeverthrowResultAsync<
   T,
   Error<E>
 >;
+
+export type Err<T, E extends BaseError> = NeverthrowErr<T, Error<E>>;

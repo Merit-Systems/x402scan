@@ -1,18 +1,17 @@
 import { serverResultFromPromise, serverErr } from '@/lib/server-result';
 
-import type {
-  ServerResultAsync,
-  ServerError,
-  BaseServerError,
-} from '@/lib/server-result';
+import type { ServerResultAsync, BaseServerError } from '@/lib/server-result';
+import type { Err } from '@x402scan/neverthrow/types';
 
-const surface = 'cdp';
+const type = 'cdp';
 
 export type CdpResultAsync<T> = ServerResultAsync<T>;
-export type CdpError = ServerError;
+export type CdpErr<T> = Err<T, BaseServerError>;
 
-export const cdpErr = (error: BaseServerError) => serverErr(surface, error);
+export const cdpErr = (surface: string, error: BaseServerError) =>
+  serverErr(type, surface, error);
 export const cdpResultFromPromise = <T>(
+  surface: string,
   promise: Promise<T>,
   error: BaseServerError | ((e: unknown) => BaseServerError)
-) => serverResultFromPromise(surface, promise, error);
+) => serverResultFromPromise(type, surface, promise, error);

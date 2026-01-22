@@ -27,12 +27,14 @@ export const evmServerWallet =
 
     return {
       address: () =>
-        cdpResultFromPromise(getAddress(), () => ({
+        cdpResultFromPromise('getAddress', getAddress(), e => ({
           cause: 'bad_gateway',
-          message: 'Failed to get wallet address',
+          message:
+            e instanceof Error ? e.message : 'Failed to get wallet address',
         })),
       getNativeTokenBalance: () =>
         cdpResultFromPromise(
+          'getNativeTokenBalance',
           getAddress()
             .then(address =>
               getBalance(wagmiConfig, {
@@ -40,13 +42,17 @@ export const evmServerWallet =
               })
             )
             .then(result => parseFloat(formatEther(result.value))),
-          () => ({
+          e => ({
             cause: 'bad_gateway',
-            message: 'Failed to get native token balance',
+            message:
+              e instanceof Error
+                ? e.message
+                : 'Failed to get native token balance',
           })
         ),
       getTokenBalance: ({ token }) =>
         cdpResultFromPromise(
+          'getTokenBalance',
           getAddress()
             .then(address =>
               readContract(wagmiConfig, {
@@ -57,27 +63,30 @@ export const evmServerWallet =
               })
             )
             .then(balance => convertTokenAmount(balance)),
-          () => ({
+          e => ({
             cause: 'bad_gateway',
-            message: 'Failed to get token balance',
+            message:
+              e instanceof Error ? e.message : 'Failed to get token balance',
           })
         ),
       export: () =>
         cdpResultFromPromise(
+          'export',
           getAddress().then(address =>
             cdpClient.evm.exportAccount({
               address,
               name,
             })
           ),
-          () => ({
+          e => ({
             cause: 'bad_gateway',
-            message: 'Failed to export wallet',
+            message: e instanceof Error ? e.message : 'Failed to export wallet',
           })
         ),
       signer: async () => toAccount(await getAccount()),
       sendTokens: ({ address, token, amount }) =>
         cdpResultFromPromise(
+          'sendTokens',
           getAccount().then(account =>
             account
               .sendTransaction({
@@ -96,9 +105,9 @@ export const evmServerWallet =
               })
               .then(({ transactionHash }) => transactionHash)
           ),
-          () => ({
+          e => ({
             cause: 'bad_gateway',
-            message: 'Failed to send tokens',
+            message: e instanceof Error ? e.message : 'Failed to send tokens',
           })
         ),
     };
