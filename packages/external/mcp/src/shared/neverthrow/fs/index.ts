@@ -1,14 +1,19 @@
 import * as fs from 'fs/promises';
 
-import { resultFromPromise } from '@x402scan/neverthrow';
+import { err, resultFromPromise } from '@x402scan/neverthrow';
 
 import type { BaseFileSystemError } from './types';
+
+const errorType = 'fs';
+
+export const fsErr = (surface: string, error: BaseFileSystemError) =>
+  err(errorType, surface, error);
 
 const fsResultFromPromise = <T>(
   surface: string,
   promise: Promise<T>,
   error: (e: unknown) => BaseFileSystemError
-) => resultFromPromise('fs', surface, promise, error);
+) => resultFromPromise(errorType, surface, promise, error);
 
 export const safeReadFile = (surface: string, path: string) =>
   fsResultFromPromise(surface, fs.readFile(path, 'utf-8'), () => ({
@@ -32,4 +37,10 @@ export const safeChmod = (surface: string, path: string, mode: number) =>
   fsResultFromPromise(surface, fs.chmod(path, mode), () => ({
     cause: 'file_not_chmodable',
     message: 'Failed to chmod file',
+  }));
+
+export const safeFileExists = (surface: string, path: string) =>
+  fsResultFromPromise(surface, fs.access(path, fs.constants.F_OK), () => ({
+    cause: 'file_not_found',
+    message: 'File not found',
   }));

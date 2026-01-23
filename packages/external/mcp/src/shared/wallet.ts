@@ -1,7 +1,13 @@
 import z from 'zod';
 
-import { err, ok } from '@x402scan/neverthrow';
-import { safeChmod, safeReadFile, safeWriteFile } from '@/shared/neverthrow/fs';
+import { ok } from '@x402scan/neverthrow';
+import {
+  fsErr,
+  safeChmod,
+  safeFileExists,
+  safeReadFile,
+  safeWriteFile,
+} from '@/shared/neverthrow/fs';
 
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
@@ -9,6 +15,8 @@ import { log } from './log';
 import { configFile } from './fs';
 
 import { getAddress } from 'viem';
+
+import { isParseError, safeParse } from './neverthrow/parse';
 
 import type { Hex } from 'viem';
 
@@ -37,15 +45,11 @@ export async function getWallet() {
 
   const readFileResult = await safeReadFile(walletSurface, WALLET_FILE).andThen(
     data => {
-      const stored = storedWalletSchema.safeParse(JSON.parse(data));
-      if (!stored.success) {
-        return err('parse', walletSurface, {
-          cause: 'invalid_data',
-          message: 'Invalid wallet data',
-          error: stored.error,
-        });
+      const parseResult = safeParse(walletSurface, storedWalletSchema, data);
+      if (parseResult.isErr()) {
+        return parseResult;
       }
-      const account = privateKeyToAccount(stored.data.privateKey);
+      const account = privateKeyToAccount(parseResult.value.privateKey);
       log.info(`Loaded wallet: ${account.address}`);
       return ok({ account, isNew: false });
     }
@@ -53,6 +57,25 @@ export async function getWallet() {
 
   if (readFileResult.isOk()) {
     return readFileResult;
+  }
+
+  // this happens when the file is found but the data is invalid
+  if (isParseError(readFileResult.error)) {
+    log.error(`Invalid wallet data: ${readFileResult.error.error.message}`);
+    return readFileResult;
+  }
+
+  const checkFileExistsResult = await safeFileExists(
+    walletSurface,
+    WALLET_FILE
+  );
+
+  // this happens when the file cant be read but it does exist
+  if (checkFileExistsResult.isOk()) {
+    return fsErr(walletSurface, {
+      cause: 'file_not_readable',
+      message: 'The file exists but is not readable',
+    });
   }
 
   // Generate new
