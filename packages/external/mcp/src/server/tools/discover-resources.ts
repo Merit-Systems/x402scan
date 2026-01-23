@@ -11,7 +11,7 @@ import { mcpErrorJson, mcpSuccessJson } from './response';
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-const toolName = 'discover-resources';
+const toolName = 'discoverResources';
 
 // Discovery document schema per spec
 const discoveryDocumentSchema = z.object({

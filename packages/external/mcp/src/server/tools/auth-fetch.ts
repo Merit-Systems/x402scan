@@ -18,8 +18,9 @@ import { requestSchema, buildRequest } from './lib/request';
 
 import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
 import type { RegisterTools } from '@/server/types';
+import { getSiwxExtension } from '../lib/x402-extensions';
 
-const toolName = 'authed_call';
+const toolName = 'fetchWithAuth';
 
 export const registerAuthTools: RegisterTools = ({ server, account }) => {
   server.registerTool(
@@ -74,11 +75,9 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
 
       const paymentRequired = getPaymentRequiredResult.value;
 
-      const siwxExtension = paymentRequired.extensions?.['sign-in-with-x'] as
-        | { info?: SIWxExtensionInfo }
-        | undefined;
+      const siwxExtension = getSiwxExtension(paymentRequired.extensions);
 
-      if (!siwxExtension?.info) {
+      if (!siwxExtension) {
         return mcpErrorJson({
           message:
             'Endpoint returned 402 but no sign-in-with-x extension found',
@@ -88,7 +87,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
         });
       }
 
-      const serverInfo = siwxExtension.info;
+      const serverInfo = siwxExtension;
 
       // Validate required fields
       const requiredFields = [

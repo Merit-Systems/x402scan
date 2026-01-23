@@ -13,13 +13,13 @@ import { log } from '@/shared/log';
 import { tokenStringToNumber } from '@/shared/token';
 import { safeGetPaymentRequired } from '@/shared/neverthrow/x402';
 
-import { getSchema } from '../lib/extract-schema';
+import { getInputSchema } from '../lib/x402-extensions';
 import { requestSchema, buildRequest } from './lib/request';
 
 import type { RegisterTools } from '@/server/types';
 import type { JsonObject } from '@/shared/neverthrow/json/types';
 
-const toolName = 'check-x402-endpoint';
+const toolName = 'checkEndpointSchema';
 
 export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
   server.registerTool(
@@ -77,7 +77,7 @@ export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
         statusCode: response.status,
         routeDetails: {
           ...resource,
-          schema: getSchema(extensions) as JsonObject,
+          schema: getInputSchema(extensions) as JsonObject,
           paymentMethods: accepts.map(accept => ({
             price: tokenStringToNumber(accept.amount),
             network: accept.network,

@@ -1,10 +1,10 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
-import { registerFetchX402ResourceTool } from './tools/fetch-x402-resource';
-import { registerAuthTools } from './tools/auth';
+import { registerFetchX402ResourceTool } from './tools/x402-fetch';
+import { registerAuthTools } from './tools/auth-fetch';
 import { registerWalletTools } from './tools/wallet';
-import { registerCheckX402EndpointTool } from './tools/check-endpoint-schema';
+import { registerCheckX402EndpointTool } from './tools/check-endpoint';
 import { registerRedeemInviteTool } from './tools/redeem-invite';
 import { registerTelemetryTools } from './tools/telemetry';
 
@@ -42,6 +42,7 @@ export const startServer: Command = async flags => {
       code,
       dev,
       address: account.address,
+      surface: 'startServer',
     });
   }
 

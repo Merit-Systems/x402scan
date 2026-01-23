@@ -19,7 +19,7 @@ export const fundMcpServer: Command = async flags => {
     account: { address },
   } = walletResult.value;
 
-  await promptDeposit(address, flags);
+  await promptDeposit({ address, flags, surface: 'fund' });
 
   outro(chalk.bold.green('Your x402scan MCP server is funded!'));
 };

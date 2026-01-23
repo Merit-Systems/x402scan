@@ -10,40 +10,48 @@ import { redeemInviteCode } from '../../shared/redeem-invite';
 import type { GlobalFlags } from '@/types';
 import type { Address } from 'viem';
 
+interface PromptDepositProps {
+  address: Address;
+  flags: GlobalFlags;
+  surface: string;
+}
+
 export const promptDeposit = async (
-  address: Address,
-  flags: GlobalFlags
+  props: PromptDepositProps
 ): Promise<void> => {
+  const { address, flags, surface } = props;
+
   const depositLink = getDepositLink(address, flags);
 
-  const depositChoice = flags.yes
-    ? 'manual'
-    : await select({
-        message: chalk.bold('How would you like to deposit?'),
-        initialValue: 'guided' as string | undefined,
-        options: [
-          {
-            label: 'Guided - Recommended',
-            value: 'guided',
-            hint: 'Online portal in x402scan',
-          },
-          {
-            label: 'Manual',
-            value: 'manual',
-            hint: 'Print deposit instructions',
-          },
-          {
-            label: 'Redeem Invite Code',
-            value: 'invite',
-            hint: 'Enter an invite code for starter money',
-          },
-          {
-            label: 'Skip',
-            value: undefined,
-            hint: 'Skip deposit process - functionality limited',
-          },
-        ],
-      });
+  const depositChoice =
+    flags.yes || surface === 'guided'
+      ? 'manual'
+      : await select({
+          message: chalk.bold('How would you like to deposit?'),
+          initialValue: 'guided' as string | undefined,
+          options: [
+            {
+              label: 'Guided - Recommended',
+              value: 'guided',
+              hint: 'Online portal in x402scan',
+            },
+            {
+              label: 'Manual',
+              value: 'manual',
+              hint: 'Print deposit instructions',
+            },
+            {
+              label: 'Redeem Invite Code',
+              value: 'invite',
+              hint: 'Enter an invite code for starter money',
+            },
+            {
+              label: 'Skip',
+              value: undefined,
+              hint: 'Skip deposit process - functionality limited',
+            },
+          ],
+        });
 
   if (depositChoice === 'guided') {
     await wait({
@@ -73,7 +81,7 @@ export const promptDeposit = async (
     });
 
     if (typeof code !== 'string') {
-      return promptDeposit(address, flags);
+      return promptDeposit({ address, flags, surface });
     }
 
     const s = spinner();
@@ -83,12 +91,13 @@ export const promptDeposit = async (
       code,
       dev: flags.dev,
       address,
+      surface: 'redeemInvite',
     });
 
     if (redeemResult.isErr()) {
       s.stop('Invite code redemption failed');
       log.error('Failed to redeem invite code');
-      return promptDeposit(address, flags);
+      return promptDeposit({ address, flags, surface });
     }
 
     s.stop('Invite code redeemed successfully!');

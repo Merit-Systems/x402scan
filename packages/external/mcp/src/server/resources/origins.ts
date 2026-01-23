@@ -3,7 +3,7 @@ import { x402Client } from '@x402/core/client';
 
 import { getWebPageMetadata } from './_lib';
 
-import { getSchema } from '../lib/extract-schema';
+import { getInputSchema } from '../lib/x402-extensions';
 
 import type { RegisterResources } from './types';
 
@@ -63,7 +63,7 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
                   description: metadata?.description,
                   resources: resources.filter(Boolean).map(resource => {
                     if (!resource) return null;
-                    const schema = getSchema(
+                    const schema = getInputSchema(
                       resource.paymentRequired?.extensions
                     );
 

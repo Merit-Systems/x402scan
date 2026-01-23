@@ -39,6 +39,7 @@ export const installMcpServer: Command<InstallFlags> = async flags => {
           code: flags.invite,
           dev: flags.dev,
           address,
+          surface: 'install',
         },
         flags
       )

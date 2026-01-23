@@ -19,7 +19,7 @@ export const addFunds = async ({ flags, address, isNew }: AddFundsProps) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
     log.info('To use paid API tools, you will need USDC in your wallet.');
-    await promptDeposit(address, flags);
+    await promptDeposit({ address, flags, surface: 'add-funds' });
   } else {
     const { start, stop } = spinner();
 
@@ -44,7 +44,7 @@ export const addFunds = async ({ flags, address, isNew }: AddFundsProps) => {
           `Your balance is low (${balance.balance} USDC). Consider topping up.`
         )
       );
-      await promptDeposit(address, flags);
+      await promptDeposit({ address, flags, surface: 'install' });
     }
   }
 };

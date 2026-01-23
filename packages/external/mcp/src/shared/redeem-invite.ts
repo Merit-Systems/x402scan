@@ -10,6 +10,7 @@ export interface RedeemInviteProps {
   code: string;
   dev: boolean;
   address: Address;
+  surface: string;
 }
 
 interface RedeemResponse {
@@ -18,21 +19,16 @@ interface RedeemResponse {
   amount: string;
 }
 
-const surface = 'redeem';
-
 export const redeemInviteCode = async ({
   code,
   dev,
   address,
-}: {
-  code: string;
-  dev: boolean;
-  address: Address;
-}) => {
+  surface,
+}: RedeemInviteProps) => {
   const state = getState();
 
   if (state.redeemedCodes?.includes(code)) {
-    return err('user', 'redeem', {
+    return err('user', surface, {
       cause: 'conflict',
       message: 'This invite code has already been redeemed',
     });

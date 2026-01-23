@@ -18,7 +18,7 @@ import {
 
 import type { RegisterTools } from '@/server/types';
 
-const toolName = 'fetch-x402-resource';
+const toolName = 'fetch';
 
 export const registerFetchX402ResourceTool: RegisterTools = ({
   server,

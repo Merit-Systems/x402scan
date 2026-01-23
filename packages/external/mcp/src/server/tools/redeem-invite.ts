@@ -5,13 +5,15 @@ import { redeemInviteCode } from '@/shared/redeem-invite';
 
 import type { RegisterTools } from '@/server/types';
 
+const toolName = 'redeemInvite';
+
 export const registerRedeemInviteTool: RegisterTools = ({
   server,
   account: { address },
   flags,
 }) => {
   server.registerTool(
-    'redeem_invite',
+    toolName,
     {
       description: 'Redeem an invite code to receive USDC.',
       inputSchema: z.object({
@@ -19,7 +21,12 @@ export const registerRedeemInviteTool: RegisterTools = ({
       }),
     },
     async ({ code }) => {
-      const result = await redeemInviteCode({ code, dev: flags.dev, address });
+      const result = await redeemInviteCode({
+        code,
+        dev: flags.dev,
+        address,
+        surface: toolName,
+      });
 
       if (result.isErr()) {
         return mcpError(result);
