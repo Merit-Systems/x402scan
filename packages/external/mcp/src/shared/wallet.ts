@@ -1,3 +1,6 @@
+import { getAddress } from 'viem';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+
 import z from 'zod';
 
 import { ok } from '@x402scan/neverthrow';
@@ -8,15 +11,11 @@ import {
   safeReadFile,
   safeWriteFile,
 } from '@/shared/neverthrow/fs';
-
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { isJsonError, jsonErr, safeParseJson } from '@/shared/neverthrow/json';
+import { isParseError, safeParse } from '@/shared/neverthrow/parse';
 
 import { log } from './log';
 import { configFile } from './fs';
-
-import { getAddress } from 'viem';
-
-import { isParseError, safeParse } from './neverthrow/parse';
 
 import type { Hex } from 'viem';
 
@@ -45,7 +44,15 @@ export async function getWallet() {
 
   const readFileResult = await safeReadFile(walletSurface, WALLET_FILE).andThen(
     data => {
-      const parseResult = safeParse(walletSurface, storedWalletSchema, data);
+      const jsonParseResult = safeParseJson(walletSurface, data);
+      if (jsonParseResult.isErr()) {
+        return jsonErr(walletSurface, jsonParseResult.error);
+      }
+      const parseResult = safeParse(
+        walletSurface,
+        storedWalletSchema,
+        jsonParseResult.value
+      );
       if (parseResult.isErr()) {
         return parseResult;
       }
@@ -60,8 +67,8 @@ export async function getWallet() {
   }
 
   // this happens when the file is found but the data is invalid
-  if (isParseError(readFileResult.error)) {
-    log.error(`Invalid wallet data: ${readFileResult.error.error.message}`);
+  if (isParseError(readFileResult.error) || isJsonError(readFileResult.error)) {
+    log.error(`Invalid wallet data: ${readFileResult.error.message}`);
     return readFileResult;
   }
 

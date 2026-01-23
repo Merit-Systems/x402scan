@@ -17,8 +17,6 @@ import type { Command } from '@/types';
 import { registerDiscoveryTools } from './tools/discover-resources';
 import { redeemInviteCode } from '@/shared/redeem-invite';
 import { MCP_VERSION } from './lib/version';
-import { outro } from '@clack/prompts';
-import chalk from 'chalk';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
@@ -29,7 +27,7 @@ export const startServer: Command = async flags => {
 
   if (walletResult.isErr()) {
     log.error(JSON.stringify(walletResult.error, null, 2));
-    outro(chalk.bold.red('Failed to get wallet'));
+    console.error(walletResult.error);
     process.exit(1);
   }
 

@@ -1,6 +1,7 @@
+import z from 'zod';
+
 import { err, ok } from '@x402scan/neverthrow';
 
-import type z from 'zod';
 import type { BaseParseError } from './types';
 import type { BaseError, Error } from '@x402scan/neverthrow/types';
 
@@ -18,7 +19,7 @@ export const safeParse = <T>(
   if (!parseResult.success) {
     return parseErr(surface, {
       cause: 'invalid_data',
-      message: 'Invalid data',
+      message: JSON.stringify(z.treeifyError(parseResult.error), null, 2),
       error: parseResult.error,
     });
   }

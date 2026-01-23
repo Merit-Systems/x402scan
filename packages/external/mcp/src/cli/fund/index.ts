@@ -1,8 +1,9 @@
 import type { Command } from '@/types';
-import { intro, log, outro } from '@clack/prompts';
+import { intro, log as clackLog, outro } from '@clack/prompts';
 import chalk from 'chalk';
 import { getWallet } from '@/shared/wallet';
 import { promptDeposit } from '@/cli/lib/deposit';
+import { log } from '@/shared/log';
 
 export const fundMcpServer: Command = async flags => {
   intro(chalk.bold(`Fund ${chalk.hex('#2563eb')('x402scan MCP')}`));
@@ -10,7 +11,8 @@ export const fundMcpServer: Command = async flags => {
   const walletResult = await getWallet();
 
   if (walletResult.isErr()) {
-    log.error(JSON.stringify(walletResult.error, null, 2));
+    log.error(walletResult.error.message);
+    clackLog.error(walletResult.error.message);
     outro(chalk.bold.red('Failed to get wallet'));
     process.exit(1);
   }

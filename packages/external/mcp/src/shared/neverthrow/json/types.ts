@@ -1,3 +1,5 @@
+import type { BaseError } from '@x402scan/neverthrow/types';
+
 export type JsonValue =
   | string
   | number
@@ -11,3 +13,7 @@ export interface JsonObject {
 }
 
 type JsonArray = JsonValue[];
+
+type JsonErrorCause = 'stringify' | 'parse';
+
+export type BaseJsonError = BaseError<JsonErrorCause>;
