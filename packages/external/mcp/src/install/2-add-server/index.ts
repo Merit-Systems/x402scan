@@ -27,7 +27,7 @@ const getMcpConfig = (globalFlags: GlobalFlags) => {
     return {
       serverName: 'x402',
       command: 'node',
-      args: [`${process.cwd()}/dist/index.js`, '--dev'],
+      args: [`${process.cwd()}/dist/esm/index.js`, '--dev'],
     };
   }
   return {
