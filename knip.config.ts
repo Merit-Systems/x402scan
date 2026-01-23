@@ -10,7 +10,11 @@ const config: KnipConfig = {
       ],
       project: ['src/**/*.{ts,tsx}', '*.{ts,tsx,js,mjs}'],
       ignoreDependencies: ['postcss', 'redis', 'tailwindcss', 'tw-animate-css'],
-      ignore: ['src/scripts/**', 'src/components/ui/charts/chart/**'],
+      ignore: [
+        'src/scripts/**',
+        'src/components/ui/charts/chart/**',
+        'src/lib/telemetry/signoz-logs.ts',
+      ],
     },
     'apps/proxy': {},
     'apps/rpcs/solana': {},
