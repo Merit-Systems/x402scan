@@ -49,10 +49,8 @@ export function signozLogInfo(
   });
 }
 
-export function signozLogWarn(
-  message: string,
-  attributes?: Record<string, unknown>
-) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function signozLogWarn(message: string, attributes?: Record<string, unknown>) {
   getApiLogger().emit({
     body: message,
     severityNumber: SeverityNumber.WARN,
@@ -61,10 +59,8 @@ export function signozLogWarn(
   });
 }
 
-export function signozLogError(
-  message: string,
-  attributes?: Record<string, unknown>
-) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function signozLogError(message: string, attributes?: Record<string, unknown>) {
   getApiLogger().emit({
     body: message,
     severityNumber: SeverityNumber.ERROR,
