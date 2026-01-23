@@ -62,7 +62,14 @@ export const safeParseResponse = (surface: string, response: Response) => {
             type: 'json' as const,
             data: (await response.json()) as JsonObject,
           };
-        case 'image/':
+        case 'image/png':
+        case 'image/jpeg':
+        case 'image/gif':
+        case 'image/webp':
+        case 'image/svg+xml':
+        case 'image/tiff':
+        case 'image/bmp':
+        case 'image/ico':
           return {
             type: 'image' as const,
             mimeType: contentType,

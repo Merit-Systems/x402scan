@@ -7,16 +7,17 @@ import { registerWalletTools } from './tools/wallet';
 import { registerCheckX402EndpointTool } from './tools/check-endpoint';
 import { registerRedeemInviteTool } from './tools/redeem-invite';
 import { registerTelemetryTools } from './tools/telemetry';
+import { registerDiscoveryTools } from './tools/discover-resources';
 
 import { registerOrigins } from './resources/origins';
 
+import { MCP_VERSION } from './lib/version';
+
 import { log } from '@/shared/log';
 import { getWallet } from '@/shared/wallet';
+import { redeemInviteCode } from '@/shared/redeem-invite';
 
 import type { Command } from '@/types';
-import { registerDiscoveryTools } from './tools/discover-resources';
-import { redeemInviteCode } from '@/shared/redeem-invite';
-import { MCP_VERSION } from './lib/version';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
