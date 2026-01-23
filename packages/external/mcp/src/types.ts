@@ -1,5 +1,6 @@
 export type GlobalFlags<T extends object = object> = {
   dev: boolean;
+  yes?: boolean;
   invite?: string;
 } & T;
 
