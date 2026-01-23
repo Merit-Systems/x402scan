@@ -12,6 +12,7 @@ interface CheckBalanceProps {
   amountNeeded: number;
   message: (balance: number) => string;
   flags: GlobalFlags;
+  surface: string;
 }
 
 export const checkBalance = async ({
@@ -20,8 +21,9 @@ export const checkBalance = async ({
   amountNeeded,
   message,
   flags,
+  surface,
 }: CheckBalanceProps) => {
-  const balanceResult = await getBalance(address);
+  const balanceResult = await getBalance({ address, flags, surface });
 
   if (balanceResult.isErr()) {
     log.error(JSON.stringify(balanceResult.error, null, 2));
@@ -30,17 +32,17 @@ export const checkBalance = async ({
 
   const balance = balanceResult.value;
 
-  if (balance < amountNeeded) {
+  if (balance.balance < amountNeeded) {
     const capabilities = server.server.getClientCapabilities();
     if (!capabilities?.elicitation) {
       throw new Error(
-        `${message(balance)}\n\nYou can deposit USDC at ${getDepositLink(address, flags)}`
+        `${message(balance.balance)}\n\nYou can deposit USDC at ${getDepositLink(address, flags)}`
       );
     }
 
     const result = await server.server.elicitInput({
       mode: 'form',
-      message: message(balance),
+      message: message(balance.balance),
       requestedSchema: {
         type: 'object',
         properties: {},
@@ -52,5 +54,5 @@ export const checkBalance = async ({
     }
   }
 
-  return balance;
+  return balance.balance;
 };

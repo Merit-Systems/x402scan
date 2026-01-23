@@ -1,63 +1,36 @@
-/**
- * USDC balance reader
- */
-
-import { createPublicClient, http, erc20Abi } from 'viem';
-
-import { getChain, getUSDCAddress, DEFAULT_NETWORK, toCaip2 } from './networks';
-
-import { log } from './log';
-
-import { tokenBigIntToNumber } from './token';
-import { err, ok, resultFromPromise } from '@x402scan/neverthrow';
+import { getBaseUrl } from '@/shared/utils';
+import { safeFetchJson } from '@/shared/neverthrow/fetch';
 
 import type { Address } from 'viem';
+import type { GlobalFlags } from '@/types';
 
-const balanceSurface = 'balance';
+interface BalanceApiResponse {
+  chain: number;
+  balance: number;
+}
 
-export async function getBalance(address: Address, network = DEFAULT_NETWORK) {
-  const caip2 = toCaip2(network);
+interface GetBalanceProps {
+  address: Address;
+  flags: GlobalFlags;
+  surface: string;
+}
 
-  const chain = getChain(caip2);
+export const getBalance = async ({
+  address,
+  flags,
+  surface,
+}: GetBalanceProps) => {
+  const url = `${getBaseUrl(flags.dev)}/api/rpc/balance/${address}`;
 
-  if (!chain) {
-    return err('input', balanceSurface, {
-      cause: 'unsupported_network',
-      message: `Unsupported network: ${network}`,
-    });
-  }
-
-  const usdcAddress = getUSDCAddress(caip2);
-
-  if (!usdcAddress) {
-    return err('input', balanceSurface, {
-      cause: 'no_usdc_address',
-      message: `No USDC address for network: ${network}`,
-    });
-  }
-
-  log.debug(`Reading USDC balance for ${address} on ${chain.name}`);
-
-  const client = createPublicClient({ chain, transport: http() });
-
-  const balanceResult = await resultFromPromise(
-    'rpc',
-    balanceSurface,
-    client.readContract({
-      address: usdcAddress,
-      abi: erc20Abi,
-      functionName: 'balanceOf',
-      args: [address],
-    }),
-    () => ({
-      cause: 'internal',
-      message: 'Failed to get USDC balance',
+  const res = await safeFetchJson<BalanceApiResponse>(
+    surface,
+    new Request(url, {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+      },
     })
   );
 
-  if (balanceResult.isErr()) {
-    return balanceResult;
-  }
-
-  return ok(tokenBigIntToNumber(balanceResult.value));
-}
+  return res;
+};

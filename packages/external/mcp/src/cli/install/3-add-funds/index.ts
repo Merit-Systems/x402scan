@@ -15,27 +15,33 @@ interface AddFundsProps {
 
 export const addFunds = async ({ flags, address, isNew }: AddFundsProps) => {
   if (isNew) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!flags.yes) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
     log.info('To use paid API tools, you will need USDC in your wallet.');
     await promptDeposit(address, flags);
   } else {
     const { start, stop } = spinner();
 
     start('Checking balance...');
-    const balanceResult = await getBalance(address);
+    const balanceResult = await getBalance({
+      address,
+      flags,
+      surface: 'add-funds',
+    });
 
     if (balanceResult.isOk()) {
-      stop(`Balance: ${chalk.bold(`${balanceResult.value} USDC`)} `);
+      stop(`Balance: ${chalk.bold(`${balanceResult.value.balance} USDC`)} `);
     } else {
       stop(`Error: ${balanceResult.error.message}`);
       return;
     }
 
     const balance = balanceResult.value;
-    if (balance < 1) {
+    if (balance.balance < 1) {
       log.warning(
         chalk.bold(
-          `Your balance is low (${balance} USDC). Consider topping up.`
+          `Your balance is low (${balance.balance} USDC). Consider topping up.`
         )
       );
       await promptDeposit(address, flags);

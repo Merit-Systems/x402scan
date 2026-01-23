@@ -7,13 +7,13 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { Accordion } from '@/components/ui/accordion';
+import { CopyButton } from '@/components/ui/copy-button';
 
 import { ClaudeAccordionItem } from './item';
 
 import type { Route } from 'next';
 import type { Step } from './item';
 import type { McpSearchParams } from '@/app/mcp/_lib/params';
-import { CopyButton } from '@/components/ui/copy-button';
 
 export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
   const [currentStep, setCurrentStep] = useState<number>(0);

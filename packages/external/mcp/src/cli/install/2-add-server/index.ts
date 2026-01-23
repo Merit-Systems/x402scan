@@ -30,7 +30,7 @@ const getMcpConfig = (globalFlags: GlobalFlags) => {
     return {
       serverName: 'x402',
       command: 'node',
-      args: [`${process.cwd()}/dist/index.js`, '--dev'],
+      args: [`${process.cwd()}/dist/esm/index.js`, '--dev'],
     };
   }
   return {
@@ -40,7 +40,7 @@ const getMcpConfig = (globalFlags: GlobalFlags) => {
   };
 };
 
-export async function addServer(client: Clients, globalFlags: GlobalFlags) {
+export const addServer = async (client: Clients, globalFlags: GlobalFlags) => {
   const { serverName, command, args } = getMcpConfig(globalFlags);
 
   if (client === Clients.Warp) {
@@ -91,11 +91,13 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
     log.info('Config file not found, creating default empty config');
     setNestedValue(config, clientFileTarget.configKey, {});
     log.info('Config created successfully');
-    await wait({
-      startText: 'Locating config file',
-      stopText: `No config found, creating default empty config`,
-      ms: 1000,
-    });
+    if (!globalFlags.yes) {
+      await wait({
+        startText: 'Locating config file',
+        stopText: `No config found, creating default empty config`,
+        ms: 1000,
+      });
+    }
   } else {
     log.info('Config file found, reading config file content');
     const parseResult = await parseClientConfig(clientFileTarget);
@@ -118,11 +120,13 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
     log.info(
       `Config loaded successfully: ${JSON.stringify(rawConfig, null, 2)}`
     );
-    await wait({
-      startText: `Locating config file`,
-      stopText: `Config loaded from ${clientFileTarget.path}`,
-      ms: 1000,
-    });
+    if (!globalFlags.yes) {
+      await wait({
+        startText: `Locating config file`,
+        stopText: `Config loaded from ${clientFileTarget.path}`,
+        ms: 1000,
+      });
+    }
   }
 
   const servers = getNestedValue(config, clientFileTarget.configKey);
@@ -170,11 +174,13 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
     };
   }
 
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  if (!globalFlags.yes) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-  clackLog.step(
-    `The following will be added to ${chalk.bold.underline(clientFileTarget.path)}`
-  );
+    clackLog.step(
+      `The following will be added to ${chalk.bold.underline(clientFileTarget.path)}`
+    );
+  }
 
   const configStr = formatDiffByFormat(
     {
@@ -185,27 +191,34 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
     clientFileTarget.format
   );
 
-  await stream.message(
-    (async function* () {
-      for (const num of Array.from({ length: configStr.length }, (_, i) => i)) {
-        const char = configStr[num]!;
-        yield char;
-        if (!['\n', ' ', '─', '╮', '╭', '╰', '╯', '│'].includes(char)) {
-          await new Promise(resolve => setTimeout(resolve, 5));
-        } else {
-          await new Promise(resolve => setTimeout(resolve, 2));
+  if (!globalFlags.yes) {
+    await stream.message(
+      (async function* () {
+        for (const num of Array.from(
+          { length: configStr.length },
+          (_, i) => i
+        )) {
+          const char = configStr[num]!;
+          yield char;
+          if (!['\n', ' ', '─', '╮', '╭', '╰', '╯', '│'].includes(char)) {
+            await new Promise(resolve => setTimeout(resolve, 5));
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 2));
+          }
         }
-      }
-    })()
-  );
+      })()
+    );
 
-  await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
 
-  const isConfirmed = await confirm({
-    message: `Would you like to proceed?`,
-    active: 'Install MCP',
-    inactive: 'Cancel',
-  });
+  const isConfirmed = globalFlags.yes
+    ? true
+    : await confirm({
+        message: `Would you like to proceed?`,
+        active: 'Install MCP',
+        inactive: 'Cancel',
+      });
   if (isConfirmed !== true) {
     outro(chalk.bold.red('Installation cancelled'));
     process.exit(0);
@@ -232,7 +245,7 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
   }
 
   clackLog.success(chalk.bold.green(`Added x402scan MCP to ${name}`));
-}
+};
 
 const formatDiffByFormat = (obj: object, format: FileFormat) => {
   const str = stringifyObject(obj, format);

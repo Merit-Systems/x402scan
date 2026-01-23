@@ -42,6 +42,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
       coreClient.onBeforePaymentCreation(async ({ selectedRequirements }) => {
         const amount = tokenStringToNumber(selectedRequirements.amount);
         await checkBalance({
+          surface: 'fetch-x402-resource',
           server,
           address: account.address,
           amountNeeded: amount,

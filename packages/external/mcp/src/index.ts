@@ -2,6 +2,10 @@
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { Clients } from './cli/install/clients';
+
+const isClaudeCode = Boolean(process.env.CLAUDECODE);
+const defaultYes = isClaudeCode || Boolean(process.env.CI);
 
 void yargs(hideBin(process.argv))
   .scriptName('@x402scan/mcp')
@@ -14,6 +18,12 @@ void yargs(hideBin(process.argv))
     type: 'string',
     description: 'Invite code to redeem for starter money',
     required: false,
+  })
+  .option('yes', {
+    alias: 'y',
+    type: 'boolean',
+    description: 'Yes to all prompts',
+    default: defaultYes ? true : undefined,
   })
   .command(
     '$0',
@@ -32,6 +42,7 @@ void yargs(hideBin(process.argv))
         type: 'string',
         description: 'The client name',
         required: false,
+        default: isClaudeCode ? Clients.ClaudeCode : undefined,
       }),
     async args => {
       const { installMcpServer } = await import('@/cli/install');

@@ -1,5 +1,5 @@
 import { CopyCommandButton } from '../../lib/copy-button';
-import { ClientSelect } from './../../lib/client-select';
+import { ClientSelect } from '../../lib/client-select';
 
 import type { McpSearchParams } from '../../../../_lib/params';
 

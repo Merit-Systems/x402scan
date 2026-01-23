@@ -8,7 +8,12 @@ import { clientMetadata, Clients } from '../clients';
 
 import type { InstallFlags } from '..';
 
-export const getClient = async ({ client: flagClient }: InstallFlags) => {
+export const getClient = async ({ client: flagClient, yes }: InstallFlags) => {
+  if (yes && !flagClient) {
+    throw new Error(
+      `Client is required when yes is true. Pass --client as one of these values: ${Object.values(Clients).join(', ')}`
+    );
+  }
   const parsedClient = z.enum(Clients).safeParse(flagClient);
   if (parsedClient.success) {
     return parsedClient.data;

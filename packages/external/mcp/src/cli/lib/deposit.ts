@@ -16,32 +16,34 @@ export const promptDeposit = async (
 ): Promise<void> => {
   const depositLink = getDepositLink(address, flags);
 
-  const depositChoice = await select({
-    message: chalk.bold('How would you like to deposit?'),
-    initialValue: 'guided' as string | undefined,
-    options: [
-      {
-        label: 'Guided - Recommended',
-        value: 'guided',
-        hint: 'Online portal in x402scan',
-      },
-      {
-        label: 'Manual',
-        value: 'manual',
-        hint: 'Print deposit instructions',
-      },
-      {
-        label: 'Redeem Invite Code',
-        value: 'invite',
-        hint: 'Enter an invite code for starter money',
-      },
-      {
-        label: 'Skip',
-        value: undefined,
-        hint: 'Skip deposit process - functionality limited',
-      },
-    ],
-  });
+  const depositChoice = flags.yes
+    ? 'manual'
+    : await select({
+        message: chalk.bold('How would you like to deposit?'),
+        initialValue: 'guided' as string | undefined,
+        options: [
+          {
+            label: 'Guided - Recommended',
+            value: 'guided',
+            hint: 'Online portal in x402scan',
+          },
+          {
+            label: 'Manual',
+            value: 'manual',
+            hint: 'Print deposit instructions',
+          },
+          {
+            label: 'Redeem Invite Code',
+            value: 'invite',
+            hint: 'Enter an invite code for starter money',
+          },
+          {
+            label: 'Skip',
+            value: undefined,
+            hint: 'Skip deposit process - functionality limited',
+          },
+        ],
+      });
 
   if (depositChoice === 'guided') {
     await wait({

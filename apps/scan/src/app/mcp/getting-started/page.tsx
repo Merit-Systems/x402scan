@@ -1,7 +1,5 @@
 'use client';
 
-import { Body } from '@/app/_components/layout/page-utils';
-import { Clients } from '@/app/mcp/_components/clients/data';
 import {
   Film,
   Globe,
@@ -12,6 +10,10 @@ import {
   Users,
   Video,
 } from 'lucide-react';
+
+import { Body } from '@/app/_components/layout/page-utils';
+import { Clients } from '@/app/mcp/_components/clients/data';
+
 import { ExamplePrompt } from './_components/example-prompt';
 
 export default function GettingStartedPage() {

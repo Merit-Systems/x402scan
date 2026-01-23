@@ -34,11 +34,14 @@ export const installMcpServer: Command<InstallFlags> = async flags => {
   await addServer(client, flags);
 
   const inviteRedeemed = flags.invite
-    ? await redeemInviteCode({
-        code: flags.invite,
-        dev: flags.dev,
-        address,
-      })
+    ? await redeemInviteCode(
+        {
+          code: flags.invite,
+          dev: flags.dev,
+          address,
+        },
+        flags
+      )
     : false;
 
   if (!inviteRedeemed) {

@@ -1,4 +1,4 @@
-import { Clients } from '../clients/data';
+import { Clients } from './data';
 
 interface ClientIconProps extends React.SVGProps<SVGSVGElement> {
   client: Clients;
