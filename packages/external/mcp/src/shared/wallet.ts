@@ -61,7 +61,10 @@ export async function getWallet() {
 
     // file exists but is not valid JSON
     if (jsonParseResult.isErr()) {
-      return jsonErr(walletSurface, jsonParseResult.error);
+      return jsonErr(walletSurface, {
+        cause: 'parse',
+        message: `The data in ${WALLET_FILE} is not valid JSON`,
+      });
     }
 
     const parseResult = safeParse(
