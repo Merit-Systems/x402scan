@@ -8,14 +8,13 @@ import {
   mcpSuccessJson,
   mcpSuccessResponse,
 } from './response';
-import { requestSchema, buildRequest } from './lib/request';
 
 import { log } from '@/shared/log';
-
+import { tokenStringToNumber } from '@/shared/token';
 import { safeGetPaymentRequired } from '@/shared/neverthrow/x402';
 
 import { getSchema } from '../lib/extract-schema';
-import { tokenStringToNumber } from '@/shared/token';
+import { requestSchema, buildRequest } from './lib/request';
 
 import type { RegisterTools } from '@/server/types';
 import type { JsonObject } from '@/shared/neverthrow/json/types';
@@ -36,25 +35,23 @@ export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
       const responseResult = await safeFetch(toolName, buildRequest(input));
 
       if (responseResult.isErr()) {
-        return mcpError(responseResult.error);
+        return mcpError(responseResult);
       }
 
       const response = responseResult.value;
 
       if (response.status !== 402) {
         if (!response.ok) {
-          return mcpErrorFetch({
+          return mcpErrorFetch(toolName, {
             cause: 'http',
-            message: `HTTP ${response.status}`,
+            message: response.statusText,
             response: response,
-            type: 'fetch',
-            surface: toolName,
           });
         }
 
         const parseResponseResult = await safeParseResponse(toolName, response);
         if (parseResponseResult.isErr()) {
-          return mcpError(parseResponseResult.error);
+          return mcpError(parseResponseResult);
         }
         return mcpSuccessResponse(parseResponseResult.value, {
           requiresPayment: false,
@@ -70,7 +67,7 @@ export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
       );
 
       if (paymentRequiredResult.isErr()) {
-        return mcpError(paymentRequiredResult.error);
+        return mcpError(paymentRequiredResult);
       }
 
       const { resource, extensions, accepts } = paymentRequiredResult.value;

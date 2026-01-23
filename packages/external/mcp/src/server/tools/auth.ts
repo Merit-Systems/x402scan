@@ -9,9 +9,9 @@ import {
 
 import {
   mcpErrorJson,
-  mcpErrorFetch,
   mcpError,
   mcpSuccessResponse,
+  mcpErrorFetch,
 } from './response';
 
 import { requestSchema, buildRequest } from './lib/request';
@@ -36,19 +36,17 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       const firstResult = await safeFetch(toolName, buildRequest(input));
 
       if (firstResult.isErr()) {
-        return mcpError(firstResult.error);
+        return mcpError(firstResult);
       }
 
       const firstResponse = firstResult.value;
 
       if (firstResponse.status !== 402) {
         if (!firstResponse.ok) {
-          return mcpErrorFetch({
+          return mcpErrorFetch(toolName, {
             cause: 'http',
-            message: `HTTP ${firstResponse.status}`,
+            message: firstResponse.statusText,
             response: firstResponse,
-            type: 'fetch',
-            surface: toolName,
           });
         }
 
@@ -58,7 +56,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
         );
 
         if (parseResponseResult.isErr()) {
-          return mcpError(parseResponseResult.error);
+          return mcpError(parseResponseResult);
         }
 
         return mcpSuccessResponse(parseResponseResult.value);
@@ -71,7 +69,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       );
 
       if (getPaymentRequiredResult.isErr()) {
-        return mcpError(getPaymentRequiredResult.error);
+        return mcpError(getPaymentRequiredResult);
       }
 
       const paymentRequired = getPaymentRequiredResult.value;
@@ -129,7 +127,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       );
 
       if (payloadResult.isErr()) {
-        return mcpError(payloadResult.error);
+        return mcpError(payloadResult);
       }
 
       const siwxHeader = encodeSIWxHeader(payloadResult.value);
@@ -141,18 +139,16 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       const authedResult = await safeFetch(toolName, authedRequest);
 
       if (authedResult.isErr()) {
-        return mcpError(authedResult.error);
+        return mcpError(authedResult);
       }
 
       const authedResponse = authedResult.value;
 
       if (!authedResponse.ok) {
-        return mcpErrorFetch({
+        return mcpErrorFetch(toolName, {
           cause: 'http',
-          message: `HTTP ${authedResponse.status} after authentication`,
+          message: authedResponse.statusText,
           response: authedResponse,
-          type: 'fetch',
-          surface: toolName,
         });
       }
 
@@ -162,7 +158,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       );
 
       if (parseResponseResult.isErr()) {
-        return mcpError(parseResponseResult.error);
+        return mcpError(parseResponseResult);
       }
 
       return mcpSuccessResponse(parseResponseResult.value, {

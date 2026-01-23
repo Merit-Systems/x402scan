@@ -8,9 +8,10 @@ import { getChain, getUSDCAddress, DEFAULT_NETWORK, toCaip2 } from './networks';
 
 import { log } from './log';
 
-import type { Address } from 'viem';
 import { tokenBigIntToNumber } from './token';
 import { err, ok, resultFromPromise } from '@x402scan/neverthrow';
+
+import type { Address } from 'viem';
 
 const balanceSurface = 'balance';
 

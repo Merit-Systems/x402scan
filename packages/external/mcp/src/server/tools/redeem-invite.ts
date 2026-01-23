@@ -1,10 +1,9 @@
 import z from 'zod';
-import { mcpErrorFetch, mcpErrorJson, mcpSuccessJson } from './response';
+import { mcpError, mcpSuccessJson } from './response';
 
 import { redeemInviteCode } from '@/shared/redeem-invite';
 
 import type { RegisterTools } from '@/server/types';
-import { isFetchError } from '@/shared/neverthrow/fetch';
 
 export const registerRedeemInviteTool: RegisterTools = ({
   server,
@@ -23,10 +22,7 @@ export const registerRedeemInviteTool: RegisterTools = ({
       const result = await redeemInviteCode({ code, dev: flags.dev, address });
 
       if (result.isErr()) {
-        if (isFetchError(result.error)) {
-          return await mcpErrorFetch(result.error);
-        }
-        return mcpErrorJson(result.error);
+        return mcpError(result);
       }
 
       const { amount, txHash } = result.value;

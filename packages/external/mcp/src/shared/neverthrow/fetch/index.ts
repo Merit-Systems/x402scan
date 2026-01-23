@@ -6,7 +6,7 @@ import type { JsonObject } from '../json/types';
 
 const errorType = 'fetch';
 
-const fetchErr = (surface: string, error: BaseFetchError) =>
+export const fetchErr = (surface: string, error: BaseFetchError) =>
   err(errorType, surface, error);
 
 export const safeFetch = (surface: string, request: Request) => {
@@ -16,7 +16,7 @@ export const safeFetch = (surface: string, request: Request) => {
     fetch(request),
     error =>
       ({
-        cause: 'network' as const,
+        cause: 'network',
         message: error instanceof Error ? error.message : 'Network error',
       }) as BaseFetchError
   );

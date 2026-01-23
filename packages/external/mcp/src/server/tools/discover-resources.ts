@@ -7,7 +7,7 @@ import {
   safeParseResponse,
 } from '@/shared/neverthrow/fetch';
 
-import { mcpSuccessJson } from './response';
+import { mcpErrorJson, mcpSuccessJson } from './response';
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
@@ -150,7 +150,7 @@ export function registerDiscoveryTools(server: McpServer): void {
         }
       }
 
-      return mcpSuccessJson({
+      return mcpErrorJson({
         found: false,
         origin,
         error:

@@ -3,13 +3,13 @@ import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { ExactEvmScheme } from '@x402/evm/exact/client';
 
+import { mcpError, mcpErrorFetch, mcpSuccessResponse } from './response';
+
+import { requestSchema, buildRequest } from './lib/request';
+import { checkBalance } from './lib/check-balance';
+
 import { DEFAULT_NETWORK } from '@/shared/networks';
 import { tokenStringToNumber } from '@/shared/token';
-
-import { mcpError, mcpSuccessResponse } from './response';
-import { requestSchema, buildRequest } from './lib/request';
-
-import { checkBalance } from './lib/check-balance';
 import {
   safeCreatePaymentPayload,
   safeGetPaymentRequired,
@@ -58,25 +58,23 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
       const fetchResult = await fetchWithPay(buildRequest(input));
 
       if (fetchResult.isErr()) {
-        return mcpError(fetchResult.error);
+        return mcpError(fetchResult);
       }
 
       const response = fetchResult.value;
 
       if (!response.ok) {
-        return mcpError({
+        return mcpErrorFetch(toolName, {
           cause: 'http',
-          message: `HTTP ${response.status}`,
+          message: response.statusText,
           response: response,
-          type: 'fetch',
-          surface: toolName,
         });
       }
 
       const parseResponseResult = await safeParseResponse(toolName, response);
 
       if (parseResponseResult.isErr()) {
-        return mcpError(parseResponseResult.error);
+        return mcpError(parseResponseResult);
       }
 
       const settlementResult = safeGetPaymentSettlement(
