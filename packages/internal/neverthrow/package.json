@@ -2,18 +2,25 @@
   "name": "@x402scan/neverthrow",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./server": "./src/server.ts",
-    "./types": "./src/types.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    }
   },
   "scripts": {
-    "dev": "tsup src/* --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0",
     "check:types": "tsc --noEmit",
-    "knip": "pnpm -w knip --workspace ./packages/internal/databases/transfers",
-    "format": "pnpm -w format:dir ./packages/internal/databases/transfers",
-    "format:check": "pnpm -w format:check:dir ./packages/internal/databases/transfers"
+    "knip": "pnpm -w knip --workspace ./packages/internal/neverthrow",
+    "format": "pnpm -w format:dir ./packages/internal/neverthrow",
+    "format:check": "pnpm -w format:check:dir ./packages/internal/neverthrow"
   },
   "dependencies": {
     "neverthrow": "^8.2.0"
@@ -23,6 +30,7 @@
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",
+    "tsup": "catalog:",
     "typescript": "catalog:"
   }
 }

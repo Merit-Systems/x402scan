@@ -1,3 +1,11 @@
+// Re-export neverthrow types so consumers don't need a direct dependency
+export type {
+  Result as NeverthrowResult,
+  ResultAsync as NeverthrowResultAsync,
+  Err as NeverthrowErr,
+  Ok as NeverthrowOk,
+} from 'neverthrow';
+
 import type {
   Result as NeverthrowResult,
   ResultAsync as NeverthrowResultAsync,
