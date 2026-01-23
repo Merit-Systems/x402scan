@@ -22,18 +22,18 @@ export const addFunds = async ({ flags, address, isNew }: AddFundsProps) => {
     log.info('To use paid API tools, you will need USDC in your wallet.');
     await promptDeposit(address, flags);
   } else {
-    const balance = await getUSDCBalance({ address });
+    const { balanceFormatted } = await getUSDCBalance(address, flags);
     if (!flags.yes) {
       await wait({
         startText: 'Checking balance...',
-        stopText: `Balance: ${chalk.bold(`${balance} USDC`)} `,
+        stopText: `Balance: ${chalk.bold(`${balanceFormatted} USDC`)} `,
         ms: 1000,
       });
     }
-    if (balance < 1) {
+    if (balanceFormatted < 1) {
       log.warning(
         chalk.bold(
-          `Your balance is low (${balance} USDC). Consider topping up.`
+          `Your balance is low (${balanceFormatted} USDC). Consider topping up.`
         )
       );
       await promptDeposit(address, flags);

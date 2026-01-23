@@ -8,6 +8,7 @@ import type { RegisterTools } from '@/server/types';
 export const registerWalletTools: RegisterTools = ({
   server,
   account: { address },
+  flags,
 }) => {
   server.registerTool(
     'check_balance',
@@ -16,17 +17,18 @@ export const registerWalletTools: RegisterTools = ({
         'Check wallet address and USDC balance. Creates wallet if needed.',
     },
     async () => {
-      const balance = await getUSDCBalance({
+      const { balanceFormatted, balanceRaw } = await getUSDCBalance(
         address,
-      });
+        flags
+      );
 
       return mcpSuccess({
         address,
         network: DEFAULT_NETWORK,
         networkName: getChainName(DEFAULT_NETWORK),
-        usdcBalance: balance,
-        balanceFormatted: balance.toString(),
-        isNewWallet: balance === 0,
+        usdcBalance: balanceRaw,
+        balanceFormatted,
+        isNewWallet: balanceFormatted === 0,
       });
     }
   );
