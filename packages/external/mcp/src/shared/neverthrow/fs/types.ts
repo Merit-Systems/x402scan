@@ -8,6 +8,7 @@ type FileSystemErrorType =
   | 'file_not_deletable'
   | 'file_not_renamable'
   | 'file_not_copyable'
-  | 'file_not_movable';
+  | 'file_not_movable'
+  | 'file_doesnt_exist';
 
 export type BaseFileSystemError = BaseError<FileSystemErrorType>;

@@ -14,6 +14,8 @@ export type InstallFlags = GlobalFlags<{
 }>;
 
 export const installMcpServer: Command<InstallFlags> = async flags => {
+  intro(chalk.green.bold(`Install x402scan MCP`));
+
   const walletResult = await getWallet();
 
   if (walletResult.isErr()) {
@@ -26,8 +28,6 @@ export const installMcpServer: Command<InstallFlags> = async flags => {
     account: { address },
     isNew,
   } = walletResult.value;
-
-  intro(chalk.green.bold(`Install x402scan MCP`));
 
   const client = await getClient(flags);
 

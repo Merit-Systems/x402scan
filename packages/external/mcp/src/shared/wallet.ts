@@ -1,14 +1,21 @@
+import { getAddress } from 'viem';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+
 import z from 'zod';
 
-import { err, ok } from '@x402scan/neverthrow';
-import { safeChmod, safeReadFile, safeWriteFile } from '@/shared/neverthrow/fs';
-
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { ok } from '@x402scan/neverthrow';
+import {
+  fsErr,
+  safeChmod,
+  safeFileExists,
+  safeReadFile,
+  safeWriteFile,
+} from '@/shared/neverthrow/fs';
+import { jsonErr, safeParseJson } from '@/shared/neverthrow/json';
+import { safeParse } from '@/shared/neverthrow/parse';
 
 import { log } from './log';
 import { configFile } from './fs';
-
-import { getAddress } from 'viem';
 
 import type { Hex } from 'viem';
 
@@ -35,24 +42,45 @@ export async function getWallet() {
     return ok({ account, isNew: false });
   }
 
-  const readFileResult = await safeReadFile(walletSurface, WALLET_FILE).andThen(
-    data => {
-      const stored = storedWalletSchema.safeParse(JSON.parse(data));
-      if (!stored.success) {
-        return err('parse', walletSurface, {
-          cause: 'invalid_data',
-          message: 'Invalid wallet data',
-          error: stored.error,
-        });
-      }
-      const account = privateKeyToAccount(stored.data.privateKey);
-      log.info(`Loaded wallet: ${account.address}`);
-      return ok({ account, isNew: false });
+  const readFileResult = await safeReadFile(walletSurface, WALLET_FILE);
+
+  if (!readFileResult.isOk()) {
+    const fileExistsResult = safeFileExists(walletSurface, WALLET_FILE);
+    // file exists but is not readable
+    if (fileExistsResult.isOk()) {
+      return fsErr(walletSurface, {
+        cause: 'file_not_readable',
+        message: `The file exists but is not readable. Fix corrupted state file: ${WALLET_FILE}`,
+      });
     }
-  );
+  }
 
   if (readFileResult.isOk()) {
-    return readFileResult;
+    const data = readFileResult.value;
+    const jsonParseResult = safeParseJson(walletSurface, data);
+
+    // file exists but is not valid JSON
+    if (jsonParseResult.isErr()) {
+      return jsonErr(walletSurface, {
+        cause: 'parse',
+        message: `The data in ${WALLET_FILE} is not valid JSON`,
+      });
+    }
+
+    const parseResult = safeParse(
+      walletSurface,
+      storedWalletSchema,
+      jsonParseResult.value
+    );
+
+    // file has valid JSON but is not a valid wallet configuration
+    if (parseResult.isErr()) {
+      return parseResult;
+    }
+
+    const account = privateKeyToAccount(parseResult.value.privateKey);
+    log.info(`Loaded wallet: ${account.address}`);
+    return ok({ account, isNew: false });
   }
 
   // Generate new
