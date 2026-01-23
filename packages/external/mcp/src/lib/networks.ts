@@ -94,11 +94,6 @@ export function getUSDCAddress(network: string): `0x${string}` | undefined {
   return getChainConfig(network)?.usdcAddress;
 }
 
-/** Get viem Chain object for a network */
-export function getChain(network: string): Chain | undefined {
-  return getChainConfig(network)?.chain;
-}
-
 /** Extract chain ID from CAIP-2 identifier */
 export function getChainId(network: string): number | undefined {
   const caip2 = toCaip2(network);
