@@ -4,10 +4,12 @@ import { getUSDCBalance } from '@/lib/balance';
 import { DEFAULT_NETWORK, getChainName } from '@/lib/networks';
 
 import type { RegisterTools } from '@/server/types';
+import { getDepositLink } from '@/lib/deposit';
 
 export const registerWalletTools: RegisterTools = ({
   server,
   account: { address },
+  flags,
 }) => {
   server.registerTool(
     'check_balance',
@@ -27,6 +29,7 @@ export const registerWalletTools: RegisterTools = ({
         usdcBalance: balance,
         balanceFormatted: balance.toString(),
         isNewWallet: balance === 0,
+        depositLink: getDepositLink(address, flags),
       });
     }
   );
