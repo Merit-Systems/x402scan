@@ -47,7 +47,9 @@ export const redeemInviteCode = async (
       return true;
     },
     error => {
-      s.stop('Invite code redemption failed');
+      if (!flags.yes) {
+        s.stop('Invite code redemption failed');
+      }
       log.warning(
         chalk.yellow(`Failed to redeem invite code: ${error?.message}`)
       );
