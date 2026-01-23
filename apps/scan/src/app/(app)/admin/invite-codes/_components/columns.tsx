@@ -1,6 +1,13 @@
 'use client';
 
-import { Calendar, DollarSign, Hash, MoreHorizontal, User, Wallet } from 'lucide-react';
+import {
+  Calendar,
+  DollarSign,
+  Hash,
+  MoreHorizontal,
+  User,
+  Wallet,
+} from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -172,9 +179,7 @@ export const createColumns = (
                 {truncateAddress(firstAddr)}
               </a>
               {remaining > 0 && (
-                <span className="text-muted-foreground ml-1">
-                  +{remaining}
-                </span>
+                <span className="text-muted-foreground ml-1">+{remaining}</span>
               )}
             </div>
           </TooltipTrigger>

@@ -11,7 +11,7 @@ export default function McpBreadcrumbsLayout({
     <>
       <Separator />
       <Breadcrumb
-        href={'/admin/mcp/users' as any}
+        href="/admin/mcp/users"
         image={null}
         name="MCP"
         Fallback={Users}

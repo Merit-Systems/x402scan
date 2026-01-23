@@ -27,21 +27,45 @@ export const getRedemptionsByWallet = async (walletAddress: string) => {
   });
 };
 
+export const mcpUserSortIdSchema = z.enum([
+  'totalSpent',
+  'totalAmount',
+  'transactionCount',
+  'lastRedemption',
+]);
+
+export type McpUserSortId = z.infer<typeof mcpUserSortIdSchema>;
+
 export const listMcpUsersSchema = z
   .object({
     search: z.string().optional(),
     limit: z.number().int().min(1).max(100).default(50),
     offset: z.number().int().min(0).default(0),
+    sortBy: mcpUserSortIdSchema.optional(),
+    sortDesc: z.boolean().optional(),
   })
   .optional();
 
 export const listMcpUsers = async (
   options: z.infer<typeof listMcpUsersSchema>
 ) => {
-  const { search, limit = 50, offset = 0 } = options ?? {};
+  const { search, limit = 50, offset = 0, sortBy, sortDesc = true } =
+    options ?? {};
 
-  // Get all unique wallets with their redemption stats
-  const result = await scanDb.inviteRedemption.groupBy({
+  // Determine orderBy based on sortBy param (only for DB-level sortable fields)
+  const getOrderBy = () => {
+    const direction = sortDesc ? 'desc' : 'asc';
+    switch (sortBy) {
+      case 'totalAmount':
+        return { _sum: { amount: direction as 'asc' | 'desc' } };
+      case 'lastRedemption':
+      default:
+        return { _max: { createdAt: direction as 'asc' | 'desc' } };
+    }
+  };
+
+  // Get aggregated stats first
+  const stats = await scanDb.inviteRedemption.groupBy({
     by: ['recipientAddr'],
     where: {
       status: 'SUCCESS',
@@ -53,17 +77,46 @@ export const listMcpUsers = async (
     _sum: { amount: true },
     _min: { createdAt: true },
     _max: { createdAt: true },
-    orderBy: { _max: { createdAt: 'desc' } },
+    orderBy: getOrderBy(),
     take: limit,
     skip: offset,
   });
 
-  return result.map(r => ({
+  // Get the invite codes for these wallets
+  const walletAddresses = stats.map(s => s.recipientAddr);
+  const redemptions = await scanDb.inviteRedemption.findMany({
+    where: {
+      recipientAddr: { in: walletAddresses },
+      status: 'SUCCESS',
+    },
+    select: {
+      recipientAddr: true,
+      inviteCode: {
+        select: {
+          code: true,
+        },
+      },
+    },
+    distinct: ['recipientAddr', 'inviteCodeId'],
+  });
+
+  // Group codes by wallet
+  const codesByWallet = new Map<string, string[]>();
+  for (const r of redemptions) {
+    const codes = codesByWallet.get(r.recipientAddr) ?? [];
+    if (!codes.includes(r.inviteCode.code)) {
+      codes.push(r.inviteCode.code);
+    }
+    codesByWallet.set(r.recipientAddr, codes);
+  }
+
+  return stats.map(r => ({
     recipientAddr: r.recipientAddr,
     totalRedemptions: r._count.id,
     totalAmount: r._sum.amount ?? BigInt(0),
     firstRedemption: r._min.createdAt!,
     lastRedemption: r._max.createdAt!,
+    inviteCodes: codesByWallet.get(r.recipientAddr) ?? [],
   }));
 };
 

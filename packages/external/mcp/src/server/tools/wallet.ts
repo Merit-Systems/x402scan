@@ -2,13 +2,18 @@ import { mcpSuccess } from '@/server/lib/response';
 
 import { getUSDCBalance } from '@/lib/balance';
 import { DEFAULT_NETWORK, getChainName } from '@/lib/networks';
+import { getBaseUrl } from '@/lib/utils';
+import { log } from '@/lib/log';
 
 import type { RegisterTools } from '@/server/types';
 
 export const registerWalletTools: RegisterTools = ({
   server,
   account: { address },
+  flags,
 }) => {
+  const baseUrl = getBaseUrl(flags.dev);
+
   server.registerTool(
     'check_balance',
     {
@@ -19,6 +24,15 @@ export const registerWalletTools: RegisterTools = ({
       const balance = await getUSDCBalance({
         address,
       });
+
+      // Log balance check telemetry (fire and forget)
+      fetch(`${baseUrl}/api/telemetry/balance-check`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: address, chain: DEFAULT_NETWORK }),
+      }).catch((err: unknown) =>
+        log.debug('Failed to log balance check', { error: err })
+      );
 
       return mcpSuccess({
         address,

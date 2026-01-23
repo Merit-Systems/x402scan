@@ -29,6 +29,8 @@ export type {
   ResourceMetrics,
   InviteCode,
   InviteRedemption,
+  McpUser,
+  BalanceCheck,
 } from '../generated/prisma/client';
 export {
   Role,

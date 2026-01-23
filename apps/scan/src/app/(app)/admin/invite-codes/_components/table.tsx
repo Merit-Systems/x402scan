@@ -81,13 +81,10 @@ export const InviteCodesTable = () => {
     [disableMutation, reactivateMutation, handleEditMaxRedemptions]
   );
 
-  const handleStatusChange = useCallback(
-    (value: string) => {
-      setStatusFilter(value as StatusFilter);
-      setPage(0);
-    },
-    []
-  );
+  const handleStatusChange = useCallback((value: string) => {
+    setStatusFilter(value as StatusFilter);
+    setPage(0);
+  }, []);
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

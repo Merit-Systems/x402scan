@@ -6,17 +6,25 @@ import { DataTable } from '@/components/ui/data-table';
 import { Input } from '@/components/ui/input';
 import { createColumns } from './columns';
 import { api } from '@/trpc/client';
+import {
+  McpUsersSortingProvider,
+  useMcpUsersSorting,
+  defaultMcpUsersSorting,
+} from '@/app/(app)/_contexts/sorting/mcp-users';
 
 const PAGE_SIZE = 25;
 
-export const McpUsersTable = () => {
+const McpUsersTableInner = () => {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const deferredSearch = useDeferredValue(search);
+  const { sorting } = useMcpUsersSorting();
 
   const { data, isLoading } = api.admin.users.list.useQuery({
     limit: PAGE_SIZE,
     offset: page * PAGE_SIZE,
+    sortBy: sorting.id,
+    sortDesc: sorting.desc,
     ...(deferredSearch && { search: deferredSearch }),
   });
 
@@ -57,5 +65,13 @@ export const McpUsersTable = () => {
         getRowId={(row, index) => row?.recipientAddr ?? `loading-${index}`}
       />
     </div>
+  );
+};
+
+export const McpUsersTable = () => {
+  return (
+    <McpUsersSortingProvider initialSorting={defaultMcpUsersSorting}>
+      <McpUsersTableInner />
+    </McpUsersSortingProvider>
   );
 };

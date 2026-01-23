@@ -12,19 +12,19 @@ import { MotionTab } from './motion-tab';
 
 import type { Route } from 'next';
 
-interface Tab<T extends string> {
+interface Tab {
   label: string;
-  href: Route<T>;
+  href: string;
   subRoutes?: string[];
   external?: boolean;
   isNew?: boolean;
 }
 
-interface Props<T extends string = string> {
-  tabs: Tab<T>[];
+interface Props {
+  tabs: Tab[];
 }
 
-export const Nav = <T extends string>({ tabs }: Props<T>) => {
+export const Nav = ({ tabs }: Props) => {
   const [buttonRefs, setButtonRefs] = useState<(HTMLAnchorElement | null)[]>(
     []
   );
@@ -59,7 +59,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
           {tabs.map((tab, index) => (
             <div className="relative z-11 pb-1 shrink-0" key={tab.label}>
               <Link
-                href={tab.href}
+                href={tab.href as Route}
                 className="z-11"
                 onMouseEnter={() => setHoveredTabIndex(index)}
                 onMouseLeave={() => setHoveredTabIndex(null)}

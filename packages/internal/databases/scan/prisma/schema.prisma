@@ -449,6 +449,28 @@ model InviteRedemption {
   @@index([recipientAddr])
 }
 
+model McpUser {
+  id        String   @id @default(uuid())
+  wallet    String   @unique
+  name      String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([wallet])
+}
+
+model BalanceCheck {
+  id        String   @id @default(uuid())
+  wallet    String
+  chain     String
+  createdAt DateTime @default(now())
+
+  @@index([wallet])
+  @@index([createdAt])
+  @@index([wallet, createdAt])
+}
+
 model ResourceOriginMetrics {
   id                  String   @id @default(uuid())
   originId            String

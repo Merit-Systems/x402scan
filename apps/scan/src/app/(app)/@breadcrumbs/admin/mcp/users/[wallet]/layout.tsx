@@ -19,7 +19,7 @@ export default async function AdminMcpUserBreadcrumbsLayout({
     <>
       <Separator />
       <Breadcrumb
-        href={`/admin/mcp/users/${wallet}` as any}
+        href={`/admin/mcp/users/${wallet}`}
         image={null}
         name={formatAddress(wallet)}
         Fallback={Wallet}
