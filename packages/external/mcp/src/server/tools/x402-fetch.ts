@@ -65,11 +65,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
       const response = fetchResult.value;
 
       if (!response.ok) {
-        return mcpErrorFetch(toolName, {
-          cause: 'http',
-          message: response.statusText,
-          response: response,
-        });
+        return mcpErrorFetch(toolName, response);
       }
 
       const parseResponseResult = await safeParseResponse(toolName, response);

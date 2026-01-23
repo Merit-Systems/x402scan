@@ -6,8 +6,15 @@ import type { JsonObject } from '../json/types';
 
 const errorType = 'fetch';
 
-export const fetchErr = (surface: string, error: BaseFetchError) =>
+const fetchErr = (surface: string, error: BaseFetchError) =>
   err(errorType, surface, error);
+export const fetchHttpErr = (surface: string, response: Response) =>
+  fetchErr(surface, {
+    cause: 'http' as const,
+    statusCode: response.status,
+    message: response.statusText,
+    response,
+  });
 
 export const safeFetch = (surface: string, request: Request) => {
   return resultFromPromise(
@@ -25,11 +32,7 @@ export const safeFetch = (surface: string, request: Request) => {
 export const safeFetchJson = <T>(surface: string, request: Request) => {
   return safeFetch(surface, request).andThen(response => {
     if (!response.ok) {
-      return fetchErr(surface, {
-        cause: 'http' as const,
-        message: 'HTTP error',
-        response,
-      });
+      return fetchHttpErr(surface, response);
     }
 
     return resultFromPromise(

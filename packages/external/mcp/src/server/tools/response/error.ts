@@ -2,7 +2,7 @@ import { safeStringifyJson } from '@/shared/neverthrow/json';
 
 import { parsedResponseToToolContentPart } from './lib';
 import {
-  fetchErr,
+  fetchHttpErr,
   isFetchError,
   safeParseResponse,
 } from '@/shared/neverthrow/fetch';
@@ -58,6 +58,6 @@ export const mcpError = async (
   return mcpErrorJson({ ...error });
 };
 
-export const mcpErrorFetch = async (surface: string, error: BaseFetchError) => {
-  return mcpError(fetchErr(surface, error));
+export const mcpErrorFetch = async (surface: string, response: Response) => {
+  return mcpError(fetchHttpErr(surface, response));
 };

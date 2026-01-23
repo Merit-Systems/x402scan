@@ -44,11 +44,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
 
       if (firstResponse.status !== 402) {
         if (!firstResponse.ok) {
-          return mcpErrorFetch(toolName, {
-            cause: 'http',
-            message: firstResponse.statusText,
-            response: firstResponse,
-          });
+          return mcpErrorFetch(toolName, firstResponse);
         }
 
         const parseResponseResult = await safeParseResponse(
@@ -144,11 +140,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       const authedResponse = authedResult.value;
 
       if (!authedResponse.ok) {
-        return mcpErrorFetch(toolName, {
-          cause: 'http',
-          message: authedResponse.statusText,
-          response: authedResponse,
-        });
+        return mcpErrorFetch(toolName, authedResponse);
       }
 
       const parseResponseResult = await safeParseResponse(

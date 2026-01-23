@@ -9,6 +9,7 @@ type FetchExtra =
     }
   | {
       cause: 'http';
+      statusCode: number;
       response: Response;
     }
   | {

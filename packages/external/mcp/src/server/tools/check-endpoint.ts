@@ -42,11 +42,7 @@ export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
 
       if (response.status !== 402) {
         if (!response.ok) {
-          return mcpErrorFetch(toolName, {
-            cause: 'http',
-            message: response.statusText,
-            response: response,
-          });
+          return mcpErrorFetch(toolName, response);
         }
 
         const parseResponseResult = await safeParseResponse(toolName, response);
