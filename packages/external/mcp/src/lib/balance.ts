@@ -13,7 +13,7 @@ const balanceApiResponseSchema = z.object({
 export async function getUSDCBalance(
   address: Address,
   flags: GlobalFlags
-): Promise<number> {
+): Promise<{ balance: number; rawBalance: string }> {
   const url = `${getBaseUrl(flags.dev)}/api/rpc/balance/${address}`;
 
   const res = await fetch(url, {
@@ -44,5 +44,8 @@ export async function getUSDCBalance(
       `Failed to safeParse balance API response (${res.status} ${res.statusText})`
     );
   }
-  return result.data.balance;
+  return {
+    balance: result.data.balance,
+    rawBalance: result.data.rawBalance,
+  };
 }

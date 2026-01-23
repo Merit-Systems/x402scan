@@ -20,7 +20,7 @@ export const checkBalance = async ({
   message,
   flags,
 }: CheckBalanceProps) => {
-  const balance = await getUSDCBalance(address, flags);
+  const { balance } = await getUSDCBalance(address, flags);
 
   if (balance < amountNeeded) {
     const capabilities = server.server.getClientCapabilities();
