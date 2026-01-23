@@ -1,0 +1,101 @@
+# Claude Agent SDK with NO tools - Baseline configuration
+# Tests what the model can do without any tool access
+
+- id: anthropic:claude-agent-sdk
+  label: 'No Tools - Haiku 4.5'
+  config:
+    model: claude-haiku-4-5-20251001
+    custom_allowed_tools: []
+    include_partial_messages: true
+    max_budget_usd: 0.50
+    output_format:
+      type: json_schema
+      schema:
+        type: object
+        properties:
+          answer:
+            description: 'The answer to the question'
+          sources:
+            type: array
+            items:
+              type: string
+            description: 'URLs or references used'
+          tool_call_log:
+            type: array
+            items:
+              type: object
+              properties:
+                tool:
+                  type: string
+                input:
+                  type: object
+                success:
+                  type: boolean
+            description: 'Log of tool calls made'
+        required: [answer]
+
+- id: anthropic:claude-agent-sdk
+  label: 'No Tools - Sonnet 4.5'
+  config:
+    model: claude-sonnet-4-5-20250929
+    custom_allowed_tools: []
+    include_partial_messages: true
+    max_budget_usd: 1.00
+    output_format:
+      type: json_schema
+      schema:
+        type: object
+        properties:
+          answer:
+            description: 'The answer to the question'
+          sources:
+            type: array
+            items:
+              type: string
+            description: 'URLs or references used'
+          tool_call_log:
+            type: array
+            items:
+              type: object
+              properties:
+                tool:
+                  type: string
+                input:
+                  type: object
+                success:
+                  type: boolean
+            description: 'Log of tool calls made'
+        required: [answer]
+
+- id: anthropic:claude-agent-sdk
+  label: 'No Tools - Opus 4.5'
+  config:
+    model: claude-opus-4-5-20251101
+    custom_allowed_tools: []
+    include_partial_messages: true
+    max_budget_usd: 5.00
+    output_format:
+      type: json_schema
+      schema:
+        type: object
+        properties:
+          answer:
+            description: 'The answer to the question'
+          sources:
+            type: array
+            items:
+              type: string
+            description: 'URLs or references used'
+          tool_call_log:
+            type: array
+            items:
+              type: object
+              properties:
+                tool:
+                  type: string
+                input:
+                  type: object
+                success:
+                  type: boolean
+            description: 'Log of tool calls made'
+        required: [answer]

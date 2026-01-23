@@ -45,6 +45,12 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.17",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.211.0",
+    "@opentelemetry/resources": "^2.5.0",
+    "@opentelemetry/sdk-trace-base": "^2.5.0",
+    "@opentelemetry/sdk-trace-node": "^2.5.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "catalog:",
     "@types/yargs": "^17.0.35",
@@ -52,6 +58,7 @@
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",
+    "promptfoo": "^0.120.17",
     "tsup": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

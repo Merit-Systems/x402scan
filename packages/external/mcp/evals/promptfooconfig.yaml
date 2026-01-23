@@ -1,0 +1,164 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: 'Claude Agent SDK Multi-Model Evaluation'
+
+# Test Matrix Overview:
+# - 3 Provider Configurations: No tools, WebFetch+WebSearch, x402scan MCP
+# - 3 Prompts: Merit funding amount, CEO email, Top 5 auditors
+# - 3 Models: Haiku 4.5, Sonnet 4.5, Opus 4.5
+# - Total Combinations: 27 test cases (3 tests × 9 providers)
+
+# Output results to JSON for full data capture
+outputPath: results.json
+
+# Extension to log tool usage details from Claude session logs
+extensions:
+  - file://extensions/log-tools.js:default
+
+# Providers: 9 total (3 configs × 3 models)
+# All providers use structured output with: answer, sources, tool_call_log
+providers:
+  # No tools - baseline (3 models)
+  - file://providers/no-tools.yaml
+  # Web tools - WebFetch + WebSearch (3 models)
+  - file://providers/web-tools.yaml
+  # MCP x402scan server (3 models)
+  - file://providers/mcp-x402.yaml
+
+# Default test configuration applied to all test cases
+defaultTest:
+  options:
+    provider: anthropic:messages:claude-sonnet-4-5-20250929
+  assert:
+    # Validate structured output format
+    - type: javascript
+      value: |
+        const isObject = typeof output === 'object' && output !== null;
+        const hasAnswer = isObject && 'answer' in output;
+        return {
+          pass: hasAnswer,
+          score: hasAnswer ? 1 : 0,
+          reason: hasAnswer ? 'Valid structured output' : 'Missing answer field in output'
+        };
+      metric: structured_output_valid
+
+    # Track sources provided
+    - type: javascript
+      value: |
+        const sources = output?.sources || [];
+        const hasSources = Array.isArray(sources) && sources.length > 0;
+        return {
+          pass: true,
+          score: hasSources ? Math.min(sources.length / 3, 1) : 0,
+          reason: hasSources ? `${sources.length} sources provided` : 'No sources provided',
+          namedScores: { source_count: sources.length }
+        };
+      metric: sources_provided
+
+    # Track self-reported tool calls
+    - type: javascript
+      value: |
+        const toolLog = output?.tool_call_log || [];
+        const hasToolLog = Array.isArray(toolLog) && toolLog.length > 0;
+        const successCount = toolLog.filter(t => t.success).length;
+        return {
+          pass: true,
+          score: hasToolLog ? 1 : 0,
+          reason: hasToolLog ? `${toolLog.length} tool calls logged (${successCount} successful)` : 'No tool calls logged',
+          namedScores: { 
+            reported_tool_calls: toolLog.length,
+            reported_successful_calls: successCount
+          }
+        };
+      metric: tool_call_log
+
+# Single prompt that uses a variable - tests define the actual prompt text
+prompts:
+  - '{{prompt}}'
+
+# Tests with inline prompts - each test has its prompt and specific assertions
+tests:
+  # Test 1: Merit Systems funding amount
+  - description: 'Merit Systems Funding Amount'
+    vars:
+      prompt: 'Find and output the total amount Merit Systems has raised, in dollars (full number, no commas)'
+    assert:
+      - type: javascript
+        value: |
+          // Extract answer from structured output
+          let answer = output?.answer;
+          // If answer is a string, try to extract the number
+          if (typeof answer === 'string') {
+            const numMatch = answer.match(/\d{7,}/);
+            answer = numMatch ? parseInt(numMatch[0].replace(/,/g, '')) : null;
+          }
+          const isCorrect = answer === 10000000;
+          return {
+            pass: isCorrect,
+            score: isCorrect ? 1 : 0,
+            reason: isCorrect ? `Correct: ${answer}` : `Expected 10000000, got ${answer}`
+          };
+        metric: answer_accuracy
+
+  # Test 2: CEO Email
+  - description: 'Merit Systems CEO Email'
+    vars:
+      prompt: 'Find and return the email of the CEO of merit systems'
+    assert:
+      - type: javascript
+        value: |
+          const answer = output?.answer || '';
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+          const emailRegex = /[\w.-]+@[\w.-]+\.\w{2,}/g;
+          const emails = text.match(emailRegex) || [];
+          return {
+            pass: emails.length > 0,
+            score: emails.length > 0 ? 1 : 0,
+            reason: emails.length > 0 ? `Found email: ${emails[0]}` : 'No valid email found'
+          };
+        metric: email_found
+      - type: javascript
+        value: |
+          const answer = output?.answer || '';
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+          const hasCeoContext = /ceo|chief executive|founder|co-founder|sam/i.test(text);
+          return {
+            pass: true,
+            score: hasCeoContext ? 1 : 0,
+            reason: hasCeoContext ? 'Response identifies CEO' : 'Response does not identify CEO'
+          };
+        metric: ceo_identified
+
+  # Test 3: Top Smart Contract Auditors
+  - description: 'Top Smart Contract Auditors'
+    vars:
+      prompt: 'Find and return the top 5 best smart contract auditors and give me their twitter handles'
+    assert:
+      - type: javascript
+        value: |
+          const answer = output?.answer;
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer || '');
+          const handles = text.match(/@[A-Za-z0-9_]{1,15}/g) || [];
+          const uniqueHandles = [...new Set(handles)];
+          const hasAtLeast5 = uniqueHandles.length >= 5;
+          return {
+            pass: hasAtLeast5,
+            score: Math.min(uniqueHandles.length / 5, 1),
+            reason: `Found ${uniqueHandles.length} Twitter handles`
+          };
+        metric: twitter_handles_count
+      - type: javascript
+        value: |
+          const answer = output?.answer;
+          const text = (typeof answer === 'string' ? answer : JSON.stringify(answer || '')).toLowerCase();
+          const knownAuditors = [
+            'trail of bits', 'trailofbits', 'openzeppelin', 'consensys', 'certik',
+            'spearbit', 'code4rena', 'sherlock', 'halborn', 'quantstamp',
+            'chainsecurity', 'slowmist', 'peckshield', 'mixbytes', 'cyfrin'
+          ];
+          const foundAuditors = knownAuditors.filter(a => text.includes(a));
+          return {
+            pass: foundAuditors.length >= 3,
+            score: Math.min(foundAuditors.length / 5, 1),
+            reason: `Found ${foundAuditors.length} known reputable auditors`
+          };
+        metric: auditor_quality
