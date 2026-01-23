@@ -3,7 +3,6 @@ import z from 'zod';
 import { err, ok } from '@x402scan/neverthrow';
 
 import type { BaseParseError } from './types';
-import type { BaseError, Error } from '@x402scan/neverthrow/types';
 
 const type = 'json';
 
@@ -24,10 +23,4 @@ export const safeParse = <T>(
     });
   }
   return ok(parseResult.data);
-};
-
-export const isParseError = (
-  error: Error<BaseError>
-): error is Error<BaseParseError> => {
-  return error.type === type;
 };

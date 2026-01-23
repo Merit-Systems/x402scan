@@ -1,6 +1,7 @@
 import * as fs from 'fs/promises';
+import { existsSync } from 'fs';
 
-import { err, resultFromPromise } from '@x402scan/neverthrow';
+import { err, ok, resultFromPromise } from '@x402scan/neverthrow';
 
 import type { BaseFileSystemError } from './types';
 
@@ -39,8 +40,13 @@ export const safeChmod = (surface: string, path: string, mode: number) =>
     message: 'Failed to chmod file',
   }));
 
-export const safeFileExists = (surface: string, path: string) =>
-  fsResultFromPromise(surface, fs.access(path, fs.constants.F_OK), () => ({
+export const safeFileExists = (surface: string, path: string) => {
+  const fileExists = existsSync(path);
+  if (fileExists) {
+    return ok(true);
+  }
+  return err(errorType, surface, {
     cause: 'file_not_found',
     message: 'File not found',
-  }));
+  });
+};

@@ -1,6 +1,5 @@
 import { err, resultFromThrowable } from '@x402scan/neverthrow';
 
-import type { BaseError, Error } from '@x402scan/neverthrow/types';
 import type { BaseJsonError, JsonObject } from './types';
 
 const type = 'json';
@@ -31,10 +30,4 @@ export const safeParseJson = (surface: string, value: string) => {
       message: e instanceof Error ? e.message : 'Could not parse JSON',
     })
   );
-};
-
-export const isJsonError = (
-  error: Error<BaseError>
-): error is Error<BaseJsonError> => {
-  return error.type === type;
 };

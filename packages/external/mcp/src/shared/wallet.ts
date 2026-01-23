@@ -11,8 +11,8 @@ import {
   safeReadFile,
   safeWriteFile,
 } from '@/shared/neverthrow/fs';
-import { isJsonError, jsonErr, safeParseJson } from '@/shared/neverthrow/json';
-import { isParseError, safeParse } from '@/shared/neverthrow/parse';
+import { jsonErr, safeParseJson } from '@/shared/neverthrow/json';
+import { safeParse } from '@/shared/neverthrow/parse';
 
 import { log } from './log';
 import { configFile } from './fs';
@@ -42,47 +42,42 @@ export async function getWallet() {
     return ok({ account, isNew: false });
   }
 
-  const readFileResult = await safeReadFile(walletSurface, WALLET_FILE).andThen(
-    data => {
-      const jsonParseResult = safeParseJson(walletSurface, data);
-      if (jsonParseResult.isErr()) {
-        return jsonErr(walletSurface, jsonParseResult.error);
-      }
-      const parseResult = safeParse(
-        walletSurface,
-        storedWalletSchema,
-        jsonParseResult.value
-      );
-      if (parseResult.isErr()) {
-        return parseResult;
-      }
-      const account = privateKeyToAccount(parseResult.value.privateKey);
-      log.info(`Loaded wallet: ${account.address}`);
-      return ok({ account, isNew: false });
+  const readFileResult = await safeReadFile(walletSurface, WALLET_FILE);
+
+  if (!readFileResult.isOk()) {
+    const fileExistsResult = safeFileExists(walletSurface, WALLET_FILE);
+    // file exists but is not readable
+    if (fileExistsResult.isOk()) {
+      return fsErr(walletSurface, {
+        cause: 'file_not_readable',
+        message: `The file exists but is not readable. Fix corrupted state file: ${WALLET_FILE}`,
+      });
     }
-  );
+  }
 
   if (readFileResult.isOk()) {
-    return readFileResult;
-  }
+    const data = readFileResult.value;
+    const jsonParseResult = safeParseJson(walletSurface, data);
 
-  // this happens when the file is found but the data is invalid
-  if (isParseError(readFileResult.error) || isJsonError(readFileResult.error)) {
-    log.error(`Invalid wallet data: ${readFileResult.error.message}`);
-    return readFileResult;
-  }
+    // file exists but is not valid JSON
+    if (jsonParseResult.isErr()) {
+      return jsonErr(walletSurface, jsonParseResult.error);
+    }
 
-  const checkFileExistsResult = await safeFileExists(
-    walletSurface,
-    WALLET_FILE
-  );
+    const parseResult = safeParse(
+      walletSurface,
+      storedWalletSchema,
+      jsonParseResult.value
+    );
 
-  // this happens when the file cant be read but it does exist
-  if (checkFileExistsResult.isOk()) {
-    return fsErr(walletSurface, {
-      cause: 'file_not_readable',
-      message: 'The file exists but is not readable',
-    });
+    // file has valid JSON but is not a valid wallet configuration
+    if (parseResult.isErr()) {
+      return parseResult;
+    }
+
+    const account = privateKeyToAccount(parseResult.value.privateKey);
+    log.info(`Loaded wallet: ${account.address}`);
+    return ok({ account, isNew: false });
   }
 
   // Generate new
