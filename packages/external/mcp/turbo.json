@@ -9,7 +9,8 @@
         "APPDATA",
         "CODEX_HOME",
         "XDG_CONFIG_HOME",
-        "INVITE_CODE"
+        "INVITE_CODE",
+        "CLAUDECODE"
       ]
     },
     "dev": {
@@ -19,7 +20,8 @@
         "APPDATA",
         "CODEX_HOME",
         "XDG_CONFIG_HOME",
-        "INVITE_CODE"
+        "INVITE_CODE",
+        "CLAUDECODE"
       ]
     },
     "build:mcpb": {
@@ -30,7 +32,8 @@
         "APPDATA",
         "CODEX_HOME",
         "XDG_CONFIG_HOME",
-        "INVITE_CODE"
+        "INVITE_CODE",
+        "CLAUDECODE"
       ]
     }
   }
