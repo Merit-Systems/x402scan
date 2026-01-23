@@ -15,6 +15,9 @@ import { Chain } from '@/types/chain';
 import { apiErr, toNextResponse } from '@/app/api/_lib/result';
 import { serverOk } from '@/lib/server-result';
 
+import { signozLogInfo } from '@/lib/telemetry/signoz/logs';
+import { BALANCE_REQUEST } from '@/lib/telemetry/signoz/types';
+
 import type { Address } from 'viem';
 
 export async function GET(
@@ -32,6 +35,7 @@ export async function GET(
       })
     );
   }
+
   const result = await rpcResultFromPromise(
     'balance',
     baseRpc.readContract({
@@ -40,16 +44,23 @@ export async function GET(
       functionName: 'balanceOf',
       args: [parseResult.data],
     }),
-    error => ({
+    (error: unknown) => ({
       cause: 'bad_gateway',
       message: `RPC balanceOf call failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
     })
-  ).andThen(balance =>
-    serverOk({
-      chain: base.id,
-      balance: convertTokenAmount(balance),
+  )
+    .andThen(balance => {
+      return serverOk({
+        chain: base.id,
+        balance: convertTokenAmount(balance),
+      });
     })
-  );
+    .andTee(result => {
+      signozLogInfo(BALANCE_REQUEST, {
+        address: parseResult.data,
+        balance: result.balance.toString(),
+      });
+    });
 
   return toNextResponse(result);
 }
