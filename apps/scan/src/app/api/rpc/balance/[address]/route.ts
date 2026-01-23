@@ -8,7 +8,8 @@ import {
 import { formatUnits } from 'viem';
 import { base } from 'wagmi/chains';
 import { evmAddressSchema } from '@/lib/schemas';
-import { signozLogInfo } from '@/lib/telemetry/signoz-logs';
+import { signozLogInfo } from '@/lib/telemetry/signoz/logs';
+import { BALANCE_REQUEST } from '@/lib/telemetry/signoz/types';
 
 export async function GET(
   _: Request,
@@ -25,7 +26,7 @@ export async function GET(
 
   return result.match(
     balance => {
-      signozLogInfo('balance_request', {
+      signozLogInfo(BALANCE_REQUEST, {
         address: parsedAddress.data,
         balance: balance.toString(),
       });

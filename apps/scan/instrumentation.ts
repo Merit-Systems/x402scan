@@ -24,8 +24,7 @@ export async function register() {
         const { ATTR_SERVICE_NAME } =
           await import('@opentelemetry/semantic-conventions');
 
-        const serviceName =
-          process.env.OTEL_SERVICE_NAME ?? 'x402scan-scan-api';
+        const serviceName = getServiceName();
 
         const loggerProvider = new LoggerProvider({
           resource: resourceFromAttributes({
@@ -54,4 +53,21 @@ export async function register() {
       projectApiKey: process.env.LMNR_PROJECT_API_KEY,
     });
   }
+}
+
+function getServiceName(): string {
+  let serviceName = process.env.OTEL_SERVICE_NAME ?? 'x402scan-scan-api';
+
+  if (
+    process.env.NODE_ENV === 'production' ||
+    process.env.VERCEL_ENV === 'production'
+  ) {
+    serviceName = `${serviceName}-prod`;
+  } else if (process.env.VERCEL_ENV === 'preview') {
+    serviceName = `${serviceName}-preview`;
+  } else {
+    serviceName = `${serviceName}-dev`;
+  }
+
+  return serviceName;
 }
