@@ -1,6 +1,7 @@
 import type { Address } from 'viem';
 import { getBaseUrl } from './utils';
 import { z } from 'zod';
+import type { GlobalFlags } from '@/types';
 
 const balanceApiResponseSchema = z.object({
   address: z.string(),
@@ -9,17 +10,11 @@ const balanceApiResponseSchema = z.object({
   rawBalance: z.string(),
 });
 
-interface GetUSDCBalanceProps {
-  address: Address;
-  dev: boolean;
-  network?: string;
-}
-
-export async function getUSDCBalance({
-  address,
-  dev,
-}: GetUSDCBalanceProps): Promise<number> {
-  const url = `${getBaseUrl(dev)}/api/rpc/balance/${address}`;
+export async function getUSDCBalance(
+  address: Address,
+  flags: GlobalFlags
+): Promise<number> {
+  const url = `${getBaseUrl(flags.dev)}/api/rpc/balance/${address}`;
 
   const res = await fetch(url, {
     method: 'GET',

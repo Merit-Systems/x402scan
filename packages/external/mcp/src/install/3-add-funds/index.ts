@@ -20,7 +20,7 @@ export const addFunds = async ({ flags, address, isNew }: AddFundsProps) => {
     log.info('To use paid API tools, you will need USDC in your wallet.');
     await promptDeposit(address, flags);
   } else {
-    const balance = await getUSDCBalance({ address, dev: flags.dev });
+    const balance = await getUSDCBalance(address, flags);
     await wait({
       startText: 'Checking balance...',
       stopText: `Balance: ${chalk.bold(`${balance} USDC`)} `,
