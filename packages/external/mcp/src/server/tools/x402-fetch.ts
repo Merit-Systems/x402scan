@@ -29,7 +29,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
     toolName,
     {
       description:
-        'Fetches an x402-protected resource and handles payment automatically. If the resource is not x402-protected, it will return the raw response.',
+        'Makes an http fetch request. If the request is to an x402-protected resource, it will handle payment automatically.',
       inputSchema: requestSchema,
     },
     async input => {
@@ -42,7 +42,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
       coreClient.onBeforePaymentCreation(async ({ selectedRequirements }) => {
         const amount = tokenStringToNumber(selectedRequirements.amount);
         await checkBalance({
-          surface: 'fetch-x402-resource',
+          surface: toolName,
           server,
           address: account.address,
           amountNeeded: amount,

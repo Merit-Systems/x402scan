@@ -6,13 +6,15 @@ import { mcpSuccessJson, mcpError } from './response';
 import type { RegisterTools } from '@/server/types';
 import { getDepositLink } from '@/shared/utils';
 
+const toolName = 'getWalletInfo';
+
 export const registerWalletTools: RegisterTools = ({
   server,
   account: { address },
   flags,
 }) => {
   server.registerTool(
-    'get_wallet_info',
+    toolName,
     {
       description:
         'Check wallet address and USDC balance. Creates wallet if needed.',
@@ -21,7 +23,7 @@ export const registerWalletTools: RegisterTools = ({
       const balanceResult = await getBalance({
         address,
         flags,
-        surface: 'get-wallet-info',
+        surface: toolName,
       });
 
       if (balanceResult.isErr()) {

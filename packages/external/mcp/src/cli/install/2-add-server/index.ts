@@ -117,9 +117,6 @@ export const addServer = async (client: Clients, globalFlags: GlobalFlags) => {
     if (!existingValue) {
       setNestedValue(rawConfig, clientFileTarget.configKey, {});
     }
-    log.info(
-      `Config loaded successfully: ${JSON.stringify(rawConfig, null, 2)}`
-    );
     if (!globalFlags.yes) {
       await wait({
         startText: `Locating config file`,

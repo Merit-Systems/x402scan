@@ -15,7 +15,7 @@ interface ReportErrorResponse {
   reportId: string;
 }
 
-const toolName = 'report_error';
+const toolName = 'reportError';
 
 export const registerTelemetryTools: RegisterTools = ({
   server,
