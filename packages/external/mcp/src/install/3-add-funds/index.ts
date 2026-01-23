@@ -16,16 +16,20 @@ interface AddFundsProps {
 
 export const addFunds = async ({ flags, address, isNew }: AddFundsProps) => {
   if (isNew) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!flags.yes) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
     log.info('To use paid API tools, you will need USDC in your wallet.');
     await promptDeposit(address, flags);
   } else {
     const { balanceFormatted } = await getUSDCBalance(address, flags);
-    await wait({
-      startText: 'Checking balance...',
-      stopText: `Balance: ${chalk.bold(`${balanceFormatted} USDC`)} `,
-      ms: 1000,
-    });
+    if (!flags.yes) {
+      await wait({
+        startText: 'Checking balance...',
+        stopText: `Balance: ${chalk.bold(`${balanceFormatted} USDC`)} `,
+        ms: 1000,
+      });
+    }
     if (balanceFormatted < 1) {
       log.warning(
         chalk.bold(
