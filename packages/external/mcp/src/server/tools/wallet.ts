@@ -18,18 +18,15 @@ export const registerWalletTools: RegisterTools = ({
         'Check wallet address and USDC balance. Creates wallet if needed.',
     },
     async () => {
-      const { balanceFormatted, balanceRaw } = await getUSDCBalance(
-        address,
-        flags
-      );
+      const { balanceFormatted } = await getUSDCBalance(address, flags);
 
       return mcpSuccess({
         address,
         network: DEFAULT_NETWORK,
         networkName: getChainName(DEFAULT_NETWORK),
-        usdcBalance: balance,
-        balanceFormatted: balance.toString(),
-        isNewWallet: balance === 0,
+        usdcBalance: balanceFormatted,
+        balanceFormatted: balanceFormatted.toString(),
+        isNewWallet: balanceFormatted === 0,
         depositLink: getDepositLink(address, flags),
       });
     }
