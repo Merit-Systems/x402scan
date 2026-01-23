@@ -29,10 +29,19 @@ export async function getUSDCBalance(
     );
   }
 
-  const result = balanceApiResponseSchema.safeParse(await res.json());
+  let json: unknown;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error(
+      `Failed to parse balance API response as JSON (${res.status} ${res.statusText})`
+    );
+  }
+
+  const result = balanceApiResponseSchema.safeParse(json);
   if (!result.success) {
     throw new Error(
-      `Balance API request failed (${res.status} ${res.statusText})`
+      `Failed to safeParse balance API response (${res.status} ${res.statusText})`
     );
   }
   return result.data.balance;
