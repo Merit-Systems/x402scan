@@ -23,6 +23,8 @@ providers:
   - file://providers/web-tools.yaml
   # MCP x402scan server (3 models)
   - file://providers/mcp-x402.yaml
+  # All tools - x402scan MCP + WebTools (3 models)
+  - file://providers/all-tools.yaml
 
 # Default test configuration applied to all test cases
 defaultTest:
