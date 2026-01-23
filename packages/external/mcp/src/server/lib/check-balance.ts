@@ -20,19 +20,19 @@ export const checkBalance = async ({
   message,
   flags,
 }: CheckBalanceProps) => {
-  const { balance } = await getUSDCBalance(address, flags);
+  const { balanceFormatted } = await getUSDCBalance(address, flags);
 
-  if (balance < amountNeeded) {
+  if (balanceFormatted < amountNeeded) {
     const capabilities = server.server.getClientCapabilities();
     if (!capabilities?.elicitation) {
       throw new Error(
-        `${message(balance)}\n\nYou can deposit USDC at ${getDepositLink(address, flags)}`
+        `${message(balanceFormatted)}\n\nYou can deposit USDC at ${getDepositLink(address, flags)}`
       );
     }
 
     const result = await server.server.elicitInput({
       mode: 'form',
-      message: message(balance),
+      message: message(balanceFormatted),
       requestedSchema: {
         type: 'object',
         properties: {},
@@ -44,5 +44,5 @@ export const checkBalance = async ({
     }
   }
 
-  return balance;
+  return balanceFormatted;
 };

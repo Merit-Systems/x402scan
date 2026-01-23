@@ -13,7 +13,7 @@ const balanceApiResponseSchema = z.object({
 export async function getUSDCBalance(
   address: Address,
   flags: GlobalFlags
-): Promise<{ balance: number; rawBalance: string }> {
+): Promise<{ balanceFormatted: number; balanceRaw: string }> {
   const url = `${getBaseUrl(flags.dev)}/api/rpc/balance/${address}`;
 
   const res = await fetch(url, {
@@ -45,7 +45,7 @@ export async function getUSDCBalance(
     );
   }
   return {
-    balance: result.data.balance,
-    rawBalance: result.data.rawBalance,
+    balanceFormatted: result.data.balance,
+    balanceRaw: result.data.rawBalance,
   };
 }
