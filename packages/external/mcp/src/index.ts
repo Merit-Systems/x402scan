@@ -5,6 +5,7 @@ import { hideBin } from 'yargs/helpers';
 import { Clients } from './install/clients';
 
 const isClaudeCode = Boolean(process.env.CLAUDECODE);
+const defaultYes = isClaudeCode || Boolean(process.env.CI);
 
 void yargs(hideBin(process.argv))
   .scriptName('@x402scan/mcp')
@@ -22,7 +23,7 @@ void yargs(hideBin(process.argv))
     alias: 'y',
     type: 'boolean',
     description: 'Yes to all prompts',
-    default: isClaudeCode ? true : undefined,
+    default: defaultYes ? true : undefined,
   })
   .command(
     '$0',

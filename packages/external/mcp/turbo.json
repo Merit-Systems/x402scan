@@ -10,7 +10,8 @@
         "CODEX_HOME",
         "XDG_CONFIG_HOME",
         "INVITE_CODE",
-        "CLAUDECODE"
+        "CLAUDECODE",
+        "CI"
       ]
     },
     "dev": {
@@ -21,7 +22,8 @@
         "CODEX_HOME",
         "XDG_CONFIG_HOME",
         "INVITE_CODE",
-        "CLAUDECODE"
+        "CLAUDECODE",
+        "CI"
       ]
     },
     "build:mcpb": {
@@ -33,7 +35,8 @@
         "CODEX_HOME",
         "XDG_CONFIG_HOME",
         "INVITE_CODE",
-        "CLAUDECODE"
+        "CLAUDECODE",
+        "CI"
       ]
     }
   }
