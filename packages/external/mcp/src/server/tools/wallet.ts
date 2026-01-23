@@ -8,6 +8,7 @@ import type { RegisterTools } from '@/server/types';
 export const registerWalletTools: RegisterTools = ({
   server,
   account: { address },
+  flags,
 }) => {
   server.registerTool(
     'check_balance',
@@ -18,6 +19,7 @@ export const registerWalletTools: RegisterTools = ({
     async () => {
       const balance = await getUSDCBalance({
         address,
+        dev: flags.dev,
       });
 
       return mcpSuccess({
