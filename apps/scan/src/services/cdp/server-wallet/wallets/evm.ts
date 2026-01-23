@@ -1,14 +1,14 @@
-import { getBalance, readContract } from 'wagmi/actions';
+import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
+import { getBalance, readContract } from 'viem/actions';
 import { toAccount } from 'viem/accounts';
 
 import { cdpClient } from '../client';
 
-import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
-import { convertTokenAmount } from '@/lib/token';
+import { baseRpc } from '@/services/rpc/base';
 
 import { cdpResultFromPromise } from '../../result';
 
-import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
+import { convertTokenAmount } from '@/lib/token';
 
 import type { EvmChain } from '@/types/chain';
 import type { Address } from 'viem';
@@ -23,8 +23,6 @@ export const evmServerWallet =
 
     const getAddress = async () => (await getAccount()).address;
 
-    const wagmiConfig = createWagmiConfig();
-
     return {
       address: () =>
         cdpResultFromPromise('getAddress', getAddress(), e => ({
@@ -37,11 +35,11 @@ export const evmServerWallet =
           'getNativeTokenBalance',
           getAddress()
             .then(address =>
-              getBalance(wagmiConfig, {
+              getBalance(baseRpc, {
                 address,
               })
             )
-            .then(result => parseFloat(formatEther(result.value))),
+            .then(result => parseFloat(formatEther(result))),
           e => ({
             cause: 'bad_gateway',
             message:
@@ -55,7 +53,7 @@ export const evmServerWallet =
           'getTokenBalance',
           getAddress()
             .then(address =>
-              readContract(wagmiConfig, {
+              readContract(baseRpc, {
                 abi: erc20Abi,
                 address: token.address as Address,
                 args: [address],
