@@ -1,4 +1,8 @@
-import { resultFromPromise, resultFromThrowable } from '@x402scan/neverthrow';
+import {
+  err,
+  resultFromPromise,
+  resultFromThrowable,
+} from '@x402scan/neverthrow';
 import { createSIWxPayload } from '@x402scan/siwx';
 
 import type { BaseX402Error } from './types';
@@ -8,6 +12,9 @@ import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
 import type { PrivateKeyAccount } from 'viem';
 
 const errorType = 'x402';
+
+export const x402Err = (cause: string, error: BaseX402Error) =>
+  err(errorType, cause, error);
 
 const x402ResultFromPromise = <T>(
   surface: string,

@@ -14,6 +14,7 @@ import {
   safeCreatePaymentPayload,
   safeGetPaymentRequired,
   safeGetPaymentSettlement,
+  x402Err,
 } from '@/shared/neverthrow/x402';
 
 import type { RegisterTools } from '@/server/types';
@@ -139,7 +140,10 @@ function safeWrapFetchWithPayment(client: x402HTTPClient) {
       clonedRequest.headers.has('PAYMENT-SIGNATURE') ||
       clonedRequest.headers.has('X-PAYMENT')
     ) {
-      throw new Error('Payment already attempted');
+      return x402Err(toolName, {
+        cause: 'payment_already_attempted',
+        message: 'Payment already attempted',
+      });
     }
 
     // Add payment headers to cloned request

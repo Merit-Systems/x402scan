@@ -5,6 +5,7 @@ type X402ErrorType =
   | 'create_payment_payload'
   | 'encode_payment_signature_header'
   | 'get_payment_settlement'
-  | 'create_siwx_payload';
+  | 'create_siwx_payload'
+  | 'payment_already_attempted';
 
 export type BaseX402Error = BaseError<X402ErrorType>;
