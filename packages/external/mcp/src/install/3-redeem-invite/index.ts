@@ -6,24 +6,39 @@ import { wait } from '@/lib/wait';
 import { redeemInviteCode as redeemInviteCodeLib } from '@/lib/redeem-invite';
 
 import type { RedeemInviteProps } from '@/lib/redeem-invite';
+import type { GlobalFlags } from '@/types';
 
-export const redeemInviteCode = async (props: RedeemInviteProps) => {
+export const redeemInviteCode = async (
+  props: RedeemInviteProps,
+  flags: GlobalFlags
+) => {
   const s = spinner();
-  s.start('Redeeming invite code...');
+
+  if (!flags.yes) {
+    s.start('Redeeming invite code...');
+  }
 
   const result = await redeemInviteCodeLib(props);
 
   return result.match(
     async ({ data }) => {
-      s.stop('Invite code redeemed successfully!');
+      if (!flags.yes) {
+        s.stop('Invite code redeemed successfully!');
 
-      await wait({
-        startText: 'Processing...',
-        stopText: chalk.green(
-          `${chalk.bold(data.amount)} USDC has been sent to your wallet!`
-        ),
-        ms: 1000,
-      });
+        await wait({
+          startText: 'Processing...',
+          stopText: chalk.green(
+            `${chalk.bold(data.amount)} USDC has been sent to your wallet!`
+          ),
+          ms: 1000,
+        });
+      } else {
+        log.success(
+          chalk.green(
+            `${chalk.bold(data.amount)} USDC has been sent to your wallet!`
+          )
+        );
+      }
 
       log.info(
         chalk.dim(`Transaction: https://basescan.org/tx/${data.txHash}`)
@@ -32,7 +47,9 @@ export const redeemInviteCode = async (props: RedeemInviteProps) => {
       return true;
     },
     error => {
-      s.stop('Invite code redemption failed');
+      if (!flags.yes) {
+        s.stop('Invite code redemption failed');
+      }
       log.warning(
         chalk.yellow(`Failed to redeem invite code: ${error?.message}`)
       );
