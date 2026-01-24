@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.0.7-beta.0
+
+### Patch Changes
+
+- 2a16bfa: test-beta
+
 ## 0.0.6
 
 ### Patch Changes
