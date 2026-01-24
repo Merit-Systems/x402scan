@@ -11,9 +11,10 @@ export default defineConfig([
     entry: ['src/index.ts'],
     format: ['esm'],
     dts: true,
+    sourcemap: true,
     clean: true,
     shims: true,
-    noExternal: ['@x402scan/neverthrow', '@x402scan/siwx'],
+    noExternal: ['@x402scan/neverthrow'],
     outDir: 'dist/esm',
     platform: 'node',
     define: {

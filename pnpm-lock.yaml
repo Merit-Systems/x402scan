@@ -797,6 +797,9 @@ importers:
       '@x402/evm':
         specifier: catalog:x402
         version: 2.2.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@x402scan/siwx':
+        specifier: workspace:*
+        version: link:../siwx
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
@@ -837,9 +840,6 @@ importers:
       '@x402scan/neverthrow':
         specifier: workspace:*
         version: link:../../internal/neverthrow
-      '@x402scan/siwx':
-        specifier: workspace:*
-        version: link:../siwx
       '@x402scan/typescript-config':
         specifier: workspace:*
         version: link:../../internal/configurations/typescript

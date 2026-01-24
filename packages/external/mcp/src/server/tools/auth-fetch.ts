@@ -1,5 +1,5 @@
 import { x402Client, x402HTTPClient } from '@x402/core/client';
-import { encodeSIWxHeader } from '../../../../siwx/dist';
+import { encodeSIWxHeader } from '@x402scan/siwx';
 
 import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
 import {
@@ -16,7 +16,7 @@ import {
 
 import { requestSchema, buildRequest } from './lib/request';
 
-import type { SIWxExtensionInfo } from '../../../../siwx/dist/types';
+import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
 import type { RegisterTools } from '@/server/types';
 import { getSiwxExtension } from '../lib/x402-extensions';
 
