@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Copyable } from '@/components/ui/copyable';
 import { formatCompactAgo, formatCurrency } from '@/lib/utils';
 import { formatUnits } from 'viem';
 
@@ -123,26 +124,21 @@ export const createColumns = (
       const firstAddress = uniqueAddresses[0];
       if (uniqueAddresses.length === 1 && firstAddress) {
         return (
-          <code
-            className="text-xs font-mono cursor-pointer hover:bg-muted px-1 rounded"
-            title={firstAddress}
-            onClick={() => void navigator.clipboard.writeText(firstAddress)}
-          >
-            {truncateAddress(firstAddress)}
-          </code>
+          <Copyable value={firstAddress} toastMessage="Address copied">
+            <code className="text-xs font-mono cursor-pointer hover:bg-muted px-1 rounded">
+              {truncateAddress(firstAddress)}
+            </code>
+          </Copyable>
         );
       }
       return (
         <div className="text-xs space-y-0.5">
           {uniqueAddresses.slice(0, 2).map(addr => (
-            <code
-              key={addr}
-              className="block font-mono cursor-pointer hover:bg-muted px-1 rounded"
-              title={addr}
-              onClick={() => void navigator.clipboard.writeText(addr)}
-            >
-              {truncateAddress(addr)}
-            </code>
+            <Copyable key={addr} value={addr} toastMessage="Address copied">
+              <code className="block font-mono cursor-pointer hover:bg-muted px-1 rounded">
+                {truncateAddress(addr)}
+              </code>
+            </Copyable>
           ))}
           {uniqueAddresses.length > 2 && (
             <span className="text-muted-foreground">
