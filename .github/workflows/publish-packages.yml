@@ -35,7 +35,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --filter "./packages/external/**"
+        run: pnpm install --frozen-lockfile --filter "./packages/**"
 
       - name: Build external packages
         run: pnpm build:packages
