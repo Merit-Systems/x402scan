@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.0.7-beta.3
+
+### Patch Changes
+
+- bd38b4c: transpile internal dependencies
+
 ## 0.0.7-beta.2
 
 ### Patch Changes
