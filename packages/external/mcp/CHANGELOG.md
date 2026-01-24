@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.0.6
+
+### Patch Changes
+
+- 154c19a: balance rpc and yes bypass
+
 ## 0.0.5
 
 ### Patch Changes
