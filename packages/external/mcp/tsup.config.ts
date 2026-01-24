@@ -14,8 +14,8 @@ export default defineConfig([
     sourcemap: true,
     clean: true,
     minify: false,
-    splitting: false,
     treeshake: true,
+    noExternal: ['@x402scan/neverthrow', '@x402scan/siwx'],
     outDir: 'dist/esm',
     define: {
       __MCP_VERSION__: JSON.stringify(pkg.version),
