@@ -31,10 +31,7 @@ export const listInviteCodesSchema = z
   .object({
     status: statusEnum.optional(),
     search: z.string().optional(),
-    orderBy: z
-      .enum(['createdAt', 'status'])
-      .optional()
-      .default('createdAt'),
+    orderBy: z.enum(['createdAt', 'status']).optional().default('createdAt'),
     orderDir: z.enum(['asc', 'desc']).optional().default('desc'),
     limit: z.number().int().min(1).max(100).default(100),
     offset: z.number().int().min(0).default(0),

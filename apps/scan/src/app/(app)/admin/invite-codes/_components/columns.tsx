@@ -1,6 +1,13 @@
 'use client';
 
-import { Calendar, DollarSign, Hash, MoreHorizontal, User, Wallet } from 'lucide-react';
+import {
+  Calendar,
+  DollarSign,
+  Hash,
+  MoreHorizontal,
+  User,
+  Wallet,
+} from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
