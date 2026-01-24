@@ -21,6 +21,7 @@
     "@x402scan/siwx": "1.0.0"
   },
   "changesets": [
+    "fair-points-guess",
     "fancy-bobcats-melt",
     "ninety-nights-jog",
     "polite-ties-find",
