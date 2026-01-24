@@ -11,8 +11,8 @@ import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
 import type { Route } from 'next';
 
-interface Props<T extends string> {
-  href: Route<T>;
+interface Props {
+  href: string;
   image: string | null;
   name: string;
   Fallback: LucideIcon | null;
@@ -23,7 +23,7 @@ interface Props<T extends string> {
   className?: string;
 }
 
-export const Breadcrumb = <T extends string>({
+export const Breadcrumb = ({
   href,
   image,
   name,
@@ -33,10 +33,10 @@ export const Breadcrumb = <T extends string>({
   mobileHideText = false,
   disabled = false,
   className,
-}: Props<T>) => {
+}: Props) => {
   return (
     <Link
-      href={href}
+      href={href as Route}
       className={cn(disabled && 'pointer-events-none', className)}
       aria-disabled={disabled}
     >
