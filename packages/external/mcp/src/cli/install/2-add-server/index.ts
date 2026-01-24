@@ -4,8 +4,9 @@ import chalk from 'chalk';
 
 import { log as clackLog, confirm, outro, stream } from '@clack/prompts';
 
-import { safeWriteFile } from '@/shared/neverthrow/fs';
+import { err } from '@x402scan/neverthrow';
 
+import { safeWriteFile } from '@/shared/neverthrow/fs';
 import { log } from '@/shared/log';
 
 import { clientMetadata, Clients } from '../clients';
@@ -19,11 +20,12 @@ import {
   setNestedValue,
 } from './lib';
 
+import { DIST_TAG } from '@/server/lib/version';
+
 import { wait } from '@/cli/lib/wait';
 
 import type { ClientConfigObject } from './types';
 import type { GlobalFlags } from '@/types';
-import { err } from '@x402scan/neverthrow';
 
 const getMcpConfig = (globalFlags: GlobalFlags) => {
   if (globalFlags.dev) {
@@ -36,7 +38,7 @@ const getMcpConfig = (globalFlags: GlobalFlags) => {
   return {
     serverName: 'x402',
     command: 'npx',
-    args: ['-y', '@x402scan/mcp@latest'],
+    args: ['-y', `@x402scan/mcp@${DIST_TAG}`],
   };
 };
 
