@@ -24,7 +24,9 @@
     "test": "vitest run",
     "knip": "pnpm -w knip --workspace ./packages/external/siwx",
     "format": "pnpm -w format:dir ./packages/external/siwx",
-    "format:check": "pnpm -w format:check:dir ./packages/external/siwx"
+    "format:check": "pnpm -w format:check:dir ./packages/external/siwx",
+    "prepublishOnly": "pnpm build",
+    "publish:check": "pnpm pack --dry-run"
   },
   "dependencies": {
     "@scure/base": "^2.0.0",
