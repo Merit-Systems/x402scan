@@ -1,29 +1,38 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
-import { registerFetchX402ResourceTool } from './tools/fetch-x402-resource';
-import { registerAuthTools } from './tools/auth';
+import { registerFetchX402ResourceTool } from './tools/x402-fetch';
+import { registerAuthTools } from './tools/auth-fetch';
 import { registerWalletTools } from './tools/wallet';
-import { registerCheckX402EndpointTool } from './tools/check-endpoint-schema';
+import { registerCheckX402EndpointTool } from './tools/check-endpoint';
 import { registerRedeemInviteTool } from './tools/redeem-invite';
 import { registerTelemetryTools } from './tools/telemetry';
+import { registerDiscoveryTools } from './tools/discover-resources';
 
 import { registerOrigins } from './resources/origins';
 
-import { log } from '@/lib/log';
-import { getWallet } from '@/lib/wallet';
+import { MCP_VERSION } from './lib/version';
+
+import { log } from '@/shared/log';
+import { getWallet } from '@/shared/wallet';
+import { redeemInviteCode } from '@/shared/redeem-invite';
 
 import type { Command } from '@/types';
-import { registerDiscoveryTools } from './tools/discover-resources';
-import { redeemInviteCode } from '@/lib/redeem-invite';
-import { MCP_VERSION } from './lib/version';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
 
   const { dev, invite } = flags;
 
-  const { account } = await getWallet();
+  const walletResult = await getWallet();
+
+  if (walletResult.isErr()) {
+    log.error(JSON.stringify(walletResult.error, null, 2));
+    console.error(walletResult.error);
+    process.exit(1);
+  }
+
+  const { account } = walletResult.value;
 
   const code = invite ?? process.env.INVITE_CODE;
 
@@ -32,6 +41,7 @@ export const startServer: Command = async flags => {
       code,
       dev,
       address: account.address,
+      surface: 'startServer',
     });
   }
 

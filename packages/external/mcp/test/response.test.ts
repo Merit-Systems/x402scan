@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mcpSuccess, mcpError } from '../src/server/lib/response';
+import { mcpSuccess, mcpError } from '../src/server/tools/lib/response';
 
 describe('mcpSuccess', () => {
   it('wraps data in MCP content format', () => {

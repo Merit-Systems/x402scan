@@ -1,12 +1,11 @@
 import Link from 'next/link';
 
+import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 
-import { Logo } from '@/components/logo';
+import { ClientTypes } from '../../../_components/clients/data';
 
 import { ClientDemosSection } from './section';
-
-import { ClientTypes } from '../../../_components/clients/data';
 
 import type { McpSearchParams } from '../../../_lib/params';
 import type { Route } from 'next';

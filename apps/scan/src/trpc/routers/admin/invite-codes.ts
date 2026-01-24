@@ -66,9 +66,9 @@ export const adminInviteCodesRouter = createTRPCRouter({
       const token = usdc(Chain.BASE);
 
       // Get address first to validate wallet is configured
-      const address = await wallet.address();
+      const addressResult = await wallet.address();
 
-      if (!address) {
+      if (addressResult.isErr()) {
         return {
           configured: false,
           error:
@@ -76,6 +76,8 @@ export const adminInviteCodesRouter = createTRPCRouter({
           chain: Chain.BASE,
         };
       }
+
+      const address = addressResult.value;
 
       // Fetch balances directly using the address we already have
       const client = createPublicClient({
