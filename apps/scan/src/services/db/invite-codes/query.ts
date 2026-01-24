@@ -49,8 +49,13 @@ export const listMcpUsersSchema = z
 export const listMcpUsers = async (
   options: z.infer<typeof listMcpUsersSchema>
 ) => {
-  const { search, limit = 50, offset = 0, sortBy, sortDesc = true } =
-    options ?? {};
+  const {
+    search,
+    limit = 50,
+    offset = 0,
+    sortBy,
+    sortDesc = true,
+  } = options ?? {};
 
   // Determine orderBy based on sortBy param (only for DB-level sortable fields)
   const getOrderBy = () => {
