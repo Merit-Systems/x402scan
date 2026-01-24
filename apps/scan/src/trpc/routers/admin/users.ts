@@ -92,7 +92,7 @@ export const adminUsersRouter = createTRPCRouter({
         await Promise.all([
           readContract(client, {
             abi: erc20Abi,
-            address: token.address,
+            address: token.address as `0x${string}`,
             args: [wallet],
             functionName: 'balanceOf',
           }),

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - beta
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -39,8 +40,21 @@ jobs:
       - name: Build external packages
         run: pnpm build:packages
 
-      - name: Build MCPB bundle
-        run: pnpm --filter @x402scan/mcp build:mcpb
+      - name: Ensure prerelease mode on beta branch
+        if: github.ref == 'refs/heads/beta'
+        run: |
+          if [ ! -f .changeset/pre.json ]; then
+            echo "❌ Beta branch must be in prerelease mode (pre.json missing)"
+            exit 1
+          fi
+
+      - name: Ensure main is NOT in prerelease mode
+        if: github.ref == 'refs/heads/main'
+        run: |
+          if [ -f .changeset/pre.json ]; then
+            echo "❌ Main branch cannot be in prerelease mode"
+            exit 1
+          fi
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets

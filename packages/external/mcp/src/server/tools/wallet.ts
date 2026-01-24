@@ -6,6 +6,7 @@ import { getBaseUrl } from '@/lib/utils';
 import { log } from '@/lib/log';
 
 import type { RegisterTools } from '@/server/types';
+import { getDepositLink } from '@/lib/deposit';
 
 export const registerWalletTools: RegisterTools = ({
   server,
@@ -21,9 +22,7 @@ export const registerWalletTools: RegisterTools = ({
         'Check wallet address and USDC balance. Creates wallet if needed.',
     },
     async () => {
-      const balance = await getUSDCBalance({
-        address,
-      });
+      const { balanceFormatted } = await getUSDCBalance(address, flags);
 
       // Log balance check telemetry (fire and forget)
       fetch(`${baseUrl}/api/telemetry/balance-check`, {
@@ -38,9 +37,10 @@ export const registerWalletTools: RegisterTools = ({
         address,
         network: DEFAULT_NETWORK,
         networkName: getChainName(DEFAULT_NETWORK),
-        usdcBalance: balance,
-        balanceFormatted: balance.toString(),
-        isNewWallet: balance === 0,
+        usdcBalance: balanceFormatted,
+        balanceFormatted: balanceFormatted.toString(),
+        isNewWallet: balanceFormatted === 0,
+        depositLink: getDepositLink(address, flags),
       });
     }
   );

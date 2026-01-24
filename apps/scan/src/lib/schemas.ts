@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
 
-import type { Address } from 'viem';
+import { getAddress, isAddress, type Address } from 'viem';
 import type { MixedAddress, SolanaAddress } from '@/types/address';
 
 export const ethereumAddressSchema = z
@@ -46,3 +46,8 @@ export const sendUsdcQueryParamsSchema = z.object({
   address: mixedAddressSchema,
   chain: supportedChainSchema,
 });
+
+export const evmAddressSchema = z
+  .string()
+  .refine(isAddress, 'Invalid EVM address')
+  .transform(a => getAddress(a));

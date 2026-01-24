@@ -1,8 +1,8 @@
 import { getWallet } from '@/lib/wallet';
 import { getClient } from './1-get-client';
 import { addServer } from './2-add-server';
-import { addFunds } from './3-add-funds';
-import { redeemInviteCode } from './4-redeem-invite';
+import { redeemInviteCode } from './3-redeem-invite';
+import { addFunds } from './4-add-funds';
 
 import type { Command, GlobalFlags } from '@/types';
 import { intro, outro } from '@clack/prompts';
@@ -25,11 +25,14 @@ export const installMcpServer: Command<InstallFlags> = async flags => {
   await addServer(client, flags);
 
   const inviteRedeemed = flags.invite
-    ? await redeemInviteCode({
-        code: flags.invite,
-        dev: flags.dev,
-        address,
-      })
+    ? await redeemInviteCode(
+        {
+          code: flags.invite,
+          dev: flags.dev,
+          address,
+        },
+        flags
+      )
     : false;
 
   if (!inviteRedeemed) {

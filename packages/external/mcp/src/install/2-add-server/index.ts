@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 import { log as clackLog, confirm, outro, stream } from '@clack/prompts';
 
-import { log } from '@/lib/log';
+import { DIST_TAG } from '@/server/lib/version';
 
 import { clientMetadata, Clients } from '../clients';
 import {
@@ -17,6 +17,7 @@ import {
   setNestedValue,
 } from './lib';
 
+import { log } from '@/lib/log';
 import { wait } from '@/lib/wait';
 
 import type { ClientConfigObject } from './types';
@@ -27,13 +28,13 @@ const getMcpConfig = (globalFlags: GlobalFlags) => {
     return {
       serverName: 'x402',
       command: 'node',
-      args: [`${process.cwd()}/dist/index.js`, '--dev'],
+      args: [`${process.cwd()}/dist/esm/index.js`, '--dev'],
     };
   }
   return {
     serverName: 'x402',
     command: 'npx',
-    args: ['-y', '@x402scan/mcp@latest'],
+    args: ['-y', `@x402scan/mcp@${DIST_TAG}`],
   };
 };
 
@@ -86,11 +87,13 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
       log.info('Config file not found, creating default empty config');
       setNestedValue(config, clientFileTarget.configKey, {});
       log.info('Config created successfully');
-      await wait({
-        startText: 'Locating config file',
-        stopText: `No config found, creating default empty config`,
-        ms: 1000,
-      });
+      if (!globalFlags.yes) {
+        await wait({
+          startText: 'Locating config file',
+          stopText: `No config found, creating default empty config`,
+          ms: 1000,
+        });
+      }
     } else {
       log.info('Config file found, reading config file content');
       const { config: rawConfig, fileContent } =
@@ -107,11 +110,13 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
       log.info(
         `Config loaded successfully: ${JSON.stringify(rawConfig, null, 2)}`
       );
-      await wait({
-        startText: `Locating config file`,
-        stopText: `Config loaded from ${clientFileTarget.path}`,
-        ms: 1000,
-      });
+      if (!globalFlags.yes) {
+        await wait({
+          startText: `Locating config file`,
+          stopText: `Config loaded from ${clientFileTarget.path}`,
+          ms: 1000,
+        });
+      }
     }
 
     const servers = getNestedValue(config, clientFileTarget.configKey);
@@ -158,11 +163,15 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
       };
     }
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!globalFlags.yes) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
 
-    clackLog.step(
-      `The following will be added to ${chalk.bold.underline(clientFileTarget.path)}`
-    );
+    if (!globalFlags.yes) {
+      clackLog.step(
+        `The following will be added to ${chalk.bold.underline(clientFileTarget.path)}`
+      );
+    }
 
     const configStr = formatDiffByFormat(
       {
@@ -173,30 +182,34 @@ export async function addServer(client: Clients, globalFlags: GlobalFlags) {
       clientFileTarget.format
     );
 
-    await stream.message(
-      (async function* () {
-        for (const num of Array.from(
-          { length: configStr.length },
-          (_, i) => i
-        )) {
-          const char = configStr[num]!;
-          yield char;
-          if (!['\n', ' ', '─', '╮', '╭', '╰', '╯', '│'].includes(char)) {
-            await new Promise(resolve => setTimeout(resolve, 5));
-          } else {
-            await new Promise(resolve => setTimeout(resolve, 2));
+    if (!globalFlags.yes) {
+      await stream.message(
+        (async function* () {
+          for (const num of Array.from(
+            { length: configStr.length },
+            (_, i) => i
+          )) {
+            const char = configStr[num]!;
+            yield char;
+            if (!['\n', ' ', '─', '╮', '╭', '╰', '╯', '│'].includes(char)) {
+              await new Promise(resolve => setTimeout(resolve, 5));
+            } else {
+              await new Promise(resolve => setTimeout(resolve, 2));
+            }
           }
-        }
-      })()
-    );
+        })()
+      );
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
 
-    const isConfirmed = await confirm({
-      message: `Would you like to proceed?`,
-      active: 'Install MCP',
-      inactive: 'Cancel',
-    });
+    const isConfirmed = globalFlags.yes
+      ? true
+      : await confirm({
+          message: `Would you like to proceed?`,
+          active: 'Install MCP',
+          inactive: 'Cancel',
+        });
     if (isConfirmed !== true) {
       outro(chalk.bold.red('Installation cancelled'));
       process.exit(0);
