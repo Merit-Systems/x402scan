@@ -1,7 +1,6 @@
 {
   "name": "@x402scan/siwx",
-  "version": "1.0.0",
-  "private": true,
+  "version": "0.0.1",
   "type": "module",
   "exports": {
     ".": {
@@ -23,9 +22,9 @@
     "lint": "eslint . --max-warnings 0",
     "check:types": "tsc --noEmit",
     "test": "vitest run",
-    "knip": "pnpm -w knip --workspace ./packages/internal/siwx",
-    "format": "pnpm -w format:dir ./packages/internal/siwx",
-    "format:check": "pnpm -w format:check:dir ./packages/internal/siwx"
+    "knip": "pnpm -w knip --workspace ./packages/external/siwx",
+    "format": "pnpm -w format:dir ./packages/external/siwx",
+    "format:check": "pnpm -w format:check:dir ./packages/external/siwx"
   },
   "dependencies": {
     "@scure/base": "^2.0.0",
