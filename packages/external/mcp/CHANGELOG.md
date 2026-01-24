@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.0.7-beta.4
+
+### Patch Changes
+
+- b8218c5: use external siwx package
+
 ## 0.0.7-beta.3
 
 ### Patch Changes
