@@ -16,9 +16,12 @@
     "prisma-client-bfff2ef213b3a2f8bed96e55a92d5644e66afcab25ce177991a5c8039418c607": "6.19.0",
     "@x402scan/sync-alerts": "1.0.0",
     "@x402scan/sync-analytics": "1.0.0",
-    "@x402scan/sync-transfers": "1.0.0"
+    "@x402scan/sync-transfers": "1.0.0",
+    "@x402scan/neverthrow": "1.0.0",
+    "@x402scan/siwx": "1.0.0"
   },
   "changesets": [
-    "fancy-bobcats-melt"
+    "fancy-bobcats-melt",
+    "rich-zebras-beg"
   ]
 }

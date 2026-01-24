@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.0.7-beta.1
+
+### Patch Changes
+
+- e1487d3: replace try-catch with neverthrow
+
 ## 0.0.7-beta.0
 
 ### Patch Changes
