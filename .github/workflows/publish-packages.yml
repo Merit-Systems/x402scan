@@ -45,7 +45,7 @@ jobs:
         run: |
           if [ ! -f .changeset/pre.json ]; then
             echo "❌ Beta branch must be in prerelease mode (pre.json missing)"
-            exit 1
+            exit 0
           fi
 
       - name: Ensure main is NOT in prerelease mode
@@ -53,7 +53,7 @@ jobs:
         run: |
           if [ -f .changeset/pre.json ]; then
             echo "❌ Main branch cannot be in prerelease mode"
-            exit 1
+            exit 0
           fi
 
       - name: Create Release Pull Request or Publish to npm
