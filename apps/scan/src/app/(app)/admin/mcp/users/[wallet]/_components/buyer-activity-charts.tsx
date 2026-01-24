@@ -10,9 +10,6 @@ import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
 
-// USDC has 6 decimals - amounts are stored as raw token values
-const USDC_DECIMALS = 6;
-
 interface Props {
   wallet: string;
 }

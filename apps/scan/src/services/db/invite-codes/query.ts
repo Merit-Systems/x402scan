@@ -59,13 +59,13 @@ export const listMcpUsers = async (
 
   // Determine orderBy based on sortBy param (only for DB-level sortable fields)
   const getOrderBy = () => {
-    const direction = sortDesc ? 'desc' : 'asc';
+    const direction: 'asc' | 'desc' = sortDesc ? 'desc' : 'asc';
     switch (sortBy) {
       case 'totalAmount':
-        return { _sum: { amount: direction as 'asc' | 'desc' } };
+        return { _sum: { amount: direction } };
       case 'lastRedemption':
       default:
-        return { _max: { createdAt: direction as 'asc' | 'desc' } };
+        return { _max: { createdAt: direction } };
     }
   };
 

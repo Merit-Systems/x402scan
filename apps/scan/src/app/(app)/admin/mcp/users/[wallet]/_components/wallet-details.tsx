@@ -103,7 +103,7 @@ export const WalletDetails = ({ wallet }: WalletDetailsProps) => {
     );
   }
 
-  if (!data || !data.valid) {
+  if (!data?.valid) {
     return (
       <div className="p-4 border border-destructive/50 bg-destructive/10 rounded-lg">
         <p className="font-medium text-destructive">Invalid Wallet</p>

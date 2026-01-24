@@ -58,11 +58,10 @@ export const adminUsersRouter = createTRPCRouter({
     });
 
     // If sorting by buyer stats field, sort and paginate in memory
-    if (isBuyerStatSort) {
+    if (isBuyerStatSort && sortBy) {
       const sorted = merged.sort((a, b) => {
-        const field = sortBy as 'totalSpent' | 'transactionCount';
-        const aVal = a[field];
-        const bVal = b[field];
+        const aVal = a[sortBy];
+        const bVal = b[sortBy];
         return sortDesc ? bVal - aVal : aVal - bVal;
       });
       return sorted.slice(offset, offset + limit);
@@ -93,11 +92,11 @@ export const adminUsersRouter = createTRPCRouter({
         await Promise.all([
           readContract(client, {
             abi: erc20Abi,
-            address: token.address as `0x${string}`,
-            args: [wallet as `0x${string}`],
+            address: token.address,
+            args: [wallet],
             functionName: 'balanceOf',
           }),
-          getBalance(client, { address: wallet as `0x${string}` }),
+          getBalance(client, { address: wallet }),
           getRedemptionsByWallet(wallet),
           getMcpUserByWallet(wallet),
         ]);
