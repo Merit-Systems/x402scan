@@ -1,0 +1,19 @@
+name: Sync main into beta
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create PR from main → beta
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: 'main'
+          destination_branch: 'beta'
+          pr_title: 'chore: sync main into beta'
+          pr_body: 'Automated sync of main into beta branch.'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
