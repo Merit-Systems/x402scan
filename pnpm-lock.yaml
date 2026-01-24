@@ -839,7 +839,7 @@ importers:
         version: link:../../internal/neverthrow
       '@x402scan/siwx':
         specifier: workspace:*
-        version: link:../../internal/siwx
+        version: link:../siwx
       '@x402scan/typescript-config':
         specifier: workspace:*
         version: link:../../internal/configurations/typescript
@@ -852,6 +852,49 @@ importers:
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(@vitest/ui@3.2.4)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
+
+  packages/external/siwx:
+    dependencies:
+      '@scure/base':
+        specifier: ^2.0.0
+        version: 2.0.0
+      '@x402/core':
+        specifier: catalog:x402
+        version: 2.2.0
+      siwe:
+        specifier: 'catalog:'
+        version: 3.0.0(ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+      tweetnacl:
+        specifier: ^1.0.3
+        version: 1.0.3
+      viem:
+        specifier: 2.44.1
+        version: 2.44.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
+      zod:
+        specifier: 'catalog:'
+        version: 4.3.5
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.19.27
+      '@x402scan/eslint-config':
+        specifier: workspace:*
+        version: link:../../internal/configurations/eslint
+      '@x402scan/typescript-config':
+        specifier: workspace:*
+        version: link:../../internal/configurations/typescript
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      tsup:
+        specifier: 'catalog:'
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1027,49 +1070,6 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
-
-  packages/internal/siwx:
-    dependencies:
-      '@scure/base':
-        specifier: ^2.0.0
-        version: 2.0.0
-      '@x402/core':
-        specifier: catalog:x402
-        version: 2.2.0
-      siwe:
-        specifier: 'catalog:'
-        version: 3.0.0(ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      tweetnacl:
-        specifier: ^1.0.3
-        version: 1.0.3
-      viem:
-        specifier: 2.44.1
-        version: 2.44.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.5)
-      zod:
-        specifier: 'catalog:'
-        version: 4.3.5
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 20.19.27
-      '@x402scan/eslint-config':
-        specifier: workspace:*
-        version: link:../configurations/eslint
-      '@x402scan/typescript-config':
-        specifier: workspace:*
-        version: link:../configurations/typescript
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
-      tsup:
-        specifier: 'catalog:'
-        version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-      vitest:
-        specifier: 'catalog:'
-        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(@vitest/ui@3.2.4)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
 
   sync/alerts:
     dependencies:

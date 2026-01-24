@@ -3,12 +3,12 @@ import {
   resultFromPromise,
   resultFromThrowable,
 } from '@x402scan/neverthrow';
-import { createSIWxPayload } from '@x402scan/siwx';
+import { createSIWxPayload } from '../../../../../siwx/dist';
 
 import type { BaseX402Error } from './types';
 import type { x402HTTPClient } from '@x402/core/http';
 import type { PaymentRequired } from '@x402/core/types';
-import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
+import type { SIWxExtensionInfo } from '../../../../../siwx/dist/types';
 import type { PrivateKeyAccount } from 'viem';
 
 const errorType = 'x402';
