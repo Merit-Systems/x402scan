@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.0.7-beta.2
+
+### Patch Changes
+
+- dec5075: make internal dependencies dev dependencies
+
 ## 0.0.7-beta.1
 
 ### Patch Changes
