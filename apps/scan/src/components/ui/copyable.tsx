@@ -28,7 +28,7 @@ export const Copyable: React.FC<CopyableProps> = ({
 
   return (
     <span
-      onClick={void handleCopy}
+      onClick={handleCopy}
       className={className}
       style={{ cursor: 'pointer' }}
       tabIndex={0}
