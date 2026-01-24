@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 import { log as clackLog, confirm, outro, stream } from '@clack/prompts';
 
-import { log } from '@/lib/log';
+import { DIST_TAG } from '@/server/lib/version';
 
 import { clientMetadata, Clients } from '../clients';
 import {
@@ -17,6 +17,7 @@ import {
   setNestedValue,
 } from './lib';
 
+import { log } from '@/lib/log';
 import { wait } from '@/lib/wait';
 
 import type { ClientConfigObject } from './types';
@@ -33,7 +34,7 @@ const getMcpConfig = (globalFlags: GlobalFlags) => {
   return {
     serverName: 'x402',
     command: 'npx',
-    args: ['-y', '@x402scan/mcp@latest'],
+    args: ['-y', `@x402scan/mcp@${DIST_TAG}`],
   };
 };
 
