@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.0.8-beta.0
+
+### Patch Changes
+
+- 518e8b2: add headers and json parsing
+
 ## 0.0.7
 
 ### Patch Changes
