@@ -9,7 +9,11 @@ import { getRouteDetails } from '../lib/x402/get-route-details';
 
 import type { RegisterTools } from '@/server/types';
 
-export const registerCheckX402EndpointTool: RegisterTools = ({ server, account, sessionId }) => {
+export const registerCheckX402EndpointTool: RegisterTools = ({
+  server,
+  account,
+  sessionId,
+}) => {
   server.registerTool(
     'check_x402_endpoint',
     {

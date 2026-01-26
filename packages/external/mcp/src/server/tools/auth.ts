@@ -12,7 +12,11 @@ import { requestWithHeadersSchema } from '@/server/lib/schemas';
 import type { RegisterTools } from '@/server/types';
 import type { SIWxExtensionInfo } from '../vendor/sign-in-with-x/types';
 
-export const registerAuthTools: RegisterTools = ({ server, account, sessionId }) => {
+export const registerAuthTools: RegisterTools = ({
+  server,
+  account,
+  sessionId,
+}) => {
   server.registerTool(
     'authed_call',
     {
