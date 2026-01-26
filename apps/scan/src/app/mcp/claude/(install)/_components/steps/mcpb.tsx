@@ -28,7 +28,7 @@ export const McpbDisplay: React.FC = () => {
         title="Open x402.mcpb"
         description={
           <>
-            The MCPB file is in your in your <strong>Downloads folder</strong>
+            The MCPB file is in your <strong>Downloads folder</strong>
           </>
         }
         display={
