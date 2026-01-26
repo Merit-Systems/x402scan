@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.0.8-beta.1
+
+### Patch Changes
+
+- b2afea8: balance schema
+
 ## 0.0.8-beta.0
 
 ### Patch Changes

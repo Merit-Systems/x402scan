@@ -21,6 +21,7 @@
     "@x402scan/neverthrow": "1.0.0"
   },
   "changesets": [
-    "cyan-eels-build"
+    "cyan-eels-build",
+    "wise-clouds-rest"
   ]
 }
