@@ -17,8 +17,8 @@ extensions:
 # Providers: 8 total (4 configs × 2 models)
 # All providers use structured output with: answer, sources, tool_call_log
 providers:
-  # No tools - baseline (2 models)
-  - file://providers/no-tools.yaml
+  # # No tools - baseline (2 models)
+  # - file://providers/no-tools.yaml
   # Web tools - WebFetch + WebSearch (2 models)
   - file://providers/web-tools.yaml
   # MCP x402scan server (2 models)
