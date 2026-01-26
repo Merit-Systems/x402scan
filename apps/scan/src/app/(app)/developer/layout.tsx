@@ -1,5 +1,12 @@
 import { Nav } from '@/app/(app)/_components/layout/nav';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Developer Hub',
+  description: 'Developer tools for x402scan',
+};
+
 export default function DeveloperLayout({
   children,
 }: LayoutProps<'/developer'>) {

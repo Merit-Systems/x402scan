@@ -1,6 +1,7 @@
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import type { ReactNode } from 'react';
 import { Sidebar } from './_components/sidebar';
+
+import type { ReactNode } from 'react';
 
 export default function ChatLayout({ children }: { children: ReactNode }) {
   return (

@@ -4,6 +4,13 @@ import { ecosystemCategories } from '@/lib/ecosystem/schema';
 import { EcosystemList } from './_components/list';
 import { EcosystemItems } from '@/lib/ecosystem/constants';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Ecosystem',
+  description: 'Projects registered in the coinbase/x402 repository.',
+};
+
 export default function EcosystemPage() {
   return (
     <div>
