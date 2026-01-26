@@ -37,7 +37,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'x402scan • x402 Ecosystem Explorer',
+    default: 'x402scan | x402 Ecosystem Explorer',
     template: '%s | x402scan',
   },
   description:
