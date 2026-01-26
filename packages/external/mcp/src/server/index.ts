@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { randomBytes } from 'crypto';
 
 import { registerFetchX402ResourceTool } from './tools/fetch-x402-resource';
 import { registerAuthTools } from './tools/auth';
@@ -26,6 +27,8 @@ export const startServer: Command = async flags => {
   const { account } = await getWallet();
 
   const code = invite ?? process.env.INVITE_CODE;
+
+  const sessionId = randomBytes(16).toString('hex');
 
   if (code) {
     await redeemInviteCode({
@@ -56,6 +59,7 @@ export const startServer: Command = async flags => {
     server,
     account,
     flags,
+    sessionId,
   };
 
   registerFetchX402ResourceTool(props);

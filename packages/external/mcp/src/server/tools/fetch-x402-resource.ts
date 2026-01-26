@@ -19,6 +19,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
   server,
   account,
   flags,
+  sessionId,
 }) => {
   server.registerTool(
     'fetch',
@@ -75,6 +76,9 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
                 : undefined,
           headers: {
             ...(body ? { 'Content-Type': 'application/json' } : {}),
+            'X-Wallet-Address': account.address,
+            'X-Client-ID': account.address,
+            'X-Session-ID': sessionId,
             ...headers,
           },
         });
