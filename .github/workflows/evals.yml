@@ -186,6 +186,11 @@ jobs:
           if [ -f "packages/external/mcp/evals/results.json" ]; then
             cp packages/external/mcp/evals/results.json claude-session-logs/
           fi
+          # Copy promptfoo error and debug logs if they exist
+          if [ -d "$HOME/.promptfoo/logs" ]; then
+            cp "$HOME/.promptfoo/logs"/promptfoo-error-*.log claude-session-logs/ 2>/dev/null || true
+            cp "$HOME/.promptfoo/logs"/promptfoo-debug-*.log claude-session-logs/ 2>/dev/null || true
+          fi
           ls -la claude-session-logs/ || echo "No logs collected"
 
       - name: Upload Claude session logs
