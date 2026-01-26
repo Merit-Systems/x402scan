@@ -45,6 +45,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.17",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "catalog:",
     "@types/yargs": "^17.0.35",
@@ -52,6 +53,7 @@
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",
+    "promptfoo": "^0.120.17",
     "tsup": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

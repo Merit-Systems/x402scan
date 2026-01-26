@@ -1,0 +1,32 @@
+name: 'Prompt Evaluation'
+
+on:
+  pull_request:
+    paths:
+      - 'packages/external/mcp/src/lib/**'
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    permissions:
+      # This permission is used to post comments on Pull Requests
+      pull-requests: write
+    steps:
+      # This cache is optional, but you'll save money and time by setting it up!
+      - name: Set up promptfoo cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/promptfoo
+          key: ${{ runner.os }}-promptfoo-v1
+          restore-keys: |
+            ${{ runner.os }}-promptfoo-
+
+      # This step will actually run the before/after evaluation
+      - name: Run promptfoo evaluation
+        uses: promptfoo/promptfoo-action@v1
+        with:
+          openai-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          prompts: 'packages/external/mcp/src/lib/**/*.json'
+          config: 'packages/external/mcp/evals/promptfooconfig.yaml'
+          cache-path: ~/.cache/promptfoo
