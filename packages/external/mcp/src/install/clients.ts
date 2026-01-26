@@ -32,7 +32,7 @@ export const clientMetadata: Record<Clients, ClientMetadata> = {
     website: 'https://cursor.com',
   },
   [Clients.Claude]: {
-    name: 'Claude',
+    name: 'Claude Desktop',
     description: 'Claude is a code editor that uses the Claude API.',
     website: 'https://claude.com',
   },
