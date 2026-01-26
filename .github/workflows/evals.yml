@@ -12,9 +12,23 @@ jobs:
     permissions:
       # This permission is used to post comments on Pull Requests
       pull-requests: write
+    env:
+      PROMPTFOO_API_KEY: ${{ secrets.PROMPTFOO_API_KEY }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       # This cache is optional, but you'll save money and time by setting it up!
       - name: Set up promptfoo cache
