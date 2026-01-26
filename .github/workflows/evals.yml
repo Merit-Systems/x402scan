@@ -45,8 +45,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-promptfoo-
 
+      # Build the MCP server locally
+      - name: Build MCP server
+        working-directory: packages/external/mcp
+        run: pnpm build
+
       # Verify the x402scan MCP server starts and registers tools
       - name: Verify x402scan MCP server
+        working-directory: packages/external/mcp
         run: |
           # MCP requires initialize handshake before tools/list
           (echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}'; \
@@ -55,13 +61,14 @@ jobs:
            sleep 1; \
            echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"check_balance","arguments":{}}}'; \
            sleep 3) | \
-            timeout 20s npx -y @x402scan/mcp@latest 2>&1 | head -150
+            timeout 20s node dist/esm/index.js 2>&1 | head -150
 
       # Run evaluation using the package's promptfoo (has claude-agent-sdk as devDep)
       - name: Run promptfoo evaluation
         id: eval
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MCP_SERVER_DIR: ${{ github.workspace }}/packages/external/mcp/dist/esm
         working-directory: packages/external/mcp
         run: |
           # Run eval and capture output

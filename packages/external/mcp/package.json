@@ -24,9 +24,10 @@
     "format:check": "pnpm -w format:check:dir ./packages/external/mcp",
     "prepublishOnly": "pnpm build",
     "publish:check": "pnpm pack --dry-run",
-    "evals": "promptfoo eval --config evals/promptfooconfig.yaml",
-    "evals:no-cache": "promptfoo eval --config evals/promptfooconfig.yaml --no-cache",
-    "evals:view": "promptfoo view"
+    "evals": "MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/promptfooconfig.yaml",
+    "evals:no-cache": "MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/promptfooconfig.yaml --no-cache",
+    "evals:view": "promptfoo view",
+    "evals:single-prompt": "MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/single-prompt.yaml --no-cache --share"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
