@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'packages/external/mcp/src/lib/**'
+      - 'packages/external/mcp/evals/**'
 
 jobs:
   evaluate:

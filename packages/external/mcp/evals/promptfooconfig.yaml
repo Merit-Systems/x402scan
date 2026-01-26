@@ -141,14 +141,16 @@ tests:
           const text = typeof answer === 'string' ? answer : JSON.stringify(answer || '');
           const knownProfessionals = [
             'chris rokos', 'said haidar', 'andrew law', 'jeff talpins', 'pablo salame',
-            'adam iqbal', 'bala kasturi', 'igor ninkovic', 'clifton hill', 'charly cui', 'stephen elgie'
+            'adam iqbal', 'bala kasturi', 'igor ninkovic', 'clifton hill', 'charly cui', 'stephen elgie',
+            'edwin lin', 'filippo cipriani', 'alan howard', 'mohammed grimeh', 'mo grimeh',
+            'diego megia', 'matthias traut', 'robert tau'
           ];
           const textLower = text.toLowerCase();
           const foundProfessionals = knownProfessionals.filter(p => textLower.includes(p));
           return {
             pass: foundProfessionals.length >= 2,
-            score: Math.min(foundProfessionals.length / 11, 1),
-            reason: `Found ${foundProfessionals.length}/11 expected professionals: ${foundProfessionals.join(', ') || 'none'}`
+            score: Math.min(foundProfessionals.length / 18, 1),
+            reason: `Found ${foundProfessionals.length}/18 expected professionals: ${foundProfessionals.join(', ') || 'none'}`
           };
         metric: professionals_found
       - type: javascript
@@ -160,13 +162,13 @@ tests:
             'brevan howard', 'bridgewater', 'millennium', 'tudor', 'two sigma',
             'squarepoint', 'capstone', 'goldman sachs', 'pimco', 'graham capital',
             'tiger management', 'schonfeld', 'acadian', 'discovery capital', 'argo capital',
-            'capula', 'rubicon'
+            'capula', 'rubicon', 'point72', 'taula capital'
           ];
           const foundFunds = knownFunds.filter(f => text.includes(f));
           return {
             pass: foundFunds.length >= 3,
-            score: Math.min(foundFunds.length / 22, 1),
-            reason: `Found ${foundFunds.length}/22 known hedge funds: ${foundFunds.join(', ') || 'none'}`
+            score: Math.min(foundFunds.length / 24, 1),
+            reason: `Found ${foundFunds.length}/24 known hedge funds: ${foundFunds.join(', ') || 'none'}`
           };
         metric: hedge_funds_identified
       - type: javascript
