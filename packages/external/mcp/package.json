@@ -23,7 +23,10 @@
     "format": "pnpm -w format:dir ./packages/external/mcp",
     "format:check": "pnpm -w format:check:dir ./packages/external/mcp",
     "prepublishOnly": "pnpm build",
-    "publish:check": "pnpm pack --dry-run"
+    "publish:check": "pnpm pack --dry-run",
+    "evals": "promptfoo eval --config evals/promptfooconfig.yaml",
+    "evals:no-cache": "promptfoo eval --config evals/promptfooconfig.yaml --no-cache",
+    "evals:view": "promptfoo view"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",

@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'packages/external/mcp/src/lib/**'
+      - 'packages/external/mcp/evals/**'
 
 jobs:
   evaluate:
@@ -11,7 +12,30 @@ jobs:
     permissions:
       # This permission is used to post comments on Pull Requests
       pull-requests: write
+    env:
+      PROMPTFOO_API_KEY: ${{ secrets.PROMPTFOO_API_KEY }}
+      X402_PRIVATE_KEY: ${{ secrets.X402_PRIVATE_KEY }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Rebuild better-sqlite3 native module
+        run: |
+          SQLITE_DIR=$(find node_modules/.pnpm -type d -name "better-sqlite3" -path "*/better-sqlite3@*/node_modules/*" | head -1)
+          cd "$SQLITE_DIR" && npm rebuild
+
       # This cache is optional, but you'll save money and time by setting it up!
       - name: Set up promptfoo cache
         uses: actions/cache@v4
@@ -21,12 +45,138 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-promptfoo-
 
-      # This step will actually run the before/after evaluation
+      # Verify the x402scan MCP server starts and registers tools
+      - name: Verify x402scan MCP server
+        run: |
+          # MCP requires initialize handshake before tools/list
+          (echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}'; \
+           sleep 1; \
+           echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'; \
+           sleep 1; \
+           echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"check_balance","arguments":{}}}'; \
+           sleep 3) | \
+            timeout 20s npx -y @x402scan/mcp@latest 2>&1 | head -150
+
+      # Run evaluation using the package's promptfoo (has claude-agent-sdk as devDep)
       - name: Run promptfoo evaluation
-        uses: promptfoo/promptfoo-action@v1
+        id: eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        working-directory: packages/external/mcp
+        run: |
+          # Run eval and capture output
+          pnpm exec promptfoo eval --config evals/promptfooconfig.yaml --output evals/results.json --share 2>&1 | tee eval-output.txt
+          
+          # Extract results summary (e.g., "Results: ✓ 10 passed, ✗ 14 failed, 0 errors (41.67%)")
+          RESULTS=$(grep -E "^Results:" eval-output.txt || echo "Results: Unable to parse")
+          echo "results=$RESULTS" >> $GITHUB_OUTPUT
+          
+          # Extract share URL
+          SHARE_URL=$(grep -oE "https://www\.promptfoo\.app/eval/[^ ]+" eval-output.txt | tail -1 || echo "")
+          echo "share_url=$SHARE_URL" >> $GITHUB_OUTPUT
+          
+          # Extract token usage
+          TOKENS=$(grep -E "^Total Tokens:" eval-output.txt || echo "")
+          echo "tokens=$TOKENS" >> $GITHUB_OUTPUT
+          
+          # Extract duration
+          DURATION=$(grep -E "^Duration:" eval-output.txt || echo "")
+          echo "duration=$DURATION" >> $GITHUB_OUTPUT
+
+      - name: Comment eval results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
         with:
-          openai-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          prompts: 'packages/external/mcp/src/lib/**/*.json'
-          config: 'packages/external/mcp/evals/promptfooconfig.yaml'
-          cache-path: ~/.cache/promptfoo
+          script: |
+            const results = `${{ steps.eval.outputs.results }}`;
+            const shareUrl = `${{ steps.eval.outputs.share_url }}`;
+            const tokens = `${{ steps.eval.outputs.tokens }}`;
+            const duration = `${{ steps.eval.outputs.duration }}`;
+            
+            // Parse pass/fail from results
+            const passMatch = results.match(/(\d+) passed/);
+            const failMatch = results.match(/(\d+) failed/);
+            const passed = passMatch ? parseInt(passMatch[1]) : 0;
+            const failed = failMatch ? parseInt(failMatch[1]) : 0;
+            const total = passed + failed;
+            const passRate = total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
+            
+            // Determine status emoji
+            const statusEmoji = failed === 0 ? '✅' : passRate >= 70 ? '⚠️' : '❌';
+            
+            const body = [
+              `## ${statusEmoji} Prompt Evaluation Results`,
+              '',
+              '| Metric | Value |',
+              '|--------|-------|',
+              `| **Passed** | ${passed} |`,
+              `| **Failed** | ${failed} |`,
+              `| **Pass Rate** | ${passRate}% |`,
+              tokens ? `| **Tokens** | ${tokens.replace('Total Tokens: ', '')} |` : null,
+              duration ? `| **Duration** | ${duration.replace('Duration: ', '')} |` : null,
+              '',
+              shareUrl ? `**[View detailed results →](${shareUrl})**` : null,
+              '',
+              '<details>',
+              '<summary>What is this?</summary>',
+              '',
+              'This evaluation tests the x402scan MCP server against a set of prompts to measure tool usage and answer quality across different provider configurations.',
+              '</details>'
+            ].filter(Boolean).join('\n');
+            
+            // Find existing comment to update
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(c => 
+              c.user.type === 'Bot' && c.body.includes('Prompt Evaluation Results')
+            );
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }
+
+      # Copy Claude session logs to a directory for artifact upload
+      - name: Collect Claude session logs
+        if: always()
+        run: |
+          mkdir -p claude-session-logs
+          if [ -d "$HOME/.claude/projects" ]; then
+            find "$HOME/.claude/projects" -name "*.jsonl" -exec cp {} claude-session-logs/ \;
+          fi
+          # Also copy the tool usage logs from the evals extension
+          if [ -f "packages/external/mcp/evals/tool-usage-log.jsonl" ]; then
+            cp packages/external/mcp/evals/tool-usage-log.jsonl claude-session-logs/
+          fi
+          if [ -f "packages/external/mcp/evals/tool-usage.json" ]; then
+            cp packages/external/mcp/evals/tool-usage.json claude-session-logs/
+          fi
+          # Copy the results.json as well
+          if [ -f "packages/external/mcp/evals/results.json" ]; then
+            cp packages/external/mcp/evals/results.json claude-session-logs/
+          fi
+          ls -la claude-session-logs/ || echo "No logs collected"
+
+      - name: Upload Claude session logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-session-logs
+          path: claude-session-logs/
+          retention-days: 3
+          if-no-files-found: warn
