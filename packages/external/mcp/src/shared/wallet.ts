@@ -1,13 +1,15 @@
+import { existsSync } from 'fs';
+
 import { getAddress } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 import z from 'zod';
 
 import { ok } from '@x402scan/neverthrow';
+
 import {
   fsErr,
   safeChmod,
-  safeFileExists,
   safeReadFile,
   safeWriteFile,
 } from '@/shared/neverthrow/fs';
@@ -45,9 +47,9 @@ export async function getWallet() {
   const readFileResult = await safeReadFile(walletSurface, WALLET_FILE);
 
   if (!readFileResult.isOk()) {
-    const fileExistsResult = safeFileExists(walletSurface, WALLET_FILE);
+    const fileExistsResult = existsSync(WALLET_FILE);
     // file exists but is not readable
-    if (fileExistsResult.isOk()) {
+    if (fileExistsResult) {
       return fsErr(walletSurface, {
         cause: 'file_not_readable',
         message: `The file exists but is not readable. Fix corrupted state file: ${WALLET_FILE}`,
