@@ -75,6 +75,8 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
                 : undefined,
           headers: {
             ...(body ? { 'Content-Type': 'application/json' } : {}),
+            'X-Wallet-Address': account.address,
+            'X-Client-ID': account.address,
             ...headers,
           },
         });
