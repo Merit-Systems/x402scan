@@ -46,7 +46,8 @@ jobs:
         with:
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          prompts: 'src/lib/**/*.json'
-          config: 'evals/promptfooconfig.yaml'
+          prompts: 'packages/external/mcp/src/lib/**/*.json'
+          config: 'packages/external/mcp/evals/promptfooconfig.yaml'
           cache-path: ~/.cache/promptfoo
-          working-directory: packages/external/mcp
+        env:
+          NODE_PATH: ${{ github.workspace }}/packages/external/mcp/node_modules
