@@ -56,6 +56,10 @@ const config: KnipConfig = {
     },
     'examples/servers/express': {},
     'examples/servers/hono': {},
+    'packages/external/mcp': {
+      ignoreDependencies: ['@anthropic-ai/claude-agent-sdk', 'promptfoo'],
+      ignore: ['evals/**'],
+    },
   },
   ignore: [
     '**/*.test.{ts,tsx,js,jsx}',
