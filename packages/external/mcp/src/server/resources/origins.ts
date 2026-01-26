@@ -3,7 +3,7 @@ import { x402Client } from '@x402/core/client';
 
 import { getWebPageMetadata } from './_lib';
 
-import { getSchema } from '../lib/x402/get-route-details';
+import { getInputSchema } from '../lib/x402-extensions';
 
 import type { RegisterResources } from './types';
 
@@ -12,7 +12,8 @@ const origins = ['enrichx402.com'];
 export const registerOrigins: RegisterResources = async ({ server }) => {
   await Promise.all(
     origins.map(async origin => {
-      const metadata = await getWebPageMetadata(`https://${origin}`);
+      const metadataResult = await getWebPageMetadata(`https://${origin}`);
+      const metadata = metadataResult.isOk() ? metadataResult.value : null;
       server.registerResource(
         origin,
         `api://${origin}`,
@@ -62,7 +63,7 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
                   description: metadata?.description,
                   resources: resources.filter(Boolean).map(resource => {
                     if (!resource) return null;
-                    const schema = getSchema(
+                    const schema = getInputSchema(
                       resource.paymentRequired?.extensions
                     );
 

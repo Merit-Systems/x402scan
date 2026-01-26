@@ -1,50 +1,58 @@
-export const getWebPageMetadata = async (url: string) => {
-  try {
-    const response = await fetch(url);
+import { err, ok } from '@x402scan/neverthrow';
+import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
 
-    if (!response.ok) {
-      return null;
-    }
+const surface = 'getWebPageMetadata';
 
-    const html = await response.text();
+interface WebPageMetadata {
+  title: string | null;
+  description: string | null;
+}
 
-    // Extract title
-    const titleMatch = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html);
-    const title = titleMatch
-      ? titleMatch[1]!.trim().replace(/\s+/g, ' ')
-      : null;
+export const getWebPageMetadata = (url: string) => {
+  return safeFetch(surface, new Request(url))
+    .andThen(response => safeParseResponse(surface, response))
+    .andThen(parsedResponse => {
+      if (parsedResponse.type === 'text') {
+        return ok(parseMetadataFromResponse(parsedResponse.data));
+      }
+      return err('user', surface, {
+        cause: 'invalid_response_type',
+        message: 'Invalid response type',
+      });
+    });
+};
 
-    // Extract description from meta tags
-    // Try standard meta description first
-    let descriptionMatch =
-      /<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i.exec(html);
+const parseMetadataFromResponse = (html: string): WebPageMetadata => {
+  // Extract title
+  const titleMatch = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html);
+  const title = titleMatch ? titleMatch[1]!.trim().replace(/\s+/g, ' ') : null;
 
-    // If not found, try og:description
-    descriptionMatch ??=
-      /<meta\s+property=["']og:description["']\s+content=["']([^"']*)["']/i.exec(
-        html
-      );
+  // Extract description from meta tags
+  // Try standard meta description first
+  let descriptionMatch =
+    /<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i.exec(html);
 
-    // Also check for reversed attribute order
-    descriptionMatch ??=
-      /<meta\s+content=["']([^"']*)["']\s+name=["']description["']/i.exec(html);
-
-    descriptionMatch ??=
-      /<meta\s+content=["']([^"']*)["']\s+property=["']og:description["']/i.exec(
-        html
-      );
-
-    const description = descriptionMatch
-      ? descriptionMatch[1]!.trim().replace(/\s+/g, ' ')
-      : null;
-
-    return {
-      title,
-      description,
-    };
-  } catch (error) {
-    throw new Error(
-      `Failed to fetch web page metadata: ${error instanceof Error ? error.message : String(error)}`
+  // If not found, try og:description
+  descriptionMatch ??=
+    /<meta\s+property=["']og:description["']\s+content=["']([^"']*)["']/i.exec(
+      html
     );
-  }
+
+  // Also check for reversed attribute order
+  descriptionMatch ??=
+    /<meta\s+content=["']([^"']*)["']\s+name=["']description["']/i.exec(html);
+
+  descriptionMatch ??=
+    /<meta\s+content=["']([^"']*)["']\s+property=["']og:description["']/i.exec(
+      html
+    );
+
+  const description = descriptionMatch
+    ? descriptionMatch[1]!.trim().replace(/\s+/g, ' ')
+    : null;
+
+  return {
+    title,
+    description,
+  };
 };
