@@ -12,7 +12,7 @@ export const safeStringifyJson = (surface: string, value: JsonObject) => {
   return resultFromThrowable(
     type,
     surface,
-    () => JSON.stringify(value),
+    () => JSON.stringify(value, null, 2),
     () => ({
       cause: 'stringify' as const,
       message: 'Could not stringify JSON',

@@ -98,7 +98,7 @@ function safeWrapFetchWithPayment(client: x402HTTPClient) {
   return async (request: Request) => {
     const clonedRequest = request.clone();
 
-    const probeResult = await safeFetch(toolName, clonedRequest);
+    const probeResult = await safeFetch(toolName, request);
 
     if (probeResult.isErr()) {
       return probeResult;
