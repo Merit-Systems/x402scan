@@ -40,14 +40,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-promptfoo-
 
-      # Run evaluation from the mcp package directory (has claude-agent-sdk as devDep)
+      # Run evaluation using the package's promptfoo (has claude-agent-sdk as devDep)
       - name: Run promptfoo evaluation
-        uses: promptfoo/promptfoo-action@v1
-        with:
-          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          prompts: 'packages/external/mcp/src/lib/**/*.json'
-          config: 'packages/external/mcp/evals/promptfooconfig.yaml'
-          cache-path: ~/.cache/promptfoo
         env:
-          NODE_PATH: ${{ github.workspace }}/packages/external/mcp/node_modules
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        working-directory: packages/external/mcp
+        run: pnpm exec promptfoo eval --config evals/promptfooconfig.yaml --output evals/results.json --share
