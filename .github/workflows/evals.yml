@@ -33,9 +33,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-promptfoo-
 
-      # Install claude-agent-sdk globally for promptfoo action
+      # Install claude-agent-sdk locally for promptfoo action
       - name: Install Claude Agent SDK
-        run: npm install -g @anthropic-ai/claude-agent-sdk
+        run: npm install @anthropic-ai/claude-agent-sdk
 
       # This step will actually run the before/after evaluation
       - name: Run promptfoo evaluation
