@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.0.8
+
+### Patch Changes
+
+- 904fae8: Additional headers on auth and check_endpoint routes
+
 ## 0.0.7
 
 ### Patch Changes
