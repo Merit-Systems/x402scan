@@ -1,0 +1,22 @@
+{
+  "mode": "pre",
+  "tag": "beta",
+  "initialVersions": {
+    "@x402scan/proxy": "1.0.0",
+    "@x402scan/solana-rpc": "0.0.0",
+    "@x402scan/app": "0.1.0",
+    "facilitators": "0.0.10",
+    "@x402scan/mcp": "0.0.7",
+    "@x402scan/eslint-config": "0.0.0",
+    "@x402scan/typescript-config": "0.0.0",
+    "@x402scan/analytics-db": "1.0.0",
+    "@x402scan/scan-db": "1.0.0",
+    "prisma-client-1d8bcb17ac472d49b060ef3f01db4b30365f35bcce0282b975003196210c16f5": "6.19.0",
+    "@x402scan/transfers-db": "1.0.0",
+    "prisma-client-bfff2ef213b3a2f8bed96e55a92d5644e66afcab25ce177991a5c8039418c607": "6.19.0",
+    "@x402scan/sync-alerts": "1.0.0",
+    "@x402scan/sync-analytics": "1.0.0",
+    "@x402scan/sync-transfers": "1.0.0"
+  },
+  "changesets": []
+}
