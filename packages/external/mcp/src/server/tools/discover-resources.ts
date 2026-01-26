@@ -112,18 +112,12 @@ export function registerDiscoveryTools(server: McpServer): void {
           );
 
           if (dnsDocResult.isOk()) {
-            const parsed = discoveryDocumentSchema.safeParse(
-              dnsDocResult.value
-            );
-
-            if (parsed.success) {
-              return mcpSuccessJson({
-                found: true,
-                origin,
-                source: 'dns-txt',
-                data: parsed.data,
-              });
-            }
+            return mcpSuccessJson({
+              found: true,
+              origin,
+              source: 'dns-txt',
+              data: dnsDocResult.value,
+            });
           }
         } else {
           log.debug(`DNS TXT value is not a valid URL: ${dnsUrl}`);

@@ -29,7 +29,7 @@ export const getBalance = async ({
     }),
     z.object({
       chain: z.number(),
-      balance: z.number(),
+      balance: z.coerce.number(),
     })
   );
 
