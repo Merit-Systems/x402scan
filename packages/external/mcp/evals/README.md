@@ -92,8 +92,8 @@ The `log-tools.js` extension parses Claude session logs to extract accurate tool
 
 | Model      | ID                           | Budget |
 | ---------- | ---------------------------- | ------ |
-| Haiku 4.5  | `claude-haiku-4-5-20251001`  | $0.50  |
-| Sonnet 4.5 | `claude-sonnet-4-5-20250929` | $1.00  |
+| Haiku 4.5  | `claude-haiku-4-5-20251001`  | $1.00  |
+| Sonnet 4.5 | `claude-sonnet-4-5-20250929` | $1.50  |
 | Opus 4.5   | `claude-opus-4-5-20251101`   | $5.00  |
 
 ## Output Files
@@ -108,4 +108,4 @@ After running, these files are generated:
 
 1. **Merit Systems Funding** - Find the total raised ($10M expected)
 2. **CEO Email** - Find Merit Systems CEO's email address
-3. **Top Auditors** - List top 5 smart contract auditors with Twitter handles
+3. **Top Carry Traders** - Find the top carry traders
