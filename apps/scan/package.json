@@ -98,6 +98,7 @@
     "hast-util-to-jsx-runtime": "^2.3.6",
     "input-otp": "^1.4.2",
     "ioredis": "^5.8.2",
+    "lottie-react": "^2.4.1",
     "lucide-react": "catalog:",
     "motion": "catalog:",
     "neverthrow": "^8.2.0",
