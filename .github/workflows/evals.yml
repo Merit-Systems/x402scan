@@ -40,7 +40,7 @@ jobs:
       - name: Set up promptfoo cache
         uses: actions/cache@v4
         with:
-          path: ~/.cache/promptfoo
+          path: ~/.promptfoo/cache
           key: ${{ runner.os }}-promptfoo-v1
           restore-keys: |
             ${{ runner.os }}-promptfoo-

@@ -129,7 +129,8 @@ tests:
             reason: hasCeoContext ? 'Response identifies CEO' : 'Response does not identify CEO'
           };
         metric: ceo_identified
-      - type: javascript // verify email is sam@merit.systems
+      # Verify email is sam@merit.systems
+      - type: javascript
         value: |
           const answer = output?.answer || '';
           const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
