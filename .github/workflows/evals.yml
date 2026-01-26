@@ -68,9 +68,18 @@ jobs:
         id: eval
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          MCP_SERVER_DIR: ${{ github.workspace }}/packages/external/mcp/dist/esm
         working-directory: packages/external/mcp
         run: |
+          # Inject absolute MCP server path into provider configs
+          MCP_PATH="${{ github.workspace }}/packages/external/mcp/dist/esm"
+          echo "Injecting MCP server path: $MCP_PATH"
+          
+          # Replace ${MCP_SERVER_DIR} with the actual absolute path
+          sed -i "s|\${MCP_SERVER_DIR}|$MCP_PATH|g" evals/providers/*.yaml
+          
+          # Verify the substitution worked
+          grep -n "index.js" evals/providers/*.yaml | head -5
+          
           # Run eval and capture output
           pnpm exec promptfoo eval --config evals/promptfooconfig.yaml --output evals/results.json --share 2>&1 | tee eval-output.txt
           
