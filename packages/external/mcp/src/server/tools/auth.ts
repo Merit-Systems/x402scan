@@ -12,7 +12,7 @@ import { requestWithHeadersSchema } from '@/server/lib/schemas';
 import type { RegisterTools } from '@/server/types';
 import type { SIWxExtensionInfo } from '../vendor/sign-in-with-x/types';
 
-export const registerAuthTools: RegisterTools = ({ server, account }) => {
+export const registerAuthTools: RegisterTools = ({ server, account, sessionId }) => {
   server.registerTool(
     'authed_call',
     {
@@ -29,6 +29,9 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
           method,
           headers: {
             'Content-Type': 'application/json',
+            'X-Wallet-Address': account.address,
+            'X-Client-ID': account.address,
+            'X-Session-ID': sessionId,
             ...headers,
           },
           body: body ? JSON.stringify(body) : undefined,
@@ -141,6 +144,9 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
           headers: {
             'Content-Type': 'application/json',
             'SIGN-IN-WITH-X': siwxHeader,
+            'X-Wallet-Address': account.address,
+            'X-Client-ID': account.address,
+            'X-Session-ID': sessionId,
             ...headers,
           },
           body: body ? JSON.stringify(body) : undefined,
