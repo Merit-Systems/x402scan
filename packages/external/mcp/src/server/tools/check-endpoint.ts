@@ -21,7 +21,11 @@ import type { JsonObject } from '@/shared/neverthrow/json/types';
 
 const toolName = 'checkEndpointSchema';
 
-export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
+export const registerCheckX402EndpointTool: RegisterTools = ({
+  server,
+  account,
+  sessionId,
+}) => {
   server.registerTool(
     toolName,
     {
@@ -32,7 +36,10 @@ export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
     async input => {
       log.info('Querying endpoint', input);
 
-      const responseResult = await safeFetch(toolName, buildRequest({ input }));
+      const responseResult = await safeFetch(
+        toolName,
+        buildRequest({ input, address: account.address, sessionId })
+      );
 
       if (responseResult.isErr()) {
         return mcpError(responseResult);
