@@ -68,15 +68,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: env.NEXT_PUBLIC_APP_URL,
-    title: 'x402scan • x402 Ecosystem Explorer',
-    description:
-      'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
-    siteName: 'x402scan',
-  },
   twitter: {
     card: 'summary_large_image',
     title: 'x402scan • x402 Ecosystem Explorer',
