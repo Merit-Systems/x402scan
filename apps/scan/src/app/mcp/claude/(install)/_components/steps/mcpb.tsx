@@ -48,7 +48,7 @@ export const McpbDisplay: React.FC = () => {
         title="Confirm in Claude Desktop"
         description="Press the install button to add the MCP to Claude Desktop"
         display={
-          <div className="px-4 py-2 bg-white rounded-xl border font-semibold">
+          <div className="px-4 py-2 bg-white text-black rounded-xl border font-semibold">
             Install
           </div>
         }
