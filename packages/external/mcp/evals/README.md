@@ -65,11 +65,11 @@ Enables `WebFetch` and `WebSearch` for general web access.
 Connects to the x402scan MCP server for access to enrichment APIs:
 
 - `mcp__x402scan__fetch` - Call x402-protected endpoints
-- `mcp__x402scan__authed_call` - Make authenticated API calls
-- `mcp__x402scan__check_balance` - Check wallet balance
-- `mcp__x402scan__get_wallet_address` - Get payment wallet
-- `mcp__x402scan__check_x402_endpoint` - Verify x402 endpoint status
-- `mcp__x402scan__discover_resources` - Find available x402 APIs
+- `mcp__x402scan__fetch_with_auth` - Make authenticated API calls
+- `mcp__x402scan__get_wallet_info` - Check wallet balance
+- `mcp__x402scan__redeem_invite` - Redeem an invite code to receive USDC
+- `mcp__x402scan__check_endpoint_schema` - Verify x402 endpoint status
+- `mcp__x402scan__discover_api_endpoints` - Find available x402 APIs
 - `mcp__x402scan__report_error` - Report errors to x402 system
 
 ## Metrics Tracked
