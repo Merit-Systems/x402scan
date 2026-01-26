@@ -8,6 +8,8 @@ import {
 import { formatUnits } from 'viem';
 import { base } from 'wagmi/chains';
 import { evmAddressSchema } from '@/lib/schemas';
+import { signozLogInfo } from '@/lib/telemetry/signoz/logs';
+import { BALANCE_REQUEST } from '@/lib/telemetry/signoz/types';
 
 export async function GET(
   _: Request,
@@ -19,11 +21,16 @@ export async function GET(
   if (!parsedAddress.success) {
     return NextResponse.json({ error: 'Invalid EVM address' }, { status: 400 });
   }
+
   const result = await getBalance(parsedAddress.data);
 
   return result.match(
-    balance =>
-      NextResponse.json(
+    balance => {
+      signozLogInfo(BALANCE_REQUEST, {
+        address: parsedAddress.data,
+        balance: balance.toString(),
+      });
+      return NextResponse.json(
         {
           address: parsedAddress.data,
           chain: base.id,
@@ -31,7 +38,8 @@ export async function GET(
           rawBalance: balance.toString(),
         },
         { status: 200 }
-      ),
+      );
+    },
     error => {
       switch (error.type) {
         case ERROR_NO_RPC:

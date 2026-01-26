@@ -3,6 +3,7 @@ import z from 'zod';
 import { scanDb } from '@x402scan/scan-db';
 
 import type { inviteCodeByIdSchema } from './schemas';
+import type { Prisma } from '@x402scan/scan-db';
 
 export const getInviteCodeById = async ({
   id,
@@ -24,9 +25,14 @@ export const getInviteCodeById = async ({
   });
 };
 
+const statusEnum = z.enum(['ACTIVE', 'EXHAUSTED', 'EXPIRED', 'DISABLED']);
+
 export const listInviteCodesSchema = z
   .object({
-    status: z.enum(['ACTIVE', 'EXHAUSTED', 'EXPIRED', 'DISABLED']).optional(),
+    status: statusEnum.optional(),
+    search: z.string().optional(),
+    orderBy: z.enum(['createdAt', 'status']).optional().default('createdAt'),
+    orderDir: z.enum(['asc', 'desc']).optional().default('desc'),
     limit: z.number().int().min(1).max(100).default(100),
     offset: z.number().int().min(0).default(0),
   })
@@ -35,10 +41,35 @@ export const listInviteCodesSchema = z
 export const listInviteCodes = async (
   options: z.infer<typeof listInviteCodesSchema>
 ) => {
-  const { status, limit = 100, offset = 0 } = options ?? {};
+  const {
+    status,
+    search,
+    orderBy = 'createdAt',
+    orderDir = 'desc',
+    limit = 100,
+    offset = 0,
+  } = options ?? {};
+
+  const where: Prisma.InviteCodeWhereInput = {};
+
+  if (status) {
+    where.status = status;
+  }
+
+  if (search) {
+    where.OR = [
+      { code: { contains: search, mode: 'insensitive' } },
+      { note: { contains: search, mode: 'insensitive' } },
+    ];
+  }
+
+  const orderByClause: Prisma.InviteCodeOrderByWithRelationInput[] =
+    orderBy === 'status'
+      ? [{ status: orderDir }, { createdAt: 'desc' }]
+      : [{ createdAt: orderDir }];
 
   return scanDb.inviteCode.findMany({
-    where: status ? { status } : undefined,
+    where,
     include: {
       createdBy: {
         select: {
@@ -47,11 +78,17 @@ export const listInviteCodes = async (
           email: true,
         },
       },
+      redemptions: {
+        select: {
+          recipientAddr: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      },
       _count: {
         select: { redemptions: true },
       },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: orderByClause,
     take: limit,
     skip: offset,
   });

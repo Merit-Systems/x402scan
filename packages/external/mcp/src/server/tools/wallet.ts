@@ -4,6 +4,7 @@ import { getUSDCBalance } from '@/lib/balance';
 import { DEFAULT_NETWORK, getChainName } from '@/lib/networks';
 
 import type { RegisterTools } from '@/server/types';
+import { getDepositLink } from '@/lib/deposit';
 
 export const registerWalletTools: RegisterTools = ({
   server,
@@ -17,18 +18,16 @@ export const registerWalletTools: RegisterTools = ({
         'Check wallet address and USDC balance. Creates wallet if needed.',
     },
     async () => {
-      const { balanceFormatted, balanceRaw } = await getUSDCBalance(
-        address,
-        flags
-      );
+      const { balanceFormatted } = await getUSDCBalance(address, flags);
 
       return mcpSuccess({
         address,
         network: DEFAULT_NETWORK,
         networkName: getChainName(DEFAULT_NETWORK),
-        usdcBalance: balanceRaw,
-        balanceFormatted,
+        usdcBalance: balanceFormatted,
+        balanceFormatted: balanceFormatted.toString(),
         isNewWallet: balanceFormatted === 0,
+        depositLink: getDepositLink(address, flags),
       });
     }
   );

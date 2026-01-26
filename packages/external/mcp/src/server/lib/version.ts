@@ -17,3 +17,5 @@ function getVersion(): string {
 }
 
 export const MCP_VERSION = getVersion();
+
+export const DIST_TAG = MCP_VERSION.includes('-beta') ? 'beta' : 'latest';

@@ -43,7 +43,7 @@ function main() {
 
   // Build the server with dependencies bundled (tsup creates dist/bundle/)
   console.log('1. Building server bundle with all dependencies...');
-  run('pnpm build');
+  run('pnpm -w build --filter=@x402scan/mcp');
 
   // Create server directory in bundle
   const serverDir = join(bundleDir, 'server');
@@ -83,18 +83,10 @@ function main() {
 
   // Pack using mcpb CLI
   console.log('\n2. Packing .mcpb bundle...');
-  const outputFile = join(ROOT, 'x402scan.mcpb');
+  const outputFile = join(SCAN_PUBLIC_DIR, 'x402scan.mcpb');
   rmSync(outputFile, { force: true });
 
   run(`npx -y @anthropic-ai/mcpb pack ${bundleDir} ${outputFile}`);
-
-  // If the file doesn't exist, create it
-  const scanMcpbPath = join(SCAN_PUBLIC_DIR, 'x402scan.mcpb');
-  if (!existsSync(scanMcpbPath)) {
-    writeFileSync(scanMcpbPath, '');
-    console.log('   Created empty x402scan.mcpb in SCAN_PUBLIC_DIR.');
-  }
-  cpSync(outputFile, scanMcpbPath);
 
   // Clean up bundle directory
   rmSync(bundleDir, { recursive: true, force: true });

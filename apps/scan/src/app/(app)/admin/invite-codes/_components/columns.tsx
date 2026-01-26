@@ -1,6 +1,13 @@
 'use client';
 
-import { Calendar, DollarSign, Hash, MoreHorizontal, User } from 'lucide-react';
+import {
+  Calendar,
+  DollarSign,
+  Hash,
+  MoreHorizontal,
+  User,
+  Wallet,
+} from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,6 +18,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCompactAgo, formatCurrency } from '@/lib/utils';
 import { formatUnits } from 'viem';
@@ -43,6 +55,9 @@ const getStatusVariant = (
   }
 };
 
+const truncateAddress = (address: string) =>
+  `${address.slice(0, 6)}...${address.slice(-4)}`;
+
 export const createColumns = (
   handlers?: ColumnHandlers
 ): ExtendedColumnDef<ColumnType>[] => [
@@ -51,11 +66,23 @@ export const createColumns = (
     header: () => (
       <HeaderCell Icon={Hash} label="Code" className="justify-start" />
     ),
-    cell: ({ row }) => (
-      <code className="text-xs font-mono bg-muted px-2 py-1 rounded">
-        {row.original.code}
-      </code>
-    ),
+    cell: ({ row }) => {
+      const { code, note } = row.original;
+      const codeElement = (
+        <code className="text-xs font-mono bg-muted px-2 py-1 rounded">
+          {code}
+        </code>
+      );
+      if (!note) return codeElement;
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>{codeElement}</TooltipTrigger>
+          <TooltipContent side="right" className="max-w-[300px]">
+            <p className="text-xs">{note}</p>
+          </TooltipContent>
+        </Tooltip>
+      );
+    },
     size: 150,
     loading: () => <Skeleton className="h-4 w-24" />,
   },
@@ -87,6 +114,53 @@ export const createColumns = (
     },
     size: 120,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
+    accessorKey: 'redeemedBy',
+    header: () => (
+      <HeaderCell Icon={Wallet} label="Redeemed By" className="justify-start" />
+    ),
+    cell: ({ row }) => {
+      const { redemptions } = row.original;
+      if (!redemptions || redemptions.length === 0) {
+        return <div className="text-xs text-muted-foreground">-</div>;
+      }
+      const addresses = redemptions.map(r => r.recipientAddr);
+      const uniqueAddresses = [...new Set(addresses)];
+      const firstAddress = uniqueAddresses[0];
+      if (uniqueAddresses.length === 1 && firstAddress) {
+        return (
+          <code
+            className="text-xs font-mono cursor-pointer hover:bg-muted px-1 rounded"
+            title={firstAddress}
+            onClick={() => void navigator.clipboard.writeText(firstAddress)}
+          >
+            {truncateAddress(firstAddress)}
+          </code>
+        );
+      }
+      return (
+        <div className="text-xs space-y-0.5">
+          {uniqueAddresses.slice(0, 2).map(addr => (
+            <code
+              key={addr}
+              className="block font-mono cursor-pointer hover:bg-muted px-1 rounded"
+              title={addr}
+              onClick={() => void navigator.clipboard.writeText(addr)}
+            >
+              {truncateAddress(addr)}
+            </code>
+          ))}
+          {uniqueAddresses.length > 2 && (
+            <span className="text-muted-foreground">
+              +{uniqueAddresses.length - 2} more
+            </span>
+          )}
+        </div>
+      );
+    },
+    size: 140,
+    loading: () => <Skeleton className="h-4 w-24" />,
   },
   {
     accessorKey: 'status',
