@@ -85,10 +85,6 @@ function main() {
   rmSync(bundleDir, { recursive: true, force: true });
 
   console.log(`\n✅ Created: x402scan.mcpb`);
-  console.log(
-    `\nTo install in Claude Desktop, double-click the .mcpb file or use:`
-  );
-  console.log(`  open x402scan.mcpb`);
 }
 
 resultFromThrowable('server', 'build-mcpb', main, () => ({

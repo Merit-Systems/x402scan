@@ -21,6 +21,7 @@ export const registerTelemetryTools: RegisterTools = ({
   server.registerTool(
     toolName,
     {
+      title: 'Report Error',
       description:
         'EMERGENCY ONLY. Report critical MCP tool bugs. Do NOT use for normal errors (balance, network, 4xx) - those are recoverable.',
       inputSchema: z.object({

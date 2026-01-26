@@ -15,6 +15,7 @@ export const registerRedeemInviteTool: RegisterTools = ({
   server.registerTool(
     toolName,
     {
+      title: 'Redeem Invite',
       description: 'Redeem an invite code to receive USDC.',
       inputSchema: z.object({
         code: z.string().min(1).describe('The invite code'),

@@ -11,8 +11,6 @@ import { mcpErrorJson, mcpSuccessJson } from './response';
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-const toolName = 'discoverResources';
-
 const discoveryDocumentSchema = z.object({
   version: z.number().refine(v => v === 1, { message: 'version must be 1' }),
   resources: z.array(z.url()),
@@ -20,10 +18,13 @@ const discoveryDocumentSchema = z.object({
   instructions: z.string().optional(),
 });
 
+const toolName = 'discoverApiEndpoints';
+
 export function registerDiscoveryTools(server: McpServer): void {
   server.registerTool(
-    'discover_resources',
+    toolName,
     {
+      title: 'Discover API Endpoints',
       description: `Discover x402-protected resources on an origin. Returns a list of resource URLs.
         Use check_x402_endpoint separately to get detailed pricing/schema info for specific resources.
 

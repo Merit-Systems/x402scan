@@ -30,6 +30,7 @@ export const registerAuthTools: RegisterTools = ({
   server.registerTool(
     toolName,
     {
+      title: 'Fetch with Authentication',
       description:
         'Make a request to a SIWX-protected endpoint. Handles auth flow automatically: detects SIWX requirement from 402 response, signs proof with server-provided challenge, retries.',
       inputSchema: requestSchema,
@@ -163,13 +164,7 @@ export const registerAuthTools: RegisterTools = ({
         return mcpError(parseResponseResult);
       }
 
-      return mcpSuccessResponse(parseResponseResult.value, {
-        authentication: {
-          address: account.address,
-          domain: serverInfo.domain,
-          chainId: serverInfo.chainId,
-        },
-      });
+      return mcpSuccessResponse(parseResponseResult.value);
     }
   );
 };

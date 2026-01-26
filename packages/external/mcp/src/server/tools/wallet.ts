@@ -16,6 +16,7 @@ export const registerWalletTools: RegisterTools = ({
   server.registerTool(
     toolName,
     {
+      title: 'Get Wallet Info',
       description:
         'Check wallet address and USDC balance. Creates wallet if needed.',
     },

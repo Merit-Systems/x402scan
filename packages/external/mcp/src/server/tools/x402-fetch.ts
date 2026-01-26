@@ -30,6 +30,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
   server.registerTool(
     toolName,
     {
+      title: 'Fetch',
       description:
         'Makes an http fetch request. If the request is to an x402-protected resource, it will handle payment automatically.',
       inputSchema: requestSchema,

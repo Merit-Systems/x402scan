@@ -29,6 +29,7 @@ export const registerCheckX402EndpointTool: RegisterTools = ({
   server.registerTool(
     toolName,
     {
+      title: 'Check Endpoint Schema',
       description:
         'Check if an endpoint is x402-protected and get pricing options, schema, and auth requirements (if applicable).',
       inputSchema: requestSchema,

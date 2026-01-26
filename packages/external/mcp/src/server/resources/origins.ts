@@ -7,7 +7,7 @@ import { getInputSchema } from '../lib/x402-extensions';
 
 import type { RegisterResources } from './types';
 
-const origins = ['enrichx402.com'];
+const origins = ['enrichx402.com', 'stablestudio.io'];
 
 export const registerOrigins: RegisterResources = async ({ server }) => {
   await Promise.all(
