@@ -31,8 +31,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Rebuild native modules
-        run: pnpm rebuild better-sqlite3
+      - name: Rebuild better-sqlite3 native module
+        run: |
+          SQLITE_DIR=$(find node_modules/.pnpm -type d -name "better-sqlite3" -path "*/better-sqlite3@*/node_modules/*" | head -1)
+          cd "$SQLITE_DIR" && npm rebuild
 
       # This cache is optional, but you'll save money and time by setting it up!
       - name: Set up promptfoo cache
