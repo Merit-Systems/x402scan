@@ -6,6 +6,13 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
 import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Agents',
+  description: 'Discover the most popular agents on x402scan',
+};
+
 export default function AgentsPage() {
   return (
     <AgentsSortingProvider initialSorting={defaultAgentsSorting}>

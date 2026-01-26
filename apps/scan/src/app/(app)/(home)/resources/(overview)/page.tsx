@@ -14,6 +14,13 @@ import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Marketplace',
+  description: 'Explore the most popular x402 servers',
+};
+
 export default function MarketplacePage() {
   return (
     <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
