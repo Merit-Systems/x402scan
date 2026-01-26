@@ -8,7 +8,7 @@ description: 'Claude Agent SDK Multi-Model Evaluation'
 # - Total Combinations: 24 test cases (3 tests × 4 providers x 2 models)
 
 # Output results to JSON for full data capture
-outputPath: results.json
+outputPath: evals/results.json
 
 # Extension to log tool usage details from Claude session logs
 extensions:
@@ -140,14 +140,15 @@ tests:
           const answer = output?.answer;
           const text = typeof answer === 'string' ? answer : JSON.stringify(answer || '');
           const knownProfessionals = [
-            'chris rokos', 'said haidar', 'andrew law', 'jeff talpins', 'pablo salame'
+            'chris rokos', 'said haidar', 'andrew law', 'jeff talpins', 'pablo salame',
+            'adam iqbal', 'bala kasturi', 'igor ninkovic', 'clifton hill', 'charly cui', 'stephen elgie'
           ];
           const textLower = text.toLowerCase();
           const foundProfessionals = knownProfessionals.filter(p => textLower.includes(p));
           return {
             pass: foundProfessionals.length >= 2,
-            score: Math.min(foundProfessionals.length / 5, 1),
-            reason: `Found ${foundProfessionals.length}/5 expected professionals: ${foundProfessionals.join(', ') || 'none'}`
+            score: Math.min(foundProfessionals.length / 11, 1),
+            reason: `Found ${foundProfessionals.length}/11 expected professionals: ${foundProfessionals.join(', ') || 'none'}`
           };
         metric: professionals_found
       - type: javascript
@@ -156,13 +157,16 @@ tests:
           const text = (typeof answer === 'string' ? answer : JSON.stringify(answer || '')).toLowerCase();
           const knownFunds = [
             'rokos capital', 'haidar capital', 'caxton', 'element capital', 'citadel',
-            'brevan howard', 'bridgewater', 'millennium', 'tudor', 'two sigma'
+            'brevan howard', 'bridgewater', 'millennium', 'tudor', 'two sigma',
+            'squarepoint', 'capstone', 'goldman sachs', 'pimco', 'graham capital',
+            'tiger management', 'schonfeld', 'acadian', 'discovery capital', 'argo capital',
+            'capula', 'rubicon'
           ];
           const foundFunds = knownFunds.filter(f => text.includes(f));
           return {
             pass: foundFunds.length >= 3,
-            score: Math.min(foundFunds.length / 5, 1),
-            reason: `Found ${foundFunds.length} known hedge funds: ${foundFunds.join(', ') || 'none'}`
+            score: Math.min(foundFunds.length / 22, 1),
+            reason: `Found ${foundFunds.length}/22 known hedge funds: ${foundFunds.join(', ') || 'none'}`
           };
         metric: hedge_funds_identified
       - type: javascript
