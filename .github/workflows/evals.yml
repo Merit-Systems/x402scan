@@ -19,10 +19,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       # This cache is optional, but you'll save money and time by setting it up!
       - name: Set up promptfoo cache
@@ -33,16 +40,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-promptfoo-
 
-      # Install claude-agent-sdk locally for promptfoo action
-      - name: Install Claude Agent SDK
-        run: npm install @anthropic-ai/claude-agent-sdk
-
-      # This step will actually run the before/after evaluation
+      # Run evaluation from the mcp package directory (has claude-agent-sdk as devDep)
       - name: Run promptfoo evaluation
         uses: promptfoo/promptfoo-action@v1
         with:
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          prompts: 'packages/external/mcp/src/lib/**/*.json'
-          config: 'packages/external/mcp/evals/promptfooconfig.yaml'
+          prompts: 'src/lib/**/*.json'
+          config: 'evals/promptfooconfig.yaml'
           cache-path: ~/.cache/promptfoo
+          working-directory: packages/external/mcp
