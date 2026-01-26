@@ -51,3 +51,33 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         working-directory: packages/external/mcp
         run: pnpm exec promptfoo eval --config evals/promptfooconfig.yaml --output evals/results.json --share
+
+      # Copy Claude session logs to a directory for artifact upload
+      - name: Collect Claude session logs
+        if: always()
+        run: |
+          mkdir -p claude-session-logs
+          if [ -d "$HOME/.claude/projects" ]; then
+            find "$HOME/.claude/projects" -name "*.jsonl" -exec cp {} claude-session-logs/ \;
+          fi
+          # Also copy the tool usage logs from the evals extension
+          if [ -f "packages/external/mcp/evals/tool-usage-log.jsonl" ]; then
+            cp packages/external/mcp/evals/tool-usage-log.jsonl claude-session-logs/
+          fi
+          if [ -f "packages/external/mcp/evals/tool-usage.json" ]; then
+            cp packages/external/mcp/evals/tool-usage.json claude-session-logs/
+          fi
+          # Copy the results.json as well
+          if [ -f "packages/external/mcp/evals/results.json" ]; then
+            cp packages/external/mcp/evals/results.json claude-session-logs/
+          fi
+          ls -la claude-session-logs/ || echo "No logs collected"
+
+      - name: Upload Claude session logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-session-logs
+          path: claude-session-logs/
+          retention-days: 3
+          if-no-files-found: warn
