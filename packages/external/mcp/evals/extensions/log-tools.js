@@ -122,13 +122,15 @@ function categorizeToolCalls(toolCalls) {
       categories.mcp.push(call);
     } else if (builtinWebTools.includes(name)) {
       categories.web.push(call);
+      categories.builtin.push(call);
     } else if (builtinFileTools.includes(name)) {
       categories.file.push(call);
+      categories.builtin.push(call);
     } else if (builtinShellTools.includes(name)) {
       categories.shell.push(call);
+      categories.builtin.push(call);
     } else {
       categories.other.push(call);
-      categories.builtin.push(call);
     }
   }
 
