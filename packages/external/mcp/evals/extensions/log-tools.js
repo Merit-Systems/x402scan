@@ -1,6 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
+/* eslint-disable @typescript-eslint/no-require-imports */
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
 
 /**
  * Find the Claude session log file by sessionId
@@ -152,7 +153,7 @@ function matchToolCallsWithResults(toolCalls, toolResults) {
 /**
  * Promptfoo extension for logging tool usage from Claude session logs
  */
-export default async function (hookName, context) {
+module.exports = async function (hookName, context) {
   if (hookName === 'afterEach') {
     const raw = context.result.response?.raw;
     const sessionId = context.result.response?.sessionId;
@@ -340,4 +341,4 @@ export default async function (hookName, context) {
     console.log(`Average turns: ${(totalTurns / count).toFixed(1)}`);
     console.log(`Total tool calls: ${totalToolCalls} (${totalMcpCalls} MCP)`);
   }
-}
+};

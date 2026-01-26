@@ -3,7 +3,7 @@ description: 'Claude Agent SDK Multi-Model Evaluation'
 
 # Test Matrix Overview:
 # - 3 Provider Configurations: No tools, WebFetch+WebSearch, x402scan MCP
-# - 3 Prompts: Merit funding amount, CEO email, Top 5 auditors
+# - 3 Prompts: Merit funding amount, CEO email, Hedge fund carry trade specialists
 # - 3 Models: Haiku 4.5, Sonnet 4.5, Opus 4.5
 # - Total Combinations: 27 test cases (3 tests × 9 providers)
 
@@ -12,7 +12,7 @@ outputPath: results.json
 
 # Extension to log tool usage details from Claude session logs
 extensions:
-  - file://extensions/log-tools.js:default
+  - file://extensions/log-tools.js:module.exports
 
 # Providers: 9 total (3 configs × 3 models)
 # All providers use structured output with: answer, sources, tool_call_log
@@ -130,37 +130,66 @@ tests:
           };
         metric: ceo_identified
 
-  # Test 3: Top Smart Contract Auditors
-  - description: 'Top Smart Contract Auditors'
+  # Test 3: Hedge Fund Carry Trade Specialists
+  - description: 'Hedge Fund Carry Trade Specialists'
     vars:
-      prompt: 'Find and return the top 5 best smart contract auditors and give me their twitter handles'
+      prompt: 'Extract professional profiles of individuals working at top global hedge funds who specialize in carry trade strategies, specifically those operating within FX, Fixed Income, or Macro desks. Focus on identifying expertise in interest rate differentials and currency positioning. Return as JSON with a professionalProfiles array containing objects with name, hedgeFund, desk, specialization, and expertise fields. Include citations for each field.'
     assert:
       - type: javascript
         value: |
           const answer = output?.answer;
           const text = typeof answer === 'string' ? answer : JSON.stringify(answer || '');
-          const handles = text.match(/@[A-Za-z0-9_]{1,15}/g) || [];
-          const uniqueHandles = [...new Set(handles)];
-          const hasAtLeast5 = uniqueHandles.length >= 5;
+          const knownProfessionals = [
+            'chris rokos', 'said haidar', 'andrew law', 'jeff talpins', 'pablo salame'
+          ];
+          const textLower = text.toLowerCase();
+          const foundProfessionals = knownProfessionals.filter(p => textLower.includes(p));
           return {
-            pass: hasAtLeast5,
-            score: Math.min(uniqueHandles.length / 5, 1),
-            reason: `Found ${uniqueHandles.length} Twitter handles`
+            pass: foundProfessionals.length >= 2,
+            score: Math.min(foundProfessionals.length / 5, 1),
+            reason: `Found ${foundProfessionals.length}/5 expected professionals: ${foundProfessionals.join(', ') || 'none'}`
           };
-        metric: twitter_handles_count
+        metric: professionals_found
       - type: javascript
         value: |
           const answer = output?.answer;
           const text = (typeof answer === 'string' ? answer : JSON.stringify(answer || '')).toLowerCase();
-          const knownAuditors = [
-            'trail of bits', 'trailofbits', 'openzeppelin', 'consensys', 'certik',
-            'spearbit', 'code4rena', 'sherlock', 'halborn', 'quantstamp',
-            'chainsecurity', 'slowmist', 'peckshield', 'mixbytes', 'cyfrin'
+          const knownFunds = [
+            'rokos capital', 'haidar capital', 'caxton', 'element capital', 'citadel',
+            'brevan howard', 'bridgewater', 'millennium', 'tudor', 'two sigma'
           ];
-          const foundAuditors = knownAuditors.filter(a => text.includes(a));
+          const foundFunds = knownFunds.filter(f => text.includes(f));
           return {
-            pass: foundAuditors.length >= 3,
-            score: Math.min(foundAuditors.length / 5, 1),
-            reason: `Found ${foundAuditors.length} known reputable auditors`
+            pass: foundFunds.length >= 3,
+            score: Math.min(foundFunds.length / 5, 1),
+            reason: `Found ${foundFunds.length} known hedge funds: ${foundFunds.join(', ') || 'none'}`
           };
-        metric: auditor_quality
+        metric: hedge_funds_identified
+      - type: javascript
+        value: |
+          const answer = output?.answer;
+          const text = (typeof answer === 'string' ? answer : JSON.stringify(answer || '')).toLowerCase();
+          const relevantTerms = [
+            'carry trade', 'interest rate differential', 'currency positioning',
+            'fx', 'fixed income', 'macro', 'ficc', 'yield curve', 'relative value'
+          ];
+          const foundTerms = relevantTerms.filter(t => text.includes(t));
+          return {
+            pass: foundTerms.length >= 3,
+            score: Math.min(foundTerms.length / relevantTerms.length, 1),
+            reason: `Found ${foundTerms.length}/${relevantTerms.length} relevant strategy terms`
+          };
+        metric: strategy_expertise_coverage
+      - type: javascript
+        value: |
+          const answer = output?.answer;
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer || '');
+          const urlRegex = /https?:\/\/[^\s"',\]]+/g;
+          const citations = text.match(urlRegex) || [];
+          const uniqueCitations = [...new Set(citations)];
+          return {
+            pass: uniqueCitations.length >= 3,
+            score: Math.min(uniqueCitations.length / 10, 1),
+            reason: `Found ${uniqueCitations.length} citation URLs`
+          };
+        metric: citations_provided

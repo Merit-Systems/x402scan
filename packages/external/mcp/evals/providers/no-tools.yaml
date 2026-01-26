@@ -7,7 +7,7 @@
     model: claude-haiku-4-5-20251001
     custom_allowed_tools: []
     include_partial_messages: true
-    max_budget_usd: 0.50
+    max_budget_usd: 1.00
     output_format:
       type: json_schema
       schema:

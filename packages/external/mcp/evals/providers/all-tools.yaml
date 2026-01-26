@@ -11,7 +11,7 @@
           args: ['-y', '@x402scan/mcp@latest']
           name: x402scan
     include_partial_messages: true
-    max_budget_usd: 0.50
+    max_budget_usd: 1.00
     output_format:
       type: json_schema
       schema:
@@ -58,7 +58,7 @@
           args: ['-y', '@x402scan/mcp@latest']
           name: x402scan
     include_partial_messages: true
-    max_budget_usd: 1.00
+    max_budget_usd: 1.50
     output_format:
       type: json_schema
       schema:
