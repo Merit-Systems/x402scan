@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.0.7
+
+### Patch Changes
+
+- f50e089: Updating x402 headers
+
 ## 0.0.6
 
 ### Patch Changes
