@@ -12,6 +12,9 @@ jobs:
       # This permission is used to post comments on Pull Requests
       pull-requests: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       # This cache is optional, but you'll save money and time by setting it up!
       - name: Set up promptfoo cache
         uses: actions/cache@v4
