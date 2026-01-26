@@ -6,6 +6,7 @@ interface ToolProps {
   server: McpServer;
   account: PrivateKeyAccount;
   flags: GlobalFlags;
+  sessionId: string;
 }
 
 export type RegisterTools = (props: ToolProps) => void;

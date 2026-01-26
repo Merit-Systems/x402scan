@@ -1,5 +1,7 @@
 import z from 'zod';
 
+import type { Address } from 'viem';
+
 export const requestSchema = z.object({
   url: z.url().describe('The endpoint URL'),
   method: z
@@ -17,7 +19,17 @@ export const requestSchema = z.object({
     .default({}),
 });
 
-export const buildRequest = (input: z.infer<typeof requestSchema>) => {
+interface BuildRequestProps {
+  input: z.infer<typeof requestSchema>;
+  address?: Address;
+  sessionId?: string;
+}
+
+export const buildRequest = ({
+  input,
+  address,
+  sessionId,
+}: BuildRequestProps) => {
   return new Request(input.url, {
     method: input.method,
     body: input.body
@@ -28,6 +40,10 @@ export const buildRequest = (input: z.infer<typeof requestSchema>) => {
     headers: {
       ...(input.body ? { 'Content-Type': 'application/json' } : {}),
       ...input.headers,
+      ...(address
+        ? { 'X-Wallet-Address': address, 'X-Client-ID': address }
+        : {}),
+      ...(sessionId ? { 'X-Session-ID': sessionId } : {}),
     },
   });
 };

@@ -3,6 +3,16 @@ import { Nav } from '../_components/layout/nav';
 import { auth } from '@/auth';
 import { notFound } from 'next/navigation';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Composer',
+    template: '%s | Composer',
+  },
+  description: 'Build and run x402 agents',
+};
+
 export default async function ComposerLayout({
   children,
 }: LayoutProps<'/composer'>) {

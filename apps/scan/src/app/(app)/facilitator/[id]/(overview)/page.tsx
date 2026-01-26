@@ -9,6 +9,7 @@ import { LatestTransactions } from './_components/transactions';
 import { facilitatorIdMap } from '@/lib/facilitators';
 import { api } from '@/trpc/server';
 import { ActivityTimeframe } from '@/types/timeframes';
+import type { Metadata } from 'next';
 
 export default async function FacilitatorPage({
   params,
@@ -33,3 +34,17 @@ export default async function FacilitatorPage({
     </Body>
   );
 }
+
+export const generateMetadata = async ({
+  params,
+}: PageProps<'/facilitator/[id]'>): Promise<Metadata> => {
+  const { id } = await params;
+  const facilitator = facilitatorIdMap.get(id);
+  if (!facilitator) {
+    return { title: 'Facilitator not found' };
+  }
+  return {
+    title: facilitator.name,
+    description: `x402 activity for the ${facilitator.name} facilitator`,
+  };
+};

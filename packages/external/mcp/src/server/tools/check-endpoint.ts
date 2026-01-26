@@ -32,7 +32,7 @@ export const registerCheckX402EndpointTool: RegisterTools = ({ server }) => {
     async input => {
       log.info('Querying endpoint', input);
 
-      const responseResult = await safeFetch(toolName, buildRequest(input));
+      const responseResult = await safeFetch(toolName, buildRequest({ input }));
 
       if (responseResult.isErr()) {
         return mcpError(responseResult);

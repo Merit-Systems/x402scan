@@ -24,6 +24,13 @@ import { getChainForPage } from '@/app/(app)/_lib/chain/page';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Facilitators',
+  description: 'Top facilitators processing x402 transactions',
+};
+
 const PAGE_SIZE = 10;
 
 export default async function FacilitatorsPage({

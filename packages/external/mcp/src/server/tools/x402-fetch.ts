@@ -25,6 +25,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
   server,
   account,
   flags,
+  sessionId,
 }) => {
   server.registerTool(
     toolName,
@@ -57,7 +58,9 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
 
       const fetchWithPay = safeWrapFetchWithPayment(client);
 
-      const fetchResult = await fetchWithPay(buildRequest(input));
+      const fetchResult = await fetchWithPay(
+        buildRequest({ input, address: account.address, sessionId })
+      );
 
       if (fetchResult.isErr()) {
         return mcpError(fetchResult);
@@ -92,11 +95,10 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
 };
 
 function safeWrapFetchWithPayment(client: x402HTTPClient) {
-  return async (input: RequestInfo | URL, init?: RequestInit) => {
-    const request = new Request(input, init);
+  return async (request: Request) => {
     const clonedRequest = request.clone();
 
-    const probeResult = await safeFetch(toolName, request);
+    const probeResult = await safeFetch(toolName, clonedRequest);
 
     if (probeResult.isErr()) {
       return probeResult;

@@ -34,7 +34,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       const httpClient = new x402HTTPClient(new x402Client());
 
       // Step 1: Make initial request
-      const firstResult = await safeFetch(toolName, buildRequest(input));
+      const firstResult = await safeFetch(toolName, buildRequest({ input }));
 
       if (firstResult.isErr()) {
         return mcpError(firstResult);
@@ -128,7 +128,7 @@ export const registerAuthTools: RegisterTools = ({ server, account }) => {
       const siwxHeader = encodeSIWxHeader(payloadResult.value);
 
       // Step 6: Retry with SIGN-IN-WITH-X header
-      const authedRequest = buildRequest(input);
+      const authedRequest = buildRequest({ input });
       authedRequest.headers.set('SIGN-IN-WITH-X', siwxHeader);
 
       const authedResult = await safeFetch(toolName, authedRequest);

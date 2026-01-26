@@ -18,6 +18,8 @@ import { facilitatorIdMap } from '@/lib/facilitators';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import type { Metadata } from 'next';
+
 export default async function TransactionsPage({
   params,
 }: PageProps<'/facilitator/[id]/transactions'>) {
@@ -61,3 +63,17 @@ export default async function TransactionsPage({
     </HydrateClient>
   );
 }
+
+export const generateMetadata = async ({
+  params,
+}: PageProps<'/facilitator/[id]/transactions'>): Promise<Metadata> => {
+  const { id } = await params;
+  const facilitator = facilitatorIdMap.get(id);
+  if (!facilitator) {
+    return { title: 'Facilitator not found' };
+  }
+  return {
+    title: `Transactions | ${facilitator.name}`,
+    description: `x402 transactions through the ${facilitator.name} facilitator`,
+  };
+};

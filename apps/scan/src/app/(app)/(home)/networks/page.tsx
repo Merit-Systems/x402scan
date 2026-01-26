@@ -18,6 +18,13 @@ import { getChainForPage } from '@/app/(app)/_lib/chain/page';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Networks',
+  description: 'Top networks processing x402 transactions',
+};
+
 export default async function NetworksPage({
   searchParams,
 }: PageProps<'/networks'>) {
