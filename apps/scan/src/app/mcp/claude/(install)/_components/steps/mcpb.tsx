@@ -25,7 +25,7 @@ export const McpbDisplay: React.FC = () => {
         }
       />
       <McpbStep
-        title="Open x402scan.mcpb"
+        title="Open x402.mcpb"
         description={
           <>
             The MCPB file is in your in your <strong>Downloads folder</strong>
