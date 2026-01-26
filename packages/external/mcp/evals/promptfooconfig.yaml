@@ -2,10 +2,10 @@
 description: 'Claude Agent SDK Multi-Model Evaluation'
 
 # Test Matrix Overview:
-# - 3 Provider Configurations: No tools, WebFetch+WebSearch, x402scan MCP
+# - 4 Provider Configurations: No tools, WebFetch+WebSearch, x402scan MCP, All tools
 # - 3 Prompts: Merit funding amount, CEO email, Hedge fund carry trade specialists
-# - 3 Models: Haiku 4.5, Sonnet 4.5, Opus 4.5
-# - Total Combinations: 27 test cases (3 tests × 9 providers)
+# - 2 Models: Sonnet 4.5, Opus 4.5
+# - Total Combinations: 24 test cases (3 tests × 4 providers x 2 models)
 
 # Output results to JSON for full data capture
 outputPath: results.json
@@ -14,16 +14,16 @@ outputPath: results.json
 extensions:
   - file://extensions/log-tools.js:module.exports
 
-# Providers: 9 total (3 configs × 3 models)
+# Providers: 8 total (4 configs × 2 models)
 # All providers use structured output with: answer, sources, tool_call_log
 providers:
-  # No tools - baseline (3 models)
+  # No tools - baseline (2 models)
   - file://providers/no-tools.yaml
-  # Web tools - WebFetch + WebSearch (3 models)
+  # Web tools - WebFetch + WebSearch (2 models)
   - file://providers/web-tools.yaml
-  # MCP x402scan server (3 models)
+  # MCP x402scan server (2 models)
   - file://providers/mcp-x402.yaml
-  # All tools - x402scan MCP + WebTools (3 models)
+  # All tools - x402scan MCP + WebTools (2 models)
   - file://providers/all-tools.yaml
 
 # Default test configuration applied to all test cases

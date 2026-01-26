@@ -1,50 +1,50 @@
 # Claude Agent SDK with x402scan MCP server
 # Provides access to x402-protected APIs with automatic payment handling
 
-- id: anthropic:claude-agent-sdk
-  label: 'x402scan MCP - Haiku 4.5'
-  config:
-    model: claude-haiku-4-5-20251001
-    mcp:
-      servers:
-        - command: npx
-          args: ['-y', '@x402scan/mcp@latest']
-          name: x402scan
-    include_partial_messages: true
-    max_budget_usd: 1.00
-    output_format:
-      type: json_schema
-      schema:
-        type: object
-        properties:
-          answer:
-            description: 'The answer to the question'
-          sources:
-            type: array
-            items:
-              type: string
-            description: 'URLs or references used'
-          tool_call_log:
-            type: array
-            items:
-              type: object
-              properties:
-                tool:
-                  type: string
-                input:
-                  type: object
-                success:
-                  type: boolean
-            description: 'Log of tool calls made'
-        required: [answer]
-    append_allowed_tools:
-      - 'mcp__x402scan__fetch'
-      - 'mcp__x402scan__authed_call'
-      - 'mcp__x402scan__check_balance'
-      - 'mcp__x402scan__get_wallet_address'
-      - 'mcp__x402scan__check_x402_endpoint'
-      - 'mcp__x402scan__discover_resources'
-      - 'mcp__x402scan__report_error'
+# - id: anthropic:claude-agent-sdk
+#   label: 'x402scan MCP - Haiku 4.5'
+#   config:
+#     model: claude-haiku-4-5-20251001
+#     mcp:
+#       servers:
+#         - command: npx
+#           args: ['-y', '@x402scan/mcp@latest']
+#           name: x402scan
+#     include_partial_messages: true
+#     max_budget_usd: 1.00
+#     output_format:
+#       type: json_schema
+#       schema:
+#         type: object
+#         properties:
+#           answer:
+#             description: 'The answer to the question'
+#           sources:
+#             type: array
+#             items:
+#               type: string
+#             description: 'URLs or references used'
+#           tool_call_log:
+#             type: array
+#             items:
+#               type: object
+#               properties:
+#                 tool:
+#                   type: string
+#                 input:
+#                   type: object
+#                 success:
+#                   type: boolean
+#             description: 'Log of tool calls made'
+#         required: [answer]
+#     append_allowed_tools:
+#       - 'mcp__x402scan__fetch'
+#       - 'mcp__x402scan__authed_call'
+#       - 'mcp__x402scan__check_balance'
+#       - 'mcp__x402scan__get_wallet_address'
+#       - 'mcp__x402scan__check_x402_endpoint'
+#       - 'mcp__x402scan__discover_resources'
+#       - 'mcp__x402scan__report_error'
 
 - id: anthropic:claude-agent-sdk
   label: 'x402scan MCP - Sonnet 4.5'
