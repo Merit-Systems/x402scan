@@ -68,13 +68,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'x402scan • x402 Ecosystem Explorer',
-    description:
-      'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
-    creator: '@x402scan',
-  },
   appleWebApp: {
     title: 'x402scan',
     statusBarStyle: 'black-translucent',
