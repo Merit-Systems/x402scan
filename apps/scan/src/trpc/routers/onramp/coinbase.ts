@@ -8,7 +8,7 @@ import {
   getOnrampTransactions,
 } from '@/services/onramp/coinbase/onramp-session';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { evmAddressSchema } from '@/lib/schemas';
 
 export const coinbaseOnrampRouter = createTRPCRouter({
   session: {
@@ -21,7 +21,7 @@ export const coinbaseOnrampRouter = createTRPCRouter({
     create: publicProcedure
       .input(
         createOnrampUrlParamsSchema.extend({
-          address: ethereumAddressSchema,
+          address: evmAddressSchema,
         })
       )
       .mutation(async ({ input }) => {

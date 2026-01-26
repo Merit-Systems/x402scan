@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { cdpFetch } from '../lib/fetch';
-import { ethereumAddressSchema, solanaAddressSchema } from '@/lib/schemas';
+import { evmAddressSchema, solanaAddressSchema } from '@/lib/schemas';
 import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
 
 export const createOnrampUrlParamsSchema = z.object({
@@ -33,7 +33,7 @@ export const createOnrampUrl = async (
   const address =
     defaultNetwork === Chain.SOLANA
       ? solanaAddressSchema.parse(addressInput)
-      : ethereumAddressSchema.parse(addressInput);
+      : evmAddressSchema.parse(addressInput);
 
   const { token } = await cdpFetch(
     {
