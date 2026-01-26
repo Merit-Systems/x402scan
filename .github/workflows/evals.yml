@@ -45,6 +45,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-promptfoo-
 
+      # Verify the x402scan MCP server starts and registers tools
+      - name: Verify x402scan MCP server
+        run: |
+          echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | \
+            timeout 10s npx -y @x402scan/mcp@latest 2>&1 | head -50
+
       # Run evaluation using the package's promptfoo (has claude-agent-sdk as devDep)
       - name: Run promptfoo evaluation
         env:
