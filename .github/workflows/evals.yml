@@ -52,15 +52,104 @@ jobs:
           (echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}'; \
            sleep 1; \
            echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'; \
-           sleep 2) | \
-            timeout 15s npx -y @x402scan/mcp@latest 2>&1 | head -100
+           sleep 1; \
+           echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"check_balance","arguments":{}}}'; \
+           sleep 3) | \
+            timeout 20s npx -y @x402scan/mcp@latest 2>&1 | head -150
 
       # Run evaluation using the package's promptfoo (has claude-agent-sdk as devDep)
       - name: Run promptfoo evaluation
+        id: eval
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         working-directory: packages/external/mcp
-        run: pnpm exec promptfoo eval --config evals/promptfooconfig.yaml --output evals/results.json --share
+        run: |
+          # Run eval and capture output
+          pnpm exec promptfoo eval --config evals/promptfooconfig.yaml --output evals/results.json --share 2>&1 | tee eval-output.txt
+          
+          # Extract results summary (e.g., "Results: ✓ 10 passed, ✗ 14 failed, 0 errors (41.67%)")
+          RESULTS=$(grep -E "^Results:" eval-output.txt || echo "Results: Unable to parse")
+          echo "results=$RESULTS" >> $GITHUB_OUTPUT
+          
+          # Extract share URL
+          SHARE_URL=$(grep -oE "https://www\.promptfoo\.app/eval/[^ ]+" eval-output.txt | tail -1 || echo "")
+          echo "share_url=$SHARE_URL" >> $GITHUB_OUTPUT
+          
+          # Extract token usage
+          TOKENS=$(grep -E "^Total Tokens:" eval-output.txt || echo "")
+          echo "tokens=$TOKENS" >> $GITHUB_OUTPUT
+          
+          # Extract duration
+          DURATION=$(grep -E "^Duration:" eval-output.txt || echo "")
+          echo "duration=$DURATION" >> $GITHUB_OUTPUT
+
+      - name: Comment eval results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const results = `${{ steps.eval.outputs.results }}`;
+            const shareUrl = `${{ steps.eval.outputs.share_url }}`;
+            const tokens = `${{ steps.eval.outputs.tokens }}`;
+            const duration = `${{ steps.eval.outputs.duration }}`;
+            
+            // Parse pass/fail from results
+            const passMatch = results.match(/(\d+) passed/);
+            const failMatch = results.match(/(\d+) failed/);
+            const passed = passMatch ? parseInt(passMatch[1]) : 0;
+            const failed = failMatch ? parseInt(failMatch[1]) : 0;
+            const total = passed + failed;
+            const passRate = total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
+            
+            // Determine status emoji
+            const statusEmoji = failed === 0 ? '✅' : passRate >= 70 ? '⚠️' : '❌';
+            
+            const body = [
+              `## ${statusEmoji} Prompt Evaluation Results`,
+              '',
+              '| Metric | Value |',
+              '|--------|-------|',
+              `| **Passed** | ${passed} |`,
+              `| **Failed** | ${failed} |`,
+              `| **Pass Rate** | ${passRate}% |`,
+              tokens ? `| **Tokens** | ${tokens.replace('Total Tokens: ', '')} |` : null,
+              duration ? `| **Duration** | ${duration.replace('Duration: ', '')} |` : null,
+              '',
+              shareUrl ? `**[View detailed results →](${shareUrl})**` : null,
+              '',
+              '<details>',
+              '<summary>What is this?</summary>',
+              '',
+              'This evaluation tests the x402scan MCP server against a set of prompts to measure tool usage and answer quality across different provider configurations.',
+              '</details>'
+            ].filter(Boolean).join('\n');
+            
+            // Find existing comment to update
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(c => 
+              c.user.type === 'Bot' && c.body.includes('Prompt Evaluation Results')
+            );
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }
 
       # Copy Claude session logs to a directory for artifact upload
       - name: Collect Claude session logs

@@ -130,72 +130,49 @@ tests:
           };
         metric: ceo_identified
 
-  # Test 3: Hedge Fund Carry Trade Specialists
+  # Test 3: Hedge Fund Carry Trade Specialists (LLM-as-Judge)
   - description: 'Hedge Fund Carry Trade Specialists'
     vars:
       prompt: 'Extract professional profiles of individuals working at top global hedge funds who specialize in carry trade strategies, specifically those operating within FX, Fixed Income, or Macro desks. Focus on identifying expertise in interest rate differentials and currency positioning. Return as JSON with a professionalProfiles array containing objects with name, hedgeFund, desk, specialization, and expertise fields. Include citations for each field.'
     assert:
-      - type: javascript
+      # LLM judge for professional profile quality
+      - type: llm-rubric
         value: |
-          const answer = output?.answer;
-          const text = typeof answer === 'string' ? answer : JSON.stringify(answer || '');
-          const knownProfessionals = [
-            'chris rokos', 'said haidar', 'andrew law', 'jeff talpins', 'pablo salame',
-            'adam iqbal', 'bala kasturi', 'igor ninkovic', 'clifton hill', 'charly cui', 'stephen elgie',
-            'edwin lin', 'filippo cipriani', 'alan howard', 'mohammed grimeh', 'mo grimeh',
-            'diego megia', 'matthias traut', 'robert tau'
-          ];
-          const textLower = text.toLowerCase();
-          const foundProfessionals = knownProfessionals.filter(p => textLower.includes(p));
-          return {
-            pass: foundProfessionals.length >= 2,
-            score: Math.min(foundProfessionals.length / 18, 1),
-            reason: `Found ${foundProfessionals.length}/18 expected professionals: ${foundProfessionals.join(', ') || 'none'}`
-          };
-        metric: professionals_found
-      - type: javascript
+          Evaluate whether the response contains legitimate professional profiles of hedge fund carry trade specialists.
+          
+          A high-quality response should:
+          1. Include real professionals who work at recognized hedge funds (e.g., Rokos Capital, Citadel, Brevan Howard, Millennium, Two Sigma, Bridgewater, Element Capital, Caxton)
+          2. Correctly identify their roles in FX, Fixed Income, or Macro desks
+          3. Demonstrate accurate knowledge of carry trade strategies (interest rate differentials, currency positioning, yield curve trading)
+          4. Provide specific expertise details that are verifiable
+          
+          Known carry trade specialists include: Chris Rokos, Said Haidar, Andrew Law, Jeff Talpins, Alan Howard, Adam Iqbal, Pablo Salame, and others at major macro hedge funds.
+          
+          Score based on accuracy and depth of professional information, not just quantity.
+        metric: profile_quality
+      # LLM judge for JSON structure compliance
+      - type: llm-rubric
         value: |
-          const answer = output?.answer;
-          const text = (typeof answer === 'string' ? answer : JSON.stringify(answer || '')).toLowerCase();
-          const knownFunds = [
-            'rokos capital', 'haidar capital', 'caxton', 'element capital', 'citadel',
-            'brevan howard', 'bridgewater', 'millennium', 'tudor', 'two sigma',
-            'squarepoint', 'capstone', 'goldman sachs', 'pimco', 'graham capital',
-            'tiger management', 'schonfeld', 'acadian', 'discovery capital', 'argo capital',
-            'capula', 'rubicon', 'point72', 'taula capital'
-          ];
-          const foundFunds = knownFunds.filter(f => text.includes(f));
-          return {
-            pass: foundFunds.length >= 3,
-            score: Math.min(foundFunds.length / 24, 1),
-            reason: `Found ${foundFunds.length}/24 known hedge funds: ${foundFunds.join(', ') || 'none'}`
-          };
-        metric: hedge_funds_identified
-      - type: javascript
+          Evaluate whether the response follows the requested JSON structure with a professionalProfiles array.
+          
+          The response should contain:
+          1. A valid JSON structure (or JSON embedded in the response)
+          2. A professionalProfiles array
+          3. Objects with the required fields: name, hedgeFund, desk, specialization, expertise
+          4. Properly formatted citations for sources
+          
+          Partial credit for responses that provide structured data even if not perfectly formatted as JSON.
+        metric: structure_compliance
+      # LLM judge for citation quality
+      - type: llm-rubric
         value: |
-          const answer = output?.answer;
-          const text = (typeof answer === 'string' ? answer : JSON.stringify(answer || '')).toLowerCase();
-          const relevantTerms = [
-            'carry trade', 'interest rate differential', 'currency positioning',
-            'fx', 'fixed income', 'macro', 'ficc', 'yield curve', 'relative value'
-          ];
-          const foundTerms = relevantTerms.filter(t => text.includes(t));
-          return {
-            pass: foundTerms.length >= 3,
-            score: Math.min(foundTerms.length / relevantTerms.length, 1),
-            reason: `Found ${foundTerms.length}/${relevantTerms.length} relevant strategy terms`
-          };
-        metric: strategy_expertise_coverage
-      - type: javascript
-        value: |
-          const answer = output?.answer;
-          const text = typeof answer === 'string' ? answer : JSON.stringify(answer || '');
-          const urlRegex = /https?:\/\/[^\s"',\]]+/g;
-          const citations = text.match(urlRegex) || [];
-          const uniqueCitations = [...new Set(citations)];
-          return {
-            pass: uniqueCitations.length >= 3,
-            score: Math.min(uniqueCitations.length / 10, 1),
-            reason: `Found ${uniqueCitations.length} citation URLs`
-          };
-        metric: citations_provided
+          Evaluate the quality and relevance of citations provided in the response.
+          
+          High-quality citations should:
+          1. Come from reputable financial news sources, LinkedIn, or official fund websites
+          2. Be relevant to the specific professional or hedge fund mentioned
+          3. Support the claims made about the individual's role and expertise
+          4. Be diverse (not all from the same source)
+          
+          A response with 5+ relevant, verifiable citations from diverse sources should score highly.
+        metric: citation_quality
