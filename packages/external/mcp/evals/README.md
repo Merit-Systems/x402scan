@@ -14,7 +14,7 @@ This directory contains a promptfoo evaluation setup for testing the Claude Agen
 ## Directory Structure
 
 ```
-getting-started/
+evals/
 ├── promptfooconfig.yaml       # Main config with inline prompts + tests
 ├── providers/
 │   ├── no-tools.yaml          # Baseline (no tools)
@@ -38,7 +38,7 @@ npm install @anthropic-ai/claude-agent-sdk
 ## Running
 
 ```bash
-cd packages/external/mcp/getting-started
+cd packages/external/mcp/evals
 
 # Run evaluation
 npx promptfoo@latest eval
