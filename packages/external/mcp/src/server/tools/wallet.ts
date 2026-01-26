@@ -6,7 +6,7 @@ import { mcpSuccessJson, mcpError } from './response';
 
 import type { RegisterTools } from '@/server/types';
 
-const toolName = 'getWalletInfo';
+const toolName = 'get_wallet_info';
 
 export const registerWalletTools: RegisterTools = ({
   server,

@@ -19,7 +19,7 @@ import { requestSchema, buildRequest } from './lib/request';
 import type { RegisterTools } from '@/server/types';
 import type { JsonObject } from '@/shared/neverthrow/json/types';
 
-const toolName = 'checkEndpointSchema';
+const toolName = 'check_endpoint_schema';
 
 export const registerCheckX402EndpointTool: RegisterTools = ({
   server,

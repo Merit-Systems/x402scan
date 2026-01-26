@@ -11,7 +11,7 @@ import { mcpError, mcpSuccessJson } from './response';
 
 import type { RegisterTools } from '@/server/types';
 
-const toolName = 'reportError';
+const toolName = 'report_error';
 
 export const registerTelemetryTools: RegisterTools = ({
   server,

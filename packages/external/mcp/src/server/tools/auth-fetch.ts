@@ -20,7 +20,7 @@ import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
 import type { RegisterTools } from '@/server/types';
 import { getSiwxExtension } from '../lib/x402-extensions';
 
-const toolName = 'fetchWithAuth';
+const toolName = 'fetch_with_auth';
 
 export const registerAuthTools: RegisterTools = ({
   server,

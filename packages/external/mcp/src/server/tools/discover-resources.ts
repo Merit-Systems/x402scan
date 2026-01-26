@@ -18,7 +18,7 @@ const discoveryDocumentSchema = z.object({
   instructions: z.string().optional(),
 });
 
-const toolName = 'discoverApiEndpoints';
+const toolName = 'discover_api_endpoints';
 
 export function registerDiscoveryTools(server: McpServer): void {
   server.registerTool(

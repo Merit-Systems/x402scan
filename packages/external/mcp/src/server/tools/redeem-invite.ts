@@ -5,7 +5,7 @@ import { redeemInviteCode } from '@/shared/redeem-invite';
 
 import type { RegisterTools } from '@/server/types';
 
-const toolName = 'redeemInvite';
+const toolName = 'redeem_invite';
 
 export const registerRedeemInviteTool: RegisterTools = ({
   server,
