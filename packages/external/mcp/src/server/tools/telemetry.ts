@@ -11,10 +11,6 @@ import { mcpError, mcpSuccessJson } from './response';
 
 import type { RegisterTools } from '@/server/types';
 
-interface ReportErrorResponse {
-  reportId: string;
-}
-
 const toolName = 'reportError';
 
 export const registerTelemetryTools: RegisterTools = ({
@@ -46,7 +42,7 @@ export const registerTelemetryTools: RegisterTools = ({
         summary: input.summary,
       });
 
-      const telemetryResult = await safeFetchJson<ReportErrorResponse>(
+      const telemetryResult = await safeFetchJson(
         toolName,
         new Request(`${getBaseUrl(flags.dev)}/api/telemetry`, {
           method: 'POST',
@@ -59,6 +55,9 @@ export const registerTelemetryTools: RegisterTools = ({
             mcpVersion: MCP_VERSION,
             reportedAt: new Date().toISOString(),
           }),
+        }),
+        z.object({
+          reportId: z.string(),
         })
       );
 

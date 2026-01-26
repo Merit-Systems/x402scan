@@ -1,8 +1,11 @@
 import { err, resultFromPromise } from '@x402scan/neverthrow';
 
+import type z from 'zod';
+
 import type { BaseError, Error } from '@x402scan/neverthrow/types';
 import type { BaseFetchError, FetchError, ParsedResponse } from './types';
 import type { JsonObject } from '../json/types';
+import { safeParse } from '../parse';
 
 const errorType = 'fetch';
 
@@ -29,24 +32,25 @@ export const safeFetch = (surface: string, request: Request) => {
   );
 };
 
-export const safeFetchJson = <T>(surface: string, request: Request) => {
-  return safeFetch(surface, request).andThen(response => {
-    if (!response.ok) {
-      return fetchHttpErr(surface, response);
-    }
+export const safeFetchJson = <T>(
+  surface: string,
+  request: Request,
+  schema: z.ZodSchema<T>
+) => {
+  return safeFetch(surface, request)
+    .andThen(response => {
+      if (!response.ok) {
+        return fetchHttpErr(surface, response);
+      }
 
-    return resultFromPromise(
-      errorType,
-      surface,
-      response.json() as Promise<T>,
-      () => ({
+      return resultFromPromise(errorType, surface, response.json(), () => ({
         cause: 'parse' as const,
         message: 'Could not parse JSON from response',
         statusCode: response.status,
         contentType: response.headers.get('content-type') ?? 'Not specified',
-      })
-    );
-  });
+      }));
+    })
+    .andThen(data => safeParse(surface, schema, data));
 };
 
 export const safeParseResponse = (surface: string, response: Response) => {

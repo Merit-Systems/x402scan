@@ -13,7 +13,6 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const toolName = 'discoverResources';
 
-// Discovery document schema per spec
 const discoveryDocumentSchema = z.object({
   version: z.number().refine(v => v === 1, { message: 'version must be 1' }),
   resources: z.array(z.url()),
@@ -59,19 +58,17 @@ export function registerDiscoveryTools(server: McpServer): void {
 
       const wellKnownResult = await safeFetchJson(
         toolName,
-        new Request(wellKnownUrl, { headers: { Accept: 'application/json' } })
+        new Request(wellKnownUrl, { headers: { Accept: 'application/json' } }),
+        discoveryDocumentSchema
       );
 
       if (wellKnownResult.isOk()) {
-        const parsed = discoveryDocumentSchema.safeParse(wellKnownResult.value);
-        if (parsed.success) {
-          return mcpSuccessJson({
-            found: true,
-            origin,
-            source: 'well-known',
-            data: parsed.data,
-          });
-        }
+        return mcpSuccessJson({
+          found: true,
+          origin,
+          source: 'well-known',
+          data: wellKnownResult.value,
+        });
       } else {
         log.info(
           `No well-known x402 discovery document found at ${wellKnownUrl}`
@@ -84,12 +81,21 @@ export function registerDiscoveryTools(server: McpServer): void {
       const dnsQuery = `_x402.${hostname}`;
       log.debug(`Looking up DNS TXT record: ${dnsQuery}`);
 
-      const dnsResult = await safeFetchJson<{ Answer?: { data: string }[] }>(
+      const dnsResult = await safeFetchJson(
         toolName,
         new Request(
           `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(dnsQuery)}&type=TXT`,
           { headers: { Accept: 'application/dns-json' } }
-        )
+        ),
+        z.object({
+          Answer: z
+            .array(
+              z.object({
+                data: z.string(),
+              })
+            )
+            .optional(),
+        })
       );
 
       if (
@@ -101,7 +107,8 @@ export function registerDiscoveryTools(server: McpServer): void {
         if (URL.canParse(dnsUrl)) {
           const dnsDocResult = await safeFetchJson(
             toolName,
-            new Request(dnsUrl, { headers: { Accept: 'application/json' } })
+            new Request(dnsUrl, { headers: { Accept: 'application/json' } }),
+            discoveryDocumentSchema
           );
 
           if (dnsDocResult.isOk()) {

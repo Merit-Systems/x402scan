@@ -1,3 +1,5 @@
+import z from 'zod';
+
 import { safeFetchJson } from '@/shared/neverthrow/fetch';
 import { err } from '@x402scan/neverthrow';
 
@@ -11,12 +13,6 @@ export interface RedeemInviteProps {
   dev: boolean;
   address: Address;
   surface: string;
-}
-
-interface RedeemResponse {
-  redemptionId: string;
-  txHash: string;
-  amount: string;
 }
 
 export const redeemInviteCode = async ({
@@ -34,7 +30,7 @@ export const redeemInviteCode = async ({
     });
   }
 
-  const result = await safeFetchJson<RedeemResponse>(
+  const result = await safeFetchJson(
     surface,
     new Request(`${getBaseUrl(dev)}/api/invite/redeem`, {
       method: 'POST',
@@ -45,6 +41,11 @@ export const redeemInviteCode = async ({
         code,
         recipientAddr: address,
       }),
+    }),
+    z.object({
+      redemptionId: z.string(),
+      txHash: z.string(),
+      amount: z.coerce.number(),
     })
   );
 
