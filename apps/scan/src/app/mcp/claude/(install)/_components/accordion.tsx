@@ -6,7 +6,12 @@ import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
 
-import { Accordion } from '@/components/ui/accordion';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { CopyButton } from '@/components/ui/copy-button';
 
 import { ClaudeAccordionItem } from './item';
@@ -14,6 +19,8 @@ import { ClaudeAccordionItem } from './item';
 import type { Route } from 'next';
 import type { Step } from './item';
 import type { McpSearchParams } from '@/app/mcp/_lib/params';
+import { McpbDisplay } from './steps/mcpb';
+import { ChevronDownIcon } from 'lucide-react';
 
 export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -73,7 +80,7 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = url;
-              link.setAttribute('download', 'x402scan.mcpb');
+              link.setAttribute('download', 'x402.mcpb');
               document.body.appendChild(link);
               link.click();
               link.parentNode?.removeChild(link);
@@ -92,37 +99,46 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
         title: 'Open the Downloaded File',
         content: (
           <div className="flex flex-col gap-2">
-            <p>Open the downloaded file to install the MCP on Claude Desktop</p>
-            <div className="bg-muted p-2 rounded-lg flex flex-col gap-2">
-              <p className="font-semibold text-xs">Note</p>
-              <p>
-                Claude Desktop will warn that{' '}
-                <span className="italic font-medium">
-                  &quot;Installing will grant access to everything on your
-                  computer.&quot;
-                </span>
-              </p>
-              <p>
-                While this is true for all local MCP servers, x402scan only uses
-                the{' '}
-                <span className="font-mono border rounded-md px-1">
-                  .x402scan
-                </span>{' '}
-                folder to store data.
-              </p>
-              <p>
-                You can verify this by checking the{' '}
-                <a
-                  href="https://github.com/Merit-Systems/x402scan/tree/main/packages/external/mcp"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-primary underline"
-                >
-                  Source Code
-                </a>{' '}
-                of the x402scan MCP.
-              </p>
-            </div>
+            <McpbDisplay />
+            <Accordion type="single" collapsible>
+              <AccordionItem value="faq">
+                <AccordionTrigger className="text-muted-foreground pt-1 pb-0 items-center">
+                  <span>Why does claude warn about installing MCPB files?</span>
+                  <ChevronDownIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 transition-transform duration-200" />
+                </AccordionTrigger>
+                <AccordionContent className="pt-2">
+                  <div className="bg-muted p-2 rounded-lg flex flex-col gap-2">
+                    <p>
+                      Claude Desktop will warn that{' '}
+                      <span className="italic font-medium">
+                        &quot;Installing will grant access to everything on your
+                        computer.&quot;
+                      </span>
+                    </p>
+                    <p>
+                      While this is true for all local MCP servers, x402scan
+                      only uses the{' '}
+                      <span className="font-mono border rounded-md px-1">
+                        .x402scan
+                      </span>{' '}
+                      folder to store data.
+                    </p>
+                    <p>
+                      You can verify this by checking the{' '}
+                      <a
+                        href="https://github.com/Merit-Systems/x402scan/tree/main/packages/external/mcp"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-primary underline"
+                      >
+                        Source Code
+                      </a>{' '}
+                      of the x402scan MCP.
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         ),
         continueText: "I've Installed the MCP",
