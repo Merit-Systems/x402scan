@@ -14,21 +14,15 @@ jobs:
       pull-requests: write
     env:
       PROMPTFOO_API_KEY: ${{ secrets.PROMPTFOO_API_KEY }}
+      X402_PRIVATE_KEY: ${{ secrets.X402_PRIVATE_KEY }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       # This cache is optional, but you'll save money and time by setting it up!
       - name: Set up promptfoo cache
@@ -38,6 +32,10 @@ jobs:
           key: ${{ runner.os }}-promptfoo-v1
           restore-keys: |
             ${{ runner.os }}-promptfoo-
+
+      # Install claude-agent-sdk globally for promptfoo action
+      - name: Install Claude Agent SDK
+        run: npm install -g @anthropic-ai/claude-agent-sdk
 
       # This step will actually run the before/after evaluation
       - name: Run promptfoo evaluation
