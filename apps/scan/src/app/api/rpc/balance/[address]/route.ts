@@ -1,57 +1,66 @@
-import { NextResponse } from 'next/server';
-import {
-  ERROR_NO_RPC,
-  ERROR_RPC_FAILED,
-  getBalance,
-  USDC_DECIMALS,
-} from '@/services/rpc/base/balance';
-import { formatUnits } from 'viem';
-import { base } from 'wagmi/chains';
+import { erc20Abi } from 'viem';
+import { base } from 'viem/chains';
+
+import z from 'zod';
+
+import { rpcResultFromPromise } from '@/services/rpc/result';
+import { baseRpc } from '@/services/rpc/base';
+
 import { evmAddressSchema } from '@/lib/schemas';
+import { convertTokenAmount } from '@/lib/token';
+import { usdc } from '@/lib/tokens/usdc';
+
+import { Chain } from '@/types/chain';
+
+import { apiErr, toNextResponse } from '@/app/api/_lib/result';
+import { serverOk } from '@/lib/server-result';
+
 import { signozLogInfo } from '@/lib/telemetry/signoz/logs';
 import { BALANCE_REQUEST } from '@/lib/telemetry/signoz/types';
 
+import type { Address } from 'viem';
+
 export async function GET(
   _: Request,
-  { params }: { params: Promise<{ address: string }> }
+  { params }: RouteContext<'/api/rpc/balance/[address]'>
 ) {
   const { address } = await params;
 
-  const parsedAddress = evmAddressSchema.safeParse(address);
-  if (!parsedAddress.success) {
-    return NextResponse.json({ error: 'Invalid EVM address' }, { status: 400 });
+  const parseResult = evmAddressSchema.safeParse(address);
+  if (!parseResult.success) {
+    return toNextResponse(
+      apiErr('balance', {
+        cause: 'invalid_request',
+        message: JSON.stringify(z.treeifyError(parseResult.error)),
+      })
+    );
   }
 
-  const result = await getBalance(parsedAddress.data);
-
-  return result.match(
-    balance => {
-      signozLogInfo(BALANCE_REQUEST, {
-        address: parsedAddress.data,
-        balance: balance.toString(),
+  const result = await rpcResultFromPromise(
+    'balance',
+    baseRpc.readContract({
+      address: usdc(Chain.BASE).address as Address,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
+      args: [parseResult.data],
+    }),
+    (error: unknown) => ({
+      cause: 'bad_gateway',
+      message: `RPC balanceOf call failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    })
+  )
+    .andThen(balance => {
+      return serverOk({
+        chain: base.id,
+        balance: convertTokenAmount(balance),
       });
-      return NextResponse.json(
-        {
-          address: parsedAddress.data,
-          chain: base.id,
-          balance: formatUnits(balance, USDC_DECIMALS),
-          rawBalance: balance.toString(),
-        },
-        { status: 200 }
-      );
-    },
-    error => {
-      switch (error.type) {
-        case ERROR_NO_RPC:
-          return NextResponse.json({ error: error.message }, { status: 503 });
-        case ERROR_RPC_FAILED:
-          return NextResponse.json({ error: error.message }, { status: 502 });
-        default:
-          return NextResponse.json(
-            { error: 'Unhandled error' },
-            { status: 500 }
-          );
-      }
-    }
-  );
+    })
+    .andTee(result => {
+      signozLogInfo(BALANCE_REQUEST, {
+        address: parseResult.data,
+        balance: result.balance.toString(),
+      });
+    });
+
+  return toNextResponse(result);
 }

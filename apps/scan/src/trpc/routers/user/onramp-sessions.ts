@@ -94,13 +94,17 @@ export const onrampSessionsRouter = createTRPCRouter({
         if (!wallets[input.defaultNetwork]) {
           throw new TRPCError({ code: 'NOT_FOUND' });
         }
-        const { token, url } = await createOnrampUrl(
-          await wallets[input.defaultNetwork].address(),
-          {
-            ...input,
-            tokenKey: 'server_wallet_onramp_token',
-          }
-        );
+        const addressResult = await wallets[input.defaultNetwork].address();
+        if (addressResult.isErr()) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: addressResult.error.message,
+          });
+        }
+        const { token, url } = await createOnrampUrl(addressResult.value, {
+          ...input,
+          tokenKey: 'server_wallet_onramp_token',
+        });
         await createOnrampSession({
           token,
           amount: input.amount,

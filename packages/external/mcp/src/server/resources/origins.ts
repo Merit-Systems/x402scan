@@ -1,18 +1,33 @@
+import z from 'zod';
+
 import { x402HTTPClient } from '@x402/core/client';
 import { x402Client } from '@x402/core/client';
+import { err, ok } from '@x402scan/neverthrow';
+
+import { safeFetch, safeFetchJson } from '@/shared/neverthrow/fetch';
+import { safeGetPaymentRequired } from '@/shared/neverthrow/x402';
+import { safeStringifyJson } from '@/shared/neverthrow/json';
 
 import { getWebPageMetadata } from './_lib';
 
-import { getSchema } from '../lib/x402/get-route-details';
+import { getInputSchema } from '../lib/x402-extensions';
 
 import type { RegisterResources } from './types';
+import type { JsonObject } from '@/shared/neverthrow/json/types';
 
-const origins = ['enrichx402.com'];
+const surface = 'registerOrigins';
+
+const origins = ['enrichx402.com', 'stablestudio.io'];
+
+const wellKnownSchema = z.object({
+  resources: z.array(z.string()),
+});
 
 export const registerOrigins: RegisterResources = async ({ server }) => {
   await Promise.all(
     origins.map(async origin => {
-      const metadata = await getWebPageMetadata(`https://${origin}`);
+      const metadataResult = await getWebPageMetadata(`https://${origin}`);
+      const metadata = metadataResult.isOk() ? metadataResult.value : null;
       server.registerResource(
         origin,
         `api://${origin}`,
@@ -22,57 +37,109 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
           mimeType: 'application/json',
         },
         async uri => {
-          const response = (await fetch(
-            `${uri.toString().replace('api://', 'https://')}/.well-known/x402`
-          ).then(response => response.json())) as { resources: string[] };
+          const wellKnownUrl = `${uri.toString().replace('api://', 'https://')}/.well-known/x402`;
+          const wellKnownResult = await safeFetchJson(
+            surface,
+            new Request(wellKnownUrl),
+            wellKnownSchema
+          );
+
+          if (wellKnownResult.isErr()) {
+            console.error(
+              `Failed to fetch well-known for ${origin}:`,
+              wellKnownResult.error
+            );
+            return {
+              contents: [
+                {
+                  uri: origin,
+                  text: JSON.stringify(
+                    { error: 'Failed to fetch well-known resources' },
+                    null,
+                    2
+                  ),
+                  mimeType: 'application/json',
+                },
+              ],
+            };
+          }
+
           const resources = await Promise.all(
-            response.resources.map(async resource => {
-              const resourceResponse = await getResourceResponse(
+            wellKnownResult.value.resources.map(async resource => {
+              const postResult = await getResourceResponse(
                 resource,
-                await fetch(resource, {
+                new Request(resource, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
                   },
                 })
               );
-              if (resourceResponse) {
-                return resourceResponse;
+
+              if (postResult.isOk()) {
+                return postResult.value;
               }
-              const getResponse = await getResourceResponse(
+
+              const getResult = await getResourceResponse(
                 resource,
-                await fetch(resource, {
-                  method: 'GET',
-                })
+                new Request(resource, { method: 'GET' })
               );
-              if (getResponse) {
-                return getResponse;
+
+              if (getResult.isOk()) {
+                return getResult.value;
               }
+
               console.error(`Failed to get resource response for ${resource}`);
               return null;
             })
           );
+
+          const payload = {
+            server: origin,
+            name: metadata?.title,
+            description: metadata?.description,
+            resources: resources.filter(Boolean).map(resource => {
+              if (!resource) return null;
+              const schema = getInputSchema(
+                resource.paymentRequired?.extensions
+              );
+
+              return {
+                url: resource.resource,
+                schema,
+                mimeType: resource.paymentRequired.resource.mimeType,
+              };
+            }),
+          };
+
+          const stringifyResult = safeStringifyJson(
+            surface,
+            payload as JsonObject
+          );
+
+          if (stringifyResult.isErr()) {
+            console.error(
+              `Failed to stringify response for ${origin}:`,
+              stringifyResult.error
+            );
+            return {
+              contents: [
+                {
+                  uri: origin,
+                  text: JSON.stringify({
+                    error: 'Failed to stringify response',
+                  }),
+                  mimeType: 'application/json',
+                },
+              ],
+            };
+          }
+
           return {
             contents: [
               {
                 uri: origin,
-                text: JSON.stringify({
-                  server: origin,
-                  name: metadata?.title,
-                  description: metadata?.description,
-                  resources: resources.filter(Boolean).map(resource => {
-                    if (!resource) return null;
-                    const schema = getSchema(
-                      resource.paymentRequired?.extensions
-                    );
-
-                    return {
-                      url: resource.resource,
-                      schema,
-                      mimeType: resource.paymentRequired.resource.mimeType,
-                    };
-                  }),
-                }),
+                text: stringifyResult.value,
                 mimeType: 'application/json',
               },
             ],
@@ -83,17 +150,42 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
   );
 };
 
-const getResourceResponse = async (resource: string, response: Response) => {
+const getResourceResponse = async (resource: string, request: Request) => {
   const client = new x402HTTPClient(new x402Client());
-  if (response.status === 402) {
-    const paymentRequired = client.getPaymentRequiredResponse(
-      name => response.headers.get(name),
-      JSON.parse(await response.text())
-    );
-    return {
-      paymentRequired,
-      resource,
-    };
+
+  const fetchResult = await safeFetch(surface, request);
+
+  if (fetchResult.isErr()) {
+    return err('fetch', surface, {
+      cause: 'network',
+      message: `Failed to fetch resource: ${resource}`,
+    });
   }
-  return null;
+
+  const response = fetchResult.value;
+
+  if (response.status !== 402) {
+    return err('fetch', surface, {
+      cause: 'not_402',
+      message: `Resource did not return 402: ${resource}`,
+    });
+  }
+
+  const paymentRequiredResult = await safeGetPaymentRequired(
+    surface,
+    client,
+    response
+  );
+
+  if (paymentRequiredResult.isErr()) {
+    return err('x402', surface, {
+      cause: 'parse_payment_required',
+      message: `Failed to parse payment required for: ${resource}`,
+    });
+  }
+
+  return ok({
+    paymentRequired: paymentRequiredResult.value,
+    resource,
+  });
 };

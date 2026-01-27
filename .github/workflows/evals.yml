@@ -47,8 +47,7 @@ jobs:
 
       # Build the MCP server locally
       - name: Build MCP server
-        working-directory: packages/external/mcp
-        run: pnpm build
+        run: pnpm build --filter=@x402scan/mcp
 
       # Verify the x402scan MCP server starts and registers tools
       - name: Verify x402scan MCP server
@@ -73,28 +72,28 @@ jobs:
           # Inject absolute MCP server path into provider configs
           MCP_PATH="${{ github.workspace }}/packages/external/mcp/dist/esm"
           echo "Injecting MCP server path: $MCP_PATH"
-          
+
           # Replace ${MCP_SERVER_DIR} with the actual absolute path
           sed -i "s|\${MCP_SERVER_DIR}|$MCP_PATH|g" evals/providers/*.yaml
-          
+
           # Verify the substitution worked
           grep -n "index.js" evals/providers/*.yaml | head -5
-          
+
           # Run eval and capture output
           pnpm exec promptfoo eval --config evals/promptfooconfig.yaml --output evals/results.json --share 2>&1 | tee eval-output.txt
-          
+
           # Extract results summary (e.g., "Results: ✓ 10 passed, ✗ 14 failed, 0 errors (41.67%)")
           RESULTS=$(grep -E "^Results:" eval-output.txt || echo "Results: Unable to parse")
           echo "results=$RESULTS" >> $GITHUB_OUTPUT
-          
+
           # Extract share URL
           SHARE_URL=$(grep -oE "https://www\.promptfoo\.app/eval/[^ ]+" eval-output.txt | tail -1 || echo "")
           echo "share_url=$SHARE_URL" >> $GITHUB_OUTPUT
-          
+
           # Extract token usage
           TOKENS=$(grep -E "^Total Tokens:" eval-output.txt || echo "")
           echo "tokens=$TOKENS" >> $GITHUB_OUTPUT
-          
+
           # Extract duration
           DURATION=$(grep -E "^Duration:" eval-output.txt || echo "")
           echo "duration=$DURATION" >> $GITHUB_OUTPUT
@@ -108,7 +107,7 @@ jobs:
             const shareUrl = `${{ steps.eval.outputs.share_url }}`;
             const tokens = `${{ steps.eval.outputs.tokens }}`;
             const duration = `${{ steps.eval.outputs.duration }}`;
-            
+
             // Parse pass/fail from results
             const passMatch = results.match(/(\d+) passed/);
             const failMatch = results.match(/(\d+) failed/);
@@ -116,10 +115,10 @@ jobs:
             const failed = failMatch ? parseInt(failMatch[1]) : 0;
             const total = passed + failed;
             const passRate = total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
-            
+
             // Determine status emoji
             const statusEmoji = failed === 0 ? '✅' : passRate >= 70 ? '⚠️' : '❌';
-            
+
             const body = [
               `## ${statusEmoji} Prompt Evaluation Results`,
               '',
@@ -139,18 +138,18 @@ jobs:
               'This evaluation tests the x402scan MCP server against a set of prompts to measure tool usage and answer quality across different provider configurations.',
               '</details>'
             ].filter(Boolean).join('\n');
-            
+
             // Find existing comment to update
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            
+
             const botComment = comments.find(c => 
               c.user.type === 'Bot' && c.body.includes('Prompt Evaluation Results')
             );
-            
+
             if (botComment) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,

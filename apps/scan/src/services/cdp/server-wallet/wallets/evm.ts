@@ -1,12 +1,14 @@
-import { getBalance, readContract } from 'wagmi/actions';
+import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
+import { getBalance, readContract } from 'viem/actions';
+import { toAccount } from 'viem/accounts';
 
 import { cdpClient } from '../client';
 
-import { encodeFunctionData, erc20Abi, formatEther, parseUnits } from 'viem';
-import { convertTokenAmount } from '@/lib/token';
-import { toAccount } from 'viem/accounts';
+import { baseRpc } from '@/services/rpc/base';
 
-import { createWagmiConfig } from '@/app/_contexts/wagmi/config';
+import { cdpResultFromPromise } from '../../result';
+
+import { convertTokenAmount } from '@/lib/token';
 
 import type { EvmChain } from '@/types/chain';
 import type { Address } from 'viem';
@@ -21,49 +23,90 @@ export const evmServerWallet =
 
     const getAddress = async () => (await getAccount()).address;
 
-    const wagmiConfig = createWagmiConfig();
-
     return {
-      address: getAddress,
-      getNativeTokenBalance: async () => {
-        const weiBalance = await getBalance(wagmiConfig, {
-          address: await getAddress(),
-        });
-        return parseFloat(formatEther(weiBalance.value));
-      },
-      getTokenBalance: async ({ token }) => {
-        const balance = await readContract(wagmiConfig, {
-          abi: erc20Abi,
-          address: token.address as Address,
-          args: [await getAddress()],
-          functionName: 'balanceOf',
-        });
-        return convertTokenAmount(balance);
-      },
-      export: async () => {
-        return cdpClient.evm.exportAccount({
-          address: await getAddress(),
-          name,
-        });
-      },
+      address: () =>
+        cdpResultFromPromise('getAddress', getAddress(), e => ({
+          cause: 'bad_gateway',
+          message:
+            e instanceof Error ? e.message : 'Failed to get wallet address',
+        })),
+      getNativeTokenBalance: () =>
+        cdpResultFromPromise(
+          'getNativeTokenBalance',
+          getAddress()
+            .then(address =>
+              getBalance(baseRpc, {
+                address,
+              })
+            )
+            .then(result => parseFloat(formatEther(result))),
+          e => ({
+            cause: 'bad_gateway',
+            message:
+              e instanceof Error
+                ? e.message
+                : 'Failed to get native token balance',
+          })
+        ),
+      getTokenBalance: ({ token }) =>
+        cdpResultFromPromise(
+          'getTokenBalance',
+          getAddress()
+            .then(address =>
+              readContract(baseRpc, {
+                abi: erc20Abi,
+                address: token.address as Address,
+                args: [address],
+                functionName: 'balanceOf',
+              })
+            )
+            .then(balance => convertTokenAmount(balance)),
+          e => ({
+            cause: 'bad_gateway',
+            message:
+              e instanceof Error ? e.message : 'Failed to get token balance',
+          })
+        ),
+      export: () =>
+        cdpResultFromPromise(
+          'export',
+          getAddress().then(address =>
+            cdpClient.evm.exportAccount({
+              address,
+              name,
+            })
+          ),
+          e => ({
+            cause: 'bad_gateway',
+            message: e instanceof Error ? e.message : 'Failed to export wallet',
+          })
+        ),
       signer: async () => toAccount(await getAccount()),
-      sendTokens: async ({ address, token, amount }) => {
-        const account = await getAccount();
-        const { transactionHash } = await account.sendTransaction({
-          network: chain,
-          transaction: {
-            to: token.address as Address,
-            data: encodeFunctionData({
-              abi: erc20Abi,
-              functionName: 'transfer',
-              args: [
-                address as Address,
-                parseUnits(amount.toString(), token.decimals),
-              ],
-            }),
-          },
-        });
-        return transactionHash;
-      },
+      sendTokens: ({ address, token, amount }) =>
+        cdpResultFromPromise(
+          'sendTokens',
+          getAccount().then(account =>
+            account
+              .sendTransaction({
+                network: chain,
+                transaction: {
+                  to: token.address as Address,
+                  data: encodeFunctionData({
+                    abi: erc20Abi,
+                    functionName: 'transfer',
+                    args: [
+                      address as Address,
+                      parseUnits(amount.toString(), token.decimals),
+                    ],
+                  }),
+                },
+              })
+              .then(({ transactionHash }) => transactionHash)
+          ),
+          e => ({
+            cause: 'bad_gateway',
+            message: e instanceof Error ? e.message : 'Failed to send tokens',
+          })
+        ),
     };
   };
