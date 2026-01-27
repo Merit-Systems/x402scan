@@ -107,14 +107,14 @@ Base, Base Sepolia, Ethereum, Optimism, Arbitrum, Polygon (via CAIP-2)
 ## Develop
 
 ```bash
-bun install
+pnpm install
 
 # Add local server to Claude Code
-claude mcp add x402scan-dev -- bun run /path/to/x402scan-mcp/src/index.ts
+claude mcp add x402scan-dev -- npx tsx /path/to/x402scan-mcp/src/index.ts
 
 # Build
-bun run build
+pnpm build
 
 # Build .mcpb for Claude Desktop
-bun run build:mcpb
+pnpm build:mcpb
 ```
