@@ -15,6 +15,7 @@ import { clients } from '@/app/mcp/_lib/clients';
 import type { BaseStep, Step } from './item';
 import type { McpSearchParams } from '@/app/mcp/_lib/params';
 import type { Clients } from '@/app/mcp/_lib/clients';
+import type { Route } from 'next';
 
 interface Props extends McpSearchParams {
   steps: BaseStep[];
@@ -58,7 +59,10 @@ export const Accordion: React.FC<Props> = ({ steps: stepsProp, client }) => {
           </div>
         ),
         continueText: 'It Works!',
-        onNext: () => router.push(`/mcp/install/${client}/complete`),
+        onNext: () =>
+          router.push(
+            `/mcp/install/${client}/complete` as Route<'/mcp/install/[client]/complete'>
+          ),
       },
     ],
     [stepsProp, clientName, client, router]
