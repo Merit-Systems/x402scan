@@ -29,7 +29,7 @@ export default async function TaskLayout({
         completedCount={completedCount}
         totalLessons={task.lessons.length}
       />
-      {children}
+      <div className="max-w-2xl mx-auto w-full">{children}</div>
     </>
   );
 }

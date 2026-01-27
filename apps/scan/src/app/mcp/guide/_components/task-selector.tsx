@@ -7,12 +7,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-import { cn } from '@/lib/utils';
+import { Book, BookBinding, BookCover, BookContent } from './book';
 
 import { selectTask } from '../_lib/actions';
 import { tasks, taskIcons } from '../_data';
 
 import type { TaskKey, TaskData, Lesson } from '../_types';
+import { Button } from '@/components/ui/button';
 
 export function TaskSelector() {
   const taskEntries = Object.entries(tasks) as [TaskKey, TaskData][];
@@ -27,37 +28,42 @@ export function TaskSelector() {
           ).length;
 
           return (
-            <form key={key} action={selectTask}>
-              <input type="hidden" name="task" value={key} />
-              <button type="submit" className="w-full text-left">
-                <Card className="cursor-pointer hover:border-primary/50 transition-all group">
-                  <CardHeader>
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={cn(
-                          'size-12 rounded-full flex items-center justify-center bg-muted',
-                          'group-hover:bg-primary/10 transition-colors',
-                          task.color
-                        )}
-                      >
-                        <Icon className="size-6" />
-                      </div>
+            <Card key={key}>
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <Book className="h-15 w-13">
+                    <BookBinding />
+                    <BookCover>
+                      <BookContent className="px-2">
+                        <div className="p-1.5 bg-white/25 dark:bg-black/50 rounded-full shadow-[inset_0_0px_-2px_6px_rgba(0,0,0,0.35)] dark:shadow-[inset_0_-2px_6px_0_rgba(0,0,0,0.35)]">
+                          <Icon className="size-4 text-neutral-700 dark:text-neutral-400" />
+                        </div>
+                      </BookContent>
+                    </BookCover>
+                  </Book>
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="text-base">{task.name}</CardTitle>
+                    <CardDescription>{task.description}</CardDescription>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {task.lessons.length} lessons ({beginnerCount} beginner)
+                    </p>
+                  </div>
 
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-base">{task.name}</CardTitle>
-                        <CardDescription>{task.description}</CardDescription>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {task.lessons.length} lessons ({beginnerCount}{' '}
-                          beginner)
-                        </p>
-                      </div>
-
-                      <ArrowRight className="size-5 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all shrink-0" />
-                    </div>
-                  </CardHeader>
-                </Card>
-              </button>
-            </form>
+                  <form action={selectTask}>
+                    <input type="hidden" name="task" value={key} />
+                    <Button
+                      type="submit"
+                      variant="outline"
+                      className="w-full"
+                      size="sm"
+                    >
+                      Start
+                      <ArrowRight className="size-4 transition-all shrink-0" />
+                    </Button>
+                  </form>
+                </div>
+              </CardHeader>
+            </Card>
           );
         })}
       </div>

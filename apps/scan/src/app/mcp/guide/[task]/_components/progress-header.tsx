@@ -2,16 +2,12 @@
 
 import Link from 'next/link';
 
-import { ArrowLeft, RotateCcw } from 'lucide-react';
-
-import { useRouter } from 'next/navigation';
+import { ArrowUp, List } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar';
 
 import { cn } from '@/lib/utils';
-
-import { guideClientCookies } from '../../_lib/cookies/client';
 
 import { taskIcons } from '../../_data/tasks';
 
@@ -28,64 +24,66 @@ export function ProgressHeader({
   completedCount,
   totalLessons,
 }: ProgressHeaderProps) {
-  const router = useRouter();
   const Icon = taskIcons[task.id];
   const progressPercent =
-    totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
-
-  const handleReset = () => {
-    guideClientCookies.reset();
-    router.push('/mcp/guide');
-    router.refresh();
-  };
+    totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
   return (
-    <div className="space-y-4 px-4 sm:px-6 lg:px-8 pb-4">
-      {/* Task info and actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="pb-4">
+      <div className="flex items-center justify-between bg-card border rounded-full px-4 py-2 h-14">
+        {/* Left side: List icon + Task info */}
         <div className="flex items-center gap-3">
-          <div
-            className={cn(
-              'size-12 rounded-full flex items-center justify-center bg-muted',
-              task.color
-            )}
-          >
-            <Icon className="size-6" />
-          </div>
-          <div>
-            <h2 className="font-semibold text-lg">{task.name}</h2>
-            <p className="text-sm text-muted-foreground">{task.description}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="ghost" size="icon" className="size-8" asChild>
             <Link href="/mcp/guide">
-              <ArrowLeft className="size-4 mr-1" />
-              Change Task
+              <List className="size-5" />
             </Link>
           </Button>
+
+          <div className="w-px h-6 bg-border" />
+
+          <div className="flex items-center gap-2.5">
+            <div
+              className={cn(
+                'size-8 rounded-md flex items-center justify-center bg-muted',
+                task.color
+              )}
+            >
+              <Icon className="size-4" />
+            </div>
+            <span className="font-medium text-sm">{task.name}</span>
+          </div>
+        </div>
+
+        {/* Right side: Progress info + Circular progress + Up button */}
+        <div className="flex items-center gap-3">
+          <div className="text-right text-sm">
+            <div className="font-medium">{progressPercent}%</div>
+            <div className="text-muted-foreground text-xs">
+              {completedCount}/{totalLessons} lessons
+            </div>
+          </div>
+
+          <AnimatedCircularProgressBar
+            value={progressPercent}
+            max={100}
+            min={0}
+            gaugePrimaryColor="var(--primary)"
+            gaugeSecondaryColor="var(--muted)"
+            className="size-8 text-xs"
+            hideText
+          />
+
+          <div className="w-px h-6 bg-border" />
+
           <Button
             variant="ghost"
-            size="sm"
-            onClick={handleReset}
-            className="text-muted-foreground"
+            size="icon"
+            className="size-8"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <RotateCcw className="size-4 mr-1" />
-            Reset
+            <ArrowUp className="size-5" />
           </Button>
         </div>
-      </div>
-
-      {/* Progress bar */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            {completedCount} of {totalLessons} lessons completed
-          </span>
-          <span className="font-medium">{Math.round(progressPercent)}%</span>
-        </div>
-        <Progress value={progressPercent} className="h-2" />
       </div>
     </div>
   );

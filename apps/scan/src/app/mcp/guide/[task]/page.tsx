@@ -19,19 +19,17 @@ export default async function TaskLessonsPage({ params }: { params: Params }) {
   );
 
   return (
-    <Body>
-      <div className="space-y-3">
-        {task.lessons.map((lesson, index) => (
-          <LessonCard
-            key={lesson.id}
-            lesson={lesson}
-            taskKey={taskKey}
-            index={index}
-            isCompleted={progress.completedLessons.includes(lesson.id)}
-            isNext={index === firstIncompleteLessonIndex}
-          />
-        ))}
-      </div>
-    </Body>
+    <div className="space-y-3">
+      {task.lessons.map((lesson, index) => (
+        <LessonCard
+          key={lesson.id}
+          lesson={lesson}
+          taskKey={taskKey}
+          index={index}
+          isCompleted={progress.completedLessons.includes(lesson.id)}
+          isNext={index === firstIncompleteLessonIndex}
+        />
+      ))}
+    </div>
   );
 }
