@@ -1,4 +1,9 @@
-import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
+import {
+  fetchErr,
+  fetchOk,
+  safeFetch,
+  safeParseResponse,
+} from '@/shared/neverthrow/fetch';
 
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { ExactEvmScheme } from '@x402/evm/exact/client';
@@ -15,6 +20,7 @@ import {
   safeGetPaymentRequired,
   safeGetPaymentSettlement,
   x402Err,
+  x402Ok,
 } from '@/shared/neverthrow/x402';
 
 import type { RegisterTools } from '@/server/types';
@@ -67,7 +73,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
         return mcpError(fetchResult);
       }
 
-      const response = fetchResult.value;
+      const { response, paymentPayload } = fetchResult.value;
 
       if (!response.ok) {
         return mcpErrorFetch(toolName, response);
@@ -87,8 +93,16 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
 
       return mcpSuccessResponse(
         parseResponseResult.value,
-        settlementResult.isOk()
-          ? { payment: settlementResult.value }
+
+        settlementResult.isOk() || paymentPayload !== undefined
+          ? {
+              ...(paymentPayload !== undefined
+                ? { price: paymentPayload.accepted.amount }
+                : {}),
+              ...(settlementResult.isOk()
+                ? { payment: settlementResult.value }
+                : {}),
+            }
           : undefined
       );
     }
@@ -102,11 +116,16 @@ function safeWrapFetchWithPayment(client: x402HTTPClient) {
     const probeResult = await safeFetch(toolName, request);
 
     if (probeResult.isErr()) {
-      return probeResult;
+      return fetchErr(toolName, probeResult.error);
     }
 
     if (probeResult.value.status !== 402) {
-      return probeResult;
+      return probeResult.andThen(response =>
+        fetchOk({
+          response,
+          paymentPayload: undefined,
+        })
+      );
     }
 
     const response = probeResult.value;
@@ -159,6 +178,11 @@ function safeWrapFetchWithPayment(client: x402HTTPClient) {
     );
 
     // Retry the request with payment
-    return await safeFetch(toolName, clonedRequest);
+    return await safeFetch(toolName, clonedRequest).andThen(response =>
+      x402Ok({
+        response,
+        paymentPayload,
+      })
+    );
   };
 }
