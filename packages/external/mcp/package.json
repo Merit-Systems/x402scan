@@ -24,11 +24,11 @@
     "format:check": "pnpm -w format:check:dir ./packages/external/mcp",
     "prepublishOnly": "pnpm build",
     "publish:check": "pnpm pack --dry-run",
-    "evals": "MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/promptfooconfig.yaml",
-    "evals:no-cache": "MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/promptfooconfig.yaml --no-cache",
+    "evals": "pnpm build && MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/promptfooconfig.yaml",
+    "evals:no-cache": "pnpm build && MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/promptfooconfig.yaml --no-cache",
     "evals:view": "promptfoo view",
-    "evals:single-prompt": "MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/single-prompt.yaml --share",
-    "evals:compare": "MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/compare-prompts.yaml --share"
+    "evals:single-prompt": "pnpm build && MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/single-prompt.yaml --share",
+    "evals:compare": "pnpm build && MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/compare-prompts.yaml --share"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
