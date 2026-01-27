@@ -28,7 +28,6 @@ export const createInviteCode = async (
   createdById: string,
   { code, partnerId, ...input }: z.infer<typeof createInviteCodeSchema>
 ) => {
-
   const inviteCode = await scanDb.inviteCode.create({
     data: {
       ...input,

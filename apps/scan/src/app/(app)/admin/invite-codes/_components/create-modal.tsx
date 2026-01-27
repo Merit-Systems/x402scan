@@ -140,7 +140,8 @@ export const CreateInviteCodeButton = () => {
                 <SelectContent>
                   {partners?.map(partner => (
                     <SelectItem key={partner.id} value={partner.id}>
-                      {partner.name} {partner.organization && `(${partner.organization})`}
+                      {partner.name}{' '}
+                      {partner.organization && `(${partner.organization})`}
                     </SelectItem>
                   ))}
                 </SelectContent>
