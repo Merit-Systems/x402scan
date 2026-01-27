@@ -47,8 +47,7 @@ jobs:
 
       # Build the MCP server locally
       - name: Build MCP server
-        working-directory: packages/external/mcp
-        run: pnpm build
+        run: pnpm build --filter=@x402scan/mcp
 
       # Verify the x402scan MCP server starts and registers tools
       - name: Verify x402scan MCP server
@@ -73,13 +72,13 @@ jobs:
           # Inject absolute MCP server path into provider configs
           MCP_PATH="${{ github.workspace }}/packages/external/mcp/dist/esm"
           echo "Injecting MCP server path: $MCP_PATH"
-          
+
           # Replace ${MCP_SERVER_DIR} with the actual absolute path
           sed -i "s|\${MCP_SERVER_DIR}|$MCP_PATH|g" evals/providers/*.yaml
-          
+
           # Verify the substitution worked
           grep -n "index.js" evals/providers/*.yaml | head -5
-          
+
           # Run eval and capture output
           pnpm exec promptfoo eval --config evals/promptfooconfig.yaml --output evals/results.json --share 2>&1 | tee eval-output.txt
 
