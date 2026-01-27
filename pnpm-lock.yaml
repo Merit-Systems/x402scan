@@ -919,6 +919,28 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
+  packages/internal/databases/partners:
+    dependencies:
+      '@clickhouse/client':
+        specifier: catalog:clickhouse
+        version: 1.12.1
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.19.27
+      '@x402scan/eslint-config':
+        specifier: workspace:*
+        version: link:../../configurations/eslint
+      '@x402scan/typescript-config':
+        specifier: workspace:*
+        version: link:../../configurations/typescript
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   packages/internal/databases/scan:
     dependencies:
       '@neondatabase/serverless':
