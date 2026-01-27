@@ -1,6 +1,6 @@
 import { partnersDb } from './client';
-import type { Tables } from './tables';
-import type { PartnersDatabaseMap } from './tables';
+import type { Tables } from './tables/types';
+import type { PartnersDatabaseMap } from './tables/types';
 
 export const createTable = async (query: string) => {
   return partnersDb.exec({ query });

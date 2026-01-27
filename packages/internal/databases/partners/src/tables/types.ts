@@ -1,13 +1,13 @@
-import { InsertResult } from "@clickhouse/client";
-import type { PartnerData } from "./partners";
+import type { InsertResult } from '@clickhouse/client';
+import type { PartnerData } from './partners';
 
 export enum Tables {
-    Partners = 'partners',
+  Partners = 'partners',
 }
 export interface PartnersDatabaseMap {
-    [Tables.Partners]: PartnerData;
+  [Tables.Partners]: PartnerData;
 }
 
 export type InsertDataFunction<T extends Tables> = (
-    data: PartnersDatabaseMap[T]
+  data: PartnersDatabaseMap[T]
 ) => Promise<InsertResult>;
