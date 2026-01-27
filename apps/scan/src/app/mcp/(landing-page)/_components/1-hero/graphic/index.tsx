@@ -2,15 +2,18 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { Card } from '@/components/ui/card';
 import { ChartCandlestick, ImageIcon, Search } from 'lucide-react';
 
+import { Card } from '@/components/ui/card';
 import { AnimatedBeam } from '@/components/magicui/animated-beam';
 
-import { cn } from '@/lib/utils';
-import { Clients } from '../../../../_components/clients/data';
-import { ClientIcon } from '../../../../_components/clients/icons';
+import { ClientIcon } from '@/app/mcp/_components/clients/icons';
+
 import { Chip } from './chip';
+
+import { cn } from '@/lib/utils';
+
+import { Clients } from '@/app/mcp/_lib/clients';
 
 export const HeroGraphic = () => {
   const containerRef = useRef<HTMLDivElement>(null);

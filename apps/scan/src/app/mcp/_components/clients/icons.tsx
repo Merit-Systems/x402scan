@@ -1,4 +1,4 @@
-import { Clients } from './data';
+import { Clients } from '@/app/mcp/_lib/clients';
 
 interface ClientIconProps extends React.SVGProps<SVGSVGElement> {
   client: Clients;
@@ -9,13 +9,17 @@ export const ClientIcon: React.FC<ClientIconProps> = ({ client, ...props }) => {
     case Clients.ClaudeCode:
       return (
         <svg
-          role="img"
-          viewBox="0 0 24 24"
+          id="Layer_1"
+          data-name="Layer 1"
           xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1529.1 959.02"
           {...props}
         >
-          <title>Anthropic</title>
-          <path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z" />
+          <path d="M1432.76,746.67H95.89s-.11-379.35-.11-379.35L.02,366.99l-.02-155.69,95.55-.38.4-210.92h1336.8s.1,210.72.1,210.72l96.17.48.08,155.83-96.23.32-.1,379.32ZM479.09,366.66l-.23-155.49h-96.87s0,155.97,0,155.97l97.1-.49ZM1147.36,366.63l-.22-155.39-96.88-.11.05,156.06,97.04-.56Z" />
+          <polygon points="574.32 958.38 477.32 959.02 477.26 802.95 574.11 803.05 574.32 958.38" />
+          <polygon points="1052.09 958.43 955.05 958.9 955 802.99 1051.86 802.99 1052.09 958.43" />
+          <polygon points="1243.09 958.57 1146 958.93 1146.04 803.06 1242.86 802.98 1243.09 958.57" />
+          <polygon points="383.33 958.36 286.31 958.97 286.26 802.97 383.11 803.06 383.33 958.36" />
         </svg>
       );
     case Clients.Claude:

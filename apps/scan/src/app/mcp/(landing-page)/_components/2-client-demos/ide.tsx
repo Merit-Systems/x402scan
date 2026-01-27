@@ -6,10 +6,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { File, FileCode2, X } from 'lucide-react';
 
 import { ClientDemosSection } from './section';
-import { ClientTypes } from '../../../_components/clients/data';
 import { ClientSelect } from '../lib/client-select';
 
-import type { McpSearchParams } from '../../../_lib/params';
+import { ClientTypes } from '@/app/mcp/_lib/clients';
+
+import type { McpSearchParams } from '@/app/mcp/_lib/params';
 
 export const IdeDemo: React.FC<McpSearchParams> = props => {
   return (

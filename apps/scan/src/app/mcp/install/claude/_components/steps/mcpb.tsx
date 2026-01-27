@@ -1,6 +1,6 @@
 import Lottie from 'lottie-react';
 
-import { Clients } from '@/app/mcp/_components/clients/data';
+import { Clients } from '@/app/mcp/_lib/clients';
 import { ClientIcon } from '@/app/mcp/_components/clients/icons';
 import { File } from 'lucide-react';
 

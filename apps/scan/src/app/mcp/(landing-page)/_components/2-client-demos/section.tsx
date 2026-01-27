@@ -2,9 +2,9 @@ import { cn } from '@/lib/utils';
 
 import { ClientIcon } from '../../../_components/clients/icons';
 
-import { clients as clientsData } from '../../../_components/clients/data';
+import { clients as clientsData } from '@/app/mcp/_lib/clients';
 
-import type { Clients, ClientTypes } from '../../../_components/clients/data';
+import type { Clients, ClientTypes } from '@/app/mcp/_lib/clients';
 
 interface Props {
   heading: string;

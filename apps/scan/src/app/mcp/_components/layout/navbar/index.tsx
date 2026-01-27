@@ -22,7 +22,7 @@ export const Navbar: React.FC<Props> = () => {
           <Link href="/" className="flex items-center gap-1">
             <Logo className="size-6" />
             <h1 className="font-semibold font-mono hidden md:block">
-              x402scan
+              x402scan MCP
             </h1>
           </Link>
         </div>
@@ -41,7 +41,7 @@ export const Navbar: React.FC<Props> = () => {
                 alt="GitHub"
                 width={16}
                 height={16}
-                className="size-4"
+                className="size-4 dark:invert"
               />
             </Button>
           </a>

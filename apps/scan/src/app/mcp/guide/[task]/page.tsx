@@ -1,14 +1,12 @@
 import { notFound } from 'next/navigation';
 
-import { Body } from '@/app/_components/layout/page-utils';
-
 import { getTask } from '../_data';
 import { getGuideProgressServer } from '../_lib/cookies/server';
 import { LessonCard } from './_components/lesson-card';
 
-type Params = Promise<{ task: string }>;
-
-export default async function TaskLessonsPage({ params }: { params: Params }) {
+export default async function TaskLessonsPage({
+  params,
+}: PageProps<'/mcp/guide/[task]'>) {
   const { task: taskKey } = await params;
   const task = getTask(taskKey);
   if (!task) notFound();

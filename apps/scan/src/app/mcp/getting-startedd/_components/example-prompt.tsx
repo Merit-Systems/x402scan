@@ -7,10 +7,10 @@ import { Input } from '@/components/ui/input';
 
 import { ClientIcon } from '@/app/mcp/_components/clients/icons';
 
-import { clients } from '@/app/mcp/_components/clients/data';
+import { clients } from '@/app/mcp/_lib/clients';
 
 import type { ReactNode } from 'react';
-import type { Clients } from '@/app/mcp/_components/clients/data';
+import type { Clients } from '@/app/mcp/_lib/clients';
 import type { LucideIcon } from 'lucide-react';
 
 interface Tool {

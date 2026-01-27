@@ -2,9 +2,11 @@
 
 import { useRef } from 'react';
 
-import { Logo } from '@/components/logo';
-import { AnimatedBeam } from '@/components/magicui/animated-beam';
 import { Card } from '@/components/ui/card';
+import { AnimatedBeam } from '@/components/magicui/animated-beam';
+
+import { Logo } from '@/components/logo';
+
 import { cn } from '@/lib/utils';
 
 interface Props {

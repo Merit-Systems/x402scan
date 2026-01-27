@@ -6,9 +6,9 @@ import { Logo } from '@/components/logo';
 
 import { ClientDemosSection } from './section';
 
-import { ClientTypes } from '../../../_components/clients/data';
+import { ClientTypes } from '@/app/mcp/_lib/clients';
 
-import type { McpSearchParams } from '../../../_lib/params';
+import type { McpSearchParams } from '@/app/mcp/_lib/params';
 import type { Route } from 'next';
 
 export const ClaudeDesktopDemo: React.FC<McpSearchParams> = props => {

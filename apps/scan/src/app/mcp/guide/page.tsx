@@ -1,7 +1,4 @@
-import { Body } from '@/app/_components/layout/page-utils';
-
 import { TaskSelector } from './_components/task-selector';
-import { ContinueCard } from './_components/continue-card';
 
 import { getGuideProgressServer } from './_lib/cookies/server';
 import { Badge } from '@/components/ui/badge';
