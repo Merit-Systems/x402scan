@@ -29,7 +29,7 @@ export const registerWalletTools: RegisterTools = ({
     toolName,
     {
       title: 'Get Wallet Info',
-      description: `Get wallet address and USDC balance on Base. Auto-creates wallet on first use (~/.x402scan-mcp/wallet.json). Returns deposit link. Check before paid API calls.`,
+      description: `Get wallet address and USDC balance on Base. Auto-creates wallet on first use (~/.x402scan-mcp/wallet.json). Returns deposit link. Check before first paid API call.`,
       outputSchema,
       annotations: {
         readOnlyHint: true,
