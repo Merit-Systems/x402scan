@@ -29,6 +29,9 @@ const config: KnipConfig = {
     'packages/internal/databases/analytics': {
       project: ['src/**/*.ts'],
     },
+    'packages/internal/databases/partners': {
+      project: ['src/**/*.ts'],
+    },
     'packages/internal/databases/transfers': {
       project: ['src/**/*.ts'],
       ignoreDependencies: ['rimraf', '@prisma/client'],

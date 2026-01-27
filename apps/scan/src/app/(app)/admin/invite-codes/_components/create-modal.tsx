@@ -17,18 +17,44 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { api } from '@/trpc/client';
 
 export const CreateInviteCodeButton = () => {
   const [open, setOpen] = useState(false);
+  const [createPartnerOpen, setCreatePartnerOpen] = useState(false);
   const [code, setCode] = useState('');
   const [amount, setAmount] = useState('');
   const [maxRedemptions, setMaxRedemptions] = useState('1');
   const [uniqueRecipients, setUniqueRecipients] = useState(true);
   const [expiresAt, setExpiresAt] = useState('');
   const [note, setNote] = useState('');
+  const [partnerId, setPartnerId] = useState<string>('');
+
+  // Partner creation form state
+  const [partnerName, setPartnerName] = useState('');
+  const [partnerEmail, setPartnerEmail] = useState('');
+  const [partnerOrganization, setPartnerOrganization] = useState('');
+  const [partnerMeritContact, setPartnerMeritContact] = useState('');
 
   const utils = api.useUtils();
+
+  const { data: partners } = api.admin.partners.list.useQuery();
+
+  const createPartnerMutation = api.admin.partners.create.useMutation({
+    onSuccess: newPartner => {
+      void utils.admin.partners.list.invalidate();
+      setPartnerId(newPartner.id);
+      setCreatePartnerOpen(false);
+      resetPartnerForm();
+    },
+  });
 
   const createMutation = api.admin.inviteCodes.create.useMutation({
     onSuccess: () => {
@@ -45,11 +71,29 @@ export const CreateInviteCodeButton = () => {
     setUniqueRecipients(true);
     setExpiresAt('');
     setNote('');
+    setPartnerId('');
+  };
+
+  const resetPartnerForm = () => {
+    setPartnerName('');
+    setPartnerEmail('');
+    setPartnerOrganization('');
+    setPartnerMeritContact('');
+  };
+
+  const handleCreatePartner = (e: React.FormEvent) => {
+    e.preventDefault();
+    createPartnerMutation.mutate({
+      name: partnerName,
+      email: partnerEmail,
+      organization: partnerOrganization,
+      merit_contact: partnerMeritContact,
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount) return;
+    if (!amount || !partnerId) return;
 
     // Convert datetime-local value to ISO format with timezone
     let expiresAtISO: Date | undefined;
@@ -64,6 +108,7 @@ export const CreateInviteCodeButton = () => {
       uniqueRecipients,
       expiresAt: expiresAtISO,
       note: note || undefined,
+      partnerId,
     });
   };
 
@@ -83,6 +128,38 @@ export const CreateInviteCodeButton = () => {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="partner">
+              Partner <span className="text-destructive">*</span>
+            </Label>
+            <div className="flex gap-2">
+              <Select value={partnerId} onValueChange={setPartnerId} required>
+                <SelectTrigger className="w-full" id="partner">
+                  <SelectValue placeholder="Select a partner" />
+                </SelectTrigger>
+                <SelectContent>
+                  {partners?.map(partner => (
+                    <SelectItem key={partner.id} value={partner.id}>
+                      {partner.name}{' '}
+                      {partner.organization && `(${partner.organization})`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setCreatePartnerOpen(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                New
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Select a partner or create a new one
+            </p>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="code">Code (Optional)</Label>
             <Input
@@ -175,12 +252,100 @@ export const CreateInviteCodeButton = () => {
             </Button>
             <Button
               type="submit"
-              disabled={createMutation.isPending || !amount}
+              disabled={createMutation.isPending || !amount || !partnerId}
             >
               {createMutation.isPending ? 'Creating...' : 'Create'}
             </Button>
           </DialogFooter>
         </form>
+
+        {/* Create Partner Dialog */}
+        <Dialog open={createPartnerOpen} onOpenChange={setCreatePartnerOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Create Partner</DialogTitle>
+              <DialogDescription>
+                Create a new partner before generating the invite code.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleCreatePartner} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="partnerName">
+                  Name <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="partnerName"
+                  placeholder="John Doe"
+                  value={partnerName}
+                  onChange={e => setPartnerName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="partnerEmail">
+                  Email <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="partnerEmail"
+                  type="email"
+                  placeholder="john@example.com"
+                  value={partnerEmail}
+                  onChange={e => setPartnerEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="partnerOrganization">
+                  Organization <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="partnerOrganization"
+                  placeholder="Acme Inc"
+                  value={partnerOrganization}
+                  onChange={e => setPartnerOrganization(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="partnerMeritContact">
+                  Merit Contact <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="partnerMeritContact"
+                  placeholder="Contact name at Merit"
+                  value={partnerMeritContact}
+                  onChange={e => setPartnerMeritContact(e.target.value)}
+                  required
+                />
+              </div>
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCreatePartnerOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={
+                    createPartnerMutation.isPending ||
+                    !partnerName ||
+                    !partnerEmail ||
+                    !partnerOrganization ||
+                    !partnerMeritContact
+                  }
+                >
+                  {createPartnerMutation.isPending ? 'Creating...' : 'Create'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );
