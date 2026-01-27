@@ -2,36 +2,32 @@
 
 import { useMemo, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { ChevronDownIcon } from 'lucide-react';
+
+import { Accordion } from '../../_components/accordion';
+
+import {
+  Accordion as AccordionPrimitive,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion';
 
 import { toast } from 'sonner';
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { CopyButton } from '@/components/ui/copy-button';
 
-import { ClaudeAccordionItem } from './item';
-
-import type { Route } from 'next';
-import type { Step } from './item';
-import type { McpSearchParams } from '@/app/mcp/_lib/params';
 import { McpbDisplay } from './steps/mcpb';
-import { ChevronDownIcon } from 'lucide-react';
+
+import { Clients } from '@/app/mcp/_lib/clients';
+
+import type { McpSearchParams } from '@/app/mcp/_lib/params';
+import type { BaseStep } from '../../_components/accordion/item';
 
 export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
-  const [currentStep, setCurrentStep] = useState<number>(0);
   const [hasDownloadedMcpb, setHasDownloadedMcpb] = useState(false);
 
-  const router = useRouter();
-
-  const goToNextStep = () => setCurrentStep(prev => prev + 1);
-  const goToPreviousStep = () => setCurrentStep(prev => prev - 1);
-
-  const steps: Step[] = useMemo(
+  const steps: BaseStep[] = useMemo(
     () => [
       {
         title: 'Install Claude Desktop',
@@ -50,7 +46,6 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
           </p>
         ),
         continueText: 'I Have Claude Desktop',
-        onNext: goToNextStep,
       },
       {
         title: 'Download the x402scan Extension',
@@ -69,12 +64,11 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
           </p>
         ),
         continueText: hasDownloadedMcpb ? 'Continue' : 'Download',
-        onNext: () => {
+        onNext: async () => {
           if (hasDownloadedMcpb) {
-            goToNextStep();
-            return;
+            return Promise.resolve();
           }
-          void fetch('/x402scan.mcpb')
+          return await fetch('/x402scan.mcpb')
             .then(res => res.blob())
             .then(blob => {
               const url = URL.createObjectURL(blob);
@@ -86,7 +80,6 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
               link.parentNode?.removeChild(link);
               window.URL.revokeObjectURL(url);
               setHasDownloadedMcpb(true);
-              goToNextStep();
             })
             .catch(err => {
               toast.error(
@@ -100,7 +93,7 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
         content: (
           <div className="flex flex-col gap-2">
             <McpbDisplay />
-            <Accordion type="single" collapsible>
+            <AccordionPrimitive type="single" collapsible>
               <AccordionItem value="faq">
                 <AccordionTrigger className="text-muted-foreground pt-1 pb-0 items-center">
                   <span>Why does claude warn about installing MCPB files?</span>
@@ -138,11 +131,10 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-            </Accordion>
+            </AccordionPrimitive>
           </div>
         ),
         continueText: "I've Installed the MCP",
-        onNext: goToNextStep,
       },
       ...(invite
         ? [
@@ -150,7 +142,10 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
               title: 'Redeem Invite Code',
               content: (
                 <div className="flex flex-col gap-2">
-                  <p>Paste the following prompt into a new chat window:</p>
+                  <p>
+                    Paste the following prompt into a new chat window to redeem
+                    your invite code:
+                  </p>
                   <div className="bg-muted p-2 rounded-lg flex justify-between items-center gap-2">
                     <p>Redeem my invite code {invite} on the x402scan MCP</p>
                     <CopyButton
@@ -160,49 +155,12 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
                 </div>
               ),
               continueText: 'Next',
-              onNext: () => {
-                goToNextStep();
-              },
             },
           ]
         : []),
-      {
-        title: 'Start Exploring x402',
-        content: (
-          <p>
-            You can now access all x402-powered resources through the x402scan
-            MCP!
-          </p>
-        ),
-        continueText: "I'm Ready to Explore",
-        onNext: () =>
-          router.push(
-            '/mcp/getting-started' as Route<'mcp/claude/getting-started'>
-          ),
-      },
     ],
-    [hasDownloadedMcpb, router, invite]
+    [hasDownloadedMcpb, invite]
   );
 
-  return (
-    <Accordion
-      type="single"
-      value={currentStep.toString()}
-      onValueChange={value => setCurrentStep(Number(value))}
-      className="space-y-4"
-    >
-      {steps.map((step, index) => (
-        <ClaudeAccordionItem
-          key={index}
-          index={index}
-          title={step.title}
-          content={step.content}
-          continueText={step.continueText}
-          onNext={step.onNext}
-          onPrevious={goToPreviousStep}
-          currentStep={currentStep}
-        />
-      ))}
-    </Accordion>
-  );
+  return <Accordion steps={steps} client={Clients.Claude} />;
 };

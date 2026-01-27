@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 
-import type { ClientInstallComponent } from '.';
+import type { ClientInstallComponent } from '../install';
 
 const encodeConfig = (config: Record<string, unknown>) => {
   const payload = JSON.stringify(config);

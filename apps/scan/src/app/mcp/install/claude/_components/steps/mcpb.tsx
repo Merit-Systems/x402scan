@@ -1,7 +1,7 @@
 import Lottie from 'lottie-react';
 
 import { Clients } from '@/app/mcp/_lib/clients';
-import { ClientIcon } from '@/app/mcp/_components/clients/icons';
+import { ClientIcon } from '@/app/mcp/_components/client-icon';
 import { File } from 'lucide-react';
 
 import doubleTap from './double-tap.json';

@@ -1,11 +1,11 @@
 import type React from 'react';
 
-import { Clients } from '../../../../../_components/clients/data';
+import { Clients } from '@/app/mcp/_lib/clients';
 
-import { ClaudeCodeInstall } from './claude-code';
-import { CodexInstall } from './codex';
-import { CursorInstall } from './cursor';
-import { VscodeInstall } from './vscode';
+import { ClaudeCodeInstall } from './client-install/claude-code';
+import { CodexInstall } from './client-install/codex';
+import { CursorInstall } from './client-install/cursor';
+import { VscodeInstall } from './client-install/vscode';
 
 import type { McpSearchParams } from '@/app/mcp/_lib/params';
 

@@ -14,7 +14,7 @@ import {
   CommandItem,
 } from '@/components/ui/command';
 
-import { ClientIcon } from '@/app/mcp/_components/clients/icons';
+import { ClientIcon } from '@/app/mcp/_components/client-icon';
 
 import { clients, ClientTypes } from '@/app/mcp/_lib/clients';
 

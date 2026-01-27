@@ -35,8 +35,8 @@ export function TaskSelector() {
                     <BookBinding />
                     <BookCover>
                       <BookContent className="px-2">
-                        <div className="p-1.5 bg-white/25 dark:bg-black/50 rounded-full shadow-[inset_0_0px_-2px_6px_rgba(0,0,0,0.35)] dark:shadow-[inset_0_-2px_6px_0_rgba(0,0,0,0.35)]">
-                          <Icon className="size-4 text-neutral-700 dark:text-neutral-400" />
+                        <div className="p-1.5 bg-white/50 dark:bg-black/50 rounded-full [box-shadow:0_1px_rgba(0,0,0,0.15)] dark:[box-shadow:0_0.5_rgba(255,255,255,0.15)]">
+                          <Icon className="size-4 text-neutral-500 dark:text-neutral-400" />
                         </div>
                       </BookContent>
                     </BookCover>

@@ -2,17 +2,21 @@ import { Check } from 'lucide-react';
 
 import {
   AccordionContent,
-  AccordionItem,
+  AccordionItem as AccordionItemPrimitive,
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 
 import { cn } from '@/lib/utils';
 
-export interface Step {
+export interface BaseStep {
   title: string;
   content: React.ReactNode;
   continueText: string;
+  onNext?: () => Promise<void>;
+}
+
+export interface Step extends Omit<BaseStep, 'onNext'> {
   onNext: () => void;
 }
 
@@ -22,7 +26,7 @@ interface Props extends Step {
   onPrevious?: () => void;
 }
 
-export const ClaudeAccordionItem: React.FC<Props> = ({
+export const AccordionItem: React.FC<Props> = ({
   index,
   title,
   content,
@@ -34,7 +38,7 @@ export const ClaudeAccordionItem: React.FC<Props> = ({
   const isCompleted = currentStep > index;
 
   return (
-    <AccordionItem
+    <AccordionItemPrimitive
       value={index.toString()}
       className="w-full border rounded-lg last:border-b p-4"
     >
@@ -61,6 +65,6 @@ export const ClaudeAccordionItem: React.FC<Props> = ({
           )}
         </div>
       </AccordionContent>
-    </AccordionItem>
+    </AccordionItemPrimitive>
   );
 };

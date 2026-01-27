@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { CopyButton } from '@/components/ui/copy-button';
 import { Input } from '@/components/ui/input';
 
-import { ClientIcon } from '@/app/mcp/_components/clients/icons';
+import { ClientIcon } from '@/app/mcp/_components/client-icon';
 
 import { clients } from '@/app/mcp/_lib/clients';
 

@@ -7,7 +7,7 @@ import { ChartCandlestick, ImageIcon, Search } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { AnimatedBeam } from '@/components/magicui/animated-beam';
 
-import { ClientIcon } from '@/app/mcp/_components/clients/icons';
+import { ClientIcon } from '@/app/mcp/_components/client-icon';
 
 import { Chip } from './chip';
 
