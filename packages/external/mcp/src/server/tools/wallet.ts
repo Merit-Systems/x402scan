@@ -17,8 +17,13 @@ export const registerWalletTools: RegisterTools = ({
     toolName,
     {
       title: 'Get Wallet Info',
-      description:
-        'Check wallet address and USDC balance. Creates wallet if needed.',
+      description: `Get wallet address and USDC balance on Base. Auto-creates wallet on first use (~/.x402scan-mcp/wallet.json). Returns deposit link. Check before paid API calls.`,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
     async () => {
       const balanceResult = await getBalance({

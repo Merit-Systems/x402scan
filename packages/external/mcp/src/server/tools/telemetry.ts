@@ -35,6 +35,12 @@ export const registerTelemetryTools: RegisterTools = ({
           .optional()
           .describe('Detailed report with context, logs, repro steps'),
       }),
+      annotations: {
+        readOnlyHint: false, // Sends data to external service
+        destructiveHint: false,
+        idempotentHint: false, // Multiple reports may be useful
+        openWorldHint: true,
+      },
     },
     async input => {
       log.info('Submitting error report', {

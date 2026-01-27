@@ -16,10 +16,16 @@ export const registerRedeemInviteTool: RegisterTools = ({
     toolName,
     {
       title: 'Redeem Invite',
-      description: 'Redeem an invite code to receive USDC.',
+      description: `Redeem an invite code for free USDC on Base. One-time use per code. Returns amount received and transaction hash. Use get_wallet_info after to verify balance.`,
       inputSchema: z.object({
         code: z.string().min(1).describe('The invite code'),
       }),
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false, // Additive (adds funds), not destructive
+        idempotentHint: true, // Same code can't be redeemed twice
+        openWorldHint: true,
+      },
     },
     async ({ code }) => {
       const result = await redeemInviteCode({

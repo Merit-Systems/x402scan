@@ -37,9 +37,14 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
     toolName,
     {
       title: 'Fetch',
-      description:
-        'Makes an http fetch request. If the request is to an x402-protected resource, it will handle payment automatically.',
+      description: `HTTP fetch with automatic x402 payment. Detects 402 responses, signs payment, retries with payment headers. Returns response data + payment details (price, tx hash) if paid. Check balance with get_wallet_info first.`,
       inputSchema: requestSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
     async input => {
       const coreClient = x402Client.fromConfig({

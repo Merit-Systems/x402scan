@@ -25,27 +25,19 @@ export function registerDiscoveryTools(server: McpServer): void {
     toolName,
     {
       title: 'Discover API Endpoints',
-      description: `Discover x402-protected resources on an origin. Returns a list of resource URLs.
-        Use check_x402_endpoint separately to get detailed pricing/schema info for specific resources.
-
-        Known default origins with resource packs. Discover if more needed:
-        - https://enrichx402.com ->
-            People + Org search
-            Google Maps (places + locations)
-            Grok twitter search
-            Exa web search
-            Clado linkedin data
-            Firecrawl web scrape
-            WhitePages (business directory)
-            Email enrichment
-        - https://stablestudio.io -> generate images / videos
-        `,
+      description: `Find x402 resources on an origin via .well-known/x402, DNS TXT, or llms.txt. Returns resource URLs. Known origins: enrichx402.com (people/org search, maps, twitter, linkedin, web scrape), stablestudio.io (image/video gen).`,
       inputSchema: {
         url: z
           .url()
           .describe(
             'The origin URL or any URL on the origin to discover resources from'
           ),
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
       },
     },
     async ({ url }) => {
