@@ -3,8 +3,10 @@ import { TaskSelector } from './_components/task-selector';
 import { getGuideProgressServer } from './_lib/cookies/server';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Book, BookBinding, BookCover } from './_components/book';
+import { Book, BookBinding, BookCover } from '../_components/guide/book';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { Logo } from '@/components/logo';
 
 export default async function GuidePage() {
   const progress = await getGuideProgressServer();
@@ -22,7 +24,13 @@ export default async function GuidePage() {
       <Card className="mt-12 flex flex-col items-center gap-4 pb-4">
         <Book className="-mt-12 h-45.25 w-40">
           <BookBinding className="w-4" />
-          <BookCover className="relative bg-black from-neutral-100 to-neutral-200 dark:from-neutral-100 dark:to-neutral-200">
+          <BookCover
+            className={cn(
+              'relative from-neutral-100 to-neutral-200',
+              'dark:from-neutral-100 dark:to-neutral-200',
+              'flex flex-col justify-between p-2'
+            )}
+          >
             <svg
               fill="none"
               height="100%"
@@ -36,19 +44,22 @@ export default async function GuidePage() {
                 fill="currentColor"
               ></path>
             </svg>
-            <div className="p-2">
-              <h2 className="text-lg font-bold dark:text-neutral-800">
-                Build <br /> Enrichment <br /> Workflows
-              </h2>
+            <h2 className="text-lg font-bold dark:text-neutral-800">
+              Build <br /> Enrichment <br /> Workflows
+            </h2>
+            <div className="flex justify-end">
+              <div className="p-2 rounded-full bg-background shadow-none">
+                <Logo />
+              </div>
             </div>
           </BookCover>
         </Book>
         <div className="flex flex-col gap-4 items-center">
           <p className="max-w-xs text-center font-medium">
-            An interactive prompt guide for building knowledge work automations.
+            Interactive Prompt Guides for Building Knowledge Work Automations.
           </p>
           <Button size="lg" className="w-fit">
-            Start Using x402
+            View Guides
           </Button>
         </div>
       </Card>

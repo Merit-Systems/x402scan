@@ -19,7 +19,7 @@ export const ClaudeDesktopDemo: React.FC<McpSearchParams> = props => {
       cta={
         <Link
           href={
-            `/mcp/claude${props.invite ? `?invite=${props.invite}` : ''}` as Route
+            `/mcp/install/claude${props.invite ? `?invite=${props.invite}` : ''}` as Route<'mcp/install/[client]'>
           }
         >
           <Button size="xl" className="w-fit font-semibold">

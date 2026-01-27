@@ -7,7 +7,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-import { Book, BookBinding, BookCover, BookContent } from './book';
+import {
+  Book,
+  BookBinding,
+  BookCover,
+  BookContent,
+} from '../../_components/guide/book';
 
 import { selectTask } from '../_lib/actions';
 import { tasks, taskIcons } from '../_data';
