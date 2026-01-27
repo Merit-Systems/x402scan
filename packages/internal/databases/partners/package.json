@@ -1,0 +1,36 @@
+{
+    "name": "@x402scan/partners-db",
+    "version": "1.0.0",
+    "private": true,
+    "types": "./dist/index.d.ts",
+    "main": "./dist/index.js",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "lint": "eslint . --max-warnings 0",
+        "lint:fix": "eslint . --fix",
+        "types:check": "tsc --noEmit",
+        "knip": "pnpm -w knip --workspace ./packages/internal/databases/partners",
+        "format": "pnpm -w format:dir ./packages/internal/databases/partners",
+        "format:check": "pnpm -w format:check:dir ./packages/internal/databases/partners"
+    },
+    "dependencies": {
+        "@clickhouse/client": "catalog:clickhouse"
+    },
+    "devDependencies": {
+        "@types/node": "catalog:",
+        "@x402scan/eslint-config": "workspace:*",
+        "@x402scan/typescript-config": "workspace:*",
+        "eslint": "catalog:",
+        "typescript": "catalog:"
+    }
+}
