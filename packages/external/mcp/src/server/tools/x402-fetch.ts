@@ -97,7 +97,14 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
         settlementResult.isOk() || paymentPayload !== undefined
           ? {
               ...(paymentPayload !== undefined
-                ? { price: paymentPayload.accepted.amount }
+                ? {
+                    price: tokenStringToNumber(
+                      paymentPayload.accepted.amount
+                    ).toLocaleString('en-US', {
+                      style: 'currency',
+                      currency: 'USD',
+                    }),
+                  }
                 : {}),
               ...(settlementResult.isOk()
                 ? { payment: settlementResult.value }
