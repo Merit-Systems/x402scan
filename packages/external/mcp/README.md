@@ -83,15 +83,15 @@ On first run, a wallet is generated at `~/.x402scan-mcp/wallet.json`. Deposit US
 
 ## Tools
 
-| Tool                  | Description                                                  |
-| --------------------- | ------------------------------------------------------------ |
-| `fetch`               | Fetch x402-protected resource with automatic payment         |
-| `fetch_with_auth`     | Make request to SIWX-protected endpoint with automatic auth  |
-| `get_wallet_info`     | Get wallet address and USDC balance                          |
-| `redeem_invite`       | Redeem an invite code to receive USDC                        |
-| `check_endpoint_schema` | Check if endpoint is x402-protected, get pricing/schema/auth |
+| Tool                     | Description                                                  |
+| ------------------------ | ------------------------------------------------------------ |
+| `fetch`                  | Fetch x402-protected resource with automatic payment         |
+| `fetch_with_auth`        | Make request to SIWX-protected endpoint with automatic auth  |
+| `get_wallet_info`        | Get wallet address and USDC balance                          |
+| `redeem_invite`          | Redeem an invite code to receive USDC                        |
+| `check_endpoint_schema`  | Check if endpoint is x402-protected, get pricing/schema/auth |
 | `discover_api_endpoints` | Discover x402 resources from origin's .well-known/x402       |
-| `report_error`        | Report critical MCP tool bugs to x402scan developers         |
+| `report_error`           | Report critical MCP tool bugs to x402scan developers         |
 
 ## Environment
 
