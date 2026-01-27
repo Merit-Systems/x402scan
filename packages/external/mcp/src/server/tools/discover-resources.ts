@@ -38,8 +38,8 @@ export function registerDiscoveryTools(server: McpServer): void {
             WhitePages (business directory)
             Email enrichment
         - https://stablestudio.io -> generate and edit images / videos
-        `,      
-        inputSchema: {
+        `,
+      inputSchema: {
         url: z
           .url()
           .describe(
