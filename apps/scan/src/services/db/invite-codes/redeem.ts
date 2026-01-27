@@ -14,6 +14,7 @@ import { mixedAddressSchema } from '@/lib/schemas';
 
 import { Chain } from '@/types/chain';
 import { dbErr, dbOk } from '../lib';
+import { upsertWalletAddressForInviteCode } from '../partners';
 
 import type { DatabaseError } from '../lib';
 
@@ -243,6 +244,14 @@ export const redeemInviteCode = async ({
           completedAt: new Date(),
         },
       });
+
+      // Update partner wallet addresses in ClickHouse (non-blocking)
+      try {
+        await upsertWalletAddressForInviteCode(inviteCode.id, recipientAddr);
+      } catch (error) {
+        // Log but don't fail - this is a side effect that shouldn't block redemption
+        console.error('Failed to update partner wallet addresses:', error);
+      }
 
       return ok({
         redemptionId: redemption.id,
