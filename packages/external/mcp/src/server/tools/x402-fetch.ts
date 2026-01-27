@@ -107,7 +107,12 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
                   }
                 : {}),
               ...(settlementResult.isOk()
-                ? { payment: settlementResult.value }
+                ? {
+                    payment: {
+                      success: settlementResult.value.success,
+                      transactionHash: settlementResult.value.transaction,
+                    },
+                  }
                 : {}),
             }
           : undefined
