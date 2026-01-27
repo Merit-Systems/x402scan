@@ -54,8 +54,8 @@
     model: claude-sonnet-4-5-20250929
     mcp:
       servers:
-        - command: npx
-          args: ['-y', '@x402scan/mcp@latest']
+        - command: sh
+          args: ['-c', 'node ${MCP_SERVER_DIR}/index.js']
           name: x402scan
     include_partial_messages: true
     max_budget_usd: 1.50
@@ -101,8 +101,8 @@
     model: claude-opus-4-5-20251101
     mcp:
       servers:
-        - command: npx
-          args: ['-y', '@x402scan/mcp@latest']
+        - command: sh
+          args: ['-c', 'node ${MCP_SERVER_DIR}/index.js']
           name: x402scan
     include_partial_messages: true
     max_budget_usd: 5.00

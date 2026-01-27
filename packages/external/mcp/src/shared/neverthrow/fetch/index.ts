@@ -1,4 +1,4 @@
-import { err, resultFromPromise } from '@x402scan/neverthrow';
+import { err, ok, resultFromPromise } from '@x402scan/neverthrow';
 
 import type z from 'zod';
 
@@ -9,8 +9,10 @@ import { safeParse } from '../parse';
 
 const errorType = 'fetch';
 
-const fetchErr = (surface: string, error: BaseFetchError) =>
+export const fetchErr = (surface: string, error: BaseFetchError) =>
   err(errorType, surface, error);
+export const fetchOk = <T>(value: T) => ok(value);
+
 export const fetchHttpErr = (surface: string, response: Response) =>
   fetchErr(surface, {
     cause: 'http' as const,

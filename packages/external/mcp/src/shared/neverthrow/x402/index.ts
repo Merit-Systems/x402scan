@@ -1,5 +1,6 @@
 import {
   err,
+  ok,
   resultFromPromise,
   resultFromThrowable,
 } from '@x402scan/neverthrow';
@@ -13,6 +14,7 @@ import type { PrivateKeyAccount } from 'viem';
 
 const errorType = 'x402';
 
+export const x402Ok = <T>(value: T) => ok(value);
 export const x402Err = (cause: string, error: BaseX402Error) =>
   err(errorType, cause, error);
 
