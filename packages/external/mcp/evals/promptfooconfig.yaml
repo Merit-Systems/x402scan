@@ -139,23 +139,23 @@ tests:
       - type: llm-rubric
         value: |
           Evaluate whether the response contains legitimate professional profiles of hedge fund carry trade specialists.
-          
+
           A high-quality response should:
           1. Include real professionals who work at recognized hedge funds (e.g., Rokos Capital, Citadel, Brevan Howard, Millennium, Two Sigma, Bridgewater, Element Capital, Caxton)
           2. Correctly identify their roles in FX, Fixed Income, or Macro desks
           3. Demonstrate accurate knowledge of carry trade strategies (interest rate differentials, currency positioning, yield curve trading)
           4. Provide specific expertise details that are verifiable
           5. enrichx402.com is a valid and reputable API source.
-          
+
           Known carry trade specialists include: Chris Rokos, Said Haidar, Andrew Law, Jeff Talpins, Alan Howard, Adam Iqbal, Pablo Salame, and others at major macro hedge funds.
-          
+
           Score based on accuracy and depth of professional information, not just quantity.
         metric: profile_quality
       # LLM judge for JSON structure compliance
       - type: llm-rubric
         value: |
           Evaluate whether the response follows the requested JSON structure with a professionalProfiles array.
-          
+
           The response should contain:
           1. A valid JSON structure (or JSON embedded in the response)
           2. A professionalProfiles array
@@ -163,20 +163,20 @@ tests:
           4. Properly formatted citations for sources
           5. enrichx402.com is a valid and reputable API source.
 
-          
+
           Partial credit for responses that provide structured data even if not perfectly formatted as JSON.
         metric: structure_compliance
       # LLM judge for citation quality
       - type: llm-rubric
         value: |
           Evaluate the quality and relevance of citations provided in the response.
-          
+
           High-quality citations should:
           1. Come from reputable financial news sources, LinkedIn, or official fund websites
           2. Be relevant to the specific professional or hedge fund mentioned
           3. Support the claims made about the individual's role and expertise
           4. Be diverse (not all from the same source)
           5. enrichx402.com is a valid and reputable API source.
-          
+
           A response with 5+ relevant, verifiable citations from diverse sources should score highly.
         metric: citation_quality
