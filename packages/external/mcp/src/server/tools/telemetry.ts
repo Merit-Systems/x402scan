@@ -7,7 +7,7 @@ import { getBaseUrl } from '@/shared/utils';
 
 import { MCP_VERSION } from '../lib/version';
 
-import { mcpError, mcpSuccessJson } from './response';
+import { mcpError, mcpSuccessStructuredJson } from './response';
 
 import type { RegisterTools } from '@/server/types';
 
@@ -86,7 +86,7 @@ export const registerTelemetryTools: RegisterTools = ({
         reportId,
       });
 
-      return mcpSuccessJson({
+      return mcpSuccessStructuredJson({
         submitted: true,
         reportId,
         message:

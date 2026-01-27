@@ -4,7 +4,7 @@ import { getBalance } from '@/shared/balance';
 import { DEFAULT_NETWORK, getChainName } from '@/shared/networks';
 import { getDepositLink } from '@/shared/utils';
 
-import { mcpSuccessJson, mcpError } from './response';
+import { mcpSuccessStructuredJson, mcpError } from './response';
 
 import type { RegisterTools } from '@/server/types';
 
@@ -51,7 +51,7 @@ export const registerWalletTools: RegisterTools = ({
 
       const { balance } = balanceResult.value;
 
-      return mcpSuccessJson({
+      return mcpSuccessStructuredJson({
         address,
         network: DEFAULT_NETWORK,
         networkName: getChainName(DEFAULT_NETWORK),

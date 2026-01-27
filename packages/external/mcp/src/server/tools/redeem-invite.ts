@@ -1,5 +1,5 @@
 import z from 'zod';
-import { mcpError, mcpSuccessJson } from './response';
+import { mcpError, mcpSuccessStructuredJson } from './response';
 
 import { redeemInviteCode } from '@/shared/redeem-invite';
 
@@ -48,7 +48,7 @@ export const registerRedeemInviteTool: RegisterTools = ({
 
       const { amount, txHash } = result.value;
 
-      return mcpSuccessJson({
+      return mcpSuccessStructuredJson({
         redeemed: true,
         amount: `${amount} USDC`,
         txHash,

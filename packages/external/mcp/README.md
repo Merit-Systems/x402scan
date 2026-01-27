@@ -110,7 +110,7 @@ Base, Base Sepolia, Ethereum, Optimism, Arbitrum, Polygon (via CAIP-2)
 pnpm install
 
 # Add local server to Claude Code
-claude mcp add x402scan-dev -- npx tsx /path/to/x402scan-mcp/src/index.ts
+claude mcp add x402scan-dev -- npx tsx src/index.ts
 
 # Build
 pnpm build
