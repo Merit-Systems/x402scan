@@ -1,8 +1,8 @@
 {
-  "evalId": "eval-PQu-2026-01-26T23:41:58",
+  "evalId": "eval-QXO-2026-01-27T01:26:21",
   "results": {
     "version": 3,
-    "timestamp": "2026-01-26T23:41:58.654Z",
+    "timestamp": "2026-01-27T01:26:21.881Z",
     "prompts": [
       {
         "id": "45a71bb638442f6eb361ecc6ae8738b7142ff4e4ed0d8fa9ac195fd12b6ad1f8",
@@ -16,12 +16,12 @@
           "testErrorCount": 0,
           "assertPassCount": 0,
           "assertFailCount": 0,
-          "totalLatencyMs": 61081,
+          "totalLatencyMs": 213988,
           "tokenUsage": {
-            "prompt": 1,
-            "completion": 1245,
+            "prompt": 1035,
+            "completion": 4884,
             "cached": 0,
-            "total": 1246,
+            "total": 5919,
             "numRequests": 1,
             "completionDetails": {
               "reasoning": 0,
@@ -43,12 +43,12 @@
           },
           "namedScores": {},
           "namedScoresCount": {},
-          "cost": 0.43348974999999995
+          "cost": 1.1827605
         }
       },
       {
         "id": "e5395c824097e1abb19a863a61ff011bee0e3de9cee778a45d181699732a82e2",
-        "raw": "You are a helpful research assistant with access to web search and x402 premium API tools.\n\n{{query}}\n",
+        "raw": "You are a helpful deep research assistant with access to web search and x402 premium API tools.\n\nUse the x402 premium API tools to enrich the response.\n\n{{query}}\n",
         "label": "Prompt B",
         "provider": "x402scan MCP + WebTools - Sonnet 4.5",
         "metrics": {
@@ -58,12 +58,12 @@
           "testErrorCount": 0,
           "assertPassCount": 0,
           "assertFailCount": 0,
-          "totalLatencyMs": 72012,
+          "totalLatencyMs": 253314,
           "tokenUsage": {
-            "prompt": 1,
-            "completion": 1279,
+            "prompt": 2726,
+            "completion": 7479,
             "cached": 0,
-            "total": 1280,
+            "total": 10205,
             "numRequests": 1,
             "completionDetails": {
               "reasoning": 0,
@@ -85,7 +85,7 @@
           },
           "namedScores": {},
           "namedScoresCount": {},
-          "cost": 0.5021567499999999
+          "cost": 0.74911215
         }
       },
       {
@@ -94,19 +94,19 @@
         "label": "Prompt A",
         "provider": "x402scan MCP + WebTools - Opus 4.5",
         "metrics": {
-          "score": 0,
-          "testPassCount": 0,
+          "score": 1,
+          "testPassCount": 1,
           "testFailCount": 0,
           "testErrorCount": 0,
           "assertPassCount": 0,
           "assertFailCount": 0,
-          "totalLatencyMs": 0,
+          "totalLatencyMs": 113382,
           "tokenUsage": {
-            "prompt": 0,
-            "completion": 0,
+            "prompt": 822,
+            "completion": 2380,
             "cached": 0,
-            "total": 0,
-            "numRequests": 0,
+            "total": 3202,
+            "numRequests": 1,
             "completionDetails": {
               "reasoning": 0,
               "acceptedPrediction": 0,
@@ -127,28 +127,28 @@
           },
           "namedScores": {},
           "namedScoresCount": {},
-          "cost": 0
+          "cost": 1.0818587499999999
         }
       },
       {
         "id": "e5395c824097e1abb19a863a61ff011bee0e3de9cee778a45d181699732a82e2",
-        "raw": "You are a helpful research assistant with access to web search and x402 premium API tools.\n\n{{query}}\n",
+        "raw": "You are a helpful deep research assistant with access to web search and x402 premium API tools.\n\nUse the x402 premium API tools to enrich the response.\n\n{{query}}\n",
         "label": "Prompt B",
         "provider": "x402scan MCP + WebTools - Opus 4.5",
         "metrics": {
-          "score": 0,
-          "testPassCount": 0,
+          "score": 1,
+          "testPassCount": 1,
           "testFailCount": 0,
           "testErrorCount": 0,
           "assertPassCount": 0,
           "assertFailCount": 0,
-          "totalLatencyMs": 0,
+          "totalLatencyMs": 164693,
           "tokenUsage": {
-            "prompt": 0,
-            "completion": 0,
+            "prompt": 6,
+            "completion": 5063,
             "cached": 0,
-            "total": 0,
-            "numRequests": 0,
+            "total": 5069,
+            "numRequests": 1,
             "completionDetails": {
               "reasoning": 0,
               "acceptedPrediction": 0,
@@ -169,13 +169,13 @@
           },
           "namedScores": {},
           "namedScoresCount": {},
-          "cost": 0
+          "cost": 1.20650125
         }
       }
     ],
     "results": [
       {
-        "cost": 0.43348974999999995,
+        "cost": 1.0818587499999999,
         "gradingResult": {
           "pass": true,
           "score": 1,
@@ -188,11 +188,999 @@
             "numRequests": 0
           }
         },
-        "id": "841917fb-e07c-436f-bfaf-3990a5c9e4f5",
-        "latencyMs": 61081,
+        "id": "cccafdb8-72e8-4f25-b308-2662cab65ec9",
+        "latencyMs": 113382,
         "namedScores": {},
         "prompt": {
-          "raw": "Find and return the board members of Friends of the Rail Park\n",
+          "raw": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.\n",
+          "label": "Prompt A",
+          "config": {}
+        },
+        "promptId": "45a71bb638442f6eb361ecc6ae8738b7142ff4e4ed0d8fa9ac195fd12b6ad1f8",
+        "promptIdx": 2,
+        "provider": {
+          "id": "anthropic:claude-agent-sdk",
+          "label": "x402scan MCP + WebTools - Opus 4.5"
+        },
+        "response": {
+          "output": {
+            "answer": "## a16z Crypto General Partners\n\n### 1. Chris Dixon - Founder & Managing Partner\n**Investment Focus:** Layer 1 blockchain infrastructure, DeFi, zero-knowledge systems, decentralized identity, AI x Crypto intersection\n**Notable Investments:** Coinbase, OpenSea, Uniswap, dYdX, Optimism\n\n### 2. Arianna Simpson - General Partner\n**Investment Focus:** Consumer crypto and gaming (play-to-earn), NFTs, crypto gaming platforms, web3 creator economies\n**Notable Investments:** Axie Infinity/Sky Mavis, Yield Guild Games, Blackbird, Phantom wallet\n\n### 3. Ali Yahya - General Partner\n**Investment Focus:** Blockchain infrastructure, AI and blockchain intersection, restaking/modular architecture, privacy-preserving tech\n**Notable Investments:** Solana, LayerZero, EigenLayer\n\n### 4. Guy Wuollet - General Partner\n**Investment Focus:** DePIN (Decentralized Physical Infrastructure Networks), DeFi infrastructure, decentralized commerce\n**Notable Investments:** Solana, LayerZero, Gensyn, EigenLayer, Morpho, Babylon\n\n**Contact:** a16z does not publish individual partner emails. Contact via a16zcrypto.com, a16z.com/connect, or warm introductions. Partners are active on Twitter/X.",
+            "sources": [
+              "https://a16zcrypto.com/our-team/",
+              "https://a16zcrypto.com/team/chris-dixon/",
+              "https://a16zcrypto.com/team/arianna-simpson/",
+              "https://a16zcrypto.com/team/ali-yahya/",
+              "https://a16zcrypto.com/team/guy-wuollet/",
+              "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+              "https://a16z.com/ai-crypto-internet-chris-dixon/",
+              "https://www.kucoin.com/news/flash/a16z-crypto-promotes-guy-wuollet-to-general-partner"
+            ],
+            "tool_call_log": [
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "a16z crypto general partners list 2025 2026"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "a16z crypto team page general partners Arianna Simpson Ali Yahya Chris Dixon"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"a16z crypto\" partner email contact investment focus areas"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://a16zcrypto.com/our-team/",
+                  "prompt": "Extract the full list of general partners and other team members"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Chris Dixon investment focus thesis interests DeFi infrastructure blockchain"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Arianna Simpson a16z investment focus thesis consumer crypto gaming NFT"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Ali Yahya a16z investment focus thesis AI blockchain decentralized"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Guy Wuollet a16z crypto general partner investment focus"
+                },
+                "success": true
+              }
+            ]
+          },
+          "tokenUsage": {
+            "prompt": 822,
+            "completion": 2380,
+            "total": 3202
+          },
+          "cost": 1.0818587499999999,
+          "raw": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":109661,\"duration_api_ms\":165075,\"num_turns\":10,\"result\":\"The structured output has been provided with all the information about a16z crypto's general partners, their investment focuses, and contact information.\",\"session_id\":\"58098a9c-1fd6-4550-b731-bd19a8ea285a\",\"total_cost_usd\":1.0818587499999999,\"usage\":{\"input_tokens\":822,\"cache_creation_input_tokens\":17436,\"cache_read_input_tokens\":136067,\"output_tokens\":2380,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":17436}},\"modelUsage\":{\"claude-opus-4-5-20251101\":{\"inputTokens\":16677,\"outputTokens\":7820,\"cacheReadInputTokens\":136067,\"cacheCreationInputTokens\":100629,\"webSearchRequests\":7,\"costUSD\":1.0458497499999997,\"contextWindow\":200000,\"maxOutputTokens\":64000},\"claude-haiku-4-5-20251001\":{\"inputTokens\":34379,\"outputTokens\":326,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.036009,\"contextWindow\":200000,\"maxOutputTokens\":64000}},\"permission_denials\":[],\"structured_output\":{\"answer\":\"## a16z Crypto General Partners\\n\\n### 1. Chris Dixon - Founder & Managing Partner\\n**Investment Focus:** Layer 1 blockchain infrastructure, DeFi, zero-knowledge systems, decentralized identity, AI x Crypto intersection\\n**Notable Investments:** Coinbase, OpenSea, Uniswap, dYdX, Optimism\\n\\n### 2. Arianna Simpson - General Partner\\n**Investment Focus:** Consumer crypto and gaming (play-to-earn), NFTs, crypto gaming platforms, web3 creator economies\\n**Notable Investments:** Axie Infinity/Sky Mavis, Yield Guild Games, Blackbird, Phantom wallet\\n\\n### 3. Ali Yahya - General Partner\\n**Investment Focus:** Blockchain infrastructure, AI and blockchain intersection, restaking/modular architecture, privacy-preserving tech\\n**Notable Investments:** Solana, LayerZero, EigenLayer\\n\\n### 4. Guy Wuollet - General Partner\\n**Investment Focus:** DePIN (Decentralized Physical Infrastructure Networks), DeFi infrastructure, decentralized commerce\\n**Notable Investments:** Solana, LayerZero, Gensyn, EigenLayer, Morpho, Babylon\\n\\n**Contact:** a16z does not publish individual partner emails. Contact via a16zcrypto.com, a16z.com/connect, or warm introductions. Partners are active on Twitter/X.\",\"sources\":[\"https://a16zcrypto.com/our-team/\",\"https://a16zcrypto.com/team/chris-dixon/\",\"https://a16zcrypto.com/team/arianna-simpson/\",\"https://a16zcrypto.com/team/ali-yahya/\",\"https://a16zcrypto.com/team/guy-wuollet/\",\"https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/\",\"https://a16z.com/ai-crypto-internet-chris-dixon/\",\"https://www.kucoin.com/news/flash/a16z-crypto-promotes-guy-wuollet-to-general-partner\"],\"tool_call_log\":[{\"tool\":\"WebSearch\",\"input\":{\"query\":\"a16z crypto general partners list 2025 2026\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"a16z crypto team page general partners Arianna Simpson Ali Yahya Chris Dixon\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"\\\"a16z crypto\\\" partner email contact investment focus areas\"},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://a16zcrypto.com/our-team/\",\"prompt\":\"Extract the full list of general partners and other team members\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Chris Dixon investment focus thesis interests DeFi infrastructure blockchain\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Arianna Simpson a16z investment focus thesis consumer crypto gaming NFT\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Ali Yahya a16z investment focus thesis AI blockchain decentralized\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Guy Wuollet a16z crypto general partner investment focus\"},\"success\":true}]},\"uuid\":\"720563de-0a72-4ffd-b1f7-c202e18711e2\"}",
+          "sessionId": "58098a9c-1fd6-4550-b731-bd19a8ea285a",
+          "metadata": {
+            "structuredOutput": {
+              "answer": "## a16z Crypto General Partners\n\n### 1. Chris Dixon - Founder & Managing Partner\n**Investment Focus:** Layer 1 blockchain infrastructure, DeFi, zero-knowledge systems, decentralized identity, AI x Crypto intersection\n**Notable Investments:** Coinbase, OpenSea, Uniswap, dYdX, Optimism\n\n### 2. Arianna Simpson - General Partner\n**Investment Focus:** Consumer crypto and gaming (play-to-earn), NFTs, crypto gaming platforms, web3 creator economies\n**Notable Investments:** Axie Infinity/Sky Mavis, Yield Guild Games, Blackbird, Phantom wallet\n\n### 3. Ali Yahya - General Partner\n**Investment Focus:** Blockchain infrastructure, AI and blockchain intersection, restaking/modular architecture, privacy-preserving tech\n**Notable Investments:** Solana, LayerZero, EigenLayer\n\n### 4. Guy Wuollet - General Partner\n**Investment Focus:** DePIN (Decentralized Physical Infrastructure Networks), DeFi infrastructure, decentralized commerce\n**Notable Investments:** Solana, LayerZero, Gensyn, EigenLayer, Morpho, Babylon\n\n**Contact:** a16z does not publish individual partner emails. Contact via a16zcrypto.com, a16z.com/connect, or warm introductions. Partners are active on Twitter/X.",
+              "sources": [
+                "https://a16zcrypto.com/our-team/",
+                "https://a16zcrypto.com/team/chris-dixon/",
+                "https://a16zcrypto.com/team/arianna-simpson/",
+                "https://a16zcrypto.com/team/ali-yahya/",
+                "https://a16zcrypto.com/team/guy-wuollet/",
+                "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+                "https://a16z.com/ai-crypto-internet-chris-dixon/",
+                "https://www.kucoin.com/news/flash/a16z-crypto-promotes-guy-wuollet-to-general-partner"
+              ],
+              "tool_call_log": [
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "a16z crypto general partners list 2025 2026"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "a16z crypto team page general partners Arianna Simpson Ali Yahya Chris Dixon"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "\"a16z crypto\" partner email contact investment focus areas"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebFetch",
+                  "input": {
+                    "url": "https://a16zcrypto.com/our-team/",
+                    "prompt": "Extract the full list of general partners and other team members"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Chris Dixon investment focus thesis interests DeFi infrastructure blockchain"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Arianna Simpson a16z investment focus thesis consumer crypto gaming NFT"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Ali Yahya a16z investment focus thesis AI blockchain decentralized"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Guy Wuollet a16z crypto general partner investment focus"
+                  },
+                  "success": true
+                }
+              ]
+            }
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "query": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.",
+            "sessionId": "58098a9c-1fd6-4550-b731-bd19a8ea285a"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "vars": {
+          "query": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.",
+          "sessionId": "58098a9c-1fd6-4550-b731-bd19a8ea285a"
+        },
+        "metadata": {
+          "structuredOutput": {
+            "answer": "## a16z Crypto General Partners\n\n### 1. Chris Dixon - Founder & Managing Partner\n**Investment Focus:** Layer 1 blockchain infrastructure, DeFi, zero-knowledge systems, decentralized identity, AI x Crypto intersection\n**Notable Investments:** Coinbase, OpenSea, Uniswap, dYdX, Optimism\n\n### 2. Arianna Simpson - General Partner\n**Investment Focus:** Consumer crypto and gaming (play-to-earn), NFTs, crypto gaming platforms, web3 creator economies\n**Notable Investments:** Axie Infinity/Sky Mavis, Yield Guild Games, Blackbird, Phantom wallet\n\n### 3. Ali Yahya - General Partner\n**Investment Focus:** Blockchain infrastructure, AI and blockchain intersection, restaking/modular architecture, privacy-preserving tech\n**Notable Investments:** Solana, LayerZero, EigenLayer\n\n### 4. Guy Wuollet - General Partner\n**Investment Focus:** DePIN (Decentralized Physical Infrastructure Networks), DeFi infrastructure, decentralized commerce\n**Notable Investments:** Solana, LayerZero, Gensyn, EigenLayer, Morpho, Babylon\n\n**Contact:** a16z does not publish individual partner emails. Contact via a16zcrypto.com, a16z.com/connect, or warm introductions. Partners are active on Twitter/X.",
+            "sources": [
+              "https://a16zcrypto.com/our-team/",
+              "https://a16zcrypto.com/team/chris-dixon/",
+              "https://a16zcrypto.com/team/arianna-simpson/",
+              "https://a16zcrypto.com/team/ali-yahya/",
+              "https://a16zcrypto.com/team/guy-wuollet/",
+              "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+              "https://a16z.com/ai-crypto-internet-chris-dixon/",
+              "https://www.kucoin.com/news/flash/a16z-crypto-promotes-guy-wuollet-to-general-partner"
+            ],
+            "tool_call_log": [
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "a16z crypto general partners list 2025 2026"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "a16z crypto team page general partners Arianna Simpson Ali Yahya Chris Dixon"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"a16z crypto\" partner email contact investment focus areas"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://a16zcrypto.com/our-team/",
+                  "prompt": "Extract the full list of general partners and other team members"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Chris Dixon investment focus thesis interests DeFi infrastructure blockchain"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Arianna Simpson a16z investment focus thesis consumer crypto gaming NFT"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Ali Yahya a16z investment focus thesis AI blockchain decentralized"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Guy Wuollet a16z crypto general partner investment focus"
+                },
+                "success": true
+              }
+            ]
+          },
+          "_promptfooFileMetadata": {},
+          "sessionId": "58098a9c-1fd6-4550-b731-bd19a8ea285a"
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 1.20650125,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "5856736c-d591-4f6f-b325-e07fc05c1cb7",
+        "latencyMs": 164693,
+        "namedScores": {},
+        "prompt": {
+          "raw": "You are a helpful deep research assistant with access to web search and x402 premium API tools.\n\nUse the x402 premium API tools to enrich the response.\n\nGet me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.\n",
+          "label": "Prompt B",
+          "config": {}
+        },
+        "promptId": "e5395c824097e1abb19a863a61ff011bee0e3de9cee778a45d181699732a82e2",
+        "promptIdx": 3,
+        "provider": {
+          "id": "anthropic:claude-agent-sdk",
+          "label": "x402scan MCP + WebTools - Opus 4.5"
+        },
+        "response": {
+          "output": {
+            "answer": {
+              "partners": [
+                {
+                  "name": "Chris Dixon",
+                  "title": "Founder & Managing Partner, a16z crypto",
+                  "email": "chris@a16z.com",
+                  "email_status": "verified",
+                  "linkedin": "https://www.linkedin.com/in/cdixon/",
+                  "twitter": "@cdixon",
+                  "location": "United States",
+                  "investment_interests": [
+                    "Web3 infrastructure & protocols",
+                    "Decentralized social networks (Farcaster)",
+                    "Privacy infrastructure (Aztec)",
+                    "Layer 1 & Layer 2 blockchains (Solana, Optimism, Aptos, Avalanche, Celo)",
+                    "User ownership & open protocols",
+                    "NFT infrastructure & digital ownership",
+                    "Crypto x AI intersection"
+                  ],
+                  "philosophy": "Focuses on the 'productive side of blockchains' rather than speculation. Believes blockchains represent the only viable path to preserving an open, decentralized internet."
+                },
+                {
+                  "name": "Ali Yahya",
+                  "title": "General Partner",
+                  "email": "alive@a16z.com",
+                  "email_status": "verified",
+                  "linkedin": "https://www.linkedin.com/in/ali01",
+                  "twitter": "@alive_eth",
+                  "location": "New York, NY",
+                  "investment_interests": [
+                    "Crypto x AI infrastructure",
+                    "Zero-knowledge proof systems (zkSync, Aztec, Aleo)",
+                    "Layer 1 blockchains (Solana)",
+                    "Cross-chain infrastructure (LayerZero, Espresso)",
+                    "Restaking & middleware (EigenLayer)",
+                    "Decentralized compute/ML (Gensyn)",
+                    "Developer infrastructure (Alchemy)",
+                    "Creator economy & music NFTs (Sound.xyz)",
+                    "Messaging protocols (XMTP)"
+                  ],
+                  "philosophy": "Believes blockchains are 'global public computers' that create a new paradigm for building software. Deep technical expertise at AI-crypto intersection from Google Brain background.",
+                  "investment_range": "$10K-$100M (sweet spot ~$10M)",
+                  "stages": ["Seed", "Series A", "Series B"]
+                },
+                {
+                  "name": "Arianna Simpson",
+                  "title": "General Partner",
+                  "email": "asimpson@a16z.com",
+                  "email_status": "verified",
+                  "linkedin": "https://www.linkedin.com/in/ariannasimpson",
+                  "twitter": "@AriannaSimpson",
+                  "location": "New York, NY",
+                  "investment_interests": [
+                    "Consumer crypto applications",
+                    "Crypto wallets (Phantom)",
+                    "Real-world crypto use cases (Blackbird dining rewards)",
+                    "Stablecoins and payment infrastructure",
+                    "Crypto x AI intersection",
+                    "Gaming & entertainment",
+                    "Crypto infrastructure"
+                  ],
+                  "philosophy": "Founder-first rather than thesis-first approach. Follows the best builders rather than predetermined themes.",
+                  "note": "May be departing a16z to start her own fund"
+                }
+              ],
+              "firm_info": {
+                "name": "a16z crypto",
+                "parent": "Andreessen Horowitz",
+                "aum": "$7.6+ billion",
+                "funds": 4,
+                "portfolio_companies": "169+ projects",
+                "headquarters": "2865 Sand Hill Road, Menlo Park, CA 94025",
+                "phone": "+1 650-798-5800",
+                "website": "https://a16zcrypto.com"
+              }
+            },
+            "sources": [
+              "https://a16zcrypto.com/about/",
+              "https://a16zcrypto.com/team/chris-dixon/",
+              "https://a16zcrypto.com/team/ali-yahya/",
+              "https://a16zcrypto.com/team/arianna-simpson/",
+              "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+              "https://techcrunch.com/podcast/a16z-chris-dixon-chain-reaction-interview/",
+              "https://signal.nfx.com/investors/ali-yahya",
+              "https://www.linkedin.com/in/ali01",
+              "https://www.linkedin.com/in/ariannasimpson"
+            ],
+            "tool_call_log": [
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "a16z crypto general partners 2024 2025 list"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__discover_resources",
+                "input": {
+                  "url": "https://enrichx402.com"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Chris Dixon a16z crypto investment focus thesis web3"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Arianna Simpson a16z crypto investment focus blockchain"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Ali Yahya a16z crypto general partner investment thesis"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/org-search",
+                  "method": "POST",
+                  "body": {
+                    "q_keywords": "a16z crypto Andreessen Horowitz",
+                    "per_page": 5
+                  }
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/org-search",
+                  "method": "POST",
+                  "body": {
+                    "q_organization_domains": ["a16z.com", "a16zcrypto.com"],
+                    "per_page": 5
+                  }
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "a16z crypto team page general partners Sam Broner Daren Matsuoka"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-search",
+                  "method": "POST",
+                  "body": {
+                    "q_keywords": "a16z crypto general partner",
+                    "person_titles": ["General Partner"],
+                    "per_page": 10
+                  }
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"a16z crypto\" \"general partner\" complete list 2024 2025"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-enrich",
+                  "method": "POST",
+                  "body": {
+                    "first_name": "Chris",
+                    "last_name": "Dixon",
+                    "organization_name": "Andreessen Horowitz"
+                  }
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-enrich",
+                  "method": "POST",
+                  "body": {
+                    "first_name": "Ali",
+                    "last_name": "Yahya",
+                    "organization_name": "Andreessen Horowitz"
+                  }
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-enrich",
+                  "method": "POST",
+                  "body": {
+                    "first_name": "Arianna",
+                    "last_name": "Simpson",
+                    "organization_name": "Andreessen Horowitz"
+                  }
+                },
+                "success": true
+              }
+            ]
+          },
+          "tokenUsage": {
+            "prompt": 6,
+            "completion": 5063,
+            "total": 5069
+          },
+          "cost": 1.20650125,
+          "raw": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":161919,\"duration_api_ms\":171166,\"num_turns\":17,\"result\":\"I've compiled the complete research on a16z crypto General Partners with verified contact information and their specific investment interests. The three confirmed General Partners are:\\n\\n1. **Chris Dixon** (chris@a16z.com) - Founder who focuses on Web3 infrastructure, L1/L2 blockchains, decentralized social, and user ownership\\n2. **Ali Yahya** (alive@a16z.com) - Technical GP specializing in crypto x AI, ZK proofs, cross-chain infrastructure, and developer tools  \\n3. **Arianna Simpson** (asimpson@a16z.com) - Consumer-focused GP interested in wallets, real-world crypto applications, and stablecoins\\n\\nAll emails were verified through the Apollo enrichment API. Note that Arianna Simpson may be transitioning to launch her own fund based on recent reports.\",\"session_id\":\"336b7d4e-bcb9-4e48-a928-f5d95538a06c\",\"total_cost_usd\":1.20650125,\"usage\":{\"input_tokens\":6,\"cache_creation_input_tokens\":42659,\"cache_read_input_tokens\":317695,\"output_tokens\":5063,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":42659}},\"modelUsage\":{\"claude-opus-4-5-20251101\":{\"inputTokens\":13597,\"outputTokens\":9423,\"cacheReadInputTokens\":317695,\"cacheCreationInputTokens\":109455,\"webSearchRequests\":6,\"costUSD\":1.20650125,\"contextWindow\":200000,\"maxOutputTokens\":64000}},\"permission_denials\":[],\"structured_output\":{\"answer\":{\"partners\":[{\"name\":\"Chris Dixon\",\"title\":\"Founder & Managing Partner, a16z crypto\",\"email\":\"chris@a16z.com\",\"email_status\":\"verified\",\"linkedin\":\"https://www.linkedin.com/in/cdixon/\",\"twitter\":\"@cdixon\",\"location\":\"United States\",\"investment_interests\":[\"Web3 infrastructure & protocols\",\"Decentralized social networks (Farcaster)\",\"Privacy infrastructure (Aztec)\",\"Layer 1 & Layer 2 blockchains (Solana, Optimism, Aptos, Avalanche, Celo)\",\"User ownership & open protocols\",\"NFT infrastructure & digital ownership\",\"Crypto x AI intersection\"],\"philosophy\":\"Focuses on the 'productive side of blockchains' rather than speculation. Believes blockchains represent the only viable path to preserving an open, decentralized internet.\"},{\"name\":\"Ali Yahya\",\"title\":\"General Partner\",\"email\":\"alive@a16z.com\",\"email_status\":\"verified\",\"linkedin\":\"https://www.linkedin.com/in/ali01\",\"twitter\":\"@alive_eth\",\"location\":\"New York, NY\",\"investment_interests\":[\"Crypto x AI infrastructure\",\"Zero-knowledge proof systems (zkSync, Aztec, Aleo)\",\"Layer 1 blockchains (Solana)\",\"Cross-chain infrastructure (LayerZero, Espresso)\",\"Restaking & middleware (EigenLayer)\",\"Decentralized compute/ML (Gensyn)\",\"Developer infrastructure (Alchemy)\",\"Creator economy & music NFTs (Sound.xyz)\",\"Messaging protocols (XMTP)\"],\"philosophy\":\"Believes blockchains are 'global public computers' that create a new paradigm for building software. Deep technical expertise at AI-crypto intersection from Google Brain background.\",\"investment_range\":\"$10K-$100M (sweet spot ~$10M)\",\"stages\":[\"Seed\",\"Series A\",\"Series B\"]},{\"name\":\"Arianna Simpson\",\"title\":\"General Partner\",\"email\":\"asimpson@a16z.com\",\"email_status\":\"verified\",\"linkedin\":\"https://www.linkedin.com/in/ariannasimpson\",\"twitter\":\"@AriannaSimpson\",\"location\":\"New York, NY\",\"investment_interests\":[\"Consumer crypto applications\",\"Crypto wallets (Phantom)\",\"Real-world crypto use cases (Blackbird dining rewards)\",\"Stablecoins and payment infrastructure\",\"Crypto x AI intersection\",\"Gaming & entertainment\",\"Crypto infrastructure\"],\"philosophy\":\"Founder-first rather than thesis-first approach. Follows the best builders rather than predetermined themes.\",\"note\":\"May be departing a16z to start her own fund\"}],\"firm_info\":{\"name\":\"a16z crypto\",\"parent\":\"Andreessen Horowitz\",\"aum\":\"$7.6+ billion\",\"funds\":4,\"portfolio_companies\":\"169+ projects\",\"headquarters\":\"2865 Sand Hill Road, Menlo Park, CA 94025\",\"phone\":\"+1 650-798-5800\",\"website\":\"https://a16zcrypto.com\"}},\"sources\":[\"https://a16zcrypto.com/about/\",\"https://a16zcrypto.com/team/chris-dixon/\",\"https://a16zcrypto.com/team/ali-yahya/\",\"https://a16zcrypto.com/team/arianna-simpson/\",\"https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/\",\"https://techcrunch.com/podcast/a16z-chris-dixon-chain-reaction-interview/\",\"https://signal.nfx.com/investors/ali-yahya\",\"https://www.linkedin.com/in/ali01\",\"https://www.linkedin.com/in/ariannasimpson\"],\"tool_call_log\":[{\"tool\":\"WebSearch\",\"input\":{\"query\":\"a16z crypto general partners 2024 2025 list\"},\"success\":true},{\"tool\":\"mcp__x402scan__discover_resources\",\"input\":{\"url\":\"https://enrichx402.com\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Chris Dixon a16z crypto investment focus thesis web3\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Arianna Simpson a16z crypto investment focus blockchain\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Ali Yahya a16z crypto general partner investment thesis\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/apollo/org-search\",\"method\":\"POST\",\"body\":{\"q_keywords\":\"a16z crypto Andreessen Horowitz\",\"per_page\":5}},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/apollo/org-search\",\"method\":\"POST\",\"body\":{\"q_organization_domains\":[\"a16z.com\",\"a16zcrypto.com\"],\"per_page\":5}},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"a16z crypto team page general partners Sam Broner Daren Matsuoka\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/apollo/people-search\",\"method\":\"POST\",\"body\":{\"q_keywords\":\"a16z crypto general partner\",\"person_titles\":[\"General Partner\"],\"per_page\":10}},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"\\\"a16z crypto\\\" \\\"general partner\\\" complete list 2024 2025\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/apollo/people-enrich\",\"method\":\"POST\",\"body\":{\"first_name\":\"Chris\",\"last_name\":\"Dixon\",\"organization_name\":\"Andreessen Horowitz\"}},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/apollo/people-enrich\",\"method\":\"POST\",\"body\":{\"first_name\":\"Ali\",\"last_name\":\"Yahya\",\"organization_name\":\"Andreessen Horowitz\"}},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/apollo/people-enrich\",\"method\":\"POST\",\"body\":{\"first_name\":\"Arianna\",\"last_name\":\"Simpson\",\"organization_name\":\"Andreessen Horowitz\"}},\"success\":true}]},\"uuid\":\"57bb139d-0d84-40bf-838f-ff071af78198\"}",
+          "sessionId": "336b7d4e-bcb9-4e48-a928-f5d95538a06c",
+          "metadata": {
+            "structuredOutput": {
+              "answer": {
+                "partners": [
+                  {
+                    "name": "Chris Dixon",
+                    "title": "Founder & Managing Partner, a16z crypto",
+                    "email": "chris@a16z.com",
+                    "email_status": "verified",
+                    "linkedin": "https://www.linkedin.com/in/cdixon/",
+                    "twitter": "@cdixon",
+                    "location": "United States",
+                    "investment_interests": [
+                      "Web3 infrastructure & protocols",
+                      "Decentralized social networks (Farcaster)",
+                      "Privacy infrastructure (Aztec)",
+                      "Layer 1 & Layer 2 blockchains (Solana, Optimism, Aptos, Avalanche, Celo)",
+                      "User ownership & open protocols",
+                      "NFT infrastructure & digital ownership",
+                      "Crypto x AI intersection"
+                    ],
+                    "philosophy": "Focuses on the 'productive side of blockchains' rather than speculation. Believes blockchains represent the only viable path to preserving an open, decentralized internet."
+                  },
+                  {
+                    "name": "Ali Yahya",
+                    "title": "General Partner",
+                    "email": "alive@a16z.com",
+                    "email_status": "verified",
+                    "linkedin": "https://www.linkedin.com/in/ali01",
+                    "twitter": "@alive_eth",
+                    "location": "New York, NY",
+                    "investment_interests": [
+                      "Crypto x AI infrastructure",
+                      "Zero-knowledge proof systems (zkSync, Aztec, Aleo)",
+                      "Layer 1 blockchains (Solana)",
+                      "Cross-chain infrastructure (LayerZero, Espresso)",
+                      "Restaking & middleware (EigenLayer)",
+                      "Decentralized compute/ML (Gensyn)",
+                      "Developer infrastructure (Alchemy)",
+                      "Creator economy & music NFTs (Sound.xyz)",
+                      "Messaging protocols (XMTP)"
+                    ],
+                    "philosophy": "Believes blockchains are 'global public computers' that create a new paradigm for building software. Deep technical expertise at AI-crypto intersection from Google Brain background.",
+                    "investment_range": "$10K-$100M (sweet spot ~$10M)",
+                    "stages": ["Seed", "Series A", "Series B"]
+                  },
+                  {
+                    "name": "Arianna Simpson",
+                    "title": "General Partner",
+                    "email": "asimpson@a16z.com",
+                    "email_status": "verified",
+                    "linkedin": "https://www.linkedin.com/in/ariannasimpson",
+                    "twitter": "@AriannaSimpson",
+                    "location": "New York, NY",
+                    "investment_interests": [
+                      "Consumer crypto applications",
+                      "Crypto wallets (Phantom)",
+                      "Real-world crypto use cases (Blackbird dining rewards)",
+                      "Stablecoins and payment infrastructure",
+                      "Crypto x AI intersection",
+                      "Gaming & entertainment",
+                      "Crypto infrastructure"
+                    ],
+                    "philosophy": "Founder-first rather than thesis-first approach. Follows the best builders rather than predetermined themes.",
+                    "note": "May be departing a16z to start her own fund"
+                  }
+                ],
+                "firm_info": {
+                  "name": "a16z crypto",
+                  "parent": "Andreessen Horowitz",
+                  "aum": "$7.6+ billion",
+                  "funds": 4,
+                  "portfolio_companies": "169+ projects",
+                  "headquarters": "2865 Sand Hill Road, Menlo Park, CA 94025",
+                  "phone": "+1 650-798-5800",
+                  "website": "https://a16zcrypto.com"
+                }
+              },
+              "sources": [
+                "https://a16zcrypto.com/about/",
+                "https://a16zcrypto.com/team/chris-dixon/",
+                "https://a16zcrypto.com/team/ali-yahya/",
+                "https://a16zcrypto.com/team/arianna-simpson/",
+                "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+                "https://techcrunch.com/podcast/a16z-chris-dixon-chain-reaction-interview/",
+                "https://signal.nfx.com/investors/ali-yahya",
+                "https://www.linkedin.com/in/ali01",
+                "https://www.linkedin.com/in/ariannasimpson"
+              ],
+              "tool_call_log": [
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "a16z crypto general partners 2024 2025 list"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__discover_resources",
+                  "input": {
+                    "url": "https://enrichx402.com"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Chris Dixon a16z crypto investment focus thesis web3"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Arianna Simpson a16z crypto investment focus blockchain"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Ali Yahya a16z crypto general partner investment thesis"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/apollo/org-search",
+                    "method": "POST",
+                    "body": {
+                      "q_keywords": "a16z crypto Andreessen Horowitz",
+                      "per_page": 5
+                    }
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/apollo/org-search",
+                    "method": "POST",
+                    "body": {
+                      "q_organization_domains": ["a16z.com", "a16zcrypto.com"],
+                      "per_page": 5
+                    }
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "a16z crypto team page general partners Sam Broner Daren Matsuoka"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/apollo/people-search",
+                    "method": "POST",
+                    "body": {
+                      "q_keywords": "a16z crypto general partner",
+                      "person_titles": ["General Partner"],
+                      "per_page": 10
+                    }
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "\"a16z crypto\" \"general partner\" complete list 2024 2025"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/apollo/people-enrich",
+                    "method": "POST",
+                    "body": {
+                      "first_name": "Chris",
+                      "last_name": "Dixon",
+                      "organization_name": "Andreessen Horowitz"
+                    }
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/apollo/people-enrich",
+                    "method": "POST",
+                    "body": {
+                      "first_name": "Ali",
+                      "last_name": "Yahya",
+                      "organization_name": "Andreessen Horowitz"
+                    }
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/apollo/people-enrich",
+                    "method": "POST",
+                    "body": {
+                      "first_name": "Arianna",
+                      "last_name": "Simpson",
+                      "organization_name": "Andreessen Horowitz"
+                    }
+                  },
+                  "success": true
+                }
+              ]
+            }
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "query": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.",
+            "sessionId": "336b7d4e-bcb9-4e48-a928-f5d95538a06c"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "vars": {
+          "query": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.",
+          "sessionId": "336b7d4e-bcb9-4e48-a928-f5d95538a06c"
+        },
+        "metadata": {
+          "structuredOutput": {
+            "answer": {
+              "partners": [
+                {
+                  "name": "Chris Dixon",
+                  "title": "Founder & Managing Partner, a16z crypto",
+                  "email": "chris@a16z.com",
+                  "email_status": "verified",
+                  "linkedin": "https://www.linkedin.com/in/cdixon/",
+                  "twitter": "@cdixon",
+                  "location": "United States",
+                  "investment_interests": [
+                    "Web3 infrastructure & protocols",
+                    "Decentralized social networks (Farcaster)",
+                    "Privacy infrastructure (Aztec)",
+                    "Layer 1 & Layer 2 blockchains (Solana, Optimism, Aptos, Avalanche, Celo)",
+                    "User ownership & open protocols",
+                    "NFT infrastructure & digital ownership",
+                    "Crypto x AI intersection"
+                  ],
+                  "philosophy": "Focuses on the 'productive side of blockchains' rather than speculation. Believes blockchains represent the only viable path to preserving an open, decentralized internet."
+                },
+                {
+                  "name": "Ali Yahya",
+                  "title": "General Partner",
+                  "email": "alive@a16z.com",
+                  "email_status": "verified",
+                  "linkedin": "https://www.linkedin.com/in/ali01",
+                  "twitter": "@alive_eth",
+                  "location": "New York, NY",
+                  "investment_interests": [
+                    "Crypto x AI infrastructure",
+                    "Zero-knowledge proof systems (zkSync, Aztec, Aleo)",
+                    "Layer 1 blockchains (Solana)",
+                    "Cross-chain infrastructure (LayerZero, Espresso)",
+                    "Restaking & middleware (EigenLayer)",
+                    "Decentralized compute/ML (Gensyn)",
+                    "Developer infrastructure (Alchemy)",
+                    "Creator economy & music NFTs (Sound.xyz)",
+                    "Messaging protocols (XMTP)"
+                  ],
+                  "philosophy": "Believes blockchains are 'global public computers' that create a new paradigm for building software. Deep technical expertise at AI-crypto intersection from Google Brain background.",
+                  "investment_range": "$10K-$100M (sweet spot ~$10M)",
+                  "stages": ["Seed", "Series A", "Series B"]
+                },
+                {
+                  "name": "Arianna Simpson",
+                  "title": "General Partner",
+                  "email": "asimpson@a16z.com",
+                  "email_status": "verified",
+                  "linkedin": "https://www.linkedin.com/in/ariannasimpson",
+                  "twitter": "@AriannaSimpson",
+                  "location": "New York, NY",
+                  "investment_interests": [
+                    "Consumer crypto applications",
+                    "Crypto wallets (Phantom)",
+                    "Real-world crypto use cases (Blackbird dining rewards)",
+                    "Stablecoins and payment infrastructure",
+                    "Crypto x AI intersection",
+                    "Gaming & entertainment",
+                    "Crypto infrastructure"
+                  ],
+                  "philosophy": "Founder-first rather than thesis-first approach. Follows the best builders rather than predetermined themes.",
+                  "note": "May be departing a16z to start her own fund"
+                }
+              ],
+              "firm_info": {
+                "name": "a16z crypto",
+                "parent": "Andreessen Horowitz",
+                "aum": "$7.6+ billion",
+                "funds": 4,
+                "portfolio_companies": "169+ projects",
+                "headquarters": "2865 Sand Hill Road, Menlo Park, CA 94025",
+                "phone": "+1 650-798-5800",
+                "website": "https://a16zcrypto.com"
+              }
+            },
+            "sources": [
+              "https://a16zcrypto.com/about/",
+              "https://a16zcrypto.com/team/chris-dixon/",
+              "https://a16zcrypto.com/team/ali-yahya/",
+              "https://a16zcrypto.com/team/arianna-simpson/",
+              "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+              "https://techcrunch.com/podcast/a16z-chris-dixon-chain-reaction-interview/",
+              "https://signal.nfx.com/investors/ali-yahya",
+              "https://www.linkedin.com/in/ali01",
+              "https://www.linkedin.com/in/ariannasimpson"
+            ],
+            "tool_call_log": [
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "a16z crypto general partners 2024 2025 list"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__discover_resources",
+                "input": {
+                  "url": "https://enrichx402.com"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Chris Dixon a16z crypto investment focus thesis web3"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Arianna Simpson a16z crypto investment focus blockchain"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Ali Yahya a16z crypto general partner investment thesis"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/org-search",
+                  "method": "POST",
+                  "body": {
+                    "q_keywords": "a16z crypto Andreessen Horowitz",
+                    "per_page": 5
+                  }
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/org-search",
+                  "method": "POST",
+                  "body": {
+                    "q_organization_domains": ["a16z.com", "a16zcrypto.com"],
+                    "per_page": 5
+                  }
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "a16z crypto team page general partners Sam Broner Daren Matsuoka"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-search",
+                  "method": "POST",
+                  "body": {
+                    "q_keywords": "a16z crypto general partner",
+                    "person_titles": ["General Partner"],
+                    "per_page": 10
+                  }
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"a16z crypto\" \"general partner\" complete list 2024 2025"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-enrich",
+                  "method": "POST",
+                  "body": {
+                    "first_name": "Chris",
+                    "last_name": "Dixon",
+                    "organization_name": "Andreessen Horowitz"
+                  }
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-enrich",
+                  "method": "POST",
+                  "body": {
+                    "first_name": "Ali",
+                    "last_name": "Yahya",
+                    "organization_name": "Andreessen Horowitz"
+                  }
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-enrich",
+                  "method": "POST",
+                  "body": {
+                    "first_name": "Arianna",
+                    "last_name": "Simpson",
+                    "organization_name": "Andreessen Horowitz"
+                  }
+                },
+                "success": true
+              }
+            ]
+          },
+          "_promptfooFileMetadata": {},
+          "sessionId": "336b7d4e-bcb9-4e48-a928-f5d95538a06c"
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 1.1827605,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "d87d9000-5649-4fd8-9c7e-b1b49e16694a",
+        "latencyMs": 213988,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.\n",
           "label": "Prompt A",
           "config": {}
         },
@@ -200,107 +1188,299 @@
         "promptIdx": 0,
         "provider": {
           "id": "anthropic:claude-agent-sdk",
-          "label": "x402scan MCP + WebTools - Opus 4.5"
+          "label": "x402scan MCP + WebTools - Sonnet 4.5"
         },
         "response": {
           "output": {
-            "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\nThe organization's Executive Director is Rebecca Chan.",
+            "answer": "\n# a16z Crypto General Partners (2026)\n\n## 1. Chris Dixon - Founder & Managing Partner\n- **Twitter:** @cdixon\n- **LinkedIn:** chris-dixon-9599b127b\n- **Website:** cdixon.org\n- **Email:** Not publicly available; contact through a16z official channels\n\n**Investment Interests:**\n- AI and crypto intersection - particularly economic models for creative people in an AI-driven world\n- New incentive systems and tokenomics (invested in Story Protocol)\n- Web3 infrastructure and open-source architectures\n- Building great products over speculation/trading\n- Small tech and open-source AI enabled by blockchains\n- Mainstream adoption focus for 2026: stablecoins, tokenization of real-world assets, AI agents, privacy solutions, prediction markets\n\n**Background:** Founded a16z crypto in 2018, manages $7+ billion across four funds. Author of \"Read Write Own: Building the Next Era of the Internet.\"\n\n---\n\n## 2. Arianna Simpson - General Partner\n- **Twitter:** @AriannaSimpson\n- **LinkedIn:** ariannasimpson\n- **Email:** Not publicly available; contact through a16z official channels\n\n**Investment Interests:**\n- Shift from infrastructure to application layer investments\n- Stablecoins (forming thesis around this emerging category)\n- Web3 gaming (invested in Irreverent Labs)\n- Crypto x AI convergence - decentralized incentives meeting centralized computing\n- DePIN (Decentralized Physical Infrastructure Networks)\n- Wallet interfaces and user experience improvements\n\n**Notable Portfolio:** Mysten Labs, Phantom, Blackbird, Talos\n\n**Background:** Founded Autonomous Partners before joining a16z. Previously worked at Facebook and BitGo.\n\n---\n\n## 3. Ali Yahya - General Partner\n- **Twitter:** @alive_eth\n- **ENS:** alive.eth\n- **LinkedIn:** ali01\n- **Email:** Not publicly available; contact through a16z official channels\n\n**Investment Interests:**\n- Core belief: blockchains aren't just about finance\n- Broad investment scope across infrastructure, NFTs, and blockchain gaming\n- Layer 1 protocols and scaling solutions\n- Zero-knowledge proofs and privacy technology\n- Decentralized infrastructure (DePIN)\n- Developer tooling and platforms\n\n**Notable Portfolio:** Alchemy, Aleo, Aztec, EigenLayer, Espresso, Gensyn, LayerZero, Solana, Sound.xyz, XMTP, zkSync, Dapper Labs, Flow, Compound, Avalanche, Near, Rally, Dfinity\n\n**Background:** Former Google X researcher (Everyday Robot project) and Google Brain engineer (core TensorFlow developer). Discovered Bitcoin whitepaper in 2010 at Stanford Computer Security Lab.\n\n---\n\n## 4. Guy Wuollet - General Partner\n- **Twitter:** @guywuolletjr (preferred contact method via DM)\n- **LinkedIn:** gdw\n- **Website:** guywuollet.com\n- **Email:** Not publicly available; prefers Twitter DMs\n\n**Investment Interests:**\n- Infrastructure investments (Layer 1s, scaling, interoperability)\n- DeFi protocols and lending platforms\n- DePIN (Decentralized Physical Infrastructure Networks) - helped define the firm's thesis\n- Application layer investments\n- Decentralized networks that better align incentives on the Internet\n\n**Notable Portfolio:** Solana, LayerZero, Gensyn, EigenLayer, Daylight, Morpho, Orchid, Nym, Helium\n\n**Background:** Recently promoted to General Partner in November 2025. Joined a16z crypto as an intern in 2018 while studying Computer Science at Stanford. Made significant contributions to 20+ investments since joining full-time in 2020.\n\n---\n\n## General Contact Information\n\n- **a16z crypto website:** a16zcrypto.com\n- **Team page:** a16zcrypto.com/our-team\n- **Main a16z contact:** a16z.com/connect\n\n**Note:** Email addresses for the partners are not publicly disclosed. For pitching or professional inquiries, the best approaches are:\n1. Twitter/X DMs (especially for Guy Wuollet who explicitly prefers this)\n2. LinkedIn messages\n3. a16z official contact forms\n4. Warm introductions through portfolio companies or mutual connections\n",
             "sources": [
-              "https://www.guidestar.org/profile/27-4200974",
-              "https://www.therailpark.org/about/"
+              "https://a16zcrypto.com/our-team/",
+              "https://a16zcrypto.com/team/chris-dixon/",
+              "https://a16zcrypto.com/team/arianna-simpson/",
+              "https://a16zcrypto.com/team/ali-yahya/",
+              "https://a16zcrypto.com/team/guy-wuollet/",
+              "https://a16z.com/author/chris-dixon/",
+              "https://a16z.com/author/arianna-simpson/",
+              "https://a16z.com/author/ali-yahya/",
+              "https://a16z.com/author/guy-wuollet/",
+              "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+              "https://a16z.com/newsletter/big-ideas-2026-part-3/",
+              "https://a16zcrypto.com/posts/article/big-ideas-things-excited-about-crypto-2026/",
+              "https://x.com/cdixon",
+              "https://x.com/AriannaSimpson",
+              "https://x.com/alive_eth",
+              "https://x.com/guywuolletjr",
+              "https://cdixon.org/",
+              "https://guywuollet.com/about/"
             ],
             "tool_call_log": [
               {
+                "tool": "mcp__x402scan__check_balance",
+                "success": true
+              },
+              {
                 "tool": "WebSearch",
                 "input": {
-                  "query": "Friends of the Rail Park board members 2026"
+                  "query": "a16z crypto general partners 2026 list"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "a16z crypto team partners Chris Dixon Arianna Simpson Ali Yahya contact email"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"a16z crypto\" general partners complete list team page 2026"
                 },
                 "success": true
               },
               {
                 "tool": "WebFetch",
                 "input": {
-                  "url": "https://www.therailpark.org/about/",
-                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
-                },
-                "success": false
-              },
-              {
-                "tool": "WebFetch",
-                "input": {
-                  "url": "https://www.therailpark.org/team/",
-                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles."
-                },
-                "success": false
-              },
-              {
-                "tool": "WebSearch",
-                "input": {
-                  "query": "\"Friends of the Rail Park\" \"board of directors\" members list Philadelphia"
+                  "url": "https://a16zcrypto.com/our-team/"
                 },
                 "success": true
               },
               {
-                "tool": "WebFetch",
+                "tool": "WebSearch",
                 "input": {
-                  "url": "https://www.guidestar.org/profile/27-4200974",
-                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
+                  "query": "Chris Dixon a16z crypto investment focus interests areas 2026"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Arianna Simpson a16z crypto investment thesis focus areas preferences"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Ali Yahya a16z crypto investment focus portfolio companies interests"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Guy Wuollet a16z crypto investment thesis focus DeFi infrastructure"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"a16z crypto\" contact email pitch founders how to reach partners"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__discover_resources",
+                "input": {
+                  "url": "https://enrichx402.com"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-search",
+                  "method": "POST"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Chris Dixon cdixon email contact a16z crypto twitter"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                  "method": "POST"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Arianna Simpson AriannaSimpson email contact twitter a16z"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Ali Yahya alive_eth email contact twitter a16z crypto"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Guy Wuollet guywuolletjr twitter email contact a16z crypto"
                 },
                 "success": true
               }
             ]
           },
           "tokenUsage": {
-            "prompt": 1,
-            "completion": 1245,
-            "total": 1246
+            "prompt": 1035,
+            "completion": 4884,
+            "total": 5919
           },
-          "cost": 0.43348974999999995,
-          "raw": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":59249,\"duration_api_ms\":56596,\"num_turns\":7,\"result\":\"\",\"session_id\":\"188e3506-d695-4a29-8fdc-f1f4365abd9e\",\"total_cost_usd\":0.43348974999999995,\"usage\":{\"input_tokens\":1,\"cache_creation_input_tokens\":10272,\"cache_read_input_tokens\":144979,\"output_tokens\":1245,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":10272}},\"modelUsage\":{\"claude-opus-4-5-20251101\":{\"inputTokens\":4528,\"outputTokens\":2270,\"cacheReadInputTokens\":144979,\"cacheCreationInputTokens\":32285,\"webSearchRequests\":2,\"costUSD\":0.37366075,\"contextWindow\":200000,\"maxOutputTokens\":64000},\"claude-haiku-4-5-20251001\":{\"inputTokens\":58009,\"outputTokens\":364,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.05982899999999999,\"contextWindow\":200000,\"maxOutputTokens\":64000}},\"permission_denials\":[],\"structured_output\":{\"answer\":\"The board members of Friends of the Rail Park (as of March 2025) are:\\n\\n1. Nyla Koncurat - Board Chair\\n2. Allen Hall - Treasurer\\n3. Alexia Landesman - Board Member\\n4. Anna Stormer - Board Member\\n5. Neel Bhuta - Board Member\\n6. Camille Focarino - Board Member\\n7. Ginger Rudolph - Board Member\\n8. Jacob Cooper - Board Member\\n9. Paige Yoder Celestin - Board Member\\n\\nThe organization's Executive Director is Rebecca Chan.\",\"sources\":[\"https://www.guidestar.org/profile/27-4200974\",\"https://www.therailpark.org/about/\"],\"tool_call_log\":[{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Friends of the Rail Park board members 2026\"},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://www.therailpark.org/about/\",\"prompt\":\"Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available.\"},\"success\":false},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://www.therailpark.org/team/\",\"prompt\":\"Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles.\"},\"success\":false},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"\\\"Friends of the Rail Park\\\" \\\"board of directors\\\" members list Philadelphia\"},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://www.guidestar.org/profile/27-4200974\",\"prompt\":\"Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available.\"},\"success\":true}]},\"uuid\":\"46f7484e-4a29-4e2c-b912-b474e3a1f7c3\"}",
-          "sessionId": "188e3506-d695-4a29-8fdc-f1f4365abd9e",
+          "cost": 1.1827605,
+          "raw": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":211380,\"duration_api_ms\":245459,\"num_turns\":20,\"result\":\"\",\"session_id\":\"a63aa164-f29c-489c-80ff-0a4188a673b0\",\"total_cost_usd\":1.1827605,\"usage\":{\"input_tokens\":1035,\"cache_creation_input_tokens\":52325,\"cache_read_input_tokens\":347384,\"output_tokens\":4884,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":52325}},\"modelUsage\":{\"claude-sonnet-4-5-20250929\":{\"inputTokens\":1176,\"outputTokens\":10879,\"cacheReadInputTokens\":455205,\"cacheCreationInputTokens\":185160,\"webSearchRequests\":15,\"costUSD\":1.1476245,\"contextWindow\":200000,\"maxOutputTokens\":64000},\"claude-haiku-4-5-20251001\":{\"inputTokens\":34371,\"outputTokens\":153,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.035136,\"contextWindow\":200000,\"maxOutputTokens\":64000}},\"permission_denials\":[],\"structured_output\":{\"answer\":\"\\n# a16z Crypto General Partners (2026)\\n\\n## 1. Chris Dixon - Founder & Managing Partner\\n- **Twitter:** @cdixon\\n- **LinkedIn:** chris-dixon-9599b127b\\n- **Website:** cdixon.org\\n- **Email:** Not publicly available; contact through a16z official channels\\n\\n**Investment Interests:**\\n- AI and crypto intersection - particularly economic models for creative people in an AI-driven world\\n- New incentive systems and tokenomics (invested in Story Protocol)\\n- Web3 infrastructure and open-source architectures\\n- Building great products over speculation/trading\\n- Small tech and open-source AI enabled by blockchains\\n- Mainstream adoption focus for 2026: stablecoins, tokenization of real-world assets, AI agents, privacy solutions, prediction markets\\n\\n**Background:** Founded a16z crypto in 2018, manages $7+ billion across four funds. Author of \\\"Read Write Own: Building the Next Era of the Internet.\\\"\\n\\n---\\n\\n## 2. Arianna Simpson - General Partner\\n- **Twitter:** @AriannaSimpson\\n- **LinkedIn:** ariannasimpson\\n- **Email:** Not publicly available; contact through a16z official channels\\n\\n**Investment Interests:**\\n- Shift from infrastructure to application layer investments\\n- Stablecoins (forming thesis around this emerging category)\\n- Web3 gaming (invested in Irreverent Labs)\\n- Crypto x AI convergence - decentralized incentives meeting centralized computing\\n- DePIN (Decentralized Physical Infrastructure Networks)\\n- Wallet interfaces and user experience improvements\\n\\n**Notable Portfolio:** Mysten Labs, Phantom, Blackbird, Talos\\n\\n**Background:** Founded Autonomous Partners before joining a16z. Previously worked at Facebook and BitGo.\\n\\n---\\n\\n## 3. Ali Yahya - General Partner\\n- **Twitter:** @alive_eth\\n- **ENS:** alive.eth\\n- **LinkedIn:** ali01\\n- **Email:** Not publicly available; contact through a16z official channels\\n\\n**Investment Interests:**\\n- Core belief: blockchains aren't just about finance\\n- Broad investment scope across infrastructure, NFTs, and blockchain gaming\\n- Layer 1 protocols and scaling solutions\\n- Zero-knowledge proofs and privacy technology\\n- Decentralized infrastructure (DePIN)\\n- Developer tooling and platforms\\n\\n**Notable Portfolio:** Alchemy, Aleo, Aztec, EigenLayer, Espresso, Gensyn, LayerZero, Solana, Sound.xyz, XMTP, zkSync, Dapper Labs, Flow, Compound, Avalanche, Near, Rally, Dfinity\\n\\n**Background:** Former Google X researcher (Everyday Robot project) and Google Brain engineer (core TensorFlow developer). Discovered Bitcoin whitepaper in 2010 at Stanford Computer Security Lab.\\n\\n---\\n\\n## 4. Guy Wuollet - General Partner\\n- **Twitter:** @guywuolletjr (preferred contact method via DM)\\n- **LinkedIn:** gdw\\n- **Website:** guywuollet.com\\n- **Email:** Not publicly available; prefers Twitter DMs\\n\\n**Investment Interests:**\\n- Infrastructure investments (Layer 1s, scaling, interoperability)\\n- DeFi protocols and lending platforms\\n- DePIN (Decentralized Physical Infrastructure Networks) - helped define the firm's thesis\\n- Application layer investments\\n- Decentralized networks that better align incentives on the Internet\\n\\n**Notable Portfolio:** Solana, LayerZero, Gensyn, EigenLayer, Daylight, Morpho, Orchid, Nym, Helium\\n\\n**Background:** Recently promoted to General Partner in November 2025. Joined a16z crypto as an intern in 2018 while studying Computer Science at Stanford. Made significant contributions to 20+ investments since joining full-time in 2020.\\n\\n---\\n\\n## General Contact Information\\n\\n- **a16z crypto website:** a16zcrypto.com\\n- **Team page:** a16zcrypto.com/our-team\\n- **Main a16z contact:** a16z.com/connect\\n\\n**Note:** Email addresses for the partners are not publicly disclosed. For pitching or professional inquiries, the best approaches are:\\n1. Twitter/X DMs (especially for Guy Wuollet who explicitly prefers this)\\n2. LinkedIn messages\\n3. a16z official contact forms\\n4. Warm introductions through portfolio companies or mutual connections\\n\",\"sources\":[\"https://a16zcrypto.com/our-team/\",\"https://a16zcrypto.com/team/chris-dixon/\",\"https://a16zcrypto.com/team/arianna-simpson/\",\"https://a16zcrypto.com/team/ali-yahya/\",\"https://a16zcrypto.com/team/guy-wuollet/\",\"https://a16z.com/author/chris-dixon/\",\"https://a16z.com/author/arianna-simpson/\",\"https://a16z.com/author/ali-yahya/\",\"https://a16z.com/author/guy-wuollet/\",\"https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/\",\"https://a16z.com/newsletter/big-ideas-2026-part-3/\",\"https://a16zcrypto.com/posts/article/big-ideas-things-excited-about-crypto-2026/\",\"https://x.com/cdixon\",\"https://x.com/AriannaSimpson\",\"https://x.com/alive_eth\",\"https://x.com/guywuolletjr\",\"https://cdixon.org/\",\"https://guywuollet.com/about/\"],\"tool_call_log\":[{\"tool\":\"mcp__x402scan__check_balance\",\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"a16z crypto general partners 2026 list\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"a16z crypto team partners Chris Dixon Arianna Simpson Ali Yahya contact email\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"\\\"a16z crypto\\\" general partners complete list team page 2026\"},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://a16zcrypto.com/our-team/\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Chris Dixon a16z crypto investment focus interests areas 2026\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Arianna Simpson a16z crypto investment thesis focus areas preferences\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Ali Yahya a16z crypto investment focus portfolio companies interests\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Guy Wuollet a16z crypto investment thesis focus DeFi infrastructure\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"\\\"a16z crypto\\\" contact email pitch founders how to reach partners\"},\"success\":true},{\"tool\":\"mcp__x402scan__discover_resources\",\"input\":{\"url\":\"https://enrichx402.com\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/apollo/people-search\",\"method\":\"POST\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Chris Dixon cdixon email contact a16z crypto twitter\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/clado/linkedin-scrape\",\"method\":\"POST\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Arianna Simpson AriannaSimpson email contact twitter a16z\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Ali Yahya alive_eth email contact twitter a16z crypto\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Guy Wuollet guywuolletjr twitter email contact a16z crypto\"},\"success\":true}]},\"uuid\":\"6977cfe1-109f-4642-a2c3-247bdf0a4297\"}",
+          "sessionId": "a63aa164-f29c-489c-80ff-0a4188a673b0",
           "metadata": {
             "structuredOutput": {
-              "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\nThe organization's Executive Director is Rebecca Chan.",
+              "answer": "\n# a16z Crypto General Partners (2026)\n\n## 1. Chris Dixon - Founder & Managing Partner\n- **Twitter:** @cdixon\n- **LinkedIn:** chris-dixon-9599b127b\n- **Website:** cdixon.org\n- **Email:** Not publicly available; contact through a16z official channels\n\n**Investment Interests:**\n- AI and crypto intersection - particularly economic models for creative people in an AI-driven world\n- New incentive systems and tokenomics (invested in Story Protocol)\n- Web3 infrastructure and open-source architectures\n- Building great products over speculation/trading\n- Small tech and open-source AI enabled by blockchains\n- Mainstream adoption focus for 2026: stablecoins, tokenization of real-world assets, AI agents, privacy solutions, prediction markets\n\n**Background:** Founded a16z crypto in 2018, manages $7+ billion across four funds. Author of \"Read Write Own: Building the Next Era of the Internet.\"\n\n---\n\n## 2. Arianna Simpson - General Partner\n- **Twitter:** @AriannaSimpson\n- **LinkedIn:** ariannasimpson\n- **Email:** Not publicly available; contact through a16z official channels\n\n**Investment Interests:**\n- Shift from infrastructure to application layer investments\n- Stablecoins (forming thesis around this emerging category)\n- Web3 gaming (invested in Irreverent Labs)\n- Crypto x AI convergence - decentralized incentives meeting centralized computing\n- DePIN (Decentralized Physical Infrastructure Networks)\n- Wallet interfaces and user experience improvements\n\n**Notable Portfolio:** Mysten Labs, Phantom, Blackbird, Talos\n\n**Background:** Founded Autonomous Partners before joining a16z. Previously worked at Facebook and BitGo.\n\n---\n\n## 3. Ali Yahya - General Partner\n- **Twitter:** @alive_eth\n- **ENS:** alive.eth\n- **LinkedIn:** ali01\n- **Email:** Not publicly available; contact through a16z official channels\n\n**Investment Interests:**\n- Core belief: blockchains aren't just about finance\n- Broad investment scope across infrastructure, NFTs, and blockchain gaming\n- Layer 1 protocols and scaling solutions\n- Zero-knowledge proofs and privacy technology\n- Decentralized infrastructure (DePIN)\n- Developer tooling and platforms\n\n**Notable Portfolio:** Alchemy, Aleo, Aztec, EigenLayer, Espresso, Gensyn, LayerZero, Solana, Sound.xyz, XMTP, zkSync, Dapper Labs, Flow, Compound, Avalanche, Near, Rally, Dfinity\n\n**Background:** Former Google X researcher (Everyday Robot project) and Google Brain engineer (core TensorFlow developer). Discovered Bitcoin whitepaper in 2010 at Stanford Computer Security Lab.\n\n---\n\n## 4. Guy Wuollet - General Partner\n- **Twitter:** @guywuolletjr (preferred contact method via DM)\n- **LinkedIn:** gdw\n- **Website:** guywuollet.com\n- **Email:** Not publicly available; prefers Twitter DMs\n\n**Investment Interests:**\n- Infrastructure investments (Layer 1s, scaling, interoperability)\n- DeFi protocols and lending platforms\n- DePIN (Decentralized Physical Infrastructure Networks) - helped define the firm's thesis\n- Application layer investments\n- Decentralized networks that better align incentives on the Internet\n\n**Notable Portfolio:** Solana, LayerZero, Gensyn, EigenLayer, Daylight, Morpho, Orchid, Nym, Helium\n\n**Background:** Recently promoted to General Partner in November 2025. Joined a16z crypto as an intern in 2018 while studying Computer Science at Stanford. Made significant contributions to 20+ investments since joining full-time in 2020.\n\n---\n\n## General Contact Information\n\n- **a16z crypto website:** a16zcrypto.com\n- **Team page:** a16zcrypto.com/our-team\n- **Main a16z contact:** a16z.com/connect\n\n**Note:** Email addresses for the partners are not publicly disclosed. For pitching or professional inquiries, the best approaches are:\n1. Twitter/X DMs (especially for Guy Wuollet who explicitly prefers this)\n2. LinkedIn messages\n3. a16z official contact forms\n4. Warm introductions through portfolio companies or mutual connections\n",
               "sources": [
-                "https://www.guidestar.org/profile/27-4200974",
-                "https://www.therailpark.org/about/"
+                "https://a16zcrypto.com/our-team/",
+                "https://a16zcrypto.com/team/chris-dixon/",
+                "https://a16zcrypto.com/team/arianna-simpson/",
+                "https://a16zcrypto.com/team/ali-yahya/",
+                "https://a16zcrypto.com/team/guy-wuollet/",
+                "https://a16z.com/author/chris-dixon/",
+                "https://a16z.com/author/arianna-simpson/",
+                "https://a16z.com/author/ali-yahya/",
+                "https://a16z.com/author/guy-wuollet/",
+                "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+                "https://a16z.com/newsletter/big-ideas-2026-part-3/",
+                "https://a16zcrypto.com/posts/article/big-ideas-things-excited-about-crypto-2026/",
+                "https://x.com/cdixon",
+                "https://x.com/AriannaSimpson",
+                "https://x.com/alive_eth",
+                "https://x.com/guywuolletjr",
+                "https://cdixon.org/",
+                "https://guywuollet.com/about/"
               ],
               "tool_call_log": [
                 {
+                  "tool": "mcp__x402scan__check_balance",
+                  "success": true
+                },
+                {
                   "tool": "WebSearch",
                   "input": {
-                    "query": "Friends of the Rail Park board members 2026"
+                    "query": "a16z crypto general partners 2026 list"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "a16z crypto team partners Chris Dixon Arianna Simpson Ali Yahya contact email"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "\"a16z crypto\" general partners complete list team page 2026"
                   },
                   "success": true
                 },
                 {
                   "tool": "WebFetch",
                   "input": {
-                    "url": "https://www.therailpark.org/about/",
-                    "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
-                  },
-                  "success": false
-                },
-                {
-                  "tool": "WebFetch",
-                  "input": {
-                    "url": "https://www.therailpark.org/team/",
-                    "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles."
-                  },
-                  "success": false
-                },
-                {
-                  "tool": "WebSearch",
-                  "input": {
-                    "query": "\"Friends of the Rail Park\" \"board of directors\" members list Philadelphia"
+                    "url": "https://a16zcrypto.com/our-team/"
                   },
                   "success": true
                 },
                 {
-                  "tool": "WebFetch",
+                  "tool": "WebSearch",
                   "input": {
-                    "url": "https://www.guidestar.org/profile/27-4200974",
-                    "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
+                    "query": "Chris Dixon a16z crypto investment focus interests areas 2026"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Arianna Simpson a16z crypto investment thesis focus areas preferences"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Ali Yahya a16z crypto investment focus portfolio companies interests"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Guy Wuollet a16z crypto investment thesis focus DeFi infrastructure"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "\"a16z crypto\" contact email pitch founders how to reach partners"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__discover_resources",
+                  "input": {
+                    "url": "https://enrichx402.com"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/apollo/people-search",
+                    "method": "POST"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Chris Dixon cdixon email contact a16z crypto twitter"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                    "method": "POST"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Arianna Simpson AriannaSimpson email contact twitter a16z"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Ali Yahya alive_eth email contact twitter a16z crypto"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Guy Wuollet guywuolletjr twitter email contact a16z crypto"
                   },
                   "success": true
                 }
@@ -312,76 +1492,169 @@
         "success": true,
         "testCase": {
           "vars": {
-            "query": "Find and return the board members of Friends of the Rail Park",
-            "sessionId": "188e3506-d695-4a29-8fdc-f1f4365abd9e"
+            "query": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.",
+            "sessionId": "a63aa164-f29c-489c-80ff-0a4188a673b0"
           },
           "assert": [],
           "options": {},
-          "metadata": {},
-          "providers": [
-            "x402scan MCP + WebTools - Opus 4.5"
-          ]
+          "metadata": {}
         },
         "testIdx": 0,
         "vars": {
-          "query": "Find and return the board members of Friends of the Rail Park",
-          "sessionId": "188e3506-d695-4a29-8fdc-f1f4365abd9e"
+          "query": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.",
+          "sessionId": "a63aa164-f29c-489c-80ff-0a4188a673b0"
         },
         "metadata": {
           "structuredOutput": {
-            "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\nThe organization's Executive Director is Rebecca Chan.",
+            "answer": "\n# a16z Crypto General Partners (2026)\n\n## 1. Chris Dixon - Founder & Managing Partner\n- **Twitter:** @cdixon\n- **LinkedIn:** chris-dixon-9599b127b\n- **Website:** cdixon.org\n- **Email:** Not publicly available; contact through a16z official channels\n\n**Investment Interests:**\n- AI and crypto intersection - particularly economic models for creative people in an AI-driven world\n- New incentive systems and tokenomics (invested in Story Protocol)\n- Web3 infrastructure and open-source architectures\n- Building great products over speculation/trading\n- Small tech and open-source AI enabled by blockchains\n- Mainstream adoption focus for 2026: stablecoins, tokenization of real-world assets, AI agents, privacy solutions, prediction markets\n\n**Background:** Founded a16z crypto in 2018, manages $7+ billion across four funds. Author of \"Read Write Own: Building the Next Era of the Internet.\"\n\n---\n\n## 2. Arianna Simpson - General Partner\n- **Twitter:** @AriannaSimpson\n- **LinkedIn:** ariannasimpson\n- **Email:** Not publicly available; contact through a16z official channels\n\n**Investment Interests:**\n- Shift from infrastructure to application layer investments\n- Stablecoins (forming thesis around this emerging category)\n- Web3 gaming (invested in Irreverent Labs)\n- Crypto x AI convergence - decentralized incentives meeting centralized computing\n- DePIN (Decentralized Physical Infrastructure Networks)\n- Wallet interfaces and user experience improvements\n\n**Notable Portfolio:** Mysten Labs, Phantom, Blackbird, Talos\n\n**Background:** Founded Autonomous Partners before joining a16z. Previously worked at Facebook and BitGo.\n\n---\n\n## 3. Ali Yahya - General Partner\n- **Twitter:** @alive_eth\n- **ENS:** alive.eth\n- **LinkedIn:** ali01\n- **Email:** Not publicly available; contact through a16z official channels\n\n**Investment Interests:**\n- Core belief: blockchains aren't just about finance\n- Broad investment scope across infrastructure, NFTs, and blockchain gaming\n- Layer 1 protocols and scaling solutions\n- Zero-knowledge proofs and privacy technology\n- Decentralized infrastructure (DePIN)\n- Developer tooling and platforms\n\n**Notable Portfolio:** Alchemy, Aleo, Aztec, EigenLayer, Espresso, Gensyn, LayerZero, Solana, Sound.xyz, XMTP, zkSync, Dapper Labs, Flow, Compound, Avalanche, Near, Rally, Dfinity\n\n**Background:** Former Google X researcher (Everyday Robot project) and Google Brain engineer (core TensorFlow developer). Discovered Bitcoin whitepaper in 2010 at Stanford Computer Security Lab.\n\n---\n\n## 4. Guy Wuollet - General Partner\n- **Twitter:** @guywuolletjr (preferred contact method via DM)\n- **LinkedIn:** gdw\n- **Website:** guywuollet.com\n- **Email:** Not publicly available; prefers Twitter DMs\n\n**Investment Interests:**\n- Infrastructure investments (Layer 1s, scaling, interoperability)\n- DeFi protocols and lending platforms\n- DePIN (Decentralized Physical Infrastructure Networks) - helped define the firm's thesis\n- Application layer investments\n- Decentralized networks that better align incentives on the Internet\n\n**Notable Portfolio:** Solana, LayerZero, Gensyn, EigenLayer, Daylight, Morpho, Orchid, Nym, Helium\n\n**Background:** Recently promoted to General Partner in November 2025. Joined a16z crypto as an intern in 2018 while studying Computer Science at Stanford. Made significant contributions to 20+ investments since joining full-time in 2020.\n\n---\n\n## General Contact Information\n\n- **a16z crypto website:** a16zcrypto.com\n- **Team page:** a16zcrypto.com/our-team\n- **Main a16z contact:** a16z.com/connect\n\n**Note:** Email addresses for the partners are not publicly disclosed. For pitching or professional inquiries, the best approaches are:\n1. Twitter/X DMs (especially for Guy Wuollet who explicitly prefers this)\n2. LinkedIn messages\n3. a16z official contact forms\n4. Warm introductions through portfolio companies or mutual connections\n",
             "sources": [
-              "https://www.guidestar.org/profile/27-4200974",
-              "https://www.therailpark.org/about/"
+              "https://a16zcrypto.com/our-team/",
+              "https://a16zcrypto.com/team/chris-dixon/",
+              "https://a16zcrypto.com/team/arianna-simpson/",
+              "https://a16zcrypto.com/team/ali-yahya/",
+              "https://a16zcrypto.com/team/guy-wuollet/",
+              "https://a16z.com/author/chris-dixon/",
+              "https://a16z.com/author/arianna-simpson/",
+              "https://a16z.com/author/ali-yahya/",
+              "https://a16z.com/author/guy-wuollet/",
+              "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+              "https://a16z.com/newsletter/big-ideas-2026-part-3/",
+              "https://a16zcrypto.com/posts/article/big-ideas-things-excited-about-crypto-2026/",
+              "https://x.com/cdixon",
+              "https://x.com/AriannaSimpson",
+              "https://x.com/alive_eth",
+              "https://x.com/guywuolletjr",
+              "https://cdixon.org/",
+              "https://guywuollet.com/about/"
             ],
             "tool_call_log": [
               {
+                "tool": "mcp__x402scan__check_balance",
+                "success": true
+              },
+              {
                 "tool": "WebSearch",
                 "input": {
-                  "query": "Friends of the Rail Park board members 2026"
+                  "query": "a16z crypto general partners 2026 list"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "a16z crypto team partners Chris Dixon Arianna Simpson Ali Yahya contact email"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"a16z crypto\" general partners complete list team page 2026"
                 },
                 "success": true
               },
               {
                 "tool": "WebFetch",
                 "input": {
-                  "url": "https://www.therailpark.org/about/",
-                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
-                },
-                "success": false
-              },
-              {
-                "tool": "WebFetch",
-                "input": {
-                  "url": "https://www.therailpark.org/team/",
-                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles."
-                },
-                "success": false
-              },
-              {
-                "tool": "WebSearch",
-                "input": {
-                  "query": "\"Friends of the Rail Park\" \"board of directors\" members list Philadelphia"
+                  "url": "https://a16zcrypto.com/our-team/"
                 },
                 "success": true
               },
               {
-                "tool": "WebFetch",
+                "tool": "WebSearch",
                 "input": {
-                  "url": "https://www.guidestar.org/profile/27-4200974",
-                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
+                  "query": "Chris Dixon a16z crypto investment focus interests areas 2026"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Arianna Simpson a16z crypto investment thesis focus areas preferences"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Ali Yahya a16z crypto investment focus portfolio companies interests"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Guy Wuollet a16z crypto investment thesis focus DeFi infrastructure"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"a16z crypto\" contact email pitch founders how to reach partners"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__discover_resources",
+                "input": {
+                  "url": "https://enrichx402.com"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-search",
+                  "method": "POST"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Chris Dixon cdixon email contact a16z crypto twitter"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                  "method": "POST"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Arianna Simpson AriannaSimpson email contact twitter a16z"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Ali Yahya alive_eth email contact twitter a16z crypto"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Guy Wuollet guywuolletjr twitter email contact a16z crypto"
                 },
                 "success": true
               }
             ]
           },
           "_promptfooFileMetadata": {},
-          "sessionId": "188e3506-d695-4a29-8fdc-f1f4365abd9e"
+          "sessionId": "a63aa164-f29c-489c-80ff-0a4188a673b0"
         },
         "failureReason": 0
       },
       {
-        "cost": 0.5021567499999999,
+        "cost": 0.74911215,
         "gradingResult": {
           "pass": true,
           "score": 1,
@@ -394,11 +1667,11 @@
             "numRequests": 0
           }
         },
-        "id": "1dce3c95-dacb-4606-8682-89f92fe5b059",
-        "latencyMs": 72012,
+        "id": "971347a3-7ecd-4562-8dec-a1e54be8ceee",
+        "latencyMs": 253314,
         "namedScores": {},
         "prompt": {
-          "raw": "You are a helpful research assistant with access to web search and x402 premium API tools.\n\nFind and return the board members of Friends of the Rail Park\n",
+          "raw": "You are a helpful deep research assistant with access to web search and x402 premium API tools.\n\nUse the x402 premium API tools to enrich the response.\n\nGet me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.\n",
           "label": "Prompt B",
           "config": {}
         },
@@ -406,107 +1679,345 @@
         "promptIdx": 1,
         "provider": {
           "id": "anthropic:claude-agent-sdk",
-          "label": "x402scan MCP + WebTools - Opus 4.5"
+          "label": "x402scan MCP + WebTools - Sonnet 4.5"
         },
         "response": {
           "output": {
-            "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n**Board of Directors:**\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\n**Executive Leadership:**\n- Rebecca Chan - Executive Director",
+            "answer": "## a16z Crypto General Partners - Contact Information & Investment Interests\n\n### 1. **Chris Dixon** - Founder & Managing Partner\n**Email:** cdixon@a16z.com  \n**LinkedIn:** [linkedin.com/in/chris-dixon-9599b127b](https://www.linkedin.com/in/chris-dixon-9599b127b)\n\n**Investment Focus:**\n- **AI × Crypto Convergence**: Building blockchain-based AI systems and new economic models for creators in an AI-driven world\n- **New Incentive Systems**: Investing in protocols like Story Protocol that create economic structures for content producers\n- **Infrastructure Over Speculation**: Focused on building practical applications and great products rather than trading\n- **Web3 Technologies**: Broad mandate across web3 with $7B+ under management\n- **Key Themes for 2026**: Stablecoins, tokenization of real-world assets, AI agents, privacy solutions, and prediction markets\n\n**Notable Portfolio:** Avalanche, Aptos, Solana, Celo, Optimism, Coinbase, Alchemy, Yuga Labs, Worldcoin, Dapper Labs\n\n**Background:** Author of \"Read Write Own,\" founded Hunch (acquired by eBay), SiteAdvisor (acquired by McAfee), co-founded Founder Collective. Columbia BA/MA Philosophy, Harvard MBA.\n\n---\n\n### 2. **Arianna Simpson** - General Partner\n**Emails:** ariannahsimpson@gmail.com, arianna@bitgo.com  \n**LinkedIn:** [linkedin.com/in/ariannasimpson](https://www.linkedin.com/in/ariannasimpson)  \n**Twitter:** [@AriannaSimpson](https://twitter.com/ariannasimpson)\n\n**Investment Focus:**\n- **Founder-Centric Approach**: Targets strong founders rather than thematic areas, following entrepreneurial trends\n- **Crypto × AI Convergence**: Particular interest in the intersection of cryptocurrency and artificial intelligence\n- **Early-Stage Expertise**: Known for identifying breakout companies early\n- **Diverse Portfolio**: Comfortable across various crypto sectors from infrastructure to consumer applications\n\n**Notable Portfolio:** Mysten Labs, Phantom (valued at $3B), Blackbird (dining rewards), Talos\n\n**Background:** Founded Autonomous Partners before joining a16z. Early career at BitGo (PM Lead), Facebook (Global Marketing Solutions). Penn State BA (International Politics, Spanish), International Baccalaureate from American School of Milan.\n\n---\n\n### 3. **Ali Yahya** - General Partner\n**Emails:** ayahya@a16z.com, alive@cs.stanford.edu  \n**LinkedIn:** [linkedin.com/in/ali01](https://www.linkedin.com/in/ali01)  \n**Twitter:** [@alive_eth](https://twitter.com/alive_eth)\n\n**Investment Focus:**\n- **Blockchain Infrastructure**: Deep focus on core blockchain protocols and infrastructure layer\n- **DeFi & Solana Ecosystem**: Active in decentralized finance and Solana network growth\n- **AI × Crypto Convergence**: Crypto as coordination layer for unused GPU supply (critical for AI compute) and as verification layer for deepfake prevention\n- **Web3 Infrastructure Mental Models**: Narrow waist, modularity advantage, network flywheel\n\n**Notable Portfolio:** Alchemy, Aleo, Aztec, EigenLayer, Espresso, Gensyn, LayerZero, Solana, Sound.xyz, XMTP, zkSync, Jito ($50M investment)\n\n**Background:** Discovered Bitcoin in 2010 at Stanford Computer Security Lab. Google Brain (TensorFlow core contributor) and Google X (AI + Robotics). Stanford BS & MS Computer Science (Distributed Systems + AI).\n\n---\n\n### 4. **Guy Wuollet** - General Partner\n**Emails:** guy@a16z.com, guy.wuollet@a16z.com, gwuollet@a16z.com  \n**LinkedIn:** [linkedin.com/in/gdw](https://www.linkedin.com/in/gdw)  \n**Twitter:** [@guywuolletjr](https://twitter.com/guywuolletjr)\n\n**Investment Focus:**\n- **Infrastructure & Application Layer**: Focuses on both foundational infrastructure and application-layer investments\n- **Research-Heavy Approach**: Brings technical computer science background to investment decisions\n- **DeFi (Decentralized Finance)**: Active in decentralized financial protocols\n- **DePIN (Decentralized Physical Infrastructure Networks)**: Key interest area\n- **Alignment Philosophy**: Believes decentralized networks better align incentives on the Internet\n\n**Notable Portfolio:** EigenLayer, Morpho, Babylon (BABY token/$15M investment in Bitcoin vaults)\n\n**Background:** Recently promoted to General Partner (2025) after serving as Investment Partner since 2020. Previously at Protocol Labs (Research), OVO Fund (Scout). Stanford BS Computer Science, MS (incomplete). Started at a16z in Market Development (2018).\n\n---\n\n## Key Insights for Founders\n\n**Common Themes Across All GPs:**\n- Strong technical backgrounds (3 out of 4 have CS degrees from Stanford)\n- Deep interest in AI × Crypto convergence\n- Focus on infrastructure and foundational protocols\n- Emphasis on practical applications over speculation\n- Interest in new incentive structures and economic models\n\n**How to Approach:**\n- **Chris Dixon**: If you're building economic systems for creators, AI-crypto convergence, or infrastructure with clear use cases\n- **Arianna Simpson**: If you're a strong founder with a compelling vision, especially in emerging crypto × AI spaces\n- **Ali Yahya**: If you're building blockchain infrastructure, DeFi protocols, or AI verification/coordination layers\n- **Guy Wuollet**: If you're working on DeFi, DePIN, or technical infrastructure with novel approaches (DM him on Twitter - he specifically requests this)",
             "sources": [
-              "https://www.guidestar.org/profile/27-4200974",
-              "https://www.therailpark.org/about/",
-              "https://www.therailpark.org/friends-rail-park-board-adds-two-new-members/"
+              "https://a16zcrypto.com/our-team/",
+              "https://a16zcrypto.com/team/chris-dixon/",
+              "https://a16z.com/ai-crypto-internet-chris-dixon/",
+              "https://www.altcoinbuzz.io/cryptocurrency-news/a16z-crypto-lays-out-17-big-priorities-for-2026/",
+              "https://a16zcrypto.com/team/arianna-simpson/",
+              "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+              "https://a16zcrypto.com/team/ali-yahya/",
+              "https://blockworks.co/news/a16z-invests-jito-v",
+              "https://a16zcrypto.com/team/guy-wuollet/",
+              "https://www.linkedin.com/in/chris-dixon-9599b127b",
+              "https://www.linkedin.com/in/ariannasimpson",
+              "https://www.linkedin.com/in/ali01",
+              "https://www.linkedin.com/in/gdw"
             ],
             "tool_call_log": [
               {
                 "tool": "WebSearch",
                 "input": {
-                  "query": "Friends of the Rail Park board members directors 2025"
+                  "query": "a16z crypto general partners 2026 team"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__check_balance",
+                "input": {},
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__discover_resources",
+                "input": {
+                  "url": "https://enrichx402.com",
+                  "fanOut": false
                 },
                 "success": true
               },
               {
                 "tool": "WebFetch",
                 "input": {
-                  "url": "https://www.therailpark.org/about/",
-                  "prompt": "Find and list all the board members or board of directors for Friends of the Rail Park"
+                  "url": "https://a16zcrypto.com/our-team/",
+                  "prompt": "Extract all the general partners listed on this page, including their names and any information about their roles or focus areas."
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-search",
+                  "method": "POST",
+                  "body": "{\"q_organization_domains\": [\"a16z.com\"], \"q_keywords\": \"general partner crypto\", \"per_page\": 10}"
                 },
                 "success": true
               },
               {
                 "tool": "WebSearch",
                 "input": {
-                  "query": "\"Friends of the Rail Park\" \"board of directors\" site:therailpark.org"
+                  "query": "Chris Dixon a16z crypto investment focus interests 2026"
                 },
                 "success": true
               },
               {
                 "tool": "WebSearch",
                 "input": {
-                  "query": "\"Friends of the Rail Park\" board members names Philadelphia"
+                  "query": "Arianna Simpson a16z crypto investment interests portfolio"
                 },
                 "success": true
               },
               {
-                "tool": "WebFetch",
+                "tool": "WebSearch",
                 "input": {
-                  "url": "https://www.guidestar.org/profile/27-4200974",
-                  "prompt": "Find and list all the board members, directors, officers, or leadership for Friends of the Rail Park"
+                  "query": "Ali Yahya a16z crypto investment focus areas"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Guy Wuollet a16z crypto investment interests"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-enrich/bulk",
+                  "method": "POST",
+                  "body": "{\"details\": [{\"first_name\": \"Chris\", \"last_name\": \"Dixon\", \"organization_name\": \"Andreessen Horowitz\"}, {\"first_name\": \"Arianna\", \"last_name\": \"Simpson\", \"organization_name\": \"Andreessen Horowitz\"}, {\"first_name\": \"Ali\", \"last_name\": \"Yahya\", \"organization_name\": \"Andreessen Horowitz\"}, {\"first_name\": \"Guy\", \"last_name\": \"Wuollet\", \"organization_name\": \"Andreessen Horowitz\"}]}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/chris-dixon-9599b127b\"}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ariannasimpson\"}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ali01\"}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/gdw\"}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/chris-dixon-9599b127b\", \"email_enrichment\": true}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ariannasimpson\", \"email_enrichment\": true}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ali01\", \"email_enrichment\": true}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/gdw\", \"email_enrichment\": true}"
                 },
                 "success": true
               }
             ]
           },
           "tokenUsage": {
-            "prompt": 1,
-            "completion": 1279,
-            "total": 1280
+            "prompt": 2726,
+            "completion": 7479,
+            "total": 10205
           },
-          "cost": 0.5021567499999999,
-          "raw": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":69171,\"duration_api_ms\":67459,\"num_turns\":7,\"result\":\"The board member information has been provided successfully.\",\"session_id\":\"3134a8cc-066e-459a-95a6-8ce2daa32d2f\",\"total_cost_usd\":0.5021567499999999,\"usage\":{\"input_tokens\":1,\"cache_creation_input_tokens\":10847,\"cache_read_input_tokens\":146701,\"output_tokens\":1279,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":10847}},\"modelUsage\":{\"claude-opus-4-5-20251101\":{\"inputTokens\":6795,\"outputTokens\":3041,\"cacheReadInputTokens\":146701,\"cacheCreationInputTokens\":36661,\"webSearchRequests\":3,\"costUSD\":0.44248175,\"contextWindow\":200000,\"maxOutputTokens\":64000},\"claude-haiku-4-5-20251001\":{\"inputTokens\":58020,\"outputTokens\":331,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.059675,\"contextWindow\":200000,\"maxOutputTokens\":64000}},\"permission_denials\":[],\"structured_output\":{\"answer\":\"The board members of Friends of the Rail Park (as of March 2025) are:\\n\\n**Board of Directors:**\\n1. Nyla Koncurat - Board Chair\\n2. Allen Hall - Treasurer\\n3. Alexia Landesman - Board Member\\n4. Anna Stormer - Board Member\\n5. Neel Bhuta - Board Member\\n6. Camille Focarino - Board Member\\n7. Ginger Rudolph - Board Member\\n8. Jacob Cooper - Board Member\\n9. Paige Yoder Celestin - Board Member\\n\\n**Executive Leadership:**\\n- Rebecca Chan - Executive Director\",\"sources\":[\"https://www.guidestar.org/profile/27-4200974\",\"https://www.therailpark.org/about/\",\"https://www.therailpark.org/friends-rail-park-board-adds-two-new-members/\"],\"tool_call_log\":[{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Friends of the Rail Park board members directors 2025\"},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://www.therailpark.org/about/\",\"prompt\":\"Find and list all the board members or board of directors for Friends of the Rail Park\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"\\\"Friends of the Rail Park\\\" \\\"board of directors\\\" site:therailpark.org\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"\\\"Friends of the Rail Park\\\" board members names Philadelphia\"},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://www.guidestar.org/profile/27-4200974\",\"prompt\":\"Find and list all the board members, directors, officers, or leadership for Friends of the Rail Park\"},\"success\":true}]},\"uuid\":\"e5c4b2f6-34ef-4214-b7c0-3390c9fce12a\"}",
-          "sessionId": "3134a8cc-066e-459a-95a6-8ce2daa32d2f",
+          "cost": 0.74911215,
+          "raw": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":250110,\"duration_api_ms\":179730,\"num_turns\":24,\"result\":\"\",\"session_id\":\"d148dc66-063e-48a4-b341-23e251c20dd5\",\"total_cost_usd\":0.74911215,\"usage\":{\"input_tokens\":2726,\"cache_creation_input_tokens\":60457,\"cache_read_input_tokens\":392846,\"output_tokens\":7479,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":60457}},\"modelUsage\":{\"claude-sonnet-4-5-20250929\":{\"inputTokens\":2776,\"outputTokens\":10056,\"cacheReadInputTokens\":413728,\"cacheCreationInputTokens\":101557,\"webSearchRequests\":5,\"costUSD\":0.71412515,\"contextWindow\":200000,\"maxOutputTokens\":64000},\"claude-haiku-4-5-20251001\":{\"inputTokens\":34372,\"outputTokens\":123,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.034987,\"contextWindow\":200000,\"maxOutputTokens\":64000}},\"permission_denials\":[],\"structured_output\":{\"answer\":\"## a16z Crypto General Partners - Contact Information & Investment Interests\\n\\n### 1. **Chris Dixon** - Founder & Managing Partner\\n**Email:** cdixon@a16z.com  \\n**LinkedIn:** [linkedin.com/in/chris-dixon-9599b127b](https://www.linkedin.com/in/chris-dixon-9599b127b)\\n\\n**Investment Focus:**\\n- **AI × Crypto Convergence**: Building blockchain-based AI systems and new economic models for creators in an AI-driven world\\n- **New Incentive Systems**: Investing in protocols like Story Protocol that create economic structures for content producers\\n- **Infrastructure Over Speculation**: Focused on building practical applications and great products rather than trading\\n- **Web3 Technologies**: Broad mandate across web3 with $7B+ under management\\n- **Key Themes for 2026**: Stablecoins, tokenization of real-world assets, AI agents, privacy solutions, and prediction markets\\n\\n**Notable Portfolio:** Avalanche, Aptos, Solana, Celo, Optimism, Coinbase, Alchemy, Yuga Labs, Worldcoin, Dapper Labs\\n\\n**Background:** Author of \\\"Read Write Own,\\\" founded Hunch (acquired by eBay), SiteAdvisor (acquired by McAfee), co-founded Founder Collective. Columbia BA/MA Philosophy, Harvard MBA.\\n\\n---\\n\\n### 2. **Arianna Simpson** - General Partner\\n**Emails:** ariannahsimpson@gmail.com, arianna@bitgo.com  \\n**LinkedIn:** [linkedin.com/in/ariannasimpson](https://www.linkedin.com/in/ariannasimpson)  \\n**Twitter:** [@AriannaSimpson](https://twitter.com/ariannasimpson)\\n\\n**Investment Focus:**\\n- **Founder-Centric Approach**: Targets strong founders rather than thematic areas, following entrepreneurial trends\\n- **Crypto × AI Convergence**: Particular interest in the intersection of cryptocurrency and artificial intelligence\\n- **Early-Stage Expertise**: Known for identifying breakout companies early\\n- **Diverse Portfolio**: Comfortable across various crypto sectors from infrastructure to consumer applications\\n\\n**Notable Portfolio:** Mysten Labs, Phantom (valued at $3B), Blackbird (dining rewards), Talos\\n\\n**Background:** Founded Autonomous Partners before joining a16z. Early career at BitGo (PM Lead), Facebook (Global Marketing Solutions). Penn State BA (International Politics, Spanish), International Baccalaureate from American School of Milan.\\n\\n---\\n\\n### 3. **Ali Yahya** - General Partner\\n**Emails:** ayahya@a16z.com, alive@cs.stanford.edu  \\n**LinkedIn:** [linkedin.com/in/ali01](https://www.linkedin.com/in/ali01)  \\n**Twitter:** [@alive_eth](https://twitter.com/alive_eth)\\n\\n**Investment Focus:**\\n- **Blockchain Infrastructure**: Deep focus on core blockchain protocols and infrastructure layer\\n- **DeFi & Solana Ecosystem**: Active in decentralized finance and Solana network growth\\n- **AI × Crypto Convergence**: Crypto as coordination layer for unused GPU supply (critical for AI compute) and as verification layer for deepfake prevention\\n- **Web3 Infrastructure Mental Models**: Narrow waist, modularity advantage, network flywheel\\n\\n**Notable Portfolio:** Alchemy, Aleo, Aztec, EigenLayer, Espresso, Gensyn, LayerZero, Solana, Sound.xyz, XMTP, zkSync, Jito ($50M investment)\\n\\n**Background:** Discovered Bitcoin in 2010 at Stanford Computer Security Lab. Google Brain (TensorFlow core contributor) and Google X (AI + Robotics). Stanford BS & MS Computer Science (Distributed Systems + AI).\\n\\n---\\n\\n### 4. **Guy Wuollet** - General Partner\\n**Emails:** guy@a16z.com, guy.wuollet@a16z.com, gwuollet@a16z.com  \\n**LinkedIn:** [linkedin.com/in/gdw](https://www.linkedin.com/in/gdw)  \\n**Twitter:** [@guywuolletjr](https://twitter.com/guywuolletjr)\\n\\n**Investment Focus:**\\n- **Infrastructure & Application Layer**: Focuses on both foundational infrastructure and application-layer investments\\n- **Research-Heavy Approach**: Brings technical computer science background to investment decisions\\n- **DeFi (Decentralized Finance)**: Active in decentralized financial protocols\\n- **DePIN (Decentralized Physical Infrastructure Networks)**: Key interest area\\n- **Alignment Philosophy**: Believes decentralized networks better align incentives on the Internet\\n\\n**Notable Portfolio:** EigenLayer, Morpho, Babylon (BABY token/$15M investment in Bitcoin vaults)\\n\\n**Background:** Recently promoted to General Partner (2025) after serving as Investment Partner since 2020. Previously at Protocol Labs (Research), OVO Fund (Scout). Stanford BS Computer Science, MS (incomplete). Started at a16z in Market Development (2018).\\n\\n---\\n\\n## Key Insights for Founders\\n\\n**Common Themes Across All GPs:**\\n- Strong technical backgrounds (3 out of 4 have CS degrees from Stanford)\\n- Deep interest in AI × Crypto convergence\\n- Focus on infrastructure and foundational protocols\\n- Emphasis on practical applications over speculation\\n- Interest in new incentive structures and economic models\\n\\n**How to Approach:**\\n- **Chris Dixon**: If you're building economic systems for creators, AI-crypto convergence, or infrastructure with clear use cases\\n- **Arianna Simpson**: If you're a strong founder with a compelling vision, especially in emerging crypto × AI spaces\\n- **Ali Yahya**: If you're building blockchain infrastructure, DeFi protocols, or AI verification/coordination layers\\n- **Guy Wuollet**: If you're working on DeFi, DePIN, or technical infrastructure with novel approaches (DM him on Twitter - he specifically requests this)\",\"sources\":[\"https://a16zcrypto.com/our-team/\",\"https://a16zcrypto.com/team/chris-dixon/\",\"https://a16z.com/ai-crypto-internet-chris-dixon/\",\"https://www.altcoinbuzz.io/cryptocurrency-news/a16z-crypto-lays-out-17-big-priorities-for-2026/\",\"https://a16zcrypto.com/team/arianna-simpson/\",\"https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/\",\"https://a16zcrypto.com/team/ali-yahya/\",\"https://blockworks.co/news/a16z-invests-jito-v\",\"https://a16zcrypto.com/team/guy-wuollet/\",\"https://www.linkedin.com/in/chris-dixon-9599b127b\",\"https://www.linkedin.com/in/ariannasimpson\",\"https://www.linkedin.com/in/ali01\",\"https://www.linkedin.com/in/gdw\"],\"tool_call_log\":[{\"tool\":\"WebSearch\",\"input\":{\"query\":\"a16z crypto general partners 2026 team\"},\"success\":true},{\"tool\":\"mcp__x402scan__check_balance\",\"input\":{},\"success\":true},{\"tool\":\"mcp__x402scan__discover_resources\",\"input\":{\"url\":\"https://enrichx402.com\",\"fanOut\":false},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://a16zcrypto.com/our-team/\",\"prompt\":\"Extract all the general partners listed on this page, including their names and any information about their roles or focus areas.\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/apollo/people-search\",\"method\":\"POST\",\"body\":\"{\\\"q_organization_domains\\\": [\\\"a16z.com\\\"], \\\"q_keywords\\\": \\\"general partner crypto\\\", \\\"per_page\\\": 10}\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Chris Dixon a16z crypto investment focus interests 2026\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Arianna Simpson a16z crypto investment interests portfolio\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Ali Yahya a16z crypto investment focus areas\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Guy Wuollet a16z crypto investment interests\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/apollo/people-enrich/bulk\",\"method\":\"POST\",\"body\":\"{\\\"details\\\": [{\\\"first_name\\\": \\\"Chris\\\", \\\"last_name\\\": \\\"Dixon\\\", \\\"organization_name\\\": \\\"Andreessen Horowitz\\\"}, {\\\"first_name\\\": \\\"Arianna\\\", \\\"last_name\\\": \\\"Simpson\\\", \\\"organization_name\\\": \\\"Andreessen Horowitz\\\"}, {\\\"first_name\\\": \\\"Ali\\\", \\\"last_name\\\": \\\"Yahya\\\", \\\"organization_name\\\": \\\"Andreessen Horowitz\\\"}, {\\\"first_name\\\": \\\"Guy\\\", \\\"last_name\\\": \\\"Wuollet\\\", \\\"organization_name\\\": \\\"Andreessen Horowitz\\\"}]}\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/clado/linkedin-scrape\",\"method\":\"POST\",\"body\":\"{\\\"linkedin_url\\\": \\\"https://www.linkedin.com/in/chris-dixon-9599b127b\\\"}\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/clado/linkedin-scrape\",\"method\":\"POST\",\"body\":\"{\\\"linkedin_url\\\": \\\"https://www.linkedin.com/in/ariannasimpson\\\"}\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/clado/linkedin-scrape\",\"method\":\"POST\",\"body\":\"{\\\"linkedin_url\\\": \\\"https://www.linkedin.com/in/ali01\\\"}\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/clado/linkedin-scrape\",\"method\":\"POST\",\"body\":\"{\\\"linkedin_url\\\": \\\"https://www.linkedin.com/in/gdw\\\"}\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/clado/contacts-enrich\",\"method\":\"POST\",\"body\":\"{\\\"linkedin_url\\\": \\\"https://www.linkedin.com/in/chris-dixon-9599b127b\\\", \\\"email_enrichment\\\": true}\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/clado/contacts-enrich\",\"method\":\"POST\",\"body\":\"{\\\"linkedin_url\\\": \\\"https://www.linkedin.com/in/ariannasimpson\\\", \\\"email_enrichment\\\": true}\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/clado/contacts-enrich\",\"method\":\"POST\",\"body\":\"{\\\"linkedin_url\\\": \\\"https://www.linkedin.com/in/ali01\\\", \\\"email_enrichment\\\": true}\"},\"success\":true},{\"tool\":\"mcp__x402scan__fetch\",\"input\":{\"url\":\"https://enrichx402.com/api/clado/contacts-enrich\",\"method\":\"POST\",\"body\":\"{\\\"linkedin_url\\\": \\\"https://www.linkedin.com/in/gdw\\\", \\\"email_enrichment\\\": true}\"},\"success\":true}]},\"uuid\":\"98d1f7e3-4756-49d6-a1a4-192508e60fbe\"}",
+          "sessionId": "d148dc66-063e-48a4-b341-23e251c20dd5",
           "metadata": {
             "structuredOutput": {
-              "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n**Board of Directors:**\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\n**Executive Leadership:**\n- Rebecca Chan - Executive Director",
+              "answer": "## a16z Crypto General Partners - Contact Information & Investment Interests\n\n### 1. **Chris Dixon** - Founder & Managing Partner\n**Email:** cdixon@a16z.com  \n**LinkedIn:** [linkedin.com/in/chris-dixon-9599b127b](https://www.linkedin.com/in/chris-dixon-9599b127b)\n\n**Investment Focus:**\n- **AI × Crypto Convergence**: Building blockchain-based AI systems and new economic models for creators in an AI-driven world\n- **New Incentive Systems**: Investing in protocols like Story Protocol that create economic structures for content producers\n- **Infrastructure Over Speculation**: Focused on building practical applications and great products rather than trading\n- **Web3 Technologies**: Broad mandate across web3 with $7B+ under management\n- **Key Themes for 2026**: Stablecoins, tokenization of real-world assets, AI agents, privacy solutions, and prediction markets\n\n**Notable Portfolio:** Avalanche, Aptos, Solana, Celo, Optimism, Coinbase, Alchemy, Yuga Labs, Worldcoin, Dapper Labs\n\n**Background:** Author of \"Read Write Own,\" founded Hunch (acquired by eBay), SiteAdvisor (acquired by McAfee), co-founded Founder Collective. Columbia BA/MA Philosophy, Harvard MBA.\n\n---\n\n### 2. **Arianna Simpson** - General Partner\n**Emails:** ariannahsimpson@gmail.com, arianna@bitgo.com  \n**LinkedIn:** [linkedin.com/in/ariannasimpson](https://www.linkedin.com/in/ariannasimpson)  \n**Twitter:** [@AriannaSimpson](https://twitter.com/ariannasimpson)\n\n**Investment Focus:**\n- **Founder-Centric Approach**: Targets strong founders rather than thematic areas, following entrepreneurial trends\n- **Crypto × AI Convergence**: Particular interest in the intersection of cryptocurrency and artificial intelligence\n- **Early-Stage Expertise**: Known for identifying breakout companies early\n- **Diverse Portfolio**: Comfortable across various crypto sectors from infrastructure to consumer applications\n\n**Notable Portfolio:** Mysten Labs, Phantom (valued at $3B), Blackbird (dining rewards), Talos\n\n**Background:** Founded Autonomous Partners before joining a16z. Early career at BitGo (PM Lead), Facebook (Global Marketing Solutions). Penn State BA (International Politics, Spanish), International Baccalaureate from American School of Milan.\n\n---\n\n### 3. **Ali Yahya** - General Partner\n**Emails:** ayahya@a16z.com, alive@cs.stanford.edu  \n**LinkedIn:** [linkedin.com/in/ali01](https://www.linkedin.com/in/ali01)  \n**Twitter:** [@alive_eth](https://twitter.com/alive_eth)\n\n**Investment Focus:**\n- **Blockchain Infrastructure**: Deep focus on core blockchain protocols and infrastructure layer\n- **DeFi & Solana Ecosystem**: Active in decentralized finance and Solana network growth\n- **AI × Crypto Convergence**: Crypto as coordination layer for unused GPU supply (critical for AI compute) and as verification layer for deepfake prevention\n- **Web3 Infrastructure Mental Models**: Narrow waist, modularity advantage, network flywheel\n\n**Notable Portfolio:** Alchemy, Aleo, Aztec, EigenLayer, Espresso, Gensyn, LayerZero, Solana, Sound.xyz, XMTP, zkSync, Jito ($50M investment)\n\n**Background:** Discovered Bitcoin in 2010 at Stanford Computer Security Lab. Google Brain (TensorFlow core contributor) and Google X (AI + Robotics). Stanford BS & MS Computer Science (Distributed Systems + AI).\n\n---\n\n### 4. **Guy Wuollet** - General Partner\n**Emails:** guy@a16z.com, guy.wuollet@a16z.com, gwuollet@a16z.com  \n**LinkedIn:** [linkedin.com/in/gdw](https://www.linkedin.com/in/gdw)  \n**Twitter:** [@guywuolletjr](https://twitter.com/guywuolletjr)\n\n**Investment Focus:**\n- **Infrastructure & Application Layer**: Focuses on both foundational infrastructure and application-layer investments\n- **Research-Heavy Approach**: Brings technical computer science background to investment decisions\n- **DeFi (Decentralized Finance)**: Active in decentralized financial protocols\n- **DePIN (Decentralized Physical Infrastructure Networks)**: Key interest area\n- **Alignment Philosophy**: Believes decentralized networks better align incentives on the Internet\n\n**Notable Portfolio:** EigenLayer, Morpho, Babylon (BABY token/$15M investment in Bitcoin vaults)\n\n**Background:** Recently promoted to General Partner (2025) after serving as Investment Partner since 2020. Previously at Protocol Labs (Research), OVO Fund (Scout). Stanford BS Computer Science, MS (incomplete). Started at a16z in Market Development (2018).\n\n---\n\n## Key Insights for Founders\n\n**Common Themes Across All GPs:**\n- Strong technical backgrounds (3 out of 4 have CS degrees from Stanford)\n- Deep interest in AI × Crypto convergence\n- Focus on infrastructure and foundational protocols\n- Emphasis on practical applications over speculation\n- Interest in new incentive structures and economic models\n\n**How to Approach:**\n- **Chris Dixon**: If you're building economic systems for creators, AI-crypto convergence, or infrastructure with clear use cases\n- **Arianna Simpson**: If you're a strong founder with a compelling vision, especially in emerging crypto × AI spaces\n- **Ali Yahya**: If you're building blockchain infrastructure, DeFi protocols, or AI verification/coordination layers\n- **Guy Wuollet**: If you're working on DeFi, DePIN, or technical infrastructure with novel approaches (DM him on Twitter - he specifically requests this)",
               "sources": [
-                "https://www.guidestar.org/profile/27-4200974",
-                "https://www.therailpark.org/about/",
-                "https://www.therailpark.org/friends-rail-park-board-adds-two-new-members/"
+                "https://a16zcrypto.com/our-team/",
+                "https://a16zcrypto.com/team/chris-dixon/",
+                "https://a16z.com/ai-crypto-internet-chris-dixon/",
+                "https://www.altcoinbuzz.io/cryptocurrency-news/a16z-crypto-lays-out-17-big-priorities-for-2026/",
+                "https://a16zcrypto.com/team/arianna-simpson/",
+                "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+                "https://a16zcrypto.com/team/ali-yahya/",
+                "https://blockworks.co/news/a16z-invests-jito-v",
+                "https://a16zcrypto.com/team/guy-wuollet/",
+                "https://www.linkedin.com/in/chris-dixon-9599b127b",
+                "https://www.linkedin.com/in/ariannasimpson",
+                "https://www.linkedin.com/in/ali01",
+                "https://www.linkedin.com/in/gdw"
               ],
               "tool_call_log": [
                 {
                   "tool": "WebSearch",
                   "input": {
-                    "query": "Friends of the Rail Park board members directors 2025"
+                    "query": "a16z crypto general partners 2026 team"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__check_balance",
+                  "input": {},
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__discover_resources",
+                  "input": {
+                    "url": "https://enrichx402.com",
+                    "fanOut": false
                   },
                   "success": true
                 },
                 {
                   "tool": "WebFetch",
                   "input": {
-                    "url": "https://www.therailpark.org/about/",
-                    "prompt": "Find and list all the board members or board of directors for Friends of the Rail Park"
+                    "url": "https://a16zcrypto.com/our-team/",
+                    "prompt": "Extract all the general partners listed on this page, including their names and any information about their roles or focus areas."
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/apollo/people-search",
+                    "method": "POST",
+                    "body": "{\"q_organization_domains\": [\"a16z.com\"], \"q_keywords\": \"general partner crypto\", \"per_page\": 10}"
                   },
                   "success": true
                 },
                 {
                   "tool": "WebSearch",
                   "input": {
-                    "query": "\"Friends of the Rail Park\" \"board of directors\" site:therailpark.org"
+                    "query": "Chris Dixon a16z crypto investment focus interests 2026"
                   },
                   "success": true
                 },
                 {
                   "tool": "WebSearch",
                   "input": {
-                    "query": "\"Friends of the Rail Park\" board members names Philadelphia"
+                    "query": "Arianna Simpson a16z crypto investment interests portfolio"
                   },
                   "success": true
                 },
                 {
-                  "tool": "WebFetch",
+                  "tool": "WebSearch",
                   "input": {
-                    "url": "https://www.guidestar.org/profile/27-4200974",
-                    "prompt": "Find and list all the board members, directors, officers, or leadership for Friends of the Rail Park"
+                    "query": "Ali Yahya a16z crypto investment focus areas"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Guy Wuollet a16z crypto investment interests"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/apollo/people-enrich/bulk",
+                    "method": "POST",
+                    "body": "{\"details\": [{\"first_name\": \"Chris\", \"last_name\": \"Dixon\", \"organization_name\": \"Andreessen Horowitz\"}, {\"first_name\": \"Arianna\", \"last_name\": \"Simpson\", \"organization_name\": \"Andreessen Horowitz\"}, {\"first_name\": \"Ali\", \"last_name\": \"Yahya\", \"organization_name\": \"Andreessen Horowitz\"}, {\"first_name\": \"Guy\", \"last_name\": \"Wuollet\", \"organization_name\": \"Andreessen Horowitz\"}]}"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                    "method": "POST",
+                    "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/chris-dixon-9599b127b\"}"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                    "method": "POST",
+                    "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ariannasimpson\"}"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                    "method": "POST",
+                    "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ali01\"}"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                    "method": "POST",
+                    "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/gdw\"}"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                    "method": "POST",
+                    "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/chris-dixon-9599b127b\", \"email_enrichment\": true}"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                    "method": "POST",
+                    "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ariannasimpson\", \"email_enrichment\": true}"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                    "method": "POST",
+                    "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ali01\", \"email_enrichment\": true}"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "mcp__x402scan__fetch",
+                  "input": {
+                    "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                    "method": "POST",
+                    "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/gdw\", \"email_enrichment\": true}"
                   },
                   "success": true
                 }
@@ -518,85 +2029,201 @@
         "success": true,
         "testCase": {
           "vars": {
-            "query": "Find and return the board members of Friends of the Rail Park",
-            "sessionId": "3134a8cc-066e-459a-95a6-8ce2daa32d2f"
+            "query": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.",
+            "sessionId": "d148dc66-063e-48a4-b341-23e251c20dd5"
           },
           "assert": [],
           "options": {},
-          "metadata": {},
-          "providers": [
-            "x402scan MCP + WebTools - Opus 4.5"
-          ]
+          "metadata": {}
         },
         "testIdx": 0,
         "vars": {
-          "query": "Find and return the board members of Friends of the Rail Park",
-          "sessionId": "3134a8cc-066e-459a-95a6-8ce2daa32d2f"
+          "query": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.",
+          "sessionId": "d148dc66-063e-48a4-b341-23e251c20dd5"
         },
         "metadata": {
           "structuredOutput": {
-            "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n**Board of Directors:**\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\n**Executive Leadership:**\n- Rebecca Chan - Executive Director",
+            "answer": "## a16z Crypto General Partners - Contact Information & Investment Interests\n\n### 1. **Chris Dixon** - Founder & Managing Partner\n**Email:** cdixon@a16z.com  \n**LinkedIn:** [linkedin.com/in/chris-dixon-9599b127b](https://www.linkedin.com/in/chris-dixon-9599b127b)\n\n**Investment Focus:**\n- **AI × Crypto Convergence**: Building blockchain-based AI systems and new economic models for creators in an AI-driven world\n- **New Incentive Systems**: Investing in protocols like Story Protocol that create economic structures for content producers\n- **Infrastructure Over Speculation**: Focused on building practical applications and great products rather than trading\n- **Web3 Technologies**: Broad mandate across web3 with $7B+ under management\n- **Key Themes for 2026**: Stablecoins, tokenization of real-world assets, AI agents, privacy solutions, and prediction markets\n\n**Notable Portfolio:** Avalanche, Aptos, Solana, Celo, Optimism, Coinbase, Alchemy, Yuga Labs, Worldcoin, Dapper Labs\n\n**Background:** Author of \"Read Write Own,\" founded Hunch (acquired by eBay), SiteAdvisor (acquired by McAfee), co-founded Founder Collective. Columbia BA/MA Philosophy, Harvard MBA.\n\n---\n\n### 2. **Arianna Simpson** - General Partner\n**Emails:** ariannahsimpson@gmail.com, arianna@bitgo.com  \n**LinkedIn:** [linkedin.com/in/ariannasimpson](https://www.linkedin.com/in/ariannasimpson)  \n**Twitter:** [@AriannaSimpson](https://twitter.com/ariannasimpson)\n\n**Investment Focus:**\n- **Founder-Centric Approach**: Targets strong founders rather than thematic areas, following entrepreneurial trends\n- **Crypto × AI Convergence**: Particular interest in the intersection of cryptocurrency and artificial intelligence\n- **Early-Stage Expertise**: Known for identifying breakout companies early\n- **Diverse Portfolio**: Comfortable across various crypto sectors from infrastructure to consumer applications\n\n**Notable Portfolio:** Mysten Labs, Phantom (valued at $3B), Blackbird (dining rewards), Talos\n\n**Background:** Founded Autonomous Partners before joining a16z. Early career at BitGo (PM Lead), Facebook (Global Marketing Solutions). Penn State BA (International Politics, Spanish), International Baccalaureate from American School of Milan.\n\n---\n\n### 3. **Ali Yahya** - General Partner\n**Emails:** ayahya@a16z.com, alive@cs.stanford.edu  \n**LinkedIn:** [linkedin.com/in/ali01](https://www.linkedin.com/in/ali01)  \n**Twitter:** [@alive_eth](https://twitter.com/alive_eth)\n\n**Investment Focus:**\n- **Blockchain Infrastructure**: Deep focus on core blockchain protocols and infrastructure layer\n- **DeFi & Solana Ecosystem**: Active in decentralized finance and Solana network growth\n- **AI × Crypto Convergence**: Crypto as coordination layer for unused GPU supply (critical for AI compute) and as verification layer for deepfake prevention\n- **Web3 Infrastructure Mental Models**: Narrow waist, modularity advantage, network flywheel\n\n**Notable Portfolio:** Alchemy, Aleo, Aztec, EigenLayer, Espresso, Gensyn, LayerZero, Solana, Sound.xyz, XMTP, zkSync, Jito ($50M investment)\n\n**Background:** Discovered Bitcoin in 2010 at Stanford Computer Security Lab. Google Brain (TensorFlow core contributor) and Google X (AI + Robotics). Stanford BS & MS Computer Science (Distributed Systems + AI).\n\n---\n\n### 4. **Guy Wuollet** - General Partner\n**Emails:** guy@a16z.com, guy.wuollet@a16z.com, gwuollet@a16z.com  \n**LinkedIn:** [linkedin.com/in/gdw](https://www.linkedin.com/in/gdw)  \n**Twitter:** [@guywuolletjr](https://twitter.com/guywuolletjr)\n\n**Investment Focus:**\n- **Infrastructure & Application Layer**: Focuses on both foundational infrastructure and application-layer investments\n- **Research-Heavy Approach**: Brings technical computer science background to investment decisions\n- **DeFi (Decentralized Finance)**: Active in decentralized financial protocols\n- **DePIN (Decentralized Physical Infrastructure Networks)**: Key interest area\n- **Alignment Philosophy**: Believes decentralized networks better align incentives on the Internet\n\n**Notable Portfolio:** EigenLayer, Morpho, Babylon (BABY token/$15M investment in Bitcoin vaults)\n\n**Background:** Recently promoted to General Partner (2025) after serving as Investment Partner since 2020. Previously at Protocol Labs (Research), OVO Fund (Scout). Stanford BS Computer Science, MS (incomplete). Started at a16z in Market Development (2018).\n\n---\n\n## Key Insights for Founders\n\n**Common Themes Across All GPs:**\n- Strong technical backgrounds (3 out of 4 have CS degrees from Stanford)\n- Deep interest in AI × Crypto convergence\n- Focus on infrastructure and foundational protocols\n- Emphasis on practical applications over speculation\n- Interest in new incentive structures and economic models\n\n**How to Approach:**\n- **Chris Dixon**: If you're building economic systems for creators, AI-crypto convergence, or infrastructure with clear use cases\n- **Arianna Simpson**: If you're a strong founder with a compelling vision, especially in emerging crypto × AI spaces\n- **Ali Yahya**: If you're building blockchain infrastructure, DeFi protocols, or AI verification/coordination layers\n- **Guy Wuollet**: If you're working on DeFi, DePIN, or technical infrastructure with novel approaches (DM him on Twitter - he specifically requests this)",
             "sources": [
-              "https://www.guidestar.org/profile/27-4200974",
-              "https://www.therailpark.org/about/",
-              "https://www.therailpark.org/friends-rail-park-board-adds-two-new-members/"
+              "https://a16zcrypto.com/our-team/",
+              "https://a16zcrypto.com/team/chris-dixon/",
+              "https://a16z.com/ai-crypto-internet-chris-dixon/",
+              "https://www.altcoinbuzz.io/cryptocurrency-news/a16z-crypto-lays-out-17-big-priorities-for-2026/",
+              "https://a16zcrypto.com/team/arianna-simpson/",
+              "https://fortune.com/2025/09/08/term-sheet-next-a16z-crypto-arianna-simpson-blockchain-bitcoin/",
+              "https://a16zcrypto.com/team/ali-yahya/",
+              "https://blockworks.co/news/a16z-invests-jito-v",
+              "https://a16zcrypto.com/team/guy-wuollet/",
+              "https://www.linkedin.com/in/chris-dixon-9599b127b",
+              "https://www.linkedin.com/in/ariannasimpson",
+              "https://www.linkedin.com/in/ali01",
+              "https://www.linkedin.com/in/gdw"
             ],
             "tool_call_log": [
               {
                 "tool": "WebSearch",
                 "input": {
-                  "query": "Friends of the Rail Park board members directors 2025"
+                  "query": "a16z crypto general partners 2026 team"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__check_balance",
+                "input": {},
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__discover_resources",
+                "input": {
+                  "url": "https://enrichx402.com",
+                  "fanOut": false
                 },
                 "success": true
               },
               {
                 "tool": "WebFetch",
                 "input": {
-                  "url": "https://www.therailpark.org/about/",
-                  "prompt": "Find and list all the board members or board of directors for Friends of the Rail Park"
+                  "url": "https://a16zcrypto.com/our-team/",
+                  "prompt": "Extract all the general partners listed on this page, including their names and any information about their roles or focus areas."
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-search",
+                  "method": "POST",
+                  "body": "{\"q_organization_domains\": [\"a16z.com\"], \"q_keywords\": \"general partner crypto\", \"per_page\": 10}"
                 },
                 "success": true
               },
               {
                 "tool": "WebSearch",
                 "input": {
-                  "query": "\"Friends of the Rail Park\" \"board of directors\" site:therailpark.org"
+                  "query": "Chris Dixon a16z crypto investment focus interests 2026"
                 },
                 "success": true
               },
               {
                 "tool": "WebSearch",
                 "input": {
-                  "query": "\"Friends of the Rail Park\" board members names Philadelphia"
+                  "query": "Arianna Simpson a16z crypto investment interests portfolio"
                 },
                 "success": true
               },
               {
-                "tool": "WebFetch",
+                "tool": "WebSearch",
                 "input": {
-                  "url": "https://www.guidestar.org/profile/27-4200974",
-                  "prompt": "Find and list all the board members, directors, officers, or leadership for Friends of the Rail Park"
+                  "query": "Ali Yahya a16z crypto investment focus areas"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Guy Wuollet a16z crypto investment interests"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/apollo/people-enrich/bulk",
+                  "method": "POST",
+                  "body": "{\"details\": [{\"first_name\": \"Chris\", \"last_name\": \"Dixon\", \"organization_name\": \"Andreessen Horowitz\"}, {\"first_name\": \"Arianna\", \"last_name\": \"Simpson\", \"organization_name\": \"Andreessen Horowitz\"}, {\"first_name\": \"Ali\", \"last_name\": \"Yahya\", \"organization_name\": \"Andreessen Horowitz\"}, {\"first_name\": \"Guy\", \"last_name\": \"Wuollet\", \"organization_name\": \"Andreessen Horowitz\"}]}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/chris-dixon-9599b127b\"}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ariannasimpson\"}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ali01\"}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/linkedin-scrape",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/gdw\"}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/chris-dixon-9599b127b\", \"email_enrichment\": true}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ariannasimpson\", \"email_enrichment\": true}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/ali01\", \"email_enrichment\": true}"
+                },
+                "success": true
+              },
+              {
+                "tool": "mcp__x402scan__fetch",
+                "input": {
+                  "url": "https://enrichx402.com/api/clado/contacts-enrich",
+                  "method": "POST",
+                  "body": "{\"linkedin_url\": \"https://www.linkedin.com/in/gdw\", \"email_enrichment\": true}"
                 },
                 "success": true
               }
             ]
           },
           "_promptfooFileMetadata": {},
-          "sessionId": "3134a8cc-066e-459a-95a6-8ce2daa32d2f"
+          "sessionId": "d148dc66-063e-48a4-b341-23e251c20dd5"
         },
         "failureReason": 0
       }
     ],
     "stats": {
-      "successes": 2,
+      "successes": 4,
       "failures": 0,
       "errors": 0,
       "tokenUsage": {
-        "prompt": 2,
-        "completion": 2524,
+        "prompt": 4589,
+        "completion": 19806,
         "cached": 0,
-        "total": 2526,
-        "numRequests": 2,
+        "total": 24395,
+        "numRequests": 4,
         "completionDetails": {
           "reasoning": 0,
           "acceptedPrediction": 0,
@@ -615,7 +2242,7 @@
           }
         }
       },
-      "durationMs": 72021
+      "durationMs": 253325
     }
   },
   "config": {
@@ -630,45 +2257,32 @@
       {
         "id": "prompt-b",
         "label": "Prompt B",
-        "raw": "You are a helpful research assistant with access to web search and x402 premium API tools.\n\n{{query}}\n"
+        "raw": "You are a helpful deep research assistant with access to web search and x402 premium API tools.\n\nUse the x402 premium API tools to enrich the response.\n\n{{query}}\n"
       }
     ],
-    "providers": [
-      "file://providers/all-tools.yaml"
-    ],
+    "providers": ["file://providers/all-tools.yaml"],
     "tests": [
       {
         "vars": {
-          "query": "Find and return the board members of Friends of the Rail Park"
+          "query": "Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences."
         }
       }
     ],
     "scenarios": [],
     "env": {},
-    "defaultTest": {
-      "providers": [
-        "x402scan MCP + WebTools - Opus 4.5"
-      ],
-      "vars": {},
-      "assert": [],
-      "options": {},
-      "metadata": {}
-    },
-    "outputPath": [
-      "evals/compare-prompts-results.json"
-    ],
+    "outputPath": ["evals/compare-prompts-results.json"],
     "extensions": [],
     "metadata": {},
     "evaluateOptions": {}
   },
-  "shareableUrl": "https://www.promptfoo.app/eval/eval-PQu-2026-01-26T23:41:58",
+  "shareableUrl": "https://www.promptfoo.app/eval/eval-QXO-2026-01-27T01:26:21",
   "metadata": {
     "promptfooVersion": "0.120.17",
     "nodeVersion": "v23.4.0",
     "platform": "darwin",
     "arch": "arm64",
-    "exportedAt": "2026-01-26T23:43:12.601Z",
-    "evaluationCreatedAt": "2026-01-26T23:41:58.654Z",
+    "exportedAt": "2026-01-27T01:30:35.642Z",
+    "evaluationCreatedAt": "2026-01-27T01:26:21.881Z",
     "author": "mason@merit.systems"
   }
 }

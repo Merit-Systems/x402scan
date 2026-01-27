@@ -18,12 +18,13 @@ prompts:
   - id: prompt-b
     label: 'Prompt B'
     raw: |
-      You are a helpful research assistant with access to web search and x402 premium API tools.
-      
+      You are a helpful deep research assistant with access to web search and x402 premium API tools.
+
+      Use the x402 premium API tools to enrich the response.
+
       {{query}}
 
 # Test cases - just provide the query, no assertions
 tests:
   - vars:
-      query: 'Find and return the board members of Friends of the Rail Park'
-
+      query: 'Get me a list of the a16z crypto general partners, their emails, and what specific types of projects they might be interested in investing in. Each will have their own unique interests and preferences.'
