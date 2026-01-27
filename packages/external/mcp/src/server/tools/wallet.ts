@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { getBalance } from '@/shared/balance';
 import { DEFAULT_NETWORK, getChainName } from '@/shared/networks';
 import { getDepositLink } from '@/shared/utils';
@@ -7,6 +9,16 @@ import { mcpSuccessJson, mcpError } from './response';
 import type { RegisterTools } from '@/server/types';
 
 const toolName = 'get_wallet_info';
+
+const outputSchema = z.object({
+  address: z.string().describe('Wallet address (0x...)'),
+  network: z.string().describe('CAIP-2 network ID (e.g., eip155:8453)'),
+  networkName: z.string().describe('Human-readable network name'),
+  usdcBalance: z.number().describe('USDC balance'),
+  isNewWallet: z.boolean().describe('True if balance is 0'),
+  depositLink: z.string().url().describe('Link to fund the wallet'),
+  message: z.string().optional().describe('Warning if balance is low'),
+});
 
 export const registerWalletTools: RegisterTools = ({
   server,
@@ -18,6 +30,7 @@ export const registerWalletTools: RegisterTools = ({
     {
       title: 'Get Wallet Info',
       description: `Get wallet address and USDC balance on Base. Auto-creates wallet on first use (~/.x402scan-mcp/wallet.json). Returns deposit link. Check before paid API calls.`,
+      outputSchema,
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,

@@ -7,6 +7,12 @@ import type { RegisterTools } from '@/server/types';
 
 const toolName = 'redeem_invite';
 
+const outputSchema = z.object({
+  redeemed: z.literal(true),
+  amount: z.string().describe('Amount with unit (e.g., "5 USDC")'),
+  txHash: z.string().describe('Transaction hash on Base'),
+});
+
 export const registerRedeemInviteTool: RegisterTools = ({
   server,
   account: { address },
@@ -20,6 +26,7 @@ export const registerRedeemInviteTool: RegisterTools = ({
       inputSchema: z.object({
         code: z.string().min(1).describe('The invite code'),
       }),
+      outputSchema,
       annotations: {
         readOnlyHint: true,
         destructiveHint: false, // Additive (adds funds), not destructive
