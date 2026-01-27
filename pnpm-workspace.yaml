@@ -27,8 +27,9 @@ catalogs:
     '@t3-oss/env-nextjs': ^0.13.10
     dotenv: ^17.2.3
   next:
-    next: &NEXT_VERSION 16.1.1
+    next: &NEXT_VERSION ^16.1.5
     eslint-config-next: *NEXT_VERSION
+    '@next/mdx': *NEXT_VERSION
     next-themes: ^0.4.6
   prisma:
     prisma: &PRISMA_VERSION ^7.2.0
@@ -85,3 +86,6 @@ catalogs:
     '@trigger.dev/sdk': &TRIGGER_SDK_VERSION ^4.3.2
     '@trigger.dev/build': *TRIGGER_SDK_VERSION
     trigger.dev: *TRIGGER_SDK_VERSION
+  mdx:
+    '@mdx-js/loader': &MDX_VERSION ^3.1.1
+    '@mdx-js/react': *MDX_VERSION

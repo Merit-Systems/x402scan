@@ -73,5 +73,6 @@ Thumbs.db
 # Turborepo
 .turbo
 
-#cursor
+# Agents
 .cursor
+.claude

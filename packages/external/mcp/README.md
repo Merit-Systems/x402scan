@@ -75,24 +75,23 @@ On first run, a wallet is generated at `~/.x402scan-mcp/wallet.json`. Deposit US
 
 **Workflow:**
 
-1. `check_balance` - Check wallet and get deposit address
+1. `get_wallet_info` - Check wallet and get deposit address
 2. `redeem_invite` - Redeem an invite code to fund your wallet (if you have one)
-3. `discover_resources` - Find available x402 endpoints on an origin
-4. `check_x402_endpoint` - Probe endpoint for pricing/schema (optional)
-5. `fetch` - Make the paid request (or `authed_call` for SIWX auth)
+3. `discover_api_endpoints` - Find available x402 endpoints on an origin
+4. `check_endpoint_schema` - Probe endpoint for pricing/schema (optional)
+5. `fetch` - Make the paid request (or `fetch_with_auth` for SIWX auth)
 
 ## Tools
 
-| Tool                  | Description                                                  |
-| --------------------- | ------------------------------------------------------------ |
-| `fetch`               | Fetch x402-protected resource with automatic payment         |
-| `authed_call`         | Make request to SIWX-protected endpoint with automatic auth  |
-| `check_balance`       | Get wallet address and USDC balance                          |
-| `get_wallet_address`  | Get the wallet address                                       |
-| `redeem_invite`       | Redeem an invite code to receive USDC                        |
-| `check_x402_endpoint` | Check if endpoint is x402-protected, get pricing/schema/auth |
-| `discover_resources`  | Discover x402 resources from origin's .well-known/x402       |
-| `report_error`        | Report critical MCP tool bugs to x402scan developers         |
+| Tool                     | Description                                                  |
+| ------------------------ | ------------------------------------------------------------ |
+| `fetch`                  | Fetch x402-protected resource with automatic payment         |
+| `fetch_with_auth`        | Make request to SIWX-protected endpoint with automatic auth  |
+| `get_wallet_info`        | Get wallet address and USDC balance                          |
+| `redeem_invite`          | Redeem an invite code to receive USDC                        |
+| `check_endpoint_schema`  | Check if endpoint is x402-protected, get pricing/schema/auth |
+| `discover_api_endpoints` | Discover x402 resources from origin's .well-known/x402       |
+| `report_error`           | Report critical MCP tool bugs to x402scan developers         |
 
 ## Environment
 

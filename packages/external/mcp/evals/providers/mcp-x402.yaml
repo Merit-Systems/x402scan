@@ -39,11 +39,11 @@
 #         required: [answer]
 #     append_allowed_tools:
 #       - 'mcp__x402scan__fetch'
-#       - 'mcp__x402scan__authed_call'
-#       - 'mcp__x402scan__check_balance'
-#       - 'mcp__x402scan__get_wallet_address'
-#       - 'mcp__x402scan__check_x402_endpoint'
-#       - 'mcp__x402scan__discover_resources'
+#       - 'mcp__x402scan__fetch_with_auth'
+#       - 'mcp__x402scan__get_wallet_info'
+#       - 'mcp__x402scan__check_endpoint_schema'
+#       - 'mcp__x402scan__discover_api_endpoints'
+#       - 'mcp__x402scan__redeem_invite'
 #       - 'mcp__x402scan__report_error'
 
 - id: anthropic:claude-agent-sdk
@@ -52,8 +52,8 @@
     model: claude-sonnet-4-5-20250929
     mcp:
       servers:
-        - command: npx
-          args: ['-y', '@x402scan/mcp@latest']
+        - command: sh
+          args: ['-c', 'node ${MCP_SERVER_DIR}/index.js']
           name: x402scan
     include_partial_messages: true
     max_budget_usd: 1.50
@@ -81,14 +81,14 @@
                 success:
                   type: boolean
             description: 'Log of tool calls made'
-        required: [answer]
+        required: [answer, tool_call_log]
     append_allowed_tools:
       - 'mcp__x402scan__fetch'
-      - 'mcp__x402scan__authed_call'
-      - 'mcp__x402scan__check_balance'
-      - 'mcp__x402scan__get_wallet_address'
-      - 'mcp__x402scan__check_x402_endpoint'
-      - 'mcp__x402scan__discover_resources'
+      - 'mcp__x402scan__fetch_with_auth'
+      - 'mcp__x402scan__get_wallet_info'
+      - 'mcp__x402scan__check_endpoint_schema'
+      - 'mcp__x402scan__discover_api_endpoints'
+      - 'mcp__x402scan__redeem_invite'
       - 'mcp__x402scan__report_error'
 
 - id: anthropic:claude-agent-sdk
@@ -97,8 +97,8 @@
     model: claude-opus-4-5-20251101
     mcp:
       servers:
-        - command: npx
-          args: ['-y', '@x402scan/mcp@latest']
+        - command: sh
+          args: ['-c', 'node ${MCP_SERVER_DIR}/index.js']
           name: x402scan
     include_partial_messages: true
     max_budget_usd: 5.00
@@ -126,12 +126,12 @@
                 success:
                   type: boolean
             description: 'Log of tool calls made'
-        required: [answer]
+        required: [answer, tool_call_log]
     append_allowed_tools:
       - 'mcp__x402scan__fetch'
-      - 'mcp__x402scan__authed_call'
-      - 'mcp__x402scan__check_balance'
-      - 'mcp__x402scan__get_wallet_address'
-      - 'mcp__x402scan__check_x402_endpoint'
-      - 'mcp__x402scan__discover_resources'
+      - 'mcp__x402scan__fetch_with_auth'
+      - 'mcp__x402scan__get_wallet_info'
+      - 'mcp__x402scan__check_endpoint_schema'
+      - 'mcp__x402scan__discover_api_endpoints'
+      - 'mcp__x402scan__redeem_invite'
       - 'mcp__x402scan__report_error'

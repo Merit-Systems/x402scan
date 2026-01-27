@@ -9,7 +9,14 @@ const config: KnipConfig = {
         'src/app/**/route.{js,jsx,ts,tsx}',
       ],
       project: ['src/**/*.{ts,tsx}', '*.{ts,tsx,js,mjs}'],
-      ignoreDependencies: ['postcss', 'redis', 'tailwindcss', 'tw-animate-css'],
+      ignoreDependencies: [
+        'postcss',
+        'redis',
+        'tailwindcss',
+        'tw-animate-css',
+        '@mdx-js/loader',
+        '@mdx-js/react',
+      ],
       ignore: [
         'src/scripts/**',
         'src/components/ui/charts/chart/**',
@@ -27,6 +34,9 @@ const config: KnipConfig = {
       ignore: ['generated/**'],
     },
     'packages/internal/databases/analytics': {
+      project: ['src/**/*.ts'],
+    },
+    'packages/internal/databases/partners': {
       project: ['src/**/*.ts'],
     },
     'packages/internal/databases/transfers': {

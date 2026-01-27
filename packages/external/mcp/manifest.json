@@ -46,7 +46,7 @@
     },
     {
       "name": "discover_resources",
-      "description": "Discover x402-protected resources from an origin. Fetches the /.well-known/x402 discovery document and optionally tests each resource to get pricing and requirements. Known default origins with resource packs: https://enrichx402.com (People + Org search, Google Maps, grok twitter search, exa web search, clado linkedin data, firecrawl web scrape), https://stablestudio.io (generate images / videos)."
+      "description": "Discover x402-protected resources from an origin. Fetches the /.well-known/x402 discovery document and optionally tests each resource to get pricing and requirements. Known default origins with resource packs: https://enrichx402.com (People + Org search, Google Maps, grok twitter search, exa web search, clado linkedin data, firecrawl web scrape, whitepages), https://stablestudio.io (generate images / videos)."
     }
   ],
   "prompts_generated": true,

@@ -6,7 +6,6 @@ import { ClientInstallAccordion } from './_components/accordion';
 
 import { clientSchema } from '@/app/mcp/_lib/clients';
 import { mcpSearchParamsSchema } from '@/app/mcp/_lib/params';
-import { ChevronsLeftRight } from 'lucide-react';
 
 export default async function InstallClientPage({
   params,

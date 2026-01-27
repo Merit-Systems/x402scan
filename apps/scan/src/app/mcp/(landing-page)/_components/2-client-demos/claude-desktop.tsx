@@ -1,8 +1,7 @@
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
-
 import { Logo } from '@/components/logo';
+import { Button } from '@/components/ui/button';
 
 import { ClientDemosSection } from './section';
 

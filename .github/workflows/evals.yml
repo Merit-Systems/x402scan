@@ -40,13 +40,18 @@ jobs:
       - name: Set up promptfoo cache
         uses: actions/cache@v4
         with:
-          path: ~/.cache/promptfoo
+          path: ~/.promptfoo/cache
           key: ${{ runner.os }}-promptfoo-v1
           restore-keys: |
             ${{ runner.os }}-promptfoo-
 
+      # Build the MCP server locally
+      - name: Build MCP server
+        run: pnpm build --filter=@x402scan/mcp
+
       # Verify the x402scan MCP server starts and registers tools
       - name: Verify x402scan MCP server
+        working-directory: packages/external/mcp
         run: |
           # MCP requires initialize handshake before tools/list
           (echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}'; \
@@ -55,7 +60,7 @@ jobs:
            sleep 1; \
            echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"check_balance","arguments":{}}}'; \
            sleep 3) | \
-            timeout 20s npx -y @x402scan/mcp@latest 2>&1 | head -150
+            timeout 20s node dist/esm/index.js 2>&1 | head -150
 
       # Run evaluation using the package's promptfoo (has claude-agent-sdk as devDep)
       - name: Run promptfoo evaluation
@@ -64,21 +69,31 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         working-directory: packages/external/mcp
         run: |
+          # Inject absolute MCP server path into provider configs
+          MCP_PATH="${{ github.workspace }}/packages/external/mcp/dist/esm"
+          echo "Injecting MCP server path: $MCP_PATH"
+
+          # Replace ${MCP_SERVER_DIR} with the actual absolute path
+          sed -i "s|\${MCP_SERVER_DIR}|$MCP_PATH|g" evals/providers/*.yaml
+
+          # Verify the substitution worked
+          grep -n "index.js" evals/providers/*.yaml | head -5
+
           # Run eval and capture output
           pnpm exec promptfoo eval --config evals/promptfooconfig.yaml --output evals/results.json --share 2>&1 | tee eval-output.txt
-          
+
           # Extract results summary (e.g., "Results: ✓ 10 passed, ✗ 14 failed, 0 errors (41.67%)")
           RESULTS=$(grep -E "^Results:" eval-output.txt || echo "Results: Unable to parse")
           echo "results=$RESULTS" >> $GITHUB_OUTPUT
-          
+
           # Extract share URL
           SHARE_URL=$(grep -oE "https://www\.promptfoo\.app/eval/[^ ]+" eval-output.txt | tail -1 || echo "")
           echo "share_url=$SHARE_URL" >> $GITHUB_OUTPUT
-          
+
           # Extract token usage
           TOKENS=$(grep -E "^Total Tokens:" eval-output.txt || echo "")
           echo "tokens=$TOKENS" >> $GITHUB_OUTPUT
-          
+
           # Extract duration
           DURATION=$(grep -E "^Duration:" eval-output.txt || echo "")
           echo "duration=$DURATION" >> $GITHUB_OUTPUT
@@ -92,7 +107,7 @@ jobs:
             const shareUrl = `${{ steps.eval.outputs.share_url }}`;
             const tokens = `${{ steps.eval.outputs.tokens }}`;
             const duration = `${{ steps.eval.outputs.duration }}`;
-            
+
             // Parse pass/fail from results
             const passMatch = results.match(/(\d+) passed/);
             const failMatch = results.match(/(\d+) failed/);
@@ -100,10 +115,10 @@ jobs:
             const failed = failMatch ? parseInt(failMatch[1]) : 0;
             const total = passed + failed;
             const passRate = total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
-            
+
             // Determine status emoji
             const statusEmoji = failed === 0 ? '✅' : passRate >= 70 ? '⚠️' : '❌';
-            
+
             const body = [
               `## ${statusEmoji} Prompt Evaluation Results`,
               '',
@@ -123,18 +138,18 @@ jobs:
               'This evaluation tests the x402scan MCP server against a set of prompts to measure tool usage and answer quality across different provider configurations.',
               '</details>'
             ].filter(Boolean).join('\n');
-            
+
             // Find existing comment to update
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            
+
             const botComment = comments.find(c => 
               c.user.type === 'Bot' && c.body.includes('Prompt Evaluation Results')
             );
-            
+
             if (botComment) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
@@ -169,6 +184,11 @@ jobs:
           # Copy the results.json as well
           if [ -f "packages/external/mcp/evals/results.json" ]; then
             cp packages/external/mcp/evals/results.json claude-session-logs/
+          fi
+          # Copy promptfoo error and debug logs if they exist
+          if [ -d "$HOME/.promptfoo/logs" ]; then
+            cp "$HOME/.promptfoo/logs"/promptfoo-error-*.log claude-session-logs/ 2>/dev/null || true
+            cp "$HOME/.promptfoo/logs"/promptfoo-debug-*.log claude-session-logs/ 2>/dev/null || true
           fi
           ls -la claude-session-logs/ || echo "No logs collected"
 

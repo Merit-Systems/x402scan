@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.1.0
+
+### Minor Changes
+
+- 804ac92: neverthrow instead of try catch
+
 ## 0.0.8
 
 ### Patch Changes
