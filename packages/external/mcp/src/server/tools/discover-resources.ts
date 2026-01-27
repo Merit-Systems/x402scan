@@ -36,6 +36,8 @@ export function registerDiscoveryTools(server: McpServer): void {
             Exa web search
             Clado linkedin data
             Firecrawl web scrape
+            WhitePages (business directory)
+            Email enrichment
         - https://stablestudio.io -> generate images / videos
         `,
       inputSchema: {

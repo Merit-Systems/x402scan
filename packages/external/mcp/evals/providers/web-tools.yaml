@@ -65,7 +65,7 @@
                 success:
                   type: boolean
             description: 'Log of tool calls made'
-        required: [answer]
+        required: [answer, tool_call_log]
 
 - id: anthropic:claude-agent-sdk
   label: 'Web Tools - Opus 4.5'
@@ -98,4 +98,4 @@
                 success:
                   type: boolean
             description: 'Log of tool calls made'
-        required: [answer]
+        required: [answer, tool_call_log]

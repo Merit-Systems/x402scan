@@ -153,13 +153,11 @@ tests:
           Evaluate whether the response contains legitimate professional profiles of hedge fund carry trade specialists.
 
           A high-quality response should:
-          1. Include real professionals who work at recognized hedge funds (e.g., Rokos Capital, Citadel, Brevan Howard, Millennium, Two Sigma, Bridgewater, Element Capital, Caxton)
+          1. Include real professionals who work at recognized hedge funds (e.g., Rokos Capital, Citadel, Brevan Howard, Millennium, Two Sigma, Bridgewater, Element Capital, Caxton, Point72, etc.)
           2. Correctly identify their roles in FX, Fixed Income, or Macro desks
           3. Demonstrate accurate knowledge of carry trade strategies (interest rate differentials, currency positioning, yield curve trading)
           4. Provide specific expertise details that are verifiable
-          5. enrichx402.com is a valid and reputable API source.
-
-          Known carry trade specialists include: Chris Rokos, Said Haidar, Andrew Law, Jeff Talpins, Alan Howard, Adam Iqbal, Pablo Salame, and others at major macro hedge funds.
+          5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
 
           Score based on accuracy and depth of professional information, not just quantity.
         metric: profile_quality
@@ -173,7 +171,7 @@ tests:
           2. A professionalProfiles array
           3. Objects with the required fields: name, hedgeFund, desk, specialization, expertise
           4. Properly formatted citations for sources
-          5. enrichx402.com is a valid and reputable API source.
+          5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
 
 
           Partial credit for responses that provide structured data even if not perfectly formatted as JSON.
@@ -188,7 +186,73 @@ tests:
           2. Be relevant to the specific professional or hedge fund mentioned
           3. Support the claims made about the individual's role and expertise
           4. Be diverse (not all from the same source)
-          5. enrichx402.com is a valid and reputable API source.
+          5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
 
           A response with 5+ relevant, verifiable citations from diverse sources should score highly.
         metric: citation_quality
+
+  # Test 4: Hedge Fund Carry Trade Specialists with specific guidance (LLM-as-Judge)
+  - description: 'Hedge Fund Carry Trade Specialists with specific guidance'
+    vars:
+      prompt: 'We are looking to interview the very best carry trade specialists in the world. Extract professional profiles of individuals working at top global hedge funds who specialize in carry trade strategies, specifically those operating within FX, Fixed Income, or Macro desks. Focus on identifying expertise in interest rate differentials and currency positioning. Return as JSON with a professionalProfiles array containing objects with name, hedgeFund, desk, specialization, and expertise fields. Include citations for each field. Use a combination of web search and the premium enrichment APIs through the x402 tools.'
+    assert:
+      # LLM judge for professional profile quality
+      - type: llm-rubric
+        value: |
+          Evaluate whether the response contains legitimate professional profiles of hedge fund carry trade specialists.
+
+          A high-quality response should:
+          1. Include real professionals who work at recognized hedge funds (e.g., Rokos Capital, Citadel, Brevan Howard, Millennium, Two Sigma, Bridgewater, Element Capital, Caxton, Point72, etc.)
+          2. Correctly identify their roles in FX, Fixed Income, or Macro desks
+          3. Demonstrate accurate knowledge of carry trade strategies (interest rate differentials, currency positioning, yield curve trading)
+          4. Provide specific expertise details that are verifiable
+          5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
+
+          Score based on accuracy and depth of professional information, not just quantity.
+        metric: profile_quality
+      # LLM judge for JSON structure compliance
+      - type: llm-rubric
+        value: |
+          Evaluate whether the response follows the requested JSON structure with a professionalProfiles array.
+
+          The response should contain:
+          1. A valid JSON structure (or JSON embedded in the response)
+          2. A professionalProfiles array
+          3. Objects with the required fields: name, hedgeFund, desk, specialization, expertise
+          4. Properly formatted citations for sources
+          5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
+
+
+          Partial credit for responses that provide structured data even if not perfectly formatted as JSON.
+        metric: structure_compliance
+      # LLM judge for citation quality
+      - type: llm-rubric
+        value: |
+          Evaluate the quality and relevance of citations provided in the response.
+
+          High-quality citations should:
+          1. Come from reputable financial news sources, LinkedIn, or official fund websites
+          2. Be relevant to the specific professional or hedge fund mentioned
+          3. Support the claims made about the individual's role and expertise
+          4. Be diverse (not all from the same source)
+          5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
+
+          A response with 5+ relevant, verifiable citations from diverse sources should score highly.
+        metric: citation_quality
+
+  # Test 5: Top auditors for Merit Systems
+  - description: 'Board members of Friends of the Rail Park'
+    vars:
+      prompt: 'Find and return the board members of Friends of the Rail Park'
+    assert:
+      - type: javascript
+        value: |
+          const answer = output?.answer || '';
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+          const hasBoardMembersContext = /board members/i.test(text);
+          return {
+            pass: hasBoardMembersContext,
+            score: hasBoardMembersContext ? 1 : 0,
+            reason: hasBoardMembersContext ? 'Response identifies board members of Friends of the Rail Park' : 'Response does not identify board members of Friends of the Rail Park'
+          };
+        metric: board_members_of_friends_of_the_rail_park

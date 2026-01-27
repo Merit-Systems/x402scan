@@ -9,10 +9,55 @@ extensions:
   - file://extensions/log-tools.js:module.exports
 
 providers:
-  - file://providers/all-tools.yaml
+  - id: anthropic:claude-agent-sdk
+    label: 'x402scan MCP + WebTools - Sonnet 4.5'
+    config:
+      model: claude-sonnet-4-5-20250929
+      mcp:
+        servers:
+          - command: sh
+            args: ['-c', 'node ${MCP_SERVER_DIR}/index.js']
+            name: x402scan
+      include_partial_messages: true
+      max_budget_usd: 1.50
+      output_format:
+        type: json_schema
+        schema:
+          type: object
+          properties:
+            answer:
+              description: 'The answer to the question'
+            sources:
+              type: array
+              items:
+                type: string
+              description: 'URLs or references used'
+            tool_call_log:
+              type: array
+              items:
+                type: object
+                properties:
+                  tool:
+                    type: string
+                  input:
+                    type: object
+                  success:
+                    type: boolean
+              description: 'Log of tool calls made'
+          required: [answer, tool_call_log]
+      append_allowed_tools:
+        - 'mcp__x402scan__fetch'
+        - 'mcp__x402scan__authed_call'
+        - 'mcp__x402scan__check_balance'
+        - 'mcp__x402scan__get_wallet_address'
+        - 'mcp__x402scan__check_x402_endpoint'
+        - 'mcp__x402scan__discover_resources'
+        - 'mcp__x402scan__report_error'
+        - 'WebFetch'
+        - 'WebSearch'
 
 evaluateOptions:
-  repeat: 1
+  repeat: 5
 
 # Default test configuration applied to all test cases
 defaultTest:

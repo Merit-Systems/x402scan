@@ -11,6 +11,7 @@ import { mixedAddressSchema } from '@/lib/schemas';
 
 import { Chain } from '@/types/chain';
 import { dbErr, dbOk, dbResultFromPromise } from '../result';
+import { upsertWalletAddressForInviteCode } from '../partners';
 
 import { cdpErr, type CdpErr } from '@/services/cdp/result';
 
@@ -227,7 +228,6 @@ export const redeemInviteCode = async ({
     });
   }
 
-  // The transaction returned a Result - unwrap it
   const innerResult = transactionResult.value;
   if (innerResult.isErr()) {
     return innerResult;
@@ -235,7 +235,6 @@ export const redeemInviteCode = async ({
 
   const { inviteCode, redemption } = innerResult.value;
 
-  // Now send the tokens (outside transaction - can't roll back blockchain tx)
   const wallet = inviteWallets[Chain.BASE];
   const token = usdc(Chain.BASE);
   const amountFloat = parseFloat(
@@ -282,7 +281,15 @@ export const redeemInviteCode = async ({
 
   const txHash = sendTokensResult.value;
 
-  // Update redemption as successful
+  await scanDb.inviteRedemption.update({
+    where: { id: redemption.id },
+    data: {
+      status: 'SUCCESS',
+      txHash,
+      completedAt: new Date(),
+    },
+  });
+
   const updateSuccessResult = await dbResultFromPromise(
     'updateSuccess',
     scanDb.inviteRedemption.update({
@@ -301,12 +308,13 @@ export const redeemInviteCode = async ({
   );
 
   if (updateSuccessResult.isErr()) {
-    // Token transfer succeeded but DB update failed - log but still return success
     console.error(
       'Failed to update redemption status after successful transfer:',
       updateSuccessResult.error.message
     );
   }
+
+  await upsertWalletAddressForInviteCode(inviteCode.id, recipientAddr);
 
   return dbOk({
     redemptionId: redemption.id,
