@@ -1,5 +1,5 @@
-import { NextResponse, type NextRequest } from 'next/server';
 import z from 'zod';
+
 import {
   redeemInviteCode,
   redeemInviteCodeSchema,
@@ -7,88 +7,46 @@ import {
   validateInviteCodeSchema,
 } from '@/services/db/invite-codes';
 
+import { toNextResponse } from '../../_lib/result';
+import { apiErr } from '../../_lib/result';
+
+import type { NextRequest } from 'next/server';
+
 export const POST = async (request: NextRequest) => {
-  try {
-    const body: unknown = await request.json();
-    const { code, recipientAddr } = redeemInviteCodeSchema.parse(body);
-
-    const result = await redeemInviteCode({
-      code,
-      recipientAddr,
-    });
-
-    return result.match(
-      data =>
-        NextResponse.json({
-          success: true as const,
-          data,
-        }),
-      error =>
-        NextResponse.json(
-          {
-            success: false as const,
-            message: error.message,
-          },
-          { status: 500 }
-        )
-    );
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid request body',
-          details: error.issues,
-        },
-        { status: 400 }
-      );
-    }
-
-    console.error('Failed to redeem invite code:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
+  const parseResult = redeemInviteCodeSchema.safeParse(await request.json());
+  if (!parseResult.success) {
+    return toNextResponse(
+      apiErr('parse', {
+        cause: 'invalid_request',
+        message: JSON.stringify(z.treeifyError(parseResult.error)),
+      })
     );
   }
+
+  const { code, recipientAddr } = parseResult.data;
+
+  const result = await redeemInviteCode({ code, recipientAddr });
+  return toNextResponse(result);
 };
 
 export const GET = async (request: NextRequest) => {
-  try {
-    const searchParams = request.nextUrl.searchParams;
-    const code = searchParams.get('code');
-    const recipientAddr = searchParams.get('recipientAddr');
+  const searchParams = request.nextUrl.searchParams;
 
-    const { code: validatedCode, recipientAddr: validatedAddr } =
-      validateInviteCodeSchema.parse({
-        code,
-        recipientAddr: recipientAddr ?? undefined,
-      });
+  const parseResult = validateInviteCodeSchema.safeParse({
+    code: searchParams.get('code'),
+    recipientAddr: searchParams.get('recipientAddr') ?? undefined,
+  });
 
-    const result = await validateInviteCode({
-      code: validatedCode,
-      recipientAddr: validatedAddr,
-    });
-
-    return NextResponse.json(
-      result
-        .map(message => ({
-          valid: true,
-          message,
-        }))
-        .unwrapOr({ valid: false, error: 'Invalid invite code' })
-    );
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { valid: false, error: 'Invalid request parameters' },
-        { status: 400 }
-      );
-    }
-
-    console.error('Failed to validate invite code:', error);
-    return NextResponse.json(
-      { valid: false, error: 'Internal server error' },
-      { status: 500 }
+  if (!parseResult.success) {
+    return toNextResponse(
+      apiErr('validate', {
+        cause: 'invalid_request',
+        message: JSON.stringify(z.treeifyError(parseResult.error)),
+      })
     );
   }
+
+  const { code, recipientAddr } = parseResult.data;
+  const result = await validateInviteCode({ code, recipientAddr });
+  return toNextResponse(result);
 };

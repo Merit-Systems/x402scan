@@ -13,10 +13,10 @@ export default defineConfig([
     dts: true,
     sourcemap: true,
     clean: true,
-    minify: false,
-    splitting: false,
-    treeshake: true,
+    shims: true,
+    noExternal: ['@x402scan/neverthrow'],
     outDir: 'dist/esm',
+    platform: 'node',
     define: {
       __MCP_VERSION__: JSON.stringify(pkg.version),
     },

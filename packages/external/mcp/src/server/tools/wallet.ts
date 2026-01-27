@@ -1,10 +1,12 @@
-import { mcpSuccess } from '@/server/lib/response';
+import { getBalance } from '@/shared/balance';
+import { DEFAULT_NETWORK, getChainName } from '@/shared/networks';
+import { getDepositLink } from '@/shared/utils';
 
-import { getUSDCBalance } from '@/lib/balance';
-import { DEFAULT_NETWORK, getChainName } from '@/lib/networks';
+import { mcpSuccessJson, mcpError } from './response';
 
 import type { RegisterTools } from '@/server/types';
-import { getDepositLink } from '@/lib/deposit';
+
+const toolName = 'get_wallet_info';
 
 export const registerWalletTools: RegisterTools = ({
   server,
@@ -12,31 +14,38 @@ export const registerWalletTools: RegisterTools = ({
   flags,
 }) => {
   server.registerTool(
-    'check_balance',
+    toolName,
     {
+      title: 'Get Wallet Info',
       description:
         'Check wallet address and USDC balance. Creates wallet if needed.',
     },
     async () => {
-      const { balanceFormatted } = await getUSDCBalance(address, flags);
+      const balanceResult = await getBalance({
+        address,
+        flags,
+        surface: toolName,
+      });
 
-      return mcpSuccess({
+      if (balanceResult.isErr()) {
+        return mcpError(balanceResult);
+      }
+
+      const { balance } = balanceResult.value;
+
+      return mcpSuccessJson({
         address,
         network: DEFAULT_NETWORK,
         networkName: getChainName(DEFAULT_NETWORK),
-        usdcBalance: balanceFormatted,
-        balanceFormatted: balanceFormatted.toString(),
-        isNewWallet: balanceFormatted === 0,
+        usdcBalance: balance,
+        isNewWallet: balance === 0,
         depositLink: getDepositLink(address, flags),
+        ...(balance < 2.5
+          ? {
+              message: `Your balance is low. Consider topping it up`,
+            }
+          : {}),
       });
     }
-  );
-
-  server.registerTool(
-    'get_wallet_address',
-    {
-      description: 'Get the wallet address.',
-    },
-    () => mcpSuccess({ address })
   );
 };
