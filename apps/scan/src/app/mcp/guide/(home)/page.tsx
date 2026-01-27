@@ -1,20 +1,16 @@
-import { TaskSelector } from './_components/task-selector';
-
-import { getGuideProgressServer } from './_lib/cookies/server';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Book, BookBinding, BookCover } from '../_components/guide/book';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
+
 import { Logo } from '@/components/logo';
 
-export default async function GuidePage() {
-  const progress = await getGuideProgressServer();
+import { Book, BookBinding, BookCover } from '@/app/mcp/_components/guide/book';
 
+import { cn } from '@/lib/utils';
+
+export default function GuidePage() {
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-16">
       <div className="flex flex-col gap-2 items-center text-center">
-        <Badge variant="primary">Get Started</Badge>
         <h1 className="text-4xl font-bold">Automate Your Knowledge Work</h1>
         <p className="text-muted-foreground max-w-sm text-lg">
           Use Claude Code and x402 to build Research, Go-to-Market, and Sales
@@ -63,7 +59,6 @@ export default async function GuidePage() {
           </Button>
         </div>
       </Card>
-      <TaskSelector />
     </div>
   );
 }

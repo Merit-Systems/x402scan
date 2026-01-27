@@ -31,6 +31,9 @@
     "@coinbase/cdp-wagmi": "catalog:coinbase",
     "@hookform/resolvers": "^5.2.2",
     "@lmnr-ai/lmnr": "^0.7.4",
+    "@mdx-js/loader": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "@next/mdx": "^16.1.5",
     "@octokit/rest": "^22.0.0",
     "@openrouter/ai-sdk-provider": "^1.5.4",
     "@opentelemetry/api-logs": "^0.211.0",
@@ -139,6 +142,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "catalog:tailwind",
     "@tanstack/react-query-devtools": "catalog:react-query",
+    "@types/mdx": "^2.0.13",
     "@types/node": "catalog:",
     "@types/react": "catalog:react",
     "@types/react-dom": "catalog:react",

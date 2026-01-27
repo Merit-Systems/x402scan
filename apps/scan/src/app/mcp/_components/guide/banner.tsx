@@ -6,6 +6,7 @@ import { Logo } from '@/components/logo';
 import { Book, BookBinding, BookCover } from './book';
 
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export const GuideBanner = () => {
   return (
@@ -46,9 +47,11 @@ export const GuideBanner = () => {
         <p className="max-w-xs text-center font-medium">
           Interactive Prompt Guides for Building Knowledge Work Automations
         </p>
-        <Button size="lg" className="w-fit">
-          Get Started
-        </Button>
+        <Link href="/mcp/guide/knowledge-work">
+          <Button size="lg" className="w-fit">
+            Get Started
+          </Button>
+        </Link>
       </div>
     </Card>
   );
