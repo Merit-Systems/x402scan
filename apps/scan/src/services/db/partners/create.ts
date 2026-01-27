@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import z from 'zod';
-import { insertPartner, Tables } from '@x402scan/partners-db';
+import { insertPartner } from '@x402scan/partners-db';
 import type { PartnerData } from '@x402scan/partners-db';
 
 export const createPartnerSchema = z.object({
