@@ -33,6 +33,10 @@ export const env = createEnv({
     ANALYTICS_CLICKHOUSE_USER: z.string().optional(),
     ANALYTICS_CLICKHOUSE_PASSWORD: z.string().optional(),
     ANALYTICS_CLICKHOUSE_DATABASE: z.string().optional(),
+    PARTNERS_CLICKHOUSE_URL: z.string().url().optional(),
+    PARTNERS_CLICKHOUSE_USER: z.string().optional(),
+    PARTNERS_CLICKHOUSE_PASSWORD: z.string().optional(),
+    PARTNERS_CLICKHOUSE_DATABASE: z.string().optional(),
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
     STRIPE_SECRET_KEY: z.string(),
@@ -43,11 +47,11 @@ export const env = createEnv({
       .url()
       .default(
         process.env.NEXT_PUBLIC_APP_URL ??
-          (process.env.VERCEL_ENV === 'production'
-            ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-            : process.env.VERCEL_ENV === 'preview'
-              ? `https://${process.env.VERCEL_BRANCH_URL}`
-              : 'http://localhost:3000')
+        (process.env.VERCEL_ENV === 'production'
+          ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+          : process.env.VERCEL_ENV === 'preview'
+            ? `https://${process.env.VERCEL_BRANCH_URL}`
+            : 'http://localhost:3000')
       ),
     NEXT_PUBLIC_PROXY_URL: z.url(),
     NEXT_PUBLIC_NODE_ENV: z

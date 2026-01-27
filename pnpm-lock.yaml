@@ -469,6 +469,9 @@ importers:
       '@x402scan/analytics-db':
         specifier: workspace:*
         version: link:../../packages/internal/databases/analytics
+      '@x402scan/partners-db':
+        specifier: workspace:*
+        version: link:../../packages/internal/databases/partners
       '@x402scan/scan-db':
         specifier: workspace:*
         version: link:../../packages/internal/databases/scan
