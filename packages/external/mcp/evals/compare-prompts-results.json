@@ -1,0 +1,674 @@
+{
+  "evalId": "eval-PQu-2026-01-26T23:41:58",
+  "results": {
+    "version": 3,
+    "timestamp": "2026-01-26T23:41:58.654Z",
+    "prompts": [
+      {
+        "id": "45a71bb638442f6eb361ecc6ae8738b7142ff4e4ed0d8fa9ac195fd12b6ad1f8",
+        "raw": "{{query}}\n",
+        "label": "Prompt A",
+        "provider": "x402scan MCP + WebTools - Sonnet 4.5",
+        "metrics": {
+          "score": 1,
+          "testPassCount": 1,
+          "testFailCount": 0,
+          "testErrorCount": 0,
+          "assertPassCount": 0,
+          "assertFailCount": 0,
+          "totalLatencyMs": 61081,
+          "tokenUsage": {
+            "prompt": 1,
+            "completion": 1245,
+            "cached": 0,
+            "total": 1246,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0
+              }
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "cost": 0.43348974999999995
+        }
+      },
+      {
+        "id": "e5395c824097e1abb19a863a61ff011bee0e3de9cee778a45d181699732a82e2",
+        "raw": "You are a helpful research assistant with access to web search and x402 premium API tools.\n\n{{query}}\n",
+        "label": "Prompt B",
+        "provider": "x402scan MCP + WebTools - Sonnet 4.5",
+        "metrics": {
+          "score": 1,
+          "testPassCount": 1,
+          "testFailCount": 0,
+          "testErrorCount": 0,
+          "assertPassCount": 0,
+          "assertFailCount": 0,
+          "totalLatencyMs": 72012,
+          "tokenUsage": {
+            "prompt": 1,
+            "completion": 1279,
+            "cached": 0,
+            "total": 1280,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0
+              }
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "cost": 0.5021567499999999
+        }
+      },
+      {
+        "id": "45a71bb638442f6eb361ecc6ae8738b7142ff4e4ed0d8fa9ac195fd12b6ad1f8",
+        "raw": "{{query}}\n",
+        "label": "Prompt A",
+        "provider": "x402scan MCP + WebTools - Opus 4.5",
+        "metrics": {
+          "score": 0,
+          "testPassCount": 0,
+          "testFailCount": 0,
+          "testErrorCount": 0,
+          "assertPassCount": 0,
+          "assertFailCount": 0,
+          "totalLatencyMs": 0,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0
+              }
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "cost": 0
+        }
+      },
+      {
+        "id": "e5395c824097e1abb19a863a61ff011bee0e3de9cee778a45d181699732a82e2",
+        "raw": "You are a helpful research assistant with access to web search and x402 premium API tools.\n\n{{query}}\n",
+        "label": "Prompt B",
+        "provider": "x402scan MCP + WebTools - Opus 4.5",
+        "metrics": {
+          "score": 0,
+          "testPassCount": 0,
+          "testFailCount": 0,
+          "testErrorCount": 0,
+          "assertPassCount": 0,
+          "assertFailCount": 0,
+          "totalLatencyMs": 0,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0
+              }
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0.43348974999999995,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "841917fb-e07c-436f-bfaf-3990a5c9e4f5",
+        "latencyMs": 61081,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Find and return the board members of Friends of the Rail Park\n",
+          "label": "Prompt A",
+          "config": {}
+        },
+        "promptId": "45a71bb638442f6eb361ecc6ae8738b7142ff4e4ed0d8fa9ac195fd12b6ad1f8",
+        "promptIdx": 0,
+        "provider": {
+          "id": "anthropic:claude-agent-sdk",
+          "label": "x402scan MCP + WebTools - Opus 4.5"
+        },
+        "response": {
+          "output": {
+            "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\nThe organization's Executive Director is Rebecca Chan.",
+            "sources": [
+              "https://www.guidestar.org/profile/27-4200974",
+              "https://www.therailpark.org/about/"
+            ],
+            "tool_call_log": [
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Friends of the Rail Park board members 2026"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://www.therailpark.org/about/",
+                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
+                },
+                "success": false
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://www.therailpark.org/team/",
+                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles."
+                },
+                "success": false
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"Friends of the Rail Park\" \"board of directors\" members list Philadelphia"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://www.guidestar.org/profile/27-4200974",
+                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
+                },
+                "success": true
+              }
+            ]
+          },
+          "tokenUsage": {
+            "prompt": 1,
+            "completion": 1245,
+            "total": 1246
+          },
+          "cost": 0.43348974999999995,
+          "raw": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":59249,\"duration_api_ms\":56596,\"num_turns\":7,\"result\":\"\",\"session_id\":\"188e3506-d695-4a29-8fdc-f1f4365abd9e\",\"total_cost_usd\":0.43348974999999995,\"usage\":{\"input_tokens\":1,\"cache_creation_input_tokens\":10272,\"cache_read_input_tokens\":144979,\"output_tokens\":1245,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":10272}},\"modelUsage\":{\"claude-opus-4-5-20251101\":{\"inputTokens\":4528,\"outputTokens\":2270,\"cacheReadInputTokens\":144979,\"cacheCreationInputTokens\":32285,\"webSearchRequests\":2,\"costUSD\":0.37366075,\"contextWindow\":200000,\"maxOutputTokens\":64000},\"claude-haiku-4-5-20251001\":{\"inputTokens\":58009,\"outputTokens\":364,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.05982899999999999,\"contextWindow\":200000,\"maxOutputTokens\":64000}},\"permission_denials\":[],\"structured_output\":{\"answer\":\"The board members of Friends of the Rail Park (as of March 2025) are:\\n\\n1. Nyla Koncurat - Board Chair\\n2. Allen Hall - Treasurer\\n3. Alexia Landesman - Board Member\\n4. Anna Stormer - Board Member\\n5. Neel Bhuta - Board Member\\n6. Camille Focarino - Board Member\\n7. Ginger Rudolph - Board Member\\n8. Jacob Cooper - Board Member\\n9. Paige Yoder Celestin - Board Member\\n\\nThe organization's Executive Director is Rebecca Chan.\",\"sources\":[\"https://www.guidestar.org/profile/27-4200974\",\"https://www.therailpark.org/about/\"],\"tool_call_log\":[{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Friends of the Rail Park board members 2026\"},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://www.therailpark.org/about/\",\"prompt\":\"Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available.\"},\"success\":false},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://www.therailpark.org/team/\",\"prompt\":\"Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles.\"},\"success\":false},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"\\\"Friends of the Rail Park\\\" \\\"board of directors\\\" members list Philadelphia\"},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://www.guidestar.org/profile/27-4200974\",\"prompt\":\"Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available.\"},\"success\":true}]},\"uuid\":\"46f7484e-4a29-4e2c-b912-b474e3a1f7c3\"}",
+          "sessionId": "188e3506-d695-4a29-8fdc-f1f4365abd9e",
+          "metadata": {
+            "structuredOutput": {
+              "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\nThe organization's Executive Director is Rebecca Chan.",
+              "sources": [
+                "https://www.guidestar.org/profile/27-4200974",
+                "https://www.therailpark.org/about/"
+              ],
+              "tool_call_log": [
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Friends of the Rail Park board members 2026"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebFetch",
+                  "input": {
+                    "url": "https://www.therailpark.org/about/",
+                    "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
+                  },
+                  "success": false
+                },
+                {
+                  "tool": "WebFetch",
+                  "input": {
+                    "url": "https://www.therailpark.org/team/",
+                    "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles."
+                  },
+                  "success": false
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "\"Friends of the Rail Park\" \"board of directors\" members list Philadelphia"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebFetch",
+                  "input": {
+                    "url": "https://www.guidestar.org/profile/27-4200974",
+                    "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
+                  },
+                  "success": true
+                }
+              ]
+            }
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "query": "Find and return the board members of Friends of the Rail Park",
+            "sessionId": "188e3506-d695-4a29-8fdc-f1f4365abd9e"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {},
+          "providers": [
+            "x402scan MCP + WebTools - Opus 4.5"
+          ]
+        },
+        "testIdx": 0,
+        "vars": {
+          "query": "Find and return the board members of Friends of the Rail Park",
+          "sessionId": "188e3506-d695-4a29-8fdc-f1f4365abd9e"
+        },
+        "metadata": {
+          "structuredOutput": {
+            "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\nThe organization's Executive Director is Rebecca Chan.",
+            "sources": [
+              "https://www.guidestar.org/profile/27-4200974",
+              "https://www.therailpark.org/about/"
+            ],
+            "tool_call_log": [
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Friends of the Rail Park board members 2026"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://www.therailpark.org/about/",
+                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
+                },
+                "success": false
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://www.therailpark.org/team/",
+                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles."
+                },
+                "success": false
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"Friends of the Rail Park\" \"board of directors\" members list Philadelphia"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://www.guidestar.org/profile/27-4200974",
+                  "prompt": "Find and list all board members of Friends of the Rail Park. Extract all names and their roles/titles if available."
+                },
+                "success": true
+              }
+            ]
+          },
+          "_promptfooFileMetadata": {},
+          "sessionId": "188e3506-d695-4a29-8fdc-f1f4365abd9e"
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0.5021567499999999,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "1dce3c95-dacb-4606-8682-89f92fe5b059",
+        "latencyMs": 72012,
+        "namedScores": {},
+        "prompt": {
+          "raw": "You are a helpful research assistant with access to web search and x402 premium API tools.\n\nFind and return the board members of Friends of the Rail Park\n",
+          "label": "Prompt B",
+          "config": {}
+        },
+        "promptId": "e5395c824097e1abb19a863a61ff011bee0e3de9cee778a45d181699732a82e2",
+        "promptIdx": 1,
+        "provider": {
+          "id": "anthropic:claude-agent-sdk",
+          "label": "x402scan MCP + WebTools - Opus 4.5"
+        },
+        "response": {
+          "output": {
+            "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n**Board of Directors:**\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\n**Executive Leadership:**\n- Rebecca Chan - Executive Director",
+            "sources": [
+              "https://www.guidestar.org/profile/27-4200974",
+              "https://www.therailpark.org/about/",
+              "https://www.therailpark.org/friends-rail-park-board-adds-two-new-members/"
+            ],
+            "tool_call_log": [
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Friends of the Rail Park board members directors 2025"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://www.therailpark.org/about/",
+                  "prompt": "Find and list all the board members or board of directors for Friends of the Rail Park"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"Friends of the Rail Park\" \"board of directors\" site:therailpark.org"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"Friends of the Rail Park\" board members names Philadelphia"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://www.guidestar.org/profile/27-4200974",
+                  "prompt": "Find and list all the board members, directors, officers, or leadership for Friends of the Rail Park"
+                },
+                "success": true
+              }
+            ]
+          },
+          "tokenUsage": {
+            "prompt": 1,
+            "completion": 1279,
+            "total": 1280
+          },
+          "cost": 0.5021567499999999,
+          "raw": "{\"type\":\"result\",\"subtype\":\"success\",\"is_error\":false,\"duration_ms\":69171,\"duration_api_ms\":67459,\"num_turns\":7,\"result\":\"The board member information has been provided successfully.\",\"session_id\":\"3134a8cc-066e-459a-95a6-8ce2daa32d2f\",\"total_cost_usd\":0.5021567499999999,\"usage\":{\"input_tokens\":1,\"cache_creation_input_tokens\":10847,\"cache_read_input_tokens\":146701,\"output_tokens\":1279,\"server_tool_use\":{\"web_search_requests\":0,\"web_fetch_requests\":0},\"service_tier\":\"standard\",\"cache_creation\":{\"ephemeral_1h_input_tokens\":0,\"ephemeral_5m_input_tokens\":10847}},\"modelUsage\":{\"claude-opus-4-5-20251101\":{\"inputTokens\":6795,\"outputTokens\":3041,\"cacheReadInputTokens\":146701,\"cacheCreationInputTokens\":36661,\"webSearchRequests\":3,\"costUSD\":0.44248175,\"contextWindow\":200000,\"maxOutputTokens\":64000},\"claude-haiku-4-5-20251001\":{\"inputTokens\":58020,\"outputTokens\":331,\"cacheReadInputTokens\":0,\"cacheCreationInputTokens\":0,\"webSearchRequests\":0,\"costUSD\":0.059675,\"contextWindow\":200000,\"maxOutputTokens\":64000}},\"permission_denials\":[],\"structured_output\":{\"answer\":\"The board members of Friends of the Rail Park (as of March 2025) are:\\n\\n**Board of Directors:**\\n1. Nyla Koncurat - Board Chair\\n2. Allen Hall - Treasurer\\n3. Alexia Landesman - Board Member\\n4. Anna Stormer - Board Member\\n5. Neel Bhuta - Board Member\\n6. Camille Focarino - Board Member\\n7. Ginger Rudolph - Board Member\\n8. Jacob Cooper - Board Member\\n9. Paige Yoder Celestin - Board Member\\n\\n**Executive Leadership:**\\n- Rebecca Chan - Executive Director\",\"sources\":[\"https://www.guidestar.org/profile/27-4200974\",\"https://www.therailpark.org/about/\",\"https://www.therailpark.org/friends-rail-park-board-adds-two-new-members/\"],\"tool_call_log\":[{\"tool\":\"WebSearch\",\"input\":{\"query\":\"Friends of the Rail Park board members directors 2025\"},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://www.therailpark.org/about/\",\"prompt\":\"Find and list all the board members or board of directors for Friends of the Rail Park\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"\\\"Friends of the Rail Park\\\" \\\"board of directors\\\" site:therailpark.org\"},\"success\":true},{\"tool\":\"WebSearch\",\"input\":{\"query\":\"\\\"Friends of the Rail Park\\\" board members names Philadelphia\"},\"success\":true},{\"tool\":\"WebFetch\",\"input\":{\"url\":\"https://www.guidestar.org/profile/27-4200974\",\"prompt\":\"Find and list all the board members, directors, officers, or leadership for Friends of the Rail Park\"},\"success\":true}]},\"uuid\":\"e5c4b2f6-34ef-4214-b7c0-3390c9fce12a\"}",
+          "sessionId": "3134a8cc-066e-459a-95a6-8ce2daa32d2f",
+          "metadata": {
+            "structuredOutput": {
+              "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n**Board of Directors:**\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\n**Executive Leadership:**\n- Rebecca Chan - Executive Director",
+              "sources": [
+                "https://www.guidestar.org/profile/27-4200974",
+                "https://www.therailpark.org/about/",
+                "https://www.therailpark.org/friends-rail-park-board-adds-two-new-members/"
+              ],
+              "tool_call_log": [
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "Friends of the Rail Park board members directors 2025"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebFetch",
+                  "input": {
+                    "url": "https://www.therailpark.org/about/",
+                    "prompt": "Find and list all the board members or board of directors for Friends of the Rail Park"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "\"Friends of the Rail Park\" \"board of directors\" site:therailpark.org"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebSearch",
+                  "input": {
+                    "query": "\"Friends of the Rail Park\" board members names Philadelphia"
+                  },
+                  "success": true
+                },
+                {
+                  "tool": "WebFetch",
+                  "input": {
+                    "url": "https://www.guidestar.org/profile/27-4200974",
+                    "prompt": "Find and list all the board members, directors, officers, or leadership for Friends of the Rail Park"
+                  },
+                  "success": true
+                }
+              ]
+            }
+          }
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "query": "Find and return the board members of Friends of the Rail Park",
+            "sessionId": "3134a8cc-066e-459a-95a6-8ce2daa32d2f"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {},
+          "providers": [
+            "x402scan MCP + WebTools - Opus 4.5"
+          ]
+        },
+        "testIdx": 0,
+        "vars": {
+          "query": "Find and return the board members of Friends of the Rail Park",
+          "sessionId": "3134a8cc-066e-459a-95a6-8ce2daa32d2f"
+        },
+        "metadata": {
+          "structuredOutput": {
+            "answer": "The board members of Friends of the Rail Park (as of March 2025) are:\n\n**Board of Directors:**\n1. Nyla Koncurat - Board Chair\n2. Allen Hall - Treasurer\n3. Alexia Landesman - Board Member\n4. Anna Stormer - Board Member\n5. Neel Bhuta - Board Member\n6. Camille Focarino - Board Member\n7. Ginger Rudolph - Board Member\n8. Jacob Cooper - Board Member\n9. Paige Yoder Celestin - Board Member\n\n**Executive Leadership:**\n- Rebecca Chan - Executive Director",
+            "sources": [
+              "https://www.guidestar.org/profile/27-4200974",
+              "https://www.therailpark.org/about/",
+              "https://www.therailpark.org/friends-rail-park-board-adds-two-new-members/"
+            ],
+            "tool_call_log": [
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "Friends of the Rail Park board members directors 2025"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://www.therailpark.org/about/",
+                  "prompt": "Find and list all the board members or board of directors for Friends of the Rail Park"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"Friends of the Rail Park\" \"board of directors\" site:therailpark.org"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebSearch",
+                "input": {
+                  "query": "\"Friends of the Rail Park\" board members names Philadelphia"
+                },
+                "success": true
+              },
+              {
+                "tool": "WebFetch",
+                "input": {
+                  "url": "https://www.guidestar.org/profile/27-4200974",
+                  "prompt": "Find and list all the board members, directors, officers, or leadership for Friends of the Rail Park"
+                },
+                "success": true
+              }
+            ]
+          },
+          "_promptfooFileMetadata": {},
+          "sessionId": "3134a8cc-066e-459a-95a6-8ce2daa32d2f"
+        },
+        "failureReason": 0
+      }
+    ],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 2,
+        "completion": 2524,
+        "cached": 0,
+        "total": 2526,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        },
+        "assertions": {
+          "total": 0,
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0
+          }
+        }
+      },
+      "durationMs": 72021
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Compare two prompts against Opus 4.5 with all tools",
+    "prompts": [
+      {
+        "id": "prompt-a",
+        "label": "Prompt A",
+        "raw": "{{query}}\n"
+      },
+      {
+        "id": "prompt-b",
+        "label": "Prompt B",
+        "raw": "You are a helpful research assistant with access to web search and x402 premium API tools.\n\n{{query}}\n"
+      }
+    ],
+    "providers": [
+      "file://providers/all-tools.yaml"
+    ],
+    "tests": [
+      {
+        "vars": {
+          "query": "Find and return the board members of Friends of the Rail Park"
+        }
+      }
+    ],
+    "scenarios": [],
+    "env": {},
+    "defaultTest": {
+      "providers": [
+        "x402scan MCP + WebTools - Opus 4.5"
+      ],
+      "vars": {},
+      "assert": [],
+      "options": {},
+      "metadata": {}
+    },
+    "outputPath": [
+      "evals/compare-prompts-results.json"
+    ],
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {}
+  },
+  "shareableUrl": "https://www.promptfoo.app/eval/eval-PQu-2026-01-26T23:41:58",
+  "metadata": {
+    "promptfooVersion": "0.120.17",
+    "nodeVersion": "v23.4.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2026-01-26T23:43:12.601Z",
+    "evaluationCreatedAt": "2026-01-26T23:41:58.654Z",
+    "author": "mason@merit.systems"
+  }
+}

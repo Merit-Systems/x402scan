@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: 'Compare two prompts against Opus 4.5 with all tools'
+
+# Output results to JSON
+outputPath: evals/compare-prompts-results.json
+
+# Use all-tools provider, filtered to Opus only
+providers:
+  - file://providers/all-tools.yaml
+
+# Two prompts to compare side-by-side
+prompts:
+  - id: prompt-a
+    label: 'Prompt A'
+    raw: |
+      {{query}}
+
+  - id: prompt-b
+    label: 'Prompt B'
+    raw: |
+      You are a helpful research assistant with access to web search and x402 premium API tools.
+      
+      {{query}}
+
+# Test cases - just provide the query, no assertions
+tests:
+  - vars:
+      query: 'Find and return the board members of Friends of the Rail Park'
+

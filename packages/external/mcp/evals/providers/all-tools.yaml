@@ -83,7 +83,7 @@
                 success:
                   type: boolean
             description: 'Log of tool calls made'
-        required: [answer]
+        required: [answer, tool_call_log]
     append_allowed_tools:
       - 'mcp__x402scan__fetch'
       - 'mcp__x402scan__authed_call'
@@ -130,7 +130,7 @@
                 success:
                   type: boolean
             description: 'Log of tool calls made'
-        required: [answer]
+        required: [answer, tool_call_log]
     append_allowed_tools:
       - 'mcp__x402scan__fetch'
       - 'mcp__x402scan__authed_call'
