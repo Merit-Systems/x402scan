@@ -3,9 +3,22 @@ export const metadata = {
   description: 'Find qualified candidates using Apollo and LinkedIn data',
 };
 
+import { PromptTemplate } from '@/app/mcp/guide/_components/prompt-template';
+
+import { z } from 'zod';
+
 # Sourcing Candidates
 
 Use Apollo People Search and LinkedIn scraping to build targeted candidate pipelines.
+
+<PromptTemplate schema={z.object({
+  name: z.string().meta({
+    label: 'Name',
+    placeholder: 'Enter your name',
+  }),
+  age: z.number(),
+  email: z.email(),
+})} />
 
 ---
 
