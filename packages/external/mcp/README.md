@@ -118,3 +118,36 @@ bun run build
 # Build .mcpb for Claude Desktop
 bun run build:mcpb
 ```
+
+## Publishing
+
+This package uses [changesets](https://github.com/changesets/changesets) for versioning and publishing.
+
+### Standard Release Flow (main branch)
+
+1. Create a changeset describing your changes:
+   ```bash
+   pnpm changeset
+   ```
+2. Commit the changeset file with your PR
+3. When merged to `main`, the CI creates a "Version Packages" PR
+4. Merging the version PR triggers automatic npm publish
+
+### Beta Release Flow (beta branch)
+
+For pre-release versions, use the `beta` branch with prerelease mode:
+
+1. Enter prerelease mode:
+   ```bash
+   pnpm changeset pre enter beta
+   ```
+2. Commit the generated `.changeset/pre.json` file
+3. Create changesets and merge to `beta` as normal
+4. Versions will be published as `x.x.x-beta.x`
+
+To exit prerelease mode and promote to stable:
+```bash
+pnpm changeset pre exit
+```
+
+**Note:** The CI enforces that `beta` branch must have `pre.json` and `main` branch must not.
