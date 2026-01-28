@@ -24,3 +24,4 @@ export { openmid, openmidFacilitator } from './openmid';
 export { primer, primerFacilitator } from './primer';
 export { x402jobs, x402jobsFacilitator } from './x402jobs';
 export { openfacilitator, openfacilitatorFacilitator } from './openfacilitator';
+export { x402x, x402xFacilitator } from './x402x';
