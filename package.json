@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.28.0",
   "scripts": {
     "dev": "turbo run dev --filter=@x402scan/app",
+    "dev:mcp": "turbo run dev --filter=@x402scan/app --filter=@x402scan/mcp",
     "build": "turbo run build",
     "build:deploy": "turbo run build:deploy",
     "build:packages": "turbo run build --filter \"./packages/external/**\"",
