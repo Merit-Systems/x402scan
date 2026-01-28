@@ -132,10 +132,10 @@ export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
       <Button
         variant="ghost"
         size="icon"
-        className="rounded-full size-6 md:size-6"
+        className="rounded-full size-6 md:size-8"
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
-        <ArrowUp className="size-3" />
+        <ArrowUp className="size-3 md:size-4" />
       </Button>
     </div>
   );

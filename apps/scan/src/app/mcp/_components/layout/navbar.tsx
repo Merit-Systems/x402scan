@@ -19,7 +19,12 @@ interface Props {
 
 export const Navbar: React.FC<Props> = ({ className }) => {
   return (
-    <div className={cn('bg-card border-y w-full', className)}>
+    <div
+      className={cn(
+        'bg-background/50 backdrop-blur-lg border-y w-full',
+        className
+      )}
+    >
       <div className="flex w-full items-center justify-between px-6 py-3 container mx-auto">
         {/* Logo section */}
         <div className="flex shrink-0 items-center gap-2">
