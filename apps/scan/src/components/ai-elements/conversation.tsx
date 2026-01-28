@@ -82,7 +82,7 @@ const ConversationScrollButton = ({
           'absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full',
           className
         )}
-        onClick={handleScrollToBottom}
+        onClick={() => void handleScrollToBottom()}
         size="icon"
         type="button"
         variant="outline"

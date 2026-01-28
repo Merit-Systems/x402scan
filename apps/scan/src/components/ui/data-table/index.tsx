@@ -75,6 +75,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
   const isServerSidePagination =
     page !== undefined && onPageChange !== undefined;
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: isLoading ? (Array(loadingRowCount).fill(null) as TData[]) : data,
     columns,
@@ -101,9 +102,9 @@ export function DataTable<TData, TValue, AppRoute extends string>({
 
   return (
     <div className="flex flex-col gap-2">
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden bg-card dark:bg-muted/80">
         <Table>
-          <TableHeader className="bg-muted">
+          <TableHeader className="bg-muted dark:bg-card">
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {

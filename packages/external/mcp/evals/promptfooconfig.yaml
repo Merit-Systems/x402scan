@@ -1,0 +1,308 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: 'Claude Agent SDK Multi-Model Evaluation'
+
+# Test Matrix Overview:
+# - 4 Provider Configurations: No tools, WebFetch+WebSearch, x402scan MCP, All tools
+# - 3 Prompts: Merit funding amount, CEO email, Hedge fund carry trade specialists
+# - 2 Models: Sonnet 4.5, Opus 4.5
+# - Total Combinations: 24 test cases (3 tests × 4 providers x 2 models)
+
+# Output results to JSON for full data capture
+outputPath: evals/results.json
+
+# Extension to log tool usage details from Claude session logs
+extensions:
+  - file://extensions/log-tools.js:module.exports
+
+# Providers: 8 total (4 configs × 2 models)
+# All providers use structured output with: answer, sources, tool_call_log
+providers:
+  # # No tools - baseline (2 models)
+  # - file://providers/no-tools.yaml
+  # Web tools - WebFetch + WebSearch (2 models)
+  - file://providers/web-tools.yaml
+  # MCP x402scan server (2 models)
+  - file://providers/mcp-x402.yaml
+  # All tools - x402scan MCP + WebTools (2 models)
+  - file://providers/all-tools.yaml
+
+# Default test configuration applied to all test cases
+defaultTest:
+  options:
+    provider: anthropic:messages:claude-sonnet-4-5-20250929
+  assert:
+    # Validate structured output format
+    - type: javascript
+      value: |
+        const isObject = typeof output === 'object' && output !== null;
+        const hasAnswer = isObject && 'answer' in output;
+        return {
+          pass: hasAnswer,
+          score: hasAnswer ? 1 : 0,
+          reason: hasAnswer ? 'Valid structured output' : 'Missing answer field in output'
+        };
+      metric: structured_output_valid
+
+    # Track sources provided
+    - type: javascript
+      value: |
+        const sources = output?.sources || [];
+        const hasSources = Array.isArray(sources) && sources.length > 0;
+        return {
+          pass: true,
+          score: hasSources ? Math.min(sources.length / 3, 1) : 0,
+          reason: hasSources ? `${sources.length} sources provided` : 'No sources provided',
+          namedScores: { source_count: sources.length }
+        };
+      metric: sources_provided
+
+    # Track self-reported tool calls
+    - type: javascript
+      value: |
+        const toolLog = output?.tool_call_log || [];
+        const hasToolLog = Array.isArray(toolLog) && toolLog.length > 0;
+        const successCount = toolLog.filter(t => t.success).length;
+        return {
+          pass: true,
+          score: hasToolLog ? 1 : 0,
+          reason: hasToolLog ? `${toolLog.length} tool calls logged (${successCount} successful)` : 'No tool calls logged',
+          namedScores: { 
+            reported_tool_calls: toolLog.length,
+            reported_successful_calls: successCount
+          }
+        };
+      metric: tool_call_log
+
+# Single prompt that uses a variable - tests define the actual prompt text
+prompts:
+  - '{{prompt}}'
+
+# Tests with inline prompts - each test has its prompt and specific assertions
+tests:
+  # Test 1: Merit Systems funding amount
+  - description: 'Merit Systems Funding Amount'
+    vars:
+      prompt: 'Find and output the total amount Merit Systems has raised, in dollars (full number, no commas)'
+    assert:
+      - type: javascript
+        value: |
+          // Extract answer from structured output
+          let answer = output?.answer;
+          // If answer is a string, try to extract the number
+          if (typeof answer === 'string') {
+            const numMatch = answer.match(/\d{1,3}(?:,\d{3})+|\d{7,}/);
+            answer = numMatch ? parseInt(numMatch[0].replace(/,/g, '')) : null;
+          }
+          const isCorrect = answer === 10000000;
+          return {
+            pass: isCorrect,
+            score: isCorrect ? 1 : 0,
+            reason: isCorrect ? `Correct: ${answer}` : `Expected 10000000, got ${answer}`
+          };
+        metric: answer_accuracy
+
+  # Test 2: CEO Email
+  - description: 'Merit Systems CEO Email'
+    vars:
+      prompt: 'Find and verify the email of the CEO of merit systems'
+    assert:
+      - type: javascript
+        value: |
+          const answer = output?.answer || '';
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+          const emailRegex = /[\w.-]+@[\w.-]+\.\w{2,}/g;
+          const emails = text.match(emailRegex) || [];
+          return {
+            pass: emails.length > 0,
+            score: emails.length > 0 ? 1 : 0,
+            reason: emails.length > 0 ? `Found email: ${emails[0]}` : 'No valid email found'
+          };
+        metric: email_found
+      - type: javascript
+        value: |
+          const answer = output?.answer || '';
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+          const hasCeoContext = /ceo|chief executive|founder|co-founder|sam/i.test(text);
+          return {
+            pass: true,
+            score: hasCeoContext ? 1 : 0,
+            reason: hasCeoContext ? 'Response identifies CEO' : 'Response does not identify CEO'
+          };
+        metric: ceo_identified
+      # Verify email is sam@merit.systems
+      - type: javascript
+        value: |
+          const answer = output?.answer || '';
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+          const hasCeoContext = /sam@merit.systems/i.test(text);
+          return {
+            pass: hasCeoContext,
+            score: hasCeoContext ? 1 : 0,
+            reason: hasCeoContext ? `Response identifies email sam@merit.systems` : `Response does not identify email sam@merit.systems`
+          };
+        metric: email_sam_merit_systems
+
+  # # Test 3: Hedge Fund Carry Trade Specialists (LLM-as-Judge)
+  # - description: 'Hedge Fund Carry Trade Specialists'
+  #   vars:
+  #     prompt: 'We are looking to interview the very best carry trade specialists in the world. Extract professional profiles of individuals working at top global hedge funds who specialize in carry trade strategies, specifically those operating within FX, Fixed Income, or Macro desks. Focus on identifying expertise in interest rate differentials and currency positioning. Return as JSON with a professionalProfiles array containing objects with name, hedgeFund, desk, specialization, and expertise fields. Include citations for each field.'
+  #   assert:
+  #     # LLM judge for professional profile quality
+  #     - type: llm-rubric
+  #       value: |
+  #         Evaluate whether the response contains legitimate professional profiles of hedge fund carry trade specialists.
+
+  #         A high-quality response should:
+  #         1. Include real professionals who work at recognized hedge funds (e.g., Rokos Capital, Citadel, Brevan Howard, Millennium, Two Sigma, Bridgewater, Element Capital, Caxton, Point72, etc.)
+  #         2. Correctly identify their roles in FX, Fixed Income, or Macro desks
+  #         3. Demonstrate accurate knowledge of carry trade strategies (interest rate differentials, currency positioning, yield curve trading)
+  #         4. Provide specific expertise details that are verifiable
+  #         5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
+
+  #         Score based on accuracy and depth of professional information, not just quantity.
+  #       metric: profile_quality
+  #     # LLM judge for JSON structure compliance
+  #     - type: llm-rubric
+  #       value: |
+  #         Evaluate whether the response follows the requested JSON structure with a professionalProfiles array.
+
+  #         The response should contain:
+  #         1. A valid JSON structure (or JSON embedded in the response)
+  #         2. A professionalProfiles array
+  #         3. Objects with the required fields: name, hedgeFund, desk, specialization, expertise
+  #         4. Properly formatted citations for sources
+  #         5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
+
+  #         Partial credit for responses that provide structured data even if not perfectly formatted as JSON.
+  #       metric: structure_compliance
+  #     # LLM judge for citation quality
+  #     - type: llm-rubric
+  #       value: |
+  #         Evaluate the quality and relevance of citations provided in the response.
+
+  #         High-quality citations should:
+  #         1. Come from reputable financial news sources, LinkedIn, or official fund websites
+  #         2. Be relevant to the specific professional or hedge fund mentioned
+  #         3. Support the claims made about the individual's role and expertise
+  #         4. Be diverse (not all from the same source)
+  #         5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
+
+  #         A response with 5+ relevant, verifiable citations from diverse sources should score highly.
+  #       metric: citation_quality
+
+  # # Test 4: Hedge Fund Carry Trade Specialists with specific guidance (LLM-as-Judge)
+  # - description: 'Hedge Fund Carry Trade Specialists with specific guidance'
+  #   vars:
+  #     prompt: 'We are looking to interview the very best carry trade specialists in the world. Extract professional profiles of individuals working at top global hedge funds who specialize in carry trade strategies, specifically those operating within FX, Fixed Income, or Macro desks. Focus on identifying expertise in interest rate differentials and currency positioning. Return as JSON with a professionalProfiles array containing objects with name, hedgeFund, desk, specialization, and expertise fields. Include citations for each field. Use a combination of web search and the premium enrichment APIs through the x402 tools.'
+  #   assert:
+  #     # LLM judge for professional profile quality
+  #     - type: llm-rubric
+  #       value: |
+  #         Evaluate whether the response contains legitimate professional profiles of hedge fund carry trade specialists.
+
+  #         A high-quality response should:
+  #         1. Include real professionals who work at recognized hedge funds (e.g., Rokos Capital, Citadel, Brevan Howard, Millennium, Two Sigma, Bridgewater, Element Capital, Caxton, Point72, etc.)
+  #         2. Correctly identify their roles in FX, Fixed Income, or Macro desks
+  #         3. Demonstrate accurate knowledge of carry trade strategies (interest rate differentials, currency positioning, yield curve trading)
+  #         4. Provide specific expertise details that are verifiable
+  #         5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
+
+  #         Score based on accuracy and depth of professional information, not just quantity.
+  #       metric: profile_quality
+  #     # LLM judge for JSON structure compliance
+  #     - type: llm-rubric
+  #       value: |
+  #         Evaluate whether the response follows the requested JSON structure with a professionalProfiles array.
+
+  #         The response should contain:
+  #         1. A valid JSON structure (or JSON embedded in the response)
+  #         2. A professionalProfiles array
+  #         3. Objects with the required fields: name, hedgeFund, desk, specialization, expertise
+  #         4. Properly formatted citations for sources
+  #         5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
+
+  #         Partial credit for responses that provide structured data even if not perfectly formatted as JSON.
+  #       metric: structure_compliance
+  #     # LLM judge for citation quality
+  #     - type: llm-rubric
+  #       value: |
+  #         Evaluate the quality and relevance of citations provided in the response.
+
+  #         High-quality citations should:
+  #         1. Come from reputable financial news sources, LinkedIn, or official fund websites
+  #         2. Be relevant to the specific professional or hedge fund mentioned
+  #         3. Support the claims made about the individual's role and expertise
+  #         4. Be diverse (not all from the same source)
+  #         5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
+
+  #         A response with 5+ relevant, verifiable citations from diverse sources should score highly.
+  #       metric: citation_quality
+
+  # Test 5: Prepared 911 Sales Enablement Contact (Bret Baumbach)
+  # Real-world scenario: Finding a specific contact with partial/uncertain info
+  # Correct answer: Bret Baumbach, LinkedIn: https://www.linkedin.com/in/bret-baumbach-76a37b51/, Email: b.baumbach@prepared911.com
+  - description: 'Prepared 911 Sales Enablement - Bret Baumbach'
+    vars:
+      prompt: "Can you find me Bret from Prepared 911 (now owned by Axon)? I think he's in sales enablement but I'm not certain of his exact title. Try searching broadly. Get his linkedin URL and email."
+    assert:
+      # Check for correct person (Bret Baumbach, not Bret Kelly or others)
+      - type: javascript
+        value: |
+          const answer = output?.answer || '';
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+          const hasBaumbach = /baumbach/i.test(text);
+          const hasWrongBret = /bret\s+kelly/i.test(text);
+          return {
+            pass: hasBaumbach && !hasWrongBret,
+            score: hasBaumbach && !hasWrongBret ? 1 : (hasBaumbach ? 0.5 : 0),
+            reason: hasBaumbach && !hasWrongBret ? 'Correctly identified Bret Baumbach' : (hasWrongBret ? 'Found wrong Bret (Kelly instead of Baumbach)' : 'Did not find Bret Baumbach')
+          };
+        metric: correct_person_identified
+      # Check for correct LinkedIn URL
+      - type: javascript
+        value: |
+          const answer = output?.answer || '';
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+          const hasCorrectLinkedIn = /linkedin\.com\/in\/bret-baumbach-76a37b51/i.test(text);
+          const hasAnyLinkedIn = /linkedin\.com\/in\//i.test(text);
+          return {
+            pass: hasCorrectLinkedIn,
+            score: hasCorrectLinkedIn ? 1 : 0,
+            reason: hasCorrectLinkedIn ? 'Found correct LinkedIn URL' : (hasAnyLinkedIn ? 'Found LinkedIn URL but not the correct one' : 'No LinkedIn URL found')
+          };
+        metric: linkedin_url_correct
+      # Check for correct email
+      - type: javascript
+        value: |
+          const answer = output?.answer || '';
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+          const hasCorrectEmail = /b\.baumbach@prepared911\.com/i.test(text);
+          const hasAnyEmail = /[\w.-]+@[\w.-]+\.\w{2,}/g.test(text);
+          return {
+            pass: hasCorrectEmail,
+            score: hasCorrectEmail ? 1 : 0,
+            reason: hasCorrectEmail ? 'Found correct email (b.baumbach@prepared911.com)' : (hasAnyEmail ? 'Found an email but not the correct one' : 'No email found')
+          };
+        metric: email_correct
+
+  # Test 6: Mason Hall Personal Email
+  # Real-world scenario: Finding personal email from a personal domain hint
+  # Correct answer: masonhall@gmail.com
+  - description: 'Mason Hall Personal Email'
+    vars:
+      prompt: 'Find the personal email for Mason Hall (masonhall.tech)'
+    assert:
+      # Check for email at gmail.com domain
+      - type: javascript
+        value: |
+          const answer = output?.answer || '';
+          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+          const hasCorrectEmail = /masonhall@gmail\.com/i.test(text);
+          const hasDomainEmail = /@gmail\.com/i.test(text);
+          const hasAnyEmail = /[\w.-]+@[\w.-]+\.\w{2,}/g.test(text);
+          return {
+            pass: hasCorrectEmail,
+            score: hasCorrectEmail ? 1 : (hasDomainEmail ? 0.5 : 0),
+            reason: hasCorrectEmail ? 'Found correct email (masonhall@gmail.com)' : (hasDomainEmail ? 'Found email at gmail.com but not the expected one' : (hasAnyEmail ? 'Found an email but not at gmail.com' : 'No email found'))
+          };
+        metric: personal_email_correct

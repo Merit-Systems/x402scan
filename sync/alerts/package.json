@@ -1,6 +1,7 @@
 {
-  "name": "sync-alerts",
+  "name": "@x402scan/sync-alerts",
   "version": "1.0.0",
+  "private": true,
   "description": "Balance alerts for x402scan",
   "license": "ISC",
   "author": "",
@@ -9,23 +10,23 @@
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
     "check:types": "tsc --noEmit",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./sync/alerts",
-    "format": "pnpm -w format-dir ./sync/alerts",
-    "check:format": "pnpm -w check:format-dir ./sync/alerts"
+    "format": "pnpm -w format:dir ./sync/alerts",
+    "format:check": "pnpm -w format:check:dir ./sync/alerts"
   },
   "dependencies": {
-    "@trigger.dev/sdk": "4.0.5",
-    "viem": "^2.21.54"
+    "@trigger.dev/sdk": "catalog:trigger",
+    "viem": "catalog:"
   },
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "@trigger.dev/build": "4.0.5",
-    "@types/node": "^20",
-    "eslint": "^9.38.0",
-    "trigger.dev": "^4.0.4",
-    "typescript": "^5.9.3"
+    "@trigger.dev/build": "catalog:trigger",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "trigger.dev": "catalog:trigger",
+    "typescript": "catalog:"
   }
 }

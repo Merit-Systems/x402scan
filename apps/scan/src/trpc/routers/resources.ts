@@ -16,18 +16,18 @@ import { upsertResourceResponse } from '@/services/db/resources/response';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 import {
-  EnhancedPaymentRequirementsSchema,
+  paymentRequirementsSchema,
   parseX402Response,
-  type EnhancedPaymentRequirements,
-} from '@/lib/x402/schema';
+  normalizeAccepts,
+  extractX402Data,
+} from '@/lib/x402';
 import { formatTokenAmount } from '@/lib/token';
 import { getOriginFromUrl } from '@/lib/url';
 
 import { Methods } from '@/types/x402';
 
-import type { AcceptsNetwork } from '@x402scan/scan-db';
+import type { AcceptsNetwork } from '@x402scan/scan-db/types';
 import { x402ResponseSchema } from 'x402/types';
-import { getFaviconUrl } from '@/lib/favicon';
 import type { ImageObject } from 'open-graph-scraper/types';
 
 export const resourcesRouter = createTRPCRouter({
@@ -85,15 +85,26 @@ export const resourcesRouter = createTRPCRouter({
           continue;
         }
 
-        const data = (await response.json()) as unknown;
+        const data = await extractX402Data(response);
 
         const baseX402ParsedResponse = x402ResponseSchema
           .omit({
             error: true,
+            x402Version: true,
           })
           .extend({
+            x402Version: z3.union([z3.literal(1), z3.literal(2)]),
             error: z3.string().optional(),
-            accepts: z3.array(EnhancedPaymentRequirementsSchema).optional(),
+            accepts: z3.array(paymentRequirementsSchema).optional(),
+            // NOTE(shafu): V2 has resource at top level
+            resource: z3
+              .object({
+                url: z3.string(),
+                description: z3.string().optional(),
+                mimeType: z3.string().optional(),
+                outputSchema: z3.any().optional(),
+              })
+              .optional(),
           })
           .safeParse(data);
         if (!baseX402ParsedResponse.success) {
@@ -109,19 +120,13 @@ export const resourcesRouter = createTRPCRouter({
 
         const origin = getOriginFromUrl(input.url);
 
-        const {
-          og,
-          metadata,
-          origin: scrapedOrigin,
-        } = await scrapeOriginData(origin);
+        const { og, metadata, favicon } = await scrapeOriginData(origin);
 
         await upsertOrigin({
-          origin: origin,
+          origin,
           title: metadata?.title ?? og?.ogTitle,
           description: metadata?.description ?? og?.ogDescription,
-          favicon: og?.favicon
-            ? getFaviconUrl(og.favicon, scrapedOrigin)
-            : undefined,
+          favicon: favicon ?? undefined,
           ogImages:
             og?.ogImage?.map((image: ImageObject) => ({
               url: image.url,
@@ -132,22 +137,19 @@ export const resourcesRouter = createTRPCRouter({
             })) ?? [],
         });
 
-        // upsert the resource
-        const accepts = baseX402ParsedResponse.data.accepts ?? [];
+        const parsedResponse = parseX402Response(data);
+        const normalizedAccepts = parsedResponse.success
+          ? normalizeAccepts(parsedResponse.data)
+          : [];
+
         const resource = await upsertResource({
           resource: input.url.toString(),
           type: 'http',
           x402Version: baseX402ParsedResponse.data.x402Version,
           lastUpdated: new Date(),
-          accepts: accepts.map((accept: EnhancedPaymentRequirements) => ({
+          accepts: normalizedAccepts.map(accept => ({
             ...accept,
-            network: (accept.network as string).replace(
-              '-',
-              '_'
-            ) as AcceptsNetwork,
-            maxAmountRequired: accept.maxAmountRequired,
-            outputSchema: accept.outputSchema!,
-            extra: accept.extra,
+            network: accept.network.replace('-', '_') as AcceptsNetwork,
           })),
         });
 
@@ -155,16 +157,11 @@ export const resourcesRouter = createTRPCRouter({
           continue;
         }
 
-        // parse the response
-        let enhancedParseWarnings: string[] | null = null;
-        const parsedResponse = parseX402Response(data);
         if (parsedResponse.success) {
           await upsertResourceResponse(
             resource.resource.id,
             parsedResponse.data
           );
-        } else {
-          enhancedParseWarnings = parsedResponse.errors;
         }
 
         return {
@@ -174,7 +171,6 @@ export const resourcesRouter = createTRPCRouter({
             ...accept,
             maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
           })),
-          enhancedParseWarnings,
           response: data,
         };
       }

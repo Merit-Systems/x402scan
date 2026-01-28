@@ -1,0 +1,12 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "trigger:dev": {
+      "env": ["DISCORD_WEBHOOK_URL", "BASE_RPC_URL"]
+    },
+    "trigger:deploy": {
+      "env": ["DISCORD_WEBHOOK_URL", "BASE_RPC_URL", "TRIGGER_*"]
+    }
+  }
+}

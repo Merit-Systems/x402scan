@@ -21,11 +21,11 @@
     "build": "tsup",
     "prepublishOnly": "pnpm run build",
     "check:types": "tsc --noEmit",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./packages/external/facilitators",
-    "format": "pnpm -w format-dir ./packages/external/facilitators",
-    "check:format": "pnpm -w check:format-dir ./packages/external/facilitators"
+    "format": "pnpm -w format:dir ./packages/external/facilitators",
+    "format:check": "pnpm -w format:check:dir ./packages/external/facilitators"
   },
   "keywords": [
     "x402",
@@ -36,18 +36,19 @@
   ],
   "author": "",
   "license": "MIT",
-  "homepage": "https://github.com/merit-systems/x402scan/tree/main/facilitators",
+  "homepage": "https://github.com/Merit-Systems/x402scan/tree/main/facilitators",
   "repository": {
     "type": "git",
-    "url": "https://github.com/merit-systems/x402scan.git",
+    "url": "https://github.com/Merit-Systems/x402scan.git",
     "directory": "facilitators"
   },
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "eslint": "^9.38.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.6.0"
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
   },
   "engines": {
     "node": ">=18.0.0"

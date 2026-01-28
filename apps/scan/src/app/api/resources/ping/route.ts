@@ -1,6 +1,6 @@
 import { listResourcesUncached } from '@/services/db/resources/resource';
 
-import { parseX402Response } from '@/lib/x402/schema';
+import { parseX402Response, extractX402Data } from '@/lib/x402';
 import { checkCronSecret } from '@/lib/cron';
 import { NextResponse, type NextRequest } from 'next/server';
 import {
@@ -67,7 +67,8 @@ export const GET = async (request: NextRequest) => {
 
           if (status === 402) {
             try {
-              const parsedResponse = parseX402Response(await response.json());
+              const x402Data = await extractX402Data(response);
+              const parsedResponse = parseX402Response(x402Data);
               if (parsedResponse.success) {
                 await upsertResourceResponse(resource.id, parsedResponse.data);
                 handled = true;

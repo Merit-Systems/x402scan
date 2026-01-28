@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { scanDb } from '@x402scan/scan-db';
 
-import { parseX402Response } from '@/lib/x402/schema';
+import { parseX402Response } from '@/lib/x402';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
 
 import type { Prisma } from '@x402scan/scan-db';
@@ -15,7 +15,7 @@ const ogImageSchema = z.object({
   description: z.string().optional(),
 });
 
-export const originSchema = z.object({
+const originSchema = z.object({
   origin: z.url(),
   title: z.string().optional(),
   description: z.string().optional(),
@@ -27,52 +27,55 @@ export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
 ) => {
   const origin = originSchema.parse(originInput);
-  return await scanDb.resourceOrigin.upsert({
-    where: { origin: origin.origin },
-    update: {
-      title: origin.title,
-      description: origin.description,
-      favicon: origin.favicon,
-      ogImages: {
-        upsert: origin.ogImages.map(
-          ({ url, height, width, title, description }) => ({
-            where: {
-              url,
-            },
-            create: {
-              url,
-              height,
-              width,
-              title,
-              description,
-            },
-            update: {
-              height,
-              width,
-              title,
-              description,
-            },
-          })
-        ),
+  return await scanDb.$transaction(async tx => {
+    const upsertedOrigin = await tx.resourceOrigin.upsert({
+      where: { origin: origin.origin },
+      update: {
+        title: origin.title,
+        description: origin.description,
+        favicon: origin.favicon,
       },
-    },
-    create: {
-      origin: origin.origin,
-      title: origin.title,
-      description: origin.description,
-      favicon: origin.favicon,
-      ogImages: {
-        create: origin.ogImages.map(
-          ({ url, height, width, title, description }) => ({
+      create: {
+        origin: origin.origin,
+        title: origin.title,
+        description: origin.description,
+        favicon: origin.favicon,
+      },
+    });
+
+    const originId = upsertedOrigin.id;
+
+    await Promise.all(
+      origin.ogImages.map(({ url, height, width, title, description }) =>
+        tx.ogImage.upsert({
+          where: {
+            originId_url: {
+              originId,
+              url,
+            },
+          },
+          update: {
+            height,
+            width,
+            title,
+            description,
+          },
+          create: {
+            originId,
             url,
             height,
             width,
             title,
             description,
-          })
-        ),
-      },
-    },
+          },
+        })
+      )
+    );
+
+    return tx.resourceOrigin.findUnique({
+      where: { id: originId },
+      include: { ogImages: true },
+    });
   });
 };
 
@@ -93,25 +96,6 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
               ...(chain ? { network: chain } : {}),
             },
           },
-        },
-      },
-    },
-    include: {
-      originMetrics: {
-        take: 1,
-        orderBy: {
-          updatedAt: 'desc',
-        },
-        select: {
-          uptime24hPct: true,
-          totalCount24h: true,
-          count_5xx_24h: true,
-          count_4xx_24h: true,
-          count_2xx_24h: true,
-          p50_24hMs: true,
-          p90_24hMs: true,
-          p99_24hMs: true,
-          updatedAt: true,
         },
       },
     },
@@ -180,15 +164,13 @@ export const listOriginsWithResources = async (
   return origins
     .map(origin => ({
       ...origin,
-      resources: origin.resources
-        .map(resource => {
-          const response = parseX402Response(resource.response?.response);
-          return {
-            ...resource,
-            ...response,
-          };
-        })
-        .filter(response => response.success),
+      resources: origin.resources.map(resource => {
+        const response = parseX402Response(resource.response?.response);
+        return {
+          ...resource,
+          ...response,
+        };
+      }),
     }))
     .filter(origin => origin.resources.length > 0);
 };
@@ -231,9 +213,26 @@ export const searchOrigins = async (
 };
 
 export const getOrigin = async (id: string) => {
-  return await scanDb.resourceOrigin.findUnique({
+  const origin = await scanDb.resourceOrigin.findUnique({
     where: { id },
+    include: {
+      ogImages: true,
+      resources: {
+        where: { x402Version: 2 },
+        select: { id: true },
+        take: 1,
+      },
+    },
   });
+
+  if (!origin) return null;
+
+  const { resources, ...originData } = origin;
+
+  return {
+    ...originData,
+    hasX402V2Resource: resources.length > 0,
+  };
 };
 
 export const getOriginMetadata = async (id: string) => {

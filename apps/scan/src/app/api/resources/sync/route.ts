@@ -7,7 +7,7 @@ import { upsertResource } from '@/services/db/resources/resource';
 import { checkCronSecret } from '@/lib/cron';
 import { getOriginFromUrl } from '@/lib/url';
 
-import type { AcceptsNetwork } from '@x402scan/scan-db';
+import type { AcceptsNetwork } from '@x402scan/scan-db/types';
 import type z from 'zod';
 import type { upsertResourceSchema } from '@/services/db/resources/resource';
 import type { NextRequest } from 'next/server';
@@ -81,23 +81,15 @@ export const GET = async (request: NextRequest) => {
         const originStart = Date.now();
 
         try {
-          // Scrape OG and metadata in parallel
-          const {
-            og,
-            metadata,
-            origin: scrapedOrigin,
-          } = await scrapeOriginData(origin);
+          // Scrape OG, metadata, and high-quality favicon in parallel
+          const { og, metadata, favicon } = await scrapeOriginData(origin);
 
           // Prepare origin data
           const originData = {
-            origin: origin,
+            origin,
             title: metadata?.title ?? og?.ogTitle,
             description: metadata?.description ?? og?.ogDescription,
-            favicon:
-              og?.favicon &&
-              (og.favicon.startsWith('/')
-                ? scrapedOrigin.replace(/\/$/, '') + og.favicon
-                : og.favicon),
+            favicon: favicon ?? undefined,
             ogImages:
               og?.ogImage?.map(image => ({
                 url: image.url,

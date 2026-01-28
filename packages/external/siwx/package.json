@@ -1,0 +1,48 @@
+{
+  "name": "@x402scan/siwx",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . --max-warnings 0",
+    "check:types": "tsc --noEmit",
+    "test": "vitest run",
+    "knip": "pnpm -w knip --workspace ./packages/external/siwx",
+    "format": "pnpm -w format:dir ./packages/external/siwx",
+    "format:check": "pnpm -w format:check:dir ./packages/external/siwx",
+    "prepublishOnly": "pnpm build",
+    "publish:check": "pnpm pack --dry-run"
+  },
+  "dependencies": {
+    "@scure/base": "^2.0.0",
+    "@x402/core": "catalog:x402",
+    "siwe": "catalog:",
+    "tweetnacl": "^1.0.3",
+    "viem": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@x402scan/eslint-config": "workspace:*",
+    "@x402scan/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,90 +1,46 @@
-import z3 from 'zod3';
-
 import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
-import {
-  EnhancedPaymentRequirementsSchema,
-  parseX402Response,
-} from '@/lib/x402/schema';
+import { validateX402 } from '@/lib/x402/validate';
 import { getOriginFromUrl } from '@/lib/url';
 
-import { x402ResponseSchema } from 'x402/types';
 import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
 import { SUPPORTED_CHAINS } from '@/types/chain';
+import { fetchDiscoveryDocument } from '@/services/discovery';
+import { verifyAcceptsOwnership } from '@/services/verification/accepts-verification';
 
-import type { EnhancedPaymentRequirements } from '@/lib/x402/schema';
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
 export const registerResource = async (url: string, data: unknown) => {
-  // Strip the query params from the incoming URL
   const urlObj = new URL(url);
   urlObj.search = '';
   const cleanUrl = urlObj.toString();
 
-  // parse the x402 response to see if it fits the x402 schema
-  const baseX402ParsedResponse = x402ResponseSchema
-    .omit({
-      error: true,
-    })
-    .extend({
-      error: z3.string().optional(),
-      accepts: z3
-        .array(z3.any())
-        .refine(accepts => {
-          return accepts.some(accept => {
-            const parsed = EnhancedPaymentRequirementsSchema.safeParse(accept);
-            return parsed.success;
-          });
-        }, 'Accepts must contain at least one EnhancedPaymentRequirements')
-        .transform(
-          accepts =>
-            accepts
-              .map(accept => {
-                const parsed =
-                  EnhancedPaymentRequirementsSchema.safeParse(accept);
-                if (!parsed.success) {
-                  return null;
-                }
-                return parsed.data;
-              })
-              .filter(Boolean) as EnhancedPaymentRequirements[]
-        ),
-    })
-    .safeParse(data);
-  // if it doesn't fit the x402 schema, return an error
-  if (!baseX402ParsedResponse.success) {
-    console.error(baseX402ParsedResponse.error.issues);
+  const validated = validateX402(data);
+  if (!validated.success) {
+    console.error(validated.errors);
     return {
       success: false as const,
       data,
       error: {
         type: 'parseResponse' as const,
-        parseErrors: baseX402ParsedResponse.error.issues.map(
-          issue => `${issue.path.join('.')}: ${issue.message}`
-        ),
+        parseErrors: validated.errors,
       },
     };
   }
 
-  // scrape the origin data
-  const origin = getOriginFromUrl(cleanUrl);
-  const {
-    og,
-    metadata,
-    origin: scrapedOrigin,
-  } = await scrapeOriginData(origin);
+  const x402Data = validated.parsed;
 
-  // upsert the origin data
+  const origin = getOriginFromUrl(cleanUrl);
+  const { og, metadata, favicon } = await scrapeOriginData(origin);
+
   await upsertOrigin({
-    origin: origin,
+    origin,
     title: metadata?.title ?? og?.ogTitle,
     description: metadata?.description ?? og?.ogDescription,
-    favicon: og?.favicon
-      ? new URL(og.favicon, scrapedOrigin).toString()
-      : undefined,
+    favicon: favicon ?? undefined,
     ogImages:
       og?.ogImage?.map(image => ({
         url: image.url,
@@ -95,29 +51,28 @@ export const registerResource = async (url: string, data: unknown) => {
       })) ?? [],
   });
 
-  // upsert the resource
+  const normalizedAccepts = validated.normalizedAccepts;
+
   const resource = await upsertResource({
     resource: cleanUrl,
     type: 'http',
-    x402Version: baseX402ParsedResponse.data.x402Version,
+    x402Version: x402Data.x402Version,
     lastUpdated: new Date(),
-    accepts:
-      baseX402ParsedResponse.data.accepts
-        ?.filter(accept =>
-          (SUPPORTED_CHAINS as ReadonlyArray<string>).includes(
-            accept.network!.replace('-', '_')
-          )
+    accepts: normalizedAccepts
+      .filter(accept =>
+        (SUPPORTED_CHAINS as readonly string[]).includes(
+          accept.network.replace('-', '_')
         )
-        .map(accept => ({
-          ...accept,
-          network: accept.network!.replace('-', '_') as AcceptsNetwork,
-          maxAmountRequired: accept.maxAmountRequired,
-          outputSchema: accept.outputSchema,
-          extra: accept.extra,
-        })) ?? [],
+      )
+      .map(accept => ({
+        ...accept,
+        network: accept.network.replace('-', '_') as AcceptsNetwork,
+        maxAmountRequired: accept.maxAmountRequired,
+        outputSchema: accept.outputSchema,
+        extra: accept.extra,
+      })),
   });
 
-  // if the resource fails to upsert, return an error
   if (!resource) {
     return {
       success: false as const,
@@ -129,14 +84,33 @@ export const registerResource = async (url: string, data: unknown) => {
     };
   }
 
-  // parse the response to see if it fits the enhanced x402 schema for allowing invocations
-  let enhancedParseWarnings: string[] | null = null;
-  const parsedResponse = parseX402Response(data);
-  if (parsedResponse.success) {
-    await upsertResourceResponse(resource.resource.id, parsedResponse.data);
-  } else {
-    enhancedParseWarnings = parsedResponse.errors;
-  }
+  await upsertResourceResponse(resource.resource.id, x402Data);
+
+  // Attempt ownership verification (non-blocking)
+  // This runs in the background and won't block registration success
+  void (async () => {
+    try {
+      const discoveryResult = await fetchDiscoveryDocument(origin);
+      if (
+        discoveryResult.success &&
+        discoveryResult.ownershipProofs &&
+        discoveryResult.ownershipProofs.length > 0
+      ) {
+        const acceptIds = resource.accepts.map(accept => accept.id);
+        await verifyAcceptsOwnership({
+          acceptIds,
+          ownershipProofs: discoveryResult.ownershipProofs,
+          origin,
+        });
+      }
+    } catch (error) {
+      // Log verification errors but don't fail registration
+      console.error(
+        'Ownership verification failed during registration:',
+        error
+      );
+    }
+  })();
 
   return {
     success: true as const,
@@ -145,18 +119,15 @@ export const registerResource = async (url: string, data: unknown) => {
       ...accept,
       maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
     })),
-    enhancedParseWarnings,
     response: data,
     registrationDetails: {
-      providedAccepts: baseX402ParsedResponse.data.accepts ?? [],
+      providedAccepts: normalizedAccepts,
       supportedAccepts: resource.accepts,
       unsupportedAccepts: resource.unsupportedAccepts,
       originMetadata: {
         title: metadata?.title ?? og?.ogTitle ?? null,
         description: metadata?.description ?? og?.ogDescription ?? null,
-        favicon: og?.favicon
-          ? new URL(og.favicon, scrapedOrigin).toString()
-          : null,
+        favicon: favicon ?? null,
         ogImages:
           og?.ogImage?.map(image => ({
             url: image.url,

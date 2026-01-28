@@ -3,14 +3,21 @@ import { Skeleton } from './skeleton';
 
 import { cn } from '@/lib/utils';
 
-type Props = {
+interface Props {
   className?: string;
   toastMessage: string;
   isLoading?: boolean;
   code: string;
-};
+  textClassName?: string;
+  copyButtonClassName?: string;
+}
 
-export const CopyCode: React.FC<Props> = ({ className, ...props }) => {
+export const CopyCode: React.FC<Props> = ({
+  className,
+  textClassName,
+  copyButtonClassName,
+  ...props
+}) => {
   return (
     <div
       className={cn(
@@ -21,7 +28,12 @@ export const CopyCode: React.FC<Props> = ({ className, ...props }) => {
       {props.isLoading ? (
         <Skeleton className="h-5 flex-1" />
       ) : (
-        <p className="flex-1 overflow-x-auto whitespace-nowrap font-mono text-sm no-scrollbar pr-2">
+        <p
+          className={cn(
+            'flex-1 overflow-x-auto whitespace-nowrap font-mono text-sm no-scrollbar pr-2',
+            textClassName
+          )}
+        >
           {props.code}
         </p>
       )}
@@ -30,6 +42,7 @@ export const CopyCode: React.FC<Props> = ({ className, ...props }) => {
         text={props.isLoading ? '' : props.code}
         toastMessage={props.isLoading ? '' : props.toastMessage}
         isLoading={props.isLoading}
+        className={copyButtonClassName}
       />
     </div>
   );

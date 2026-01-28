@@ -4,7 +4,7 @@ import { Chain } from '@/types/chain';
 import { clsx, type ClassValue } from 'clsx';
 import { formatDistanceToNow, formatISO } from 'date-fns';
 
-import type { Message } from '@x402scan/scan-db';
+import type { Message } from '@x402scan/scan-db/types';
 import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from 'ai';
 import type { MixedAddress, SolanaAddress } from '@/types/address';
 
@@ -92,8 +92,6 @@ export const USDC_ADDRESS = {
   [Chain.POLYGON]: '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359' as const,
   [Chain.OPTIMISM]: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85' as const,
 } satisfies Record<Chain, MixedAddress>;
-
-export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export const safeParseJson = <T>(
   value: string | null | undefined,

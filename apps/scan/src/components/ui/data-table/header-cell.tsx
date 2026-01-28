@@ -2,8 +2,8 @@ import { cn } from '@/lib/utils';
 
 import { ArrowDown, ArrowUp, type LucideIcon } from 'lucide-react';
 
-import type { SortingContext } from '@/app/_contexts/sorting/base/context';
-import { useSorting } from '@/app/_contexts/sorting/base/hook';
+import type { SortingContext } from '@/app/(app)/_contexts/sorting/base/context';
+import { useSorting } from '@/app/(app)/_contexts/sorting/base/hook';
 
 interface BaseProps {
   Icon: LucideIcon;
@@ -11,9 +11,9 @@ interface BaseProps {
   className?: string;
 }
 
-interface Props<SortKey extends string> extends BaseProps {
+type Props<SortKey extends string> = {
   sorting?: SortingProps<SortKey>;
-}
+} & BaseProps;
 
 export const HeaderCell = <SortKey extends string>({
   Icon,
@@ -80,10 +80,10 @@ const SortableHeaderCell = <SortKey extends string>({
   );
 };
 
-interface HeaderCellInternalProps extends BaseProps {
+type HeaderCellInternalProps = {
   onClick?: () => void;
   children?: React.ReactNode;
-}
+} & BaseProps;
 
 const HeaderCellInternal: React.FC<HeaderCellInternalProps> = ({
   Icon,

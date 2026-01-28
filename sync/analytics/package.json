@@ -1,6 +1,7 @@
 {
-  "name": "sync-analytics",
+  "name": "@x402scan/sync-analytics",
   "version": "1.0.0",
+  "private": true,
   "description": "Analytics cron jobs for x402scan",
   "license": "ISC",
   "author": "",
@@ -9,24 +10,24 @@
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
     "check:types": "tsc --noEmit",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./sync/analytics",
-    "format": "pnpm -w format-dir ./sync/analytics",
-    "check:format": "pnpm -w check:format-dir ./sync/analytics"
+    "format": "pnpm -w format:dir ./sync/analytics",
+    "format:check": "pnpm -w format:check:dir ./sync/analytics"
   },
   "dependencies": {
     "@x402scan/analytics-db": "workspace:*",
     "@x402scan/scan-db": "workspace:*",
-    "@trigger.dev/sdk": "4.0.5"
+    "@trigger.dev/sdk": "catalog:trigger"
   },
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "@trigger.dev/build": "4.0.5",
-    "@types/node": "^20",
-    "eslint": "^9.39.1",
-    "trigger.dev": "^4.0.4",
-    "typescript": "^5.9.3"
+    "@trigger.dev/build": "catalog:trigger",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "trigger.dev": "catalog:trigger",
+    "typescript": "catalog:"
   }
 }

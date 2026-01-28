@@ -1,35 +1,44 @@
 {
-  "name": "x402scan-monorepo",
+  "name": "@x402scan/monorepo",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.28.0",
   "scripts": {
-    "dev:scan": "turbo run dev --filter=x402scan",
-    "build:scan": "turbo run build --filter=x402scan",
-    "build:proxy": "turbo run build --filter=x402proxy",
+    "dev": "turbo run dev --filter=@x402scan/app",
     "build": "turbo run build",
+    "build:deploy": "turbo run build:deploy",
+    "build:packages": "turbo run build --filter \"./packages/external/**\"",
+    "clean": "rimraf .turbo node_modules .next dist",
     "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "types:check": "turbo run types:check",
+    "types:generate": "turbo run types:generate",
+    "format": "turbo run format",
+    "format:check": "turbo run format:check",
+    "format:dir": "prettier --write",
+    "format:check:dir": "prettier --check",
     "knip": "knip",
-    "format-dir": "prettier --write",
-    "format": "pnpm format-dir .",
-    "check:format-dir": "prettier --check",
-    "check:format": "pnpm check:format-dir .",
-    "check:types": "turbo run check:types",
-    "check:knip": "turbo run knip",
-    "check": "turbo run check:format check:types lint knip",
-    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=sync-analytics",
-    "trigger:deploy:transfers": "turbo run trigger:deploy --filter=sync-transfers",
-    "trigger:deploy:alerts": "turbo run trigger:deploy --filter=sync-alerts"
+    "knip:check": "turbo run knip",
+    "check": "turbo run format types:check lint knip publish:check",
+    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=@x402scan/sync-analytics",
+    "trigger:deploy:transfers": "turbo run trigger:deploy --filter=@x402scan/sync-transfers",
+    "trigger:deploy:alerts": "turbo run trigger:deploy --filter=@x402scan/sync-alerts",
+    "changeset": "changeset",
+    "changeset:version": "changeset version && pnpm --filter @x402scan/mcp build:mcpb",
+    "changeset:publish": "pnpm build:packages && changeset publish"
   },
   "devDependencies": {
-    "knip": "^5.69.0",
-    "prettier": "^3.6.2",
-    "turbo": "^2.5.1",
-    "typescript": "^5"
+    "@changesets/cli": "^2.29.8",
+    "knip": "^5.80.0",
+    "prettier": "^3.7.4",
+    "rimraf": "catalog:",
+    "turbo": "^2.7.4",
+    "typescript": "catalog:"
   },
   "pnpm": {
     "overrides": {
-      "@auth/core": "0.40.0"
+      "@auth/core": "0.40.0",
+      "viem": "2.44.1"
     },
     "onlyBuiltDependencies": [
       "@coinbase/x402"

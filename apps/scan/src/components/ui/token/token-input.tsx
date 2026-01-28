@@ -14,19 +14,17 @@ import { Loading } from '@/components/ui/loading';
 
 import { TokenSelect } from './token-select';
 
-import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
-import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-balance';
+import { useEvmTokenBalance } from '@/app/(app)/_hooks/balance/token/use-evm-token-balance';
+import { useSPLTokenBalance } from '@/app/(app)/_hooks/balance/token/use-svm-token-balance';
 
 import { cn } from '@/lib/utils';
-import { BASE_USDC } from '@/lib/tokens/usdc';
 
 import { Chain } from '@/types/chain';
 
 import type { Token } from '@/types/token';
 import type { MixedAddress, SolanaAddress } from '@/types/address';
 
-interface Props
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+type Props = {
   onChange: (value: number) => void;
   label: string;
   selectedToken: Token;
@@ -37,11 +35,15 @@ interface Props
   inputClassName?: string;
   isBalanceMax?: boolean;
   address?: MixedAddress;
-}
+  balanceProp?: {
+    balance: number | undefined;
+    isLoading: boolean;
+  };
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>;
 
 export const TokenInput: React.FC<Props> = ({
   onChange,
-  selectedToken = BASE_USDC,
+  selectedToken,
   onTokenChange,
   tokens = [],
   isBalanceMax = false,
@@ -50,6 +52,7 @@ export const TokenInput: React.FC<Props> = ({
   className,
   inputClassName,
   address,
+  balanceProp,
   ...props
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -60,18 +63,22 @@ export const TokenInput: React.FC<Props> = ({
       token: selectedToken,
       address: address as `0x${string}` | undefined,
       query: {
-        enabled: isBalanceMax && chain !== Chain.SOLANA,
+        enabled:
+          isBalanceMax && chain !== Chain.SOLANA && balanceProp === undefined,
+        refetchOnMount: 'always',
       },
     });
 
   const { data: svmBalance, isLoading: isSolanaBalanceLoading } =
     useSPLTokenBalance({
-      enabled: isBalanceMax && chain === Chain.SOLANA,
+      enabled:
+        isBalanceMax && chain === Chain.SOLANA && balanceProp === undefined,
       address: address as SolanaAddress | undefined,
     });
 
   const { balance, isLoading } =
-    chain === Chain.SOLANA
+    balanceProp ??
+    (chain === Chain.SOLANA
       ? {
           balance: svmBalance,
           isLoading: isSolanaBalanceLoading,
@@ -79,7 +86,7 @@ export const TokenInput: React.FC<Props> = ({
       : {
           balance: evmBalance,
           isLoading: isEvmBalanceLoading,
-        };
+        });
 
   useEffect(() => {
     if (inputRef.current) {

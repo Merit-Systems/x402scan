@@ -23,6 +23,13 @@ const badgeVariants = cva(
         primary: 'border-transparent bg-primary/30 text-primary',
         glass: 'border-primary/60 bg-primary/10 text-primary',
         warning: 'border-transparent bg-yellow-500/20 text-yellow-500',
+        fancy: cn(
+          'relative overflow-hidden border bg-gradient-to-tr from-primary via-primary/80 to-primary text-white',
+          // before: shimmer overlay
+          'before:pointer-events-none before:absolute before:inset-0 before:rounded-none before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:opacity-80 motion-safe:before:animate-shimmer before:h-[200%] before:w-[200%] before:rounded-full before:-translate-y-1/4 before:z-20',
+          // after: inner glow
+          'after:pointer-events-none after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_6px_0px_rgba(255,255,255,0.8)] after:z-10'
+        ),
       },
     },
     defaultVariants: {
@@ -31,9 +38,8 @@ const badgeVariants = cva(
   }
 );
 
-interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+type BadgeProps = {} & React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof badgeVariants>;
 
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (

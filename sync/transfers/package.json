@@ -1,6 +1,7 @@
 {
-  "name": "sync-transfers",
+  "name": "@x402scan/sync-transfers",
   "version": "1.0.0",
+  "private": true,
   "description": "",
   "license": "ISC",
   "author": "",
@@ -8,19 +9,19 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "check:types": "tsc --noEmit",
-    "lint": "eslint .",
+    "types:check": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./sync/transfers",
-    "format": "pnpm -w format-dir ./sync/transfers",
-    "check:format": "pnpm -w check:format-dir ./sync/transfers"
+    "format": "pnpm -w format:dir ./sync/transfers",
+    "format:check": "pnpm -w format:check:dir ./sync/transfers"
   },
   "dependencies": {
     "@coinbase/cdp-sdk": "^1.38.4",
     "@google-cloud/bigquery": "^8.1.1",
     "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
-    "@trigger.dev/sdk": "4.0.5",
+    "@trigger.dev/sdk": "catalog:trigger",
     "@x402scan/transfers-db": "workspace:*",
     "bottleneck": "^2.19.5",
     "facilitators": "workspace:*",
@@ -29,10 +30,10 @@
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "@trigger.dev/build": "4.0.5",
-    "@types/node": "^20",
-    "eslint": "^9.38.0",
-    "trigger.dev": "^4.0.4",
-    "typescript": "^5.9.3"
+    "@trigger.dev/build": "catalog:trigger",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "trigger.dev": "catalog:trigger",
+    "typescript": "catalog:"
   }
 }

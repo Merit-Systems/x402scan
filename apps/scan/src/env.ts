@@ -3,8 +3,8 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
-    POSTGRES_PRISMA_URL: z.url(),
-    POSTGRES_URL_NON_POOLING: z.url(),
+    SCAN_DATABASE_URL: z.url(),
+    SCAN_DATABASE_URL_UNPOOLED: z.url(),
     CDP_API_KEY_NAME: z.string(),
     CDP_API_KEY_ID: z.string(),
     CDP_API_KEY_SECRET: z.string(),
@@ -17,7 +17,8 @@ export const env = createEnv({
         : z.string(),
     FREEPIK_API_KEY: z.string().optional(),
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
-    FREE_TIER_WALLET_NAME: z.string().optional(),
+    FREE_TIER_WALLET_NAME: z.string(),
+    INVITE_WALLET_NAME: z.string().optional(),
     TRANSFERS_DB_URL: z.url(),
     TRANSFERS_DB_URL_REPLICA_1: z.url().optional(),
     TRANSFERS_DB_URL_REPLICA_2: z.url().optional(),
@@ -25,13 +26,21 @@ export const env = createEnv({
     TRANSFERS_DB_URL_REPLICA_4: z.url().optional(),
     TRANSFERS_DB_URL_REPLICA_5: z.url().optional(),
     REDIS_URL: z.string().optional(),
+    REDIS_DISABLE: z.coerce.boolean().optional().default(false),
     ECHO_APP_ID: z.string().default('7fed205e-3aa5-44af-83a3-f7ae5e49dba4'),
     ECHO_PROXY_URL: z.url().optional(),
     ANALYTICS_CLICKHOUSE_URL: z.string().url().optional(),
     ANALYTICS_CLICKHOUSE_USER: z.string().optional(),
     ANALYTICS_CLICKHOUSE_PASSWORD: z.string().optional(),
     ANALYTICS_CLICKHOUSE_DATABASE: z.string().optional(),
+    PARTNERS_CLICKHOUSE_URL: z.string().url().optional(),
+    PARTNERS_CLICKHOUSE_USER: z.string().optional(),
+    PARTNERS_CLICKHOUSE_PASSWORD: z.string().optional(),
+    PARTNERS_CLICKHOUSE_DATABASE: z.string().optional(),
     JINA_API_KEY: z.string().optional(),
+    RESOURCE_SEARCH_API_KEY: z.string().optional(),
+    STRIPE_SECRET_KEY: z.string(),
+    DISCORD_TELEMETRY_WEBHOOK_URL: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
@@ -53,8 +62,12 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
     NEXT_PUBLIC_ENABLE_COMPOSER: z.string().optional().default('true'),
-    NEXT_PUBLIC_SOLANA_RPC_URL: z.url().optional(),
+    NEXT_PUBLIC_SOLANA_RPC_URL: z.url(),
     NEXT_PUBLIC_BASE_RPC_URL: z.url().optional(),
+    NEXT_PUBLIC_VERCEL_ENV: z
+      .enum(['development', 'preview', 'production'])
+      .optional(),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL:
@@ -73,6 +86,9 @@ export const env = createEnv({
     NEXT_PUBLIC_ENABLE_COMPOSER: process.env.NEXT_PUBLIC_ENABLE_COMPOSER,
     NEXT_PUBLIC_SOLANA_RPC_URL: process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
     NEXT_PUBLIC_BASE_RPC_URL: process.env.NEXT_PUBLIC_BASE_RPC_URL,
+    NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
   emptyStringAsUndefined: true,
 });
