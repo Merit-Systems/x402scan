@@ -13,7 +13,7 @@ export const KnowledgeWorkHome = async () => {
         .map(section => (
           <Link
             key={section.slug}
-            className="border rounded-xl p-4 flex flex-col gap-2 hover:border-primary transition-all cursor-pointer group"
+            className="border bg-card rounded-xl p-4 flex flex-col gap-2 hover:border-primary transition-all cursor-pointer group"
             href={`/mcp/guide/knowledge-work/${section.slug}`}
           >
             <div className="flex gap-2 justify-between items-center">

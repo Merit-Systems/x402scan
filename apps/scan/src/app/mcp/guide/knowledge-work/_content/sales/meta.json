@@ -2,5 +2,5 @@
   "title": "Sales",
   "description": "Generate leads and research accounts",
   "icon": "handshake",
-  "items": ["lead-generation", "account-research", "contact-enrichment"]
+  "items": ["index", "lead-generation", "account-research", "contact-enrichment"]
 }

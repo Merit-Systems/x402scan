@@ -71,3 +71,36 @@ export const collectPagePaths = (
     }
   });
 };
+
+// Recursively collect all section paths from the navigation tree
+export const collectSectionPaths = (
+  items: NavItem[],
+  prefix: string[] = []
+): string[][] => {
+  return items.flatMap(item => {
+    if (item.type === 'section') {
+      const currentPath = [...prefix, item.slug];
+      return [currentPath, ...collectSectionPaths(item.items, currentPath)];
+    }
+    return [];
+  });
+};
+
+// Check if a path points to a section in the navigation tree
+export const findSection = (
+  items: NavItem[],
+  path: string[]
+): NavSection | null => {
+  if (path.length === 0) return null;
+
+  const [current, ...rest] = path;
+  const item = items.find(i => i.slug === current);
+
+  if (item?.type !== 'section') return null;
+
+  if (rest.length === 0) {
+    return item;
+  }
+
+  return findSection(item.items, rest);
+};

@@ -60,6 +60,15 @@ const components: MDXComponents = {
     );
   },
   hr: () => <hr className="my-8" />,
+  ul: ({ children }) => (
+    <ul className="list-disc list-outside pl-4 mb-4 last:mb-0">{children}</ul>
+  ),
+  ol: ({ children }) => (
+    <ol className="list-decimal list-outside pl-4 mb-4 last:mb-0">
+      {children}
+    </ol>
+  ),
+  li: ({ children }) => <li className="mb-2 last:mb-0 pl-2">{children}</li>,
 };
 
 export function useMDXComponents(): MDXComponents {

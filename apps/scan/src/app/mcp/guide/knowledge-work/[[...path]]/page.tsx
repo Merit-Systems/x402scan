@@ -6,7 +6,12 @@ import { notFound } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 
-import { collectPagePaths, findPageLocation } from '../../_lib/navigation';
+import {
+  collectPagePaths,
+  collectSectionPaths,
+  findPageLocation,
+  findSection,
+} from '../../_lib/navigation';
 
 import type { Route } from 'next';
 import { knowledgeWorkGuide } from '../_content/data';
@@ -17,9 +22,15 @@ export default async function Page({
   params,
 }: PageProps<'/mcp/guide/knowledge-work/[[...path]]'>) {
   const { path: rawPath } = await params;
-  const path = rawPath?.length ? rawPath : ['index'];
+  let path = rawPath?.length ? rawPath : ['index'];
 
   const guide = await knowledgeWorkGuide;
+
+  // If the path points to a section, append 'index' to load the section's index page
+  const section = findSection(guide.items, path);
+  if (section) {
+    path = [...path, 'index'];
+  }
 
   const pageLocation = findPageLocation(guide.items, path);
 
@@ -70,10 +81,15 @@ export default async function Page({
 
 export async function generateStaticParams() {
   const guide = await knowledgeWorkGuide;
-  const paths = collectPagePaths(guide.items);
+  const pagePaths = collectPagePaths(guide.items);
+  const sectionPaths = collectSectionPaths(guide.items);
 
-  // Include empty path for the base route, plus all nested paths
-  return [{ path: [] }, ...paths.map(path => ({ path }))];
+  // Include empty path for the base route, section paths, and all page paths
+  return [
+    { path: [] },
+    ...sectionPaths.map(path => ({ path })),
+    ...pagePaths.map(path => ({ path })),
+  ];
 }
 
 export const dynamicParams = false;

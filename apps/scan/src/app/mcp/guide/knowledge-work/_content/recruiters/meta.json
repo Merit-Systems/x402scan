@@ -2,5 +2,5 @@
   "title": "Recruiters",
   "description": "Find and research candidates for open roles",
   "icon": "users",
-  "items": ["sourcing-candidates", "enriching-profiles", "competitive-mapping"]
+  "items": ["index", "sourcing-candidates", "enriching-profiles", "competitive-mapping"]
 }

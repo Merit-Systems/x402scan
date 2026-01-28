@@ -2,5 +2,5 @@
   "title": "Researchers",
   "description": "Conduct market research and competitive analysis",
   "icon": "chart-line",
-  "items": ["market-research", "competitive-intelligence", "trend-monitoring"]
+  "items": ["index", "market-research", "competitive-intelligence", "trend-monitoring"]
 }
