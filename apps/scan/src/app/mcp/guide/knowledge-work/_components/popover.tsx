@@ -23,7 +23,7 @@ export const KnowledgeWorkPopover: React.FC<{ guide: Guide }> = ({ guide }) => {
                 `/mcp/guide/knowledge-work/${section.slug}/${section.items[0]!.slug}` as Route
               }
               key={section.slug}
-              className="w-full"
+              className="w-full cursor-pointer"
             >
               <Button
                 key={section.slug}
@@ -57,7 +57,7 @@ export const KnowledgeWorkPopover: React.FC<{ guide: Guide }> = ({ guide }) => {
                 `/mcp/guide/knowledge-work/${pageLocation?.section?.slug}/${item.slug}` as Route
               }
               key={item.slug}
-              className="w-full"
+              className="w-full cursor-pointer"
             >
               <Button variant="ghost" className="w-full">
                 <p className="text-sm font-medium">{item.slug}</p>
