@@ -1,6 +1,6 @@
 {
-  "title": "Automate Your Knowledge Work",
-  "description": "Automate research and enrichment tasks with EnrichX402",
+  "title": "Automate Knowledge Work",
+  "description": "Build agents that can perform knowledge work tasks",
   "icon": "/logo.svg",
   "items": [
     "index",

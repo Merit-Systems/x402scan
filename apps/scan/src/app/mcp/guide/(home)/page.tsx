@@ -11,7 +11,7 @@ export default function GuidePage() {
   return (
     <div className="max-w-2xl mx-auto flex flex-col gap-16">
       <div className="flex flex-col gap-2 items-center text-center">
-        <h1 className="text-4xl font-bold">Automate Your Knowledge Work</h1>
+        <h1 className="text-4xl font-bold">Automate Knowledge Work</h1>
         <p className="text-muted-foreground max-w-sm text-lg">
           Use Claude Code and x402 to build Research, Go-to-Market, and Sales
           workflows.
