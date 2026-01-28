@@ -31,7 +31,7 @@ catalogs:
     eslint-config-next: *NEXT_VERSION
     next-themes: ^0.4.6
   prisma:
-    prisma: &PRISMA_VERSION ^7.2.0
+    prisma: &PRISMA_VERSION ^7.3.0
     '@prisma/client': *PRISMA_VERSION
     '@prisma/adapter-neon': *PRISMA_VERSION
   react:
