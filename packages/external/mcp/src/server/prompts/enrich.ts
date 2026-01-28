@@ -97,7 +97,7 @@ export const registerEnrichPrompt: RegisterPrompts = ({ server }) => {
           ),
       },
     },
-    async ({ query }): Promise<GetPromptResult> => ({
+    ({ query }): GetPromptResult => ({
       messages: [
         {
           role: 'user',
