@@ -8,12 +8,12 @@ interface Props {
   Popover: React.FC<{ guide: Guide }>;
 }
 
-export const GuideLayout: React.FC<Props> = ({
+export const GuideLayout: React.FC<Props> = async ({
   children,
   guideSlug,
   Popover,
 }) => {
-  const guide = getGuide(...guideSlug);
+  const guide = await getGuide(...guideSlug);
   return (
     <>
       <GuidesHeader guide={guide} Popover={Popover} />

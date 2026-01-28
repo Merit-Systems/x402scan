@@ -10,7 +10,7 @@ export default async function Page({
 }: PageProps<'/mcp/guide/knowledge-work/[...path]'>) {
   const { path } = await params;
 
-  const guide = getGuide(GUIDE_SLUG);
+  const guide = await getGuide(GUIDE_SLUG);
 
   if (!isValidPagePath(guide.items, path)) {
     notFound();
@@ -28,8 +28,8 @@ export default async function Page({
   );
 }
 
-export function generateStaticParams() {
-  const guide = getGuide(GUIDE_SLUG);
+export async function generateStaticParams() {
+  const guide = await getGuide(GUIDE_SLUG);
   const paths = collectPagePaths(guide.items);
 
   return paths.map(path => ({ path }));

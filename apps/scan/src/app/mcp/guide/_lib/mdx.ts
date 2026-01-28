@@ -11,7 +11,7 @@ const metadataSchema = z.object({
 type Metadata = z.infer<typeof metadataSchema>;
 
 // Navigation tree node types
-export interface NavPage {
+export interface NavPage extends Metadata {
   type: 'page';
   slug: string;
 }
@@ -61,29 +61,39 @@ const parseMeta = (dir: string) => {
   );
 };
 
-const getNavItems = (contentDir: string): NavItem[] => {
-  const meta = parseMeta(contentDir);
+const basePath = path.join(process.cwd(), 'src', 'app', 'mcp', 'guide');
 
-  return meta.items.map(({ type, slug }): NavItem => {
-    if (type === 'section') {
-      const sectionDir = path.join(contentDir, slug);
-      const meta = parseMeta(sectionDir);
-      return {
-        type: 'section',
-        slug,
-        ...meta,
-        items: getNavItems(sectionDir),
-      };
-    } else {
-      return {
-        type: 'page',
-        slug,
-      };
-    }
-  });
+const getNavItems = async (contentDir: string): Promise<NavItem[]> => {
+  const meta = parseMeta(contentDir);
+  const relativePath = contentDir.replace(basePath, '').replace(/^\//, '');
+
+  return Promise.all(
+    meta.items.map(async ({ type, slug }): Promise<NavItem> => {
+      if (type === 'section') {
+        const sectionDir = path.join(contentDir, slug);
+        const sectionMeta = parseMeta(sectionDir);
+        return {
+          type: 'section',
+          slug,
+          ...sectionMeta,
+          items: await getNavItems(sectionDir),
+        };
+      } else {
+        const mdxModule = (await import(
+          `@/app/mcp/guide/${relativePath}/${slug}.mdx`
+        )) as { metadata: unknown };
+        const pageMetadata = metadataSchema.parse(mdxModule.metadata);
+        return {
+          type: 'page',
+          slug,
+          ...pageMetadata,
+        };
+      }
+    })
+  );
 };
 
-export const getGuide = (...dir: string[]): Guide => {
+export const getGuide = async (...dir: string[]): Promise<Guide> => {
   const contentDir = path.join(
     process.cwd(),
     'src',
@@ -98,6 +108,6 @@ export const getGuide = (...dir: string[]): Guide => {
 
   return {
     ...meta,
-    items: getNavItems(contentDir),
+    items: await getNavItems(contentDir),
   };
 };

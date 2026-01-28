@@ -18,7 +18,7 @@ interface Props {
 
 export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
   return (
-    <div className="flex items-center justify-between bg-card border rounded-full p-3">
+    <div className="flex items-center justify-between bg-background border rounded-full p-3">
       {/* Left side: List icon + Task info */}
       <PopoverComponent>
         <PopoverTrigger asChild>
@@ -30,7 +30,12 @@ export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
             <List className="size-4" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 w-96">
+        <PopoverContent
+          className="p-0 w-96 shadow-none rounded-xl bg-card"
+          sideOffset={24}
+          align="start"
+          alignOffset={-8}
+        >
           <Popover guide={guide} />
         </PopoverContent>
       </PopoverComponent>

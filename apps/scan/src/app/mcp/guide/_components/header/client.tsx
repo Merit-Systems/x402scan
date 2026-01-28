@@ -21,8 +21,8 @@ export const CurrentPage: React.FC<Props> = ({ guide }) => {
     return null;
   }
 
-  const currentTitle = pageLocation.section?.title ?? guide.title;
-  const subtitle = pageLocation.section ? guide.title : null;
+  const currentTitle = pageLocation?.page?.title ?? guide.title;
+  const subtitle = pageLocation?.section?.title ?? null;
 
   return (
     <div className="flex flex-col">
