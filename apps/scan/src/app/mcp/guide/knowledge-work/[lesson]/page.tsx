@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation';
-import { getGuides } from '../../_utils/mdx';
+import { getGuides } from '../../../_lib/mdx';
 
-import type { Metadata } from '../../_utils/mdx';
+import type { Metadata } from '../../../_lib/mdx';
 
 export default async function Page({
   params,
-}: PageProps<'/mcp/guide/[guide]/[lesson]'>) {
-  const { guide, lesson } = await params;
+}: PageProps<'/mcp/guide/knowledge-work/[lesson]'>) {
+  const { lesson } = await params;
 
   const guides = await getGuides();
 

@@ -12,21 +12,38 @@ export interface Metadata {
   description: string;
 }
 
-interface Guide extends Omit<GuideMetadata, 'pages'> {
+export interface Guide extends Omit<GuideMetadata, 'pages'> {
   pages: { metadata: Metadata; slug: string }[];
 }
 
 export type Guides = Record<string, Guide>;
 
-export const getGuides = async (): Promise<Guides> => {
-  const contentDir = path.join(
+export const getGuide = async (...dir: string[]): Promise<Guide> => {
+  const guideDir = path.join(
     process.cwd(),
     'src',
     'app',
     'mcp',
     'guide',
-    '(guides)',
-    '_content'
+    ...dir
+  );
+
+  const meta = JSON.parse(
+    fs.readFileSync(path.join(guideDir, 'meta.json'), 'utf8')
+  ) as GuideMetadata;
+  const lessonsData = await Promise.all(
+    meta.pages.map(async lesson => {
+      const { metadata } = (await import(
+        `../_content/${guide}/${lesson}.mdx`
+      )) as { metadata: Metadata };
+      if (!metadata) {
+        throw new Error(`No metadata found for ${lesson}`);
+      }
+      return {
+        metadata,
+        slug: path.basename(lesson, path.extname(lesson)),
+      };
+    })
   );
 
   const guides = fs
@@ -35,23 +52,6 @@ export const getGuides = async (): Promise<Guides> => {
 
   const guidesData = await Promise.all(
     guides.map(async guide => {
-      const meta = JSON.parse(
-        fs.readFileSync(path.join(contentDir, guide, 'meta.json'), 'utf8')
-      ) as GuideMetadata;
-      const lessonsData = await Promise.all(
-        meta.pages.map(async lesson => {
-          const { metadata } = (await import(
-            `../_content/${guide}/${lesson}.mdx`
-          )) as { metadata: Metadata };
-          if (!metadata) {
-            throw new Error(`No metadata found for ${lesson}`);
-          }
-          return {
-            metadata,
-            slug: path.basename(lesson, path.extname(lesson)),
-          };
-        })
-      );
       return { slug: guide, metadata: meta, pages: lessonsData };
     })
   );

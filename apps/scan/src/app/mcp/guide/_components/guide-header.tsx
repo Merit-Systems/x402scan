@@ -15,7 +15,7 @@ import {
 } from '@/app/mcp/_components/guide/book';
 import { Logo } from '@/components/logo';
 
-import type { Guides } from '../_utils/mdx';
+import type { Guides } from '../_lib/mdx';
 import { useParams } from 'next/navigation';
 
 interface Props {

@@ -1,5 +1,5 @@
-import { GuidesHeader } from './_components/header';
-import { getGuides } from './_utils/mdx';
+import { GuidesHeader } from '../_components/guide-header';
+import { getGuides } from '../_lib/mdx';
 
 export default async function GuidesLayout({
   children,
