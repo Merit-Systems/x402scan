@@ -62,6 +62,9 @@ export const startServer: Command = async flags => {
           subscribe: true,
           listChanged: true,
         },
+        prompts: {
+          listChanged: true,
+        },
       },
     }
   );
