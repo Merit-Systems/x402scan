@@ -1,6 +1,6 @@
 {
   "title": "Investors",
   "description": "Research companies and founders for due diligence",
-  "icon": "/invest.png",
+  "icon": "dollar-sign",
   "items": ["deal-sourcing", "founder-research", "company-due-diligence"]
 }

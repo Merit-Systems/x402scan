@@ -1,9 +1,6 @@
 {
   "title": "Recruiters",
   "description": "Find and research candidates for open roles",
-  "items": [
-    "sourcing-candidates",
-    "enriching-profiles",
-    "competitive-mapping"
-  ]
+  "icon": "users",
+  "items": ["sourcing-candidates", "enriching-profiles", "competitive-mapping"]
 }

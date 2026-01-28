@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 import { List } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -10,6 +12,7 @@ import {
 import { CurrentPage, Book, ScrollToTopButton } from './client';
 
 import type { Guide } from '../../_lib/mdx';
+import { Separator } from '@/components/ui/separator';
 
 interface Props {
   guide: Guide;
@@ -19,7 +22,6 @@ interface Props {
 export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
   return (
     <div className="flex items-center justify-between bg-background border rounded-full p-3">
-      {/* Left side: List icon + Task info */}
       <PopoverComponent>
         <PopoverTrigger asChild>
           <Button
@@ -36,6 +38,20 @@ export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
           align="start"
           alignOffset={-8}
         >
+          <div className="p-4 flex items-center gap-2">
+            {guide.icon ? (
+              <Image
+                src={guide.icon}
+                alt={guide.title}
+                width={20}
+                height={20}
+              />
+            ) : (
+              <List className="size-4" />
+            )}
+            <p className="text-sm font-medium">{guide.title}</p>
+          </div>
+          <Separator />
           <Popover guide={guide} />
         </PopoverContent>
       </PopoverComponent>

@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { Check } from 'lucide-react';
 
 import { Logo } from '@/components/logo';
 
@@ -8,7 +8,8 @@ import {
   BookCover,
   BookContent,
 } from '@/app/mcp/_components/guide/book';
-import { Check } from 'lucide-react';
+
+import { Icon } from '../icon';
 
 interface Props {
   icon?: string;
@@ -25,13 +26,7 @@ export const SectionBook: React.FC<Props> = ({ icon, selected }) => {
             {selected ? (
               <Check className="size-2.5 text-white" />
             ) : icon ? (
-              <Image
-                src={icon}
-                alt={icon}
-                width={50}
-                height={50}
-                className="invert size-2.5"
-              />
+              <Icon icon={icon} className="size-2.5 text-white" />
             ) : (
               <Logo className="size-2.5" />
             )}

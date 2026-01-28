@@ -1,5 +1,6 @@
 {
-  "title": "Knowledge Work",
+  "title": "Automate Your Knowledge Work",
   "description": "Automate research and enrichment tasks with EnrichX402",
+  "icon": "/logo.svg",
   "items": ["...recruiters", "...sales", "...researchers", "...investors"]
 }
