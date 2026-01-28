@@ -9,6 +9,10 @@ import { AnimatedThemeToggler } from '@/components/magicui/animated-theme-toggle
 
 import { NavbarContainer } from './container';
 
+import type { Route } from 'next';
+import { Book } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
 interface Props {
   hideLinks?: boolean;
 }
@@ -18,12 +22,16 @@ export const Navbar: React.FC<Props> = () => {
     <NavbarContainer>
       <div className="flex w-full items-center justify-between">
         {/* Logo section */}
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex shrink-0 items-center gap-2">
           <Link href="/" className="flex items-center gap-1">
             <Logo className="size-6" />
             <h1 className="font-semibold font-mono hidden md:block">
-              x402scan MCP
+              x402scan
             </h1>
+          </Link>
+          <p className={cn('text-muted-foreground/20 text-xl')}>/</p>
+          <Link href="/mcp" className="flex items-center gap-1">
+            <h1 className="font-semibold font-mono hidden md:block">MCP</h1>
           </Link>
         </div>
 
@@ -46,6 +54,12 @@ export const Navbar: React.FC<Props> = () => {
             </Button>
           </a>
           <AnimatedThemeToggler className="md:rounded-xl" />
+          <Link href={'/mcp/guide' as Route<'/mcp/guide'>}>
+            <Button className="md:rounded-xl">
+              <Book className="size-4" />
+              Learn
+            </Button>
+          </Link>
         </div>
       </div>
     </NavbarContainer>
