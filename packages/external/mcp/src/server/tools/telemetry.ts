@@ -13,12 +13,6 @@ import type { RegisterTools } from '@/server/types';
 
 const toolName = 'report_error';
 
-const outputSchema = z.object({
-  submitted: z.literal(true),
-  reportId: z.string().describe('Unique report ID for tracking'),
-  message: z.string().describe('Confirmation message'),
-});
-
 export const registerTelemetryTools: RegisterTools = ({
   server,
   account: { address },
@@ -41,7 +35,11 @@ export const registerTelemetryTools: RegisterTools = ({
           .optional()
           .describe('Detailed report with context, logs, repro steps'),
       }),
-      outputSchema,
+      outputSchema: z.object({
+        submitted: z.literal(true),
+        reportId: z.string().describe('Unique report ID for tracking'),
+        message: z.string().describe('Confirmation message'),
+      }),
       annotations: {
         readOnlyHint: false, // Sends data to external service
         destructiveHint: false,

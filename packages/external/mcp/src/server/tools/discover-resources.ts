@@ -39,13 +39,13 @@ export function registerDiscoveryTools(server: McpServer): void {
             Email enrichment
         - https://stablestudio.io -> generate and edit images / videos
         `,
-      inputSchema: {
+      inputSchema: z.object({
         url: z
           .url()
           .describe(
             'The origin URL or any URL on the origin to discover resources from'
           ),
-      },
+      }),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,

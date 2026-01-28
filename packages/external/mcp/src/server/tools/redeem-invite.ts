@@ -5,32 +5,28 @@ import { redeemInviteCode } from '@/shared/redeem-invite';
 
 import type { RegisterTools } from '@/server/types';
 
-const toolName = 'redeem_invite';
-
-const outputSchema = z.object({
-  redeemed: z.literal(true),
-  amount: z.string().describe('Amount with unit (e.g., "5 USDC")'),
-  txHash: z.string().describe('Transaction hash on Base'),
-});
-
 export const registerRedeemInviteTool: RegisterTools = ({
   server,
   account: { address },
   flags,
 }) => {
   server.registerTool(
-    toolName,
+    'redeem_invite',
     {
       title: 'Redeem Invite',
       description: `Redeem an invite code for free USDC on Base. One-time use per code. Returns amount received and transaction hash. Use get_wallet_info after to verify balance.`,
       inputSchema: z.object({
         code: z.string().min(1).describe('The invite code'),
       }),
-      outputSchema,
+      outputSchema: z.object({
+        redeemed: z.literal(true),
+        amount: z.string().describe('Amount with unit (e.g., "5 USDC")'),
+        txHash: z.string().describe('Transaction hash on Base'),
+      }),
       annotations: {
-        readOnlyHint: true,
+        readOnlyHint: false, // Modifies wallet balance
         destructiveHint: false, // Additive (adds funds), not destructive
-        idempotentHint: true, // Same code can't be redeemed twice
+        idempotentHint: false, // Same code can't be redeemed twice - second attempt fails
         openWorldHint: true,
       },
     },
@@ -39,7 +35,7 @@ export const registerRedeemInviteTool: RegisterTools = ({
         code,
         dev: flags.dev,
         address,
-        surface: toolName,
+        surface: 'redeem_invite',
       });
 
       if (result.isErr()) {
