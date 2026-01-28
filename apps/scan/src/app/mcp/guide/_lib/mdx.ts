@@ -29,8 +29,6 @@ export interface Guide extends Metadata {
   items: NavItem[];
 }
 
-export type Guides = Record<string, Guide>;
-
 // Schema for meta.json files (used by both guides and sections)
 const metaSchema = metadataSchema.extend({
   items: z

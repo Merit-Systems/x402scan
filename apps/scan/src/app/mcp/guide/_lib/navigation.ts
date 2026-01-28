@@ -1,6 +1,6 @@
 import type { NavItem, NavPage, NavSection } from './mdx';
 
-export interface PageLocation {
+interface PageLocation {
   page: NavPage;
   section?: NavSection;
   index: number;
@@ -47,7 +47,7 @@ export const isValidPagePath = (items: NavItem[], path: string[]): boolean => {
 };
 
 // Recursively collect all pages from the navigation tree (flattened)
-export const collectPages = (items: NavItem[]): NavPage[] => {
+const collectPages = (items: NavItem[]): NavPage[] => {
   return items.flatMap(item => {
     if (item.type === 'page') {
       return [item];
@@ -70,17 +70,4 @@ export const collectPagePaths = (
       return collectPagePaths(item.items, currentPath);
     }
   });
-};
-
-// Get the flat index of a page given its path
-export const getPageIndex = (items: NavItem[], path: string[]): number => {
-  const allPaths = collectPagePaths(items);
-  return allPaths.findIndex(
-    p => p.length === path.length && p.every((seg, i) => seg === path[i])
-  );
-};
-
-// Get total page count in the navigation tree
-export const getTotalPages = (items: NavItem[]): number => {
-  return collectPages(items).length;
 };

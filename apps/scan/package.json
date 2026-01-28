@@ -108,7 +108,6 @@
     "motion": "catalog:",
     "next": "catalog:next",
     "next-auth": "5.0.0-beta.29",
-    "next-mdx-remote": "^5.0.0",
     "next-themes": "catalog:next",
     "open-graph-scraper": "^6.10.0",
     "posthog-js": "^1.273.1",
