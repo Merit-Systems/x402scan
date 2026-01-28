@@ -18,8 +18,7 @@ export const BookBinding: React.FC<{ className?: string }> = ({
     <div
       className={cn(
         'w-2 bg-linear-to-r shrink-0 shadow-inner',
-        'from-neutral-200 to-neutral-300',
-        'dark:from-[#2e2e2e] dark:via-[#3e3e3e] dark:to-[#2e2e2e]',
+        'from-[#2e2e2e] via-[#3e3e3e] to-[#2e2e2e]',
         className
       )}
     />
@@ -34,13 +33,13 @@ export const BookCover: React.FC<{
     <div
       className={cn(
         'relative flex-1 bg-linear-to-br',
-        'from-neutral-400 to-neutral-300',
+        'from-neutral-500 to-[#2c2f30]',
         'dark:from-neutral-500 dark:to-[#2c2f30]',
         className
       )}
     >
       {/* Inner shadow / edge highlight */}
-      <div className="absolute inset-0 rounded-r-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] dark:shadow-[inset_0_1px_0_0_rgba(0,0,0,0.1)]" />
+      <div className="absolute inset-0 rounded-r-md shadow-[inset_0_1px_0_0_rgba(0,0,0,0.1)]" />
       {children}
     </div>
   );

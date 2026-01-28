@@ -1,22 +1,21 @@
 'use client';
 
-import Image from 'next/image';
+import { ArrowUp } from 'lucide-react';
 
-import { useParams } from 'next/navigation';
-import { findPageLocation } from '../../_lib/navigation';
+import { Button } from '@/components/ui/button';
+
+import { SectionBook } from './book';
+
+import { usePageLocation } from '../../_hooks/use-page-location';
 
 import type { Guide } from '../../_lib/mdx';
-import { Button } from '@/components/ui/button';
-import { ArrowUp } from 'lucide-react';
-import { Logo } from '@/components/logo';
-import { cn } from '@/lib/utils';
 
 interface Props {
   guide: Guide;
 }
 
 export const CurrentPage: React.FC<Props> = ({ guide }) => {
-  const pageLocation = useLocation(guide);
+  const pageLocation = usePageLocation(guide);
 
   if (!pageLocation) {
     return null;
@@ -48,32 +47,8 @@ export const ScrollToTopButton = () => {
   );
 };
 
-export const Icon: React.FC<Props & { className?: string }> = ({
-  guide,
-  className,
-}) => {
-  const location = useLocation(guide);
+export const Book: React.FC<Props> = ({ guide }) => {
+  const location = usePageLocation(guide);
 
-  if (location?.section?.icon) {
-    return (
-      <Image
-        src={location.section.icon}
-        alt={location.section.title}
-        width={16}
-        height={16}
-        className={cn(className, 'dark:invert')}
-      />
-    );
-  }
-
-  return <Logo className={className} />;
-};
-
-const useLocation = (guide: Guide) => {
-  const params = useParams<{ path: string[] }>();
-
-  const path = params.path ?? [];
-  const pageLocation = findPageLocation(guide.items, path);
-
-  return pageLocation;
+  return <SectionBook icon={location?.section?.icon} />;
 };
