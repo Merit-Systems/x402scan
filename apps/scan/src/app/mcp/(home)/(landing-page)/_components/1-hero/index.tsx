@@ -1,7 +1,7 @@
 import { HeroBody } from './body';
 import { HeroGraphic } from './graphic';
 
-import type { McpSearchParams } from '../../../_lib/params';
+import type { McpSearchParams } from '../../../../_lib/params';
 
 export const Hero: React.FC<McpSearchParams> = props => {
   return (

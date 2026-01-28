@@ -10,15 +10,20 @@ import {
 } from '@/app/mcp/guide/_components/book';
 
 import { Icon } from '../../icon';
+import { cn } from '@/lib/utils';
 
 interface Props {
   icon?: string;
   selected?: boolean;
 }
 
-export const SectionBook: React.FC<Props> = ({ icon, selected }) => {
+export const SectionBook: React.FC<Props & { className?: string }> = ({
+  icon,
+  selected,
+  className,
+}) => {
   return (
-    <Book className="h-10 w-8 rounded-sm">
+    <Book className={cn('h-10 w-8 rounded-sm', className)}>
       <BookBinding className="w-1.25" />
       <BookCover className="flex flex-col justify-between">
         <BookContent>

@@ -1,6 +1,6 @@
 import { Logo } from '@/components/logo';
 
-import { ClientIcon } from '../../_components/client-icon';
+import { ClientIcon } from '../../../_components/client-icon';
 
 import { clients, type Clients } from '@/app/mcp/_lib/clients';
 import { cn } from '@/lib/utils';

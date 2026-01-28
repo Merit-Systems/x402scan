@@ -43,8 +43,11 @@ export const ScrollToTopButton = () => {
   );
 };
 
-export const Book: React.FC<Props> = ({ guide }) => {
+export const Book: React.FC<Props & { className?: string }> = ({
+  guide,
+  className,
+}) => {
   const location = usePageLocation(guide);
 
-  return <SectionBook icon={location?.section?.icon} />;
+  return <SectionBook icon={location?.section?.icon} className={className} />;
 };

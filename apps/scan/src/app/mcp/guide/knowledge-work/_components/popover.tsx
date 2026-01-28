@@ -1,16 +1,25 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { SectionBook } from '../../_components/layout/header/book';
-import type { Guide } from '../../_lib/mdx';
-import { Separator } from '@/components/ui/separator';
-import { usePageLocation } from '../../_hooks/use-page-location';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import type { Route } from 'next';
 import { useState } from 'react';
 
-export const KnowledgeWorkPopover: React.FC<{ guide: Guide }> = ({ guide }) => {
+import Link from 'next/link';
+
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+
+import { SectionBook } from '../../_components/layout/header/book';
+
+import { usePageLocation } from '../../_hooks/use-page-location';
+
+import { cn } from '@/lib/utils';
+
+import type { Route } from 'next';
+import type { Guide } from '../../_lib/mdx';
+
+export const KnowledgeWorkPopover: React.FC<{
+  guide: Guide;
+  onClose: () => void;
+}> = ({ guide, onClose }) => {
   const pageLocation = usePageLocation(guide);
 
   const [selectedSection, setSelectedSection] = useState<string | undefined>(
@@ -67,6 +76,7 @@ export const KnowledgeWorkPopover: React.FC<{ guide: Guide }> = ({ guide }) => {
                     }
                     key={item.slug}
                     className="w-full cursor-pointer group"
+                    onClick={onClose}
                   >
                     <div className="w-full justify-start h-fit md:h-fit gap-3 flex items-center px-3">
                       <div

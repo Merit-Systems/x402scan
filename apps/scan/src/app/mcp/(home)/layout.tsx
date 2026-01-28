@@ -1,4 +1,4 @@
-import { Footer } from '@/app/_components/layout/footer';
+import { Navbar } from '../_components/layout/navbar';
 
 import type { Metadata } from 'next';
 
@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 export default function McpLayout({ children }: LayoutProps<'/mcp'>) {
   return (
     <>
-      {children}
-      <Footer />
+      <Navbar className="sticky top-0 z-50" />
+      <div className="flex flex-col flex-1 py-6 md:py-8">{children}</div>
     </>
   );
 }

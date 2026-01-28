@@ -3,7 +3,7 @@ import { ClaudeDesktopDemo } from './claude-desktop';
 import { IdeDemo } from './ide';
 import { TerminalDemo } from './terminal';
 
-import type { McpSearchParams } from '../../../_lib/params';
+import type { McpSearchParams } from '../../../../_lib/params';
 
 export const ClientDemos: React.FC<McpSearchParams> = props => {
   return (

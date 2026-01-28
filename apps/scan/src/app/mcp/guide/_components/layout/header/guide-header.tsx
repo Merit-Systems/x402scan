@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -18,13 +22,15 @@ import type { Route } from 'next';
 
 interface Props {
   guide: Guide;
-  Popover: React.FC<{ guide: Guide }>;
+  Popover: React.FC<{ guide: Guide; onClose: () => void }>;
 }
 
 export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="flex items-center justify-between bg-background border rounded-full p-3 sticky top-12 z-50">
-      <PopoverComponent>
+    <div className="flex items-center justify-between bg-background border rounded-full px-3 py-2 md:py-3 sticky top-6 z-50">
+      <PopoverComponent open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
@@ -60,7 +66,7 @@ export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
             </div>
           </Link>
           <Separator />
-          <Popover guide={guide} />
+          <Popover guide={guide} onClose={() => setIsOpen(false)} />
         </PopoverContent>
       </PopoverComponent>
 
@@ -68,7 +74,7 @@ export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
 
       <div className="flex items-center gap-3 justify-between flex-1">
         <div className="flex items-center gap-3">
-          <Book guide={guide} />
+          <Book guide={guide} className="hidden md:flex" />
           <CurrentPage guide={guide} />
         </div>
       </div>

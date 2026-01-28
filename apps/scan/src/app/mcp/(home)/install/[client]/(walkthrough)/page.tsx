@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { ClientInstallHeader } from '@/app/mcp/install/_components/header';
+import { ClientInstallHeader } from '@/app/mcp/(home)/install/_components/header';
 
 import { ClientInstallAccordion } from './_components/accordion';
 

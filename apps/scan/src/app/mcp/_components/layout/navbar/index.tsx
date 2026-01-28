@@ -14,12 +14,12 @@ import { cn } from '@/lib/utils';
 import type { Route } from 'next';
 
 interface Props {
-  hideLinks?: boolean;
+  className?: string;
 }
 
-export const Navbar: React.FC<Props> = () => {
+export const Navbar: React.FC<Props> = ({ className }) => {
   return (
-    <div className="bg-card border-y w-full sticky top-0 z-50">
+    <div className={cn('bg-card border-y w-full', className)}>
       <div className="flex w-full items-center justify-between px-6 py-3 container mx-auto">
         {/* Logo section */}
         <div className="flex shrink-0 items-center gap-2">
