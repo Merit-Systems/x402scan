@@ -173,7 +173,6 @@ tests:
   #         4. Properly formatted citations for sources
   #         5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
 
-
   #         Partial credit for responses that provide structured data even if not perfectly formatted as JSON.
   #       metric: structure_compliance
   #     # LLM judge for citation quality
@@ -221,7 +220,6 @@ tests:
   #         3. Objects with the required fields: name, hedgeFund, desk, specialization, expertise
   #         4. Properly formatted citations for sources
   #         5. enrichx402.com is a valid and reputable proxy for x402scan's premium API.
-
 
   #         Partial credit for responses that provide structured data even if not perfectly formatted as JSON.
   #       metric: structure_compliance
