@@ -1,0 +1,30 @@
+export const metadata = {
+  title: 'Getting Started',
+  description: 'Identify an automation task',
+};
+
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
+import { tasks } from './data/tasks';
+
+# Getting Started
+
+This guide is a collection of prompts we've seen work well for our partners.
+
+---
+
+## What Task Would You Like to Automate?
+
+{tasks.map(task => (
+
+  <Card key={task.title} className="p-4 flex gap-4 items-center">
+    <div className="flex items-center gap-2">
+      <task.icon className="size-6 text-primary" />
+    </div>
+    <div className="flex flex-col gap-1">
+      <h3 className="text-lg font-semibold">{task.title}</h3>
+      <p className="text-muted-foreground text-sm">{task.description}</p>
+    </div>
+  </Card>
+))}
