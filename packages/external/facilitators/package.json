@@ -20,7 +20,7 @@
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "pnpm run build",
-    "check:types": "tsc --noEmit",
+    "types:check": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./packages/external/facilitators",
