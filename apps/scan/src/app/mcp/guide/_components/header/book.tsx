@@ -7,7 +7,7 @@ import {
   BookBinding,
   BookCover,
   BookContent,
-} from '@/app/mcp/_components/guide/book';
+} from '@/app/mcp/guide/_components/book';
 
 import { Icon } from '../icon';
 

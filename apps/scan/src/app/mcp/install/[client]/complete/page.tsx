@@ -6,8 +6,8 @@ import { Card } from '@/components/ui/card';
 
 import { ClientInstallHeader } from '../../_components/header';
 
-import { GuideBanner } from '@/app/mcp/_components/guide/banner';
-import { GuideCard } from '@/app/mcp/_components/guide/guide-card';
+import { GuideBanner } from '@/app/mcp/guide/_components/banner';
+import { GuideCard } from '@/app/mcp/guide/_components/guide-card';
 import { ClientIcon } from '@/app/mcp/_components/client-icon';
 
 import { Clients, clients, clientSchema } from '@/app/mcp/_lib/clients';

@@ -17,6 +17,7 @@ import { usdc } from '@/lib/tokens/usdc';
 import { Chain } from '@/types/chain';
 import { formatCurrency } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Wallet } from 'lucide-react';
 
 interface Props {
   address: Address;
@@ -40,6 +41,7 @@ export const CopyAddress: React.FC<Props> = ({ address }) => {
           variant="secondary"
           className="shrink-0 size-fit md:size-fit px-3 py-1.5"
         >
+          <Wallet className="size-3.5" />
           {balance !== undefined ? (
             <span>{formatCurrency(balance)}</span>
           ) : (

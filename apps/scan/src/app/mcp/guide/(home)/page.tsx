@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card';
 
 import { Logo } from '@/components/logo';
 
-import { Book, BookBinding, BookCover } from '@/app/mcp/_components/guide/book';
+import { Book, BookBinding, BookCover } from '@/app/mcp/guide/_components/book';
 
 import { cn } from '@/lib/utils';
 
