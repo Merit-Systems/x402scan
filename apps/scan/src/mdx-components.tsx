@@ -21,7 +21,7 @@ const components: MDXComponents = {
     <h5 className="text-sm font-medium mt-2 mb-1 first:mt-0">{children}</h5>
   ),
   h6: ({ children }) => <h6 className="text-xs font-medium">{children}</h6>,
-  p: ({ children }) => <p className="mb-4">{children}</p>,
+  p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,
   pre: ({ children, ...rest }) => {
     if (
       typeof children === 'object' &&

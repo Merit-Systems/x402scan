@@ -7,7 +7,7 @@ export const KnowledgeWorkHome = async () => {
   const guide = await knowledgeWorkGuide;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
       {guide.items
         .filter(item => item.type === 'section')
         .map(section => (
@@ -18,7 +18,7 @@ export const KnowledgeWorkHome = async () => {
           >
             <div className="flex gap-2 justify-between items-center">
               <div className="flex items-center gap-2">
-                <Icon icon={section.icon} className="size-4.5" />
+                <Icon icon={section.icon} className="size-4.5 text-primary" />
                 <h2 className="text-lg font-semibold">{section.title}</h2>
               </div>
               <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-all group-hover:text-primary" />

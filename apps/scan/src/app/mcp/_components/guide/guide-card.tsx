@@ -22,7 +22,7 @@ export const GuideCard: React.FC<Props> = ({
   href,
 }) => {
   return (
-    <div className="p-4 border rounded-xl">
+    <div className="p-4 bg-muted rounded-xl">
       <div className="flex items-center gap-4">
         <Book className="h-15 w-13">
           <BookBinding />
