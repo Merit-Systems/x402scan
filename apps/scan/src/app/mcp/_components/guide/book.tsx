@@ -4,7 +4,11 @@ export const Book: React.FC<{
   children: React.ReactNode;
   className?: string;
 }> = ({ children, className }) => {
-  return <div className={cn('flex', className)}>{children}</div>;
+  return (
+    <div className={cn('flex rounded-md overflow-hidden', className)}>
+      {children}
+    </div>
+  );
 };
 
 export const BookBinding: React.FC<{ className?: string }> = ({
@@ -13,7 +17,7 @@ export const BookBinding: React.FC<{ className?: string }> = ({
   return (
     <div
       className={cn(
-        'w-2 bg-linear-to-r rounded-l-md shrink-0 shadow-inner',
+        'w-2 bg-linear-to-r shrink-0 shadow-inner',
         'from-neutral-200 to-neutral-300',
         'dark:from-[#2e2e2e] dark:via-[#3e3e3e] dark:to-[#2e2e2e]',
         className
@@ -29,7 +33,7 @@ export const BookCover: React.FC<{
   return (
     <div
       className={cn(
-        'relative flex-1 bg-linear-to-br rounded-r-md',
+        'relative flex-1 bg-linear-to-br',
         'from-neutral-400 to-neutral-300',
         'dark:from-neutral-500 dark:to-[#2c2f30]',
         className

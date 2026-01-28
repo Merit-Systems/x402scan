@@ -1,10 +1,14 @@
 import { GuidesHeader } from './_components/header';
+import { getGuides } from './_utils/mdx';
 
-export default function GuidesLayout({ children }: LayoutProps<'/mcp/guide'>) {
+export default async function GuidesLayout({
+  children,
+}: LayoutProps<'/mcp/guide'>) {
+  const guides = await getGuides();
   return (
     <>
-      <GuidesHeader completedCount={0} totalLessons={0} />
-      <div className="max-w-2xl mx-auto w-full">{children}</div>
+      <GuidesHeader guides={guides} />
+      <div className="w-full px-[52px]">{children}</div>
     </>
   );
 }

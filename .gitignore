@@ -76,3 +76,6 @@ Thumbs.db
 # Agents
 .cursor
 .claude
+
+# MDX content files
+*.mdx
