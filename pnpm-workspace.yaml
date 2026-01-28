@@ -34,6 +34,9 @@ catalogs:
     prisma: &PRISMA_VERSION ^7.3.0
     '@prisma/client': *PRISMA_VERSION
     '@prisma/adapter-neon': *PRISMA_VERSION
+    ws: ^8.18.3
+    '@types/ws': ^8.18.1
+    '@neondatabase/serverless': ^1.0.2
   react:
     '@types/react': &REACT_VERSION 19.2.2
     '@types/react-dom': *REACT_VERSION

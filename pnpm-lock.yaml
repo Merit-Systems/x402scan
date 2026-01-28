@@ -100,15 +100,24 @@ catalogs:
       specifier: ^0.4.6
       version: 0.4.6
   prisma:
+    '@neondatabase/serverless':
+      specifier: ^1.0.2
+      version: 1.0.2
     '@prisma/adapter-neon':
       specifier: ^7.3.0
       version: 7.3.0
     '@prisma/client':
       specifier: ^7.3.0
       version: 7.3.0
+    '@types/ws':
+      specifier: ^8.18.1
+      version: 8.18.1
     prisma:
       specifier: ^7.3.0
       version: 7.3.0
+    ws:
+      specifier: ^8.18.3
+      version: 8.19.0
   react:
     '@types/react':
       specifier: 19.2.2
@@ -984,7 +993,7 @@ importers:
   packages/internal/databases/scan:
     dependencies:
       '@neondatabase/serverless':
-        specifier: ^1.0.2
+        specifier: catalog:prisma
         version: 1.0.2
       '@prisma/adapter-neon':
         specifier: catalog:prisma
@@ -996,8 +1005,8 @@ importers:
         specifier: catalog:env
         version: 17.2.3
       ws:
-        specifier: ^8.18.3
-        version: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: catalog:prisma
+        version: 8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       zod:
         specifier: 'catalog:'
         version: 4.3.5
@@ -1006,7 +1015,7 @@ importers:
         specifier: 'catalog:'
         version: 20.19.27
       '@types/ws':
-        specifier: ^8.18.1
+        specifier: catalog:prisma
         version: 8.18.1
       '@x402scan/eslint-config':
         specifier: workspace:*
@@ -1021,7 +1030,7 @@ importers:
         specifier: catalog:prisma
         version: 7.3.0(@types/react@19.2.6)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       rimraf:
-        specifier: ^5.0.5
+        specifier: 'catalog:'
         version: 5.0.10
       tsup:
         specifier: 'catalog:'
@@ -1030,31 +1039,29 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/internal/databases/scan/generated/client: {}
-
   packages/internal/databases/transfers:
     dependencies:
       '@neondatabase/serverless':
-        specifier: ^1.0.2
+        specifier: catalog:prisma
         version: 1.0.2
       '@prisma/adapter-neon':
-        specifier: ^7.0.0
-        version: 7.2.0
+        specifier: catalog:prisma
+        version: 7.3.0
       '@prisma/client':
-        specifier: ^7.0.0
-        version: 7.2.0(prisma@7.3.0(@types/react@19.2.6)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
+        specifier: catalog:prisma
+        version: 7.3.0(prisma@7.3.0(@types/react@19.2.6)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
       dotenv:
         specifier: catalog:env
         version: 17.2.3
       ws:
-        specifier: ^8.18.3
-        version: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: catalog:prisma
+        version: 8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
         version: 20.19.27
       '@types/ws':
-        specifier: ^8.18.1
+        specifier: catalog:prisma
         version: 8.18.1
       '@x402scan/eslint-config':
         specifier: workspace:*
@@ -1077,8 +1084,6 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
-
-  packages/internal/databases/transfers/generated/client: {}
 
   packages/internal/neverthrow:
     dependencies:
@@ -4193,29 +4198,11 @@ packages:
   '@posthog/core@1.4.0':
     resolution: {integrity: sha512-jmW8/I//YOHAfjzokqas+Qtc2T57Ux8d2uIJu7FLcMGxywckHsl6od59CD18jtUzKToQdjQhV6Y3429qj+KeNw==}
 
-  '@prisma/adapter-neon@7.2.0':
-    resolution: {integrity: sha512-XLTCQ0mDdaOqzBO99jyMOWBofJ5iqsvgWYB7lW+2ZEXvY6888tkeKfpo2VwdKhu1Cj/q4IqHd15eFQzPwbpjJQ==}
-
   '@prisma/adapter-neon@7.3.0':
     resolution: {integrity: sha512-kwsMG9uweNwBiVuAzO5251dtVY2FB/PM2Rwovq+uzQHsscgI3I3X+qL9IKizMxmQRVjASY2nCNhwIL4KNM7KrQ==}
 
-  '@prisma/client-runtime-utils@7.2.0':
-    resolution: {integrity: sha512-dn7oB53v0tqkB0wBdMuTNFNPdEbfICEUe82Tn9FoKAhJCUkDH+fmyEp0ClciGh+9Hp2Tuu2K52kth2MTLstvmA==}
-
   '@prisma/client-runtime-utils@7.3.0':
     resolution: {integrity: sha512-dG/ceD9c+tnXATPk8G+USxxYM9E6UdMTnQeQ+1SZUDxTz7SgQcfxEqafqIQHcjdlcNK/pvmmLfSwAs3s2gYwUw==}
-
-  '@prisma/client@7.2.0':
-    resolution: {integrity: sha512-JdLF8lWZ+LjKGKpBqyAlenxd/kXjd1Abf/xK+6vUA7R7L2Suo6AFTHFRpPSdAKCan9wzdFApsUpSa/F6+t1AtA==}
-    engines: {node: ^20.19 || ^22.12 || >=24.0}
-    peerDependencies:
-      prisma: '*'
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      prisma:
-        optional: true
-      typescript:
-        optional: true
 
   '@prisma/client@7.3.0':
     resolution: {integrity: sha512-FXBIxirqQfdC6b6HnNgxGmU7ydCPEPk7maHMOduJJfnTP+MuOGa15X4omjR/zpPUUpm8ef/mEFQjJudOGkXFcQ==}
@@ -4243,9 +4230,6 @@ packages:
 
   '@prisma/dev@0.20.0':
     resolution: {integrity: sha512-ovlBYwWor0OzG+yH4J3Ot+AneD818BttLA+Ii7wjbcLHUrnC4tbUPVGyNd3c/+71KETPKZfjhkTSpdS15dmXNQ==}
-
-  '@prisma/driver-adapter-utils@7.2.0':
-    resolution: {integrity: sha512-gzrUcbI9VmHS24Uf+0+7DNzdIw7keglJsD5m/MHxQOU68OhGVzlphQRobLiDMn8CHNA2XN8uugwKjudVtnfMVQ==}
 
   '@prisma/driver-adapter-utils@7.3.0':
     resolution: {integrity: sha512-Wdlezh1ck0Rq2dDINkfSkwbR53q53//Eo1vVqVLwtiZ0I6fuWDGNPxwq+SNAIHnsU+FD/m3aIJKevH3vF13U3w==}
@@ -18236,28 +18220,13 @@ snapshots:
 
   '@posthog/core@1.4.0': {}
 
-  '@prisma/adapter-neon@7.2.0':
-    dependencies:
-      '@neondatabase/serverless': 1.0.2
-      '@prisma/driver-adapter-utils': 7.2.0
-      postgres-array: 3.0.4
-
   '@prisma/adapter-neon@7.3.0':
     dependencies:
       '@neondatabase/serverless': 1.0.2
       '@prisma/driver-adapter-utils': 7.3.0
       postgres-array: 3.0.4
 
-  '@prisma/client-runtime-utils@7.2.0': {}
-
   '@prisma/client-runtime-utils@7.3.0': {}
-
-  '@prisma/client@7.2.0(prisma@7.3.0(@types/react@19.2.6)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)':
-    dependencies:
-      '@prisma/client-runtime-utils': 7.2.0
-    optionalDependencies:
-      prisma: 7.3.0(@types/react@19.2.6)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
-      typescript: 5.9.3
 
   '@prisma/client@7.3.0(prisma@7.3.0(@types/react@19.2.2)(better-sqlite3@12.6.2)(magicast@0.3.5)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)(typescript@5.9.3))(typescript@5.9.3)':
     dependencies:
@@ -18316,10 +18285,6 @@ snapshots:
       zeptomatch: 2.1.0
     transitivePeerDependencies:
       - typescript
-
-  '@prisma/driver-adapter-utils@7.2.0':
-    dependencies:
-      '@prisma/debug': 7.2.0
 
   '@prisma/driver-adapter-utils@7.3.0':
     dependencies:
@@ -30940,7 +30905,7 @@ snapshots:
       buffer: 6.0.3
       eventemitter3: 5.0.1
       uuid: 8.3.2
-      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      ws: 8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
     optionalDependencies:
       bufferutil: 4.0.9
       utf-8-validate: 5.0.10
