@@ -53,6 +53,8 @@ export async function GET(
       return serverOk({
         chain: base.id,
         balance: convertTokenAmount(balance),
+        address: parseResult.data,
+        rawBalance: balance.toString(),
       });
     })
     .andTee(result => {
