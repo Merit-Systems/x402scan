@@ -4,6 +4,12 @@ MCP server for calling [x402](https://x402.org)-protected APIs with automatic pa
 
 ## Install
 
+### Recommended (Guided Install)
+
+```bash
+npx @x402scan/mcp install
+```
+
 ### Claude Code
 
 ```bash
@@ -110,10 +116,10 @@ Base, Base Sepolia, Ethereum, Optimism, Arbitrum, Polygon (via CAIP-2)
 pnpm install
 
 # Build
-pnpm build:watch
+pnpm -w dev:mcp
 
-# In a seperate terminal
-pnpm dev install --dev   
+# In a separate terminal with cwd packages/external/mcp
+pnpm dev install --dev
 
 # Build .mcpb for Claude Desktop
 pnpm build:mcpb
@@ -146,6 +152,7 @@ For pre-release versions, use the `beta` branch with prerelease mode:
 4. Versions will be published as `x.x.x-beta.x`
 
 To exit prerelease mode and promote to stable:
+
 ```bash
 pnpm changeset pre exit
 ```
