@@ -13,8 +13,13 @@ Conduct deep diligence on founders, their backgrounds, and their track records.
 
 Get a comprehensive view of a founder's history.
 
-```
-Research the founders of [Company X]:
+```prompt
+---
+title: Founder Background
+description: Research a founder's complete professional history
+icon: user
+---
+Research the founders of {{Company|Acme Corp}}:
 - Full career history and education
 - Previous startups or exits
 - Technical background and expertise
@@ -30,9 +35,13 @@ Research the founders of [Company X]:
 
 Fact-check founder backgrounds and achievements.
 
-```
-A founder claims to be "ex-Google AI" and have worked on
-[specific project]. Verify this claim by:
+```prompt
+---
+title: Credential Verification
+description: Verify a founder's claimed background and achievements
+icon: shield-check
+---
+A founder claims to be "{{Claimed Background|ex-Google AI}}" and have worked on {{Claimed Project|a specific ML project}}. Verify this claim by:
 - Finding their LinkedIn employment history
 - Searching for their name + Google + the project
 - Looking for any publications or talks
@@ -46,8 +55,13 @@ A founder claims to be "ex-Google AI" and have worked on
 
 Understand how founders know each other and their shared history.
 
-```
-Map the professional network of [Company X]'s founding team:
+```prompt
+---
+title: Team Network Map
+description: Map the professional relationships between co-founders
+icon: network
+---
+Map the professional network of {{Company|Acme Corp}}'s founding team:
 - Where did they work together previously?
 - Do they have complementary skills?
 - What's their history of collaboration?
@@ -61,8 +75,13 @@ Map the professional network of [Company X]'s founding team:
 
 Track founders across multiple ventures.
 
-```
-Find all companies founded by [Person X]. For each company:
+```prompt
+---
+title: Serial Founder History
+description: Track a founder's history across multiple ventures
+icon: repeat
+---
+Find all companies founded by {{Founder Name|Jane Smith}}. For each company:
 - When was it founded and what did it do?
 - What happened (exit, shut down, still running)?
 - Who were the co-founders and investors?
@@ -76,9 +95,13 @@ Find all companies founded by [Person X]. For each company:
 
 Evaluate a technical founder's depth.
 
-```
-Evaluate the technical credibility of [Founder Name] who's
-building an ML infrastructure company:
+```prompt
+---
+title: Technical Credibility
+description: Evaluate a technical founder's expertise and background
+icon: code
+---
+Evaluate the technical credibility of {{Founder Name|Jane Smith}} who's building {{Company Focus|an ML infrastructure company}}:
 - What's their publication record?
 - Open source contributions?
 - Technical blog posts or talks?

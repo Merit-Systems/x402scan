@@ -6,19 +6,20 @@ import { notFound } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 
-import { getGuide } from '../../_lib/mdx';
 import { collectPagePaths, findPageLocation } from '../../_lib/navigation';
 
 import type { Route } from 'next';
+import { knowledgeWorkGuide } from '../_content/data';
 
 const GUIDE_SLUG = 'knowledge-work';
 
 export default async function Page({
   params,
-}: PageProps<'/mcp/guide/knowledge-work/[...path]'>) {
-  const { path } = await params;
+}: PageProps<'/mcp/guide/knowledge-work/[[...path]]'>) {
+  const { path: rawPath } = await params;
+  const path = rawPath?.length ? rawPath : ['index'];
 
-  const guide = await getGuide(GUIDE_SLUG);
+  const guide = await knowledgeWorkGuide;
 
   const pageLocation = findPageLocation(guide.items, path);
 
@@ -29,7 +30,6 @@ export default async function Page({
   const pageSectionIndex = pageLocation.section?.items.findIndex(
     item => item.slug === pageLocation.page.slug
   );
-  console.log(pageSectionIndex);
   const nextPage =
     pageSectionIndex !== undefined
       ? pageLocation.section?.items[pageSectionIndex + 1]
@@ -41,11 +41,13 @@ export default async function Page({
   )) as { default: React.ComponentType };
 
   return (
-    <div className="flex flex-col gap-4">
-      <Content />
+    <div className="flex flex-col gap-20">
+      <div>
+        <Content />
+      </div>
 
       {nextPage && (
-        <div className="flex flex-col gap-6 border py-8 px-4 rounded-xl items-center text-center mt-16">
+        <div className="flex flex-col gap-6 border py-8 px-4 rounded-xl items-center text-center">
           <div className="flex flex-col gap-2">
             <p className="text-sm text-muted-foreground">Next Up</p>
             <h1 className="text-2xl font-bold">{nextPage.title}</h1>
@@ -67,10 +69,11 @@ export default async function Page({
 }
 
 export async function generateStaticParams() {
-  const guide = await getGuide(GUIDE_SLUG);
+  const guide = await knowledgeWorkGuide;
   const paths = collectPagePaths(guide.items);
 
-  return paths.map(path => ({ path }));
+  // Include empty path for the base route, plus all nested paths
+  return [{ path: [] }, ...paths.map(path => ({ path }))];
 }
 
 export const dynamicParams = false;

@@ -13,11 +13,16 @@ Transform basic contact information into complete, verified profiles ready for o
 
 Find the right contacts when you only know the company.
 
-```
-I want to reach out to cloudflare.com. Find me:
-- The VP of Sales or CRO with their email
-- The Head of Partnerships with their email
-- Any relevant decision makers in business development
+```prompt
+---
+title: Domain-Based Search
+description: Find key contacts at a company from their domain
+icon: globe
+---
+I want to reach out to {{Domain|cloudflare.com}}. Find me:
+- The {{Role 1|VP of Sales or CRO}} with their email
+- The {{Role 2|Head of Partnerships}} with their email
+- Any relevant decision makers in {{Department|business development}}
 ```
 
 **APIs Used:** Apollo Org Search → Apollo People Search → Apollo People Enrich
@@ -28,10 +33,13 @@ I want to reach out to cloudflare.com. Find me:
 
 Process an existing list with missing contact information.
 
-```
-I have a CSV of 50 leads with name and company. Enrich all of them
-with verified email addresses, phone numbers, and LinkedIn URLs.
-Flag any that couldn't be found.
+```prompt
+---
+title: Bulk Lead Enrichment
+description: Enrich a list of leads with missing contact information
+icon: list
+---
+I have a CSV of {{Count|50}} leads with name and company. Enrich all of them with verified email addresses, phone numbers, and LinkedIn URLs. Flag any that couldn't be found.
 ```
 
 **APIs Used:** Apollo People Enrich Bulk → Clado Contacts Enrich (for failures)
@@ -42,9 +50,13 @@ Flag any that couldn't be found.
 
 Check if emails are valid before sending campaigns.
 
-```
-I have these 10 email addresses from an old list. Verify which ones
-are still valid and get updated contact info for any that bounced.
+```prompt
+---
+title: Email Verification
+description: Verify email addresses before sending campaigns
+icon: mail-check
+---
+I have these {{Count|10}} email addresses from an old list. Verify which ones are still valid and get updated contact info for any that bounced.
 ```
 
 **APIs Used:** Apollo People Enrich (checks email_status)
@@ -55,9 +67,13 @@ are still valid and get updated contact info for any that bounced.
 
 When corporate emails bounce, find alternative contact methods.
 
-```
-I can't reach john.smith@acme.com - it's bouncing. Find his personal
-email or mobile number so I can reach him directly.
+```prompt
+---
+title: Personal Contact Finder
+description: Find personal contact info when corporate emails fail
+icon: user-search
+---
+I can't reach {{Email|john.smith@acme.com}} - it's bouncing. Find his personal email or mobile number so I can reach him directly.
 ```
 
 **APIs Used:** Apollo People Enrich (get LinkedIn) → Clado Contacts Enrich (email_enrichment + phone_enrichment)

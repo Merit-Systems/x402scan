@@ -13,10 +13,13 @@ Identify promising investment opportunities by discovering emerging companies an
 
 Source deals that match your investment thesis.
 
-```
-Find early-stage companies (seed to Series A) working on AI
-infrastructure - specifically model serving, fine-tuning, or
-evaluation tools. Include:
+```prompt
+---
+title: Thesis-Based Search
+description: Find early-stage companies matching your investment thesis
+icon: target
+---
+Find early-stage companies ({{Stage|seed to Series A}}) working on {{Focus Area|AI infrastructure}} - specifically {{Specifics|model serving, fine-tuning, or evaluation tools}}. Include:
 - Company name and website
 - Founding team backgrounds
 - Funding history
@@ -31,10 +34,13 @@ evaluation tools. Include:
 
 Monitor the funding landscape in your focus areas.
 
-```
-What seed and Series A rounds were announced in developer tools
-and infrastructure in the last 30 days? Include the company,
-amount raised, and lead investors.
+```prompt
+---
+title: Funding Tracker
+description: Track recent funding announcements in your focus area
+icon: trending-up
+---
+What {{Stage|seed and Series A}} rounds were announced in {{Industry|developer tools and infrastructure}} in the last {{Timeframe|30 days}}? Include the company, amount raised, and lead investors.
 ```
 
 **APIs Used:** Serper News → Exa Search → Apollo Org Enrich
@@ -45,11 +51,16 @@ amount raised, and lead investors.
 
 Find companies attracting exceptional talent.
 
-```
+```prompt
+---
+title: Talent Signal Search
+description: Find startups attracting exceptional talent from top companies
+icon: user-check
+---
 Find startups that have recently hired engineers from:
-- Google (DeepMind, Brain, Core ML teams)
-- OpenAI
-- Anthropic
+- {{Company 1|Google (DeepMind, Brain, Core ML teams)}}
+- {{Company 2|OpenAI}}
+- {{Company 3|Anthropic}}
 
 These talent moves often signal promising companies.
 ```
@@ -62,9 +73,14 @@ These talent moves often signal promising companies.
 
 Find founders building in public before they raise.
 
-```
+```prompt
+---
+title: Social Signal Discovery
+description: Find founders building in public on social media
+icon: message-circle
+---
 Search X/Twitter for founders and builders talking about:
-- "We're building" + AI/ML/infrastructure
+- "We're building" + {{Topic|AI/ML/infrastructure}}
 - Technical deep dives on novel approaches
 - Early product launches and demos
 
@@ -79,11 +95,16 @@ Filter for accounts with technical credibility.
 
 Find opportunities in specific regions or ecosystems.
 
-```
-Map the early-stage fintech ecosystem in Latin America:
-- Companies founded in the last 3 years
-- Based in Brazil, Mexico, or Colombia
-- Seed to Series A stage
+```prompt
+---
+title: Geographic Search
+description: Map the startup ecosystem in a specific region
+icon: map-pin
+---
+Map the early-stage {{Industry|fintech}} ecosystem in {{Region|Latin America}}:
+- Companies founded in the last {{Years|3 years}}
+- Based in {{Countries|Brazil, Mexico, or Colombia}}
+- {{Stage|Seed to Series A}} stage
 - Founding team with relevant experience
 ```
 

@@ -24,11 +24,11 @@ export const SectionBook: React.FC<Props> = ({ icon, selected }) => {
         <BookContent>
           <div className="p-1 bg-black/50 rounded-full [box-shadow:0_0.5_rgba(255,255,255,0.15)]">
             {selected ? (
-              <Check className="size-2.5 text-white" />
+              <Check className="size-3 text-white" />
             ) : icon ? (
-              <Icon icon={icon} className="size-2.5 text-white" />
+              <Icon icon={icon} className="size-3 text-white" />
             ) : (
-              <Logo className="size-2.5" />
+              <Logo className="size-2.5 brightness-0 invert" />
             )}
           </div>
         </BookContent>

@@ -13,10 +13,13 @@ Build qualified prospect lists using company and people search with multi-signal
 
 Identify the right contacts at companies matching your ICP.
 
-```
-Find VP and Director-level contacts in Engineering and IT at
-enterprise companies (1000+ employees) in financial services.
-Include their email addresses and LinkedIn profiles.
+```prompt
+---
+title: Decision Maker Search
+description: Find decision makers at companies matching your ICP
+icon: target
+---
+Find {{Seniority|VP and Director-level}} contacts in {{Department|Engineering and IT}} at {{Company Type|enterprise companies (1000+ employees)}} in {{Industry|financial services}}. Include their email addresses and LinkedIn profiles.
 ```
 
 **APIs Used:** Apollo People Search → Apollo People Enrich
@@ -27,10 +30,13 @@ Include their email addresses and LinkedIn profiles.
 
 Target companies using specific technologies or in specific markets.
 
-```
-Find SaaS companies using Kubernetes that have raised Series B or
-later. Then get me the CTO or VP Engineering at each company with
-their contact information.
+```prompt
+---
+title: Tech Stack Search
+description: Find companies using specific technologies
+icon: layers
+---
+Find {{Company Type|SaaS companies}} using {{Technology|Kubernetes}} that have raised {{Stage|Series B or later}}. Then get me the {{Role|CTO or VP Engineering}} at each company with their contact information.
 ```
 
 **APIs Used:** Exa Search (tech stack signals) → Apollo Org Search → Apollo People Search → Apollo People Enrich
@@ -41,10 +47,13 @@ their contact information.
 
 Target companies with fresh capital who may be expanding.
 
-```
-Search for companies that announced Series A or B funding in the
-last 30 days in the developer tools space. Get the founder/CEO
-contact info for each.
+```prompt
+---
+title: Funding-Based Leads
+description: Find companies with recent funding announcements
+icon: trending-up
+---
+Search for companies that announced {{Stage|Series A or B}} funding in the last {{Timeframe|30 days}} in the {{Industry|developer tools}} space. Get the {{Role|founder/CEO}} contact info for each.
 ```
 
 **APIs Used:** Serper News → Apollo Org Enrich → Apollo People Search → Apollo People Enrich
@@ -55,9 +64,13 @@ contact info for each.
 
 Build geographically targeted prospect lists.
 
-```
-Find all software companies with 50-200 employees in Austin, Texas.
-Get me the Head of Sales or VP Sales at each with email and phone.
+```prompt
+---
+title: Geographic Lead Search
+description: Find companies by location and size
+icon: map-pin
+---
+Find all {{Industry|software}} companies with {{Size|50-200 employees}} in {{Location|Austin, Texas}}. Get me the {{Role|Head of Sales or VP Sales}} at each with email and phone.
 ```
 
 **APIs Used:** Apollo Org Search → Apollo People Search → Apollo People Enrich → Clado Contacts Enrich (fallback)

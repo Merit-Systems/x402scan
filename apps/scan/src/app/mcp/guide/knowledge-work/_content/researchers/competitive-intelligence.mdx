@@ -13,8 +13,13 @@ Monitor competitors, analyze their strategies, and identify threats and opportun
 
 Build a comprehensive profile of a competitor.
 
-```
-Create a competitive intelligence report on Competitor X:
+```prompt
+---
+title: Competitor Report
+description: Create a comprehensive competitive intelligence report
+icon: file-search
+---
+Create a competitive intelligence report on {{Competitor|Competitor X}}:
 - Company overview (funding, headcount, growth trajectory)
 - Product features and pricing
 - Target market and positioning
@@ -31,10 +36,13 @@ Create a competitive intelligence report on Competitor X:
 
 Understand competitor priorities through their job postings.
 
-```
-Analyze what Competitor X is hiring for. What roles are they
-prioritizing? What technologies are they using? What does this
-tell us about their product roadmap?
+```prompt
+---
+title: Hiring Analysis
+description: Analyze competitor hiring patterns to understand their priorities
+icon: briefcase
+---
+Analyze what {{Competitor|Competitor X}} is hiring for. What roles are they prioritizing? What technologies are they using? What does this tell us about their product roadmap?
 ```
 
 **APIs Used:** Firecrawl Search (job boards) → Firecrawl Scrape (careers page) → Apollo People Search (recent hires)
@@ -45,8 +53,13 @@ tell us about their product roadmap?
 
 Track what competitors are saying and how customers respond.
 
-```
-Monitor Competitor X's social presence:
+```prompt
+---
+title: Social Monitoring
+description: Monitor a competitor's social presence and customer sentiment
+icon: message-square
+---
+Monitor {{Competitor|Competitor X}}'s social presence:
 - What are they posting about on X/Twitter?
 - How are customers responding?
 - What's the sentiment in Reddit discussions?
@@ -61,9 +74,13 @@ Monitor Competitor X's social presence:
 
 Build a feature matrix across competitors.
 
-```
-Compare the feature sets of tools A, B, and C in the data
-orchestration space. Create a matrix covering:
+```prompt
+---
+title: Feature Matrix
+description: Compare features across multiple competitors
+icon: columns
+---
+Compare the feature sets of {{Product A|Tool A}}, {{Product B|Tool B}}, and {{Product C|Tool C}} in the {{Market|data orchestration}} space. Create a matrix covering:
 - Core features
 - Integrations
 - Pricing models

@@ -13,6 +13,7 @@ import { CurrentPage, Book, ScrollToTopButton } from './client';
 
 import type { Guide } from '../../_lib/mdx';
 import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 
 interface Props {
   guide: Guide;
@@ -38,23 +39,25 @@ export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
           align="start"
           alignOffset={-8}
         >
-          <div className="p-4 flex items-center gap-3">
-            {guide.icon && (
-              <Image
-                src={guide.icon}
-                alt={guide.title}
-                width={20}
-                height={20}
-                className="size-4"
-              />
-            )}
-            <div className="flex flex-col">
-              <p className="text-sm font-semibold">{guide.title}</p>
-              <p className="text-xs text-muted-foreground">
-                {guide.description}
-              </p>
+          <Link href="/mcp/guide/knowledge-work">
+            <div className="p-4 flex items-center gap-3">
+              {guide.icon && (
+                <Image
+                  src={guide.icon}
+                  alt={guide.title}
+                  width={20}
+                  height={20}
+                  className="size-4"
+                />
+              )}
+              <div className="flex flex-col">
+                <p className="text-sm font-semibold">{guide.title}</p>
+                <p className="text-xs text-muted-foreground">
+                  {guide.description}
+                </p>
+              </div>
             </div>
-          </div>
+          </Link>
           <Separator />
           <Popover guide={guide} />
         </PopoverContent>

@@ -17,12 +17,8 @@ interface Props {
 export const CurrentPage: React.FC<Props> = ({ guide }) => {
   const pageLocation = usePageLocation(guide);
 
-  if (!pageLocation) {
-    return null;
-  }
-
   const currentTitle = pageLocation?.page?.title ?? guide.title;
-  const subtitle = pageLocation?.section?.title ?? null;
+  const subtitle = pageLocation?.section?.title ?? guide.description;
 
   return (
     <div className="flex flex-col">

@@ -13,8 +13,13 @@ Gather comprehensive intelligence on target accounts to personalize outreach and
 
 Get a complete picture of a target account before a meeting.
 
-```
-Research Acme Corp thoroughly. I need:
+```prompt
+---
+title: Account Overview
+description: Get a complete picture of a target account
+icon: building
+---
+Research {{Company|Acme Corp}} thoroughly. I need:
 - Company overview (size, funding, revenue if available)
 - Leadership team and their backgrounds
 - Recent news and announcements
@@ -30,9 +35,13 @@ Research Acme Corp thoroughly. I need:
 
 Identify all stakeholders involved in purchasing decisions.
 
-```
-I'm selling to Acme Corp's engineering team. Map out everyone who
-might be involved in a purchasing decision:
+```prompt
+---
+title: Buying Committee
+description: Map all stakeholders involved in purchasing decisions
+icon: users
+---
+I'm selling to {{Company|Acme Corp}}'s {{Team|engineering}} team. Map out everyone who might be involved in a purchasing decision:
 - Technical evaluators (senior engineers, architects)
 - Budget holders (VP/Director level)
 - Executive sponsors (CTO, CEO)
@@ -48,8 +57,13 @@ Include their LinkedIn and email for each.
 
 Monitor for buying signals and conversation starters.
 
-```
-What's been happening at Datadog in the last month? Find:
+```prompt
+---
+title: Signal Tracking
+description: Monitor a company for buying signals and news
+icon: bell
+---
+What's been happening at {{Company|Datadog}} in the last {{Timeframe|month}}? Find:
 - Press releases and announcements
 - Executive interviews or podcasts
 - Product launches
@@ -64,10 +78,13 @@ What's been happening at Datadog in the last month? Find:
 
 Find accounts using competitor products.
 
-```
-Find companies that mention using Competitor X on their engineering
-blog, job postings, or Stack Overflow discussions. These are
-potential displacement opportunities.
+```prompt
+---
+title: Displacement Opportunities
+description: Find companies using competitor products
+icon: shuffle
+---
+Find companies that mention using {{Competitor|Competitor X}} on their engineering blog, job postings, or Stack Overflow discussions. These are potential displacement opportunities.
 ```
 
 **APIs Used:** Exa Search → Firecrawl Scrape → Apollo Org Enrich

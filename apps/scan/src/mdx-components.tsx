@@ -5,12 +5,23 @@ import { PromptTemplate } from '@/components/prompt-template';
 import type { MDXComponents } from 'mdx/types';
 
 const components: MDXComponents = {
-  h1: ({ children }) => <h1 className="text-2xl font-bold">{children}</h1>,
-  h2: ({ children }) => <h2 className="text-xl font-bold">{children}</h2>,
-  h3: ({ children }) => <h3 className="text-lg font-semibold">{children}</h3>,
-  h4: ({ children }) => <h4 className="text-base font-medium">{children}</h4>,
-  h5: ({ children }) => <h5 className="text-sm font-medium">{children}</h5>,
+  h1: ({ children }) => (
+    <h1 className="text-2xl font-bold mt-12 mb-4 first:mt-0">{children}</h1>
+  ),
+  h2: ({ children }) => (
+    <h2 className="text-xl font-bold mt-8 mb-4 first:mt-0">{children}</h2>
+  ),
+  h3: ({ children }) => (
+    <h3 className="text-lg font-semibold mt-6 mb-3 first:mt-0">{children}</h3>
+  ),
+  h4: ({ children }) => (
+    <h4 className="text-base font-medium mt-4 mb-2 first:mt-0">{children}</h4>
+  ),
+  h5: ({ children }) => (
+    <h5 className="text-sm font-medium mt-2 mb-1 first:mt-0">{children}</h5>
+  ),
   h6: ({ children }) => <h6 className="text-xs font-medium">{children}</h6>,
+  p: ({ children }) => <p className="mb-4">{children}</p>,
   pre: ({ children, ...rest }) => {
     if (
       typeof children === 'object' &&
@@ -25,10 +36,14 @@ const components: MDXComponents = {
         typeof childElement.props.className === 'string' &&
         childElement.props.className.includes('prompt')
       ) {
-        return childElement;
+        return <div className="my-8">{childElement}</div>;
       }
     }
-    return <pre {...rest}>{children}</pre>;
+    return (
+      <pre {...rest} className="mb-4">
+        {children}
+      </pre>
+    );
   },
   code: ({ children, className, ...rest }) => {
     if (
@@ -44,6 +59,7 @@ const components: MDXComponents = {
       </pre>
     );
   },
+  hr: () => <hr className="my-8" />,
 };
 
 export function useMDXComponents(): MDXComponents {

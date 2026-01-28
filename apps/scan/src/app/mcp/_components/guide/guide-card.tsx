@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 
 import { Book, BookBinding, BookContent, BookCover } from './book';
 
@@ -23,14 +22,14 @@ export const GuideCard: React.FC<Props> = ({
   href,
 }) => {
   return (
-    <Card className="p-4">
+    <div className="p-4 border rounded-xl">
       <div className="flex items-center gap-4">
         <Book className="h-15 w-13">
           <BookBinding />
           <BookCover>
             <BookContent className="px-2">
-              <div className="p-1.5 bg-white/80 dark:bg-black/50 rounded-full [box-shadow:0_1px_rgba(0,0,0,0.15)] dark:[box-shadow:0_0.5_rgba(255,255,255,0.15)]">
-                <Icon className="size-4 text-neutral-500 dark:text-neutral-400" />
+              <div className="p-1.5 bg-black/50 rounded-full [box-shadow:0_0.5_rgba(255,255,255,0.15)]">
+                <Icon className="size-4 text-white" />
               </div>
             </BookContent>
           </BookCover>
@@ -47,6 +46,6 @@ export const GuideCard: React.FC<Props> = ({
           </Button>
         </Link>
       </div>
-    </Card>
+    </div>
   );
 };

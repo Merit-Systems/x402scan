@@ -45,42 +45,52 @@ export const KnowledgeWorkPopover: React.FC<{ guide: Guide }> = ({ guide }) => {
             </Button>
           ))}
       </div>
-      <Separator />
-      <div className="p-2 flex flex-col gap-3 py-4">
-        {selectedSection &&
-          guide.items
-            .filter(item => item.type === 'section')
-            .find(item => item.slug === selectedSection)
-            ?.items.filter(item => item.type === 'page')
-            .map((item, index) => (
-              <Link
-                href={
-                  `/mcp/guide/knowledge-work/${selectedSection}/${item.slug}` as Route
-                }
-                key={item.slug}
-                className="w-full cursor-pointer group"
-              >
-                <div className="w-full justify-start h-fit md:h-fit gap-3 flex items-center px-3">
-                  <div
-                    className={cn(
-                      'size-6 text-sm rounded-full flex items-center justify-center bg-primary/20 text-primary',
-                      'group-hover:bg-primary/40 transition-all',
-                      pageLocation?.page?.slug === item.slug &&
-                        'bg-primary text-white'
-                    )}
+      {Boolean(
+        selectedSection &&
+        guide.items
+          .filter(item => item.type === 'section')
+          .find(item => item.slug === selectedSection)
+          ?.items.filter(item => item.type === 'page')
+      ) && (
+        <>
+          <Separator />
+          <div className="p-2 flex flex-col gap-3 py-4">
+            {selectedSection &&
+              guide.items
+                .filter(item => item.type === 'section')
+                .find(item => item.slug === selectedSection)
+                ?.items.filter(item => item.type === 'page')
+                .map((item, index) => (
+                  <Link
+                    href={
+                      `/mcp/guide/knowledge-work/${selectedSection}/${item.slug}` as Route
+                    }
+                    key={item.slug}
+                    className="w-full cursor-pointer group"
                   >
-                    {index + 1}
-                  </div>
-                  <div className="flex flex-col items-start text-left">
-                    <p className="text-sm font-normal">{item.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-      </div>
+                    <div className="w-full justify-start h-fit md:h-fit gap-3 flex items-center px-3">
+                      <div
+                        className={cn(
+                          'size-6 text-sm rounded-full flex items-center justify-center bg-primary/20 text-primary',
+                          'group-hover:bg-primary/40 transition-all',
+                          pageLocation?.page?.slug === item.slug &&
+                            'bg-primary text-white'
+                        )}
+                      >
+                        {index + 1}
+                      </div>
+                      <div className="flex flex-col items-start text-left">
+                        <p className="text-sm font-normal">{item.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

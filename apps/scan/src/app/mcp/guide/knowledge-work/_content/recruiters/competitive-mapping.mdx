@@ -13,8 +13,13 @@ Build detailed organizational maps of engineering, product, and leadership teams
 
 Understand the structure and key players in a company's engineering team.
 
-```
-Map the engineering organization at Figma. I want to understand:
+```prompt
+---
+title: Org Chart Mapping
+description: Map the engineering organization structure at a target company
+icon: sitemap
+---
+Map the engineering organization at {{Company|Figma}}. I want to understand:
 - Engineering leadership (VP, Directors, Managers)
 - Team structure and reporting lines where visible
 - Key technical leaders and their focus areas
@@ -31,10 +36,13 @@ Provide LinkedIn profiles for all leadership.
 
 Track talent movement at competitor companies.
 
-```
-Find people who joined Notion in the last 6 months in engineering or
-product roles. Also identify any senior departures I can see from
-LinkedIn data showing short tenures.
+```prompt
+---
+title: Talent Movement Tracker
+description: Track recent hires and departures at a company
+icon: arrow-right-left
+---
+Find people who joined {{Company|Notion}} in the last {{Timeframe|6 months}} in {{Department|engineering or product}} roles. Also identify any senior departures I can see from LinkedIn data showing short tenures.
 ```
 
 **APIs Used:** Apollo People Search → Clado LinkedIn Scrape (for detailed tenure data)
@@ -45,9 +53,13 @@ LinkedIn data showing short tenures.
 
 Benchmark headcount and team composition across multiple companies.
 
-```
-Compare the data engineering teams at Databricks, Snowflake, and
-Confluent. For each company, give me:
+```prompt
+---
+title: Team Comparison
+description: Compare team sizes and composition across competitors
+icon: bar-chart
+---
+Compare the {{Team Type|data engineering}} teams at {{Company 1|Databricks}}, {{Company 2|Snowflake}}, and {{Company 3|Confluent}}. For each company, give me:
 - Estimated team size
 - Seniority distribution
 - Key leaders with their backgrounds
@@ -61,10 +73,13 @@ Confluent. For each company, give me:
 
 Identify small companies with exceptional talent density.
 
-```
-Find seed-stage AI/ML startups (under 50 employees) in San Francisco
-that have hired engineers from Google Brain, DeepMind, or OpenAI.
-List the companies and the notable hires.
+```prompt
+---
+title: Talent Density Search
+description: Find small companies with exceptional talent from top organizations
+icon: gem
+---
+Find {{Stage|seed-stage}} {{Industry|AI/ML}} startups (under {{Size|50 employees}}) in {{Location|San Francisco}} that have hired engineers from {{Source Companies|Google Brain, DeepMind, or OpenAI}}. List the companies and the notable hires.
 ```
 
 **APIs Used:** Apollo People Search (ex-employees of target orgs) → Apollo Org Enrich (their current companies)

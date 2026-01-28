@@ -5,11 +5,15 @@ import { DynamicIcon } from 'lucide-react/dynamic';
 import type { IconName } from 'lucide-react/dynamic';
 
 interface Props {
-  icon: string;
+  icon?: string;
   className?: string;
 }
 
 export const Icon: React.FC<Props> = ({ icon, className }) => {
+  if (!icon) {
+    return null;
+  }
+
   if (icon.startsWith('/')) {
     return (
       <Image
