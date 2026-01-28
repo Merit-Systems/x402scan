@@ -3,15 +3,15 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
+import { Book } from 'lucide-react';
+
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { AnimatedThemeToggler } from '@/components/magicui/animated-theme-toggler';
 
-import { NavbarContainer } from './container';
+import { cn } from '@/lib/utils';
 
 import type { Route } from 'next';
-import { Book } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface Props {
   hideLinks?: boolean;
@@ -19,19 +19,21 @@ interface Props {
 
 export const Navbar: React.FC<Props> = () => {
   return (
-    <NavbarContainer>
-      <div className="flex w-full items-center justify-between">
+    <div className="bg-card border-y w-full sticky top-0 z-50">
+      <div className="flex w-full items-center justify-between px-6 py-3 container mx-auto">
         {/* Logo section */}
         <div className="flex shrink-0 items-center gap-2">
-          <Link href="/" className="flex items-center gap-1">
+          <Link href="/" className="flex items-center gap-1 group">
             <Logo className="size-6" />
-            <h1 className="font-semibold font-mono hidden md:block">
+            <h1 className="font-semibold font-mono hidden md:block group-hover:text-primary transition-colors">
               x402scan
             </h1>
           </Link>
           <p className={cn('text-muted-foreground/20 text-xl')}>/</p>
-          <Link href="/mcp" className="flex items-center gap-1">
-            <h1 className="font-semibold font-mono hidden md:block">MCP</h1>
+          <Link href="/mcp" className="flex items-center gap-1 group">
+            <h1 className="font-semibold font-mono hidden md:block group-hover:text-primary transition-colors">
+              MCP
+            </h1>
           </Link>
         </div>
 
@@ -62,6 +64,6 @@ export const Navbar: React.FC<Props> = () => {
           </Link>
         </div>
       </div>
-    </NavbarContainer>
+    </div>
   );
 };

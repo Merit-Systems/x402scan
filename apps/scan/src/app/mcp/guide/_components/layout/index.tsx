@@ -1,6 +1,6 @@
 import { GuidesHeader } from './header/guide-header';
 
-import { getGuide, type Guide } from '../_lib/mdx';
+import { getGuide, type Guide } from '../../_lib/mdx';
 
 interface Props {
   children: React.ReactNode;

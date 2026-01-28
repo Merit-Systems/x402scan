@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { SectionBook } from '../../_components/header/book';
+import { SectionBook } from '../../_components/layout/header/book';
 import type { Guide } from '../../_lib/mdx';
 import { Separator } from '@/components/ui/separator';
 import { usePageLocation } from '../../_hooks/use-page-location';

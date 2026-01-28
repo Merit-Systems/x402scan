@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 
 import { SectionBook } from './book';
 
-import { usePageLocation } from '../../_hooks/use-page-location';
+import { usePageLocation } from '../../../_hooks/use-page-location';
 
-import type { Guide } from '../../_lib/mdx';
+import type { Guide } from '../../../_lib/mdx';
 
 interface Props {
   guide: Guide;

@@ -1,4 +1,4 @@
-import { GuideLayout } from '../../_components/guide-layout';
+import { GuideLayout } from '../../_components/layout';
 
 import { KnowledgeWorkPopover } from '../_components/popover';
 

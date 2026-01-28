@@ -13,9 +13,7 @@ export default function McpLayout({ children }: LayoutProps<'/mcp'>) {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col flex-1 py-6 md:py-8 pt-16 md:pt-20">
-        {children}
-      </div>
+      <div className="flex flex-col flex-1 py-6 md:py-8">{children}</div>
       <Footer />
     </>
   );

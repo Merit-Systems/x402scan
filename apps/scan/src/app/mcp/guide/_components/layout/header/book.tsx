@@ -9,7 +9,7 @@ import {
   BookContent,
 } from '@/app/mcp/guide/_components/book';
 
-import { Icon } from '../icon';
+import { Icon } from '../../icon';
 
 interface Props {
   icon?: string;
