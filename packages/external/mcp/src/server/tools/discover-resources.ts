@@ -13,7 +13,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const discoveryDocumentSchema = z.object({
   version: z.number().refine(v => v === 1, { message: 'version must be 1' }),
-  resources: z.array(z.url()),
+  resources: z.array(z.string()),
   ownershipProofs: z.array(z.string()).optional(),
   instructions: z.string().optional(),
 });
