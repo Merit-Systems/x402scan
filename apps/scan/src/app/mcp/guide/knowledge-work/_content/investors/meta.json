@@ -1,9 +1,6 @@
 {
   "title": "Investors",
   "description": "Research companies and founders for due diligence",
-  "items": [
-    "deal-sourcing",
-    "founder-research",
-    "company-due-diligence"
-  ]
+  "icon": "/invest.png",
+  "items": ["deal-sourcing", "founder-research", "company-due-diligence"]
 }

@@ -1,11 +1,5 @@
 {
   "title": "Knowledge Work",
   "description": "Automate research and enrichment tasks with EnrichX402",
-  "items": [
-    "index",
-    "...recruiters",
-    "...sales",
-    "...researchers",
-    "...investors"
-  ]
+  "items": ["...recruiters", "...sales", "...researchers", "...investors"]
 }

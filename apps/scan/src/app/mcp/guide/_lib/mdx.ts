@@ -2,11 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import z from 'zod';
 
-// Shared metadata shape used by guides, sections, and pages
-export interface Meta {
-  title: string;
-  description: string;
-}
+const metadataSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  icon: z.string().optional(),
+});
+
+type Metadata = z.infer<typeof metadataSchema>;
 
 // Navigation tree node types
 export interface NavPage {
@@ -14,7 +16,7 @@ export interface NavPage {
   slug: string;
 }
 
-export interface NavSection extends Meta {
+export interface NavSection extends Metadata {
   type: 'section';
   slug: string;
   items: NavItem[];
@@ -23,16 +25,14 @@ export interface NavSection extends Meta {
 export type NavItem = NavPage | NavSection;
 
 // Top-level guide structure
-export interface Guide extends Meta {
+export interface Guide extends Metadata {
   items: NavItem[];
 }
 
 export type Guides = Record<string, Guide>;
 
 // Schema for meta.json files (used by both guides and sections)
-const metaSchema = z.object({
-  title: z.string(),
-  description: z.string(),
+const metaSchema = metadataSchema.extend({
   items: z
     .array(
       z
@@ -67,12 +67,11 @@ const getNavItems = (contentDir: string): NavItem[] => {
   return meta.items.map(({ type, slug }): NavItem => {
     if (type === 'section') {
       const sectionDir = path.join(contentDir, slug);
-      const { title, description } = parseMeta(sectionDir);
+      const meta = parseMeta(sectionDir);
       return {
         type: 'section',
         slug,
-        title,
-        description,
+        ...meta,
         items: getNavItems(sectionDir),
       };
     } else {
@@ -98,8 +97,7 @@ export const getGuide = (...dir: string[]): Guide => {
   const meta = parseMeta(contentDir);
 
   return {
-    title: meta.title,
-    description: meta.description,
+    ...meta,
     items: getNavItems(contentDir),
   };
 };
