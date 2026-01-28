@@ -38,18 +38,22 @@ export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
           align="start"
           alignOffset={-8}
         >
-          <div className="p-4 flex items-center gap-2">
-            {guide.icon ? (
+          <div className="p-4 flex items-center gap-3">
+            {guide.icon && (
               <Image
                 src={guide.icon}
                 alt={guide.title}
                 width={20}
                 height={20}
+                className="size-4"
               />
-            ) : (
-              <List className="size-4" />
             )}
-            <p className="text-sm font-medium">{guide.title}</p>
+            <div className="flex flex-col">
+              <p className="text-sm font-semibold">{guide.title}</p>
+              <p className="text-xs text-muted-foreground">
+                {guide.description}
+              </p>
+            </div>
           </div>
           <Separator />
           <Popover guide={guide} />
