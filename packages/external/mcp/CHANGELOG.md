@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.1.2
+
+### Patch Changes
+
+- 90bdc6f: relax discovery schema to string instead of url
+
 ## 0.1.1
 
 ### Patch Changes
