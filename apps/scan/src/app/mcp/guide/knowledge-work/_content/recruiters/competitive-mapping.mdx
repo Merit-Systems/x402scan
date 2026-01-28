@@ -1,0 +1,70 @@
+export const metadata = {
+  title: 'Competitive Mapping',
+  description: 'Map organizational structures and talent at target companies',
+};
+
+# Competitive Mapping
+
+Build detailed organizational maps of engineering, product, and leadership teams at target companies.
+
+---
+
+## Map an Engineering Organization
+
+Understand the structure and key players in a company's engineering team.
+
+```
+Map the engineering organization at Figma. I want to understand:
+- Engineering leadership (VP, Directors, Managers)
+- Team structure and reporting lines where visible
+- Key technical leaders and their focus areas
+- Total engineering headcount estimate
+
+Provide LinkedIn profiles for all leadership.
+```
+
+**APIs Used:** Apollo Org Search → Apollo People Search (multiple queries by seniority) → Apollo People Enrich
+
+---
+
+## Identify Recent Hires and Departures
+
+Track talent movement at competitor companies.
+
+```
+Find people who joined Notion in the last 6 months in engineering or
+product roles. Also identify any senior departures I can see from
+LinkedIn data showing short tenures.
+```
+
+**APIs Used:** Apollo People Search → Clado LinkedIn Scrape (for detailed tenure data)
+
+---
+
+## Compare Team Sizes Across Competitors
+
+Benchmark headcount and team composition across multiple companies.
+
+```
+Compare the data engineering teams at Databricks, Snowflake, and
+Confluent. For each company, give me:
+- Estimated team size
+- Seniority distribution
+- Key leaders with their backgrounds
+```
+
+**APIs Used:** Apollo Org Search (verify all 3) → Apollo People Search (per company) → Apollo People Enrich
+
+---
+
+## Find Acquisition Targets by Talent
+
+Identify small companies with exceptional talent density.
+
+```
+Find seed-stage AI/ML startups (under 50 employees) in San Francisco
+that have hired engineers from Google Brain, DeepMind, or OpenAI.
+List the companies and the notable hires.
+```
+
+**APIs Used:** Apollo People Search (ex-employees of target orgs) → Apollo Org Enrich (their current companies)

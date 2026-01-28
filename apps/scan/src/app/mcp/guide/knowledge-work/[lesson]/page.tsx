@@ -1,7 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getGuides } from '../../../_lib/mdx';
-
-import type { Metadata } from '../../../_lib/mdx';
+import { getGuide } from '../../_lib/mdx';
 
 export default async function Page({
   params,

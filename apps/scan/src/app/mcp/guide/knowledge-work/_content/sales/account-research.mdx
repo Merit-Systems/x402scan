@@ -1,0 +1,73 @@
+export const metadata = {
+  title: 'Account Research',
+  description: 'Deep research on target accounts before outreach',
+};
+
+# Account Research
+
+Gather comprehensive intelligence on target accounts to personalize outreach and identify opportunities.
+
+---
+
+## Company Deep Dive
+
+Get a complete picture of a target account before a meeting.
+
+```
+Research Acme Corp thoroughly. I need:
+- Company overview (size, funding, revenue if available)
+- Leadership team and their backgrounds
+- Recent news and announcements
+- Tech stack and tools they use
+- Any recent job postings that signal priorities
+```
+
+**APIs Used:** Apollo Org Enrich → Apollo People Search → Serper News → Exa Search → Firecrawl Scrape (careers page)
+
+---
+
+## Map the Buying Committee
+
+Identify all stakeholders involved in purchasing decisions.
+
+```
+I'm selling to Acme Corp's engineering team. Map out everyone who
+might be involved in a purchasing decision:
+- Technical evaluators (senior engineers, architects)
+- Budget holders (VP/Director level)
+- Executive sponsors (CTO, CEO)
+
+Include their LinkedIn and email for each.
+```
+
+**APIs Used:** Apollo People Search (multiple queries by role) → Apollo People Enrich
+
+---
+
+## Track Company News and Signals
+
+Monitor for buying signals and conversation starters.
+
+```
+What's been happening at Datadog in the last month? Find:
+- Press releases and announcements
+- Executive interviews or podcasts
+- Product launches
+- Hiring patterns that indicate priorities
+```
+
+**APIs Used:** Serper News → Grok X Search → Exa Search
+
+---
+
+## Analyze Competitive Displacement Opportunities
+
+Find accounts using competitor products.
+
+```
+Find companies that mention using Competitor X on their engineering
+blog, job postings, or Stack Overflow discussions. These are
+potential displacement opportunities.
+```
+
+**APIs Used:** Exa Search → Firecrawl Scrape → Apollo Org Enrich

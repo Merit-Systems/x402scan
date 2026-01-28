@@ -1,0 +1,63 @@
+export const metadata = {
+  title: 'Contact Enrichment',
+  description: 'Enrich and verify contact information for outreach',
+};
+
+# Contact Enrichment
+
+Transform basic contact information into complete, verified profiles ready for outreach.
+
+---
+
+## Enrich from Company Domain
+
+Find the right contacts when you only know the company.
+
+```
+I want to reach out to cloudflare.com. Find me:
+- The VP of Sales or CRO with their email
+- The Head of Partnerships with their email
+- Any relevant decision makers in business development
+```
+
+**APIs Used:** Apollo Org Search → Apollo People Search → Apollo People Enrich
+
+---
+
+## Bulk Enrich a Lead List
+
+Process an existing list with missing contact information.
+
+```
+I have a CSV of 50 leads with name and company. Enrich all of them
+with verified email addresses, phone numbers, and LinkedIn URLs.
+Flag any that couldn't be found.
+```
+
+**APIs Used:** Apollo People Enrich Bulk → Clado Contacts Enrich (for failures)
+
+---
+
+## Verify Email Deliverability
+
+Check if emails are valid before sending campaigns.
+
+```
+I have these 10 email addresses from an old list. Verify which ones
+are still valid and get updated contact info for any that bounced.
+```
+
+**APIs Used:** Apollo People Enrich (checks email_status)
+
+---
+
+## Find Personal Contact Info
+
+When corporate emails bounce, find alternative contact methods.
+
+```
+I can't reach john.smith@acme.com - it's bouncing. Find his personal
+email or mobile number so I can reach him directly.
+```
+
+**APIs Used:** Apollo People Enrich (get LinkedIn) → Clado Contacts Enrich (email_enrichment + phone_enrichment)

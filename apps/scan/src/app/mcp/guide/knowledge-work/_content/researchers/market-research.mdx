@@ -1,0 +1,71 @@
+export const metadata = {
+  title: 'Market Research',
+  description: 'Research markets, industries, and trends',
+};
+
+# Market Research
+
+Conduct comprehensive market research using web search, news, and company data.
+
+---
+
+## Industry Landscape Overview
+
+Get a comprehensive view of a market or industry.
+
+```
+Research the observability/monitoring market. I need:
+- Key players and their market positioning
+- Recent funding and M&A activity
+- Market size estimates from analyst reports
+- Emerging trends and technologies
+
+Cite all sources.
+```
+
+**APIs Used:** Exa Search → Exa Answer → Serper News → Apollo Org Search (key players)
+
+---
+
+## Identify Market Entrants
+
+Track new companies entering a space.
+
+```
+Find all companies founded in the last 2 years that are building
+AI coding assistants or developer productivity tools. Include
+their funding, team size, and product focus.
+```
+
+**APIs Used:** Exa Search → Apollo Org Enrich → Firecrawl Scrape (company websites)
+
+---
+
+## Analyze Market Sizing Data
+
+Gather data points for TAM/SAM/SOM calculations.
+
+```
+Help me size the market for API security tools:
+- Find analyst reports with market size estimates
+- Identify the number of potential customers (companies using APIs)
+- Research pricing models of existing solutions
+```
+
+**APIs Used:** Exa Search → Firecrawl Scrape → Apollo Org Search (customer counts)
+
+---
+
+## Geographic Market Analysis
+
+Research a market in a specific region.
+
+```
+What does the fintech landscape look like in Southeast Asia?
+- Major hubs and ecosystems
+- Key companies and recent funding
+- Regulatory environment
+- Growth trends vs. other regions
+```
+
+**APIs Used:** Exa Search → Serper News → Apollo Org Search (location filter)

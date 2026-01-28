@@ -1,0 +1,63 @@
+export const metadata = {
+  title: 'Lead Generation',
+  description: 'Build targeted prospect lists for outbound sales',
+};
+
+# Lead Generation
+
+Build qualified prospect lists using company and people search with multi-signal enrichment.
+
+---
+
+## Find Decision Makers at Target Companies
+
+Identify the right contacts at companies matching your ICP.
+
+```
+Find VP and Director-level contacts in Engineering and IT at
+enterprise companies (1000+ employees) in financial services.
+Include their email addresses and LinkedIn profiles.
+```
+
+**APIs Used:** Apollo People Search → Apollo People Enrich
+
+---
+
+## Build a List from Industry + Tech Stack
+
+Target companies using specific technologies or in specific markets.
+
+```
+Find SaaS companies using Kubernetes that have raised Series B or
+later. Then get me the CTO or VP Engineering at each company with
+their contact information.
+```
+
+**APIs Used:** Exa Search (tech stack signals) → Apollo Org Search → Apollo People Search → Apollo People Enrich
+
+---
+
+## Source Leads from Recent Funding Announcements
+
+Target companies with fresh capital who may be expanding.
+
+```
+Search for companies that announced Series A or B funding in the
+last 30 days in the developer tools space. Get the founder/CEO
+contact info for each.
+```
+
+**APIs Used:** Serper News → Apollo Org Enrich → Apollo People Search → Apollo People Enrich
+
+---
+
+## Find Companies by Location and Size
+
+Build geographically targeted prospect lists.
+
+```
+Find all software companies with 50-200 employees in Austin, Texas.
+Get me the Head of Sales or VP Sales at each with email and phone.
+```
+
+**APIs Used:** Apollo Org Search → Apollo People Search → Apollo People Enrich → Clado Contacts Enrich (fallback)

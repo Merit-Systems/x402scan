@@ -1,0 +1,64 @@
+export const metadata = {
+  title: 'Sourcing Candidates',
+  description: 'Find qualified candidates using Apollo and LinkedIn data',
+};
+
+# Sourcing Candidates
+
+Use Apollo People Search and LinkedIn scraping to build targeted candidate pipelines.
+
+---
+
+## Find Engineers at Specific Companies
+
+Search for software engineers at target companies by domain or organization ID.
+
+```
+Find 20 senior software engineers at Stripe. Include their LinkedIn URLs,
+current titles, and email addresses. Focus on those with backend or
+infrastructure experience.
+```
+
+**APIs Used:** Apollo People Search → Apollo People Enrich
+
+---
+
+## Source Candidates by Skills and Location
+
+Build a candidate pool based on job title, seniority, and geography.
+
+```
+Find ML engineers in the San Francisco Bay Area who are currently at
+Series A-C startups (50-500 employees). I need their contact info and
+employment history.
+```
+
+**APIs Used:** Apollo People Search → Apollo People Enrich → Clado LinkedIn Scrape (for detailed profiles)
+
+---
+
+## Find Passive Candidates via Social Signals
+
+Identify candidates who are actively sharing content or engaging in industry discussions.
+
+```
+Search X/Twitter for people posting about distributed systems, Rust, or
+Kubernetes who have "engineer" or "developer" in their bio. Then enrich
+their profiles with Apollo to get professional details.
+```
+
+**APIs Used:** Grok User Search → Apollo People Enrich (by name + company)
+
+---
+
+## Map Talent at Competitor Companies
+
+Build a comprehensive view of engineering talent at competing organizations.
+
+```
+Create a talent map of all engineering managers and directors at
+Datadog, Splunk, and New Relic. Include their tenure, previous
+companies, and LinkedIn profiles.
+```
+
+**APIs Used:** Apollo Org Search (verify IDs) → Apollo People Search → Apollo People Enrich

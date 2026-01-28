@@ -146,6 +146,7 @@ For pre-release versions, use the `beta` branch with prerelease mode:
 4. Versions will be published as `x.x.x-beta.x`
 
 To exit prerelease mode and promote to stable:
+
 ```bash
 pnpm changeset pre exit
 ```

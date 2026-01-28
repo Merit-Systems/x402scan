@@ -1,0 +1,90 @@
+export const metadata = {
+  title: 'Company Due Diligence',
+  description: 'Research companies for investment decisions',
+};
+
+# Company Due Diligence
+
+Conduct thorough due diligence on companies before making investment decisions.
+
+---
+
+## Company Overview Research
+
+Build a comprehensive company profile.
+
+```
+Create a due diligence report on [Company X]:
+- Company history and founding story
+- Product and technology overview
+- Business model and pricing
+- Funding history and cap table info
+- Team size and key hires
+- Market positioning and competitors
+```
+
+**APIs Used:** Apollo Org Enrich → Firecrawl Scrape → Exa Search → Serper News → Apollo People Search
+
+---
+
+## Competitive Landscape Analysis
+
+Understand where a company fits in the market.
+
+```
+Map the competitive landscape for [Company X]:
+- Direct competitors and their funding
+- How does the product differentiate?
+- What do customers say in reviews?
+- Market share indicators if available
+```
+
+**APIs Used:** Exa Search → Exa Find Similar → Apollo Org Enrich → Reddit Search → Grok X Search
+
+---
+
+## Team Quality Assessment
+
+Evaluate the depth and quality of the team.
+
+```
+Assess the team at [Company X]:
+- Leadership backgrounds and track records
+- Engineering team size and composition
+- Notable hires and where they came from
+- Any key departures recently?
+```
+
+**APIs Used:** Apollo People Search → Apollo People Enrich → Clado LinkedIn Scrape → Serper News
+
+---
+
+## Market Validation Research
+
+Gather evidence of product-market fit.
+
+```
+Find evidence of customer traction for [Company X]:
+- Customer testimonials and case studies
+- Reviews on G2, Capterra, or similar
+- Social proof (tweets, Reddit mentions)
+- Job postings that mention using them
+```
+
+**APIs Used:** Firecrawl Scrape (testimonials page) → Exa Search → Reddit Search → Grok X Search
+
+---
+
+## Risk Factor Identification
+
+Uncover potential red flags or risks.
+
+```
+Research potential risks for investing in [Company X]:
+- Any negative press or controversies?
+- Glassdoor reviews and employee sentiment?
+- Customer complaints on social media?
+- Regulatory or legal concerns in their space?
+```
+
+**APIs Used:** Serper News → Exa Search → Reddit Search → Grok X Search → Firecrawl Search

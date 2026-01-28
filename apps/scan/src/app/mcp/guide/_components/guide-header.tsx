@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-
 import { ArrowUp, List } from 'lucide-react';
+
+import { useParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { AnimatedCircularProgressBar } from '@/components/ui/animated-circular-progress-bar';
@@ -15,21 +15,21 @@ import {
 } from '@/app/mcp/_components/guide/book';
 import { Logo } from '@/components/logo';
 
-import type { Guides } from '../_lib/mdx';
-import { useParams } from 'next/navigation';
+import type { Guide } from '../_lib/mdx';
+import React from 'react';
+import {
+  Popover as PopoverComponent,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 interface Props {
-  guides: Guides;
+  guide: Guide;
+  Popover: React.FC<{ guide: Guide }>;
 }
 
-export const GuidesHeader: React.FC<Props> = ({ guides }) => {
+export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
   const params = useParams<{ guide: string; lesson: string }>();
-
-  const guide = guides[params.guide];
-
-  if (!guide) {
-    return null;
-  }
 
   const lessonIndex = guide.pages.findIndex(
     page => page.slug === params.lesson
@@ -48,13 +48,20 @@ export const GuidesHeader: React.FC<Props> = ({ guides }) => {
   return (
     <div className="flex items-center justify-between bg-card border rounded-full p-3">
       {/* Left side: List icon + Task info */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="rounded-full size-8 md:size-8"
-      >
-        <List className="size-4" />
-      </Button>
+      <PopoverComponent>
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full size-8 md:size-8"
+          >
+            <List className="size-4" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="p-0">
+          <Popover guide={guide} />
+        </PopoverContent>
+      </PopoverComponent>
 
       <div className="w-px h-6 bg-border ml-2 mr-4" />
 
@@ -71,7 +78,7 @@ export const GuidesHeader: React.FC<Props> = ({ guides }) => {
             </BookCover>
           </Book>
           <div className="flex flex-col">
-            <span className="text-sm font-medium">{lesson.metadata.title}</span>
+            <span className="text-sm font-medium">{lesson.title}</span>
             <span className="text-muted-foreground text-xs">{guide.title}</span>
           </div>
         </div>

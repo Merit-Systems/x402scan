@@ -1,0 +1,50 @@
+import Link from 'next/link';
+
+import { Card } from '@/components/ui/card';
+
+import { tasks } from './data/tasks';
+
+export const metadata = {
+  title: 'Getting Started',
+  description: 'Choose your workflow and find prompts that work',
+};
+
+# Getting Started
+
+This guide contains prompts and workflows that work well for automating knowledge work tasks with EnrichX402.
+
+Each section includes ready-to-use prompts with the APIs that power them.
+
+---
+
+## Choose Your Workflow
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+  {tasks.map(task => (
+    <Link key={task.title} href={task.href} className="no-underline">
+      <Card className="p-4 h-full hover:bg-muted/50 transition-colors cursor-pointer">
+        <div className="flex gap-4 items-start">
+          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
+            <task.icon className="size-5 text-primary" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <h3 className="text-lg font-semibold">{task.title}</h3>
+            <p className="text-muted-foreground text-sm">{task.description}</p>
+          </div>
+        </div>
+      </Card>
+    </Link>
+  ))}
+</div>
+
+---
+
+## How These Guides Work
+
+Each guide includes:
+
+1. **Ready-to-use prompts** - Copy and customize for your specific needs
+2. **API mapping** - See which EnrichX402 endpoints power each workflow
+3. **Best practices** - Tips for getting better results
+
+The prompts are designed to work with Claude Code and the x402 MCP server.

@@ -1,0 +1,90 @@
+export const metadata = {
+  title: 'Deal Sourcing',
+  description: 'Find investment opportunities and emerging companies',
+};
+
+# Deal Sourcing
+
+Identify promising investment opportunities by discovering emerging companies and tracking market signals.
+
+---
+
+## Find Companies by Thesis
+
+Source deals that match your investment thesis.
+
+```
+Find early-stage companies (seed to Series A) working on AI
+infrastructure - specifically model serving, fine-tuning, or
+evaluation tools. Include:
+- Company name and website
+- Founding team backgrounds
+- Funding history
+- Product description
+```
+
+**APIs Used:** Exa Search → Apollo Org Enrich → Apollo People Search (founders) → Apollo People Enrich
+
+---
+
+## Track Funding Announcements
+
+Monitor the funding landscape in your focus areas.
+
+```
+What seed and Series A rounds were announced in developer tools
+and infrastructure in the last 30 days? Include the company,
+amount raised, and lead investors.
+```
+
+**APIs Used:** Serper News → Exa Search → Apollo Org Enrich
+
+---
+
+## Source via Talent Signals
+
+Find companies attracting exceptional talent.
+
+```
+Find startups that have recently hired engineers from:
+- Google (DeepMind, Brain, Core ML teams)
+- OpenAI
+- Anthropic
+
+These talent moves often signal promising companies.
+```
+
+**APIs Used:** Apollo People Search (ex-employees) → Apollo Org Enrich (current companies)
+
+---
+
+## Discover via Social Signals
+
+Find founders building in public before they raise.
+
+```
+Search X/Twitter for founders and builders talking about:
+- "We're building" + AI/ML/infrastructure
+- Technical deep dives on novel approaches
+- Early product launches and demos
+
+Filter for accounts with technical credibility.
+```
+
+**APIs Used:** Grok X Search → Grok User Search → Apollo People Enrich (verify backgrounds)
+
+---
+
+## Geographic Deal Sourcing
+
+Find opportunities in specific regions or ecosystems.
+
+```
+Map the early-stage fintech ecosystem in Latin America:
+- Companies founded in the last 3 years
+- Based in Brazil, Mexico, or Colombia
+- Seed to Series A stage
+- Founding team with relevant experience
+```
+
+**APIs Used:** Apollo Org Search → Apollo People Search → Exa Search (local tech news)

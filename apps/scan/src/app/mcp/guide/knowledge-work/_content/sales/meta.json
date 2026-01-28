@@ -1,0 +1,9 @@
+{
+  "title": "Sales",
+  "description": "Generate leads and research accounts",
+  "items": [
+    "lead-generation",
+    "account-research",
+    "contact-enrichment"
+  ]
+}

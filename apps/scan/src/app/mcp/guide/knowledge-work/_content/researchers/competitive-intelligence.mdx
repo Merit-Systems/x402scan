@@ -1,0 +1,73 @@
+export const metadata = {
+  title: 'Competitive Intelligence',
+  description: 'Track and analyze competitors',
+};
+
+# Competitive Intelligence
+
+Monitor competitors, analyze their strategies, and identify threats and opportunities.
+
+---
+
+## Competitor Deep Dive
+
+Build a comprehensive profile of a competitor.
+
+```
+Create a competitive intelligence report on Competitor X:
+- Company overview (funding, headcount, growth trajectory)
+- Product features and pricing
+- Target market and positioning
+- Recent product launches and announcements
+- Key executives and their backgrounds
+- Customer reviews and sentiment
+```
+
+**APIs Used:** Apollo Org Enrich → Firecrawl Scrape → Exa Search → Serper News → Reddit Search → Apollo People Search
+
+---
+
+## Track Competitor Hiring Patterns
+
+Understand competitor priorities through their job postings.
+
+```
+Analyze what Competitor X is hiring for. What roles are they
+prioritizing? What technologies are they using? What does this
+tell us about their product roadmap?
+```
+
+**APIs Used:** Firecrawl Search (job boards) → Firecrawl Scrape (careers page) → Apollo People Search (recent hires)
+
+---
+
+## Monitor Competitor Social Presence
+
+Track what competitors are saying and how customers respond.
+
+```
+Monitor Competitor X's social presence:
+- What are they posting about on X/Twitter?
+- How are customers responding?
+- What's the sentiment in Reddit discussions?
+- Any notable praise or complaints?
+```
+
+**APIs Used:** Grok User Posts → Grok X Search → Reddit Search → Reddit Post Comments
+
+---
+
+## Competitive Feature Comparison
+
+Build a feature matrix across competitors.
+
+```
+Compare the feature sets of tools A, B, and C in the data
+orchestration space. Create a matrix covering:
+- Core features
+- Integrations
+- Pricing models
+- Enterprise capabilities
+```
+
+**APIs Used:** Firecrawl Scrape (each product's docs/features pages) → Exa Search (comparison articles)

@@ -1,0 +1,65 @@
+export const metadata = {
+  title: 'Enriching Profiles',
+  description: 'Get complete candidate information from partial data',
+};
+
+# Enriching Profiles
+
+Transform basic candidate information into comprehensive profiles with contact details and work history.
+
+---
+
+## Enrich from LinkedIn URL
+
+Get full professional details from a LinkedIn profile URL.
+
+```
+I have this LinkedIn profile: linkedin.com/in/example-candidate
+Get their full work history, current email, phone number, and any
+other contact information available.
+```
+
+**APIs Used:** Clado LinkedIn Scrape → Clado Contacts Enrich (for personal email/phone)
+
+---
+
+## Bulk Enrich a Candidate List
+
+Process multiple candidates at once when you have partial information.
+
+```
+I have a list of 10 candidates with their names and current companies.
+Enrich all of them with email addresses and LinkedIn profiles:
+- Jane Smith, Acme Corp
+- John Doe, TechStartup Inc
+[...]
+```
+
+**APIs Used:** Apollo People Enrich Bulk
+
+---
+
+## Fill in Missing Contact Info
+
+When Apollo data is incomplete, fall back to Clado for personal contact details.
+
+```
+I have this candidate's Apollo profile but need their personal email
+and phone number for outreach. Their LinkedIn is linkedin.com/in/candidate
+```
+
+**APIs Used:** Clado Contacts Enrich (with email_enrichment and phone_enrichment flags)
+
+---
+
+## Verify and Update Stale Data
+
+Re-enrich candidates whose information may be outdated.
+
+```
+This candidate's Apollo data shows they were at Company X but their
+LinkedIn shows Company Y. Get me fresh data from their LinkedIn profile
+and update their contact information.
+```
+
+**APIs Used:** Clado LinkedIn Scrape → Apollo People Enrich (to cross-reference)
