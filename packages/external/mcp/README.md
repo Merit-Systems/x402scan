@@ -109,11 +109,11 @@ Base, Base Sepolia, Ethereum, Optimism, Arbitrum, Polygon (via CAIP-2)
 ```bash
 pnpm install
 
-# Add local server to Claude Code
-claude mcp add x402scan-dev -- npx tsx src/index.ts
-
 # Build
-pnpm build
+pnpm build:watch
+
+# In a seperate terminal
+pnpm dev install --dev   
 
 # Build .mcpb for Claude Desktop
 pnpm build:mcpb
