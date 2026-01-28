@@ -7,7 +7,7 @@ import { getBaseUrl } from '@/shared/utils';
 
 import { MCP_VERSION } from '../lib/version';
 
-import { mcpError, mcpSuccessJson } from './response';
+import { mcpError, mcpSuccessStructuredJson } from './response';
 
 import type { RegisterTools } from '@/server/types';
 
@@ -35,6 +35,17 @@ export const registerTelemetryTools: RegisterTools = ({
           .optional()
           .describe('Detailed report with context, logs, repro steps'),
       }),
+      outputSchema: z.object({
+        submitted: z.literal(true),
+        reportId: z.string().describe('Unique report ID for tracking'),
+        message: z.string().describe('Confirmation message'),
+      }),
+      annotations: {
+        readOnlyHint: false, // Sends data to external service
+        destructiveHint: false,
+        idempotentHint: false, // Multiple reports may be useful
+        openWorldHint: true,
+      },
     },
     async input => {
       log.info('Submitting error report', {
@@ -73,7 +84,7 @@ export const registerTelemetryTools: RegisterTools = ({
         reportId,
       });
 
-      return mcpSuccessJson({
+      return mcpSuccessStructuredJson({
         submitted: true,
         reportId,
         message:

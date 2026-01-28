@@ -25,9 +25,8 @@ export function registerDiscoveryTools(server: McpServer): void {
     toolName,
     {
       title: 'Discover API Endpoints',
-      description: `Discover x402-protected resources on an origin. Returns a list of resource URLs.
+      description: `Find x402-protected resources on an origin. Returns a list of resource URLs.
         Use check_x402_endpoint separately to get detailed pricing/schema info for specific resources.
-
         Known default origins with resource packs. Discover if more needed:
         - https://enrichx402.com ->
             People + Org search
@@ -38,14 +37,20 @@ export function registerDiscoveryTools(server: McpServer): void {
             Firecrawl web scrape
             WhitePages (business directory)
             Email enrichment
-        - https://stablestudio.io -> generate images / videos
+        - https://stablestudio.io -> generate and edit images / videos
         `,
-      inputSchema: {
+      inputSchema: z.object({
         url: z
           .url()
           .describe(
             'The origin URL or any URL on the origin to discover resources from'
           ),
+      }),
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
       },
     },
     async ({ url }) => {

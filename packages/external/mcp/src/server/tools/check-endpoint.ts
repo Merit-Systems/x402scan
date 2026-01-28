@@ -30,9 +30,14 @@ export const registerCheckX402EndpointTool: RegisterTools = ({
     toolName,
     {
       title: 'Check Endpoint Schema',
-      description:
-        'Check if an endpoint is x402-protected and get pricing options, schema, and auth requirements (if applicable).',
+      description: `Probe endpoint to check if x402-protected. Returns pricing, input schema, payment methods. Use before fetch to preview costs. No payment made.`,
       inputSchema: requestSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
     async input => {
       log.info('Querying endpoint', input);
