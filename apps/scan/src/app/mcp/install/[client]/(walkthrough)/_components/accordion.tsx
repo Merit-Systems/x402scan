@@ -3,7 +3,10 @@ import { CopyCommand } from './copy-command';
 
 import { Accordion } from '../../../_components/accordion';
 
-import type { Clients } from '@/app/mcp/_lib/clients';
+import { cn } from '@/lib/utils';
+
+import { Clients } from '@/app/mcp/_lib/clients';
+
 import type { McpSearchParams } from '@/app/mcp/_lib/params';
 import type { BaseStep } from '../../../_components/accordion/item';
 
@@ -19,17 +22,24 @@ export const ClientInstallAccordion: React.FC<Props> = ({
 
   const steps: BaseStep[] = [
     {
-      title: 'Run CLI Command',
+      title: 'Install MCP',
       content: (
-        <div className="flex flex-col gap-2">
+        <div
+          className={cn(
+            'flex flex-col gap-4',
+            client === Clients.Cursor && 'flex-col-reverse gap-4'
+          )}
+        >
           <CopyCommand
-            title="Quick Install"
+            title={
+              client === Clients.Cursor ? 'Manual Install' : 'Quick Install'
+            }
             command={`npx @x402scan/mcp install --client ${client}${props.invite ? ` --invite ${props.invite}` : ''}`}
           />
           {InstallComponent && <InstallComponent {...props} />}
         </div>
       ),
-      continueText: 'Next',
+      continueText: "I've Installed the MCP",
     },
   ];
 

@@ -54,12 +54,16 @@ export const AccordionItem: React.FC<Props> = ({
         </div>
         <h2 className="text-lg font-semibold shrink-0">{title}</h2>
       </AccordionTrigger>
-      <AccordionContent className="pt-4 pb-0 flex flex-col gap-4">
+      <AccordionContent className="pt-4 pb-0 flex flex-col gap-6">
         {content}
-        <div className="flex items-center justify-start gap-2">
-          {onNext && <Button onClick={onNext}>{continueText}</Button>}
+        <div className="flex items-center justify-start gap-2 w-full">
+          {onNext && (
+            <Button className="flex-1" onClick={onNext}>
+              {continueText}
+            </Button>
+          )}
           {index > 0 && onPrevious && (
-            <Button variant="outline" onClick={onPrevious}>
+            <Button className="flex-1" variant="outline" onClick={onPrevious}>
               Back
             </Button>
           )}

@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
 
 import type { ClientInstallComponent } from '../install';
+import { ClientIcon } from '@/app/mcp/_components/client-icon';
+import { Clients } from '@/app/mcp/_lib/clients';
 
 const encodeConfig = (config: Record<string, unknown>) => {
   const payload = JSON.stringify(config);
@@ -30,7 +32,12 @@ const cursorDeepLink = (invite?: string) => {
 export const CursorInstall: ClientInstallComponent = ({ invite }) => {
   return (
     <a href={cursorDeepLink(invite)}>
-      <Button variant="outline" className="w-full" size="lg">
+      <Button
+        className="w-full h-fit py-4 border-2 shadow-none"
+        size="xl"
+        variant="outline"
+      >
+        <ClientIcon client={Clients.Cursor} className="size-4" />
         One-Click Install
       </Button>
     </a>

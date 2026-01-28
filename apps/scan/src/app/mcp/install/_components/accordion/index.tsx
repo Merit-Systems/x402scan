@@ -50,7 +50,7 @@ export const Accordion: React.FC<Props> = ({ steps: stepsProp, client }) => {
         title: 'Run your First Enrichment Query',
         content: (
           <div className="flex flex-col gap-2">
-            <p className="text-sm">
+            <p className="text-sm font-medium">
               Paste this prompt into {clientName} to see the MCP in action:
             </p>
             <CopyPrompt
