@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.2.0
+
+### Minor Changes
+
+- 6224dcb: Added built-in prompts for the x402 MCP server (getting-started and enrich)
+
 ## 0.1.2
 
 ### Patch Changes
