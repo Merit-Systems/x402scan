@@ -7,6 +7,8 @@ import { Book, BookBinding, BookCover } from './book';
 
 import { cn } from '@/lib/utils';
 
+import type { Route } from 'next';
+
 export const GuideBanner = () => {
   return (
     <Card className="flex items-center gap-4 p-6 justify-between">
@@ -15,7 +17,7 @@ export const GuideBanner = () => {
         <p className="max-w-xs text-sm text-muted-foreground">
           An interactive guide to help you build knowledge work automations.
         </p>
-        <Link href="/mcp/guide/knowledge-work" className="w-fit">
+        <Link href={'/mcp/guide/knowledge-work' as Route} className="w-fit">
           <Button size="xl" className="w-fit">
             Start
           </Button>

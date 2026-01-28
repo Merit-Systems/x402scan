@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 import { Book, Check } from 'lucide-react';
 
 import { notFound } from 'next/navigation';

@@ -41,11 +41,6 @@ export const findPageLocation = (
   return findPageLocation(item.items, rest, item);
 };
 
-// Check if a path exists as a valid page in the navigation tree
-export const isValidPagePath = (items: NavItem[], path: string[]): boolean => {
-  return findPageLocation(items, path) !== null;
-};
-
 // Recursively collect all pages from the navigation tree (flattened)
 const collectPages = (items: NavItem[]): NavPage[] => {
   return items.flatMap(item => {

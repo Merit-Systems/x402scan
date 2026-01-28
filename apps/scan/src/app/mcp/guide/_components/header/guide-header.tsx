@@ -14,6 +14,7 @@ import { CurrentPage, Book, ScrollToTopButton } from './client';
 import type { Guide } from '../../_lib/mdx';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
+import type { Route } from 'next';
 
 interface Props {
   guide: Guide;
@@ -39,7 +40,7 @@ export const GuidesHeader: React.FC<Props> = ({ guide, Popover }) => {
           align="start"
           alignOffset={-8}
         >
-          <Link href="/mcp/guide/knowledge-work">
+          <Link href={'/mcp/guide/knowledge-work' as Route} className="w-fit">
             <div className="p-4 flex items-center gap-3">
               {guide.icon && (
                 <Image
