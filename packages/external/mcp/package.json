@@ -1,6 +1,6 @@
 {
   "name": "@x402scan/mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generic MCP server for calling x402-protected APIs with automatic payment handling",
   "type": "module",
   "main": "dist/esm/index.js",
@@ -46,7 +46,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@anthropic-ai/claude-agent-sdk": "^0.2.17",
+    "@anthropic-ai/claude-agent-sdk": "^0.2.20",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "catalog:",
     "@types/yargs": "^17.0.35",

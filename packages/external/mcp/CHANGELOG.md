@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.1.1
+
+### Patch Changes
+
+- a2dd2ec: patch no wallet
+
 ## 0.1.0
 
 ### Minor Changes

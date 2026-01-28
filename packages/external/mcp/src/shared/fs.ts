@@ -8,16 +8,10 @@ if (!fs.existsSync(BASE_DIRECTORY)) {
   fs.mkdirSync(BASE_DIRECTORY, { recursive: true });
 }
 
-export const configFile = (
-  name: `${string}.${string}`,
-  defaultValue: string
-) => {
+export const configFile = (name: `${string}.${string}`) => {
   if (!fs.existsSync(BASE_DIRECTORY)) {
     fs.mkdirSync(BASE_DIRECTORY, { recursive: true });
   }
   const filePath = join(BASE_DIRECTORY, name);
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, defaultValue);
-  }
   return filePath;
 };

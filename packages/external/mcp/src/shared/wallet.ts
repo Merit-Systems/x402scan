@@ -21,7 +21,7 @@ import { configFile } from './fs';
 
 import type { Hex } from 'viem';
 
-const WALLET_FILE = configFile('wallet.json', '');
+const WALLET_FILE = configFile('wallet.json');
 
 const storedWalletSchema = z.object({
   privateKey: z
