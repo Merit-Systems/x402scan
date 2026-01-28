@@ -15,6 +15,49 @@ import {
   DialogDescription,
   Dialog,
 } from './ui/dialog';
+import { Icon } from '@/app/mcp/guide/_components/icon';
+
+interface Frontmatter {
+  title: string;
+  description: string;
+  icon?: string;
+}
+
+function parseFrontmatter(content: string): {
+  frontmatter: Frontmatter | null;
+  body: string;
+} {
+  const frontmatterRegex = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/;
+  const match = frontmatterRegex.exec(content);
+
+  if (!match) {
+    return { frontmatter: null, body: content };
+  }
+
+  const [, frontmatterStr, body] = match;
+  const frontmatter: Partial<Frontmatter> = {};
+
+  frontmatterStr?.split('\n').forEach(line => {
+    const colonIndex = line.indexOf(':');
+    if (colonIndex === -1) return;
+
+    const key = line.slice(0, colonIndex).trim();
+    const value = line.slice(colonIndex + 1).trim();
+
+    if (key === 'title' || key === 'description' || key === 'icon') {
+      frontmatter[key] = value;
+    }
+  });
+
+  if (!frontmatter.title || !frontmatter.description) {
+    return { frontmatter: null, body: content };
+  }
+
+  return {
+    frontmatter: frontmatter as Frontmatter,
+    body: body?.trim() ?? '',
+  };
+}
 
 interface TemplateVar {
   raw: string; // Full match e.g. "{{Label|example}}"
@@ -52,15 +95,18 @@ interface Props {
 }
 
 export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
-  const templateVars = useMemo(
-    () => parseTemplateVariables(templateString),
+  // Parse frontmatter and body
+  const { frontmatter, body } = useMemo(
+    () => parseFrontmatter(templateString),
     [templateString]
   );
+
+  const templateVars = useMemo(() => parseTemplateVariables(body), [body]);
 
   // Initialize values state based on template variables
   const [values, setValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
-    parseTemplateVariables(templateString).forEach(v => {
+    parseTemplateVariables(body).forEach(v => {
       initial[v.raw] = '';
     });
     return initial;
@@ -68,7 +114,7 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
 
   // Plain text version for copying
   const filledPrompt = useMemo(() => {
-    let result = templateString;
+    let result = body;
     templateVars.forEach(v => {
       // Replace with value if filled, otherwise show just the label in template syntax
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally treating empty string as falsy
@@ -76,11 +122,11 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
       result = result.replaceAll(v.raw, replacement);
     });
     return result;
-  }, [templateString, templateVars, values]);
+  }, [body, templateVars, values]);
 
   // Rendered version with styled template values
   const renderedPrompt = useMemo(() => {
-    if (templateVars.length === 0) return templateString;
+    if (templateVars.length === 0) return body;
 
     const rawVars = templateVars.map(v => v.raw);
 
@@ -90,7 +136,7 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
       'g'
     );
 
-    const parts = templateString.split(pattern);
+    const parts = body.split(pattern);
     const result: ReactNode[] = [];
 
     parts.forEach((part, i) => {
@@ -110,12 +156,26 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
     });
 
     return result;
-  }, [templateString, templateVars, values]);
+  }, [body, templateVars, values]);
 
   const hasTemplateVars = templateVars.length > 0;
 
   return (
     <div className="flex flex-col gap-4 border rounded-lg p-4 bg-muted">
+      {frontmatter && (
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            {frontmatter.icon && (
+              <Icon icon={frontmatter.icon} className="size-5 text-primary" />
+            )}
+            <h3 className="text-lg font-semibold">{frontmatter.title}</h3>
+          </div>
+          <p className="text-muted-foreground text-sm">
+            {frontmatter.description}
+          </p>
+        </div>
+      )}
+
       {hasTemplateVars && (
         <div className="flex flex-wrap gap-3">
           {templateVars.map(v => (
