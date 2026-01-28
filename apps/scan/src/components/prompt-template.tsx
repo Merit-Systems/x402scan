@@ -161,7 +161,7 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
   const hasTemplateVars = templateVars.length > 0;
 
   return (
-    <div className="flex flex-col gap-4 border rounded-lg p-4 bg-muted">
+    <div className="flex flex-col gap-4 border rounded-lg p-4 bg-card">
       {frontmatter && (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
@@ -198,11 +198,18 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
         </div>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2">
+        <Button
+          disabled={Object.values(values).some(value => value === '')}
+          className="flex-1"
+          onClick={() => void navigator.clipboard.writeText(filledPrompt)}
+        >
+          Copy Prompt
+        </Button>
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" className="flex-1">
-              Full Prompt
+            <Button variant="ghost" className="flex-1">
+              See Full Prompt
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -224,13 +231,6 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
             </div>
           </DialogContent>
         </Dialog>
-        <Button
-          disabled={Object.values(values).some(value => value === '')}
-          className="flex-1"
-          onClick={() => void navigator.clipboard.writeText(filledPrompt)}
-        >
-          Copy Prompt
-        </Button>
       </div>
     </div>
   );

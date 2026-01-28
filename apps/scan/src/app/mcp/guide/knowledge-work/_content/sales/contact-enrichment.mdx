@@ -25,8 +25,6 @@ I want to reach out to {{Domain|cloudflare.com}}. Find me:
 - Any relevant decision makers in {{Department|business development}}
 ```
 
-**APIs Used:** Apollo Org Search → Apollo People Search → Apollo People Enrich
-
 ---
 
 ## Bulk Enrich a Lead List
@@ -42,7 +40,6 @@ icon: list
 I have a CSV of {{Count|50}} leads with name and company. Enrich all of them with verified email addresses, phone numbers, and LinkedIn URLs. Flag any that couldn't be found.
 ```
 
-**APIs Used:** Apollo People Enrich Bulk → Clado Contacts Enrich (for failures)
 
 ---
 
@@ -59,7 +56,6 @@ icon: mail-check
 I have these {{Count|10}} email addresses from an old list. Verify which ones are still valid and get updated contact info for any that bounced.
 ```
 
-**APIs Used:** Apollo People Enrich (checks email_status)
 
 ---
 
@@ -76,4 +72,3 @@ icon: user-search
 I can't reach {{Email|john.smith@acme.com}} - it's bouncing. Find his personal email or mobile number so I can reach him directly.
 ```
 
-**APIs Used:** Apollo People Enrich (get LinkedIn) → Clado Contacts Enrich (email_enrichment + phone_enrichment)
