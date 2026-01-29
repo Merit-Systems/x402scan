@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.2.1-beta.0
+
+### Patch Changes
+
+- a4fd1dc: testing new tool structure
+
 ## 0.2.0
 
 ### Minor Changes

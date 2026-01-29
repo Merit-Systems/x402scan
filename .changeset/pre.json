@@ -19,5 +19,7 @@
     "@x402scan/sync-analytics": "1.0.0",
     "@x402scan/sync-transfers": "1.0.0"
   },
-  "changesets": []
+  "changesets": [
+    "large-seas-call"
+  ]
 }
