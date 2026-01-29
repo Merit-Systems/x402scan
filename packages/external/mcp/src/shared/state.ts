@@ -12,7 +12,7 @@ const stateSchema = z.looseObject({
 });
 
 const defaultState = {
-  redeemedCodes: [],
+  redeemedCodes: [] as string[],
   origins: DEFAULT_ORIGINS,
 };
 
@@ -37,7 +37,7 @@ export const setState = (state: Partial<z.infer<typeof stateSchema>>) => {
   fs.writeFileSync(STATE_FILE, JSON.stringify(newState, null, 2));
 };
 
-export const addOrigin = (origin: string) => {
-  const state = getState();
-  setState({ origins: [...state.origins, origin] });
-};
+// export const addOrigin = (origin: string) => {
+//   const state = getState();
+//   setState({ origins: [...state.origins, origin] });
+// };

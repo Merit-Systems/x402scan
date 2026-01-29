@@ -1,18 +1,11 @@
 import { safeStringifyJson } from '@/shared/neverthrow/json';
-import { safeCheckX402Endpoint } from '@/shared/neverthrow/x402';
 import { getState } from '@/shared/state';
 import { log } from '@/shared/log';
 
-import { getWebPageMetadata } from './lib';
-
-import { getInputSchema } from '../lib/x402-extensions';
-
-import { fetchWellKnown } from '../tools/lib/fetch-well-known';
+import { getOriginData } from '../lib/origin-data';
 
 import type { RegisterResources } from '../types';
 import type { JsonObject } from '@/shared/neverthrow/json/types';
-
-const surface = 'registerOriginResources';
 
 export const registerOriginResources: RegisterResources = async ({
   server,
@@ -20,57 +13,24 @@ export const registerOriginResources: RegisterResources = async ({
   const { origins } = getState();
   await Promise.all(
     origins.map(async origin => {
-      const metadata = (await getWebPageMetadata(origin)).match(
-        ok => ok,
-        () => null
-      );
-      const strippedOrigin = origin
-        .replace('https://', '')
-        .replace('http://', '');
+      const surface = `${origin}-resource`;
 
-      const wellKnownResult = await fetchWellKnown({
-        surface: `${origin}-resource`,
-        url: origin,
-      });
+      const originData = await getOriginData({ origin, surface });
 
-      if (wellKnownResult.isErr()) {
-        log.error(
-          `Failed to fetch well-known for ${origin}:`,
-          wellKnownResult.error
-        );
+      if (!originData) {
         return;
       }
 
-      const resources = await Promise.all(
-        wellKnownResult.value.resources.map(async resource => {
-          const checkX402EndpointResult = await safeCheckX402Endpoint({
-            surface: `${origin}-resource`,
-            resource,
-          });
-
-          return checkX402EndpointResult.match(
-            ok => ok,
-            err => {
-              log.error(`Failed to check x402 endpoint for ${resource}:`, err);
-              return null;
-            }
-          );
-        })
-      );
-
-      const filteredResources = resources.filter(
-        (resource): resource is NonNullable<typeof resource> =>
-          resource !== null
-      );
+      const { hostname, metadata, resources } = originData;
 
       const stringifyResult = safeStringifyJson(surface, {
-        server: strippedOrigin,
+        server: originData.hostname,
         name: metadata?.title ?? '',
         description: metadata?.description ?? '',
-        resources: filteredResources.map(({ resource, paymentRequired }) => ({
-          url: resource,
-          schema: getInputSchema(paymentRequired.extensions) as JsonObject,
-          mimeType: paymentRequired.resource.mimeType,
+        resources: resources.map(({ resource, inputSchema }) => ({
+          url: resource.resource,
+          schema: inputSchema as JsonObject,
+          mimeType: resource.paymentRequired.resource.mimeType,
         })),
       });
 
@@ -83,8 +43,8 @@ export const registerOriginResources: RegisterResources = async ({
       }
 
       server.registerResource(
-        strippedOrigin,
-        `api://${strippedOrigin}`,
+        hostname,
+        `api://${hostname}`,
         {
           title: metadata?.title ?? origin,
           description: metadata?.description ?? '',
@@ -93,7 +53,7 @@ export const registerOriginResources: RegisterResources = async ({
         () => ({
           contents: [
             {
-              uri: strippedOrigin,
+              uri: hostname,
               text: stringifyResult.value,
               mimeType: 'application/json',
             },

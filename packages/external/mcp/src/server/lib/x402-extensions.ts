@@ -2,9 +2,7 @@ import type { PaymentRequired } from '@x402/core/types';
 import type { DiscoveryExtension } from '@x402/extensions/bazaar';
 import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
 
-export const getBazaarExtension = (
-  extensions: PaymentRequired['extensions']
-) => {
+const getBazaarExtension = (extensions: PaymentRequired['extensions']) => {
   const { bazaar } = extensions ?? {};
 
   if (!bazaar) {

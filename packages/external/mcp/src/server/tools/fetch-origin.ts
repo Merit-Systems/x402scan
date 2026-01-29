@@ -9,11 +9,9 @@ import { getState } from '@/shared/state';
 
 import { mcpError, mcpErrorFetch, mcpSuccessResponse } from './response';
 
-import { getInputSchema } from '../lib/x402-extensions';
+import { getOriginData } from '../lib/origin-data';
 
 import { buildRequest } from './lib/request';
-import { fetchWellKnown } from './lib/fetch-well-known';
-import { checkX402Endpoint } from './lib/check-x402-endpoint';
 
 import { tokenStringToNumber } from '@/shared/token';
 
@@ -30,61 +28,48 @@ export const registerFetchOriginTool: RegisterTools = async ({
 
   await Promise.all(
     origins.map(async origin => {
-      const wellKnownResult = await fetchWellKnown({
-        surface: origin,
-        url: origin,
-      });
-      if (wellKnownResult.isErr()) {
+      const surface = `${origin}-fetch`;
+
+      const originData = await getOriginData({ origin, surface });
+
+      if (!originData) {
         return;
       }
-      const checkX402EndpointResults = await Promise.all(
-        wellKnownResult.value.resources.map(async resource => {
-          const checkX402EndpointResult = await checkX402Endpoint({
-            surface: `${origin}-resource`,
-            resource,
-          });
-          if (checkX402EndpointResult.isErr()) {
-            return null;
-          }
-          return checkX402EndpointResult.value;
-        })
-      );
-      const validResults = checkX402EndpointResults
-        .filter(
-          (result): result is NonNullable<typeof result> => result !== null
-        )
-        .map(resource => {
-          const inputSchema = getInputSchema(
-            resource.paymentRequired?.extensions
-          );
-          if (!inputSchema || !('body' in inputSchema.properties)) {
-            return null;
-          }
-          return {
-            resource,
-            bodySchema: inputSchema?.properties.body as JSONSchema.Schema,
-          };
-        })
-        .filter(
-          (result): result is NonNullable<typeof result> => result !== null
-        );
+
+      const { hostname, resources, metadata } = originData;
 
       // Skip tool registration if no valid results
-      if (validResults.length === 0) {
+      if (resources.length === 0) {
         return;
       }
 
-      const strippedOrigin = origin
-        .replace('https://', '')
-        .replace('http://', '');
-
-      const unionMembers = validResults.map(({ resource, bodySchema }) =>
+      const unionMembers = resources.map(({ resource, inputSchema }) =>
         z.object({
           url: z
             .literal(resource.resource)
             .describe(resource.paymentRequired.resource.description),
           method: z.literal(resource.method),
-          body: z.fromJSONSchema(bodySchema),
+          ...('body' in inputSchema.properties
+            ? {
+                body: z.fromJSONSchema(
+                  inputSchema.properties.body as JSONSchema.Schema
+                ),
+              }
+            : {}),
+          ...('query' in inputSchema.properties
+            ? {
+                queryParams: z.fromJSONSchema(
+                  inputSchema.properties.query as JSONSchema.Schema
+                ),
+              }
+            : {}),
+          ...('headers' in inputSchema.properties
+            ? {
+                headers: z.fromJSONSchema(
+                  inputSchema.properties.headers as JSONSchema.Schema
+                ),
+              }
+            : {}),
         })
       );
 
@@ -96,11 +81,14 @@ export const registerFetchOriginTool: RegisterTools = async ({
         ]
       );
 
+      const site = hostname.split('.')[0]!;
+
       server.registerTool(
-        strippedOrigin.replace('.', '-'),
+        site,
         {
-          title: origin,
-          description: 'Fetch from origin',
+          title: metadata?.title ?? undefined,
+          description:
+            metadata?.description ?? 'Make x402 requests to the origin',
           inputSchema: z.object({
             request: z
               .union([z.string(), requestSchema])
@@ -116,7 +104,7 @@ export const registerFetchOriginTool: RegisterTools = async ({
               ),
           }),
         },
-        async input => {
+        async ({ request }) => {
           const fetchWithPay = safeWrapFetchWithPayment({
             account,
             server,
@@ -124,18 +112,30 @@ export const registerFetchOriginTool: RegisterTools = async ({
             flags,
           });
 
+          const url = new URL(request.url);
+          if (request.queryParams) {
+            for (const [key, value] of Object.entries(request.queryParams)) {
+              if (typeof value === 'string') {
+                url.searchParams.set(key, value);
+              } else {
+                url.searchParams.set(key, JSON.stringify(value));
+              }
+            }
+          }
+
           const fetchResult = await fetchWithPay(
             buildRequest({
               input: {
-                url: input.request.url,
-                method: input.request.method as
+                url: url.toString(),
+                method: request.method as
                   | 'GET'
                   | 'POST'
                   | 'PUT'
                   | 'DELETE'
                   | 'PATCH',
-                body: input.request.body,
-                headers: {},
+                body: request.body,
+                headers:
+                  typeof request.headers === 'object' ? request.headers : {},
               },
               address: account.address,
               sessionId,

@@ -23,8 +23,8 @@ import type { GlobalFlags } from '@/types';
 
 const errorType = 'x402';
 
-export const x402Ok = <T>(value: T) => ok(value);
-export const x402Err = (cause: string, error: BaseX402Error) =>
+const x402Ok = <T>(value: T) => ok(value);
+const x402Err = (cause: string, error: BaseX402Error) =>
   err(errorType, cause, error);
 
 const x402ResultFromPromise = <T>(
@@ -65,7 +65,7 @@ export const safeGetPaymentRequired = (
   );
 };
 
-export const safeCreatePaymentPayload = (
+const safeCreatePaymentPayload = (
   surface: string,
   client: x402HTTPClient,
   paymentRequired: PaymentRequired
