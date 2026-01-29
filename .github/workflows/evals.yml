@@ -3,7 +3,7 @@ name: 'Prompt Evaluation'
 on:
   pull_request:
     paths:
-      - 'packages/external/mcp/src/lib/**'
+      - 'packages/external/mcp/src/**'
       - 'packages/external/mcp/evals/**'
 
 jobs:

@@ -78,8 +78,7 @@ export const startServer: Command = async flags => {
     registerPrompts(props),
   ]);
 
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
+  await server.connect(new StdioServerTransport());
 
   const shutdown = async () => {
     log.info('Shutting down...');
