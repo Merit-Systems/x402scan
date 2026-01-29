@@ -128,6 +128,8 @@ export const registerFetchOriginTool: RegisterTools = async ({
             for (const [key, value] of Object.entries(request.headers)) {
               if (typeof value === 'string') {
                 headers[key] = value;
+              } else {
+                headers[key] = JSON.stringify(value);
               }
             }
           }
