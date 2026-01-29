@@ -9,4 +9,4 @@ interface ToolProps {
   sessionId: string;
 }
 
-export type RegisterTools = (props: ToolProps) => void;
+export type RegisterTools = (props: ToolProps) => void | Promise<void>;

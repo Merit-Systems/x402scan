@@ -20,6 +20,7 @@ import { getWallet } from '@/shared/wallet';
 import { redeemInviteCode } from '@/shared/redeem-invite';
 
 import type { Command } from '@/types';
+import { registerFetchOriginTool } from './tools/fetch-origin';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
@@ -79,17 +80,18 @@ export const startServer: Command = async flags => {
     sessionId,
   };
 
-  registerFetchX402ResourceTool(props);
-  registerAuthTools(props);
-  registerWalletTools(props);
-  registerCheckX402EndpointTool(props);
-  registerRedeemInviteTool(props);
-  registerDiscoveryTools(server);
-  registerTelemetryTools(props);
+  // await registerFetchX402ResourceTool(props);
+  // await registerAuthTools(props);
+  // await registerWalletTools(props);
+  // await registerCheckX402EndpointTool(props);
+  // await registerRedeemInviteTool(props);
+  // await registerDiscoveryTools(props);
+  // await registerTelemetryTools(props);
+  await registerFetchOriginTool(props);
+
+  // await registerOrigins({ server, flags });
 
   registerPrompts(props);
-
-  await registerOrigins({ server, flags });
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

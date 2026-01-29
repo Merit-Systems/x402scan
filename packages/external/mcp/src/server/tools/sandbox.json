@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "http"
+    },
+    "method": {
+      "type": "string",
+      "enum": ["POST", "PUT", "PATCH"]
+    },
+    "bodyType": {
+      "type": "string",
+      "enum": ["json", "form-data", "text"]
+    },
+    "body": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": ["nano-banana-pro"],
+          "description": "The model identifier"
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A detailed description of the image you want to generate"
+        },
+        "aspectRatio": {
+          "type": "string",
+          "enum": [
+            "1:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9",
+            "21:9"
+          ],
+          "default": "1:1",
+          "description": "The aspect ratio of the generated image"
+        },
+        "imageSize": {
+          "type": "string",
+          "enum": ["1K", "2K", "4K"],
+          "default": "1K",
+          "description": "The resolution of the generated image"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["nano-banana-pro-generate"],
+          "description": "The operation type"
+        }
+      },
+      "required": ["model", "prompt", "type"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["type", "bodyType", "body"],
+  "additionalProperties": false
+}

@@ -9,7 +9,7 @@ import {
 
 import { mcpErrorJson, mcpSuccessJson } from './response';
 
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { RegisterTools } from '../types';
 
 const discoveryDocumentSchema = z.object({
   version: z.number().refine(v => v === 1, { message: 'version must be 1' }),
@@ -20,7 +20,7 @@ const discoveryDocumentSchema = z.object({
 
 const toolName = 'discover_api_endpoints';
 
-export function registerDiscoveryTools(server: McpServer): void {
+export const registerDiscoveryTools: RegisterTools = ({ server }) => {
   server.registerTool(
     toolName,
     {
@@ -167,4 +167,4 @@ export function registerDiscoveryTools(server: McpServer): void {
       });
     }
   );
-}
+};
