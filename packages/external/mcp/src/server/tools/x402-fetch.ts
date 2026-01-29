@@ -1,14 +1,8 @@
-import { safeParseResponse } from '@/shared/neverthrow/fetch';
-
-import { mcpError, mcpErrorFetch, mcpSuccessResponse } from './response';
+import { mcpX402FetchResponse } from './response';
 
 import { requestSchema, buildRequest } from './lib/request';
 
-import { tokenStringToNumber } from '@/shared/token';
-import {
-  safeGetPaymentSettlement,
-  safeWrapFetchWithPayment,
-} from '@/shared/neverthrow/x402';
+import { safeWrapFetchWithPayment } from '@/shared/neverthrow/x402';
 
 import type { RegisterTools } from '@/server/types';
 
@@ -45,50 +39,10 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
         buildRequest({ input, address: account.address, sessionId })
       );
 
-      if (fetchResult.isErr()) {
-        return mcpError(fetchResult);
-      }
-
-      const { response, paymentPayload } = fetchResult.value;
-
-      if (!response.ok) {
-        return mcpErrorFetch(toolName, response);
-      }
-
-      const parseResponseResult = await safeParseResponse(toolName, response);
-
-      if (parseResponseResult.isErr()) {
-        return mcpError(parseResponseResult);
-      }
-
-      const settlementResult = safeGetPaymentSettlement(toolName, response);
-
-      return mcpSuccessResponse(
-        parseResponseResult.value,
-
-        settlementResult.isOk() || paymentPayload !== undefined
-          ? {
-              ...(paymentPayload !== undefined
-                ? {
-                    price: tokenStringToNumber(
-                      paymentPayload.accepted.amount
-                    ).toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                    }),
-                  }
-                : {}),
-              ...(settlementResult.isOk()
-                ? {
-                    payment: {
-                      success: settlementResult.value.success,
-                      transactionHash: settlementResult.value.transaction,
-                    },
-                  }
-                : {}),
-            }
-          : undefined
-      );
+      return mcpX402FetchResponse({
+        surface: toolName,
+        x402FetchResult: fetchResult,
+      });
     }
   );
 };

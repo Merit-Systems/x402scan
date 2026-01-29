@@ -24,7 +24,7 @@ export const registerWalletTools: RegisterTools = ({
         networkName: z.string().describe('Human-readable network name'),
         usdcBalance: z.number().describe('USDC balance'),
         isNewWallet: z.boolean().describe('True if balance is 0'),
-        depositLink: z.string().url().describe('Link to fund the wallet'),
+        depositLink: z.url().describe('Link to fund the wallet'),
         message: z.string().optional().describe('Warning if balance is low'),
       }),
       annotations: {
