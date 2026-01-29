@@ -23,20 +23,20 @@
     "format:check": "pnpm -w format:check:dir ./packages/internal/databases/scan"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.2",
+    "@neondatabase/serverless": "catalog:prisma",
     "@prisma/adapter-neon": "catalog:prisma",
     "@prisma/client": "catalog:prisma",
     "dotenv": "catalog:env",
-    "ws": "^8.18.3"
+    "ws": "catalog:prisma"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@types/ws": "^8.18.1",
+    "@types/ws": "catalog:prisma",
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",
     "prisma": "catalog:prisma",
-    "rimraf": "^5.0.5",
+    "rimraf": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:"
   },

@@ -20,15 +20,15 @@
     "format:check": "pnpm -w format:check:dir ./packages/internal/databases/transfers"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.2",
-    "@prisma/adapter-neon": "^7.0.0",
-    "@prisma/client": "^7.0.0",
+    "@neondatabase/serverless": "catalog:prisma",
+    "@prisma/adapter-neon": "catalog:prisma",
+    "@prisma/client": "catalog:prisma",
     "dotenv": "catalog:env",
-    "ws": "^8.18.3"
+    "ws": "catalog:prisma"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@types/ws": "^8.18.1",
+    "@types/ws": "catalog:prisma",
     "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",
