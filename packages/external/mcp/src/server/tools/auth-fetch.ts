@@ -31,9 +31,14 @@ export const registerAuthTools: RegisterTools = ({
     toolName,
     {
       title: 'Fetch with Authentication',
-      description:
-        'Make a request to a SIWX-protected endpoint. Handles auth flow automatically: detects SIWX requirement from 402 response, signs proof with server-provided challenge, retries.',
+      description: `HTTP fetch with automatic SIWX (Sign-In With X) authentication. Detects auth requirement, signs wallet proof, retries with credentials. For endpoints requiring identity verification without payment. EVM chains only.`,
       inputSchema: requestSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     },
     async input => {
       const httpClient = new x402HTTPClient(new x402Client());

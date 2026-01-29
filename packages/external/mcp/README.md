@@ -4,6 +4,12 @@ MCP server for calling [x402](https://x402.org)-protected APIs with automatic pa
 
 ## Install
 
+### Recommended (Guided Install)
+
+```bash
+npx @x402scan/mcp install
+```
+
 ### Claude Code
 
 ```bash
@@ -107,16 +113,16 @@ Base, Base Sepolia, Ethereum, Optimism, Arbitrum, Polygon (via CAIP-2)
 ## Develop
 
 ```bash
-bun install
-
-# Add local server to Claude Code
-claude mcp add x402scan-dev -- bun run /path/to/x402scan-mcp/src/index.ts
+pnpm install
 
 # Build
-bun run build
+pnpm -w dev:mcp
+
+# In a separate terminal with cwd packages/external/mcp
+pnpm dev install --dev
 
 # Build .mcpb for Claude Desktop
-bun run build:mcpb
+pnpm build:mcpb
 ```
 
 ## Publishing

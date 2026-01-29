@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "description": "Build neverthrow utilities package",
+      "description": "Build facilitators package for npm distribution",
       "outputs": ["dist/**"]
     }
   }

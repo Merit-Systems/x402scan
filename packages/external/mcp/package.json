@@ -1,6 +1,6 @@
 {
   "name": "@x402scan/mcp",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Generic MCP server for calling x402-protected APIs with automatic payment handling",
   "type": "module",
   "main": "dist/esm/index.js",
@@ -33,7 +33,7 @@
   "dependencies": {
     "@clack/prompts": "^0.11.0",
     "@iarna/toml": "^2.2.5",
-    "@modelcontextprotocol/sdk": "^1.25.2",
+    "@modelcontextprotocol/sdk": "^1.25.3",
     "@x402/core": "catalog:x402",
     "@x402/evm": "catalog:x402",
     "@x402scan/siwx": "workspace:*",
@@ -46,7 +46,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@anthropic-ai/claude-agent-sdk": "^0.2.20",
+    "@anthropic-ai/claude-agent-sdk": "^0.2.22",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "catalog:",
     "@types/yargs": "^17.0.35",
@@ -55,7 +55,7 @@
     "@x402scan/neverthrow": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",
-    "promptfoo": "^0.120.17",
+    "promptfoo": "^0.120.18",
     "tsup": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

@@ -17,7 +17,7 @@ providers:
         servers:
           - command: sh
             args: ['-c', 'node ${MCP_SERVER_DIR}/index.js']
-            name: x402scan
+            name: x402
       include_partial_messages: true
       max_budget_usd: 1.50
       output_format:
@@ -44,18 +44,22 @@ providers:
                   success:
                     type: boolean
               description: 'Log of tool calls made'
-          required: [answer, tool_call_log]
+            available_tools:
+              type: array
+              items:
+                type: string
+              description: 'List of available tools'
+          required: [answer, tool_call_log, available_tools]
       append_allowed_tools:
-        - 'mcp__x402scan__fetch'
-        - 'mcp__x402scan__authed_call'
-        - 'mcp__x402scan__check_balance'
-        - 'mcp__x402scan__get_wallet_address'
-        - 'mcp__x402scan__check_x402_endpoint'
-        - 'mcp__x402scan__discover_resources'
-        - 'mcp__x402scan__report_error'
+        - 'mcp__x402__fetch'
+        - 'mcp__x402__fetch_with_auth'
+        - 'mcp__x402__get_wallet_info'
+        - 'mcp__x402__check_endpoint_schema'
+        - 'mcp__x402__discover_api_endpoints'
+        - 'mcp__x402__redeem_invite'
+        - 'mcp__x402__report_error'
         - 'WebFetch'
         - 'WebSearch'
-
 evaluateOptions:
   repeat: 5
 
@@ -114,7 +118,7 @@ prompts:
 tests:
   - description: 'Merit Systems CEO Email'
     vars:
-      prompt: 'Find and return the email of the CEO of Merit Systems'
+      prompt: 'Find and verify the email of the CEO of Merit Systems (merit.systems)'
     assert:
       - type: javascript
         value: |

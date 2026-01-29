@@ -3,10 +3,12 @@
   "extends": ["//"],
   "tasks": {
     "build": {
+      "description": "Build partners database package",
       "env": ["PARTNERS_CLICKHOUSE_*"],
       "outputs": ["dist/**"]
     },
     "dev": {
+      "description": "Start partners database package in development mode",
       "env": ["PARTNERS_CLICKHOUSE_*"],
       "persistent": true
     }

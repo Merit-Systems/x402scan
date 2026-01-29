@@ -9,7 +9,7 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "check:types": "tsc --noEmit",
+    "types:check": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./sync/analytics",

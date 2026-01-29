@@ -22,6 +22,16 @@ export const mcpSuccessJson = (data: JsonObject): CallToolResult => {
   );
 };
 
+export const mcpSuccessStructuredJson = (data: JsonObject): CallToolResult => {
+  return safeStringifyJson('mcp-success-structured', data).match(
+    success => ({
+      content: [{ type: 'text' as const, text: success }],
+      structuredContent: data,
+    }),
+    error => mcpErrorJson(error)
+  );
+};
+
 export const mcpSuccessResponse = (
   data: ParsedResponse,
   extra?: JsonObject

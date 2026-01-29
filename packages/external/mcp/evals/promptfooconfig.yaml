@@ -104,7 +104,7 @@ tests:
   # Test 2: CEO Email
   - description: 'Merit Systems CEO Email'
     vars:
-      prompt: 'Find and verify the email of the CEO of merit systems'
+      prompt: 'Find and verify the email of the CEO of merit systems (merit.systems)'
     assert:
       - type: javascript
         value: |

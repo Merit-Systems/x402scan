@@ -3,6 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
+      "description": "Build MCP server package",
       "env": ["X402_*", "X402_PRIVATE_KEY"],
       "outputs": ["dist/**"],
       "passThroughEnv": [
@@ -15,6 +16,7 @@
       ]
     },
     "dev": {
+      "description": "Start MCP server in development mode",
       "env": ["X402_*", "X402_PRIVATE_KEY"],
       "persistent": true,
       "passThroughEnv": [
@@ -27,6 +29,7 @@
       ]
     },
     "build:mcpb": {
+      "description": "Build MCP server bundle for distribution",
       "env": ["X402_*", "X402_PRIVATE_KEY"],
       "dependsOn": ["^build"],
       "outputs": ["bundle/**"],

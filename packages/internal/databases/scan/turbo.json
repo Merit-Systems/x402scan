@@ -3,15 +3,20 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["SCAN_DATABASE_*"]
+      "description": "Build scan database package",
+      "env": ["SCAN_DATABASE_*"],
+      "outputs": ["dist/**"]
     },
     "db:deploy": {
+      "description": "Deploy scan database migrations",
       "env": ["SCAN_DATABASE_*"]
     },
     "types:check": {
+      "description": "Type-check scan database code",
       "dependsOn": ["db:generate"]
     },
     "lint": {
+      "description": "Lint scan database code",
       "dependsOn": ["db:generate"]
     }
   }

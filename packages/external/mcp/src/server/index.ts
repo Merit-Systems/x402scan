@@ -11,6 +11,7 @@ import { registerTelemetryTools } from './tools/telemetry';
 import { registerDiscoveryTools } from './tools/discover-resources';
 
 import { registerOrigins } from './resources/origins';
+import { registerPrompts } from './prompts';
 
 import { MCP_VERSION } from './lib/version';
 
@@ -61,6 +62,9 @@ export const startServer: Command = async flags => {
           subscribe: true,
           listChanged: true,
         },
+        prompts: {
+          listChanged: true,
+        },
       },
     }
   );
@@ -79,6 +83,8 @@ export const startServer: Command = async flags => {
   registerRedeemInviteTool(props);
   registerDiscoveryTools(server);
   registerTelemetryTools(props);
+
+  registerPrompts(props);
 
   await registerOrigins({ server, flags });
 
