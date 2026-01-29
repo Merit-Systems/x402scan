@@ -108,10 +108,7 @@ export const safeParseResponse = (surface: string, response: Response) => {
         };
       } else if (contentType.includes('multipart/form-data')) {
         return { type: 'formData' as const, data: await response.formData() };
-      } else if (
-        contentType.includes('text/html') ||
-        contentType.includes('text/plain')
-      ) {
+      } else if (contentType.includes('text/')) {
         return { type: 'text' as const, data: await response.text() };
       } else {
         throw new Error(`Unsupported content type: ${contentType}`);
