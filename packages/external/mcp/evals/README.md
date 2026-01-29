@@ -109,3 +109,16 @@ After running, these files are generated:
 1. **Merit Systems Funding** - Find the total raised ($10M expected)
 2. **CEO Email** - Find Merit Systems CEO's email address
 3. **Top Carry Traders** - Find the top carry traders
+
+
+### Notes
+
+Comparing against same config: 
+
+Metric	Value
+Passed	17
+Failed	7
+Pass Rate	70.8%
+Tokens	114,318
+Duration	4m 30s (concurrency: 4)
+View detailed results →	https://www.promptfoo.app/eval/eval-quR-2026-01-29T17:45:20
