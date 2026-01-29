@@ -3,10 +3,12 @@
   "extends": ["//"],
   "tasks": {
     "build": {
+      "description": "Build analytics database package",
       "env": ["ANALYTICS_CLICKHOUSE_*"],
       "outputs": ["dist/**"]
     },
     "dev": {
+      "description": "Start analytics database package in development mode",
       "env": ["ANALYTICS_CLICKHOUSE_*"],
       "persistent": true
     }

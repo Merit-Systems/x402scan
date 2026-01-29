@@ -17,7 +17,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0",
-    "check:types": "tsc --noEmit",
+    "types:check": "tsc --noEmit",
     "knip": "pnpm -w knip --workspace ./packages/internal/neverthrow",
     "format": "pnpm -w format:dir ./packages/internal/neverthrow",
     "format:check": "pnpm -w format:check:dir ./packages/internal/neverthrow"
