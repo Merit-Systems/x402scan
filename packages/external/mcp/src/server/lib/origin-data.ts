@@ -72,5 +72,6 @@ export const getOriginData = async ({
     hostname,
     metadata,
     resources: resourcesWithSchema,
+    wellKnown: wellKnownResult.value,
   };
 };
