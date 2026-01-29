@@ -2,11 +2,16 @@ import type { GlobalFlags } from '@/types';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { PrivateKeyAccount } from 'viem';
 
-interface ToolProps {
+interface ResourceProps {
   server: McpServer;
-  account: PrivateKeyAccount;
   flags: GlobalFlags;
+}
+
+export type RegisterResources = (props: ResourceProps) => Promise<void> | void;
+
+interface ToolProps extends ResourceProps {
+  account: PrivateKeyAccount;
   sessionId: string;
 }
 
-export type RegisterTools = (props: ToolProps) => void | Promise<void>;
+export type RegisterTools = (props: ToolProps) => Promise<void> | void;

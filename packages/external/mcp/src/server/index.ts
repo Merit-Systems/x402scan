@@ -10,7 +10,8 @@ import { registerRedeemInviteTool } from './tools/redeem-invite';
 import { registerTelemetryTools } from './tools/telemetry';
 import { registerDiscoveryTools } from './tools/discover-resources';
 
-import { registerOrigins } from './resources/origins';
+import { registerOriginResources } from './resources/origins';
+
 import { registerPrompts } from './prompts';
 
 import { MCP_VERSION } from './lib/version';
@@ -80,16 +81,16 @@ export const startServer: Command = async flags => {
     sessionId,
   };
 
-  // await registerFetchX402ResourceTool(props);
-  // await registerAuthTools(props);
-  // await registerWalletTools(props);
-  // await registerCheckX402EndpointTool(props);
-  // await registerRedeemInviteTool(props);
-  // await registerDiscoveryTools(props);
-  // await registerTelemetryTools(props);
+  await registerFetchX402ResourceTool(props);
+  await registerAuthTools(props);
+  await registerWalletTools(props);
+  await registerCheckX402EndpointTool(props);
+  await registerRedeemInviteTool(props);
+  await registerDiscoveryTools(props);
+  await registerTelemetryTools(props);
   await registerFetchOriginTool(props);
 
-  // await registerOrigins({ server, flags });
+  await registerOriginResources({ server, flags });
 
   registerPrompts(props);
 
