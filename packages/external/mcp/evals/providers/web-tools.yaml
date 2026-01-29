@@ -38,7 +38,10 @@
   label: 'Web Tools - Sonnet 4.5'
   config:
     model: claude-sonnet-4-5-20250929
-    append_allowed_tools: ['WebFetch', 'WebSearch']
+    setting_sources: ['local']
+    permission_mode: bypassPermissions
+    allow_dangerously_skip_permissions: true
+    allow_all_tools: true
     include_partial_messages: true
     max_budget_usd: 1.00
     output_format:
@@ -71,7 +74,10 @@
   label: 'Web Tools - Opus 4.5'
   config:
     model: claude-opus-4-5-20251101
-    append_allowed_tools: ['WebFetch', 'WebSearch']
+    setting_sources: ['local']
+    permission_mode: bypassPermissions
+    allow_dangerously_skip_permissions: true
+    allow_all_tools: true
     include_partial_messages: true
     max_budget_usd: 5.00
     output_format:

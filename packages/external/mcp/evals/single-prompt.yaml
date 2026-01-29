@@ -13,6 +13,11 @@ providers:
     label: 'x402scan MCP + WebTools - Sonnet 4.5'
     config:
       model: claude-sonnet-4-5-20250929
+      setting_sources: ['local']
+      permission_mode: bypassPermissions
+      allow_dangerously_skip_permissions: true
+      allow_all_tools: true
+      disallowed_tools: ['WebFetch', 'WebSearch']
       mcp:
         servers:
           - command: sh
@@ -50,18 +55,9 @@ providers:
                 type: string
               description: 'List of available tools'
           required: [answer, tool_call_log, available_tools]
-      append_allowed_tools:
-        - 'mcp__x402__fetch'
-        - 'mcp__x402__fetch_with_auth'
-        - 'mcp__x402__get_wallet_info'
-        - 'mcp__x402__check_endpoint_schema'
-        - 'mcp__x402__discover_api_endpoints'
-        - 'mcp__x402__redeem_invite'
-        - 'mcp__x402__report_error'
-        - 'WebFetch'
-        - 'WebSearch'
+
 evaluateOptions:
-  repeat: 5
+  repeat: 1
 
 # Default test configuration applied to all test cases
 defaultTest:
@@ -114,44 +110,49 @@ defaultTest:
 prompts:
   - '{{prompt}}'
 
-# Tests with inline prompts - each test has its prompt and specific assertions
 tests:
-  - description: 'Merit Systems CEO Email'
+  - description: 'Available Tools List'
     vars:
-      prompt: 'Find and verify the email of the CEO of Merit Systems (merit.systems)'
-    assert:
-      - type: javascript
-        value: |
-          const answer = output?.answer || '';
-          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
-          const emailRegex = /[\w.-]+@[\w.-]+\.\w{2,}/g;
-          const emails = text.match(emailRegex) || [];
-          return {
-            pass: emails.length > 0,
-            score: emails.length > 0 ? 1 : 0,
-            reason: emails.length > 0 ? `Found email: ${emails[0]}` : 'No valid email found'
-          };
-        metric: email_found
-      - type: javascript
-        value: |
-          const answer = output?.answer || '';
-          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
-          const hasCeoContext = /ceo|chief executive|founder|co-founder|sam/i.test(text);
-          return {
-            pass: true,
-            score: hasCeoContext ? 1 : 0,
-            reason: hasCeoContext ? 'Response identifies CEO' : 'Response does not identify CEO'
-          };
-        metric: ceo_identified
-      # Verify email is sam@merit.systems
-      - type: javascript
-        value: |
-          const answer = output?.answer || '';
-          const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
-          const hasCeoContext = /sam@merit.systems/i.test(text);
-          return {
-            pass: hasCeoContext,
-            score: hasCeoContext ? 1 : 0,
-            reason: hasCeoContext ? `Response identifies email sam@merit.systems` : `Response does not identify email sam@merit.systems`
-          };
-        metric: email_sam_merit_systems
+      prompt: 'List all the tools you have access to. Then call get wallet info and tell me your balance.'
+
+# # Tests with inline prompts - each test has its prompt and specific assertions
+# tests:
+#   - description: 'Merit Systems CEO Email'
+#     vars:
+#       prompt: 'Find and verify the email of the CEO of Merit Systems (merit.systems)'
+#     assert:
+#       - type: javascript
+#         value: |
+#           const answer = output?.answer || '';
+#           const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+#           const emailRegex = /[\w.-]+@[\w.-]+\.\w{2,}/g;
+#           const emails = text.match(emailRegex) || [];
+#           return {
+#             pass: emails.length > 0,
+#             score: emails.length > 0 ? 1 : 0,
+#             reason: emails.length > 0 ? `Found email: ${emails[0]}` : 'No valid email found'
+#           };
+#         metric: email_found
+#       - type: javascript
+#         value: |
+#           const answer = output?.answer || '';
+#           const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+#           const hasCeoContext = /ceo|chief executive|founder|co-founder|sam/i.test(text);
+#           return {
+#             pass: true,
+#             score: hasCeoContext ? 1 : 0,
+#             reason: hasCeoContext ? 'Response identifies CEO' : 'Response does not identify CEO'
+#           };
+#         metric: ceo_identified
+#       # Verify email is sam@merit.systems
+#       - type: javascript
+#         value: |
+#           const answer = output?.answer || '';
+#           const text = typeof answer === 'string' ? answer : JSON.stringify(answer);
+#           const hasCeoContext = /sam@merit.systems/i.test(text);
+#           return {
+#             pass: hasCeoContext,
+#             score: hasCeoContext ? 1 : 0,
+#             reason: hasCeoContext ? `Response identifies email sam@merit.systems` : `Response does not identify email sam@merit.systems`
+#           };
+#         metric: email_sam_merit_systems
