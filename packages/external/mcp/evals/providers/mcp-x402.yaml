@@ -50,6 +50,12 @@
   label: 'x402scan MCP - Sonnet 4.5'
   config:
     model: claude-sonnet-4-5-20250929
+    setting_sources: ['local']
+    permission_mode: bypassPermissions
+    allow_dangerously_skip_permissions: true
+    allow_all_tools: true
+    disallowed_tools: ['WebFetch', 'WebSearch']
+
     mcp:
       servers:
         - command: sh
@@ -82,19 +88,17 @@
                   type: boolean
             description: 'Log of tool calls made'
         required: [answer, tool_call_log]
-    append_allowed_tools:
-      - 'mcp__x402__fetch'
-      - 'mcp__x402__fetch_with_auth'
-      - 'mcp__x402__get_wallet_info'
-      - 'mcp__x402__check_endpoint_schema'
-      - 'mcp__x402__discover_api_endpoints'
-      - 'mcp__x402__redeem_invite'
-      - 'mcp__x402__report_error'
 
 - id: anthropic:claude-agent-sdk
   label: 'x402scan MCP - Opus 4.5'
   config:
     model: claude-opus-4-5-20251101
+    setting_sources: ['local']
+    permission_mode: bypassPermissions
+    allow_dangerously_skip_permissions: true
+    allow_all_tools: true
+    disallowed_tools: ['WebFetch', 'WebSearch']
+
     mcp:
       servers:
         - command: sh
@@ -127,11 +131,3 @@
                   type: boolean
             description: 'Log of tool calls made'
         required: [answer, tool_call_log]
-    append_allowed_tools:
-      - 'mcp__x402__fetch'
-      - 'mcp__x402__fetch_with_auth'
-      - 'mcp__x402__get_wallet_info'
-      - 'mcp__x402__check_endpoint_schema'
-      - 'mcp__x402__discover_api_endpoints'
-      - 'mcp__x402__redeem_invite'
-      - 'mcp__x402__report_error'
