@@ -24,7 +24,6 @@ export const startServer: Command = async flags => {
 
   if (walletResult.isErr()) {
     log.error(JSON.stringify(walletResult.error, null, 2));
-    console.error(walletResult.error);
     process.exit(1);
   }
 
