@@ -1,4 +1,4 @@
-import type { RegisterPrompts } from './types';
+import type { RegisterPrompts } from '../types';
 
 /**
  * # Getting Started with x402scan

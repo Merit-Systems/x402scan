@@ -2,7 +2,13 @@ import type { GlobalFlags } from '@/types';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { PrivateKeyAccount } from 'viem';
 
-interface ResourceProps {
+interface PromptProps {
+  server: McpServer;
+}
+
+export type RegisterPrompts = (props: PromptProps) => Promise<void> | void;
+
+interface ResourceProps extends PromptProps {
   server: McpServer;
   flags: GlobalFlags;
 }

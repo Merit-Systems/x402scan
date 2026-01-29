@@ -2,14 +2,6 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { randomBytes } from 'crypto';
 
-import { registerFetchX402ResourceTool } from './tools/x402-fetch';
-import { registerAuthTools } from './tools/auth-fetch';
-import { registerWalletTools } from './tools/wallet';
-import { registerCheckX402EndpointTool } from './tools/check-endpoint';
-import { registerRedeemInviteTool } from './tools/redeem-invite';
-import { registerTelemetryTools } from './tools/telemetry';
-import { registerDiscoveryTools } from './tools/discover-resources';
-
 import { registerOriginResources } from './resources/origins';
 
 import { registerPrompts } from './prompts';
@@ -21,7 +13,7 @@ import { getWallet } from '@/shared/wallet';
 import { redeemInviteCode } from '@/shared/redeem-invite';
 
 import type { Command } from '@/types';
-import { registerFetchOriginTool } from './tools/fetch-origin';
+import { registerTools } from './tools';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
@@ -81,18 +73,11 @@ export const startServer: Command = async flags => {
     sessionId,
   };
 
-  await registerFetchX402ResourceTool(props);
-  await registerAuthTools(props);
-  await registerWalletTools(props);
-  await registerCheckX402EndpointTool(props);
-  await registerRedeemInviteTool(props);
-  await registerDiscoveryTools(props);
-  await registerTelemetryTools(props);
-  await registerFetchOriginTool(props);
-
-  await registerOriginResources({ server, flags });
-
-  registerPrompts(props);
+  await Promise.all([
+    registerTools(props),
+    registerOriginResources(props),
+    registerPrompts(props),
+  ]);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
