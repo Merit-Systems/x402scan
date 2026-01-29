@@ -36,3 +36,6 @@ coverage/
 .env.*
 **/.env
 **/.env.*
+
+# MDX content files
+*.mdx

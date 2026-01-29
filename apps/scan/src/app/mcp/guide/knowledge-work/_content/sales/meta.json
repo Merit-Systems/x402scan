@@ -1,0 +1,11 @@
+{
+  "title": "Sales",
+  "description": "Generate leads and research accounts",
+  "icon": "handshake",
+  "items": [
+    "index",
+    "lead-generation",
+    "account-research",
+    "contact-enrichment"
+  ]
+}

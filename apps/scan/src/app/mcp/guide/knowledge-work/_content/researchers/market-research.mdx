@@ -1,0 +1,81 @@
+export const metadata = {
+  title: 'Market Research',
+  description: 'Research markets, industries, and trends',
+};
+
+# Market Research
+
+Conduct comprehensive market research using web search, news, and company data.
+
+---
+
+## Industry Landscape Overview
+
+Get a comprehensive view of a market or industry.
+
+```prompt
+---
+title: Industry Overview
+description: Get a comprehensive view of a market or industry landscape
+icon: globe
+---
+Research the {{Market|observability/monitoring}} market. I need:
+- Key players and their market positioning
+- Recent funding and M&A activity
+- Market size estimates from analyst reports
+- Emerging trends and technologies
+
+Cite all sources.
+```
+
+---
+
+## Identify Market Entrants
+
+Track new companies entering a space.
+
+```prompt
+---
+title: New Entrants
+description: Find new companies entering a specific market
+icon: log-in
+---
+Find all companies founded in the last {{Timeframe|2 years}} that are building {{Product Type|AI coding assistants or developer productivity tools}}. Include their funding, team size, and product focus.
+```
+
+---
+
+## Analyze Market Sizing Data
+
+Gather data points for TAM/SAM/SOM calculations.
+
+```prompt
+---
+title: Market Sizing
+description: Gather data for market sizing calculations
+icon: pie-chart
+---
+Help me size the market for {{Product Category|API security tools}}:
+- Find analyst reports with market size estimates
+- Identify the number of potential customers (companies using APIs)
+- Research pricing models of existing solutions
+```
+
+---
+
+## Geographic Market Analysis
+
+Research a market in a specific region.
+
+```prompt
+---
+title: Regional Analysis
+description: Analyze a market landscape in a specific geographic region
+icon: map
+---
+What does the {{Industry|fintech}} landscape look like in {{Region|Southeast Asia}}?
+- Major hubs and ecosystems
+- Key companies and recent funding
+- Regulatory environment
+- Growth trends vs. other regions
+```
