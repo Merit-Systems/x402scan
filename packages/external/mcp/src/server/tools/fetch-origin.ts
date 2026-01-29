@@ -123,6 +123,15 @@ export const registerFetchOriginTool: RegisterTools = async ({
             }
           }
 
+          const headers: Record<string, string> = {};
+          if (request.headers) {
+            for (const [key, value] of Object.entries(request.headers)) {
+              if (typeof value === 'string') {
+                headers[key] = value;
+              }
+            }
+          }
+
           const fetchResult = await fetchWithPay(
             buildRequest({
               input: {
@@ -134,8 +143,7 @@ export const registerFetchOriginTool: RegisterTools = async ({
                   | 'DELETE'
                   | 'PATCH',
                 body: request.body,
-                headers:
-                  typeof request.headers === 'object' ? request.headers : {},
+                headers,
               },
               address: account.address,
               sessionId,
