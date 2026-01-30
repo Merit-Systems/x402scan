@@ -37,7 +37,7 @@ export function registerDiscoveryTools(server: McpServer): void {
             Firecrawl web scrape
             WhitePages (business directory)
             Email enrichment
-        - https://stablestudio.io -> generate and edit images / videos
+        - https://stablestudio.io -> generate and edit images / videos.
         `,
       inputSchema: z.object({
         url: z
