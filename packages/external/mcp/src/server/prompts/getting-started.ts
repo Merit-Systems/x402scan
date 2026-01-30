@@ -37,6 +37,8 @@ If the wallet has 0 balance, the user needs to deposit USDC on Base before proce
 
 If the user has an invite code, use \`redeem_invite\` to claim free USDC credits.
 
+If they don't, you should send them to this link: https://www.x402scan.com/deposit/<their_wallet_address> to purchase some USDC.
+
 ### Step 3: Discover Available APIs
 
 Use \`discover_api_endpoints\` to find x402-protected endpoints on a target origin. For example:
