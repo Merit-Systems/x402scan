@@ -3,9 +3,11 @@
   "extends": ["//"],
   "tasks": {
     "dev": {
+      "description": "Start Hono example server in development mode",
       "env": ["ADDRESS"]
     },
     "build": {
+      "description": "Build Hono example server",
       "env": ["ADDRESS"]
     }
   }

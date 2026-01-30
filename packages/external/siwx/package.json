@@ -20,7 +20,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0",
-    "check:types": "tsc --noEmit",
+    "types:check": "tsc --noEmit",
     "test": "vitest run",
     "knip": "pnpm -w knip --workspace ./packages/external/siwx",
     "format": "pnpm -w format:dir ./packages/external/siwx",

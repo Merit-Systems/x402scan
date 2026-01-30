@@ -3,6 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
+      "description": "Build x402 scan Next.js app for production",
       "env": [
         "NEXT_PUBLIC_*",
         "NODE_ENV",
@@ -20,6 +21,7 @@
       ]
     },
     "build:deploy": {
+      "description": "Build x402 scan app with database migrations",
       "env": [
         "NEXT_PUBLIC_*",
         "NODE_ENV",
@@ -37,6 +39,7 @@
       ]
     },
     "dev": {
+      "description": "Start x402 scan app in development mode",
       "env": [
         "NEXT_PUBLIC_*",
         "NODE_ENV",

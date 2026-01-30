@@ -3,10 +3,13 @@
   "extends": ["//"],
   "tasks": {
     "dev": {
+      "description": "Start proxy server in development mode",
       "env": ["PORT"]
     },
     "build": {
-      "env": ["PORT"]
+      "description": "Build proxy server for production",
+      "env": ["PORT"],
+      "outputs": ["dist/**"]
     }
   }
 }
