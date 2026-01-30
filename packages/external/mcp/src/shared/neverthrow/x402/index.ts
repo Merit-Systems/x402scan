@@ -83,10 +83,7 @@ const safeCreatePaymentPayload = (
   );
 };
 
-export const safeGetPaymentSettlement = (
-  surface: string,
-  response: Response
-) => {
+const safeGetPaymentSettlement = (surface: string, response: Response) => {
   return x402ResultFromThrowable(
     surface,
     () =>
@@ -169,6 +166,7 @@ export const safeWrapFetchWithPayment = ({
         fetchOk({
           response,
           paymentPayload: undefined,
+          settlement: undefined,
         })
       );
     }
@@ -223,12 +221,25 @@ export const safeWrapFetchWithPayment = ({
     );
 
     // Retry the request with payment
-    return await safeFetch(surface, clonedRequest).andThen(response =>
-      x402Ok({
-        response,
-        paymentPayload,
-      })
+    const retryResult = await safeFetch(surface, clonedRequest);
+
+    if (retryResult.isErr()) {
+      return retryResult;
+    }
+
+    const settlementResult = safeGetPaymentSettlement(
+      surface,
+      retryResult.value
     );
+
+    return x402Ok({
+      response: retryResult.value,
+      paymentPayload,
+      settlement: settlementResult.match(
+        ok => ok,
+        () => undefined
+      ),
+    });
   };
 };
 

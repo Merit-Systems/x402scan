@@ -1,19 +1,13 @@
 import z from 'zod';
 
-import {
-  safeGetPaymentSettlement,
-  safeWrapFetchWithPayment,
-} from '@/shared/neverthrow/x402';
-import { safeParseResponse } from '@/shared/neverthrow/fetch';
+import { safeWrapFetchWithPayment } from '@/shared/neverthrow/x402';
 import { getState } from '@/shared/state';
 
-import { mcpError, mcpErrorFetch, mcpSuccessResponse } from './response';
+import { mcpX402FetchResponse } from './response';
 
 import { getOriginData } from '../lib/origin-data';
 
 import { buildRequest } from './lib/request';
-
-import { tokenStringToNumber } from '@/shared/token';
 
 import type { JSONSchema } from 'zod/v4/core';
 import type { RegisterTools } from '../types';
@@ -88,14 +82,11 @@ export const registerFetchOriginTool: RegisterTools = async ({
         {
           title: metadata?.title ?? undefined,
           description:
-            metadata?.description ?? 'Make x402 requests to the origin',
+            metadata?.description ?? `Make x402 requests to ${origin}`,
           inputSchema: z.object({
             request: z
               .union([z.string(), requestSchema])
-              .describe(
-                originData.wellKnown.instructions ??
-                  `The request to send to ${origin}`
-              )
+              .describe(`The request to send to ${origin}`)
               .refine(value =>
                 typeof value === 'string'
                   ? requestSchema.safeParse(JSON.parse(value)).success
@@ -138,7 +129,7 @@ export const registerFetchOriginTool: RegisterTools = async ({
             }
           }
 
-          const fetchResult = await fetchWithPay(
+          const x402FetchResult = await fetchWithPay(
             buildRequest({
               input: {
                 url: url.toString(),
@@ -156,50 +147,10 @@ export const registerFetchOriginTool: RegisterTools = async ({
             })
           );
 
-          if (fetchResult.isErr()) {
-            return mcpError(fetchResult);
-          }
-
-          const { response, paymentPayload } = fetchResult.value;
-
-          if (!response.ok) {
-            return mcpErrorFetch(origin, response);
-          }
-
-          const parseResponseResult = await safeParseResponse(origin, response);
-
-          if (parseResponseResult.isErr()) {
-            return mcpError(parseResponseResult);
-          }
-
-          const settlementResult = safeGetPaymentSettlement(origin, response);
-
-          return mcpSuccessResponse(
-            parseResponseResult.value,
-
-            settlementResult.isOk() || paymentPayload !== undefined
-              ? {
-                  ...(paymentPayload !== undefined
-                    ? {
-                        price: tokenStringToNumber(
-                          paymentPayload.accepted.amount
-                        ).toLocaleString('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                        }),
-                      }
-                    : {}),
-                  ...(settlementResult.isOk()
-                    ? {
-                        payment: {
-                          success: settlementResult.value.success,
-                          transactionHash: settlementResult.value.transaction,
-                        },
-                      }
-                    : {}),
-                }
-              : undefined
-          );
+          return mcpX402FetchResponse({
+            surface: origin,
+            x402FetchResult,
+          });
         }
       );
     })
