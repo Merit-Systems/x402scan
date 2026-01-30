@@ -7,6 +7,11 @@
       "dependsOn": ["^build", "^db:generate"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
+    "build:watch": {
+      "description": "Build package for development with hot reload",
+      "dependsOn": ["^build", "^db:generate"],
+      "outputs": ["dist/**"]
+    },
     "build:deploy": {
       "description": "Build package with database migrations for deployment",
       "dependsOn": ["^build", "^db:generate", "^db:deploy"],

@@ -1,13 +1,8 @@
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 
-import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
+import { safeFetch } from '@/shared/neverthrow/fetch';
 
-import {
-  mcpError,
-  mcpErrorFetch,
-  mcpSuccessJson,
-  mcpSuccessResponse,
-} from './response';
+import { mcpError, mcpFetchResponse, mcpSuccessJson } from './response';
 
 import { log } from '@/shared/log';
 import { tokenStringToNumber } from '@/shared/token';
@@ -54,16 +49,12 @@ export const registerCheckX402EndpointTool: RegisterTools = ({
       const response = responseResult.value;
 
       if (response.status !== 402) {
-        if (!response.ok) {
-          return mcpErrorFetch(toolName, response);
-        }
-
-        const parseResponseResult = await safeParseResponse(toolName, response);
-        if (parseResponseResult.isErr()) {
-          return mcpError(parseResponseResult);
-        }
-        return mcpSuccessResponse(parseResponseResult.value, {
-          requiresPayment: false,
+        return await mcpFetchResponse({
+          surface: toolName,
+          fetchResult: responseResult,
+          extra: {
+            requiresPayment: false,
+          },
         });
       }
 

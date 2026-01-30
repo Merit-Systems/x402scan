@@ -1,4 +1,4 @@
-import type { BaseError, Error } from '@x402scan/neverthrow/types';
+import type { BaseError, Error, Result } from '@x402scan/neverthrow/types';
 import type { JsonObject } from '../json/types';
 
 type FetchErrorCause = 'network' | 'http' | 'parse';
@@ -20,6 +20,7 @@ type FetchExtra =
 
 export type BaseFetchError = BaseError<FetchErrorCause> & FetchExtra;
 export type FetchError = Error<BaseFetchError>;
+export type FetchResult = Result<Response, FetchError>;
 
 export type ParsedResponse =
   | { type: 'json'; data: JsonObject }

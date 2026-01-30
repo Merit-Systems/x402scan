@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import type { GetPromptResult } from '@modelcontextprotocol/sdk/types.js';
-import type { RegisterPrompts } from './types';
+import type { RegisterPrompts } from '../types';
 
 const PROMPT_CONTENT = `To start, you should check this resource page: https://enrichx402.com/llms.txt, which has access to all of the paid endpoints.
 

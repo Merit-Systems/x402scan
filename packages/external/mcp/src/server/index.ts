@@ -2,15 +2,8 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { randomBytes } from 'crypto';
 
-import { registerFetchX402ResourceTool } from './tools/x402-fetch';
-import { registerAuthTools } from './tools/auth-fetch';
-import { registerWalletTools } from './tools/wallet';
-import { registerCheckX402EndpointTool } from './tools/check-endpoint';
-import { registerRedeemInviteTool } from './tools/redeem-invite';
-import { registerTelemetryTools } from './tools/telemetry';
-import { registerDiscoveryTools } from './tools/discover-resources';
+import { registerOriginResources } from './resources/origins';
 
-import { registerOrigins } from './resources/origins';
 import { registerPrompts } from './prompts';
 
 import { MCP_VERSION } from './lib/version';
@@ -20,6 +13,7 @@ import { getWallet } from '@/shared/wallet';
 import { redeemInviteCode } from '@/shared/redeem-invite';
 
 import type { Command } from '@/types';
+import { registerTools } from './tools';
 
 export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
@@ -30,7 +24,6 @@ export const startServer: Command = async flags => {
 
   if (walletResult.isErr()) {
     log.error(JSON.stringify(walletResult.error, null, 2));
-    console.error(walletResult.error);
     process.exit(1);
   }
 
@@ -65,6 +58,9 @@ export const startServer: Command = async flags => {
         prompts: {
           listChanged: true,
         },
+        tools: {
+          listChanged: true,
+        },
       },
     }
   );
@@ -76,20 +72,13 @@ export const startServer: Command = async flags => {
     sessionId,
   };
 
-  registerFetchX402ResourceTool(props);
-  registerAuthTools(props);
-  registerWalletTools(props);
-  registerCheckX402EndpointTool(props);
-  registerRedeemInviteTool(props);
-  registerDiscoveryTools(server);
-  registerTelemetryTools(props);
+  await Promise.all([
+    registerTools(props),
+    registerOriginResources(props),
+    registerPrompts(props),
+  ]);
 
-  registerPrompts(props);
-
-  await registerOrigins({ server, flags });
-
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
+  await server.connect(new StdioServerTransport());
 
   const shutdown = async () => {
     log.info('Shutting down...');

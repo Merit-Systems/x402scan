@@ -3,11 +3,6 @@ import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
 
 const surface = 'getWebPageMetadata';
 
-interface WebPageMetadata {
-  title: string | null;
-  description: string | null;
-}
-
 export const getWebPageMetadata = (url: string) => {
   return safeFetch(surface, new Request(url))
     .andThen(response => safeParseResponse(surface, response))
@@ -22,7 +17,7 @@ export const getWebPageMetadata = (url: string) => {
     });
 };
 
-const parseMetadataFromResponse = (html: string): WebPageMetadata => {
+const parseMetadataFromResponse = (html: string) => {
   // Extract title
   const titleMatch = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(html);
   const title = titleMatch ? titleMatch[1]!.trim().replace(/\s+/g, ' ') : null;

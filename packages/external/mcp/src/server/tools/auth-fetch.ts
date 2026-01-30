@@ -1,24 +1,20 @@
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { encodeSIWxHeader } from '@x402scan/siwx';
 
-import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
+import { safeFetch } from '@/shared/neverthrow/fetch';
 import {
   safeCreateSIWxPayload,
   safeGetPaymentRequired,
 } from '@/shared/neverthrow/x402';
 
-import {
-  mcpErrorJson,
-  mcpError,
-  mcpSuccessResponse,
-  mcpErrorFetch,
-} from './response';
+import { mcpErrorJson, mcpError, mcpFetchResponse } from './response';
 
 import { requestSchema, buildRequest } from './lib/request';
 
+import { getSiwxExtension } from '../lib/x402-extensions';
+
 import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
 import type { RegisterTools } from '@/server/types';
-import { getSiwxExtension } from '../lib/x402-extensions';
 
 const toolName = 'fetch_with_auth';
 
@@ -56,20 +52,10 @@ export const registerAuthTools: RegisterTools = ({
       const firstResponse = firstResult.value;
 
       if (firstResponse.status !== 402) {
-        if (!firstResponse.ok) {
-          return mcpErrorFetch(toolName, firstResponse);
-        }
-
-        const parseResponseResult = await safeParseResponse(
-          toolName,
-          firstResponse
-        );
-
-        if (parseResponseResult.isErr()) {
-          return mcpError(parseResponseResult);
-        }
-
-        return mcpSuccessResponse(parseResponseResult.value);
+        return await mcpFetchResponse({
+          surface: toolName,
+          fetchResult: firstResult,
+        });
       }
 
       const getPaymentRequiredResult = await safeGetPaymentRequired(
@@ -150,26 +136,10 @@ export const registerAuthTools: RegisterTools = ({
 
       const authedResult = await safeFetch(toolName, authedRequest);
 
-      if (authedResult.isErr()) {
-        return mcpError(authedResult);
-      }
-
-      const authedResponse = authedResult.value;
-
-      if (!authedResponse.ok) {
-        return mcpErrorFetch(toolName, authedResponse);
-      }
-
-      const parseResponseResult = await safeParseResponse(
-        toolName,
-        authedResponse
-      );
-
-      if (parseResponseResult.isErr()) {
-        return mcpError(parseResponseResult);
-      }
-
-      return mcpSuccessResponse(parseResponseResult.value);
+      return await mcpFetchResponse({
+        surface: toolName,
+        fetchResult: authedResult,
+      });
     }
   );
 };
