@@ -290,7 +290,7 @@ tests:
   # Correct answer: masonhall@gmail.com
   - description: 'Mason Hall Personal Email'
     vars:
-      prompt: 'Find the personal email for Mason Hall (masonhall.tech)'
+      prompt: 'Find the personal email for Mason Hall'
     assert:
       # Check for email at gmail.com domain
       - type: javascript
