@@ -15,13 +15,15 @@ const encodeConfig = (config: Record<string, unknown>) => {
 };
 
 const cursorDeepLink = (invite?: string) => {
-  const command = invite
-    ? `source $HOME/.nvm/nvm.sh 2>/dev/null; exec npx -y @x402scan/mcp@latest --invite ${invite}`
-    : 'source $HOME/.nvm/nvm.sh 2>/dev/null; exec npx -y @x402scan/mcp@latest';
+  const args = ['-y', '@x402scan/mcp@latest'];
+
+  if (invite) {
+    args.push(`--invite ${invite}`);
+  }
 
   const config = {
-    command: '/bin/bash',
-    args: ['-c', command],
+    command: 'npx',
+    args,
   };
 
   const encodedConfig = encodeConfig(config);
@@ -33,7 +35,7 @@ export const CursorInstall: ClientInstallComponent = ({ invite }) => {
   return (
     <a href={cursorDeepLink(invite)}>
       <Button
-        className="w-full h-fit py-4 border-2 shadow-none"
+        className="w-full h-fit py-4 border-2 shadow-none bg-muted"
         size="xl"
         variant="outline"
       >

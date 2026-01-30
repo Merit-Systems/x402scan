@@ -14,16 +14,16 @@ export interface BaseStep {
   content: React.ReactNode;
   continueText: string;
   onNext?: () => Promise<void>;
+  nextDisabled?: boolean;
 }
 
 export interface Step extends Omit<BaseStep, 'onNext'> {
-  onNext: () => void;
+  onNext: () => void | Promise<void>;
 }
 
 interface Props extends Step {
   index: number;
   currentStep: number;
-  onPrevious?: () => void;
 }
 
 export const AccordionItem: React.FC<Props> = ({
@@ -33,7 +33,7 @@ export const AccordionItem: React.FC<Props> = ({
   continueText,
   currentStep,
   onNext,
-  onPrevious,
+  nextDisabled,
 }) => {
   const isCompleted = currentStep > index;
 
@@ -54,17 +54,16 @@ export const AccordionItem: React.FC<Props> = ({
         </div>
         <h2 className="text-lg font-semibold shrink-0">{title}</h2>
       </AccordionTrigger>
-      <AccordionContent className="pt-4 pb-0 flex flex-col gap-6">
+      <AccordionContent className="pt-4 pb-0 flex flex-col gap-4">
         {content}
         <div className="flex items-center justify-start gap-2 w-full">
           {onNext && (
-            <Button className="flex-1" onClick={onNext}>
+            <Button
+              className="flex-1"
+              onClick={() => void onNext?.()}
+              disabled={nextDisabled}
+            >
               {continueText}
-            </Button>
-          )}
-          {index > 0 && onPrevious && (
-            <Button className="flex-1" variant="outline" onClick={onPrevious}>
-              Back
             </Button>
           )}
         </div>

@@ -45,7 +45,7 @@ export const McpbDisplay: React.FC = () => {
         }
       />
       <McpbStep
-        title="Confirm in Claude Desktop"
+        title="Confirm Installation"
         description="Press the install button to add the MCP to Claude Desktop"
         display={
           <div className="px-4 py-2 bg-white text-black rounded-xl border font-semibold">
@@ -63,15 +63,14 @@ interface StepProps {
   display: React.ReactNode;
 }
 
-const McpbStep: React.FC<StepProps> = ({ title, description, display }) => {
+const McpbStep: React.FC<StepProps> = ({ title, display }) => {
   return (
     <div className="flex-1 border rounded-lg overflow-hidden flex flex-col">
-      <div className="flex items-center justify-center gap-2 bg-primary/5 p-4 flex-1">
+      <div className="flex items-center justify-center gap-2 bg-primary/5 pt-4 pb-2 flex-1">
         {display}
       </div>
       <div className="p-2 border-t shrink-0 flex flex-col gap-1">
-        <h2 className="text-sm font-semibold">{title}</h2>
-        <p className="text-xs text-muted-foreground">{description}</p>
+        <h2 className="text-sm font-medium text-center">{title}</h2>
       </div>
     </div>
   );

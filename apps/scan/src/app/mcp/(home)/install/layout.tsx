@@ -5,5 +5,5 @@ export default function InstallLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Body className="max-w-2xl mx-auto">{children}</Body>;
+  return <Body className="max-w-xl mx-auto">{children}</Body>;
 }
