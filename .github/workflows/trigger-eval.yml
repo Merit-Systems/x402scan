@@ -1,0 +1,204 @@
+name: 'Trigger Eval in x402-evals'
+
+# Trigger evaluations in x402-evals repository
+# Supports:
+# 1. PR comment trigger with "/eval [suite]"
+# 2. Manual workflow_dispatch
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      eval_suite:
+        description: 'Evaluation suite to run'
+        required: true
+        type: choice
+        options:
+          - smoke
+          - full
+          - regression
+        default: 'smoke'
+      ref:
+        description: 'Branch/tag/SHA to evaluate (defaults to current branch)'
+        required: false
+        type: string
+
+jobs:
+  # Parse the /eval command from PR comments
+  parse-command:
+    if: github.event_name == 'issue_comment' && github.event.issue.pull_request && startsWith(github.event.comment.body, '/eval')
+    runs-on: ubuntu-latest
+    outputs:
+      suite: ${{ steps.parse.outputs.suite }}
+      should_run: ${{ steps.parse.outputs.should_run }}
+    steps:
+      - name: Parse eval command
+        id: parse
+        run: |
+          COMMENT="${{ github.event.comment.body }}"
+          echo "Comment: $COMMENT"
+
+          # Check if it's an eval command
+          if [[ "$COMMENT" =~ ^/eval ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+
+            # Parse suite from command (e.g., "/eval smoke", "/eval full")
+            SUITE=$(echo "$COMMENT" | awk '{print $2}')
+
+            # Default to smoke if no suite specified
+            if [ -z "$SUITE" ] || [[ ! "$SUITE" =~ ^(smoke|full|regression)$ ]]; then
+              SUITE="smoke"
+            fi
+
+            echo "suite=$SUITE" >> $GITHUB_OUTPUT
+            echo "Parsed suite: $SUITE"
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Get PR details for comment-triggered runs
+  get-pr-details:
+    needs: parse-command
+    if: needs.parse-command.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      ref: ${{ steps.pr.outputs.ref }}
+      sha: ${{ steps.pr.outputs.sha }}
+      pr_number: ${{ steps.pr.outputs.pr_number }}
+    steps:
+      - name: Get PR details
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_NUMBER="${{ github.event.issue.number }}"
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+          # Get PR details
+          PR_DATA=$(gh api repos/${{ github.repository }}/pulls/$PR_NUMBER)
+          REF=$(echo "$PR_DATA" | jq -r '.head.ref')
+          SHA=$(echo "$PR_DATA" | jq -r '.head.sha')
+
+          echo "ref=$REF" >> $GITHUB_OUTPUT
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+          echo "PR #$PR_NUMBER: ref=$REF, sha=$SHA"
+
+  # Acknowledge the command with a reaction
+  acknowledge-comment:
+    needs: [parse-command, get-pr-details]
+    if: needs.parse-command.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add reaction to comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+            -f content='rocket' || true
+
+      - name: Post acknowledgment comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          BODY="🚀 **Eval triggered!**
+
+          | Parameter | Value |
+          |-----------|-------|
+          | **Suite** | \`${{ needs.parse-command.outputs.suite }}\` |
+          | **Branch** | \`${{ needs.get-pr-details.outputs.ref }}\` |
+          | **Commit** | \`${{ needs.get-pr-details.outputs.sha }}\` |
+
+          Results will be posted here when complete.
+
+          [View workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
+          gh api repos/${{ github.repository }}/issues/${{ needs.get-pr-details.outputs.pr_number }}/comments \
+            -f body="$BODY"
+
+  # Dispatch to x402-evals for PR comment triggers
+  dispatch-from-comment:
+    needs: [parse-command, get-pr-details, acknowledge-comment]
+    if: needs.parse-command.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch to x402-evals
+        env:
+          EVAL_REPO_PAT: ${{ secrets.EVAL_REPO_PAT }}
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token $EVAL_REPO_PAT" \
+            https://api.github.com/repos/Merit-Systems/x402-evals/dispatches \
+            -d '{
+              "event_type": "feature-branch-eval",
+              "client_payload": {
+                "ref": "${{ needs.get-pr-details.outputs.ref }}",
+                "sha": "${{ needs.get-pr-details.outputs.sha }}",
+                "suite": "${{ needs.parse-command.outputs.suite }}",
+                "pr_number": "${{ needs.get-pr-details.outputs.pr_number }}",
+                "source_repo": "${{ github.repository }}",
+                "triggered_by": "${{ github.actor }}"
+              }
+            }'
+
+          echo "Dispatched feature-branch-eval to x402-evals"
+          echo "  ref: ${{ needs.get-pr-details.outputs.ref }}"
+          echo "  sha: ${{ needs.get-pr-details.outputs.sha }}"
+          echo "  suite: ${{ needs.parse-command.outputs.suite }}"
+          echo "  pr_number: ${{ needs.get-pr-details.outputs.pr_number }}"
+
+  # Dispatch to x402-evals for manual workflow_dispatch
+  dispatch-manual:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get current ref info
+        id: ref
+        run: |
+          REF="${{ inputs.ref || github.ref_name }}"
+          echo "ref=$REF" >> $GITHUB_OUTPUT
+
+          # Get SHA for the ref
+          SHA=$(git ls-remote https://github.com/${{ github.repository }} $REF | cut -f1)
+          if [ -z "$SHA" ]; then
+            SHA="${{ github.sha }}"
+          fi
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Dispatch to x402-evals
+        env:
+          EVAL_REPO_PAT: ${{ secrets.EVAL_REPO_PAT }}
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token $EVAL_REPO_PAT" \
+            https://api.github.com/repos/Merit-Systems/x402-evals/dispatches \
+            -d '{
+              "event_type": "feature-branch-eval",
+              "client_payload": {
+                "ref": "${{ steps.ref.outputs.ref }}",
+                "sha": "${{ steps.ref.outputs.sha }}",
+                "suite": "${{ inputs.eval_suite }}",
+                "pr_number": "",
+                "source_repo": "${{ github.repository }}",
+                "triggered_by": "${{ github.actor }}"
+              }
+            }'
+
+          echo "Dispatched feature-branch-eval to x402-evals"
+          echo "  ref: ${{ steps.ref.outputs.ref }}"
+          echo "  sha: ${{ steps.ref.outputs.sha }}"
+          echo "  suite: ${{ inputs.eval_suite }}"
+
+      - name: Create summary
+        run: |
+          echo "## Eval Dispatched to x402-evals" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Parameter | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Suite** | \`${{ inputs.eval_suite }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Ref** | \`${{ steps.ref.outputs.ref }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **SHA** | \`${{ steps.ref.outputs.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check [x402-evals Actions](https://github.com/Merit-Systems/x402-evals/actions) for results." >> $GITHUB_STEP_SUMMARY

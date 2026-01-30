@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - beta
+      - canary
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -41,10 +42,10 @@ jobs:
         run: pnpm build:packages
 
       - name: Ensure prerelease mode on beta branch
-        if: github.ref == 'refs/heads/beta'
+        if: github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/canary'
         run: |
           if [ ! -f .changeset/pre.json ]; then
-            echo "❌ Beta branch must be in prerelease mode (pre.json missing)"
+            echo "❌ Beta or Canary branch must be in prerelease mode (pre.json missing)"
             exit 1
           fi
 
@@ -66,3 +67,19 @@ jobs:
           commit: 'chore: version packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get MCP package version
+        id: mcp-version
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          VERSION=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | select(.name == "@x402scan/mcp") | .version')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Trigger eval in x402-evals repo
+        if: steps.mcp-version.outputs.version != ''
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.EVAL_REPO_PAT }}
+          repository: merit-systems/x402-evals
+          event-type: mcp-release
+          client-payload: '{"version": "${{ steps.mcp-version.outputs.version }}"}'
