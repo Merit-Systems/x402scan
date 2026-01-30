@@ -125,6 +125,46 @@ pnpm dev install --dev
 pnpm build:mcpb
 ```
 
+## Evaluations
+
+MCP changes are automatically tested via CI. Comprehensive evaluations run in the [x402-evals](https://github.com/Merit-Systems/x402-evals) repository.
+
+### Automatic Checks
+
+- **PR Smoke Test** - Automatically runs when you modify MCP source code
+- **Release Eval** - Full evaluation suite runs when a new version is published
+
+### Manual Evaluation
+
+Comment on your PR to trigger evaluations:
+
+| Command | Description |
+|---------|-------------|
+| `/eval` or `/eval smoke` | Quick validation (~2-3 min) |
+| `/eval full` | Comprehensive testing (~10 min) |
+| `/eval regression` | Known edge cases and historical failures |
+
+Results are posted back to your PR with a link to detailed metrics.
+
+### Local Evaluation
+
+For local development, you can run evals directly:
+
+```bash
+# Run local evals in this package
+pnpm evals
+
+# Or run smoke tests
+pnpm evals:single-prompt
+```
+
+For the full CI/CD eval suite, clone [x402-evals](https://github.com/Merit-Systems/x402-evals) and run:
+
+```bash
+# In x402-evals repo
+MCP_SERVER_DIR=/path/to/x402scan/packages/external/mcp/dist/esm pnpm --filter @x402-evals/promptfoo eval
+```
+
 ## Publishing
 
 This package uses [changesets](https://github.com/changesets/changesets) for versioning and publishing.

@@ -1,20 +1,22 @@
-name: 'Prompt Evaluation'
+name: 'MCP Smoke Test'
+
+# Quick smoke test for MCP changes
+# For comprehensive evals, use `/eval` command or trigger x402-evals manually
 
 on:
   pull_request:
     paths:
-      - 'packages/external/mcp/src/lib/**'
-      - 'packages/external/mcp/evals/**'
+      - 'packages/external/mcp/src/**'
+      - 'packages/external/mcp/package.json'
 
 jobs:
-  evaluate:
+  smoke-test:
     runs-on: ubuntu-latest
     permissions:
-      # This permission is used to post comments on Pull Requests
       pull-requests: write
     env:
-      PROMPTFOO_API_KEY: ${{ secrets.PROMPTFOO_API_KEY }}
       X402_PRIVATE_KEY: ${{ secrets.X402_PRIVATE_KEY }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,113 +33,71 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Rebuild better-sqlite3 native module
-        run: |
-          SQLITE_DIR=$(find node_modules/.pnpm -type d -name "better-sqlite3" -path "*/better-sqlite3@*/node_modules/*" | head -1)
-          cd "$SQLITE_DIR" && npm rebuild
-
-      # This cache is optional, but you'll save money and time by setting it up!
-      - name: Set up promptfoo cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.promptfoo/cache
-          key: ${{ runner.os }}-promptfoo-v1
-          restore-keys: |
-            ${{ runner.os }}-promptfoo-
-
-      # Build the MCP server locally
       - name: Build MCP server
         run: pnpm build --filter=@x402scan/mcp
 
-      # Verify the x402scan MCP server starts and registers tools
-      - name: Verify x402scan MCP server
+      # Verify the MCP server starts and registers tools
+      - name: Verify MCP server starts
+        id: verify
         working-directory: packages/external/mcp
         run: |
+          echo "Testing locally built MCP server..."
+
           # MCP requires initialize handshake before tools/list
-          (echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}'; \
+          OUTPUT=$((echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}'; \
            sleep 1; \
            echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'; \
            sleep 1; \
-           echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"check_balance","arguments":{}}}'; \
+           echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_wallet_info","arguments":{}}}'; \
            sleep 3) | \
-            timeout 20s node dist/esm/index.js 2>&1 | head -150
+            timeout 20s node dist/esm/index.js 2>&1)
 
-      # Run evaluation using the package's promptfoo (has claude-agent-sdk as devDep)
-      - name: Run promptfoo evaluation
-        id: eval
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        working-directory: packages/external/mcp
-        run: |
-          # Inject absolute MCP server path into provider configs
-          MCP_PATH="${{ github.workspace }}/packages/external/mcp/dist/esm"
-          echo "Injecting MCP server path: $MCP_PATH"
+          echo "$OUTPUT" | head -100
 
-          # Replace ${MCP_SERVER_DIR} with the actual absolute path
-          sed -i "s|\${MCP_SERVER_DIR}|$MCP_PATH|g" evals/providers/*.yaml
+          # Check for successful initialization
+          if echo "$OUTPUT" | grep -q '"result"'; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "✅ MCP server initialized successfully"
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "❌ MCP server failed to initialize"
+            exit 1
+          fi
 
-          # Verify the substitution worked
-          grep -n "index.js" evals/providers/*.yaml | head -5
+          # Count registered tools
+          TOOL_COUNT=$(echo "$OUTPUT" | grep -o '"name":' | wc -l || echo "0")
+          echo "tool_count=$TOOL_COUNT" >> $GITHUB_OUTPUT
+          echo "Found $TOOL_COUNT tool definitions"
 
-          # Run eval and capture output
-          pnpm exec promptfoo eval --config evals/promptfooconfig.yaml --output evals/results.json --share 2>&1 | tee eval-output.txt
-
-          # Extract results summary (e.g., "Results: ✓ 10 passed, ✗ 14 failed, 0 errors (41.67%)")
-          RESULTS=$(grep -E "^Results:" eval-output.txt || echo "Results: Unable to parse")
-          echo "results=$RESULTS" >> $GITHUB_OUTPUT
-
-          # Extract share URL
-          SHARE_URL=$(grep -oE "https://www\.promptfoo\.app/eval/[^ ]+" eval-output.txt | tail -1 || echo "")
-          echo "share_url=$SHARE_URL" >> $GITHUB_OUTPUT
-
-          # Extract token usage
-          TOKENS=$(grep -E "^Total Tokens:" eval-output.txt || echo "")
-          echo "tokens=$TOKENS" >> $GITHUB_OUTPUT
-
-          # Extract duration
-          DURATION=$(grep -E "^Duration:" eval-output.txt || echo "")
-          echo "duration=$DURATION" >> $GITHUB_OUTPUT
-
-      - name: Comment eval results on PR
-        if: github.event_name == 'pull_request'
+      - name: Post smoke test results
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
-            const results = `${{ steps.eval.outputs.results }}`;
-            const shareUrl = `${{ steps.eval.outputs.share_url }}`;
-            const tokens = `${{ steps.eval.outputs.tokens }}`;
-            const duration = `${{ steps.eval.outputs.duration }}`;
-
-            // Parse pass/fail from results
-            const passMatch = results.match(/(\d+) passed/);
-            const failMatch = results.match(/(\d+) failed/);
-            const passed = passMatch ? parseInt(passMatch[1]) : 0;
-            const failed = failMatch ? parseInt(failMatch[1]) : 0;
-            const total = passed + failed;
-            const passRate = total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
-
-            // Determine status emoji
-            const statusEmoji = failed === 0 ? '✅' : passRate >= 70 ? '⚠️' : '❌';
+            const status = '${{ steps.verify.outputs.status }}';
+            const toolCount = '${{ steps.verify.outputs.tool_count }}';
+            const statusEmoji = status === 'success' ? '✅' : '❌';
 
             const body = [
-              `## ${statusEmoji} Prompt Evaluation Results`,
+              `## ${statusEmoji} MCP Smoke Test`,
               '',
-              '| Metric | Value |',
-              '|--------|-------|',
-              `| **Passed** | ${passed} |`,
-              `| **Failed** | ${failed} |`,
-              `| **Pass Rate** | ${passRate}% |`,
-              tokens ? `| **Tokens** | ${tokens.replace('Total Tokens: ', '')} |` : null,
-              duration ? `| **Duration** | ${duration.replace('Duration: ', '')} |` : null,
-              '',
-              shareUrl ? `**[View detailed results →](${shareUrl})**` : null,
+              '| Check | Status |',
+              '|-------|--------|',
+              `| **Server Starts** | ${status === 'success' ? '✅ Pass' : '❌ Fail'} |`,
+              `| **Tools Registered** | ${toolCount} tools |`,
               '',
               '<details>',
-              '<summary>What is this?</summary>',
+              '<summary>Run full evaluation suite</summary>',
               '',
-              'This evaluation tests the x402scan MCP server against a set of prompts to measure tool usage and answer quality across different provider configurations.',
+              'Comment `/eval` on this PR to trigger the full evaluation suite in x402-evals.',
+              '',
+              'Available suites:',
+              '- `/eval smoke` - Quick validation (~2-3 min)',
+              '- `/eval full` - Comprehensive testing (~10 min)',
+              '- `/eval regression` - Known edge cases',
+              '',
               '</details>'
-            ].filter(Boolean).join('\n');
+            ].join('\n');
 
             // Find existing comment to update
             const { data: comments } = await github.rest.issues.listComments({
@@ -146,8 +106,8 @@ jobs:
               issue_number: context.issue.number,
             });
 
-            const botComment = comments.find(c => 
-              c.user.type === 'Bot' && c.body.includes('Prompt Evaluation Results')
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('MCP Smoke Test')
             );
 
             if (botComment) {
@@ -165,38 +125,3 @@ jobs:
                 body
               });
             }
-
-      # Copy Claude session logs to a directory for artifact upload
-      - name: Collect Claude session logs
-        if: always()
-        run: |
-          mkdir -p claude-session-logs
-          if [ -d "$HOME/.claude/projects" ]; then
-            find "$HOME/.claude/projects" -name "*.jsonl" -exec cp {} claude-session-logs/ \;
-          fi
-          # Also copy the tool usage logs from the evals extension
-          if [ -f "packages/external/mcp/evals/tool-usage-log.jsonl" ]; then
-            cp packages/external/mcp/evals/tool-usage-log.jsonl claude-session-logs/
-          fi
-          if [ -f "packages/external/mcp/evals/tool-usage.json" ]; then
-            cp packages/external/mcp/evals/tool-usage.json claude-session-logs/
-          fi
-          # Copy the results.json as well
-          if [ -f "packages/external/mcp/evals/results.json" ]; then
-            cp packages/external/mcp/evals/results.json claude-session-logs/
-          fi
-          # Copy promptfoo error and debug logs if they exist
-          if [ -d "$HOME/.promptfoo/logs" ]; then
-            cp "$HOME/.promptfoo/logs"/promptfoo-error-*.log claude-session-logs/ 2>/dev/null || true
-            cp "$HOME/.promptfoo/logs"/promptfoo-debug-*.log claude-session-logs/ 2>/dev/null || true
-          fi
-          ls -la claude-session-logs/ || echo "No logs collected"
-
-      - name: Upload Claude session logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: claude-session-logs
-          path: claude-session-logs/
-          retention-days: 3
-          if-no-files-found: warn
