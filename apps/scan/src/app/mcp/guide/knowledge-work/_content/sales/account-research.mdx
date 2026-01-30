@@ -1,0 +1,82 @@
+export const metadata = {
+  title: 'Account Research',
+  description: 'Deep research on target accounts before outreach',
+};
+
+# Account Research
+
+Gather comprehensive intelligence on target accounts to personalize outreach and identify opportunities.
+
+---
+
+## Company Deep Dive
+
+Get a complete picture of a target account before a meeting.
+
+```prompt
+---
+title: Account Overview
+description: Get a complete picture of a target account
+icon: building
+---
+Research {{Company|Acme Corp}} thoroughly. I need:
+- Company overview (size, funding, revenue if available)
+- Leadership team and their backgrounds
+- Recent news and announcements
+- Tech stack and tools they use
+- Any recent job postings that signal priorities
+```
+
+---
+
+## Map the Buying Committee
+
+Identify all stakeholders involved in purchasing decisions.
+
+```prompt
+---
+title: Buying Committee
+description: Map all stakeholders involved in purchasing decisions
+icon: users
+---
+I'm selling to {{Company|Acme Corp}}'s {{Team|engineering}} team. Map out everyone who might be involved in a purchasing decision:
+- Technical evaluators (senior engineers, architects)
+- Budget holders (VP/Director level)
+- Executive sponsors (CTO, CEO)
+
+Include their LinkedIn and email for each.
+```
+
+---
+
+## Track Company News and Signals
+
+Monitor for buying signals and conversation starters.
+
+```prompt
+---
+title: Signal Tracking
+description: Monitor a company for buying signals and news
+icon: bell
+---
+What's been happening at {{Company|Datadog}} in the last {{Timeframe|month}}? Find:
+- Press releases and announcements
+- Executive interviews or podcasts
+- Product launches
+- Hiring patterns that indicate priorities
+```
+
+---
+
+## Analyze Competitive Displacement Opportunities
+
+Find accounts using competitor products.
+
+```prompt
+---
+title: Displacement Opportunities
+description: Find companies using competitor products
+icon: shuffle
+---
+Find companies that mention using {{Competitor|Competitor X}} on their engineering blog, job postings, or Stack Overflow discussions. These are potential displacement opportunities.
+```

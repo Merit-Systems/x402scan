@@ -52,7 +52,7 @@ export const V2AnnouncementBanner = () => {
 
       <div className="flex items-center gap-2">
         <Popover>
-          <PopoverTrigger>
+          <PopoverTrigger asChild>
             <Button size="sm">Learn more</Button>
           </PopoverTrigger>
           <PopoverContent>

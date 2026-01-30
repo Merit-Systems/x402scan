@@ -1,0 +1,11 @@
+{
+  "title": "Investors",
+  "description": "Research companies and founders for due diligence",
+  "icon": "dollar-sign",
+  "items": [
+    "index",
+    "deal-sourcing",
+    "founder-research",
+    "company-due-diligence"
+  ]
+}
