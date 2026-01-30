@@ -89,6 +89,9 @@ jobs:
     needs: [parse-command, get-pr-details]
     if: needs.parse-command.outputs.should_run == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
       - name: Add reaction to comment
         env:
