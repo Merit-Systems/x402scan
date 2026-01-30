@@ -127,7 +127,7 @@ pnpm build:mcpb
 
 ## Evaluations
 
-MCP changes are automatically tested via CI. Comprehensive evaluations run in the [x402-evals](https://github.com/Merit-Systems/x402-evals) repository.
+MCP changes are automatically tested via CI. Comprehensive evaluations run in the [x402-evals](https://github.com/merit-systems/x402-evals) repository.
 
 ### Automatic Checks
 
@@ -158,7 +158,7 @@ pnpm evals
 pnpm evals:single-prompt
 ```
 
-For the full CI/CD eval suite, clone [x402-evals](https://github.com/Merit-Systems/x402-evals) and run:
+For the full CI/CD eval suite, clone [x402-evals](https://github.com/merit-systems/x402-evals) and run:
 
 ```bash
 # In x402-evals repo
