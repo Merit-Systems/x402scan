@@ -82,14 +82,11 @@ export const registerFetchOriginTool: RegisterTools = async ({
         {
           title: metadata?.title ?? undefined,
           description:
-            metadata?.description ?? 'Make x402 requests to the origin',
+            metadata?.description ?? `Make x402 requests to ${origin}`,
           inputSchema: z.object({
             request: z
               .union([z.string(), requestSchema])
-              .describe(
-                originData.wellKnown.instructions ??
-                  `The request to send to ${origin}`
-              )
+              .describe(`The request to send to ${origin}`)
               .refine(value =>
                 typeof value === 'string'
                   ? requestSchema.safeParse(JSON.parse(value)).success
