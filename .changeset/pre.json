@@ -20,6 +20,7 @@
     "@x402scan/sync-transfers": "1.0.0"
   },
   "changesets": [
-    "large-seas-call"
+    "large-seas-call",
+    "tiny-socks-train"
   ]
 }

@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.2.1-beta.1
+
+### Patch Changes
+
+- cdff591: remove instructions from descriptions
+
 ## 0.2.1-beta.0
 
 ### Patch Changes
