@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "postinstall": "cp -f ../facilitators/images/* public/ 2>/dev/null || true",
+    "predev": "pnpm --filter @x402scan/neverthrow --filter @x402scan/partners-db build",
     "dev": "next dev",
     "build": "next build",
     "build:deploy": "pnpm build",
