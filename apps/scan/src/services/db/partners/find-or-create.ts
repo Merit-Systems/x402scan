@@ -24,10 +24,16 @@ export const findOrCreatePartner = async (
         query_params: { name },
     });
 
-    const rows = await resultSet.json<PartnerData[]>();
+    const data = await resultSet.json();
+    const rows = data as PartnerData[];
 
-    const partner = rows?.[0];
-    if (partner) {
+    if (rows && rows.length > 0) {
+        const partner = rows[0];
+        if (!partner) {
+            // This shouldn't happen, but TypeScript needs this check
+            throw new Error('Partner data is undefined');
+        }
+
         // Update merit_contact if it's different
         if (partner.merit_contact !== merit_contact) {
             const updateQuery = `
