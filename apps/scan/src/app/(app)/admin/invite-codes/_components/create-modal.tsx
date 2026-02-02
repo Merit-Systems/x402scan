@@ -29,6 +29,8 @@ export const CreateInviteCodeButton = () => {
   const [note, setNote] = useState('');
   const [partnerName, setPartnerName] = useState('');
   const [partnerMeritContact, setPartnerMeritContact] = useState('');
+  const [partnerEmail, setPartnerEmail] = useState('');
+  const [partnerOrganization, setPartnerOrganization] = useState('');
 
   const utils = api.useUtils();
 
@@ -50,6 +52,8 @@ export const CreateInviteCodeButton = () => {
     setNote('');
     setPartnerName('');
     setPartnerMeritContact('');
+    setPartnerEmail('');
+    setPartnerOrganization('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -71,6 +75,8 @@ export const CreateInviteCodeButton = () => {
       note: note || undefined,
       partnerName,
       partnerMeritContact,
+      partnerEmail: partnerEmail || undefined,
+      partnerOrganization: partnerOrganization || undefined,
     });
   };
 
@@ -119,6 +125,35 @@ export const CreateInviteCodeButton = () => {
             />
             <p className="text-xs text-muted-foreground">
               Name of the Merit team member managing this partner
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="partnerEmail">Partner Email (Optional)</Label>
+            <Input
+              id="partnerEmail"
+              type="email"
+              placeholder="partner@example.com"
+              value={partnerEmail}
+              onChange={e => setPartnerEmail(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Partner email address. Will use placeholder if not provided.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="partnerOrganization">
+              Partner Organization (Optional)
+            </Label>
+            <Input
+              id="partnerOrganization"
+              placeholder="Acme Inc"
+              value={partnerOrganization}
+              onChange={e => setPartnerOrganization(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Partner organization name. Will use placeholder if not provided.
             </p>
           </div>
 

@@ -23,14 +23,26 @@ export const createInviteCodeSchema = z.object({
   note: z.string().optional(),
   partnerName: z.string().min(1),
   partnerMeritContact: z.string().min(1),
+  partnerEmail: z.string().email().optional(),
+  partnerOrganization: z.string().min(1).optional(),
 });
 
 export const createInviteCode = async (
   createdById: string,
-  { code, partnerName, partnerMeritContact, ...input }: z.infer<typeof createInviteCodeSchema>
+  {
+    code,
+    partnerName,
+    partnerMeritContact,
+    partnerEmail,
+    partnerOrganization,
+    ...input
+  }: z.infer<typeof createInviteCodeSchema>
 ) => {
   // Find or create the partner first
-  const partner = await findOrCreatePartner(partnerName, partnerMeritContact);
+  const partner = await findOrCreatePartner(partnerName, partnerMeritContact, {
+    email: partnerEmail,
+    organization: partnerOrganization,
+  });
 
   // Create the invite code
   const inviteCode = await scanDb.inviteCode.create({
