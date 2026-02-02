@@ -1,7 +1,7 @@
 import { parseUnits } from '@coinbase/cdp-sdk';
 import { scanDb } from '@x402scan/scan-db';
 import z from 'zod';
-import { addInviteCodeToPartner } from '../partners';
+import { addInviteCodeToPartner, findOrCreatePartner } from '../partners';
 
 // Characters that avoid confusion (no 0/O, 1/I/L)
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -21,13 +21,18 @@ export const createInviteCodeSchema = z.object({
   uniqueRecipients: z.boolean().default(false),
   expiresAt: z.date().optional(),
   note: z.string().optional(),
-  partnerId: z.string().min(1),
+  partnerName: z.string().min(1),
+  partnerMeritContact: z.string().min(1),
 });
 
 export const createInviteCode = async (
   createdById: string,
-  { code, partnerId, ...input }: z.infer<typeof createInviteCodeSchema>
+  { code, partnerName, partnerMeritContact, ...input }: z.infer<typeof createInviteCodeSchema>
 ) => {
+  // Find or create the partner first
+  const partner = await findOrCreatePartner(partnerName, partnerMeritContact);
+
+  // Create the invite code
   const inviteCode = await scanDb.inviteCode.create({
     data: {
       ...input,
@@ -35,7 +40,9 @@ export const createInviteCode = async (
       createdById,
     },
   });
-  await addInviteCodeToPartner(partnerId, inviteCode.id);
+
+  // Associate the invite code with the partner
+  await addInviteCodeToPartner(partner.id, inviteCode.id);
 
   return inviteCode;
 };
