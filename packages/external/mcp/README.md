@@ -138,11 +138,11 @@ MCP changes are automatically tested via CI. Comprehensive evaluations run in th
 
 Comment on your PR to trigger evaluations:
 
-| Command | Description |
-|---------|-------------|
-| `/eval` or `/eval smoke` | Quick validation (~2-3 min) |
-| `/eval full` | Comprehensive testing (~10 min) |
-| `/eval regression` | Known edge cases and historical failures |
+| Command                  | Description                              |
+| ------------------------ | ---------------------------------------- |
+| `/eval` or `/eval smoke` | Quick validation (~2-3 min)              |
+| `/eval full`             | Comprehensive testing (~10 min)          |
+| `/eval regression`       | Known edge cases and historical failures |
 
 Results are posted back to your PR with a link to detailed metrics.
 

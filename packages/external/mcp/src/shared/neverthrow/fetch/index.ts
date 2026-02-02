@@ -61,57 +61,74 @@ export const safeParseResponse = (surface: string, response: Response) => {
     surface,
     (async (): Promise<ParsedResponse> => {
       const contentType = response.headers.get('content-type') ?? '';
+      // Extract base MIME type without parameters (e.g., charset)
+      const baseType = (contentType.split(';')[0] ?? '').trim();
 
-      switch (contentType) {
-        case 'application/json':
-          return {
-            type: 'json' as const,
-            data: (await response.json()) as JsonObject,
-          };
-        case 'image/png':
-        case 'image/jpeg':
-        case 'image/gif':
-        case 'image/webp':
-        case 'image/svg+xml':
-        case 'image/tiff':
-        case 'image/bmp':
-        case 'image/ico':
-          return {
-            type: 'image' as const,
-            mimeType: contentType,
-            data: await response.arrayBuffer(),
-          };
-        case 'audio/':
-          return {
-            type: 'audio' as const,
-            mimeType: contentType,
-            data: await response.arrayBuffer(),
-          };
-        case 'video/':
-          return {
-            type: 'video' as const,
-            mimeType: contentType,
-            data: await response.arrayBuffer(),
-          };
-        case 'application/pdf':
-          return {
-            type: 'pdf' as const,
-            mimeType: contentType,
-            data: await response.arrayBuffer(),
-          };
-        case 'application/octet-stream':
-          return {
-            type: 'octet-stream' as const,
-            mimeType: contentType,
-            data: await response.arrayBuffer(),
-          };
-        case 'multipart/form-data':
-          return { type: 'formData' as const, data: await response.formData() };
-        case 'text/':
-          return { type: 'text' as const, data: await response.text() };
-        default:
-          throw new Error(`Unsupported content type: ${contentType}`);
+      if (baseType === 'application/json') {
+        return {
+          type: 'json' as const,
+          data: (await response.json()) as JsonObject,
+        };
       }
+
+      if (
+        baseType === 'image/png' ||
+        baseType === 'image/jpeg' ||
+        baseType === 'image/gif' ||
+        baseType === 'image/webp' ||
+        baseType === 'image/svg+xml' ||
+        baseType === 'image/tiff' ||
+        baseType === 'image/bmp' ||
+        baseType === 'image/ico'
+      ) {
+        return {
+          type: 'image' as const,
+          mimeType: baseType,
+          data: await response.arrayBuffer(),
+        };
+      }
+
+      if (baseType.startsWith('audio/')) {
+        return {
+          type: 'audio' as const,
+          mimeType: baseType,
+          data: await response.arrayBuffer(),
+        };
+      }
+
+      if (baseType.startsWith('video/')) {
+        return {
+          type: 'video' as const,
+          mimeType: baseType,
+          data: await response.arrayBuffer(),
+        };
+      }
+
+      if (baseType === 'application/pdf') {
+        return {
+          type: 'pdf' as const,
+          mimeType: baseType,
+          data: await response.arrayBuffer(),
+        };
+      }
+
+      if (baseType === 'application/octet-stream') {
+        return {
+          type: 'octet-stream' as const,
+          mimeType: baseType,
+          data: await response.arrayBuffer(),
+        };
+      }
+
+      if (baseType.startsWith('multipart/form-data')) {
+        return { type: 'formData' as const, data: await response.formData() };
+      }
+
+      if (baseType.startsWith('text/')) {
+        return { type: 'text' as const, data: await response.text() };
+      }
+
+      throw new Error(`Unsupported content type: ${contentType}`);
     })(),
     e => ({
       cause: 'parse' as const,
