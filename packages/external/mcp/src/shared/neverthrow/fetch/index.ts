@@ -1,3 +1,4 @@
+import contentType from 'content-type';
 import { err, ok, resultFromPromise } from '@x402scan/neverthrow';
 
 import type z from 'zod';
@@ -6,6 +7,17 @@ import type { BaseError, Error } from '@x402scan/neverthrow/types';
 import type { BaseFetchError, FetchError, ParsedResponse } from './types';
 import type { JsonObject } from '../json/types';
 import { safeParse } from '../parse';
+
+const IMAGE_TYPES = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/gif',
+  'image/webp',
+  'image/svg+xml',
+  'image/tiff',
+  'image/bmp',
+  'image/ico',
+]);
 
 const errorType = 'fetch';
 
@@ -60,58 +72,62 @@ export const safeParseResponse = (surface: string, response: Response) => {
     errorType,
     surface,
     (async (): Promise<ParsedResponse> => {
-      const contentType = response.headers.get('content-type') ?? '';
+      const header = response.headers.get('content-type');
+      const { type: mimeType } = header
+        ? contentType.parse(header)
+        : { type: 'application/octet-stream' };
 
-      switch (contentType) {
+      switch (mimeType) {
         case 'application/json':
           return {
             type: 'json' as const,
             data: (await response.json()) as JsonObject,
           };
-        case 'image/png':
-        case 'image/jpeg':
-        case 'image/gif':
-        case 'image/webp':
-        case 'image/svg+xml':
-        case 'image/tiff':
-        case 'image/bmp':
-        case 'image/ico':
-          return {
-            type: 'image' as const,
-            mimeType: contentType,
-            data: await response.arrayBuffer(),
-          };
-        case 'audio/':
-          return {
-            type: 'audio' as const,
-            mimeType: contentType,
-            data: await response.arrayBuffer(),
-          };
-        case 'video/':
-          return {
-            type: 'video' as const,
-            mimeType: contentType,
-            data: await response.arrayBuffer(),
-          };
         case 'application/pdf':
           return {
             type: 'pdf' as const,
-            mimeType: contentType,
+            mimeType,
             data: await response.arrayBuffer(),
           };
         case 'application/octet-stream':
           return {
             type: 'octet-stream' as const,
-            mimeType: contentType,
+            mimeType,
             data: await response.arrayBuffer(),
           };
         case 'multipart/form-data':
           return { type: 'formData' as const, data: await response.formData() };
-        case 'text/':
-          return { type: 'text' as const, data: await response.text() };
-        default:
-          throw new Error(`Unsupported content type: ${contentType}`);
       }
+
+      if (IMAGE_TYPES.has(mimeType)) {
+        return {
+          type: 'image' as const,
+          mimeType,
+          data: await response.arrayBuffer(),
+        };
+      }
+
+      if (mimeType.startsWith('audio/')) {
+        return {
+          type: 'audio' as const,
+          mimeType,
+          data: await response.arrayBuffer(),
+        };
+      }
+
+      if (mimeType.startsWith('video/')) {
+        return {
+          type: 'video' as const,
+          mimeType,
+          data: await response.arrayBuffer(),
+        };
+      }
+
+      if (mimeType.startsWith('text/')) {
+        return { type: 'text' as const, data: await response.text() };
+      }
+
+      throw new Error(`Unsupported content type: ${header}`);
     })(),
     e => ({
       cause: 'parse' as const,
