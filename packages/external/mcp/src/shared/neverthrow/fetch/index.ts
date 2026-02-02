@@ -1,3 +1,4 @@
+import contentType from 'content-type';
 import { err, ok, resultFromPromise } from '@x402scan/neverthrow';
 
 import type z from 'zod';
@@ -6,6 +7,17 @@ import type { BaseError, Error } from '@x402scan/neverthrow/types';
 import type { BaseFetchError, FetchError, ParsedResponse } from './types';
 import type { JsonObject } from '../json/types';
 import { safeParse } from '../parse';
+
+const IMAGE_TYPES = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/gif',
+  'image/webp',
+  'image/svg+xml',
+  'image/tiff',
+  'image/bmp',
+  'image/ico',
+]);
 
 const errorType = 'fetch';
 
@@ -60,75 +72,62 @@ export const safeParseResponse = (surface: string, response: Response) => {
     errorType,
     surface,
     (async (): Promise<ParsedResponse> => {
-      const contentType = response.headers.get('content-type') ?? '';
-      // Extract base MIME type without parameters (e.g., charset)
-      const baseType = (contentType.split(';')[0] ?? '').trim();
+      const header = response.headers.get('content-type');
+      const { type: mimeType } = header
+        ? contentType.parse(header)
+        : { type: 'application/octet-stream' };
 
-      if (baseType === 'application/json') {
-        return {
-          type: 'json' as const,
-          data: (await response.json()) as JsonObject,
-        };
+      switch (mimeType) {
+        case 'application/json':
+          return {
+            type: 'json' as const,
+            data: (await response.json()) as JsonObject,
+          };
+        case 'application/pdf':
+          return {
+            type: 'pdf' as const,
+            mimeType,
+            data: await response.arrayBuffer(),
+          };
+        case 'application/octet-stream':
+          return {
+            type: 'octet-stream' as const,
+            mimeType,
+            data: await response.arrayBuffer(),
+          };
+        case 'multipart/form-data':
+          return { type: 'formData' as const, data: await response.formData() };
       }
 
-      if (
-        baseType === 'image/png' ||
-        baseType === 'image/jpeg' ||
-        baseType === 'image/gif' ||
-        baseType === 'image/webp' ||
-        baseType === 'image/svg+xml' ||
-        baseType === 'image/tiff' ||
-        baseType === 'image/bmp' ||
-        baseType === 'image/ico'
-      ) {
+      if (IMAGE_TYPES.has(mimeType)) {
         return {
           type: 'image' as const,
-          mimeType: baseType,
+          mimeType,
           data: await response.arrayBuffer(),
         };
       }
 
-      if (baseType.startsWith('audio/')) {
+      if (mimeType.startsWith('audio/')) {
         return {
           type: 'audio' as const,
-          mimeType: baseType,
+          mimeType,
           data: await response.arrayBuffer(),
         };
       }
 
-      if (baseType.startsWith('video/')) {
+      if (mimeType.startsWith('video/')) {
         return {
           type: 'video' as const,
-          mimeType: baseType,
+          mimeType,
           data: await response.arrayBuffer(),
         };
       }
 
-      if (baseType === 'application/pdf') {
-        return {
-          type: 'pdf' as const,
-          mimeType: baseType,
-          data: await response.arrayBuffer(),
-        };
-      }
-
-      if (baseType === 'application/octet-stream') {
-        return {
-          type: 'octet-stream' as const,
-          mimeType: baseType,
-          data: await response.arrayBuffer(),
-        };
-      }
-
-      if (baseType.startsWith('multipart/form-data')) {
-        return { type: 'formData' as const, data: await response.formData() };
-      }
-
-      if (baseType.startsWith('text/')) {
+      if (mimeType.startsWith('text/')) {
         return { type: 'text' as const, data: await response.text() };
       }
 
-      throw new Error(`Unsupported content type: ${contentType}`);
+      throw new Error(`Unsupported content type: ${header}`);
     })(),
     e => ({
       cause: 'parse' as const,
