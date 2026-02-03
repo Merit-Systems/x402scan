@@ -38,6 +38,19 @@ void yargs(hideBin(process.argv))
     description: 'Suppress stderr output',
     default: false,
   })
+  .option('verbose', {
+    alias: 'v',
+    type: 'boolean',
+    description: 'Enable verbose logging (debug output to stderr)',
+    default: false,
+  })
+  .middleware(async argv => {
+    // Configure CLI context for shared modules (like logging)
+    if (argv.verbose) {
+      const { configureCliContext } = await import('@/shared/cli-context');
+      configureCliContext({ verbose: true });
+    }
+  })
   // ============================================================
   // Core CLI Commands (for agent/programmatic use)
   // ============================================================
