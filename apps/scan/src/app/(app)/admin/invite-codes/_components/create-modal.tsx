@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, ChevronDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,20 +17,46 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { api } from '@/trpc/client';
+
+const MERIT_CONTACTS = [
+  'alvaro@merit.systems',
+  'ben@merit.systems',
+  'jason@merit.systems',
+  'mason@merit.systems',
+  'mitch@merit.systems',
+  'ryan@merit.systems',
+  'sam@merit.systems',
+  'shafu@merit.systems',
+] as const;
 
 export const CreateInviteCodeButton = () => {
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState('15');
   const [maxRedemptions, setMaxRedemptions] = useState('1');
   const [uniqueRecipients, setUniqueRecipients] = useState(true);
   const [expiresAt, setExpiresAt] = useState('');
   const [note, setNote] = useState('');
   const [partnerName, setPartnerName] = useState('');
   const [partnerMeritContact, setPartnerMeritContact] = useState('');
+  const [isCustomContact, setIsCustomContact] = useState(false);
+  const [customContact, setCustomContact] = useState('');
   const [partnerEmail, setPartnerEmail] = useState('');
   const [partnerOrganization, setPartnerOrganization] = useState('');
+  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   const utils = api.useUtils();
 
@@ -45,20 +71,27 @@ export const CreateInviteCodeButton = () => {
 
   const resetForm = () => {
     setCode('');
-    setAmount('');
+    setAmount('15');
     setMaxRedemptions('1');
     setUniqueRecipients(true);
     setExpiresAt('');
     setNote('');
     setPartnerName('');
     setPartnerMeritContact('');
+    setIsCustomContact(false);
+    setCustomContact('');
     setPartnerEmail('');
     setPartnerOrganization('');
+    setAdvancedOpen(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !partnerName || !partnerMeritContact) return;
+    
+    // Determine which contact value to use
+    const finalContact = isCustomContact ? customContact : partnerMeritContact;
+    
+    if (!amount || !partnerName || !finalContact) return;
 
     // Convert datetime-local value to ISO format with timezone
     let expiresAtISO: Date | undefined;
@@ -74,10 +107,21 @@ export const CreateInviteCodeButton = () => {
       expiresAt: expiresAtISO,
       note: note || undefined,
       partnerName,
-      partnerMeritContact,
+      partnerMeritContact: finalContact,
       partnerEmail: partnerEmail || undefined,
       partnerOrganization: partnerOrganization || undefined,
     });
+  };
+
+  const handleContactChange = (value: string) => {
+    if (value === 'custom') {
+      setIsCustomContact(true);
+      setPartnerMeritContact('');
+    } else {
+      setIsCustomContact(false);
+      setPartnerMeritContact(value);
+      setCustomContact('');
+    }
   };
 
   return (
@@ -117,13 +161,46 @@ export const CreateInviteCodeButton = () => {
               <Label htmlFor="partnerMeritContact">
                 Merit Contact <span className="text-destructive">*</span>
               </Label>
-              <Input
-                id="partnerMeritContact"
-                placeholder="Contact name at Merit"
-                value={partnerMeritContact}
-                onChange={e => setPartnerMeritContact(e.target.value)}
-                required
-              />
+              {!isCustomContact ? (
+                <Select
+                  value={partnerMeritContact}
+                  onValueChange={handleContactChange}
+                  required
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a Merit contact" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MERIT_CONTACTS.map(contact => (
+                      <SelectItem key={contact} value={contact}>
+                        {contact}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="custom">Custom...</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex gap-2">
+                  <Input
+                    id="customContact"
+                    placeholder="Enter custom contact"
+                    value={customContact}
+                    onChange={e => setCustomContact(e.target.value)}
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setIsCustomContact(false);
+                      setCustomContact('');
+                    }}
+                  >
+                    Back
+                  </Button>
+                </div>
+              )}
               <p className="text-xs text-muted-foreground">
                 Name of the Merit team member managing this partner
               </p>
@@ -174,12 +251,14 @@ export const CreateInviteCodeButton = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount (USDC)</Label>
+              <Label htmlFor="amount">
+                Amount (USDC) <span className="text-destructive">*</span>
+              </Label>
               <Input
                 id="amount"
                 type="number"
                 step="0.01"
-                placeholder="10"
+                placeholder="15"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
                 required
@@ -189,56 +268,75 @@ export const CreateInviteCodeButton = () => {
               </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="maxRedemptions">Max Redemptions</Label>
-              <Input
-                id="maxRedemptions"
-                type="number"
-                min="0"
-                placeholder="1"
-                value={maxRedemptions}
-                onChange={e => setMaxRedemptions(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                0 = unlimited redemptions
-              </p>
-            </div>
+            <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-between"
+                  size="sm"
+                >
+                  <span className="text-xs">Additional Options</span>
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${advancedOpen ? 'rotate-180' : ''}`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="maxRedemptions">Max Redemptions</Label>
+                  <Input
+                    id="maxRedemptions"
+                    type="number"
+                    min="0"
+                    placeholder="1"
+                    value={maxRedemptions}
+                    onChange={e => setMaxRedemptions(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    0 = unlimited redemptions
+                  </p>
+                </div>
 
-            <div className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <Label className="text-base">Unique Recipients Only</Label>
-                <p className="text-xs text-muted-foreground">
-                  Each wallet can only redeem this code once
-                </p>
-              </div>
-              <Checkbox
-                checked={uniqueRecipients}
-                onCheckedChange={checked => setUniqueRecipients(checked === true)}
-              />
-            </div>
+                <div className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <Label className="text-base">Unique Recipients Only</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Each wallet can only redeem this code once
+                    </p>
+                  </div>
+                  <Checkbox
+                    checked={uniqueRecipients}
+                    onCheckedChange={checked =>
+                      setUniqueRecipients(checked === true)
+                    }
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="expiresAt">Expires At (Optional)</Label>
-              <Input
-                id="expiresAt"
-                type="datetime-local"
-                value={expiresAt}
-                onChange={e => setExpiresAt(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Leave empty for no expiration
-              </p>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="expiresAt">Expires At (Optional)</Label>
+                  <Input
+                    id="expiresAt"
+                    type="datetime-local"
+                    value={expiresAt}
+                    onChange={e => setExpiresAt(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Leave empty for no expiration
+                  </p>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="note">Note (Optional)</Label>
-              <Textarea
-                id="note"
-                placeholder="Internal note about this invite code..."
-                value={note}
-                onChange={e => setNote(e.target.value)}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="note">Note (Optional)</Label>
+                  <Textarea
+                    id="note"
+                    placeholder="Internal note about this invite code..."
+                    value={note}
+                    onChange={e => setNote(e.target.value)}
+                  />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
 
           <DialogFooter className="mt-4">
@@ -255,7 +353,8 @@ export const CreateInviteCodeButton = () => {
                 createMutation.isPending ||
                 !amount ||
                 !partnerName ||
-                !partnerMeritContact
+                (!isCustomContact && !partnerMeritContact) ||
+                (isCustomContact && !customContact)
               }
             >
               {createMutation.isPending ? 'Creating...' : 'Create'}
