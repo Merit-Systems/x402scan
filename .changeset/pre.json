@@ -1,6 +1,6 @@
 {
   "mode": "pre",
-  "tag": "beta",
+  "tag": "canary",
   "initialVersions": {
     "@x402scan/proxy": "1.0.0",
     "@x402scan/solana-rpc": "0.0.0",
