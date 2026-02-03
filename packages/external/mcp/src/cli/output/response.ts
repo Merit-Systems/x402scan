@@ -172,7 +172,7 @@ export function outputAndExit(
 /**
  * Output a response to stdout without exiting
  */
-export function output(
+function output(
   response: CliResponse,
   format: OutputFormat = 'json',
   quiet = false
@@ -186,14 +186,5 @@ export function output(
   // Optionally suppress stderr output
   if (!quiet && !response.success && format === 'pretty') {
     // Additional debug info could go to stderr
-  }
-}
-
-/**
- * Log to stderr (for progress/debug info in verbose mode)
- */
-export function logStderr(message: string, flags: OutputFlags = {}): void {
-  if (!isQuiet(flags.quiet)) {
-    console.error(chalk.dim(message));
   }
 }

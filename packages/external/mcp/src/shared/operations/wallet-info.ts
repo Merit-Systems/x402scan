@@ -10,7 +10,7 @@ import type { Address } from 'viem';
 /**
  * Wallet info result
  */
-export interface WalletInfoResult {
+interface WalletInfoResult {
   address: Address;
   network: string;
   networkName: string;

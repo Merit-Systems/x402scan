@@ -216,21 +216,6 @@ void yargs(hideBin(process.argv))
       );
     }
   )
-  .command(
-    'schema <command>',
-    'Output JSON schema for a command (for agent introspection)',
-    yargs =>
-      yargs.positional('command', {
-        type: 'string',
-        description: 'The command to get schema for',
-        demandOption: true,
-        choices: ['fetch', 'check', 'discover', 'wallet', 'report-error'],
-      }),
-    async args => {
-      const { schemaCommand } = await import('@/cli/commands');
-      schemaCommand({ command: args.command }, args);
-    }
-  )
   // ============================================================
   // Server & Installation Commands
   // ============================================================

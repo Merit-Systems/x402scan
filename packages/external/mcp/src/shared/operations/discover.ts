@@ -11,24 +11,24 @@ import {
 /**
  * Discovery document schema (x402 v1)
  */
-export const discoveryDocumentSchema = z.object({
+const discoveryDocumentSchema = z.object({
   version: z.number().refine(v => v === 1, { message: 'version must be 1' }),
   resources: z.array(z.string()),
   ownershipProofs: z.array(z.string()).optional(),
   instructions: z.string().optional(),
 });
 
-export type DiscoveryDocument = z.infer<typeof discoveryDocumentSchema>;
+type DiscoveryDocument = z.infer<typeof discoveryDocumentSchema>;
 
 /**
  * Discovery source types
  */
-export type DiscoverySource = 'well-known' | 'dns-txt' | 'llms-txt';
+type DiscoverySource = 'well-known' | 'dns-txt' | 'llms-txt';
 
 /**
  * Discovery success result
  */
-export interface DiscoverySuccessResult {
+interface DiscoverySuccessResult {
   found: true;
   origin: string;
   source: DiscoverySource;

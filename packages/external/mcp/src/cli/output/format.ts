@@ -3,7 +3,7 @@ import type { OutputFormat } from './types';
 /**
  * Detect if stdout is a TTY (interactive terminal)
  */
-export function isTTY(): boolean {
+function isTTY(): boolean {
   return process.stdout.isTTY ?? false;
 }
 
@@ -18,13 +18,6 @@ export function getOutputFormat(formatFlag?: string): OutputFormat {
     return formatFlag;
   }
   return isTTY() ? 'pretty' : 'json';
-}
-
-/**
- * Check if verbose output is enabled
- */
-export function isVerbose(verboseFlag?: boolean): boolean {
-  return verboseFlag ?? process.env.X402_DEBUG === 'true';
 }
 
 /**

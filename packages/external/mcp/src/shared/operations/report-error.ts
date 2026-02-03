@@ -10,7 +10,7 @@ import type { Address } from 'viem';
 /**
  * Error report input
  */
-export interface ErrorReportInput {
+interface ErrorReportInput {
   tool: string;
   summary: string;
   errorMessage: string;
@@ -22,7 +22,7 @@ export interface ErrorReportInput {
 /**
  * Error report result
  */
-export interface ErrorReportResult {
+interface ErrorReportResult {
   submitted: true;
   reportId: string;
   message: string;

@@ -9,18 +9,9 @@ import { getInputSchema } from '@/server/lib/x402-extensions';
 import type { JsonObject } from '@/shared/neverthrow/json/types';
 
 /**
- * Payment method info
- */
-export interface PaymentMethod {
-  price: number;
-  network: string;
-  asset: string;
-}
-
-/**
  * Check endpoint result for non-402 responses
  */
-export interface CheckEndpointFreeResult {
+interface CheckEndpointFreeResult {
   requiresPayment: false;
   statusCode: number;
   data: JsonObject | { text: string } | { type: string };
@@ -29,15 +20,13 @@ export interface CheckEndpointFreeResult {
 /**
  * Check endpoint result for 402 responses
  */
-export interface CheckEndpointPaidResult {
+interface CheckEndpointPaidResult {
   requiresPayment: true;
   statusCode: number;
   routeDetails: JsonObject;
 }
 
-export type CheckEndpointResult =
-  | CheckEndpointFreeResult
-  | CheckEndpointPaidResult;
+type CheckEndpointResult = CheckEndpointFreeResult | CheckEndpointPaidResult;
 
 /**
  * Check if an endpoint is x402-protected and get pricing/schema info.
