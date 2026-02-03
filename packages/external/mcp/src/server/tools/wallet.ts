@@ -1,9 +1,6 @@
 import { z } from 'zod';
 
-import { getBalance } from '@/shared/balance';
-import { DEFAULT_NETWORK, getChainName } from '@/shared/networks';
-import { getDepositLink } from '@/shared/utils';
-
+import { getWalletInfo } from '@/shared/operations';
 import { mcpSuccessStructuredJson, mcpError } from './response';
 
 import type { RegisterTools } from '@/server/types';
@@ -35,30 +32,20 @@ export const registerWalletTools: RegisterTools = ({
       },
     },
     async () => {
-      const balanceResult = await getBalance({
-        address,
-        flags,
-        surface: 'get_wallet_info',
-      });
+      const result = await getWalletInfo('get_wallet_info', address, flags);
 
-      if (balanceResult.isErr()) {
-        return mcpError(balanceResult);
+      if (result.isErr()) {
+        return mcpError(result);
       }
 
-      const { balance } = balanceResult.value;
-
       return mcpSuccessStructuredJson({
-        address,
-        network: DEFAULT_NETWORK,
-        networkName: getChainName(DEFAULT_NETWORK),
-        usdcBalance: balance,
-        isNewWallet: balance === 0,
-        depositLink: getDepositLink(address, flags),
-        ...(balance < 2.5
-          ? {
-              message: `Your balance is low. Consider topping it up`,
-            }
-          : {}),
+        address: result.value.address,
+        network: result.value.network,
+        networkName: result.value.networkName,
+        usdcBalance: result.value.usdcBalance,
+        isNewWallet: result.value.isNewWallet,
+        depositLink: result.value.depositLink,
+        ...(result.value.message ? { message: result.value.message } : {}),
       });
     }
   );

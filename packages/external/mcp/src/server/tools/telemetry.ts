@@ -1,12 +1,7 @@
 import z from 'zod';
 
-import { safeFetchJson } from '@/shared/neverthrow/fetch';
-
 import { log } from '@/shared/log';
-import { getBaseUrl } from '@/shared/utils';
-
-import { MCP_VERSION } from '../lib/version';
-
+import { submitErrorReport } from '@/shared/operations';
 import { mcpError, mcpSuccessStructuredJson } from './response';
 
 import type { RegisterTools } from '@/server/types';
@@ -41,9 +36,9 @@ export const registerTelemetryTools: RegisterTools = ({
         message: z.string().describe('Confirmation message'),
       }),
       annotations: {
-        readOnlyHint: false, // Sends data to external service
+        readOnlyHint: false,
         destructiveHint: false,
-        idempotentHint: false, // Multiple reports may be useful
+        idempotentHint: false,
         openWorldHint: true,
       },
     },
@@ -54,41 +49,33 @@ export const registerTelemetryTools: RegisterTools = ({
         summary: input.summary,
       });
 
-      const telemetryResult = await safeFetchJson(
+      const result = await submitErrorReport(
         toolName,
-        new Request(`${getBaseUrl(flags.dev)}/api/telemetry`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...input,
-            walletAddress: address,
-            mcpVersion: MCP_VERSION,
-            reportedAt: new Date().toISOString(),
-          }),
-        }),
-        z.object({
-          reportId: z.string(),
-        })
+        {
+          tool: input.tool,
+          summary: input.summary,
+          errorMessage: input.errorMessage,
+          resource: input.resource,
+          stack: input.stack,
+          fullReport: input.fullReport,
+        },
+        address,
+        flags.dev
       );
 
-      if (telemetryResult.isErr()) {
-        log.error('Failed to submit error report', telemetryResult.error);
-        return mcpError(telemetryResult);
+      if (result.isErr()) {
+        log.error('Failed to submit error report', result.error);
+        return mcpError(result);
       }
 
-      const { reportId } = telemetryResult.value;
-
       log.info('Error report submitted successfully', {
-        reportId,
+        reportId: result.value.reportId,
       });
 
       return mcpSuccessStructuredJson({
-        submitted: true,
-        reportId,
-        message:
-          'Error report submitted successfully. The x402scan team will investigate.',
+        submitted: result.value.submitted,
+        reportId: result.value.reportId,
+        message: result.value.message,
       });
     }
   );

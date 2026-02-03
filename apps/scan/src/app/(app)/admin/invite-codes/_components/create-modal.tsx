@@ -165,7 +165,9 @@ export const CreateInviteCodeButton = () => {
                 placeholder="WELCOME10 (auto-generated if empty)"
                 value={code}
                 onChange={e =>
-                  setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))
+                  setCode(
+                    e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+                  )
                 }
               />
               <p className="text-xs text-muted-foreground">
@@ -213,7 +215,9 @@ export const CreateInviteCodeButton = () => {
               </div>
               <Checkbox
                 checked={uniqueRecipients}
-                onCheckedChange={checked => setUniqueRecipients(checked === true)}
+                onCheckedChange={checked =>
+                  setUniqueRecipients(checked === true)
+                }
               />
             </div>
 

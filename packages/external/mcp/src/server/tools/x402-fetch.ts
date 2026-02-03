@@ -1,9 +1,4 @@
-import {
-  fetchErr,
-  fetchOk,
-  safeFetch,
-  safeParseResponse,
-} from '@/shared/neverthrow/fetch';
+import { safeParseResponse } from '@/shared/neverthrow/fetch';
 
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 import { ExactEvmScheme } from '@x402/evm/exact/client';
@@ -15,13 +10,8 @@ import { checkBalance } from './lib/check-balance';
 
 import { DEFAULT_NETWORK } from '@/shared/networks';
 import { tokenStringToNumber } from '@/shared/token';
-import {
-  safeCreatePaymentPayload,
-  safeGetPaymentRequired,
-  safeGetPaymentSettlement,
-  x402Err,
-  x402Ok,
-} from '@/shared/neverthrow/x402';
+import { safeGetPaymentSettlement } from '@/shared/neverthrow/x402';
+import { createFetchWithPayment } from '@/shared/operations';
 
 import type { RegisterTools } from '@/server/types';
 
@@ -68,7 +58,7 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
 
       const client = new x402HTTPClient(coreClient);
 
-      const fetchWithPay = safeWrapFetchWithPayment(client);
+      const fetchWithPay = createFetchWithPayment(toolName, client);
 
       const fetchResult = await fetchWithPay(
         buildRequest({ input, address: account.address, sessionId })
@@ -125,81 +115,3 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
     }
   );
 };
-
-function safeWrapFetchWithPayment(client: x402HTTPClient) {
-  return async (request: Request) => {
-    const clonedRequest = request.clone();
-
-    const probeResult = await safeFetch(toolName, request);
-
-    if (probeResult.isErr()) {
-      return fetchErr(toolName, probeResult.error);
-    }
-
-    if (probeResult.value.status !== 402) {
-      return probeResult.andThen(response =>
-        fetchOk({
-          response,
-          paymentPayload: undefined,
-        })
-      );
-    }
-
-    const response = probeResult.value;
-
-    const paymentRequiredResult = await safeGetPaymentRequired(
-      toolName,
-      client,
-      response
-    );
-
-    if (paymentRequiredResult.isErr()) {
-      return paymentRequiredResult;
-    }
-
-    const paymentRequired = paymentRequiredResult.value;
-
-    const paymentPayloadResult = await safeCreatePaymentPayload(
-      toolName,
-      client,
-      paymentRequired
-    );
-
-    if (paymentPayloadResult.isErr()) {
-      return paymentPayloadResult;
-    }
-
-    const paymentPayload = paymentPayloadResult.value;
-
-    // Encode payment header
-    const paymentHeaders = client.encodePaymentSignatureHeader(paymentPayload);
-
-    // Check if this is already a retry to prevent infinite loops
-    if (
-      clonedRequest.headers.has('PAYMENT-SIGNATURE') ||
-      clonedRequest.headers.has('X-PAYMENT')
-    ) {
-      return x402Err(toolName, {
-        cause: 'payment_already_attempted',
-        message: 'Payment already attempted',
-      });
-    }
-
-    // Add payment headers to cloned request
-    for (const [key, value] of Object.entries(paymentHeaders)) {
-      clonedRequest.headers.set(key, value);
-    }
-    clonedRequest.headers.set(
-      'Access-Control-Expose-Headers',
-      'PAYMENT-RESPONSE,X-PAYMENT-RESPONSE'
-    );
-
-    // Retry the request with payment
-    return await safeFetch(toolName, clonedRequest).andThen(response =>
-      x402Ok({
-        response,
-        paymentPayload,
-      })
-    );
-  };
-}
