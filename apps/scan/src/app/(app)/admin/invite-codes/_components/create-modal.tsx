@@ -40,7 +40,16 @@ export const CreateInviteCodeButton = () => {
   const [partnerOrganization, setPartnerOrganization] = useState('');
 
   // Parse merit contacts from env var (comma-separated)
-  const meritContacts = ['Sam', 'Ryan', 'Alvaro', 'Jason', 'Ben', 'Shafu', 'Mason', 'Mitch'];
+  const meritContacts = [
+    'Sam',
+    'Ryan',
+    'Alvaro',
+    'Jason',
+    'Ben',
+    'Shafu',
+    'Mason',
+    'Mitch',
+  ];
 
   const utils = api.useUtils();
 
