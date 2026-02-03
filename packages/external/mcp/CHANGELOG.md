@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.2.2-canary.0
+
+### Patch Changes
+
+- f003742: CLI interface"
+
 ## 0.2.1
 
 ### Patch Changes
