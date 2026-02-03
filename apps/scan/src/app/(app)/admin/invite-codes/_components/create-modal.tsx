@@ -17,6 +17,13 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { api } from '@/trpc/client';
 
 export const CreateInviteCodeButton = () => {
@@ -31,6 +38,18 @@ export const CreateInviteCodeButton = () => {
   const [partnerMeritContact, setPartnerMeritContact] = useState('');
   const [partnerEmail, setPartnerEmail] = useState('');
   const [partnerOrganization, setPartnerOrganization] = useState('');
+
+  // Parse merit contacts from env var (comma-separated)
+  const meritContacts = [
+    'Sam',
+    'Ryan',
+    'Alvaro',
+    'Jason',
+    'Ben',
+    'Shafu',
+    'Mason',
+    'Mitch',
+  ];
 
   const utils = api.useUtils();
 
@@ -117,13 +136,32 @@ export const CreateInviteCodeButton = () => {
               <Label htmlFor="partnerMeritContact">
                 Merit Contact <span className="text-destructive">*</span>
               </Label>
-              <Input
-                id="partnerMeritContact"
-                placeholder="Contact name at Merit"
-                value={partnerMeritContact}
-                onChange={e => setPartnerMeritContact(e.target.value)}
-                required
-              />
+              {meritContacts.length > 0 ? (
+                <Select
+                  value={partnerMeritContact}
+                  onValueChange={setPartnerMeritContact}
+                  required
+                >
+                  <SelectTrigger id="partnerMeritContact" className="w-full">
+                    <SelectValue placeholder="Select a Merit contact" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {meritContacts.map(contact => (
+                      <SelectItem key={contact} value={contact}>
+                        {contact}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  id="partnerMeritContact"
+                  placeholder="Contact name at Merit"
+                  value={partnerMeritContact}
+                  onChange={e => setPartnerMeritContact(e.target.value)}
+                  required
+                />
+              )}
               <p className="text-xs text-muted-foreground">
                 Name of the Merit team member managing this partner
               </p>
@@ -165,7 +203,9 @@ export const CreateInviteCodeButton = () => {
                 placeholder="WELCOME10 (auto-generated if empty)"
                 value={code}
                 onChange={e =>
-                  setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))
+                  setCode(
+                    e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+                  )
                 }
               />
               <p className="text-xs text-muted-foreground">
@@ -213,7 +253,9 @@ export const CreateInviteCodeButton = () => {
               </div>
               <Checkbox
                 checked={uniqueRecipients}
-                onCheckedChange={checked => setUniqueRecipients(checked === true)}
+                onCheckedChange={checked =>
+                  setUniqueRecipients(checked === true)
+                }
               />
             </div>
 
