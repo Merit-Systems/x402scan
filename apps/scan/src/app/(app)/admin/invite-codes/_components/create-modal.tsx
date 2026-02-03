@@ -32,14 +32,14 @@ import {
 import { api } from '@/trpc/client';
 
 const MERIT_CONTACTS = [
-  'alvaro@merit.systems',
-  'ben@merit.systems',
-  'jason@merit.systems',
-  'mason@merit.systems',
-  'mitch@merit.systems',
-  'ryan@merit.systems',
-  'sam@merit.systems',
-  'shafu@merit.systems',
+  'Alvaro',
+  'Ben',
+  'Jason',
+  'Mason',
+  'Mitch',
+  'Ryan',
+  'Sam',
+  'Shafu',
 ] as const;
 
 export const CreateInviteCodeButton = () => {
