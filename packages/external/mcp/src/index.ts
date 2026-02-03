@@ -9,7 +9,7 @@ const defaultYes = isClaudeCode || Boolean(process.env.CI);
 
 void yargs(hideBin(process.argv))
   .scriptName('@x402scan/mcp')
-  .usage('$0 <command> [options]')
+  .usage('$0 [command] [options]')
   .option('dev', {
     type: 'boolean',
     description: 'Enable dev mode (use localhost endpoints)',
@@ -233,8 +233,8 @@ void yargs(hideBin(process.argv))
   // Server & Installation Commands
   // ============================================================
   .command(
-    'server',
-    'Start the MCP server (for MCP client integration)',
+    ['$0', 'server'],
+    'Start the MCP server (default when no command specified)',
     yargs => yargs,
     async args => {
       const { serverCommand } = await import('@/cli/commands');
@@ -279,13 +279,9 @@ void yargs(hideBin(process.argv))
   )
   .example('$0 wallet info', 'Get wallet balance')
   .example('$0 wallet redeem ABC123', 'Redeem invite code')
-  .example('$0 server', 'Start MCP server')
+  .example('$0', 'Start MCP server (default)')
   .example('$0 install --client cursor', 'Install MCP for Cursor')
   .strict()
-  .demandCommand(
-    1,
-    'You must specify a command. Run with --help for available commands.'
-  )
   .help()
   .version()
   .parseAsync()
