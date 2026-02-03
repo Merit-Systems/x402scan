@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ok, err } from '@x402scan/neverthrow';
+import type { Result } from '@x402scan/neverthrow/types';
 
 import { log } from '@/shared/log';
 import {
@@ -36,13 +37,25 @@ interface DiscoverySuccessResult {
   usage?: string;
 }
 
+/**
+ * Discovery error with origin context
+ */
+interface DiscoveryError {
+  cause: 'not_found';
+  message: string;
+  origin: string;
+}
+
 const ERROR_TYPE = 'discovery';
 
 /**
  * Discover x402-protected resources on an origin.
  * Tries: .well-known/x402, DNS TXT record, llms.txt
  */
-export async function discoverResources(surface: string, url: string) {
+export async function discoverResources(
+  surface: string,
+  url: string
+): Promise<Result<DiscoverySuccessResult, DiscoveryError>> {
   const origin = URL.canParse(url) ? new URL(url).origin : url;
   const hostname = URL.canParse(origin) ? new URL(origin).hostname : origin;
 
