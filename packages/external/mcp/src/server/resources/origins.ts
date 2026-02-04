@@ -26,11 +26,13 @@ const wellKnownSchema = z.object({
 export const registerOrigins: RegisterResources = async ({ server }) => {
   await Promise.all(
     ORIGINS.map(async origin => {
+      // Extract domain from full URL (e.g., 'https://enrichx402.com' -> 'enrichx402.com')
+      const domain = new URL(origin).hostname;
       const metadataResult = await getWebPageMetadata(origin);
       const metadata = metadataResult.isOk() ? metadataResult.value : null;
       server.registerResource(
-        origin.toString(),
-        `api://${origin}`,
+        domain,
+        `api://${domain}`,
         {
           title: metadata?.title ?? origin,
           description: metadata?.description ?? '',
@@ -52,7 +54,7 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
             return {
               contents: [
                 {
-                  uri: origin,
+                  uri: domain,
                   text: JSON.stringify(
                     { error: 'Failed to fetch well-known resources' },
                     null,
@@ -125,7 +127,7 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
             return {
               contents: [
                 {
-                  uri: origin,
+                  uri: domain,
                   text: JSON.stringify({
                     error: 'Failed to stringify response',
                   }),
@@ -138,7 +140,7 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
           return {
             contents: [
               {
-                uri: origin,
+                uri: domain,
                 text: stringifyResult.value,
                 mimeType: 'application/json',
               },
