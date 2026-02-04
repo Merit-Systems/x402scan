@@ -23,12 +23,7 @@
     "format": "pnpm -w format:dir ./packages/external/mcp",
     "format:check": "pnpm -w format:check:dir ./packages/external/mcp",
     "prepublishOnly": "pnpm build",
-    "publish:check": "pnpm pack --dry-run",
-    "evals": "pnpm build && MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/promptfooconfig.yaml",
-    "evals:no-cache": "pnpm build && MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/promptfooconfig.yaml --no-cache",
-    "evals:view": "promptfoo view",
-    "evals:single-prompt": "pnpm build && MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/single-prompt.yaml --share",
-    "evals:compare": "pnpm build && MCP_SERVER_DIR=$(pwd)/dist/esm promptfoo eval --config evals/compare-prompts.yaml --share"
+    "publish:check": "pnpm pack --dry-run"
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
@@ -47,7 +42,6 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@anthropic-ai/claude-agent-sdk": "^0.2.22",
     "@types/content-type": "^1.1.9",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "catalog:",
@@ -57,7 +51,6 @@
     "@x402scan/neverthrow": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",
-    "promptfoo": "^0.120.18",
     "tsup": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",

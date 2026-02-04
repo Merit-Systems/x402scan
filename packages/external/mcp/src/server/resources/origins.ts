@@ -12,12 +12,12 @@ import { getWebPageMetadata } from './_lib';
 
 import { getInputSchema } from '../lib/x402-extensions';
 
+import { ORIGINS } from '@/shared/origins';
+
 import type { RegisterResources } from './types';
 import type { JsonObject } from '@/shared/neverthrow/json/types';
 
 const surface = 'registerOrigins';
-
-const origins = ['enrichx402.com', 'stablestudio.io'];
 
 const wellKnownSchema = z.object({
   resources: z.array(z.string()),
@@ -25,11 +25,11 @@ const wellKnownSchema = z.object({
 
 export const registerOrigins: RegisterResources = async ({ server }) => {
   await Promise.all(
-    origins.map(async origin => {
-      const metadataResult = await getWebPageMetadata(`https://${origin}`);
+    ORIGINS.map(async origin => {
+      const metadataResult = await getWebPageMetadata(origin);
       const metadata = metadataResult.isOk() ? metadataResult.value : null;
       server.registerResource(
-        origin,
+        origin.toString(),
         `api://${origin}`,
         {
           title: metadata?.title ?? origin,
