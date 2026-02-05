@@ -3,7 +3,7 @@
  * Using const enum so values are inlined at build time.
  */
 export const enum Origin {
-  EnrichX402 = 'https://enrichx402-git-shafu-add-hunter-email-verifier-merit-systems.vercel.app',
+  EnrichX402 = 'https://enrichx402.com',
   StableStudio = 'https://stablestudio.io',
 }
 
