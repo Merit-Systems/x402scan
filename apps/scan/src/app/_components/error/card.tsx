@@ -11,34 +11,35 @@ import { Button } from '@/components/ui/button';
 
 import type { ErrorComponentProps } from './types';
 import Link from 'next/link';
+import { Streamdown } from 'streamdown';
 
 export const ErrorCard: React.FC<ErrorComponentProps> = ({
   title = 'An Error Has Occurred!',
-  description = "We've reported this to our team and will investigate it shortly.",
+  description,
   errorProps,
   Icon = AlertCircle,
   actions,
 }) => {
   return (
-    <Card className="gap-4 flex flex-col">
-      <CardHeader className="flex flex-col items-center text-center">
-        <Icon className="size-12 text-primary mb-4" />
+    <Card className="flex flex-col max-w-md w-full gap-4 p-4">
+      <CardHeader className="flex flex-row items-center text-center gap-2 p-0">
+        <Icon className="size-6 text-primary" />
         <CardTitle className="text-xl font-bold">{title}</CardTitle>
-        <CardDescription className="text-base">{description}</CardDescription>
+        <CardDescription className="text-base hidden" />
       </CardHeader>
-      <CardFooter>
-        {actions ??
-          (errorProps ? (
-            <Button onClick={errorProps.reset} className="w-full">
-              Reset
+      <Streamdown className="text-base">
+        {description ??
+          errorProps?.error.message ??
+          'This error has been reported to our team and will be investigated shortly.'}
+      </Streamdown>
+      <CardFooter className="p-0">
+        {actions ?? (
+          <Link href="/" className="flex-1">
+            <Button variant="outline" className="w-full">
+              Back to Home
             </Button>
-          ) : (
-            <Link href="/" className="flex-1">
-              <Button variant="outline" className="w-full">
-                Back to Home
-              </Button>
-            </Link>
-          ))}
+          </Link>
+        )}
       </CardFooter>
     </Card>
   );
