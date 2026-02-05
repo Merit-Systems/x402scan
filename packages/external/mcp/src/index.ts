@@ -25,6 +25,11 @@ void yargs(hideBin(process.argv))
     description: 'Yes to all prompts',
     default: defaultYes ? true : undefined,
   })
+  .option('sessionId', {
+    type: 'string',
+    description: 'Session ID for matching requests (auto-generated if not provided)',
+    required: false,
+  })
   .command(
     '$0',
     'Start the MCP server',

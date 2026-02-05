@@ -25,6 +25,9 @@ export const startServer: Command = async flags => {
   log.info('Starting x402scan-mcp...');
 
   const { dev, invite } = flags;
+  let { sessionId } = flags;
+  // Generate a random session ID if not provided
+  sessionId ??= randomBytes(16).toString('hex');
 
   const walletResult = await getWallet();
 
@@ -37,8 +40,6 @@ export const startServer: Command = async flags => {
   const { account } = walletResult.value;
 
   const code = invite ?? process.env.INVITE_CODE;
-
-  const sessionId = randomBytes(16).toString('hex');
 
   if (code) {
     await redeemInviteCode({
