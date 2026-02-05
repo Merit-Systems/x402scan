@@ -70,8 +70,10 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
 
       const fetchWithPay = safeWrapFetchWithPayment(client);
 
+      const provider = flags.provider ?? account.address;
+
       const fetchResult = await fetchWithPay(
-        buildRequest({ input, address: account.address, sessionId })
+        buildRequest({ input, address: account.address, sessionId, provider })
       );
 
       if (fetchResult.isErr()) {

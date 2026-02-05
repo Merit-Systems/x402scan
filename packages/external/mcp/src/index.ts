@@ -27,7 +27,13 @@ void yargs(hideBin(process.argv))
   })
   .option('sessionId', {
     type: 'string',
-    description: 'Session ID for matching requests (auto-generated if not provided)',
+    description:
+      'Session ID for matching requests (auto-generated if not provided)',
+    required: false,
+  })
+  .option('provider', {
+    type: 'string',
+    description: 'Provider to use for the MCP server',
     required: false,
   })
   .command(

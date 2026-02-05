@@ -34,8 +34,8 @@ export default function OpenClawPage() {
 
         {/* Footer note */}
         <p className="text-xs md:text-sm text-muted-foreground/50 max-w-md">
-          Works with Claude Code, Cursor, Codex, and any agent that can read URLs and
-          execute commands.
+          Works with Claude Code, Cursor, Codex, and any agent that can read
+          URLs and execute commands.
         </p>
       </div>
     </div>

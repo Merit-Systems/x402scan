@@ -3,6 +3,7 @@ export type GlobalFlags<T extends object = object> = {
   yes?: boolean;
   invite?: string;
   sessionId?: string;
+  provider?: string;
 } & T;
 
 export type Command<Flags extends GlobalFlags = GlobalFlags> = (
