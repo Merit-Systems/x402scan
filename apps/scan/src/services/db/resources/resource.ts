@@ -300,6 +300,7 @@ export const listResourcesWithPagination = createCachedPaginatedQuery({
 export const getResourceByAddress = async (address: string) => {
   return await scanDb.resources.findFirst({
     where: {
+      deprecatedAt: null,
       accepts: {
         some: {
           payTo: address.toLowerCase(),

@@ -90,6 +90,7 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
     where: {
       resources: {
         some: {
+          deprecatedAt: null,
           accepts: {
             some: {
               ...(address ? { payTo: address } : {}),
@@ -122,6 +123,7 @@ export const listOriginsWithResources = async (
       ...(originIds ? { id: { in: originIds } } : {}),
       resources: {
         some: {
+          deprecatedAt: null,
           response: {
             isNot: null,
           },
@@ -134,6 +136,7 @@ export const listOriginsWithResources = async (
     include: {
       resources: {
         where: {
+          deprecatedAt: null,
           response: {
             isNot: null,
           },
@@ -191,6 +194,7 @@ export const searchOrigins = async (
       },
       resources: {
         some: {
+          deprecatedAt: null,
           accepts: {
             some: {},
           },
@@ -199,6 +203,9 @@ export const searchOrigins = async (
     },
     include: {
       resources: {
+        where: {
+          deprecatedAt: null,
+        },
         include: {
           accepts: {
             select: {
@@ -240,6 +247,9 @@ export const getOriginMetadata = async (id: string) => {
     where: { id },
     select: {
       resources: {
+        where: {
+          deprecatedAt: null,
+        },
         select: {
           tags: {
             select: {
@@ -260,7 +270,11 @@ export const getOriginMetadata = async (id: string) => {
       },
       _count: {
         select: {
-          resources: true,
+          resources: {
+            where: {
+              deprecatedAt: null,
+            },
+          },
         },
       },
     },
