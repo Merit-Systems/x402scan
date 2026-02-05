@@ -6,6 +6,7 @@ import {
   safeFetchJson,
   safeParseResponse,
 } from '@/shared/neverthrow/fetch';
+import { Origin } from '@/shared/origins';
 
 import { mcpErrorJson, mcpSuccessJson } from './response';
 
@@ -28,7 +29,7 @@ export function registerDiscoveryTools(server: McpServer): void {
       description: `Find x402-protected resources on an origin. Returns a list of resource URLs.
         Use check_x402_endpoint separately to get detailed pricing/schema info for specific resources.
         Known default origins with resource packs. Discover if more needed:
-        - https://enrichx402.com ->
+        - ${Origin.EnrichX402} ->
             People + Org search
             Google Maps (places + locations)
             Grok twitter search
@@ -37,7 +38,7 @@ export function registerDiscoveryTools(server: McpServer): void {
             Firecrawl web scrape
             WhitePages (business directory)
             Email enrichment
-        - https://stablestudio.io -> generate and edit images / videos
+        - ${Origin.StableStudio} -> generate and edit images / videos
         `,
       inputSchema: z.object({
         url: z
