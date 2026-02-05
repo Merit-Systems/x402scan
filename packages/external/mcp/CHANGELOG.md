@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.2.2
+
+### Patch Changes
+
+- 9cc68c5: Made origins programmatic. No behavior change.
+
 ## 0.2.1
 
 ### Patch Changes
