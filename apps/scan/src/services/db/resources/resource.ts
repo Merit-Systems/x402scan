@@ -424,11 +424,20 @@ export const listResourcesForTools = async (resourceIds: string[]) => {
 /**
  * Deprecate resources that are no longer in the discovery document.
  * Sets deprecatedAt to now() for resources not in the provided URLs list.
+ *
+ * Note: If activeResourceUrls is empty, no deprecation occurs to avoid accidentally
+ * deprecating all resources when discovery is empty or fails.
  */
 export const deprecateStaleResources = async (
   originId: string,
   activeResourceUrls: string[]
 ) => {
+  // If no active resources were discovered, don't deprecate anything
+  // (could indicate discovery failure or incomplete data)
+  if (activeResourceUrls.length === 0) {
+    return 0;
+  }
+
   const result = await scanDb.resources.updateMany({
     where: {
       originId,
