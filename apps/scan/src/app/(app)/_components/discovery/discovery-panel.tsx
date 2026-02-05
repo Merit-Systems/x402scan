@@ -81,6 +81,7 @@ export interface DiscoveryPanelProps {
     registered: number;
     total: number;
     failed: number;
+    deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
   } | null;
   /** Called when "Register All" is clicked (required in register mode) */
@@ -161,7 +162,7 @@ export function DiscoveryPanel({
       return (
         <div className="space-y-3">
           <div className="flex items-start gap-3 p-4 border rounded-md bg-red-500/10 border-red-500/30">
-            <XCircle className="size-6 text-red-600 flex-shrink-0 mt-0.5" />
+            <XCircle className="size-6 text-red-600 shrink-0 mt-0.5" />
             <div className="flex-1">
               <h2 className="font-semibold text-red-600">
                 Registration Failed
@@ -196,7 +197,7 @@ export function DiscoveryPanel({
                       <span className="text-muted-foreground shrink-0">
                         Error:
                       </span>
-                      <span className="text-red-600 break-words">
+                      <span className="text-red-600 wrap-break-word">
                         {failed.error}
                       </span>
                     </div>
@@ -242,6 +243,25 @@ export function DiscoveryPanel({
           </div>
         </div>
 
+        {/* Deprecation notice */}
+        {bulkResult.deprecated !== undefined && bulkResult.deprecated > 0 && (
+          <div className="flex items-start gap-3 p-4 border rounded-md bg-yellow-600/10 border-yellow-600/30">
+            <AlertCircle className="size-5 text-yellow-600 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-medium text-yellow-700">
+                {bulkResult.deprecated} resource
+                {bulkResult.deprecated === 1 ? '' : 's'} deprecated
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Resources previously registered for this origin that are no
+                longer in your discovery document have been marked as
+                deprecated. They won&apos;t appear in listings but historical
+                data is preserved.
+              </p>
+            </div>
+          </div>
+        )}
+
         {bulkResult.failed > 0 &&
           bulkResult.failedDetails &&
           bulkResult.failedDetails.length > 0 && (
@@ -266,7 +286,7 @@ export function DiscoveryPanel({
                       <span className="text-muted-foreground shrink-0">
                         Error:
                       </span>
-                      <span className="text-red-600 break-words">
+                      <span className="text-red-600 wrap-break-word">
                         {failed.error}
                       </span>
                     </div>

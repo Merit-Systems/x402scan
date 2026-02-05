@@ -85,6 +85,9 @@ model Resources {
   lastUpdated DateTime
   metadata    Json?
 
+  // Soft delete: when set, the resource is deprecated (no longer in discovery doc)
+  deprecatedAt DateTime?
+
   originId String
 
   accepts                     Accepts[]
@@ -97,6 +100,8 @@ model Resources {
   toolCalls                   ToolCall[]
   excluded                    ExcludedResource?
   metrics                     ResourceMetrics[]
+
+  @@index([deprecatedAt])
 }
 
 enum AcceptsScheme {
