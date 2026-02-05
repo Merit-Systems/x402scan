@@ -20,7 +20,6 @@ export const ErrorCard: React.FC<ErrorComponentProps> = ({
   Icon = AlertCircle,
   actions,
 }) => {
-  console.log(description ?? errorProps?.error.message);
   return (
     <Card className="flex flex-col max-w-md w-full gap-4 p-4">
       <CardHeader className="flex flex-row items-center text-center gap-2 p-0">
