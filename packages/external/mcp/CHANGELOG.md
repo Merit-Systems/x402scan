@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.3.0
+
+### Minor Changes
+
+- f315d52: hunter api for email verification
+
 ## 0.2.4
 
 ### Patch Changes
