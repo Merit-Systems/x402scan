@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.2.4
+
+### Patch Changes
+
+- 02cfaac: Stop pretty printing outputs to save on tokens
+
 ## 0.2.3
 
 ### Patch Changes
