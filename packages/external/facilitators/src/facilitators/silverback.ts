@@ -1,9 +1,14 @@
 import { Network } from '../types';
-import { USDC_BASE_TOKEN } from '../constants';
 
 import type { Facilitator, FacilitatorConfig, Token } from '../types';
 
 // Silverback-specific tokens (addresses must be lowercase)
+const USDC_BASE_TOKEN: Token = {
+  address: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+  decimals: 6,
+  symbol: 'USDC',
+};
+
 const BACK_TOKEN: Token = {
   address: '0x558881c4959e9cf961a7e1815fcd6586906babd2',
   decimals: 18,
