@@ -95,7 +95,7 @@ jobs:
               '- `/eval smoke` - Quick validation (~2-3 min)',
               '- `/eval full` - Comprehensive testing (~10 min)',
               '- `/eval regression` - Known edge cases',
-              '- `/eval ambiguous` - Ambiguous query handling',
+              '- `/eval unit` - Unit tests',
               '',
               '</details>'
             ].join('\n');
