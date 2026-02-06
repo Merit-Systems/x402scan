@@ -38,6 +38,7 @@ export function registerDiscoveryTools(server: McpServer): void {
             Firecrawl web scrape
             WhitePages (business directory)
             Email enrichment
+            Hunter email verifier
         - ${Origin.StableStudio} -> generate and edit images / videos
         `,
       inputSchema: z.object({
