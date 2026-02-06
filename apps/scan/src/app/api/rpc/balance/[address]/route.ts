@@ -6,7 +6,7 @@ import z from 'zod';
 import { rpcResultFromPromise } from '@/services/rpc/result';
 import { baseRpc } from '@/services/rpc/base';
 
-import { evmAddressSchema } from '@/lib/schemas';
+import { ethereumAddressSchema } from '@/lib/schemas';
 import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
 
@@ -26,7 +26,7 @@ export async function GET(
 ) {
   const { address } = await params;
 
-  const parseResult = evmAddressSchema.safeParse(address);
+  const parseResult = ethereumAddressSchema.safeParse(address);
   if (!parseResult.success) {
     return toNextResponse(
       apiErr('balance', {

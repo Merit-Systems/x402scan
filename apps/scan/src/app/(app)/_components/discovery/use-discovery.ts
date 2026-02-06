@@ -42,6 +42,7 @@ export interface UseDiscoveryOptions {
     registered: number;
     total: number;
     failed: number;
+    deprecated?: number;
   }) => void;
   /** Called when bulk registration fails */
   onRegisterAllError?: () => void;
@@ -94,6 +95,7 @@ export interface UseDiscoveryReturn {
     registered: number;
     total: number;
     failed: number;
+    deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
     originId?: string;
   } | null;
@@ -258,6 +260,7 @@ export function useDiscovery({
         registered: data.registered,
         total: data.total,
         failed: data.failed,
+        deprecated: data.deprecated,
       });
     },
     onError: () => {
@@ -324,6 +327,7 @@ export function useDiscovery({
           registered: bulkData.registered,
           total: bulkData.total,
           failed: bulkData.failed,
+          deprecated: bulkData.deprecated,
           failedDetails: bulkData.failedDetails,
           originId: bulkData.originId,
         }

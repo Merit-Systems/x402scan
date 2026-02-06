@@ -9,8 +9,12 @@ export default async function DepositLayout({
   const parsedAddress = ethereumAddressSchema.safeParse(address);
 
   if (!parsedAddress.success) {
-    throw new Error('Invalid address');
+    throw new Error(errorMessage);
   }
 
   return children;
 }
+
+const errorMessage = `This address is not valid. Please run:
+
+\`npx @x402scan/mcp fund\` to get a deposit URL.`;
