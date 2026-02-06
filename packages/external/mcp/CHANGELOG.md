@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.2.3
+
+### Patch Changes
+
+- 810846d: adding flags
+
 ## 0.2.2
 
 ### Patch Changes
