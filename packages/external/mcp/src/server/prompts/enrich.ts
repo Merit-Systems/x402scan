@@ -51,7 +51,7 @@ const PROMPT_CONTENT = `To start, you should check this resource page: ${Origin.
 - You should use these paid endpoints to find useful information whenever possible.
 - Opt to use the paid endpoints as often as possible, as they speed up your research and provide higher quality information than traditional WebFetch.
 
-- **IMPORTANT:** All the API endpoints below (Exa, Firecrawl, Clado, Google Maps, Apollo, Grok) are accessed via mcp__x402__fetch. They are NOT separate MCP tools. Call them like: mcp__x402__fetch(url="${Origin.EnrichX402}/api/clado/contacts-enrich", method="POST", body={...})
+- **IMPORTANT:** All the API endpoints below (Exa, Firecrawl, Clado, Google Maps, Apollo, Grok, Whitepages, Hunter) are accessed via mcp__x402__fetch. They are NOT separate MCP tools. Call them like: mcp__x402__fetch(url="${Origin.EnrichX402}/api/clado/contacts-enrich", method="POST", body={...})
 - Use the Exa and Firecrawl endpoints as advanced / better WebFetch. They will often return data that would otherwise return only javascript or blocked content.
 - If you get a 403 or error when using WebSearch or WebFetch on a website, try with Exa/Firecrawl endpoints immediately as they likely can get around the blockage.
 - Use the Clado endpoints (/api/clado/contacts-enrich, /api/clado/linkedin-scrape) to enrich information about people and find their linkedin or email addresses. If linkedin returns an error code, immediately try with the Clado endpoints.
