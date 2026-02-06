@@ -24,9 +24,7 @@ export const mcpErrorJson = (error: JsonObject): CallToolResult => {
   return safeStringifyJson('mcp-error-json', error).match(
     success => buildMcpError([{ type: 'text' as const, text: success }]),
     error =>
-      buildMcpError([
-        { type: 'text' as const, text: JSON.stringify(error) },
-      ])
+      buildMcpError([{ type: 'text' as const, text: JSON.stringify(error) }])
   );
 };
 
