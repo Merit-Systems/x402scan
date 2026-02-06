@@ -25,7 +25,7 @@ export const mcpErrorJson = (error: JsonObject): CallToolResult => {
     success => buildMcpError([{ type: 'text' as const, text: success }]),
     error =>
       buildMcpError([
-        { type: 'text' as const, text: JSON.stringify(error, null, 2) },
+        { type: 'text' as const, text: JSON.stringify(error) },
       ])
   );
 };
@@ -47,7 +47,7 @@ export const mcpError = async (
           response
         );
         return buildMcpError([
-          { type: 'text' as const, text: JSON.stringify(rest, null, 2) },
+          { type: 'text' as const, text: JSON.stringify(rest) },
           ...parseResponseResult.match(
             success => [parsedResponseToToolContentPart(success)],
             () => []
