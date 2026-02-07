@@ -45,8 +45,8 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
             href: '/admin/invite-codes',
           },
           {
-            label: 'Telemetry',
-            href: '/admin/telemetry',
+            label: 'MCP Errors',
+            href: '/admin/mcp-errors',
           },
         ]}
       />
