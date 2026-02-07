@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { SOLANA_MAINNET, SOLANA_DEVNET } from '@x402scan/siwx';
+import { SOLANA_MAINNET, SOLANA_DEVNET } from '@x402/extensions/sign-in-with-x';
 
 describe('authed_call Solana Detection', () => {
   /**
