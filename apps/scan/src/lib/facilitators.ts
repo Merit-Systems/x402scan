@@ -17,6 +17,7 @@ export type Facilitator = FacilitatorMetadata & {
 
 const chainMap: Record<FacilitatorsNetwork, Chain> = {
   [FacilitatorsNetwork.BASE]: Chain.BASE,
+  [FacilitatorsNetwork.ETHEREUM]: Chain.ETHEREUM,
   [FacilitatorsNetwork.POLYGON]: Chain.POLYGON,
   [FacilitatorsNetwork.SOLANA]: Chain.SOLANA,
 };

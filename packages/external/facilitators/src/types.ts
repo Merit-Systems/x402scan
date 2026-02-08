@@ -38,6 +38,7 @@ export interface Token {
 
 export enum Network {
   BASE = 'base',
+  ETHEREUM = 'ethereum',
   POLYGON = 'polygon',
   SOLANA = 'solana',
 }
