@@ -4,7 +4,7 @@ import { USDC_ETHEREUM_TOKEN } from '../constants';
 import type { Facilitator, FacilitatorConfig } from '../types';
 
 export const primev: FacilitatorConfig = {
-  url: 'https://x402-facilitator-gold.vercel.app',
+  url: 'https://facilitator.primev.xyz',
 };
 
 export const primevFacilitator = {
