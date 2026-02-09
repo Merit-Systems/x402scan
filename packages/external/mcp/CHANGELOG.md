@@ -1,5 +1,23 @@
 # @x402scan/mcp
 
+## 0.3.0
+
+### Minor Changes
+
+- f315d52: hunter api for email verification
+
+## 0.2.4
+
+### Patch Changes
+
+- 02cfaac: Stop pretty printing outputs to save on tokens
+
+## 0.2.3
+
+### Patch Changes
+
+- 810846d: adding flags
+
 ## 0.2.2
 
 ### Patch Changes

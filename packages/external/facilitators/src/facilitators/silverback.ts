@@ -55,6 +55,10 @@ export const silverback: FacilitatorConfig = {
   url: 'https://facilitator.silverbackdefi.app/',
 };
 
+export const silverbackDiscovery: FacilitatorConfig = {
+  url: 'https://facilitator.silverbackdefi.app/',
+};
+
 export const silverbackFacilitator = {
   id: 'silverback',
   metadata: {
@@ -64,6 +68,7 @@ export const silverbackFacilitator = {
     color: '#1A1A1A',
   },
   config: silverback,
+  discoveryConfig: silverbackDiscovery,
   addresses: {
     [Network.BASE]: [
       {

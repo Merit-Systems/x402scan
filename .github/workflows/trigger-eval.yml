@@ -18,6 +18,7 @@ on:
           - smoke
           - full
           - regression
+          - unit
         default: 'smoke'
       ref:
         description: 'Branch/tag/SHA to evaluate (defaults to current branch)'
@@ -47,7 +48,7 @@ jobs:
             SUITE=$(echo "$COMMENT" | awk '{print $2}')
 
             # Default to smoke if no suite specified
-            if [ -z "$SUITE" ] || [[ ! "$SUITE" =~ ^(smoke|full|regression)$ ]]; then
+            if [ -z "$SUITE" ] || [[ ! "$SUITE" =~ ^(smoke|full|regression|unit)$ ]]; then
               SUITE="smoke"
             fi
 

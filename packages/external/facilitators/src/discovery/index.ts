@@ -10,5 +10,7 @@ export { thirdwebDiscovery } from '../facilitators/thirdweb';
 export { questflowDiscovery } from '../facilitators/questflow';
 export { ultravioletadaoDiscovery } from '../facilitators/ultravioletadao';
 export { anyspendDiscovery } from '../facilitators/anyspend';
+export { silverbackDiscovery } from '../facilitators/silverback';
+export { relaiDiscovery } from '../facilitators/relai';
 
 export { discoverableFacilitators } from './facilitators';

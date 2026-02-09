@@ -73,6 +73,7 @@ The following facilitators currently support resource discovery:
 - **thirdweb** - Web3 development platform
 - **PayAI** - AI-payment infrastructure
 - **Ultravioleta DAO** - Community-driven multichain facilitator
+- **RelAI** - AI infrastructure platform
 
 ### Enumerate All Discoverable Facilitators
 
@@ -120,7 +121,8 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Meridian**         | BASE          | No        | No                           |
 | **Openmid**          | BASE          | No        | No                           |
 | **Primer**           | BASE          | No        | No                           |
-| **Silverback**       | BASE          | No        | No                           |
+| **Silverback**       | BASE          | ✅ Yes    | No                           |
+| **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
 
 ### Import Individual Facilitators
 
@@ -148,6 +150,7 @@ import {
   openmid,
   primer,
   silverback,
+  relai,
 } from 'facilitators';
 
 // Facilitators requiring setup

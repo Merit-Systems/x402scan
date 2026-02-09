@@ -25,6 +25,7 @@ import {
   x402jobsFacilitator,
   openfacilitatorFacilitator,
   silverbackFacilitator,
+  relaiFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -58,6 +59,7 @@ const FACILITATORS = validateUniqueFacilitators([
   x402jobsFacilitator,
   openfacilitatorFacilitator,
   silverbackFacilitator,
+  relaiFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =

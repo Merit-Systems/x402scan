@@ -23,12 +23,14 @@ interface BuildRequestProps {
   input: z.infer<typeof requestSchema>;
   address?: Address;
   sessionId?: string;
+  provider?: string;
 }
 
 export const buildRequest = ({
   input,
   address,
   sessionId,
+  provider,
 }: BuildRequestProps) => {
   return new Request(input.url, {
     method: input.method,
@@ -41,7 +43,7 @@ export const buildRequest = ({
       ...(input.body ? { 'Content-Type': 'application/json' } : {}),
       ...input.headers,
       ...(address
-        ? { 'X-Wallet-Address': address, 'X-Client-ID': address }
+        ? { 'X-Wallet-Address': address, 'X-Client-ID': provider }
         : {}),
       ...(sessionId ? { 'X-Session-ID': sessionId } : {}),
     },

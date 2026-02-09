@@ -2,13 +2,14 @@ import z from 'zod';
 
 import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
 
-import { getAddress, isAddress } from 'viem';
+import { isAddress } from 'viem';
 import type { MixedAddress, SolanaAddress } from '@/types/address';
+import type { Address } from 'viem';
 
 export const ethereumAddressSchema = z
   .string()
   .refine(isAddress, 'Invalid EVM address')
-  .transform(a => getAddress(a));
+  .transform(a => a.toLowerCase() as Address);
 
 export const sortingSchema = (sortIds: string[] | readonly string[]) =>
   z.object({
