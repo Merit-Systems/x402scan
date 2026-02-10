@@ -4,12 +4,12 @@ import {
   resultFromPromise,
   resultFromThrowable,
 } from '@x402scan/neverthrow';
-import { createSIWxPayload } from '@x402scan/siwx';
+import { createSIWxPayload } from '@x402/extensions/sign-in-with-x';
 
 import type { BaseX402Error } from './types';
 import type { x402HTTPClient } from '@x402/core/http';
 import type { PaymentRequired } from '@x402/core/types';
-import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
+import type { CompleteSIWxInfo } from '@x402/extensions/sign-in-with-x';
 import type { PrivateKeyAccount } from 'viem';
 
 const errorType = 'x402';
@@ -94,7 +94,7 @@ export const safeGetPaymentSettlement = (
 
 export const safeCreateSIWxPayload = (
   surface: string,
-  serverInfo: SIWxExtensionInfo,
+  serverInfo: CompleteSIWxInfo,
   signer: PrivateKeyAccount
 ) => {
   return x402ResultFromPromise(
