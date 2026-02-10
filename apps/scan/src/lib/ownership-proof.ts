@@ -16,13 +16,13 @@ import { baseRpc } from '@/services/rpc/base';
 type ChainType = 'evm' | 'solana';
 
 /** Subset of viem's PublicClient used for on-chain signature verification */
-type EvmVerificationClient = {
+interface EvmVerificationClient {
   verifyMessage: (args: {
     address: `0x${string}`;
     message: string;
     signature: `0x${string}`;
   }) => Promise<boolean>;
-};
+}
 
 interface VerificationConfig {
   signature: string;
