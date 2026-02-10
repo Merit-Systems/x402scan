@@ -11,10 +11,17 @@ import {
 } from '@/services/cdp/server-wallet/wallets/schemas';
 import { tokenSchema } from '@/types/token';
 import { usdc } from '@/lib/tokens/usdc';
-import { SUPPORTED_CHAINS } from '@/types/chain';
-import { wrapFetchWithPayment } from 'x402-fetch';
-import { parseUnits } from 'viem';
+import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
+import {
+  x402Client,
+  wrapFetchWithPayment,
+  registerExactEvmScheme,
+  registerSvmX402Client,
+} from '@/lib/x402/wrap-fetch';
 import { env } from '@/env';
+
+import type { ClientEvmSigner } from '@/lib/x402/wrap-fetch';
+import type { ClientSvmSigner } from '@x402/svm';
 
 const serverWalletChainShape = {
   chain: supportedChainSchema,
@@ -144,11 +151,22 @@ export const serverWalletRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input: { chain, amount, address } }) => {
       const { wallets } = await getUserWallets(ctx.session.user.id);
-      const fetchWithPayment = wrapFetchWithPayment(
-        fetch,
-        await wallets[chain].signer(),
-        parseUnits(amount.toString(), usdc(chain).decimals)
-      );
+      const signer = await wallets[chain].signer();
+
+      let client: InstanceType<typeof x402Client>;
+      if (chain === Chain.SOLANA) {
+        client = registerSvmX402Client({
+          signer: signer as ClientSvmSigner,
+          rpcUrl: env.NEXT_PUBLIC_SOLANA_RPC_URL,
+        });
+      } else {
+        client = new x402Client();
+        registerExactEvmScheme(client, {
+          signer: signer as ClientEvmSigner,
+        });
+      }
+
+      const fetchWithPayment = wrapFetchWithPayment(fetch, client);
       const url = new URL(`/api/send`, env.NEXT_PUBLIC_APP_URL);
       url.searchParams.set('amount', amount.toString());
       url.searchParams.set('address', address);

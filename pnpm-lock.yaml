@@ -214,13 +214,7 @@ catalogs:
     x402-express:
       specifier: ^0.7.1
       version: 0.7.1
-    x402-fetch:
-      specifier: ^0.7.1
-      version: 0.7.3
     x402-hono:
-      specifier: ^0.7.1
-      version: 0.7.1
-    x402-next:
       specifier: ^0.7.1
       version: 0.7.1
 
@@ -653,12 +647,6 @@ importers:
       x402:
         specifier: catalog:x402-v1
         version: 0.7.3(@azure/identity@4.13.0)(@azure/storage-blob@12.30.0)(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.2))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      x402-fetch:
-        specifier: catalog:x402-v1
-        version: 0.7.3(@azure/identity@4.13.0)(@azure/storage-blob@12.30.0)(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.2))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      x402-next:
-        specifier: catalog:x402-v1
-        version: 0.7.1(@azure/identity@4.13.0)(@azure/storage-blob@12.30.0)(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.2))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(next@16.1.6(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(react@19.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       zod:
         specifier: 'catalog:'
         version: 4.3.5
@@ -11985,11 +11973,6 @@ packages:
 
   x402-hono@0.7.1:
     resolution: {integrity: sha512-4QGtjK9FpuUnkBCWm8ptJmNkWs6TlLvDAI0Ypo85/WZGg3JKOoyyMSF1pDU3SReKYCYOwRCbCJ9A4TbtbPMOTg==}
-
-  x402-next@0.7.1:
-    resolution: {integrity: sha512-+valV77abaOuRh1g4NH/K3MslHSysIBWWueUf5/AXi018qMvIJB0Kp/TebWM6Antkl3q0uNBTSdU351d6u2w7Q==}
-    peerDependencies:
-      next: ^15.0.0
 
   x402@0.6.6:
     resolution: {integrity: sha512-gKkxqKBT0mH7fSLld6Mz9ML52dmu1XeOPhVtiUCA3EzkfY6p0EJ3ijKhIKN0Jh8Q6kVXrFlJ/4iAUS1dNDA2lA==}
@@ -27997,6 +27980,7 @@ snapshots:
       - uploadthing
       - utf-8-validate
       - ws
+    optional: true
 
   x402-hono@0.7.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)):
     dependencies:
@@ -28005,53 +27989,6 @@ snapshots:
       hono: 4.11.5
       viem: 2.44.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       x402: 0.7.3(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      zod: 3.25.76
-    transitivePeerDependencies:
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@deno/kv'
-      - '@netlify/blobs'
-      - '@planetscale/database'
-      - '@react-native-async-storage/async-storage'
-      - '@solana/sysvars'
-      - '@tanstack/query-core'
-      - '@tanstack/react-query'
-      - '@types/react'
-      - '@upstash/redis'
-      - '@vercel/blob'
-      - '@vercel/functions'
-      - '@vercel/kv'
-      - aws4fetch
-      - bufferutil
-      - db0
-      - debug
-      - encoding
-      - expo-auth-session
-      - expo-crypto
-      - expo-web-browser
-      - fastestsmallesttextencoderdecoder
-      - immer
-      - ioredis
-      - react
-      - react-native
-      - supports-color
-      - typescript
-      - uploadthing
-      - utf-8-validate
-      - ws
-
-  x402-next@0.7.1(@azure/identity@4.13.0)(@azure/storage-blob@12.30.0)(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.2))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(next@16.1.6(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(react@19.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)):
-    dependencies:
-      '@coinbase/cdp-sdk': 1.40.1(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      '@solana/kit': 2.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      next: 16.1.6(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
-      viem: 2.44.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
-      x402: 0.7.3(@azure/identity@4.13.0)(@azure/storage-blob@12.30.0)(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.2))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       zod: 3.25.76
     transitivePeerDependencies:
       - '@azure/app-configuration'
