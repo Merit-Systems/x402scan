@@ -12,12 +12,16 @@ import { mcpErrorJson, mcpSuccessJson } from './response';
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-const discoveryDocumentSchema = z.object({
-  version: z.number().refine(v => v === 1, { message: 'version must be 1' }),
-  resources: z.array(z.string()),
-  ownershipProofs: z.array(z.string()).optional(),
-  instructions: z.string().optional(),
-});
+const discoveryDocumentSchema = z
+  .object({
+    version: z
+      .number()
+      .refine(v => v === 1, { message: 'version must be 1' }),
+    resources: z.array(z.string()),
+    ownershipProofs: z.array(z.string()).optional(),
+    instructions: z.string().optional(),
+  })
+  .passthrough();
 
 const toolName = 'discover_api_endpoints';
 
@@ -47,7 +51,7 @@ export function registerDiscoveryTools(server: McpServer): void {
           .describe(
             'The origin URL or any URL on the origin to discover resources from'
           ),
-        includeOwnershipProof: z
+        includeOwnershipProofs: z
           .boolean()
           .default(false)
           .describe(
@@ -61,7 +65,7 @@ export function registerDiscoveryTools(server: McpServer): void {
         openWorldHint: true,
       },
     },
-    async ({ url, includeOwnershipProof }) => {
+    async ({ url, includeOwnershipProofs }) => {
       const origin = URL.canParse(url) ? new URL(url).origin : url;
       const hostname = URL.canParse(origin) ? new URL(origin).hostname : origin;
       log.info(`Discovering resources for origin: ${origin}`);
@@ -80,7 +84,7 @@ export function registerDiscoveryTools(server: McpServer): void {
 
       if (wellKnownResult.isOk()) {
         const data = { ...wellKnownResult.value };
-        if (!includeOwnershipProof) delete data.ownershipProofs;
+        if (!includeOwnershipProofs) delete data.ownershipProofs;
         return mcpSuccessJson({
           found: true,
           origin,
@@ -131,7 +135,7 @@ export function registerDiscoveryTools(server: McpServer): void {
 
           if (dnsDocResult.isOk()) {
             const data = { ...dnsDocResult.value };
-            if (!includeOwnershipProof) delete data.ownershipProofs;
+            if (!includeOwnershipProofs) delete data.ownershipProofs;
             return mcpSuccessJson({
               found: true,
               origin,
