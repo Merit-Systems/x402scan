@@ -20,6 +20,10 @@ import type {
 } from '@x402/core/server';
 import type { Network } from '@x402/core/types';
 
+const BASE_MAINNET: Network = 'eip155:8453' as Network;
+const SOLANA_MAINNET: Network =
+  'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp' as Network;
+
 function getQueryParam(url: string, name: string): string | undefined {
   try {
     return new URL(url).searchParams.get(name) ?? undefined;
@@ -33,7 +37,7 @@ const routes: RoutesConfig = {
     accepts: [
       {
         scheme: 'exact',
-        network: 'eip155:8453' as Network,
+        network: BASE_MAINNET,
         payTo: (ctx: HTTPRequestContext) =>
           getQueryParam(ctx.adapter.getUrl(), 'address') ?? '',
         price: (ctx: HTTPRequestContext) =>
@@ -41,7 +45,7 @@ const routes: RoutesConfig = {
       },
       {
         scheme: 'exact',
-        network: 'solana:mainnet' as Network,
+        network: SOLANA_MAINNET,
         payTo: (ctx: HTTPRequestContext) =>
           getQueryParam(ctx.adapter.getUrl(), 'address') ?? '',
         price: (ctx: HTTPRequestContext) =>
