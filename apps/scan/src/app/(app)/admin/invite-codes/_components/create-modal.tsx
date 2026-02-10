@@ -17,14 +17,8 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { api } from '@/trpc/client';
+import { PartnerCollapsible, type PartnerData } from './partner-collapsible';
 
 export const CreateInviteCodeButton = () => {
   const [open, setOpen] = useState(false);
@@ -34,22 +28,12 @@ export const CreateInviteCodeButton = () => {
   const [uniqueRecipients, setUniqueRecipients] = useState(true);
   const [expiresAt, setExpiresAt] = useState('');
   const [note, setNote] = useState('');
-  const [partnerName, setPartnerName] = useState('');
-  const [partnerMeritContact, setPartnerMeritContact] = useState('');
-  const [partnerEmail, setPartnerEmail] = useState('');
-  const [partnerOrganization, setPartnerOrganization] = useState('');
-
-  // Parse merit contacts from env var (comma-separated)
-  const meritContacts = [
-    'Sam',
-    'Ryan',
-    'Alvaro',
-    'Jason',
-    'Ben',
-    'Shafu',
-    'Mason',
-    'Mitch',
-  ];
+  const [partnerData, setPartnerData] = useState<PartnerData>({
+    partnerName: '',
+    partnerMeritContact: '',
+    partnerEmail: '',
+    partnerOrganization: '',
+  });
 
   const utils = api.useUtils();
 
@@ -69,15 +53,17 @@ export const CreateInviteCodeButton = () => {
     setUniqueRecipients(true);
     setExpiresAt('');
     setNote('');
-    setPartnerName('');
-    setPartnerMeritContact('');
-    setPartnerEmail('');
-    setPartnerOrganization('');
+    setPartnerData({
+      partnerName: '',
+      partnerMeritContact: '',
+      partnerEmail: '',
+      partnerOrganization: '',
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !partnerName || !partnerMeritContact) return;
+    if (!amount) return;
 
     // Convert datetime-local value to ISO format with timezone
     let expiresAtISO: Date | undefined;
@@ -92,10 +78,10 @@ export const CreateInviteCodeButton = () => {
       uniqueRecipients,
       expiresAt: expiresAtISO,
       note: note || undefined,
-      partnerName,
-      partnerMeritContact,
-      partnerEmail: partnerEmail || undefined,
-      partnerOrganization: partnerOrganization || undefined,
+      partnerName: partnerData.partnerName || undefined,
+      partnerMeritContact: partnerData.partnerMeritContact || undefined,
+      partnerEmail: partnerData.partnerEmail || undefined,
+      partnerOrganization: partnerData.partnerOrganization || undefined,
     });
   };
 
@@ -116,85 +102,7 @@ export const CreateInviteCodeButton = () => {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
           <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-            <div className="space-y-2">
-              <Label htmlFor="partnerName">
-                Partner Name <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="partnerName"
-                placeholder="John Doe"
-                value={partnerName}
-                onChange={e => setPartnerName(e.target.value)}
-                required
-              />
-              <p className="text-xs text-muted-foreground">
-                Partner will be created automatically if it doesn&apos;t exist
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="partnerMeritContact">
-                Merit Contact <span className="text-destructive">*</span>
-              </Label>
-              {meritContacts.length > 0 ? (
-                <Select
-                  value={partnerMeritContact}
-                  onValueChange={setPartnerMeritContact}
-                  required
-                >
-                  <SelectTrigger id="partnerMeritContact" className="w-full">
-                    <SelectValue placeholder="Select a Merit contact" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {meritContacts.map(contact => (
-                      <SelectItem key={contact} value={contact}>
-                        {contact}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Input
-                  id="partnerMeritContact"
-                  placeholder="Contact name at Merit"
-                  value={partnerMeritContact}
-                  onChange={e => setPartnerMeritContact(e.target.value)}
-                  required
-                />
-              )}
-              <p className="text-xs text-muted-foreground">
-                Name of the Merit team member managing this partner
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="partnerEmail">Partner Email (Optional)</Label>
-              <Input
-                id="partnerEmail"
-                type="email"
-                placeholder="partner@example.com"
-                value={partnerEmail}
-                onChange={e => setPartnerEmail(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Partner email address. Will use placeholder if not provided.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="partnerOrganization">
-                Partner Organization (Optional)
-              </Label>
-              <Input
-                id="partnerOrganization"
-                placeholder="Acme Inc"
-                value={partnerOrganization}
-                onChange={e => setPartnerOrganization(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Partner organization name. Will use placeholder if not provided.
-              </p>
-            </div>
+            <PartnerCollapsible onPartnerChange={setPartnerData} />
 
             <div className="space-y-2">
               <Label htmlFor="code">Code (Optional)</Label>
@@ -293,12 +201,7 @@ export const CreateInviteCodeButton = () => {
             </Button>
             <Button
               type="submit"
-              disabled={
-                createMutation.isPending ||
-                !amount ||
-                !partnerName ||
-                !partnerMeritContact
-              }
+              disabled={createMutation.isPending || !amount}
             >
               {createMutation.isPending ? 'Creating...' : 'Create'}
             </Button>

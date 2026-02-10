@@ -21,8 +21,8 @@ export const createInviteCodeSchema = z.object({
   uniqueRecipients: z.boolean().default(false),
   expiresAt: z.date().optional(),
   note: z.string().optional(),
-  partnerName: z.string().min(1),
-  partnerMeritContact: z.string().min(1),
+  partnerName: z.string().optional(),
+  partnerMeritContact: z.string().optional(),
   partnerEmail: z.string().email().optional(),
   partnerOrganization: z.string().min(1).optional(),
 });
@@ -38,12 +38,6 @@ export const createInviteCode = async (
     ...input
   }: z.infer<typeof createInviteCodeSchema>
 ) => {
-  // Find or create the partner first
-  const partner = await findOrCreatePartner(partnerName, partnerMeritContact, {
-    email: partnerEmail,
-    organization: partnerOrganization,
-  });
-
   // Create the invite code
   const inviteCode = await scanDb.inviteCode.create({
     data: {
@@ -51,6 +45,14 @@ export const createInviteCode = async (
       code: code ?? generateInviteCode(),
       createdById,
     },
+  });
+  if (!partnerName || !partnerMeritContact) {
+    return inviteCode;
+  }
+  // Find or create the partner first
+  const partner = await findOrCreatePartner(partnerName, partnerMeritContact, {
+    email: partnerEmail,
+    organization: partnerOrganization,
   });
 
   // Associate the invite code with the partner
