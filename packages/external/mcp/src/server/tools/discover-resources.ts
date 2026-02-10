@@ -47,6 +47,12 @@ export function registerDiscoveryTools(server: McpServer): void {
           .describe(
             'The origin URL or any URL on the origin to discover resources from'
           ),
+        includeOwnershipProof: z
+          .boolean()
+          .default(false)
+          .describe(
+            'Include ownershipProofs in the response (default: false)'
+          ),
       }),
       annotations: {
         readOnlyHint: true,
@@ -55,7 +61,7 @@ export function registerDiscoveryTools(server: McpServer): void {
         openWorldHint: true,
       },
     },
-    async ({ url }) => {
+    async ({ url, includeOwnershipProof }) => {
       const origin = URL.canParse(url) ? new URL(url).origin : url;
       const hostname = URL.canParse(origin) ? new URL(origin).hostname : origin;
       log.info(`Discovering resources for origin: ${origin}`);
@@ -73,11 +79,13 @@ export function registerDiscoveryTools(server: McpServer): void {
       );
 
       if (wellKnownResult.isOk()) {
+        const data = { ...wellKnownResult.value };
+        if (!includeOwnershipProof) delete data.ownershipProofs;
         return mcpSuccessJson({
           found: true,
           origin,
           source: 'well-known',
-          data: wellKnownResult.value,
+          data,
         });
       } else {
         log.info(
@@ -122,11 +130,13 @@ export function registerDiscoveryTools(server: McpServer): void {
           );
 
           if (dnsDocResult.isOk()) {
+            const data = { ...dnsDocResult.value };
+            if (!includeOwnershipProof) delete data.ownershipProofs;
             return mcpSuccessJson({
               found: true,
               origin,
               source: 'dns-txt',
-              data: dnsDocResult.value,
+              data,
             });
           }
         } else {
