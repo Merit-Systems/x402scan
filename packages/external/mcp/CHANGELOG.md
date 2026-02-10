@@ -1,5 +1,11 @@
 # @x402scan/mcp
 
+## 0.3.1
+
+### Patch Changes
+
+- 0fe8183: Replace vendored @x402scan/siwx with @x402/extensions/sign-in-with-x SDK
+
 ## 0.3.0
 
 ### Minor Changes
