@@ -38,7 +38,6 @@ export const createInviteCode = async (
     ...input
   }: z.infer<typeof createInviteCodeSchema>
 ) => {
-
   // Create the invite code
   const inviteCode = await scanDb.inviteCode.create({
     data: {
