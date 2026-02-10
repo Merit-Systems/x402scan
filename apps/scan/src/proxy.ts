@@ -65,8 +65,9 @@ async function getHTTPServer(): Promise<x402HTTPResourceServer> {
     const resourceServer = new x402ResourceServer(facilitatorClient);
     registerExactEvmScheme(resourceServer);
     registerExactSvmScheme(resourceServer);
-    httpServer = new x402HTTPResourceServer(resourceServer, routes);
-    await httpServer.initialize();
+    const server = new x402HTTPResourceServer(resourceServer, routes);
+    await server.initialize();
+    httpServer = server;
   }
   return httpServer;
 }
