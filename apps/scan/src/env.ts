@@ -18,6 +18,7 @@ export const env = createEnv({
     FREEPIK_API_KEY: z.string().optional(),
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
     FREE_TIER_WALLET_NAME: z.string(),
+    INVITE_WALLET_NAME: z.string().optional(),
     TRANSFERS_DB_URL: z.url(),
     TRANSFERS_DB_URL_REPLICA_1: z.url().optional(),
     TRANSFERS_DB_URL_REPLICA_2: z.url().optional(),
@@ -32,9 +33,14 @@ export const env = createEnv({
     ANALYTICS_CLICKHOUSE_USER: z.string().optional(),
     ANALYTICS_CLICKHOUSE_PASSWORD: z.string().optional(),
     ANALYTICS_CLICKHOUSE_DATABASE: z.string().optional(),
+    PARTNERS_CLICKHOUSE_URL: z.string().url().optional(),
+    PARTNERS_CLICKHOUSE_USER: z.string().optional(),
+    PARTNERS_CLICKHOUSE_PASSWORD: z.string().optional(),
+    PARTNERS_CLICKHOUSE_DATABASE: z.string().optional(),
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
     STRIPE_SECRET_KEY: z.string(),
+    DISCORD_TELEMETRY_WEBHOOK_URL: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
@@ -56,7 +62,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
     NEXT_PUBLIC_ENABLE_COMPOSER: z.string().optional().default('true'),
-    NEXT_PUBLIC_SOLANA_RPC_URL: z.url().optional(),
+    NEXT_PUBLIC_SOLANA_RPC_URL: z.url(),
     NEXT_PUBLIC_BASE_RPC_URL: z.url().optional(),
     NEXT_PUBLIC_VERCEL_ENV: z
       .enum(['development', 'preview', 'production'])

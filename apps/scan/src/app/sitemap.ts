@@ -21,10 +21,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
-      url: 'https://x402scan.com/news',
+      url: 'https://x402scan.com/networks',
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.6,
+    },
+    {
+      url: 'https://x402scan.com/ecosystem',
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.6,
+    },
+    {
+      url: 'https://x402scan.com/facilitators',
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.6,
+    },
+    {
+      url: 'https://x402scan.com/composer',
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.6,
+    },
+    {
+      url: 'https://x402scan.com/developer',
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.4,
     },
   ];
 }

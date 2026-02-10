@@ -27,6 +27,8 @@ export type {
   UserAcknowledgement,
   ResourceOriginMetrics,
   ResourceMetrics,
+  InviteCode,
+  InviteRedemption,
 } from '../generated/prisma/client';
 export {
   Role,
@@ -36,5 +38,7 @@ export {
   SessionStatus,
   ServerWalletType,
   Visibility,
+  InviteCodeStatus,
+  RedemptionStatus,
 } from '../generated/prisma/client';
 export { scanDb } from './client';

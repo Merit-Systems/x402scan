@@ -3,11 +3,14 @@
   "extends": ["//"],
   "tasks": {
     "build": {
+      "description": "Build x402 scan Next.js app for production",
       "env": [
         "NEXT_PUBLIC_*",
         "NODE_ENV",
         "NEXT_RUNTIME",
         "LMNR_PROJECT_API_KEY",
+        "OTEL_SERVICE_NAME",
+        "SIGNOZ_INGESTION_KEY",
         "GITHUB_TOKEN",
         "SCAN_DATABASE_*",
         "CDP_*",
@@ -18,11 +21,14 @@
       ]
     },
     "build:deploy": {
+      "description": "Build x402 scan app with database migrations",
       "env": [
         "NEXT_PUBLIC_*",
         "NODE_ENV",
         "NEXT_RUNTIME",
         "LMNR_PROJECT_API_KEY",
+        "OTEL_SERVICE_NAME",
+        "SIGNOZ_INGESTION_KEY",
         "GITHUB_TOKEN",
         "SCAN_DATABASE_*",
         "CDP_*",
@@ -33,11 +39,14 @@
       ]
     },
     "dev": {
+      "description": "Start x402 scan app in development mode",
       "env": [
         "NEXT_PUBLIC_*",
         "NODE_ENV",
         "NEXT_RUNTIME",
         "LMNR_PROJECT_API_KEY",
+        "OTEL_SERVICE_NAME",
+        "SIGNOZ_INGESTION_KEY",
         "GITHUB_TOKEN",
         "SCAN_DATABASE_*",
         "CDP_*",

@@ -1,0 +1,77 @@
+export const metadata = {
+  title: 'Competitive Mapping',
+  description: 'Map organizational structures and talent at target companies',
+};
+
+# Competitive Mapping
+
+Build detailed organizational maps of engineering, product, and leadership teams at target companies.
+
+---
+
+## Map an Engineering Organization
+
+Understand the structure and key players in a company's engineering team.
+
+```prompt
+---
+title: Org Chart Mapping
+description: Map the engineering organization structure at a target company
+icon: sitemap
+---
+Map the engineering organization at {{Company|Figma}}. I want to understand:
+- Engineering leadership (VP, Directors, Managers)
+- Team structure and reporting lines where visible
+- Key technical leaders and their focus areas
+- Total engineering headcount estimate
+
+Provide LinkedIn profiles for all leadership.
+```
+
+---
+
+## Identify Recent Hires and Departures
+
+Track talent movement at competitor companies.
+
+```prompt
+---
+title: Talent Movement Tracker
+description: Track recent hires and departures at a company
+icon: arrow-right-left
+---
+Find people who joined {{Company|Notion}} in the last {{Timeframe|6 months}} in {{Department|engineering or product}} roles. Also identify any senior departures I can see from LinkedIn data showing short tenures.
+```
+
+---
+
+## Compare Team Sizes Across Competitors
+
+Benchmark headcount and team composition across multiple companies.
+
+```prompt
+---
+title: Team Comparison
+description: Compare team sizes and composition across competitors
+icon: bar-chart
+---
+Compare the {{Team Type|data engineering}} teams at {{Company 1|Databricks}}, {{Company 2|Snowflake}}, and {{Company 3|Confluent}}. For each company, give me:
+- Estimated team size
+- Seniority distribution
+- Key leaders with their backgrounds
+```
+
+---
+
+## Find Acquisition Targets by Talent
+
+Identify small companies with exceptional talent density.
+
+```prompt
+---
+title: Talent Density Search
+description: Find small companies with exceptional talent from top organizations
+icon: gem
+---
+Find {{Stage|seed-stage}} {{Industry|AI/ML}} startups (under {{Size|50 employees}}) in {{Location|San Francisco}} that have hired engineers from {{Source Companies|Google Brain, DeepMind, or OpenAI}}. List the companies and the notable hires.
+```

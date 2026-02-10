@@ -16,10 +16,26 @@ interface JsonSchema {
 export function extractFieldsFromSchema(
   inputSchema: InputSchema,
   method: Methods,
-  fieldType: 'query' | 'body'
+  fieldType: 'query' | 'body' | 'header'
 ): FieldDefinition[] {
   const schema = inputSchema as Record<string, unknown>;
   const schemaBody = schema.body as JsonSchema | undefined;
+
+  if (fieldType === 'header') {
+    const headerFields = (
+      inputSchema as unknown as { headerFields?: Record<string, unknown> }
+    ).headerFields;
+    if (headerFields && typeof headerFields === 'object') {
+      return getFields(headerFields);
+    }
+    const headerFieldsRaw = schema.headerFields as
+      | Record<string, unknown>
+      | undefined;
+    if (headerFieldsRaw && typeof headerFieldsRaw === 'object') {
+      return getFields(headerFieldsRaw);
+    }
+    return [];
+  }
 
   const hasJsonSchemaQuery =
     inputSchema.queryParams &&

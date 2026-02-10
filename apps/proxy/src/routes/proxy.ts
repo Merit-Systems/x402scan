@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import type { Hono } from 'hono';
 
 import { insertResourceInvocation } from '@x402scan/analytics-db';
 import { randomUUID } from 'crypto';

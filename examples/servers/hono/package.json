@@ -1,5 +1,5 @@
 {
-  "name": "hono-server-example",
+  "name": "@x402scan/hono-server-example",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,7 +16,7 @@
     "dotenv": "catalog:env",
     "facilitators": "workspace:*",
     "hono": "catalog:hono",
-    "x402-hono": "catalog:x402"
+    "x402-hono": "catalog:x402-v1"
   },
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",

@@ -13,6 +13,7 @@ import {
   listResourcesWithPagination,
   searchResources,
   searchResourcesSchema,
+  deprecateStaleResources,
   type ResourceSortId,
 } from '@/services/db/resources/resource';
 
@@ -81,11 +82,16 @@ export const resourcesRouter = createTRPCRouter({
               desc: z.boolean(),
             })
             .optional(),
+          includeDeprecated: z.boolean().optional(),
         })
       )
       .query(async ({ input, ctx: { pagination } }) => {
         return await listResourcesWithPagination(
-          { where: input.where, sorting: input.sorting },
+          {
+            where: input.where,
+            sorting: input.sorting,
+            includeDeprecated: input.includeDeprecated,
+          },
           pagination
         );
       }),
@@ -391,7 +397,11 @@ export const resourcesRouter = createTRPCRouter({
               url: resourceUrl,
             });
             // Capture origin ID from the first successful registration
-            if (!originId && 'resource' in value && value.resource?.origin?.id) {
+            if (
+              !originId &&
+              'resource' in value &&
+              value.resource?.origin?.id
+            ) {
               originId = value.resource.origin.id;
             }
           } else if ('success' in value && !value.success) {
@@ -412,10 +422,21 @@ export const resourcesRouter = createTRPCRouter({
         }
       }
 
+      // Deprecate resources that are no longer in the discovery document
+      let deprecated = 0;
+      if (originId) {
+        const activeResourceUrls = discoveryResult.resources.map(r => r.url);
+        deprecated = await deprecateStaleResources(
+          originId,
+          activeResourceUrls
+        );
+      }
+
       return {
         success: true as const,
         registered: successfulResults.length,
         failed: failedResults.length,
+        deprecated,
         total: results.length,
         source: discoveryResult.source,
         failedDetails: failedResults,

@@ -1,5 +1,5 @@
-import React from 'react';
 import Image from 'next/image';
+import React from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -23,15 +23,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
           alt="x402scan Logo"
           width={200}
           height={200}
-          className={cn('dark:hidden size-6', className)}
-          priority={priority}
-        />
-        <Image
-          src="/logo.svg"
-          alt="x402scan Logo"
-          width={200}
-          height={200}
-          className={cn('hidden dark:block size-6', className)}
+          className={cn('size-6', className)}
           priority={priority}
         />
       </div>

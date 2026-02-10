@@ -67,12 +67,18 @@ function CommandDialog({
 
 function CommandInput({
   className,
+  containerClassName,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+}: React.ComponentProps<typeof CommandPrimitive.Input> & {
+  containerClassName?: string;
+}) {
   return (
     <div
       data-slot="command-input-wrapper"
-      className="flex h-9 items-center gap-2 border-b px-3"
+      className={cn(
+        'flex h-9 items-center gap-2 border-b px-3',
+        containerClassName
+      )}
     >
       <SearchIcon className="size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
@@ -90,13 +96,15 @@ function CommandInput({
 function CommandList({
   className,
   children,
+  containerClassName,
   gradientClassName,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.List> & {
+  containerClassName?: string;
   gradientClassName?: string;
 }) {
   return (
-    <div className="relative">
+    <div className={cn('relative', containerClassName)}>
       <CommandPrimitive.List
         data-slot="command-list"
         className={cn(
@@ -109,7 +117,7 @@ function CommandList({
       </CommandPrimitive.List>
       <div
         className={cn(
-          'from-background absolute right-0 bottom-0 left-0 h-4 bg-gradient-to-t to-transparent',
+          'from-background absolute right-0 bottom-0 left-0 h-4 bg-linear-to-t to-transparent',
           gradientClassName
         )}
       />

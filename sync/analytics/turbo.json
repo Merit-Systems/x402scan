@@ -3,9 +3,11 @@
   "extends": ["//"],
   "tasks": {
     "trigger:dev": {
+      "description": "Start analytics sync jobs in development mode",
       "env": ["DISCORD_WEBHOOK_URL", "BASE_RPC_URL"]
     },
     "trigger:deploy": {
+      "description": "Deploy analytics sync jobs to Trigger.dev",
       "env": ["DISCORD_WEBHOOK_URL", "BASE_RPC_URL", "TRIGGER_*"]
     }
   }

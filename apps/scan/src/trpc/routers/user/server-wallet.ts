@@ -1,3 +1,5 @@
+import { TRPCError } from '@trpc/server';
+
 import { createTRPCRouter, protectedProcedure } from '@/trpc/trpc';
 
 import { getUserWallets } from '@/services/cdp/server-wallet/user';
@@ -25,7 +27,14 @@ export const serverWalletRouter = createTRPCRouter({
     .input(serverWalletChainSchema)
     .query(async ({ ctx, input: { chain } }) => {
       const { wallets } = await getUserWallets(ctx.session.user.id);
-      return await wallets[chain].address();
+      const result = await wallets[chain].address();
+      if (result.isErr()) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: result.error.message,
+        });
+      }
+      return result.value;
     }),
 
   tokenBalance: protectedProcedure
@@ -45,21 +54,42 @@ export const serverWalletRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input: { chain, ...rest } }) => {
       const { wallets } = await getUserWallets(ctx.session.user.id);
-      return await wallets[chain].getTokenBalance(rest);
+      const result = await wallets[chain].getTokenBalance(rest);
+      if (result.isErr()) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: result.error.message,
+        });
+      }
+      return result.value;
     }),
 
   export: protectedProcedure
     .input(serverWalletChainSchema)
     .mutation(async ({ ctx, input: { chain } }) => {
       const { wallets } = await getUserWallets(ctx.session.user.id);
-      return await wallets[chain].export();
+      const result = await wallets[chain].export();
+      if (result.isErr()) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: result.error.message,
+        });
+      }
+      return result.value;
     }),
 
   nativeBalance: protectedProcedure
     .input(serverWalletChainSchema)
     .query(async ({ ctx, input: { chain } }) => {
       const { wallets } = await getUserWallets(ctx.session.user.id);
-      return await wallets[chain].getNativeTokenBalance();
+      const result = await wallets[chain].getNativeTokenBalance();
+      if (result.isErr()) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: result.error.message,
+        });
+      }
+      return result.value;
     }),
 
   sendTokens: protectedProcedure
@@ -76,19 +106,32 @@ export const serverWalletRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input: { chain, ...rest } }) => {
       const { wallets } = await getUserWallets(ctx.session.user.id);
-      return await wallets[chain].sendTokens(rest);
+      const result = await wallets[chain].sendTokens(rest);
+      if (result.isErr()) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: result.error.message,
+        });
+      }
+      return result.value;
     }),
 
   chainsWithBalances: protectedProcedure.query(async ({ ctx }) => {
     const { wallets } = await getUserWallets(ctx.session.user.id);
-    return Promise.all(
-      SUPPORTED_CHAINS.map(async chain => ({
-        chain,
-        balance: await wallets[chain].getTokenBalance({ token: usdc(chain) }),
-      }))
-    )
-      .then(balances => balances.filter(balance => balance.balance > 0))
-      .then(balances => balances.map(balance => balance.chain));
+    const balanceResults = await Promise.all(
+      SUPPORTED_CHAINS.map(async chain => {
+        const result = await wallets[chain].getTokenBalance({
+          token: usdc(chain),
+        });
+        return {
+          chain,
+          balance: result.isOk() ? result.value : 0,
+        };
+      })
+    );
+    return balanceResults
+      .filter(balance => balance.balance > 0)
+      .map(balance => balance.chain);
   }),
 
   sendUsdc: protectedProcedure

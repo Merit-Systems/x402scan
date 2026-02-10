@@ -1,12 +1,15 @@
 {
-  "name": "x402scan-monorepo",
+  "name": "@x402scan/monorepo",
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.28.0",
   "scripts": {
-    "dev": "turbo run dev --filter=x402scan",
+    "dev": "turbo run dev --filter=@x402scan/app",
+    "dev:mcp": "turbo run dev --filter=@x402scan/app --filter=@x402scan/mcp",
     "build": "turbo run build",
     "build:deploy": "turbo run build:deploy",
+    "build:packages": "turbo run build --filter \"./packages/external/**\"",
+    "clean": "rimraf .turbo node_modules .next dist",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "types:check": "turbo run types:check",
@@ -17,15 +20,20 @@
     "format:check:dir": "prettier --check",
     "knip": "knip",
     "knip:check": "turbo run knip",
-    "check": "turbo run format types:check lint knip",
-    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=sync-analytics",
-    "trigger:deploy:transfers": "turbo run trigger:deploy --filter=sync-transfers",
-    "trigger:deploy:alerts": "turbo run trigger:deploy --filter=sync-alerts"
+    "check": "turbo run format types:check lint knip publish:check",
+    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=@x402scan/sync-analytics",
+    "trigger:deploy:transfers": "turbo run trigger:deploy --filter=@x402scan/sync-transfers",
+    "trigger:deploy:alerts": "turbo run trigger:deploy --filter=@x402scan/sync-alerts",
+    "changeset": "changeset",
+    "changeset:version": "changeset version && pnpm --filter @x402scan/mcp build:mcpb",
+    "changeset:publish": "pnpm build:packages && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.8",
     "knip": "^5.80.0",
     "prettier": "^3.7.4",
-    "turbo": "^2.7.4",
+    "rimraf": "catalog:",
+    "turbo": "^2.8.0",
     "typescript": "catalog:"
   },
   "pnpm": {

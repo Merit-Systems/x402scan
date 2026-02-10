@@ -1,0 +1,72 @@
+export const metadata = {
+  title: 'Enriching Profiles',
+  description: 'Get complete candidate information from partial data',
+};
+
+# Enriching Profiles
+
+Transform basic candidate information into comprehensive profiles with contact details and work history.
+
+---
+
+## Enrich from LinkedIn URL
+
+Get full professional details from a LinkedIn profile URL.
+
+```prompt
+---
+title: LinkedIn Profile Enrichment
+description: Get full professional details from a LinkedIn profile
+icon: linkedin
+---
+I have this LinkedIn profile: {{LinkedIn URL|linkedin.com/in/example-candidate}}
+Get their full work history, current email, phone number, and any other contact information available.
+```
+
+---
+
+## Bulk Enrich a Candidate List
+
+Process multiple candidates at once when you have partial information.
+
+```prompt
+---
+title: Bulk Candidate Enrichment
+description: Enrich multiple candidates with names and companies
+icon: users
+---
+I have a list of {{Count|10}} candidates with their names and current companies. Enrich all of them with email addresses and LinkedIn profiles:
+- {{Candidate 1|Jane Smith, Acme Corp}}
+- {{Candidate 2|John Doe, TechStartup Inc}}
+[...]
+```
+
+---
+
+## Fill in Missing Contact Info
+
+When Apollo data is incomplete, fall back to Clado for personal contact details.
+
+```prompt
+---
+title: Contact Info Fallback
+description: Find personal contact details when corporate data is incomplete
+icon: phone
+---
+I have this candidate's Apollo profile but need their personal email and phone number for outreach. Their LinkedIn is {{LinkedIn URL|linkedin.com/in/candidate}}
+```
+
+---
+
+## Verify and Update Stale Data
+
+Re-enrich candidates whose information may be outdated.
+
+```prompt
+---
+title: Data Refresh
+description: Update stale candidate data with fresh information
+icon: refresh-cw
+---
+This candidate's Apollo data shows they were at {{Old Company|Company X}} but their LinkedIn shows {{New Company|Company Y}}. Get me fresh data from their LinkedIn profile and update their contact information.
+```

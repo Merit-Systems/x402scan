@@ -1,0 +1,91 @@
+# @x402scan/mcp
+
+## 0.3.1
+
+### Patch Changes
+
+- 0fe8183: Replace vendored @x402scan/siwx with @x402/extensions/sign-in-with-x SDK
+
+## 0.3.0
+
+### Minor Changes
+
+- f315d52: hunter api for email verification
+
+## 0.2.4
+
+### Patch Changes
+
+- 02cfaac: Stop pretty printing outputs to save on tokens
+
+## 0.2.3
+
+### Patch Changes
+
+- 810846d: adding flags
+
+## 0.2.2
+
+### Patch Changes
+
+- 9cc68c5: Made origins programmatic. No behavior change.
+
+## 0.2.1
+
+### Patch Changes
+
+- 9fc8532: ## 0.2.1### Patch Changes- Fix Content-Type header parsing to handle charset and other parameters - Use `content-type` package for RFC-compliant header parsing - Fix audio/video/text type matching that previously used broken literal switch cases - Extract base MIME type before matching (e.g., `application/json; charset=utf-8` → `application/json`)
+
+## 0.2.0
+
+### Minor Changes
+
+- 6224dcb: Added built-in prompts for the x402 MCP server (getting-started and enrich)
+
+## 0.1.2
+
+### Patch Changes
+
+- 90bdc6f: relax discovery schema to string instead of url
+
+## 0.1.1
+
+### Patch Changes
+
+- a2dd2ec: patch no wallet
+
+## 0.1.0
+
+### Minor Changes
+
+- 804ac92: neverthrow instead of try catch
+
+## 0.0.8
+
+### Patch Changes
+
+- 904fae8: Additional headers on auth and check_endpoint routes
+
+## 0.0.7
+
+### Patch Changes
+
+- f50e089: Updating x402 headers
+
+## 0.0.6
+
+### Patch Changes
+
+- 154c19a: balance rpc and yes bypass
+
+## 0.0.5
+
+### Patch Changes
+
+- 02ea5f6: update deposit link
+
+## 0.0.4
+
+### Patch Changes
+
+- c046ccb: invite codes

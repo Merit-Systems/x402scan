@@ -25,3 +25,4 @@ export { primer, primerFacilitator } from './primer';
 export { x402jobs, x402jobsFacilitator } from './x402jobs';
 export { openfacilitator, openfacilitatorFacilitator } from './openfacilitator';
 export { tsex, tsexFacilitator } from './tsex';
+export { relai, relaiFacilitator } from './relai';
