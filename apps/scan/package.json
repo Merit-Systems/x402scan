@@ -135,8 +135,6 @@
     "viem": "catalog:",
     "wagmi": "^2.17.5",
     "x402": "catalog:x402-v1",
-    "x402-fetch": "catalog:x402-v1",
-    "x402-next": "catalog:x402-v1",
     "zod": "catalog:",
     "zod3": "npm:zod@^3.24.2"
   },

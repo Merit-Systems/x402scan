@@ -1,5 +1,4 @@
 import type { Chain, SupportedChain, SupportedEVMChain } from '@/types/chain';
-import type { Signer } from 'x402-fetch';
 import type z from 'zod';
 import type { getTokenBalanceSchema, sendTokensSchema } from './schemas';
 import type { SolanaAddress } from '@/types/address';
@@ -15,7 +14,7 @@ export type NetworkServerWallet<T extends Chain> = (name: string) => {
   ) => CdpResultAsync<number>;
   getNativeTokenBalance: () => CdpResultAsync<number>;
   export: () => CdpResultAsync<string>;
-  signer: () => Promise<Signer>;
+  signer: () => Promise<unknown>;
   sendTokens: (
     input: z.infer<typeof sendTokensSchema>
   ) => CdpResultAsync<string>;
