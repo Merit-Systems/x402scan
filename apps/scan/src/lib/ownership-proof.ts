@@ -5,11 +5,24 @@
  * The signed message is the origin string (e.g., "https://api.example.com").
  *
  * Supports both EVM (Ethereum) and Solana addresses.
+ * EVM verification supports EOA (ECDSA), EIP-1271 (smart contract wallets),
+ * and EIP-6492 (counterfactual smart contract wallets) signatures.
  */
 
 import { recoverMessageAddress } from 'viem';
 
+import { baseRpc } from '@/services/rpc/base';
+
 type ChainType = 'evm' | 'solana';
+
+/** Subset of viem's PublicClient used for on-chain signature verification */
+type EvmVerificationClient = {
+  verifyMessage: (args: {
+    address: `0x${string}`;
+    message: string;
+    signature: `0x${string}`;
+  }) => Promise<boolean>;
+};
 
 interface VerificationConfig {
   signature: string;
@@ -57,22 +70,54 @@ function normalizeEvmSignature(signature: string): `0x${string}` {
 
 /**
  * EVM (Ethereum) Verifier using viem
+ *
+ * Supports EOA signatures via ECDSA recovery (fast, no RPC), with an
+ * on-chain fallback via EIP-1271/EIP-6492 for smart contract wallets.
  */
 class EVMVerifier implements ChainVerifier {
+  private publicClient: EvmVerificationClient | null;
+
+  constructor(publicClient?: EvmVerificationClient | null) {
+    this.publicClient = publicClient ?? null;
+  }
+
   async verify(config: VerificationConfig): Promise<boolean> {
+    const signature = normalizeEvmSignature(config.signature);
+
+    // 1. Try fast ECDSA recovery first (works for EOA signatures, no RPC needed)
     try {
-      const signature = normalizeEvmSignature(config.signature);
       const recoveredAddress = await recoverMessageAddress({
         message: config.message,
         signature,
       });
 
-      return (
+      if (
         recoveredAddress.toLowerCase() === config.expectedAddress.toLowerCase()
-      );
+      ) {
+        return true;
+      }
     } catch {
-      return false;
+      // ECDSA recovery failed — signature may be from a smart contract wallet
     }
+
+    // 2. Fall back to on-chain verification (EIP-1271 / EIP-6492)
+    if (this.publicClient) {
+      try {
+        return await this.publicClient.verifyMessage({
+          address: config.expectedAddress as `0x${string}`,
+          message: config.message,
+          signature,
+        });
+      } catch (error) {
+        console.warn(
+          `On-chain signature verification failed for ${config.expectedAddress}:`,
+          error instanceof Error ? error.message : error
+        );
+        return false;
+      }
+    }
+
+    return false;
   }
 
   async recoverAddress(
@@ -145,7 +190,7 @@ class SolanaVerifier implements ChainVerifier {
 
 // Verifier registry
 const verifiers: Record<ChainType, ChainVerifier> = {
-  evm: new EVMVerifier(),
+  evm: new EVMVerifier(baseRpc),
   solana: new SolanaVerifier(),
 };
 
