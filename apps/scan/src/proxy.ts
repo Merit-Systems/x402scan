@@ -5,6 +5,8 @@ import {
   x402HTTPResourceServer,
   HTTPFacilitatorClient,
 } from '@x402/core/server';
+import { registerExactEvmScheme } from '@x402/evm/exact/server';
+import { registerExactSvmScheme } from '@x402/svm/exact/server';
 
 import { coinbase } from 'facilitators';
 
@@ -57,6 +59,8 @@ async function getHTTPServer(): Promise<x402HTTPResourceServer> {
   if (!httpServer) {
     const facilitatorClient = new HTTPFacilitatorClient(coinbase);
     const resourceServer = new x402ResourceServer(facilitatorClient);
+    registerExactEvmScheme(resourceServer);
+    registerExactSvmScheme(resourceServer);
     httpServer = new x402HTTPResourceServer(resourceServer, routes);
     await httpServer.initialize();
   }
@@ -112,10 +116,10 @@ export async function proxy(request: NextRequest) {
 
   if (result.type === 'payment-error') {
     const { status, headers, body, isHtml } = result.response;
-    return new NextResponse(
-      isHtml ? (body as string) : JSON.stringify(body),
-      { status, headers }
-    );
+    return new NextResponse(isHtml ? (body as string) : JSON.stringify(body), {
+      status,
+      headers,
+    });
   }
 
   if (result.type === 'payment-verified') {
