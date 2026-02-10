@@ -11,13 +11,18 @@ import { Origin } from '@/shared/origins';
 import { mcpErrorJson, mcpSuccessJson } from './response';
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { JsonObject } from '@/shared/neverthrow/json/types';
 
-const discoveryDocumentSchema = z.object({
-  version: z.number().refine(v => v === 1, { message: 'version must be 1' }),
-  resources: z.array(z.string()),
-  ownershipProofs: z.array(z.string()).optional(),
-  instructions: z.string().optional(),
-});
+const discoveryDocumentSchema = z
+  .object({
+    version: z
+      .number()
+      .refine(v => v === 1, { message: 'version must be 1' }),
+    resources: z.array(z.string()),
+    ownershipProofs: z.array(z.string()).optional(),
+    instructions: z.string().optional(),
+  })
+  .passthrough();
 
 const toolName = 'discover_api_endpoints';
 
@@ -47,6 +52,12 @@ export function registerDiscoveryTools(server: McpServer): void {
           .describe(
             'The origin URL or any URL on the origin to discover resources from'
           ),
+        includeOwnershipProofs: z
+          .boolean()
+          .default(false)
+          .describe(
+            'Include ownershipProofs in the response (default: false)'
+          ),
       }),
       annotations: {
         readOnlyHint: true,
@@ -55,7 +66,7 @@ export function registerDiscoveryTools(server: McpServer): void {
         openWorldHint: true,
       },
     },
-    async ({ url }) => {
+    async ({ url, includeOwnershipProofs }) => {
       const origin = URL.canParse(url) ? new URL(url).origin : url;
       const hostname = URL.canParse(origin) ? new URL(origin).hostname : origin;
       log.info(`Discovering resources for origin: ${origin}`);
@@ -73,11 +84,13 @@ export function registerDiscoveryTools(server: McpServer): void {
       );
 
       if (wellKnownResult.isOk()) {
+        const data = { ...wellKnownResult.value } as JsonObject;
+        if (!includeOwnershipProofs) delete data.ownershipProofs;
         return mcpSuccessJson({
           found: true,
           origin,
           source: 'well-known',
-          data: wellKnownResult.value,
+          data,
         });
       } else {
         log.info(
@@ -122,11 +135,13 @@ export function registerDiscoveryTools(server: McpServer): void {
           );
 
           if (dnsDocResult.isOk()) {
+            const data = { ...dnsDocResult.value } as JsonObject;
+            if (!includeOwnershipProofs) delete data.ownershipProofs;
             return mcpSuccessJson({
               found: true,
               origin,
               source: 'dns-txt',
-              data: dnsDocResult.value,
+              data,
             });
           }
         } else {
