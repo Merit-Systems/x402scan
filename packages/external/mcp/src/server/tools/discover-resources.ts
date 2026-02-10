@@ -11,6 +11,7 @@ import { Origin } from '@/shared/origins';
 import { mcpErrorJson, mcpSuccessJson } from './response';
 
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { JsonObject } from '@/shared/neverthrow/json/types';
 
 const discoveryDocumentSchema = z
   .object({
@@ -83,7 +84,7 @@ export function registerDiscoveryTools(server: McpServer): void {
       );
 
       if (wellKnownResult.isOk()) {
-        const data = { ...wellKnownResult.value };
+        const data = { ...wellKnownResult.value } as JsonObject;
         if (!includeOwnershipProofs) delete data.ownershipProofs;
         return mcpSuccessJson({
           found: true,
@@ -134,7 +135,7 @@ export function registerDiscoveryTools(server: McpServer): void {
           );
 
           if (dnsDocResult.isOk()) {
-            const data = { ...dnsDocResult.value };
+            const data = { ...dnsDocResult.value } as JsonObject;
             if (!includeOwnershipProofs) delete data.ownershipProofs;
             return mcpSuccessJson({
               found: true,
