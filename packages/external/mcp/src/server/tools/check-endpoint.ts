@@ -68,7 +68,7 @@ export const registerCheckX402EndpointTool: RegisterTools = ({
       }
 
       // Fallback
-      return mcpSuccessJson(value as never);
+      return mcpSuccessJson(value);
     }
   );
 };
