@@ -50,19 +50,24 @@ const dataRouteConfig = (
   description: string,
   price: string,
   extensions: Record<string, unknown>
-) => ({
-  accepts: [
-    {
-      scheme: 'exact' as const,
-      network: BASE_MAINNET,
-      payTo: env.X402_PAYEE_ADDRESS,
-      price,
-    },
-  ],
-  description,
-  mimeType: 'application/json',
-  extensions,
-});
+) => {
+  if (!env.X402_PAYEE_ADDRESS) {
+    throw new Error('X402_PAYEE_ADDRESS environment variable is required');
+  }
+  return {
+    accepts: [
+      {
+        scheme: 'exact' as const,
+        network: BASE_MAINNET,
+        payTo: env.X402_PAYEE_ADDRESS,
+        price,
+      },
+    ],
+    description,
+    mimeType: 'application/json',
+    extensions,
+  };
+};
 
 const routes: RoutesConfig = {
   'POST /api/send': {
