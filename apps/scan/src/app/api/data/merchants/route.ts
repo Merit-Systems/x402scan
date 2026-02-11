@@ -3,10 +3,9 @@ import type { NextRequest } from 'next/server';
 import { merchantsListQuerySchema } from '@/app/api/data/_lib/schemas';
 import {
   parseQueryParams,
-  jsonResponse,
+  paginatedResponse,
   errorResponse,
-  toInternalTimeframe,
-  toInternalChain,
+  asChain,
 } from '@/app/api/data/_lib/utils';
 import { listTopSellersMV } from '@/services/transfers/sellers/list-mv';
 
@@ -28,8 +27,8 @@ export const GET = async (request: NextRequest) => {
   try {
     const result = await listTopSellersMV(
       {
-        timeframe: toInternalTimeframe(timeframe),
-        chain: toInternalChain(chain),
+        timeframe: timeframe ?? 0,
+        chain: asChain(chain),
         sorting: {
           id: SORT_MAP[sort_by],
           desc: true,
@@ -38,14 +37,7 @@ export const GET = async (request: NextRequest) => {
       { page, page_size }
     );
 
-    return jsonResponse({
-      data: result.items,
-      pagination: {
-        page: result.page,
-        page_size,
-        has_next_page: result.hasNextPage,
-      },
-    });
+    return paginatedResponse(result, page_size);
   } catch (err) {
     console.error('Failed to fetch merchants:', err);
     return errorResponse('Internal server error', 500);

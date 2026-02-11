@@ -6,8 +6,7 @@ import {
   parseAddress,
   jsonResponse,
   errorResponse,
-  toInternalTimeframe,
-  toInternalChain,
+  asChain,
 } from '@/app/api/data/_lib/utils';
 import { getOverallStatisticsMV } from '@/services/transfers/stats/overall-mv';
 
@@ -29,8 +28,8 @@ export const GET = async (
 
   try {
     const stats = await getOverallStatisticsMV({
-      timeframe: toInternalTimeframe(timeframe),
-      chain: toInternalChain(chain),
+      timeframe: timeframe ?? 0,
+      chain: asChain(chain),
       recipients: { include: [addr.data] },
     });
 

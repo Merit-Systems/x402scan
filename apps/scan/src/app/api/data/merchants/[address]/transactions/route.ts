@@ -4,10 +4,9 @@ import { merchantTransactionsQuerySchema } from '@/app/api/data/_lib/schemas';
 import {
   parseQueryParams,
   parseAddress,
-  jsonResponse,
+  paginatedResponse,
   errorResponse,
-  toInternalTimeframe,
-  toInternalChain,
+  asChain,
 } from '@/app/api/data/_lib/utils';
 import { listFacilitatorTransfers } from '@/services/transfers/transfers/list';
 
@@ -31,8 +30,8 @@ export const GET = async (
   try {
     const result = await listFacilitatorTransfers(
       {
-        timeframe: toInternalTimeframe(timeframe),
-        chain: toInternalChain(chain),
+        timeframe: timeframe ?? 0,
+        chain: asChain(chain),
         recipients: { include: [addr.data] },
         sorting: {
           id: sort_by === 'time' ? 'block_timestamp' : 'amount',
@@ -42,14 +41,7 @@ export const GET = async (
       { page, page_size }
     );
 
-    return jsonResponse({
-      data: result.items,
-      pagination: {
-        page: result.page,
-        page_size,
-        has_next_page: result.hasNextPage,
-      },
-    });
+    return paginatedResponse(result, page_size);
   } catch (err) {
     console.error('Failed to fetch merchant transactions:', err);
     return errorResponse('Internal server error', 500);

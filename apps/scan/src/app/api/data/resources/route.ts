@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { resourcesListQuerySchema } from '@/app/api/data/_lib/schemas';
 import {
   parseQueryParams,
-  jsonResponse,
+  paginatedResponse,
   errorResponse,
 } from '@/app/api/data/_lib/utils';
 import { listResourcesWithPagination } from '@/services/db/resources/resource';
@@ -29,14 +29,7 @@ export const GET = async (request: NextRequest) => {
       { page, page_size }
     );
 
-    return jsonResponse({
-      data: result.items,
-      pagination: {
-        page: result.page,
-        page_size,
-        has_next_page: result.hasNextPage,
-      },
-    });
+    return paginatedResponse(result, page_size);
   } catch (err) {
     console.error('Failed to fetch resources:', err);
     return errorResponse('Internal server error', 500);

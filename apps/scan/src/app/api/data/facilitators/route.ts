@@ -3,10 +3,9 @@ import type { NextRequest } from 'next/server';
 import { facilitatorsListQuerySchema } from '@/app/api/data/_lib/schemas';
 import {
   parseQueryParams,
-  jsonResponse,
+  paginatedResponse,
   errorResponse,
-  toInternalTimeframe,
-  toInternalChain,
+  asChain,
 } from '@/app/api/data/_lib/utils';
 import { listTopFacilitators } from '@/services/transfers/facilitators/list';
 
@@ -22,21 +21,14 @@ export const GET = async (request: NextRequest) => {
   try {
     const result = await listTopFacilitators(
       {
-        timeframe: toInternalTimeframe(timeframe),
-        chain: toInternalChain(chain),
+        timeframe: timeframe ?? 0,
+        chain: asChain(chain),
         sorting: { id: 'tx_count', desc: true },
       },
       { page, page_size }
     );
 
-    return jsonResponse({
-      data: result.items,
-      pagination: {
-        page: result.page,
-        page_size,
-        has_next_page: result.hasNextPage,
-      },
-    });
+    return paginatedResponse(result, page_size);
   } catch (err) {
     console.error('Failed to fetch facilitators:', err);
     return errorResponse('Internal server error', 500);

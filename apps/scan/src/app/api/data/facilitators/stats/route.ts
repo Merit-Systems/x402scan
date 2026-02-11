@@ -5,8 +5,7 @@ import {
   parseQueryParams,
   jsonResponse,
   errorResponse,
-  toInternalTimeframe,
-  toInternalChain,
+  asChain,
 } from '@/app/api/data/_lib/utils';
 import { getOverallStatisticsMV } from '@/services/transfers/stats/overall-mv';
 
@@ -21,8 +20,8 @@ export const GET = async (request: NextRequest) => {
 
   try {
     const stats = await getOverallStatisticsMV({
-      timeframe: toInternalTimeframe(timeframe),
-      chain: toInternalChain(chain),
+      timeframe: timeframe ?? 0,
+      chain: asChain(chain),
     });
 
     return jsonResponse({ data: stats });

@@ -6,7 +6,6 @@ import {
   parseAddress,
   jsonResponse,
   errorResponse,
-  toInternalTimeframe,
 } from '@/app/api/data/_lib/utils';
 import { getWalletStats } from '@/services/transfers/wallets/stats';
 
@@ -30,7 +29,7 @@ export const GET = async (
     const stats = await getWalletStats({
       address: addr.data,
       chain,
-      timeframe: toInternalTimeframe(timeframe),
+      timeframe: timeframe ?? 0,
     });
 
     return jsonResponse({ data: stats });

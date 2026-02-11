@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { Chain } from '@/types/chain';
 import { mixedAddressSchema } from '@/lib/schemas';
 
 import type z from 'zod';
 import type { MixedAddress } from '@/types/address';
+import type { Chain } from '@/types/chain';
 
 export function parseQueryParams<T>(
   searchParams: URLSearchParams,
@@ -24,29 +24,9 @@ export function parseQueryParams<T>(
   return { success: true, data: result.data };
 }
 
-export function jsonResponse(data: unknown, status = 200): NextResponse {
-  return NextResponse.json(data, { status });
-}
-
-export function errorResponse(message: string, status: number): NextResponse {
-  return NextResponse.json({ error: message }, { status });
-}
-
-/** Map API timeframe param (days) to internal timeframe format. 0 = all time. */
-export function toInternalTimeframe(timeframe?: number): number {
-  return timeframe ?? 0;
-}
-
-/** Map API chain param to internal Chain enum value */
-export function toInternalChain(chain?: 'base' | 'solana'): Chain | undefined {
-  if (!chain) return undefined;
-  return chain === 'base' ? Chain.BASE : Chain.SOLANA;
-}
-
 /**
  * Validate and normalize an address path param.
  * EVM addresses are lowercased (matching DB storage), Solana addresses are preserved.
- * Returns 400 response on invalid address.
  */
 export function parseAddress(
   address: string
@@ -64,4 +44,37 @@ export function parseAddress(
     };
   }
   return { success: true, data: result.data };
+}
+
+export function jsonResponse(data: unknown, status = 200): NextResponse {
+  return NextResponse.json(data, { status });
+}
+
+export function errorResponse(message: string, status: number): NextResponse {
+  return NextResponse.json({ error: message }, { status });
+}
+
+/** Format a paginated service result into a standard API response. */
+export function paginatedResponse(
+  result: { items: unknown[]; page: number; hasNextPage: boolean },
+  pageSize: number
+): NextResponse {
+  return jsonResponse({
+    data: result.items,
+    pagination: {
+      page: result.page,
+      page_size: pageSize,
+      has_next_page: result.hasNextPage,
+    },
+  });
+}
+
+/**
+ * Cast validated chain string to Chain enum.
+ * Safe because Zod already validates the value is 'base' | 'solana'.
+ */
+export function asChain(
+  chain: 'base' | 'solana' | undefined
+): Chain | undefined {
+  return chain as Chain | undefined;
 }
