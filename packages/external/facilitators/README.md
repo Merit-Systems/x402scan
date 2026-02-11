@@ -117,6 +117,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Heurist**          | BASE          | No        | No                           |
 | **Treasure**         | BASE          | No        | No                           |
 | **AnySpend**         | BASE, SOLANA  | ✅ Yes    | No                           |
+| **WorldFun by AWE**  | BASE          | No        | No                           |
 | **Polymer**          | BASE          | No        | Yes - API key                |
 | **Meridian**         | BASE          | No        | No                           |
 | **Openmid**          | BASE          | No        | No                           |
@@ -144,6 +145,7 @@ import {
   heurist,
   treasure,
   anyspend,
+  worldfun,
   polymer,
   meridian,
   openmid,
