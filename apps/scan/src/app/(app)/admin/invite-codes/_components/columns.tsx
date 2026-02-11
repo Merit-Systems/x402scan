@@ -281,6 +281,15 @@ export const createColumns = (
             >
               Copy Full URL
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                void navigator.clipboard.writeText(
+                  `https://poncho.merit.systems?inviteCode=${encodeURIComponent(row.original.code)}`
+                )
+              }
+            >
+              Copy Poncho Invite URL
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
