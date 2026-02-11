@@ -2,13 +2,14 @@ import z from 'zod';
 
 import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
 
-import { getAddress, isAddress, type Address } from 'viem';
+import { isAddress } from 'viem';
 import type { MixedAddress, SolanaAddress } from '@/types/address';
+import type { Address } from 'viem';
 
 export const ethereumAddressSchema = z
   .string()
-  .regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid Ethereum address')
-  .transform(address => address.toLowerCase() as Address);
+  .refine(isAddress, 'Invalid EVM address')
+  .transform(a => a.toLowerCase() as Address);
 
 export const sortingSchema = (sortIds: string[] | readonly string[]) =>
   z.object({
@@ -46,8 +47,3 @@ export const sendUsdcQueryParamsSchema = z.object({
   address: mixedAddressSchema,
   chain: supportedChainSchema,
 });
-
-export const evmAddressSchema = z
-  .string()
-  .refine(isAddress, 'Invalid EVM address')
-  .transform(a => getAddress(a));

@@ -1,5 +1,35 @@
 # @x402scan/mcp
 
+## 0.3.1
+
+### Patch Changes
+
+- 0fe8183: Replace vendored @x402scan/siwx with @x402/extensions/sign-in-with-x SDK
+
+## 0.3.0
+
+### Minor Changes
+
+- f315d52: hunter api for email verification
+
+## 0.2.4
+
+### Patch Changes
+
+- 02cfaac: Stop pretty printing outputs to save on tokens
+
+## 0.2.3
+
+### Patch Changes
+
+- 810846d: adding flags
+
+## 0.2.2
+
+### Patch Changes
+
+- 9cc68c5: Made origins programmatic. No behavior change.
+
 ## 0.2.1
 
 ### Patch Changes

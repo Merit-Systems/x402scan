@@ -1,5 +1,5 @@
 import { x402Client, x402HTTPClient } from '@x402/core/client';
-import { encodeSIWxHeader } from '@x402scan/siwx';
+import { encodeSIWxHeader } from '@x402/extensions/sign-in-with-x';
 
 import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
 import {
@@ -16,7 +16,6 @@ import {
 
 import { requestSchema, buildRequest } from './lib/request';
 
-import type { SIWxExtensionInfo } from '@x402scan/siwx/types';
 import type { RegisterTools } from '@/server/types';
 import { getSiwxExtension } from '../lib/x402-extensions';
 
@@ -96,41 +95,10 @@ export const registerAuthTools: RegisterTools = ({
         });
       }
 
-      const serverInfo = siwxExtension;
-
-      // Validate required fields
-      const requiredFields = [
-        'domain',
-        'uri',
-        'version',
-        'chainId',
-        'nonce',
-        'issuedAt',
-      ];
-      const missingFields = requiredFields.filter(
-        f => !serverInfo[f as keyof SIWxExtensionInfo]
-      );
-      if (missingFields.length > 0) {
-        return mcpErrorJson({
-          message: 'Invalid sign-in-with-x extension: missing required fields',
-          missingFields,
-          receivedInfo: { ...serverInfo },
-        });
-      }
-
-      // Step 4: Check for unsupported chain types
-      if (serverInfo.chainId.startsWith('solana:')) {
-        return mcpErrorJson({
-          message: 'Solana authentication not supported',
-          chainId: serverInfo.chainId,
-          hint: 'This endpoint requires a Solana wallet. The MCP server currently only supports EVM wallets.',
-        });
-      }
-
-      // Step 5: Create signed proof using server-provided challenge
+      // Create signed proof using server-provided challenge
       const payloadResult = await safeCreateSIWxPayload(
         toolName,
-        serverInfo,
+        siwxExtension,
         account
       );
 

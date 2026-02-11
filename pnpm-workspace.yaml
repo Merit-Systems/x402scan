@@ -66,7 +66,7 @@ catalogs:
     'x402-express': *X402_VERSION
     'x402-hono': *X402_VERSION
   x402:
-    '@x402/core': &X402_CORE_VERSION ^2.2.0
+    '@x402/core': &X402_CORE_VERSION ^2.3.0
     '@x402/evm': *X402_CORE_VERSION
     '@x402/extensions': *X402_CORE_VERSION
     '@x402/fetch': *X402_CORE_VERSION

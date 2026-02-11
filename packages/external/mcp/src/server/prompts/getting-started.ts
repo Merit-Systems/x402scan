@@ -1,3 +1,5 @@
+import { Origin } from '@/shared/origins';
+
 import type { RegisterPrompts } from './types';
 
 /**
@@ -41,8 +43,8 @@ If the user has an invite code, use \`redeem_invite\` to claim free USDC credits
 
 Use \`discover_api_endpoints\` to find x402-protected endpoints on a target origin. For example:
 
-- \`enrichx402.com\` - Data enrichment APIs
-- \`stablestudio.io\` - AI image generation APIs
+- \`${Origin.EnrichX402}\` - Data enrichment APIs
+- \`${Origin.StableStudio}\` - AI image generation APIs
 
 This returns a list of available endpoints with their pricing and schemas.
 

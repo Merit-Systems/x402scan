@@ -8,7 +8,7 @@ export const parsedResponseToToolContentPart = (
     case 'json':
       return {
         type: 'text' as const,
-        text: JSON.stringify(data.data, null, 2),
+        text: JSON.stringify(data.data),
       };
     case 'image':
       return {

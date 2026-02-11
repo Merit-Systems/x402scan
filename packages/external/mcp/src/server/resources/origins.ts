@@ -12,12 +12,12 @@ import { getWebPageMetadata } from './_lib';
 
 import { getInputSchema } from '../lib/x402-extensions';
 
+import { ORIGINS } from '@/shared/origins';
+
 import type { RegisterResources } from './types';
 import type { JsonObject } from '@/shared/neverthrow/json/types';
 
 const surface = 'registerOrigins';
-
-const origins = ['enrichx402.com', 'stablestudio.io'];
 
 const wellKnownSchema = z.object({
   resources: z.array(z.string()),
@@ -25,12 +25,14 @@ const wellKnownSchema = z.object({
 
 export const registerOrigins: RegisterResources = async ({ server }) => {
   await Promise.all(
-    origins.map(async origin => {
-      const metadataResult = await getWebPageMetadata(`https://${origin}`);
+    ORIGINS.map(async origin => {
+      // Extract domain from full URL (e.g., 'https://enrichx402.com' -> 'enrichx402.com')
+      const domain = new URL(origin).hostname;
+      const metadataResult = await getWebPageMetadata(origin);
       const metadata = metadataResult.isOk() ? metadataResult.value : null;
       server.registerResource(
-        origin,
-        `api://${origin}`,
+        domain,
+        `api://${domain}`,
         {
           title: metadata?.title ?? origin,
           description: metadata?.description ?? '',
@@ -52,7 +54,7 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
             return {
               contents: [
                 {
-                  uri: origin,
+                  uri: domain,
                   text: JSON.stringify(
                     { error: 'Failed to fetch well-known resources' },
                     null,
@@ -125,7 +127,7 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
             return {
               contents: [
                 {
-                  uri: origin,
+                  uri: domain,
                   text: JSON.stringify({
                     error: 'Failed to stringify response',
                   }),
@@ -138,7 +140,7 @@ export const registerOrigins: RegisterResources = async ({ server }) => {
           return {
             contents: [
               {
-                uri: origin,
+                uri: domain,
                 text: stringifyResult.value,
                 mimeType: 'application/json',
               },

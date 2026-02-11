@@ -148,22 +148,17 @@ Results are posted back to your PR with a link to detailed metrics.
 
 ### Local Evaluation
 
-For local development, you can run evals directly:
-
-```bash
-# Run local evals in this package
-pnpm evals
-
-# Or run smoke tests
-pnpm evals:single-prompt
-```
-
-For the full CI/CD eval suite, clone [x402-evals](https://github.com/merit-systems/x402-evals) and run:
-
 ```bash
 # In x402-evals repo
 MCP_SERVER_DIR=/path/to/x402scan/packages/external/mcp/dist/esm pnpm --filter @x402-evals/promptfoo eval
 ```
+
+### Evals on changes to enrichx402 or stablestudio
+
+1. Make a PR in enrichx402 and generate a preview URL with vercel
+2. Make a branch in the x402scan repo
+3. Replace the enrichx402.com URL in `src/shared/origins.ts` with your preview URL
+4. Push and make a PR, then comment on it with "/eval full" (or smoke, regression)
 
 ## Publishing
 

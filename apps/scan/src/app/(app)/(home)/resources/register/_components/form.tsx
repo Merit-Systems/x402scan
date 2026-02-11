@@ -99,7 +99,13 @@ export const RegisterResourceForm = () => {
   } = useDiscovery({
     url,
     onRegisterAllSuccess: data => {
-      toast.success(`Registered ${data.registered} of ${data.total} resources`);
+      const deprecatedMsg =
+        'deprecated' in data && data.deprecated && data.deprecated > 0
+          ? `, ${data.deprecated} deprecated`
+          : '';
+      toast.success(
+        `Registered ${data.registered} of ${data.total} resources${deprecatedMsg}`
+      );
     },
     onRegisterAllError: () => {
       toast.error('Failed to register resources');
