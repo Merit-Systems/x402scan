@@ -25,9 +25,7 @@ export const GET = async (request: NextRequest) => {
 
   try {
     const chainList = chains
-      ? (chains
-          .split(',')
-          .filter(c => validChains.has(c)) as SupportedChain[])
+      ? (chains.split(',').filter(c => validChains.has(c)) as SupportedChain[])
       : undefined;
     const tagList = tags ? tags.split(',').filter(Boolean) : undefined;
 
