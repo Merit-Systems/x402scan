@@ -6,15 +6,13 @@ import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { chainSchema } from '@/lib/schemas';
 import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 
-const walletStatsInputSchema = z.object({
-  address: z.string(),
-  chain: z.enum(['base', 'solana']).optional(),
-  timeframe: z.number().default(0),
-});
+interface WalletStatsInput {
+  address: string;
+  chain?: 'base' | 'solana';
+  timeframe: number;
+}
 
-const getWalletStatsUncached = async (
-  input: z.infer<typeof walletStatsInputSchema>
-) => {
+const getWalletStatsUncached = async (input: WalletStatsInput) => {
   const { address, chain, timeframe } = input;
   const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
 
