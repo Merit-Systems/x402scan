@@ -1,12 +1,14 @@
 import { ok } from '@x402scan/neverthrow';
 import { x402Client, x402HTTPClient } from '@x402/core/client';
 
+import { log } from '@/shared/log';
 import { safeFetch, safeParseResponse } from '@/shared/neverthrow/fetch';
 import { safeGetPaymentRequired } from '@/shared/neverthrow/x402';
 import { tokenStringToNumber } from '@/shared/token';
 import { getInputSchema } from '@/server/lib/x402-extensions';
 
 import type { JsonObject } from '@/shared/neverthrow/json/types';
+import type { ParsedResponse } from '@/shared/neverthrow/fetch/types';
 
 /**
  * Check endpoint result for non-402 responses
@@ -14,7 +16,7 @@ import type { JsonObject } from '@/shared/neverthrow/json/types';
 interface CheckEndpointFreeResult {
   requiresPayment: false;
   statusCode: number;
-  data: JsonObject | { text: string } | { type: string };
+  parsedResponse: ParsedResponse;
 }
 
 /**
@@ -33,6 +35,8 @@ type CheckEndpointResult = CheckEndpointFreeResult | CheckEndpointPaidResult;
  * Does not make any payment.
  */
 export async function checkEndpoint(surface: string, request: Request) {
+  log.info('Checking endpoint', request.url);
+
   const responseResult = await safeFetch(surface, request);
 
   if (responseResult.isErr()) {
@@ -53,17 +57,10 @@ export async function checkEndpoint(surface: string, request: Request) {
       return parseResponseResult;
     }
 
-    const data =
-      parseResponseResult.value.type === 'json'
-        ? parseResponseResult.value.data
-        : parseResponseResult.value.type === 'text'
-          ? { text: parseResponseResult.value.data }
-          : { type: parseResponseResult.value.type };
-
     return ok<CheckEndpointResult>({
       requiresPayment: false,
       statusCode: response.status,
-      data,
+      parsedResponse: parseResponseResult.value,
     });
   }
 

@@ -20,7 +20,7 @@ export async function discoverCommand(
   const result = await discoverResources('cli:discover', args.url);
 
   if (result.isOk()) {
-    outputAndExit(
+    return outputAndExit(
       successResponse({
         found: true,
         origin: result.value.origin,
@@ -33,7 +33,7 @@ export async function discoverCommand(
   }
 
   // Error case
-  outputAndExit(
+  return outputAndExit(
     errorResponse({
       code: 'GENERAL_ERROR',
       message: result.error.message,

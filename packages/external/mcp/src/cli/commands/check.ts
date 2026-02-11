@@ -43,7 +43,7 @@ export async function checkCommand(
   const result = await checkEndpoint(SURFACE, request);
 
   if (result.isErr()) {
-    outputAndExit(fromNeverthrowError(result), flags);
+    return outputAndExit(fromNeverthrowError(result), flags);
   }
 
   const value = result.value;
@@ -63,7 +63,7 @@ export async function checkCommand(
         details.bodyType = type;
       }
     }
-    outputAndExit(
+    return outputAndExit(
       errorResponse({
         code: 'HTTP_ERROR',
         message: `HTTP ${response.status}: ${response.statusText}`,
@@ -77,7 +77,7 @@ export async function checkCommand(
 
   // Handle CheckEndpointPaidResult
   if ('requiresPayment' in value && value.requiresPayment) {
-    outputAndExit(
+    return outputAndExit(
       successResponse({
         requiresPayment: true,
         statusCode: value.statusCode,
@@ -88,19 +88,27 @@ export async function checkCommand(
   }
 
   // Handle CheckEndpointFreeResult
-  if ('data' in value) {
-    outputAndExit(
+  if ('parsedResponse' in value) {
+    const { parsedResponse } = value;
+    const data =
+      parsedResponse.type === 'json'
+        ? parsedResponse.data
+        : parsedResponse.type === 'text'
+          ? parsedResponse.data
+          : { type: parsedResponse.type };
+
+    return outputAndExit(
       successResponse({
         requiresPayment: false,
         statusCode: value.statusCode,
-        data: value.data,
+        data,
       }),
       flags
     );
   }
 
   // Fallback - shouldn't reach here
-  outputAndExit(
+  return outputAndExit(
     errorResponse({
       code: 'GENERAL_ERROR',
       message: 'Unexpected response format',

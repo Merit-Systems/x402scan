@@ -42,10 +42,10 @@ export async function reportErrorCommand(
   );
 
   if (result.isErr()) {
-    outputAndExit(fromNeverthrowError(result), flags);
+    return outputAndExit(fromNeverthrowError(result), flags);
   }
 
-  outputAndExit(
+  return outputAndExit(
     successResponse({
       submitted: result.value.submitted,
       reportId: result.value.reportId,

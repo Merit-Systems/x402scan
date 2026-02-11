@@ -22,10 +22,10 @@ export async function walletInfoCommand(
   const result = await getWalletInfo(SURFACE, account.address, flags);
 
   if (result.isErr()) {
-    outputAndExit(fromNeverthrowError(result), flags);
+    return outputAndExit(fromNeverthrowError(result), flags);
   }
 
-  outputAndExit(
+  return outputAndExit(
     successResponse({
       address: result.value.address,
       network: result.value.network,
@@ -57,10 +57,10 @@ export async function walletRedeemCommand(
   });
 
   if (result.isErr()) {
-    outputAndExit(fromNeverthrowError(result), flags);
+    return outputAndExit(fromNeverthrowError(result), flags);
   }
 
-  outputAndExit(
+  return outputAndExit(
     successResponse({
       redeemed: true,
       amount: `${result.value.amount} USDC`,

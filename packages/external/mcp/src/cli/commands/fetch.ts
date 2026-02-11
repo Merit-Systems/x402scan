@@ -49,17 +49,20 @@ export async function fetchCommand(
 
   const client = new x402HTTPClient(coreClient);
 
+  const provider = flags.provider ?? account.address;
+
   const request = buildRequest({
     input,
     address: account.address,
     sessionId,
+    provider,
   });
 
   const fetchWithPay = createFetchWithPayment(SURFACE, client);
   const fetchResult = await fetchWithPay(request);
 
   if (fetchResult.isErr()) {
-    outputAndExit(fromNeverthrowError(fetchResult), flags);
+    return outputAndExit(fromNeverthrowError(fetchResult), flags);
   }
 
   const { response, paymentPayload } = fetchResult.value;
@@ -77,7 +80,7 @@ export async function fetchCommand(
         details.bodyType = type;
       }
     }
-    outputAndExit(
+    return outputAndExit(
       errorResponse({
         code: 'HTTP_ERROR',
         message: `HTTP ${response.status}: ${response.statusText}`,
@@ -91,7 +94,7 @@ export async function fetchCommand(
 
   const parseResponseResult = await safeParseResponse(SURFACE, response);
   if (parseResponseResult.isErr()) {
-    outputAndExit(fromNeverthrowError(parseResponseResult), flags);
+    return outputAndExit(fromNeverthrowError(parseResponseResult), flags);
   }
 
   const settlementResult = safeGetPaymentSettlement(SURFACE, client, response);

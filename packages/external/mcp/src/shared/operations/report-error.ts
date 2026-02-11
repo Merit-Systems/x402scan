@@ -3,7 +3,7 @@ import { ok } from '@x402scan/neverthrow';
 
 import { safeFetchJson } from '@/shared/neverthrow/fetch';
 import { getBaseUrl } from '@/shared/utils';
-import { MCP_VERSION } from '@/server/lib/version';
+import { MCP_VERSION } from '@/shared/version';
 
 import type { Address } from 'viem';
 

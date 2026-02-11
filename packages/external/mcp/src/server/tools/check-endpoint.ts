@@ -1,5 +1,10 @@
 import { checkEndpoint } from '@/shared/operations';
-import { mcpError, mcpErrorFetch, mcpSuccessJson } from './response';
+import {
+  mcpError,
+  mcpErrorFetch,
+  mcpSuccessJson,
+  mcpSuccessResponse,
+} from './response';
 import { requestSchema, buildRequest } from './lib/request';
 
 import type { RegisterTools } from '@/server/types';
@@ -55,16 +60,15 @@ export const registerCheckX402EndpointTool: RegisterTools = ({
       }
 
       // Handle CheckEndpointFreeResult
-      if ('data' in value) {
-        return mcpSuccessJson({
+      if ('parsedResponse' in value) {
+        return mcpSuccessResponse(value.parsedResponse, {
           requiresPayment: false,
           statusCode: value.statusCode,
-          data: value.data,
         });
       }
 
       // Fallback
-      return mcpSuccessJson(value);
+      return mcpSuccessJson(value as never);
     }
   );
 };
