@@ -6,11 +6,12 @@ import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { chainSchema } from '@/lib/schemas';
 import { getTimeRangeFromTimeframe } from '@/lib/time-range';
 
-interface WalletStatsInput {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type WalletStatsInput = {
   address: string;
   chain?: 'base' | 'solana';
   timeframe: number;
-}
+};
 
 const getWalletStatsUncached = async (input: WalletStatsInput) => {
   const { address, chain, timeframe } = input;
