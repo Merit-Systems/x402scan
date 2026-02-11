@@ -32,12 +32,9 @@ export function errorResponse(message: string, status: number): NextResponse {
   return NextResponse.json({ error: message }, { status });
 }
 
-/** Map API timeframe param (days) to internal timeframe format */
-export function toInternalTimeframe(
-  timeframe?: number
-): number | { period: number } {
-  if (timeframe === undefined) return 0;
-  return timeframe;
+/** Map API timeframe param (days) to internal timeframe format. 0 = all time. */
+export function toInternalTimeframe(timeframe?: number): number {
+  return timeframe ?? 0;
 }
 
 /** Map API chain param to internal Chain enum value */

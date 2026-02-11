@@ -30,7 +30,7 @@ export const GET = async (
     const stats = await getWalletStats({
       address: addr.data,
       chain,
-      timeframe: toInternalTimeframe(timeframe) as number,
+      timeframe: toInternalTimeframe(timeframe),
     });
 
     return jsonResponse({ data: stats });
