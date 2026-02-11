@@ -2,7 +2,7 @@ import z from 'zod';
 
 // ── Reusable primitives ──────────────────────────────
 
-export const paginationSchema = z.object({
+const paginationSchema = z.object({
   page: z.coerce
     .number()
     .int()
@@ -18,18 +18,18 @@ export const paginationSchema = z.object({
     .describe('Items per page (1-100, default 10)'),
 });
 
-export const chainFilterSchema = z
+const chainFilterSchema = z
   .enum(['base', 'solana'])
   .optional()
   .describe('Filter by chain');
 
-export const timeframeSchema = z.coerce
+const timeframeSchema = z.coerce
   .number()
   .pipe(z.union([z.literal(1), z.literal(7), z.literal(14), z.literal(30)]))
   .optional()
   .describe('Days lookback (1, 7, 14, or 30)');
 
-export const sortOrderSchema = z
+const sortOrderSchema = z
   .enum(['asc', 'desc'])
   .default('desc')
   .describe('Sort direction');
