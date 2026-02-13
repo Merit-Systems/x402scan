@@ -113,6 +113,18 @@ function expandFields(
     }
 
     if (typeof raw !== 'object' || !raw) {
+      // Handle non-string primitives (numbers, booleans) as simple fields
+      // so query params like { page: 1 } or { include_gt_community_data: true }
+      // are not silently dropped.
+      if (raw !== null && raw !== undefined) {
+        fields.push({
+          name: fullName,
+          type: String(raw),
+          required: parentRequired?.includes(name) ?? false,
+          enum: undefined,
+          default: undefined,
+        } satisfies FieldDefinition);
+      }
       continue;
     }
 
