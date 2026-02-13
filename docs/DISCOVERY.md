@@ -223,6 +223,25 @@ Ownership verification allows you to prove that you control the payment addresse
    console.log('Ownership proof:', signature);
    ```
 
+   **Example using viem (for EVM chains):**
+
+   ```typescript
+   import { privateKeyToAccount } from 'viem/accounts';
+
+   const account = privateKeyToAccount('0xYOUR_PRIVATE_KEY');
+
+   const origin = 'https://api.example.com';
+   const signature = await account.signMessage({ message: origin });
+
+   console.log('Ownership proof:', signature);
+   ```
+
+   **Example using Foundry's `cast` (for EVM chains):**
+
+   ```bash
+   cast wallet sign --private-key $PRIVATE_KEY "https://api.example.com"
+   ```
+
    **Example using @solana/web3.js (for Solana):**
 
    ```javascript
@@ -349,7 +368,7 @@ app.listen(3000);
 ### Complete Example with Next.js
 
 ```typescript
-// app/api/.well-known/x402/route.ts
+// app/.well-known/x402/route.ts
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -368,6 +387,8 @@ export async function GET() {
   });
 }
 ```
+
+> **Note:** In Next.js App Router, routes map directly from the `app/` directory. Using `app/.well-known/x402/route.ts` serves the endpoint at `/.well-known/x402`. Placing it under `app/api/.well-known/x402/route.ts` would incorrectly serve it at `/api/.well-known/x402`.
 
 ## Testing Your Discovery Document
 
