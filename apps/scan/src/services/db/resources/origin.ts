@@ -45,32 +45,40 @@ export const upsertOrigin = async (
 
     const originId = upsertedOrigin.id;
 
-    await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
-        tx.ogImage.upsert({
-          where: {
-            originId_url: {
-              originId,
-              url,
-            },
-          },
-          update: {
-            height,
-            width,
-            title,
-            description,
-          },
-          create: {
+    // Deduplicate OG images by URL — scraped HTML can contain duplicate
+    // og:image tags that would cause a unique-constraint conflict when
+    // we try to upsert them concurrently.  Keeping only the last
+    // occurrence per URL mirrors browser behaviour.
+    const dedupedOgImages = [
+      ...new Map(origin.ogImages.map(img => [img.url, img])).values(),
+    ];
+
+    // Process sequentially to avoid race conditions on the composite
+    // unique key (originId, url) within the same transaction.
+    for (const { url, height, width, title, description } of dedupedOgImages) {
+      await tx.ogImage.upsert({
+        where: {
+          originId_url: {
             originId,
             url,
-            height,
-            width,
-            title,
-            description,
           },
-        })
-      )
-    );
+        },
+        update: {
+          height,
+          width,
+          title,
+          description,
+        },
+        create: {
+          originId,
+          url,
+          height,
+          width,
+          title,
+          description,
+        },
+      });
+    }
 
     return tx.resourceOrigin.findUnique({
       where: { id: originId },
