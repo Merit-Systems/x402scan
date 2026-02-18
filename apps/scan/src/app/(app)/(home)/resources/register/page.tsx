@@ -1,5 +1,6 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { RegisterResourceForm } from './_components/form';
+import { OpenAPIUpload } from './_components/openapi-upload';
 import { OutputSchema } from './_components/schema';
 import { DeveloperToolBanner } from './_components/developer-tool-banner';
 
@@ -20,6 +21,7 @@ export default function RegisterResourcePage() {
       <Body>
         <DeveloperToolBanner />
         <RegisterResourceForm />
+        <OpenAPIUpload />
         <OutputSchema />
       </Body>
     </div>
