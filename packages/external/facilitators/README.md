@@ -122,6 +122,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Openmid**          | BASE          | No        | No                           |
 | **Primer**           | BASE          | No        | No                           |
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
+| **Silverback**       | BASE, SOLANA  | ✅ Yes    | No                           |
 
 ### Import Individual Facilitators
 
@@ -149,6 +150,7 @@ import {
   openmid,
   primer,
   relai,
+  silverback,
 } from 'facilitators';
 
 // Facilitators requiring setup
