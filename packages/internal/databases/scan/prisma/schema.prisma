@@ -31,6 +31,7 @@ model User {
   agentConfigurations     AgentConfiguration[]
   agentConfigurationUsers AgentConfigurationUser[]
   UserAcknowledgement     UserAcknowledgement?
+  createdInviteCodes      InviteCode[]             @relation("InviteCodeCreator")
 }
 
 model Account {
@@ -84,6 +85,9 @@ model Resources {
   lastUpdated DateTime
   metadata    Json?
 
+  // Soft delete: when set, the resource is deprecated (no longer in discovery doc)
+  deprecatedAt DateTime?
+
   originId String
 
   accepts                     Accepts[]
@@ -96,6 +100,8 @@ model Resources {
   toolCalls                   ToolCall[]
   excluded                    ExcludedResource?
   metrics                     ResourceMetrics[]
+
+  @@index([deprecatedAt])
 }
 
 enum AcceptsScheme {
@@ -395,6 +401,57 @@ model UserAcknowledgement {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("UserAcknowledgement")
+}
+
+enum InviteCodeStatus {
+  ACTIVE
+  EXHAUSTED
+  EXPIRED
+  DISABLED
+}
+
+enum RedemptionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model InviteCode {
+  id               String           @id @default(uuid())
+  code             String           @unique
+  amount           BigInt
+  maxRedemptions   Int              @default(1)
+  redemptionCount  Int              @default(0)
+  uniqueRecipients Boolean          @default(false)
+  status           InviteCodeStatus @default(ACTIVE)
+  expiresAt        DateTime?
+  createdById      String
+  note             String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  createdBy   User               @relation("InviteCodeCreator", fields: [createdById], references: [id])
+  redemptions InviteRedemption[]
+
+  @@index([code])
+  @@index([status])
+}
+
+model InviteRedemption {
+  id            String           @id @default(uuid())
+  inviteCodeId  String
+  recipientAddr String
+  txHash        String?
+  amount        BigInt
+  status        RedemptionStatus @default(PENDING)
+  failureReason String?
+  createdAt     DateTime         @default(now())
+  completedAt   DateTime?
+
+  inviteCode InviteCode @relation(fields: [inviteCodeId], references: [id], onDelete: Cascade)
+
+  @@index([inviteCodeId])
+  @@index([recipientAddr])
 }
 
 model ResourceOriginMetrics {

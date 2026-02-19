@@ -1,5 +1,5 @@
 {
-  "name": "express-server-example",
+  "name": "@x402scan/express-server-example",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
     "dotenv": "catalog:env",
     "express": "catalog:express",
     "facilitators": "workspace:*",
-    "x402-express": "catalog:x402"
+    "x402-express": "catalog:x402-v1"
   },
   "devDependencies": {
     "@x402scan/eslint-config": "workspace:*",

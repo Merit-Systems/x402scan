@@ -7,4 +7,5 @@ export enum OnrampMethods {
   DEBIT_CARD = 'debit-card',
   ACH = 'ach-bank-account',
   WALLET = 'wallet',
+  INVITE_CODE = 'invite-code',
 }

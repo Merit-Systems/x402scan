@@ -48,7 +48,6 @@ export const listAllFacilitatorResources = async (
 
       if (isRateLimit) {
         console.log('Rate limit hit, retrying in', backoff, 'ms');
-
         await new Promise(res => setTimeout(res, backoff));
         backoff = Math.min(backoff * 2, maxBackoff);
         continue;

@@ -2,8 +2,8 @@ import { cn } from '@/lib/utils';
 
 import { ArrowDown, ArrowUp, type LucideIcon } from 'lucide-react';
 
-import type { SortingContext } from '@/app/_contexts/sorting/base/context';
-import { useSorting } from '@/app/_contexts/sorting/base/hook';
+import type { SortingContext } from '@/app/(app)/_contexts/sorting/base/context';
+import { useSorting } from '@/app/(app)/_contexts/sorting/base/hook';
 
 interface BaseProps {
   Icon: LucideIcon;

@@ -111,6 +111,8 @@ export const upsertResource = async (
         x402Version: baseResource.x402Version,
         lastUpdated: baseResource.lastUpdated,
         metadata: baseResource.metadata,
+        // Clear deprecatedAt when resource is re-registered (un-deprecate)
+        deprecatedAt: null,
         origin: {
           connect: {
             origin: originStr,
@@ -200,7 +202,11 @@ export const listResourcesUncached = async (
   where?: Prisma.ResourcesWhereInput
 ) => {
   return await scanDb.resources.findMany({
-    where,
+    where: {
+      ...where,
+      // Exclude deprecated resources by default
+      deprecatedAt: null,
+    },
     orderBy: [
       { invocations: { _count: 'desc' } },
       { tags: { _count: 'desc' } },
@@ -224,10 +230,14 @@ interface ResourceSorting {
 }
 
 export const listResourcesWithPaginationUncached = async (
-  input: { where?: Prisma.ResourcesWhereInput; sorting?: ResourceSorting },
+  input: {
+    where?: Prisma.ResourcesWhereInput;
+    sorting?: ResourceSorting;
+    includeDeprecated?: boolean;
+  },
   pagination: PaginatedQueryParams
 ) => {
-  const { where, sorting } = input;
+  const { where, sorting, includeDeprecated } = input;
   const { page, page_size } = pagination;
 
   // Default sorting
@@ -239,12 +249,18 @@ export const listResourcesWithPaginationUncached = async (
       ? { lastUpdated: sortConfig.desc ? 'desc' : 'asc' }
       : { toolCalls: { _count: sortConfig.desc ? 'desc' : 'asc' } };
 
+  // Exclude deprecated resources by default
+  const whereWithDeprecation: Prisma.ResourcesWhereInput = {
+    ...where,
+    ...(includeDeprecated ? {} : { deprecatedAt: null }),
+  };
+
   const [count, resources] = await Promise.all([
     scanDb.resources.count({
-      where,
+      where: whereWithDeprecation,
     }),
     scanDb.resources.findMany({
-      where,
+      where: whereWithDeprecation,
       include: {
         accepts: true,
         origin: true,
@@ -284,6 +300,7 @@ export const listResourcesWithPagination = createCachedPaginatedQuery({
 export const getResourceByAddress = async (address: string) => {
   return await scanDb.resources.findFirst({
     where: {
+      deprecatedAt: null,
       accepts: {
         some: {
           payTo: address.toLowerCase(),
@@ -299,13 +316,22 @@ export const searchResourcesSchema = z.object({
   tagIds: z.array(z.string()).optional(),
   resourceIds: z.array(z.string()).optional(),
   showExcluded: z.boolean().optional().default(false),
+  showDeprecated: z.boolean().optional().default(false),
   chains: z.array(supportedChainSchema).optional(),
 });
 
 const searchResourcesUncached = async (
   input: z.infer<typeof searchResourcesSchema>
 ) => {
-  const { search, limit, tagIds, resourceIds, showExcluded, chains } = input;
+  const {
+    search,
+    limit,
+    tagIds,
+    resourceIds,
+    showExcluded,
+    showDeprecated,
+    chains,
+  } = input;
   return await scanDb.resources.findMany({
     where: {
       accepts: {
@@ -351,6 +377,7 @@ const searchResourcesUncached = async (
       ...(tagIds ? { tags: { some: { tagId: { in: tagIds } } } } : undefined),
       ...(resourceIds ? { id: { in: resourceIds } } : undefined),
       ...(!showExcluded ? { excluded: { is: null } } : {}),
+      ...(!showDeprecated ? { deprecatedAt: null } : {}),
     },
     include: {
       origin: true,
@@ -385,10 +412,44 @@ export const listResourcesForTools = async (resourceIds: string[]) => {
     where: {
       id: { in: resourceIds },
       excluded: { is: null },
+      deprecatedAt: null,
     },
     include: {
       accepts: true,
       requestMetadata: true,
     },
   });
+};
+
+/**
+ * Deprecate resources that are no longer in the discovery document.
+ * Sets deprecatedAt to now() for resources not in the provided URLs list.
+ *
+ * Note: If activeResourceUrls is empty, no deprecation occurs to avoid accidentally
+ * deprecating all resources when discovery is empty or fails.
+ */
+export const deprecateStaleResources = async (
+  originId: string,
+  activeResourceUrls: string[]
+) => {
+  // If no active resources were discovered, don't deprecate anything
+  // (could indicate discovery failure or incomplete data)
+  if (activeResourceUrls.length === 0) {
+    return 0;
+  }
+
+  const result = await scanDb.resources.updateMany({
+    where: {
+      originId,
+      deprecatedAt: null,
+      resource: {
+        notIn: activeResourceUrls,
+      },
+    },
+    data: {
+      deprecatedAt: new Date(),
+    },
+  });
+
+  return result.count;
 };

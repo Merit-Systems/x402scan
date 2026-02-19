@@ -3,15 +3,20 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["TRANSFERS_DB_*"]
+      "description": "Build transfers database package",
+      "env": ["TRANSFERS_DB_*"],
+      "outputs": ["dist/**"]
     },
     "db:deploy": {
+      "description": "Deploy transfers database migrations",
       "env": ["TRANSFERS_DB_*"]
     },
     "types:check": {
+      "description": "Type-check transfers database code",
       "dependsOn": ["db:generate"]
     },
     "lint": {
+      "description": "Lint transfers database code",
       "dependsOn": ["db:generate"]
     }
   }

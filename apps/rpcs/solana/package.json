@@ -1,5 +1,5 @@
 {
-  "name": "x402-solana-rpc",
+  "name": "@x402scan/solana-rpc",
   "version": "0.0.0",
   "private": true,
   "engines": {
@@ -22,7 +22,7 @@
     "@x402scan/typescript-config": "workspace:*",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "vitest": "^1.3.1",
+    "vitest": "catalog:",
     "wrangler": "^4.2.0"
   }
 }

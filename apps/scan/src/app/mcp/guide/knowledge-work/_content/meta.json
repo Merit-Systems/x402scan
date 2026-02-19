@@ -1,0 +1,12 @@
+{
+  "title": "Automate Knowledge Work",
+  "description": "Build agents that can perform knowledge work tasks",
+  "icon": "/logo.svg",
+  "items": [
+    "index",
+    "...recruiters",
+    "...sales",
+    "...researchers",
+    "...investors"
+  ]
+}

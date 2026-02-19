@@ -3,14 +3,17 @@
   "ui": "tui",
   "tasks": {
     "build": {
+      "description": "Build package for production",
       "dependsOn": ["^build", "^db:generate"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "build:deploy": {
+      "description": "Build package with database migrations for deployment",
       "dependsOn": ["^build", "^db:generate", "^db:deploy"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {
+      "description": "Run ESLint to check code quality",
       "dependsOn": [
         "^types:generate",
         "^build",
@@ -20,6 +23,7 @@
       ]
     },
     "lint:fix": {
+      "description": "Run ESLint and automatically fix issues",
       "dependsOn": [
         "^types:generate",
         "^build",
@@ -29,17 +33,21 @@
       ]
     },
     "dev": {
+      "description": "Start development server with hot reload",
       "dependsOn": ["^build", "^db:generate"],
       "persistent": true
     },
     "start": {
+      "description": "Start production server",
       "cache": false,
       "persistent": true
     },
     "types:generate": {
+      "description": "Generate TypeScript types from sources",
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "types:check": {
+      "description": "Type-check code with TypeScript compiler",
       "dependsOn": [
         "^types:check",
         "^types:generate",
@@ -50,24 +58,37 @@
       ]
     },
     "format": {
+      "description": "Format code with Prettier",
       "dependsOn": ["^format"]
     },
     "format:check": {
+      "description": "Check code formatting without modifying files",
       "dependsOn": ["^format:check"]
     },
-    "knip": {},
-    "knip:check": {},
+    "knip": {
+      "description": "Find unused files, dependencies, and exports"
+    },
+    "knip:check": {
+      "description": "Check for unused code without auto-fixing"
+    },
+    "publish:check": {
+      "description": "Verify package is ready for npm publishing"
+    },
     "db:generate": {
+      "description": "Generate Prisma client from schema",
       "cache": false
     },
     "db:migrate": {
+      "description": "Create and apply database migrations",
       "cache": false,
       "persistent": true
     },
     "db:deploy": {
+      "description": "Deploy pending database migrations to production",
       "cache": false
     },
     "trigger:deploy": {
+      "description": "Deploy Trigger.dev background jobs",
       "dependsOn": ["^build", "^db:generate"],
       "cache": false
     }

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "description": "Build facilitators package for npm distribution",
+      "outputs": ["dist/**"]
+    }
+  }
+}

@@ -14,8 +14,8 @@ import { Loading } from '@/components/ui/loading';
 
 import { TokenSelect } from './token-select';
 
-import { useEvmTokenBalance } from '@/app/_hooks/balance/token/use-evm-token-balance';
-import { useSPLTokenBalance } from '@/app/_hooks/balance/token/use-svm-token-balance';
+import { useEvmTokenBalance } from '@/app/(app)/_hooks/balance/token/use-evm-token-balance';
+import { useSPLTokenBalance } from '@/app/(app)/_hooks/balance/token/use-svm-token-balance';
 
 import { cn } from '@/lib/utils';
 
