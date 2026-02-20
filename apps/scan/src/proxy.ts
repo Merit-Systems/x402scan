@@ -13,6 +13,7 @@ import { coinbase } from 'facilitators';
 
 import { env } from './env';
 import { sendUsdcQueryParamsSchema } from './lib/schemas';
+
 import {
   walletTransactionsExtension,
   walletStatsExtension,
@@ -33,6 +34,12 @@ import type {
   RoutesConfig,
 } from '@x402/core/server';
 import type { Network } from '@x402/core/types';
+
+const corsHeaders: Record<string, string> = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Payment',
+};
 
 const BASE_MAINNET: Network = 'eip155:8453' as Network;
 const SOLANA_MAINNET: Network =
@@ -185,6 +192,11 @@ function createAdapter(request: NextRequest): HTTPAdapter {
 }
 
 export async function proxy(request: NextRequest) {
+  // Handle CORS preflight
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, { status: 204, headers: corsHeaders });
+  }
+
   // Validate /api/send query params before payment processing
   if (request.nextUrl.pathname === '/api/send') {
     const paramResult = sendUsdcQueryParamsSchema.safeParse(
@@ -196,7 +208,7 @@ export async function proxy(request: NextRequest) {
           error: 'Invalid query parameters',
           details: paramResult.error.issues,
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
   }
@@ -212,14 +224,18 @@ export async function proxy(request: NextRequest) {
   const result = await server.processHTTPRequest(context);
 
   if (result.type === 'no-payment-required') {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    for (const [key, value] of Object.entries(corsHeaders)) {
+      response.headers.set(key, value);
+    }
+    return response;
   }
 
   if (result.type === 'payment-error') {
     const { status, headers, body, isHtml } = result.response;
     return new NextResponse(isHtml ? (body as string) : JSON.stringify(body), {
       status,
-      headers,
+      headers: { ...headers, ...corsHeaders },
     });
   }
 
@@ -235,12 +251,12 @@ export async function proxy(request: NextRequest) {
         JSON.stringify({
           error: settlement.errorReason ?? 'Settlement failed',
         }),
-        { status: 402, headers: { 'Content-Type': 'application/json' } }
+        { status: 402, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
       );
     }
 
     const response = NextResponse.next();
-    for (const [key, value] of Object.entries(settlement.headers)) {
+    for (const [key, value] of Object.entries({ ...settlement.headers, ...corsHeaders })) {
       response.headers.set(key, value);
     }
     return response;
