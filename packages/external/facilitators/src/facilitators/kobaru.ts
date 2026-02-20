@@ -7,7 +7,7 @@ export const kobaru: FacilitatorConfig = {
   url: 'https://gateway.kobaru.io',
 };
 
-const kobaruDiscovery: FacilitatorConfig = {
+export const kobaruDiscovery: FacilitatorConfig = {
   url: 'https://gateway.kobaru.io',
 };
 
