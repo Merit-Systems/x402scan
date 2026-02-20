@@ -565,6 +565,178 @@ export const resourcesRouter = createTRPCRouter({
       });
     }),
 
+
+  /**
+   * Parse an OpenAPI spec and register all discovered endpoints as resources.
+   * Users can upload or paste their OpenAPI spec to bulk-register API endpoints.
+   */
+  registerFromOpenAPISpec: publicProcedure
+    .input(
+      z.object({
+        /** The raw OpenAPI spec content (JSON or YAML string) */
+        spec: z.string().min(1).max(500_000),
+        /** Base URL override (if not specified in the spec's servers field) */
+        baseUrl: z.string().url().optional(),
+        /** If true, only parse and return endpoints without registering */
+        dryRun: z.boolean().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { parseOpenAPISpec } = await import('@/lib/openapi');
+
+      const parsed = parseOpenAPISpec(input.spec, input.baseUrl);
+
+      if (!parsed.success) {
+        return {
+          success: false as const,
+          error: parsed.error,
+        };
+      }
+
+      // If dry run, just return the parsed endpoints
+      if (input.dryRun) {
+        return {
+          success: true as const,
+          dryRun: true as const,
+          title: parsed.title,
+          description: parsed.description,
+          version: parsed.version,
+          baseUrl: parsed.baseUrl,
+          endpointCount: parsed.endpoints.length,
+          endpoints: parsed.endpoints.map(ep => ({
+            url: ep.url,
+            method: ep.method,
+            path: ep.path,
+            description: ep.description,
+            operationId: ep.operationId,
+            hasQueryParams: Object.keys(ep.queryParams).length > 0,
+            hasBodyFields: Object.keys(ep.bodyFields).length > 0,
+            hasResponseSchema: ep.responseSchema !== null,
+          })),
+        };
+      }
+
+      // Register each endpoint
+      const results = await Promise.allSettled(
+        parsed.endpoints.map(async (endpoint) => {
+          // Try fetching the endpoint to get x402 response
+          const methodsToTry = [endpoint.method, 'GET', 'POST'].filter(
+            (v, i, a) => a.indexOf(v) === i
+          );
+
+          let lastError = `No 402 response from ${endpoint.url}`;
+
+          for (const method of methodsToTry) {
+            try {
+              const response = await fetch(
+                endpoint.url.replace('{', '').replace('}', ''),
+                {
+                  method,
+                  headers:
+                    method === 'POST'
+                      ? {
+                          'Content-Type': 'application/json',
+                          'Cache-Control': 'no-cache',
+                        }
+                      : { 'Cache-Control': 'no-cache' },
+                  body: method === 'POST' ? '{}' : undefined,
+                  signal: AbortSignal.timeout(15000),
+                  cache: 'no-store',
+                }
+              );
+
+              if (response.status === 402) {
+                const x402Data = await extractX402Data(response);
+                const result = await registerResource(
+                  endpoint.url,
+                  x402Data
+                );
+
+                if (result.success) {
+                  return {
+                    success: true as const,
+                    url: endpoint.url,
+                    method: endpoint.method,
+                    path: endpoint.path,
+                    description: endpoint.description,
+                  };
+                }
+
+                lastError =
+                  'error' in result && result.error
+                    ? typeof result.error === 'string'
+                      ? result.error
+                      : JSON.stringify(result.error)
+                    : 'Registration failed';
+              } else {
+                lastError = `Expected 402, got ${response.status}`;
+              }
+            } catch (err) {
+              lastError =
+                err instanceof Error ? err.message : 'Request failed';
+            }
+          }
+
+          return {
+            success: false as const,
+            url: endpoint.url,
+            method: endpoint.method,
+            path: endpoint.path,
+            description: endpoint.description,
+            error: lastError,
+          };
+        })
+      );
+
+      const successful: {
+        url: string;
+        method: string;
+        path: string;
+        description: string | null;
+      }[] = [];
+      const failed: {
+        url: string;
+        method: string;
+        path: string;
+        description: string | null;
+        error: string;
+      }[] = [];
+
+      for (const result of results) {
+        if (result.status === 'fulfilled') {
+          if (result.value.success) {
+            successful.push(result.value);
+          } else {
+            failed.push(result.value);
+          }
+        } else {
+          failed.push({
+            url: 'unknown',
+            method: 'unknown',
+            path: 'unknown',
+            description: null,
+            error:
+              result.reason instanceof Error
+                ? result.reason.message
+                : 'Promise rejected',
+          });
+        }
+      }
+
+      return {
+        success: true as const,
+        dryRun: false as const,
+        title: parsed.title,
+        description: parsed.description,
+        baseUrl: parsed.baseUrl,
+        registered: successful.length,
+        failed: failed.length,
+        total: results.length,
+        successfulEndpoints: successful,
+        failedEndpoints: failed,
+      };
+    }),
+
   tags: {
     list: publicProcedure
       .input(listTagsSchema.optional())
