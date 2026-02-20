@@ -31,7 +31,7 @@ export const kobaruFacilitator = {
     ],
     [Network.BASE]: [
       {
-        address: '0x67a3176Acd5Db920747eef65b813B028Ad143CdB',
+        address: '0x67a3176acd5db920747eef65b813b028ad143cdb',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2026-01-09'),
       },
