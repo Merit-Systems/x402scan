@@ -122,6 +122,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Openmid**          | BASE          | No        | No                           |
 | **Primer**           | BASE          | No        | No                           |
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
+| **Moltalyzer**       | BASE          | No        | No                           |
 
 ### Import Individual Facilitators
 
