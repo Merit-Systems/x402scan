@@ -14,11 +14,6 @@ import { coinbase } from 'facilitators';
 import { env } from './env';
 import { sendUsdcQueryParamsSchema } from './lib/schemas';
 
-const corsHeaders: Record<string, string> = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, X-Payment',
-};
 import {
   walletTransactionsExtension,
   walletStatsExtension,
@@ -39,6 +34,12 @@ import type {
   RoutesConfig,
 } from '@x402/core/server';
 import type { Network } from '@x402/core/types';
+
+const corsHeaders: Record<string, string> = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Payment',
+};
 
 const BASE_MAINNET: Network = 'eip155:8453' as Network;
 const SOLANA_MAINNET: Network =
