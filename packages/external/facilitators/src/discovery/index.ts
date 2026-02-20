@@ -11,5 +11,6 @@ export { questflowDiscovery } from '../facilitators/questflow';
 export { ultravioletadaoDiscovery } from '../facilitators/ultravioletadao';
 export { anyspendDiscovery } from '../facilitators/anyspend';
 export { relaiDiscovery } from '../facilitators/relai';
+export { silverbackDiscovery } from '../facilitators/silverback';
 
 export { discoverableFacilitators } from './facilitators';
