@@ -122,6 +122,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Openmid**          | BASE          | No        | No                           |
 | **Primer**           | BASE          | No        | No                           |
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
+| **GoPlausible**      | ALGORAND, BASE, SOLANA | ✅ Yes | No                    |
 
 ### Import Individual Facilitators
 
@@ -149,6 +150,7 @@ import {
   openmid,
   primer,
   relai,
+  goplausible,
 } from 'facilitators';
 
 // Facilitators requiring setup
@@ -268,5 +270,6 @@ enum Network {
   BASE = 'base',
   POLYGON = 'polygon',
   SOLANA = 'solana',
+  ALGORAND = 'algorand',
 }
 ```
