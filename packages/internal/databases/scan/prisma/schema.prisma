@@ -109,6 +109,8 @@ enum AcceptsScheme {
 }
 
 enum AcceptsNetwork {
+  algorand
+  algorand_testnet
   base_sepolia
   avalanche_fuji
   base
