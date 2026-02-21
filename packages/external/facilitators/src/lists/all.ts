@@ -24,13 +24,11 @@ import {
   primerFacilitator,
   x402jobsFacilitator,
   openfacilitatorFacilitator,
+  tsexFacilitator,
   relaiFacilitator,
 } from '../facilitators';
-
 import { validateUniqueFacilitators } from './validate';
-
 import type { Facilitator } from '../types';
-
 const FACILITATORS = validateUniqueFacilitators([
   coinbaseFacilitator,
   aurracloudFacilitator,
@@ -57,8 +55,8 @@ const FACILITATORS = validateUniqueFacilitators([
   primerFacilitator,
   x402jobsFacilitator,
   openfacilitatorFacilitator,
+  tsexFacilitator,
   relaiFacilitator,
 ]);
-
 export const allFacilitators: Facilitator[] =
   FACILITATORS as unknown as Facilitator[];
