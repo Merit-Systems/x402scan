@@ -23,7 +23,7 @@ import { PartnerCollapsible, type PartnerData } from './partner-collapsible';
 export const CreateInviteCodeButton = () => {
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState('5');
   const [maxRedemptions, setMaxRedemptions] = useState('1');
   const [uniqueRecipients, setUniqueRecipients] = useState(true);
   const [expiresAt, setExpiresAt] = useState('');
@@ -48,7 +48,7 @@ export const CreateInviteCodeButton = () => {
 
   const resetForm = () => {
     setCode('');
-    setAmount('');
+    setAmount('5');
     setMaxRedemptions('1');
     setUniqueRecipients(true);
     setExpiresAt('');
