@@ -119,7 +119,7 @@ export const ecosystemItems: EcosystemItem[] = [
   {
     name: 'GoPlausible',
     description:
-      'GoPlausible provides x402 reference implementation, tooling and facilitator service dedicatedly for Algorand withn support for Solana and Base, enabling seamless x402 payments on these networks with USDC and fee abstraction and sponsorship for all supported chains (Mainnets and testnets).',
+      'GoPlausible provides x402 reference implementation, tooling and facilitator service dedicatedly for Algorand with support for Solana and Base, enabling seamless x402 payments on these networks with USDC and fee abstraction and sponsorship for all supported chains (Mainnets and testnets).',
     logoUrl: 'https://www.x402.org/logos/goplausible.png',
     websiteUrl: 'https://x402.goplausible.xyz',
     category: 'Facilitators',
