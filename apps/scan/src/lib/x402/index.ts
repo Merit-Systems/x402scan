@@ -54,30 +54,30 @@ export const paymentRequirementsSchema = z3.union([
 
 type PaymentRequirements = PaymentRequirementsV1 | PaymentRequirementsV2;
 
-function isV2PaymentRequirement(
+function isV2Accept(
   accept: PaymentRequirements
 ): accept is PaymentRequirementsV2 {
   return 'amount' in accept;
 }
 
-/**
- * NOTE(shafu): we do this because we want to store the payment requirements
- * in the database in a common format, which for legacy reasons is v1.
- */
-function normalizePaymentRequirement(
+// NOTE(shafu): normalize v2 and v1 to a common accept format
+function normalizeAccept(
   accept: PaymentRequirements,
   resource?: X402ResponseV2['resource'],
   outputSchema?: OutputSchemaV1
 ): NormalizedAccept {
-  if (isV2PaymentRequirement(accept)) {
+  const common = {
+    payTo: accept.payTo,
+    asset: accept.asset,
+    maxTimeoutSeconds: accept.maxTimeoutSeconds,
+    extra: accept.extra,
+  };
+  if (isV2Accept(accept)) {
     return {
+      ...common,
       scheme: accept.scheme as 'exact',
-      network: normalizeChainId(accept.network),
+      network: chainIdToNetworkSlug(accept.network),
       maxAmountRequired: accept.amount,
-      payTo: accept.payTo,
-      asset: accept.asset,
-      maxTimeoutSeconds: accept.maxTimeoutSeconds,
-      extra: accept.extra,
       resource: resource?.url,
       description: resource?.description,
       mimeType: resource?.mimeType,
@@ -85,13 +85,10 @@ function normalizePaymentRequirement(
     };
   }
   return {
+    ...common,
     scheme: accept.scheme,
     network: accept.network ?? '',
     maxAmountRequired: accept.maxAmountRequired,
-    payTo: accept.payTo,
-    asset: accept.asset,
-    maxTimeoutSeconds: accept.maxTimeoutSeconds,
-    extra: accept.extra,
     resource: accept.resource,
     description: accept.description,
     mimeType: accept.mimeType,
@@ -110,7 +107,7 @@ export function normalizeAccepts(
 
   return (
     response.accepts?.map(accept =>
-      normalizePaymentRequirement(accept, resource, outputSchema)
+      normalizeAccept(accept, resource, outputSchema)
     ) ?? []
   );
 }
@@ -126,17 +123,17 @@ export function parseX402Response(
   if (!result.success) {
     return {
       success: false,
-      errors: result.error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
+      errors: [
+        'x402scan parseX402Response() error',
+        ...result.error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
+      ],
     };
   }
+
   return { success: true, data: result.data as ParsedX402Response };
 }
 
-/**
- * NOTE(shafu): get the output schema from a parsed x402 response
- * V1: outputSchema is in accepts[].outputSchema (bodyFields format)
- * V2: outputSchema comes from extensions.bazaar (info + schema)
- */
+// NOTE(shafu): get output schema for v1 and v2
 export function getOutputSchema(
   response: ParsedX402Response
 ): OutputSchema | undefined {
@@ -144,11 +141,11 @@ export function getOutputSchema(
     return response.accepts?.[0]?.outputSchema;
   }
 
-  const bazaar = response.extensions?.bazaar as DiscoveryExtension | undefined;
-  return bazaar ? getOutputSchemaFromBazaar(bazaar) : undefined;
+  const bazaar = response.extensions?.bazaar;
+  if (!bazaar) return undefined;
+  return getOutputSchemaFromBazaar(bazaar as DiscoveryExtension);
 }
 
-// NOTE(shafu): merge example data from info with field definitions from schema.
 function getOutputSchemaFromBazaar(
   bazaar: DiscoveryExtension
 ): OutputSchema | undefined {
@@ -380,7 +377,7 @@ export async function extractX402Data(response: Response): Promise<unknown> {
   }
 }
 
-export function normalizeChainId(chainId: string): string {
+export function chainIdToNetworkSlug(chainId: string): string {
   if (chainId.startsWith('eip155:')) {
     const id = Number(chainId.split(':')[1]);
     const network = ChainIdToNetwork[id];
@@ -388,12 +385,17 @@ export function normalizeChainId(chainId: string): string {
   }
   if (chainId.startsWith('solana:')) {
     const suffix = chainId.split(':')[1];
-    if (suffix === 'mainnet') return 'solana';
-    if (suffix === 'devnet') return 'solana_devnet';
-    if (suffix === 'testnet') return 'solana_testnet';
-    if (suffix === '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp') return 'solana';
-    if (suffix === 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1') return 'solana_devnet';
-    if (suffix === '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z') return 'solana_testnet';
+    switch (suffix) {
+      case 'mainnet':
+      case '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp':
+        return 'solana';
+      case 'devnet':
+      case 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1':
+        return 'solana_devnet';
+      case 'testnet':
+      case '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z':
+        return 'solana_testnet';
+    }
     return `solana_${suffix}`;
   }
   return chainId;

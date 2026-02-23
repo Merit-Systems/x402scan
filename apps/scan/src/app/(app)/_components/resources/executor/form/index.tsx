@@ -11,7 +11,7 @@ import { FieldSection } from './field-section';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 import type { Methods } from '@/types/x402';
 import {
-  normalizeChainId,
+  chainIdToNetworkSlug,
   type ParsedX402Response,
   type InputSchema,
 } from '@/lib/x402';
@@ -191,7 +191,7 @@ export function Form({
 
   const supportedChains = useMemo(() => {
     const networks = x402Response.accepts?.map(a => a.network ?? '') ?? [];
-    const normalized = networks.map(n => normalizeChainId(n));
+    const normalized = networks.map(n => chainIdToNetworkSlug(n));
     return normalized.filter(n =>
       (SUPPORTED_CHAINS as readonly string[]).includes(n)
     ) as SupportedChain[];
