@@ -13,7 +13,7 @@ import { registerDiscoveryTools } from './tools/discover-resources';
 import { registerOrigins } from './resources/origins';
 import { registerPrompts } from './prompts';
 
-import { MCP_VERSION } from './lib/version';
+import { MCP_VERSION } from '@/shared/version';
 
 import { log } from '@/shared/log';
 import { getWallet } from '@/shared/wallet';

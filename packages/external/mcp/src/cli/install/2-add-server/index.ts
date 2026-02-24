@@ -20,7 +20,7 @@ import {
   setNestedValue,
 } from './lib';
 
-import { DIST_TAG } from '@/server/lib/version';
+import { DIST_TAG } from '@/shared/version';
 
 import { wait } from '@/cli/lib/wait';
 
