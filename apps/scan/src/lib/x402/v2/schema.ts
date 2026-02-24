@@ -1,4 +1,4 @@
-import type { Network, PaymentRequirements } from '@x402/core/types';
+import type { Network } from '@x402/core/types';
 import { z as z3 } from 'zod3';
 
 // NOTE(shafu): this was changed in V2, it does not support network names like base
@@ -46,4 +46,4 @@ export const x402ResponseSchemaV2 = z3.object({
 });
 
 export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
-export type PaymentRequirementsV2 = PaymentRequirements;
+export type PaymentRequirementsV2 = z3.infer<typeof paymentRequirementsSchemaV2>;
