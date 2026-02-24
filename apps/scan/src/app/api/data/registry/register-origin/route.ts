@@ -4,7 +4,6 @@ import { registryRegisterOriginBodySchema } from '@/app/api/data/_lib/schemas';
 import {
   parseJsonBody,
   jsonResponse,
-  errorResponse,
 } from '@/app/api/data/_lib/utils';
 import { registerResource } from '@/lib/resources';
 import { extractX402Data } from '@/lib/x402';
@@ -23,8 +22,14 @@ export const POST = async (request: NextRequest) => {
   const discoveryResult = await fetchDiscoveryDocument(origin);
 
   if (!discoveryResult.success) {
-    return errorResponse(
-      discoveryResult.error ?? 'No discovery document found',
+    return jsonResponse(
+      {
+        success: false,
+        error: {
+          type: 'no_discovery',
+          message: discoveryResult.error ?? 'No discovery document found',
+        },
+      },
       404
     );
   }

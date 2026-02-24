@@ -4,7 +4,6 @@ import { registryRegisterBodySchema } from '@/app/api/data/_lib/schemas';
 import {
   parseJsonBody,
   jsonResponse,
-  errorResponse,
 } from '@/app/api/data/_lib/utils';
 import { registerResource } from '@/lib/resources';
 import { extractX402Data } from '@/lib/x402';
@@ -69,6 +68,7 @@ export const POST = async (request: NextRequest) => {
       success: true,
       resource: result.resource,
       accepts: result.accepts,
+      registrationDetails: result.registrationDetails,
     });
   }
 
@@ -76,15 +76,18 @@ export const POST = async (request: NextRequest) => {
     return jsonResponse(
       {
         success: false,
-        error: 'parse_error',
-        details: lastParseError.parseErrors,
+        error: { type: 'parse_error', parseErrors: lastParseError.parseErrors },
+        data: lastParseError.data,
       },
       422
     );
   }
 
-  return errorResponse(
-    'Resource did not return a 402 Payment Required response',
+  return jsonResponse(
+    {
+      success: false,
+      error: { type: 'no_402', message: 'Resource did not return a 402 Payment Required response' },
+    },
     422
   );
 };
