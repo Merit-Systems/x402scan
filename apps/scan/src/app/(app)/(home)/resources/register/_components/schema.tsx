@@ -107,12 +107,12 @@ type Accepts = {
     payTo: string,
     maxTimeoutSeconds: number,
     asset: string,
-    extra: Record<string, any>  // Required in V2
+    extra?: Record<string, any>
 }
 
 type Resource = {
     url: string,
-    description: string,
+    description?: string,
     mimeType?: string
 }
 

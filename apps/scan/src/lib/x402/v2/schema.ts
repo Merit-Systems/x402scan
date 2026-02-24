@@ -9,7 +9,7 @@ const ChainIdSchema = z3.custom<Network>(
 
 const resourceSchemaV2 = z3.object({
   url: z3.string(),
-  description: z3.string(),
+  description: z3.string().optional(),
   mimeType: z3.string().optional(),
 });
 
@@ -20,7 +20,7 @@ export const paymentRequirementsSchemaV2 = z3.object({
   amount: z3.string(),
   payTo: z3.string(),
   maxTimeoutSeconds: z3.number(),
-  extra: z3.record(z3.string(), z3.any()), // Using any() for Prisma JSON compatibility
+  extra: z3.record(z3.string(), z3.any()).optional().nullable(), // Match @x402/core OptionalAny
 });
 
 const extensionsSchemaV2 = z3.object({
@@ -42,7 +42,7 @@ export const x402ResponseSchemaV2 = z3.object({
   error: z3.string().nullish(),
   accepts: z3.array(paymentRequirementsSchemaV2).optional(),
   resource: resourceSchemaV2.optional(),
-  extensions: extensionsSchemaV2.optional(),
+  extensions: extensionsSchemaV2.nullish(),
 });
 
 export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
