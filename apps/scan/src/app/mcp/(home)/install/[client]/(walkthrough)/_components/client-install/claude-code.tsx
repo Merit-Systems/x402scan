@@ -6,7 +6,7 @@ export const ClaudeCodeInstall: ClientInstallComponent = ({ invite }) => {
   return (
     <CopyCommand
       title="Manual Install"
-      command={`claude mcp add x402scan --scope user -- npx -y @x402scan/mcp@latest${invite ? ` -- invite ${invite}` : ''}`}
+      command={`claude mcp add agentcash --scope user -- npx -y agentcash@latest${invite ? ` -- invite ${invite}` : ''}`}
     />
   );
 };

@@ -19,8 +19,8 @@ export const CopyCommandButton: React.FC<Props> = ({ invite, className }) => {
   const { isCopied, copyToClipboard } = useCopyToClipboard();
 
   const command = invite
-    ? `npx @x402scan/mcp install --invite ${invite}`
-    : 'npx @x402scan/mcp install';
+    ? `npx agentcash install --invite ${invite}`
+    : 'npx agentcash install';
 
   return (
     <Card
@@ -31,7 +31,7 @@ export const CopyCommandButton: React.FC<Props> = ({ invite, className }) => {
       onClick={() => void copyToClipboard(command)}
     >
       <span className="font-mono font-semibold text-sm md:text-base">
-        npx <span className="text-primary">@x402scan/mcp</span> install
+        npx <span className="text-primary">agentcash</span> install
       </span>
       <AnimatePresence mode="wait">
         {isCopied ? (

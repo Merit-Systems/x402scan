@@ -17,4 +17,4 @@ export default async function DepositLayout({
 
 const errorMessage = `This address is not valid. Please run:
 
-\`npx @x402scan/mcp fund\` to get a deposit URL.`;
+\`npx agentcash fund\` to get a deposit URL.`;

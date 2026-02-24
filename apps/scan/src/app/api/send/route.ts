@@ -8,7 +8,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-export const OPTIONS = () => new NextResponse(null, { status: 204, headers: corsHeaders });
+export const OPTIONS = () =>
+  new NextResponse(null, { status: 204, headers: corsHeaders });
 
 export const POST = (request: NextRequest) => {
   const { amount, address, chain } = sendUsdcQueryParamsSchema.parse(

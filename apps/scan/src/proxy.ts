@@ -208,7 +208,10 @@ export async function proxy(request: NextRequest) {
           error: 'Invalid query parameters',
           details: paramResult.error.issues,
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        }
       );
     }
   }
@@ -251,12 +254,18 @@ export async function proxy(request: NextRequest) {
         JSON.stringify({
           error: settlement.errorReason ?? 'Settlement failed',
         }),
-        { status: 402, headers: { 'Content-Type': 'application/json', ...corsHeaders } }
+        {
+          status: 402,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        }
       );
     }
 
     const response = NextResponse.next();
-    for (const [key, value] of Object.entries({ ...settlement.headers, ...corsHeaders })) {
+    for (const [key, value] of Object.entries({
+      ...settlement.headers,
+      ...corsHeaders,
+    })) {
       response.headers.set(key, value);
     }
     return response;
