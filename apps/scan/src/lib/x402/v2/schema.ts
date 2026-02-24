@@ -39,7 +39,7 @@ const extensionsSchemaV2 = z3.object({
 
 export const x402ResponseSchemaV2 = z3.object({
   x402Version: z3.literal(2),
-  error: z3.string().optional(),
+  error: z3.string().nullish(),
   accepts: z3.array(paymentRequirementsSchemaV2).optional(),
   resource: resourceSchemaV2.optional(),
   extensions: extensionsSchemaV2.optional(),
