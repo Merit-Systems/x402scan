@@ -122,6 +122,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Openmid**          | BASE          | No        | No                           |
 | **Primer**           | BASE          | No        | No                           |
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
+| **Kobaru**           | BASE, SOLANA  | ✅ Yes    | No - Optional API Key        |
 
 ### Import Individual Facilitators
 
@@ -149,6 +150,7 @@ import {
   openmid,
   primer,
   relai,
+  kobaru,
 } from 'facilitators';
 
 // Facilitators requiring setup
