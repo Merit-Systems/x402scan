@@ -113,7 +113,7 @@ type Accepts = {
 type Resource = {
     url: string,
     description: string,
-    mimeType: string
+    mimeType?: string
 }
 
 // Bazaar extension for discoverable APIs (x402scan uses this for UI)
