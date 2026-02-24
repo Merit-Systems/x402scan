@@ -558,6 +558,34 @@ describe('V2 schema validation edge cases', () => {
     }
   });
 
+  it('should accept resource without mimeType', () => {
+    const response = {
+      x402Version: 2,
+      accepts: [
+        {
+          scheme: 'exact' as const,
+          network: 'eip155:8453',
+          amount: '10000',
+          payTo: '0x1234567890123456789012345678901234567890',
+          maxTimeoutSeconds: 60,
+          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          extra: {},
+        },
+      ],
+      resource: {
+        url: 'https://api.example.com/endpoint',
+        description: 'Endpoint without mimeType',
+      },
+    };
+
+    const result = parseV2(response);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.resource?.mimeType).toBeUndefined();
+    }
+  });
+
   it('should validate solana-devnet network', () => {
     const response = {
       x402Version: 2,
