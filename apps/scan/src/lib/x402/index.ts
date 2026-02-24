@@ -77,7 +77,7 @@ function normalizePaymentRequirement(
       payTo: accept.payTo,
       asset: accept.asset,
       maxTimeoutSeconds: accept.maxTimeoutSeconds,
-      extra: accept.extra,
+      extra: accept.extra ?? undefined,
       resource: resource?.url,
       description: resource?.description,
       mimeType: resource?.mimeType,

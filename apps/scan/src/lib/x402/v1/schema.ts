@@ -57,7 +57,7 @@ export const x402ResponseSchemaV1 = x402ResponseSchema
   })
   .extend({
     x402Version: z3.literal(1).default(1),
-    error: z3.string().optional(),
+    error: z3.string().nullish(),
     accepts: z3.array(paymentRequirementsSchemaV1).optional(),
   });
 
