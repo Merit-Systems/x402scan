@@ -95,3 +95,21 @@ export const resourcesSearchQuerySchema = paginationSchema.extend({
 export const originResourcesQuerySchema = paginationSchema.extend({
   chain: chainFilterSchema,
 });
+
+// ── Registry endpoints ─────────────────────────────
+
+export const registryRegisterBodySchema = z.object({
+  url: z.string().url().describe('URL of the x402-protected resource to register'),
+});
+
+export const registryRegisterOriginBodySchema = z.object({
+  origin: z
+    .string()
+    .url()
+    .describe('Origin URL to discover and register all x402 resources from'),
+});
+
+export const registryOriginQuerySchema = paginationSchema.extend({
+  url: z.string().url().describe('Origin URL to list registered resources for'),
+  chain: chainFilterSchema,
+});

@@ -8,7 +8,11 @@ export function GET() {
     instructions: `Data API: GET /api/data/* endpoints return paginated x402 payment data.
 All data endpoints cost $0.01 except /api/data/resources/search ($0.02).
 Common query params: page (0-indexed), page_size (1-100), chain (base|solana), timeframe (1|7|14|30 days).
-Send API: POST /api/send with query params address, amount, chain.`,
+Send API: POST /api/send with query params address, amount, chain.
+Registry API: Register x402 resources into the index.
+  POST /api/data/registry/register — JSON body { url } — probes URL for 402, registers resource.
+  POST /api/data/registry/register-origin — JSON body { origin } — discovers and registers all resources from origin.
+  GET /api/data/registry/origin?url=<origin> — list registered resources for an origin.`,
     resources: [
       'POST /api/send',
       'GET /api/data/wallets/{address}/transactions',
@@ -21,6 +25,9 @@ Send API: POST /api/send with query params address, amount, chain.`,
       'GET /api/data/resources',
       'GET /api/data/resources/search',
       'GET /api/data/origins/{id}/resources',
+      'POST /api/data/registry/register',
+      'POST /api/data/registry/register-origin',
+      'GET /api/data/registry/origin',
     ],
     ownershipProofs: [],
   });

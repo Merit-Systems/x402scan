@@ -25,6 +25,9 @@ import {
   resourcesListExtension,
   resourcesSearchExtension,
   originResourcesExtension,
+  registryRegisterExtension,
+  registryRegisterOriginExtension,
+  registryOriginExtension,
 } from './app/api/data/_lib/extensions';
 
 import type { NextRequest } from 'next/server';
@@ -158,6 +161,23 @@ const routes: RoutesConfig = {
     'Resources for a specific origin/domain',
     '$0.01',
     originResourcesExtension
+  ),
+
+  // ── Registry endpoints ─────────────────────────────
+  'POST /api/data/registry/register': dataRouteConfig(
+    'Register an x402 resource by URL (probes for 402, extracts payment requirements, indexes)',
+    '$0.01',
+    registryRegisterExtension
+  ),
+  'POST /api/data/registry/register-origin': dataRouteConfig(
+    'Discover and register all x402 resources from an origin via .well-known/x402 or DNS TXT',
+    '$0.01',
+    registryRegisterOriginExtension
+  ),
+  'GET /api/data/registry/origin': dataRouteConfig(
+    'List all registered x402 resources for an origin',
+    '$0.01',
+    registryOriginExtension
   ),
 };
 
