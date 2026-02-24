@@ -27,6 +27,14 @@ export const ecosystemItems: EcosystemItem[] = [
     category: 'Services/Endpoints',
   },
   {
+    name: 'Algorand Foundation',
+    description:
+      'The Algorand Foundation is an organization dedicated to fostering the growth and development of the Algorand ecosystem. With x402 support, Algorand enables seamless payment rails on the Algorand blockchain, for humans and agentic commerce.',
+    logoUrl: 'https://www.x402.org/logos/algorand.png',
+    websiteUrl: 'https://algorand.co',
+    category: 'Infrastructure & Tooling',
+  },
+  {
     name: 'AurraCloud',
     description:
       'AI agents hosting and Tooling Platform, with MCP, smartWallets, OpenAI API compatibility and X402 support.',
@@ -107,6 +115,14 @@ export const ecosystemItems: EcosystemItem[] = [
     logoUrl: 'https://www.x402.org/logos/gloria.png',
     websiteUrl: 'https://itsgloria.ai',
     category: 'Services/Endpoints',
+  },
+  {
+    name: 'GoPlausible',
+    description:
+      'GoPlausible provides x402 reference implementation, tooling and facilitator service dedicatedly for Algorand with support for Solana and Base, enabling seamless x402 payments on these networks with USDC and fee abstraction and sponsorship for all supported chains (Mainnets and testnets).',
+    logoUrl: 'https://www.x402.org/logos/goplausible.png',
+    websiteUrl: 'https://x402.goplausible.xyz',
+    category: 'Facilitators',
   },
   {
     name: 'Grove API',
