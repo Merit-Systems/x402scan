@@ -36,7 +36,7 @@ export const POST = async (request: NextRequest) => {
         signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
         cache: 'no-store',
       });
-    } catch (err) {
+    } catch {
       continue;
     }
 
