@@ -12,6 +12,9 @@ import {
   resourcesListQuerySchema,
   resourcesSearchQuerySchema,
   originResourcesQuerySchema,
+  registryRegisterBodySchema,
+  registryRegisterOriginBodySchema,
+  registryOriginQuerySchema,
 } from './schemas';
 
 /** Convert a Zod schema to a JSON Schema object for the bazaar inputSchema field. */
@@ -195,6 +198,63 @@ export const originResourcesExtension = declareDiscoveryExtension({
         {
           id: 'res_123',
           resource: 'https://example.com/api/data',
+          x402Version: 2,
+        },
+      ],
+      pagination: { page: 0, page_size: 10, has_next_page: true },
+    },
+  },
+});
+
+// ── Registry endpoints ─────────────────────────────
+
+export const registryRegisterExtension = declareDiscoveryExtension({
+  input: { url: 'https://example.com/api/endpoint' },
+  inputSchema: inputSchemaFrom(registryRegisterBodySchema),
+  output: {
+    example: {
+      success: true,
+      resource: {
+        id: 'res_123',
+        resource: 'https://example.com/api/endpoint',
+        x402Version: 2,
+      },
+      accepts: [
+        {
+          network: 'base',
+          payTo: '0x1234...abcd',
+          maxAmountRequired: '0.01',
+          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        },
+      ],
+    },
+  },
+});
+
+export const registryRegisterOriginExtension = declareDiscoveryExtension({
+  input: { origin: 'https://example.com' },
+  inputSchema: inputSchemaFrom(registryRegisterOriginBodySchema),
+  output: {
+    example: {
+      success: true,
+      registered: 5,
+      failed: 0,
+      deprecated: 1,
+      total: 5,
+      source: 'well-known',
+    },
+  },
+});
+
+export const registryOriginExtension = declareDiscoveryExtension({
+  input: { url: 'https://example.com', page: 0, page_size: 10 },
+  inputSchema: inputSchemaFrom(registryOriginQuerySchema),
+  output: {
+    example: {
+      data: [
+        {
+          id: 'res_123',
+          resource: 'https://example.com/api/endpoint',
           x402Version: 2,
         },
       ],
