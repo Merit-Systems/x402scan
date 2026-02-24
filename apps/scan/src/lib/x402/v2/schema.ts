@@ -10,7 +10,7 @@ const ChainIdSchema = z3.custom<Network>(
 const resourceSchemaV2 = z3.object({
   url: z3.string(),
   description: z3.string(),
-  mimeType: z3.string(),
+  mimeType: z3.string().optional(),
 });
 
 export const paymentRequirementsSchemaV2 = z3.object({
