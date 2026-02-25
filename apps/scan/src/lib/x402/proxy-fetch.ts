@@ -40,7 +40,7 @@ export const fetchWithProxy = async (
   }
 
   const proxyUrl = new URL(PROXY_ENDPOINT, env.NEXT_PUBLIC_PROXY_URL);
-  proxyUrl.searchParams.set('url', encodeURIComponent(url));
+  proxyUrl.searchParams.set('url', url);
   proxyUrl.searchParams.set('share_data', 'true');
 
   const { method = 'GET', ...restInit } = effectiveInit ?? {};
