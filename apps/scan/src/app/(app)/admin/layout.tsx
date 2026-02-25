@@ -44,6 +44,10 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
             label: 'Invite Codes',
             href: '/admin/invite-codes',
           },
+          {
+            label: 'MCP Errors',
+            href: '/admin/mcp-errors',
+          },
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>
