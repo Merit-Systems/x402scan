@@ -121,6 +121,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Meridian**         | BASE          | No        | No                           |
 | **Openmid**          | BASE          | No        | No                           |
 | **Primer**           | BASE          | No        | No                           |
+| **TSE-X**            | BASE          | No        | No                           |
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
 
 ### Import Individual Facilitators
@@ -148,6 +149,7 @@ import {
   meridian,
   openmid,
   primer,
+  tsex,
   relai,
 } from 'facilitators';
 
