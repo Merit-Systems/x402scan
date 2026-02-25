@@ -112,6 +112,10 @@ export function Form({
           if (trimmed.length > 0) {
             acc.push([key, trimmed]);
           }
+        } else if (Array.isArray(value)) {
+          if (value.length > 0) {
+            acc.push([key, value.join(',')]);
+          }
         }
         return acc;
       },

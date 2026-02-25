@@ -112,6 +112,20 @@ function expandFields(
       continue;
     }
 
+    // Handle non-string primitives (number, boolean) — these appear when
+    // query params are defined as bare values like `page: 1` or
+    // `include_gt_community_data: true` rather than as FieldDef objects.
+    if (typeof raw === 'number' || typeof raw === 'boolean') {
+      fields.push({
+        name: fullName,
+        type: typeof raw === 'number' ? 'number' : 'boolean',
+        required: parentRequired?.includes(name) ?? false,
+        enum: undefined,
+        default: String(raw),
+      } satisfies FieldDefinition);
+      continue;
+    }
+
     if (typeof raw !== 'object' || !raw) {
       continue;
     }
