@@ -46,4 +46,6 @@ export const x402ResponseSchemaV2 = z3.object({
 });
 
 export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
-export type PaymentRequirementsV2 = z3.infer<typeof paymentRequirementsSchemaV2>;
+export type PaymentRequirementsV2 = z3.infer<
+  typeof paymentRequirementsSchemaV2
+>;

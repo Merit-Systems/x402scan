@@ -99,7 +99,10 @@ export const originResourcesQuerySchema = paginationSchema.extend({
 // ── Registry endpoints ─────────────────────────────
 
 export const registryRegisterBodySchema = z.object({
-  url: z.string().url().describe('URL of the x402-protected resource to register'),
+  url: z
+    .string()
+    .url()
+    .describe('URL of the x402-protected resource to register'),
 });
 
 export const registryRegisterOriginBodySchema = z.object({
