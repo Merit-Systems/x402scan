@@ -207,10 +207,44 @@ export function Form({
   const hasFields =
     headerFields.length > 0 || queryFields.length > 0 || bodyFields.length > 0;
 
+  const totalRequired = useMemo(() => {
+    return [headerFields, queryFields, bodyFields].reduce(
+      (sum, fields) => sum + fields.filter(f => f.required).length,
+      0
+    );
+  }, [headerFields, queryFields, bodyFields]);
+
+  const totalOptional = useMemo(() => {
+    return [headerFields, queryFields, bodyFields].reduce(
+      (sum, fields) => sum + fields.filter(f => !f.required).length,
+      0
+    );
+  }, [headerFields, queryFields, bodyFields]);
+
   return (
     <CardContent className="flex flex-col gap-4 p-4 border-t">
       {hasFields && (
         <div className="space-y-4">
+          {/* Summary of parameter counts */}
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            {totalRequired > 0 && (
+              <span>
+                <span className="font-medium text-foreground">
+                  {totalRequired}
+                </span>{' '}
+                required
+              </span>
+            )}
+            {totalRequired > 0 && totalOptional > 0 && (
+              <span className="text-border">|</span>
+            )}
+            {totalOptional > 0 && (
+              <span>
+                <span className="font-medium">{totalOptional}</span> optional
+              </span>
+            )}
+          </div>
+
           <FieldSection
             fields={headerFields}
             values={headerValues}
@@ -223,6 +257,7 @@ export function Form({
             values={queryValues}
             onChange={handleQueryChange}
             prefix="query"
+            title="Query Parameters"
           />
           <FieldSection
             fields={bodyFields}
