@@ -119,7 +119,7 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
                     <p>
                       You can verify this by checking the{' '}
                       <a
-                        href="https://github.com/Merit-Systems/x402scan/tree/main/packages/external/mcp"
+                        href="https://github.com/Merit-Systems/agentcash/tree/main/packages/external/mcp"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-semibold text-primary underline"

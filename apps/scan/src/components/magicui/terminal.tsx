@@ -238,7 +238,7 @@ export const Terminal = ({
       )}
     >
       <div className="border-border flex flex-col gap-y-2 border-b p-4 text-sm font-mono font-bold">
-        @x402scan/mcp
+        agentcash
       </div>
       <pre className="p-4 flex-1 h-0 overflow-y-auto overflow-x-hidden">
         <code className="grid gap-y-2 overflow-auto whitespace-pre-wrap">

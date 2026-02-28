@@ -34,7 +34,7 @@ export const ClientInstallAccordion: React.FC<Props> = ({
             title={
               client === Clients.Cursor ? 'Manual Install' : 'Quick Install'
             }
-            command={`npx @x402scan/mcp install --client ${client}${props.invite ? ` --invite ${props.invite}` : ''}`}
+            command={`npx agentcash install --client ${client}${props.invite ? ` --invite ${props.invite}` : ''}`}
           />
           {InstallComponent && <InstallComponent {...props} />}
         </div>
