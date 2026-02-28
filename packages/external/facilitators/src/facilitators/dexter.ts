@@ -1,5 +1,5 @@
 import { Network } from '../types';
-import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
+import { USDC_BASE_TOKEN, USDC_POLYGON_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
 import type { Facilitator, FacilitatorConfig } from '../types';
 
@@ -34,6 +34,13 @@ export const dexterFacilitator = {
         address: '0x40272E2eAc848Ea70db07Fd657D799bD309329C4',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-12-25'),
+      },
+    ],
+    [Network.POLYGON]: [
+      {
+        address: '0x40272E2eAc848Ea70db07Fd657D799bD309329C4',
+        tokens: [USDC_POLYGON_TOKEN],
+        dateOfFirstTransaction: new Date('2026-01-27'),
       },
     ],
   },
