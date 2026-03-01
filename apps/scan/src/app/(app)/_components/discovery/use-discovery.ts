@@ -6,7 +6,7 @@ import z from 'zod';
 import { api } from '@/trpc/client';
 
 import type { FailedResource, TestedResource } from '@/types/batch-test';
-import type { DiscoveredResource } from '@/types/discovery';
+import type { DiscoveredResource, DiscoverySource } from '@/types/discovery';
 import type { OriginPreview } from './discovery-panel';
 import { useBatchTest } from './use-batch-test';
 import { useOwnership } from './use-ownership';
@@ -59,7 +59,7 @@ export interface UseDiscoveryReturn {
   discoveryQuery: unknown;
   isDiscoveryLoading: boolean;
   discoveryFound: boolean;
-  discoverySource?: 'dns' | 'well-known';
+  discoverySource?: DiscoverySource;
   discoveryResources: string[];
   actualDiscoveredResources: string[];
   discoveryResourceCount: number;

@@ -38,6 +38,7 @@ import type {
   FailedResource as FailedResourceType,
   TestedResource as TestedResourceType,
 } from '@/types/batch-test';
+import type { DiscoverySource } from '@/types/discovery';
 import type { Methods } from '@/types/x402';
 import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 
@@ -63,8 +64,8 @@ export interface DiscoveryPanelProps {
   isLoading: boolean;
   /** Whether discovery document was found */
   found: boolean;
-  /** Discovery source: 'dns' or 'well-known' */
-  source?: 'dns' | 'well-known';
+  /** Discovery source from discovery runtime */
+  source?: DiscoverySource;
   /** List of discovered resource URLs */
   resources: string[];
   /** Total count of resources */
@@ -966,7 +967,7 @@ function RegisterModeResourceList({
 }: {
   enteredUrl?: string;
   discoveredResources: string[];
-  source?: 'dns' | 'well-known';
+  source?: DiscoverySource;
   registeredUrls: string[];
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
 }) {
@@ -975,7 +976,7 @@ function RegisterModeResourceList({
   // Build unified list: entered URL first (if exists), then discovered
   const allResources: {
     url: string;
-    source: 'entered' | 'dns' | 'well-known';
+    source: 'entered' | DiscoverySource;
     isRegistered: boolean;
   }[] = [];
 
@@ -1033,9 +1034,15 @@ function RegisterModeResourceList({
                   >
                     {resourceSource === 'entered'
                       ? 'Manually Entered'
-                      : resourceSource === 'dns'
-                        ? '_x402 DNS TXT'
-                        : '/.well-known/x402'}
+                      : resourceSource === 'openapi'
+                        ? 'OpenAPI'
+                        : resourceSource === 'dns'
+                          ? '_x402 DNS TXT'
+                          : resourceSource === 'probe'
+                            ? 'Runtime Probe'
+                            : resourceSource === 'interop-mpp'
+                              ? '/.well-known/mpp'
+                              : '/.well-known/x402'}
                   </span>
                 </td>
                 <td className="px-3 py-2">

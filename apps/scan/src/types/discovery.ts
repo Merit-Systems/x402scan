@@ -18,6 +18,13 @@ export interface DiscoveredResource {
   invalidReason?: string;
 }
 
+export type DiscoverySource =
+  | 'openapi'
+  | 'well-known'
+  | 'dns'
+  | 'probe'
+  | 'interop-mpp';
+
 /**
  * Parsed DNS TXT record for x402 discovery.
  * Format: v=x4021;[descriptor=<desc>;]url=<https_url>
@@ -59,7 +66,7 @@ export interface X402DiscoveryDocument {
  */
 export interface X402DiscoveryResult {
   success: boolean;
-  source?: 'dns' | 'well-known';
+  source?: DiscoverySource;
   /** Resources with URLs and optional methods */
   resources: DiscoveredResource[];
   discoveryUrls: string[];
@@ -84,7 +91,7 @@ export interface X402DiscoveryResult {
  */
 export interface DiscoveryInfo {
   found: boolean;
-  source?: 'dns' | 'well-known';
+  source?: DiscoverySource;
   otherResourceCount: number;
   origin: string;
   resources?: string[];

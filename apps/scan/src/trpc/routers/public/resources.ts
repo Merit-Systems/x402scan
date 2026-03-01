@@ -43,7 +43,23 @@ import {
 
 import type { Prisma } from '@x402scan/scan-db';
 import type { SupportedChain } from '@/types/chain';
-import type { DiscoveryInfo } from '@/types/discovery';
+import type { DiscoveryInfo, DiscoveredResource } from '@/types/discovery';
+
+const DEFAULT_PROBE_METHODS: Methods[] = [Methods.POST, Methods.GET];
+
+function buildProbeMethods(resource: DiscoveredResource): Methods[] {
+  if (!resource.method) return DEFAULT_PROBE_METHODS;
+
+  const preferredMethod = resource.method as Methods;
+  if (!Object.values(Methods).includes(preferredMethod)) {
+    return DEFAULT_PROBE_METHODS;
+  }
+
+  return [
+    preferredMethod,
+    ...DEFAULT_PROBE_METHODS.filter(method => method !== preferredMethod),
+  ];
+}
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
@@ -315,8 +331,7 @@ export const resourcesRouter = createTRPCRouter({
       const results = await Promise.allSettled(
         discoveryResult.resources.map(async resource => {
           const resourceUrl = resource.url;
-          // Always try both POST and GET to find which method works
-          const methodsToTry = [Methods.POST, Methods.GET];
+          const methodsToTry = buildProbeMethods(resource);
 
           let lastError = 'No 402 response';
           let lastStatus: number | undefined;
