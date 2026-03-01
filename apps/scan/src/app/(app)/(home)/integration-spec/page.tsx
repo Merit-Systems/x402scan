@@ -82,7 +82,7 @@ Done when:
 
 function CodeBlock({ code }: { code: string }) {
   return (
-    <pre className="rounded-md bg-muted p-3 overflow-x-auto text-xs md:text-sm">
+    <pre className="rounded-md bg-muted p-3 overflow-x-auto text-xs">
       <code>{code}</code>
     </pre>
   );
@@ -107,18 +107,25 @@ export default function DiscoverySpecPage() {
       />
       <Body className="gap-10">
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Why This Spec Exists</h2>
-          <p className="text-sm text-muted-foreground md:text-base">
-            Most registration failures come from ambiguous discovery and incomplete 402 metadata.
-            This page defines one deterministic path so providers and x402scan stay in sync.
-          </p>
-          <ul className="mt-3 list-disc pl-5 space-y-1 text-sm md:text-base">
-            <li>OpenAPI is the canonical machine-readable contract.</li>
+          <h2 className="text-xl font-semibold">Why This Matters</h2>
+          <div className="space-y-2 text-sm text-muted-foreground">
+            <p>
+              If agents can&apos;t discover your API, they can&apos;t call it. Bulletproof discovery
+              turns your endpoint from merely listed to reliably invocable.
+            </p>
+            <p>
+              When metadata and runtime <code>402</code> behavior agree, agents succeed on the
+              first pass. You get fewer x402scan failures, less debugging churn, and more real
+              agent traffic.
+            </p>
+          </div>
+          <ul className="mt-3 list-disc pl-5 space-y-1 text-sm">
+            <li>Publish OpenAPI as the canonical machine-readable contract.</li>
             <li>
-              <code>/.well-known/x402</code> and DNS are migration compatibility layers.
+              Keep <code>/.well-known/x402</code> and DNS as migration compatibility bridges.
             </li>
             <li>
-              Runtime <code>402</code> challenge behavior is the final source of truth.
+              Treat runtime <code>402</code> challenge behavior as the final source of truth.
             </li>
           </ul>
         </section>
@@ -127,7 +134,7 @@ export default function DiscoverySpecPage() {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
               <h2 className="text-xl font-semibold">Copy for Agents</h2>
-              <p className="text-sm text-muted-foreground md:text-base">
+              <p className="text-sm text-muted-foreground">
                 Paste this directly into your coding agent. It should handle discovery implementation
                 and validation end-to-end.
               </p>
@@ -139,7 +146,7 @@ export default function DiscoverySpecPage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Choose Your Discovery Strategy</h2>
-          <p className="text-sm text-muted-foreground md:text-base">
+          <p className="text-sm text-muted-foreground">
             Click a strategy to view exact requirements and a copy-paste implementation example.
           </p>
           <DiscoveryStrategyPanel />
@@ -147,7 +154,7 @@ export default function DiscoverySpecPage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Discovery Precedence</h2>
-          <p className="text-sm text-muted-foreground md:text-base">
+          <p className="text-sm text-muted-foreground">
             x402scan resolves in this order and stops at the first valid source.
           </p>
           <Card>
@@ -190,10 +197,10 @@ export default function DiscoverySpecPage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Endpoint-Only Fallback</h2>
-          <p className="text-sm text-muted-foreground md:text-base">
+          <p className="text-sm text-muted-foreground">
             If no discovery document exists, endpoint registration still works.
           </p>
-          <ul className="list-disc pl-5 space-y-1 text-sm md:text-base">
+          <ul className="list-disc pl-5 space-y-1 text-sm">
             <li>Probe method is method-aware with GET/POST fallback where applicable.</li>
             <li>
               Endpoint must return a parseable <code>402</code> challenge.
@@ -207,7 +214,7 @@ export default function DiscoverySpecPage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Common Failure Reasons</h2>
-          <p className="text-sm text-muted-foreground md:text-base">
+          <p className="text-sm text-muted-foreground">
             These are the most frequent errors seen during registration.
           </p>
           <Card>
@@ -223,7 +230,7 @@ export default function DiscoverySpecPage() {
                   </TableHeader>
                   <TableBody>
                     <TableRow>
-                      <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                      <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
                         Expected 402, got 404/405
                       </TableCell>
                       <TableCell className="whitespace-normal break-words align-top">
@@ -234,7 +241,7 @@ export default function DiscoverySpecPage() {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                      <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
                         Accepts must contain at least one valid payment requirement
                       </TableCell>
                       <TableCell className="whitespace-normal break-words align-top">
@@ -245,7 +252,7 @@ export default function DiscoverySpecPage() {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                      <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
                         Missing input schema
                       </TableCell>
                       <TableCell className="whitespace-normal break-words align-top">
@@ -256,7 +263,7 @@ export default function DiscoverySpecPage() {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                      <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
                         Expected 402, got 429
                       </TableCell>
                       <TableCell className="whitespace-normal break-words align-top">

@@ -54,6 +54,7 @@ export function Footer() {
 
             <Link
               href="/privacy"
+              prefetch={false}
               className="hover:text-foreground transition-colors"
             >
               Privacy
@@ -61,6 +62,7 @@ export function Footer() {
 
             <Link
               href="/tos"
+              prefetch={false}
               className="hover:text-foreground transition-colors"
             >
               Terms

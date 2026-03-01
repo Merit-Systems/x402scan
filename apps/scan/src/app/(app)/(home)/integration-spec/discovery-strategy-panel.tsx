@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 type StrategyKey = 'openapi' | 'wellKnown' | 'dns';
@@ -93,15 +95,67 @@ const strategies: Strategy[] = [
 
 function CodeBlock({ code }: { code: string }) {
   return (
-    <pre className="rounded-md bg-muted p-3 overflow-x-auto text-xs md:text-sm">
+    <pre className="rounded-md bg-muted p-3 overflow-x-auto text-xs">
       <code>{code}</code>
     </pre>
   );
 }
 
+function StrategyDetails({ strategy }: { strategy: Strategy }) {
+  return (
+    <Card>
+      <CardContent className="space-y-4 pt-4">
+        <div className="space-y-1">
+          <h3 className="text-lg font-semibold">{strategy.title} Implementation</h3>
+          <p className="text-sm text-muted-foreground">{strategy.note}</p>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Expected location: <code>{strategy.location}</code>
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          {strategy.requirements.map(requirement => (
+            <li key={requirement}>{requirement}</li>
+          ))}
+        </ul>
+        <CodeBlock code={strategy.example} />
+      </CardContent>
+    </Card>
+  );
+}
+
 export function DiscoveryStrategyPanel() {
   const [selected, setSelected] = useState<StrategyKey>('openapi');
+  const [direction, setDirection] = useState(1);
+  const [panelHeight, setPanelHeight] = useState<number | null>(null);
+  const [contentElement, setContentElement] = useState<HTMLDivElement | null>(
+    null
+  );
+
   const strategy = strategies.find(item => item.key === selected) ?? strategies[0]!;
+
+  useLayoutEffect(() => {
+    if (!contentElement) {
+      return;
+    }
+
+    const updateHeight = () => {
+      const height = contentElement.getBoundingClientRect().height;
+      if (height > 0) {
+        setPanelHeight(previous =>
+          previous === height ? previous : height
+        );
+      }
+    };
+
+    updateHeight();
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(contentElement);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [contentElement]);
 
   return (
     <div className="space-y-4">
@@ -113,12 +167,21 @@ export function DiscoveryStrategyPanel() {
               key={item.key}
               type="button"
               aria-pressed={active}
-              onClick={() => setSelected(item.key)}
+              onClick={() => {
+                const currentIndex = strategies.findIndex(
+                  strategyItem => strategyItem.key === selected
+                );
+                const nextIndex = strategies.findIndex(
+                  strategyItem => strategyItem.key === item.key
+                );
+                setDirection(nextIndex >= currentIndex ? 1 : -1);
+                setSelected(item.key);
+              }}
               className={cn(
-                'flex h-full flex-col rounded-md border p-4 text-left transition-colors',
+                'flex h-full cursor-pointer flex-col rounded-md border p-4 text-left transition-colors',
                 active
                   ? 'border-primary/40 bg-primary/5'
-                  : 'border-border bg-background hover:bg-muted/30'
+                  : 'border-border bg-background hover:border-primary/30 hover:bg-muted/50'
               )}
             >
               <div className="flex items-start justify-between gap-2">
@@ -143,19 +206,26 @@ export function DiscoveryStrategyPanel() {
       </div>
 
       <div className="space-y-4 border-t border-border/70 pt-4">
-        <div className="space-y-1">
-          <h3 className="text-lg font-semibold">{strategy.title} Implementation</h3>
-          <p className="text-sm text-muted-foreground">{strategy.note}</p>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Expected location: <code>{strategy.location}</code>
-        </p>
-        <ul className="list-disc pl-5 space-y-1 text-sm md:text-base">
-          {strategy.requirements.map(requirement => (
-            <li key={requirement}>{requirement}</li>
-          ))}
-        </ul>
-        <CodeBlock code={strategy.example} />
+        <motion.div
+          initial={false}
+          animate={panelHeight === null ? undefined : { height: panelHeight }}
+          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+          className="overflow-hidden"
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={strategy.key}
+              ref={setContentElement}
+              initial={{ opacity: 0, x: direction * 14, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, x: direction * -14, filter: 'blur(4px)' }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="will-change-transform will-change-[filter]"
+            >
+              <StrategyDetails strategy={strategy} />
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );
