@@ -275,7 +275,7 @@ export const createColumns = (
             <DropdownMenuItem
               onClick={() =>
                 void navigator.clipboard.writeText(
-                  `${window.location.origin}/mcp?invite=${encodeURIComponent(row.original.code)}`
+                  `https://agentcash.dev?invite=${encodeURIComponent(row.original.code)}`
                 )
               }
             >
