@@ -1,17 +1,30 @@
 import type { NextRequest } from 'next/server';
 
 import { registryRegisterOriginBodySchema } from '@/app/api/data/_lib/schemas';
-import {
-  parseJsonBody,
-  jsonResponse,
-} from '@/app/api/data/_lib/utils';
+import { parseJsonBody, jsonResponse } from '@/app/api/data/_lib/utils';
 import { registerResource } from '@/lib/resources';
 import { extractX402Data } from '@/lib/x402';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 import { Methods } from '@/types/x402';
+import type { DiscoveredResource } from '@/types/discovery';
 
 const PROBE_TIMEOUT_MS = 15000;
+const DEFAULT_PROBE_METHODS: Methods[] = [Methods.POST, Methods.GET];
+
+function buildProbeMethods(resource: DiscoveredResource): Methods[] {
+  if (!resource.method) return DEFAULT_PROBE_METHODS;
+
+  const preferredMethod = resource.method as Methods;
+  if (!Object.values(Methods).includes(preferredMethod)) {
+    return DEFAULT_PROBE_METHODS;
+  }
+
+  return [
+    preferredMethod,
+    ...DEFAULT_PROBE_METHODS.filter(method => method !== preferredMethod),
+  ];
+}
 
 export const POST = async (request: NextRequest) => {
   const parsed = await parseJsonBody(request, registryRegisterOriginBodySchema);
@@ -37,7 +50,7 @@ export const POST = async (request: NextRequest) => {
   const results = await Promise.allSettled(
     discoveryResult.resources.map(async resource => {
       const resourceUrl = resource.url;
-      const methodsToTry = [Methods.POST, Methods.GET];
+      const methodsToTry = buildProbeMethods(resource);
 
       let lastError = 'No 402 response';
       let lastStatus: number | undefined;
@@ -49,7 +62,10 @@ export const POST = async (request: NextRequest) => {
             method,
             headers:
               method === Methods.POST
-                ? { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' }
+                ? {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache',
+                  }
                 : { 'Cache-Control': 'no-cache' },
             body: method === Methods.POST ? '{}' : undefined,
             signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
@@ -66,7 +82,8 @@ export const POST = async (request: NextRequest) => {
               return result;
             }
 
-            const errorMsg = getErrorMessage(result.error) || 'Registration failed';
+            const errorMsg =
+              getErrorMessage(result.error) || 'Registration failed';
             errors.push(`${method}: ${errorMsg}`);
             lastError = errors.join('; ');
           } else {
@@ -74,7 +91,8 @@ export const POST = async (request: NextRequest) => {
             lastError = errors.join('; ');
           }
         } catch (err) {
-          const errorMsg = err instanceof Error ? err.message : 'Request failed';
+          const errorMsg =
+            err instanceof Error ? err.message : 'Request failed';
           errors.push(`${method}: ${errorMsg}`);
           lastError = errors.join('; ');
         }
@@ -152,9 +170,7 @@ function getErrorMessage(err: unknown): string {
     } else if ('upsertErrors' in err && Array.isArray(err.upsertErrors)) {
       details.push(...(err.upsertErrors as string[]));
     }
-    return details.length > 0
-      ? `${err.type}: ${details.join(', ')}`
-      : err.type;
+    return details.length > 0 ? `${err.type}: ${details.join(', ')}` : err.type;
   }
 
   return 'Unknown error';

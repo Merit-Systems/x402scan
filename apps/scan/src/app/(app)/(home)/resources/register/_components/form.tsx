@@ -1,43 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
-  AlertTriangle,
+  ArrowDown,
+  CheckCircle2,
   ChevronDown,
-  ChevronRight,
-  Eye,
-  Info,
   Loader2,
   Plus,
-  X,
+  Server,
+  Trash2,
+  XCircle,
 } from 'lucide-react';
 
-import { toast } from 'sonner';
-
 import { Button } from '@/components/ui/button';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-
-import { api } from '@/trpc/client';
-
-import {
-  DiscoveryPanel,
-  useDiscovery,
-} from '@/app/(app)/_components/discovery';
-import { Favicon } from '@/app/(app)/_components/favicon';
-import { parseChain } from '@/app/(app)/_lib/chain/parse';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import {
   Card,
   CardContent,
@@ -47,569 +23,670 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+import { DiscoveryPanel, useDiscovery } from '@/app/(app)/_components/discovery';
+import { Favicon } from '@/app/(app)/_components/favicon';
 import { cn } from '@/lib/utils';
+import { normalizeUrl } from '@/lib/url';
+import { api } from '@/trpc/client';
 import Link from 'next/link';
-import { AcceptsBreakdownTable } from './accepts-breakdown-table';
-import { RegistrationAlert } from './registration-alert';
-import { RegistrationChecklist } from './registration-checklist';
+import { z } from 'zod';
+
+interface ManualRegistrationResult {
+  success: true;
+  registered: number;
+  total: number;
+  failed: number;
+  failedDetails: { url: string; error: string; status?: number }[];
+  originId?: string;
+  origin: string | null;
+}
+
+function getErrorMessageFromRegisterResult(result: {
+  success: false;
+  error: {
+    type: 'parseErrors' | 'no402';
+    parseErrors?: string[];
+  };
+}): string {
+  if (result.error.type === 'parseErrors') {
+    const parseErrors = result.error.parseErrors ?? [];
+    if (parseErrors.length > 0) {
+      return `parseResponse: ${parseErrors.join(', ')}`;
+    }
+    return 'parseResponse: Invalid x402 response';
+  }
+
+  return 'Expected 402 response';
+}
+
+const registerSuccessResultSchema = z.object({
+  resource: z.object({
+    origin: z.object({
+      id: z.string(),
+    }),
+  }),
+});
+
+function safeGetOrigin(url: string): string | null {
+  try {
+    return new URL(url).origin;
+  } catch {
+    return null;
+  }
+}
+
+function toPathLabel(resourceUrl: string): string {
+  try {
+    const parsed = new URL(resourceUrl);
+    return `${parsed.pathname}${parsed.search}`;
+  } catch {
+    return resourceUrl;
+  }
+}
 
 export const RegisterResourceForm = () => {
   const [url, setUrl] = useState('');
-  const [headers, setHeaders] = useState<
-    {
-      name: string;
-      value: string;
-    }[]
-  >([]);
+  const [headers, setHeaders] = useState<{ name: string; value: string }[]>([]);
+  const [manualUrls, setManualUrls] = useState<string[]>([]);
+  const [manualListError, setManualListError] = useState<string | null>(null);
+  const [manualProgress, setManualProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
+  const [isRegisteringManual, setIsRegisteringManual] = useState(false);
+  const [manualResult, setManualResult] =
+    useState<ManualRegistrationResult | null>(null);
 
   const utils = api.useUtils();
 
-  // Use shared discovery hook
   const {
     isValidUrl,
     urlOrigin,
     isOriginOnly,
-    enteredUrlInDiscovery,
     isDiscoveryLoading,
     discoveryFound,
     discoverySource,
     discoveryError,
     actualDiscoveredResources,
-    invalidResourcesMap,
-    registeredUrls,
     isRegisteringAll,
     bulkData,
+    bulkError,
     handleRegisterAll,
     resetBulk,
-    ownershipVerified,
-    ownershipProofs,
-    payToAddresses,
-    recoveredAddresses,
-    verifiedAddresses,
     preview,
-    isPreviewLoading,
-    refreshDiscovery,
+    isBatchTestLoading,
+    testedResources,
+    failedResources,
   } = useDiscovery({
     url,
-    onRegisterAllSuccess: data => {
-      const deprecatedMsg =
-        'deprecated' in data && data.deprecated && data.deprecated > 0
-          ? `, ${data.deprecated} deprecated`
-          : '';
-      toast.success(
-        `Registered ${data.registered} of ${data.total} resources${deprecatedMsg}`
-      );
-    },
-    onRegisterAllError: () => {
-      toast.error('Failed to register resources');
-    },
   });
 
-  const {
-    mutate: addResource,
-    isPending,
-    data,
-    reset,
-  } = api.public.resources.register.useMutation({
-    onSuccess: data => {
-      if (data.error) {
-        toast.error('Failed to add resource');
-        return;
-      }
-      void utils.public.resources.list.invalidate();
-      void utils.public.origins.list.withResources.invalidate();
-      for (const accept of data.accepts) {
-        void utils.public.resources.getResourceByAddress.invalidate(
-          accept.payTo
-        );
-        void utils.public.origins.list.withResources.invalidate({
-          address: accept.payTo,
-          chain: parseChain(accept.network),
-        });
-      }
-      void utils.public.sellers.bazaar.list.invalidate();
-      toast.success('Resource added successfully', {
-        action: {
-          label: 'View Server',
-          onClick: () => {
-            window.location.href = `/server/${data.resource.origin.id}`;
-          },
-        },
-      });
-    },
-    onError: () => {
-      toast.error('Failed to add resource');
-    },
-  });
+  const registerMutation = api.public.resources.register.useMutation();
 
-  const onReset = () => {
-    setUrl('');
-    setHeaders([]);
-    reset();
+  const normalizedUrl = useMemo(() => normalizeUrl(url.trim()), [url]);
+
+  const queueOrigin = useMemo(
+    () => (manualUrls.length > 0 ? safeGetOrigin(manualUrls[0] ?? '') : null),
+    [manualUrls]
+  );
+
+  const hasDiscoveryResources =
+    discoveryFound && actualDiscoveredResources.length > 0;
+
+  const canUseManualMode = isValidUrl && !isOriginOnly;
+  const currentUrlAlreadyInManualList = manualUrls.includes(normalizedUrl);
+  const canAddCurrentUrl =
+    canUseManualMode &&
+    !currentUrlAlreadyInManualList &&
+    (!queueOrigin || queueOrigin === urlOrigin);
+
+  const manualTargets =
+    manualUrls.length > 0
+      ? manualUrls
+      : canUseManualMode
+        ? [normalizedUrl]
+        : [];
+
+  const testedResourceByUrl = useMemo(() => {
+    const map = new Map<string, (typeof testedResources)[number]>();
+    for (const tested of testedResources) {
+      map.set(normalizeUrl(tested.url), tested);
+    }
+    return map;
+  }, [testedResources]);
+
+  const failedResourceByUrl = useMemo(() => {
+    const map = new Map<string, (typeof failedResources)[number]>();
+    for (const failed of failedResources) {
+      map.set(normalizeUrl(failed.url), failed);
+    }
+    return map;
+  }, [failedResources]);
+
+  const currentManualTested = testedResourceByUrl.get(normalizedUrl);
+  const currentManualFailed = failedResourceByUrl.get(normalizedUrl);
+
+  const activeBulkResult = manualResult ?? bulkData ?? null;
+  const activeSummaryOrigin = manualResult?.origin ?? urlOrigin;
+  const shouldShowReset =
+    activeBulkResult !== null || manualUrls.length > 0 || url.length > 0;
+
+  const requestHeaders = useMemo(() => {
+    const entries = headers
+      .map(header => ({
+        name: header.name.trim(),
+        value: header.value,
+      }))
+      .filter(header => header.name.length > 0);
+
+    if (entries.length === 0) {
+      return undefined;
+    }
+
+    return Object.fromEntries(entries.map(header => [header.name, header.value]));
+  }, [headers]);
+
+  const resetStateForNewRun = () => {
+    setManualResult(null);
+    setManualProgress(null);
+    setManualListError(null);
     resetBulk();
   };
 
-  // Handle registering a single resource
-  const handleRegisterSingle = () => {
-    if (!isValidUrl) return;
-    addResource({
-      url,
-      headers: Object.fromEntries(headers.map(h => [h.name, h.value])),
-    });
+  const handleUrlChange = (nextUrl: string) => {
+    setUrl(nextUrl);
+    setManualResult(null);
+    setManualProgress(null);
+    setManualListError(null);
   };
 
-  // Sanitize possibly loosely-typed values from discovery for strict props
-  const safeOwnershipVerified = Boolean(ownershipVerified);
-  const safeOwnershipProofs: string[] = Array.isArray(ownershipProofs)
-    ? ownershipProofs.filter((s): s is string => typeof s === 'string')
-    : [];
-  const safeRecoveredAddresses: string[] = Array.isArray(recoveredAddresses)
-    ? recoveredAddresses.filter((s): s is string => typeof s === 'string')
-    : [];
+  const handleAddCurrentUrl = () => {
+    if (!canUseManualMode) {
+      return;
+    }
+
+    if (queueOrigin && queueOrigin !== urlOrigin) {
+      setManualListError('All manual URLs must share the same origin.');
+      return;
+    }
+
+    if (!currentUrlAlreadyInManualList) {
+      setManualUrls(current => [...current, normalizedUrl]);
+    }
+
+    setManualListError(null);
+    setManualResult(null);
+    setManualProgress(null);
+  };
+
+  const handleRemoveManualUrl = (targetUrl: string) => {
+    setManualUrls(current => current.filter(item => item !== targetUrl));
+    setManualResult(null);
+    setManualProgress(null);
+    setManualListError(null);
+  };
+
+  const handleResetAll = () => {
+    setUrl('');
+    setHeaders([]);
+    setManualUrls([]);
+    setManualListError(null);
+    setManualProgress(null);
+    setManualResult(null);
+    setIsRegisteringManual(false);
+    registerMutation.reset();
+    resetBulk();
+  };
+
+  const handleRegisterDiscovered = () => {
+    setManualResult(null);
+    setManualProgress(null);
+    setManualListError(null);
+    handleRegisterAll();
+  };
+
+  const handleRegisterManual = async () => {
+    if (manualTargets.length === 0 || isRegisteringManual) {
+      return;
+    }
+
+    await runManualRegistration(manualTargets);
+  };
+
+  const runManualRegistration = async (targets: string[]) => {
+    if (targets.length === 0 || isRegisteringManual) {
+      return;
+    }
+
+    resetStateForNewRun();
+    setIsRegisteringManual(true);
+
+    let registered = 0;
+    let originId: string | undefined;
+    const failedDetails: { url: string; error: string; status?: number }[] = [];
+
+    for (let index = 0; index < targets.length; index += 1) {
+      const targetUrl = targets[index] ?? '';
+      setManualProgress({ current: index + 1, total: targets.length });
+
+      try {
+        const result = await registerMutation.mutateAsync({
+          url: targetUrl,
+          headers: requestHeaders,
+        });
+
+        if (result.success) {
+          registered += 1;
+          const parsedSuccessResult = registerSuccessResultSchema.safeParse(result);
+          if (parsedSuccessResult.success) {
+            originId ??= parsedSuccessResult.data.resource.origin.id;
+          }
+          continue;
+        }
+
+        failedDetails.push({
+          url: targetUrl,
+          error: getErrorMessageFromRegisterResult(result),
+        });
+      } catch (error) {
+        failedDetails.push({
+          url: targetUrl,
+          error: error instanceof Error ? error.message : 'Request failed',
+        });
+      }
+    }
+
+    if (registered > 0) {
+      void utils.public.resources.list.invalidate();
+      void utils.public.origins.list.withResources.invalidate();
+      void utils.public.sellers.bazaar.list.invalidate();
+    }
+
+    setManualResult({
+      success: true,
+      registered,
+      total: targets.length,
+      failed: failedDetails.length,
+      failedDetails,
+      originId,
+      origin: safeGetOrigin(targets[0] ?? ''),
+    });
+
+    setIsRegisteringManual(false);
+  };
+
+  const handleRegisterCurrentUrlOnly = async () => {
+    if (!canUseManualMode || isRegisteringManual) {
+      return;
+    }
+
+    await runManualRegistration([normalizedUrl]);
+  };
+
+  const renderProbeCard = () => {
+    if (url.trim().length === 0) {
+      return null;
+    }
+
+    if (!isValidUrl) {
+      return (
+        <Card>
+          <CardHeader className="flex-row items-center gap-3 space-y-0">
+            <XCircle className="size-6 text-red-600 shrink-0" />
+            <div>
+              <CardTitle className="text-base">Invalid URL</CardTitle>
+              <CardDescription>
+                Enter a full URL like <code>https://api.example.com</code>.
+              </CardDescription>
+            </div>
+          </CardHeader>
+        </Card>
+      );
+    }
+
+    if (isDiscoveryLoading) {
+      return (
+        <Card>
+          <CardHeader className="flex-row items-center gap-3 space-y-0">
+            <Loader2 className="size-6 animate-spin text-muted-foreground shrink-0" />
+            <div>
+              <CardTitle className="text-base">Fetching Server Info</CardTitle>
+              <CardDescription>Checking discovery and endpoint data...</CardDescription>
+            </div>
+          </CardHeader>
+        </Card>
+      );
+    }
+
+    if (hasDiscoveryResources) {
+      const previewResources = actualDiscoveredResources.slice(0, 8);
+      const hiddenCount = actualDiscoveredResources.length - previewResources.length;
+
+      return (
+        <Card>
+          <CardHeader className="flex-row items-center gap-3 space-y-0">
+            <Favicon
+              url={preview?.favicon ?? null}
+              className="size-10 rounded-md border bg-background shrink-0"
+            />
+            <div className="min-w-0">
+              <CardTitle className="text-base truncate">
+                {preview?.title ?? urlOrigin ?? 'Discovered Server'}
+              </CardTitle>
+              <CardDescription className="line-clamp-2">
+                {preview?.description ??
+                  `Found ${actualDiscoveredResources.length} resource${actualDiscoveredResources.length === 1 ? '' : 's'} via ${discoverySource === 'dns' ? 'DNS/.well-known' : '.well-known/x402'}.`}
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="border-t pt-4">
+            <ul className="space-y-1 text-xs text-muted-foreground">
+              {previewResources.map(resource => (
+                <li key={resource} className="font-mono truncate">
+                  {toPathLabel(resource)}
+                </li>
+              ))}
+              {hiddenCount > 0 && (
+                <li className="text-muted-foreground/70">+ {hiddenCount} more</li>
+              )}
+            </ul>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    if (isOriginOnly) {
+      return (
+        <Card>
+          <CardHeader className="flex-row items-center gap-3 space-y-0">
+            <XCircle className="size-6 text-red-600 shrink-0" />
+            <div>
+              <CardTitle className="text-base">No Discovery Document Found</CardTitle>
+              <CardDescription>
+                {discoveryError ??
+                  'This origin has no discoverable resource list yet. Enter a full endpoint URL to register manually.'}
+              </CardDescription>
+            </div>
+          </CardHeader>
+        </Card>
+      );
+    }
+
+    return (
+      <Card>
+        <CardHeader className="flex-row items-center gap-3 space-y-0">
+          <Server className="size-6 text-muted-foreground shrink-0" />
+          <div>
+            <CardTitle className="text-base">Manual URL Mode</CardTitle>
+            <CardDescription>
+              No discovery resources found for this origin. You can still register URLs directly.
+            </CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent className="border-t pt-4 text-xs text-muted-foreground space-y-1">
+          {isBatchTestLoading ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="size-3 animate-spin" />
+              Testing endpoint response...
+            </div>
+          ) : currentManualTested ? (
+            <div className="flex items-center gap-2 text-green-700">
+              <CheckCircle2 className="size-3" />
+              Endpoint responds with a valid 402 challenge.
+            </div>
+          ) : currentManualFailed ? (
+            <div className="flex items-center gap-2 text-red-700">
+              <XCircle className="size-3" />
+              {currentManualFailed.error}
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg md:text-xl">
-          {data ? 'Resource Added' : 'Add Resource'}
-        </CardTitle>
-        <CardDescription className="text-sm md:text-base">
-          {data
-            ? 'This resource is now registered on and available throughout x402scan.'
-            : "Know of an x402 resource that isn't listed? Add it here."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {data && !data.error ? (
-          <div className="flex flex-col gap-2 overflow-hidden w-full max-w-full">
-            <div className="border rounded-lg p-4 bg-linear-to-br from-muted/30 to-muted/10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-              <div className="flex items-center gap-4">
-                <Favicon
-                  url={data.resource.origin.favicon}
-                  className="size-10 rounded-lg border bg-background shrink-0"
-                />
-                <div className="flex-1 min-w-0 flex flex-col">
-                  <h2 className="font-bold text-lg truncate">
-                    {data.resource.resource.resource}
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    {data.resource.accepts.find(accept => accept.description)
-                      ?.description ?? 'No description'}
-                  </p>
-                </div>
-              </div>
-              <Link href={`/server/${data.resource.origin.id}`}>
-                <Button variant="outline" size="sm" className="w-full md:w-fit">
-                  View Server Page <ChevronRight className="size-4" />
-                </Button>
-              </Link>
-            </div>
-
-            {/* Registration status alert */}
-            {data.registrationDetails && (
-              <RegistrationAlert
-                registeredCount={
-                  data.registrationDetails.supportedAccepts.length
-                }
-                filteredCount={
-                  data.registrationDetails.unsupportedAccepts.length
-                }
-                totalCount={data.registrationDetails.providedAccepts.length}
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Add Server</CardTitle>
+          <CardDescription>
+            Enter a server URL. If discovery is available, we&apos;ll register everything.
+            If not, you can add endpoint URLs manually.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-1">
+            <Label>Server or Endpoint URL</Label>
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="https://api.example.com"
+                value={url}
+                onChange={event => handleUrlChange(event.target.value)}
               />
-            )}
-
-            {/* Detailed breakdown in accordion */}
-            <Accordion
-              type="multiple"
-              defaultValue={(() => {
-                const hasErrors =
-                  // No accepts registered
-                  data.registrationDetails?.supportedAccepts.length === 0 ||
-                  // No metadata scraped
-                  (!data.registrationDetails?.originMetadata?.title &&
-                    !data.registrationDetails?.originMetadata?.description);
-
-                const hasFilteredAccepts =
-                  data.registrationDetails &&
-                  data.registrationDetails.unsupportedAccepts.length > 0;
-
-                if (hasErrors && hasFilteredAccepts) {
-                  return ['accepts', 'checklist'];
-                } else if (hasErrors) {
-                  return ['checklist'];
-                } else if (hasFilteredAccepts) {
-                  return ['accepts'];
-                }
-                return [];
-              })()}
-              className="w-full"
-            >
-              {/* Registration checklist */}
-              <AccordionItem value="checklist" className="border-b">
-                <AccordionTrigger className="py-3">
-                  <span className="font-semibold">Registration Details</span>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pt-2">
-                  <RegistrationChecklist
-                    methodUsed={data.methodUsed}
-                    hasAccepts={
-                      data.registrationDetails
-                        ? data.registrationDetails.supportedAccepts.length > 0
-                        : false
-                    }
-                    hasOriginMetadata={Boolean(
-                      data.registrationDetails?.originMetadata?.title ??
-                      data.registrationDetails?.originMetadata?.description
-                    )}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-
-              {/* Accepts breakdown section */}
-              {data.registrationDetails &&
-                data.registrationDetails.providedAccepts.length > 0 && (
-                  <AccordionItem value="accepts" className="border-b">
-                    <AccordionTrigger className="py-3">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold">Payment Addresses</span>
-                        <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                          {data.registrationDetails.providedAccepts.length}
-                        </span>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="pb-4 pt-2">
-                      <AcceptsBreakdownTable
-                        accepts={[
-                          ...data.registrationDetails.supportedAccepts.map(
-                            (accept: {
-                              network: string;
-                              payTo: string;
-                              asset: string;
-                            }) => ({
-                              network: accept.network,
-                              payTo: accept.payTo,
-                              asset: accept.asset,
-                              isSupported: true,
-                            })
-                          ),
-                          ...data.registrationDetails.unsupportedAccepts.map(
-                            (accept: {
-                              network: string;
-                              payTo: string;
-                              asset: string;
-                            }) => ({
-                              network: accept.network,
-                              payTo: accept.payTo,
-                              asset: accept.asset,
-                              isSupported: false,
-                            })
-                          ),
-                        ]}
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
-
-              {/* Raw response viewer */}
-              <AccordionItem value="response" className="border-b">
-                <AccordionTrigger className="py-3">
-                  <span className="font-semibold">Raw 402 Response</span>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pt-2">
-                  <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-4 rounded-md max-h-96 overflow-auto">
-                    {JSON.stringify(data.response, null, 2)}
-                  </pre>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {/* Discovery Tip */}
-            <div className="flex items-start gap-3 p-3 bg-muted/50 border rounded-md">
-              <Info className="size-5 text-muted-foreground shrink-0 mt-0.5" />
-              <div className="flex-1 text-sm">
-                <p className="font-medium">Tip: Enable automatic discovery</p>
-                <p className="text-muted-foreground mt-1">
-                  Implement a discovery document at{' '}
-                  <code className="px-1 py-0.5 bg-muted rounded text-xs">
-                    /.well-known/x402
-                  </code>{' '}
-                  to register all your resources at once.{' '}
-                  <a
-                    href="https://github.com/Merit-Systems/x402scan/blob/main/docs/DISCOVERY.md"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:no-underline font-medium"
-                  >
-                    Learn more
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <Label>Resource URL</Label>
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="https://"
-                  value={url}
-                  onChange={e => setUrl(e.target.value)}
-                  className="pr-10"
-                />
-                {isDiscoveryLoading && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <Collapsible>
-              <CollapsibleTrigger asChild>
+              {!hasDiscoveryResources && (
                 <Button
-                  variant="ghost"
-                  className="size-fit p-0 w-full md:size-fit text-xs md:text-xs text-muted-foreground/60 hover:text-muted-foreground"
+                  type="button"
+                  variant="outline"
+                  onClick={handleAddCurrentUrl}
+                  disabled={!canAddCurrentUrl || isRegisteringManual}
+                  className="shrink-0"
                 >
-                  Advanced Configuration
-                  <ChevronDown className="size-3" />
+                  <Plus className="size-4 mr-1" />
+                  Add URL
                 </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="border p-4 rounded-md">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-xs">Headers</Label>
+              )}
+            </div>
+            {manualListError && (
+              <p className="text-xs text-red-600">{manualListError}</p>
+            )}
+          </div>
+
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="ghost"
+                className="size-fit p-0 text-xs text-muted-foreground/70 hover:text-muted-foreground"
+              >
+                Advanced Configuration
+                <ChevronDown className="size-3 ml-1" />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="border p-4 rounded-md mt-2">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs">Headers</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => setHeaders(current => [...current, { name: '', value: '' }])}
+                    className="size-fit px-1"
+                  >
+                    <Plus className="size-3 mr-1" />
+                    Add Header
+                  </Button>
+                </div>
+                {headers.map((header, index) => (
+                  <div key={index} className="flex gap-1 items-center">
+                    <Input
+                      type="text"
+                      placeholder="Name"
+                      value={header.name}
+                      onChange={event =>
+                        setHeaders(current =>
+                          current.map((item, itemIndex) =>
+                            itemIndex === index ? { ...item, name: event.target.value } : item
+                          )
+                        )
+                      }
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Value"
+                      value={header.value}
+                      onChange={event =>
+                        setHeaders(current =>
+                          current.map((item, itemIndex) =>
+                            itemIndex === index ? { ...item, value: event.target.value } : item
+                          )
+                        )
+                      }
+                    />
                     <Button
                       type="button"
                       variant="ghost"
-                      size="xs"
+                      size="icon"
                       onClick={() =>
-                        setHeaders([...headers, { name: '', value: '' }])
+                        setHeaders(current => current.filter((_, itemIndex) => itemIndex !== index))
                       }
-                      className="size-fit px-1 md:size-fit"
+                      className="shrink-0"
                     >
-                      <Plus className="size-3" />
-                      Add Header
+                      <Trash2 className="size-4" />
                     </Button>
                   </div>
-                  {headers.map((header, index) => (
-                    <div key={index} className="flex gap-1 items-center">
-                      <Input
-                        type="text"
-                        placeholder="Name"
-                        value={header.name}
-                        onChange={e =>
-                          setHeaders(
-                            headers.map((h, i) =>
-                              i === index ? { ...h, name: e.target.value } : h
-                            )
-                          )
-                        }
-                      />
-                      <Input
-                        type="text"
-                        placeholder="Value"
-                        value={header.value}
-                        onChange={e =>
-                          setHeaders(
-                            headers.map((h, i) =>
-                              i === index ? { ...h, value: e.target.value } : h
-                            )
-                          )
-                        }
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          setHeaders(headers.filter((_, i) => i !== index))
-                        }
-                        className="shrink-0 size-fit p-0 w-full md:size-fit text-xs md:text-xs text-muted-foreground/60 hover:text-muted-foreground"
-                      >
-                        <X className="size-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-            {data?.success === false && (
-              <div>
-                <div className="flex flex-col gap-1 bg-red-600/10 rounded-md border-red-600/60 border">
-                  <div
-                    className={cn(
-                      'flex justify-between items-center gap-2 p-4',
-                      data.error.type === 'parseErrors' &&
-                        'border-b border-b-red-600/60'
-                    )}
-                  >
-                    <div className={cn('flex items-center gap-2')}>
-                      <AlertTriangle className="size-6 text-red-600" />
-                      <div>
-                        <h2 className="font-semibold">
-                          {data.error.type === 'parseErrors'
-                            ? 'Invalid x402 Response'
-                            : 'No 402 Response'}
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                          {data.error.type === 'parseErrors'
-                            ? 'The route responded with a 402, but the response body was not properly typed.'
-                            : 'The route did not respond with a 402.'}
-                        </p>
-                      </div>
-                    </div>
-                    {data.error.type === 'parseErrors' && (
-                      <Dialog>
-                        <DialogTrigger>
-                          <Button variant="ghost">
-                            <Eye className="size-4" />
-                            See Response
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Invalid x402 Response</DialogTitle>
-                            <DialogDescription>
-                              The route responded with a 402, but the response
-                              body was not properly typed.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-4 rounded-md max-h-48 overflow-auto">
-                            {JSON.stringify(data.data, null, 2)}
-                          </pre>
-                        </DialogContent>
-                      </Dialog>
-                    )}
-                  </div>
-
-                  {data.error.type === 'parseErrors' && (
-                    <ul className="list-disc list-inside text-sm text-muted-foreground p-4">
-                      {data.error.parseErrors.map(warning => (
-                        <li key={warning}>{warning}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+                ))}
               </div>
-            )}
+            </CollapsibleContent>
+          </Collapsible>
 
-            {/* Discovery Results */}
-            <DiscoveryPanel
-              origin={urlOrigin}
-              enteredUrl={
-                !isOriginOnly && !enteredUrlInDiscovery ? url : undefined
-              }
-              isLoading={isDiscoveryLoading}
-              found={discoveryFound}
-              source={discoverySource}
-              resources={actualDiscoveredResources}
-              resourceCount={actualDiscoveredResources.length}
-              discoveryError={discoveryError}
-              invalidResourcesMap={invalidResourcesMap}
-              isRegisteringAll={isRegisteringAll}
-              bulkResult={bulkData}
-              onRegisterAll={handleRegisterAll}
-              onRefresh={refreshDiscovery}
-              showRegisterButton={false}
-              registeredUrls={registeredUrls}
-              ownershipVerified={safeOwnershipVerified}
-              ownershipProofs={safeOwnershipProofs}
-              payToAddresses={payToAddresses}
-              recoveredAddresses={safeRecoveredAddresses}
-              verifiedAddresses={verifiedAddresses}
-              preview={preview}
-              isPreviewLoading={isPreviewLoading}
-            />
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="flex-col gap-2">
-        {data && !data.error ? (
-          <div className="flex gap-2 w-full">
-            <Button variant="outline" onClick={onReset} className="flex-1">
-              Add Another
-            </Button>
-            <Link
-              href={`/server/${data.resource.origin.id}`}
-              className="flex-1"
-            >
-              <Button variant="turbo" className="w-full">
-                View Server
+          {manualUrls.length > 0 && !hasDiscoveryResources && (
+            <div className="border rounded-md p-3 space-y-2">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Manual URLs ({manualUrls.length})
+              </p>
+              <ul className="space-y-1">
+                {manualUrls.map(item => (
+                  <li key={item} className="flex items-center gap-2 text-xs">
+                    <code className="font-mono break-all flex-1">{item}</code>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveManualUrl(item)}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="flex-col items-stretch gap-2">
+          {hasDiscoveryResources ? (
+            <>
+              <Button
+                variant="turbo"
+                disabled={isRegisteringAll || isRegisteringManual}
+                onClick={handleRegisterDiscovered}
+              >
+                {isRegisteringAll ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin mr-2" />
+                    Registering resources...
+                  </>
+                ) : (
+                  `Add Server (${actualDiscoveredResources.length} resources)`
+                )}
               </Button>
-            </Link>
-          </div>
-        ) : bulkData?.success && bulkData.registered > 0 ? (
-          <div className="flex gap-2 w-full">
-            <Button variant="outline" onClick={onReset} className="flex-1">
-              Add Another
-            </Button>
-            {bulkData.originId && (
-              <Link href={`/server/${bulkData.originId}`} className="flex-1">
-                <Button variant="turbo" className="w-full">
-                  View Server
-                </Button>
-              </Link>
-            )}
-          </div>
-        ) : bulkData?.success && bulkData.registered === 0 ? (
-          <div className="flex gap-2 w-full">
-            <Button variant="outline" onClick={resetBulk} className="flex-1">
-              Try Again
-            </Button>
-            <Link href="/" className="flex-1">
-              <Button variant="turbo" className="w-full">
-                Back to Home
-              </Button>
-            </Link>
-          </div>
-        ) : discoveryFound ? (
-          <div className="flex flex-col gap-2 w-full">
-            <Button
-              variant="turbo"
-              disabled={isRegisteringAll}
-              onClick={handleRegisterAll}
-              className="w-full"
-            >
-              {isRegisteringAll ? (
-                <>
-                  <Loader2 className="size-4 animate-spin mr-2" />
-                  Registering...
-                </>
-              ) : (
-                `Register All ${actualDiscoveredResources.length} Resources`
-              )}
-            </Button>
-            {!isOriginOnly && (
               <Button
                 variant="outline"
-                disabled={isPending}
-                onClick={handleRegisterSingle}
-                className="w-full"
+                disabled={!canUseManualMode || isRegisteringAll || isRegisteringManual}
+                onClick={() => {
+                  void handleRegisterCurrentUrlOnly();
+                }}
               >
-                {isPending ? 'Adding...' : 'Register Only This URL'}
+                {isRegisteringManual ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin mr-2" />
+                    {manualProgress
+                      ? `Checking ${manualProgress.current}/${manualProgress.total} resources`
+                      : 'Registering...'}
+                  </>
+                ) : (
+                  'Register This URL Only'
+                )}
               </Button>
-            )}
-          </div>
-        ) : (
-          <Button
-            variant="turbo"
-            disabled={isPending || !isValidUrl}
-            onClick={handleRegisterSingle}
-            className="w-full"
-          >
-            {isPending ? 'Adding...' : 'Add'}
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+            </>
+          ) : (
+            <Button
+              variant="turbo"
+              disabled={manualTargets.length === 0 || isRegisteringManual}
+              onClick={() => {
+                void handleRegisterManual();
+              }}
+            >
+              {isRegisteringManual ? (
+                <>
+                  <Loader2 className="size-4 animate-spin mr-2" />
+                  {manualProgress
+                    ? `Checking ${manualProgress.current}/${manualProgress.total} resources`
+                    : 'Registering...'}
+                </>
+              ) : manualTargets.length > 1 ? (
+                `Register ${manualTargets.length} URLs`
+              ) : (
+                'Register URL'
+              )}
+            </Button>
+          )}
+
+          {shouldShowReset && (
+            <Button variant="outline" onClick={handleResetAll}>
+              Reset
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+
+      {renderProbeCard() ? (
+        <div className="flex flex-col items-center gap-4">
+          <ArrowDown className="size-5 text-muted-foreground" />
+          <div className="w-full">{renderProbeCard()}</div>
+        </div>
+      ) : null}
+
+      {activeBulkResult && activeSummaryOrigin ? (
+        <DiscoveryPanel
+          origin={activeSummaryOrigin}
+          isLoading={false}
+          found={hasDiscoveryResources}
+          source={discoverySource}
+          resources={[]}
+          resourceCount={0}
+          isRegisteringAll={false}
+          bulkResult={activeBulkResult}
+        />
+      ) : null}
+
+      {activeBulkResult?.originId ? (
+        <div className="flex gap-2">
+          <Link href={`/server/${activeBulkResult.originId}`} className="flex-1">
+            <Button variant="outline" className="w-full">
+              View Server
+            </Button>
+          </Link>
+        </div>
+      ) : null}
+
+      {bulkError && (
+        <p className={cn('text-sm text-red-600')}>{bulkError}</p>
+      )}
+
+      {registerMutation.error && (
+        <p className={cn('text-sm text-red-600')}>
+          {registerMutation.error.message}
+        </p>
+      )}
+    </div>
   );
 };
