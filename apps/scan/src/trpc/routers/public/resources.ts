@@ -105,6 +105,18 @@ function isSiwxAuthOnlyChallenge(data: unknown): boolean {
   return 'sign-in-with-x' in extensionsValue;
 }
 
+function isMissingInputSchemaError(err: unknown): boolean {
+  if (!isRecord(err)) return false;
+  if (err.type !== 'parseResponse') return false;
+
+  const parseErrors = err.parseErrors;
+  if (!Array.isArray(parseErrors)) return false;
+
+  return parseErrors.some(
+    message => typeof message === 'string' && message.includes('Missing input schema')
+  );
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
@@ -515,6 +527,17 @@ export const resourcesRouter = createTRPCRouter({
                 // If registration succeeded, return it
                 if (result.success) {
                   return result;
+                }
+
+                if (isMissingInputSchemaError(result.error)) {
+                  return {
+                    success: false as const,
+                    skipped: true as const,
+                    url: resourceUrl,
+                    error:
+                      'Missing input schema (non-invocable endpoint skipped in strict mode)',
+                    status: response.status,
+                  };
                 }
 
                 // Registration failed, capture error but continue trying other methods
