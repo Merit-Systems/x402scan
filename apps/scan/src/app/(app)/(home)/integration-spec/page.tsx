@@ -261,40 +261,32 @@ npx -y @agentcash/discovery <domain> --json`}
             </div>
 
             <div className="space-y-3 md:hidden">
-              <Card className="border-dashed">
-                <CardContent className="pt-4 space-y-2">
-                  <p className="font-mono text-xs break-words">Expected 402, got 404/405</p>
-                  <p className="text-sm text-muted-foreground">Wrong method or wrong path</p>
-                  <p className="text-sm">Fix: Match method/path to your actual handler</p>
-                </CardContent>
-              </Card>
-              <Card className="border-dashed">
-                <CardContent className="pt-4 space-y-2">
-                  <p className="font-mono text-xs break-words">
-                    Accepts must contain at least one valid payment requirement
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Malformed or empty payment requirements
-                  </p>
-                  <p className="text-sm">Fix: Return a valid non-empty x402 accepts set</p>
-                </CardContent>
-              </Card>
-              <Card className="border-dashed">
-                <CardContent className="pt-4 space-y-2">
-                  <p className="font-mono text-xs break-words">Missing input schema</p>
-                  <p className="text-sm text-muted-foreground">
-                    Strict parser cannot infer invocable contract
-                  </p>
-                  <p className="text-sm">Fix: Publish Bazaar/OpenAPI input schema metadata</p>
-                </CardContent>
-              </Card>
-              <Card className="border-dashed">
-                <CardContent className="pt-4 space-y-2">
-                  <p className="font-mono text-xs break-words">Expected 402, got 429</p>
-                  <p className="text-sm text-muted-foreground">Provider-side throttling</p>
-                  <p className="text-sm">Fix: Retry, reduce probe volume, or register URL-only</p>
-                </CardContent>
-              </Card>
+              <div className="border-l-2 border-border pl-3 space-y-2">
+                <p className="font-mono text-xs break-words">Expected 402, got 404/405</p>
+                <p className="text-sm text-muted-foreground">Wrong method or wrong path</p>
+                <p className="text-sm">Fix: Match method/path to your actual handler</p>
+              </div>
+              <div className="border-l-2 border-border pl-3 space-y-2">
+                <p className="font-mono text-xs break-words">
+                  Accepts must contain at least one valid payment requirement
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Malformed or empty payment requirements
+                </p>
+                <p className="text-sm">Fix: Return a valid non-empty x402 accepts set</p>
+              </div>
+              <div className="border-l-2 border-border pl-3 space-y-2">
+                <p className="font-mono text-xs break-words">Missing input schema</p>
+                <p className="text-sm text-muted-foreground">
+                  Strict parser cannot infer invocable contract
+                </p>
+                <p className="text-sm">Fix: Publish Bazaar/OpenAPI input schema metadata</p>
+              </div>
+              <div className="border-l-2 border-border pl-3 space-y-2">
+                <p className="font-mono text-xs break-words">Expected 402, got 429</p>
+                <p className="text-sm text-muted-foreground">Provider-side throttling</p>
+                <p className="text-sm">Fix: Retry, reduce probe volume, or register URL-only</p>
+              </div>
             </div>
           </CardContent>
         </Card>
