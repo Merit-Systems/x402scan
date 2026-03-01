@@ -117,7 +117,7 @@ npx -y @agentcash/discovery <domain> --json`}
             x402scan resolves in this order and stops at the first valid source.
           </p>
           <Card>
-            <CardContent className="pt-6">
+            <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -177,7 +177,7 @@ npx -y @agentcash/discovery <domain> --json`}
             These are the most frequent errors seen during registration.
           </p>
           <Card>
-            <CardContent className="pt-6">
+            <CardContent>
               <div className="hidden md:block">
                 <Table>
                   <TableHeader>
