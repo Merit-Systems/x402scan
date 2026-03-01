@@ -24,24 +24,30 @@ export const metadata: Metadata = {
 const endpointExample = `curl -i -X POST https://yourdomain.com/api/route
 curl -i -X GET https://yourdomain.com/api/route`;
 
-const agentChecklist = `Use this checklist to validate discovery for a provider:
+const agentPrompt = `You are implementing discovery for <domain>.
 
-1) Progressive audit
-npx -y @agentcash/discovery <domain>
+Goal:
+- Make discovery pass end-to-end using OpenAPI-first.
 
-2) Full verbose matrix
-npx -y @agentcash/discovery <domain> -v
+Philosophy:
+- OpenAPI is the canonical machine-readable contract.
+- /.well-known/x402 and DNS _x402 are compatibility layers.
+- Runtime 402 challenge behavior is authoritative over static metadata.
+- Keep implementation minimal and deterministic.
 
-3) JSON output for CI/debug
-npx -y @agentcash/discovery <domain> --json
+Tasks:
+1) Run a discovery audit and identify failures.
+2) Implement/fix discovery + 402 behavior.
+3) Re-run validation until pass criteria are met.
 
-4) Local dev server audit
-npx -y @agentcash/discovery http://localhost:3000 -v
+Validation:
+- npx -y @agentcash/discovery <domain> --json
+- npx -y @agentcash/discovery <domain> -v
 
-Interpretation:
-- Prefer OpenAPI integration first.
-- Keep /.well-known/x402 and DNS _x402 only for compatibility.
-- Runtime 402 challenge is authoritative when static metadata disagrees.`;
+Success criteria:
+- Discovery finds resources.
+- OpenAPI is selected when present.
+- No critical parser/probe errors remain.`;
 
 function CodeBlock({ code }: { code: string }) {
   return (
@@ -69,9 +75,9 @@ export default function DiscoverySpecPage() {
         }
       />
       <Body className="gap-10">
-        <section className="rounded-md bg-primary/5 px-4 py-3 md:px-5 md:py-4">
+        <section className="space-y-3">
           <h2 className="text-lg font-semibold md:text-xl">Why This Spec Exists</h2>
-          <p className="mt-1 text-sm text-muted-foreground md:text-base">
+          <p className="text-sm text-muted-foreground md:text-base">
             Most registration failures come from ambiguous discovery and incomplete 402 metadata.
             This page defines one deterministic path so providers and x402scan stay in sync.
           </p>
@@ -91,16 +97,13 @@ export default function DiscoverySpecPage() {
             <div className="space-y-1">
               <h2 className="text-xl font-semibold">Copy for Agents</h2>
               <p className="text-sm text-muted-foreground md:text-base">
-                A minimal checklist an agent can run to validate both local and remote integration.
+                Paste this directly into your coding agent. It should handle discovery implementation
+                and validation end-to-end.
               </p>
             </div>
-            <CopyForAgentsButton text={agentChecklist} />
+            <CopyForAgentsButton text={agentPrompt} />
           </div>
-          <CodeBlock
-            code={`npx -y @agentcash/discovery <domain>
-npx -y @agentcash/discovery <domain> -v
-npx -y @agentcash/discovery <domain> --json`}
-          />
+          <CodeBlock code={agentPrompt} />
         </section>
 
         <section className="space-y-3">
@@ -117,7 +120,7 @@ npx -y @agentcash/discovery <domain> --json`}
             x402scan resolves in this order and stops at the first valid source.
           </p>
           <Card>
-            <CardContent>
+            <CardContent className="px-0 pb-0">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -177,7 +180,7 @@ npx -y @agentcash/discovery <domain> --json`}
             These are the most frequent errors seen during registration.
           </p>
           <Card>
-            <CardContent>
+            <CardContent className="px-0 pb-0">
               <div className="hidden md:block">
                 <Table>
                   <TableHeader>
@@ -236,31 +239,35 @@ npx -y @agentcash/discovery <domain> --json`}
                 </Table>
               </div>
 
-              <div className="space-y-3 md:hidden">
-                <div className="border-l-2 border-border pl-3 space-y-2">
+              <div className="divide-y md:hidden">
+                <div className="space-y-2 py-3 first:pt-0">
                   <p className="font-mono text-xs break-words">Expected 402, got 404/405</p>
-                  <p className="text-sm text-muted-foreground">Wrong method or wrong path</p>
+                  <p className="text-sm text-muted-foreground">
+                    Cause: Wrong method or wrong path
+                  </p>
                   <p className="text-sm">Fix: Match method/path to your actual handler</p>
                 </div>
-                <div className="border-l-2 border-border pl-3 space-y-2">
+                <div className="space-y-2 py-3">
                   <p className="font-mono text-xs break-words">
                     Accepts must contain at least one valid payment requirement
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Malformed or empty payment requirements
+                    Cause: Malformed or empty payment requirements
                   </p>
                   <p className="text-sm">Fix: Return a valid non-empty x402 accepts set</p>
                 </div>
-                <div className="border-l-2 border-border pl-3 space-y-2">
+                <div className="space-y-2 py-3">
                   <p className="font-mono text-xs break-words">Missing input schema</p>
                   <p className="text-sm text-muted-foreground">
-                    Strict parser cannot infer invocable contract
+                    Cause: Strict parser cannot infer invocable contract
                   </p>
                   <p className="text-sm">Fix: Publish Bazaar/OpenAPI input schema metadata</p>
                 </div>
-                <div className="border-l-2 border-border pl-3 space-y-2">
+                <div className="space-y-2 py-3 last:pb-0">
                   <p className="font-mono text-xs break-words">Expected 402, got 429</p>
-                  <p className="text-sm text-muted-foreground">Provider-side throttling</p>
+                  <p className="text-sm text-muted-foreground">
+                    Cause: Provider-side throttling
+                  </p>
                   <p className="text-sm">Fix: Retry, reduce probe volume, or register URL-only</p>
                 </div>
               </div>

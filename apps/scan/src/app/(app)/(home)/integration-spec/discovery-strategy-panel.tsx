@@ -105,25 +105,28 @@ export function DiscoveryStrategyPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid items-stretch gap-3 md:grid-cols-3">
         {strategies.map(item => {
           const active = item.key === selected;
           return (
             <button
               key={item.key}
               type="button"
+              aria-pressed={active}
               onClick={() => setSelected(item.key)}
               className={cn(
-                'rounded-md text-left p-4 transition-colors',
-                'bg-muted/40 hover:bg-muted/70',
-                active && 'bg-primary/10'
+                'flex h-full flex-col rounded-md border p-4 text-left transition-colors',
+                active
+                  ? 'border-primary/40 bg-primary/5'
+                  : 'border-border bg-background hover:bg-muted/30'
               )}
             >
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-base font-semibold">{item.title}</p>
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-base font-semibold leading-tight">{item.title}</p>
                 <Badge
                   variant={item.badgeVariant}
                   className={cn(
+                    'shrink-0',
                     item.badge === 'Recommended' &&
                       'bg-primary/15 text-primary border-primary/40'
                   )}
@@ -131,26 +134,17 @@ export function DiscoveryStrategyPanel() {
                   {item.badge}
                 </Badge>
               </div>
-              <p className="mt-2 text-sm text-muted-foreground">{item.subtitle}</p>
+              <p className="mt-2 min-h-10 text-sm leading-snug text-muted-foreground">
+                {item.subtitle}
+              </p>
             </button>
           );
         })}
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 border-t border-border/70 pt-4">
         <div className="space-y-1">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            {strategy.title} Implementation
-            <Badge
-              variant={strategy.badgeVariant}
-              className={cn(
-                strategy.badge === 'Recommended' &&
-                  'bg-primary/15 text-primary border-primary/40'
-              )}
-            >
-              {strategy.badge}
-            </Badge>
-          </h3>
+          <h3 className="text-lg font-semibold">{strategy.title} Implementation</h3>
           <p className="text-sm text-muted-foreground">{strategy.note}</p>
         </div>
         <p className="text-sm text-muted-foreground">
