@@ -101,12 +101,7 @@ export const TestEndpointForm = () => {
                     /.well-known/x402
                   </code>{' '}
                   to enable automatic resource discovery.{' '}
-                  <a
-                    href="https://github.com/Merit-Systems/x402scan/blob/main/docs/DISCOVERY.md"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:no-underline font-medium"
-                  >
+                  <a href="/discovery" className="underline hover:no-underline font-medium">
                     Learn more
                   </a>
                 </p>

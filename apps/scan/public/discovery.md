@@ -1,0 +1,221 @@
+# x402scan Discovery & Registration Spec
+
+This doc defines how `x402scan` discovers and registers resources today.
+
+If you want your server to be picked up reliably, implement one of the paths below.
+
+## TL;DR
+
+There are **three supported integration levels**:
+
+1. **Endpoint-only x402 (manual URL registration)**
+2. **`/.well-known/x402` fan-out (legacy compatibility, still fully supported)**
+3. **OpenAPI-first discovery (recommended, future-proof)**
+
+`x402scan` discovery precedence is:
+
+1. OpenAPI (`/openapi.json`, `/.well-known/openapi.json`)
+2. `/.well-known/x402`
+3. DNS `_x402` TXT pointer
+
+If discovery is unavailable, users can still register endpoints one-by-one.
+
+---
+
+## A) Endpoint-Only x402 (Manual URL Registration)
+
+Use this when you only have endpoint URLs and no discovery document yet.
+
+### Required route behavior
+
+For a route to register cleanly in `x402scan`, probing that route must return `402` with a valid x402 challenge.
+
+Accepted challenge transport:
+- `Payment-Required` header (x402 v2), or
+- JSON body (legacy compatibility)
+
+For payable resource indexing in `x402scan`, the challenge should include:
+- non-empty `accepts`
+- Bazaar-style input schema (`extensions.bazaar.info` + schema-derived input)
+
+### Important compatibility notes
+
+- `402` + `accepts: []` + `extensions["sign-in-with-x"]` is treated as **SIWX auth-only** and is **skipped** from payable indexing.
+- Routes missing input schema are treated as **strict non-invocable** and are **skipped** during bulk registration.
+
+### Quick check
+
+```bash
+curl -i -X POST https://api.example.com/your/route
+```
+
+Expected: `HTTP 402` and a parseable x402 challenge.
+
+---
+
+## B) `/.well-known/x402` Fan-Out (Legacy Compat)
+
+Use this to support one-click “Add Server” by returning all resource URLs.
+
+Endpoint:
+
+```text
+GET https://yourdomain.com/.well-known/x402
+```
+
+### Minimal payload
+
+```json
+{
+  "version": 1,
+  "resources": [
+    "https://yourdomain.com/api/route-1",
+    "https://yourdomain.com/api/route-2"
+  ]
+}
+```
+
+### Optional fields
+
+```json
+{
+  "version": 1,
+  "resources": ["https://yourdomain.com/api/route-1"],
+  "ownershipProofs": ["0x..."],
+  "instructions": "Optional legacy human guidance"
+}
+```
+
+### DNS pointer (optional)
+
+You can also expose a DNS TXT pointer for compatibility:
+
+```text
+_x402.yourdomain.com TXT "v=x4021;url=https://yourdomain.com/.well-known/x402"
+```
+
+Notes:
+- DNS is a compatibility path, not the primary recommended approach.
+- `/.well-known/x402` is still supported, but OpenAPI is preferred going forward.
+
+---
+
+## C) OpenAPI-First Discovery (Recommended)
+
+This is the canonical long-term path.
+
+Supported URLs:
+- `https://yourdomain.com/openapi.json`
+- `https://yourdomain.com/.well-known/openapi.json`
+
+### Required top-level OpenAPI fields
+
+- `openapi` (string)
+- `info.title` (string)
+- `info.version` (string)
+- `paths` (object)
+
+### Paid operation requirements
+
+For each paid operation:
+- Declare `x-payment-info`
+- Include a `402` response in `responses`
+- Include `x-payment-info.protocols` (for example `"x402"`)
+- Include valid pricing metadata:
+  - `pricingMode: "fixed"` + `price`
+  - or `pricingMode: "range"` + `minPrice` + `maxPrice`
+  - or `pricingMode: "quote"`
+
+### Auth declaration
+
+Use OpenAPI `security` + `components.securitySchemes`.
+
+Legacy `x-agentcash-auth.mode` is accepted for compatibility, but not recommended for new integrations.
+
+### Optional discovery metadata
+
+Use top-level `x-discovery` for metadata:
+
+```json
+{
+  "x-discovery": {
+    "ownershipProofs": ["0x..."],
+    "llmsTxtUrl": "https://yourdomain.com/llms.txt"
+  }
+}
+```
+
+---
+
+## `llms.txt` Guidance
+
+`llms.txt` is optional and unstructured. Use it for concise cross-route human/agent guidance.
+
+Machine-parseable discovery metadata should stay in OpenAPI.
+
+---
+
+## Ownership Proofs
+
+Ownership proofs verify control of pay-to addresses.
+
+Current accepted locations:
+- OpenAPI: `x-discovery.ownershipProofs` (preferred)
+- Legacy compat: `/.well-known/x402` -> `ownershipProofs`
+
+---
+
+## How x402scan Registers
+
+When a user clicks **Add Server**:
+
+1. Run discovery using the precedence above.
+2. Probe each discovered URL with method-aware fallback.
+3. Parse x402 challenge.
+4. Register valid routes.
+5. Mark non-conformant routes as failed/skipped with explicit reasons.
+
+When a user clicks **Register This URL Only**:
+
+- Skip fan-out and attempt registration for only that endpoint.
+- Useful for rate-limited servers (`429`) or partial compatibility rollouts.
+
+---
+
+## Common Failure Reasons
+
+- `Expected 402, got 404/405/429`
+- `parseResponse: Accepts must contain at least one valid payment requirement`
+- `parseResponse: Missing input schema`
+- discovery fetch/parse failures for OpenAPI or `/.well-known/x402`
+
+`429` responses are upstream provider rate limits. They are not generated by x402scan.
+
+---
+
+## Validation Commands
+
+### Full discovery audit
+
+```bash
+npx -y @agentcash/discovery yourdomain.com -v
+```
+
+### Single endpoint probe
+
+```bash
+curl -i -X POST https://yourdomain.com/api/route
+curl -i -X GET https://yourdomain.com/api/route
+```
+
+Use the method that should normally produce a `402` challenge.
+
+---
+
+## Recommended Rollout Order
+
+1. Make every route return valid x402 challenges (`402`, parseable, non-empty `accepts`).
+2. Add `/.well-known/x402` for immediate server fan-out support.
+3. Add OpenAPI discovery + `x-payment-info` + security declarations.
+4. Keep legacy compat paths during migration, then phase them out when safe.
+
