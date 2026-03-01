@@ -1,41 +1,169 @@
-import {
-  parseDiscoveryDocument,
-  resolveResourceWithMethod,
-} from '@/lib/x402/discovery-schema';
+import dns from 'node:dns';
+import { discoverDetailed } from '@agentcash/discovery';
+
 import { getOriginFromUrl } from '@/lib/url';
 import { isLocalUrl } from '@/lib/url-helpers';
 
-import { lookupX402TxtRecord } from './dns-lookup';
-
 import type {
   DiscoveredResource,
+  DiscoverySource,
   X402DiscoveryResult,
 } from '@/types/discovery';
+import type {
+  DiscoverDetailedResult,
+  DiscoveryStage,
+  DiscoveryWarning,
+  RawSources,
+} from '@agentcash/discovery';
 
 const FETCH_TIMEOUT_MS = 10000;
+const VALID_METHODS = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
+
+function isDiscoveredMethod(
+  method: string
+): method is NonNullable<DiscoveredResource['method']> {
+  return VALID_METHODS.has(method);
+}
+
+function mapStageToSource(
+  stage: DiscoveryStage | undefined
+): DiscoverySource | undefined {
+  if (!stage) return undefined;
+  if (stage === 'openapi' || stage === 'override') return 'openapi';
+  if (stage === 'well-known/x402') return 'well-known';
+  if (stage === 'dns/_x402') return 'dns';
+  if (stage === 'probe') return 'probe';
+  if (stage === 'interop/mpp') return 'interop-mpp';
+  return undefined;
+}
+
+function resolveErrorMessage(warnings: DiscoveryWarning[]): string {
+  const relevant = warnings.filter(
+    w => w.severity === 'error' || w.severity === 'warn'
+  );
+  if (relevant.length === 0) return 'No discovery document found';
+  return relevant
+    .slice(0, 3)
+    .map(w => w.message)
+    .join('; ');
+}
+
+function toDiscoveredResources(
+  result: DiscoverDetailedResult
+): DiscoveredResource[] {
+  const deduped = new Map<string, DiscoveredResource>();
+
+  for (const resource of result.resources) {
+    let normalized: string;
+    try {
+      normalized = new URL(resource.path, resource.origin).toString();
+    } catch {
+      continue;
+    }
+    const method = isDiscoveredMethod(resource.method)
+      ? resource.method
+      : undefined;
+
+    if (!deduped.has(normalized)) {
+      deduped.set(normalized, {
+        url: normalized,
+        ...(method ? { method } : {}),
+      });
+    }
+  }
+
+  return [...deduped.values()];
+}
+
+function collectDiscoveryUrls(result: DiscoverDetailedResult): string[] {
+  const urls = new Set<string>();
+
+  for (const trace of result.trace) {
+    if (trace.links?.openapiUrl) urls.add(trace.links.openapiUrl);
+    if (trace.links?.wellKnownUrl) urls.add(trace.links.wellKnownUrl);
+    if (trace.links?.discoveryUrl) urls.add(trace.links.discoveryUrl);
+  }
+
+  for (const resource of result.resources) {
+    if (resource.links?.openapiUrl) urls.add(resource.links.openapiUrl);
+    if (resource.links?.wellKnownUrl) urls.add(resource.links.wellKnownUrl);
+    if (resource.links?.discoveryUrl) urls.add(resource.links.discoveryUrl);
+  }
+
+  return [...urls];
+}
+
+function getOwnershipProofsFromOpenApi(
+  rawSources: RawSources | undefined
+): string[] {
+  if (!rawSources?.openapi || typeof rawSources.openapi !== 'object') return [];
+
+  const document = rawSources.openapi as Record<string, unknown>;
+  const discovery = document['x-discovery'];
+  if (discovery && typeof discovery === 'object' && !Array.isArray(discovery)) {
+    const proofs = (discovery as Record<string, unknown>).ownershipProofs;
+    if (Array.isArray(proofs)) {
+      return proofs.filter(
+        (entry): entry is string => typeof entry === 'string'
+      );
+    }
+  }
+
+  const legacy = document['x-agentcash-provenance'];
+  if (legacy && typeof legacy === 'object' && !Array.isArray(legacy)) {
+    const proofs = (legacy as Record<string, unknown>).ownershipProofs;
+    if (Array.isArray(proofs)) {
+      return proofs.filter(
+        (entry): entry is string => typeof entry === 'string'
+      );
+    }
+  }
+
+  return [];
+}
+
+function getOwnershipProofsFromWellKnown(
+  rawSources: RawSources | undefined
+): string[] {
+  if (!Array.isArray(rawSources?.wellKnownX402)) return [];
+
+  const proofs = new Set<string>();
+  for (const payload of rawSources.wellKnownX402) {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload))
+      continue;
+    const ownershipProofs = (payload as Record<string, unknown>)
+      .ownershipProofs;
+    if (!Array.isArray(ownershipProofs)) continue;
+    for (const proof of ownershipProofs) {
+      if (typeof proof === 'string') proofs.add(proof);
+    }
+  }
+
+  return [...proofs];
+}
+
+function collectOwnershipProofs(rawSources: RawSources | undefined): string[] {
+  const all = new Set<string>([
+    ...getOwnershipProofsFromOpenApi(rawSources),
+    ...getOwnershipProofsFromWellKnown(rawSources),
+  ]);
+  return [...all];
+}
 
 /**
- * Fetch x402 discovery document(s) for an origin.
+ * Fetch discovery data for an origin using @agentcash/discovery.
  *
- * Discovery order:
- * 1. Check DNS TXT records at _x402.{hostname}
- * 2. If DNS records found, fetch documents from all URLs
- * 3. Fall back to {origin}/.well-known/x402 if no DNS records
- *
- * @param originOrUrl - Origin URL or full URL (origin will be extracted)
- * @param bustCache - If true, adds cache-busting parameter to bypass HTTP cache
- * @returns Merged list of discovered resource URLs
+ * This is the canonical x402scan discovery path:
+ * openapi.json -> /.well-known/x402 (compat) -> DNS _x402 (compat).
  */
 export async function fetchDiscoveryDocument(
   originOrUrl: string,
   bustCache = false
 ): Promise<X402DiscoveryResult> {
-  // Extract origin from URL if full URL provided
   const origin = originOrUrl.includes('://')
     ? getOriginFromUrl(originOrUrl)
     : `https://${originOrUrl}`;
 
-  // Skip local URLs in production
   if (isLocalUrl(origin)) {
     return {
       success: false,
@@ -45,175 +173,60 @@ export async function fetchDiscoveryDocument(
     };
   }
 
-  const hostname = new URL(origin).hostname;
-
-  // Step 1: Check DNS TXT records first
-  const dnsResult = await lookupX402TxtRecord(hostname);
-
-  if (dnsResult.found && dnsResult.records.length > 0) {
-    const discoveryUrls = dnsResult.records.map(r => r.url);
-    const allResources: DiscoveredResource[] = [];
-    let instructions: string | undefined;
-    let ownershipProofs: string[] | undefined;
-    const errors: string[] = [];
-
-    // Fetch documents from all DNS-specified URLs
-    // Pass the origin so paths can be resolved relative to it
-    const results = await Promise.allSettled(
-      discoveryUrls.map(url => fetchAndParseDocument(url, origin, bustCache))
-    );
-
-    for (const [i, result] of results.entries()) {
-      if (result.status === 'fulfilled' && result.value.success) {
-        allResources.push(...result.value.resources);
-        // Use first instructions found
-        if (!instructions && result.value.instructions) {
-          instructions = result.value.instructions;
-        }
-        // Merge ownership proofs from all documents
-        if (result.value.ownershipProofs?.length) {
-          ownershipProofs = [
-            ...(ownershipProofs ?? []),
-            ...result.value.ownershipProofs,
-          ];
-        }
-      } else if (result.status === 'fulfilled' && !result.value.success) {
-        errors.push(`${discoveryUrls[i]}: ${result.value.error}`);
-      } else if (result.status === 'rejected') {
-        errors.push(`${discoveryUrls[i]}: ${String(result.reason)}`);
+  const txtResolver = async (fqdn: string): Promise<string[]> => {
+    try {
+      const records = await dns.promises.resolveTxt(fqdn);
+      return records.map(parts => parts.join(''));
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code === 'ENODATA' || code === 'ENOTFOUND') {
+        return [];
       }
+      throw error;
     }
+  };
 
-    // Deduplicate resources by URL
-    const seenUrls = new Set<string>();
-    const uniqueResources = allResources.filter(r => {
-      if (seenUrls.has(r.url)) return false;
-      seenUrls.add(r.url);
-      return true;
-    });
+  const discovered = await discoverDetailed({
+    target: origin,
+    compatMode: 'on',
+    rawView: 'full',
+    txtResolver,
+    fetcher: async (input, init) => {
+      const url =
+        input instanceof URL
+          ? new URL(input.toString())
+          : typeof input === 'string'
+            ? new URL(input)
+            : new URL(input.url);
+      const method = (init?.method ?? 'GET').toUpperCase();
 
-    if (uniqueResources.length > 0) {
-      return {
-        success: true,
-        source: 'dns',
-        resources: uniqueResources,
-        discoveryUrls,
-        instructions,
-        ownershipProofs,
-      };
-    }
+      if (bustCache && method === 'GET') {
+        url.searchParams.set('_t', Date.now().toString());
+      }
 
-    // DNS records existed but no valid resources found, fall through to well-known
-    if (errors.length > 0) {
-      console.warn('DNS discovery errors:', errors);
-    }
-  }
+      return fetch(url, {
+        ...init,
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        cache: bustCache ? 'no-store' : init?.cache,
+      });
+    },
+  });
 
-  // Step 2: Fall back to /.well-known/x402
-  const wellKnownUrl = `${origin}/.well-known/x402`;
-  const wellKnownResult = await fetchAndParseDocument(
-    wellKnownUrl,
-    origin,
-    bustCache
-  );
-
-  if (wellKnownResult.success) {
+  const resources = toDiscoveredResources(discovered);
+  if (resources.length === 0) {
     return {
-      success: true,
-      source: 'well-known',
-      resources: wellKnownResult.resources,
-      discoveryUrls: [wellKnownUrl],
-      instructions: wellKnownResult.instructions,
-      ownershipProofs: wellKnownResult.ownershipProofs,
+      success: false,
+      resources: [],
+      discoveryUrls: collectDiscoveryUrls(discovered),
+      error: resolveErrorMessage(discovered.warnings),
     };
   }
 
   return {
-    success: false,
-    resources: [],
-    discoveryUrls: [],
-    error: wellKnownResult.error ?? 'No discovery document found',
+    success: true,
+    source: mapStageToSource(discovered.selectedStage),
+    resources,
+    discoveryUrls: collectDiscoveryUrls(discovered),
+    ownershipProofs: collectOwnershipProofs(discovered.rawSources),
   };
-}
-
-/**
- * Fetch and parse a single discovery document.
- * @param url - URL to fetch the discovery document from
- * @param resolveOrigin - Origin to resolve relative paths against
- * @param bustCache - If true, adds cache-busting parameter to bypass HTTP cache
- */
-async function fetchAndParseDocument(
-  url: string,
-  resolveOrigin: string,
-  bustCache = false
-): Promise<
-  | {
-      success: true;
-      resources: DiscoveredResource[];
-      instructions?: string;
-      ownershipProofs?: string[];
-    }
-  | { success: false; error: string }
-> {
-  try {
-    // Add cache-busting parameter if requested
-    let fetchUrl = url;
-    if (bustCache) {
-      const urlObj = new URL(url);
-      urlObj.searchParams.set('_t', Date.now().toString());
-      fetchUrl = urlObj.toString();
-    }
-
-    const response = await fetch(fetchUrl, {
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      // Also use cache: 'no-store' when busting cache
-      cache: bustCache ? 'no-store' : 'default',
-    });
-
-    if (!response.ok) {
-      return { success: false, error: `HTTP ${response.status}` };
-    }
-
-    const data: unknown = await response.json();
-    const parsed = parseDiscoveryDocument(data);
-
-    if (!parsed.success) {
-      return { success: false, error: parsed.error };
-    }
-
-    // Get set of invalid resource strings for quick lookup
-    const invalidSet = new Set(parsed.invalidResources ?? []);
-
-    // Resolve paths relative to the origin being checked (not the discovery document URL)
-    // Also extract method if specified in the resource string
-    // Mark resources as invalid if they failed validation
-    const resolvedResources = parsed.data.resources.map(resource => {
-      const resolved = resolveResourceWithMethod(resource, resolveOrigin);
-
-      // If this resource was in the invalid list, mark it
-      if (invalidSet.has(resource)) {
-        return {
-          ...resolved,
-          invalid: true,
-          invalidReason:
-            'Resource format is invalid (must be a URL, path starting with /, or prefixed with HTTP method)',
-        };
-      }
-
-      return resolved;
-    });
-
-    return {
-      success: true,
-      resources: resolvedResources,
-      instructions: parsed.data.instructions,
-      ownershipProofs: parsed.data.ownershipProofs,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Fetch failed',
-    };
-  }
 }

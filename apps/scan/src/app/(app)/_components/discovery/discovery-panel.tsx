@@ -38,6 +38,7 @@ import type {
   FailedResource as FailedResourceType,
   TestedResource as TestedResourceType,
 } from '@/types/batch-test';
+import type { DiscoverySource } from '@/types/discovery';
 import type { Methods } from '@/types/x402';
 import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 
@@ -63,8 +64,8 @@ export interface DiscoveryPanelProps {
   isLoading: boolean;
   /** Whether discovery document was found */
   found: boolean;
-  /** Discovery source: 'dns' or 'well-known' */
-  source?: 'dns' | 'well-known';
+  /** Discovery source from discovery runtime */
+  source?: DiscoverySource;
   /** List of discovered resource URLs */
   resources: string[];
   /** Total count of resources */
@@ -81,8 +82,10 @@ export interface DiscoveryPanelProps {
     registered: number;
     total: number;
     failed: number;
+    skipped?: number;
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
+    skippedDetails?: { url: string; error: string; status?: number }[];
   } | null;
   /** Called when "Register All" is clicked (required in register mode) */
   onRegisterAll?: () => void;
@@ -157,8 +160,17 @@ export function DiscoveryPanel({
 
   // Show bulk registration result (only in register mode)
   if (!isTestMode && bulkResult?.success) {
+    const skippedCount = bulkResult.skipped ?? 0;
+    const skippedDetails = bulkResult.skippedDetails ?? [];
+    const siwxSkippedCount = skippedDetails.filter(item =>
+      item.error.includes('SIWX')
+    ).length;
+    const missingSchemaSkippedCount = skippedDetails.filter(item =>
+      item.error.includes('Missing input schema')
+    ).length;
+
     // Show error state if no resources were registered
-    if (bulkResult.registered === 0) {
+    if (bulkResult.registered === 0 && bulkResult.failed > 0) {
       return (
         <div className="space-y-3">
           <div className="flex items-start gap-3 p-4 border rounded-md bg-red-500/10 border-red-500/30">
@@ -176,7 +188,7 @@ export function DiscoveryPanel({
           <details className="border rounded-md group">
             <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
               <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              More Info ({bulkResult.failedDetails?.length ?? bulkResult.total}{' '}
+              More Info ({bulkResult.failedDetails?.length ?? bulkResult.failed}{' '}
               failed resources)
             </summary>
             <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
@@ -233,6 +245,9 @@ export function DiscoveryPanel({
             <p className="text-sm text-muted-foreground">
               Successfully registered {bulkResult.registered} of{' '}
               {bulkResult.total} resources
+              {skippedCount > 0 && (
+                <span className="text-amber-700"> ({skippedCount} skipped)</span>
+              )}
               {bulkResult.failed > 0 && (
                 <span className="text-red-600">
                   {' '}
@@ -242,6 +257,38 @@ export function DiscoveryPanel({
             </p>
           </div>
         </div>
+
+        {/* Skipped resources notice */}
+        {skippedCount > 0 && (
+          <div className="flex items-start gap-3 p-4 border rounded-md bg-amber-600/10 border-amber-600/30">
+            <AlertCircle className="size-5 text-amber-700 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-medium text-amber-800">
+                {skippedCount} resource{skippedCount === 1 ? '' : 's'} skipped
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Some resources were skipped by compatibility rules in strict
+                registration mode.
+              </p>
+              <ul className="text-xs text-muted-foreground mt-2 space-y-1">
+                {siwxSkippedCount > 0 && (
+                  <li>
+                    - {siwxSkippedCount} SIWX auth-only endpoint
+                    {siwxSkippedCount === 1 ? '' : 's'} (no payment
+                    requirements)
+                  </li>
+                )}
+                {missingSchemaSkippedCount > 0 && (
+                  <li>
+                    - {missingSchemaSkippedCount} endpoint
+                    {missingSchemaSkippedCount === 1 ? '' : 's'} missing input
+                    schema
+                  </li>
+                )}
+              </ul>
+            </div>
+          </div>
+        )}
 
         {/* Deprecation notice */}
         {bulkResult.deprecated !== undefined && bulkResult.deprecated > 0 && (
@@ -296,6 +343,46 @@ export function DiscoveryPanel({
                           Status:
                         </span>
                         <span className="font-mono">{failed.status}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
+
+        {skippedCount > 0 && skippedDetails.length > 0 && (
+            <details className="border rounded-md group">
+              <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+                <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+                Skipped Details ({skippedDetails.length} resources)
+              </summary>
+              <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
+                {skippedDetails.map((skipped, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">
+                        URL:
+                      </span>
+                      <span className="font-mono break-all">{skipped.url}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">
+                        Reason:
+                      </span>
+                      <span className="text-amber-700 wrap-break-word">
+                        {skipped.error}
+                      </span>
+                    </div>
+                    {skipped.status && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-muted-foreground shrink-0">
+                          Status:
+                        </span>
+                        <span className="font-mono">{skipped.status}</span>
                       </div>
                     )}
                   </div>
@@ -966,7 +1053,7 @@ function RegisterModeResourceList({
 }: {
   enteredUrl?: string;
   discoveredResources: string[];
-  source?: 'dns' | 'well-known';
+  source?: DiscoverySource;
   registeredUrls: string[];
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
 }) {
@@ -975,7 +1062,7 @@ function RegisterModeResourceList({
   // Build unified list: entered URL first (if exists), then discovered
   const allResources: {
     url: string;
-    source: 'entered' | 'dns' | 'well-known';
+    source: 'entered' | DiscoverySource;
     isRegistered: boolean;
   }[] = [];
 
@@ -1033,9 +1120,15 @@ function RegisterModeResourceList({
                   >
                     {resourceSource === 'entered'
                       ? 'Manually Entered'
-                      : resourceSource === 'dns'
-                        ? '_x402 DNS TXT'
-                        : '/.well-known/x402'}
+                      : resourceSource === 'openapi'
+                        ? 'OpenAPI'
+                        : resourceSource === 'dns'
+                          ? '_x402 DNS TXT'
+                          : resourceSource === 'probe'
+                            ? 'Runtime Probe'
+                            : resourceSource === 'interop-mpp'
+                              ? '/.well-known/mpp'
+                              : '/.well-known/x402'}
                   </span>
                 </td>
                 <td className="px-3 py-2">

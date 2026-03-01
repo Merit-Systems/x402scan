@@ -1,12 +1,12 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import z from 'zod';
 
 import { api } from '@/trpc/client';
 
 import type { FailedResource, TestedResource } from '@/types/batch-test';
-import type { DiscoveredResource } from '@/types/discovery';
+import type { DiscoveredResource, DiscoverySource } from '@/types/discovery';
 import type { OriginPreview } from './discovery-panel';
 import { useBatchTest } from './use-batch-test';
 import { useOwnership } from './use-ownership';
@@ -59,7 +59,7 @@ export interface UseDiscoveryReturn {
   discoveryQuery: unknown;
   isDiscoveryLoading: boolean;
   discoveryFound: boolean;
-  discoverySource?: 'dns' | 'well-known';
+  discoverySource?: DiscoverySource;
   discoveryResources: string[];
   actualDiscoveredResources: string[];
   discoveryResourceCount: number;
@@ -95,10 +95,13 @@ export interface UseDiscoveryReturn {
     registered: number;
     total: number;
     failed: number;
+    skipped?: number;
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
+    skippedDetails?: { url: string; error: string; status?: number }[];
     originId?: string;
   } | null;
+  bulkError: string | null;
   handleRegisterAll: () => void;
   resetBulk: () => void;
 
@@ -115,6 +118,7 @@ export function useDiscovery({
   onRegisterAllError,
 }: UseDiscoveryOptions): UseDiscoveryReturn {
   const utils = api.useUtils();
+  const [bulkError, setBulkError] = useState<string | null>(null);
 
   // Check if URL is valid and extract origin
   const isValidUrl = useMemo(() => z.url().safeParse(url).success, [url]);
@@ -248,11 +252,16 @@ export function useDiscovery({
     data: bulkData,
     reset: resetBulk,
   } = api.public.resources.registerFromOrigin.useMutation({
+    onMutate: () => {
+      setBulkError(null);
+    },
     onSuccess: data => {
       if (!data.success) {
+        setBulkError(data.error.message);
         onRegisterAllError?.();
         return;
       }
+      setBulkError(null);
       void utils.public.resources.list.invalidate();
       void utils.public.origins.list.withResources.invalidate();
       void utils.public.sellers.bazaar.list.invalidate();
@@ -264,6 +273,7 @@ export function useDiscovery({
       });
     },
     onError: () => {
+      setBulkError('Failed to register resources');
       onRegisterAllError?.();
     },
   });
@@ -327,13 +337,19 @@ export function useDiscovery({
           registered: bulkData.registered,
           total: bulkData.total,
           failed: bulkData.failed,
+          skipped: bulkData.skipped,
           deprecated: bulkData.deprecated,
           failedDetails: bulkData.failedDetails,
+          skippedDetails: bulkData.skippedDetails,
           originId: bulkData.originId,
         }
       : null,
+    bulkError,
     handleRegisterAll,
-    resetBulk,
+    resetBulk: () => {
+      setBulkError(null);
+      resetBulk();
+    },
 
     // Refresh discovery data with cache busting
     refreshDiscovery: () => {

@@ -305,6 +305,9 @@ importers:
 
   apps/scan:
     dependencies:
+      '@agentcash/discovery':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@ai-sdk/openai':
         specifier: ^2.0.52
         version: 2.0.56(zod@4.3.5)
@@ -1202,6 +1205,11 @@ packages:
 
   '@adraffy/ens-normalize@1.11.1':
     resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
+
+  '@agentcash/discovery@0.1.0':
+    resolution: {integrity: sha512-SAhjoZzVQ+FHicGx0aZvZWQAP68XOzHxNQctpwvairBrmm/JlBg7CTEgsMG5nwXvrnYYmglPXn1jKKeFumUkXw==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   '@ai-sdk/gateway@2.0.2':
     resolution: {integrity: sha512-25F1qPqZxOw9IcV9OQCL29hV4HAFLw5bFWlzQLBi5aDhEZsTMT2rMi3umSqNaUxrrw+dLRtjOL7RbHC+WjbA/A==}
@@ -12172,6 +12180,10 @@ snapshots:
   '@adraffy/ens-normalize@1.10.1': {}
 
   '@adraffy/ens-normalize@1.11.1': {}
+
+  '@agentcash/discovery@0.1.0':
+    dependencies:
+      zod: 4.3.6
 
   '@ai-sdk/gateway@2.0.2(zod@4.3.5)':
     dependencies:
