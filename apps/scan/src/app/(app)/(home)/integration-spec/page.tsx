@@ -44,7 +44,7 @@ Interpretation:
 
 function CodeBlock({ code }: { code: string }) {
   return (
-    <pre className="rounded-md border bg-muted p-3 overflow-x-auto text-xs md:text-sm">
+    <pre className="rounded-md bg-muted p-3 overflow-x-auto text-xs md:text-sm">
       <code>{code}</code>
     </pre>
   );
@@ -67,8 +67,8 @@ export default function DiscoverySpecPage() {
           </div>
         }
       />
-      <Body className="gap-8">
-        <section className="rounded-md border-l-2 border-primary/50 bg-primary/5 px-4 py-3 md:px-5 md:py-4">
+      <Body className="gap-10">
+        <section className="rounded-md bg-primary/5 px-4 py-3 md:px-5 md:py-4">
           <h2 className="text-lg font-semibold md:text-xl">Why This Spec Exists</h2>
           <p className="mt-1 text-sm text-muted-foreground md:text-base">
             Most registration failures come from ambiguous discovery and incomplete 402 metadata.
@@ -85,7 +85,7 @@ export default function DiscoverySpecPage() {
           </ul>
         </section>
 
-        <section className="space-y-3 border-t pt-6">
+        <section className="space-y-3">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
               <h2 className="text-xl font-semibold">Copy for Agents</h2>
@@ -102,7 +102,7 @@ npx -y @agentcash/discovery <domain> --json`}
           />
         </section>
 
-        <section className="space-y-3 border-t pt-6">
+        <section className="space-y-3">
           <h2 className="text-xl font-semibold">Choose Your Discovery Strategy</h2>
           <p className="text-sm text-muted-foreground md:text-base">
             Click a strategy to view exact requirements and a copy-paste implementation example.
@@ -110,48 +110,27 @@ npx -y @agentcash/discovery <domain> --json`}
           <DiscoveryStrategyPanel />
         </section>
 
-        <section className="space-y-3 border-t pt-6">
+        <section className="space-y-3">
           <h2 className="text-xl font-semibold">Discovery Precedence</h2>
           <p className="text-sm text-muted-foreground md:text-base">
             x402scan resolves in this order and stops at the first valid source.
           </p>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-16">Order</TableHead>
-                  <TableHead>Source</TableHead>
-                  <TableHead className="w-[40%] whitespace-normal">Expected Location</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>1</TableCell>
-                  <TableCell>OpenAPI document</TableCell>
-                  <TableCell className="whitespace-normal break-words">
-                    <code>/openapi.json</code> then <code>/.well-known/openapi.json</code>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>2</TableCell>
-                  <TableCell>Well-known fan-out</TableCell>
-                  <TableCell className="whitespace-normal break-words">
-                    <code>/.well-known/x402</code>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>3</TableCell>
-                  <TableCell>DNS pointer</TableCell>
-                  <TableCell className="whitespace-normal break-words">
-                    TXT at <code>_x402</code>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
+          <ol className="space-y-2 text-sm md:text-base">
+            <li>
+              <span className="font-semibold">1. OpenAPI document:</span> <code>/openapi.json</code>{' '}
+              then <code>/.well-known/openapi.json</code>
+            </li>
+            <li>
+              <span className="font-semibold">2. Well-known fan-out:</span>{' '}
+              <code>/.well-known/x402</code>
+            </li>
+            <li>
+              <span className="font-semibold">3. DNS pointer:</span> TXT at <code>_x402</code>
+            </li>
+          </ol>
         </section>
 
-        <section className="space-y-3 border-t pt-6">
+        <section className="space-y-3">
           <h2 className="text-xl font-semibold">Endpoint-Only Fallback</h2>
           <p className="text-sm text-muted-foreground md:text-base">
             If no discovery document exists, endpoint registration still works.
@@ -168,15 +147,14 @@ npx -y @agentcash/discovery <domain> --json`}
           <CodeBlock code={endpointExample} />
         </section>
 
-        <section className="space-y-3 border-t pt-6">
+        <section className="space-y-3">
           <h2 className="text-xl font-semibold">Common Failure Reasons</h2>
           <p className="text-sm text-muted-foreground md:text-base">
             These are the most frequent errors seen during registration.
           </p>
           <div>
             <div className="hidden md:block">
-              <div className="rounded-md border">
-                <Table>
+              <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[35%] whitespace-normal">Error</TableHead>
@@ -230,8 +208,7 @@ npx -y @agentcash/discovery <domain> --json`}
                     </TableCell>
                   </TableRow>
                 </TableBody>
-                </Table>
-              </div>
+              </Table>
             </div>
 
             <div className="space-y-3 md:hidden">

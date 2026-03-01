@@ -93,7 +93,7 @@ const strategies: Strategy[] = [
 
 function CodeBlock({ code }: { code: string }) {
   return (
-    <pre className="rounded-md border bg-muted p-3 overflow-x-auto text-xs md:text-sm">
+    <pre className="rounded-md bg-muted p-3 overflow-x-auto text-xs md:text-sm">
       <code>{code}</code>
     </pre>
   );
@@ -114,9 +114,9 @@ export function DiscoveryStrategyPanel() {
               type="button"
               onClick={() => setSelected(item.key)}
               className={cn(
-                'rounded-md border text-left p-4 transition-colors',
-                'border-border/60 hover:bg-muted/40',
-                active && 'border-primary bg-primary/5'
+                'rounded-md text-left p-4 transition-colors',
+                'bg-muted/40 hover:bg-muted/70',
+                active && 'bg-primary/10'
               )}
             >
               <div className="flex items-center justify-between gap-2">
@@ -137,7 +137,7 @@ export function DiscoveryStrategyPanel() {
         })}
       </div>
 
-      <div className="space-y-4 border-t pt-4">
+      <div className="space-y-4">
         <div className="space-y-1">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             {strategy.title} Implementation
