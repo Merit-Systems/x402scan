@@ -27,23 +27,38 @@ curl -i -X GET https://yourdomain.com/api/route`;
 
 const agentPrompt = `Implement discovery for this server and make it pass.
 
-Required x402scan-compatible shapes:
-1) OpenAPI paid operation must include ALL:
+Discovery strategy:
+1) OpenAPI is canonical and should be used by default.
+2) If OpenAPI is not feasible yet, use /.well-known/x402 v1 as temporary compatibility.
+3) DNS _x402 is optional legacy compatibility (only add if needed).
+
+Auth mode rules (x-agentcash-auth.mode):
+- allowed: "paid" | "siwx" | "apiKey"
+- payable route => mode must be "paid"
+- non-payable auth-only route can use "siwx" or "apiKey"
+- if a route is payable and also supports SIWX, keep mode as "paid"
+
+OpenAPI payable operation must include ALL:
 - x-agentcash-auth: { mode: "paid" }
-- x-payment-info: { protocols: ["x402"], pricingMode: "fixed" | "range" | "quote", ... }
+- x-payment-info with:
+  - protocols: ["x402"]
+  - pricingMode + fields:
+    - fixed: { pricingMode: "fixed", price: "<amount>" }
+    - range: { pricingMode: "range", minPrice: "<min>", maxPrice: "<max>" }
+    - quote: { pricingMode: "quote" }
+  - IMPORTANT: for fixed pricing use "price" (not "amount")
 - responses: { "402": { description: "Payment Required" } }
 
-2) /.well-known/x402 must be:
+/.well-known/x402 must be exactly:
 {
   "version": 1,
   "resources": ["POST /api/route"]
 }
-(Use "METHOD /path" entries.)
+(Use "METHOD /path" entries, not object entries.)
 
 Rules:
-- OpenAPI is canonical.
-- /.well-known/x402 and DNS _x402 are compatibility layers.
 - Runtime 402 behavior is authoritative over static metadata.
+- "amount" is for runtime accepts; "price" is for x-payment-info fixed pricing.
 
 Workflow:
 1) Audit discovery and probe failures.
@@ -56,7 +71,7 @@ npx -y @agentcash/discovery "$TARGET_URL" -v
 
 Done when:
 - resources are discovered
-- OpenAPI is selected when present
+- OpenAPI is selected when present (otherwise well-known is acceptable fallback)
 - no critical parser/probe errors remain`;
 
 function CodeBlock({ code }: { code: string }) {
@@ -86,7 +101,7 @@ export default function DiscoverySpecPage() {
       />
       <Body className="gap-10">
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold md:text-xl">Why This Spec Exists</h2>
+          <h2 className="text-xl font-semibold">Why This Spec Exists</h2>
           <p className="text-sm text-muted-foreground md:text-base">
             Most registration failures come from ambiguous discovery and incomplete 402 metadata.
             This page defines one deterministic path so providers and x402scan stay in sync.
