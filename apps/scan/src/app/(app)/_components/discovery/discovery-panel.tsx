@@ -161,6 +161,13 @@ export function DiscoveryPanel({
   // Show bulk registration result (only in register mode)
   if (!isTestMode && bulkResult?.success) {
     const skippedCount = bulkResult.skipped ?? 0;
+    const skippedDetails = bulkResult.skippedDetails ?? [];
+    const siwxSkippedCount = skippedDetails.filter(item =>
+      item.error.includes('SIWX')
+    ).length;
+    const missingSchemaSkippedCount = skippedDetails.filter(item =>
+      item.error.includes('Missing input schema')
+    ).length;
 
     // Show error state if no resources were registered
     if (bulkResult.registered === 0 && bulkResult.failed > 0) {
@@ -260,9 +267,25 @@ export function DiscoveryPanel({
                 {skippedCount} resource{skippedCount === 1 ? '' : 's'} skipped
               </h3>
               <p className="text-sm text-muted-foreground">
-                Auth-only SIWX endpoints without payment requirements were
-                skipped in legacy indexing mode.
+                Some resources were skipped by compatibility rules in strict
+                registration mode.
               </p>
+              <ul className="text-xs text-muted-foreground mt-2 space-y-1">
+                {siwxSkippedCount > 0 && (
+                  <li>
+                    - {siwxSkippedCount} SIWX auth-only endpoint
+                    {siwxSkippedCount === 1 ? '' : 's'} (no payment
+                    requirements)
+                  </li>
+                )}
+                {missingSchemaSkippedCount > 0 && (
+                  <li>
+                    - {missingSchemaSkippedCount} endpoint
+                    {missingSchemaSkippedCount === 1 ? '' : 's'} missing input
+                    schema
+                  </li>
+                )}
+              </ul>
             </div>
           </div>
         )}
@@ -328,16 +351,14 @@ export function DiscoveryPanel({
             </details>
           )}
 
-        {skippedCount > 0 &&
-          bulkResult.skippedDetails &&
-          bulkResult.skippedDetails.length > 0 && (
+        {skippedCount > 0 && skippedDetails.length > 0 && (
             <details className="border rounded-md group">
               <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
                 <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-                Skipped Details ({bulkResult.skippedDetails.length} resources)
+                Skipped Details ({skippedDetails.length} resources)
               </summary>
               <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
-                {bulkResult.skippedDetails.map((skipped, idx) => (
+                {skippedDetails.map((skipped, idx) => (
                   <div
                     key={idx}
                     className="p-3 bg-muted/50 rounded border text-xs space-y-1"
