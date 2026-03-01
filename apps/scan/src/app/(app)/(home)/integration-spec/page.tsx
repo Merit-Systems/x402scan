@@ -27,7 +27,20 @@ curl -i -X GET https://yourdomain.com/api/route`;
 
 const agentPrompt = `Implement discovery for this server and make it pass.
 
-Principles:
+Required x402scan-compatible shapes:
+1) OpenAPI paid operation must include ALL:
+- x-agentcash-auth: { mode: "paid" }
+- x-payment-info: { protocols: ["x402"], pricingMode: "fixed" | "range" | "quote", ... }
+- responses: { "402": { description: "Payment Required" } }
+
+2) /.well-known/x402 must be:
+{
+  "version": 1,
+  "resources": ["POST /api/route"]
+}
+(Use "METHOD /path" entries.)
+
+Rules:
 - OpenAPI is canonical.
 - /.well-known/x402 and DNS _x402 are compatibility layers.
 - Runtime 402 behavior is authoritative over static metadata.
