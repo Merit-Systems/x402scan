@@ -117,6 +117,7 @@ export const RegisterResourceForm = () => {
     actualDiscoveredResources,
     isRegisteringAll,
     bulkData,
+    bulkError,
     handleRegisterAll,
     resetBulk,
     preview,
@@ -640,6 +641,10 @@ export const RegisterResourceForm = () => {
           </Link>
         </div>
       ) : null}
+
+      {bulkError && (
+        <p className={cn('text-sm text-red-600')}>{bulkError}</p>
+      )}
 
       {registerMutation.error && (
         <p className={cn('text-sm text-red-600')}>
