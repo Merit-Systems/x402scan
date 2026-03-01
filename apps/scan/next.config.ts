@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/discovery',
-        destination: '/discover',
+        destination: '/integration-spec',
       },
     ]);
   },
