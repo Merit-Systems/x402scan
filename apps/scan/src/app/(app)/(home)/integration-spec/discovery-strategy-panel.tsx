@@ -10,7 +10,7 @@ interface Strategy {
   key: StrategyKey;
   title: string;
   badge: string;
-  badgeVariant: 'success' | 'secondary' | 'outline';
+  badgeVariant: 'primary' | 'secondary' | 'outline';
   subtitle: string;
   location: string;
   requirements: string[];
@@ -23,7 +23,7 @@ const strategies: Strategy[] = [
     key: 'openapi',
     title: 'OpenAPI',
     badge: 'Recommended',
-    badgeVariant: 'success',
+    badgeVariant: 'primary',
     subtitle: 'Canonical and most reliable discovery signal.',
     location: '/openapi.json or /.well-known/openapi.json',
     requirements: [
@@ -121,7 +121,15 @@ export function DiscoveryStrategyPanel() {
             >
               <div className="flex items-center justify-between gap-2">
                 <p className="text-base font-semibold">{item.title}</p>
-                <Badge variant={item.badgeVariant}>{item.badge}</Badge>
+                <Badge
+                  variant={item.badgeVariant}
+                  className={cn(
+                    item.badge === 'Recommended' &&
+                      'bg-primary/15 text-primary border-primary/40'
+                  )}
+                >
+                  {item.badge}
+                </Badge>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">{item.subtitle}</p>
             </button>
@@ -133,7 +141,15 @@ export function DiscoveryStrategyPanel() {
         <div className="space-y-1">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             {strategy.title} Implementation
-            <Badge variant={strategy.badgeVariant}>{strategy.badge}</Badge>
+            <Badge
+              variant={strategy.badgeVariant}
+              className={cn(
+                strategy.badge === 'Recommended' &&
+                  'bg-primary/15 text-primary border-primary/40'
+              )}
+            >
+              {strategy.badge}
+            </Badge>
           </h3>
           <p className="text-sm text-muted-foreground">{strategy.note}</p>
         </div>

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -78,10 +77,7 @@ export default function DiscoverySpecPage() {
       <Body className="gap-6">
         <Card className="border-primary/30 bg-primary/5">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              Why This Spec Exists
-              <Badge variant="primary">Important</Badge>
-            </CardTitle>
+            <CardTitle>Why This Spec Exists</CardTitle>
             <CardDescription>
               Most registration failures come from ambiguous discovery and incomplete 402 metadata.
               This page defines one deterministic path so providers and x402scan stay in sync.
@@ -103,10 +99,7 @@ export default function DiscoverySpecPage() {
         <Card>
           <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
-              <CardTitle className="flex items-center gap-2">
-                Copy for Agents
-                <Badge variant="primary">CLI First</Badge>
-              </CardTitle>
+              <CardTitle>Copy for Agents</CardTitle>
               <CardDescription>
                 A minimal checklist an agent can run to validate both local and remote integration.
               </CardDescription>
