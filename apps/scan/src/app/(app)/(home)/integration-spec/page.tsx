@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { CopyForAgentsButton } from './copy-for-agents-button';
 import { DiscoveryStrategyPanel } from './discovery-strategy-panel';
+import { AgentPromptPreview } from './agent-prompt-preview';
 
 import type { Metadata } from 'next';
 
@@ -24,30 +25,26 @@ export const metadata: Metadata = {
 const endpointExample = `curl -i -X POST https://yourdomain.com/api/route
 curl -i -X GET https://yourdomain.com/api/route`;
 
-const agentPrompt = `You are implementing discovery for <domain>.
+const agentPrompt = `Implement discovery for this server and make it pass.
 
-Goal:
-- Make discovery pass end-to-end using OpenAPI-first.
-
-Philosophy:
-- OpenAPI is the canonical machine-readable contract.
+Principles:
+- OpenAPI is canonical.
 - /.well-known/x402 and DNS _x402 are compatibility layers.
-- Runtime 402 challenge behavior is authoritative over static metadata.
-- Keep implementation minimal and deterministic.
+- Runtime 402 behavior is authoritative over static metadata.
 
-Tasks:
-1) Run a discovery audit and identify failures.
-2) Implement/fix discovery + 402 behavior.
-3) Re-run validation until pass criteria are met.
+Workflow:
+1) Audit discovery and probe failures.
+2) Fix discovery metadata and 402 behavior.
+3) Re-run audits until clean.
 
-Validation:
-- npx -y @agentcash/discovery <domain> --json
-- npx -y @agentcash/discovery <domain> -v
+Validation commands:
+npx -y @agentcash/discovery "$TARGET_URL" --json
+npx -y @agentcash/discovery "$TARGET_URL" -v
 
-Success criteria:
-- Discovery finds resources.
-- OpenAPI is selected when present.
-- No critical parser/probe errors remain.`;
+Done when:
+- resources are discovered
+- OpenAPI is selected when present
+- no critical parser/probe errors remain`;
 
 function CodeBlock({ code }: { code: string }) {
   return (
@@ -103,7 +100,7 @@ export default function DiscoverySpecPage() {
             </div>
             <CopyForAgentsButton text={agentPrompt} />
           </div>
-          <CodeBlock code={agentPrompt} />
+          <AgentPromptPreview prompt={agentPrompt} />
         </section>
 
         <section className="space-y-3">
