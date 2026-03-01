@@ -116,11 +116,19 @@ export function DiscoveryStrategyPanel() {
               className={cn(
                 'rounded-md text-left p-4 transition-colors',
                 'bg-muted/40 hover:bg-muted/70',
-                active && 'bg-primary/10'
+                active && 'bg-primary/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]'
               )}
             >
               <div className="flex items-center justify-between gap-2">
-                <p className="text-base font-semibold">{item.title}</p>
+                <div className="flex items-center gap-2">
+                  {active && (
+                    <span
+                      aria-hidden
+                      className="size-2 rounded-full bg-primary shadow-[inset_0_1px_2px_rgba(255,255,255,0.75)]"
+                    />
+                  )}
+                  <p className="text-base font-semibold">{item.title}</p>
+                </div>
                 <Badge
                   variant={item.badgeVariant}
                   className={cn(

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -115,19 +116,42 @@ npx -y @agentcash/discovery <domain> --json`}
           <p className="text-sm text-muted-foreground md:text-base">
             x402scan resolves in this order and stops at the first valid source.
           </p>
-          <ol className="space-y-2 text-sm md:text-base">
-            <li>
-              <span className="font-semibold">1. OpenAPI document:</span> <code>/openapi.json</code>{' '}
-              then <code>/.well-known/openapi.json</code>
-            </li>
-            <li>
-              <span className="font-semibold">2. Well-known fan-out:</span>{' '}
-              <code>/.well-known/x402</code>
-            </li>
-            <li>
-              <span className="font-semibold">3. DNS pointer:</span> TXT at <code>_x402</code>
-            </li>
-          </ol>
+          <Card>
+            <CardContent className="pt-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">Order</TableHead>
+                    <TableHead>Source</TableHead>
+                    <TableHead className="w-[40%] whitespace-normal">Expected Location</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>1</TableCell>
+                    <TableCell>OpenAPI document</TableCell>
+                    <TableCell className="whitespace-normal break-words">
+                      <code>/openapi.json</code> then <code>/.well-known/openapi.json</code>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>2</TableCell>
+                    <TableCell>Well-known fan-out</TableCell>
+                    <TableCell className="whitespace-normal break-words">
+                      <code>/.well-known/x402</code>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>3</TableCell>
+                    <TableCell>DNS pointer</TableCell>
+                    <TableCell className="whitespace-normal break-words">
+                      TXT at <code>_x402</code>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </section>
 
         <section className="space-y-3">
@@ -152,94 +176,96 @@ npx -y @agentcash/discovery <domain> --json`}
           <p className="text-sm text-muted-foreground md:text-base">
             These are the most frequent errors seen during registration.
           </p>
-          <div>
-            <div className="hidden md:block">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[35%] whitespace-normal">Error</TableHead>
-                    <TableHead className="w-[30%] whitespace-normal">Likely Cause</TableHead>
-                    <TableHead className="w-[35%] whitespace-normal">Fix</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
-                      Expected 402, got 404/405
-                    </TableCell>
-                    <TableCell className="whitespace-normal break-words align-top">
-                      Wrong method or wrong path
-                    </TableCell>
-                    <TableCell className="whitespace-normal break-words align-top">
-                      Match method/path to your actual handler
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
-                      Accepts must contain at least one valid payment requirement
-                    </TableCell>
-                    <TableCell className="whitespace-normal break-words align-top">
-                      Malformed or empty payment requirements
-                    </TableCell>
-                    <TableCell className="whitespace-normal break-words align-top">
-                      Return a valid non-empty x402 accepts set
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
-                      Missing input schema
-                    </TableCell>
-                    <TableCell className="whitespace-normal break-words align-top">
-                      Strict parser cannot infer invocable contract
-                    </TableCell>
-                    <TableCell className="whitespace-normal break-words align-top">
-                      Publish Bazaar/OpenAPI input schema metadata
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
-                      Expected 402, got 429
-                    </TableCell>
-                    <TableCell className="whitespace-normal break-words align-top">
-                      Provider-side throttling
-                    </TableCell>
-                    <TableCell className="whitespace-normal break-words align-top">
-                      Retry, reduce probe volume, or register URL-only
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[35%] whitespace-normal">Error</TableHead>
+                      <TableHead className="w-[30%] whitespace-normal">Likely Cause</TableHead>
+                      <TableHead className="w-[35%] whitespace-normal">Fix</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                        Expected 402, got 404/405
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words align-top">
+                        Wrong method or wrong path
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words align-top">
+                        Match method/path to your actual handler
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                        Accepts must contain at least one valid payment requirement
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words align-top">
+                        Malformed or empty payment requirements
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words align-top">
+                        Return a valid non-empty x402 accepts set
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                        Missing input schema
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words align-top">
+                        Strict parser cannot infer invocable contract
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words align-top">
+                        Publish Bazaar/OpenAPI input schema metadata
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                        Expected 402, got 429
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words align-top">
+                        Provider-side throttling
+                      </TableCell>
+                      <TableCell className="whitespace-normal break-words align-top">
+                        Retry, reduce probe volume, or register URL-only
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
 
-            <div className="space-y-3 md:hidden">
-              <div className="border-l-2 border-border pl-3 space-y-2">
-                <p className="font-mono text-xs break-words">Expected 402, got 404/405</p>
-                <p className="text-sm text-muted-foreground">Wrong method or wrong path</p>
-                <p className="text-sm">Fix: Match method/path to your actual handler</p>
+              <div className="space-y-3 md:hidden">
+                <div className="border-l-2 border-border pl-3 space-y-2">
+                  <p className="font-mono text-xs break-words">Expected 402, got 404/405</p>
+                  <p className="text-sm text-muted-foreground">Wrong method or wrong path</p>
+                  <p className="text-sm">Fix: Match method/path to your actual handler</p>
+                </div>
+                <div className="border-l-2 border-border pl-3 space-y-2">
+                  <p className="font-mono text-xs break-words">
+                    Accepts must contain at least one valid payment requirement
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Malformed or empty payment requirements
+                  </p>
+                  <p className="text-sm">Fix: Return a valid non-empty x402 accepts set</p>
+                </div>
+                <div className="border-l-2 border-border pl-3 space-y-2">
+                  <p className="font-mono text-xs break-words">Missing input schema</p>
+                  <p className="text-sm text-muted-foreground">
+                    Strict parser cannot infer invocable contract
+                  </p>
+                  <p className="text-sm">Fix: Publish Bazaar/OpenAPI input schema metadata</p>
+                </div>
+                <div className="border-l-2 border-border pl-3 space-y-2">
+                  <p className="font-mono text-xs break-words">Expected 402, got 429</p>
+                  <p className="text-sm text-muted-foreground">Provider-side throttling</p>
+                  <p className="text-sm">Fix: Retry, reduce probe volume, or register URL-only</p>
+                </div>
               </div>
-              <div className="border-l-2 border-border pl-3 space-y-2">
-                <p className="font-mono text-xs break-words">
-                  Accepts must contain at least one valid payment requirement
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Malformed or empty payment requirements
-                </p>
-                <p className="text-sm">Fix: Return a valid non-empty x402 accepts set</p>
-              </div>
-              <div className="border-l-2 border-border pl-3 space-y-2">
-                <p className="font-mono text-xs break-words">Missing input schema</p>
-                <p className="text-sm text-muted-foreground">
-                  Strict parser cannot infer invocable contract
-                </p>
-                <p className="text-sm">Fix: Publish Bazaar/OpenAPI input schema metadata</p>
-              </div>
-              <div className="border-l-2 border-border pl-3 space-y-2">
-                <p className="font-mono text-xs break-words">Expected 402, got 429</p>
-                <p className="text-sm text-muted-foreground">Provider-side throttling</p>
-                <p className="text-sm">Fix: Retry, reduce probe volume, or register URL-only</p>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </section>
       </Body>
     </div>
