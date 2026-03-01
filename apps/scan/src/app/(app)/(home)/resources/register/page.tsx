@@ -22,7 +22,7 @@ export default function RegisterResourcePage() {
               x402scan.
             </p>
             <div>
-              <Button asChild size="sm" variant="primaryOutline">
+              <Button asChild size="sm" variant="outline" className="gap-1">
                 <Link href="/discovery">
                   Read the Discovery Spec
                   <span aria-hidden>→</span>
