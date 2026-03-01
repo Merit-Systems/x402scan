@@ -101,7 +101,10 @@ export const TestEndpointForm = () => {
                     /.well-known/x402
                   </code>{' '}
                   to enable automatic resource discovery.{' '}
-                  <a href="/discovery" className="underline hover:no-underline font-medium">
+                  <a
+                    href="/developer/discovery"
+                    className="underline hover:no-underline font-medium"
+                  >
                     Learn more
                   </a>
                 </p>

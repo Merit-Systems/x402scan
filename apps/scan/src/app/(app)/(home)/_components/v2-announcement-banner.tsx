@@ -67,7 +67,7 @@ export const V2AnnouncementBanner = () => {
                   <>
                     New x402scan Discovery Standard —{' '}
                     <Link
-                      href="/discovery"
+                      href="/developer/discovery"
                       className="text-primary underline hover:text-primary/80"
                     >
                       read the docs
