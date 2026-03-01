@@ -82,6 +82,26 @@ function probeInitForMethod(method: Methods): {
   };
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isSiwxAuthOnlyChallenge(data: unknown): boolean {
+  if (!isRecord(data)) return false;
+
+  const acceptsValue = data.accepts;
+  if (!Array.isArray(acceptsValue) || acceptsValue.length !== 0) {
+    return false;
+  }
+
+  const extensionsValue = data.extensions;
+  if (!isRecord(extensionsValue)) {
+    return false;
+  }
+
+  return 'sign-in-with-x' in extensionsValue;
+}
+
 async function mapSettledWithConcurrency<T, R>(
   items: T[],
   mapper: (item: T, index: number) => Promise<R>,
@@ -425,6 +445,21 @@ export const resourcesRouter = createTRPCRouter({
               if (response.status === 402) {
                 // Extract x402 data (handles v2 header and v1 body, with JSON parse fallback)
                 const x402Data = await extractX402Data(response);
+
+                // Compat path: SIWX auth-only challenges are valid, but don't
+                // include payment requirements and therefore aren't indexable
+                // as payable resources in legacy x402scan.
+                if (isSiwxAuthOnlyChallenge(x402Data)) {
+                  return {
+                    success: false as const,
+                    skipped: true as const,
+                    url: resourceUrl,
+                    error:
+                      'SIWX auth-only endpoint (no payment requirements to index)',
+                    status: response.status,
+                  };
+                }
+
                 const result = await registerResource(resourceUrl, x402Data);
 
                 // If registration succeeded, return it
@@ -487,6 +522,8 @@ export const resourcesRouter = createTRPCRouter({
       const successfulResults: { url: string }[] = [];
       const failedResults: { url: string; error: string; status?: number }[] =
         [];
+      const skippedResults: { url: string; error: string; status?: number }[] =
+        [];
       let originId: string | undefined;
 
       for (let i = 0; i < results.length; i++) {
@@ -509,6 +546,17 @@ export const resourcesRouter = createTRPCRouter({
             ) {
               originId = value.resource.origin.id;
             }
+          } else if (
+            'success' in value &&
+            !value.success &&
+            'skipped' in value &&
+            value.skipped === true
+          ) {
+            skippedResults.push({
+              url: resourceUrl,
+              error: value.error,
+              status: 'status' in value ? value.status : undefined,
+            });
           } else if ('success' in value && !value.success) {
             failedResults.push({
               url: resourceUrl,
@@ -541,10 +589,12 @@ export const resourcesRouter = createTRPCRouter({
         success: true as const,
         registered: successfulResults.length,
         failed: failedResults.length,
+        skipped: skippedResults.length,
         deprecated,
         total: results.length,
         source: discoveryResult.source,
         failedDetails: failedResults,
+        skippedDetails: skippedResults,
         originId,
       };
     }),

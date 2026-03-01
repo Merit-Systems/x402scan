@@ -95,8 +95,10 @@ export interface UseDiscoveryReturn {
     registered: number;
     total: number;
     failed: number;
+    skipped?: number;
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
+    skippedDetails?: { url: string; error: string; status?: number }[];
     originId?: string;
   } | null;
   handleRegisterAll: () => void;
@@ -327,8 +329,10 @@ export function useDiscovery({
           registered: bulkData.registered,
           total: bulkData.total,
           failed: bulkData.failed,
+          skipped: bulkData.skipped,
           deprecated: bulkData.deprecated,
           failedDetails: bulkData.failedDetails,
+          skippedDetails: bulkData.skippedDetails,
           originId: bulkData.originId,
         }
       : null,

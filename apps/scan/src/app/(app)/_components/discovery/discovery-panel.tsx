@@ -82,8 +82,10 @@ export interface DiscoveryPanelProps {
     registered: number;
     total: number;
     failed: number;
+    skipped?: number;
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
+    skippedDetails?: { url: string; error: string; status?: number }[];
   } | null;
   /** Called when "Register All" is clicked (required in register mode) */
   onRegisterAll?: () => void;
@@ -158,8 +160,10 @@ export function DiscoveryPanel({
 
   // Show bulk registration result (only in register mode)
   if (!isTestMode && bulkResult?.success) {
+    const skippedCount = bulkResult.skipped ?? 0;
+
     // Show error state if no resources were registered
-    if (bulkResult.registered === 0) {
+    if (bulkResult.registered === 0 && bulkResult.failed > 0) {
       return (
         <div className="space-y-3">
           <div className="flex items-start gap-3 p-4 border rounded-md bg-red-500/10 border-red-500/30">
@@ -177,7 +181,7 @@ export function DiscoveryPanel({
           <details className="border rounded-md group">
             <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
               <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              More Info ({bulkResult.failedDetails?.length ?? bulkResult.total}{' '}
+              More Info ({bulkResult.failedDetails?.length ?? bulkResult.failed}{' '}
               failed resources)
             </summary>
             <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
@@ -234,6 +238,9 @@ export function DiscoveryPanel({
             <p className="text-sm text-muted-foreground">
               Successfully registered {bulkResult.registered} of{' '}
               {bulkResult.total} resources
+              {skippedCount > 0 && (
+                <span className="text-amber-700"> ({skippedCount} skipped)</span>
+              )}
               {bulkResult.failed > 0 && (
                 <span className="text-red-600">
                   {' '}
@@ -243,6 +250,22 @@ export function DiscoveryPanel({
             </p>
           </div>
         </div>
+
+        {/* Skipped resources notice */}
+        {skippedCount > 0 && (
+          <div className="flex items-start gap-3 p-4 border rounded-md bg-amber-600/10 border-amber-600/30">
+            <AlertCircle className="size-5 text-amber-700 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-medium text-amber-800">
+                {skippedCount} resource{skippedCount === 1 ? '' : 's'} skipped
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Auth-only SIWX endpoints without payment requirements were
+                skipped in legacy indexing mode.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Deprecation notice */}
         {bulkResult.deprecated !== undefined && bulkResult.deprecated > 0 && (
@@ -297,6 +320,48 @@ export function DiscoveryPanel({
                           Status:
                         </span>
                         <span className="font-mono">{failed.status}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
+
+        {skippedCount > 0 &&
+          bulkResult.skippedDetails &&
+          bulkResult.skippedDetails.length > 0 && (
+            <details className="border rounded-md group">
+              <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+                <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+                Skipped Details ({bulkResult.skippedDetails.length} resources)
+              </summary>
+              <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
+                {bulkResult.skippedDetails.map((skipped, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">
+                        URL:
+                      </span>
+                      <span className="font-mono break-all">{skipped.url}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">
+                        Reason:
+                      </span>
+                      <span className="text-amber-700 wrap-break-word">
+                        {skipped.error}
+                      </span>
+                    </div>
+                    {skipped.status && (
+                      <div className="flex items-start gap-2">
+                        <span className="text-muted-foreground shrink-0">
+                          Status:
+                        </span>
+                        <span className="font-mono">{skipped.status}</span>
                       </div>
                     )}
                   </div>
