@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
         source: '/deposit/:path*',
         destination: '/mcp/deposit/:path*',
       },
+      {
+        source: '/discovery',
+        destination: '/discover',
+      },
     ]);
   },
   images: {
