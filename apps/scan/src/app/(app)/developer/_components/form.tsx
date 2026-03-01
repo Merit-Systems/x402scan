@@ -102,8 +102,10 @@ export const TestEndpointForm = () => {
                   </code>{' '}
                   to enable automatic resource discovery.{' '}
                   <a
-                    href="/developer/discovery"
+                    href="/discovery.md"
                     className="underline hover:no-underline font-medium"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     Learn more
                   </a>
