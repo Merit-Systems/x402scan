@@ -2,13 +2,6 @@ import Link from 'next/link';
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
   Table,
   TableBody,
   TableCell,
@@ -74,48 +67,42 @@ export default function DiscoverySpecPage() {
           </div>
         }
       />
-      <Body className="gap-6">
-        <Card className="border-primary/30 bg-primary/5">
-          <CardHeader>
-            <CardTitle>Why This Spec Exists</CardTitle>
-            <CardDescription>
-              Most registration failures come from ambiguous discovery and incomplete 402 metadata.
-              This page defines one deterministic path so providers and x402scan stay in sync.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-sm md:text-base">
-            <ul className="list-disc pl-5 space-y-1">
-              <li>OpenAPI is the canonical machine-readable contract.</li>
-              <li>
-                <code>/.well-known/x402</code> and DNS are migration compatibility layers.
-              </li>
-              <li>
-                Runtime <code>402</code> challenge behavior is the final source of truth.
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+      <Body className="gap-8">
+        <section className="rounded-md border-l-2 border-primary/50 bg-primary/5 px-4 py-3 md:px-5 md:py-4">
+          <h2 className="text-lg font-semibold md:text-xl">Why This Spec Exists</h2>
+          <p className="mt-1 text-sm text-muted-foreground md:text-base">
+            Most registration failures come from ambiguous discovery and incomplete 402 metadata.
+            This page defines one deterministic path so providers and x402scan stay in sync.
+          </p>
+          <ul className="mt-3 list-disc pl-5 space-y-1 text-sm md:text-base">
+            <li>OpenAPI is the canonical machine-readable contract.</li>
+            <li>
+              <code>/.well-known/x402</code> and DNS are migration compatibility layers.
+            </li>
+            <li>
+              Runtime <code>402</code> challenge behavior is the final source of truth.
+            </li>
+          </ul>
+        </section>
 
-        <Card>
-          <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <section className="space-y-3 border-t pt-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
-              <CardTitle>Copy for Agents</CardTitle>
-              <CardDescription>
+              <h2 className="text-xl font-semibold">Copy for Agents</h2>
+              <p className="text-sm text-muted-foreground md:text-base">
                 A minimal checklist an agent can run to validate both local and remote integration.
-              </CardDescription>
+              </p>
             </div>
             <CopyForAgentsButton text={agentChecklist} />
-          </CardHeader>
-          <CardContent>
-            <CodeBlock
-              code={`npx -y @agentcash/discovery <domain>
+          </div>
+          <CodeBlock
+            code={`npx -y @agentcash/discovery <domain>
 npx -y @agentcash/discovery <domain> -v
 npx -y @agentcash/discovery <domain> --json`}
-            />
-          </CardContent>
-        </Card>
+          />
+        </section>
 
-        <section className="space-y-3">
+        <section className="space-y-3 border-t pt-6">
           <h2 className="text-xl font-semibold">Choose Your Discovery Strategy</h2>
           <p className="text-sm text-muted-foreground md:text-base">
             Click a strategy to view exact requirements and a copy-paste implementation example.
@@ -123,14 +110,12 @@ npx -y @agentcash/discovery <domain> --json`}
           <DiscoveryStrategyPanel />
         </section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Discovery Precedence</CardTitle>
-            <CardDescription>
-              x402scan resolves in this order and stops at the first valid source.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <section className="space-y-3 border-t pt-6">
+          <h2 className="text-xl font-semibold">Discovery Precedence</h2>
+          <p className="text-sm text-muted-foreground md:text-base">
+            x402scan resolves in this order and stops at the first valid source.
+          </p>
+          <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -163,40 +148,35 @@ npx -y @agentcash/discovery <domain> --json`}
                 </TableRow>
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Endpoint-Only Fallback</CardTitle>
-            <CardDescription>
-              If no discovery document exists, endpoint registration still works.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm md:text-base">
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Probe method is method-aware with GET/POST fallback where applicable.</li>
-              <li>
-                Endpoint must return a parseable <code>402</code> challenge.
-              </li>
-              <li>
-                Missing schema or auth-only SIWX routes are marked as skipped in strict mode.
-              </li>
-            </ul>
-            <CodeBlock code={endpointExample} />
-          </CardContent>
-        </Card>
+        <section className="space-y-3 border-t pt-6">
+          <h2 className="text-xl font-semibold">Endpoint-Only Fallback</h2>
+          <p className="text-sm text-muted-foreground md:text-base">
+            If no discovery document exists, endpoint registration still works.
+          </p>
+          <ul className="list-disc pl-5 space-y-1 text-sm md:text-base">
+            <li>Probe method is method-aware with GET/POST fallback where applicable.</li>
+            <li>
+              Endpoint must return a parseable <code>402</code> challenge.
+            </li>
+            <li>
+              Missing schema or auth-only SIWX routes are marked as skipped in strict mode.
+            </li>
+          </ul>
+          <CodeBlock code={endpointExample} />
+        </section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Common Failure Reasons</CardTitle>
-            <CardDescription>
-              These are the most frequent errors seen during registration.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <section className="space-y-3 border-t pt-6">
+          <h2 className="text-xl font-semibold">Common Failure Reasons</h2>
+          <p className="text-sm text-muted-foreground md:text-base">
+            These are the most frequent errors seen during registration.
+          </p>
+          <div>
             <div className="hidden md:block">
-              <Table>
+              <div className="rounded-md border">
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[35%] whitespace-normal">Error</TableHead>
@@ -250,7 +230,8 @@ npx -y @agentcash/discovery <domain> --json`}
                     </TableCell>
                   </TableRow>
                 </TableBody>
-              </Table>
+                </Table>
+              </div>
             </div>
 
             <div className="space-y-3 md:hidden">
@@ -281,8 +262,8 @@ npx -y @agentcash/discovery <domain> --json`}
                 <p className="text-sm">Fix: Retry, reduce probe volume, or register URL-only</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </Body>
     </div>
   );
