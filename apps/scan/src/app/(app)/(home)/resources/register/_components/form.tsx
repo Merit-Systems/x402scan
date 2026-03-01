@@ -257,6 +257,14 @@ export const RegisterResourceForm = () => {
       return;
     }
 
+    await runManualRegistration(manualTargets);
+  };
+
+  const runManualRegistration = async (targets: string[]) => {
+    if (targets.length === 0 || isRegisteringManual) {
+      return;
+    }
+
     resetStateForNewRun();
     setIsRegisteringManual(true);
 
@@ -264,9 +272,9 @@ export const RegisterResourceForm = () => {
     let originId: string | undefined;
     const failedDetails: { url: string; error: string; status?: number }[] = [];
 
-    for (let index = 0; index < manualTargets.length; index += 1) {
-      const targetUrl = manualTargets[index] ?? '';
-      setManualProgress({ current: index + 1, total: manualTargets.length });
+    for (let index = 0; index < targets.length; index += 1) {
+      const targetUrl = targets[index] ?? '';
+      setManualProgress({ current: index + 1, total: targets.length });
 
       try {
         const result = await registerMutation.mutateAsync({
@@ -304,14 +312,22 @@ export const RegisterResourceForm = () => {
     setManualResult({
       success: true,
       registered,
-      total: manualTargets.length,
+      total: targets.length,
       failed: failedDetails.length,
       failedDetails,
       originId,
-      origin: safeGetOrigin(manualTargets[0] ?? ''),
+      origin: safeGetOrigin(targets[0] ?? ''),
     });
 
     setIsRegisteringManual(false);
+  };
+
+  const handleRegisterCurrentUrlOnly = async () => {
+    if (!canUseManualMode || isRegisteringManual) {
+      return;
+    }
+
+    await runManualRegistration([normalizedUrl]);
   };
 
   const renderProbeCard = () => {
@@ -567,20 +583,40 @@ export const RegisterResourceForm = () => {
         </CardContent>
         <CardFooter className="flex-col items-stretch gap-2">
           {hasDiscoveryResources ? (
-            <Button
-              variant="turbo"
-              disabled={isRegisteringAll}
-              onClick={handleRegisterDiscovered}
-            >
-              {isRegisteringAll ? (
-                <>
-                  <Loader2 className="size-4 animate-spin mr-2" />
-                  Registering resources...
-                </>
-              ) : (
-                `Add Server (${actualDiscoveredResources.length} resources)`
-              )}
-            </Button>
+            <>
+              <Button
+                variant="turbo"
+                disabled={isRegisteringAll || isRegisteringManual}
+                onClick={handleRegisterDiscovered}
+              >
+                {isRegisteringAll ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin mr-2" />
+                    Registering resources...
+                  </>
+                ) : (
+                  `Add Server (${actualDiscoveredResources.length} resources)`
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                disabled={!canUseManualMode || isRegisteringAll || isRegisteringManual}
+                onClick={() => {
+                  void handleRegisterCurrentUrlOnly();
+                }}
+              >
+                {isRegisteringManual ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin mr-2" />
+                    {manualProgress
+                      ? `Checking ${manualProgress.current}/${manualProgress.total} resources`
+                      : 'Registering...'}
+                  </>
+                ) : (
+                  'Register This URL Only'
+                )}
+              </Button>
+            </>
           ) : (
             <Button
               variant="turbo"
