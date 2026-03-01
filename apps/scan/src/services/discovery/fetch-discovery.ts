@@ -186,31 +186,44 @@ export async function fetchDiscoveryDocument(
     }
   };
 
-  const discovered = await discoverDetailed({
-    target: origin,
-    compatMode: 'on',
-    rawView: 'full',
-    txtResolver,
-    fetcher: async (input, init) => {
-      const url =
-        input instanceof URL
-          ? new URL(input.toString())
-          : typeof input === 'string'
-            ? new URL(input)
-            : new URL(input.url);
-      const method = (init?.method ?? 'GET').toUpperCase();
+  let discovered: DiscoverDetailedResult;
+  try {
+    discovered = await discoverDetailed({
+      target: origin,
+      compatMode: 'on',
+      rawView: 'full',
+      txtResolver,
+      fetcher: async (input, init) => {
+        const url =
+          input instanceof URL
+            ? new URL(input.toString())
+            : typeof input === 'string'
+              ? new URL(input)
+              : new URL(input.url);
+        const method = (init?.method ?? 'GET').toUpperCase();
 
-      if (bustCache && method === 'GET') {
-        url.searchParams.set('_t', Date.now().toString());
-      }
+        if (bustCache && method === 'GET') {
+          url.searchParams.set('_t', Date.now().toString());
+        }
 
-      return fetch(url, {
-        ...init,
-        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-        cache: bustCache ? 'no-store' : init?.cache,
-      });
-    },
-  });
+        return fetch(url, {
+          ...init,
+          signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+          cache: bustCache ? 'no-store' : init?.cache,
+        });
+      },
+    });
+  } catch (error) {
+    return {
+      success: false,
+      resources: [],
+      discoveryUrls: [],
+      error:
+        error instanceof Error && error.message.length > 0
+          ? error.message
+          : 'Discovery failed',
+    };
+  }
 
   const resources = toDiscoveredResources(discovered);
   if (resources.length === 0) {
