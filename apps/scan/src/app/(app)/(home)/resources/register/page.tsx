@@ -1,5 +1,6 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { RegisterResourceForm } from './_components/form';
 
 import type { Metadata } from 'next';
@@ -21,13 +22,12 @@ export default function RegisterResourcePage() {
               x402scan.
             </p>
             <div>
-              <Link
-                href="/discovery"
-                className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2.5 py-1 font-medium text-primary hover:bg-primary/20"
-              >
-                Read the Discovery Spec
-                <span aria-hidden>→</span>
-              </Link>
+              <Button asChild size="sm" variant="primaryOutline">
+                <Link href="/discovery">
+                  Read the Discovery Spec
+                  <span aria-hidden>→</span>
+                </Link>
+              </Button>
             </div>
           </div>
         }
