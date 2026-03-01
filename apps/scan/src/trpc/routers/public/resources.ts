@@ -45,20 +45,89 @@ import type { Prisma } from '@x402scan/scan-db';
 import type { SupportedChain } from '@/types/chain';
 import type { DiscoveryInfo, DiscoveredResource } from '@/types/discovery';
 
-const DEFAULT_PROBE_METHODS: Methods[] = [Methods.POST, Methods.GET];
+const BULK_REGISTER_CONCURRENCY = 6;
+const METHOD_FALLBACKS = [Methods.DELETE, Methods.PUT, Methods.PATCH] as const;
 
-function buildProbeMethods(resource: DiscoveredResource): Methods[] {
-  if (!resource.method) return DEFAULT_PROBE_METHODS;
+function uniqueMethods(methods: Methods[]): Methods[] {
+  return Array.from(new Set(methods));
+}
 
-  const preferredMethod = resource.method as Methods;
-  if (!Object.values(Methods).includes(preferredMethod)) {
-    return DEFAULT_PROBE_METHODS;
+function primaryMethodsToTry(resource: DiscoveredResource): Methods[] {
+  if (resource.method) {
+    return uniqueMethods([resource.method as Methods, Methods.POST, Methods.GET]);
+  }
+  return [Methods.POST, Methods.GET];
+}
+
+function probeInitForMethod(method: Methods): {
+  headers: Record<string, string>;
+  body?: string;
+} {
+  if (
+    method === Methods.POST ||
+    method === Methods.PUT ||
+    method === Methods.PATCH
+  ) {
+    return {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+      },
+      body: '{}',
+    };
   }
 
-  return [
-    preferredMethod,
-    ...DEFAULT_PROBE_METHODS.filter(method => method !== preferredMethod),
-  ];
+  return {
+    headers: { 'Cache-Control': 'no-cache' },
+  };
+}
+
+async function mapSettledWithConcurrency<T, R>(
+  items: T[],
+  mapper: (item: T, index: number) => Promise<R>,
+  concurrency = BULK_REGISTER_CONCURRENCY
+): Promise<PromiseSettledResult<R>[]> {
+  const results: (PromiseSettledResult<R> | undefined)[] = Array.from({
+    length: items.length,
+  });
+  let nextIndex = 0;
+
+  async function worker() {
+    while (true) {
+      const current = nextIndex;
+      nextIndex += 1;
+
+      if (current >= items.length) return;
+      const item = items[current] as T;
+
+      try {
+        const value = await mapper(item, current);
+        results[current] = {
+          status: 'fulfilled',
+          value,
+        };
+      } catch (reason) {
+        results[current] = {
+          status: 'rejected',
+          reason,
+        };
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, () => worker())
+  );
+
+  return results.map((result, index) => {
+    if (!result) {
+      return {
+        status: 'rejected',
+        reason: new Error(`Missing result at index ${index}`),
+      };
+    }
+    return result;
+  });
 }
 
 export const resourcesRouter = createTRPCRouter({
@@ -328,32 +397,30 @@ export const resourcesRouter = createTRPCRouter({
         return 'Unknown error';
       }
 
-      const results = await Promise.allSettled(
-        discoveryResult.resources.map(async resource => {
+      const results = await mapSettledWithConcurrency(
+        discoveryResult.resources,
+        async resource => {
           const resourceUrl = resource.url;
-          const methodsToTry = buildProbeMethods(resource);
+          const methodsToTry = primaryMethodsToTry(resource);
 
           let lastError = 'No 402 response';
           let lastStatus: number | undefined;
           const errors: string[] = [];
+          const methodStatuses = new Map<Methods, number>();
 
-          for (const method of methodsToTry) {
+          const tryMethod = async (method: Methods) => {
             try {
+              const probeInit = probeInitForMethod(method);
               const response = await fetch(resourceUrl, {
                 method,
-                headers:
-                  method === Methods.POST
-                    ? {
-                        'Content-Type': 'application/json',
-                        'Cache-Control': 'no-cache',
-                      }
-                    : { 'Cache-Control': 'no-cache' },
-                body: method === Methods.POST ? '{}' : undefined,
+                headers: probeInit.headers,
+                body: probeInit.body,
                 signal: AbortSignal.timeout(15000),
                 cache: 'no-store',
               });
 
               lastStatus = response.status;
+              methodStatuses.set(method, response.status);
 
               if (response.status === 402) {
                 // Extract x402 data (handles v2 header and v1 body, with JSON parse fallback)
@@ -370,7 +437,6 @@ export const resourcesRouter = createTRPCRouter({
                   getErrorMessage(result.error) || 'Registration failed';
                 errors.push(`${method}: ${errorMsg}`);
                 lastError = errors.join('; ');
-                // Continue to try next method - don't break
               } else {
                 const errorMsg = `Expected 402, got ${response.status}`;
                 errors.push(`${method}: ${errorMsg}`);
@@ -382,6 +448,30 @@ export const resourcesRouter = createTRPCRouter({
               errors.push(`${method}: ${errorMsg}`);
               lastError = errors.join('; ');
             }
+
+            return null;
+          };
+
+          for (const method of methodsToTry) {
+            const successfulResult = await tryMethod(method);
+            if (successfulResult) {
+              return successfulResult;
+            }
+          }
+
+          // Legacy fallback: if discovery did not specify method and both
+          // default probe methods are method-not-allowed, try uncommon methods.
+          if (
+            !resource.method &&
+            methodStatuses.get(Methods.POST) === 405 &&
+            methodStatuses.get(Methods.GET) === 405
+          ) {
+            for (const fallbackMethod of METHOD_FALLBACKS) {
+              const successfulResult = await tryMethod(fallbackMethod);
+              if (successfulResult) {
+                return successfulResult;
+              }
+            }
           }
 
           return {
@@ -390,7 +480,7 @@ export const resourcesRouter = createTRPCRouter({
             error: lastError,
             status: lastStatus,
           };
-        })
+        }
       );
 
       // Separate successful and failed results with details
