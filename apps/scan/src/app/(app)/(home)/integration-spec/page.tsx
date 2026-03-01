@@ -122,6 +122,14 @@ npx -y @agentcash/discovery <domain> --json`}
           </CardContent>
         </Card>
 
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold">Choose Your Discovery Strategy</h2>
+          <p className="text-sm text-muted-foreground md:text-base">
+            Click a strategy to view exact requirements and a copy-paste implementation example.
+          </p>
+          <DiscoveryStrategyPanel />
+        </section>
+
         <Card>
           <CardHeader>
             <CardTitle>Discovery Precedence</CardTitle>
@@ -164,14 +172,6 @@ npx -y @agentcash/discovery <domain> --json`}
             </Table>
           </CardContent>
         </Card>
-
-        <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Choose Your Discovery Strategy</h2>
-          <p className="text-sm text-muted-foreground md:text-base">
-            Click a strategy to view exact requirements and a copy-paste implementation example.
-          </p>
-          <DiscoveryStrategyPanel />
-        </section>
 
         <Card>
           <CardHeader>
