@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Sparkles, Zap, BookOpen, Layers } from 'lucide-react';
-import Link from 'next/link';
 import {
   Popover,
   PopoverContent,
@@ -66,14 +65,14 @@ export const V2AnnouncementBanner = () => {
                 text={
                   <>
                     New x402scan Discovery Standard —{' '}
-                    <Link
+                    <a
                       href="/discovery.md"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary underline hover:text-primary/80"
                     >
                       read the docs
-                    </Link>
+                    </a>
                   </>
                 }
               />
