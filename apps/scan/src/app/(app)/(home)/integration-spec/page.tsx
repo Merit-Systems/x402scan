@@ -18,6 +18,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { CopyForAgentsButton } from './copy-for-agents-button';
+import { DiscoveryStrategyPanel } from './discovery-strategy-panel';
 
 import type { Metadata } from 'next';
 
@@ -26,45 +27,6 @@ export const metadata: Metadata = {
   description:
     'x402scan discovery and registration specification for OpenAPI, .well-known, DNS, and endpoint-only compatibility.',
 };
-
-const openApiExample = `{
-  "openapi": "3.1.0",
-  "info": { "title": "My API", "version": "1.0.0" },
-  "paths": {
-    "/api/quote": {
-      "post": {
-        "security": [{ "siwx": [] }],
-        "responses": { "402": { "description": "Payment Required" } },
-        "x-payment-info": {
-          "protocols": ["x402"],
-          "pricingMode": "fixed",
-          "price": "0.05"
-        }
-      }
-    }
-  },
-  "components": {
-    "securitySchemes": {
-      "siwx": { "type": "http", "scheme": "bearer" }
-    }
-  },
-  "x-discovery": {
-    "ownershipProofs": ["0x..."],
-    "llmsTxtUrl": "https://yourdomain.com/llms.txt"
-  }
-}`;
-
-const wellKnownExample = `{
-  "version": 1,
-  "resources": [
-    "https://yourdomain.com/api/route-1",
-    "https://yourdomain.com/api/route-2"
-  ],
-  "ownershipProofs": ["0x..."]
-}`;
-
-const dnsExample =
-  '_x402.yourdomain.com TXT "v=x4021;url=https://yourdomain.com/.well-known/x402"';
 
 const endpointExample = `curl -i -X POST https://yourdomain.com/api/route
 curl -i -X GET https://yourdomain.com/api/route`;
@@ -160,51 +122,6 @@ npx -y @agentcash/discovery <domain> --json`}
           </CardContent>
         </Card>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                OpenAPI
-                <Badge variant="success">Recommended</Badge>
-              </CardTitle>
-              <CardDescription>
-                Best signal quality, best compatibility, easiest to reason about.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Use <code>/openapi.json</code> or <code>/.well-known/openapi.json</code>.
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                Well-Known
-                <Badge variant="secondary">Compat</Badge>
-              </CardTitle>
-              <CardDescription>
-                Good for fan-out when OpenAPI is not available yet.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              Serve <code>GET /.well-known/x402</code> with a v1 resource list.
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                DNS Pointer
-                <Badge variant="outline">Legacy</Badge>
-              </CardTitle>
-              <CardDescription>
-                Supported for older integrations. Prefer moving off this over time.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              TXT record <code>_x402</code> should point to your well-known document.
-            </CardContent>
-          </Card>
-        </div>
-
         <Card>
           <CardHeader>
             <CardTitle>Discovery Precedence</CardTitle>
@@ -218,28 +135,28 @@ npx -y @agentcash/discovery <domain> --json`}
                 <TableRow>
                   <TableHead className="w-16">Order</TableHead>
                   <TableHead>Source</TableHead>
-                  <TableHead>Expected Location</TableHead>
+                  <TableHead className="w-[40%] whitespace-normal">Expected Location</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 <TableRow>
                   <TableCell>1</TableCell>
                   <TableCell>OpenAPI document</TableCell>
-                  <TableCell>
+                  <TableCell className="whitespace-normal break-words">
                     <code>/openapi.json</code> then <code>/.well-known/openapi.json</code>
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>2</TableCell>
                   <TableCell>Well-known fan-out</TableCell>
-                  <TableCell>
+                  <TableCell className="whitespace-normal break-words">
                     <code>/.well-known/x402</code>
                   </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell>3</TableCell>
                   <TableCell>DNS pointer</TableCell>
-                  <TableCell>
+                  <TableCell className="whitespace-normal break-words">
                     TXT at <code>_x402</code>
                   </TableCell>
                 </TableRow>
@@ -250,61 +167,15 @@ npx -y @agentcash/discovery <domain> --json`}
 
         <Card>
           <CardHeader>
-            <CardTitle>OpenAPI Contract (Canonical)</CardTitle>
+            <CardTitle>Choose Your Discovery Strategy</CardTitle>
             <CardDescription>
-              For paid operations, include both static metadata and runtime 402 behavior.
+              Click a card to view the exact requirements and an implementation example.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 text-sm md:text-base">
-            <ul className="list-disc pl-5 space-y-1">
-              <li>
-                Required top-level fields: <code>openapi</code>, <code>info.title</code>,{' '}
-                <code>info.version</code>, <code>paths</code>.
-              </li>
-              <li>
-                Per paid operation: <code>x-payment-info</code>, <code>responses.402</code>, and
-                <code> x-payment-info.protocols</code>.
-              </li>
-              <li>
-                Supported pricing modes: <code>fixed</code>, <code>range</code>, <code>quote</code>.
-              </li>
-              <li>
-                Auth should be declared with OpenAPI <code>security</code> and
-                <code> components.securitySchemes</code>.
-              </li>
-            </ul>
-            <CodeBlock code={openApiExample} />
+          <CardContent>
+            <DiscoveryStrategyPanel />
           </CardContent>
         </Card>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Well-Known Compatibility</CardTitle>
-              <CardDescription>
-                Use for fan-out if you are not ready to publish OpenAPI yet.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Endpoint: <code>GET /.well-known/x402</code>
-              </p>
-              <CodeBlock code={wellKnownExample} />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>DNS Compatibility</CardTitle>
-              <CardDescription>
-                Keep only while you still support older x402scan discovery paths.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">TXT record example</p>
-              <CodeBlock code={dnsExample} />
-            </CardContent>
-          </Card>
-        </div>
 
         <Card>
           <CardHeader>
@@ -335,37 +206,100 @@ npx -y @agentcash/discovery <domain> --json`}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Error</TableHead>
-                  <TableHead>Likely Cause</TableHead>
-                  <TableHead>Fix</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-mono text-xs md:text-sm">Expected 402, got 404/405</TableCell>
-                  <TableCell>Wrong method or wrong path</TableCell>
-                  <TableCell>Match method/path to your actual handler</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-mono text-xs md:text-sm">Accepts must contain at least one valid payment requirement</TableCell>
-                  <TableCell>Malformed or empty payment requirements</TableCell>
-                  <TableCell>Return a valid non-empty x402 accepts set</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-mono text-xs md:text-sm">Missing input schema</TableCell>
-                  <TableCell>Strict parser cannot infer invocable contract</TableCell>
-                  <TableCell>Publish Bazaar/OpenAPI input schema metadata</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-mono text-xs md:text-sm">Expected 402, got 429</TableCell>
-                  <TableCell>Provider-side throttling</TableCell>
-                  <TableCell>Retry, reduce probe volume, or register URL-only</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[35%] whitespace-normal">Error</TableHead>
+                    <TableHead className="w-[30%] whitespace-normal">Likely Cause</TableHead>
+                    <TableHead className="w-[35%] whitespace-normal">Fix</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                      Expected 402, got 404/405
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words align-top">
+                      Wrong method or wrong path
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words align-top">
+                      Match method/path to your actual handler
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                      Accepts must contain at least one valid payment requirement
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words align-top">
+                      Malformed or empty payment requirements
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words align-top">
+                      Return a valid non-empty x402 accepts set
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                      Missing input schema
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words align-top">
+                      Strict parser cannot infer invocable contract
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words align-top">
+                      Publish Bazaar/OpenAPI input schema metadata
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-mono text-xs md:text-sm whitespace-normal break-words align-top">
+                      Expected 402, got 429
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words align-top">
+                      Provider-side throttling
+                    </TableCell>
+                    <TableCell className="whitespace-normal break-words align-top">
+                      Retry, reduce probe volume, or register URL-only
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              <Card className="border-dashed">
+                <CardContent className="pt-4 space-y-2">
+                  <p className="font-mono text-xs break-words">Expected 402, got 404/405</p>
+                  <p className="text-sm text-muted-foreground">Wrong method or wrong path</p>
+                  <p className="text-sm">Fix: Match method/path to your actual handler</p>
+                </CardContent>
+              </Card>
+              <Card className="border-dashed">
+                <CardContent className="pt-4 space-y-2">
+                  <p className="font-mono text-xs break-words">
+                    Accepts must contain at least one valid payment requirement
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Malformed or empty payment requirements
+                  </p>
+                  <p className="text-sm">Fix: Return a valid non-empty x402 accepts set</p>
+                </CardContent>
+              </Card>
+              <Card className="border-dashed">
+                <CardContent className="pt-4 space-y-2">
+                  <p className="font-mono text-xs break-words">Missing input schema</p>
+                  <p className="text-sm text-muted-foreground">
+                    Strict parser cannot infer invocable contract
+                  </p>
+                  <p className="text-sm">Fix: Publish Bazaar/OpenAPI input schema metadata</p>
+                </CardContent>
+              </Card>
+              <Card className="border-dashed">
+                <CardContent className="pt-4 space-y-2">
+                  <p className="font-mono text-xs break-words">Expected 402, got 429</p>
+                  <p className="text-sm text-muted-foreground">Provider-side throttling</p>
+                  <p className="text-sm">Fix: Retry, reduce probe volume, or register URL-only</p>
+                </CardContent>
+              </Card>
+            </div>
           </CardContent>
         </Card>
       </Body>
