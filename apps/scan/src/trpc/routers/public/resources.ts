@@ -47,6 +47,9 @@ import type { DiscoveryInfo, DiscoveredResource } from '@/types/discovery';
 
 const BULK_REGISTER_CONCURRENCY = 6;
 const METHOD_FALLBACKS = [Methods.DELETE, Methods.PUT, Methods.PATCH] as const;
+const MAX_429_RETRIES_PER_METHOD = 1;
+const RETRY_429_BASE_DELAY_MS = 300;
+const RETRY_429_MAX_DELAY_MS = 1500;
 
 function uniqueMethods(methods: Methods[]): Methods[] {
   return Array.from(new Set(methods));
@@ -100,6 +103,28 @@ function isSiwxAuthOnlyChallenge(data: unknown): boolean {
   }
 
   return 'sign-in-with-x' in extensionsValue;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function parseRetryAfterMs(retryAfter: string | null): number | null {
+  if (!retryAfter) return null;
+
+  const asSeconds = Number.parseFloat(retryAfter);
+  if (Number.isFinite(asSeconds) && asSeconds >= 0) {
+    return Math.floor(asSeconds * 1000);
+  }
+
+  const asDate = Date.parse(retryAfter);
+  if (Number.isNaN(asDate)) {
+    return null;
+  }
+
+  return Math.max(0, asDate - Date.now());
 }
 
 async function mapSettledWithConcurrency<T, R>(
@@ -431,13 +456,38 @@ export const resourcesRouter = createTRPCRouter({
           const tryMethod = async (method: Methods) => {
             try {
               const probeInit = probeInitForMethod(method);
-              const response = await fetch(resourceUrl, {
-                method,
-                headers: probeInit.headers,
-                body: probeInit.body,
-                signal: AbortSignal.timeout(15000),
-                cache: 'no-store',
-              });
+              let response: Response;
+              let retryCount = 0;
+
+              while (true) {
+                response = await fetch(resourceUrl, {
+                  method,
+                  headers: probeInit.headers,
+                  body: probeInit.body,
+                  signal: AbortSignal.timeout(15000),
+                  cache: 'no-store',
+                });
+
+                if (
+                  response.status === 429 &&
+                  retryCount < MAX_429_RETRIES_PER_METHOD
+                ) {
+                  retryCount += 1;
+                  const retryAfterMs = parseRetryAfterMs(
+                    response.headers.get('retry-after')
+                  );
+                  const fallbackDelayMs =
+                    RETRY_429_BASE_DELAY_MS + Math.floor(Math.random() * 200);
+                  const delayMs = Math.min(
+                    retryAfterMs ?? fallbackDelayMs,
+                    RETRY_429_MAX_DELAY_MS
+                  );
+                  await sleep(delayMs);
+                  continue;
+                }
+
+                break;
+              }
 
               lastStatus = response.status;
               methodStatuses.set(method, response.status);
