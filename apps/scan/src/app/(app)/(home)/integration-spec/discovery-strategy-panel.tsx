@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 type StrategyKey = 'openapi' | 'wellKnown' | 'dns';
@@ -105,7 +104,7 @@ export function DiscoveryStrategyPanel() {
   const strategy = strategies.find(item => item.key === selected) ?? strategies[0]!;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 rounded-xl bg-muted/30 p-4 md:p-5">
       <div className="grid gap-3 md:grid-cols-3">
         {strategies.map(item => {
           const active = item.key === selected;
@@ -115,9 +114,9 @@ export function DiscoveryStrategyPanel() {
               type="button"
               onClick={() => setSelected(item.key)}
               className={cn(
-                'rounded-lg border bg-card text-left p-4 transition-colors',
-                'hover:border-primary/50 hover:bg-primary/5',
-                active && 'border-primary bg-primary/10'
+                'rounded-lg text-left p-4 transition-colors',
+                'bg-background/80 hover:bg-background',
+                active && 'ring-1 ring-primary bg-background'
               )}
             >
               <div className="flex items-center justify-between gap-2">
@@ -130,26 +129,24 @@ export function DiscoveryStrategyPanel() {
         })}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="rounded-lg bg-background p-4 md:p-5 space-y-4">
+        <div className="space-y-1">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             {strategy.title} Implementation
             <Badge variant={strategy.badgeVariant}>{strategy.badge}</Badge>
-          </CardTitle>
-          <CardDescription>{strategy.note}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Expected location: <code>{strategy.location}</code>
-          </p>
-          <ul className="list-disc pl-5 space-y-1 text-sm md:text-base">
-            {strategy.requirements.map(requirement => (
-              <li key={requirement}>{requirement}</li>
-            ))}
-          </ul>
-          <CodeBlock code={strategy.example} />
-        </CardContent>
-      </Card>
+          </h3>
+          <p className="text-sm text-muted-foreground">{strategy.note}</p>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Expected location: <code>{strategy.location}</code>
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-sm md:text-base">
+          {strategy.requirements.map(requirement => (
+            <li key={requirement}>{requirement}</li>
+          ))}
+        </ul>
+        <CodeBlock code={strategy.example} />
+      </div>
     </div>
   );
 }
