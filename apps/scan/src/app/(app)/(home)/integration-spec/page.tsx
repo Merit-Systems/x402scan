@@ -32,11 +32,11 @@ Discovery strategy:
 2) If OpenAPI is not feasible yet, use /.well-known/x402 v1 as temporary compatibility.
 3) DNS _x402 is optional legacy compatibility (only add if needed).
 
-Auth mode rules (x-agentcash-auth.mode):
-- allowed: "paid" | "siwx" | "apiKey"
-- payable route => mode must be "paid"
-- non-payable auth-only route can use "siwx" or "apiKey"
-- if a route is payable and also supports SIWX, keep mode as "paid"
+Schema guidance (important):
+- Each invocable route should expose an input schema.
+- In OpenAPI, define requestBody.content["application/json"].schema.
+- This is required for reliable agent invocation and robust listing behavior.
+- TypeScript recommendation (optional): Zod v4 is a good source of truth, but any valid schema pipeline is fine.
 
 OpenAPI payable operation must include ALL:
 - x-agentcash-auth: { mode: "paid" }
@@ -48,6 +48,12 @@ OpenAPI payable operation must include ALL:
     - quote: { pricingMode: "quote" }
   - IMPORTANT: for fixed pricing use "price" (not "amount")
 - responses: { "402": { description: "Payment Required" } }
+
+Auth mode rules (x-agentcash-auth.mode):
+- allowed: "paid" | "siwx" | "apiKey"
+- payable route => mode must be "paid"
+- non-payable auth-only route can use "siwx" or "apiKey"
+- if a route is payable and also supports SIWX, keep mode as "paid"
 
 /.well-known/x402 must be exactly:
 {
