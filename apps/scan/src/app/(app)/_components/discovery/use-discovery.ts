@@ -50,6 +50,7 @@ export interface UseDiscoveryOptions {
 
 export interface UseDiscoveryReturn {
   // URL info
+  normalizedUrl: string;
   isValidUrl: boolean;
   urlOrigin: string | null;
   isOriginOnly: boolean;
@@ -294,6 +295,7 @@ export function useDiscovery({
 
   return {
     // URL info
+    normalizedUrl: url,
     isValidUrl,
     urlOrigin,
     isOriginOnly,

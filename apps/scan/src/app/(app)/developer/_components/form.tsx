@@ -34,6 +34,7 @@ export const TestEndpointForm = () => {
 
   // Use shared discovery hook (test mode - no registration)
   const {
+    normalizedUrl,
     isValidUrl,
     urlOrigin,
     isDiscoveryLoading,
@@ -60,23 +61,20 @@ export const TestEndpointForm = () => {
 
   const isLocalhost = useMemo(() => {
     try {
-      // Try with http:// prefix if no protocol
-      const urlToCheck = url.includes('://') ? url : `http://${url}`;
-      return isLocalUrl(urlToCheck);
+      return isLocalUrl(normalizedUrl);
     } catch {
       return false;
     }
-  }, [url]);
+  }, [normalizedUrl]);
 
   const localPort = useMemo(() => {
     if (!isLocalhost) return null;
     try {
-      const urlToCheck = url.includes('://') ? url : `http://${url}`;
-      return extractPort(urlToCheck);
+      return extractPort(normalizedUrl);
     } catch {
       return null;
     }
-  }, [url, isLocalhost]);
+  }, [normalizedUrl, isLocalhost]);
 
   return (
     <div className="flex flex-col gap-4">
