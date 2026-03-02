@@ -113,12 +113,20 @@ export interface UseDiscoveryReturn {
 }
 
 export function useDiscovery({
-  url,
+  url: rawUrl,
   onRegisterAllSuccess,
   onRegisterAllError,
 }: UseDiscoveryOptions): UseDiscoveryReturn {
   const utils = api.useUtils();
   const [bulkError, setBulkError] = useState<string | null>(null);
+
+  const url = useMemo(() => {
+    const trimmed = rawUrl.trim();
+    if (trimmed && !trimmed.includes('://')) {
+      return `https://${trimmed}`;
+    }
+    return trimmed;
+  }, [rawUrl]);
 
   // Check if URL is valid and extract origin
   const isValidUrl = useMemo(() => z.url().safeParse(url).success, [url]);

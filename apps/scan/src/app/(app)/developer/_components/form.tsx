@@ -116,7 +116,7 @@ export const TestEndpointForm = () => {
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="https://"
+                  placeholder="stableenrich.dev"
                   value={url}
                   onChange={e => setUrl(e.target.value)}
                   className="pr-10"
