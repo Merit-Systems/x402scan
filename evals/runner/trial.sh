@@ -112,17 +112,17 @@ if [ "$FIXTURE" = "express-openapi" ]; then
 else
   # Next.js: try build+start, fall back to dev
   if (cd "$TMPDIR" && npx next build 2>"$RESULTS_DIR/build-stderr.log" >&2); then
-    (cd "$TMPDIR" && npx next start -p "$PORT" 2>"$RESULTS_DIR/server-stderr.log" &)
+    (cd "$TMPDIR" && PORT=$PORT npx next start -p "$PORT" 2>"$RESULTS_DIR/server-stderr.log" &)
   else
     log "Build failed, using dev mode"
-    (cd "$TMPDIR" && npx next dev -p "$PORT" 2>"$RESULTS_DIR/server-stderr.log" &)
+    (cd "$TMPDIR" && PORT=$PORT npx next dev -p "$PORT" 2>"$RESULTS_DIR/server-stderr.log" &)
   fi
 fi
 
 # Wait for server
 for i in $(seq 1 30); do
   if curl -sf "http://localhost:$PORT" >/dev/null 2>&1 || \
-     curl -sf "http://localhost:$PORT" -o /dev/null -w "%{http_code}" 2>/dev/null | grep -q "200\|404"; then
+     curl -s "http://localhost:$PORT" -o /dev/null -w "%{http_code}" 2>/dev/null | grep -q "200\|404"; then
     break
   fi
   sleep 0.5
