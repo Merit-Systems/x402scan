@@ -279,7 +279,7 @@ export const createColumns = (
                 )
               }
             >
-              Copy Full URL
+              Copy Agentcash URL
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() =>
