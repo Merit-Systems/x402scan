@@ -94,6 +94,19 @@ function toPathLabel(resourceUrl: string): string {
   }
 }
 
+function getPrimaryProbeError(
+  failed?: {
+    error: string;
+    parseErrors?: string[];
+  } | null
+): string {
+  if (!failed) return 'Endpoint probe failed';
+  if (Array.isArray(failed.parseErrors) && failed.parseErrors.length > 0) {
+    return failed.parseErrors[0] ?? failed.error;
+  }
+  return failed.error || 'Endpoint probe failed';
+}
+
 export const RegisterResourceForm = () => {
   const [url, setUrl] = useState('');
   const [headers, setHeaders] = useState<{ name: string; value: string }[]>([]);
@@ -116,11 +129,8 @@ export const RegisterResourceForm = () => {
     isDiscoveryLoading,
     discoveryFound,
     discoverySource,
-    discoveryResources,
     discoveryError,
-    invalidResourcesMap,
     actualDiscoveredResources,
-    isPreviewLoading,
     isRegisteringAll,
     bulkData,
     bulkError,
@@ -130,13 +140,6 @@ export const RegisterResourceForm = () => {
     isBatchTestLoading,
     testedResources,
     failedResources,
-    ownershipProofs,
-    payToAddresses,
-    recoveredAddresses,
-    verifiedAddresses,
-    ownershipVerified,
-    refreshDiscovery,
-    retryResource,
   } = useDiscovery({
     url,
   });
@@ -184,14 +187,14 @@ export const RegisterResourceForm = () => {
   }, [failedResources]);
 
   const currentManualTested = testedResourceByUrl.get(normalizedUrl);
-  const currentManualFailed = failedResourceByUrl.get(normalizedUrl);
+  const currentManualFailed =
+    failedResourceByUrl.get(normalizedUrl) ??
+    (failedResources.length === 1 ? failedResources[0] : undefined);
 
   const activeBulkResult = manualResult ?? bulkData ?? null;
   const activeSummaryOrigin = manualResult?.origin ?? urlOrigin;
   const shouldShowReset =
     activeBulkResult !== null || manualUrls.length > 0 || url.length > 0;
-  const shouldShowPreRegisterValidation =
-    activeBulkResult === null && isValidUrl && Boolean(urlOrigin);
 
   const requestHeaders = useMemo(() => {
     const entries = headers
@@ -470,7 +473,7 @@ export const RegisterResourceForm = () => {
           ) : currentManualFailed ? (
             <div className="flex items-center gap-2 text-red-700">
               <XCircle className="size-3" />
-              {currentManualFailed.error}
+              {getPrimaryProbeError(currentManualFailed)}
             </div>
           ) : null}
         </CardContent>
@@ -694,33 +697,61 @@ export const RegisterResourceForm = () => {
         </div>
       ) : null}
 
-      {shouldShowPreRegisterValidation && urlOrigin ? (
-        <DiscoveryPanel
-          origin={urlOrigin}
-          enteredUrl={!isOriginOnly ? normalizedUrl : undefined}
-          isLoading={isDiscoveryLoading}
-          found={discoveryFound}
-          source={discoverySource}
-          resources={discoveryResources}
-          resourceCount={discoveryResources.length}
-          discoveryError={discoveryError}
-          invalidResourcesMap={invalidResourcesMap}
-          isRegisteringAll={false}
-          showRegisterButton={false}
-          mode="test"
-          preview={preview}
-          isPreviewLoading={isPreviewLoading}
-          testedResources={testedResources}
-          failedResources={failedResources}
-          isBatchTestLoading={isBatchTestLoading}
-          onRefresh={refreshDiscovery}
-          onRetryResource={retryResource}
-          ownershipProofs={ownershipProofs}
-          payToAddresses={payToAddresses}
-          recoveredAddresses={recoveredAddresses}
-          verifiedAddresses={verifiedAddresses}
-          ownershipVerified={ownershipVerified}
-        />
+      {!activeBulkResult &&
+      !isBatchTestLoading &&
+      failedResources.length > 0 ? (
+        <details className="border rounded-md group">
+          <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+            <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+            More Info ({failedResources.length} failed resource
+            {failedResources.length === 1 ? '' : 's'})
+          </summary>
+          <div className="p-4 pt-2 border-t space-y-2 max-h-[360px] overflow-y-auto">
+            {failedResources.map((failed, idx) => (
+              <div
+                key={`${failed.url}-${idx}`}
+                className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+              >
+                <div className="flex items-start gap-2">
+                  <span className="text-muted-foreground shrink-0">URL:</span>
+                  <span className="font-mono break-all">{failed.url}</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-muted-foreground shrink-0">Error:</span>
+                  <span className="text-red-600 wrap-break-word">
+                    {getPrimaryProbeError(failed)}
+                  </span>
+                </div>
+                {Array.isArray(failed.parseErrors) &&
+                  failed.parseErrors.length > 0 && (
+                    <div className="pt-1">
+                      <p className="text-muted-foreground mb-1">
+                        Validation details:
+                      </p>
+                      <ul className="space-y-1 list-disc list-inside">
+                        {failed.parseErrors.map((error, i) => (
+                          <li
+                            key={i}
+                            className="text-red-600 font-mono text-[10px]"
+                          >
+                            {error}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                {failed.status && (
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground shrink-0">
+                      Status:
+                    </span>
+                    <span className="font-mono">{failed.status}</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </details>
       ) : null}
 
       {activeBulkResult && activeSummaryOrigin ? (
