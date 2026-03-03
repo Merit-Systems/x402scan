@@ -16,6 +16,7 @@ import {
   registryRegisterOriginBodySchema,
   registryOriginQuerySchema,
 } from './schemas';
+import { sendUsdcQueryParamsSchema } from '@/lib/schemas';
 
 /** Convert a Zod schema to a JSON Schema object for the bazaar inputSchema field. */
 function inputSchemaFrom(schema: z.ZodType) {
@@ -259,6 +260,24 @@ export const registryOriginExtension = declareDiscoveryExtension({
         },
       ],
       pagination: { page: 0, page_size: 10, has_next_page: true },
+    },
+  },
+});
+
+// ── Utility endpoints ─────────────────────────────
+
+export const sendUsdcExtension = declareDiscoveryExtension({
+  input: {
+    amount: 0.01,
+    chain: 'solana',
+    address: '7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV',
+  },
+  inputSchema: inputSchemaFrom(sendUsdcQueryParamsSchema),
+  output: {
+    example: {
+      success: true,
+      message:
+        '0.01 USDC sent to 7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV on solana',
     },
   },
 });
