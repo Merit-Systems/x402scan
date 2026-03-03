@@ -43,6 +43,35 @@ const validV2WithoutSchema = {
   },
 };
 
+const validV2MissingInputInBazaarInfo = {
+  x402Version: 2,
+  accepts: [
+    {
+      scheme: 'exact',
+      network: 'eip155:8453',
+      amount: '1000',
+      payTo: '0x1234567890123456789012345678901234567890',
+      maxTimeoutSeconds: 60,
+      asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      extra: {},
+    },
+  ],
+  resource: {
+    url: 'https://example.com/tool',
+    description: 'A valid v2 resource',
+    mimeType: 'application/json',
+  },
+  extensions: {
+    bazaar: {
+      info: {
+        output: {
+          type: 'object',
+        },
+      },
+    },
+  },
+};
+
 async function loadValidateWithDiscoveryMock(
   validatePaymentRequiredDetailed?: (payload: unknown) => {
     valid: boolean;
@@ -195,6 +224,20 @@ describe('validateX402', () => {
     }));
 
     const result = validateX402(validV2WithoutSchema);
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.errors).toContain('Missing input schema');
+    }
+  });
+
+  it('does not throw when bazaar info exists without input schema', async () => {
+    const { validateX402 } = await loadValidateWithDiscoveryMock(() => ({
+      valid: true,
+      issues: [],
+    }));
+
+    const result = validateX402(validV2MissingInputInBazaarInfo);
 
     expect(result.success).toBe(false);
     if (!result.success) {

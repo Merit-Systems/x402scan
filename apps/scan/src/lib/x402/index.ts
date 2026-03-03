@@ -157,6 +157,11 @@ function getOutputSchemaFromBazaar(
   }
 
   const info = bazaar.info;
+  if (!info.input || typeof info.input !== 'object') {
+    // Missing/invalid bazaar input schema should be handled as a validation
+    // issue upstream; never throw here.
+    return undefined;
+  }
   const input = info.input as Record<string, unknown>;
   const body = input.body;
   const schemaUnknown: unknown = bazaar.schema;
