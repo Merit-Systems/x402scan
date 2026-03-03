@@ -29,6 +29,7 @@ export type X402ScanValidationResult =
   | X402ScanValidationFailure;
 
 interface DiscoveryValidationResult {
+  valid: boolean;
   issues: X402ValidationIssue[];
 }
 
@@ -64,6 +65,7 @@ function runDiscoveryValidation(data: unknown): DiscoveryValidationResult | null
       : [];
 
     return {
+      valid: result.valid,
       issues,
     };
   } catch {
@@ -99,6 +101,7 @@ export function validateX402(data: unknown): X402ScanValidationResult {
   }
 
   const x402 = parsed.data;
+  const discoveryValid = discoveryValidation?.valid ?? true;
   const discoveryIssues = discoveryValidation?.issues ?? [];
 
   if (!x402.accepts?.length) {
@@ -124,7 +127,7 @@ export function validateX402(data: unknown): X402ScanValidationResult {
   const discoveryErrors = discoveryIssues.filter(
     issue => issue.severity === 'error'
   );
-  if (discoveryErrors.length > 0) {
+  if (!discoveryValid || discoveryErrors.length > 0) {
     return {
       success: false,
       errors: toLegacyErrors([], discoveryIssues),

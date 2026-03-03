@@ -132,6 +132,34 @@ describe('validateX402', () => {
     }
   });
 
+  it('fails strict validation when discovery marks payload invalid with warn-only issues', async () => {
+    const { validateX402 } = await loadValidateWithDiscoveryMock(() => ({
+      valid: false,
+      issues: [
+        {
+          code: 'COMPAT_ESCALATED_STRICT',
+          severity: 'warn',
+          path: '$.resource',
+          message: 'Compatibility issue escalated by strict mode.',
+        },
+      ],
+    }));
+
+    const result = validateX402(validV1Response);
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.issues).toEqual([
+        {
+          code: 'COMPAT_ESCALATED_STRICT',
+          severity: 'warn',
+          path: '$.resource',
+          message: 'Compatibility issue escalated by strict mode.',
+        },
+      ]);
+    }
+  });
+
   it('still returns missing input schema when payload has no discoverable schema', async () => {
     const { validateX402 } = await loadValidateWithDiscoveryMock(() => ({
       valid: true,
