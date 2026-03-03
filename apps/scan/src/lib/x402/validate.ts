@@ -1,7 +1,10 @@
 import { getOutputSchema, normalizeAccepts, parseX402Response } from '.';
 import type { ParsedX402Response } from '.';
 import * as discoveryPackage from '@agentcash/discovery';
-import type { X402ValidationIssue } from '@/types/validation';
+import {
+  isX402ValidationIssue,
+  type X402ValidationIssue,
+} from '@/types/validation';
 
 export type ParsedX402ResponseWithAccepts = ParsedX402Response & {
   accepts: NonNullable<ParsedX402Response['accepts']>;
@@ -38,18 +41,6 @@ type DiscoveryValidateFn = (
   }
 ) => { valid: boolean; issues: unknown[] };
 
-function isValidationIssue(value: unknown): value is X402ValidationIssue {
-  if (!value || typeof value !== 'object') return false;
-  const issue = value as Partial<X402ValidationIssue>;
-  return (
-    typeof issue.code === 'string' &&
-    typeof issue.message === 'string' &&
-    (issue.severity === 'error' ||
-      issue.severity === 'warn' ||
-      issue.severity === 'info')
-  );
-}
-
 function runDiscoveryValidation(data: unknown): DiscoveryValidationResult | null {
   const validate = (
     discoveryPackage as unknown as {
@@ -69,7 +60,7 @@ function runDiscoveryValidation(data: unknown): DiscoveryValidationResult | null
       requireOutputSchema: true,
     });
     const issues = Array.isArray(result.issues)
-      ? result.issues.filter(isValidationIssue)
+      ? result.issues.filter(isX402ValidationIssue)
       : [];
 
     return {
