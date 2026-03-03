@@ -30,7 +30,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import { DiscoveryPanel, useDiscovery } from '@/app/(app)/_components/discovery';
+import {
+  DiscoveryPanel,
+  useDiscovery,
+} from '@/app/(app)/_components/discovery';
 import { Favicon } from '@/app/(app)/_components/favicon';
 import { cn } from '@/lib/utils';
 import { normalizeUrl } from '@/lib/url';
@@ -113,8 +116,11 @@ export const RegisterResourceForm = () => {
     isDiscoveryLoading,
     discoveryFound,
     discoverySource,
+    discoveryResources,
     discoveryError,
+    invalidResourcesMap,
     actualDiscoveredResources,
+    isPreviewLoading,
     isRegisteringAll,
     bulkData,
     bulkError,
@@ -124,6 +130,13 @@ export const RegisterResourceForm = () => {
     isBatchTestLoading,
     testedResources,
     failedResources,
+    ownershipProofs,
+    payToAddresses,
+    recoveredAddresses,
+    verifiedAddresses,
+    ownershipVerified,
+    refreshDiscovery,
+    retryResource,
   } = useDiscovery({
     url,
   });
@@ -177,6 +190,8 @@ export const RegisterResourceForm = () => {
   const activeSummaryOrigin = manualResult?.origin ?? urlOrigin;
   const shouldShowReset =
     activeBulkResult !== null || manualUrls.length > 0 || url.length > 0;
+  const shouldShowPreRegisterValidation =
+    activeBulkResult === null && isValidUrl && Boolean(urlOrigin);
 
   const requestHeaders = useMemo(() => {
     const entries = headers
@@ -190,7 +205,9 @@ export const RegisterResourceForm = () => {
       return undefined;
     }
 
-    return Object.fromEntries(entries.map(header => [header.name, header.value]));
+    return Object.fromEntries(
+      entries.map(header => [header.name, header.value])
+    );
   }, [headers]);
 
   const resetStateForNewRun = () => {
@@ -284,7 +301,8 @@ export const RegisterResourceForm = () => {
 
         if (result.success) {
           registered += 1;
-          const parsedSuccessResult = registerSuccessResultSchema.safeParse(result);
+          const parsedSuccessResult =
+            registerSuccessResultSchema.safeParse(result);
           if (parsedSuccessResult.success) {
             originId ??= parsedSuccessResult.data.resource.origin.id;
           }
@@ -358,7 +376,9 @@ export const RegisterResourceForm = () => {
             <Loader2 className="size-6 animate-spin text-muted-foreground shrink-0" />
             <div>
               <CardTitle className="text-base">Fetching Server Info</CardTitle>
-              <CardDescription>Checking discovery and endpoint data...</CardDescription>
+              <CardDescription>
+                Checking discovery and endpoint data...
+              </CardDescription>
             </div>
           </CardHeader>
         </Card>
@@ -367,7 +387,8 @@ export const RegisterResourceForm = () => {
 
     if (hasDiscoveryResources) {
       const previewResources = actualDiscoveredResources.slice(0, 8);
-      const hiddenCount = actualDiscoveredResources.length - previewResources.length;
+      const hiddenCount =
+        actualDiscoveredResources.length - previewResources.length;
 
       return (
         <Card>
@@ -394,7 +415,9 @@ export const RegisterResourceForm = () => {
                 </li>
               ))}
               {hiddenCount > 0 && (
-                <li className="text-muted-foreground/70">+ {hiddenCount} more</li>
+                <li className="text-muted-foreground/70">
+                  + {hiddenCount} more
+                </li>
               )}
             </ul>
           </CardContent>
@@ -408,7 +431,9 @@ export const RegisterResourceForm = () => {
           <CardHeader className="flex-row items-center gap-3 space-y-0">
             <XCircle className="size-6 text-red-600 shrink-0" />
             <div>
-              <CardTitle className="text-base">No Discovery Document Found</CardTitle>
+              <CardTitle className="text-base">
+                No Discovery Document Found
+              </CardTitle>
               <CardDescription>
                 {discoveryError ??
                   'This origin has no discoverable resource list yet. Enter a full endpoint URL to register manually.'}
@@ -426,7 +451,8 @@ export const RegisterResourceForm = () => {
           <div>
             <CardTitle className="text-base">Manual URL Mode</CardTitle>
             <CardDescription>
-              No discovery resources found for this origin. You can still register URLs directly.
+              No discovery resources found for this origin. You can still
+              register URLs directly.
             </CardDescription>
           </div>
         </CardHeader>
@@ -458,8 +484,8 @@ export const RegisterResourceForm = () => {
         <CardHeader>
           <CardTitle>Add Server</CardTitle>
           <CardDescription>
-            Enter a server URL. If discovery is available, we&apos;ll register everything.
-            If not, you can add endpoint URLs manually.
+            Enter a server URL. If discovery is available, we&apos;ll register
+            everything. If not, you can add endpoint URLs manually.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -508,7 +534,12 @@ export const RegisterResourceForm = () => {
                     type="button"
                     variant="ghost"
                     size="xs"
-                    onClick={() => setHeaders(current => [...current, { name: '', value: '' }])}
+                    onClick={() =>
+                      setHeaders(current => [
+                        ...current,
+                        { name: '', value: '' },
+                      ])
+                    }
                     className="size-fit px-1"
                   >
                     <Plus className="size-3 mr-1" />
@@ -524,7 +555,9 @@ export const RegisterResourceForm = () => {
                       onChange={event =>
                         setHeaders(current =>
                           current.map((item, itemIndex) =>
-                            itemIndex === index ? { ...item, name: event.target.value } : item
+                            itemIndex === index
+                              ? { ...item, name: event.target.value }
+                              : item
                           )
                         )
                       }
@@ -536,7 +569,9 @@ export const RegisterResourceForm = () => {
                       onChange={event =>
                         setHeaders(current =>
                           current.map((item, itemIndex) =>
-                            itemIndex === index ? { ...item, value: event.target.value } : item
+                            itemIndex === index
+                              ? { ...item, value: event.target.value }
+                              : item
                           )
                         )
                       }
@@ -546,7 +581,9 @@ export const RegisterResourceForm = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() =>
-                        setHeaders(current => current.filter((_, itemIndex) => itemIndex !== index))
+                        setHeaders(current =>
+                          current.filter((_, itemIndex) => itemIndex !== index)
+                        )
                       }
                       className="shrink-0"
                     >
@@ -600,7 +637,9 @@ export const RegisterResourceForm = () => {
               </Button>
               <Button
                 variant="outline"
-                disabled={!canUseManualMode || isRegisteringAll || isRegisteringManual}
+                disabled={
+                  !canUseManualMode || isRegisteringAll || isRegisteringManual
+                }
                 onClick={() => {
                   void handleRegisterCurrentUrlOnly();
                 }}
@@ -655,6 +694,35 @@ export const RegisterResourceForm = () => {
         </div>
       ) : null}
 
+      {shouldShowPreRegisterValidation && urlOrigin ? (
+        <DiscoveryPanel
+          origin={urlOrigin}
+          enteredUrl={!isOriginOnly ? normalizedUrl : undefined}
+          isLoading={isDiscoveryLoading}
+          found={discoveryFound}
+          source={discoverySource}
+          resources={discoveryResources}
+          resourceCount={discoveryResources.length}
+          discoveryError={discoveryError}
+          invalidResourcesMap={invalidResourcesMap}
+          isRegisteringAll={false}
+          showRegisterButton={false}
+          mode="test"
+          preview={preview}
+          isPreviewLoading={isPreviewLoading}
+          testedResources={testedResources}
+          failedResources={failedResources}
+          isBatchTestLoading={isBatchTestLoading}
+          onRefresh={refreshDiscovery}
+          onRetryResource={retryResource}
+          ownershipProofs={ownershipProofs}
+          payToAddresses={payToAddresses}
+          recoveredAddresses={recoveredAddresses}
+          verifiedAddresses={verifiedAddresses}
+          ownershipVerified={ownershipVerified}
+        />
+      ) : null}
+
       {activeBulkResult && activeSummaryOrigin ? (
         <DiscoveryPanel
           origin={activeSummaryOrigin}
@@ -670,7 +738,10 @@ export const RegisterResourceForm = () => {
 
       {activeBulkResult?.originId ? (
         <div className="flex gap-2">
-          <Link href={`/server/${activeBulkResult.originId}`} className="flex-1">
+          <Link
+            href={`/server/${activeBulkResult.originId}`}
+            className="flex-1"
+          >
             <Button variant="outline" className="w-full">
               View Server
             </Button>
@@ -678,9 +749,7 @@ export const RegisterResourceForm = () => {
         </div>
       ) : null}
 
-      {bulkError && (
-        <p className={cn('text-sm text-red-600')}>{bulkError}</p>
-      )}
+      {bulkError && <p className={cn('text-sm text-red-600')}>{bulkError}</p>}
 
       {registerMutation.error && (
         <p className={cn('text-sm text-red-600')}>
