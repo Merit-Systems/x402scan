@@ -1,4 +1,5 @@
 import type { ParsedX402Response } from '@/lib/x402';
+import type { X402ValidationIssue } from './validation';
 
 export interface TestedResource {
   success: true;
@@ -17,5 +18,6 @@ export interface FailedResource {
   headers?: Record<string, string>;
   body?: unknown;
   parseErrors?: string[];
+  issues?: X402ValidationIssue[];
   triedMethods?: string[];
 }

@@ -76,3 +76,47 @@ Failure buckets: `no-discovery-doc`, `invalid-openapi-shape`, `missing-paid-rout
 | v2 | v2 (added schemas) | easy | 30% |
 | v3 | v3 (price/auth explicit) | easy | 60% |
 | v3-hard | v3 | hard (2 routes + distractors + broken discovery) | 100% |
+
+---
+
+## Validator Seam Evals (x402scan registration path)
+
+Use this when you want to validate that malformed x402 payloads fail with structured, parseable
+diagnostics (`error.issues[]` + `error.parseErrors[]`) through x402scan APIs.
+
+### What it covers
+
+- invalid Solana alias in v1 (`solana-mainnet-beta`)
+- invalid v2 CAIP format
+- missing `accepts`
+- missing input schema
+- missing output schema (strict)
+- Coinbase structural schema failure
+- invalid `accepts` shape
+
+### Run
+
+Prereqs:
+- x402scan app running locally (default `http://localhost:3000`)
+- local pointer to your discovery branch active in x402scan
+
+Commands:
+
+```bash
+cd evals
+chmod +x runner/validator-seam.sh
+./runner/validator-seam.sh
+```
+
+Options:
+
+```bash
+./runner/validator-seam.sh http://localhost:3000 4102
+```
+
+Output:
+- fixture logs: `results-validator-seam/fixture.log`
+- latest report: `results-validator-seam/latest.json`
+
+Prod sampling helper:
+- `runner/prod-solana-sampling.sql` (query real Solana network/schema patterns from scan DB)

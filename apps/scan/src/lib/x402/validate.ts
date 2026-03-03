@@ -1,5 +1,10 @@
 import { getOutputSchema, normalizeAccepts, parseX402Response } from '.';
 import type { ParsedX402Response } from '.';
+import * as discoveryPackage from '@agentcash/discovery';
+import {
+  isX402ValidationIssue,
+  type X402ValidationIssue,
+} from '@/types/validation';
 
 export type ParsedX402ResponseWithAccepts = ParsedX402Response & {
   accepts: NonNullable<ParsedX402Response['accepts']>;
@@ -10,35 +15,153 @@ interface X402ScanValidationSuccess {
   parsed: ParsedX402ResponseWithAccepts;
   normalizedAccepts: ReturnType<typeof normalizeAccepts>;
   outputSchema: NonNullable<ReturnType<typeof getOutputSchema>>;
+  issues: X402ValidationIssue[];
 }
 
 interface X402ScanValidationFailure {
   success: false;
   errors: string[];
+  issues: X402ValidationIssue[];
 }
 
 export type X402ScanValidationResult =
   | X402ScanValidationSuccess
   | X402ScanValidationFailure;
 
+interface DiscoveryValidationResult {
+  valid: boolean;
+  issues: X402ValidationIssue[];
+}
+
+type DiscoveryValidateFn = (
+  payload: unknown,
+  options?: {
+    compatMode?: 'on' | 'off' | 'strict';
+    requireInputSchema?: boolean;
+    requireOutputSchema?: boolean;
+  }
+) => { valid: boolean; issues: unknown[] };
+
+function runDiscoveryValidation(
+  data: unknown
+): DiscoveryValidationResult | null {
+  const validate = (
+    discoveryPackage as unknown as {
+      validatePaymentRequiredDetailed?: DiscoveryValidateFn;
+    }
+  ).validatePaymentRequiredDetailed;
+
+  if (typeof validate !== 'function') {
+    return null;
+  }
+
+  try {
+    const result = validate(data, {
+      compatMode: 'strict',
+      requireInputSchema: true,
+      // Treat output schema as required for scan ingestion quality.
+      requireOutputSchema: true,
+    });
+    const issues = Array.isArray(result.issues)
+      ? result.issues.filter(isX402ValidationIssue)
+      : [];
+
+    return {
+      valid: result.valid,
+      issues,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function toLegacyErrors(
+  parseErrors: string[],
+  issues: X402ValidationIssue[]
+): string[] {
+  const issueErrors = issues
+    .filter(issue => issue.severity === 'error')
+    .map(issue =>
+      issue.path && issue.path !== '$'
+        ? `${issue.code}: ${issue.path}: ${issue.message}`
+        : `${issue.code}: ${issue.message}`
+    );
+
+  return [...new Set([...parseErrors, ...issueErrors])];
+}
+
+function isNonBlockingDiscoveryIssue(issue: X402ValidationIssue): boolean {
+  // Missing output schema should be surfaced as a warning in UI, but
+  // should not block ingestion when the rest of the payload is valid.
+  if (issue.code === 'SCHEMA_OUTPUT_MISSING') {
+    return true;
+  }
+
+  // Coinbase validator currently rejects nullable strings in some
+  // producer payloads we still want to ingest.
+  if (
+    issue.code === 'COINBASE_SCHEMA_INVALID' &&
+    issue.message.includes('Expected string, received null')
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 export function validateX402(data: unknown): X402ScanValidationResult {
+  const discoveryValidation = runDiscoveryValidation(data);
+
   const parsed = parseX402Response(data);
   if (!parsed.success) {
-    return { success: false, errors: parsed.errors };
+    return {
+      success: false,
+      errors: toLegacyErrors(parsed.errors, discoveryValidation?.issues ?? []),
+      issues: discoveryValidation?.issues ?? [],
+    };
   }
 
   const x402 = parsed.data;
+  const discoveryValid = discoveryValidation?.valid ?? true;
+  const discoveryIssues = discoveryValidation?.issues ?? [];
 
   if (!x402.accepts?.length) {
     return {
       success: false,
-      errors: ['Accepts must contain at least one valid payment requirement'],
+      errors: toLegacyErrors(
+        ['Accepts must contain at least one valid payment requirement'],
+        discoveryIssues
+      ),
+      issues: discoveryIssues,
     };
   }
 
   const outputSchema = getOutputSchema(x402);
   if (!outputSchema?.input) {
-    return { success: false, errors: ['Missing input schema'] };
+    return {
+      success: false,
+      errors: toLegacyErrors(['Missing input schema'], discoveryIssues),
+      issues: discoveryIssues,
+    };
+  }
+
+  const discoveryBlockingErrors = discoveryIssues.filter(
+    issue => issue.severity === 'error' && !isNonBlockingDiscoveryIssue(issue)
+  );
+  const hasNonBlockingOnlyInvalidState =
+    !discoveryValid &&
+    discoveryIssues.length > 0 &&
+    discoveryIssues.every(isNonBlockingDiscoveryIssue);
+
+  if (
+    (!discoveryValid && !hasNonBlockingOnlyInvalidState) ||
+    discoveryBlockingErrors.length > 0
+  ) {
+    return {
+      success: false,
+      errors: toLegacyErrors([], discoveryIssues),
+      issues: discoveryIssues,
+    };
   }
 
   const withAccepts = x402 as ParsedX402ResponseWithAccepts;
@@ -47,5 +170,6 @@ export function validateX402(data: unknown): X402ScanValidationResult {
     parsed: withAccepts,
     normalizedAccepts: normalizeAccepts(withAccepts),
     outputSchema,
+    issues: discoveryIssues,
   };
 }
