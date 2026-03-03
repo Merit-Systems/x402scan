@@ -6,6 +6,7 @@ import { registerResource } from '@/lib/resources';
 import { extractX402Data } from '@/lib/x402';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
+import { getValidationIssueMessages } from '@/types/validation';
 import { Methods } from '@/types/x402';
 import type { DiscoveredResource } from '@/types/discovery';
 
@@ -168,21 +169,7 @@ function getErrorMessage(err: unknown): string {
     if ('parseErrors' in err && Array.isArray(err.parseErrors)) {
       details.push(...(err.parseErrors as string[]));
     } else if ('issues' in err && Array.isArray(err.issues)) {
-      const issueMessages = (err.issues as unknown[])
-        .map(issue => {
-          if (!issue || typeof issue !== 'object') return null;
-          const code =
-            'code' in issue && typeof issue.code === 'string'
-              ? issue.code
-              : 'UNKNOWN';
-          const message =
-            'message' in issue && typeof issue.message === 'string'
-              ? issue.message
-              : null;
-          return message ? `${code}: ${message}` : null;
-        })
-        .filter((value): value is string => Boolean(value));
-      details.push(...issueMessages);
+      details.push(...getValidationIssueMessages(err.issues as unknown[]));
     } else if ('upsertErrors' in err && Array.isArray(err.upsertErrors)) {
       details.push(...(err.upsertErrors as string[]));
     }
