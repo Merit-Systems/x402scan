@@ -42,7 +42,9 @@ type DiscoveryValidateFn = (
   }
 ) => { valid: boolean; issues: unknown[] };
 
-function runDiscoveryValidation(data: unknown): DiscoveryValidationResult | null {
+function runDiscoveryValidation(
+  data: unknown
+): DiscoveryValidationResult | null {
   const validate = (
     discoveryPackage as unknown as {
       validatePaymentRequiredDetailed?: DiscoveryValidateFn;
@@ -88,6 +90,25 @@ function toLegacyErrors(
   return [...new Set([...parseErrors, ...issueErrors])];
 }
 
+function isNonBlockingDiscoveryIssue(issue: X402ValidationIssue): boolean {
+  // Missing output schema should be surfaced as a warning in UI, but
+  // should not block ingestion when the rest of the payload is valid.
+  if (issue.code === 'SCHEMA_OUTPUT_MISSING') {
+    return true;
+  }
+
+  // Coinbase validator currently rejects nullable strings in some
+  // producer payloads we still want to ingest.
+  if (
+    issue.code === 'COINBASE_SCHEMA_INVALID' &&
+    issue.message.includes('Expected string, received null')
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 export function validateX402(data: unknown): X402ScanValidationResult {
   const discoveryValidation = runDiscoveryValidation(data);
 
@@ -124,10 +145,18 @@ export function validateX402(data: unknown): X402ScanValidationResult {
     };
   }
 
-  const discoveryErrors = discoveryIssues.filter(
-    issue => issue.severity === 'error'
+  const discoveryBlockingErrors = discoveryIssues.filter(
+    issue => issue.severity === 'error' && !isNonBlockingDiscoveryIssue(issue)
   );
-  if (!discoveryValid || discoveryErrors.length > 0) {
+  const hasNonBlockingOnlyInvalidState =
+    !discoveryValid &&
+    discoveryIssues.length > 0 &&
+    discoveryIssues.every(isNonBlockingDiscoveryIssue);
+
+  if (
+    (!discoveryValid && !hasNonBlockingOnlyInvalidState) ||
+    discoveryBlockingErrors.length > 0
+  ) {
     return {
       success: false,
       errors: toLegacyErrors([], discoveryIssues),

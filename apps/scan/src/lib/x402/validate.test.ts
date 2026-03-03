@@ -160,6 +160,34 @@ describe('validateX402', () => {
     }
   });
 
+  it('allows non-blocking discovery issues for output schema / nullable coinbase fields', async () => {
+    const { validateX402 } = await loadValidateWithDiscoveryMock(() => ({
+      valid: false,
+      issues: [
+        {
+          code: 'SCHEMA_OUTPUT_MISSING',
+          severity: 'error',
+          path: '$.extensions.bazaar.info.output',
+          message: 'Output schema is missing.',
+        },
+        {
+          code: 'COINBASE_SCHEMA_INVALID',
+          severity: 'error',
+          path: '$',
+          message:
+            'Coinbase schema validation failed: Expected string, received null',
+        },
+      ],
+    }));
+
+    const result = validateX402(validV1Response);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.issues).toHaveLength(2);
+    }
+  });
+
   it('still returns missing input schema when payload has no discoverable schema', async () => {
     const { validateX402 } = await loadValidateWithDiscoveryMock(() => ({
       valid: true,
