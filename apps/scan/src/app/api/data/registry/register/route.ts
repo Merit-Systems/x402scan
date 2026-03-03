@@ -20,6 +20,7 @@ export const POST = async (request: NextRequest) => {
   let lastParseError: {
     parseErrors: string[];
     data: unknown;
+    issues?: unknown[];
   } | null = null;
 
   for (const method of [Methods.POST, Methods.GET]) {
@@ -51,6 +52,7 @@ export const POST = async (request: NextRequest) => {
         lastParseError = {
           data: result.data,
           parseErrors: result.error.parseErrors,
+          issues: result.error.issues,
         };
         continue;
       }
@@ -60,6 +62,10 @@ export const POST = async (request: NextRequest) => {
           'parseErrors' in result.error && Array.isArray(result.error.parseErrors)
             ? result.error.parseErrors
             : [JSON.stringify(result.error)],
+        issues:
+          'issues' in result.error && Array.isArray(result.error.issues)
+            ? result.error.issues
+            : undefined,
       };
       continue;
     }
@@ -76,7 +82,11 @@ export const POST = async (request: NextRequest) => {
     return jsonResponse(
       {
         success: false,
-        error: { type: 'parse_error', parseErrors: lastParseError.parseErrors },
+        error: {
+          type: 'parse_error',
+          parseErrors: lastParseError.parseErrors,
+          issues: lastParseError.issues,
+        },
         data: lastParseError.data,
       },
       422

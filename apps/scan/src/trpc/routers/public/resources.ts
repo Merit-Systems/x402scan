@@ -109,6 +109,15 @@ function isMissingInputSchemaError(err: unknown): boolean {
   if (!isRecord(err)) return false;
   if (err.type !== 'parseResponse') return false;
 
+  const issues = err.issues;
+  if (Array.isArray(issues)) {
+    const hasSchemaIssue = issues.some(issue => {
+      if (!isRecord(issue)) return false;
+      return issue.code === 'SCHEMA_INPUT_MISSING';
+    });
+    if (hasSchemaIssue) return true;
+  }
+
   const parseErrors = err.parseErrors;
   if (!Array.isArray(parseErrors)) return false;
 
@@ -287,6 +296,7 @@ export const resourcesRouter = createTRPCRouter({
       let parseErrorData: {
         parseErrors: string[];
         data: unknown;
+        issues?: unknown[];
       } | null = null;
 
       for (const method of [Methods.POST, Methods.GET]) {
@@ -327,6 +337,7 @@ export const resourcesRouter = createTRPCRouter({
             parseErrorData = {
               data: result.data,
               parseErrors: result.error.parseErrors,
+              issues: result.error.issues,
             };
             continue;
           } else {
@@ -338,6 +349,10 @@ export const resourcesRouter = createTRPCRouter({
                 Array.isArray(result.error.parseErrors)
                   ? result.error.parseErrors
                   : [JSON.stringify(result.error)],
+              issues:
+                'issues' in result.error && Array.isArray(result.error.issues)
+                  ? result.error.issues
+                  : undefined,
             };
             continue;
           }
@@ -398,6 +413,7 @@ export const resourcesRouter = createTRPCRouter({
           error: {
             type: 'parseErrors' as const,
             parseErrors: parseErrorData.parseErrors,
+            issues: parseErrorData.issues,
           },
         };
       }
@@ -443,6 +459,22 @@ export const resourcesRouter = createTRPCRouter({
           const details: string[] = [];
           if ('parseErrors' in err && Array.isArray(err.parseErrors)) {
             details.push(...(err.parseErrors as string[]));
+          } else if ('issues' in err && Array.isArray(err.issues)) {
+            const issueMessages = (err.issues as unknown[])
+              .map(issue => {
+                if (!issue || typeof issue !== 'object') return null;
+                const code =
+                  'code' in issue && typeof issue.code === 'string'
+                    ? issue.code
+                    : 'UNKNOWN';
+                const message =
+                  'message' in issue && typeof issue.message === 'string'
+                    ? issue.message
+                    : null;
+                return message ? `${code}: ${message}` : null;
+              })
+              .filter((value): value is string => Boolean(value));
+            details.push(...issueMessages);
           } else if ('upsertErrors' in err && Array.isArray(err.upsertErrors)) {
             details.push(...(err.upsertErrors as string[]));
           }

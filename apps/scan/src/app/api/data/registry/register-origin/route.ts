@@ -167,6 +167,22 @@ function getErrorMessage(err: unknown): string {
     const details: string[] = [];
     if ('parseErrors' in err && Array.isArray(err.parseErrors)) {
       details.push(...(err.parseErrors as string[]));
+    } else if ('issues' in err && Array.isArray(err.issues)) {
+      const issueMessages = (err.issues as unknown[])
+        .map(issue => {
+          if (!issue || typeof issue !== 'object') return null;
+          const code =
+            'code' in issue && typeof issue.code === 'string'
+              ? issue.code
+              : 'UNKNOWN';
+          const message =
+            'message' in issue && typeof issue.message === 'string'
+              ? issue.message
+              : null;
+          return message ? `${code}: ${message}` : null;
+        })
+        .filter((value): value is string => Boolean(value));
+      details.push(...issueMessages);
     } else if ('upsertErrors' in err && Array.isArray(err.upsertErrors)) {
       details.push(...(err.upsertErrors as string[]));
     }

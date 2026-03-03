@@ -27,6 +27,7 @@ export const registerResource = async (url: string, data: unknown) => {
       error: {
         type: 'parseResponse' as const,
         parseErrors: validated.errors,
+        issues: validated.issues,
       },
     };
   }
@@ -124,6 +125,7 @@ export const registerResource = async (url: string, data: unknown) => {
       providedAccepts: normalizedAccepts,
       supportedAccepts: resource.accepts,
       unsupportedAccepts: resource.unsupportedAccepts,
+      validationIssues: validated.issues,
       originMetadata: {
         title: metadata?.title ?? og?.ogTitle ?? null,
         description: metadata?.description ?? og?.ogDescription ?? null,

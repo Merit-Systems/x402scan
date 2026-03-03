@@ -98,6 +98,7 @@ async function testSingleResource(url: string) {
           headers,
           body: errorBody,
           parseErrors: validated.errors,
+          issues: validated.issues,
           triedMethods,
         };
         break;
@@ -201,8 +202,16 @@ export const developerRouter = createTRPCRouter({
           : false,
       };
       const parsed = validated.success
-        ? { success: true as const, data: validated.parsed }
-        : { success: false as const, errors: validated.errors };
+        ? {
+            success: true as const,
+            data: validated.parsed,
+            issues: validated.issues,
+          }
+        : {
+            success: false as const,
+            errors: validated.errors,
+            issues: validated.issues,
+          };
 
       return { result, parsed, info };
     }),
