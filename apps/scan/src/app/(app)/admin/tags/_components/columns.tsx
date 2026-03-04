@@ -66,7 +66,7 @@ export const createColumns = (
     ),
     cell: ({ row }) => {
       const description =
-        row.original.accepts.find(accept => accept.description)?.description ??
+        row.original.accepts.find((accept: { description?: string }) => accept.description)?.description ??
         'N/A';
       return (
         <div className="text-center text-xs text-muted-foreground truncate max-w-[200px]">
@@ -141,7 +141,7 @@ export const createColumns = (
             </span>
           ) : (
             <>
-              {visibleTags.map(resourceTag => (
+              {visibleTags.map((resourceTag: { id: string; tag: { color: string; name: string } }) => (
                 <span
                   key={resourceTag.id}
                   className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"

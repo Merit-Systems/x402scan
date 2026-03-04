@@ -1,4 +1,7 @@
+import { usdc } from './tokens/usdc';
 import { formatCurrency } from './utils';
+
+import type { SupportedChain } from '@/types/chain';
 
 export const convertTokenAmount = (amount: bigint, decimals = 6) => {
   // Convert to string, then use string manipulation to preserve precision
@@ -18,3 +21,17 @@ export const convertTokenAmount = (amount: bigint, decimals = 6) => {
 export const formatTokenAmount = (amount: bigint, decimals = 6) => {
   return formatCurrency(Number(convertTokenAmount(amount, decimals)));
 };
+
+/** Convert BigInt maxAmountRequired to a JSON-safe number on accepts records. */
+export const serializeAccepts = <
+  T extends { maxAmountRequired: bigint; network: string },
+>(
+  accepts: T[]
+) =>
+  accepts.map(a => ({
+    ...a,
+    maxAmountRequired: convertTokenAmount(
+      a.maxAmountRequired,
+      usdc(a.network as SupportedChain).decimals
+    ),
+  }));

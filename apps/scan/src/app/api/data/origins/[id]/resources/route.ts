@@ -7,6 +7,7 @@ import {
   errorResponse,
 } from '@/app/api/data/_lib/utils';
 import { listResourcesWithPagination } from '@/services/db/resources/resource';
+import { serializeAccepts } from '@/lib/token';
 
 import type { SupportedChain } from '@/types/chain';
 
@@ -37,7 +38,18 @@ export const GET = async (
       { page, page_size }
     );
 
-    return paginatedResponse(result, page_size);
+    return paginatedResponse(
+      {
+        ...result,
+        items: result.items.map((item: Record<string, unknown>) => ({
+          ...item,
+          accepts: serializeAccepts(
+            item.accepts as { maxAmountRequired: bigint; network: string }[]
+          ),
+        })),
+      },
+      page_size
+    );
   } catch (err) {
     console.error('Failed to fetch origin resources:', err);
     return errorResponse('Internal server error', 500);
