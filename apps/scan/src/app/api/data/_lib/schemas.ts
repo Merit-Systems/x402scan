@@ -100,6 +100,14 @@ export const originResourcesQuerySchema = paginationSchema.extend({
 
 export const registryRegisterBodySchema = z.object({
   url: z.string().url().describe('URL of the x402-protected resource to register'),
+  headers: z
+    .record(z.string(), z.string())
+    .optional()
+    .describe('Optional headers to include when probing the resource URL'),
+  body: z
+    .record(z.string(), z.unknown())
+    .optional()
+    .describe('Optional JSON body used when probing with POST'),
 });
 
 export const registryRegisterOriginBodySchema = z.object({
