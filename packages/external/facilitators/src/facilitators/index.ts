@@ -26,3 +26,4 @@ export { x402jobs, x402jobsFacilitator } from './x402jobs';
 export { openfacilitator, openfacilitatorFacilitator } from './openfacilitator';
 export { relai, relaiFacilitator } from './relai';
 export { bitrefill, bitrefillFacilitator } from './bitrefill';
+export { silverback, silverbackFacilitator } from './silverback';
