@@ -59,18 +59,24 @@ PASS=0
 FAIL=0
 
 echo
-echo "Running validator seam checks against ${SCAN_BASE_URL}/api/data/registry/register"
+echo "Running validator seam checks against ${SCAN_BASE_URL}/api/internal/registry/register"
 
 for spec in "${CASES[@]}"; do
   IFS='|' read -r CASE_ID CASE_PATH EXPECTED_CODE <<<"$spec"
   TARGET_URL="http://127.0.0.1:${FIXTURE_PORT}${CASE_PATH}"
   RESPONSE_FILE=$(mktemp)
 
+  API_KEY_HEADER=""
+  if [ -n "${INTERNAL_API_KEY:-}" ]; then
+    API_KEY_HEADER="-H x-api-key:${INTERNAL_API_KEY}"
+  fi
+
   HTTP_CODE=$(curl -sS \
     -o "$RESPONSE_FILE" \
     -w "%{http_code}" \
-    -X POST "${SCAN_BASE_URL}/api/data/registry/register" \
+    -X POST "${SCAN_BASE_URL}/api/internal/registry/register" \
     -H "Content-Type: application/json" \
+    $API_KEY_HEADER \
     -d "{\"url\":\"${TARGET_URL}\"}") || HTTP_CODE="000"
 
   CHECK=$(node - <<'NODE' "$RESPONSE_FILE" "$CASE_ID" "$EXPECTED_CODE" "$HTTP_CODE"
@@ -102,27 +108,47 @@ try {
   process.exit(0);
 }
 
-if (body?.success !== false || body?.error?.type !== 'parse_error') {
-  out.reason = 'Expected parse_error response shape';
+// Case 1: parse_error response (validation blocked registration)
+if (body?.success === false && body?.error?.type === 'parse_error') {
+  const issues = Array.isArray(body.error.issues) ? body.error.issues : [];
+  const issueCodes = issues
+    .filter(issue => issue && typeof issue === 'object' && typeof issue.code === 'string')
+    .map(issue => issue.code);
+  out.issueCodes = [...new Set(issueCodes)];
+  out.parseErrors = Array.isArray(body.error.parseErrors) ? body.error.parseErrors : [];
+
+  const hasExpectedIssue = out.issueCodes.includes(expectedCode);
+  const hasExpectedInLegacy = out.parseErrors.some(msg => typeof msg === 'string' && msg.includes(expectedCode));
+
+  if (hasExpectedIssue && hasExpectedInLegacy) {
+    out.ok = true;
+  } else {
+    out.reason = `Missing expected code ${expectedCode} in issues[] or parseErrors[]`;
+  }
   process.stdout.write(JSON.stringify(out));
   process.exit(0);
 }
 
-const issues = Array.isArray(body?.error?.issues) ? body.error.issues : [];
-const issueCodes = issues
-  .filter(issue => issue && typeof issue === 'object' && typeof issue.code === 'string')
-  .map(issue => issue.code);
-out.issueCodes = [...new Set(issueCodes)];
-out.parseErrors = Array.isArray(body?.error?.parseErrors) ? body.error.parseErrors : [];
+// Case 2: success response with non-blocking validation issues
+if (body?.success === true) {
+  const issues = Array.isArray(body?.registrationDetails?.validationIssues)
+    ? body.registrationDetails.validationIssues
+    : [];
+  const issueCodes = issues
+    .filter(issue => issue && typeof issue === 'object' && typeof issue.code === 'string')
+    .map(issue => issue.code);
+  out.issueCodes = [...new Set(issueCodes)];
 
-const hasExpectedIssue = out.issueCodes.includes(expectedCode);
-const hasExpectedInLegacy = out.parseErrors.some(msg => typeof msg === 'string' && msg.includes(expectedCode));
-
-if (hasExpectedIssue && hasExpectedInLegacy) {
-  out.ok = true;
-} else {
-  out.reason = `Missing expected code ${expectedCode} in issues[] or parseErrors[]`;
+  if (out.issueCodes.includes(expectedCode)) {
+    out.ok = true;
+  } else {
+    out.reason = `Missing expected code ${expectedCode} in registrationDetails.validationIssues[]`;
+  }
+  process.stdout.write(JSON.stringify(out));
+  process.exit(0);
 }
+
+out.reason = 'Unexpected response shape';
 
 process.stdout.write(JSON.stringify(out));
 NODE

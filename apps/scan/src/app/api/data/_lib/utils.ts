@@ -49,7 +49,9 @@ export function parseAddress(
 export async function parseJsonBody<T>(
   request: Request,
   schema: z.ZodType<T>
-): Promise<{ success: true; data: T } | { success: false; response: NextResponse }> {
+): Promise<
+  { success: true; data: T } | { success: false; response: NextResponse }
+> {
   let raw: unknown;
   try {
     raw = await request.json();
@@ -76,7 +78,13 @@ export async function parseJsonBody<T>(
 }
 
 export function jsonResponse(data: unknown, status = 200): NextResponse {
-  return NextResponse.json(data, { status });
+  const serialized = JSON.stringify(data, (_key, value: unknown) =>
+    typeof value === 'bigint' ? value.toString() : value
+  );
+  return new NextResponse(serialized, {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
 export function errorResponse(message: string, status: number): NextResponse {
