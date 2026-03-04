@@ -11,6 +11,7 @@ import { Methods } from '@/types/x402';
 import type { DiscoveredResource } from '@/types/discovery';
 
 const PROBE_TIMEOUT_MS = 15000;
+const BATCH_SIZE = 20;
 const DEFAULT_PROBE_METHODS: Methods[] = [Methods.POST, Methods.GET];
 
 function buildProbeMethods(resource: DiscoveredResource): Methods[] {
@@ -26,6 +27,64 @@ function buildProbeMethods(resource: DiscoveredResource): Methods[] {
     ...DEFAULT_PROBE_METHODS.filter(method => method !== preferredMethod),
   ];
 }
+
+async function probeAndRegister(resource: DiscoveredResource) {
+  const resourceUrl = resource.url;
+  const methodsToTry = buildProbeMethods(resource);
+
+  let lastError = 'No 402 response';
+  let lastStatus: number | undefined;
+  const errors: string[] = [];
+
+  for (const method of methodsToTry) {
+    try {
+      const response = await fetch(resourceUrl, {
+        method,
+        headers:
+          method === Methods.POST
+            ? {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache',
+              }
+            : { 'Cache-Control': 'no-cache' },
+        body: method === Methods.POST ? '{}' : undefined,
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+        cache: 'no-store',
+      });
+
+      lastStatus = response.status;
+
+      if (response.status === 402) {
+        const x402Data = await extractX402Data(response);
+        const result = await registerResource(resourceUrl, x402Data);
+
+        if (result.success) {
+          return result;
+        }
+
+        const errorMsg = getErrorMessage(result.error) || 'Registration failed';
+        errors.push(`${method}: ${errorMsg}`);
+        lastError = errors.join('; ');
+      } else {
+        errors.push(`${method}: Expected 402, got ${response.status}`);
+        lastError = errors.join('; ');
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Request failed';
+      errors.push(`${method}: ${errorMsg}`);
+      lastError = errors.join('; ');
+    }
+  }
+
+  return {
+    success: false as const,
+    url: resourceUrl,
+    error: lastError,
+    status: lastStatus,
+  };
+}
+
+type ProbeResult = Awaited<ReturnType<typeof probeAndRegister>>;
 
 export const POST = async (request: NextRequest) => {
   const parsed = await parseJsonBody(request, registryRegisterOriginBodySchema);
@@ -48,65 +107,13 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const results = await Promise.allSettled(
-    discoveryResult.resources.map(async resource => {
-      const resourceUrl = resource.url;
-      const methodsToTry = buildProbeMethods(resource);
+  const results: PromiseSettledResult<ProbeResult>[] = [];
 
-      let lastError = 'No 402 response';
-      let lastStatus: number | undefined;
-      const errors: string[] = [];
-
-      for (const method of methodsToTry) {
-        try {
-          const response = await fetch(resourceUrl, {
-            method,
-            headers:
-              method === Methods.POST
-                ? {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-cache',
-                  }
-                : { 'Cache-Control': 'no-cache' },
-            body: method === Methods.POST ? '{}' : undefined,
-            signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
-            cache: 'no-store',
-          });
-
-          lastStatus = response.status;
-
-          if (response.status === 402) {
-            const x402Data = await extractX402Data(response);
-            const result = await registerResource(resourceUrl, x402Data);
-
-            if (result.success) {
-              return result;
-            }
-
-            const errorMsg =
-              getErrorMessage(result.error) || 'Registration failed';
-            errors.push(`${method}: ${errorMsg}`);
-            lastError = errors.join('; ');
-          } else {
-            errors.push(`${method}: Expected 402, got ${response.status}`);
-            lastError = errors.join('; ');
-          }
-        } catch (err) {
-          const errorMsg =
-            err instanceof Error ? err.message : 'Request failed';
-          errors.push(`${method}: ${errorMsg}`);
-          lastError = errors.join('; ');
-        }
-      }
-
-      return {
-        success: false as const,
-        url: resourceUrl,
-        error: lastError,
-        status: lastStatus,
-      };
-    })
-  );
+  for (let i = 0; i < discoveryResult.resources.length; i += BATCH_SIZE) {
+    const batch = discoveryResult.resources.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.allSettled(batch.map(probeAndRegister));
+    results.push(...batchResults);
+  }
 
   const successfulResults: { url: string }[] = [];
   const failedResults: { url: string; error: string; status?: number }[] = [];
