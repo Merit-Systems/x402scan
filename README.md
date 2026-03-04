@@ -60,6 +60,12 @@ We're actively seeking contributors to help build x402scan. We believe an ecosys
 
 If you know of a resource that is not yet listed, you can add it by visiting [https://www.x402scan.com/resources/register](https://www.x402scan.com/resources/register) and submitting the URL. If the URL returns a valid x402 schema, it will be added to the resources list automatically.
 
+You can also register or refresh resources programmatically via:
+- `POST https://www.x402scan.com/api/data/registry/register` for a single resource URL
+- `POST https://www.x402scan.com/api/data/registry/register-origin` for discovery-based origin refresh
+
+Request/response examples are documented in [docs/DISCOVERY.md](./docs/DISCOVERY.md#programmatic-registration-api).
+
 ### Add Facilitators
 
 If you know of another facilitator that is not listed, you can add it to [`facilitators/config.ts`](https://github.com/Merit-Systems/x402scan/blob/main/facilitators/config.ts) and the dashboard will automatically update.

@@ -166,6 +166,45 @@ When a user clicks **Register This URL Only**:
 - Register only that endpoint.
 - Useful for partial rollouts and rate-limited providers.
 
+## Programmatic Registration API
+
+You can add or refresh resources programmatically using public API endpoints.
+
+### Register or refresh a single resource
+
+```bash
+curl -X POST https://www.x402scan.com/api/data/registry/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://yourdomain.com/api/paid-endpoint",
+    "headers": {
+      "Authorization": "Bearer your-probe-token"
+    },
+    "body": {
+      "example": "probe"
+    }
+  }'
+```
+
+Notes:
+- `headers` and `body` are optional.
+- Re-submitting the same `url` triggers a refresh (metadata and challenge data are re-probed and upserted).
+
+### Register or refresh all resources discovered from an origin
+
+```bash
+curl -X POST https://www.x402scan.com/api/data/registry/register-origin \
+  -H "Content-Type: application/json" \
+  -d '{
+    "origin": "https://yourdomain.com"
+  }'
+```
+
+This endpoint:
+- discovers resources from OpenAPI / `/.well-known/x402` / DNS pointer precedence,
+- registers all valid `402` resources found, and
+- deprecates previously-registered resources no longer present in discovery.
+
 ---
 
 ## Common Failure Reasons

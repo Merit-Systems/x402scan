@@ -15,7 +15,7 @@ export const POST = async (request: NextRequest) => {
   const parsed = await parseJsonBody(request, registryRegisterBodySchema);
   if (!parsed.success) return parsed.response;
 
-  const { url } = parsed.data;
+  const { url, headers, body } = parsed.data;
 
   let lastParseError: {
     parseErrors: string[];
@@ -30,9 +30,18 @@ export const POST = async (request: NextRequest) => {
         method,
         headers:
           method === Methods.POST
-            ? { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' }
-            : { 'Cache-Control': 'no-cache' },
-        body: method === Methods.POST ? '{}' : undefined,
+            ? {
+                ...headers,
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache',
+              }
+            : { ...headers, 'Cache-Control': 'no-cache' },
+        body:
+          method === Methods.POST
+            ? body
+              ? JSON.stringify(body)
+              : '{}'
+            : undefined,
         signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
         cache: 'no-store',
       });
