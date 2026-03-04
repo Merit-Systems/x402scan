@@ -82,12 +82,12 @@ export const listTopSellersMVUncached = async (
       Prisma.sql`
       SELECT 
         recipient,
-        ARRAY_AGG(DISTINCT unnested_facilitator) as facilitator_ids,
+        COALESCE(ARRAY_AGG(DISTINCT unnested_facilitator) FILTER (WHERE unnested_facilitator IS NOT NULL), ARRAY[]::text[]) as facilitator_ids,
         COALESCE(SUM(total_transactions), 0)::integer as tx_count,
         COALESCE(SUM(total_amount), 0)::float as total_amount,
         MAX(latest_block_timestamp) as latest_block_timestamp,
         COALESCE(SUM(unique_buyers), 0)::integer as unique_buyers,
-        ARRAY_AGG(DISTINCT chain) as chains
+        COALESCE(ARRAY_AGG(DISTINCT chain) FILTER (WHERE chain IS NOT NULL), ARRAY[]::text[]) as chains
       FROM ${Prisma.raw(tableName)},
         LATERAL unnest(facilitator_ids) AS unnested_facilitator
       ${whereClause}
