@@ -26,21 +26,33 @@ export const getSolanaTokenBalance = async (
   const { ownerAddress, tokenMint } = getSolanaTokenBalanceSchema.parse(input);
 
   try {
-    const [usdcTokenAccount] = await findAssociatedTokenPda({
+    const [tokenAccount] = await findAssociatedTokenPda({
       mint: address(tokenMint),
       owner: address(ownerAddress),
       tokenProgram: TOKEN_PROGRAM_ADDRESS,
     });
     const {
       value: { amount, decimals },
-    } = await solanaRpc.getTokenAccountBalance(usdcTokenAccount).send();
+    } = await solanaRpc.getTokenAccountBalance(tokenAccount).send();
 
     return convertTokenAmount(BigInt(amount), decimals);
   } catch (error) {
-    console.error('Error getting Solana token balance', error);
+    // Wallets that have never held this token won't have an ATA on-chain.
+    // getTokenAccountBalance throws RPC -32602 ("could not find account")
+    // which is expected — only log unexpected errors.
+    if (!isAccountNotFoundError(error)) {
+      console.error('Error getting Solana token balance', error);
+    }
     return 0;
   }
 };
+
+/** RPC -32602 "could not find account" — the ATA doesn't exist on-chain. */
+function isAccountNotFoundError(error: unknown): boolean {
+  if (!(error instanceof Error) || !('context' in error)) return false;
+  const ctx = (error as { context: Record<string, unknown> }).context;
+  return ctx?.__code === -32602;
+}
 
 export const getSolanaNativeBalance = async (
   ownerAddress: z.output<typeof solanaAddressSchema>
