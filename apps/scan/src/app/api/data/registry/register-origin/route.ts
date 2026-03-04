@@ -11,7 +11,7 @@ import { Methods } from '@/types/x402';
 import type { DiscoveredResource } from '@/types/discovery';
 
 const PROBE_TIMEOUT_MS = 15000;
-const BATCH_SIZE = 10;
+const BATCH_SIZE = 50;
 const DEFAULT_PROBE_METHODS: Methods[] = [Methods.POST, Methods.GET];
 
 function buildProbeMethods(resource: DiscoveredResource): Methods[] {
@@ -62,8 +62,7 @@ async function probeAndRegister(resource: DiscoveredResource) {
           return result;
         }
 
-        const errorMsg =
-          getErrorMessage(result.error) || 'Registration failed';
+        const errorMsg = getErrorMessage(result.error) || 'Registration failed';
         errors.push(`${method}: ${errorMsg}`);
         lastError = errors.join('; ');
       } else {
@@ -71,8 +70,7 @@ async function probeAndRegister(resource: DiscoveredResource) {
         lastError = errors.join('; ');
       }
     } catch (err) {
-      const errorMsg =
-        err instanceof Error ? err.message : 'Request failed';
+      const errorMsg = err instanceof Error ? err.message : 'Request failed';
       errors.push(`${method}: ${errorMsg}`);
       lastError = errors.join('; ');
     }
@@ -113,9 +111,7 @@ export const POST = async (request: NextRequest) => {
 
   for (let i = 0; i < discoveryResult.resources.length; i += BATCH_SIZE) {
     const batch = discoveryResult.resources.slice(i, i + BATCH_SIZE);
-    const batchResults = await Promise.allSettled(
-      batch.map(probeAndRegister)
-    );
+    const batchResults = await Promise.allSettled(batch.map(probeAndRegister));
     results.push(...batchResults);
   }
 
