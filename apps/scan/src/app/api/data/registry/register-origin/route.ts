@@ -11,7 +11,7 @@ import { Methods } from '@/types/x402';
 import type { DiscoveredResource } from '@/types/discovery';
 
 const PROBE_TIMEOUT_MS = 15000;
-const BATCH_SIZE = 50;
+const BATCH_SIZE = 20;
 const DEFAULT_PROBE_METHODS: Methods[] = [Methods.POST, Methods.GET];
 
 function buildProbeMethods(resource: DiscoveredResource): Methods[] {
