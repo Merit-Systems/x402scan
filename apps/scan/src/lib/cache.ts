@@ -1,7 +1,14 @@
+import { createHash } from 'crypto';
 import superjson from 'superjson';
 import type { PaginatedQueryParams } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
+
+/**
+ * Maximum Redis key length in bytes. Keys exceeding this are hashed to prevent
+ * "ERR key too long" errors (e.g. when address lists are serialized into keys).
+ */
+const MAX_KEY_LENGTH = 1024;
 
 /**
  * Cache context that can be passed from tRPC to control cache behavior
@@ -193,7 +200,13 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
       : (allArgs as unknown as TInput);
 
     const cacheKey = config.createCacheKey(...args);
-    const fullCacheKey = `${config.cacheKeyPrefix}:${cacheKey}`;
+    const rawKey = `${config.cacheKeyPrefix}:${cacheKey}`;
+    // Hash oversized keys to prevent Redis "ERR key too long" errors.
+    // Preserves the prefix for debuggability.
+    const fullCacheKey =
+      rawKey.length > MAX_KEY_LENGTH
+        ? `${config.cacheKeyPrefix}:hash:${createHash('sha256').update(rawKey).digest('hex')}`
+        : rawKey;
     const ttl = config.revalidate ?? CACHE_TTL_SECONDS;
 
     return await withRedisCache(

@@ -114,8 +114,10 @@ function getHomePageTasks(
       }),
 
     // Top Servers (Bazaar) - overall stats
+    // Uses origin-based MV (pre-joined), not stats.bazaar.overall which
+    // passes 1000+ addresses into the cache key and blows the Redis key limit.
     () =>
-      api.public.stats.bazaar.overall({
+      api.public.sellers.bazaar.stats.overall({
         timeframe,
         chain,
       }),

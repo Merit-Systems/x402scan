@@ -4,8 +4,6 @@ import {
 } from '@/services/transfers/stats/first-transfer';
 
 import { createTRPCRouter, publicProcedure } from '../../trpc';
-import { getAcceptsAddresses } from '@/services/db/resources/accepts';
-import { mixedAddressSchema } from '@/lib/schemas';
 import {
   getOverallStatisticsMV,
   overallStatisticsMVInputSchema,
@@ -31,43 +29,4 @@ export const statsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await getFirstTransferTimestamp(input);
     }),
-
-  bazaar: {
-    overall: publicProcedure
-      .input(overallStatisticsMVInputSchema)
-      .query(async ({ input, ctx }) => {
-        const originsByAddress = await getAcceptsAddresses({
-          chain: input.chain,
-        });
-        return await getOverallStatisticsMV(
-          {
-            ...input,
-            recipients: {
-              include: Object.keys(originsByAddress).map(addr =>
-                mixedAddressSchema.parse(addr)
-              ),
-            },
-          },
-          ctx
-        );
-      }),
-    bucketed: publicProcedure
-      .input(bucketedStatisticsMVInputSchema)
-      .query(async ({ input, ctx }) => {
-        const originsByAddress = await getAcceptsAddresses({
-          chain: input.chain,
-        });
-        return await getBucketedStatisticsMV(
-          {
-            ...input,
-            recipients: {
-              include: Object.keys(originsByAddress).map(addr =>
-                mixedAddressSchema.parse(addr)
-              ),
-            },
-          },
-          ctx
-        );
-      }),
-  },
 });
