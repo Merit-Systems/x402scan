@@ -80,7 +80,7 @@ const listTopFacilitatorsUncached = async (
         MAX(latest_block_timestamp) AS latest_block_timestamp,
         SUM(unique_buyers)::int AS unique_buyers,
         SUM(unique_sellers)::int AS unique_sellers,
-        ARRAY_AGG(DISTINCT chain) as chains
+        COALESCE(ARRAY_AGG(DISTINCT chain) FILTER (WHERE chain IS NOT NULL), ARRAY[]::text[]) as chains
       FROM ${Prisma.raw(tableName)}
       ${whereClause}
       GROUP BY facilitator_id

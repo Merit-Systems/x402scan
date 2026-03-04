@@ -41,7 +41,7 @@ const getWalletStatsUncached = async (input: WalletStatsInput) => {
         COUNT(*)::int AS total_transactions,
         COALESCE(SUM(amount), 0)::float AS total_amount,
         COUNT(DISTINCT recipient)::int AS unique_recipients,
-        ARRAY_AGG(DISTINCT chain) AS chains
+        COALESCE(ARRAY_AGG(DISTINCT chain) FILTER (WHERE chain IS NOT NULL), ARRAY[]::text[]) AS chains
       FROM "TransferEvent"
       ${whereClause}
     `,
