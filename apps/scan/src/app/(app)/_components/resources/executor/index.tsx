@@ -26,10 +26,12 @@ import {
   getMaxAmount,
   type ParsedX402Response,
 } from '@/lib/x402';
-import type { Resources, Tag } from '@x402scan/scan-db';
+import type { ResourceRequestMetadata, Resources, Tag } from '@x402scan/scan-db';
 
 interface Props {
-  resource: Resources;
+  resource: Resources & {
+    requestMetadata?: ResourceRequestMetadata | null;
+  };
   tags: Tag[];
   response: ParsedX402Response;
   bazaarMethod: Methods;
@@ -124,6 +126,7 @@ export const ResourceExecutor: React.FC<Props> = ({
             maxAmountRequired={maxAmountRequired}
             method={bazaarMethod}
             resource={resource.resource}
+            requestMetadata={resource.requestMetadata}
           />
         </AccordionContent>
       </Card>
