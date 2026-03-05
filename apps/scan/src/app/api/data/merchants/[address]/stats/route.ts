@@ -1,41 +1,28 @@
-import type { NextRequest } from 'next/server';
-
+import { router, withCors, OPTIONS } from '@/lib/router';
 import { merchantStatsQuerySchema } from '@/app/api/data/_lib/schemas';
-import {
-  parseQueryParams,
-  parseAddress,
-  jsonResponse,
-  errorResponse,
-  asChain,
-} from '@/app/api/data/_lib/utils';
+import { parseAddress, jsonResponse, asChain } from '@/app/api/data/_lib/utils';
 import { getOverallStatisticsMV } from '@/services/transfers/stats/overall-mv';
 
-export const GET = async (
-  request: NextRequest,
-  { params }: { params: Promise<{ address: string }> }
-) => {
-  const { address: rawAddress } = await params;
-  const addr = parseAddress(rawAddress);
-  if (!addr.success) return addr.response;
+export { OPTIONS };
 
-  const parsed = parseQueryParams(
-    request.nextUrl.searchParams,
-    merchantStatsQuerySchema
-  );
-  if (!parsed.success) return parsed.response;
+export const GET = withCors(
+  router
+    .route('data/merchants/stats')
+    .paid('0.01')
+    .method('GET')
+    .query(merchantStatsQuerySchema)
+    .description('Aggregate stats for a merchant')
+    .handler(async ({ query, request }) => {
+      const rawAddress = request.nextUrl.pathname.split('/')[4]!;
+      const addr = parseAddress(rawAddress);
+      if (!addr.success) return addr.response;
 
-  const { chain, timeframe } = parsed.data;
-
-  try {
-    const stats = await getOverallStatisticsMV({
-      timeframe: timeframe ?? 0,
-      chain: asChain(chain),
-      recipients: { include: [addr.data] },
-    });
-
-    return jsonResponse({ data: stats });
-  } catch (err) {
-    console.error('Failed to fetch merchant stats:', err);
-    return errorResponse('Internal server error', 500);
-  }
-};
+      const { chain, timeframe } = query;
+      const stats = await getOverallStatisticsMV({
+        timeframe: timeframe ?? 0,
+        chain: asChain(chain),
+        recipients: { include: [addr.data] },
+      });
+      return jsonResponse({ data: stats });
+    })
+);

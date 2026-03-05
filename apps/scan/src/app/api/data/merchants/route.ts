@@ -1,12 +1,6 @@
-import type { NextRequest } from 'next/server';
-
+import { router, withCors, OPTIONS } from '@/lib/router';
 import { merchantsListQuerySchema } from '@/app/api/data/_lib/schemas';
-import {
-  parseQueryParams,
-  paginatedResponse,
-  errorResponse,
-  asChain,
-} from '@/app/api/data/_lib/utils';
+import { paginatedResponse, asChain } from '@/app/api/data/_lib/utils';
 import { listTopSellersMV } from '@/services/transfers/sellers/list-mv';
 
 const SORT_MAP = {
@@ -15,31 +9,25 @@ const SORT_MAP = {
   unique_buyers: 'unique_buyers',
 } as const;
 
-export const GET = async (request: NextRequest) => {
-  const parsed = parseQueryParams(
-    request.nextUrl.searchParams,
-    merchantsListQuerySchema
-  );
-  if (!parsed.success) return parsed.response;
+export { OPTIONS };
 
-  const { page, page_size, chain, timeframe, sort_by } = parsed.data;
-
-  try {
-    const result = await listTopSellersMV(
-      {
-        timeframe: timeframe ?? 0,
-        chain: asChain(chain),
-        sorting: {
-          id: SORT_MAP[sort_by],
-          desc: true,
+export const GET = withCors(
+  router
+    .route('data/merchants')
+    .paid('0.01')
+    .method('GET')
+    .query(merchantsListQuerySchema)
+    .description('Paginated list of merchants (top recipients by volume)')
+    .handler(async ({ query }) => {
+      const { page, page_size, chain, timeframe, sort_by } = query;
+      const result = await listTopSellersMV(
+        {
+          timeframe: timeframe ?? 0,
+          chain: asChain(chain),
+          sorting: { id: SORT_MAP[sort_by], desc: true },
         },
-      },
-      { page, page_size }
-    );
-
-    return paginatedResponse(result, page_size);
-  } catch (err) {
-    console.error('Failed to fetch merchants:', err);
-    return errorResponse('Internal server error', 500);
-  }
-};
+        { page, page_size }
+      );
+      return paginatedResponse(result, page_size);
+    })
+);

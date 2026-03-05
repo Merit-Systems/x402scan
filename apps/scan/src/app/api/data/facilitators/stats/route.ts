@@ -1,32 +1,23 @@
-import type { NextRequest } from 'next/server';
-
+import { router, withCors, OPTIONS } from '@/lib/router';
 import { facilitatorStatsQuerySchema } from '@/app/api/data/_lib/schemas';
-import {
-  parseQueryParams,
-  jsonResponse,
-  errorResponse,
-  asChain,
-} from '@/app/api/data/_lib/utils';
+import { jsonResponse, asChain } from '@/app/api/data/_lib/utils';
 import { getOverallStatisticsMV } from '@/services/transfers/stats/overall-mv';
 
-export const GET = async (request: NextRequest) => {
-  const parsed = parseQueryParams(
-    request.nextUrl.searchParams,
-    facilitatorStatsQuerySchema
-  );
-  if (!parsed.success) return parsed.response;
+export { OPTIONS };
 
-  const { chain, timeframe } = parsed.data;
-
-  try {
-    const stats = await getOverallStatisticsMV({
-      timeframe: timeframe ?? 0,
-      chain: asChain(chain),
-    });
-
-    return jsonResponse({ data: stats });
-  } catch (err) {
-    console.error('Failed to fetch facilitator stats:', err);
-    return errorResponse('Internal server error', 500);
-  }
-};
+export const GET = withCors(
+  router
+    .route('data/facilitators/stats')
+    .paid('0.01')
+    .method('GET')
+    .query(facilitatorStatsQuerySchema)
+    .description('Overall high-level facilitator stats')
+    .handler(async ({ query }) => {
+      const { chain, timeframe } = query;
+      const stats = await getOverallStatisticsMV({
+        timeframe: timeframe ?? 0,
+        chain: asChain(chain),
+      });
+      return jsonResponse({ data: stats });
+    })
+);

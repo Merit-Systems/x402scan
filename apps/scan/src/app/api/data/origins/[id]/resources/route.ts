@@ -1,57 +1,45 @@
-import type { NextRequest } from 'next/server';
-
+import { router, withCors, OPTIONS } from '@/lib/router';
 import { originResourcesQuerySchema } from '@/app/api/data/_lib/schemas';
-import {
-  parseQueryParams,
-  paginatedResponse,
-  errorResponse,
-} from '@/app/api/data/_lib/utils';
+import { paginatedResponse } from '@/app/api/data/_lib/utils';
 import { listResourcesWithPagination } from '@/services/db/resources/resource';
 import { serializeAccepts } from '@/lib/token';
 
 import type { SupportedChain } from '@/types/chain';
 
-export const GET = async (
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) => {
-  const { id } = await params;
+export { OPTIONS };
 
-  const parsed = parseQueryParams(
-    request.nextUrl.searchParams,
-    originResourcesQuerySchema
-  );
-  if (!parsed.success) return parsed.response;
-
-  const { page, page_size, chain } = parsed.data;
-
-  try {
-    const result = await listResourcesWithPagination(
-      {
-        where: {
-          originId: id,
-          ...(chain
-            ? { accepts: { some: { network: chain as SupportedChain } } }
-            : {}),
+export const GET = withCors(
+  router
+    .route('data/origins/resources')
+    .paid('0.01')
+    .method('GET')
+    .query(originResourcesQuerySchema)
+    .description('Resources for a specific origin/domain')
+    .handler(async ({ query, request }) => {
+      const id = request.nextUrl.pathname.split('/')[4]!;
+      const { page, page_size, chain } = query;
+      const result = await listResourcesWithPagination(
+        {
+          where: {
+            originId: id,
+            ...(chain
+              ? { accepts: { some: { network: chain as SupportedChain } } }
+              : {}),
+          },
         },
-      },
-      { page, page_size }
-    );
-
-    return paginatedResponse(
-      {
-        ...result,
-        items: result.items.map((item: Record<string, unknown>) => ({
-          ...item,
-          accepts: serializeAccepts(
-            item.accepts as { maxAmountRequired: bigint; network: string }[]
-          ),
-        })),
-      },
-      page_size
-    );
-  } catch (err) {
-    console.error('Failed to fetch origin resources:', err);
-    return errorResponse('Internal server error', 500);
-  }
-};
+        { page, page_size }
+      );
+      return paginatedResponse(
+        {
+          ...result,
+          items: result.items.map((item: Record<string, unknown>) => ({
+            ...item,
+            accepts: serializeAccepts(
+              item.accepts as { maxAmountRequired: bigint; network: string }[]
+            ),
+          })),
+        },
+        page_size
+      );
+    })
+);
