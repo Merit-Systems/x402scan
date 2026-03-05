@@ -11,6 +11,7 @@ export { OPTIONS };
 export const GET = withCors(
   router
     .route('data/origins/resources')
+    .path('data/origins/{id}/resources')
     .paid('0.01')
     .method('GET')
     .query(originResourcesQuerySchema)

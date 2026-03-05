@@ -2,6 +2,7 @@ import { router, withCors, OPTIONS } from '@/lib/router';
 import { registryOriginQuerySchema } from '@/app/api/data/_lib/schemas';
 import { paginatedResponse } from '@/app/api/data/_lib/utils';
 import { listResourcesWithPagination } from '@/services/db/resources/resource';
+import { serializeAccepts } from '@/lib/token';
 import { getOriginFromUrl } from '@/lib/url';
 
 import type { SupportedChain } from '@/types/chain';
@@ -29,6 +30,19 @@ export const GET = withCors(
         },
         { page, page_size }
       );
-      return paginatedResponse(result, page_size);
+      return paginatedResponse(
+        {
+          ...result,
+          items: result.items.map((item: Record<string, unknown>) => ({
+            ...item,
+            accepts: item.accepts
+              ? serializeAccepts(
+                  item.accepts as { maxAmountRequired: bigint; network: string }[]
+                )
+              : item.accepts,
+          })),
+        },
+        page_size
+      );
     })
 );

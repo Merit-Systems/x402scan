@@ -8,6 +8,7 @@ export { OPTIONS };
 export const GET = withCors(
   router
     .route('data/merchants/stats')
+    .path('data/merchants/{address}/stats')
     .paid('0.01')
     .method('GET')
     .query(merchantStatsQuerySchema)

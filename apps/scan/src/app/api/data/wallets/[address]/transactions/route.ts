@@ -12,6 +12,7 @@ export { OPTIONS };
 export const GET = withCors(
   router
     .route('data/wallets/transactions')
+    .path('data/wallets/{address}/transactions')
     .paid('0.01')
     .method('GET')
     .query(walletTransactionsQuerySchema)

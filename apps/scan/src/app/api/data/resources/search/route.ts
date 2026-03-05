@@ -2,6 +2,7 @@ import { router, withCors, OPTIONS } from '@/lib/router';
 import { resourcesSearchQuerySchema } from '@/app/api/data/_lib/schemas';
 import { jsonResponse } from '@/app/api/data/_lib/utils';
 import { searchResources } from '@/services/db/resources/resource';
+import { serializeAccepts } from '@/lib/token';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { SupportedChain } from '@/types/chain';
@@ -39,7 +40,14 @@ export const GET = withCors(
       const sliced = results.slice(start, start + page_size + 1);
       const hasNextPage = sliced.length > page_size;
       return jsonResponse({
-        data: sliced.slice(0, page_size),
+        data: sliced.slice(0, page_size).map((item: Record<string, unknown>) => ({
+          ...item,
+          accepts: item.accepts
+            ? serializeAccepts(
+                item.accepts as { maxAmountRequired: bigint; network: string }[]
+              )
+            : item.accepts,
+        })),
         pagination: { page, page_size, has_next_page: hasNextPage },
       });
     })

@@ -8,6 +8,7 @@ export { OPTIONS };
 export const GET = withCors(
   router
     .route('data/wallets/stats')
+    .path('data/wallets/{address}/stats')
     .paid('0.01')
     .method('GET')
     .query(walletStatsQuerySchema)

@@ -1,0 +1,13 @@
+import '@/app/api/data/merchants/route';
+import '@/app/api/data/merchants/[address]/transactions/route';
+import '@/app/api/data/merchants/[address]/stats/route';
+import '@/app/api/data/wallets/[address]/transactions/route';
+import '@/app/api/data/wallets/[address]/stats/route';
+import '@/app/api/data/facilitators/route';
+import '@/app/api/data/facilitators/stats/route';
+import '@/app/api/data/resources/route';
+import '@/app/api/data/resources/search/route';
+import '@/app/api/data/origins/[id]/resources/route';
+import '@/app/api/data/registry/register/route';
+import '@/app/api/data/registry/register-origin/route';
+import '@/app/api/data/registry/origin/route';
