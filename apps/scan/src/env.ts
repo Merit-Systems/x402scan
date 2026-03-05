@@ -41,7 +41,7 @@ export const env = createEnv({
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
     STRIPE_SECRET_KEY: z.string(),
     DISCORD_TELEMETRY_WEBHOOK_URL: z.string().optional(),
-    X402_PAYEE_ADDRESS: z.string(),
+    X402_PAYEE_ADDRESS: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
