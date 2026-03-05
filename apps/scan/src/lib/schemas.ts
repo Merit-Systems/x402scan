@@ -47,3 +47,9 @@ export const sendUsdcQueryParamsSchema = z.object({
   address: mixedAddressSchema,
   chain: supportedChainSchema,
 });
+
+export const sendUsdcBodySchema = z.object({
+  amount: z.number(),
+  address: mixedAddressSchema,
+  chain: supportedChainSchema,
+});

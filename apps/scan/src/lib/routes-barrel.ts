@@ -11,3 +11,4 @@ import '@/app/api/data/origins/[id]/resources/route';
 import '@/app/api/data/registry/register/route';
 import '@/app/api/data/registry/register-origin/route';
 import '@/app/api/data/registry/origin/route';
+import '@/app/api/send/route';

@@ -2,7 +2,7 @@ import { router, withCors, OPTIONS } from '@/lib/router';
 import { registryRegisterBodySchema } from '@/app/api/data/_lib/schemas';
 import { jsonResponse } from '@/app/api/data/_lib/utils';
 import { registerResource } from '@/lib/resources';
-import { serializeAccepts } from '@/lib/token';
+
 import { extractX402Data } from '@/lib/x402';
 import { Methods } from '@/types/x402';
 
@@ -85,7 +85,7 @@ export const POST = withCors(
                 accepts: result.accepts,
                 registrationDetails: result.registrationDetails,
               },
-              (_k, v) => (typeof v === 'bigint' ? Number(v) : v)
+              (_k, v: unknown) => (typeof v === 'bigint' ? Number(v) : v)
             )
           )
         );

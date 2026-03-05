@@ -1,24 +1,23 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { router, withCors, OPTIONS } from '@/lib/router';
+import { sendUsdcBodySchema } from '@/lib/schemas';
 
-import { sendUsdcQueryParamsSchema } from '@/lib/schemas';
+export { OPTIONS };
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export const OPTIONS = () => new NextResponse(null, { status: 204, headers: corsHeaders });
-
-export const POST = (request: NextRequest) => {
-  const { amount, address, chain } = sendUsdcQueryParamsSchema.parse(
-    Object.fromEntries(request.nextUrl.searchParams)
-  );
-  return NextResponse.json(
-    {
-      success: true,
-      message: `${amount} USDC sent to ${address} on ${chain}`,
-    },
-    { headers: corsHeaders }
-  );
-};
+export const POST = withCors(
+  router
+    .route('send')
+    .path('send')
+    .paid(
+      (body: { amount: number }) => body.amount.toString(),
+      { maxPrice: '1000' }
+    )
+    .method('POST')
+    .body(sendUsdcBodySchema)
+    .description('Send USDC to an address on Base or Solana')
+    .handler(({ body }) =>
+      Promise.resolve({
+        success: true,
+        message: `${body.amount} USDC sent to ${body.address} on ${body.chain}`,
+      })
+    )
+);
