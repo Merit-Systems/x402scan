@@ -3,13 +3,21 @@ import { sendUsdcBodySchema } from '@/lib/schemas';
 
 export { OPTIONS };
 
+let lastParsedAddress = '';
+
 export const POST = withCors(
   router
     .route('send')
     .path('send')
     .paid(
-      (body: { amount: number }) => body.amount.toString(),
-      { maxPrice: '1000' }
+      (body: { amount: number; address: string }) => {
+        lastParsedAddress = body.address;
+        return body.amount.toString();
+      },
+      {
+        maxPrice: '1000',
+        payTo: () => lastParsedAddress,
+      }
     )
     .method('POST')
     .body(sendUsdcBodySchema)
