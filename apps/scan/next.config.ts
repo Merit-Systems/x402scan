@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
     turbopackScopeHoisting: false,
     authInterrupts: true,
   },
-  serverExternalPackages: ['@lmnr-ai/lmnr', 'mppx'],
+  serverExternalPackages: ['@lmnr-ai/lmnr', 'mppx', '@agentcash/router'],
   devIndicators: false,
 };
 
