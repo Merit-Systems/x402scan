@@ -49,7 +49,9 @@ export function parseAddress(
 export async function parseJsonBody<T>(
   request: Request,
   schema: z.ZodType<T>
-): Promise<{ success: true; data: T } | { success: false; response: NextResponse }> {
+): Promise<
+  { success: true; data: T } | { success: false; response: NextResponse }
+> {
   let raw: unknown;
   try {
     raw = await request.json();

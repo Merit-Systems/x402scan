@@ -17,7 +17,11 @@ export function CopyForAgentsButton({ text }: { text: string }) {
       className="gap-2"
       onClick={() => void copyToClipboard(text)}
     >
-      {isCopied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+      {isCopied ? (
+        <Check className="size-3.5" />
+      ) : (
+        <Copy className="size-3.5" />
+      )}
       {isCopied ? 'Copied' : 'Copy for Agents'}
     </Button>
   );
