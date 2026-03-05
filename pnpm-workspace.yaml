@@ -17,7 +17,7 @@ catalog:
   zod: ^4.3.5
   tsx: ^4.21.0
   tsup: ^8.5.1
-  viem: ^2.44.2
+  viem: ^2.47.0
   siwe: ^3.0.0
   vitest: ^4.0.16
   rimraf: ^5.0.5

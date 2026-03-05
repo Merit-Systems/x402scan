@@ -39,7 +39,7 @@
   "pnpm": {
     "overrides": {
       "@auth/core": "0.40.0",
-      "viem": "2.44.1"
+      "viem": "2.47.0"
     },
     "onlyBuiltDependencies": [
       "@coinbase/x402"
