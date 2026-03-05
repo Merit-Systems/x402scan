@@ -13,7 +13,7 @@ const corsHeaders: Record<string, string> = {
 
 export const router = createRouter({
   baseUrl: env.NEXT_PUBLIC_APP_URL,
-  payeeAddress: env.X402_PAYEE_ADDRESS ?? '',
+  payeeAddress: env.X402_PAYEE_ADDRESS,
   network: 'eip155:8453',
 });
 
