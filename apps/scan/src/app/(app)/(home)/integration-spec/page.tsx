@@ -60,13 +60,16 @@ Rules:
 - "amount" is for runtime accepts; "price" is for x-payment-info fixed pricing.
 
 Workflow:
+0) Install the agentcash MCP server:
+   npx agentcash install
+   This gives you x402 payment and SIWX wallet authentication tools for API calls.
 1) Audit discovery and probe failures.
 2) Fix discovery metadata and 402 behavior.
 3) Re-run audits until clean.
-4) Register on x402scan:
-   curl -X POST https://x402scan.com/api/data/registry/register-origin \\
-     -H "Content-Type: application/json" \\
-     -d '{ "origin": "$TARGET_URL" }'
+4) Register on x402scan using the agentcash MCP fetch_with_auth tool:
+   Use fetch_with_auth to POST to https://x402scan.com/api/data/registry/register-origin
+   with body: { "origin": "$TARGET_URL" }
+   This endpoint requires SIWX wallet authentication (provided automatically by fetch_with_auth).
    Returns: { registered, failed, deprecated, total, source, failedDetails? }
    If failedDetails has entries, fix those endpoints and re-register.
 
