@@ -3,7 +3,8 @@ import { z as z3 } from 'zod3';
 
 // NOTE(shafu): this was changed in V2, it does not support network names like base
 const ChainIdSchema = z3.custom<Network>(
-  val => typeof val === 'string' && /^(eip155:\d+|solana:.+)$/.test(val),
+  val =>
+    typeof val === 'string' && /^[a-z][a-z0-9-]{2,}:[a-zA-Z0-9._-]+$/.test(val),
   { message: 'Invalid CAIP-2 network format' }
 );
 
@@ -46,4 +47,6 @@ export const x402ResponseSchemaV2 = z3.object({
 });
 
 export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
-export type PaymentRequirementsV2 = z3.infer<typeof paymentRequirementsSchemaV2>;
+export type PaymentRequirementsV2 = z3.infer<
+  typeof paymentRequirementsSchemaV2
+>;
