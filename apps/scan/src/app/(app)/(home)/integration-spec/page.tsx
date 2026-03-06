@@ -38,8 +38,7 @@ Schema guidance (important):
 - This is required for reliable agent invocation and robust listing behavior.
 - TypeScript recommendation (optional): Zod v4 is a good source of truth, but any valid schema pipeline is fine.
 
-OpenAPI payable operation must include ALL:
-- x-agentcash-auth: { mode: "paid" }
+OpenAPI payable operation must include:
 - x-payment-info with:
   - protocols: ["x402"]
   - pricingMode + fields:
@@ -48,12 +47,6 @@ OpenAPI payable operation must include ALL:
     - quote: { pricingMode: "quote" }
   - IMPORTANT: for fixed pricing use "price" (not "amount")
 - responses: { "402": { description: "Payment Required" } }
-
-Auth mode rules (x-agentcash-auth.mode):
-- allowed: "paid" | "siwx" | "apiKey"
-- payable route => mode must be "paid"
-- non-payable auth-only route can use "siwx" or "apiKey"
-- if a route is payable and also supports SIWX, keep mode as "paid"
 
 /.well-known/x402 must be exactly:
 {
@@ -67,9 +60,18 @@ Rules:
 - "amount" is for runtime accepts; "price" is for x-payment-info fixed pricing.
 
 Workflow:
+0) Install the agentcash MCP server:
+   npx agentcash install
+   This gives you x402 payment and SIWX wallet authentication tools for API calls.
 1) Audit discovery and probe failures.
 2) Fix discovery metadata and 402 behavior.
 3) Re-run audits until clean.
+4) Register on x402scan using the agentcash MCP fetch_with_auth tool:
+   Use fetch_with_auth to POST to https://x402scan.com/api/x402/registry/register-origin
+   with body: { "origin": "$TARGET_URL" }
+   This endpoint requires SIWX wallet authentication (provided automatically by fetch_with_auth).
+   Returns: { registered, failed, deprecated, total, source, failedDetails? }
+   If failedDetails has entries, fix those endpoints and re-register.
 
 Validation commands:
 npx -y @agentcash/discovery "$TARGET_URL" --json
@@ -78,7 +80,8 @@ npx -y @agentcash/discovery "$TARGET_URL" -v
 Done when:
 - resources are discovered
 - OpenAPI is selected when present (otherwise well-known is acceptable fallback)
-- no critical parser/probe errors remain`;
+- no critical parser/probe errors remain
+- server is registered on x402scan with no failed resources`;
 
 function CodeBlock({ code }: { code: string }) {
   return (
