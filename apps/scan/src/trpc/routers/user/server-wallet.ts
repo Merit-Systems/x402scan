@@ -167,7 +167,7 @@ export const serverWalletRouter = createTRPCRouter({
       }
 
       const fetchWithPayment = wrapFetchWithPayment(fetch, client);
-      const url = new URL(`/api/send`, env.NEXT_PUBLIC_APP_URL);
+      const url = new URL(`/api/x402/send`, env.NEXT_PUBLIC_APP_URL);
       url.searchParams.set('amount', amount.toString());
       url.searchParams.set('address', address);
       url.searchParams.set('chain', chain);

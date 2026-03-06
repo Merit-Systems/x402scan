@@ -67,7 +67,7 @@ Workflow:
 2) Fix discovery metadata and 402 behavior.
 3) Re-run audits until clean.
 4) Register on x402scan using the agentcash MCP fetch_with_auth tool:
-   Use fetch_with_auth to POST to https://x402scan.com/api/data/registry/register-origin
+   Use fetch_with_auth to POST to https://x402scan.com/api/x402/registry/register-origin
    with body: { "origin": "$TARGET_URL" }
    This endpoint requires SIWX wallet authentication (provided automatically by fetch_with_auth).
    Returns: { registered, failed, deprecated, total, source, failedDetails? }
