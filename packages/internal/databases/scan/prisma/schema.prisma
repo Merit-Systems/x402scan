@@ -106,6 +106,7 @@ model Resources {
 
 enum AcceptsScheme {
   exact
+  escrow
 }
 
 enum AcceptsNetwork {
