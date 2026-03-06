@@ -149,6 +149,7 @@ export const listOriginsWithResources = async (
             where: acceptsWhere,
           },
           response: true,
+          requestMetadata: true,
           tags: {
             include: {
               tag: true,

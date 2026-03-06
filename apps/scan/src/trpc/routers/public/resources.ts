@@ -266,6 +266,7 @@ export const resourcesRouter = createTRPCRouter({
         accepts: true,
         origin: true,
         response: true,
+        requestMetadata: true,
         tags: {
           include: {
             tag: true,

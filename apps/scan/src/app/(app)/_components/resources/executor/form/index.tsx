@@ -25,6 +25,7 @@ import type { SupportedChain } from '@/types/chain';
 import type { FieldValue } from '@/types/x402';
 import type { X402FetchResponse } from '@/app/(app)/_hooks/x402/types';
 import type { JsonValue } from '@/components/ai-elements/json-viewer';
+import type { ResourceRequestMetadata } from '@x402scan/scan-db';
 
 interface Props {
   x402Response: ParsedX402Response;
@@ -32,6 +33,191 @@ interface Props {
   maxAmountRequired: bigint;
   method: Methods;
   resource: string;
+  requestMetadata?: ResourceRequestMetadata | null;
+}
+
+function toRecord(
+  value: unknown
+): Record<string, unknown> | Record<string, never> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+  return value as Record<string, unknown>;
+}
+
+function getNestedValue(
+  record: Record<string, unknown>,
+  path: string
+): unknown | undefined {
+  const directValue = record[path];
+  if (directValue !== undefined) {
+    return directValue;
+  }
+
+  return path.split('.').reduce<unknown>((current, segment) => {
+    if (!current || typeof current !== 'object' || Array.isArray(current)) {
+      return undefined;
+    }
+    return (current as Record<string, unknown>)[segment];
+  }, record);
+}
+
+function normalizeDefaultValue(value: unknown): string | undefined {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+  return undefined;
+}
+
+function resolveFieldMetadata(
+  metadata: Record<string, unknown>,
+  fieldName: string
+): Partial<{
+  type: string;
+  description: string;
+  required: boolean;
+  enum: string[];
+  default: string;
+}> {
+  const fieldMetadata = getNestedValue(metadata, fieldName);
+  if (fieldMetadata === undefined) {
+    return {};
+  }
+
+  if (
+    fieldMetadata &&
+    typeof fieldMetadata === 'object' &&
+    !Array.isArray(fieldMetadata)
+  ) {
+    const raw = fieldMetadata as Record<string, unknown>;
+    return {
+      type: typeof raw.type === 'string' ? raw.type : undefined,
+      description:
+        typeof raw.description === 'string' ? raw.description : undefined,
+      required: typeof raw.required === 'boolean' ? raw.required : undefined,
+      enum:
+        Array.isArray(raw.enum) &&
+        raw.enum.every(option => typeof option === 'string')
+          ? (raw.enum as string[])
+          : undefined,
+      default: normalizeDefaultValue(raw.default),
+    };
+  }
+
+  return {
+    default: normalizeDefaultValue(fieldMetadata),
+  };
+}
+
+function createMetadataOnlyField(
+  fieldName: string,
+  metadataValue: unknown
+): {
+  name: string;
+  type?: string;
+  description?: string;
+  required?: boolean;
+  enum?: string[];
+  default?: string;
+} | null {
+  if (typeof metadataValue === 'string') {
+    return {
+      name: fieldName,
+      type: 'string',
+      default: metadataValue,
+    };
+  }
+
+  if (typeof metadataValue === 'number' || typeof metadataValue === 'boolean') {
+    return {
+      name: fieldName,
+      type: 'string',
+      default: String(metadataValue),
+    };
+  }
+
+  if (
+    !metadataValue ||
+    typeof metadataValue !== 'object' ||
+    Array.isArray(metadataValue)
+  ) {
+    return null;
+  }
+
+  const metadataObject = metadataValue as Record<string, unknown>;
+  const hasStructuredMetadata = [
+    'type',
+    'description',
+    'required',
+    'enum',
+    'default',
+  ].some(key => key in metadataObject);
+
+  if (!hasStructuredMetadata) {
+    return null;
+  }
+
+  return {
+    name: fieldName,
+    type: typeof metadataObject.type === 'string' ? metadataObject.type : 'string',
+    description:
+      typeof metadataObject.description === 'string'
+        ? metadataObject.description
+        : undefined,
+    required:
+      typeof metadataObject.required === 'boolean'
+        ? metadataObject.required
+        : undefined,
+    enum:
+      Array.isArray(metadataObject.enum) &&
+      metadataObject.enum.every(option => typeof option === 'string')
+        ? (metadataObject.enum as string[])
+        : undefined,
+    default: normalizeDefaultValue(metadataObject.default),
+  };
+}
+
+function isMetadataField(
+  field: ReturnType<typeof createMetadataOnlyField>
+): field is NonNullable<ReturnType<typeof createMetadataOnlyField>> {
+  return field !== null;
+}
+
+function mergeFieldsWithMetadata(
+  fields: ReturnType<typeof extractFieldsFromSchema>,
+  metadataSection: unknown
+) {
+  const metadata = toRecord(metadataSection);
+  const mergedFields = fields.map(field => {
+    const fieldMetadata = resolveFieldMetadata(metadata, field.name);
+    return {
+      ...field,
+      ...fieldMetadata,
+      required: fieldMetadata.required ?? field.required,
+      description: fieldMetadata.description ?? field.description,
+      default: fieldMetadata.default ?? field.default,
+      enum: fieldMetadata.enum ?? field.enum,
+      type: fieldMetadata.type ?? field.type,
+    };
+  });
+
+  const existingFieldNames = new Set(mergedFields.map(field => field.name));
+  const metadataOnlyFields = Object.entries(metadata)
+    .filter(([fieldName]) => !existingFieldNames.has(fieldName))
+    .map(([fieldName, metadataValue]) =>
+      createMetadataOnlyField(fieldName, metadataValue)
+    )
+    .filter(isMetadataField);
+
+  return [...mergedFields, ...metadataOnlyFields];
+}
+
+function getEffectiveFieldValue(
+  field: { name: string; default?: string },
+  values: Record<string, FieldValue>
+) {
+  return values[field.name] ?? field.default;
 }
 
 export function Form({
@@ -40,20 +226,37 @@ export function Form({
   maxAmountRequired,
   method,
   resource,
+  requestMetadata,
 }: Props) {
+  const metadataHeaders = requestMetadata?.headers;
+  const metadataQueryParams = requestMetadata?.queryParams;
+  const metadataBody = requestMetadata?.body;
+
   const headerFields = useMemo(
-    () => extractFieldsFromSchema(inputSchema, method, 'header'),
-    [inputSchema, method]
+    () =>
+      mergeFieldsWithMetadata(
+        extractFieldsFromSchema(inputSchema, method, 'header'),
+        metadataHeaders
+      ),
+    [inputSchema, method, metadataHeaders]
   );
 
   const queryFields = useMemo(
-    () => extractFieldsFromSchema(inputSchema, method, 'query'),
-    [inputSchema, method]
+    () =>
+      mergeFieldsWithMetadata(
+        extractFieldsFromSchema(inputSchema, method, 'query'),
+        metadataQueryParams
+      ),
+    [inputSchema, method, metadataQueryParams]
   );
 
   const bodyFields = useMemo(
-    () => extractFieldsFromSchema(inputSchema, method, 'body'),
-    [inputSchema, method]
+    () =>
+      mergeFieldsWithMetadata(
+        extractFieldsFromSchema(inputSchema, method, 'body'),
+        metadataBody
+      ),
+    [inputSchema, method, metadataBody]
   );
 
   const [headerValues, setHeaderValues] = useState<Record<string, FieldValue>>(
@@ -82,16 +285,16 @@ export function Form({
     const requiredBody = bodyFields.filter(field => field.required);
 
     const headerFilled = requiredHeader.every(field => {
-      const value = headerValues[field.name];
-      return value && isValidFieldValue(value);
+      const value = getEffectiveFieldValue(field, headerValues);
+      return value !== undefined && isValidFieldValue(value);
     });
     const queryFilled = requiredQuery.every(field => {
-      const value = queryValues[field.name];
-      return value && isValidFieldValue(value);
+      const value = getEffectiveFieldValue(field, queryValues);
+      return value !== undefined && isValidFieldValue(value);
     });
     const bodyFilled = requiredBody.every(field => {
-      const value = bodyValues[field.name];
-      return value && isValidFieldValue(value);
+      const value = getEffectiveFieldValue(field, bodyValues);
+      return value !== undefined && isValidFieldValue(value);
     });
 
     return headerFilled && queryFilled && bodyFilled;
@@ -105,12 +308,13 @@ export function Form({
   ]);
 
   const targetUrl = useMemo(() => {
-    const queryEntries = Object.entries(queryValues).reduce<[string, string][]>(
-      (acc, [key, value]) => {
+    const queryEntries = queryFields.reduce<[string, string][]>(
+      (acc, field) => {
+        const value = getEffectiveFieldValue(field, queryValues);
         if (typeof value === 'string') {
           const trimmed = value.trim();
           if (trimmed.length > 0) {
-            acc.push([key, trimmed]);
+            acc.push([field.name, trimmed]);
           }
         }
         return acc;
@@ -122,55 +326,54 @@ export function Form({
     const searchParams = new URLSearchParams(queryEntries);
     const separator = resource.includes('?') ? '&' : '?';
     return `${resource}${separator}${searchParams.toString()}`;
-  }, [resource, queryValues]);
+  }, [resource, queryValues, queryFields]);
 
   const isReservedHeader = (name: string) =>
     name.trim().toLowerCase() === 'x-payment';
 
   const headerEntries = useMemo(() => {
-    return Object.entries(headerValues).reduce<[string, string][]>(
-      (acc, [key, value]) => {
-        if (isReservedHeader(key)) return acc;
-        if (typeof value === 'string') {
+    return headerFields.reduce<[string, string][]>((acc, field) => {
+      if (isReservedHeader(field.name)) return acc;
+      const value = getEffectiveFieldValue(field, headerValues);
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (trimmed.length > 0) {
+          acc.push([field.name, trimmed]);
+        }
+      }
+      return acc;
+    }, []);
+  }, [headerValues, headerFields]);
+
+  const bodyEntries = useMemo(() => {
+    return bodyFields.reduce<[string, FieldValue | number | boolean][]>(
+      (acc, field) => {
+        const value = getEffectiveFieldValue(field, bodyValues);
+        const fieldType = field?.type;
+
+        if (Array.isArray(value)) {
+          if (value.length > 0) {
+            acc.push([field.name, value]);
+          }
+        } else if (typeof value === 'string') {
           const trimmed = value.trim();
           if (trimmed.length > 0) {
-            acc.push([key, trimmed]);
+            if (fieldType === 'number' || fieldType === 'integer') {
+              const num = Number(trimmed);
+              if (!isNaN(num)) {
+                acc.push([field.name, num]);
+              }
+            } else if (fieldType === 'boolean') {
+              acc.push([field.name, trimmed === 'true']);
+            } else {
+              acc.push([field.name, trimmed]);
+            }
           }
         }
         return acc;
       },
       []
     );
-  }, [headerValues]);
-
-  const bodyEntries = useMemo(() => {
-    return Object.entries(bodyValues).reduce<
-      [string, FieldValue | number | boolean][]
-    >((acc, [key, value]) => {
-      const field = bodyFields.find(f => f.name === key);
-      const fieldType = field?.type;
-
-      if (Array.isArray(value)) {
-        if (value.length > 0) {
-          acc.push([key, value]);
-        }
-      } else if (typeof value === 'string') {
-        const trimmed = value.trim();
-        if (trimmed.length > 0) {
-          if (fieldType === 'number' || fieldType === 'integer') {
-            const num = Number(trimmed);
-            if (!isNaN(num)) {
-              acc.push([key, num]);
-            }
-          } else if (fieldType === 'boolean') {
-            acc.push([key, trimmed === 'true']);
-          } else {
-            acc.push([key, trimmed]);
-          }
-        }
-      }
-      return acc;
-    }, []);
   }, [bodyValues, bodyFields]);
 
   const requestInit = useMemo((): RequestInit => {
