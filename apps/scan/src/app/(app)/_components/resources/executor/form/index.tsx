@@ -107,10 +107,15 @@ export function Form({
   const targetUrl = useMemo(() => {
     const queryEntries = Object.entries(queryValues).reduce<[string, string][]>(
       (acc, [key, value]) => {
-        if (typeof value === 'string') {
-          const trimmed = value.trim();
-          if (trimmed.length > 0) {
-            acc.push([key, trimmed]);
+        if (Array.isArray(value)) {
+          const filtered = value.filter(v => String(v).trim().length > 0);
+          if (filtered.length > 0) {
+            acc.push([key, filtered.join(',')]);
+          }
+        } else if (value != null) {
+          const str = String(value).trim();
+          if (str.length > 0) {
+            acc.push([key, str]);
           }
         }
         return acc;
