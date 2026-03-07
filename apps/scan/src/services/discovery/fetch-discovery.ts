@@ -31,7 +31,6 @@ function mapSourceToDiscoverySource(
   if (!source) return undefined;
   if (source === 'openapi' || source === 'override') return 'openapi';
   if (source === 'well-known/x402' || source === 'well-known') return 'well-known';
-  if (source === 'dns/_x402' || source === 'dns') return 'dns';
   if (source === 'probe') return 'probe';
   if (source === 'interop/mpp' || source === 'interop-mpp') return 'interop-mpp';
   return undefined;
