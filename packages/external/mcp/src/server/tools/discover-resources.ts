@@ -51,7 +51,6 @@ export function registerDiscoveryTools(server: McpServer): void {
           found: true,
           origin: result.value.origin,
           source: result.value.source,
-          ...(result.value.usage ? { usage: result.value.usage } : {}),
           data: result.value.data,
         });
       }
