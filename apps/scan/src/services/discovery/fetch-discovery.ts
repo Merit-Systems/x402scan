@@ -86,7 +86,7 @@ function getOwnershipProofsFromWellKnown(
   const raw = wellKnown.raw;
 
   // Top-level ownershipProofs on the well-known document
-  const topLevel = raw['ownershipProofs'];
+  const topLevel = raw.ownershipProofs;
   if (Array.isArray(topLevel)) {
     for (const proof of topLevel) {
       if (typeof proof === 'string') proofs.add(proof);
@@ -94,7 +94,7 @@ function getOwnershipProofsFromWellKnown(
   }
 
   // Per-route ownershipProofs (well-known may embed proofs per route)
-  const routes = raw['routes'];
+  const routes = raw.routes;
   if (Array.isArray(routes)) {
     for (const route of routes) {
       if (!route || typeof route !== 'object' || Array.isArray(route)) continue;
@@ -173,7 +173,7 @@ export async function fetchDiscoveryDocument(
   if (wellKnown?.fetchedUrl) discoveryUrls.push(wellKnown.fetchedUrl);
 
   if (discoveryOutcome.status === 'rejected') {
-    const error = discoveryOutcome.reason;
+    const error: unknown = discoveryOutcome.reason;
     return {
       success: false,
       resources: [],
