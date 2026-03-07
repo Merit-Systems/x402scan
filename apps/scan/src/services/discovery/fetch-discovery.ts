@@ -122,8 +122,8 @@ function collectOwnershipProofs(
 /**
  * Fetch discovery data for an origin using @agentcash/discovery.
  *
- * This is the canonical x402scan discovery path:
- * openapi.json -> /.well-known/x402 (compat) -> DNS _x402 (compat).
+ * This attempts discovery via multiple methods:
+ * openapi.json, /.well-known/x402, and probe-based discovery.
  */
 export async function fetchDiscoveryDocument(
   originOrUrl: string,
@@ -148,7 +148,7 @@ export async function fetchDiscoveryDocument(
     : {};
 
   // Run discovery and raw source fetches in parallel.
-  // discoverOriginSchema handles all stages (openapi, well-known, probe, dns).
+  // discoverOriginSchema handles multiple discovery methods (openapi, well-known, probe).
   // getOpenAPI/getWellKnown are called separately to access raw documents
   // for ownership proof extraction and fetchedUrl collection.
   const [discoveryOutcome, openApiOutcome, wellKnownOutcome] =
