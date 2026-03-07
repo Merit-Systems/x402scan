@@ -1122,13 +1122,11 @@ function RegisterModeResourceList({
                       ? 'Manually Entered'
                       : resourceSource === 'openapi'
                         ? 'OpenAPI'
-                        : resourceSource === 'dns'
-                          ? '_x402 DNS TXT'
-                          : resourceSource === 'probe'
-                            ? 'Runtime Probe'
-                            : resourceSource === 'interop-mpp'
-                              ? '/.well-known/mpp'
-                              : '/.well-known/x402'}
+                        : resourceSource === 'probe'
+                          ? 'Runtime Probe'
+                          : resourceSource === 'interop-mpp'
+                            ? '/.well-known/mpp'
+                            : '/.well-known/x402'}
                   </span>
                 </td>
                 <td className="px-3 py-2">

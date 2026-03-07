@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-type StrategyKey = 'openapi' | 'wellKnown' | 'dns';
+type StrategyKey = 'openapi' | 'wellKnown';
 
 interface Strategy {
   key: StrategyKey;
@@ -74,22 +74,6 @@ const strategies: Strategy[] = [
   "ownershipProofs": ["0x..."]
 }`,
     note: 'Good for compatibility and fan-out, but OpenAPI should be your long-term source of truth.',
-  },
-  {
-    key: 'dns',
-    title: 'DNS Pointer',
-    badge: 'Legacy',
-    badgeVariant: 'outline',
-    subtitle: 'Oldest compatibility mode. Keep only if needed.',
-    location: 'TXT record at _x402.<domain>',
-    requirements: [
-      'TXT value should point to your /.well-known/x402 URL.',
-      'Keep the pointed URL stable and cache-friendly.',
-      'Plan migration away from DNS-only discovery.',
-    ],
-    example:
-      '_x402.yourdomain.com TXT "v=x4021;url=https://yourdomain.com/.well-known/x402"',
-    note: 'Supported for backward compatibility, but lowest priority and least expressive.',
   },
 ];
 
@@ -159,7 +143,7 @@ export function DiscoveryStrategyPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="grid items-stretch gap-3 md:grid-cols-3">
+      <div className="grid items-stretch gap-3 md:grid-cols-2">
         {strategies.map(item => {
           const active = item.key === selected;
           return (

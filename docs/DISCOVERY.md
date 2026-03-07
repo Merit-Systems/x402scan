@@ -6,7 +6,6 @@ If you want reliable pickup, implement discovery in this order:
 
 1. OpenAPI-first (recommended)
 2. `/.well-known/x402` (compatibility)
-3. DNS `_x402` TXT pointer (compatibility)
 
 If you cannot expose discovery yet, endpoint-only manual registration still works.
 
@@ -16,7 +15,6 @@ Discovery precedence used by `x402scan`:
 
 1. OpenAPI (`/openapi.json`, then `/.well-known/openapi.json`)
 2. `/.well-known/x402`
-3. DNS `_x402` TXT pointer
 
 Runtime `402` behavior is authoritative over static metadata.
 
@@ -59,8 +57,7 @@ Use `x-discovery`:
 ```json
 {
   "x-discovery": {
-    "ownershipProofs": ["0x..."],
-    "llmsTxtUrl": "https://yourdomain.com/llms.txt"
+    "ownershipProofs": ["0x..."]
   }
 }
 ```
@@ -100,21 +97,7 @@ Optional fields:
 
 ---
 
-## C) DNS `_x402` Pointer (Compatibility)
-
-Example TXT record:
-
-```text
-_x402.yourdomain.com TXT "v=x4021;url=https://yourdomain.com/.well-known/x402"
-```
-
-Notes:
-- DNS is compatibility-only; do not prefer it over OpenAPI.
-- Keep payload URL stable and cache-friendly.
-
----
-
-## D) Endpoint-Only Registration (Fallback)
+## C) Endpoint-Only Registration (Fallback)
 
 Use this when discovery docs are not available yet.
 
@@ -131,14 +114,6 @@ For payable indexing in `x402scan`, challenge data should include:
 Compatibility behavior:
 - `402` + `accepts: []` + `extensions["sign-in-with-x"]` => SIWX auth-only, marked `skipped`.
 - Missing input schema => strict non-invocable, marked `skipped`.
-
----
-
-## `llms.txt` Guidance
-
-`llms.txt` is optional and unstructured.
-
-Use it for concise cross-route human/agent guidance. Keep machine-parseable contract data in OpenAPI.
 
 ---
 
@@ -200,5 +175,5 @@ curl -i -X GET https://yourdomain.com/api/route
 
 1. Ensure routes return valid x402 challenges (`402`, parseable, non-empty `accepts` for payable routes).
 2. Add OpenAPI discovery + `x-payment-info` + security declarations.
-3. Keep `/.well-known/x402` + DNS compat during migration.
+3. Keep `/.well-known/x402` compat during migration.
 4. Remove compat paths when your consumers no longer depend on them.

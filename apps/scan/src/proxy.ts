@@ -172,7 +172,7 @@ const routes: RoutesConfig = {
     registryRegisterExtension
   ),
   'POST /api/data/registry/register-origin': dataRouteConfig(
-    'Discover and register all x402 resources from an origin via .well-known/x402 or DNS TXT',
+    'Discover and register all x402 resources from an origin via .well-known/x402',
     '$0.01',
     registryRegisterOriginExtension
   ),
