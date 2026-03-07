@@ -19,7 +19,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Discovery Spec',
   description:
-    'x402scan discovery and registration specification for OpenAPI, .well-known, DNS, and endpoint-only compatibility.',
+    'x402scan discovery and registration specification for OpenAPI, .well-known, and endpoint-only compatibility.',
 };
 
 const endpointExample = `curl -i -X POST https://yourdomain.com/api/route
@@ -29,8 +29,7 @@ const agentPrompt = `Implement discovery for this server and make it pass.
 
 Discovery strategy:
 1) OpenAPI is canonical and should be used by default.
-2) If OpenAPI is not feasible yet, use /.well-known/x402 v1 as temporary compatibility.
-3) DNS _x402 is optional legacy compatibility (only add if needed).
+2) If OpenAPI is not feasible yet, use /.well-known/x402 v1 as fallback.
 
 Schema guidance (important):
 - Each invocable route should expose an input schema.
@@ -122,7 +121,7 @@ export default function DiscoverySpecPage() {
           <ul className="mt-3 list-disc pl-5 space-y-1 text-sm">
             <li>Publish OpenAPI as the canonical machine-readable contract.</li>
             <li>
-              Keep <code>/.well-known/x402</code> and DNS as migration compatibility bridges.
+              Use <code>/.well-known/x402</code> as a migration compatibility bridge.
             </li>
             <li>
               Treat runtime <code>402</code> challenge behavior as the final source of truth.
@@ -180,13 +179,6 @@ export default function DiscoverySpecPage() {
                     <TableCell>Well-known fan-out</TableCell>
                     <TableCell className="whitespace-normal break-words">
                       <code>/.well-known/x402</code>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>3</TableCell>
-                    <TableCell>DNS pointer</TableCell>
-                    <TableCell className="whitespace-normal break-words">
-                      TXT at <code>_x402</code>
                     </TableCell>
                   </TableRow>
                 </TableBody>
