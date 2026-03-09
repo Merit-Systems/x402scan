@@ -23,6 +23,11 @@ export const daydreamsFacilitator = {
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-16'),
       },
+      {
+        address: '0x1363C7Ff51CcCE10258A7F7bddd63bAaB6aAf678',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2026-01-16'),
+      },
     ],
     [Network.SOLANA]: [
       {
