@@ -11,6 +11,8 @@ import { LoadingOriginActivity, OriginActivity } from './_components/activity';
 import { LoadingOriginAgents, OriginAgents } from './_components/agents';
 import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
 import { defaultAgentsSorting } from '@/app/(app)/_contexts/sorting/agents/default';
+import { Terminal } from 'lucide-react';
+import { CopyCode } from '@/components/ui/copy-code';
 
 export default async function OriginPage({
   params,
@@ -38,13 +40,26 @@ export default async function OriginPage({
         <Suspense fallback={<LoadingHeaderCard />}>
           <HeaderCard origin={origin} />
         </Suspense>
+        <div className="flex flex-col gap-3 rounded-lg border p-4 bg-muted/30">
+          <div className="flex items-center gap-2">
+            <Terminal className="size-4 text-muted-foreground" />
+            <p className="text-sm font-semibold">Try in agentcash</p>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Use the agentcash CLI to discover and call this API with USDC micropayments.
+          </p>
+          <CopyCode
+            code={`npx agentcash try ${origin.origin}`}
+            toastMessage="Command copied!"
+          />
+        </div>
         <Suspense fallback={<LoadingOriginActivity />}>
           <OriginActivity originId={id} />
         </Suspense>
         <div className="md:grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="col-span-1 md:col-span-2 flex flex-col gap-8">
             <Suspense fallback={<LoadingOriginResources />}>
-              <OriginResources originId={id} originUrl={origin.origin} />
+              <OriginResources originId={id} />
             </Suspense>
           </div>
           <div className="col-span-1">
