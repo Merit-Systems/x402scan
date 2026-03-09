@@ -164,7 +164,7 @@ export default function DiscoverySpecPage() {
           </p>
           <Card>
             <CardContent className="px-0 pb-0">
-              <div className="hidden md:block">
+              <div className="hidden lg:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -195,7 +195,7 @@ export default function DiscoverySpecPage() {
                 </Table>
               </div>
 
-              <div className="divide-y px-4 md:hidden">
+              <div className="divide-y px-4 lg:hidden">
                 <div className="space-y-2 py-3 first:pt-0">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs font-medium">
@@ -262,8 +262,8 @@ export default function DiscoverySpecPage() {
           </p>
           <Card>
             <CardContent className="px-0 pb-0">
-              <div className="hidden md:block overflow-x-auto">
-                <Table className="table-fixed">
+              <div className="hidden lg:block overflow-x-auto">
+                <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[35%] whitespace-normal">
@@ -327,7 +327,7 @@ export default function DiscoverySpecPage() {
                 </Table>
               </div>
 
-              <div className="divide-y px-4 md:hidden">
+              <div className="divide-y px-4 lg:hidden">
                 {[
                   {
                     error: 'Expected 402, got 404/405',
