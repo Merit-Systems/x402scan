@@ -93,6 +93,20 @@ export const USDC_ADDRESS = {
   [Chain.OPTIMISM]: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85' as const,
 } satisfies Record<Chain, MixedAddress>;
 
+const HTML_ENTITIES: Record<string, string> = {
+  '&amp;': '&',
+  '&lt;': '<',
+  '&gt;': '>',
+  '&quot;': '"',
+  '&#39;': "'",
+  '&apos;': "'",
+};
+
+const ENTITY_PATTERN = /&(?:amp|lt|gt|quot|#39|apos);/g;
+
+export const decodeHtmlEntities = (str: string): string =>
+  str.replace(ENTITY_PATTERN, match => HTML_ENTITIES[match] ?? match);
+
 export const safeParseJson = <T>(
   value: string | null | undefined,
   fallback: T

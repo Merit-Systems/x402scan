@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Address, Addresses } from '@/components/ui/address';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
-import { cn } from '@/lib/utils';
+import { cn, decodeHtmlEntities } from '@/lib/utils';
 
 import type { ResourceOrigin } from '@x402scan/scan-db/types';
 import type { MixedAddress } from '@/types/address';
@@ -89,7 +89,7 @@ export const Origins: React.FC<Props> = ({
               <ul className="list-disc list-inside">
                 {origins.slice(1).map(origin => (
                   <li key={origin.id}>
-                    {origin.title ?? new URL(origin.origin).hostname}
+                    {origin.title ? decodeHtmlEntities(origin.title) : new URL(origin.origin).hostname}
                   </li>
                 ))}
               </ul>
