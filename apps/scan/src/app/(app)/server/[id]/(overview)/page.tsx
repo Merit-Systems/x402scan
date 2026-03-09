@@ -44,7 +44,7 @@ export default async function OriginPage({
         <div className="md:grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="col-span-1 md:col-span-2 flex flex-col gap-8">
             <Suspense fallback={<LoadingOriginResources />}>
-              <OriginResources originId={id} />
+              <OriginResources originId={id} originUrl={origin.origin} />
             </Suspense>
           </div>
           <div className="col-span-1">
