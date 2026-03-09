@@ -66,8 +66,9 @@ export const createColumns = (
     ),
     cell: ({ row }) => {
       const description =
-        row.original.accepts.find((accept: { description?: string }) => accept.description)?.description ??
-        'N/A';
+        row.original.accepts.find(
+          (accept: { description?: string }) => accept.description
+        )?.description ?? 'N/A';
       return (
         <div className="text-center text-xs text-muted-foreground truncate max-w-[200px]">
           {description}
@@ -141,19 +142,24 @@ export const createColumns = (
             </span>
           ) : (
             <>
-              {visibleTags.map((resourceTag: { id: string; tag: { color: string; name: string } }) => (
-                <span
-                  key={resourceTag.id}
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"
-                  style={{
-                    backgroundColor: `${resourceTag.tag.color}20`,
-                    borderColor: resourceTag.tag.color,
-                    color: resourceTag.tag.color,
-                  }}
-                >
-                  {resourceTag.tag.name}
-                </span>
-              ))}
+              {visibleTags.map(
+                (resourceTag: {
+                  id: string;
+                  tag: { color: string; name: string };
+                }) => (
+                  <span
+                    key={resourceTag.id}
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"
+                    style={{
+                      backgroundColor: `${resourceTag.tag.color}20`,
+                      borderColor: resourceTag.tag.color,
+                      color: resourceTag.tag.color,
+                    }}
+                  >
+                    {resourceTag.tag.name}
+                  </span>
+                )
+              )}
               {hasMore && (
                 <span className="inline-flex items-center px-2 py-0.5 text-xs text-muted-foreground">
                   ...

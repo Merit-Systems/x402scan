@@ -18,8 +18,8 @@ export default function RegisterResourcePage() {
         description={
           <div className="space-y-2">
             <p>
-              Register your x402-compatible server to make your resources discoverable on
-              x402scan.
+              Register your x402-compatible server to make your resources
+              discoverable on x402scan.
             </p>
             <div>
               <Button asChild size="sm" variant="outline" className="gap-1">
