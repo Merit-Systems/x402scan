@@ -196,20 +196,38 @@ export default function DiscoverySpecPage() {
               </div>
 
               <div className="divide-y px-4 md:hidden">
-                <div className="space-y-1 py-3 first:pt-0">
-                  <p className="text-xs font-medium text-muted-foreground">1</p>
-                  <p className="text-sm font-medium">OpenAPI document</p>
-                  <p className="font-mono text-xs break-words text-muted-foreground">
-                    <code>/openapi.json</code> then{' '}
-                    <code>/.well-known/openapi.json</code>
-                  </p>
+                <div className="space-y-2 py-3 first:pt-0">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs font-medium">
+                      1
+                    </span>
+                    <p className="text-sm font-medium">OpenAPI document</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground mb-0.5">
+                      Location
+                    </p>
+                    <p className="font-mono text-xs break-words">
+                      <code>/openapi.json</code> then{' '}
+                      <code>/.well-known/openapi.json</code>
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-1 py-3 last:pb-0">
-                  <p className="text-xs font-medium text-muted-foreground">2</p>
-                  <p className="text-sm font-medium">Well-known fan-out</p>
-                  <p className="font-mono text-xs break-words text-muted-foreground">
-                    <code>/.well-known/x402</code>
-                  </p>
+                <div className="space-y-2 py-3 last:pb-0">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs font-medium">
+                      2
+                    </span>
+                    <p className="text-sm font-medium">Well-known fan-out</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground mb-0.5">
+                      Location
+                    </p>
+                    <p className="font-mono text-xs break-words">
+                      <code>/.well-known/x402</code>
+                    </p>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -244,8 +262,8 @@ export default function DiscoverySpecPage() {
           </p>
           <Card>
             <CardContent className="px-0 pb-0">
-              <div className="hidden md:block">
-                <Table>
+              <div className="hidden md:block overflow-x-auto">
+                <Table className="table-fixed">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[35%] whitespace-normal">
@@ -310,50 +328,55 @@ export default function DiscoverySpecPage() {
               </div>
 
               <div className="divide-y px-4 md:hidden">
-                <div className="space-y-2 py-3 first:pt-0">
-                  <p className="font-mono text-xs break-words">
-                    Expected 402, got 404/405
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Cause: Wrong method or wrong path
-                  </p>
-                  <p className="text-sm">
-                    Fix: Match method/path to your actual handler
-                  </p>
-                </div>
-                <div className="space-y-2 py-3">
-                  <p className="font-mono text-xs break-words">
-                    Accepts must contain at least one valid payment requirement
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Cause: Malformed or empty payment requirements
-                  </p>
-                  <p className="text-sm">
-                    Fix: Return a valid non-empty x402 accepts set
-                  </p>
-                </div>
-                <div className="space-y-2 py-3">
-                  <p className="font-mono text-xs break-words">
-                    Missing input schema
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Cause: Strict parser cannot infer invocable contract
-                  </p>
-                  <p className="text-sm">
-                    Fix: Publish Bazaar/OpenAPI input schema metadata
-                  </p>
-                </div>
-                <div className="space-y-2 py-3 last:pb-0">
-                  <p className="font-mono text-xs break-words">
-                    Expected 402, got 429
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Cause: Provider-side throttling
-                  </p>
-                  <p className="text-sm">
-                    Fix: Retry, reduce probe volume, or register URL-only
-                  </p>
-                </div>
+                {[
+                  {
+                    error: 'Expected 402, got 404/405',
+                    cause: 'Wrong method or wrong path',
+                    fix: 'Match method/path to your actual handler',
+                  },
+                  {
+                    error:
+                      'Accepts must contain at least one valid payment requirement',
+                    cause: 'Malformed or empty payment requirements',
+                    fix: 'Return a valid non-empty x402 accepts set',
+                  },
+                  {
+                    error: 'Missing input schema',
+                    cause: 'Strict parser cannot infer invocable contract',
+                    fix: 'Publish Bazaar/OpenAPI input schema metadata',
+                  },
+                  {
+                    error: 'Expected 402, got 429',
+                    cause: 'Provider-side throttling',
+                    fix: 'Retry, reduce probe volume, or register URL-only',
+                  },
+                ].map((row, i, arr) => (
+                  <div
+                    key={i}
+                    className={`space-y-2 py-3 ${i === 0 ? 'pt-0' : ''} ${i === arr.length - 1 ? 'pb-0' : ''}`}
+                  >
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-0.5">
+                        Error
+                      </p>
+                      <p className="font-mono text-xs break-words">
+                        {row.error}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-0.5">
+                        Likely Cause
+                      </p>
+                      <p className="text-sm">{row.cause}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-0.5">
+                        Fix
+                      </p>
+                      <p className="text-sm">{row.fix}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
