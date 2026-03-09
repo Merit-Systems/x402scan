@@ -195,39 +195,41 @@ export default function DiscoverySpecPage() {
                 </Table>
               </div>
 
-              <div className="divide-y px-4 lg:hidden">
-                <div className="space-y-2 py-3 first:pt-0">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs font-medium">
-                      1
-                    </span>
-                    <p className="text-sm font-medium">OpenAPI document</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-0.5">
-                      Location
-                    </p>
-                    <p className="font-mono text-xs break-words">
-                      <code>/openapi.json</code> then{' '}
-                      <code>/.well-known/openapi.json</code>
-                    </p>
-                  </div>
+              <div className="lg:hidden">
+                <div className="flex gap-4 border-b bg-muted/40 px-4 py-2 text-xs font-medium text-muted-foreground">
+                  <span className="w-8">Order</span>
+                  <span className="flex-1">Source</span>
+                  <span className="flex-1">Expected Location</span>
                 </div>
-                <div className="space-y-2 py-3 last:pb-0">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs font-medium">
-                      2
-                    </span>
-                    <p className="text-sm font-medium">Well-known fan-out</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground mb-0.5">
-                      Location
-                    </p>
-                    <p className="font-mono text-xs break-words">
-                      <code>/.well-known/x402</code>
-                    </p>
-                  </div>
+                <div className="divide-y px-4">
+                  {[
+                    {
+                      order: '1',
+                      source: 'OpenAPI document',
+                      location: (
+                        <>
+                          <code>/openapi.json</code> then{' '}
+                          <code>/.well-known/openapi.json</code>
+                        </>
+                      ),
+                    },
+                    {
+                      order: '2',
+                      source: 'Well-known fan-out',
+                      location: <code>/.well-known/x402</code>,
+                    },
+                  ].map((row, i, arr) => (
+                    <div
+                      key={i}
+                      className={`flex gap-4 py-3 ${i === arr.length - 1 ? 'pb-0' : ''}`}
+                    >
+                      <span className="w-8 text-sm font-medium">{row.order}</span>
+                      <span className="flex-1 text-sm">{row.source}</span>
+                      <span className="flex-1 font-mono text-xs break-words">
+                        {row.location}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </CardContent>
@@ -327,56 +329,50 @@ export default function DiscoverySpecPage() {
                 </Table>
               </div>
 
-              <div className="divide-y px-4 lg:hidden">
-                {[
-                  {
-                    error: 'Expected 402, got 404/405',
-                    cause: 'Wrong method or wrong path',
-                    fix: 'Match method/path to your actual handler',
-                  },
-                  {
-                    error:
-                      'Accepts must contain at least one valid payment requirement',
-                    cause: 'Malformed or empty payment requirements',
-                    fix: 'Return a valid non-empty x402 accepts set',
-                  },
-                  {
-                    error: 'Missing input schema',
-                    cause: 'Strict parser cannot infer invocable contract',
-                    fix: 'Publish Bazaar/OpenAPI input schema metadata',
-                  },
-                  {
-                    error: 'Expected 402, got 429',
-                    cause: 'Provider-side throttling',
-                    fix: 'Retry, reduce probe volume, or register URL-only',
-                  },
-                ].map((row, i, arr) => (
-                  <div
-                    key={i}
-                    className={`space-y-2 py-3 ${i === 0 ? 'pt-0' : ''} ${i === arr.length - 1 ? 'pb-0' : ''}`}
-                  >
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-0.5">
-                        Error
-                      </p>
-                      <p className="font-mono text-xs break-words">
+              <div className="lg:hidden">
+                <div className="flex gap-3 border-b bg-muted/40 px-4 py-2 text-xs font-medium text-muted-foreground">
+                  <span className="w-[35%]">Error</span>
+                  <span className="w-[30%]">Likely Cause</span>
+                  <span className="w-[35%]">Fix</span>
+                </div>
+                <div className="divide-y px-4">
+                  {[
+                    {
+                      error: 'Expected 402, got 404/405',
+                      cause: 'Wrong method or wrong path',
+                      fix: 'Match method/path to your actual handler',
+                    },
+                    {
+                      error:
+                        'Accepts must contain at least one valid payment requirement',
+                      cause: 'Malformed or empty payment requirements',
+                      fix: 'Return a valid non-empty x402 accepts set',
+                    },
+                    {
+                      error: 'Missing input schema',
+                      cause: 'Strict parser cannot infer invocable contract',
+                      fix: 'Publish Bazaar/OpenAPI input schema metadata',
+                    },
+                    {
+                      error: 'Expected 402, got 429',
+                      cause: 'Provider-side throttling',
+                      fix: 'Retry, reduce probe volume, or register URL-only',
+                    },
+                  ].map((row, i, arr) => (
+                    <div
+                      key={i}
+                      className={`flex gap-3 py-3 ${i === arr.length - 1 ? 'pb-0' : ''}`}
+                    >
+                      <p className="w-[35%] font-mono text-xs break-words">
                         {row.error}
                       </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-0.5">
-                        Likely Cause
+                      <p className="w-[30%] text-sm break-words">
+                        {row.cause}
                       </p>
-                      <p className="text-sm">{row.cause}</p>
+                      <p className="w-[35%] text-sm break-words">{row.fix}</p>
                     </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground mb-0.5">
-                        Fix
-                      </p>
-                      <p className="text-sm">{row.fix}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </CardContent>
           </Card>
