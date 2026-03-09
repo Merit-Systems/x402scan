@@ -422,6 +422,22 @@ export const listResourcesForTools = async (resourceIds: string[]) => {
 };
 
 /**
+ * Normalize a resource URL to match the canonical form stored in the database.
+ * `registerResource` strips query params via `urlObj.search = ''`, so we must
+ * do the same here to avoid false-positive deprecation when discovery URLs
+ * contain query strings that were stripped on insert.
+ */
+function normalizeResourceUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    parsed.search = '';
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+/**
  * Deprecate resources that are no longer in the discovery document.
  * Sets deprecatedAt to now() for resources not in the provided URLs list.
  *
@@ -438,12 +454,18 @@ export const deprecateStaleResources = async (
     return 0;
   }
 
+  // Normalize URLs to match the canonical form stored in the DB
+  // (registerResource strips query params before upserting)
+  const normalizedActiveUrls = [
+    ...new Set(activeResourceUrls.map(normalizeResourceUrl)),
+  ];
+
   const result = await scanDb.resources.updateMany({
     where: {
       originId,
       deprecatedAt: null,
       resource: {
-        notIn: activeResourceUrls,
+        notIn: normalizedActiveUrls,
       },
     },
     data: {
