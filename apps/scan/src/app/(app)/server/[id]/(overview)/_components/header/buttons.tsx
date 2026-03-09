@@ -16,6 +16,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { CopyCode } from '@/components/ui/copy-code';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
@@ -78,54 +79,77 @@ export const HeaderButtons: React.FC<Props> = ({ origin }) => {
     </Button>
   );
 
-  if (
-    originWithResources?.resources.length &&
-    originWithResources.resources.length > 0
-  ) {
-    return (
-      <ButtonsContainer>
-        {resources.length === 0 ? (
-          <NoResourcesTooltip>{tryInChatButton}</NoResourcesTooltip>
-        ) : (
-          tryInChatButton
-        )}
-        {resources.length === 0 ? (
-          <NoResourcesTooltip>{createAgentButton}</NoResourcesTooltip>
-        ) : (
-          <Link
-            href={{
-              pathname: '/composer/agents/new',
-              query: {
-                resources: resources.map(resource => resource.id),
-              },
-            }}
-          >
-            {createAgentButton}
-          </Link>
-        )}
-      </ButtonsContainer>
-    );
-  }
+  const agentcashCommand = `npx agentcash try ${origin.origin}`;
 
-  return null;
+  return (
+    <div className="flex flex-col gap-3">
+      {originWithResources?.resources.length &&
+      originWithResources.resources.length > 0 ? (
+        <ButtonsContainer>
+          {resources.length === 0 ? (
+            <NoResourcesTooltip>{tryInChatButton}</NoResourcesTooltip>
+          ) : (
+            tryInChatButton
+          )}
+          {resources.length === 0 ? (
+            <NoResourcesTooltip>{createAgentButton}</NoResourcesTooltip>
+          ) : (
+            <Link
+              href={{
+                pathname: '/composer/agents/new',
+                query: {
+                  resources: resources.map(resource => resource.id),
+                },
+              }}
+            >
+              {createAgentButton}
+            </Link>
+          )}
+        </ButtonsContainer>
+      ) : null}
+      <div className="flex flex-col gap-1">
+        <p className="text-xs font-medium text-muted-foreground">
+          Try in agentcash
+        </p>
+        <CopyCode
+          code={agentcashCommand}
+          toastMessage="Command copied!"
+          className="max-w-xs"
+        />
+      </div>
+    </div>
+  );
 };
 
 export const LoadingHeaderButtons = () => {
   return (
-    <ButtonsContainer>
-      <Link href={`/composer/chat`}>
-        <Button variant="turbo">
-          <MessagesSquare className="size-4" />
-          Try in Chat
-        </Button>
-      </Link>
-      <Link href={`/resources/register`}>
-        <Button variant="outline">
-          <Bot className="size-4" />
-          Create Agent
-        </Button>
-      </Link>
-    </ButtonsContainer>
+    <div className="flex flex-col gap-3">
+      <ButtonsContainer>
+        <Link href={`/composer/chat`}>
+          <Button variant="turbo">
+            <MessagesSquare className="size-4" />
+            Try in Chat
+          </Button>
+        </Link>
+        <Link href={`/resources/register`}>
+          <Button variant="outline">
+            <Bot className="size-4" />
+            Create Agent
+          </Button>
+        </Link>
+      </ButtonsContainer>
+      <div className="flex flex-col gap-1">
+        <p className="text-xs font-medium text-muted-foreground">
+          Try in agentcash
+        </p>
+        <CopyCode
+          code=""
+          toastMessage=""
+          isLoading={true}
+          className="max-w-xs"
+        />
+      </div>
+    </div>
   );
 };
 
