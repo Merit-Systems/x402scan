@@ -4,6 +4,7 @@ import { Breadcrumb } from '../../_components/breadcrumb';
 
 import { Separator } from '../../_components/separator';
 import { api } from '@/trpc/server';
+import { decodeHtmlEntities } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 
 export default async function OriginLayout({
@@ -28,7 +29,7 @@ export default async function OriginLayout({
       <Breadcrumb
         href={`/server/${id}`}
         image={origin.favicon}
-        name={origin.title ?? new URL(origin.origin).hostname}
+        name={origin.title ? decodeHtmlEntities(origin.title) : new URL(origin.origin).hostname}
         Fallback={Wallet}
         mobileHideText
         className="hidden md:block min-w-0"

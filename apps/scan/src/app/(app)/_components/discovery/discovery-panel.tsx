@@ -23,7 +23,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
+import { cn, decodeHtmlEntities } from '@/lib/utils';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
 import { ResourceExecutor } from '@/app/(app)/_components/resources/executor';
@@ -1504,7 +1504,7 @@ function OriginPreviewCard({
                     !origin.title && 'opacity-60'
                   )}
                 >
-                  {origin.title ?? 'No Title'}
+                  {origin.title ? decodeHtmlEntities(origin.title) : 'No Title'}
                 </h3>
                 <p
                   className={cn(
@@ -1512,7 +1512,7 @@ function OriginPreviewCard({
                     !origin.description && 'text-muted-foreground/60'
                   )}
                 >
-                  {origin.description ?? 'No Description'}
+                  {origin.description ? decodeHtmlEntities(origin.description) : 'No Description'}
                 </p>
               </div>
             </div>
@@ -1524,7 +1524,7 @@ function OriginPreviewCard({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={origin.ogImages[0]!.url}
-            alt={origin.title ?? ''}
+            alt={origin.title ? decodeHtmlEntities(origin.title) : ''}
             className="rounded-md max-h-24"
           />
         </div>
