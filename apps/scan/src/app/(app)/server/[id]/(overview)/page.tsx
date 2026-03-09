@@ -47,7 +47,7 @@ export default async function OriginPage({
             <p className="text-sm font-semibold">Try in AgentCash</p>
           </div>
           <p className="text-xs text-muted-foreground">
-            Pass this command to your agent to start using this API instantly.
+            Pass this command to your agent to start using this API.
           </p>
           <CopyCode
             code={`npx agentcash try ${origin.origin}`}
