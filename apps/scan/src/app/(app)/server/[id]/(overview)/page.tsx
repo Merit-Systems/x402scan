@@ -11,7 +11,6 @@ import { LoadingOriginActivity, OriginActivity } from './_components/activity';
 import { LoadingOriginAgents, OriginAgents } from './_components/agents';
 import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
 import { defaultAgentsSorting } from '@/app/(app)/_contexts/sorting/agents/default';
-import { AgentCashCTA } from './_components/agentcash-cta';
 
 export default async function OriginPage({
   params,
@@ -39,7 +38,6 @@ export default async function OriginPage({
         <Suspense fallback={<LoadingHeaderCard />}>
           <HeaderCard origin={origin} />
         </Suspense>
-        <AgentCashCTA originUrl={origin.origin} />
         <Suspense fallback={<LoadingOriginActivity />}>
           <OriginActivity originId={id} />
         </Suspense>
