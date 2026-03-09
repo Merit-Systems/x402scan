@@ -35,7 +35,9 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
           <div className="">
             <div className="flex items-center gap-2 min-w-0">
               <h1 className="text-xl md:text-3xl font-bold wrap-break-word line-clamp-2 min-w-0">
-                {origin.title ? decodeHtmlEntities(origin.title) : new URL(origin.origin).hostname}
+                {origin.title
+                  ? decodeHtmlEntities(origin.title)
+                  : new URL(origin.origin).hostname}
               </h1>
               {origin.hasX402V2Resource && (
                 <X402V2Badge className="mt-1 shrink-0" />
@@ -59,7 +61,9 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
                   : 'text-muted-foreground'
               )}
             >
-              {origin.description ? decodeHtmlEntities(origin.description) : 'No Description'}
+              {origin.description
+                ? decodeHtmlEntities(origin.description)
+                : 'No Description'}
             </p>
           </div>
           <Suspense fallback={<LoadingHeaderButtons />}>

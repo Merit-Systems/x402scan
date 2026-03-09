@@ -90,7 +90,9 @@ function StrategyDetails({ strategy }: { strategy: Strategy }) {
     <Card>
       <CardContent className="space-y-4 pt-4">
         <div className="space-y-1">
-          <h3 className="text-lg font-semibold">{strategy.title} Implementation</h3>
+          <h3 className="text-lg font-semibold">
+            {strategy.title} Implementation
+          </h3>
           <p className="text-sm text-muted-foreground">{strategy.note}</p>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -115,7 +117,8 @@ export function DiscoveryStrategyPanel() {
     null
   );
 
-  const strategy = strategies.find(item => item.key === selected) ?? strategies[0]!;
+  const strategy =
+    strategies.find(item => item.key === selected) ?? strategies[0]!;
 
   useLayoutEffect(() => {
     if (!contentElement) {
@@ -125,9 +128,7 @@ export function DiscoveryStrategyPanel() {
     const updateHeight = () => {
       const height = contentElement.getBoundingClientRect().height;
       if (height > 0) {
-        setPanelHeight(previous =>
-          previous === height ? previous : height
-        );
+        setPanelHeight(previous => (previous === height ? previous : height));
       }
     };
 
@@ -169,7 +170,9 @@ export function DiscoveryStrategyPanel() {
               )}
             >
               <div className="flex items-start justify-between gap-2">
-                <p className="text-base font-semibold leading-tight">{item.title}</p>
+                <p className="text-base font-semibold leading-tight">
+                  {item.title}
+                </p>
                 <Badge
                   variant={item.badgeVariant}
                   className={cn(

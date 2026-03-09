@@ -95,7 +95,9 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
     cell: ({ row }) => {
       const origin = row.original.origin;
       const favicon = origin.favicon;
-      const title = origin.title ? decodeHtmlEntities(origin.title) : origin.origin;
+      const title = origin.title
+        ? decodeHtmlEntities(origin.title)
+        : origin.origin;
 
       return (
         <div className="flex items-center gap-3">

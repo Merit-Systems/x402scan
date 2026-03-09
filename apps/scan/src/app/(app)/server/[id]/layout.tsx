@@ -39,7 +39,9 @@ export async function generateMetadata({
   }
 
   const title = origin.title ? decodeHtmlEntities(origin.title) : origin.origin;
-  const description = origin.description ? decodeHtmlEntities(origin.description) : `Explore ${title} on x402scan`;
+  const description = origin.description
+    ? decodeHtmlEntities(origin.description)
+    : `Explore ${title} on x402scan`;
 
   const imageUrl = origin.ogImages?.[0]?.url
     ? new URL(origin.ogImages[0].url, env.NEXT_PUBLIC_APP_URL).toString()

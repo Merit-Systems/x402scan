@@ -246,7 +246,10 @@ export function DiscoveryPanel({
               Successfully registered {bulkResult.registered} of{' '}
               {bulkResult.total} resources
               {skippedCount > 0 && (
-                <span className="text-amber-700"> ({skippedCount} skipped)</span>
+                <span className="text-amber-700">
+                  {' '}
+                  ({skippedCount} skipped)
+                </span>
               )}
               {bulkResult.failed > 0 && (
                 <span className="text-red-600">
@@ -352,44 +355,42 @@ export function DiscoveryPanel({
           )}
 
         {skippedCount > 0 && skippedDetails.length > 0 && (
-            <details className="border rounded-md group">
-              <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
-                <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-                Skipped Details ({skippedDetails.length} resources)
-              </summary>
-              <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
-                {skippedDetails.map((skipped, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 bg-muted/50 rounded border text-xs space-y-1"
-                  >
-                    <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">
-                        URL:
-                      </span>
-                      <span className="font-mono break-all">{skipped.url}</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">
-                        Reason:
-                      </span>
-                      <span className="text-amber-700 wrap-break-word">
-                        {skipped.error}
-                      </span>
-                    </div>
-                    {skipped.status && (
-                      <div className="flex items-start gap-2">
-                        <span className="text-muted-foreground shrink-0">
-                          Status:
-                        </span>
-                        <span className="font-mono">{skipped.status}</span>
-                      </div>
-                    )}
+          <details className="border rounded-md group">
+            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+              Skipped Details ({skippedDetails.length} resources)
+            </summary>
+            <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
+              {skippedDetails.map((skipped, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground shrink-0">URL:</span>
+                    <span className="font-mono break-all">{skipped.url}</span>
                   </div>
-                ))}
-              </div>
-            </details>
-          )}
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground shrink-0">
+                      Reason:
+                    </span>
+                    <span className="text-amber-700 wrap-break-word">
+                      {skipped.error}
+                    </span>
+                  </div>
+                  {skipped.status && (
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">
+                        Status:
+                      </span>
+                      <span className="font-mono">{skipped.status}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
       </div>
     );
   }
@@ -1512,7 +1513,9 @@ function OriginPreviewCard({
                     !origin.description && 'text-muted-foreground/60'
                   )}
                 >
-                  {origin.description ? decodeHtmlEntities(origin.description) : 'No Description'}
+                  {origin.description
+                    ? decodeHtmlEntities(origin.description)
+                    : 'No Description'}
                 </p>
               </div>
             </div>

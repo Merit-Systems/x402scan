@@ -89,7 +89,9 @@ export const Origins: React.FC<Props> = ({
               <ul className="list-disc list-inside">
                 {origins.slice(1).map(origin => (
                   <li key={origin.id}>
-                    {origin.title ? decodeHtmlEntities(origin.title) : new URL(origin.origin).hostname}
+                    {origin.title
+                      ? decodeHtmlEntities(origin.title)
+                      : new URL(origin.origin).hostname}
                   </li>
                 ))}
               </ul>

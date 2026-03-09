@@ -58,7 +58,11 @@ function uniqueMethods(methods: Methods[]): Methods[] {
 
 function primaryMethodsToTry(resource: DiscoveredResource): Methods[] {
   if (resource.method) {
-    return uniqueMethods([resource.method as Methods, Methods.POST, Methods.GET]);
+    return uniqueMethods([
+      resource.method as Methods,
+      Methods.POST,
+      Methods.GET,
+    ]);
   }
   return [Methods.POST, Methods.GET];
 }
@@ -123,7 +127,8 @@ function isMissingInputSchemaError(err: unknown): boolean {
   if (!Array.isArray(parseErrors)) return false;
 
   return parseErrors.some(
-    message => typeof message === 'string' && message.includes('Missing input schema')
+    message =>
+      typeof message === 'string' && message.includes('Missing input schema')
   );
 }
 
@@ -461,7 +466,9 @@ export const resourcesRouter = createTRPCRouter({
           if ('parseErrors' in err && Array.isArray(err.parseErrors)) {
             details.push(...(err.parseErrors as string[]));
           } else if ('issues' in err && Array.isArray(err.issues)) {
-            details.push(...getValidationIssueMessages(err.issues as unknown[]));
+            details.push(
+              ...getValidationIssueMessages(err.issues as unknown[])
+            );
           } else if ('upsertErrors' in err && Array.isArray(err.upsertErrors)) {
             details.push(...(err.upsertErrors as string[]));
           }
