@@ -44,10 +44,10 @@ export default async function OriginPage({
         <Card className="flex flex-col gap-3 p-4">
           <div className="flex items-center gap-2">
             <Terminal className="size-4 text-muted-foreground" />
-            <p className="text-sm font-semibold">Try in agentcash</p>
+            <p className="text-sm font-semibold">Try in AgentCash</p>
           </div>
           <p className="text-xs text-muted-foreground">
-            Use the agentcash CLI to discover and call this API with USDC micropayments.
+            Pass this command to your agent to start using this API instantly.
           </p>
           <CopyCode
             code={`npx agentcash try ${origin.origin}`}
