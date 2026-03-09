@@ -11,9 +11,7 @@ import { LoadingOriginActivity, OriginActivity } from './_components/activity';
 import { LoadingOriginAgents, OriginAgents } from './_components/agents';
 import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
 import { defaultAgentsSorting } from '@/app/(app)/_contexts/sorting/agents/default';
-import { Terminal } from 'lucide-react';
-import { CopyCode } from '@/components/ui/copy-code';
-import { Card } from '@/components/ui/card';
+import { AgentCashCTA } from './_components/agentcash-cta';
 
 export default async function OriginPage({
   params,
@@ -41,19 +39,7 @@ export default async function OriginPage({
         <Suspense fallback={<LoadingHeaderCard />}>
           <HeaderCard origin={origin} />
         </Suspense>
-        <Card className="flex flex-col gap-3 p-4">
-          <div className="flex items-center gap-2">
-            <Terminal className="size-4 text-muted-foreground" />
-            <p className="text-sm font-semibold">Try in AgentCash</p>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Pass this command to your agent or run it in your terminal to start using this API.
-          </p>
-          <CopyCode
-            code={`npx agentcash try ${origin.origin}`}
-            toastMessage="Command copied!"
-          />
-        </Card>
+        <AgentCashCTA originUrl={origin.origin} />
         <Suspense fallback={<LoadingOriginActivity />}>
           <OriginActivity originId={id} />
         </Suspense>
