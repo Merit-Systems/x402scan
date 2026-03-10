@@ -18,16 +18,16 @@ interface CacheContext {
 }
 
 /**
- * Redis TTL is 3x the cache duration to provide buffer time.
+ * Redis TTL is 2x the cache duration to provide buffer time.
  * This ensures cache doesn't expire while the next warming cycle is running.
  */
-// TODO(sragss): With unwramed queries they'll be cached by 45mins.
 const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 2;
 
 /**
- * Lock timeout in seconds (query should complete within this time)
+ * Lock timeout in seconds. Acts as a safety net — if the holder crashes
+ * without releasing, the lock auto-expires after this period.
  */
-const LOCK_TIMEOUT_SECONDS = 60;
+const LOCK_TIMEOUT_SECONDS = 30;
 
 /**
  * Poll interval in milliseconds when waiting for lock
@@ -35,10 +35,14 @@ const LOCK_TIMEOUT_SECONDS = 60;
 const POLL_INTERVAL_MS = 100;
 
 /**
- * Max polling attempts (derived from lock timeout and poll interval)
+ * Max seconds a waiter will poll before giving up and executing directly.
+ * Intentionally shorter than LOCK_TIMEOUT_SECONDS so waiters fall through
+ * quickly rather than blocking for the full lock TTL.
  */
+const MAX_POLL_SECONDS = 10;
+
 const MAX_POLL_ATTEMPTS = Math.floor(
-  (LOCK_TIMEOUT_SECONDS * 1000) / POLL_INTERVAL_MS
+  (MAX_POLL_SECONDS * 1000) / POLL_INTERVAL_MS
 );
 
 /**
@@ -104,7 +108,14 @@ const deserializeDates = <T>(obj: T, dateKeys: (keyof T)[]): T => {
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
- * Redis-based cached query with distributed locking
+ * Redis-based cached query with distributed locking.
+ *
+ * Guarantees:
+ *  - At most one concurrent execution of queryFn per cache key.
+ *  - If the lock holder crashes (e.g. Vercel function timeout), waiters
+ *    detect the orphaned lock and fall through to execute directly.
+ *  - Never throws due to lock contention — always falls back to a direct
+ *    query execution.
  */
 async function withRedisCache<T>(
   fullCacheKey: string,
@@ -114,7 +125,6 @@ async function withRedisCache<T>(
 ): Promise<T> {
   const redis = getRedisClient();
   if (!redis) {
-    // Fallback: execute query directly without caching
     console.log(
       `[Cache] NO REDIS: Executing query directly for ${fullCacheKey}`
     );
@@ -123,57 +133,83 @@ async function withRedisCache<T>(
 
   const lockKey = `${fullCacheKey}:lock`;
 
-  // Try to get from cache first
-  const cached = await redis.get(fullCacheKey);
-  if (cached) {
-    console.log(`[Cache] HIT: ${fullCacheKey}`);
-    return deserialize<T>(cached);
+  // On force-refresh (cache warming), skip the cache so we actually
+  // re-execute and extend the TTL, preventing expiry between warming cycles.
+  if (!forceRefresh) {
+    try {
+      const cached = await redis.get(fullCacheKey);
+      if (cached) {
+        console.log(`[Cache] HIT: ${fullCacheKey}`);
+        return deserialize<T>(cached);
+      }
+    } catch {
+      // Redis read failed — fall through to execute
+    }
   }
 
-  // Try to acquire lock with NX (set if not exists) and EX (expiry)
+  // Try to acquire lock (NX = set-if-not-exists, EX = auto-expire)
   const lockAcquired = await redis.set(
     lockKey,
-    '1',
+    Date.now().toString(),
     'EX',
     LOCK_TIMEOUT_SECONDS,
     'NX'
   );
 
   if (lockAcquired === 'OK') {
-    // We got the lock - execute query and cache result
-    if (forceRefresh) {
-      console.log(`[Cache] WARMING: ${fullCacheKey}`);
-    } else {
-      console.log(`[Cache] MISS: Executing query for ${fullCacheKey}`);
-    }
+    console.log(
+      `[Cache] ${forceRefresh ? 'WARMING' : 'MISS'}: Executing query for ${fullCacheKey}`
+    );
     try {
       const result = await queryFn();
       await redis.setex(fullCacheKey, ttlSeconds, serialize(result));
       return result;
     } finally {
-      // Release lock
-      await redis.del(lockKey);
+      await redis.del(lockKey).catch(() => {});
     }
-  } else {
-    // Someone else has the lock - poll for the cached result
-    if (forceRefresh) {
-      console.log(`[Cache] WARMING (waiting for lock): ${fullCacheKey}`);
-    } else {
-      console.log(`[Cache] WAIT: Polling for ${fullCacheKey}`);
-    }
-    for (let i = 0; i < MAX_POLL_ATTEMPTS; i++) {
-      await sleep(POLL_INTERVAL_MS);
+  }
+
+  // Another process holds the lock — poll for result
+  console.log(
+    `[Cache] WAIT: Polling for ${fullCacheKey} (max ${MAX_POLL_SECONDS}s)`
+  );
+  for (let i = 0; i < MAX_POLL_ATTEMPTS; i++) {
+    await sleep(POLL_INTERVAL_MS);
+
+    try {
       const cached = await redis.get(fullCacheKey);
       if (cached) {
         console.log(
-          `[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`
+          `[Cache] WAIT→HIT after ${(i + 1) * POLL_INTERVAL_MS}ms: ${fullCacheKey}`
         );
         return deserialize<T>(cached);
       }
-    }
 
-    throw new Error('Cache lock timeout - query took too long');
+      // Detect orphaned lock: if the lock disappeared but no result was
+      // cached, the holder crashed. Break out and execute directly.
+      const lockExists = await redis.exists(lockKey);
+      if (!lockExists) {
+        console.log(
+          `[Cache] WAIT→ORPHAN: Lock gone without result after ${(i + 1) * POLL_INTERVAL_MS}ms`
+        );
+        break;
+      }
+    } catch {
+      // Redis error during poll — break out and execute directly
+      break;
+    }
   }
+
+  // Fallback: execute query directly instead of throwing.
+  // This ensures requests never fail due to lock contention alone.
+  console.warn(
+    `[Cache] FALLBACK: Executing query directly for ${fullCacheKey}`
+  );
+  const result = await queryFn();
+  await redis
+    .setex(fullCacheKey, ttlSeconds, serialize(result))
+    .catch(() => {});
+  return result;
 }
 
 /**

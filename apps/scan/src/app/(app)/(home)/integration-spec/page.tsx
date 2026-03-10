@@ -223,7 +223,9 @@ export default function DiscoverySpecPage() {
                       key={i}
                       className={`flex gap-4 py-3 ${i === arr.length - 1 ? 'pb-0' : ''}`}
                     >
-                      <span className="w-8 text-sm font-medium">{row.order}</span>
+                      <span className="w-8 text-sm font-medium">
+                        {row.order}
+                      </span>
                       <span className="flex-1 text-sm">{row.source}</span>
                       <span className="flex-1 font-mono text-xs break-words">
                         {row.location}
@@ -366,9 +368,7 @@ export default function DiscoverySpecPage() {
                       <p className="w-[35%] font-mono text-xs break-words">
                         {row.error}
                       </p>
-                      <p className="w-[30%] text-sm break-words">
-                        {row.cause}
-                      </p>
+                      <p className="w-[30%] text-sm break-words">{row.cause}</p>
                       <p className="w-[35%] text-sm break-words">{row.fix}</p>
                     </div>
                   ))}
