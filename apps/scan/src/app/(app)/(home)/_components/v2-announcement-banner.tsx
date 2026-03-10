@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'x402scan-hide-agentcash-announcement';
 
@@ -32,22 +32,38 @@ export const AgentCashAnnouncementBanner = () => {
   return (
     <div className="border border-primary/40 bg-primary/5 p-4 rounded-md flex flex-col md:flex-row md:items-center gap-4 md:justify-between relative">
       <div className="flex items-center gap-4 pr-6 md:pr-0">
-        <Image src="/agentcash-light.svg" alt="AgentCash" width={32} height={32} className="shrink-0 block dark:hidden" />
-        <Image src="/agentcash-dark.svg" alt="AgentCash" width={32} height={32} className="shrink-0 hidden dark:block" />
+        <Image
+          src="/agentcash-light.svg"
+          alt="AgentCash"
+          width={32}
+          height={32}
+          className="shrink-0 block dark:hidden"
+        />
+        <Image
+          src="/agentcash-dark.svg"
+          alt="AgentCash"
+          width={32}
+          height={32}
+          className="shrink-0 hidden dark:block"
+        />
         <div className="flex flex-col">
           <h2 className="text-base md:text-lg font-bold text-primary">
             Introducing AgentCash
           </h2>
           <p className="text-xs md:text-sm text-muted-foreground">
-            The x402 wallet for your AI agent. One balance. Every paid API on the
-            internet. $100k sign up bonuses available.
+            The x402 wallet for your AI agent. One balance for any x402 API. We
+            are giving away $100k in sign up bonuses.
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
         <Button size="sm" asChild>
-          <Link href="https://agentcash.dev/onboard" target="_blank" rel="noopener noreferrer">
+          <Link
+            href="https://agentcash.dev/onboard"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Try AgentCash
           </Link>
         </Button>

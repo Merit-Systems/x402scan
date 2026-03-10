@@ -5,7 +5,11 @@ import {
   getWarningsForOpenAPI,
   getWarningsForWellKnown,
 } from '@agentcash/discovery';
-import type { AuditWarning, OpenApiSource, WellKnownSource } from '@agentcash/discovery';
+import type {
+  AuditWarning,
+  OpenApiSource,
+  WellKnownSource,
+} from '@agentcash/discovery';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { isLocalUrl } from '@/lib/url-helpers';
@@ -30,9 +34,11 @@ function mapSourceToDiscoverySource(
 ): DiscoverySource | undefined {
   if (!source) return undefined;
   if (source === 'openapi' || source === 'override') return 'openapi';
-  if (source === 'well-known/x402' || source === 'well-known') return 'well-known';
+  if (source === 'well-known/x402' || source === 'well-known')
+    return 'well-known';
   if (source === 'probe') return 'probe';
-  if (source === 'interop/mpp' || source === 'interop-mpp') return 'interop-mpp';
+  if (source === 'interop/mpp' || source === 'interop-mpp')
+    return 'interop-mpp';
   return undefined;
 }
 

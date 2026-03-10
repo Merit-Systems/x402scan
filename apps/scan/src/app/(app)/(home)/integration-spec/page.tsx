@@ -109,22 +109,25 @@ export default function DiscoverySpecPage() {
           <h2 className="text-xl font-semibold">Why This Matters</h2>
           <div className="space-y-2 text-sm text-muted-foreground">
             <p>
-              If agents can&apos;t discover your API, they can&apos;t call it. Bulletproof discovery
-              turns your endpoint from merely listed to reliably invocable.
+              If agents can&apos;t discover your API, they can&apos;t call it.
+              Bulletproof discovery turns your endpoint from merely listed to
+              reliably invocable.
             </p>
             <p>
-              When metadata and runtime <code>402</code> behavior agree, agents succeed on the
-              first pass. You get fewer x402scan failures, less debugging churn, and more real
-              agent traffic.
+              When metadata and runtime <code>402</code> behavior agree, agents
+              succeed on the first pass. You get fewer x402scan failures, less
+              debugging churn, and more real agent traffic.
             </p>
           </div>
           <ul className="mt-3 list-disc pl-5 space-y-1 text-sm">
             <li>Publish OpenAPI as the canonical machine-readable contract.</li>
             <li>
-              Use <code>/.well-known/x402</code> as a migration compatibility bridge.
+              Use <code>/.well-known/x402</code> as a migration compatibility
+              bridge.
             </li>
             <li>
-              Treat runtime <code>402</code> challenge behavior as the final source of truth.
+              Treat runtime <code>402</code> challenge behavior as the final
+              source of truth.
             </li>
           </ul>
         </section>
@@ -134,8 +137,8 @@ export default function DiscoverySpecPage() {
             <div className="space-y-1">
               <h2 className="text-xl font-semibold">Copy for Agents</h2>
               <p className="text-sm text-muted-foreground">
-                Paste this directly into your coding agent. It should handle discovery implementation
-                and validation end-to-end.
+                Paste this directly into your coding agent. It should handle
+                discovery implementation and validation end-to-end.
               </p>
             </div>
             <CopyForAgentsButton text={agentPrompt} />
@@ -144,9 +147,12 @@ export default function DiscoverySpecPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Choose Your Discovery Strategy</h2>
+          <h2 className="text-xl font-semibold">
+            Choose Your Discovery Strategy
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Click a strategy to view exact requirements and a copy-paste implementation example.
+            Click a strategy to view exact requirements and a copy-paste
+            implementation example.
           </p>
           <DiscoveryStrategyPanel />
         </section>
@@ -163,7 +169,9 @@ export default function DiscoverySpecPage() {
                   <TableRow>
                     <TableHead className="w-16">Order</TableHead>
                     <TableHead>Source</TableHead>
-                    <TableHead className="w-[40%] whitespace-normal">Expected Location</TableHead>
+                    <TableHead className="w-[40%] whitespace-normal">
+                      Expected Location
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -171,7 +179,8 @@ export default function DiscoverySpecPage() {
                     <TableCell>1</TableCell>
                     <TableCell>OpenAPI document</TableCell>
                     <TableCell className="whitespace-normal break-words">
-                      <code>/openapi.json</code> then <code>/.well-known/openapi.json</code>
+                      <code>/openapi.json</code> then{' '}
+                      <code>/.well-known/openapi.json</code>
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -193,12 +202,16 @@ export default function DiscoverySpecPage() {
             If no discovery document exists, endpoint registration still works.
           </p>
           <ul className="list-disc pl-5 space-y-1 text-sm">
-            <li>Probe method is method-aware with GET/POST fallback where applicable.</li>
+            <li>
+              Probe method is method-aware with GET/POST fallback where
+              applicable.
+            </li>
             <li>
               Endpoint must return a parseable <code>402</code> challenge.
             </li>
             <li>
-              Missing schema or auth-only SIWX routes are marked as skipped in strict mode.
+              Missing schema or auth-only SIWX routes are marked as skipped in
+              strict mode.
             </li>
           </ul>
           <CodeBlock code={endpointExample} />
@@ -215,9 +228,15 @@ export default function DiscoverySpecPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[35%] whitespace-normal">Error</TableHead>
-                      <TableHead className="w-[30%] whitespace-normal">Likely Cause</TableHead>
-                      <TableHead className="w-[35%] whitespace-normal">Fix</TableHead>
+                      <TableHead className="w-[35%] whitespace-normal">
+                        Error
+                      </TableHead>
+                      <TableHead className="w-[30%] whitespace-normal">
+                        Likely Cause
+                      </TableHead>
+                      <TableHead className="w-[35%] whitespace-normal">
+                        Fix
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -234,7 +253,8 @@ export default function DiscoverySpecPage() {
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
-                        Accepts must contain at least one valid payment requirement
+                        Accepts must contain at least one valid payment
+                        requirement
                       </TableCell>
                       <TableCell className="whitespace-normal break-words align-top">
                         Malformed or empty payment requirements
@@ -271,11 +291,15 @@ export default function DiscoverySpecPage() {
 
               <div className="divide-y md:hidden">
                 <div className="space-y-2 py-3 first:pt-0">
-                  <p className="font-mono text-xs break-words">Expected 402, got 404/405</p>
+                  <p className="font-mono text-xs break-words">
+                    Expected 402, got 404/405
+                  </p>
                   <p className="text-sm text-muted-foreground">
                     Cause: Wrong method or wrong path
                   </p>
-                  <p className="text-sm">Fix: Match method/path to your actual handler</p>
+                  <p className="text-sm">
+                    Fix: Match method/path to your actual handler
+                  </p>
                 </div>
                 <div className="space-y-2 py-3">
                   <p className="font-mono text-xs break-words">
@@ -284,21 +308,31 @@ export default function DiscoverySpecPage() {
                   <p className="text-sm text-muted-foreground">
                     Cause: Malformed or empty payment requirements
                   </p>
-                  <p className="text-sm">Fix: Return a valid non-empty x402 accepts set</p>
+                  <p className="text-sm">
+                    Fix: Return a valid non-empty x402 accepts set
+                  </p>
                 </div>
                 <div className="space-y-2 py-3">
-                  <p className="font-mono text-xs break-words">Missing input schema</p>
+                  <p className="font-mono text-xs break-words">
+                    Missing input schema
+                  </p>
                   <p className="text-sm text-muted-foreground">
                     Cause: Strict parser cannot infer invocable contract
                   </p>
-                  <p className="text-sm">Fix: Publish Bazaar/OpenAPI input schema metadata</p>
+                  <p className="text-sm">
+                    Fix: Publish Bazaar/OpenAPI input schema metadata
+                  </p>
                 </div>
                 <div className="space-y-2 py-3 last:pb-0">
-                  <p className="font-mono text-xs break-words">Expected 402, got 429</p>
+                  <p className="font-mono text-xs break-words">
+                    Expected 402, got 429
+                  </p>
                   <p className="text-sm text-muted-foreground">
                     Cause: Provider-side throttling
                   </p>
-                  <p className="text-sm">Fix: Retry, reduce probe volume, or register URL-only</p>
+                  <p className="text-sm">
+                    Fix: Retry, reduce probe volume, or register URL-only
+                  </p>
                 </div>
               </div>
             </CardContent>

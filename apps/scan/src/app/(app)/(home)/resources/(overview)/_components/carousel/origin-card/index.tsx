@@ -40,7 +40,9 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
               />
               <div className="flex-1 overflow-hidden">
                 <CardTitle className="font-bold text-sm md:text-base truncate group-hover:text-primary transition-colors">
-                  {originWithMetadata.title ? decodeHtmlEntities(originWithMetadata.title) : 'No Title'}
+                  {originWithMetadata.title
+                    ? decodeHtmlEntities(originWithMetadata.title)
+                    : 'No Title'}
                 </CardTitle>
                 <p className="text-[10px] md:text-xs text-muted-foreground truncate font-mono">
                   {originWithMetadata.origin}
@@ -48,7 +50,9 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
               </div>
             </div>
             <CardDescription className="text-muted-foreground text-[10px] md:text-xs line-clamp-2">
-              {originWithMetadata?.description ? decodeHtmlEntities(originWithMetadata.description) : 'No description'}
+              {originWithMetadata?.description
+                ? decodeHtmlEntities(originWithMetadata.description)
+                : 'No description'}
             </CardDescription>
           </CardHeader>
         </div>

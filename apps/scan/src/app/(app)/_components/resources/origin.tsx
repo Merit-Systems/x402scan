@@ -63,7 +63,9 @@ export const OriginCard: React.FC<Props> = ({
                     !origin.description && 'text-muted-foreground/60'
                   )}
                 >
-                  {origin.description ? decodeHtmlEntities(origin.description) : 'No Description'}
+                  {origin.description
+                    ? decodeHtmlEntities(origin.description)
+                    : 'No Description'}
                 </p>
               </div>
             </div>
@@ -75,7 +77,11 @@ export const OriginCard: React.FC<Props> = ({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={origin.ogImages[0]!.url}
-            alt={origin.ogImages[0]!.title ? decodeHtmlEntities(origin.ogImages[0]!.title) : ''}
+            alt={
+              origin.ogImages[0]!.title
+                ? decodeHtmlEntities(origin.ogImages[0]!.title)
+                : ''
+            }
             className="rounded-md max-h-24"
           />
         </div>

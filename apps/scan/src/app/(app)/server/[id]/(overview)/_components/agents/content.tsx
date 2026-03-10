@@ -67,8 +67,20 @@ export const OriginAgentsContent: React.FC<Props> = ({ originId }) => {
           rel="noopener noreferrer"
           className="flex items-center gap-2 font-semibold text-sm transition-colors hover:text-[oklch(0.5946_0.1624_144.21)]"
         >
-          <Image src="/agentcash-light.svg" alt="AgentCash" width={18} height={18} className="block dark:hidden" />
-          <Image src="/agentcash-dark.svg" alt="AgentCash" width={18} height={18} className="hidden dark:block" />
+          <Image
+            src="/agentcash-light.svg"
+            alt="AgentCash"
+            width={18}
+            height={18}
+            className="block dark:hidden"
+          />
+          <Image
+            src="/agentcash-dark.svg"
+            alt="AgentCash"
+            width={18}
+            height={18}
+            className="hidden dark:block"
+          />
           Save with AgentCash
         </a>
         <p className="text-sm text-muted-foreground">

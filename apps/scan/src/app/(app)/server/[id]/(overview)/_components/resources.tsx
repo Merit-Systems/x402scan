@@ -26,7 +26,9 @@ export const OriginResources: React.FC<Props> = ({ originId }) => {
   const [showAll, setShowAll] = useState(false);
   const allResources = origin?.resources ?? [];
   const hasMore = allResources.length > INITIAL_LIMIT;
-  const visibleResources = showAll ? allResources : allResources.slice(0, INITIAL_LIMIT);
+  const visibleResources = showAll
+    ? allResources
+    : allResources.slice(0, INITIAL_LIMIT);
 
   return (
     <OriginOverviewSection title="Resources" className="gap-0">
