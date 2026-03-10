@@ -20,7 +20,7 @@ export const Resource: React.FC<Props> = ({ resource }) => {
       Icon={({ className }) => (
         <Favicon url={resource.origin.favicon} className={className} />
       )}
-      title={`${new URL(resource.origin.origin).hostname}${new URL(resource.resource).pathname}`}
+      title={`${new URL(resource.origin.origin).hostname}${decodeURIComponent(new URL(resource.resource).pathname)}`}
       address={
         <Addresses
           addresses={resource.accepts.map(accept => accept.payTo)}
