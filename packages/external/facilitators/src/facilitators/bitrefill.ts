@@ -2,7 +2,7 @@ import { Network } from '../types';
 import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
 import type { Facilitator, FacilitatorConfig } from '../types';
- 
+
 export const bitrefill: FacilitatorConfig = {
   url: 'https://api.bitrefill.com/x402',
 };

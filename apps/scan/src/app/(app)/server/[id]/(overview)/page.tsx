@@ -27,7 +27,7 @@ export default async function OriginPage({
     api.public.agents.list.prefetch({
       originId: id,
       timeframe: ALL_TIME_TIMEFRAME,
-      pagination: { page: 0, page_size: 6 },
+      pagination: { page: 0, page_size: 20 },
       sorting: defaultAgentsSorting,
     }),
   ]);
@@ -41,15 +41,15 @@ export default async function OriginPage({
         <Suspense fallback={<LoadingOriginActivity />}>
           <OriginActivity originId={id} />
         </Suspense>
-        <div className="md:grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="col-span-1 md:col-span-2 flex flex-col gap-8">
-            <Suspense fallback={<LoadingOriginResources />}>
-              <OriginResources originId={id} />
-            </Suspense>
-          </div>
-          <div className="col-span-1">
+        <div className="flex flex-col md:grid md:grid-cols-3 gap-8">
+          <div className="order-1 md:order-2 col-span-1">
             <Suspense fallback={<LoadingOriginAgents />}>
               <OriginAgents originId={id} />
+            </Suspense>
+          </div>
+          <div className="order-2 md:order-1 col-span-1 md:col-span-2 flex flex-col gap-8">
+            <Suspense fallback={<LoadingOriginResources />}>
+              <OriginResources originId={id} />
             </Suspense>
           </div>
         </div>
