@@ -31,7 +31,7 @@ export const Header: React.FC<Props> = ({
           <Method method={method} />
           <span className="font-mono text-sm truncate">
             {hideOrigin
-              ? new URL(resource.resource).pathname
+              ? decodeURIComponent(new URL(resource.resource).pathname)
               : resource.resource}
           </span>
           <Tags tags={tags} />

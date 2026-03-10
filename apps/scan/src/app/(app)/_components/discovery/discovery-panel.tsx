@@ -780,7 +780,7 @@ function FailedResourceCard({
 
   const pathname = (() => {
     try {
-      return new URL(resourceUrl).pathname;
+      return decodeURIComponent(new URL(resourceUrl).pathname);
     } catch {
       return resourceUrl;
     }
@@ -1099,7 +1099,7 @@ function RegisterModeResourceList({
           {allResources.map(({ url, source: resourceSource, isRegistered }) => {
             const pathname = (() => {
               try {
-                return new URL(url).pathname;
+                return decodeURIComponent(new URL(url).pathname);
               } catch {
                 return url;
               }
