@@ -165,7 +165,7 @@ async function withRedisCache<T>(
       await redis.setex(fullCacheKey, ttlSeconds, serialize(result));
       return result;
     } finally {
-      await redis.del(lockKey).catch(() => {});
+      await redis.del(lockKey).catch(() => { /* lock cleanup is best-effort */ });
     }
   }
 
@@ -208,7 +208,7 @@ async function withRedisCache<T>(
   const result = await queryFn();
   await redis
     .setex(fullCacheKey, ttlSeconds, serialize(result))
-    .catch(() => {});
+    .catch(() => { /* cache write is best-effort */ });
   return result;
 }
 
