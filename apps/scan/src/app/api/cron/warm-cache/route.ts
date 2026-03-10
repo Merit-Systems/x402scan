@@ -12,11 +12,13 @@ import type { NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
 import { env } from '@/env';
 
+export const maxDuration = 300;
+
 /**
  * Maximum number of concurrent cache warming requests
  * Helps prevent database connection pool exhaustion
  */
-const MAX_CONCURRENT_REQUESTS = 10;
+const MAX_CONCURRENT_REQUESTS = 20;
 
 /**
  * Maximum number of retries per task
@@ -292,7 +294,6 @@ export async function GET(request: NextRequest) {
 
   try {
     const startTime = Date.now();
-    const timeframesWarmed: Record<string, number> = {};
 
     // Create cache warming API with authenticated headers
     const warmingHeaders = new Headers();
@@ -334,22 +335,12 @@ export async function GET(request: NextRequest) {
       `[Cache Warming] Starting cache warm for ${timeframesToWarm.length} timeframe${timeframesToWarm.length === 1 ? '' : 's'} and ${pagesToWarm.length} page${pagesToWarm.length === 1 ? '' : 's'}: ${pagesToWarm.join(', ')}`
     );
 
-    // Warm each timeframe serially to avoid overwhelming the database
+    const allTasks: (() => Promise<unknown>)[] = [];
+
     for (const timeframe of timeframesToWarm) {
-      const timeframeStartTime = Date.now();
-
-      const timeframeName =
-        timeframe === ActivityTimeframe.OneDay ? '1 Day' : `${timeframe} Days`;
-
-      console.log(`[Cache Warming] Warming timeframe: ${timeframeName}`);
-
-      // Collect all tasks from selected pages
-      const allTasks: (() => Promise<unknown>)[] = [];
-
       if (pagesToWarm.includes('home')) {
-        // Home page with chain filtering
         if (!chainFilter || chainFilter === 'all') {
-          allTasks.push(...getHomePageTasks(api, timeframe)); // All chains (undefined)
+          allTasks.push(...getHomePageTasks(api, timeframe));
         }
         if (!chainFilter || chainFilter === Chain.BASE) {
           allTasks.push(...getHomePageTasks(api, timeframe, Chain.BASE));
@@ -370,31 +361,27 @@ export async function GET(request: NextRequest) {
       if (pagesToWarm.includes('resources')) {
         allTasks.push(...getResourcesPageTasks(api, timeframe));
       }
-
-      // Run all tasks with controlled concurrency
-      await limitConcurrency(allTasks, MAX_CONCURRENT_REQUESTS);
-
-      const timeframeElapsed = Date.now() - timeframeStartTime;
-      timeframesWarmed[timeframeName] = timeframeElapsed;
-      console.log(
-        `[Cache Warming] Completed ${timeframeName} in ${timeframeElapsed}ms`
-      );
     }
+
+    console.log(
+      `[Cache Warming] Collected ${allTasks.length} tasks across all timeframes`
+    );
+
+    await limitConcurrency(allTasks, MAX_CONCURRENT_REQUESTS);
 
     const totalElapsed = Date.now() - startTime;
     const totalElapsedMinutes = totalElapsed / 1000 / 60;
 
     console.log(
-      `[Cache Warming] Completed all timeframes in ${totalElapsed}ms (${totalElapsedMinutes.toFixed(2)} minutes)`
+      `[Cache Warming] Completed ${allTasks.length} tasks in ${totalElapsed}ms (${totalElapsedMinutes.toFixed(2)} minutes)`
     );
 
-    // Warn if cache warming took longer than the cache duration
     const cacheDurationMs = CACHE_DURATION_MINUTES * 60 * 1000;
     if (totalElapsed > cacheDurationMs) {
       console.warn(
         `[Cache Warming] WARNING: Cache warming took ${totalElapsedMinutes.toFixed(2)} minutes, ` +
           `which exceeds CACHE_DURATION_MINUTES (${CACHE_DURATION_MINUTES} minutes). ` +
-          `This may cause cache misses between warming cycles. Consider optimizing queries or increasing the interval.`
+          `This may cause cache misses between warming cycles.`
       );
     }
 
@@ -402,11 +389,11 @@ export async function GET(request: NextRequest) {
       success: true,
       timestamp: new Date().toISOString(),
       message: 'Cache warmed successfully',
-      timeframesWarmed: Object.keys(timeframesWarmed).length,
+      tasksCompleted: allTasks.length,
+      timeframesWarmed: timeframesToWarm.length,
       timings: {
         total: totalElapsed,
         totalMinutes: totalElapsedMinutes,
-        byTimeframe: timeframesWarmed,
       },
       warning:
         totalElapsed > cacheDurationMs
