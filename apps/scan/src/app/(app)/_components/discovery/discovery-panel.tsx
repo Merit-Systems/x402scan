@@ -781,7 +781,7 @@ function FailedResourceCard({
   const pathname = (() => {
     try {
       return decodeURIComponent(new URL(resourceUrl).pathname);
- } catch {
+    } catch {
       return resourceUrl;
     }
   })();
