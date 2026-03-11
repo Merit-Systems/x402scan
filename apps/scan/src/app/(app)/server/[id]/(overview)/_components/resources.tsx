@@ -8,9 +8,9 @@ import {
 } from '@/app/(app)/_components/resources/origin-resources';
 
 import { Button } from '@/components/ui/button';
-
 import { api } from '@/trpc/client';
 import { OriginOverviewSection } from './section';
+import { RefreshButton } from './refresh-button';
 
 const INITIAL_LIMIT = 10;
 
@@ -31,7 +31,11 @@ export const OriginResources: React.FC<Props> = ({ originId }) => {
     : allResources.slice(0, INITIAL_LIMIT);
 
   return (
-    <OriginOverviewSection title="Resources" className="gap-0">
+    <OriginOverviewSection
+      title="Resources"
+      className="gap-0"
+      action={origin ? <RefreshButton origin={origin.origin} /> : undefined}
+    >
       <OriginResourcesComponent
         resources={visibleResources}
         defaultOpen={false}
