@@ -174,8 +174,7 @@ export default function DiscoverySpecPage() {
                       <TableCell>1</TableCell>
                       <TableCell>OpenAPI document</TableCell>
                       <TableCell className="whitespace-normal break-words">
-                        <code>/openapi.json</code> then{' '}
-                        <code>/.well-known/openapi.json</code>
+                        <code>/openapi.json</code>
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -202,8 +201,7 @@ export default function DiscoverySpecPage() {
                       source: 'OpenAPI document',
                       location: (
                         <>
-                          <code>/openapi.json</code> then{' '}
-                          <code>/.well-known/openapi.json</code>
+                          <code>/openapi.json</code>
                         </>
                       ),
                     },
