@@ -14,7 +14,7 @@ const globalForPrisma = global as unknown as {
 
 const scanDbAdapter =
   globalForPrisma.scanDbAdapter ||
-  new PrismaNeon({ connectionString: `${process.env.SCAN_DATABASE_URL}` });
+  new PrismaNeon({ connectionString: process.env.SCAN_DATABASE_URL! });
 if (process.env.NODE_ENV !== 'production')
   globalForPrisma.scanDbAdapter = scanDbAdapter;
 
