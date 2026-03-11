@@ -21,13 +21,25 @@ const listBazaarOriginsUncached = async (
 ) => {
   const t0 = performance.now();
 
-  const originsByAddress = await getAcceptsAddresses({
-    chain: input.chain,
-    tags: input.tags,
-  });
+  let originsByAddress: Awaited<ReturnType<typeof getAcceptsAddresses>>;
+  try {
+    originsByAddress = await getAcceptsAddresses({
+      chain: input.chain,
+      tags: input.tags,
+    });
+  } catch (err) {
+    console.error(
+      `[bazaar.list] getAcceptsAddresses FAILED after ${(performance.now() - t0).toFixed(0)}ms:`,
+      err
+    );
+    throw err;
+  }
 
   const tAccepts = performance.now();
   const addrCount = Object.keys(originsByAddress).length;
+  console.log(
+    `[bazaar.list] accepts=${(tAccepts - t0).toFixed(0)}ms (${addrCount} addrs)`
+  );
 
   const result = await listTopSellersMVUncached(
     {
@@ -44,8 +56,7 @@ const listBazaarOriginsUncached = async (
   const tMV = performance.now();
 
   console.log(
-    `[bazaar.list] accepts=${(tAccepts - t0).toFixed(0)}ms (${addrCount} addrs)` +
-      ` mv=${(tMV - tAccepts).toFixed(0)}ms (${result.items.length} items)` +
+    `[bazaar.list] mv=${(tMV - tAccepts).toFixed(0)}ms (${result.items.length} items)` +
       ` chain=${input.chain ?? 'all'} timeframe=${typeof input.timeframe === 'number' ? input.timeframe : input.timeframe.period}`
   );
 
