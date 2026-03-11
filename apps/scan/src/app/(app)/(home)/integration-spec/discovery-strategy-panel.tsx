@@ -40,7 +40,6 @@ const strategies: Strategy[] = [
   "paths": {
     "/api/quote": {
       "post": {
-        "security": [{ "paid": [] }],
         "responses": { "402": { "description": "Payment Required" } },
         "x-payment-info": {
           "protocols": ["x402"],
