@@ -9,6 +9,21 @@ import ws from 'ws';
 
 neonConfig.webSocketConstructor = ws;
 
+const STATEMENT_TIMEOUT_MS = 15_000;
+const IDLE_SESSION_TIMEOUT_MS = 30_000;
+const CONNECT_TIMEOUT_S = 10;
+
+function withConnectionDefaults(connectionString: string): string {
+  const url = new URL(connectionString);
+  url.searchParams.set(
+    'options',
+    `-c statement_timeout=${STATEMENT_TIMEOUT_MS} -c idle_session_timeout=${IDLE_SESSION_TIMEOUT_MS}`
+  );
+  url.searchParams.set('connect_timeout', String(CONNECT_TIMEOUT_S));
+  url.searchParams.set('sslnegotiation', 'direct');
+  return url.toString();
+}
+
 const globalForPrisma = global as unknown as {
   transfersDb: PrismaClient;
   transfersDbAdapter: PrismaNeon;
@@ -16,7 +31,9 @@ const globalForPrisma = global as unknown as {
 
 const transfersDbAdapter =
   globalForPrisma.transfersDbAdapter ||
-  new PrismaNeon({ connectionString: process.env.TRANSFERS_DB_URL! });
+  new PrismaNeon({
+    connectionString: withConnectionDefaults(process.env.TRANSFERS_DB_URL!),
+  });
 if (process.env.NODE_ENV !== 'production')
   globalForPrisma.transfersDbAdapter = transfersDbAdapter;
 
@@ -35,7 +52,9 @@ const hasReplicas =
 
 const createReplicaClient = (url: string) => {
   return new PrismaClient({
-    adapter: new PrismaNeon({ connectionString: url }),
+    adapter: new PrismaNeon({
+      connectionString: withConnectionDefaults(url),
+    }),
   });
 };
 
