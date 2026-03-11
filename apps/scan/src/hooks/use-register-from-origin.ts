@@ -3,7 +3,7 @@
 import { api } from '@/trpc/client';
 import { toast } from 'sonner';
 
-export interface RegisterFromOriginSuccessData {
+interface RegisterFromOriginSuccessData {
   registered: number;
   failed: number;
   skipped: number;
