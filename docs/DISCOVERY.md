@@ -13,7 +13,7 @@ If you cannot expose discovery yet, endpoint-only manual registration still work
 
 Discovery precedence used by `x402scan`:
 
-1. OpenAPI (`/openapi.json`
+1. OpenAPI (`/openapi.json`)
 2. `/.well-known/x402`
 
 Runtime `402` behavior is authoritative over static metadata.
