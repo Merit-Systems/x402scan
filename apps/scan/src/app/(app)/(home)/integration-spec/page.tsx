@@ -38,7 +38,6 @@ Schema guidance (important):
 - TypeScript recommendation (optional): Zod v4 is a good source of truth, but any valid schema pipeline is fine.
 
 OpenAPI payable operation must include ALL:
-- x-agentcash-auth: { mode: "paid" }
 - x-payment-info with:
   - protocols: ["x402"]
   - pricingMode + fields:
@@ -47,12 +46,6 @@ OpenAPI payable operation must include ALL:
     - quote: { pricingMode: "quote" }
   - IMPORTANT: for fixed pricing use "price" (not "amount")
 - responses: { "402": { description: "Payment Required" } }
-
-Auth mode rules (x-agentcash-auth.mode):
-- allowed: "paid" | "siwx" | "apiKey"
-- payable route => mode must be "paid"
-- non-payable auth-only route can use "siwx" or "apiKey"
-- if a route is payable and also supports SIWX, keep mode as "paid"
 
 /.well-known/x402 must be exactly:
 {

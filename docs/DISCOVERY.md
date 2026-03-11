@@ -48,8 +48,6 @@ For each paid operation:
 
 Use OpenAPI `security` + `components.securitySchemes`.
 
-Legacy `x-agentcash-auth.mode` is accepted as a migration fallback, but is not recommended for new integrations.
-
 ### Optional top-level metadata
 
 Use `x-discovery`:
