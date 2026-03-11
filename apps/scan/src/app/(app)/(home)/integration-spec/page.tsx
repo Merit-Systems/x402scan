@@ -36,6 +36,7 @@ Schema guidance (important):
 - In OpenAPI, define requestBody.content["application/json"].schema.
 - This is required for reliable agent invocation and robust listing behavior.
 - TypeScript recommendation (optional): Zod v4 is a good source of truth, but any valid schema pipeline is fine.
+- Add high-level guidance in info.guidance for user-friendly discovery. This document should explain to an agent how to use your API at a high level.
 
 OpenAPI payable operation must include ALL:
 - x-payment-info with:
@@ -64,12 +65,12 @@ Workflow:
 3) Re-run audits until clean.
 
 Validation commands:
-npx -y @agentcash/discovery "$TARGET_URL" --json
-npx -y @agentcash/discovery "$TARGET_URL" -v
+npx -y @agentcash/discovery@latest discover "$TARGET_URL" 
+
+This will yield warnings regarding the discovery document and how it can be improved.
 
 Done when:
-- resources are discovered
-- OpenAPI is selected when present (otherwise well-known is acceptable fallback)
+- resources are discovered properly
 - no critical parser/probe errors remain`;
 
 function CodeBlock({ code }: { code: string }) {
