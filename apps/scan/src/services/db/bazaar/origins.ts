@@ -19,13 +19,16 @@ const listBazaarOriginsUncached = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
+  const t0 = performance.now();
+
   const originsByAddress = await getAcceptsAddresses({
     chain: input.chain,
     tags: input.tags,
   });
 
-  // Use uncached version since listBazaarOrigins is already cached
-  // This avoids creating a massive cache key with 100+ addresses
+  const tAccepts = performance.now();
+  const addrCount = Object.keys(originsByAddress).length;
+
   const result = await listTopSellersMVUncached(
     {
       ...input,
@@ -36,6 +39,14 @@ const listBazaarOriginsUncached = async (
       },
     },
     pagination
+  );
+
+  const tMV = performance.now();
+
+  console.log(
+    `[bazaar.list] accepts=${(tAccepts - t0).toFixed(0)}ms (${addrCount} addrs)` +
+      ` mv=${(tMV - tAccepts).toFixed(0)}ms (${result.items.length} items)` +
+      ` chain=${input.chain ?? 'all'} timeframe=${typeof input.timeframe === 'number' ? input.timeframe : input.timeframe.period}`
   );
 
   // Group by origin
@@ -113,11 +124,18 @@ const listBazaarOriginsUncached = async (
     chains: Array.from(item.chains),
   }));
 
-  return toPaginatedResponse({
+  const response = toPaginatedResponse({
     items: groupedItems,
     total_count: Object.keys(originsByAddress).length,
     ...pagination,
   });
+
+  console.log(
+    `[bazaar.list] total=${(performance.now() - t0).toFixed(0)}ms` +
+      ` grouped=${groupedItems.length} origins`
+  );
+
+  return response;
 };
 
 export const listBazaarOrigins = createCachedPaginatedQuery({

@@ -65,6 +65,8 @@ export const listTopSellersMVUncached = async (
 
   const whereClause = Prisma.join(conditions, ' ');
 
+  const t0 = performance.now();
+
   const [count, items] = await Promise.all([
     queryRaw(
       Prisma.sql`
@@ -77,7 +79,12 @@ export const listTopSellersMVUncached = async (
           count: z.number(),
         })
       )
-    ).then(result => result[0]?.count ?? 0),
+    ).then(result => {
+      console.log(
+        `[sellers-mv] count query ${tableName} ${(performance.now() - t0).toFixed(0)}ms`
+      );
+      return result[0]?.count ?? 0;
+    }),
     queryRaw(
       Prisma.sql`
       SELECT 
@@ -106,7 +113,12 @@ export const listTopSellersMVUncached = async (
           chains: z.array(chainSchema),
         })
       )
-    ),
+    ).then(result => {
+      console.log(
+        `[sellers-mv] main query ${tableName} ${(performance.now() - t0).toFixed(0)}ms (${result.length} rows)`
+      );
+      return result;
+    }),
   ]);
 
   return toPaginatedResponse({
