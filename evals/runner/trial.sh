@@ -134,7 +134,7 @@ sleep 1
 # 6. Run discovery
 log "Running discovery..."
 set +e
-DISCOVERY_JSON=$(npx -y @agentcash/discovery "http://localhost:$PORT" --json 2>/dev/null)
+DISCOVERY_JSON=$(npx -y @agentcash/discovery@latest "http://localhost:$PORT" --json 2>/dev/null)
 DISCOVERY_EXIT=$?
 set -e
 if [ -z "$DISCOVERY_JSON" ] || ! echo "$DISCOVERY_JSON" | python3 -c "import sys,json; json.load(sys.stdin)" 2>/dev/null; then
@@ -143,7 +143,7 @@ fi
 echo "$DISCOVERY_JSON" > "$RESULTS_DIR/discovery.json"
 
 # Also capture verbose
-npx -y @agentcash/discovery "http://localhost:$PORT" -v > "$RESULTS_DIR/verbose.txt" 2>&1 || true
+npx -y @agentcash/discovery@latest "http://localhost:$PORT" -v > "$RESULTS_DIR/verbose.txt" 2>&1 || true
 
 END_TIME=$(now_ms)
 TOTAL_TIME=$((END_TIME - START_TIME))
