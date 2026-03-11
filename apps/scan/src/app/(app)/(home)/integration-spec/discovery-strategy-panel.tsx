@@ -27,9 +27,9 @@ const strategies: Strategy[] = [
     badge: 'Recommended',
     badgeVariant: 'primary',
     subtitle: 'Canonical and most reliable discovery signal.',
-    location: '/openapi.json or /.well-known/openapi.json',
+    location: 'GET /openapi.json',
     requirements: [
-      'Top-level fields: openapi, info.title, info.version, paths.',
+      'Top-level fields: openapi, info.title, info.guidance, info.version, paths.',
       'For paid operations: responses.402 and x-payment-info.',
       'Set x-payment-info.protocols and one pricing mode (fixed, range, quote).',
       'Use OpenAPI security + components.securitySchemes for auth declaration.',
@@ -40,7 +40,7 @@ const strategies: Strategy[] = [
   "paths": {
     "/api/quote": {
       "post": {
-        "security": [{ "siwx": [] }],
+        "security": [{ "paid": [] }],
         "responses": { "402": { "description": "Payment Required" } },
         "x-payment-info": {
           "protocols": ["x402"],
