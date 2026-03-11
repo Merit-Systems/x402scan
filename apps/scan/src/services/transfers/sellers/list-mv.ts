@@ -66,9 +66,48 @@ export const listTopSellersMVUncached = async (
   const whereClause = Prisma.join(conditions, ' ');
 
   const t0 = performance.now();
+  const offset = pagination.page * pagination.page_size;
 
-  const [count, items] = await Promise.all([
-    queryRaw(
+  const items = await queryRaw(
+    Prisma.sql`
+    SELECT 
+      recipient,
+      COALESCE(ARRAY_AGG(DISTINCT unnested_facilitator) FILTER (WHERE unnested_facilitator IS NOT NULL), ARRAY[]::text[]) as facilitator_ids,
+      COALESCE(SUM(total_transactions), 0)::integer as tx_count,
+      COALESCE(SUM(total_amount), 0)::float as total_amount,
+      MAX(latest_block_timestamp) as latest_block_timestamp,
+      COALESCE(SUM(unique_buyers), 0)::integer as unique_buyers,
+      COALESCE(ARRAY_AGG(DISTINCT chain) FILTER (WHERE chain IS NOT NULL), ARRAY[]::text[]) as chains
+    FROM ${Prisma.raw(tableName)},
+      LATERAL unnest(facilitator_ids) AS unnested_facilitator
+    ${whereClause}
+    GROUP BY recipient
+    ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.raw('DESC') : Prisma.raw('ASC')}
+    LIMIT ${pagination.page_size}
+    OFFSET ${offset}`,
+    z.array(
+      z.object({
+        recipient: mixedAddressSchema,
+        facilitator_ids: z.array(z.string()),
+        tx_count: z.number(),
+        total_amount: z.number(),
+        latest_block_timestamp: z.date().nullable(),
+        unique_buyers: z.number(),
+        chains: z.array(chainSchema),
+      })
+    )
+  );
+
+  console.log(
+    `[sellers-mv] main query ${tableName} ${(performance.now() - t0).toFixed(0)}ms (${items.length} rows)`
+  );
+
+  let count: number;
+
+  if (items.length < pagination.page_size) {
+    count = offset + items.length;
+  } else {
+    const countResult = await queryRaw(
       Prisma.sql`
         SELECT COUNT(DISTINCT recipient)::integer AS count
         FROM ${Prisma.raw(tableName)}
@@ -79,47 +118,12 @@ export const listTopSellersMVUncached = async (
           count: z.number(),
         })
       )
-    ).then(result => {
-      console.log(
-        `[sellers-mv] count query ${tableName} ${(performance.now() - t0).toFixed(0)}ms`
-      );
-      return result[0]?.count ?? 0;
-    }),
-    queryRaw(
-      Prisma.sql`
-      SELECT 
-        recipient,
-        COALESCE(ARRAY_AGG(DISTINCT unnested_facilitator) FILTER (WHERE unnested_facilitator IS NOT NULL), ARRAY[]::text[]) as facilitator_ids,
-        COALESCE(SUM(total_transactions), 0)::integer as tx_count,
-        COALESCE(SUM(total_amount), 0)::float as total_amount,
-        MAX(latest_block_timestamp) as latest_block_timestamp,
-        COALESCE(SUM(unique_buyers), 0)::integer as unique_buyers,
-        COALESCE(ARRAY_AGG(DISTINCT chain) FILTER (WHERE chain IS NOT NULL), ARRAY[]::text[]) as chains
-      FROM ${Prisma.raw(tableName)},
-        LATERAL unnest(facilitator_ids) AS unnested_facilitator
-      ${whereClause}
-      GROUP BY recipient
-      ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.raw('DESC') : Prisma.raw('ASC')}
-      LIMIT ${pagination.page_size}
-      OFFSET ${pagination.page * pagination.page_size}`,
-      z.array(
-        z.object({
-          recipient: mixedAddressSchema,
-          facilitator_ids: z.array(z.string()),
-          tx_count: z.number(),
-          total_amount: z.number(),
-          latest_block_timestamp: z.date().nullable(),
-          unique_buyers: z.number(),
-          chains: z.array(chainSchema),
-        })
-      )
-    ).then(result => {
-      console.log(
-        `[sellers-mv] main query ${tableName} ${(performance.now() - t0).toFixed(0)}ms (${result.length} rows)`
-      );
-      return result;
-    }),
-  ]);
+    );
+    count = countResult[0]?.count ?? 0;
+    console.log(
+      `[sellers-mv] count query ${tableName} ${(performance.now() - t0).toFixed(0)}ms`
+    );
+  }
 
   return toPaginatedResponse({
     items,

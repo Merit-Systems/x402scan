@@ -10,7 +10,9 @@ import { Section } from '@/app/_components/layout/page-utils';
 import { TransfersSortingProvider } from '@/app/(app)/_contexts/sorting/transfers/provider';
 import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
 
-import { HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from '@/trpc/server';
+
+import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
 
@@ -20,6 +22,16 @@ interface Props {
 
 export const LatestTransactions: React.FC<Props> = ({ chain }) => {
   const pageSize = 10;
+
+  void api.public.transfers.list.prefetch({
+    chain,
+    pagination: {
+      page_size: pageSize,
+      page: 0,
+    },
+    sorting: defaultTransfersSorting,
+    timeframe: ActivityTimeframe.ThirtyDays,
+  });
 
   return (
     <HydrateClient>
