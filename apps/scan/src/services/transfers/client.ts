@@ -45,10 +45,11 @@ export const queryRaw = async <T>(
         replica.query(query, params),
         REPLICA_TIMEOUT_MS
       );
-    } catch {
+    } catch (error) {
       const elapsed = performance.now() - t0;
       console.warn(
-        `[queryRaw] replica HTTP failed after ${elapsed.toFixed(0)}ms, retrying primary: ${tag}`
+        `[queryRaw] replica HTTP failed after ${elapsed.toFixed(0)}ms, retrying primary: ${tag}`,
+        error
       );
       rows = await withTimeout(
         transfersHttpPrimary.query(query, params),
