@@ -133,7 +133,7 @@ export function scoreTrial(discoveryJson, fixture, trialId, agentId, timeMs) {
     for (const r of resources) {
       if (!r.authHint) {
         warnings.push(
-          `Resource ${r.resourceKey}: missing authHint (x-agentcash-auth not set)`
+          `Resource ${r.resourceKey}: missing authHint`
         );
       }
       if (!r.pricing && !r.priceHint) {

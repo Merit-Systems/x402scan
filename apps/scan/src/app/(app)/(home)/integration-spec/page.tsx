@@ -36,9 +36,9 @@ Schema guidance (important):
 - In OpenAPI, define requestBody.content["application/json"].schema.
 - This is required for reliable agent invocation and robust listing behavior.
 - TypeScript recommendation (optional): Zod v4 is a good source of truth, but any valid schema pipeline is fine.
+- Add high-level guidance in info.guidance for user-friendly discovery. This document should explain to an agent how to use your API at a high level.
 
 OpenAPI payable operation must include ALL:
-- x-agentcash-auth: { mode: "paid" }
 - x-payment-info with:
   - protocols: ["x402"]
   - pricingMode + fields:
@@ -47,12 +47,6 @@ OpenAPI payable operation must include ALL:
     - quote: { pricingMode: "quote" }
   - IMPORTANT: for fixed pricing use "price" (not "amount")
 - responses: { "402": { description: "Payment Required" } }
-
-Auth mode rules (x-agentcash-auth.mode):
-- allowed: "paid" | "siwx" | "apiKey"
-- payable route => mode must be "paid"
-- non-payable auth-only route can use "siwx" or "apiKey"
-- if a route is payable and also supports SIWX, keep mode as "paid"
 
 /.well-known/x402 must be exactly:
 {
@@ -71,12 +65,12 @@ Workflow:
 3) Re-run audits until clean.
 
 Validation commands:
-npx -y @agentcash/discovery "$TARGET_URL" --json
-npx -y @agentcash/discovery "$TARGET_URL" -v
+npx -y @agentcash/discovery@latest discover "$TARGET_URL" 
+
+This will yield warnings regarding the discovery document and how it can be improved.
 
 Done when:
-- resources are discovered
-- OpenAPI is selected when present (otherwise well-known is acceptable fallback)
+- resources are discovered properly
 - no critical parser/probe errors remain`;
 
 function CodeBlock({ code }: { code: string }) {
@@ -180,8 +174,7 @@ export default function DiscoverySpecPage() {
                       <TableCell>1</TableCell>
                       <TableCell>OpenAPI document</TableCell>
                       <TableCell className="whitespace-normal break-words">
-                        <code>/openapi.json</code> then{' '}
-                        <code>/.well-known/openapi.json</code>
+                        <code>/openapi.json</code>
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -208,8 +201,7 @@ export default function DiscoverySpecPage() {
                       source: 'OpenAPI document',
                       location: (
                         <>
-                          <code>/openapi.json</code> then{' '}
-                          <code>/.well-known/openapi.json</code>
+                          <code>/openapi.json</code>
                         </>
                       ),
                     },
