@@ -295,8 +295,8 @@ importers:
   apps/scan:
     dependencies:
       '@agentcash/discovery':
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: 0.0.0-pr-31-20260312193535
+        version: 0.0.0-pr-31-20260312193535
       '@agentcash/router':
         specifier: ^1.0.1
         version: 1.0.1(2d34d474b384d21849900b1f6a2db476)
@@ -1198,8 +1198,8 @@ packages:
   '@adraffy/ens-normalize@1.11.1':
     resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
 
-  '@agentcash/discovery@1.0.0':
-    resolution: {integrity: sha512-QoPVBP3Z0MZ17n0i0h5SCyZ0i3zce+jdsqNzAmVotcy1Im3qghaX8jvQVUt4iDr3BkmL8LgqZTUSCkCBDjMN+Q==}
+  '@agentcash/discovery@0.0.0-pr-31-20260312193535':
+    resolution: {integrity: sha512-iW+oLSzC+wvnmzFMO22XHM2dklVb3rCHwHvpJdcVQiHAhB3s2YRKyGWYhLjB3nO5dqRlrUgz69+oFiYTGkRTNA==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -7564,6 +7564,9 @@ packages:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
 
+  dereference-json-schema@0.2.2:
+    resolution: {integrity: sha512-w8dUsJyrzH4Zsj8W/tKcjLsmcTKXfdNf+n3BBm1SAfnqpaCodgEUWqQGJ+pNb9NOqPwYMGvUnZZ8nQfeFjJlbQ==}
+
   derive-valtio@0.1.0:
     resolution: {integrity: sha512-OCg2UsLbXK7GmmpzMXhYkdO64vhJ1ROUUGaTFyHjVwEdMEcTTRj7W1TxLbSBxdY8QLBPCcp66MTyaSy0RpO17A==}
     peerDependencies:
@@ -12255,9 +12258,9 @@ snapshots:
 
   '@adraffy/ens-normalize@1.11.1': {}
 
-  '@agentcash/discovery@1.0.0':
+  '@agentcash/discovery@0.0.0-pr-31-20260312193535':
     dependencies:
-      '@x402/core': 2.3.0
+      dereference-json-schema: 0.2.2
       neverthrow: 8.2.0
       zod: 4.3.6
 
@@ -21975,6 +21978,8 @@ snapshots:
   depd@2.0.0: {}
 
   dequal@2.0.3: {}
+
+  dereference-json-schema@0.2.2: {}
 
   derive-valtio@0.1.0(valtio@1.13.2(@types/react@19.2.2)(react@19.2.2)):
     dependencies:
