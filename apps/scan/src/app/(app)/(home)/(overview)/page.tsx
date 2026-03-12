@@ -8,7 +8,7 @@ import { LatestTransactions } from './_components/latest-transactions';
 import { AllSellers } from './_components/sellers/all-sellers';
 import { getChainForPage } from '@/app/(app)/_lib/chain/page';
 import { TopAgents } from './_components/top-agents';
-import { V2AnnouncementBanner } from '../_components/v2-announcement-banner';
+import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
   const chain = await getChainForPage(await searchParams);
@@ -17,7 +17,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
     <div>
       <HomeHeading />
       <Body>
-        <V2AnnouncementBanner />
+        <AgentCashAnnouncementBanner />
         <OverallStats chain={chain} />
         <TopServers chain={chain} />
         <TopFacilitators chain={chain} />

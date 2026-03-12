@@ -18,7 +18,6 @@ export interface DiscoveredResource {
 export type DiscoverySource =
   | 'openapi'
   | 'well-known'
-  | 'dns'
   | 'probe'
   | 'interop-mpp';
 

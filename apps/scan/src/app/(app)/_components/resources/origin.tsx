@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
 
-import { cn } from '@/lib/utils';
+import { cn, decodeHtmlEntities } from '@/lib/utils';
 
 import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -55,7 +55,7 @@ export const OriginCard: React.FC<Props> = ({
                     !origin.title && 'opacity-60'
                   )}
                 >
-                  {origin.title ?? 'No Title'}
+                  {origin.title ? decodeHtmlEntities(origin.title) : 'No Title'}
                 </h3>
                 <p
                   className={cn(
@@ -63,7 +63,9 @@ export const OriginCard: React.FC<Props> = ({
                     !origin.description && 'text-muted-foreground/60'
                   )}
                 >
-                  {origin.description ?? 'No Description'}
+                  {origin.description
+                    ? decodeHtmlEntities(origin.description)
+                    : 'No Description'}
                 </p>
               </div>
             </div>
@@ -75,7 +77,11 @@ export const OriginCard: React.FC<Props> = ({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={origin.ogImages[0]!.url}
-            alt={origin.ogImages[0]!.title ?? ''}
+            alt={
+              origin.ogImages[0]!.title
+                ? decodeHtmlEntities(origin.ogImages[0]!.title)
+                : ''
+            }
             className="rounded-md max-h-24"
           />
         </div>

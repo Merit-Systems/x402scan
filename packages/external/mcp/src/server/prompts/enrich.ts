@@ -5,9 +5,7 @@ import { Origin } from '@/shared/origins';
 import type { GetPromptResult } from '@modelcontextprotocol/sdk/types.js';
 import type { RegisterPrompts } from './types';
 
-const PROMPT_CONTENT = `To start, you should check this resource page: ${Origin.EnrichX402}/llms.txt, which has access to all of the paid endpoints.
-
-- You have access to the x402scan MCP server, which allows you to call paid endpoints which contain potentially extremely useful information.
+const PROMPT_CONTENT = `You have access to the x402scan MCP server, which allows you to call paid endpoints which contain potentially extremely useful information.
 - Here are the tools you have access to:
 
   mcp__x402__get_wallet_info

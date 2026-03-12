@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
 import { Globe, TrendingUp, Zap, CheckCircle, Filter } from 'lucide-react';
 import type { FilteredSearchResult } from '@/services/resource-search/types';
+import { decodeHtmlEntities } from '@/lib/utils';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { ResourceSearchSortingContext } from '@/app/(app)/_contexts/sorting/resource-search/context';
 
@@ -94,7 +95,9 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
     cell: ({ row }) => {
       const origin = row.original.origin;
       const favicon = origin.favicon;
-      const title = origin.title ?? origin.origin;
+      const title = origin.title
+        ? decodeHtmlEntities(origin.title)
+        : origin.origin;
 
       return (
         <div className="flex items-center gap-3">

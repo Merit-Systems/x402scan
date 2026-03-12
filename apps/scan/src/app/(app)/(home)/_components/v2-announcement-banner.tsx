@@ -1,18 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import type { LucideIcon } from 'lucide-react';
-import { Sparkles, Zap, BookOpen, Layers } from 'lucide-react';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-const STORAGE_KEY = 'x402scan-hide-v2-announcement';
+const STORAGE_KEY = 'x402scan-hide-agentcash-announcement';
 
-export const V2AnnouncementBanner = () => {
+export const AgentCashAnnouncementBanner = () => {
   const [isDismissed, setIsDismissed] = useState(true); // Default to true to avoid flash
 
   useEffect(() => {
@@ -37,69 +32,45 @@ export const V2AnnouncementBanner = () => {
   return (
     <div className="border border-primary/40 bg-primary/5 p-4 rounded-md flex flex-col md:flex-row md:items-center gap-4 md:justify-between relative">
       <div className="flex items-center gap-4 pr-6 md:pr-0">
-        <Sparkles className="size-8 text-primary shrink-0" />
+        <Image
+          src="/agentcash-light.svg"
+          alt="AgentCash"
+          width={32}
+          height={32}
+          className="shrink-0 block dark:hidden"
+        />
+        <Image
+          src="/agentcash-dark.svg"
+          alt="AgentCash"
+          width={32}
+          height={32}
+          className="shrink-0 hidden dark:block"
+        />
         <div className="flex flex-col">
           <h2 className="text-base md:text-lg font-bold text-primary">
-            Introducing x402scan v2
+            Introducing AgentCash
           </h2>
           <p className="text-xs md:text-sm text-muted-foreground">
-            A major update with native v2 support, faster performance, and a new
-            discovery standard.
+            The x402 wallet for your AI agent. One balance for any x402 API. We
+            are giving away $100k in sign up bonuses.
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button size="sm">Learn more</Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <div className="flex flex-col gap-2 text-sm md:mr-6 shrink-0">
-              <MoreInfoBullet
-                Icon={Layers}
-                text="Native support for x402 v2 resources and facilitators"
-              />
-              <MoreInfoBullet
-                Icon={BookOpen}
-                text={
-                  <>
-                    New x402scan Discovery Standard —{' '}
-                    <a
-                      href="/discovery"
-                      className="text-primary underline hover:text-primary/80"
-                    >
-                      read the docs
-                    </a>
-                  </>
-                }
-              />
-              <MoreInfoBullet
-                Icon={Zap}
-                text="x402scan stability and performance improvements"
-              />
-            </div>
-          </PopoverContent>
-        </Popover>
+        <Button size="sm" asChild>
+          <Link
+            href="https://agentcash.dev/onboard"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Try AgentCash
+          </Link>
+        </Button>
         <Button size="sm" variant="outline" onClick={handleDismiss}>
           Close
         </Button>
       </div>
-    </div>
-  );
-};
-
-const MoreInfoBullet = ({
-  Icon,
-  text,
-}: {
-  Icon: LucideIcon;
-  text: React.ReactNode;
-}) => {
-  return (
-    <div className="flex items-center gap-3">
-      <Icon className="size-4 text-primary shrink-0 mt-0.5" />
-      <span className="text-muted-foreground">{text}</span>
     </div>
   );
 };

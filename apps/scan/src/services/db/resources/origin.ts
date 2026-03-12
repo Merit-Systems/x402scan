@@ -144,6 +144,9 @@ export const listOriginsWithResources = async (
             some: acceptsWhere,
           },
         },
+        orderBy: {
+          resource: 'asc',
+        },
         include: {
           accepts: {
             where: acceptsWhere,

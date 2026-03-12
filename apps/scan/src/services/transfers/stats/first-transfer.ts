@@ -5,6 +5,7 @@ import { Prisma } from '@x402scan/transfers-db';
 import { baseQuerySchema } from '../schemas';
 
 import { queryRaw } from '@/services/transfers/client';
+import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 
 import { transfersWhereClause } from '../query-utils';
 import { ActivityTimeframe } from '@/types/timeframes';
@@ -13,9 +14,9 @@ export const getFirstTransferTimestampInputSchema = baseQuerySchema.omit({
   timeframe: true,
 });
 
-export const getFirstTransferTimestamp = async (
+const getFirstTransferTimestampUncached = async (
   input: z.infer<typeof getFirstTransferTimestampInputSchema>
-): Promise<Date | null> => {
+): Promise<{ timestamp: Date | null }> => {
   const sql = Prisma.sql`
     SELECT t.block_timestamp
     FROM "TransferEvent" t
@@ -33,5 +34,20 @@ export const getFirstTransferTimestamp = async (
     )
   );
 
-  return result[0]?.block_timestamp ?? null;
+  return { timestamp: result[0]?.block_timestamp ?? null };
+};
+
+const getFirstTransferTimestampCached = createCachedQuery({
+  queryFn: getFirstTransferTimestampUncached,
+  cacheKeyPrefix: 'first-transfer-timestamp',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['timestamp'],
+  tags: ['transfers'],
+});
+
+export const getFirstTransferTimestamp = async (
+  input: z.infer<typeof getFirstTransferTimestampInputSchema>
+): Promise<Date | null> => {
+  const result = await getFirstTransferTimestampCached(input);
+  return result.timestamp;
 };

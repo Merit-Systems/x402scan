@@ -1,9 +1,10 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import z from 'zod';
 
 import { api } from '@/trpc/client';
+import { useRegisterFromOrigin } from '@/hooks/use-register-from-origin';
 
 import type { FailedResource, TestedResource } from '@/types/batch-test';
 import type { DiscoveredResource, DiscoverySource } from '@/types/discovery';
@@ -118,7 +119,6 @@ export function useDiscovery({
   onRegisterAllError,
 }: UseDiscoveryOptions): UseDiscoveryReturn {
   const utils = api.useUtils();
-  const [bulkError, setBulkError] = useState<string | null>(null);
 
   // Check if URL is valid and extract origin
   const isValidUrl = useMemo(() => z.url().safeParse(url).success, [url]);
@@ -245,43 +245,29 @@ export function useDiscovery({
     }
   );
 
-  // Bulk registration mutation
+  // Bulk registration
   const {
-    mutate: registerFromOrigin,
-    isPending: isRegisteringAll,
+    register,
+    isRegistering: isRegisteringAll,
     data: bulkData,
+    error: bulkError,
     reset: resetBulk,
-  } = api.public.resources.registerFromOrigin.useMutation({
-    onMutate: () => {
-      setBulkError(null);
-    },
-    onSuccess: data => {
-      if (!data.success) {
-        setBulkError(data.error.message);
-        onRegisterAllError?.();
-        return;
-      }
-      setBulkError(null);
-      void utils.public.resources.list.invalidate();
-      void utils.public.origins.list.withResources.invalidate();
-      void utils.public.sellers.bazaar.list.invalidate();
+  } = useRegisterFromOrigin({
+    onSuccess: data =>
       onRegisterAllSuccess?.({
         registered: data.registered,
         total: data.total,
         failed: data.failed,
         deprecated: data.deprecated,
-      });
-    },
-    onError: () => {
-      setBulkError('Failed to register resources');
-      onRegisterAllError?.();
-    },
+      }),
+    onError: () => onRegisterAllError?.(),
   });
 
   // Handle registering all discovered resources
   const handleRegisterAll = () => {
     if (!urlOrigin) return;
-    registerFromOrigin({ origin: urlOrigin });
+    resetBulk();
+    void register(urlOrigin);
   };
 
   return {
@@ -346,10 +332,7 @@ export function useDiscovery({
       : null,
     bulkError,
     handleRegisterAll,
-    resetBulk: () => {
-      setBulkError(null);
-      resetBulk();
-    },
+    resetBulk,
 
     // Refresh discovery data with cache busting
     refreshDiscovery: () => {

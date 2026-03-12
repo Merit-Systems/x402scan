@@ -9,10 +9,12 @@ export function getTimeRangeFromTimeframe(
 ) {
   const now = new Date();
 
-  // Handle All Time (0) - no date restrictions
   const period = typeof timeframe === 'number' ? timeframe : timeframe.period;
   if (period === 0) {
-    return { startDate: null, endDate: null };
+    // Use a floor date instead of null so TimescaleDB can still do
+    // chunk exclusion and Prisma always emits a block_timestamp filter.
+    // All TransferEvent data starts 2025-05-09; this won't exclude anything.
+    return { startDate: new Date('2024-01-01T00:00:00Z'), endDate: now };
   }
 
   const endDate =

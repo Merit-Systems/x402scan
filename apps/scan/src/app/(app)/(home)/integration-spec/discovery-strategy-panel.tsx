@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-type StrategyKey = 'openapi' | 'wellKnown' | 'dns';
+type StrategyKey = 'openapi' | 'wellKnown';
 
 interface Strategy {
   key: StrategyKey;
@@ -27,12 +27,13 @@ const strategies: Strategy[] = [
     badge: 'Recommended',
     badgeVariant: 'primary',
     subtitle: 'Canonical and most reliable discovery signal.',
-    location: '/openapi.json or /.well-known/openapi.json',
+    location: 'GET /openapi.json',
     requirements: [
-      'Top-level fields: openapi, info.title, info.version, paths.',
+      'Top-level fields: openapi, info.title, info.guidance, info.version, paths.',
       'For paid operations: responses.402 and x-payment-info.',
       'Set x-payment-info.protocols and one pricing mode (fixed, range, quote).',
       'Use OpenAPI security + components.securitySchemes for auth declaration.',
+      'Add high-level guidance in info.guidance for user-friendly discovery.',
     ],
     example: `{
   "openapi": "3.1.0",
@@ -40,7 +41,6 @@ const strategies: Strategy[] = [
   "paths": {
     "/api/quote": {
       "post": {
-        "security": [{ "siwx": [] }],
         "responses": { "402": { "description": "Payment Required" } },
         "x-payment-info": {
           "protocols": ["x402"],
@@ -75,22 +75,6 @@ const strategies: Strategy[] = [
 }`,
     note: 'Good for compatibility and fan-out, but OpenAPI should be your long-term source of truth.',
   },
-  {
-    key: 'dns',
-    title: 'DNS Pointer',
-    badge: 'Legacy',
-    badgeVariant: 'outline',
-    subtitle: 'Oldest compatibility mode. Keep only if needed.',
-    location: 'TXT record at _x402.<domain>',
-    requirements: [
-      'TXT value should point to your /.well-known/x402 URL.',
-      'Keep the pointed URL stable and cache-friendly.',
-      'Plan migration away from DNS-only discovery.',
-    ],
-    example:
-      '_x402.yourdomain.com TXT "v=x4021;url=https://yourdomain.com/.well-known/x402"',
-    note: 'Supported for backward compatibility, but lowest priority and least expressive.',
-  },
 ];
 
 function CodeBlock({ code }: { code: string }) {
@@ -106,7 +90,9 @@ function StrategyDetails({ strategy }: { strategy: Strategy }) {
     <Card>
       <CardContent className="space-y-4 pt-4">
         <div className="space-y-1">
-          <h3 className="text-lg font-semibold">{strategy.title} Implementation</h3>
+          <h3 className="text-lg font-semibold">
+            {strategy.title} Implementation
+          </h3>
           <p className="text-sm text-muted-foreground">{strategy.note}</p>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -131,7 +117,8 @@ export function DiscoveryStrategyPanel() {
     null
   );
 
-  const strategy = strategies.find(item => item.key === selected) ?? strategies[0]!;
+  const strategy =
+    strategies.find(item => item.key === selected) ?? strategies[0]!;
 
   useLayoutEffect(() => {
     if (!contentElement) {
@@ -141,9 +128,7 @@ export function DiscoveryStrategyPanel() {
     const updateHeight = () => {
       const height = contentElement.getBoundingClientRect().height;
       if (height > 0) {
-        setPanelHeight(previous =>
-          previous === height ? previous : height
-        );
+        setPanelHeight(previous => (previous === height ? previous : height));
       }
     };
 
@@ -159,7 +144,7 @@ export function DiscoveryStrategyPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="grid items-stretch gap-3 md:grid-cols-3">
+      <div className="grid items-stretch gap-3 md:grid-cols-2">
         {strategies.map(item => {
           const active = item.key === selected;
           return (
@@ -185,7 +170,9 @@ export function DiscoveryStrategyPanel() {
               )}
             >
               <div className="flex items-start justify-between gap-2">
-                <p className="text-base font-semibold leading-tight">{item.title}</p>
+                <p className="text-base font-semibold leading-tight">
+                  {item.title}
+                </p>
                 <Badge
                   variant={item.badgeVariant}
                   className={cn(

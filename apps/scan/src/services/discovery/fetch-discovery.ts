@@ -1,5 +1,15 @@
-import dns from 'node:dns';
-import { discoverDetailed } from '@agentcash/discovery';
+import {
+  discoverOriginSchema,
+  getOpenAPI,
+  getWellKnown,
+  getWarningsForOpenAPI,
+  getWarningsForWellKnown,
+} from '@agentcash/discovery';
+import type {
+  AuditWarning,
+  OpenApiSource,
+  WellKnownSource,
+} from '@agentcash/discovery';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { isLocalUrl } from '@/lib/url-helpers';
@@ -9,12 +19,6 @@ import type {
   DiscoverySource,
   X402DiscoveryResult,
 } from '@/types/discovery';
-import type {
-  DiscoverDetailedResult,
-  DiscoveryStage,
-  DiscoveryWarning,
-  RawSources,
-} from '@agentcash/discovery';
 
 const FETCH_TIMEOUT_MS = 10000;
 const VALID_METHODS = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
@@ -25,19 +29,20 @@ function isDiscoveredMethod(
   return VALID_METHODS.has(method);
 }
 
-function mapStageToSource(
-  stage: DiscoveryStage | undefined
+function mapSourceToDiscoverySource(
+  source: string | undefined
 ): DiscoverySource | undefined {
-  if (!stage) return undefined;
-  if (stage === 'openapi' || stage === 'override') return 'openapi';
-  if (stage === 'well-known/x402') return 'well-known';
-  if (stage === 'dns/_x402') return 'dns';
-  if (stage === 'probe') return 'probe';
-  if (stage === 'interop/mpp') return 'interop-mpp';
+  if (!source) return undefined;
+  if (source === 'openapi' || source === 'override') return 'openapi';
+  if (source === 'well-known/x402' || source === 'well-known')
+    return 'well-known';
+  if (source === 'probe') return 'probe';
+  if (source === 'interop/mpp' || source === 'interop-mpp')
+    return 'interop-mpp';
   return undefined;
 }
 
-function resolveErrorMessage(warnings: DiscoveryWarning[]): string {
+function resolveErrorMessage(warnings: AuditWarning[]): string {
   const relevant = warnings.filter(
     w => w.severity === 'error' || w.severity === 'warn'
   );
@@ -48,57 +53,12 @@ function resolveErrorMessage(warnings: DiscoveryWarning[]): string {
     .join('; ');
 }
 
-function toDiscoveredResources(
-  result: DiscoverDetailedResult
-): DiscoveredResource[] {
-  const deduped = new Map<string, DiscoveredResource>();
-
-  for (const resource of result.resources) {
-    let normalized: string;
-    try {
-      normalized = new URL(resource.path, resource.origin).toString();
-    } catch {
-      continue;
-    }
-    const method = isDiscoveredMethod(resource.method)
-      ? resource.method
-      : undefined;
-
-    if (!deduped.has(normalized)) {
-      deduped.set(normalized, {
-        url: normalized,
-        ...(method ? { method } : {}),
-      });
-    }
-  }
-
-  return [...deduped.values()];
-}
-
-function collectDiscoveryUrls(result: DiscoverDetailedResult): string[] {
-  const urls = new Set<string>();
-
-  for (const trace of result.trace) {
-    if (trace.links?.openapiUrl) urls.add(trace.links.openapiUrl);
-    if (trace.links?.wellKnownUrl) urls.add(trace.links.wellKnownUrl);
-    if (trace.links?.discoveryUrl) urls.add(trace.links.discoveryUrl);
-  }
-
-  for (const resource of result.resources) {
-    if (resource.links?.openapiUrl) urls.add(resource.links.openapiUrl);
-    if (resource.links?.wellKnownUrl) urls.add(resource.links.wellKnownUrl);
-    if (resource.links?.discoveryUrl) urls.add(resource.links.discoveryUrl);
-  }
-
-  return [...urls];
-}
-
 function getOwnershipProofsFromOpenApi(
-  rawSources: RawSources | undefined
+  openApi: OpenApiSource | null
 ): string[] {
-  if (!rawSources?.openapi || typeof rawSources.openapi !== 'object') return [];
+  if (!openApi?.raw) return [];
 
-  const document = rawSources.openapi as Record<string, unknown>;
+  const document = openApi.raw;
   const discovery = document['x-discovery'];
   if (discovery && typeof discovery === 'object' && !Array.isArray(discovery)) {
     const proofs = (discovery as Record<string, unknown>).ownershipProofs;
@@ -123,29 +83,44 @@ function getOwnershipProofsFromOpenApi(
 }
 
 function getOwnershipProofsFromWellKnown(
-  rawSources: RawSources | undefined
+  wellKnown: WellKnownSource | null
 ): string[] {
-  if (!Array.isArray(rawSources?.wellKnownX402)) return [];
+  if (!wellKnown?.raw) return [];
 
   const proofs = new Set<string>();
-  for (const payload of rawSources.wellKnownX402) {
-    if (!payload || typeof payload !== 'object' || Array.isArray(payload))
-      continue;
-    const ownershipProofs = (payload as Record<string, unknown>)
-      .ownershipProofs;
-    if (!Array.isArray(ownershipProofs)) continue;
-    for (const proof of ownershipProofs) {
+  const raw = wellKnown.raw;
+
+  // Top-level ownershipProofs on the well-known document
+  const topLevel = raw.ownershipProofs;
+  if (Array.isArray(topLevel)) {
+    for (const proof of topLevel) {
       if (typeof proof === 'string') proofs.add(proof);
+    }
+  }
+
+  // Per-route ownershipProofs (well-known may embed proofs per route)
+  const routes = raw.routes;
+  if (Array.isArray(routes)) {
+    for (const route of routes) {
+      if (!route || typeof route !== 'object' || Array.isArray(route)) continue;
+      const routeProofs = (route as Record<string, unknown>).ownershipProofs;
+      if (!Array.isArray(routeProofs)) continue;
+      for (const proof of routeProofs) {
+        if (typeof proof === 'string') proofs.add(proof);
+      }
     }
   }
 
   return [...proofs];
 }
 
-function collectOwnershipProofs(rawSources: RawSources | undefined): string[] {
+function collectOwnershipProofs(
+  openApi: OpenApiSource | null,
+  wellKnown: WellKnownSource | null
+): string[] {
   const all = new Set<string>([
-    ...getOwnershipProofsFromOpenApi(rawSources),
-    ...getOwnershipProofsFromWellKnown(rawSources),
+    ...getOwnershipProofsFromOpenApi(openApi),
+    ...getOwnershipProofsFromWellKnown(wellKnown),
   ]);
   return [...all];
 }
@@ -153,8 +128,8 @@ function collectOwnershipProofs(rawSources: RawSources | undefined): string[] {
 /**
  * Fetch discovery data for an origin using @agentcash/discovery.
  *
- * This is the canonical x402scan discovery path:
- * openapi.json -> /.well-known/x402 (compat) -> DNS _x402 (compat).
+ * This attempts discovery via multiple methods:
+ * openapi.json, /.well-known/x402, and probe-based discovery.
  */
 export async function fetchDiscoveryDocument(
   originOrUrl: string,
@@ -173,51 +148,41 @@ export async function fetchDiscoveryDocument(
     };
   }
 
-  const txtResolver = async (fqdn: string): Promise<string[]> => {
-    try {
-      const records = await dns.promises.resolveTxt(fqdn);
-      return records.map(parts => parts.join(''));
-    } catch (error) {
-      const code = (error as NodeJS.ErrnoException).code;
-      if (code === 'ENODATA' || code === 'ENOTFOUND') {
-        return [];
-      }
-      throw error;
-    }
-  };
+  const signal = AbortSignal.timeout(FETCH_TIMEOUT_MS);
+  const headers: Record<string, string> = bustCache
+    ? { 'Cache-Control': 'no-cache, no-store' }
+    : {};
 
-  let discovered: DiscoverDetailedResult;
-  try {
-    discovered = await discoverDetailed({
-      target: origin,
-      compatMode: 'on',
-      rawView: 'full',
-      txtResolver,
-      fetcher: async (input, init) => {
-        const url =
-          input instanceof URL
-            ? new URL(input.toString())
-            : typeof input === 'string'
-              ? new URL(input)
-              : new URL(input.url);
-        const method = (init?.method ?? 'GET').toUpperCase();
+  // Run discovery and raw source fetches in parallel.
+  // discoverOriginSchema handles multiple discovery methods (openapi, well-known, probe).
+  // getOpenAPI/getWellKnown are called separately to access raw documents
+  // for ownership proof extraction and fetchedUrl collection.
+  const [discoveryOutcome, openApiOutcome, wellKnownOutcome] =
+    await Promise.allSettled([
+      discoverOriginSchema({ target: origin, headers, signal }),
+      getOpenAPI(origin, headers, signal),
+      getWellKnown(origin, headers, signal),
+    ]);
 
-        if (bustCache && method === 'GET') {
-          url.searchParams.set('_t', Date.now().toString());
-        }
+  const openApi =
+    openApiOutcome.status === 'fulfilled' && openApiOutcome.value.isOk()
+      ? openApiOutcome.value.value
+      : null;
+  const wellKnown =
+    wellKnownOutcome.status === 'fulfilled' && wellKnownOutcome.value.isOk()
+      ? wellKnownOutcome.value.value
+      : null;
 
-        return fetch(url, {
-          ...init,
-          signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-          cache: bustCache ? 'no-store' : init?.cache,
-        });
-      },
-    });
-  } catch (error) {
+  const discoveryUrls: string[] = [];
+  if (openApi?.fetchedUrl) discoveryUrls.push(openApi.fetchedUrl);
+  if (wellKnown?.fetchedUrl) discoveryUrls.push(wellKnown.fetchedUrl);
+
+  if (discoveryOutcome.status === 'rejected') {
+    const error: unknown = discoveryOutcome.reason;
     return {
       success: false,
       resources: [],
-      discoveryUrls: [],
+      discoveryUrls,
       error:
         error instanceof Error && error.message.length > 0
           ? error.message
@@ -225,21 +190,60 @@ export async function fetchDiscoveryDocument(
     };
   }
 
-  const resources = toDiscoveredResources(discovered);
-  if (resources.length === 0) {
+  const discovered = discoveryOutcome.value;
+
+  if (!discovered.found) {
+    const warnings = [
+      ...getWarningsForOpenAPI(openApi),
+      ...getWarningsForWellKnown(wellKnown),
+    ];
     return {
       success: false,
       resources: [],
-      discoveryUrls: collectDiscoveryUrls(discovered),
-      error: resolveErrorMessage(discovered.warnings),
+      discoveryUrls,
+      error: resolveErrorMessage(warnings),
+    };
+  }
+
+  const deduped = new Map<string, DiscoveredResource>();
+  for (const endpoint of discovered.endpoints) {
+    let normalized: string;
+    try {
+      normalized = new URL(endpoint.path, discovered.origin).toString();
+    } catch {
+      continue;
+    }
+    const method = isDiscoveredMethod(endpoint.method)
+      ? endpoint.method
+      : undefined;
+
+    if (!deduped.has(normalized)) {
+      deduped.set(normalized, {
+        url: normalized,
+        ...(method ? { method } : {}),
+      });
+    }
+  }
+
+  const resources = [...deduped.values()];
+  if (resources.length === 0) {
+    const warnings = [
+      ...getWarningsForOpenAPI(openApi),
+      ...getWarningsForWellKnown(wellKnown),
+    ];
+    return {
+      success: false,
+      resources: [],
+      discoveryUrls,
+      error: resolveErrorMessage(warnings),
     };
   }
 
   return {
     success: true,
-    source: mapStageToSource(discovered.selectedStage),
+    source: mapSourceToDiscoverySource(discovered.source),
     resources,
-    discoveryUrls: collectDiscoveryUrls(discovered),
-    ownershipProofs: collectOwnershipProofs(discovered.rawSources),
+    discoveryUrls,
+    ownershipProofs: collectOwnershipProofs(openApi, wellKnown),
   };
 }

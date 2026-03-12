@@ -406,7 +406,7 @@ export const RegisterResourceForm = () => {
               </CardTitle>
               <CardDescription className="line-clamp-2">
                 {preview?.description ??
-                  `Found ${actualDiscoveredResources.length} resource${actualDiscoveredResources.length === 1 ? '' : 's'} via ${discoverySource === 'dns' ? 'DNS/.well-known' : '.well-known/x402'}.`}
+                  `Found ${actualDiscoveredResources.length} resource${actualDiscoveredResources.length === 1 ? '' : 's'} via .well-known/x402.`}
               </CardDescription>
             </div>
           </CardHeader>
