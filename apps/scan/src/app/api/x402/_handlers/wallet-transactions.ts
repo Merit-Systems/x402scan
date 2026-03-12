@@ -1,4 +1,4 @@
-import { walletTransactionsQuerySchema } from '@/app/api/x402/_lib/schemas';
+import type { walletTransactionsQuerySchema } from '@/app/api/x402/_lib/schemas';
 import {
   parseAddress,
   paginatedResponse,

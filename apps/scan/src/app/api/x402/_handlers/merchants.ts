@@ -1,4 +1,4 @@
-import { merchantsListQuerySchema } from '@/app/api/x402/_lib/schemas';
+import type { merchantsListQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { paginatedResponse, asChain } from '@/app/api/x402/_lib/utils';
 import { listTopSellersMV } from '@/services/transfers/sellers/list-mv';
 

@@ -1,4 +1,4 @@
-import { merchantTransactionsQuerySchema } from '@/app/api/x402/_lib/schemas';
+import type { merchantTransactionsQuerySchema } from '@/app/api/x402/_lib/schemas';
 import {
   parseAddress,
   paginatedResponse,

@@ -1,4 +1,4 @@
-import { facilitatorsListQuerySchema } from '@/app/api/x402/_lib/schemas';
+import type { facilitatorsListQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { paginatedResponse, asChain } from '@/app/api/x402/_lib/utils';
 import { listTopFacilitators } from '@/services/transfers/facilitators/list';
 

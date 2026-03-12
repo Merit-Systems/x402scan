@@ -1,4 +1,4 @@
-import { resourcesSearchQuerySchema } from '@/app/api/x402/_lib/schemas';
+import type { resourcesSearchQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
 import { searchResources } from '@/services/db/resources/resource';
 import { serializeAccepts } from '@/lib/token';

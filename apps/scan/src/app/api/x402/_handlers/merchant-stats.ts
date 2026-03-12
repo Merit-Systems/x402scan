@@ -1,4 +1,4 @@
-import { merchantStatsQuerySchema } from '@/app/api/x402/_lib/schemas';
+import type { merchantStatsQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { parseAddress, jsonResponse, asChain } from '@/app/api/x402/_lib/utils';
 import { getOverallStatisticsMV } from '@/services/transfers/stats/overall-mv';
 

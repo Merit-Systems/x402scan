@@ -1,4 +1,4 @@
-import { registryRegisterOriginBodySchema } from '@/app/api/x402/_lib/schemas';
+import type { registryRegisterOriginBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
 import { registerResource } from '@/lib/resources';
 import { extractX402Data } from '@/lib/x402';

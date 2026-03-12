@@ -1,4 +1,4 @@
-import { registryOriginQuerySchema } from '@/app/api/x402/_lib/schemas';
+import type { registryOriginQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { paginatedResponse } from '@/app/api/x402/_lib/utils';
 import { listResourcesWithPagination } from '@/services/db/resources/resource';
 import { serializeAccepts } from '@/lib/token';

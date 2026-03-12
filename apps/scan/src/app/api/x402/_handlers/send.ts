@@ -1,4 +1,4 @@
-import { sendUsdcBodySchema } from '@/lib/schemas';
+import type { sendUsdcBodySchema } from '@/lib/schemas';
 
 import type { z } from 'zod';
 
