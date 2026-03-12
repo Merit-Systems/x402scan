@@ -1,0 +1,14 @@
+import '@/app/api/x402/merchants/route';
+import '@/app/api/x402/merchants/[address]/transactions/route';
+import '@/app/api/x402/merchants/[address]/stats/route';
+import '@/app/api/x402/wallets/[address]/transactions/route';
+import '@/app/api/x402/wallets/[address]/stats/route';
+import '@/app/api/x402/facilitators/route';
+import '@/app/api/x402/facilitators/stats/route';
+import '@/app/api/x402/resources/route';
+import '@/app/api/x402/resources/search/route';
+import '@/app/api/x402/origins/[id]/resources/route';
+import '@/app/api/x402/registry/register/route';
+import '@/app/api/x402/registry/register-origin/route';
+import '@/app/api/x402/registry/origin/route';
+import '@/app/api/x402/send/route';

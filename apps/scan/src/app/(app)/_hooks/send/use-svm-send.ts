@@ -60,7 +60,7 @@ export const useSvmSend = ({
     reset,
   } = useSvmX402Fetch({
     account,
-    targetUrl: `${window.location.origin}/api/send?address=${toAddress}&amount=${amount}&chain=${Chain.SOLANA}`,
+    targetUrl: `${window.location.origin}/api/x402/send?address=${toAddress}&amount=${amount}&chain=${Chain.SOLANA}`,
     value: amount ? BigInt(amount * 10 ** token.decimals) : BigInt(0),
     init: {
       method: 'POST',

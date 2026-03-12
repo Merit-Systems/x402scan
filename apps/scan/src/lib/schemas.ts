@@ -42,8 +42,8 @@ export const timeframeSchema = z.union([
   }),
 ]);
 
-export const sendUsdcQueryParamsSchema = z.object({
-  amount: z.coerce.number(),
+export const sendUsdcBodySchema = z.object({
+  amount: z.number(),
   address: mixedAddressSchema,
   chain: supportedChainSchema,
 });

@@ -66,7 +66,7 @@ export const useEvmSend = (props?: Props) => {
   } = useEvmX402Fetch({
     chain,
     connection,
-    targetUrl: `${window.location.origin}/api/send?address=${toAddress}&amount=${amount}&chain=${chain}`,
+    targetUrl: `${window.location.origin}/api/x402/send?address=${toAddress}&amount=${amount}&chain=${chain}`,
     value: amount ? BigInt(amount * 10 ** token.decimals) : BigInt(0),
     init: {
       method: 'POST',
