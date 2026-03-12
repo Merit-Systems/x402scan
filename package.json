@@ -48,6 +48,6 @@
     },
     "onlyBuiltDependencies": [
       "@coinbase/x402"
-    ]
+    ],
   }
 }
