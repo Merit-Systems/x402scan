@@ -191,22 +191,6 @@ catalogs:
     '@trpc/server':
       specifier: ^11.8.1
       version: 11.8.1
-  x402:
-    '@x402/core':
-      specifier: ^2.3.0
-      version: 2.5.0
-    '@x402/evm':
-      specifier: ^2.3.0
-      version: 2.3.0
-    '@x402/extensions':
-      specifier: ^2.3.0
-      version: 2.3.0
-    '@x402/fetch':
-      specifier: ^2.3.0
-      version: 2.3.0
-    '@x402/svm':
-      specifier: ^2.3.0
-      version: 2.3.0
   x402-v1:
     x402:
       specifier: ^0.7.1
@@ -221,6 +205,11 @@ catalogs:
 overrides:
   '@auth/core': 0.40.0
   viem: 2.47.0
+  '@x402/core': 2.3.0
+  '@x402/evm': 2.3.0
+  '@x402/extensions': 2.3.0
+  '@x402/fetch': 2.3.0
+  '@x402/svm': 2.3.0
 
 importers:
 
@@ -306,11 +295,11 @@ importers:
   apps/scan:
     dependencies:
       '@agentcash/discovery':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: 1.0.0
+        version: 1.0.0
       '@agentcash/router':
         specifier: ^1.0.1
-        version: 1.0.1(41606804b1e45d6ed03c6589eb2ac336)
+        version: 1.0.1(2d34d474b384d21849900b1f6a2db476)
       '@ai-sdk/openai':
         specifier: ^2.0.52
         version: 2.0.56(zod@4.3.6)
@@ -483,19 +472,19 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
       '@x402/core':
-        specifier: catalog:x402
-        version: 2.5.0
+        specifier: 2.3.0
+        version: 2.3.0
       '@x402/evm':
-        specifier: catalog:x402
+        specifier: 2.3.0
         version: 2.3.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@x402/extensions':
-        specifier: catalog:x402
+        specifier: 2.3.0
         version: 2.3.0(bufferutil@4.0.9)(ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@x402/fetch':
-        specifier: catalog:x402
+        specifier: 2.3.0
         version: 2.3.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@x402/svm':
-        specifier: catalog:x402
+        specifier: 2.3.0
         version: 2.3.0(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@x402scan/analytics-db':
         specifier: workspace:*
@@ -823,13 +812,13 @@ importers:
         specifier: ^1.25.3
         version: 1.25.3(hono@4.11.5)(zod@4.3.6)
       '@x402/core':
-        specifier: catalog:x402
-        version: 2.5.0
+        specifier: 2.3.0
+        version: 2.3.0
       '@x402/evm':
-        specifier: catalog:x402
+        specifier: 2.3.0
         version: 2.3.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@x402/extensions':
-        specifier: catalog:x402
+        specifier: 2.3.0
         version: 2.3.0(bufferutil@4.0.9)(ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(typescript@5.9.3)(utf-8-validate@5.0.10)
       chalk:
         specifier: ^5.6.2
@@ -1209,8 +1198,8 @@ packages:
   '@adraffy/ens-normalize@1.11.1':
     resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
 
-  '@agentcash/discovery@1.1.0':
-    resolution: {integrity: sha512-xtBccSM1EFt9O88lmo7AAbbygJnQEBsuSIslU9C9wVTCmeEmkVSgEqtH57Zlaf9VvcOUTd3JklaDT+chXtgDpA==}
+  '@agentcash/discovery@1.0.0':
+    resolution: {integrity: sha512-QoPVBP3Z0MZ17n0i0h5SCyZ0i3zce+jdsqNzAmVotcy1Im3qghaX8jvQVUt4iDr3BkmL8LgqZTUSCkCBDjMN+Q==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -1218,9 +1207,9 @@ packages:
     resolution: {integrity: sha512-EcoRQrHNyNH+RogAC9o0o4l1Y7o4kJ/SxNFHtHbTLbl1Df3X3PS6nYaVjW3p5VeTLGc/mRys6UunUvO6VGN2Mw==}
     peerDependencies:
       '@coinbase/x402': ^2.1.0
-      '@x402/core': ^2.3.0
-      '@x402/evm': ^2.3.0
-      '@x402/extensions': ^2.3.0
+      '@x402/core': 2.3.0
+      '@x402/evm': 2.3.0
+      '@x402/extensions': 2.3.0
       mppx: ^0.3.2
       next: '>=15.0.0'
       zod: ^4.0.0
@@ -6506,9 +6495,6 @@ packages:
   '@x402/core@2.3.0':
     resolution: {integrity: sha512-XOSfqZXJMHwBoTFa07MiVr35CaMPoD2hVwncMAQQKr/qfEHmdD4mP3vrcAQvkfIJXVdu/wkpWXTJ5irXy1jn7g==}
 
-  '@x402/core@2.5.0':
-    resolution: {integrity: sha512-nUr8HW8WhkU1DvrpUfsRvALy5NF8UWKoFezZOtX61mohxp2lWZpJ2GnvscxDM8nmBAbtIollmksd5z5pj8InXw==}
-
   '@x402/evm@2.3.0':
     resolution: {integrity: sha512-VzjS5k0EiQQ8+MKVMth1/tHgeAW2j2LRi/JLqKd1UVRe8X2tkcgItvRnZzX6kSrlta8e3iKngVu9GMKIIkrI8Q==}
 
@@ -7577,9 +7563,6 @@ packages:
   dequal@2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
-
-  dereference-json-schema@0.2.2:
-    resolution: {integrity: sha512-w8dUsJyrzH4Zsj8W/tKcjLsmcTKXfdNf+n3BBm1SAfnqpaCodgEUWqQGJ+pNb9NOqPwYMGvUnZZ8nQfeFjJlbQ==}
 
   derive-valtio@0.1.0:
     resolution: {integrity: sha512-OCg2UsLbXK7GmmpzMXhYkdO64vhJ1ROUUGaTFyHjVwEdMEcTTRj7W1TxLbSBxdY8QLBPCcp66MTyaSy0RpO17A==}
@@ -12272,17 +12255,16 @@ snapshots:
 
   '@adraffy/ens-normalize@1.11.1': {}
 
-  '@agentcash/discovery@1.1.0':
+  '@agentcash/discovery@1.0.0':
     dependencies:
-      '@x402/core': 2.5.0
-      dereference-json-schema: 0.2.2
+      '@x402/core': 2.3.0
       neverthrow: 8.2.0
       zod: 4.3.6
 
-  '@agentcash/router@1.0.1(41606804b1e45d6ed03c6589eb2ac336)':
+  '@agentcash/router@1.0.1(2d34d474b384d21849900b1f6a2db476)':
     dependencies:
       '@coinbase/x402': 0.6.6(@azure/identity@4.13.0)(@azure/storage-blob@12.30.0)(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.2))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      '@x402/core': 2.5.0
+      '@x402/core': 2.3.0
       '@x402/evm': 2.3.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@x402/extensions': 2.3.0(bufferutil@4.0.9)(ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(typescript@5.9.3)(utf-8-validate@5.0.10)
       next: 16.1.6(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
@@ -20861,10 +20843,6 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
-  '@x402/core@2.5.0':
-    dependencies:
-      zod: 3.25.76
-
   '@x402/evm@2.3.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@x402/core': 2.3.0
@@ -21997,8 +21975,6 @@ snapshots:
   depd@2.0.0: {}
 
   dequal@2.0.3: {}
-
-  dereference-json-schema@0.2.2: {}
 
   derive-valtio@0.1.0(valtio@1.13.2(@types/react@19.2.2)(react@19.2.2)):
     dependencies:
