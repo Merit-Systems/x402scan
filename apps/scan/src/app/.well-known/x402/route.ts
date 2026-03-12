@@ -8,7 +8,7 @@ export function GET() {
     instructions: `Data API: GET /api/x402/* endpoints return paginated x402 payment data.
 All data endpoints cost $0.01 except /api/x402/resources/search ($0.02).
 Common query params: page (0-indexed), page_size (1-100), chain (base|solana), timeframe (1|7|14|30 days).
-Send API: POST /api/x402/send with query params address, amount, chain.
+Send API: POST /api/x402/send with JSON body { address, amount, chain }.
 Registry API: Register x402 resources into the index.
   POST /api/x402/registry/register — JSON body { url } — probes URL for 402, registers resource.
   POST /api/x402/registry/register-origin — JSON body { origin } — discovers and registers all resources from origin.
