@@ -306,11 +306,11 @@ importers:
   apps/scan:
     dependencies:
       '@agentcash/discovery':
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: ^1.1.0
+        version: 1.1.0
       '@agentcash/router':
-        specifier: ^0.7.0
-        version: 0.7.0(41606804b1e45d6ed03c6589eb2ac336)
+        specifier: ^1.0.1
+        version: 1.0.1(41606804b1e45d6ed03c6589eb2ac336)
       '@ai-sdk/openai':
         specifier: ^2.0.52
         version: 2.0.56(zod@4.3.6)
@@ -1209,13 +1209,13 @@ packages:
   '@adraffy/ens-normalize@1.11.1':
     resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
 
-  '@agentcash/discovery@1.0.0':
-    resolution: {integrity: sha512-QoPVBP3Z0MZ17n0i0h5SCyZ0i3zce+jdsqNzAmVotcy1Im3qghaX8jvQVUt4iDr3BkmL8LgqZTUSCkCBDjMN+Q==}
+  '@agentcash/discovery@1.1.0':
+    resolution: {integrity: sha512-xtBccSM1EFt9O88lmo7AAbbygJnQEBsuSIslU9C9wVTCmeEmkVSgEqtH57Zlaf9VvcOUTd3JklaDT+chXtgDpA==}
     engines: {node: '>=20'}
     hasBin: true
 
-  '@agentcash/router@0.7.0':
-    resolution: {integrity: sha512-W5z6VTQSBeAxm7pbz00COvEKIpj8g46wrP+yYiQXQ8dQl5GU5ZriR6o9mCVLOjQFXd8TDkb4YTEpftQLJg5lng==}
+  '@agentcash/router@1.0.1':
+    resolution: {integrity: sha512-EcoRQrHNyNH+RogAC9o0o4l1Y7o4kJ/SxNFHtHbTLbl1Df3X3PS6nYaVjW3p5VeTLGc/mRys6UunUvO6VGN2Mw==}
     peerDependencies:
       '@coinbase/x402': ^2.1.0
       '@x402/core': ^2.3.0
@@ -7578,6 +7578,9 @@ packages:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
 
+  dereference-json-schema@0.2.2:
+    resolution: {integrity: sha512-w8dUsJyrzH4Zsj8W/tKcjLsmcTKXfdNf+n3BBm1SAfnqpaCodgEUWqQGJ+pNb9NOqPwYMGvUnZZ8nQfeFjJlbQ==}
+
   derive-valtio@0.1.0:
     resolution: {integrity: sha512-OCg2UsLbXK7GmmpzMXhYkdO64vhJ1ROUUGaTFyHjVwEdMEcTTRj7W1TxLbSBxdY8QLBPCcp66MTyaSy0RpO17A==}
     peerDependencies:
@@ -12269,13 +12272,14 @@ snapshots:
 
   '@adraffy/ens-normalize@1.11.1': {}
 
-  '@agentcash/discovery@1.0.0':
+  '@agentcash/discovery@1.1.0':
     dependencies:
       '@x402/core': 2.5.0
+      dereference-json-schema: 0.2.2
       neverthrow: 8.2.0
       zod: 4.3.6
 
-  '@agentcash/router@0.7.0(41606804b1e45d6ed03c6589eb2ac336)':
+  '@agentcash/router@1.0.1(41606804b1e45d6ed03c6589eb2ac336)':
     dependencies:
       '@coinbase/x402': 0.6.6(@azure/identity@4.13.0)(@azure/storage-blob@12.30.0)(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.2))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@x402/core': 2.5.0
@@ -21993,6 +21997,8 @@ snapshots:
   depd@2.0.0: {}
 
   dequal@2.0.3: {}
+
+  dereference-json-schema@0.2.2: {}
 
   derive-valtio@0.1.0(valtio@1.13.2(@types/react@19.2.2)(react@19.2.2)):
     dependencies:
