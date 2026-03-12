@@ -295,8 +295,8 @@ importers:
   apps/scan:
     dependencies:
       '@agentcash/discovery':
-        specifier: 0.0.0-pr-31-20260312193535
-        version: 0.0.0-pr-31-20260312193535
+        specifier: 0.0.0-pr-31-20260312211723
+        version: 0.0.0-pr-31-20260312211723
       '@agentcash/router':
         specifier: ^1.0.1
         version: 1.0.1(2d34d474b384d21849900b1f6a2db476)
@@ -1198,8 +1198,8 @@ packages:
   '@adraffy/ens-normalize@1.11.1':
     resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
 
-  '@agentcash/discovery@0.0.0-pr-31-20260312193535':
-    resolution: {integrity: sha512-iW+oLSzC+wvnmzFMO22XHM2dklVb3rCHwHvpJdcVQiHAhB3s2YRKyGWYhLjB3nO5dqRlrUgz69+oFiYTGkRTNA==}
+  '@agentcash/discovery@0.0.0-pr-31-20260312211723':
+    resolution: {integrity: sha512-bHdoJQZJyzn5IhZzLoe+3PjSacoeziZdJ//H+h0TgjedOgaRT+sSCFBSNtt6hQCSX8f86Gmgl4Qqcmwjofj3rg==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -12258,7 +12258,7 @@ snapshots:
 
   '@adraffy/ens-normalize@1.11.1': {}
 
-  '@agentcash/discovery@0.0.0-pr-31-20260312193535':
+  '@agentcash/discovery@0.0.0-pr-31-20260312211723':
     dependencies:
       dereference-json-schema: 0.2.2
       neverthrow: 8.2.0
