@@ -287,7 +287,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 'catalog:'
-        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
+        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
       wrangler:
         specifier: ^4.2.0
         version: 4.48.0(@cloudflare/workers-types@4.20251111.0)(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -299,7 +299,7 @@ importers:
         version: 1.1.1
       '@agentcash/router':
         specifier: 1.1.9
-        version: 1.1.9(c34e7861ae3141a74a8c5f074f0d9ba7)
+        version: 1.1.9(6eacb81bb22aa1ce566e8ab228700749)
       '@ai-sdk/openai':
         specifier: ^2.0.52
         version: 2.0.56(zod@4.3.6)
@@ -555,6 +555,9 @@ importers:
       motion:
         specifier: 'catalog:'
         version: 12.24.10(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
+      mppx:
+        specifier: ^0.4.2
+        version: 0.4.2(@modelcontextprotocol/sdk@1.27.1(zod@4.3.6))(express@5.2.1)(hono@4.11.5)(openapi-types@12.1.3)(typescript@5.9.3)(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
       next:
         specifier: catalog:next
         version: 16.1.6(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
@@ -696,7 +699,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 'catalog:'
-        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
+        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
 
   examples/servers/express:
     dependencies:
@@ -795,7 +798,7 @@ importers:
         version: 9.39.2(jiti@2.6.1)
       tsup:
         specifier: 'catalog:'
-        version: 8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
+        version: 8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -871,7 +874,7 @@ importers:
         version: 9.39.2(jiti@2.6.1)
       tsup:
         specifier: 'catalog:'
-        version: 8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
+        version: 8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       tsx:
         specifier: 'catalog:'
         version: 4.21.0
@@ -880,7 +883,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 'catalog:'
-        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
+        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/internal/configurations/eslint:
     devDependencies:
@@ -993,7 +996,7 @@ importers:
         version: 5.0.10
       tsup:
         specifier: 'catalog:'
-        version: 8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
+        version: 8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1041,7 +1044,7 @@ importers:
         version: 5.0.10
       tsup:
         specifier: 'catalog:'
-        version: 8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
+        version: 8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1068,7 +1071,7 @@ importers:
         version: 9.39.2(jiti@2.6.1)
       tsup:
         specifier: 'catalog:'
-        version: 8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1)
+        version: 8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1260,6 +1263,12 @@ packages:
 
   '@antfu/utils@9.3.0':
     resolution: {integrity: sha512-9hFT4RauhcUzqOE4f1+frMKLZrgNog5b06I7VmZQV1BkvwvqrbC8EBZf3L1eEL2AKb6rNKjER0sEvJiSP1FXEA==}
+
+  '@apidevtools/json-schema-ref-parser@14.2.1':
+    resolution: {integrity: sha512-HmdFw9CDYqM6B25pqGBpNeLCKvGPlIx1EbLrVL0zPvj50CJQUHyBNBw45Muk0kEIkogo1VZvOKHajdMuAzSxRg==}
+    engines: {node: '>= 20'}
+    peerDependencies:
+      '@types/json-schema': ^7.0.15
 
   '@arr/every@1.0.1':
     resolution: {integrity: sha512-UQFQ6SgyJ6LX42W8rHCs8KVc0JS0tzVL9ct4XYedJukskYVWTo49tNiMEK9C2HTyarbNiT/RVIRSY82vH+6sTg==}
@@ -2528,6 +2537,10 @@ packages:
     resolution: {integrity: sha512-bxveV4V8v5Yb4ncFTT3rPSgZBOpCkjfK0y4oVVVJwIuDVBRMDXrPyXRL988i5ap9m9bnyEEjWfm5WkBmtffLfA==}
     engines: {node: '>=12.22'}
 
+  '@humanwhocodes/momoa@2.0.4':
+    resolution: {integrity: sha512-RE815I4arJFtt+FVeU1Tgp9/Xvecacji8w/V6XtXsWWH/wz/eNkNbhb+ny/+PlVZjV0rxQpRSQKNKE3lcktHEA==}
+    engines: {node: '>=10.10.0'}
+
   '@humanwhocodes/retry@0.4.3':
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
@@ -2957,6 +2970,16 @@ packages:
 
   '@modelcontextprotocol/sdk@1.25.3':
     resolution: {integrity: sha512-vsAMBMERybvYgKbg/l4L1rhS7VXV1c0CtyJg72vwxONVX0l4ZfKVAnZEWTQixJGTzKnELjQ59e4NbdFDALRiAQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@cfworker/json-schema': ^4.1.1
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      '@cfworker/json-schema':
+        optional: true
+
+  '@modelcontextprotocol/sdk@1.27.1':
+    resolution: {integrity: sha512-sr6GbP+4edBwFndLbM60gf07z0FQ79gaExpnsjMGePXqFcSSb7t6iscpjk9DhFhwd+mTEQrzNafGP8/iGGFYaA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -4244,6 +4267,22 @@ packages:
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
 
+  '@readme/better-ajv-errors@2.4.0':
+    resolution: {integrity: sha512-9WODaOAKSl/mU+MYNZ2aHCrkoRSvmQ+1YkLj589OEqqjOAhbn8j7Z+ilYoiTu/he6X63/clsxxAB4qny9/dDzg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      ajv: 4.11.8 - 8
+
+  '@readme/openapi-parser@6.0.0':
+    resolution: {integrity: sha512-PaTnrKlKgEJZzjJ77AAhGe28NiyLBdiKMx95rJ9xlLZ8QLqYitMpPBQAKhsuEGOWQQbsIMfBZEPavbXghACQHA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      openapi-types: '>=7'
+
+  '@readme/openapi-schemas@3.1.0':
+    resolution: {integrity: sha512-9FC/6ho8uFa8fV50+FPy/ngWN53jaUu4GRXlAjcxIRrzhltJnpKkBG2Tp0IDraFJeWrOpk84RJ9EMEEYzaI1Bw==}
+    engines: {node: '>=18'}
+
   '@redis/bloom@5.9.0':
     resolution: {integrity: sha512-W9D8yfKTWl4tP8lkC3MRYkMz4OfbuzE/W8iObe0jFgoRmgMfkBV+Vj38gvIqZPImtY0WB34YZkX3amYuQebvRQ==}
     engines: {node: '>= 18'}
@@ -4271,6 +4310,15 @@ packages:
     engines: {node: '>= 18'}
     peerDependencies:
       '@redis/client': ^5.9.0
+
+  '@remix-run/fetch-proxy@0.7.1':
+    resolution: {integrity: sha512-rPLfOpAaCXtm1dLI45uIPKERNbXbrh0P9AJc1sliz8pWd/McaFYjdr5KzB4QrFSfPvEt/Wmy6F2521qB1kK0ug==}
+
+  '@remix-run/headers@0.19.0':
+    resolution: {integrity: sha512-+62NbkXuXm9r/NdG6KfH9OCKofCWm8VjkrVPICiHKtRl8Gf2Vi6eFTN4mGgBlZRhd5mmEVRV4hTIn/JUSHDAOw==}
+
+  '@remix-run/node-fetch-server@0.13.0':
+    resolution: {integrity: sha512-1EsNo0ZpgXu/90AWoRZf/oE3RVTUS80tiTUpt+hv5pjtAkw7icN4WskDwz/KdAw5ARbJLMhZBrO1NqThmy/McA==}
 
   '@reown/appkit-common@1.7.8':
     resolution: {integrity: sha512-ridIhc/x6JOp7KbDdwGKY4zwf8/iK8EYBl+HtWrruutSLwZyVi5P8WaZa+8iajL6LcDcDF7LoyLwMTym7SRuwQ==}
@@ -5694,6 +5742,9 @@ packages:
     resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
     engines: {node: '>=12'}
 
+  '@toon-format/toon@2.1.0':
+    resolution: {integrity: sha512-JwWptdF5eOA0HaQxbKAzkpQtR4wSWTEfDlEy/y3/4okmOAX1qwnpLZMmtEWr+ncAhTTY1raCKH0kteHhSXnQqg==}
+
   '@tootallnate/once@2.0.0':
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
     engines: {node: '>= 10'}
@@ -6577,6 +6628,14 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
+
+  ajv-draft-04@1.0.0:
+    resolution: {integrity: sha512-mv00Te6nmYbRp5DCwclxtt7yV/joXJPGS7nM+97GdxvuttCOfgI3K4U25zboyeX0O+myI8ERluxQe5wljMmVIw==}
+    peerDependencies:
+      ajv: ^8.5.0
+    peerDependenciesMeta:
+      ajv:
+        optional: true
 
   ajv-formats@3.0.1:
     resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
@@ -8062,6 +8121,12 @@ packages:
     peerDependencies:
       express: '>= 4.11'
 
+  express-rate-limit@8.3.1:
+    resolution: {integrity: sha512-D1dKN+cmyPWuvB+G2SREQDzPY1agpBIcTa9sJxOPMCNeH3gwzhqJRDWCXW3gg0y//+LQ/8j52JbMROWyrKdMdw==}
+    engines: {node: '>= 16'}
+    peerDependencies:
+      express: '>= 4.11'
+
   express@4.21.2:
     resolution: {integrity: sha512-28HqgMZAmih1Czt9ny7qr6ek2qddF4FclbMzwhCREB6OFfH+rXAnuNCwo1/wFvrtbgsQDb4kSbX9de9lFbrXnA==}
     engines: {node: '>= 0.10.0'}
@@ -8643,6 +8708,10 @@ packages:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
 
+  incur@0.3.4:
+    resolution: {integrity: sha512-pXqZCRZXBBFhPPte0//I6SLtgCVuY9Subd8/kpyKhMrQjSCViuc72f5bJ4UeV4QO5CzG5f6GQYocPAljjhW3Lg==}
+    hasBin: true
+
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
 
@@ -8676,6 +8745,10 @@ packages:
   ioredis@5.8.2:
     resolution: {integrity: sha512-C6uC+kleiIMmjViJINWk80sOQw5lEzse1ZmvD+S/s8p8CWapftSaC+kocGTx6xrbrJ4WmYQGC08ffHLr6ToR6Q==}
     engines: {node: '>=12.22.0'}
+
+  ip-address@10.1.0:
+    resolution: {integrity: sha512-XXADHxXmvT9+CRxhXg56LJovE+bmWnEWB78LB83VZTprKTmaC5QfruXocxzTZ2Kl0DNwKuBdlIhjL8LeY8Sf8Q==}
+    engines: {node: '>= 12'}
 
   ipaddr.js@1.9.1:
     resolution: {integrity: sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==}
@@ -9020,6 +9093,10 @@ packages:
   jsonify@0.0.1:
     resolution: {integrity: sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==}
 
+  jsonpointer@5.0.1:
+    resolution: {integrity: sha512-p/nXbhSEcu3pZRdkW1OfJhpsVtW1gd4Wa1fnQc9YLiTfAjn0312eMKimbdIQzuZl9aa9xUGaRlP9T/CJE/ditQ==}
+    engines: {node: '>=0.10.0'}
+
   jsonwebtoken@9.0.3:
     resolution: {integrity: sha512-MT/xP0CrubFRNLNKvxJ2BYfy53Zkm++5bX9dtuPbqAeQpTVe0MQTFhao8+Cp//EmJp244xt6Drw/GVEGCUj40g==}
     engines: {node: '>=12', npm: '>=6'}
@@ -9085,6 +9162,10 @@ packages:
 
   layout-base@2.0.1:
     resolution: {integrity: sha512-dp3s92+uNI1hWIpPGH3jK2kxE2lMjdXdr+DH8ynZHpd6PUlH6x6cbuXnoMmiNumznqaNO31xu9e79F0uuZ0JFg==}
+
+  leven@3.1.0:
+    resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
+    engines: {node: '>=6'}
 
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
@@ -9634,6 +9715,25 @@ packages:
       react-dom:
         optional: true
 
+  mppx@0.4.2:
+    resolution: {integrity: sha512-yXifOLH2sKGBxUTFR8CxW94blhNuMlBVt+GHDwlO0ABHxDe+0UjnV2bIXTatO43rguHQrWPRus6z+/sF+2Iftw==}
+    hasBin: true
+    peerDependencies:
+      '@modelcontextprotocol/sdk': '>=1.25.0'
+      elysia: '>=1'
+      express: '>=5'
+      hono: '>=4'
+      viem: 2.47.0
+    peerDependenciesMeta:
+      '@modelcontextprotocol/sdk':
+        optional: true
+      elysia:
+        optional: true
+      express:
+        optional: true
+      hono:
+        optional: true
+
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -9896,6 +9996,9 @@ packages:
   openapi-fetch@0.13.8:
     resolution: {integrity: sha512-yJ4QKRyNxE44baQ9mY5+r/kAzZ8yXMemtNAOFwOzRXJscdjSxxzWSNlyBAr+o5JjkUw9Lc3W7OIoca0cY3PYnQ==}
 
+  openapi-types@12.1.3:
+    resolution: {integrity: sha512-N4YtSYJqghVu4iek2ZUvcN/0aqH1kRDuNqzcycDxhOUpg7GdvLa2F3DgS6yBNhInhv2r/6I0Flkn7CqL8+nIcw==}
+
   openapi-typescript-helpers@0.0.15:
     resolution: {integrity: sha512-opyTPaunsklCBpTK8JGef6mfPhLSnyy5a0IN9vKtx3+4aExf+KxEqYwIy3hqkedXIB97u357uLMJsOnm3GVjsw==}
 
@@ -9916,6 +10019,14 @@ packages:
 
   ox@0.14.0:
     resolution: {integrity: sha512-WLOB7IKnmI3Ol6RAqY7CJdZKl8QaI44LN91OGF1061YIeN6bL5IsFcdp7+oQShRyamE/8fW/CBRWhJAOzI35Dw==}
+    peerDependencies:
+      typescript: '>=5.4.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
+  ox@0.14.5:
+    resolution: {integrity: sha512-HgmHmBveYO40H/R3K6TMrwYtHsx/u6TAB+GpZlgJCoW0Sq5Ttpjih0IZZiwGQw7T6vdW4IAyobYrE2mdAvyF8Q==}
     peerDependencies:
       typescript: '>=5.4.0'
     peerDependenciesMeta:
@@ -11261,6 +11372,9 @@ packages:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
 
+  tokenx@1.3.0:
+    resolution: {integrity: sha512-NLdXTEZkKiO0gZuLtMoZKjCXTREXeZZt8nnnNeyoXtNZAfG/GKGSbQtLU5STspc0rMSwcA+UJfWZkbNU01iKmQ==}
+
   totalist@3.0.1:
     resolution: {integrity: sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==}
     engines: {node: '>=6'}
@@ -12068,8 +12182,8 @@ packages:
     resolution: {integrity: sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==}
     engines: {node: '>=18'}
 
-  yaml@2.8.1:
-    resolution: {integrity: sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw==}
+  yaml@2.8.2:
+    resolution: {integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A==}
     engines: {node: '>= 14.6'}
     hasBin: true
 
@@ -12229,7 +12343,7 @@ snapshots:
       neverthrow: 8.2.0
       zod: 4.3.6
 
-  '@agentcash/router@1.1.9(c34e7861ae3141a74a8c5f074f0d9ba7)':
+  '@agentcash/router@1.1.9(6eacb81bb22aa1ce566e8ab228700749)':
     dependencies:
       '@coinbase/x402': 0.6.6(@azure/identity@4.13.0)(@azure/storage-blob@12.30.0)(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.2))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@x402/core': 2.3.0
@@ -12239,6 +12353,8 @@ snapshots:
       next: 16.1.6(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
       zod: 4.3.6
       zod-openapi: 5.4.6(zod@4.3.6)
+    optionalDependencies:
+      mppx: 0.4.2(@modelcontextprotocol/sdk@1.27.1(zod@4.3.6))(express@5.2.1)(hono@4.11.5)(openapi-types@12.1.3)(typescript@5.9.3)(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
 
   '@ai-sdk/gateway@2.0.2(zod@4.3.6)':
     dependencies:
@@ -12282,6 +12398,11 @@ snapshots:
       tinyexec: 1.0.2
 
   '@antfu/utils@9.3.0': {}
+
+  '@apidevtools/json-schema-ref-parser@14.2.1(@types/json-schema@7.0.15)':
+    dependencies:
+      '@types/json-schema': 7.0.15
+      js-yaml: 4.1.1
 
   '@arr/every@1.0.1': {}
 
@@ -13629,11 +13750,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@gemini-wallet/core@0.3.1(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))':
+  '@gemini-wallet/core@0.3.1(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
     dependencies:
       '@metamask/rpc-errors': 7.0.2
       eventemitter3: 5.0.1
       viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@gemini-wallet/core@0.3.1(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))':
+    dependencies:
+      '@metamask/rpc-errors': 7.0.2
+      eventemitter3: 5.0.1
+      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.22.4)
     transitivePeerDependencies:
       - supports-color
 
@@ -13717,6 +13846,8 @@ snapshots:
       '@humanwhocodes/retry': 0.4.3
 
   '@humanwhocodes/module-importer@1.0.1': {}
+
+  '@humanwhocodes/momoa@2.0.4': {}
 
   '@humanwhocodes/retry@0.4.3': {}
 
@@ -14275,7 +14406,7 @@ snapshots:
       eventsource: 3.0.7
       eventsource-parser: 3.0.6
       express: 5.2.1(supports-color@10.2.2)
-      express-rate-limit: 7.5.1(express@5.2.1(supports-color@10.2.2))
+      express-rate-limit: 7.5.1(express@5.2.1)
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.0
@@ -14288,6 +14419,28 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.25.3(supports-color@10.2.2)(zod@3.25.76)':
     dependencies:
+      '@hono/node-server': 1.19.9(hono@4.11.4)
+      ajv: 8.17.1
+      ajv-formats: 3.0.1(ajv@8.17.1)
+      content-type: 1.0.5
+      cors: 2.8.6
+      cross-spawn: 7.0.6
+      eventsource: 3.0.7
+      eventsource-parser: 3.0.6
+      express: 5.2.1(supports-color@10.2.2)
+      express-rate-limit: 7.5.1(express@5.2.1)
+      jose: 6.1.3
+      json-schema-typed: 8.0.2
+      pkce-challenge: 5.0.0
+      raw-body: 3.0.1
+      zod: 3.25.76
+      zod-to-json-schema: 3.25.1(zod@3.25.76)
+    transitivePeerDependencies:
+      - hono
+      - supports-color
+
+  '@modelcontextprotocol/sdk@1.27.1(zod@4.3.6)':
+    dependencies:
       '@hono/node-server': 1.19.9(hono@4.11.5)
       ajv: 8.17.1
       ajv-formats: 3.0.1(ajv@8.17.1)
@@ -14297,15 +14450,15 @@ snapshots:
       eventsource: 3.0.7
       eventsource-parser: 3.0.6
       express: 5.2.1(supports-color@10.2.2)
-      express-rate-limit: 7.5.1(express@5.2.1(supports-color@10.2.2))
+      express-rate-limit: 8.3.1(express@5.2.1)
+      hono: 4.11.5
       jose: 6.1.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.0
       raw-body: 3.0.1
-      zod: 3.25.76
-      zod-to-json-schema: 3.25.1(zod@3.25.76)
+      zod: 4.3.6
+      zod-to-json-schema: 3.25.1(zod@4.3.6)
     transitivePeerDependencies:
-      - hono
       - supports-color
 
   '@mrleebo/prisma-ast@0.13.1':
@@ -15678,6 +15831,28 @@ snapshots:
 
   '@radix-ui/rect@1.1.1': {}
 
+  '@readme/better-ajv-errors@2.4.0(ajv@8.17.1)':
+    dependencies:
+      '@babel/code-frame': 7.27.1
+      '@babel/runtime': 7.28.4
+      '@humanwhocodes/momoa': 2.0.4
+      ajv: 8.17.1
+      jsonpointer: 5.0.1
+      leven: 3.1.0
+      picocolors: 1.1.1
+
+  '@readme/openapi-parser@6.0.0(openapi-types@12.1.3)':
+    dependencies:
+      '@apidevtools/json-schema-ref-parser': 14.2.1(@types/json-schema@7.0.15)
+      '@readme/better-ajv-errors': 2.4.0(ajv@8.17.1)
+      '@readme/openapi-schemas': 3.1.0
+      '@types/json-schema': 7.0.15
+      ajv: 8.17.1
+      ajv-draft-04: 1.0.0(ajv@8.17.1)
+      openapi-types: 12.1.3
+
+  '@readme/openapi-schemas@3.1.0': {}
+
   '@redis/bloom@5.9.0(@redis/client@5.9.0)':
     dependencies:
       '@redis/client': 5.9.0
@@ -15697,6 +15872,14 @@ snapshots:
   '@redis/time-series@5.9.0(@redis/client@5.9.0)':
     dependencies:
       '@redis/client': 5.9.0
+
+  '@remix-run/fetch-proxy@0.7.1':
+    dependencies:
+      '@remix-run/headers': 0.19.0
+
+  '@remix-run/headers@0.19.0': {}
+
+  '@remix-run/node-fetch-server@0.13.0': {}
 
   '@reown/appkit-common@1.7.8(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.22.4)':
     dependencies:
@@ -18540,6 +18723,8 @@ snapshots:
 
   '@tanstack/table-core@8.21.3': {}
 
+  '@toon-format/toon@2.1.0': {}
+
   '@tootallnate/once@2.0.0': {}
 
   '@traceloop/ai-semantic-conventions@0.12.0':
@@ -19266,21 +19451,21 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.0.3
 
-  '@vitest/mocker@4.0.17(vite@7.1.12(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1))':
+  '@vitest/mocker@4.0.17(vite@7.1.12(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
       '@vitest/spy': 4.0.17
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.1.12(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
+      vite: 7.1.12(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
 
-  '@vitest/mocker@4.0.17(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1))':
+  '@vitest/mocker@4.0.17(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
       '@vitest/spy': 4.0.17
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
+      vite: 7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
 
   '@vitest/pretty-format@3.2.4':
     dependencies:
@@ -19312,7 +19497,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 2.0.0
-      vitest: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
+      vitest: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -19329,7 +19514,7 @@ snapshots:
     dependencies:
       '@base-org/account': 2.4.0(@types/react@19.2.2)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(react@19.2.2)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.2))(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@4.3.6)
       '@coinbase/wallet-sdk': 4.3.6(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.2.2)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.2))(utf-8-validate@5.0.10)(zod@4.3.6)
-      '@gemini-wallet/core': 0.3.1(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))
+      '@gemini-wallet/core': 0.3.1(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
       '@metamask/sdk': 0.33.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@safe-global/safe-apps-provider': 0.18.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
       '@safe-global/safe-apps-sdk': 9.1.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
@@ -19391,7 +19576,7 @@ snapshots:
       '@walletconnect/ethereum-provider': 2.21.1(bufferutil@4.0.9)(react@19.2.4)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       cbw-sdk: '@coinbase/wallet-sdk@3.9.3'
       porto: 0.2.35(@tanstack/react-query@5.90.16(react@19.2.4))(@wagmi/core@2.22.1(react@19.2.4)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.4))(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)))(react@19.2.4)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.4))(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(wagmi@2.19.1(@tanstack/react-query@5.90.16(react@19.2.4))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(react@19.2.4)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.25.76))
-      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.22.4)
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -19491,7 +19676,7 @@ snapshots:
     dependencies:
       '@base-org/account': 2.4.0(@types/react@19.2.2)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(react@19.2.2)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.2))(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@3.25.76)
       '@coinbase/wallet-sdk': 4.3.6(@types/react@19.2.2)(bufferutil@4.0.9)(react@19.2.2)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.2))(utf-8-validate@5.0.10)(zod@3.25.76)
-      '@gemini-wallet/core': 0.3.1(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))
+      '@gemini-wallet/core': 0.3.1(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
       '@metamask/sdk': 0.33.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@safe-global/safe-apps-provider': 0.18.6(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@safe-global/safe-apps-sdk': 9.1.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
@@ -19560,7 +19745,7 @@ snapshots:
     dependencies:
       eventemitter3: 5.0.1
       mipd: 0.0.7(typescript@5.9.3)
-      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.22.4)
       zustand: 5.0.0(react@19.2.4)(use-sync-external-store@1.4.0(react@19.2.4))
     optionalDependencies:
       typescript: 5.9.3
@@ -20917,6 +21102,10 @@ snapshots:
       '@ai-sdk/provider-utils': 3.0.13(zod@4.3.6)
       '@opentelemetry/api': 1.9.0
       zod: 4.3.6
+
+  ajv-draft-04@1.0.0(ajv@8.17.1):
+    optionalDependencies:
+      ajv: 8.17.1
 
   ajv-formats@3.0.1(ajv@8.17.1):
     optionalDependencies:
@@ -22729,9 +22918,14 @@ snapshots:
 
   expect-type@1.2.2: {}
 
-  express-rate-limit@7.5.1(express@5.2.1(supports-color@10.2.2)):
+  express-rate-limit@7.5.1(express@5.2.1):
     dependencies:
       express: 5.2.1(supports-color@10.2.2)
+
+  express-rate-limit@8.3.1(express@5.2.1):
+    dependencies:
+      express: 5.2.1(supports-color@10.2.2)
+      ip-address: 10.1.0
 
   express@4.21.2:
     dependencies:
@@ -23509,6 +23703,19 @@ snapshots:
 
   imurmurhash@0.1.4: {}
 
+  incur@0.3.4(openapi-types@12.1.3):
+    dependencies:
+      '@modelcontextprotocol/sdk': 1.27.1(zod@4.3.6)
+      '@readme/openapi-parser': 6.0.0(openapi-types@12.1.3)
+      '@toon-format/toon': 2.1.0
+      tokenx: 1.3.0
+      yaml: 2.8.2
+      zod: 4.3.6
+    transitivePeerDependencies:
+      - '@cfworker/json-schema'
+      - openapi-types
+      - supports-color
+
   inherits@2.0.4: {}
 
   ini@1.3.8:
@@ -23546,6 +23753,8 @@ snapshots:
       standard-as-callback: 2.1.0
     transitivePeerDependencies:
       - supports-color
+
+  ip-address@10.1.0: {}
 
   ipaddr.js@1.9.1: {}
 
@@ -23885,6 +24094,8 @@ snapshots:
 
   jsonify@0.0.1: {}
 
+  jsonpointer@5.0.1: {}
+
   jsonwebtoken@9.0.3:
     dependencies:
       jws: 4.0.1
@@ -23979,6 +24190,8 @@ snapshots:
   layout-base@1.0.2: {}
 
   layout-base@2.0.1: {}
+
+  leven@3.1.0: {}
 
   levn@0.4.1:
     dependencies:
@@ -24777,6 +24990,24 @@ snapshots:
       react: 19.2.2
       react-dom: 19.2.2(react@19.2.2)
 
+  mppx@0.4.2(@modelcontextprotocol/sdk@1.27.1(zod@4.3.6))(express@5.2.1)(hono@4.11.5)(openapi-types@12.1.3)(typescript@5.9.3)(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)):
+    dependencies:
+      '@remix-run/fetch-proxy': 0.7.1
+      '@remix-run/node-fetch-server': 0.13.0
+      incur: 0.3.4(openapi-types@12.1.3)
+      ox: 0.14.5(typescript@5.9.3)(zod@4.3.6)
+      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+      zod: 4.3.6
+    optionalDependencies:
+      '@modelcontextprotocol/sdk': 1.27.1(zod@4.3.6)
+      express: 5.2.1(supports-color@10.2.2)
+      hono: 4.11.5
+    transitivePeerDependencies:
+      - '@cfworker/json-schema'
+      - openapi-types
+      - supports-color
+      - typescript
+
   mri@1.2.0: {}
 
   mrmime@2.0.1: {}
@@ -25038,6 +25269,8 @@ snapshots:
     dependencies:
       openapi-typescript-helpers: 0.0.15
 
+  openapi-types@12.1.3: {}
+
   openapi-typescript-helpers@0.0.15: {}
 
   optionator@0.9.4:
@@ -25092,6 +25325,21 @@ snapshots:
       - zod
 
   ox@0.14.0(typescript@5.9.3)(zod@4.3.6):
+    dependencies:
+      '@adraffy/ens-normalize': 1.11.1
+      '@noble/ciphers': 1.3.0
+      '@noble/curves': 1.9.1
+      '@noble/hashes': 1.8.0
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.6.0
+      abitype: 1.2.3(typescript@5.9.3)(zod@4.3.6)
+      eventemitter3: 5.0.1
+    optionalDependencies:
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - zod
+
+  ox@0.14.5(typescript@5.9.3)(zod@4.3.6):
     dependencies:
       '@adraffy/ens-normalize': 1.11.1
       '@noble/ciphers': 1.3.0
@@ -25440,7 +25688,7 @@ snapshots:
       idb-keyval: 6.2.2
       mipd: 0.0.7(typescript@5.9.3)
       ox: 0.9.14(typescript@5.9.3)(zod@4.3.6)
-      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.22.4)
       zod: 4.3.6
       zustand: 5.0.8(react@19.2.4)(use-sync-external-store@1.4.0(react@19.2.4))
     optionalDependencies:
@@ -25473,14 +25721,14 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-load-config@6.0.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(yaml@2.8.1):
+  postcss-load-config@6.0.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       jiti: 2.6.1
       postcss: 8.5.6
       tsx: 4.21.0
-      yaml: 2.8.1
+      yaml: 2.8.2
 
   postcss@8.4.31:
     dependencies:
@@ -26873,6 +27121,8 @@ snapshots:
 
   toidentifier@1.0.1: {}
 
+  tokenx@1.3.0: {}
+
   totalist@3.0.1: {}
 
   tough-cookie@5.1.2:
@@ -27003,7 +27253,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.1):
+  tsup@8.5.1(@swc/core@1.15.10(@swc/helpers@0.5.17))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.0)
       cac: 6.7.14
@@ -27014,7 +27264,7 @@ snapshots:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(yaml@2.8.1)
+      postcss-load-config: 6.0.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(yaml@2.8.2)
       resolve-from: 5.0.0
       rollup: 4.52.5
       source-map: 0.7.6
@@ -27463,7 +27713,7 @@ snapshots:
       - utf-8-validate
       - zod
 
-  vite@7.1.12(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1):
+  vite@7.1.12(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       esbuild: 0.25.11
       fdir: 6.5.0(picomatch@4.0.3)
@@ -27477,9 +27727,9 @@ snapshots:
       jiti: 2.6.1
       lightningcss: 1.30.2
       tsx: 4.21.0
-      yaml: 2.8.1
+      yaml: 2.8.2
 
-  vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1):
+  vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       esbuild: 0.25.11
       fdir: 6.5.0(picomatch@4.0.3)
@@ -27493,12 +27743,12 @@ snapshots:
       jiti: 2.6.1
       lightningcss: 1.30.2
       tsx: 4.21.0
-      yaml: 2.8.1
+      yaml: 2.8.2
 
-  vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1):
+  vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@20.19.27)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.17
-      '@vitest/mocker': 4.0.17(vite@7.1.12(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1))
+      '@vitest/mocker': 4.0.17(vite@7.1.12(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))
       '@vitest/pretty-format': 4.0.17
       '@vitest/runner': 4.0.17
       '@vitest/snapshot': 4.0.17
@@ -27515,7 +27765,7 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 7.1.12(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
+      vite: 7.1.12(@types/node@20.19.27)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
@@ -27535,10 +27785,10 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1):
+  vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.9.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.17
-      '@vitest/mocker': 4.0.17(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1))
+      '@vitest/mocker': 4.0.17(vite@7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2))
       '@vitest/pretty-format': 4.0.17
       '@vitest/runner': 4.0.17
       '@vitest/snapshot': 4.0.17
@@ -27555,7 +27805,7 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.1)
+      vite: 7.1.12(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.2)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
@@ -27695,7 +27945,7 @@ snapshots:
       '@wagmi/core': 2.22.1(react@19.2.4)(typescript@5.9.3)(use-sync-external-store@1.4.0(react@19.2.4))(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10))
       react: 19.2.4
       use-sync-external-store: 1.4.0(react@19.2.4)
-      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.22.4)
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -28332,8 +28582,7 @@ snapshots:
 
   yallist@5.0.0: {}
 
-  yaml@2.8.1:
-    optional: true
+  yaml@2.8.2: {}
 
   yargs-parser@18.1.3:
     dependencies:
