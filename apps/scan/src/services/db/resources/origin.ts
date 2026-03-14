@@ -45,32 +45,25 @@ export const upsertOrigin = async (
 
     const originId = upsertedOrigin.id;
 
-    await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
-        tx.ogImage.upsert({
-          where: {
-            originId_url: {
-              originId,
-              url,
-            },
-          },
-          update: {
-            height,
-            width,
-            title,
-            description,
-          },
-          create: {
-            originId,
-            url,
-            height,
-            width,
-            title,
-            description,
-          },
-        })
-      )
-    );
+    // Deduplicate OG images by URL (scraped pages can contain repeated og:image tags)
+    // and use createMany with skipDuplicates to atomically handle race conditions
+    // where concurrent registrations share the same OG image URL.
+    const uniqueOgImages = [
+      ...new Map(origin.ogImages.map(img => [img.url, img])).values(),
+    ];
+    if (uniqueOgImages.length > 0) {
+      await tx.ogImage.createMany({
+        data: uniqueOgImages.map(({ url, height, width, title, description }) => ({
+          originId,
+          url,
+          height,
+          width,
+          title,
+          description,
+        })),
+        skipDuplicates: true,
+      });
+    }
 
     return tx.resourceOrigin.findUnique({
       where: { id: originId },
