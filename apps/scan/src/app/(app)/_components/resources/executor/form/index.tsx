@@ -32,11 +32,25 @@ import type { SupportedChain } from '@/types/chain';
 import type { FieldDefinition, FieldValue } from '@/types/x402';
 import type { X402FetchResponse } from '@/app/(app)/_hooks/x402/types';
 import type { JsonValue } from '@/components/ai-elements/json-viewer';
+import type { ResourceRequestMetadata } from '@x402scan/scan-db';
 
 function splitByRequired(fields: FieldDefinition[]) {
   const required = fields.filter(f => f.required);
   const optional = fields.filter(f => !f.required);
   return { required, optional };
+}
+
+function extractDefaults(metadata: Record<string, unknown> | null | undefined): Record<string, FieldValue> {
+  if (!metadata || typeof metadata !== 'object') return {};
+  const defaults: Record<string, FieldValue> = {};
+  for (const [key, value] of Object.entries(metadata)) {
+    if (typeof value === 'string') {
+      defaults[key] = value;
+    } else if (Array.isArray(value)) {
+      defaults[key] = value;
+    }
+  }
+  return defaults;
 }
 
 interface Props {
@@ -45,6 +59,7 @@ interface Props {
   maxAmountRequired: bigint;
   method: Methods;
   resource: string;
+  requestMetadata?: ResourceRequestMetadata;
 }
 
 export function Form({
@@ -53,6 +68,7 @@ export function Form({
   maxAmountRequired,
   method,
   resource,
+  requestMetadata,
 }: Props) {
   const headerFields = useMemo(
     () => extractFieldsFromSchema(inputSchema, method, 'header'),
@@ -69,13 +85,28 @@ export function Form({
     [inputSchema, method]
   );
 
+  const headerDefaults = useMemo(
+    () => extractDefaults(requestMetadata?.headers as Record<string, unknown> | null),
+    [requestMetadata]
+  );
+  const queryDefaults = useMemo(
+    () => extractDefaults(requestMetadata?.queryParams as Record<string, unknown> | null),
+    [requestMetadata]
+  );
+  const bodyDefaults = useMemo(
+    () => extractDefaults(requestMetadata?.body as Record<string, unknown> | null),
+    [requestMetadata]
+  );
+
   const [headerValues, setHeaderValues] = useState<Record<string, FieldValue>>(
-    {}
+    () => ({ ...headerDefaults })
   );
   const [queryValues, setQueryValues] = useState<Record<string, FieldValue>>(
-    {}
+    () => ({ ...queryDefaults })
   );
-  const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>({});
+  const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>(
+    () => ({ ...bodyDefaults })
+  );
 
   const handleHeaderChange = (name: string, value: FieldValue) => {
     setHeaderValues(prev => ({ ...prev, [name]: value }));
@@ -246,6 +277,7 @@ export function Form({
             onChange={handleHeaderChange}
             prefix="header"
             title={headerSplit.required.length > 0 && allRequired.length > 1 ? "Required Header Parameters" : undefined}
+            defaults={headerDefaults}
           />
           <FieldSection
             fields={querySplit.required}
@@ -253,6 +285,7 @@ export function Form({
             onChange={handleQueryChange}
             prefix="query"
             title={querySplit.required.length > 0 && allRequired.length > 1 ? "Required Query Parameters" : undefined}
+            defaults={queryDefaults}
           />
           <FieldSection
             fields={bodySplit.required}
@@ -260,6 +293,7 @@ export function Form({
             onChange={handleBodyChange}
             prefix="body"
             title={bodySplit.required.length > 0 && allRequired.length > 1 ? "Required Body Parameters" : undefined}
+            defaults={bodyDefaults}
           />
 
           {/* Optional parameters in a collapsible section */}
@@ -276,6 +310,7 @@ export function Form({
                   onChange={handleHeaderChange}
                   prefix="header"
                   title={headerSplit.optional.length > 0 && allOptional.length > headerSplit.optional.length ? "Header Parameters" : undefined}
+                  defaults={headerDefaults}
                 />
                 <FieldSection
                   fields={querySplit.optional}
@@ -283,6 +318,7 @@ export function Form({
                   onChange={handleQueryChange}
                   prefix="query"
                   title={querySplit.optional.length > 0 && allOptional.length > querySplit.optional.length ? "Query Parameters" : undefined}
+                  defaults={queryDefaults}
                 />
                 <FieldSection
                   fields={bodySplit.optional}
@@ -290,6 +326,7 @@ export function Form({
                   onChange={handleBodyChange}
                   prefix="body"
                   title={bodySplit.optional.length > 0 && allOptional.length > bodySplit.optional.length ? "Body Parameters" : undefined}
+                  defaults={bodyDefaults}
                 />
               </CollapsibleContent>
             </Collapsible>

@@ -199,11 +199,13 @@ export function FieldInput({
   value,
   onChange,
   prefix,
+  placeholder,
 }: {
   field: FieldDefinition;
   value: FieldValue;
   onChange: (value: FieldValue) => void;
   prefix: string;
+  placeholder?: string;
 }) {
   const fieldId = `${prefix}-${field.name}`;
 
@@ -223,7 +225,7 @@ export function FieldInput({
       propName={field.name}
       propDef={{
         type: field.type ?? 'string',
-        description: field.description,
+        description: placeholder ?? field.description,
         enum: field.enum,
         isRequired: field.required ?? false,
       }}
