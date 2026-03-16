@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { ChevronDown } from 'lucide-react';
 
@@ -107,6 +107,16 @@ export function Form({
   const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>(
     () => ({ ...bodyDefaults })
   );
+
+  useEffect(() => {
+    setHeaderValues(prev => ({ ...prev, ...headerDefaults }));
+  }, [headerDefaults]);
+  useEffect(() => {
+    setQueryValues(prev => ({ ...prev, ...queryDefaults }));
+  }, [queryDefaults]);
+  useEffect(() => {
+    setBodyValues(prev => ({ ...prev, ...bodyDefaults }));
+  }, [bodyDefaults]);
 
   const handleHeaderChange = (name: string, value: FieldValue) => {
     setHeaderValues(prev => ({ ...prev, [name]: value }));
@@ -263,6 +273,12 @@ export function Form({
     ...bodySplit.optional,
   ];
 
+  const requiredCategoryCount = [
+    headerSplit.required.length > 0,
+    querySplit.required.length > 0,
+    bodySplit.required.length > 0,
+  ].filter(Boolean).length;
+
   const hasFields =
     headerFields.length > 0 || queryFields.length > 0 || bodyFields.length > 0;
 
@@ -276,7 +292,7 @@ export function Form({
             values={headerValues}
             onChange={handleHeaderChange}
             prefix="header"
-            title={headerSplit.required.length > 0 && allRequired.length > 1 ? "Required Header Parameters" : undefined}
+            title={headerSplit.required.length > 0 && requiredCategoryCount > 1 ? "Required Header Parameters" : undefined}
             defaults={headerDefaults}
           />
           <FieldSection
@@ -284,7 +300,7 @@ export function Form({
             values={queryValues}
             onChange={handleQueryChange}
             prefix="query"
-            title={querySplit.required.length > 0 && allRequired.length > 1 ? "Required Query Parameters" : undefined}
+            title={querySplit.required.length > 0 && requiredCategoryCount > 1 ? "Required Query Parameters" : undefined}
             defaults={queryDefaults}
           />
           <FieldSection
@@ -292,7 +308,7 @@ export function Form({
             values={bodyValues}
             onChange={handleBodyChange}
             prefix="body"
-            title={bodySplit.required.length > 0 && allRequired.length > 1 ? "Required Body Parameters" : undefined}
+            title={bodySplit.required.length > 0 && requiredCategoryCount > 1 ? "Required Body Parameters" : undefined}
             defaults={bodyDefaults}
           />
 
