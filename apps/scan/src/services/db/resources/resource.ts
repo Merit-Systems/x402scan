@@ -28,7 +28,7 @@ export const upsertResourceSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
   accepts: z.array(
     z.object({
-      scheme: z.enum(['exact']),
+      scheme: z.enum(['exact', 'escrow']),
       network: z.union([
         z.enum([
           'base_sepolia',
