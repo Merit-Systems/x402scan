@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@agentcash/discovery": "1.1.1",
-    "@agentcash/router": "^1.0.1",
+    "@agentcash/router": "1.1.9",
     "@ai-sdk/openai": "^2.0.52",
     "@ai-sdk/react": "^2.0.68",
     "@auth/prisma-adapter": "^2.7.4",
@@ -108,6 +108,7 @@
     "lottie-react": "^2.4.1",
     "lucide-react": "catalog:",
     "motion": "catalog:",
+    "mppx": "^0.4.2",
     "next": "catalog:next",
     "next-auth": "5.0.0-beta.29",
     "next-themes": "catalog:next",
