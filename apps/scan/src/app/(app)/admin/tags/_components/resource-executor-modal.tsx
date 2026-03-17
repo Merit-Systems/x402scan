@@ -103,6 +103,7 @@ export function ResourceExecutorModal({
               resource.accepts.find(accept => accept.outputSchema)?.outputSchema
             )}
             response={parsedResponse.data}
+            requestMetadata={resource.requestMetadata}
             className="bg-transparent"
           />
         </Accordion>
