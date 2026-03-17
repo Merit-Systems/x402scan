@@ -33,7 +33,7 @@ import {
   createDummyResources,
 } from '@/app/(app)/developer/_components/dummy';
 
-import { getOutputSchema } from '@/lib/x402';
+import { getOutputSchema, parseX402Response } from '@/lib/x402';
 import type {
   FailedResource as FailedResourceType,
   TestedResource as TestedResourceType,
@@ -523,8 +523,7 @@ export function DiscoveryPanel({
 
                   if (tested) {
                     // Check if we have a valid schema for ResourceExecutor
-                    const outputSchema = getOutputSchema(tested.parsed);
-                    const hasValidSchema = Boolean(outputSchema?.input);
+                    const hasValidSchema = Boolean(tested.parsed.inputSchema);
 
                     if (hasValidSchema) {
                       // Render working resource with ResourceExecutor
@@ -647,12 +646,10 @@ function getResourceVerificationStatus(
 ): { verified: boolean; partial: boolean; addresses: string[] } {
   const addresses: string[] = [];
 
-  // Extract all payTo addresses from accepts
-  if (parsed.accepts) {
-    for (const accept of parsed.accepts) {
-      if ('payTo' in accept && typeof accept.payTo === 'string') {
-        addresses.push(accept.payTo);
-      }
+  // Extract all payTo addresses from payment options
+  for (const opt of parsed.paymentOptions ?? []) {
+    if ('payTo' in opt && typeof opt.payTo === 'string') {
+      addresses.push(opt.payTo);
     }
   }
 
@@ -687,19 +684,22 @@ function DiscoveredResourceExecutor({
   invalidInfo?: { invalid: boolean; reason?: string };
   verifiedAddresses?: Record<string, boolean>;
 }) {
-  const outputSchema = getOutputSchema(tested.parsed);
+  const inputSchema = tested.parsed.inputSchema as Record<string, unknown> | undefined;
   const method =
-    (outputSchema?.input?.method?.toUpperCase() as Methods) ??
-    (tested.method as Methods);
+    ((inputSchema?.method as string | undefined)?.toUpperCase() as Methods) ??
+    (tested.parsed.method as Methods);
 
   const verificationStatus = getResourceVerificationStatus(
     tested.parsed,
     verifiedAddresses
   );
 
+  const x402Result = parseX402Response(tested.parsed.paymentRequiredBody);
+  const x402Response = x402Result.success ? x402Result.data : null;
+
   // Collect warnings for missing optional items
   const warnings: string[] = [];
-  if (!outputSchema?.output) warnings.push('Output schema');
+  if (!tested.parsed.outputSchema) warnings.push('Output schema');
   if (!preview?.ogImages?.[0]?.url) warnings.push('OG image');
   if (!preview?.favicon) warnings.push('Favicon');
   if (invalidInfo?.invalid)
@@ -715,7 +715,6 @@ function DiscoveredResourceExecutor({
     );
 
     if (verificationStatus.partial) {
-      // Show both verified and unverified for partial verification
       const verifiedShort = verifiedList
         .map(addr => `${addr.slice(0, 6)}...${addr.slice(-4)}`)
         .join(', ');
@@ -728,13 +727,14 @@ function DiscoveredResourceExecutor({
           `Verified: ${verifiedShort}. Unverified: ${unverifiedShort}`
       );
     } else {
-      // Show only unverified for fully unverified
       const addressList = unverifiedAddresses
         .map(addr => `${addr.slice(0, 6)}...${addr.slice(-4)}`)
         .join(', ');
       warnings.push(`No ownership proof for payTo address: ${addressList}`);
     }
   }
+
+  if (!x402Response) return null;
 
   return (
     <ResourceExecutor
@@ -745,7 +745,7 @@ function DiscoveredResourceExecutor({
         originId: 'discovered',
       })}
       tags={[]}
-      response={tested.parsed}
+      response={x402Response}
       bazaarMethod={method}
       hideOrigin
       isFlat={false}
@@ -789,13 +789,14 @@ function FailedResourceCard({
   // If we have a tested response, x402 parsed but missing schema
   const x402Parsed = Boolean(testedResponse);
   const hasAccepts = x402Parsed
-    ? Boolean(testedResponse?.parsed?.accepts?.length)
+    ? Boolean(testedResponse?.parsed?.paymentOptions?.length)
     : false;
-  const outputSchema = testedResponse
-    ? getOutputSchema(testedResponse.parsed)
-    : null;
-  const hasInputSchema = Boolean(outputSchema?.input);
-  const hasOutputSchema = Boolean(outputSchema?.output);
+  const hasInputSchema = x402Parsed
+    ? Boolean(testedResponse?.parsed?.inputSchema)
+    : false;
+  const hasOutputSchema = x402Parsed
+    ? Boolean(testedResponse?.parsed?.outputSchema)
+    : false;
 
   // Compute per-resource verification status
   const verificationStatus = testedResponse
@@ -804,7 +805,7 @@ function FailedResourceCard({
   const resourceOwnershipVerified = verificationStatus.verified;
 
   // Determine checklist status based on error details or tested response
-  const returns402 = x402Parsed || failedDetails?.status === 402;
+  const returns402 = x402Parsed;
   const isInvalid = invalidInfo?.invalid ?? false;
   const errorMessage = isInvalid
     ? (invalidInfo?.reason ?? 'Invalid format')
@@ -896,56 +897,23 @@ function FailedResourceCard({
               </Button>
             )}
 
-            {/* HTTP Response Details */}
-            {failedDetails && (
-              <div className="border rounded-md bg-muted/30 p-3 text-xs space-y-2">
-                <p className="font-medium">HTTP Response</p>
-                <div className="space-y-1">
-                  {failedDetails.status && (
-                    <div className="flex gap-2">
-                      <span className="text-muted-foreground">Status:</span>
-                      <span className="font-mono">
-                        {failedDetails.status} {failedDetails.statusText}
-                      </span>
-                    </div>
-                  )}
-                  {(() => {
-                    const methods = failedDetails.triedMethods;
-                    return (
-                      Array.isArray(methods) &&
-                      methods.length > 0 && (
-                        <div className="flex gap-2">
-                          <span className="text-muted-foreground">
-                            Tried Methods:
-                          </span>
-                          <span className="font-mono">
-                            {methods.join(', ')}
-                          </span>
-                        </div>
-                      )
-                    );
-                  })()}
-                </div>
-              </div>
-            )}
-
-            {/* Parse Errors */}
+            {/* Validation Issues */}
             {(() => {
-              const errors = failedDetails?.parseErrors;
+              const issues = failedDetails?.issues;
               return (
-                Array.isArray(errors) &&
-                errors.length > 0 && (
+                Array.isArray(issues) &&
+                issues.length > 0 && (
                   <div className="border rounded-md bg-red-500/5 border-red-500/30 p-3 text-xs space-y-2">
                     <p className="font-medium text-red-600">
                       Validation Errors
                     </p>
                     <ul className="space-y-1 list-disc list-inside">
-                      {errors.map((error: string, i: number) => (
+                      {issues.map((issue, i) => (
                         <li
                           key={i}
                           className="text-red-600 font-mono text-[10px]"
                         >
-                          {error}
+                          {issue.code}: {issue.message}
                         </li>
                       ))}
                     </ul>
@@ -954,35 +922,8 @@ function FailedResourceCard({
               );
             })()}
 
-            {/* Headers - collapsible */}
-            {(() => {
-              const headers = failedDetails?.headers;
-              return (
-                headers &&
-                typeof headers === 'object' &&
-                Object.keys(headers).length > 0 && (
-                  <details className="border rounded-md bg-muted/30">
-                    <summary className="p-2 text-xs font-medium cursor-pointer hover:bg-muted/50">
-                      HTTP Headers ({Object.keys(headers).length})
-                    </summary>
-                    <div className="p-2 pt-0 space-y-1">
-                      {Object.entries(headers).map(([key, value]) => (
-                        <div
-                          key={key}
-                          className="flex gap-2 text-[10px] font-mono"
-                        >
-                          <span className="text-muted-foreground">{key}:</span>
-                          <span className="break-all">{value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </details>
-                )
-              );
-            })()}
-
             {/* Raw response - nested collapsible */}
-            {(failedDetails?.body !== undefined || testedResponse?.parsed) && (
+            {testedResponse?.parsed && (
               <div className="border rounded-md bg-muted/30">
                 <button
                   type="button"
@@ -999,11 +940,7 @@ function FailedResourceCard({
                 </button>
                 {showRawResponse && (
                   <pre className="text-xs overflow-auto max-h-48 bg-background p-2 mx-2 mb-2 rounded border">
-                    {testedResponse?.parsed
-                      ? JSON.stringify(testedResponse.parsed, null, 2)
-                      : typeof failedDetails?.body === 'string'
-                        ? failedDetails.body
-                        : JSON.stringify(failedDetails?.body, null, 2)}
+                    {JSON.stringify(testedResponse.parsed, null, 2)}
                   </pre>
                 )}
               </div>

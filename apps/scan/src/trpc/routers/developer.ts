@@ -3,117 +3,75 @@ import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
-import { extractX402Data, getDescription, isV2Response } from '@/lib/x402';
+import { extractX402Data } from '@/lib/x402';
 import { validateX402 } from '@/lib/x402/validate';
 import { scrapeOriginData } from '@/services/scraper';
-import type { FailedResource } from '@/types/batch-test';
-
-type FailedResourceDetails = FailedResource;
+import type { FailedResource, TestedResource } from '@/types/batch-test';
+import { checkEndpointSchema, getWarningsForL3 } from '@agentcash/discovery';
 
 async function testSingleResource(url: string) {
-  let lastError: FailedResourceDetails = {
-    success: false,
-    url,
-    error: 'No valid x402 response found',
-  };
+  try {
+    const result = await checkEndpointSchema({
+      url,
+      probe: true,
+      signal: AbortSignal.timeout(10000),
+    });
 
-  // Always try both GET and POST to find which method works
-  const methodsToTry = ['GET', 'POST'] as const;
-  const triedMethods: string[] = [];
-
-  for (const method of methodsToTry) {
-    triedMethods.push(method);
-    try {
-      const response = await fetch(url, {
-        method,
-        headers:
-          method === 'POST'
-            ? {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache',
-              }
-            : { 'Cache-Control': 'no-cache' },
-        body: method === 'POST' ? '{}' : undefined,
-        redirect: 'follow',
-        signal: AbortSignal.timeout(10000),
-        cache: 'no-store',
-      });
-
-      // Clone response so we can read headers and body separately
-      const clonedResponse = response.clone();
-
-      // Extract x402 data (checks Payment-Required header for v2, then body for v1)
-      const x402Data = await extractX402Data(clonedResponse);
-
-      // Also read raw body for error reporting
-      const text = await response.text();
-      let rawBody: unknown = null;
-      try {
-        rawBody = text ? JSON.parse(text) : null;
-      } catch {
-        rawBody = text;
-      }
-
-      // Capture headers for debugging
-      const headers: Record<string, string> = {};
-      response.headers.forEach((v, k) => {
-        headers[k] = v;
-      });
-
-      if (response.status !== 402) {
-        lastError = {
-          success: false,
-          url,
-          error: `Expected 402, got ${response.status}`,
-          status: response.status,
-          statusText: response.statusText,
-          headers,
-          body: rawBody,
-          triedMethods,
-        };
-        continue;
-      }
-
-      const validated = validateX402(x402Data);
-      if (validated.success) {
-        const description = getDescription(validated.parsed) ?? null;
-        return {
-          success: true as const,
-          url,
-          method,
-          description,
-          parsed: validated.parsed,
-        };
-      } else {
-        // For debugging: include both x402Data and rawBody in error
-        const errorBody = isV2Response(x402Data)
-          ? { x402Data, rawBody }
-          : rawBody;
-        lastError = {
-          success: false,
-          url,
-          error: 'Invalid x402 response format',
-          status: response.status,
-          statusText: response.statusText,
-          headers,
-          body: errorBody,
-          parseErrors: validated.errors,
-          issues: validated.issues,
-          triedMethods,
-        };
-        break;
-      }
-    } catch (err) {
-      lastError = {
-        success: false,
+    if (!result.found) {
+      return {
+        success: false as const,
         url,
-        error: err instanceof Error ? err.message : 'Fetch failed',
-        triedMethods,
+        error: result.message ?? `Endpoint not found: ${result.cause}`,
       };
     }
-  }
 
-  return lastError;
+    const advisory =
+      result.advisories.find(a => (a.paymentOptions?.length ?? 0) > 0) ??
+      result.advisories[0];
+
+    if (!advisory) {
+      return {
+        success: false as const,
+        url,
+        error: 'No valid x402 response found',
+      };
+    }
+
+    const warnings = getWarningsForL3(advisory);
+    const errors = warnings.filter(w => w.severity === 'error');
+
+    if (errors.length > 0) {
+      return {
+        success: false as const,
+        url,
+        error: errors.map(e => e.message).join('; '),
+        issues: warnings,
+      };
+    }
+
+    if (!advisory.inputSchema) {
+      return {
+        success: false as const,
+        url,
+        error: 'Missing input schema',
+        issues: warnings,
+      };
+    }
+
+    return {
+      success: true as const,
+      url,
+      method: advisory.method as TestedResource['method'],
+      description: advisory.summary ?? null,
+      parsed: advisory,
+    };
+  } catch (err) {
+    return {
+      success: false as const,
+      url,
+      error: err instanceof Error ? err.message : 'Fetch failed',
+    };
+  }
 }
 
 export const developerRouter = createTRPCRouter({
@@ -238,7 +196,7 @@ export const developerRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       // Separate invalid resources from valid ones
-      const invalidResults: FailedResourceDetails[] = input.resources
+      const invalidResults: FailedResource[] = input.resources
         .filter(r => r.invalid)
         .map(r => ({
           success: false as const,
@@ -260,7 +218,7 @@ export const developerRouter = createTRPCRouter({
           (r): r is Extract<typeof r, { success: true }> => r.success
         ),
         failed: allResults.filter(
-          (r): r is FailedResourceDetails => !r.success
+          (r): r is FailedResource => !r.success
         ),
       };
     }),

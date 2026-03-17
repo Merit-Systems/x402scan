@@ -722,32 +722,24 @@ export const RegisterResourceForm = () => {
                     {getPrimaryProbeError(failed)}
                   </span>
                 </div>
-                {Array.isArray(failed.parseErrors) &&
-                  failed.parseErrors.length > 0 && (
+                {Array.isArray(failed.issues) &&
+                  failed.issues.length > 0 && (
                     <div className="pt-1">
                       <p className="text-muted-foreground mb-1">
                         Validation details:
                       </p>
                       <ul className="space-y-1 list-disc list-inside">
-                        {failed.parseErrors.map((error, i) => (
+                        {failed.issues.map((issue, i) => (
                           <li
                             key={i}
                             className="text-red-600 font-mono text-[10px]"
                           >
-                            {error}
+                            {issue.code}: {issue.message}
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
-                {failed.status && (
-                  <div className="flex items-start gap-2">
-                    <span className="text-muted-foreground shrink-0">
-                      Status:
-                    </span>
-                    <span className="font-mono">{failed.status}</span>
-                  </div>
-                )}
               </div>
             ))}
           </div>

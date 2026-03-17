@@ -76,9 +76,9 @@ export function useBatchTest(
   const payToAddresses = useMemo(() => {
     const addresses: string[] = [];
     for (const resource of combinedData.resources) {
-      for (const accept of resource.parsed.accepts ?? []) {
-        if ('payTo' in accept && typeof accept.payTo === 'string') {
-          addresses.push(accept.payTo);
+      for (const opt of resource.parsed.paymentOptions ?? []) {
+        if ('payTo' in opt && typeof opt.payTo === 'string') {
+          addresses.push(opt.payTo);
         }
       }
     }
