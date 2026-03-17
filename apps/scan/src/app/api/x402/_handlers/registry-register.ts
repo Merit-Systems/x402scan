@@ -1,11 +1,10 @@
 import type { registryRegisterBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
-import { registerResource, toX402PaymentOptions } from '@/lib/resources';
+import { registerResource } from '@/lib/resources';
 
 import { checkEndpointSchema } from '@agentcash/discovery';
+import { PROBE_TIMEOUT_MS } from '@/lib/discovery/utils';
 import type { z } from 'zod';
-
-const PROBE_TIMEOUT_MS = 15000;
 
 export async function handleRegistryRegister(
   body: z.infer<typeof registryRegisterBodySchema>
@@ -35,15 +34,9 @@ export async function handleRegistryRegister(
   } | null = null;
 
   for (const advisory of check.advisories) {
-    const x402Options = toX402PaymentOptions(advisory.paymentOptions ?? []);
-    if (x402Options.length === 0) continue;
+    if (!advisory.paymentOptions?.some(p => p.protocol === 'x402')) continue;
 
-    const result = await registerResource(url, {
-      paymentOptions: x402Options,
-      inputSchema: advisory.inputSchema,
-      outputSchema: advisory.outputSchema,
-      paymentRequiredBody: advisory.paymentRequiredBody,
-    });
+    const result = await registerResource(url, advisory);
 
     if (!result.success) {
       lastParseError = {

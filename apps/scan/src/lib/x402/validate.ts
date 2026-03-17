@@ -5,6 +5,7 @@ import {
   isX402ValidationIssue,
   type X402ValidationIssue,
 } from '@/types/validation';
+import { isNonBlockingIssue } from '@/lib/discovery/utils';
 
 export type ParsedX402ResponseWithAccepts = ParsedX402Response & {
   accepts: NonNullable<ParsedX402Response['accepts']>;
@@ -89,25 +90,6 @@ function toLegacyErrors(
   return [...new Set([...parseErrors, ...issueErrors])];
 }
 
-function isNonBlockingDiscoveryIssue(issue: X402ValidationIssue): boolean {
-  // Missing output schema should be surfaced as a warning in UI, but
-  // should not block ingestion when the rest of the payload is valid.
-  if (issue.code === 'SCHEMA_OUTPUT_MISSING') {
-    return true;
-  }
-
-  // Coinbase validator currently rejects nullable strings in some
-  // producer payloads we still want to ingest.
-  if (
-    issue.code === 'COINBASE_SCHEMA_INVALID' &&
-    issue.message.includes('Expected string, received null')
-  ) {
-    return true;
-  }
-
-  return false;
-}
-
 export function validateX402(data: unknown): X402ScanValidationResult {
   const discoveryValidation = runDiscoveryValidation(data);
 
@@ -145,12 +127,12 @@ export function validateX402(data: unknown): X402ScanValidationResult {
   }
 
   const discoveryBlockingErrors = discoveryIssues.filter(
-    issue => issue.severity === 'error' && !isNonBlockingDiscoveryIssue(issue)
+    issue => issue.severity === 'error' && !isNonBlockingIssue(issue)
   );
   const hasNonBlockingOnlyInvalidState =
     !discoveryValid &&
     discoveryIssues.length > 0 &&
-    discoveryIssues.every(isNonBlockingDiscoveryIssue);
+    discoveryIssues.every(isNonBlockingIssue);
 
   if (
     (!discoveryValid && !hasNonBlockingOnlyInvalidState) ||

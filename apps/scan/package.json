@@ -21,7 +21,7 @@
     "format:check": "pnpm -w format:check:dir ./apps/scan"
   },
   "dependencies": {
-    "@agentcash/discovery": "1.1.1",
+    "@agentcash/discovery": "0.0.0-pr-37-20260317150243",
     "@agentcash/router": "1.1.9",
     "@ai-sdk/openai": "^2.0.52",
     "@ai-sdk/react": "^2.0.68",

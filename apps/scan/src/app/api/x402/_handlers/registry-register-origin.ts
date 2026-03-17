@@ -1,32 +1,13 @@
 import type { registryRegisterOriginBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
-import { registerResource, toX402PaymentOptions } from '@/lib/resources';
+import { registerResource } from '@/lib/resources';
 
 import { checkEndpointSchema } from '@agentcash/discovery';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
-import { getValidationIssueMessages } from '@/types/validation';
+import { PROBE_TIMEOUT_MS, getRegistrationErrorMessage } from '@/lib/discovery/utils';
 
 import type { z } from 'zod';
-
-const PROBE_TIMEOUT_MS = 15000;
-
-function getErrorMessage(err: unknown): string {
-  if (typeof err === 'string') return err;
-  if (!err || typeof err !== 'object') return 'Unknown error';
-  if ('type' in err && typeof err.type === 'string') {
-    const details: string[] = [];
-    if ('parseErrors' in err && Array.isArray(err.parseErrors)) {
-      details.push(...(err.parseErrors as string[]));
-    } else if ('issues' in err && Array.isArray(err.issues)) {
-      details.push(...getValidationIssueMessages(err.issues as unknown[]));
-    } else if ('upsertErrors' in err && Array.isArray(err.upsertErrors)) {
-      details.push(...(err.upsertErrors as string[]));
-    }
-    return details.length > 0 ? `${err.type}: ${details.join(', ')}` : err.type;
-  }
-  return 'Unknown error';
-}
 
 export async function handleRegistryRegisterOrigin(
   body: z.infer<typeof registryRegisterOriginBodySchema>
@@ -67,19 +48,13 @@ export async function handleRegistryRegisterOrigin(
       }
 
       for (const advisory of check.advisories) {
-        const x402Options = toX402PaymentOptions(advisory.paymentOptions ?? []);
-        if (x402Options.length === 0) continue;
+        if (!advisory.paymentOptions?.some(p => p.protocol === 'x402')) continue;
         if (!advisory.inputSchema) continue;
 
-        const result = await registerResource(resourceUrl, {
-          paymentOptions: x402Options,
-          inputSchema: advisory.inputSchema,
-          outputSchema: advisory.outputSchema,
-          paymentRequiredBody: advisory.paymentRequiredBody,
-        });
+        const result = await registerResource(resourceUrl, advisory);
 
         if (result.success) return result;
-        const errorMsg = getErrorMessage(result.error) || 'Registration failed';
+        const errorMsg = getRegistrationErrorMessage(result.error) || 'Registration failed';
         return {
           success: false as const,
           url: resourceUrl,

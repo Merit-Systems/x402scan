@@ -8,7 +8,7 @@
  */
 export interface DiscoveredResource {
   url: string;
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'TRACE';
   /** If true, this resource failed validation */
   invalid?: boolean;
   /** Error message if resource is invalid */
@@ -29,7 +29,6 @@ export interface X402DiscoveryResult {
   source?: DiscoverySource;
   /** Resources with URLs and optional methods */
   resources: DiscoveredResource[];
-  discoveryUrls: string[];
   /** Optional instructions for AI agents consuming this API */
   instructions?: string;
   /**

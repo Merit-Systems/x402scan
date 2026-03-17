@@ -21,9 +21,10 @@ import { scanDb } from '@x402scan/scan-db';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 
-import { registerResource, toX402PaymentOptions } from '@/lib/resources';
+import { registerResource } from '@/lib/resources';
 
 import { checkEndpointSchema } from '@agentcash/discovery';
+import { PROBE_TIMEOUT_MS, getRegistrationErrorMessage } from '@/lib/discovery/utils';
 import { TRPCError } from '@trpc/server';
 import {
   listResourceTags,
@@ -39,7 +40,6 @@ import {
   getResourceVerificationStatus,
   getOriginVerificationStatus,
 } from '@/services/verification/accepts-verification';
-import { getValidationIssueMessages } from '@/types/validation';
 
 import type { Prisma } from '@x402scan/scan-db';
 import type { SupportedChain } from '@/types/chain';
@@ -195,7 +195,7 @@ export const resourcesRouter = createTRPCRouter({
       const check = await checkEndpointSchema({
         url: input.url.toString().replace('{', '').replace('}', ''),
         sampleInputBody: {},
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
       });
 
       if (!check.found) {
@@ -209,15 +209,9 @@ export const resourcesRouter = createTRPCRouter({
       } | null = null;
 
       for (const advisory of check.advisories) {
-        const x402Options = toX402PaymentOptions(advisory.paymentOptions ?? []);
-        if (x402Options.length === 0) continue;
+        if (!advisory.paymentOptions?.some(p => p.protocol === 'x402')) continue;
 
-        const result = await registerResource(input.url.toString(), {
-          paymentOptions: x402Options,
-          inputSchema: advisory.inputSchema,
-          outputSchema: advisory.outputSchema,
-          paymentRequiredBody: advisory.paymentRequiredBody,
-        });
+        const result = await registerResource(input.url.toString(), advisory);
 
         if (result.success === false) {
           if (result.error.type === 'parseResponse') {
@@ -326,30 +320,6 @@ export const resourcesRouter = createTRPCRouter({
         };
       }
 
-      // Helper to extract error message
-      function getErrorMessage(err: unknown): string {
-        if (typeof err === 'string') return err;
-        if (!err || typeof err !== 'object') return 'Unknown error';
-
-        if ('type' in err && typeof err.type === 'string') {
-          const details: string[] = [];
-          if ('parseErrors' in err && Array.isArray(err.parseErrors)) {
-            details.push(...(err.parseErrors as string[]));
-          } else if ('issues' in err && Array.isArray(err.issues)) {
-            details.push(
-              ...getValidationIssueMessages(err.issues as unknown[])
-            );
-          } else if ('upsertErrors' in err && Array.isArray(err.upsertErrors)) {
-            details.push(...(err.upsertErrors as string[]));
-          }
-          return details.length > 0
-            ? `${err.type}: ${details.join(', ')}`
-            : err.type;
-        }
-
-        return 'Unknown error';
-      }
-
       const results = await mapSettledWithConcurrency(
         discoveryResult.resources,
         async resource => {
@@ -358,7 +328,7 @@ export const resourcesRouter = createTRPCRouter({
           const check = await checkEndpointSchema({
             url: resourceUrl,
             sampleInputBody: {},
-            signal: AbortSignal.timeout(15000),
+            signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
           });
 
           if (!check.found) {
@@ -370,8 +340,6 @@ export const resourcesRouter = createTRPCRouter({
           }
 
           for (const advisory of check.advisories) {
-            const x402Options = toX402PaymentOptions(advisory.paymentOptions ?? []);
-
             if (advisory.authMode === 'siwx') {
               return {
                 success: false as const,
@@ -394,14 +362,9 @@ export const resourcesRouter = createTRPCRouter({
               };
             }
 
-            if (x402Options.length === 0) continue;
+            if (!advisory.paymentOptions?.some(p => p.protocol === 'x402')) continue;
 
-            const result = await registerResource(resourceUrl, {
-              paymentOptions: x402Options,
-              inputSchema: advisory.inputSchema,
-              outputSchema: advisory.outputSchema,
-              paymentRequiredBody: advisory.paymentRequiredBody,
-            });
+            const result = await registerResource(resourceUrl, advisory);
 
             if (result.success) return result;
 
@@ -412,7 +375,7 @@ export const resourcesRouter = createTRPCRouter({
             return {
               success: false as const,
               url: resourceUrl,
-              error: getErrorMessage(result.error),
+              error: getRegistrationErrorMessage(result.error),
             };
           }
 
@@ -535,7 +498,6 @@ export const resourcesRouter = createTRPCRouter({
         source: discoveryResult.source,
         resourceCount: discoveryResult.resources.length,
         resources: discoveryResult.resources,
-        discoveryUrls: discoveryResult.discoveryUrls,
         ownershipProofs: discoveryResult.ownershipProofs,
       };
     }),

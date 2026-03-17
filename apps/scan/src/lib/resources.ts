@@ -3,8 +3,9 @@ import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
 import { validatePaymentRequiredDetailed } from '@agentcash/discovery';
-import type { PaymentOption, X402V1PaymentOption, X402V2PaymentOption } from '@agentcash/discovery';
+import type { EndpointMethodAdvisory } from '@agentcash/discovery';
 import { isX402ValidationIssue } from '@/types/validation';
+import { isX402PaymentOption, isNonBlockingIssue } from '@/lib/discovery/utils';
 
 import { getOriginFromUrl } from '@/lib/url';
 
@@ -18,87 +19,23 @@ import { normalizeChainId } from '@/lib/x402';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
-/**
- * Filters a PaymentOption[] from @agentcash/discovery down to only x402
- * options and maps them into the ResourceRegistrationInput shape.
- * Handles the V1/V2 discriminated union so callers don't have to.
- */
-export function toX402PaymentOptions(
-  options: PaymentOption[]
-): ResourceRegistrationInput['paymentOptions'] {
-  return options
-    .filter(
-      (p): p is X402V1PaymentOption | X402V2PaymentOption =>
-        p.protocol === 'x402'
-    )
-    .map(p =>
-      p.version === 2
-        ? {
-            protocol: 'x402' as const,
-            version: 2 as const,
-            scheme: p.scheme,
-            network: p.network,
-            asset: p.asset,
-            amount: p.amount,
-            payTo: p.payTo,
-            maxTimeoutSeconds: p.maxTimeoutSeconds,
-          }
-        : {
-            protocol: 'x402' as const,
-            version: 1 as const,
-            scheme: p.scheme,
-            network: p.network,
-            asset: p.asset,
-            maxAmountRequired: p.maxAmountRequired,
-            payTo: p.payTo,
-            maxTimeoutSeconds: p.maxTimeoutSeconds,
-          }
-    );
-}
-
-export interface ResourceRegistrationInput {
-  paymentOptions: Array<{
-    protocol: 'x402';
-    version: 1 | 2;
-    scheme?: string;
-    network: string;
-    asset: string;
-    maxAmountRequired?: string; // v1
-    amount?: string; // v2
-    payTo?: string;
-    maxTimeoutSeconds?: number;
-  }>;
-  inputSchema?: Record<string, unknown>;
-  outputSchema?: Record<string, unknown>;
-  paymentRequiredBody?: unknown;
-}
-
 export const registerResource = async (
   url: string,
-  data: ResourceRegistrationInput
+  advisory: EndpointMethodAdvisory
 ) => {
+  const x402Options = (advisory.paymentOptions ?? []).filter(isX402PaymentOption);
   const urlObj = new URL(url);
   urlObj.search = '';
   const cleanUrl = urlObj.toString();
 
-  const validation = data.paymentRequiredBody
-    ? validatePaymentRequiredDetailed(data.paymentRequiredBody, {
+  const validation = advisory.paymentRequiredBody
+    ? validatePaymentRequiredDetailed(advisory.paymentRequiredBody, {
         compatMode: 'strict',
         requireInputSchema: true,
         requireOutputSchema: true,
       })
     : null;
   const issues = (validation?.issues ?? []).filter(isX402ValidationIssue);
-
-  function isNonBlockingIssue(issue: import('@/types/validation').X402ValidationIssue): boolean {
-    if (issue.code === 'SCHEMA_OUTPUT_MISSING') return true;
-    if (
-      issue.code === 'COINBASE_SCHEMA_INVALID' &&
-      issue.message.includes('Expected string, received null')
-    )
-      return true;
-    return false;
-  }
 
   if (validation && !validation.valid) {
     const blockingErrors = issues.filter(
@@ -107,7 +44,7 @@ export const registerResource = async (
     if (blockingErrors.length > 0) {
       return {
         success: false as const,
-        data: data.paymentRequiredBody,
+        data: advisory.paymentRequiredBody,
         error: {
           type: 'parseResponse' as const,
           parseErrors: blockingErrors.map(
@@ -120,10 +57,10 @@ export const registerResource = async (
     }
   }
 
-  if (data.paymentOptions.length === 0) {
+  if (x402Options.length === 0) {
     return {
       success: false as const,
-      data: data.paymentRequiredBody,
+      data: advisory.paymentRequiredBody,
       error: {
         type: 'parseResponse' as const,
         parseErrors: ['No payment options found'],
@@ -132,10 +69,10 @@ export const registerResource = async (
     };
   }
 
-  if (!data.inputSchema) {
+  if (!advisory.inputSchema) {
     return {
       success: false as const,
-      data: data.paymentRequiredBody,
+      data: advisory.paymentRequiredBody,
       error: {
         type: 'parseResponse' as const,
         parseErrors: ['Missing input schema'],
@@ -144,14 +81,12 @@ export const registerResource = async (
     };
   }
 
-  const outputSchemaForDb = data.inputSchema
-    ? outputSchemaV1.safeParse({
-        input: data.inputSchema,
-        output: data.outputSchema ?? null,
-      }).data
-    : undefined;
+  const outputSchemaForDb = outputSchemaV1.safeParse({
+    input: advisory.inputSchema,
+    output: advisory.outputSchema ?? null,
+  }).data;
 
-  const mappedAccepts = data.paymentOptions
+  const mappedAccepts = x402Options
     .map(opt => ({
       scheme: (opt.scheme ?? 'exact') as 'exact',
       network: normalizeChainId(opt.network).replace('-', '_') as AcceptsNetwork,
@@ -167,7 +102,7 @@ export const registerResource = async (
       (SUPPORTED_CHAINS as readonly string[]).includes(accept.network)
     );
 
-  const x402Version = data.paymentOptions[0]?.version ?? 1;
+  const x402Version = x402Options[0]?.version ?? 1;
 
   const origin = getOriginFromUrl(cleanUrl);
   const { og, metadata, favicon } = await scrapeOriginData(origin);
@@ -201,7 +136,7 @@ export const registerResource = async (
   if (!resource) {
     return {
       success: false as const,
-      data: data.paymentRequiredBody,
+      data: advisory.paymentRequiredBody,
       error: {
         type: 'database' as const,
         upsertErrors: ['Resource failed to upsert'],
@@ -212,7 +147,7 @@ export const registerResource = async (
   await upsertResourceResponse(
     resource.resource.id,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (data.paymentRequiredBody ?? {}) as any
+    (advisory.paymentRequiredBody ?? {}) as any
   );
 
   // Attempt ownership verification (non-blocking)
@@ -246,7 +181,7 @@ export const registerResource = async (
       ...accept,
       maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
     })),
-    response: data.paymentRequiredBody,
+    response: advisory.paymentRequiredBody,
     registrationDetails: {
       providedAccepts: mappedAccepts,
       supportedAccepts: resource.accepts,

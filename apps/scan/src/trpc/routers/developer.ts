@@ -225,7 +225,7 @@ export const developerRouter = createTRPCRouter({
             z.object({
               url: z.string().url(),
               method: z
-                .enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+                .enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS', 'TRACE'])
                 .optional(),
               /** If true, this resource is invalid and should not be tested */
               invalid: z.boolean().optional(),
