@@ -15,7 +15,7 @@ export const POST = async (request: NextRequest) => {
   const parsed = await parseJsonBody(request, registryRegisterBodySchema);
   if (!parsed.success) return parsed.response;
 
-  const { url, headers, body } = parsed.data;
+  const { url, headers = {}, body } = parsed.data;
 
   let lastParseError: {
     parseErrors: string[];
