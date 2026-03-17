@@ -15,8 +15,6 @@ import {
   DialogDescription,
   Dialog,
 } from './ui/dialog';
-import { Icon } from '@/app/mcp/guide/_components/icon';
-
 interface Frontmatter {
   title: string;
   description: string;
@@ -165,10 +163,7 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
       {frontmatter && (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            {frontmatter.icon && (
-              <Icon icon={frontmatter.icon} className="size-5 text-primary" />
-            )}
-            <h3 className="text-lg font-semibold">{frontmatter.title}</h3>
+<h3 className="text-lg font-semibold">{frontmatter.title}</h3>
           </div>
           <p className="text-muted-foreground text-sm">
             {frontmatter.description}
