@@ -1,5 +1,4 @@
 import z from 'zod';
-import z3 from 'zod3';
 
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
@@ -15,19 +14,12 @@ import { upsertOrigin } from '@/services/db/resources/origin';
 import { upsertResourceResponse } from '@/services/db/resources/response';
 
 import { mixedAddressSchema } from '@/lib/schemas';
-import {
-  paymentRequirementsSchema,
-  parseX402Response,
-  normalizeAccepts,
-  extractX402Data,
-} from '@/lib/x402';
 import { formatTokenAmount } from '@/lib/token';
 import { getOriginFromUrl } from '@/lib/url';
-
-import { Methods } from '@/types/x402';
+import { normalizeChainId } from '@/lib/x402';
+import { checkEndpointSchema } from '@agentcash/discovery';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db/types';
-import { x402ResponseSchema } from 'x402/types';
 import type { ImageObject } from 'open-graph-scraper/types';
 
 export const resourcesRouter = createTRPCRouter({
@@ -67,59 +59,25 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      let parseErrorData: {
-        parseErrors: string[];
-        data: unknown;
-      } | null = null;
+      const check = await checkEndpointSchema({
+        url: input.url,
+        probe: true,
+        signal: AbortSignal.timeout(10000),
+      });
 
-      for (const method of [Methods.GET, Methods.POST]) {
-        // ping resource
-        const response = await fetch(input.url, {
-          method,
-          headers: input.headers,
-          body: input.body ? JSON.stringify(input.body) : undefined,
-        });
+      if (!check.found) {
+        return {
+          error: true as const,
+          parseErrors: ['Endpoint not found'],
+          data: null,
+        };
+      }
 
-        // if it doesn't respond with a 402, return error
-        if (response.status !== 402) {
-          continue;
-        }
-
-        const data = await extractX402Data(response);
-
-        const baseX402ParsedResponse = x402ResponseSchema
-          .omit({
-            error: true,
-            x402Version: true,
-          })
-          .extend({
-            x402Version: z3.union([z3.literal(1), z3.literal(2)]),
-            error: z3.string().optional(),
-            accepts: z3.array(paymentRequirementsSchema).optional(),
-            // NOTE(shafu): V2 has resource at top level
-            resource: z3
-              .object({
-                url: z3.string(),
-                description: z3.string().optional(),
-                mimeType: z3.string().optional(),
-                outputSchema: z3.any().optional(),
-              })
-              .optional(),
-          })
-          .safeParse(data);
-        if (!baseX402ParsedResponse.success) {
-          console.error(baseX402ParsedResponse.error.issues);
-          parseErrorData = {
-            parseErrors: baseX402ParsedResponse.error.issues.map(
-              issue => `${issue.path.join('.')}: ${issue.message}`
-            ),
-            data,
-          };
-          continue;
-        }
+      for (const advisory of check.advisories) {
+        const x402Options = toX402PaymentOptions(advisory.paymentOptions ?? []);
+        if (x402Options.length === 0) continue;
 
         const origin = getOriginFromUrl(input.url);
-
         const { og, metadata, favicon } = await scrapeOriginData(origin);
 
         await upsertOrigin({
@@ -137,31 +95,35 @@ export const resourcesRouter = createTRPCRouter({
             })) ?? [],
         });
 
-        const parsedResponse = parseX402Response(data);
-        const normalizedAccepts = parsedResponse.success
-          ? normalizeAccepts(parsedResponse.data)
-          : [];
+        const normalizedAccepts = x402Options.map(opt => ({
+          scheme: (opt.scheme ?? 'exact') as 'exact',
+          network: normalizeChainId(opt.network).replace(
+            '-',
+            '_'
+          ) as AcceptsNetwork,
+          maxAmountRequired:
+            ('amount' in opt ? opt.amount : opt.maxAmountRequired) ?? '0',
+          payTo: opt.payTo ?? '',
+          asset: opt.asset,
+          maxTimeoutSeconds: opt.maxTimeoutSeconds ?? 60,
+        }));
 
         const resource = await upsertResource({
           resource: input.url.toString(),
           type: 'http',
-          x402Version: baseX402ParsedResponse.data.x402Version,
+          x402Version: x402Options[0]!.version,
           lastUpdated: new Date(),
           accepts: normalizedAccepts.map(accept => ({
             ...accept,
-            network: accept.network.replace('-', '_') as AcceptsNetwork,
+            network: accept.network as AcceptsNetwork,
           })),
         });
 
-        if (!resource) {
-          continue;
-        }
+        if (!resource) continue;
 
-        if (parsedResponse.success) {
-          await upsertResourceResponse(
-            resource.resource.id,
-            parsedResponse.data
-          );
+        if (advisory.paymentRequiredBody) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await upsertResourceResponse(resource.resource.id, advisory.paymentRequiredBody as any);
         }
 
         return {
@@ -171,21 +133,14 @@ export const resourcesRouter = createTRPCRouter({
             ...accept,
             maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
           })),
-          response: data,
-        };
-      }
-
-      if (parseErrorData) {
-        return {
-          error: true as const,
-          type: 'parseErrors' as const,
-          parseErrorData,
+          response: advisory.paymentRequiredBody,
         };
       }
 
       return {
         error: true as const,
-        type: 'no402' as const,
+        parseErrors: ['No 402 response or no x402 payment options'],
+        data: null,
       };
     }),
 });

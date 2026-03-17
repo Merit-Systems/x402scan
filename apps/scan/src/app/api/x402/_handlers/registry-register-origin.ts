@@ -1,29 +1,15 @@
 import type { registryRegisterOriginBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
-import { registerResource } from '@/lib/resources';
-import { extractX402Data } from '@/lib/x402';
+import { registerResource, toX402PaymentOptions } from '@/lib/resources';
+
+import { checkEndpointSchema } from '@agentcash/discovery';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 import { getValidationIssueMessages } from '@/types/validation';
-import { Methods } from '@/types/x402';
 
 import type { z } from 'zod';
-import type { DiscoveredResource } from '@/types/discovery';
 
 const PROBE_TIMEOUT_MS = 15000;
-const DEFAULT_PROBE_METHODS: Methods[] = [Methods.POST, Methods.GET];
-
-function buildProbeMethods(resource: DiscoveredResource): Methods[] {
-  if (!resource.method) return DEFAULT_PROBE_METHODS;
-  const preferredMethod = resource.method as Methods;
-  if (!Object.values(Methods).includes(preferredMethod)) {
-    return DEFAULT_PROBE_METHODS;
-  }
-  return [
-    preferredMethod,
-    ...DEFAULT_PROBE_METHODS.filter(method => method !== preferredMethod),
-  ];
-}
 
 function getErrorMessage(err: unknown): string {
   if (typeof err === 'string') return err;
@@ -64,54 +50,49 @@ export async function handleRegistryRegisterOrigin(
   const results = await Promise.allSettled(
     discoveryResult.resources.map(async resource => {
       const resourceUrl = resource.url;
-      const methodsToTry = buildProbeMethods(resource);
-      let lastError = 'No 402 response';
-      let lastStatus: number | undefined;
-      const errors: string[] = [];
 
-      for (const method of methodsToTry) {
-        try {
-          const response = await fetch(resourceUrl, {
-            method,
-            headers:
-              method === Methods.POST
-                ? {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-cache',
-                  }
-                : { 'Cache-Control': 'no-cache' },
-            body: method === Methods.POST ? '{}' : undefined,
-            signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
-            cache: 'no-store',
-          });
+      const check = await checkEndpointSchema({
+        url: resourceUrl,
+        sampleInputBody: {},
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+      });
 
-          lastStatus = response.status;
+      if (!check.found) {
+        return {
+          success: false as const,
+          url: resourceUrl,
+          error: 'Endpoint not found',
+          status: undefined,
+        };
+      }
 
-          if (response.status === 402) {
-            const x402Data = await extractX402Data(response);
-            const result = await registerResource(resourceUrl, x402Data);
-            if (result.success) return result;
-            const errorMsg =
-              getErrorMessage(result.error) || 'Registration failed';
-            errors.push(`${method}: ${errorMsg}`);
-            lastError = errors.join('; ');
-          } else {
-            errors.push(`${method}: Expected 402, got ${response.status}`);
-            lastError = errors.join('; ');
-          }
-        } catch (err) {
-          const errorMsg =
-            err instanceof Error ? err.message : 'Request failed';
-          errors.push(`${method}: ${errorMsg}`);
-          lastError = errors.join('; ');
-        }
+      for (const advisory of check.advisories) {
+        const x402Options = toX402PaymentOptions(advisory.paymentOptions ?? []);
+        if (x402Options.length === 0) continue;
+        if (!advisory.inputSchema) continue;
+
+        const result = await registerResource(resourceUrl, {
+          paymentOptions: x402Options,
+          inputSchema: advisory.inputSchema,
+          outputSchema: advisory.outputSchema,
+          paymentRequiredBody: advisory.paymentRequiredBody,
+        });
+
+        if (result.success) return result;
+        const errorMsg = getErrorMessage(result.error) || 'Registration failed';
+        return {
+          success: false as const,
+          url: resourceUrl,
+          error: errorMsg,
+          status: undefined,
+        };
       }
 
       return {
         success: false as const,
         url: resourceUrl,
-        error: lastError,
-        status: lastStatus,
+        error: 'No x402 payment options found',
+        status: undefined,
       };
     })
   );
@@ -135,8 +116,8 @@ export async function handleRegistryRegisterOrigin(
       } else if ('success' in value && !value.success) {
         failedResults.push({
           url: resourceUrl,
-          error: value.error,
-          status: 'status' in value ? value.status : undefined,
+          error: 'error' in value ? (value.error as string) : 'Unknown error',
+          status: 'status' in value ? (value.status as number | undefined) : undefined,
         });
       }
     } else if (result.status === 'rejected') {

@@ -1,4 +1,4 @@
-import { getOutputSchema, normalizeAccepts, parseX402Response } from '.';
+import { getOutputSchema, parseX402Response } from '.';
 import type { ParsedX402Response } from '.';
 import * as discoveryPackage from '@agentcash/discovery';
 import {
@@ -13,7 +13,6 @@ export type ParsedX402ResponseWithAccepts = ParsedX402Response & {
 interface X402ScanValidationSuccess {
   success: true;
   parsed: ParsedX402ResponseWithAccepts;
-  normalizedAccepts: ReturnType<typeof normalizeAccepts>;
   outputSchema: NonNullable<ReturnType<typeof getOutputSchema>>;
   issues: X402ValidationIssue[];
 }
@@ -168,7 +167,6 @@ export function validateX402(data: unknown): X402ScanValidationResult {
   return {
     success: true,
     parsed: withAccepts,
-    normalizedAccepts: normalizeAccepts(withAccepts),
     outputSchema,
     issues: discoveryIssues,
   };
