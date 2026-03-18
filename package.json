@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.28.0",
   "scripts": {
     "dev": "turbo run dev --filter=@x402scan/app",
+    "dev:mcp": "turbo run dev --filter=@x402scan/app --filter=@x402scan/mcp",
     "build": "turbo run build",
     "build:deploy": "turbo run build:deploy",
     "build:packages": "turbo run build --filter \"./packages/external/**\"",
@@ -24,7 +25,7 @@
     "trigger:deploy:transfers": "turbo run trigger:deploy --filter=@x402scan/sync-transfers",
     "trigger:deploy:alerts": "turbo run trigger:deploy --filter=@x402scan/sync-alerts",
     "changeset": "changeset",
-    "changeset:version": "changeset version",
+    "changeset:version": "changeset version && pnpm --filter @x402scan/mcp build:mcpb",
     "changeset:publish": "pnpm build:packages && changeset publish"
   },
   "devDependencies": {

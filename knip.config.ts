@@ -67,6 +67,7 @@ const config: KnipConfig = {
     },
     'examples/servers/express': {},
     'examples/servers/hono': {},
+    'packages/external/mcp': {},
   },
   ignore: [
     '**/*.test.{ts,tsx,js,jsx}',
