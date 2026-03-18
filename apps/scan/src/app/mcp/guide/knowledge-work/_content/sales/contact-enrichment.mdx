@@ -1,0 +1,74 @@
+export const metadata = {
+  title: 'Contact Enrichment',
+  description: 'Enrich and verify contact information for outreach',
+};
+
+# Contact Enrichment
+
+Transform basic contact information into complete, verified profiles ready for outreach.
+
+---
+
+## Enrich from Company Domain
+
+Find the right contacts when you only know the company.
+
+```prompt
+---
+title: Domain-Based Search
+description: Find key contacts at a company from their domain
+icon: globe
+---
+I want to reach out to {{Domain|cloudflare.com}}. Find me:
+- The {{Role 1|VP of Sales or CRO}} with their email
+- The {{Role 2|Head of Partnerships}} with their email
+- Any relevant decision makers in {{Department|business development}}
+```
+
+---
+
+## Bulk Enrich a Lead List
+
+Process an existing list with missing contact information.
+
+```prompt
+---
+title: Bulk Lead Enrichment
+description: Enrich a list of leads with missing contact information
+icon: list
+---
+I have a CSV of {{Count|50}} leads with name and company. Enrich all of them with verified email addresses, phone numbers, and LinkedIn URLs. Flag any that couldn't be found.
+```
+
+
+---
+
+## Verify Email Deliverability
+
+Check if emails are valid before sending campaigns.
+
+```prompt
+---
+title: Email Verification
+description: Verify email addresses before sending campaigns
+icon: mail-check
+---
+I have these {{Count|10}} email addresses from an old list. Verify which ones are still valid and get updated contact info for any that bounced.
+```
+
+
+---
+
+## Find Personal Contact Info
+
+When corporate emails bounce, find alternative contact methods.
+
+```prompt
+---
+title: Personal Contact Finder
+description: Find personal contact info when corporate emails fail
+icon: user-search
+---
+I can't reach {{Email|john.smith@acme.com}} - it's bouncing. Find his personal email or mobile number so I can reach him directly.
+```
+
