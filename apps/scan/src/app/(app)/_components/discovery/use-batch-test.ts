@@ -61,6 +61,7 @@ export function useBatchTest(
     for (let i = 0; i < queries.length; i++) {
       const query = queries[i];
       const chunk = chunks[i] ?? [];
+      if (!query) continue;
 
       if (query.data) {
         allResources.push(...query.data.resources);
