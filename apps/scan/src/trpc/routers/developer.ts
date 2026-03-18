@@ -183,7 +183,16 @@ export const developerRouter = createTRPCRouter({
             z.object({
               url: z.string().url(),
               method: z
-                .enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS', 'TRACE'])
+                .enum([
+                  'GET',
+                  'POST',
+                  'PUT',
+                  'PATCH',
+                  'DELETE',
+                  'HEAD',
+                  'OPTIONS',
+                  'TRACE',
+                ])
                 .optional(),
               /** If true, this resource is invalid and should not be tested */
               invalid: z.boolean().optional(),
@@ -217,9 +226,7 @@ export const developerRouter = createTRPCRouter({
         resources: allResults.filter(
           (r): r is Extract<typeof r, { success: true }> => r.success
         ),
-        failed: allResults.filter(
-          (r): r is FailedResource => !r.success
-        ),
+        failed: allResults.filter((r): r is FailedResource => !r.success),
       };
     }),
 });

@@ -47,7 +47,11 @@ export async function fetchDiscoveryDocument(
     ? { 'Cache-Control': 'no-cache, no-store' }
     : {};
 
-  const discovered = await discoverOriginSchema({ target: origin, headers, signal });
+  const discovered = await discoverOriginSchema({
+    target: origin,
+    headers,
+    signal,
+  });
 
   if (!discovered.found) {
     return {
@@ -58,14 +62,16 @@ export async function fetchDiscoveryDocument(
     };
   }
 
-  const resources: DiscoveredResource[] = discovered.endpoints.flatMap(endpoint => {
-    try {
-      const url = new URL(endpoint.path, discovered.origin).toString();
-      return [{ url, method: endpoint.method }];
-    } catch {
-      return [];
+  const resources: DiscoveredResource[] = discovered.endpoints.flatMap(
+    endpoint => {
+      try {
+        const url = new URL(endpoint.path, discovered.origin).toString();
+        return [{ url, method: endpoint.method }];
+      } catch {
+        return [];
+      }
     }
-  });
+  );
 
   if (resources.length === 0) {
     return {
@@ -79,6 +85,8 @@ export async function fetchDiscoveryDocument(
     success: true,
     source: mapSourceToDiscoverySource(discovered.source),
     resources,
-    ...(discovered.ownershipProofs ? { ownershipProofs: discovered.ownershipProofs } : {}),
+    ...(discovered.ownershipProofs
+      ? { ownershipProofs: discovered.ownershipProofs }
+      : {}),
   };
 }

@@ -8,7 +8,15 @@
  */
 export interface DiscoveredResource {
   url: string;
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'TRACE';
+  method?:
+    | 'GET'
+    | 'POST'
+    | 'PUT'
+    | 'PATCH'
+    | 'DELETE'
+    | 'HEAD'
+    | 'OPTIONS'
+    | 'TRACE';
   /** If true, this resource failed validation */
   invalid?: boolean;
   /** Error message if resource is invalid */

@@ -11,10 +11,7 @@ import {
   type X402ResponseV1,
   type OutputSchemaV1,
 } from './v1';
-import {
-  x402ResponseSchemaV2,
-  type X402ResponseV2,
-} from './v2';
+import { x402ResponseSchemaV2, type X402ResponseV2 } from './v2';
 import type { DiscoveryExtension } from '@x402/extensions/bazaar';
 import { decodePaymentRequiredHeader } from '@x402/core/http';
 import { ChainIdToNetwork } from 'x402/types';

@@ -24,7 +24,10 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import { registerResource } from '@/lib/resources';
 
 import { checkEndpointSchema } from '@agentcash/discovery';
-import { PROBE_TIMEOUT_MS, getRegistrationErrorMessage } from '@/lib/discovery/utils';
+import {
+  PROBE_TIMEOUT_MS,
+  getRegistrationErrorMessage,
+} from '@/lib/discovery/utils';
 import { TRPCError } from '@trpc/server';
 import {
   listResourceTags,
@@ -209,7 +212,8 @@ export const resourcesRouter = createTRPCRouter({
       } | null = null;
 
       for (const advisory of check.advisories) {
-        if (!advisory.paymentOptions?.some(p => p.protocol === 'x402')) continue;
+        if (!advisory.paymentOptions?.some(p => p.protocol === 'x402'))
+          continue;
 
         const result = await registerResource(input.url.toString(), advisory);
 
@@ -362,7 +366,8 @@ export const resourcesRouter = createTRPCRouter({
               };
             }
 
-            if (!advisory.paymentOptions?.some(p => p.protocol === 'x402')) continue;
+            if (!advisory.paymentOptions?.some(p => p.protocol === 'x402'))
+              continue;
 
             const result = await registerResource(resourceUrl, advisory);
 

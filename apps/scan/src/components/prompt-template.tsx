@@ -163,7 +163,7 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
       {frontmatter && (
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-<h3 className="text-lg font-semibold">{frontmatter.title}</h3>
+            <h3 className="text-lg font-semibold">{frontmatter.title}</h3>
           </div>
           <p className="text-muted-foreground text-sm">
             {frontmatter.description}

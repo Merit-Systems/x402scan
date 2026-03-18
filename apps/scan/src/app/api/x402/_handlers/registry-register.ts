@@ -21,7 +21,10 @@ export async function handleRegistryRegister(
     return jsonResponse(
       {
         success: false,
-        error: { type: 'no_402', message: 'Endpoint not found or not reachable' },
+        error: {
+          type: 'no_402',
+          message: 'Endpoint not found or not reachable',
+        },
       },
       422
     );
@@ -45,8 +48,7 @@ export async function handleRegistryRegister(
           result.error.type === 'parseResponse'
             ? result.error.parseErrors
             : [JSON.stringify(result.error)],
-        issues:
-          'issues' in result.error ? result.error.issues : undefined,
+        issues: 'issues' in result.error ? result.error.issues : undefined,
       };
       continue;
     }

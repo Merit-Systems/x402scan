@@ -1,4 +1,7 @@
-import type { EndpointMethodAdvisory, AuditWarning } from '@agentcash/discovery';
+import type {
+  EndpointMethodAdvisory,
+  AuditWarning,
+} from '@agentcash/discovery';
 
 export interface TestedResource {
   success: true;
