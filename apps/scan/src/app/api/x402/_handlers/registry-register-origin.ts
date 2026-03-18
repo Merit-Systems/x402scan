@@ -58,14 +58,8 @@ export async function handleRegistryRegisterOrigin(
         const result = await registerResource(resourceUrl, advisory);
 
         if (result.success) return result;
-        const errorMsg =
-          getRegistrationErrorMessage(result.error) || 'Registration failed';
-        return {
-          success: false as const,
-          url: resourceUrl,
-          error: errorMsg,
-          status: undefined,
-        };
+        // Continue to next advisory instead of returning immediately on failure
+        continue;
       }
 
       return {
