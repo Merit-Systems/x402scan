@@ -5,10 +5,7 @@ import { registerResource } from '@/lib/resources';
 import { checkEndpointSchema } from '@agentcash/discovery';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
-import {
-  PROBE_TIMEOUT_MS,
-  getRegistrationErrorMessage,
-} from '@/lib/discovery/utils';
+import { PROBE_TIMEOUT_MS } from '@/lib/discovery/utils';
 
 import type { z } from 'zod';
 
