@@ -196,7 +196,7 @@ export const resourcesRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       const check = await checkEndpointSchema({
-        url: input.url.toString().replace('{', '').replace('}', ''),
+        url: input.url.toString().replaceAll('{', '').replaceAll('}', ''),
         sampleInputBody: {},
         signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
       });

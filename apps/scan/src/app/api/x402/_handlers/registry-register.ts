@@ -12,7 +12,7 @@ export async function handleRegistryRegister(
   const { url } = body;
 
   const check = await checkEndpointSchema({
-    url: url.replace('{', '').replace('}', ''),
+    url: url.replaceAll('{', '').replaceAll('}', ''),
     sampleInputBody: {},
     signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
   });
