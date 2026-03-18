@@ -1,7 +1,7 @@
 import { facilitator } from '@coinbase/x402';
 
 import { Network } from '../types';
-import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
+import { USDC_BASE_TOKEN, USDC_POLYGON_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
 import type { Facilitator, FacilitatorConfig } from '../types';
 
@@ -144,6 +144,33 @@ export const coinbaseFacilitator = {
         address: '0xa32ccda98ba7529705a059bd2d213da8de10d101',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-12-16'),
+      },
+    ],
+    [Network.POLYGON]: [
+      {
+        address: '0x8f5cb67b49555e614892b7233cfddebfb746e531',
+        tokens: [USDC_POLYGON_TOKEN],
+        dateOfFirstTransaction: new Date('2026-03-03'),
+      },
+      {
+        address: '0x67b9ce703d9ce658d7c4ac3c289cea112fe662af',
+        tokens: [USDC_POLYGON_TOKEN],
+        dateOfFirstTransaction: new Date('2026-03-03'),
+      },
+      {
+        address: '0x68a96f41ff1e9f2e7b591a931a4ad224e7c07863',
+        tokens: [USDC_POLYGON_TOKEN],
+        dateOfFirstTransaction: new Date('2026-03-03'),
+      },
+      {
+        address: '0x97acce27d5069544480bde0f04d9f47d7422a016',
+        tokens: [USDC_POLYGON_TOKEN],
+        dateOfFirstTransaction: new Date('2026-03-03'),
+      },
+      {
+        address: '0xa32ccda98ba7529705a059bd2d213da8de10d101',
+        tokens: [USDC_POLYGON_TOKEN],
+        dateOfFirstTransaction: new Date('2026-03-03'),
       },
     ],
     [Network.SOLANA]: [
