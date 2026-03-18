@@ -435,6 +435,9 @@ importers:
       '@solana/transactions':
         specifier: catalog:solana
         version: 5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)
+      '@stripe/crypto':
+        specifier: ^0.0.4
+        version: 0.0.4(@stripe/stripe-js@1.54.2)
       '@t3-oss/env-nextjs':
         specifier: catalog:env
         version: 0.13.10(typescript@5.9.3)(valibot@1.2.0(typescript@5.9.3))(zod@4.3.6)
@@ -519,6 +522,9 @@ importers:
       cookies-next:
         specifier: ^6.1.0
         version: 6.1.1(next@16.1.6(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(react@19.2.2)
+      country-data-list:
+        specifier: ^1.6.0
+        version: 1.6.0
       date-fns:
         specifier: 'catalog:'
         version: 4.1.0
@@ -540,6 +546,9 @@ importers:
       ioredis:
         specifier: ^5.8.2
         version: 5.8.2
+      lottie-react:
+        specifier: ^2.4.1
+        version: 2.4.1(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
       lucide-react:
         specifier: 'catalog:'
         version: 0.556.0(react@19.2.2)
@@ -567,6 +576,9 @@ importers:
       react:
         specifier: catalog:react
         version: 19.2.2
+      react-circle-flags:
+        specifier: ^0.0.27
+        version: 0.0.27(react@19.2.2)
       react-dom:
         specifier: catalog:react
         version: 19.2.2(react@19.2.2)
@@ -5481,6 +5493,14 @@ packages:
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
+  '@stripe/crypto@0.0.4':
+    resolution: {integrity: sha512-gcD/aG0N90ZrNVppWYf9ADPECptw6PVtF67VIeaFP7fhgd2NvNx8erkzlcvk3VIVSY+bZ6YGX7c7cASoySX74Q==}
+    peerDependencies:
+      '@stripe/stripe-js': ^1.46.0
+
+  '@stripe/stripe-js@1.54.2':
+    resolution: {integrity: sha512-R1PwtDvUfs99cAjfuQ/WpwJ3c92+DAMy9xGApjqlWQMj0FKQabUAys2swfTRNzuYAYJh7NqK2dzcYVNkKLEKUg==}
+
   '@swc/core-darwin-arm64@1.15.10':
     resolution: {integrity: sha512-U72pGqmJYbjrLhMndIemZ7u9Q9owcJczGxwtfJlz/WwMaGYAV/g4nkGiUVk/+QSX8sFCAjanovcU1IUsP2YulA==}
     engines: {node: '>=10'}
@@ -7226,6 +7246,9 @@ packages:
 
   cose-base@2.2.0:
     resolution: {integrity: sha512-AzlgcsCbUMymkADOJtQm3wO9S3ltPfYOFD5033keQn9NJzIbtnZj+UdBJe7DYml/8TdbtHJW3j58SOnKhWY/5g==}
+
+  country-data-list@1.6.0:
+    resolution: {integrity: sha512-KG1flNkUHtde7q9zw1/NcH5fFgDxU6gRt4f7jhBm2ucNXrSO8UBWv/w8UyueOhJGabzzjHJ7fTyRVLrKruWpUw==}
 
   crc-32@1.2.2:
     resolution: {integrity: sha512-ROmzCKrTnOwybPcJApAA6WBWij23HVfGVNKqqrZpuyZOHqK2CwHSvpGuyt/UNNvaIjEd8X5IFGp4Mh+Ie1IHJQ==}
@@ -9290,6 +9313,15 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
+  lottie-react@2.4.1:
+    resolution: {integrity: sha512-LQrH7jlkigIIv++wIyrOYFLHSKQpEY4zehPicL9bQsrt1rnoKRYCYgpCUe5maqylNtacy58/sQDZTkwMcTRxZw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  lottie-web@5.13.0:
+    resolution: {integrity: sha512-+gfBXl6sxXMPe8tKQm7qzLnUy5DUPJPKIyRHwtpCpyUEYjHYRJC/5gjUvdkuO2c3JllrPtHXH5UJJK8LRYl5yQ==}
+
   loupe@3.2.1:
     resolution: {integrity: sha512-CdzqowRJCeLU72bHvWqwRBBlLcMEtIvGrlvef74kMnV2AolS9Y8xUv1I0U/MNAWMhBlKIoyuEgoJ0t/bbwHbLQ==}
 
@@ -10471,6 +10503,12 @@ packages:
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
+
+  react-circle-flags@0.0.27:
+    resolution: {integrity: sha512-34WtRgFX74DtmL4UiOZk+i+OmX5lHXevaRelF7zEUIBCrUAPyfJ1P3Oi8ebxcfysn8Z4+EZPKGvKcS9hqp5fCw==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16.0.0 || 17.x || 18.x || 19.x
 
   react-dom@19.2.2:
     resolution: {integrity: sha512-fhyD2BLrew6qYf4NNtHff1rLXvzR25rq49p+FeqByOazc6TcSi2n8EYulo5C1PbH+1uBW++5S1SG7FcUU6mlDg==}
@@ -18466,6 +18504,12 @@ snapshots:
 
   '@standard-schema/utils@0.3.0': {}
 
+  '@stripe/crypto@0.0.4(@stripe/stripe-js@1.54.2)':
+    dependencies:
+      '@stripe/stripe-js': 1.54.2
+
+  '@stripe/stripe-js@1.54.2': {}
+
   '@swc/core-darwin-arm64@1.15.10':
     optional: true
 
@@ -21681,6 +21725,8 @@ snapshots:
     dependencies:
       layout-base: 2.0.1
 
+  country-data-list@1.6.0: {}
+
   crc-32@1.2.2: {}
 
   cronstrue@2.59.0: {}
@@ -24240,6 +24286,14 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
+  lottie-react@2.4.1(react-dom@19.2.2(react@19.2.2))(react@19.2.2):
+    dependencies:
+      lottie-web: 5.13.0
+      react: 19.2.2
+      react-dom: 19.2.2(react@19.2.2)
+
+  lottie-web@5.13.0: {}
+
   loupe@3.2.1: {}
 
   lru-cache@10.4.3: {}
@@ -25880,6 +25934,10 @@ snapshots:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
     optional: true
+
+  react-circle-flags@0.0.27(react@19.2.2):
+    dependencies:
+      react: 19.2.2
 
   react-dom@19.2.2(react@19.2.2):
     dependencies:
