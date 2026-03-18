@@ -3,8 +3,6 @@ import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
-import { extractX402Data } from '@/lib/x402';
-import { validateX402 } from '@/lib/x402/validate';
 import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource, TestedResource } from '@/types/batch-test';
 import {
@@ -132,68 +130,6 @@ export const developerRouter = createTRPCRouter({
           origin: scrapedOrigin,
         },
       };
-    }),
-  test: publicProcedure
-    .input(
-      z.object({
-        method: z.enum(['GET', 'POST']),
-        url: z.string().url(),
-        headers: z.record(z.string(), z.string()).optional(),
-      })
-    )
-    .query(async ({ input }) => {
-      const { method, url, headers = {} } = input;
-
-      const response = await fetch(url, {
-        method,
-        headers:
-          method === 'POST'
-            ? {
-                ...headers,
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache',
-              }
-            : { ...headers, 'Cache-Control': 'no-cache' },
-        body: method === 'POST' ? '{}' : undefined,
-        redirect: 'follow',
-        cache: 'no-store',
-      });
-
-      const hdrs: Record<string, string> = {};
-      response.headers.forEach((v, k) => (hdrs[k] = v));
-
-      const x402Data = await extractX402Data(response);
-
-      const result = {
-        ok: response.ok,
-        status: response.status,
-        statusText: response.statusText,
-        headers: hdrs,
-        body: x402Data,
-      };
-
-      const validated = validateX402(x402Data);
-      const info = {
-        hasAccepts: validated.success
-          ? (validated.parsed.accepts?.length ?? 0) > 0
-          : false,
-        hasInputSchema: validated.success
-          ? Boolean(validated.outputSchema?.input)
-          : false,
-      };
-      const parsed = validated.success
-        ? {
-            success: true as const,
-            data: validated.parsed,
-            issues: validated.issues,
-          }
-        : {
-            success: false as const,
-            errors: validated.errors,
-            issues: validated.issues,
-          };
-
-      return { result, parsed, info };
     }),
 
   /** Batch test multiple resources to get their x402 responses */
