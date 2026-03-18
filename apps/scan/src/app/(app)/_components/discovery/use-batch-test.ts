@@ -58,10 +58,19 @@ export function useBatchTest(
     const allResources: TestedResource[] = [];
     const allFailed: FailedResource[] = [];
 
-    for (const query of queries) {
+    for (let i = 0; i < queries.length; i++) {
+      const query = queries[i];
+      const chunk = chunks[i] ?? [];
+
       if (query.data) {
         allResources.push(...query.data.resources);
         allFailed.push(...query.data.failed);
+      } else if (query.isError) {
+        const error =
+          query.error instanceof Error ? query.error.message : 'Request failed';
+        for (const resource of chunk) {
+          allFailed.push({ success: false, url: resource.url, error });
+        }
       }
     }
 
@@ -69,7 +78,7 @@ export function useBatchTest(
       resources: allResources,
       failed: allFailed,
     };
-  }, [queries]);
+  }, [queries, chunks]);
 
   const isLoading = queries.some(q => q.isLoading);
 
