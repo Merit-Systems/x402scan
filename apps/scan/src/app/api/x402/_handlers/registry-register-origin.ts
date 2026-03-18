@@ -5,7 +5,10 @@ import { registerResource } from '@/lib/resources';
 import { checkEndpointSchema } from '@agentcash/discovery';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
-import { PROBE_TIMEOUT_MS, getRegistrationErrorMessage } from '@/lib/discovery/utils';
+import {
+  PROBE_TIMEOUT_MS,
+  getRegistrationErrorMessage,
+} from '@/lib/discovery/utils';
 
 import type { z } from 'zod';
 
@@ -48,13 +51,15 @@ export async function handleRegistryRegisterOrigin(
       }
 
       for (const advisory of check.advisories) {
-        if (!advisory.paymentOptions?.some(p => p.protocol === 'x402')) continue;
+        if (!advisory.paymentOptions?.some(p => p.protocol === 'x402'))
+          continue;
         if (!advisory.inputSchema) continue;
 
         const result = await registerResource(resourceUrl, advisory);
 
         if (result.success) return result;
-        const errorMsg = getRegistrationErrorMessage(result.error) || 'Registration failed';
+        const errorMsg =
+          getRegistrationErrorMessage(result.error) || 'Registration failed';
         return {
           success: false as const,
           url: resourceUrl,
@@ -91,8 +96,11 @@ export async function handleRegistryRegisterOrigin(
       } else if ('success' in value && !value.success) {
         failedResults.push({
           url: resourceUrl,
-          error: 'error' in value ? (value.error as string) : 'Unknown error',
-          status: 'status' in value ? (value.status as number | undefined) : undefined,
+          error: 'error' in value ? value.error : 'Unknown error',
+          status:
+            'status' in value
+              ? (value.status as number | undefined)
+              : undefined,
         });
       }
     } else if (result.status === 'rejected') {

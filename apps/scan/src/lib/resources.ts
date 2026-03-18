@@ -15,7 +15,7 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { verifyAcceptsOwnership } from '@/services/verification/accepts-verification';
 import { outputSchemaV1 } from '@/lib/x402/v1';
-import { normalizeChainId } from '@/lib/x402';
+import { normalizeChainId, type ParsedX402Response } from '@/lib/x402';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
@@ -23,7 +23,9 @@ export const registerResource = async (
   url: string,
   advisory: EndpointMethodAdvisory
 ) => {
-  const x402Options = (advisory.paymentOptions ?? []).filter(isX402PaymentOption);
+  const x402Options = (advisory.paymentOptions ?? []).filter(
+    isX402PaymentOption
+  );
   const urlObj = new URL(url);
   urlObj.search = '';
   const cleanUrl = urlObj.toString();
@@ -89,7 +91,10 @@ export const registerResource = async (
   const mappedAccepts = x402Options
     .map(opt => ({
       scheme: (opt.scheme ?? 'exact') as 'exact',
-      network: normalizeChainId(opt.network).replace('-', '_') as AcceptsNetwork,
+      network: normalizeChainId(opt.network).replace(
+        '-',
+        '_'
+      ) as AcceptsNetwork,
       maxAmountRequired:
         ('amount' in opt ? opt.amount : opt.maxAmountRequired) ?? '0',
       payTo: opt.payTo ?? '',
@@ -146,8 +151,7 @@ export const registerResource = async (
 
   await upsertResourceResponse(
     resource.resource.id,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (advisory.paymentRequiredBody ?? {}) as any
+    (advisory.paymentRequiredBody ?? {}) as ParsedX402Response
   );
 
   // Attempt ownership verification (non-blocking)

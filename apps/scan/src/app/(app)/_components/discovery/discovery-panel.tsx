@@ -33,7 +33,7 @@ import {
   createDummyResources,
 } from '@/app/(app)/developer/_components/dummy';
 
-import { getOutputSchema, parseX402Response } from '@/lib/x402';
+import { parseX402Response } from '@/lib/x402';
 import type {
   FailedResource as FailedResourceType,
   TestedResource as TestedResourceType,
@@ -684,7 +684,7 @@ function DiscoveredResourceExecutor({
   invalidInfo?: { invalid: boolean; reason?: string };
   verifiedAddresses?: Record<string, boolean>;
 }) {
-  const inputSchema = tested.parsed.inputSchema as Record<string, unknown> | undefined;
+  const inputSchema = tested.parsed.inputSchema;
   const method =
     ((inputSchema?.method as string | undefined)?.toUpperCase() as Methods) ??
     (tested.parsed.method as Methods);
