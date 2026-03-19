@@ -428,13 +428,8 @@ export function DiscoveryPanel({
                 but invalid: {discoveryError}
               </>
             ) : (
-              <>
-                No{' '}
-                <code className="px-1 py-0.5 bg-muted rounded text-xs">
-                  /.well-known/x402
-                </code>{' '}
-                found
-              </>
+              <>No discovery spec found</>
+
             )}
           </span>
         </div>
