@@ -85,5 +85,6 @@ export async function fetchDiscoveryDocument(
     success: true,
     source: mapSourceToDiscoverySource(discovered.source),
     resources,
+    ownershipProofs: discovered.ownershipProofs ?? [],
   };
 }

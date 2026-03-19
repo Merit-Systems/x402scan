@@ -21,7 +21,7 @@ export async function probeX402Endpoint(
 ): Promise<ProbeX402Result> {
   const result = await checkEndpointSchema({
     url,
-    ...(options?.probe ? { probe: true } : { }),
+    ...(options?.probe ? { probe: true } : {}),
     headers: options?.headers,
     signal: options?.signal ?? AbortSignal.timeout(PROBE_TIMEOUT_MS),
   });
