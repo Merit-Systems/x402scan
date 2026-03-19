@@ -9,10 +9,7 @@ import { probeX402Endpoint } from '@/lib/discovery/probe';
 
 async function testSingleResource(url: string) {
   try {
-    const result = await probeX402Endpoint(url, {
-      probe: true,
-      signal: AbortSignal.timeout(10000),
-    });
+    const result = await probeX402Endpoint(url);
 
     if (!result.success) {
       return { success: false as const, url, error: result.error };

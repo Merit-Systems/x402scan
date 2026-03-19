@@ -12,18 +12,11 @@ export type ProbeX402Result =
  */
 export async function probeX402Endpoint(
   url: string,
-  options?: {
-    headers?: Record<string, string>;
-    signal?: AbortSignal;
-    /** Use probe mode (skips OpenAPI). Defaults to sampleInputBody probe. */
-    probe?: boolean;
-  }
 ): Promise<ProbeX402Result> {
   const result = await checkEndpointSchema({
     url,
-    ...(options?.probe ? { probe: true } : {}),
-    headers: options?.headers,
-    signal: options?.signal ?? AbortSignal.timeout(PROBE_TIMEOUT_MS),
+    probe: true,
+    signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
   });
 
   if (!result.found) {
