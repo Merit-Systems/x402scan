@@ -24,7 +24,7 @@ export const ClientInstallHeader: React.FC<Props> = ({
 
   const text = textProp ?? (
     <>
-      Add x402scan MCP to <br />
+      Add AgentCash to <br />
       {name}
     </>
   );

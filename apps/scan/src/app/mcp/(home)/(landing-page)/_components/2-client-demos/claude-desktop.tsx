@@ -52,7 +52,7 @@ const ChatGraphic = () => {
       <div className="bg-card border rounded-lg overflow-hidden">
         <div className="flex items-center gap-2 px-4 py-3 border-b">
           <Logo className="size-4" />
-          <span className="font-semibold">x402scan MCP</span>
+          <span className="font-semibold">AgentCash</span>
         </div>
 
         <div className="p-4 flex flex-col gap-2">
