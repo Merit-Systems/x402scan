@@ -2,10 +2,10 @@ import type { registryRegisterOriginBodySchema } from '@/app/api/x402/_lib/schem
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
 import { registerResource } from '@/lib/resources';
 
-import { checkEndpointSchema } from '@agentcash/discovery';
+import { probeX402Endpoint } from '@/lib/discovery/probe';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
-import { PROBE_TIMEOUT_MS } from '@/lib/discovery/utils';
+import { getRegistrationErrorMessage } from '@/lib/discovery/utils';
 
 import type { z } from 'zod';
 
@@ -32,37 +32,36 @@ export async function handleRegistryRegisterOrigin(
     discoveryResult.resources.map(async resource => {
       const resourceUrl = resource.url;
 
-      const check = await checkEndpointSchema({
-        url: resourceUrl,
-        sampleInputBody: {},
-        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
-      });
+      const probeResult = await probeX402Endpoint(resourceUrl);
 
-      if (!check.found) {
+      if (!probeResult.success) {
         return {
           success: false as const,
           url: resourceUrl,
-          error: 'Endpoint not found',
+          error: probeResult.error,
           status: undefined,
         };
       }
 
-      for (const advisory of check.advisories) {
-        if (!advisory.paymentOptions?.some(p => p.protocol === 'x402'))
-          continue;
-        if (!advisory.inputSchema) continue;
+      const { advisory } = probeResult;
 
-        const result = await registerResource(resourceUrl, advisory);
-
-        if (result.success) return result;
-        // Continue to next advisory instead of returning immediately on failure
-        continue;
+      if (!advisory.inputSchema) {
+        return {
+          success: false as const,
+          url: resourceUrl,
+          error: 'Missing input schema (non-invocable endpoint skipped)',
+          status: undefined,
+        };
       }
+
+      const result = await registerResource(resourceUrl, advisory);
+
+      if (result.success) return result;
 
       return {
         success: false as const,
         url: resourceUrl,
-        error: 'No x402 payment options found',
+        error: getRegistrationErrorMessage(result.error),
         status: undefined,
       };
     })

@@ -5,85 +5,31 @@ import { createTRPCRouter, publicProcedure } from '../trpc';
 import { getOriginFromUrl } from '@/lib/url';
 import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource, TestedResource } from '@/types/batch-test';
-import {
-  checkEndpointSchema,
-  validatePaymentRequiredDetailed,
-} from '@agentcash/discovery';
-import { isX402ValidationIssue } from '@/types/validation';
-import { isNonBlockingIssue } from '@/lib/discovery/utils';
+import { probeX402Endpoint } from '@/lib/discovery/probe';
 
 async function testSingleResource(url: string) {
   try {
-    const result = await checkEndpointSchema({
-      url,
+    const result = await probeX402Endpoint(url, {
       probe: true,
       signal: AbortSignal.timeout(10000),
     });
 
-    if (!result.found) {
-      return {
-        success: false as const,
-        url,
-        error: result.message ?? `Endpoint not found: ${result.cause}`,
-      };
+    if (!result.success) {
+      return { success: false as const, url, error: result.error };
     }
 
-    let lastError: { message: string; issues?: unknown[] } | null = null;
+    const { advisory } = result;
 
-    for (const advisory of result.advisories) {
-      if (!advisory.paymentOptions?.some(p => p.protocol === 'x402')) continue;
-
-      const validation = advisory.paymentRequiredBody
-        ? validatePaymentRequiredDetailed(advisory.paymentRequiredBody, {
-            compatMode: 'strict',
-            requireInputSchema: true,
-            requireOutputSchema: true,
-          })
-        : null;
-      const issues = (validation?.issues ?? []).filter(isX402ValidationIssue);
-
-      if (validation && !validation.valid) {
-        const blockingErrors = issues.filter(
-          issue => issue.severity === 'error' && !isNonBlockingIssue(issue)
-        );
-        if (blockingErrors.length > 0) {
-          lastError = {
-            message: blockingErrors
-              .map(e => `${e.code}${e.path ? ': ' + e.path : ''}: ${e.message}`)
-              .join('; '),
-            issues,
-          };
-          continue;
-        }
-      }
-
-      if (!advisory.inputSchema) {
-        lastError = { message: 'Missing input schema', issues };
-        continue;
-      }
-
-      return {
-        success: true as const,
-        url,
-        method: advisory.method as TestedResource['method'],
-        description: advisory.summary ?? null,
-        parsed: advisory,
-      };
-    }
-
-    if (lastError) {
-      return {
-        success: false as const,
-        url,
-        error: lastError.message,
-        issues: lastError.issues,
-      };
+    if (!advisory.inputSchema) {
+      return { success: false as const, url, error: 'Missing input schema' };
     }
 
     return {
-      success: false as const,
+      success: true as const,
       url,
-      error: 'No valid x402 response found',
+      method: advisory.method as TestedResource['method'],
+      description: advisory.summary ?? null,
+      parsed: advisory,
     };
   } catch (err) {
     return {

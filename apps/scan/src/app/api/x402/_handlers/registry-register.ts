@@ -2,8 +2,7 @@ import type { registryRegisterBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
 import { registerResource } from '@/lib/resources';
 
-import { checkEndpointSchema } from '@agentcash/discovery';
-import { PROBE_TIMEOUT_MS } from '@/lib/discovery/utils';
+import { probeX402Endpoint } from '@/lib/discovery/probe';
 import type { z } from 'zod';
 
 export async function handleRegistryRegister(
@@ -11,86 +10,50 @@ export async function handleRegistryRegister(
 ) {
   const { url } = body;
 
-  const check = await checkEndpointSchema({
-    url: url.replaceAll('{', '').replaceAll('}', ''),
-    sampleInputBody: {},
-    signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
-  });
+  const probeResult = await probeX402Endpoint(
+    url.replaceAll('{', '').replaceAll('}', '')
+  );
 
-  if (!check.found) {
+  if (!probeResult.success) {
     return jsonResponse(
       {
         success: false,
-        error: {
-          type: 'no_402',
-          message: 'Endpoint not found or not reachable',
-        },
+        error: { type: 'no_402', message: probeResult.error },
       },
       422
     );
   }
 
-  let lastParseError: {
-    parseErrors: string[];
-    data: unknown;
-    issues?: unknown[];
-  } | null = null;
+  const result = await registerResource(url, probeResult.advisory);
 
-  for (const advisory of check.advisories) {
-    if (!advisory.paymentOptions?.some(p => p.protocol === 'x402')) continue;
-
-    const result = await registerResource(url, advisory);
-
-    if (!result.success) {
-      lastParseError = {
-        data: result.data,
-        parseErrors:
-          result.error.type === 'parseResponse'
-            ? result.error.parseErrors
-            : [JSON.stringify(result.error)],
-        issues: 'issues' in result.error ? result.error.issues : undefined,
-      };
-      continue;
-    }
-
-    return jsonResponse(
-      JSON.parse(
-        JSON.stringify(
-          {
-            success: true,
-            resource: result.resource,
-            accepts: result.accepts,
-            registrationDetails: result.registrationDetails,
-          },
-          (_k, v: unknown) => (typeof v === 'bigint' ? Number(v) : v)
-        )
-      )
-    );
-  }
-
-  if (lastParseError) {
+  if (!result.success) {
     return jsonResponse(
       {
         success: false,
         error: {
           type: 'parse_error',
-          parseErrors: lastParseError.parseErrors,
-          issues: lastParseError.issues,
+          parseErrors:
+            result.error.type === 'parseResponse'
+              ? result.error.parseErrors
+              : [JSON.stringify(result.error)],
         },
-        data: lastParseError.data,
+        data: result.data,
       },
       422
     );
   }
 
   return jsonResponse(
-    {
-      success: false,
-      error: {
-        type: 'no_402',
-        message: 'Resource did not return a 402 Payment Required response',
-      },
-    },
-    422
+    JSON.parse(
+      JSON.stringify(
+        {
+          success: true,
+          resource: result.resource,
+          accepts: result.accepts,
+          registrationDetails: result.registrationDetails,
+        },
+        (_k, v: unknown) => (typeof v === 'bigint' ? Number(v) : v)
+      )
+    )
   );
 }

@@ -23,11 +23,8 @@ import { mixedAddressSchema } from '@/lib/schemas';
 
 import { registerResource } from '@/lib/resources';
 
-import { checkEndpointSchema } from '@agentcash/discovery';
-import {
-  PROBE_TIMEOUT_MS,
-  getRegistrationErrorMessage,
-} from '@/lib/discovery/utils';
+import { probeX402Endpoint } from '@/lib/discovery/probe';
+import { getRegistrationErrorMessage } from '@/lib/discovery/utils';
 import { TRPCError } from '@trpc/server';
 import {
   listResourceTags,
@@ -47,6 +44,7 @@ import {
 import type { Prisma } from '@x402scan/scan-db';
 import type { SupportedChain } from '@/types/chain';
 import type { DiscoveryInfo } from '@/types/discovery';
+import { verifyAnyOwnershipProof } from '@/lib/ownership-proof';
 
 const BULK_REGISTER_CONCURRENCY = 6;
 
@@ -195,109 +193,77 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      const check = await checkEndpointSchema({
-        url: input.url.toString().replaceAll('{', '').replaceAll('}', ''),
-        sampleInputBody: {},
-        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
-      });
+      const probeResult = await probeX402Endpoint(
+        input.url.toString().replaceAll('{', '').replaceAll('}', '')
+      );
 
-      if (!check.found) {
+      if (!probeResult.success) {
         return { success: false as const, error: { type: 'no402' as const } };
       }
 
-      let parseErrorData: {
-        parseErrors: string[];
-        data: unknown;
-        issues?: unknown[];
-      } | null = null;
+      const result = await registerResource(
+        input.url.toString(),
+        probeResult.advisory
+      );
 
-      for (const advisory of check.advisories) {
-        if (!advisory.paymentOptions?.some(p => p.protocol === 'x402'))
-          continue;
-
-        const result = await registerResource(input.url.toString(), advisory);
-
-        if (result.success === false) {
-          if (result.error.type === 'parseResponse') {
-            parseErrorData = {
-              data: result.data,
-              parseErrors: result.error.parseErrors,
-              issues: result.error.issues,
-            };
-            continue;
-          }
-          parseErrorData = {
-            data: null,
-            parseErrors: [JSON.stringify(result.error)],
-          };
-          continue;
-        }
-
-        // Check for additional resources via discovery
-        const origin = getOriginFromUrl(input.url);
-        let discovery: DiscoveryInfo = {
-          found: false,
-          otherResourceCount: 0,
-          origin,
-        };
-
-        try {
-          const discoveryResult = await fetchDiscoveryDocument(origin);
-          if (
-            discoveryResult.success &&
-            Array.isArray(discoveryResult.resources)
-          ) {
-            const inputUrlStr = String(input.url);
-            const normalizedInputUrl = normalizeUrl(inputUrlStr);
-            const otherResources = discoveryResult.resources.filter(r => {
-              if (
-                !r ||
-                typeof r !== 'object' ||
-                !('url' in r) ||
-                typeof r.url !== 'string'
-              ) {
-                return false;
-              }
-              const resourceUrl = String(r.url);
-              return normalizeUrl(resourceUrl) !== normalizedInputUrl;
-            });
-            discovery = {
-              found: true,
-              source: discoveryResult.source,
-              otherResourceCount: otherResources.length,
-              origin,
-              resources: otherResources.map(r => r.url),
-            };
-          }
-        } catch {
-          // Discovery check failed, continue without discovery info
-        }
-
-        return {
-          ...result,
-          methodUsed: advisory.method,
-          discovery,
-        };
-      }
-
-      if (parseErrorData) {
+      if (result.success === false) {
         return {
           success: false as const,
-          data: parseErrorData.data,
+          data: result.data,
           error: {
             type: 'parseErrors' as const,
-            parseErrors: parseErrorData.parseErrors,
-            issues: parseErrorData.issues,
+            parseErrors:
+              result.error.type === 'parseResponse'
+                ? result.error.parseErrors
+                : [JSON.stringify(result.error)],
           },
         };
       }
 
+      // Check for additional resources via discovery
+      const origin = getOriginFromUrl(input.url);
+      let discovery: DiscoveryInfo = {
+        found: false,
+        otherResourceCount: 0,
+        origin,
+      };
+
+      try {
+        const discoveryResult = await fetchDiscoveryDocument(origin);
+        if (
+          discoveryResult.success &&
+          Array.isArray(discoveryResult.resources)
+        ) {
+          const inputUrlStr = String(input.url);
+          const normalizedInputUrl = normalizeUrl(inputUrlStr);
+          const otherResources = discoveryResult.resources.filter(r => {
+            if (
+              !r ||
+              typeof r !== 'object' ||
+              !('url' in r) ||
+              typeof r.url !== 'string'
+            ) {
+              return false;
+            }
+            const resourceUrl = String(r.url);
+            return normalizeUrl(resourceUrl) !== normalizedInputUrl;
+          });
+          discovery = {
+            found: true,
+            source: discoveryResult.source,
+            otherResourceCount: otherResources.length,
+            origin,
+            resources: otherResources.map(r => r.url),
+          };
+        }
+      } catch {
+        // Discovery check failed, continue without discovery info
+      }
+
       return {
-        success: false as const,
-        error: {
-          type: 'no402' as const,
-        },
-        type: 'no402' as const,
+        ...result,
+        methodUsed: probeResult.advisory.method,
+        discovery,
       };
     }),
 
@@ -329,65 +295,46 @@ export const resourcesRouter = createTRPCRouter({
         async resource => {
           const resourceUrl = resource.url;
 
-          const check = await checkEndpointSchema({
-            url: resourceUrl,
-            sampleInputBody: {},
-            signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
-          });
+          const probeResult = await probeX402Endpoint(resourceUrl);
 
-          if (!check.found) {
+          if (!probeResult.success) {
             return {
               success: false as const,
               url: resourceUrl,
-              error: `Endpoint not found: ${check.cause}`,
+              error: probeResult.error,
             };
           }
 
-          for (const advisory of check.advisories) {
-            if (advisory.authMode === 'siwx') {
-              return {
-                success: false as const,
-                skipped: true as const,
-                url: resourceUrl,
-                error:
-                  'SIWX auth-only endpoint (no payment requirements to index)',
-                status: 402,
-              };
-            }
+          const { advisory } = probeResult;
 
-            if (!advisory.inputSchema) {
-              return {
-                success: false as const,
-                skipped: true as const,
-                url: resourceUrl,
-                error:
-                  'Missing input schema (non-invocable endpoint skipped in strict mode)',
-                status: 402,
-              };
-            }
-
-            if (!advisory.paymentOptions?.some(p => p.protocol === 'x402'))
-              continue;
-
-            const result = await registerResource(resourceUrl, advisory);
-
-            if (result.success) return result;
-
-            if (result.error.type === 'parseResponse') {
-              continue;
-            }
-
+          if (advisory.authMode === 'siwx') {
             return {
               success: false as const,
+              skipped: true as const,
               url: resourceUrl,
-              error: getRegistrationErrorMessage(result.error),
+              error: 'SIWX auth-only endpoint (no payment requirements to index)',
+              status: 402,
             };
           }
+
+          if (!advisory.inputSchema) {
+            return {
+              success: false as const,
+              skipped: true as const,
+              url: resourceUrl,
+              error: 'Missing input schema (non-invocable endpoint skipped in strict mode)',
+              status: 402,
+            };
+          }
+
+          const result = await registerResource(resourceUrl, advisory);
+
+          if (result.success) return result;
 
           return {
             success: false as const,
             url: resourceUrl,
-            error: 'No x402 payment options found',
+            error: getRegistrationErrorMessage(result.error),
           };
         }
       );
@@ -548,7 +495,6 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      const { verifyAnyOwnershipProof } = await import('@/lib/ownership-proof');
 
       const result = await verifyAnyOwnershipProof(
         input.ownershipProofs,

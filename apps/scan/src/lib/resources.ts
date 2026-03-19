@@ -2,10 +2,8 @@ import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
-import { validatePaymentRequiredDetailed } from '@agentcash/discovery';
 import type { EndpointMethodAdvisory } from '@agentcash/discovery';
-import { isX402ValidationIssue } from '@/types/validation';
-import { isX402PaymentOption, isNonBlockingIssue } from '@/lib/discovery/utils';
+import { isX402PaymentOption } from '@/lib/discovery/utils';
 
 import { getOriginFromUrl } from '@/lib/url';
 
@@ -30,35 +28,6 @@ export const registerResource = async (
   urlObj.search = '';
   const cleanUrl = urlObj.toString();
 
-  const validation = advisory.paymentRequiredBody
-    ? validatePaymentRequiredDetailed(advisory.paymentRequiredBody, {
-        compatMode: 'strict',
-        requireInputSchema: true,
-        requireOutputSchema: true,
-      })
-    : null;
-  const issues = (validation?.issues ?? []).filter(isX402ValidationIssue);
-
-  if (validation && !validation.valid) {
-    const blockingErrors = issues.filter(
-      issue => issue.severity === 'error' && !isNonBlockingIssue(issue)
-    );
-    if (blockingErrors.length > 0) {
-      return {
-        success: false as const,
-        data: advisory.paymentRequiredBody,
-        error: {
-          type: 'parseResponse' as const,
-          parseErrors: blockingErrors.map(
-            issue =>
-              `${issue.code}${issue.path ? ': ' + issue.path : ''}: ${issue.message}`
-          ),
-          issues,
-        },
-      };
-    }
-  }
-
   if (x402Options.length === 0) {
     return {
       success: false as const,
@@ -66,7 +35,6 @@ export const registerResource = async (
       error: {
         type: 'parseResponse' as const,
         parseErrors: ['No payment options found'],
-        issues,
       },
     };
   }
@@ -78,7 +46,6 @@ export const registerResource = async (
       error: {
         type: 'parseResponse' as const,
         parseErrors: ['Missing input schema'],
-        issues,
       },
     };
   }
@@ -190,7 +157,6 @@ export const registerResource = async (
       providedAccepts: mappedAccepts,
       supportedAccepts: resource.accepts,
       unsupportedAccepts: resource.unsupportedAccepts,
-      validationIssues: issues,
       originMetadata: {
         title,
         description,
