@@ -1,7 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useQueries } from '@tanstack/react-query';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { api } from '@/trpc/client';
 import type { TestedResource, FailedResource } from '@/types/batch-test';
 import type { DiscoveredResource } from '@/types/discovery';
@@ -30,62 +29,58 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 /**
  * Wrapper hook for api.developer.batchTest that handles pagination.
  * Automatically splits resources into chunks of 20 and makes parallel requests.
+ * Uses a mutation (POST) to avoid URL length limits with large inputs.
  */
 export function useBatchTest(
   effectiveResources: DiscoveredResource[],
   enabled: boolean
 ): BatchTestResult {
+  const [resources, setResources] = useState<TestedResource[]>([]);
+  const [failed, setFailed] = useState<FailedResource[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [runCount, setRunCount] = useState(0);
+
+  const mutation = api.developer.batchTest.useMutation();
+  const mutateAsyncRef = useRef(mutation.mutateAsync);
+  mutateAsyncRef.current = mutation.mutateAsync;
+
   const chunks = useMemo(
     () => chunkArray(effectiveResources, BATCH_SIZE),
     [effectiveResources]
   );
 
-  // Get tRPC context for making queries
-  const utils = api.useUtils();
-
-  // Use useQueries to fetch all chunks in parallel
-  const queries = useQueries({
-    queries: chunks.map(chunk => ({
-      queryKey: ['developer.batchTest', { resources: chunk }],
-      queryFn: () => utils.developer.batchTest.fetch({ resources: chunk }),
-      enabled: enabled && chunks.length > 0,
-      staleTime: 60000,
-    })),
-  });
-
-  // Combine results from all queries
-  const combinedData = useMemo(() => {
-    const allResources: TestedResource[] = [];
-    const allFailed: FailedResource[] = [];
-
-    for (let i = 0; i < queries.length; i++) {
-      const query = queries[i];
-      const chunk = chunks[i] ?? [];
-      if (!query) continue;
-
-      if (query.data) {
-        allResources.push(...query.data.resources);
-        allFailed.push(...query.data.failed);
-      } else if (query.isError) {
-        const error =
-          query.error instanceof Error ? query.error.message : 'Request failed';
-        for (const resource of chunk) {
-          allFailed.push({ success: false, url: resource.url, error });
-        }
-      }
+  useEffect(() => {
+    if (!enabled || chunks.length === 0) {
+      setResources([]);
+      setFailed([]);
+      return;
     }
 
-    return {
-      resources: allResources,
-      failed: allFailed,
-    };
-  }, [queries, chunks]);
+    setIsLoading(true);
 
-  const isLoading = queries.some(q => q.isLoading);
+    void Promise.all(chunks.map(chunk => mutateAsyncRef.current({ resources: chunk })))
+      .then(results => {
+        const allResources: TestedResource[] = [];
+        const allFailed: FailedResource[] = [];
+        for (const result of results) {
+          allResources.push(...result.resources);
+          allFailed.push(...result.failed);
+        }
+        setResources(allResources);
+        setFailed(allFailed);
+      })
+      .catch(err => {
+        const error = err instanceof Error ? err.message : 'Request failed';
+        setFailed(chunks.flat().map(r => ({ success: false as const, url: r.url, error })));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [enabled, chunks, runCount]);
 
   const payToAddresses = useMemo(() => {
     const addresses: string[] = [];
-    for (const resource of combinedData.resources) {
+    for (const resource of resources) {
       for (const opt of resource.parsed.paymentOptions ?? []) {
         if ('payTo' in opt && typeof opt.payTo === 'string') {
           addresses.push(opt.payTo);
@@ -93,15 +88,13 @@ export function useBatchTest(
       }
     }
     return [...new Set(addresses)];
-  }, [combinedData.resources]);
+  }, [resources]);
 
   return {
     isLoading,
-    resources: combinedData.resources,
-    failed: combinedData.failed,
+    resources,
+    failed,
     payToAddresses,
-    refetch: () => {
-      queries.forEach(q => void q.refetch());
-    },
+    refetch: () => setRunCount(c => c + 1),
   };
 }

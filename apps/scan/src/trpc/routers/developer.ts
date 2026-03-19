@@ -104,7 +104,7 @@ export const developerRouter = createTRPCRouter({
           .max(20),
       })
     )
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
       // Separate invalid resources from valid ones
       const invalidResults: FailedResource[] = input.resources
         .filter(r => r.invalid)
