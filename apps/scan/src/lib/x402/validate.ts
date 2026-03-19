@@ -1,6 +1,6 @@
 import { getOutputSchema, parseX402Response } from '.';
 import type { ParsedX402Response } from '.';
-import * as discoveryPackage from '@agentcash/discovery';
+import { validatePaymentRequiredDetailed } from '@agentcash/discovery';
 import {
   isX402ValidationIssue,
   type X402ValidationIssue,
@@ -45,18 +45,9 @@ type DiscoveryValidateFn = (
 function runDiscoveryValidation(
   data: unknown
 ): DiscoveryValidationResult | null {
-  const validate = (
-    discoveryPackage as unknown as {
-      validatePaymentRequiredDetailed?: DiscoveryValidateFn;
-    }
-  ).validatePaymentRequiredDetailed;
-
-  if (typeof validate !== 'function') {
-    return null;
-  }
 
   try {
-    const result = validate(data, {
+    const result = validatePaymentRequiredDetailed(data, {
       compatMode: 'strict',
       requireInputSchema: true,
       // Treat output schema as required for scan ingestion quality.
