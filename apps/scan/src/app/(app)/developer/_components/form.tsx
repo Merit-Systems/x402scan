@@ -98,7 +98,7 @@ export const TestEndpointForm = () => {
                 <p className="text-muted-foreground mt-1">
                   Implement a discovery document at{' '}
                   <code className="px-1 py-0.5 bg-muted rounded text-xs">
-                    /.well-known/x402
+                    /openapi.json
                   </code>{' '}
                   to enable automatic resource discovery.{' '}
                   <a
