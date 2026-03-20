@@ -33,6 +33,7 @@ export const TopServers: React.FC<Props> = ({ chain }) => {
     },
     timeframe: ActivityTimeframe.OneDay,
     sorting: defaultSellersSorting,
+    showSpeculative: false,
   });
 
   return (

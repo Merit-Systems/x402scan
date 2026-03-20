@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
 
 interface SpeculativeFilterContextType {
   showSpeculative: boolean;
@@ -23,10 +23,13 @@ export const SpeculativeFilterProvider: React.FC<{
 }> = ({ children }) => {
   const [showSpeculative, setShowSpeculative] = useState(false);
 
+  const value = useMemo(
+    () => ({ showSpeculative, setShowSpeculative }),
+    [showSpeculative]
+  );
+
   return (
-    <SpeculativeFilterContext.Provider
-      value={{ showSpeculative, setShowSpeculative }}
-    >
+    <SpeculativeFilterContext.Provider value={value}>
       {children}
     </SpeculativeFilterContext.Provider>
   );
