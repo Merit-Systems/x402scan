@@ -56,7 +56,7 @@ export async function probeX402Endpoint(
 
   if (preferred) {
     // If the OpenAPI spec declares a specific method, trust it over the probe.
-    // Some APIs (e.g. Nansen) return 402 for all HTTP methods because their
+    // Some APIs return 402 for all HTTP methods because their
     // payment middleware fires before method routing, so the probe may land on
     // PATCH/PUT even though the endpoint is declared as POST in the spec.
     // In that case we keep the probe's paymentOptions but correct the method.
