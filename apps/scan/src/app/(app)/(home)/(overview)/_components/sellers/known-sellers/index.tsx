@@ -19,7 +19,7 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import type { Chain } from '@/types/chain';
 
 import { GamedFilterProvider } from './gamed-filter';
-import { GamedFilterDescription } from './gamed-filter-description';
+import { GamedFilterPopover } from './gamed-filter-description';
 
 interface Props {
   chain?: Chain;
@@ -70,8 +70,8 @@ export const LoadingTopServers = () => {
 const TopServersContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section
-      title="Top Servers"
-      description={<GamedFilterDescription />}
+      title={<><h1 className="font-bold text-xl md:text-2xl">Top Servers</h1> <sup><GamedFilterPopover /></sup></>}
+      description="Top addresses that have received x402 transfers and are listed in the Bazaar"
       actions={
         <div className="flex items-center gap-2">
           <RangeSelector />
