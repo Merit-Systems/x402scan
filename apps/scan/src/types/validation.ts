@@ -1,4 +1,4 @@
-export interface X402ValidationIssue {
+interface X402ValidationIssue {
   code: string;
   severity: 'error' | 'warn' | 'info';
   message: string;
@@ -15,9 +15,7 @@ export interface X402ValidationIssue {
     | 'runtime_probe';
 }
 
-export function isX402ValidationIssue(
-  value: unknown
-): value is X402ValidationIssue {
+function isX402ValidationIssue(value: unknown): value is X402ValidationIssue {
   if (!value || typeof value !== 'object') return false;
   const issue = value as Partial<X402ValidationIssue>;
 

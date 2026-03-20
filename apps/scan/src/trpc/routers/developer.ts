@@ -3,117 +3,39 @@ import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
-import { extractX402Data, getDescription, isV2Response } from '@/lib/x402';
-import { validateX402 } from '@/lib/x402/validate';
 import { scrapeOriginData } from '@/services/scraper';
-import type { FailedResource } from '@/types/batch-test';
+import type { FailedResource, TestedResource } from '@/types/batch-test';
+import { probeX402Endpoint } from '@/lib/discovery/probe';
 
-type FailedResourceDetails = FailedResource;
+async function testSingleResource(url: string, method?: string) {
+  try {
+    const result = await probeX402Endpoint(url, method);
 
-async function testSingleResource(url: string) {
-  let lastError: FailedResourceDetails = {
-    success: false,
-    url,
-    error: 'No valid x402 response found',
-  };
-
-  // Always try both GET and POST to find which method works
-  const methodsToTry = ['GET', 'POST'] as const;
-  const triedMethods: string[] = [];
-
-  for (const method of methodsToTry) {
-    triedMethods.push(method);
-    try {
-      const response = await fetch(url, {
-        method,
-        headers:
-          method === 'POST'
-            ? {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache',
-              }
-            : { 'Cache-Control': 'no-cache' },
-        body: method === 'POST' ? '{}' : undefined,
-        redirect: 'follow',
-        signal: AbortSignal.timeout(10000),
-        cache: 'no-store',
-      });
-
-      // Clone response so we can read headers and body separately
-      const clonedResponse = response.clone();
-
-      // Extract x402 data (checks Payment-Required header for v2, then body for v1)
-      const x402Data = await extractX402Data(clonedResponse);
-
-      // Also read raw body for error reporting
-      const text = await response.text();
-      let rawBody: unknown = null;
-      try {
-        rawBody = text ? JSON.parse(text) : null;
-      } catch {
-        rawBody = text;
-      }
-
-      // Capture headers for debugging
-      const headers: Record<string, string> = {};
-      response.headers.forEach((v, k) => {
-        headers[k] = v;
-      });
-
-      if (response.status !== 402) {
-        lastError = {
-          success: false,
-          url,
-          error: `Expected 402, got ${response.status}`,
-          status: response.status,
-          statusText: response.statusText,
-          headers,
-          body: rawBody,
-          triedMethods,
-        };
-        continue;
-      }
-
-      const validated = validateX402(x402Data);
-      if (validated.success) {
-        const description = getDescription(validated.parsed) ?? null;
-        return {
-          success: true as const,
-          url,
-          method,
-          description,
-          parsed: validated.parsed,
-        };
-      } else {
-        // For debugging: include both x402Data and rawBody in error
-        const errorBody = isV2Response(x402Data)
-          ? { x402Data, rawBody }
-          : rawBody;
-        lastError = {
-          success: false,
-          url,
-          error: 'Invalid x402 response format',
-          status: response.status,
-          statusText: response.statusText,
-          headers,
-          body: errorBody,
-          parseErrors: validated.errors,
-          issues: validated.issues,
-          triedMethods,
-        };
-        break;
-      }
-    } catch (err) {
-      lastError = {
-        success: false,
-        url,
-        error: err instanceof Error ? err.message : 'Fetch failed',
-        triedMethods,
-      };
+    if (!result.success) {
+      return { success: false as const, url, error: result.error };
     }
-  }
 
-  return lastError;
+    const { advisory } = result;
+
+    if (!advisory.inputSchema) {
+      return { success: false as const, url, error: 'Missing input schema' };
+    }
+
+    return {
+      success: true as const,
+      url,
+      method: advisory.method as TestedResource['method'],
+      description: advisory.summary ?? null,
+      parsed: advisory,
+      warnings: result.warnings,
+    };
+  } catch (err) {
+    return {
+      success: false as const,
+      url,
+      error: err instanceof Error ? err.message : 'Fetch failed',
+    };
+  }
 }
 
 export const developerRouter = createTRPCRouter({
@@ -153,68 +75,6 @@ export const developerRouter = createTRPCRouter({
         },
       };
     }),
-  test: publicProcedure
-    .input(
-      z.object({
-        method: z.enum(['GET', 'POST']),
-        url: z.string().url(),
-        headers: z.record(z.string(), z.string()).optional(),
-      })
-    )
-    .query(async ({ input }) => {
-      const { method, url, headers = {} } = input;
-
-      const response = await fetch(url, {
-        method,
-        headers:
-          method === 'POST'
-            ? {
-                ...headers,
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache',
-              }
-            : { ...headers, 'Cache-Control': 'no-cache' },
-        body: method === 'POST' ? '{}' : undefined,
-        redirect: 'follow',
-        cache: 'no-store',
-      });
-
-      const hdrs: Record<string, string> = {};
-      response.headers.forEach((v, k) => (hdrs[k] = v));
-
-      const x402Data = await extractX402Data(response);
-
-      const result = {
-        ok: response.ok,
-        status: response.status,
-        statusText: response.statusText,
-        headers: hdrs,
-        body: x402Data,
-      };
-
-      const validated = validateX402(x402Data);
-      const info = {
-        hasAccepts: validated.success
-          ? (validated.parsed.accepts?.length ?? 0) > 0
-          : false,
-        hasInputSchema: validated.success
-          ? Boolean(validated.outputSchema?.input)
-          : false,
-      };
-      const parsed = validated.success
-        ? {
-            success: true as const,
-            data: validated.parsed,
-            issues: validated.issues,
-          }
-        : {
-            success: false as const,
-            errors: validated.errors,
-            issues: validated.issues,
-          };
-
-      return { result, parsed, info };
-    }),
 
   /** Batch test multiple resources to get their x402 responses */
   batchTest: publicProcedure
@@ -225,7 +85,16 @@ export const developerRouter = createTRPCRouter({
             z.object({
               url: z.string().url(),
               method: z
-                .enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+                .enum([
+                  'GET',
+                  'POST',
+                  'PUT',
+                  'PATCH',
+                  'DELETE',
+                  'HEAD',
+                  'OPTIONS',
+                  'TRACE',
+                ])
                 .optional(),
               /** If true, this resource is invalid and should not be tested */
               invalid: z.boolean().optional(),
@@ -236,9 +105,9 @@ export const developerRouter = createTRPCRouter({
           .max(20),
       })
     )
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
       // Separate invalid resources from valid ones
-      const invalidResults: FailedResourceDetails[] = input.resources
+      const invalidResults: FailedResource[] = input.resources
         .filter(r => r.invalid)
         .map(r => ({
           success: false as const,
@@ -249,7 +118,7 @@ export const developerRouter = createTRPCRouter({
       // Only test valid resources
       const validResources = input.resources.filter(r => !r.invalid);
       const testResults = await Promise.all(
-        validResources.map(r => testSingleResource(r.url))
+        validResources.map(r => testSingleResource(r.url, r.method))
       );
 
       // Combine test results with invalid results
@@ -259,9 +128,7 @@ export const developerRouter = createTRPCRouter({
         resources: allResults.filter(
           (r): r is Extract<typeof r, { success: true }> => r.success
         ),
-        failed: allResults.filter(
-          (r): r is FailedResourceDetails => !r.success
-        ),
+        failed: allResults.filter((r): r is FailedResource => !r.success),
       };
     }),
 });

@@ -7,18 +7,11 @@ export { fetchWithProxy } from './proxy-fetch';
 
 import {
   x402ResponseSchemaV1,
-  paymentRequirementsSchemaV1,
   outputSchemaV1,
   type X402ResponseV1,
-  type PaymentRequirementsV1,
   type OutputSchemaV1,
 } from './v1';
-import {
-  x402ResponseSchemaV2,
-  paymentRequirementsSchemaV2,
-  type X402ResponseV2,
-  type PaymentRequirementsV2,
-} from './v2';
+import { x402ResponseSchemaV2, type X402ResponseV2 } from './v2';
 import type { DiscoveryExtension } from '@x402/extensions/bazaar';
 import { decodePaymentRequiredHeader } from '@x402/core/http';
 import { ChainIdToNetwork } from 'x402/types';
@@ -45,75 +38,7 @@ export const normalizedAcceptSchema = z3.object({
   outputSchema: outputSchemaV1.optional(),
 });
 
-type NormalizedAccept = z3.infer<typeof normalizedAcceptSchema>;
-
-export const paymentRequirementsSchema = z3.union([
-  paymentRequirementsSchemaV1,
-  paymentRequirementsSchemaV2,
-]);
-
-type PaymentRequirements = PaymentRequirementsV1 | PaymentRequirementsV2;
-
-function isV2PaymentRequirement(
-  accept: PaymentRequirements
-): accept is PaymentRequirementsV2 {
-  return 'amount' in accept;
-}
-
-/**
- * NOTE(shafu): we do this because we want to store the payment requirements
- * in the database in a common format, which for legacy reasons is v1.
- */
-function normalizePaymentRequirement(
-  accept: PaymentRequirements,
-  resource?: X402ResponseV2['resource'],
-  outputSchema?: OutputSchemaV1
-): NormalizedAccept {
-  if (isV2PaymentRequirement(accept)) {
-    return {
-      scheme: accept.scheme as 'exact',
-      network: normalizeChainId(accept.network),
-      maxAmountRequired: accept.amount,
-      payTo: accept.payTo,
-      asset: accept.asset,
-      maxTimeoutSeconds: accept.maxTimeoutSeconds,
-      extra: accept.extra ?? undefined,
-      resource: resource?.url,
-      description: resource?.description,
-      mimeType: resource?.mimeType,
-      outputSchema,
-    };
-  }
-  return {
-    scheme: accept.scheme,
-    network: accept.network ?? '',
-    maxAmountRequired: accept.maxAmountRequired,
-    payTo: accept.payTo,
-    asset: accept.asset,
-    maxTimeoutSeconds: accept.maxTimeoutSeconds,
-    extra: accept.extra,
-    resource: accept.resource,
-    description: accept.description,
-    mimeType: accept.mimeType,
-    outputSchema: accept.outputSchema,
-  };
-}
-
 export type ParsedX402Response = X402ResponseV1 | X402ResponseV2;
-
-export function normalizeAccepts(
-  response: ParsedX402Response
-): NormalizedAccept[] {
-  const isV2 = isV2Response(response);
-  const resource = isV2 ? response.resource : undefined;
-  const outputSchema = isV2 ? getOutputSchema(response) : undefined;
-
-  return (
-    response.accepts?.map(accept =>
-      normalizePaymentRequirement(accept, resource, outputSchema)
-    ) ?? []
-  );
-}
 
 export function parseX402Response(
   data: unknown
