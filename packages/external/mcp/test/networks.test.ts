@@ -16,6 +16,7 @@ describe('toCaip2', () => {
   });
 
   it('converts v1 names to CAIP-2', () => {
+    expect(toCaip2('abstract')).toBe('eip155:2741');
     expect(toCaip2('base')).toBe('eip155:8453');
     expect(toCaip2('base-sepolia')).toBe('eip155:84532');
     expect(toCaip2('ethereum')).toBe('eip155:1');
@@ -42,6 +43,16 @@ describe('getChainConfig', () => {
     expect(config?.chain.name).toBe('Base');
   });
 
+  it('returns config for Abstract', () => {
+    const config = getChainConfig('eip155:2741');
+    expect(config).toBeDefined();
+    expect(config?.v1Name).toBe('abstract');
+    expect(config?.chain.name).toBe('Abstract');
+    expect(config?.usdcAddress).toBe(
+      '0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1'
+    );
+  });
+
   it('returns config for v1 name', () => {
     const config = getChainConfig('base');
     expect(config).toBeDefined();
@@ -55,12 +66,14 @@ describe('getChainConfig', () => {
 
 describe('getChainId', () => {
   it('extracts chain ID from CAIP-2', () => {
+    expect(getChainId('eip155:2741')).toBe(2741);
     expect(getChainId('eip155:8453')).toBe(8453);
     expect(getChainId('eip155:1')).toBe(1);
     expect(getChainId('eip155:84532')).toBe(84532);
   });
 
   it('converts v1 name and extracts chain ID', () => {
+    expect(getChainId('abstract')).toBe(2741);
     expect(getChainId('base')).toBe(8453);
     expect(getChainId('ethereum')).toBe(1);
   });
@@ -105,6 +118,7 @@ describe('isTestnet', () => {
   });
 
   it('returns false for mainnets', () => {
+    expect(isTestnet('abstract')).toBe(false);
     expect(isTestnet('base')).toBe(false);
     expect(isTestnet('eip155:8453')).toBe(false);
     expect(isTestnet('ethereum')).toBe(false);

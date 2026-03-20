@@ -1,6 +1,7 @@
 import { Chain, CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 
 const NETWORK_COLORS: Record<Chain, string> = {
+  [Chain.ABSTRACT]: 'hsl(145, 63%, 49%)',
   [Chain.BASE]: 'hsl(221, 83%, 53%)',
   [Chain.SOLANA]: 'hsl(271, 100%, 71%)',
   [Chain.POLYGON]: 'hsl(272, 55%, 50%)',

@@ -94,7 +94,8 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
           accepts: {
             some: {
               ...(address ? { payTo: address } : {}),
-              ...(chain ? { network: chain } : {}),
+              // TODO: remove cast when Prisma AcceptsNetwork enum includes abstract
+              ...(chain ? { network: chain as Prisma.AcceptsWhereInput['network'] } : {}),
             },
           },
         },
@@ -114,9 +115,10 @@ export const listOriginsWithResources = async (
   input: z.infer<typeof listOriginsWithResourcesSchema>
 ) => {
   const { chain, address, originIds } = input;
+  // TODO: remove cast when Prisma AcceptsNetwork enum includes abstract
   const acceptsWhere: Prisma.AcceptsWhereInput = {
     ...(address ? { payTo: address } : {}),
-    ...(chain ? { network: chain } : {}),
+    ...(chain ? { network: chain as Prisma.AcceptsWhereInput['network'] } : {}),
   };
   const origins = await scanDb.resourceOrigin.findMany({
     where: {

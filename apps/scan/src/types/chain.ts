@@ -1,6 +1,7 @@
-import { base, optimism, polygon } from 'wagmi/chains';
+import { abstract, base, optimism, polygon } from 'wagmi/chains';
 
 export enum Chain {
+  ABSTRACT = 'abstract',
   BASE = 'base',
   SOLANA = 'solana',
   POLYGON = 'polygon',
@@ -16,6 +17,7 @@ export type SupportedChain = (typeof SUPPORTED_CHAINS)[number];
 export type SupportedEVMChain = Exclude<SupportedChain, Chain.SOLANA>;
 
 export const CHAIN_LABELS: Record<Chain, string> = {
+  [Chain.ABSTRACT]: 'Abstract',
   [Chain.BASE]: 'Base',
   [Chain.SOLANA]: 'Solana',
   [Chain.POLYGON]: 'Polygon',
@@ -23,6 +25,7 @@ export const CHAIN_LABELS: Record<Chain, string> = {
 };
 
 export const CHAIN_ICONS: Record<Chain, string> = {
+  [Chain.ABSTRACT]: '/abstract.png',
   [Chain.BASE]: '/base.png',
   [Chain.SOLANA]: '/solana.png',
   [Chain.POLYGON]: '/polygon.png',
@@ -30,6 +33,7 @@ export const CHAIN_ICONS: Record<Chain, string> = {
 };
 
 export const CHAIN_ID: Record<Chain, number> = {
+  [Chain.ABSTRACT]: abstract.id,
   [Chain.BASE]: base.id,
   [Chain.POLYGON]: polygon.id,
   [Chain.OPTIMISM]: optimism.id,

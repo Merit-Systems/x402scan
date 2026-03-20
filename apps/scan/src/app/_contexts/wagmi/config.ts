@@ -5,7 +5,7 @@ import {
   http,
   injected,
 } from 'wagmi';
-import { base } from 'wagmi/chains';
+import { abstract, base } from 'wagmi/chains';
 
 import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
 
@@ -17,8 +17,9 @@ const createCDPConnector = () =>
   createCDPEmbeddedWalletConnector({
     cdpConfig,
     providerConfig: {
-      chains: [base],
+      chains: [abstract, base],
       transports: {
+        [abstract.id]: http(),
         [base.id]: http(),
       },
     },
@@ -28,11 +29,12 @@ export const createWagmiConfig = () => {
   const isServer = typeof window === 'undefined';
 
   return createConfig({
-    chains: [base],
+    chains: [abstract, base],
     storage: createStorage({
       storage: cookieStorage,
     }),
     transports: {
+      [abstract.id]: http(),
       [base.id]: http(env.NEXT_PUBLIC_BASE_RPC_URL),
     },
     connectors: isServer ? [injected()] : [injected(), createCDPConnector()],

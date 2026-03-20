@@ -86,6 +86,7 @@ export function convertToUIMessages(messages: Message[]): UIMessage[] {
   }));
 }
 export const USDC_ADDRESS = {
+  [Chain.ABSTRACT]: '0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1' as const,
   [Chain.BASE]: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913' as const,
   [Chain.SOLANA]:
     'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' as SolanaAddress,

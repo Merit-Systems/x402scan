@@ -88,7 +88,8 @@ export const evmServerWallet =
           getAccount().then(account =>
             account
               .sendTransaction({
-                network: chain,
+                // TODO: remove cast when CDP SDK adds Abstract support
+                network: chain as 'base',
                 transaction: {
                   to: token.address as Address,
                   data: encodeFunctionData({
