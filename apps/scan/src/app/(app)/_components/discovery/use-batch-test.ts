@@ -52,15 +52,17 @@ export function useBatchTest(
   );
 
   useEffect(() => {
-    if (!enabled || chunks.length === 0) {
-      setResources([]);
-      setFailed([]);
-      return;
-    }
+    if (!enabled || chunks.length === 0) return;
 
-    setIsLoading(true);
+    // Start requests immediately, but defer all setState calls into the async chain
+    // to satisfy react-hooks/set-state-in-effect
+    const request = Promise.all(
+      chunks.map(chunk => mutateAsyncRef.current({ resources: chunk }))
+    );
 
-    void Promise.all(chunks.map(chunk => mutateAsyncRef.current({ resources: chunk })))
+    void Promise.resolve()
+      .then(() => setIsLoading(true))
+      .then(() => request)
       .then(results => {
         const allResources: TestedResource[] = [];
         const allFailed: FailedResource[] = [];
@@ -73,14 +75,21 @@ export function useBatchTest(
       })
       .catch(err => {
         const error = err instanceof Error ? err.message : 'Request failed';
-        setFailed(chunks.flat().map(r => ({ success: false as const, url: r.url, error })));
+        setFailed(
+          chunks
+            .flat()
+            .map(r => ({ success: false as const, url: r.url, error }))
+        );
       })
       .finally(() => {
         setIsLoading(false);
       });
   }, [enabled, chunks, runCount]);
 
+  const active = enabled && chunks.length > 0;
+
   const payToAddresses = useMemo(() => {
+    if (!active) return [];
     const addresses: string[] = [];
     for (const resource of resources) {
       for (const opt of resource.parsed.paymentOptions ?? []) {
@@ -90,12 +99,12 @@ export function useBatchTest(
       }
     }
     return [...new Set(addresses)];
-  }, [resources]);
+  }, [active, resources]);
 
   return {
-    isLoading,
-    resources,
-    failed,
+    isLoading: isLoading && active,
+    resources: active ? resources : [],
+    failed: active ? failed : [],
     payToAddresses,
     refetch: () => setRunCount(c => c + 1),
   };

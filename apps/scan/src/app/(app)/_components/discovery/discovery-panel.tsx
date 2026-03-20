@@ -106,7 +106,7 @@ export interface DiscoveryPanelProps {
   /** Called when refresh is clicked */
   onRefresh?: () => void;
   /** Called when retry is clicked for a single resource */
-  onRetryResource?: (url: string) => void;
+  onRetryResource?: () => Promise<void>;
   /** URLs that are already registered */
   registeredUrls?: string[];
   /** Ownership proofs from discovery document */
@@ -429,7 +429,6 @@ export function DiscoveryPanel({
               </>
             ) : (
               <>No discovery spec found</>
-
             )}
           </span>
         </div>
@@ -528,7 +527,6 @@ export function DiscoveryPanel({
                           resourceUrl={resourceUrl}
                           tested={tested}
                           idx={idx}
-                          preview={preview}
                           invalidInfo={invalidInfo}
                           verifiedAddresses={verifiedAddresses}
                         />
@@ -668,14 +666,12 @@ function DiscoveredResourceExecutor({
   resourceUrl,
   tested,
   idx,
-  preview,
   invalidInfo,
   verifiedAddresses = {},
 }: {
   resourceUrl: string;
   tested: TestedResource;
   idx: number;
-  preview?: OriginPreview | null;
   invalidInfo?: { invalid: boolean; reason?: string };
   verifiedAddresses?: Record<string, boolean>;
 }) {
@@ -764,7 +760,7 @@ function FailedResourceCard({
   testedResponse?: TestedResource;
   invalidInfo?: { invalid: boolean; reason?: string };
   verifiedAddresses?: Record<string, boolean>;
-  onRetry?: (url: string) => void;
+  onRetry?: () => Promise<void>;
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const [showRawResponse, setShowRawResponse] = useState(false);
@@ -875,7 +871,7 @@ function FailedResourceCard({
                 size="sm"
                 onClick={() => {
                   setIsRetrying(true);
-                  void onRetry(resourceUrl).finally(() => {
+                  void onRetry().finally(() => {
                     setIsRetrying(false);
                   });
                 }}
