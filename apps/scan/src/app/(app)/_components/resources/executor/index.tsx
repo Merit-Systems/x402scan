@@ -26,7 +26,7 @@ import {
   getMaxAmount,
   type ParsedX402Response,
 } from '@/lib/x402';
-import type { Resources, Tag } from '@x402scan/scan-db';
+import type { Resources, Tag, ResourceRequestMetadata } from '@x402scan/scan-db';
 
 interface Props {
   resource: Resources;
@@ -41,6 +41,8 @@ interface Props {
   warnings?: string[];
   /** Whether ownership is verified for this resource */
   ownershipVerified?: boolean;
+  /** Metadata with default values for parameters */
+  requestMetadata?: ResourceRequestMetadata;
 }
 
 export const ResourceExecutor: React.FC<Props> = ({
@@ -53,6 +55,7 @@ export const ResourceExecutor: React.FC<Props> = ({
   isFlat = false,
   warnings = [],
   ownershipVerified = false,
+  requestMetadata,
 }) => {
   const outputSchema = response ? getOutputSchema(response) : undefined;
   const inputSchema = outputSchema?.input;
@@ -124,6 +127,7 @@ export const ResourceExecutor: React.FC<Props> = ({
             maxAmountRequired={maxAmountRequired}
             method={bazaarMethod}
             resource={resource.resource}
+            requestMetadata={requestMetadata}
           />
         </AccordionContent>
       </Card>

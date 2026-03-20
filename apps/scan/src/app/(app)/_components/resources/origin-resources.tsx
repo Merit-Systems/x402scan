@@ -59,6 +59,7 @@ export const OriginResources: React.FC<Props> = ({
                 hideOrigin={hideOrigin}
                 defaultOpen={defaultOpen}
                 isFlat={isFlat}
+                requestMetadata={resource.requestMetadata ?? undefined}
               />
             );
           })
