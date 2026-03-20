@@ -3,12 +3,12 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 
 interface SpeculativeFilterContextType {
-  showSpeculative: boolean;
+  showGamed: boolean;
   setShowSpeculative: (value: boolean) => void;
 }
 
 const SpeculativeFilterContext = createContext<SpeculativeFilterContextType>({
-  showSpeculative: false,
+  showGamed: false,
   setShowSpeculative: () => {
     void 0;
   },
@@ -21,11 +21,11 @@ export const useSpeculativeFilter = () => {
 export const SpeculativeFilterProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [showSpeculative, setShowSpeculative] = useState(false);
+  const [showGamed, setShowSpeculative] = useState(false);
 
   const value = useMemo(
-    () => ({ showSpeculative, setShowSpeculative }),
-    [showSpeculative]
+    () => ({ showGamed, setShowSpeculative }),
+    [showGamed]
   );
 
   return (

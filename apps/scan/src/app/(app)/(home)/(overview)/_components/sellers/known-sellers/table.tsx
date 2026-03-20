@@ -14,7 +14,7 @@ export const KnownSellersTable = () => {
   const { sorting } = useSellersSorting();
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
-  const { showSpeculative } = useSpeculativeFilter();
+  const { showGamed } = useSpeculativeFilter();
 
   const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
     chain,
@@ -23,7 +23,7 @@ export const KnownSellersTable = () => {
     },
     timeframe,
     sorting,
-    showSpeculative,
+    showGamed,
   });
 
   return <DataTable columns={columns} data={topSellers.items} pageSize={10} />;

@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useSpeculativeFilter } from './speculative-filter';
 
 export const SpeculativeFilterDescription = () => {
-  const { showSpeculative, setShowSpeculative } = useSpeculativeFilter();
+  const { showGamed, setShowSpeculative } = useSpeculativeFilter();
 
   return (
     <span className="inline-flex items-center gap-1">
@@ -35,7 +35,7 @@ export const SpeculativeFilterDescription = () => {
             </p>
             <label className="flex items-center gap-2 cursor-pointer">
               <Checkbox
-                checked={showSpeculative}
+                checked={showGamed}
                 onCheckedChange={checked => setShowSpeculative(checked === true)}
               />
               <span className="text-sm">Show all servers</span>
