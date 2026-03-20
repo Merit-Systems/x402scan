@@ -25,9 +25,14 @@ export async function probeX402Endpoint(url: string): Promise<ProbeX402Result> {
   });
 
   if (!result.found) {
+    const causeMessages = {
+      not_found: 'Endpoint did not return a 402 payment challenge',
+      network: 'Network error reaching endpoint',
+      timeout: 'Endpoint timed out',
+    };
     return {
       success: false,
-      error: result.message ?? `Endpoint not found: ${result.cause}`,
+      error: result.message ?? causeMessages[result.cause],
     };
   }
 
