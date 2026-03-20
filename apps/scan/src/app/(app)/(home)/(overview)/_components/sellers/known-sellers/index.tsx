@@ -19,7 +19,7 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import type { Chain } from '@/types/chain';
 
 import { GamedFilterProvider } from './gamed-filter';
-import { GamedFilterPopover } from './gamed-filter-description';
+import { GamedFilterPopover } from './gamed-filter-popover';
 
 interface Props {
   chain?: Chain;
