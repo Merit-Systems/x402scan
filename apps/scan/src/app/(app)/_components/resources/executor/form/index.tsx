@@ -110,7 +110,18 @@ export function Form({
         if (typeof value === 'string') {
           const trimmed = value.trim();
           if (trimmed.length > 0) {
-            acc.push([key, trimmed]);
+            const field = queryFields.find(f => f.name === key);
+            const fieldType = field?.type;
+            if (fieldType === 'number' || fieldType === 'integer') {
+              const num = Number(trimmed);
+              if (!isNaN(num)) {
+                acc.push([key, String(num)]);
+              }
+            } else if (fieldType === 'boolean') {
+              acc.push([key, trimmed]);
+            } else {
+              acc.push([key, trimmed]);
+            }
           }
         }
         return acc;
@@ -122,7 +133,7 @@ export function Form({
     const searchParams = new URLSearchParams(queryEntries);
     const separator = resource.includes('?') ? '&' : '?';
     return `${resource}${separator}${searchParams.toString()}`;
-  }, [resource, queryValues]);
+  }, [resource, queryValues, queryFields]);
 
   const isReservedHeader = (name: string) =>
     name.trim().toLowerCase() === 'x-payment';

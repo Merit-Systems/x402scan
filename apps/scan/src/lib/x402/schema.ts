@@ -112,6 +112,28 @@ function expandFields(
       continue;
     }
 
+    if (typeof raw === 'number') {
+      fields.push({
+        name: fullName,
+        type: Number.isInteger(raw) ? 'integer' : 'number',
+        required: parentRequired?.includes(name) ?? false,
+        enum: undefined,
+        default: String(raw),
+      } satisfies FieldDefinition);
+      continue;
+    }
+
+    if (typeof raw === 'boolean') {
+      fields.push({
+        name: fullName,
+        type: 'boolean',
+        required: parentRequired?.includes(name) ?? false,
+        enum: ['true', 'false'],
+        default: String(raw),
+      } satisfies FieldDefinition);
+      continue;
+    }
+
     if (typeof raw !== 'object' || !raw) {
       continue;
     }
