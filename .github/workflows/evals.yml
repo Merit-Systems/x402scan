@@ -1,0 +1,128 @@
+name: 'MCP Smoke Test'
+
+# Quick smoke test for MCP changes
+# For comprehensive evals, use `/eval` command or trigger x402-evals manually
+
+on:
+  pull_request:
+    paths:
+      - 'packages/external/mcp/src/**'
+      - 'packages/external/mcp/package.json'
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    env:
+      X402_PRIVATE_KEY: ${{ secrets.X402_PRIVATE_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build MCP server
+        run: pnpm build --filter=@x402scan/mcp
+
+      # Verify the MCP server starts and registers tools
+      - name: Verify MCP server starts
+        id: verify
+        working-directory: packages/external/mcp
+        run: |
+          echo "Testing locally built MCP server..."
+
+          # MCP requires initialize handshake before tools/list
+          OUTPUT=$((echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}'; \
+           sleep 1; \
+           echo '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'; \
+           sleep 1; \
+           echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_wallet_info","arguments":{}}}'; \
+           sleep 3) | \
+            timeout 20s node dist/esm/index.js 2>&1)
+
+          echo "$OUTPUT" | head -100
+
+          # Check for successful initialization
+          if echo "$OUTPUT" | grep -q '"result"'; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "✅ MCP server initialized successfully"
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "❌ MCP server failed to initialize"
+            exit 1
+          fi
+
+          # Count registered tools
+          TOOL_COUNT=$(echo "$OUTPUT" | grep -o '"name":' | wc -l || echo "0")
+          echo "tool_count=$TOOL_COUNT" >> $GITHUB_OUTPUT
+          echo "Found $TOOL_COUNT tool definitions"
+
+      - name: Post smoke test results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ steps.verify.outputs.status }}';
+            const toolCount = '${{ steps.verify.outputs.tool_count }}';
+            const statusEmoji = status === 'success' ? '✅' : '❌';
+
+            const body = [
+              `## ${statusEmoji} MCP Smoke Test`,
+              '',
+              '| Check | Status |',
+              '|-------|--------|',
+              `| **Server Starts** | ${status === 'success' ? '✅ Pass' : '❌ Fail'} |`,
+              `| **Tools Registered** | ${toolCount} tools |`,
+              '',
+              '<details>',
+              '<summary>Run full evaluation suite</summary>',
+              '',
+              'Comment `/eval` on this PR to trigger the full evaluation suite in x402-evals.',
+              '',
+              'Available suites:',
+              '- `/eval smoke` - Quick validation (~2-3 min)',
+              '- `/eval full` - Comprehensive testing (~10 min)',
+              '- `/eval regression` - Known edge cases',
+              '- `/eval unit` - Unit tests',
+              '',
+              '</details>'
+            ].join('\n');
+
+            // Find existing comment to update
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('MCP Smoke Test')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }
