@@ -1,4 +1,5 @@
 import {
+  abstract,
   base,
   baseSepolia,
   mainnet,
@@ -18,6 +19,12 @@ export interface ChainConfig {
 }
 
 const CHAIN_CONFIGS: Record<string, ChainConfig> = {
+  'eip155:2741': {
+    chain: abstract,
+    caip2: 'eip155:2741',
+    v1Name: 'abstract',
+    usdcAddress: '0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1',
+  },
   'eip155:8453': {
     chain: base,
     caip2: 'eip155:8453',
@@ -63,6 +70,7 @@ const CHAIN_CONFIGS: Record<string, ChainConfig> = {
 };
 
 const V1_TO_CAIP2: Record<string, string> = {
+  abstract: 'eip155:2741',
   base: 'eip155:8453',
   'base-sepolia': 'eip155:84532',
   ethereum: 'eip155:1',
