@@ -8,11 +8,13 @@ import { useChain } from '@/app/(app)/_contexts/chain/hook';
 
 import { columns } from './columns';
 import { api } from '@/trpc/client';
+import { useSpeculativeFilter } from './speculative-filter';
 
 export const KnownSellersTable = () => {
   const { sorting } = useSellersSorting();
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
+  const { showSpeculative } = useSpeculativeFilter();
 
   const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
     chain,
@@ -21,6 +23,7 @@ export const KnownSellersTable = () => {
     },
     timeframe,
     sorting,
+    showSpeculative,
   });
 
   return <DataTable columns={columns} data={topSellers.items} pageSize={10} />;

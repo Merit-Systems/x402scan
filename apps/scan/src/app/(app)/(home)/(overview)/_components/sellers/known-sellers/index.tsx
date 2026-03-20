@@ -18,6 +18,9 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
 
+import { SpeculativeFilterProvider } from './speculative-filter';
+import { SpeculativeFilterDescription } from './speculative-filter-description';
+
 interface Props {
   chain?: Chain;
 }
@@ -36,17 +39,19 @@ export const TopServers: React.FC<Props> = ({ chain }) => {
     <HydrateClient>
       <SellersSortingProvider initialSorting={defaultSellersSorting}>
         <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
-          <TopServersContainer>
-            <ErrorBoundary
-              fallback={
-                <p>There was an error loading the known sellers data</p>
-              }
-            >
-              <Suspense fallback={<LoadingKnownSellersTable />}>
-                <KnownSellersTable />
-              </Suspense>
-            </ErrorBoundary>
-          </TopServersContainer>
+          <SpeculativeFilterProvider>
+            <TopServersContainer>
+              <ErrorBoundary
+                fallback={
+                  <p>There was an error loading the known sellers data</p>
+                }
+              >
+                <Suspense fallback={<LoadingKnownSellersTable />}>
+                  <KnownSellersTable />
+                </Suspense>
+              </ErrorBoundary>
+            </TopServersContainer>
+          </SpeculativeFilterProvider>
         </TimeRangeProvider>
       </SellersSortingProvider>
     </HydrateClient>
@@ -65,7 +70,7 @@ const TopServersContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section
       title="Top Servers"
-      description="Top addresses that have received x402 transfers and are listed in the Bazaar"
+      description={<SpeculativeFilterDescription />}
       actions={
         <div className="flex items-center gap-2">
           <RangeSelector />

@@ -167,7 +167,8 @@ model ResourceOrigin {
 
   title       String?
   description String?
-  favicon     String?
+  favicon       String?
+  isSpeculative Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

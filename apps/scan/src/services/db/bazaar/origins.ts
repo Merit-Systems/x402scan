@@ -36,6 +36,18 @@ const listBazaarOriginsUncached = async (
   }
 
   const tAccepts = performance.now();
+
+  if (!input.showSpeculative) {
+    for (const addr of Object.keys(originsByAddress)) {
+      const origins = originsByAddress[addr]!.filter(o => !o.isSpeculative);
+      if (origins.length === 0) {
+        delete originsByAddress[addr];
+      } else {
+        originsByAddress[addr] = origins;
+      }
+    }
+  }
+
   const addrCount = Object.keys(originsByAddress).length;
   console.log(
     `[bazaar.list] accepts=${(tAccepts - t0).toFixed(0)}ms (${addrCount} addrs)`
