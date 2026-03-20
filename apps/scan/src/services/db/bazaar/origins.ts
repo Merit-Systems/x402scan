@@ -39,7 +39,7 @@ const listBazaarOriginsUncached = async (
 
   if (!input.showSpeculative) {
     for (const addr of Object.keys(originsByAddress)) {
-      const origins = originsByAddress[addr]!.filter(o => !o.isSpeculative);
+      const origins = originsByAddress[addr]!.filter(o => !o.isGamed);
       if (origins.length === 0) {
         delete originsByAddress[addr];
       } else {
