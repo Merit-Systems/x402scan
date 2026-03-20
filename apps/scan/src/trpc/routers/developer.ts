@@ -7,9 +7,9 @@ import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource, TestedResource } from '@/types/batch-test';
 import { probeX402Endpoint } from '@/lib/discovery/probe';
 
-async function testSingleResource(url: string) {
+async function testSingleResource(url: string, method?: string) {
   try {
-    const result = await probeX402Endpoint(url);
+    const result = await probeX402Endpoint(url, method);
 
     if (!result.success) {
       return { success: false as const, url, error: result.error };
@@ -118,7 +118,7 @@ export const developerRouter = createTRPCRouter({
       // Only test valid resources
       const validResources = input.resources.filter(r => !r.invalid);
       const testResults = await Promise.all(
-        validResources.map(r => testSingleResource(r.url))
+        validResources.map(r => testSingleResource(r.url, r.method))
       );
 
       // Combine test results with invalid results
