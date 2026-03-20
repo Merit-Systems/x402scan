@@ -15,7 +15,7 @@ const encodeConfig = (config: Record<string, unknown>) => {
 };
 
 const cursorDeepLink = (invite?: string) => {
-  const args = ['-y', '@x402scan/mcp@latest'];
+  const args = ['-y', 'agentcash@latest'];
 
   if (invite) {
     args.push(`--invite ${invite}`);

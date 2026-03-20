@@ -91,7 +91,7 @@ const IdeGraphic = () => {
             <div className="bg-card border rounded-lg overflow-hidden">
               <div className="flex items-center gap-2 px-3 py-2 border-b border-border/50 bg-muted/30">
                 <Logo className="size-3.5" />
-                <span className="font-semibold text-xs">x402scan MCP</span>
+                <span className="font-semibold text-xs">AgentCash</span>
               </div>
 
               <div className="p-3 flex flex-col gap-2">

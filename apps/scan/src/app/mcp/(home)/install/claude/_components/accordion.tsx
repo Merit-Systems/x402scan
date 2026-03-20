@@ -51,7 +51,7 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
         title: 'Download the x402scan Extension',
         content: (
           <p>
-            The x402scan MCP is available as a{' '}
+            The AgentCash is available as a{' '}
             <a
               href="https://www.anthropic.com/engineering/desktop-extensions"
               target="_blank"
@@ -126,7 +126,7 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
                       >
                         Source Code
                       </a>{' '}
-                      of the x402scan MCP.
+                      of the AgentCash.
                     </p>
                   </div>
                 </AccordionContent>
@@ -147,9 +147,9 @@ export const ClaudeAccordion: React.FC<McpSearchParams> = ({ invite }) => {
                     your invite code:
                   </p>
                   <div className="bg-muted p-2 rounded-lg flex justify-between items-center gap-2">
-                    <p>Redeem my invite code {invite} on the x402scan MCP</p>
+                    <p>Redeem my invite code {invite} on the AgentCash</p>
                     <CopyButton
-                      text={`Redeem my invite code ${invite} on the x402scan MCP`}
+                      text={`Redeem my invite code ${invite} on the AgentCash`}
                     />
                   </div>
                 </div>

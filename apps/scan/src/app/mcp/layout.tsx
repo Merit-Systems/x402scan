@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'MCP',
-  description: 'x402scan MCP - Use x402 in any AI agent',
+  description: 'AgentCash - Use x402 in any AI agent',
 };
 
 export default function McpLayout({ children }: LayoutProps<'/mcp'>) {
