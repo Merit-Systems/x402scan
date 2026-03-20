@@ -1,9 +1,15 @@
 'use client';
 
+import { ChevronDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { CardContent } from '@/components/ui/card';
 import { JsonViewer } from '@/components/ai-elements/json-viewer';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 import { ResourceFetch } from '../../../resource-fetch';
 import { FieldSection } from './field-section';
@@ -22,7 +28,8 @@ import {
 } from '@/lib/x402/schema';
 
 import type { SupportedChain } from '@/types/chain';
-import type { FieldValue } from '@/types/x402';
+import type { FieldDefinition, FieldValue } from '@/types/x402';
+import type { ResourceRequestMetadata } from '@x402scan/scan-db';
 import type { X402FetchResponse } from '@/app/(app)/_hooks/x402/types';
 import type { JsonValue } from '@/components/ai-elements/json-viewer';
 
@@ -32,6 +39,146 @@ interface Props {
   maxAmountRequired: bigint;
   method: Methods;
   resource: string;
+  requestMetadata?: ResourceRequestMetadata | null;
+}
+
+interface OptionalFieldSectionProps {
+  title: string;
+  fields: FieldDefinition[];
+  values: Record<string, FieldValue>;
+  onChange: (name: string, value: FieldValue) => void;
+  prefix: string;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function flattenMetadataValues(
+  value: unknown,
+  prefix = ''
+): Record<string, FieldValue> {
+  const result: Record<string, FieldValue> = {};
+
+  if (Array.isArray(value)) {
+    if (prefix) {
+      result[prefix] = value;
+    }
+    return result;
+  }
+
+  if (!isPlainObject(value)) {
+    if (prefix && (typeof value === 'string' || typeof value === 'number')) {
+      result[prefix] = String(value);
+    }
+    if (prefix && typeof value === 'boolean') {
+      result[prefix] = value ? 'true' : 'false';
+    }
+    return result;
+  }
+
+  for (const [key, nestedValue] of Object.entries(value)) {
+    const nestedPrefix = prefix ? `${prefix}.${key}` : key;
+    Object.assign(result, flattenMetadataValues(nestedValue, nestedPrefix));
+  }
+
+  return result;
+}
+
+function mergeInputSchemaWithMetadata(
+  baseInputSchema: InputSchema,
+  metadata: ResourceRequestMetadata | null | undefined
+): InputSchema {
+  if (!isPlainObject(metadata?.inputSchema)) {
+    return baseInputSchema;
+  }
+
+  const merged = {
+    ...(baseInputSchema as Record<string, unknown>),
+  };
+
+  for (const [key, value] of Object.entries(metadata.inputSchema)) {
+    const existingValue = merged[key];
+    if (isPlainObject(existingValue) && isPlainObject(value)) {
+      merged[key] = { ...existingValue, ...value };
+      continue;
+    }
+    merged[key] = value;
+  }
+
+  return merged as InputSchema;
+}
+
+function splitRequiredFields(fields: FieldDefinition[]) {
+  return {
+    required: fields.filter(field => field.required),
+    optional: fields.filter(field => !field.required),
+  };
+}
+
+function buildInitialFieldValues(
+  fields: FieldDefinition[],
+  metadataDefaults: Record<string, FieldValue>
+): Record<string, FieldValue> {
+  const values: Record<string, FieldValue> = {};
+
+  for (const field of fields) {
+    const metadataValue = metadataDefaults[field.name];
+
+    if (field.type === 'array') {
+      if (Array.isArray(metadataValue)) {
+        values[field.name] = metadataValue;
+      }
+      continue;
+    }
+
+    if (typeof metadataValue === 'string') {
+      values[field.name] = metadataValue;
+      continue;
+    }
+
+    if (typeof field.default === 'string') {
+      values[field.name] = field.default;
+    }
+  }
+
+  return values;
+}
+
+function OptionalFieldSection({
+  title,
+  fields,
+  values,
+  onChange,
+  prefix,
+}: OptionalFieldSectionProps) {
+  if (fields.length === 0) {
+    return null;
+  }
+
+  return (
+    <Collapsible className="group rounded-md border">
+      <CollapsibleTrigger asChild>
+        <button
+          type="button"
+          className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/50 transition-colors"
+        >
+          <span className="text-xs font-medium text-muted-foreground">
+            {title} ({fields.length})
+          </span>
+          <ChevronDown className="size-3 text-muted-foreground transition-transform group-open:rotate-180" />
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="border-t p-3">
+        <FieldSection
+          fields={fields}
+          values={values}
+          onChange={onChange}
+          prefix={prefix}
+        />
+      </CollapsibleContent>
+    </Collapsible>
+  );
 }
 
 export function Form({
@@ -40,29 +187,63 @@ export function Form({
   maxAmountRequired,
   method,
   resource,
+  requestMetadata,
 }: Props) {
+  const mergedInputSchema = useMemo(
+    () => mergeInputSchemaWithMetadata(inputSchema, requestMetadata),
+    [inputSchema, requestMetadata]
+  );
+
   const headerFields = useMemo(
-    () => extractFieldsFromSchema(inputSchema, method, 'header'),
-    [inputSchema, method]
+    () => extractFieldsFromSchema(mergedInputSchema, method, 'header'),
+    [mergedInputSchema, method]
   );
 
   const queryFields = useMemo(
-    () => extractFieldsFromSchema(inputSchema, method, 'query'),
-    [inputSchema, method]
+    () => extractFieldsFromSchema(mergedInputSchema, method, 'query'),
+    [mergedInputSchema, method]
   );
 
   const bodyFields = useMemo(
-    () => extractFieldsFromSchema(inputSchema, method, 'body'),
-    [inputSchema, method]
+    () => extractFieldsFromSchema(mergedInputSchema, method, 'body'),
+    [mergedInputSchema, method]
+  );
+
+  const headerDefaults = useMemo(
+    () => flattenMetadataValues(requestMetadata?.headers),
+    [requestMetadata?.headers]
+  );
+  const queryDefaults = useMemo(
+    () => flattenMetadataValues(requestMetadata?.queryParams),
+    [requestMetadata?.queryParams]
+  );
+  const bodyDefaults = useMemo(
+    () => flattenMetadataValues(requestMetadata?.body),
+    [requestMetadata?.body]
+  );
+
+  const initialHeaderValues = useMemo(
+    () => buildInitialFieldValues(headerFields, headerDefaults),
+    [headerFields, headerDefaults]
+  );
+  const initialQueryValues = useMemo(
+    () => buildInitialFieldValues(queryFields, queryDefaults),
+    [queryFields, queryDefaults]
+  );
+  const initialBodyValues = useMemo(
+    () => buildInitialFieldValues(bodyFields, bodyDefaults),
+    [bodyFields, bodyDefaults]
   );
 
   const [headerValues, setHeaderValues] = useState<Record<string, FieldValue>>(
-    {}
+    initialHeaderValues
   );
   const [queryValues, setQueryValues] = useState<Record<string, FieldValue>>(
-    {}
+    initialQueryValues
   );
-  const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>({});
+  const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>(
+    initialBodyValues
+  );
 
   const handleHeaderChange = (name: string, value: FieldValue) => {
     setHeaderValues(prev => ({ ...prev, [name]: value }));
@@ -76,29 +257,32 @@ export function Form({
     setBodyValues(prev => ({ ...prev, [name]: value }));
   };
 
-  const allRequiredFieldsFilled = useMemo(() => {
-    const requiredHeader = headerFields.filter(field => field.required);
-    const requiredQuery = queryFields.filter(field => field.required);
-    const requiredBody = bodyFields.filter(field => field.required);
+  const { required: requiredHeaderFields, optional: optionalHeaderFields } =
+    useMemo(() => splitRequiredFields(headerFields), [headerFields]);
+  const { required: requiredQueryFields, optional: optionalQueryFields } =
+    useMemo(() => splitRequiredFields(queryFields), [queryFields]);
+  const { required: requiredBodyFields, optional: optionalBodyFields } =
+    useMemo(() => splitRequiredFields(bodyFields), [bodyFields]);
 
-    const headerFilled = requiredHeader.every(field => {
+  const allRequiredFieldsFilled = useMemo(() => {
+    const headerFilled = requiredHeaderFields.every(field => {
       const value = headerValues[field.name];
-      return value && isValidFieldValue(value);
+      return value !== undefined && isValidFieldValue(value);
     });
-    const queryFilled = requiredQuery.every(field => {
+    const queryFilled = requiredQueryFields.every(field => {
       const value = queryValues[field.name];
-      return value && isValidFieldValue(value);
+      return value !== undefined && isValidFieldValue(value);
     });
-    const bodyFilled = requiredBody.every(field => {
+    const bodyFilled = requiredBodyFields.every(field => {
       const value = bodyValues[field.name];
-      return value && isValidFieldValue(value);
+      return value !== undefined && isValidFieldValue(value);
     });
 
     return headerFilled && queryFilled && bodyFilled;
   }, [
-    headerFields,
-    queryFields,
-    bodyFields,
+    requiredHeaderFields,
+    requiredQueryFields,
+    requiredBodyFields,
     headerValues,
     queryValues,
     bodyValues,
@@ -207,29 +391,77 @@ export function Form({
   const hasFields =
     headerFields.length > 0 || queryFields.length > 0 || bodyFields.length > 0;
 
+  const hasRequiredFields =
+    requiredHeaderFields.length > 0 ||
+    requiredQueryFields.length > 0 ||
+    requiredBodyFields.length > 0;
+
   return (
     <CardContent className="flex flex-col gap-4 p-4 border-t">
       {hasFields && (
         <div className="space-y-4">
-          <FieldSection
-            fields={headerFields}
+          {hasRequiredFields && (
+            <div className="space-y-4 rounded-md border bg-muted/30 p-3">
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium">Required Parameters</h3>
+                <p className="text-xs text-muted-foreground">
+                  Fill these first to enable request execution.
+                </p>
+              </div>
+              <FieldSection
+                fields={requiredHeaderFields}
+                values={headerValues}
+                onChange={handleHeaderChange}
+                prefix="required-header"
+                title={
+                  requiredHeaderFields.length > 0
+                    ? 'Header Parameters'
+                    : undefined
+                }
+              />
+              <FieldSection
+                fields={requiredQueryFields}
+                values={queryValues}
+                onChange={handleQueryChange}
+                prefix="required-query"
+                title={
+                  requiredQueryFields.length > 0
+                    ? 'Query Parameters'
+                    : undefined
+                }
+              />
+              <FieldSection
+                fields={requiredBodyFields}
+                values={bodyValues}
+                onChange={handleBodyChange}
+                prefix="required-body"
+                title={
+                  requiredBodyFields.length > 0 ? 'Body Parameters' : undefined
+                }
+              />
+            </div>
+          )}
+
+          <OptionalFieldSection
+            title="Optional Header Parameters"
+            fields={optionalHeaderFields}
             values={headerValues}
             onChange={handleHeaderChange}
-            prefix="header"
-            title="Header Parameters"
+            prefix="optional-header"
           />
-          <FieldSection
-            fields={queryFields}
+          <OptionalFieldSection
+            title="Optional Query Parameters"
+            fields={optionalQueryFields}
             values={queryValues}
             onChange={handleQueryChange}
-            prefix="query"
+            prefix="optional-query"
           />
-          <FieldSection
-            fields={bodyFields}
+          <OptionalFieldSection
+            title="Optional Body Parameters"
+            fields={optionalBodyFields}
             values={bodyValues}
             onChange={handleBodyChange}
-            prefix="body"
-            title="Body Parameters"
+            prefix="optional-body"
           />
         </div>
       )}
