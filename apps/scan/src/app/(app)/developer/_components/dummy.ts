@@ -38,7 +38,7 @@ export function createDummyResourceOrigin(params: {
     title: params.title ?? null,
     description: params.description ?? null,
     favicon: params.favicon ?? null,
-    isSpeculative: false,
+    isSpeculative: true,
     createdAt: new Date(),
     updatedAt: new Date(),
     ogImages: params.ogImages,
