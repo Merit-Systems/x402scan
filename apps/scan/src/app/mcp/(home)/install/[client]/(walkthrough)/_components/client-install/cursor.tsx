@@ -15,7 +15,7 @@ const encodeConfig = (config: Record<string, unknown>) => {
 };
 
 const cursorDeepLink = (invite?: string) => {
-  const args = ['-y', '@x402scan/mcp@latest'];
+  const args = ['-y', 'agentcash@latest'];
 
   if (invite) {
     args.push(`--invite ${invite}`);
@@ -28,7 +28,7 @@ const cursorDeepLink = (invite?: string) => {
 
   const encodedConfig = encodeConfig(config);
 
-  return `cursor://anysphere.cursor-deeplink/mcp/install?name=x402&config=${encodeURIComponent(encodedConfig)}`;
+  return `cursor://anysphere.cursor-deeplink/mcp/install?name=agentcash&config=${encodeURIComponent(encodedConfig)}`;
 };
 
 export const CursorInstall: ClientInstallComponent = ({ invite }) => {
