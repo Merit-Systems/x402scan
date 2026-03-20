@@ -70,7 +70,7 @@ export const LoadingTopServers = () => {
 const TopServersContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section
-      title={<><h1 className="font-bold text-xl md:text-2xl">Top Servers</h1> <sup><GamedFilterPopover /></sup></>}
+      title={<><h1 className="font-bold text-xl md:text-2xl">Top Servers</h1> <GamedFilterPopover /></>}
       description="Top addresses that have received x402 transfers and are listed in the Bazaar"
       actions={
         <div className="flex items-center gap-2">

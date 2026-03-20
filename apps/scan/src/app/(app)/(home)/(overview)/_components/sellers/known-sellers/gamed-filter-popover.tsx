@@ -21,7 +21,7 @@ export const GamedFilterPopover = () => {
           type="button"
           className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
         >
-          <Info className="size-3" />
+          <Info className="size-3.5" />
         </button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-80">
