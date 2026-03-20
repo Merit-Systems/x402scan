@@ -19,7 +19,7 @@ export const cascadeFacilitator = {
   addresses: {
     [Network.SOLANA]: [
       {
-        address: 'F2vVvFwrbGHtsBEqFkSkLvsM6SJmDMm7KqhiW2P64WxY',
+        address: '7NetKx8TuRMBpqYFKZCVetkNuvWCPTrgekmGrsJwTmfN',
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2026-03-05'),
       },
