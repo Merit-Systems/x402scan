@@ -8,13 +8,13 @@ import { useChain } from '@/app/(app)/_contexts/chain/hook';
 
 import { columns } from './columns';
 import { api } from '@/trpc/client';
-import { useSpeculativeFilter } from './speculative-filter';
+import { useGamedFilter } from './gamed-filter';
 
 export const KnownSellersTable = () => {
   const { sorting } = useSellersSorting();
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
-  const { showGamed } = useSpeculativeFilter();
+  const { showGamed } = useGamedFilter();
 
   const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
     chain,

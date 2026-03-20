@@ -9,10 +9,10 @@ import {
 } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 
-import { useSpeculativeFilter } from './speculative-filter';
+import { useGamedFilter } from './gamed-filter';
 
-export const SpeculativeFilterDescription = () => {
-  const { showGamed, setShowSpeculative } = useSpeculativeFilter();
+export const GamedFilterDescription = () => {
+  const { showGamed, setShowGamed } = useGamedFilter();
 
   return (
     <span className="inline-flex items-center gap-1">
@@ -36,7 +36,7 @@ export const SpeculativeFilterDescription = () => {
             <label className="flex items-center gap-2 cursor-pointer">
               <Checkbox
                 checked={showGamed}
-                onCheckedChange={checked => setShowSpeculative(checked === true)}
+                onCheckedChange={checked => setShowGamed(checked === true)}
               />
               <span className="text-sm">Show all servers</span>
             </label>

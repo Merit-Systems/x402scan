@@ -18,8 +18,8 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
 
-import { SpeculativeFilterProvider } from './speculative-filter';
-import { SpeculativeFilterDescription } from './speculative-filter-description';
+import { GamedFilterProvider } from './gamed-filter';
+import { GamedFilterDescription } from './gamed-filter-description';
 
 interface Props {
   chain?: Chain;
@@ -40,7 +40,7 @@ export const TopServers: React.FC<Props> = ({ chain }) => {
     <HydrateClient>
       <SellersSortingProvider initialSorting={defaultSellersSorting}>
         <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
-          <SpeculativeFilterProvider>
+          <GamedFilterProvider>
             <TopServersContainer>
               <ErrorBoundary
                 fallback={
@@ -52,7 +52,7 @@ export const TopServers: React.FC<Props> = ({ chain }) => {
                 </Suspense>
               </ErrorBoundary>
             </TopServersContainer>
-          </SpeculativeFilterProvider>
+          </GamedFilterProvider>
         </TimeRangeProvider>
       </SellersSortingProvider>
     </HydrateClient>
@@ -71,7 +71,7 @@ const TopServersContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section
       title="Top Servers"
-      description={<SpeculativeFilterDescription />}
+      description={<GamedFilterDescription />}
       actions={
         <div className="flex items-center gap-2">
           <RangeSelector />
