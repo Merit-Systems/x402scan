@@ -1,5 +1,5 @@
 import { Network } from '../types';
-import { USDC_SOLANA_TOKEN } from '../constants';
+import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
 import type { Facilitator, FacilitatorConfig } from '../types';
 
@@ -21,6 +21,13 @@ export const cascadeFacilitator = {
       {
         address: 'F2vVvFwrbGHtsBEqFkSkLvsM6SJmDMm7KqhiW2P64WxY',
         tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2026-03-05'),
+      },
+    ],
+    [Network.BASE]: [
+      {
+        address: '0x2bb201f1bb056eb738718bd7a3ad1bef24b883bb',
+        tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2026-03-05'),
       },
     ],
