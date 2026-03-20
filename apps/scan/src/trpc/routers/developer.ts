@@ -27,6 +27,7 @@ async function testSingleResource(url: string) {
       method: advisory.method as TestedResource['method'],
       description: advisory.summary ?? null,
       parsed: advisory,
+      warnings: result.warnings,
     };
   } catch (err) {
     return {

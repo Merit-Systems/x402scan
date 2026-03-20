@@ -42,7 +42,9 @@ export function useBatchTest(
 
   const mutation = api.developer.batchTest.useMutation();
   const mutateAsyncRef = useRef(mutation.mutateAsync);
-  mutateAsyncRef.current = mutation.mutateAsync;
+  useEffect(() => {
+    mutateAsyncRef.current = mutation.mutateAsync;
+  });
 
   const chunks = useMemo(
     () => chunkArray(effectiveResources, BATCH_SIZE),

@@ -106,7 +106,7 @@ export interface DiscoveryPanelProps {
   /** Called when refresh is clicked */
   onRefresh?: () => void;
   /** Called when retry is clicked for a single resource */
-  onRetryResource?: (url: string) => Promise<void>;
+  onRetryResource?: (url: string) => void;
   /** URLs that are already registered */
   registeredUrls?: string[];
   /** Ownership proofs from discovery document */
@@ -692,11 +692,8 @@ function DiscoveredResourceExecutor({
   const x402Result = parseX402Response(tested.parsed.paymentRequiredBody);
   const x402Response = x402Result.success ? x402Result.data : null;
 
-  // Collect warnings for missing optional items
-  const warnings: string[] = [];
-  if (!tested.parsed.outputSchema) warnings.push('Output schema');
-  if (!preview?.ogImages?.[0]?.url) warnings.push('OG image');
-  if (!preview?.favicon) warnings.push('Favicon');
+  // Collect warnings from library and x402scan-specific checks
+  const warnings: string[] = tested.warnings.map(w => w.message);
   if (invalidInfo?.invalid)
     warnings.push(`Invalid: ${invalidInfo.reason ?? 'Unknown format error'}`);
 
@@ -767,7 +764,7 @@ function FailedResourceCard({
   testedResponse?: TestedResource;
   invalidInfo?: { invalid: boolean; reason?: string };
   verifiedAddresses?: Record<string, boolean>;
-  onRetry?: (url: string) => Promise<void>;
+  onRetry?: (url: string) => void;
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const [showRawResponse, setShowRawResponse] = useState(false);

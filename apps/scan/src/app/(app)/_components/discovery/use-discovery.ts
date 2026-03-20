@@ -110,7 +110,7 @@ export interface UseDiscoveryReturn {
   refreshDiscovery: () => void;
 
   // Retry single resource
-  retryResource: (url: string) => Promise<void>;
+  retryResource: (url: string) => void;
 }
 
 export function useDiscovery({
@@ -357,7 +357,7 @@ export function useDiscovery({
     },
 
     // Retry a single resource by re-running all batch tests
-    retryResource: async (_resourceUrl: string) => {
+    retryResource: (_url: string) => {
       batchTest.refetch();
     },
   };

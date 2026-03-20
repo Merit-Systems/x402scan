@@ -1,9 +1,9 @@
-import { checkEndpointSchema } from '@agentcash/discovery';
-import type { EndpointMethodAdvisory } from '@agentcash/discovery';
+import { checkEndpointSchema, getWarningsForL3 } from '@agentcash/discovery';
+import type { AuditWarning, EndpointMethodAdvisory } from '@agentcash/discovery';
 import { PROBE_TIMEOUT_MS } from './utils';
 
 export type ProbeX402Result =
-  | { success: true; advisory: EndpointMethodAdvisory }
+  | { success: true; advisory: EndpointMethodAdvisory; warnings: AuditWarning[] }
   | { success: false; error: string };
 
 /**
@@ -28,7 +28,7 @@ export async function probeX402Endpoint(
 
   for (const advisory of result.advisories) {
     if (advisory.paymentOptions?.some(p => p.protocol === 'x402')) {
-      return { success: true, advisory };
+      return { success: true, advisory, warnings: getWarningsForL3(advisory) };
     }
   }
 

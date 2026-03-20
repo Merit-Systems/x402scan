@@ -9,6 +9,7 @@ export interface TestedResource {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   description: string | null;
   parsed: EndpointMethodAdvisory;
+  warnings: AuditWarning[];
 }
 
 export interface FailedResource {
