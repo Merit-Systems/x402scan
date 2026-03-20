@@ -127,7 +127,7 @@ const OverallStatsCardContainer = ({
   value: React.ReactNode;
 }) => {
   return (
-    <Card>
+    <Card className="shadow-none border-0 bg-transparent">
       <CardHeader className="space-y-0">
         <CardDescription className="text-xs md:text-sm">
           {title}
