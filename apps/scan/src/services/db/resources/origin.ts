@@ -45,29 +45,24 @@ export const upsertOrigin = async (
 
     const originId = upsertedOrigin.id;
 
+    // Deduplicate OG images by URL within this batch (scraped pages can contain
+    // repeated og:image tags pointing to the same CDN URL).  After deduplication
+    // each URL appears at most once, so concurrent transactions sharing the same
+    // origin no longer race within the same Promise.all batch.
+    //
+    // Each upsert compiles to a single atomic
+    //   INSERT ... ON CONFLICT (originId, url) DO UPDATE SET ...
+    // statement, which is safe under concurrent load AND preserves metadata
+    // updates when a page is re-scanned with different OG image dimensions/titles.
+    const uniqueOgImages = [
+      ...new Map(origin.ogImages.map(img => [img.url, img])).values(),
+    ];
     await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
+      uniqueOgImages.map(({ url, height, width, title, description }) =>
         tx.ogImage.upsert({
-          where: {
-            originId_url: {
-              originId,
-              url,
-            },
-          },
-          update: {
-            height,
-            width,
-            title,
-            description,
-          },
-          create: {
-            originId,
-            url,
-            height,
-            width,
-            title,
-            description,
-          },
+          where: { originId_url: { originId, url } },
+          update: { height, width, title, description },
+          create: { originId, url, height, width, title, description },
         })
       )
     );
