@@ -26,6 +26,7 @@ const listBazaarOriginsUncached = async (
     originsByAddress = await getAcceptsAddresses({
       chain: input.chain,
       tags: input.tags,
+      excludeGamed: !input.showGamed,
     });
   } catch (err) {
     console.error(
@@ -36,6 +37,7 @@ const listBazaarOriginsUncached = async (
   }
 
   const tAccepts = performance.now();
+
   const addrCount = Object.keys(originsByAddress).length;
   console.log(
     `[bazaar.list] accepts=${(tAccepts - t0).toFixed(0)}ms (${addrCount} addrs)`
