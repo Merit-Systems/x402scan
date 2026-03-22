@@ -28,7 +28,7 @@ const cursorDeepLink = (invite?: string) => {
 
   const encodedConfig = encodeConfig(config);
 
-  return `cursor://anysphere.cursor-deeplink/mcp/install?name=x402&config=${encodeURIComponent(encodedConfig)}`;
+  return `cursor://anysphere.cursor-deeplink/mcp/install?name=agentcash&config=${encodeURIComponent(encodedConfig)}`;
 };
 
 export const CursorInstall: ClientInstallComponent = ({ invite }) => {
