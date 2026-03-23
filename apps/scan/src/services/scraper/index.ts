@@ -1,5 +1,5 @@
 import type { OgObject } from 'open-graph-scraper/types';
-import { fetchHtml } from './html';
+import { checkUrlExists, fetchHtml } from './html';
 import { parseMetadataFromHtml } from './metadata';
 import { parseOgFromHtml } from './og';
 import { parseFaviconFromHtml } from './favicon';
@@ -51,6 +51,14 @@ export const scrapeOriginData = async (inputOrigin: string) => {
   let { og, metadata, favicon } = html
     ? await parseAllFromHtml(html, origin)
     : { og: null, metadata: null, favicon: null };
+
+  // If no favicon found (e.g. origin returned non-HTML or had no icon tags), try /favicon.ico directly
+  if (!favicon) {
+    const fallbackUrl = new URL('/favicon.ico', origin).toString();
+    if (await checkUrlExists(fallbackUrl)) {
+      favicon = fallbackUrl;
+    }
+  }
 
   // Handle API subdomain fallback
   if (origin.startsWith('https://api.')) {
