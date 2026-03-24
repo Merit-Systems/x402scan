@@ -194,6 +194,7 @@ export const searchOrigins = async (
     where: {
       origin: {
         contains: search,
+        mode: 'insensitive',
       },
       resources: {
         some: {
