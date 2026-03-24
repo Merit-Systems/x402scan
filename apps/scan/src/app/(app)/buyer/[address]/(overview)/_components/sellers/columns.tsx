@@ -10,13 +10,11 @@ import {
   User,
 } from 'lucide-react';
 
-import Link from 'next/link';
-
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { SellerChart, LoadingSellerChart } from './chart';
 
-import { Origins, OriginsSkeleton } from '@/app/(app)/_components/origins';
+import { Seller, SellerSkeleton } from '@/app/(app)/_components/seller';
 import { Facilitators } from '@/app/(app)/_components/facilitator';
 
 import { formatCompactAgo } from '@/lib/utils';
@@ -27,7 +25,6 @@ import type { RouterOutputs } from '@/trpc/client';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { BuyerSellersSortingContext } from './sorting-provider';
 import { Chains } from '@/app/(app)/_components/chains';
-import { Address } from '@/components/ui/address';
 
 type ColumnType =
   RouterOutputs['public']['buyers']['all']['sellers']['items'][number];
@@ -38,19 +35,15 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     header: () => (
       <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
-    cell: ({ row }) => {
-      return (
-        <Link href={`/recipient/${row.original.recipient}`}>
-          <Address
-            address={row.original.recipient}
-            disableCopy
-            className="font-normal hover:underline"
-          />
-        </Link>
-      );
-    },
+    cell: ({ row }) => (
+      <Seller
+        address={row.original.recipient}
+        disableCopy
+        addressClassName="font-normal"
+      />
+    ),
     size: 225,
-    loading: () => <OriginsSkeleton />,
+    loading: () => <SellerSkeleton />,
   },
   {
     accessorKey: 'chart',
