@@ -1,66 +1,79 @@
 'use client';
 
+import {
+  Activity,
+  ArrowLeftRight,
+  Calendar,
+  DollarSign,
+  Globe,
+  Server,
+  User,
+} from 'lucide-react';
+
 import Link from 'next/link';
-
-import { Calendar, DollarSign, Globe, Hash, Server, User } from 'lucide-react';
-
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
-
-import { Address } from '@/components/ui/address';
-import { Facilitators } from '@/app/(app)/_components/facilitator';
-import { BuyerTopServers, LoadingBuyerTopServers } from './top-servers';
-
-import { formatTokenAmount } from '@/lib/token';
-import { formatCompactAgo } from '@/lib/utils';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { SellerChart, LoadingSellerChart } from './chart';
+
+import { Origins, OriginsSkeleton } from '@/app/(app)/_components/origins';
+import { Facilitators } from '@/app/(app)/_components/facilitator';
+
+import { formatCompactAgo } from '@/lib/utils';
+import { formatTokenAmount } from '@/lib/token';
+
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
-import { BuyersSortingContext } from '../../../../_contexts/sorting/buyers/context';
+import { HeaderCell } from '@/components/ui/data-table/header-cell';
+import { BuyerSellersSortingContext } from './sorting-provider';
 import { Chains } from '@/app/(app)/_components/chains';
+import { Address } from '@/components/ui/address';
 
 type ColumnType =
-  RouterOutputs['public']['buyers']['all']['list']['items'][number];
+  RouterOutputs['public']['buyers']['all']['sellers']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
-    accessorKey: 'sender',
+    accessorKey: 'recipient',
     header: () => (
-      <HeaderCell Icon={User} label="Buyer" className="justify-start" />
+      <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
-    cell: ({ row }) => (
-      <Link href={`/buyer/${row.original.sender}`}>
-        <Address
-          address={row.original.sender}
-          disableCopy
-          className="font-normal hover:underline"
-        />
-      </Link>
-    ),
+    cell: ({ row }) => {
+      return (
+        <Link href={`/recipient/${row.original.recipient}`}>
+          <Address
+            address={row.original.recipient}
+            disableCopy
+            className="font-normal hover:underline"
+          />
+        </Link>
+      );
+    },
     size: 225,
-    loading: () => <Skeleton className="h-4 w-32" />,
+    loading: () => <OriginsSkeleton />,
   },
   {
-    accessorKey: 'top_servers',
+    accessorKey: 'chart',
     header: () => (
-      <HeaderCell Icon={Server} label="Servers" className="mx-auto" />
+      <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
     ),
-    cell: ({ row }) => <BuyerTopServers sender={row.original.sender} />,
+    cell: ({ row }) => (
+      <SellerChart addresses={[row.original.recipient]} />
+    ),
     size: 100,
-    loading: () => <LoadingBuyerTopServers />,
+    loading: () => <LoadingSellerChart />,
   },
   {
     accessorKey: 'tx_count',
     header: () => (
       <HeaderCell
-        Icon={Hash}
+        Icon={ArrowLeftRight}
         label="Txns"
+        className="mx-auto"
         sorting={{
-          sortContext: BuyersSortingContext,
+          sortContext: BuyerSellersSortingContext,
           sortKey: 'tx_count',
         }}
-        className="mx-auto"
       />
     ),
     cell: ({ row }) => (
@@ -83,39 +96,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         label="Volume"
         className="mx-auto"
         sorting={{
-          sortContext: BuyersSortingContext,
+          sortContext: BuyerSellersSortingContext,
           sortKey: 'total_amount',
         }}
       />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
-        {formatTokenAmount(BigInt(row.original.total_amount))}
-      </div>
-    ),
-    size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
-  },
-  {
-    accessorKey: 'unique_sellers',
-    header: () => (
-      <HeaderCell
-        Icon={Hash}
-        label="Sellers"
-        sorting={{
-          sortContext: BuyersSortingContext,
-          sortKey: 'unique_sellers',
-        }}
-        className="mx-auto"
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {row.original.unique_sellers.toLocaleString(undefined, {
-          notation: 'compact',
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 0,
-        })}
+        {formatTokenAmount(BigInt(Math.round(row.original.total_amount)))}
       </div>
     ),
     size: 100,
@@ -128,7 +116,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         Icon={Calendar}
         label="Latest"
         sorting={{
-          sortContext: BuyersSortingContext,
+          sortContext: BuyerSellersSortingContext,
           sortKey: 'latest_block_timestamp',
         }}
         className="mx-auto"

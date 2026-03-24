@@ -68,6 +68,7 @@ export const listTopBuyersMVUncached = async (
   const t0 = performance.now();
   const offset = pagination.page * pagination.page_size;
 
+  try {
   const items = await queryRaw(
     Prisma.sql`
     SELECT
@@ -130,6 +131,17 @@ export const listTopBuyersMVUncached = async (
     total_count: count,
     ...pagination,
   });
+  } catch (error) {
+    if (String(error).includes('does not exist')) {
+      console.warn(`[buyers-mv] MV ${tableName} not yet available, returning empty`);
+      return toPaginatedResponse({
+        items: [],
+        total_count: 0,
+        ...pagination,
+      });
+    }
+    throw error;
+  }
 };
 
 export const listTopBuyersMV = createCachedPaginatedQuery({

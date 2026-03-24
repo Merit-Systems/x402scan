@@ -11,6 +11,10 @@ import { buyerStatisticsMVInputSchema } from '@/services/transfers/buyers/stats/
 import { bucketedBuyerStatisticsMVInputSchema } from '@/services/transfers/buyers/stats/bucketed-mv';
 import { getOverallBuyerStatisticsMV } from '@/services/transfers/buyers/stats/overall-mv';
 import { getBucketedBuyerStatisticsMV } from '@/services/transfers/buyers/stats/bucketed-mv';
+import {
+  listBuyerSellers,
+  listBuyerSellersInputSchema,
+} from '@/services/transfers/buyers/sellers/list';
 
 export const buyersRouter = createTRPCRouter({
   all: {
@@ -32,5 +36,10 @@ export const buyersRouter = createTRPCRouter({
           return await getBucketedBuyerStatisticsMV(input, ctx);
         }),
     },
+    sellers: paginatedProcedure
+      .input(listBuyerSellersInputSchema)
+      .query(async ({ input, ctx: { pagination } }) => {
+        return await listBuyerSellers(input, pagination);
+      }),
   },
 });

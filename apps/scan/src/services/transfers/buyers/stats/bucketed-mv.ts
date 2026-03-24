@@ -8,19 +8,6 @@ import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 export const bucketedBuyerStatisticsMVInputSchema = baseBucketedQuerySchema;
 
-// Map timeframe suffix to bucket interval for new buyers calculation
-// Must match the bucket intervals used in the sender_stats_bucketed MVs
-const getBucketInterval = (mvTimeframe: string): string => {
-  const intervalMap: Record<string, string> = {
-    '1d': '30 minutes',
-    '7d': '3 hours 30 minutes',
-    '14d': '7 hours',
-    '30d': '15 hours',
-    '0d': '1 day',
-  };
-  return intervalMap[mvTimeframe] ?? '1 day';
-};
-
 const bucketedBuyerResultSchema = z.array(
   z.object({
     bucket_start: z.date(),
@@ -39,7 +26,6 @@ const getBucketedBuyerStatisticsMVUncached = async (
 
   const mvTimeframe = getMaterializedViewSuffix(timeframe);
   const tableName = `sender_stats_bucketed_${mvTimeframe}`;
-  const bucketInterval = getBucketInterval(mvTimeframe);
 
   // Build WHERE conditions for bucketed stats
   const statsConditions: Prisma.Sql[] = [];
@@ -60,69 +46,35 @@ const getBucketedBuyerStatisticsMVUncached = async (
     );
   }
 
-  // Build WHERE conditions for new buyers (same filters applied to sender_first_seen)
-  const newBuyersConditions: Prisma.Sql[] = [];
-
-  if (input.chain) {
-    newBuyersConditions.push(Prisma.sql`AND sfs.chain = ${input.chain}`);
-  }
-
-  if (input.senders?.include && input.senders.include.length > 0) {
-    newBuyersConditions.push(
-      Prisma.sql`AND sfs.sender = ANY(${input.senders.include})`
-    );
-  }
-
-  if (input.senders?.exclude && input.senders.exclude.length > 0) {
-    newBuyersConditions.push(
-      Prisma.sql`AND NOT (sfs.sender = ANY(${input.senders.exclude}))`
-    );
-  }
-
   const statsWhereClause = Prisma.join(
     [Prisma.sql`WHERE 1=1`, ...statsConditions],
     ' '
   );
-  const newBuyersWhereClause = Prisma.join(
-    [Prisma.sql`WHERE 1=1`, ...newBuyersConditions],
-    ' '
-  );
 
-  // Query bucketed stats with new_buyers computed from sender_first_seen
-  // Uses LEFT JOIN to include buckets even if no new buyers exist
+  // Query bucketed stats — new_buyers omitted for now (requires sender_first_seen MV)
   const sql = Prisma.sql`
-    WITH bucketed_stats AS (
-      SELECT
-        ssb.bucket AS bucket_start,
-        COUNT(DISTINCT ssb.sender)::int AS total_buyers,
-        COALESCE(SUM(ssb.total_transactions), 0)::int AS total_transactions,
-        COALESCE(SUM(ssb.total_amount), 0)::float AS total_amount,
-        COALESCE(SUM(ssb.unique_sellers), 0)::int AS unique_sellers
-      FROM ${Prisma.raw(tableName)} ssb
-      ${statsWhereClause}
-      GROUP BY ssb.bucket
-    ),
-    new_buyers_per_bucket AS (
-      SELECT
-        time_bucket(${Prisma.raw(`'${bucketInterval}'`)}::interval, sfs.first_block_timestamp) AS bucket_start,
-        COUNT(*)::int AS new_buyers
-      FROM sender_first_seen sfs
-      ${newBuyersWhereClause}
-      GROUP BY 1
-    )
     SELECT
-      bs.bucket_start,
-      bs.total_buyers,
-      bs.total_transactions,
-      bs.total_amount,
-      bs.unique_sellers,
-      COALESCE(nb.new_buyers, 0)::int AS new_buyers
-    FROM bucketed_stats bs
-    LEFT JOIN new_buyers_per_bucket nb ON bs.bucket_start = nb.bucket_start
-    ORDER BY bs.bucket_start
+      ssb.bucket AS bucket_start,
+      COUNT(DISTINCT ssb.sender)::int AS total_buyers,
+      COALESCE(SUM(ssb.total_transactions), 0)::int AS total_transactions,
+      COALESCE(SUM(ssb.total_amount), 0)::float AS total_amount,
+      COALESCE(SUM(ssb.unique_sellers), 0)::int AS unique_sellers,
+      0::int AS new_buyers
+    FROM ${Prisma.raw(tableName)} ssb
+    ${statsWhereClause}
+    GROUP BY ssb.bucket
+    ORDER BY ssb.bucket
   `;
 
-  return queryRaw(sql, bucketedBuyerResultSchema);
+  try {
+    return await queryRaw(sql, bucketedBuyerResultSchema);
+  } catch (error) {
+    if (String(error).includes('does not exist')) {
+      console.warn(`[buyer-stats] MV ${tableName} not yet available, returning empty`);
+      return [];
+    }
+    throw error;
+  }
 };
 
 export const getBucketedBuyerStatisticsMV = createCachedArrayQuery({
