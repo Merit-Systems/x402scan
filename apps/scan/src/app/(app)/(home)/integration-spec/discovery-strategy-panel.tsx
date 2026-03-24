@@ -29,11 +29,11 @@ const strategies: Strategy[] = [
     subtitle: 'Canonical and most reliable discovery signal.',
     location: 'GET /openapi.json',
     requirements: [
-      'Top-level fields: openapi, info.title, info.guidance, info.version, paths.',
+      'Top-level fields: openapi, info.title, info.x-guidance, info.version, paths.',
       'For paid operations: responses.402 and x-payment-info.',
       'Set x-payment-info.protocols and one pricing mode (fixed, range, quote).',
       'Use OpenAPI security + components.securitySchemes for auth declaration.',
-      'Add high-level guidance in info.guidance for user-friendly discovery.',
+      'Add high-level guidance in info.x-guidance for user-friendly discovery.',
     ],
     example: `{
   "openapi": "3.1.0",
