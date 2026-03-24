@@ -13,7 +13,12 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { verifyAcceptsOwnership } from '@/services/verification/accepts-verification';
 import { outputSchemaV1 } from '@/lib/x402/v1';
-import { normalizeChainId, type ParsedX402Response } from '@/lib/x402';
+import {
+  normalizeChainId,
+  parseX402Response,
+  getOutputSchema,
+  type ParsedX402Response,
+} from '@/lib/x402';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
@@ -50,10 +55,26 @@ export const registerResource = async (
     };
   }
 
-  const outputSchemaForDb = outputSchemaV1.safeParse({
+  // Try v1 parse first (works when inputSchema includes type/method)
+  let outputSchemaForDb = outputSchemaV1.safeParse({
     input: advisory.inputSchema,
     output: advisory.outputSchema ?? null,
   }).data;
+
+  // Fallback: use v2-aware extraction from raw 402 body
+  if (!outputSchemaForDb && advisory.paymentRequiredBody) {
+    const parsed = parseX402Response(advisory.paymentRequiredBody);
+    if (parsed.success) {
+      const extracted = getOutputSchema(parsed.data);
+      if (extracted) {
+        const input = extracted.input as Record<string, unknown>;
+        if (!input.method && advisory.method) {
+          input.method = advisory.method;
+        }
+        outputSchemaForDb = extracted;
+      }
+    }
+  }
 
   const mappedAccepts = x402Options
     .map(opt => ({
