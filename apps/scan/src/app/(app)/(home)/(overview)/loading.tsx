@@ -6,6 +6,7 @@ import { LoadingLatestTransactions } from './_components/latest-transactions';
 import { LoadingTopFacilitators } from './_components/top-facilitators';
 import { LoadingOverallStats } from './_components/stats';
 import { LoadingAllSellers } from './_components/sellers/all-sellers';
+import { LoadingAllBuyers } from './_components/buyers';
 import { LoadingTopAgents } from './_components/top-agents';
 
 export default function LoadingOverview() {
@@ -20,6 +21,7 @@ export default function LoadingOverview() {
         <LoadingTopAgents />
         <LoadingLatestTransactions loadingRowCount={pageSize} />
         <LoadingAllSellers />
+        <LoadingAllBuyers />
       </Body>
     </div>
   );

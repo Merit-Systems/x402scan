@@ -48,6 +48,15 @@ export const walletStatsQuerySchema = z.object({
   timeframe: timeframeSchema,
 });
 
+export const buyersListQuerySchema = paginationSchema.extend({
+  chain: chainFilterSchema,
+  timeframe: timeframeSchema,
+  sort_by: z
+    .enum(['volume', 'tx_count', 'unique_sellers'])
+    .default('volume')
+    .describe('Sort field'),
+});
+
 export const merchantsListQuerySchema = paginationSchema.extend({
   chain: chainFilterSchema,
   timeframe: timeframeSchema,

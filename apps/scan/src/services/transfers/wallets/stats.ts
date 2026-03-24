@@ -4,7 +4,7 @@ import { Prisma } from '@x402scan/transfers-db';
 import { queryRaw } from '@/services/transfers/client';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { chainSchema } from '@/lib/schemas';
-import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+import { getMaterializedViewSuffix } from '@/lib/time-range';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type WalletStatsInput = {
@@ -15,22 +15,13 @@ type WalletStatsInput = {
 
 const getWalletStatsUncached = async (input: WalletStatsInput) => {
   const { address, chain, timeframe } = input;
-  const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
+  const mvTimeframe = getMaterializedViewSuffix(timeframe);
+  const tableName = `sender_stats_aggregated_${mvTimeframe}`;
 
   const conditions: Prisma.Sql[] = [Prisma.sql`WHERE sender = ${address}`];
 
   if (chain) {
     conditions.push(Prisma.sql`AND chain = ${chain}`);
-  }
-  if (startDate) {
-    conditions.push(
-      Prisma.sql`AND block_timestamp >= ${startDate.toISOString()}::timestamp`
-    );
-  }
-  if (endDate && startDate) {
-    conditions.push(
-      Prisma.sql`AND block_timestamp <= ${endDate.toISOString()}::timestamp`
-    );
   }
 
   const whereClause = Prisma.join(conditions, ' ');
@@ -38,11 +29,11 @@ const getWalletStatsUncached = async (input: WalletStatsInput) => {
   const result = await queryRaw(
     Prisma.sql`
       SELECT
-        COUNT(*)::int AS total_transactions,
-        COALESCE(SUM(amount), 0)::float AS total_amount,
-        COUNT(DISTINCT recipient)::int AS unique_recipients,
+        COALESCE(SUM(total_transactions), 0)::int AS total_transactions,
+        COALESCE(SUM(total_amount), 0)::float AS total_amount,
+        COALESCE(SUM(unique_sellers), 0)::int AS unique_recipients,
         COALESCE(ARRAY_AGG(DISTINCT chain) FILTER (WHERE chain IS NOT NULL), ARRAY[]::text[]) AS chains
-      FROM "TransferEvent"
+      FROM ${Prisma.raw(tableName)}
       ${whereClause}
     `,
     z.array(
