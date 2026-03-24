@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, DollarSign, Globe, Hash, Server, User } from 'lucide-react';
+import { Calendar, DollarSign, Globe, Hash, Server } from 'lucide-react';
 
 import Link from 'next/link';
 
