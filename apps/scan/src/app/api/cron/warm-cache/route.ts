@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createCaller } from '@/trpc/routers';
 import { createTRPCContext } from '@/trpc/trpc';
+import { defaultBuyersSorting } from '@/app/(app)/_contexts/sorting/buyers/default';
 import { defaultSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
 import { ActivityTimeframe } from '@/types/timeframes';
@@ -149,6 +150,43 @@ function getHomePageTasks(
 }
 
 /**
+ * Get cache warming tasks for Buyers
+ */
+function getBuyersPageTasks(
+  api: ReturnType<typeof createCaller>,
+  timeframe: ActivityTimeframe,
+  chain?: Chain
+): (() => Promise<unknown>)[] {
+  return [
+    // All Buyers list
+    () =>
+      api.public.buyers.all.list({
+        pagination: {
+          page_size: 100,
+        },
+        timeframe,
+        sorting: defaultBuyersSorting,
+        chain,
+      }),
+
+    // Buyer overall stats
+    () =>
+      api.public.buyers.all.stats.overall({
+        timeframe,
+        chain,
+      }),
+
+    // Buyer bucketed stats
+    () =>
+      api.public.buyers.all.stats.bucketed({
+        timeframe,
+        numBuckets: 48,
+        chain,
+      }),
+  ];
+}
+
+/**
  * Get cache warming tasks for the Networks Page
  */
 function getNetworksPageTasks(
@@ -277,10 +315,11 @@ function getResourcesPageTasks(
 /**
  * Page types that can be warmed
  */
-type WarmablePage = 'home' | 'networks' | 'facilitators' | 'resources';
+type WarmablePage = 'home' | 'buyers' | 'networks' | 'facilitators' | 'resources';
 
 const ALL_PAGES: WarmablePage[] = [
   'home',
+  'buyers',
   'networks',
   'facilitators',
   'resources',
@@ -347,6 +386,18 @@ export async function GET(request: NextRequest) {
         }
         if (!chainFilter || chainFilter === Chain.SOLANA) {
           allTasks.push(...getHomePageTasks(api, timeframe, Chain.SOLANA));
+        }
+      }
+
+      if (pagesToWarm.includes('buyers')) {
+        if (!chainFilter || chainFilter === 'all') {
+          allTasks.push(...getBuyersPageTasks(api, timeframe));
+        }
+        if (!chainFilter || chainFilter === Chain.BASE) {
+          allTasks.push(...getBuyersPageTasks(api, timeframe, Chain.BASE));
+        }
+        if (!chainFilter || chainFilter === Chain.SOLANA) {
+          allTasks.push(...getBuyersPageTasks(api, timeframe, Chain.SOLANA));
         }
       }
 

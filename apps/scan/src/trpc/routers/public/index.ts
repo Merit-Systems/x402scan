@@ -6,6 +6,7 @@ import { originsRouter } from './origins';
 import { publicToolsRouter } from './tools';
 import { facilitatorsRouter } from './facilitators';
 import { transfersRouter } from './transfers';
+import { buyersRouter } from './buyers';
 import { sellersRouter } from './sellers';
 import { statsRouter } from './stats';
 import { resourcesRouter } from './resources';
@@ -21,6 +22,7 @@ export const publicRouter = createTRPCRouter({
   tools: publicToolsRouter,
   facilitators: facilitatorsRouter,
   transfers: transfersRouter,
+  buyers: buyersRouter,
   sellers: sellersRouter,
   stats: statsRouter,
   resources: resourcesRouter,

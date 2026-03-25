@@ -100,6 +100,7 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
         },
       },
     },
+    orderBy: { createdAt: 'desc' },
   });
   return origins;
 };
