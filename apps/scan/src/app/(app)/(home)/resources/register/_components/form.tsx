@@ -9,7 +9,9 @@ import {
   Loader2,
   Plus,
   Server,
+  CircleHelp,
   Trash2,
+  TriangleAlert,
   XCircle,
 } from 'lucide-react';
 
@@ -29,6 +31,12 @@ import {
 } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import {
   DiscoveryPanel,
@@ -396,10 +404,29 @@ export const RegisterResourceForm = () => {
       return (
         <Card>
           <CardHeader className="flex-row items-center gap-3 space-y-0">
-            <Favicon
-              url={preview?.favicon ?? null}
-              className="size-10 rounded-md border bg-background shrink-0"
-            />
+            {preview?.favicon ? (
+              <Favicon
+                url={preview.favicon}
+                className="size-10 rounded-md border bg-background shrink-0"
+              />
+            ) : (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="relative shrink-0 cursor-help">
+                      <Favicon
+                        url={null}
+                        className="size-10 rounded-md border bg-background"
+                      />
+                      <CircleHelp className="absolute -right-1.5 -top-1.5 size-3.5 text-muted-foreground" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    Add a favicon to help your server stand out
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
             <div className="min-w-0">
               <CardTitle className="text-base truncate">
                 {preview?.title ?? urlOrigin ?? 'Discovered Server'}
@@ -410,6 +437,20 @@ export const RegisterResourceForm = () => {
               </CardDescription>
             </div>
           </CardHeader>
+          {!preview?.favicon && (
+            <div className="border-t px-6 py-2.5 flex items-center gap-2 text-xs text-yellow-600 dark:text-yellow-500">
+              <TriangleAlert className="size-3.5 shrink-0" />
+              <p>
+                To configure a favicon, serve{' '}
+                <code className="font-mono">/favicon.ico</code>,{' '}
+                <code className="font-mono">.png</code>, or{' '}
+                <code className="font-mono">.svg</code> at the root of your
+                server, or include a{' '}
+                <code className="font-mono">{'<link rel="icon">'}</code> tag.
+                This can be updated later by re-registering.
+              </p>
+            </div>
+          )}
           <CardContent className="border-t pt-4">
             <ul className="space-y-1 text-xs text-muted-foreground">
               {previewResources.map(resource => (
