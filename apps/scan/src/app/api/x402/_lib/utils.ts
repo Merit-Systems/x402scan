@@ -64,7 +64,7 @@ export function paginatedResponse(
  * Safe because Zod already validates the value is 'base' | 'solana'.
  */
 export function asChain(
-  chain: 'base' | 'solana' | undefined
+  chain: 'base' | 'solana' | 'stellar' | undefined
 ): Chain | undefined {
   return chain as Chain | undefined;
 }

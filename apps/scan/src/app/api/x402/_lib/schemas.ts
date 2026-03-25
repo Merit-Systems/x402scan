@@ -19,7 +19,7 @@ const paginationSchema = z.object({
 });
 
 const chainFilterSchema = z
-  .enum(['base', 'solana'])
+  .enum(['base', 'solana', 'stellar'])
   .optional()
   .describe('Filter by chain');
 
