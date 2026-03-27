@@ -45,8 +45,14 @@ export const upsertOrigin = async (
 
     const originId = upsertedOrigin.id;
 
+    // Deduplicate OG images by URL to prevent unique constraint violations
+    // when the scraped page returns duplicate OG image entries.
+    const uniqueOgImages = [
+      ...new Map(origin.ogImages.map(img => [img.url, img])).values(),
+    ];
+
     await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
+      uniqueOgImages.map(({ url, height, width, title, description }) =>
         tx.ogImage.upsert({
           where: {
             originId_url: {
