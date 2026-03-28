@@ -295,8 +295,8 @@ importers:
   apps/scan:
     dependencies:
       '@agentcash/discovery':
-        specifier: 1.4.1
-        version: 1.4.1
+        specifier: 1.4.3
+        version: 1.4.3
       '@agentcash/router':
         specifier: 1.1.9
         version: 1.1.9(6eacb81bb22aa1ce566e8ab228700749)
@@ -1001,8 +1001,6 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/internal/databases/scan/generated/client: {}
-
   packages/internal/databases/transfers:
     dependencies:
       '@neondatabase/serverless':
@@ -1048,8 +1046,6 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
-
-  packages/internal/databases/transfers/generated/client: {}
 
   packages/internal/neverthrow:
     dependencies:
@@ -1201,8 +1197,8 @@ packages:
   '@adraffy/ens-normalize@1.11.1':
     resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
 
-  '@agentcash/discovery@1.4.1':
-    resolution: {integrity: sha512-BNEVYUmV0vHSwcp1WCsAesUJiospuasIGIg6n+SdU04ChNX3KD1aa2f1mn/DNyTEmPRQ8qQXkeg3MDhfXiwAHA==}
+  '@agentcash/discovery@1.4.3':
+    resolution: {integrity: sha512-85KfL6w1N/7wLLL4dbTUgGVOTgzouuK0DmlZmgLfAWbuV8OT6Muav+lJkE+gh///Fi1PCLmYMhy1SWRSwfVGGQ==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -12321,7 +12317,7 @@ snapshots:
 
   '@adraffy/ens-normalize@1.11.1': {}
 
-  '@agentcash/discovery@1.4.1':
+  '@agentcash/discovery@1.4.3':
     dependencies:
       dereference-json-schema: 0.2.2
       neverthrow: 8.2.0
