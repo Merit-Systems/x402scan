@@ -23,7 +23,7 @@ export default async function DepositPage({
         <div className="flex flex-col items-start gap-1">
           <h1 className="text-3xl font-bold font-mono">Add Funds</h1>
           <p className="text-muted-foreground">
-            Add USDC to your x402scan MCP to call resources
+            Add USDC to your AgentCash to call resources
           </p>
         </div>
         <CopyAddress address={address} />
