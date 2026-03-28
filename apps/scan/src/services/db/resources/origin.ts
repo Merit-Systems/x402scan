@@ -158,6 +158,7 @@ export const listOriginsWithResources = async (
               tag: true,
             },
           },
+          requestMetadata: true,
         },
       },
       ogImages: true,

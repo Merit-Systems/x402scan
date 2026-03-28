@@ -10,6 +10,7 @@ interface FieldSectionProps {
   onChange: (name: string, value: FieldValue) => void;
   prefix: string;
   title?: string;
+  defaults?: Record<string, FieldValue>;
 }
 
 export function FieldSection({
@@ -18,6 +19,7 @@ export function FieldSection({
   onChange,
   prefix,
   title,
+  defaults,
 }: FieldSectionProps) {
   if (fields.length === 0) {
     return null;
@@ -41,6 +43,7 @@ export function FieldSection({
             value={values[field.name] ?? field.default ?? ''}
             onChange={value => onChange(field.name, value)}
             prefix={prefix}
+            placeholder={defaults?.[field.name] as string | undefined}
           />
           {field.description && (
             <p className="text-xs text-muted-foreground">{field.description}</p>

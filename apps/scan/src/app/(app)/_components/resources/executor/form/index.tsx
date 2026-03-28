@@ -1,9 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+import { ChevronDown } from 'lucide-react';
 
 import { CardContent } from '@/components/ui/card';
 import { JsonViewer } from '@/components/ai-elements/json-viewer';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 import { ResourceFetch } from '../../../resource-fetch';
 import { FieldSection } from './field-section';
@@ -22,9 +29,29 @@ import {
 } from '@/lib/x402/schema';
 
 import type { SupportedChain } from '@/types/chain';
-import type { FieldValue } from '@/types/x402';
+import type { FieldDefinition, FieldValue } from '@/types/x402';
 import type { X402FetchResponse } from '@/app/(app)/_hooks/x402/types';
 import type { JsonValue } from '@/components/ai-elements/json-viewer';
+import type { ResourceRequestMetadata } from '@x402scan/scan-db';
+
+function splitByRequired(fields: FieldDefinition[]) {
+  const required = fields.filter(f => f.required);
+  const optional = fields.filter(f => !f.required);
+  return { required, optional };
+}
+
+function extractDefaults(metadata: Record<string, unknown> | null | undefined): Record<string, FieldValue> {
+  if (!metadata || typeof metadata !== 'object') return {};
+  const defaults: Record<string, FieldValue> = {};
+  for (const [key, value] of Object.entries(metadata)) {
+    if (typeof value === 'string') {
+      defaults[key] = value;
+    } else if (Array.isArray(value)) {
+      defaults[key] = value;
+    }
+  }
+  return defaults;
+}
 
 interface Props {
   x402Response: ParsedX402Response;
@@ -32,6 +59,7 @@ interface Props {
   maxAmountRequired: bigint;
   method: Methods;
   resource: string;
+  requestMetadata?: ResourceRequestMetadata;
 }
 
 export function Form({
@@ -40,6 +68,7 @@ export function Form({
   maxAmountRequired,
   method,
   resource,
+  requestMetadata,
 }: Props) {
   const headerFields = useMemo(
     () => extractFieldsFromSchema(inputSchema, method, 'header'),
@@ -56,13 +85,38 @@ export function Form({
     [inputSchema, method]
   );
 
+  const headerDefaults = useMemo(
+    () => extractDefaults(requestMetadata?.headers as Record<string, unknown> | null),
+    [requestMetadata]
+  );
+  const queryDefaults = useMemo(
+    () => extractDefaults(requestMetadata?.queryParams as Record<string, unknown> | null),
+    [requestMetadata]
+  );
+  const bodyDefaults = useMemo(
+    () => extractDefaults(requestMetadata?.body as Record<string, unknown> | null),
+    [requestMetadata]
+  );
+
   const [headerValues, setHeaderValues] = useState<Record<string, FieldValue>>(
-    {}
+    () => ({ ...headerDefaults })
   );
   const [queryValues, setQueryValues] = useState<Record<string, FieldValue>>(
-    {}
+    () => ({ ...queryDefaults })
   );
-  const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>({});
+  const [bodyValues, setBodyValues] = useState<Record<string, FieldValue>>(
+    () => ({ ...bodyDefaults })
+  );
+
+  useEffect(() => {
+    setHeaderValues(prev => ({ ...prev, ...headerDefaults }));
+  }, [headerDefaults]);
+  useEffect(() => {
+    setQueryValues(prev => ({ ...prev, ...queryDefaults }));
+  }, [queryDefaults]);
+  useEffect(() => {
+    setBodyValues(prev => ({ ...prev, ...bodyDefaults }));
+  }, [bodyDefaults]);
 
   const handleHeaderChange = (name: string, value: FieldValue) => {
     setHeaderValues(prev => ({ ...prev, [name]: value }));
@@ -204,6 +258,27 @@ export function Form({
   const [data, setData] = useState<X402FetchResponse | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
+  const headerSplit = useMemo(() => splitByRequired(headerFields), [headerFields]);
+  const querySplit = useMemo(() => splitByRequired(queryFields), [queryFields]);
+  const bodySplit = useMemo(() => splitByRequired(bodyFields), [bodyFields]);
+
+  const allRequired = [
+    ...headerSplit.required,
+    ...querySplit.required,
+    ...bodySplit.required,
+  ];
+  const allOptional = [
+    ...headerSplit.optional,
+    ...querySplit.optional,
+    ...bodySplit.optional,
+  ];
+
+  const requiredCategoryCount = [
+    headerSplit.required.length > 0,
+    querySplit.required.length > 0,
+    bodySplit.required.length > 0,
+  ].filter(Boolean).length;
+
   const hasFields =
     headerFields.length > 0 || queryFields.length > 0 || bodyFields.length > 0;
 
@@ -211,26 +286,67 @@ export function Form({
     <CardContent className="flex flex-col gap-4 p-4 border-t">
       {hasFields && (
         <div className="space-y-4">
+          {/* Required parameters shown first */}
           <FieldSection
-            fields={headerFields}
+            fields={headerSplit.required}
             values={headerValues}
             onChange={handleHeaderChange}
             prefix="header"
-            title="Header Parameters"
+            title={headerSplit.required.length > 0 && requiredCategoryCount > 1 ? "Required Header Parameters" : undefined}
+            defaults={headerDefaults}
           />
           <FieldSection
-            fields={queryFields}
+            fields={querySplit.required}
             values={queryValues}
             onChange={handleQueryChange}
             prefix="query"
+            title={querySplit.required.length > 0 && requiredCategoryCount > 1 ? "Required Query Parameters" : undefined}
+            defaults={queryDefaults}
           />
           <FieldSection
-            fields={bodyFields}
+            fields={bodySplit.required}
             values={bodyValues}
             onChange={handleBodyChange}
             prefix="body"
-            title="Body Parameters"
+            title={bodySplit.required.length > 0 && requiredCategoryCount > 1 ? "Required Body Parameters" : undefined}
+            defaults={bodyDefaults}
           />
+
+          {/* Optional parameters in a collapsible section */}
+          {allOptional.length > 0 && (
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors w-full group">
+                <ChevronDown className="size-4 transition-transform group-data-[state=open]:rotate-180" />
+                <span>Optional parameters ({allOptional.length})</span>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-3 space-y-4">
+                <FieldSection
+                  fields={headerSplit.optional}
+                  values={headerValues}
+                  onChange={handleHeaderChange}
+                  prefix="header"
+                  title={headerSplit.optional.length > 0 && allOptional.length > headerSplit.optional.length ? "Header Parameters" : undefined}
+                  defaults={headerDefaults}
+                />
+                <FieldSection
+                  fields={querySplit.optional}
+                  values={queryValues}
+                  onChange={handleQueryChange}
+                  prefix="query"
+                  title={querySplit.optional.length > 0 && allOptional.length > querySplit.optional.length ? "Query Parameters" : undefined}
+                  defaults={queryDefaults}
+                />
+                <FieldSection
+                  fields={bodySplit.optional}
+                  values={bodyValues}
+                  onChange={handleBodyChange}
+                  prefix="body"
+                  title={bodySplit.optional.length > 0 && allOptional.length > bodySplit.optional.length ? "Body Parameters" : undefined}
+                  defaults={bodyDefaults}
+                />
+              </CollapsibleContent>
+            </Collapsible>
+          )}
         </div>
       )}
 
