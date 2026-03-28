@@ -27,6 +27,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { formatCompactAgo, formatCurrency } from '@/lib/utils';
 import { formatUnits } from 'viem';
 
+import { toast } from 'sonner';
+
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -128,12 +130,17 @@ export const createColumns = (
       const addresses = redemptions.map(r => r.recipientAddr);
       const uniqueAddresses = [...new Set(addresses)];
       const firstAddress = uniqueAddresses[0];
+      const copyAddress = (addr: string) => {
+        void navigator.clipboard.writeText(addr).then(() => {
+          toast.success('Address copied');
+        });
+      };
       if (uniqueAddresses.length === 1 && firstAddress) {
         return (
           <code
             className="text-xs font-mono cursor-pointer hover:bg-muted px-1 rounded"
             title={firstAddress}
-            onClick={() => void navigator.clipboard.writeText(firstAddress)}
+            onClick={() => copyAddress(firstAddress)}
           >
             {truncateAddress(firstAddress)}
           </code>
@@ -146,7 +153,7 @@ export const createColumns = (
               key={addr}
               className="block font-mono cursor-pointer hover:bg-muted px-1 rounded"
               title={addr}
-              onClick={() => void navigator.clipboard.writeText(addr)}
+              onClick={() => copyAddress(addr)}
             >
               {truncateAddress(addr)}
             </code>
