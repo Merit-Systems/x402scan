@@ -56,6 +56,7 @@ export const OriginResources: React.FC<Props> = ({
                 bazaarMethod={bazaarMethod}
                 className="bg-transparent"
                 response={resource.data}
+                requestMetadata={resource.requestMetadata}
                 hideOrigin={hideOrigin}
                 defaultOpen={defaultOpen}
                 isFlat={isFlat}
