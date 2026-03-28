@@ -295,8 +295,8 @@ importers:
   apps/scan:
     dependencies:
       '@agentcash/discovery':
-        specifier: 1.4.3
-        version: 1.4.3
+        specifier: 1.4.4
+        version: 1.4.4
       '@agentcash/router':
         specifier: 1.1.9
         version: 1.1.9(6eacb81bb22aa1ce566e8ab228700749)
@@ -1197,8 +1197,8 @@ packages:
   '@adraffy/ens-normalize@1.11.1':
     resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
 
-  '@agentcash/discovery@1.4.3':
-    resolution: {integrity: sha512-85KfL6w1N/7wLLL4dbTUgGVOTgzouuK0DmlZmgLfAWbuV8OT6Muav+lJkE+gh///Fi1PCLmYMhy1SWRSwfVGGQ==}
+  '@agentcash/discovery@1.4.4':
+    resolution: {integrity: sha512-JFq9X1HhIyojuszXa8O9PTJzPoRq+J+4F4wguQTElChKmmAIX5Y8p27ldcM+SwWN516GaBJdm3dm0664hc9UlQ==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -12317,7 +12317,7 @@ snapshots:
 
   '@adraffy/ens-normalize@1.11.1': {}
 
-  '@agentcash/discovery@1.4.3':
+  '@agentcash/discovery@1.4.4':
     dependencies:
       dereference-json-schema: 0.2.2
       neverthrow: 8.2.0
