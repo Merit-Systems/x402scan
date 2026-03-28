@@ -99,7 +99,7 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
 
 export interface SectionProps<T extends string> {
   title: string | ReactNode;
-  description?: string;
+  description?: React.ReactNode;
   children: React.ReactNode;
   actions?: React.ReactNode;
   className?: string;

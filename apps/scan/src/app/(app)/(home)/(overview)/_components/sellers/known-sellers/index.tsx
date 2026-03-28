@@ -18,6 +18,9 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { Chain } from '@/types/chain';
 
+import { GamedFilterProvider } from './gamed-filter';
+import { GamedFilterPopover } from './gamed-filter-popover';
+
 interface Props {
   chain?: Chain;
 }
@@ -30,23 +33,26 @@ export const TopServers: React.FC<Props> = ({ chain }) => {
     },
     timeframe: ActivityTimeframe.OneDay,
     sorting: defaultSellersSorting,
+    showGamed: false,
   });
 
   return (
     <HydrateClient>
       <SellersSortingProvider initialSorting={defaultSellersSorting}>
         <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
-          <TopServersContainer>
-            <ErrorBoundary
-              fallback={
-                <p>There was an error loading the known sellers data</p>
-              }
-            >
-              <Suspense fallback={<LoadingKnownSellersTable />}>
-                <KnownSellersTable />
-              </Suspense>
-            </ErrorBoundary>
-          </TopServersContainer>
+          <GamedFilterProvider>
+            <TopServersContainer>
+              <ErrorBoundary
+                fallback={
+                  <p>There was an error loading the known sellers data</p>
+                }
+              >
+                <Suspense fallback={<LoadingKnownSellersTable />}>
+                  <KnownSellersTable />
+                </Suspense>
+              </ErrorBoundary>
+            </TopServersContainer>
+          </GamedFilterProvider>
         </TimeRangeProvider>
       </SellersSortingProvider>
     </HydrateClient>
@@ -64,7 +70,7 @@ export const LoadingTopServers = () => {
 const TopServersContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section
-      title="Top Servers"
+      title={<><h1 className="font-bold text-xl md:text-2xl">Top Servers</h1> <GamedFilterPopover /></>}
       description="Top addresses that have received x402 transfers and are listed in the Bazaar"
       actions={
         <div className="flex items-center gap-2">
