@@ -15,9 +15,8 @@ export type Facilitator = FacilitatorMetadata & {
   addresses: Partial<Record<Chain, MixedAddress[]>>;
 };
 
-const chainMap: Record<FacilitatorsNetwork, Chain> = {
+const chainMap: Partial<Record<FacilitatorsNetwork, Chain>> = {
   [FacilitatorsNetwork.BASE]: Chain.BASE,
-  [FacilitatorsNetwork.POLYGON]: Chain.POLYGON,
   [FacilitatorsNetwork.SOLANA]: Chain.SOLANA,
 };
 
@@ -28,7 +27,9 @@ export const facilitators: Facilitator[] = allFacilitators.map(f => ({
   addresses: Object.entries(f.addresses).reduce(
     (acc, [network, configs]) => {
       const scanChain = chainMap[network as FacilitatorsNetwork];
-      acc[scanChain] = configs.map(c => c.address as MixedAddress);
+      if (scanChain) {
+        acc[scanChain] = configs.map(c => c.address as MixedAddress);
+      }
       return acc;
     },
     {} as Partial<Record<Chain, MixedAddress[]>>

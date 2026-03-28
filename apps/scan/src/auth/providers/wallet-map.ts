@@ -4,7 +4,5 @@ import { SIWS_PROVIDER_ID } from './siws/constants';
 
 export const chainToAuthProviderId: Record<Chain, string> = {
   [Chain.BASE]: SIWE_PROVIDER_ID,
-  [Chain.POLYGON]: SIWE_PROVIDER_ID,
-  [Chain.OPTIMISM]: SIWE_PROVIDER_ID,
   [Chain.SOLANA]: SIWS_PROVIDER_ID,
 };
