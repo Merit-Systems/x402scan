@@ -112,6 +112,30 @@ function expandFields(
       continue;
     }
 
+    // Handle numeric example values (e.g. queryParams: { page: 1 })
+    if (typeof raw === 'number') {
+      fields.push({
+        name: fullName,
+        type: Number.isInteger(raw) ? 'integer' : 'number',
+        required: parentRequired?.includes(name) ?? false,
+        enum: undefined,
+        default: String(raw),
+      } satisfies FieldDefinition);
+      continue;
+    }
+
+    // Handle boolean example values (e.g. queryParams: { verbose: true })
+    if (typeof raw === 'boolean') {
+      fields.push({
+        name: fullName,
+        type: 'boolean',
+        required: parentRequired?.includes(name) ?? false,
+        enum: ['true', 'false'],
+        default: String(raw),
+      } satisfies FieldDefinition);
+      continue;
+    }
+
     if (typeof raw !== 'object' || !raw) {
       continue;
     }
@@ -124,7 +148,7 @@ function expandFields(
       ? (field.enum as string[])
       : undefined;
     const fieldDefault =
-      typeof field.default === 'string' ? field.default : undefined;
+      field.default != null ? String(field.default) : undefined;
 
     const isFieldRequired =
       typeof field.required === 'boolean'
