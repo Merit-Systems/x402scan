@@ -1,0 +1,10 @@
+feat: solution for issue #107
+
+Closes #107
+
+Payouts:
+- EVM: 0xe744f6791a685b0A0cC316ED44375B69361c837F
+- SOL: 8BsByR6rPqxDPku6dYtdoiSk6bdgE9YETbLQF2RGSw1C
+
+
+PoA-Signature: poa_d252c0370ab50e6c
