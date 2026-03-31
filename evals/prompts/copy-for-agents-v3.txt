@@ -14,11 +14,11 @@ Schema guidance (important):
 OpenAPI payable operation must include ALL:
 - x-payment-info with:
   - protocols: ["x402"]
-  - pricingMode + fields:
-    - fixed: { pricingMode: "fixed", price: "<amount>" }
-    - range: { pricingMode: "range", minPrice: "<min>", maxPrice: "<max>" }
-    - quote: { pricingMode: "quote" }
-  - IMPORTANT: for fixed pricing use "price" (not "amount")
+  - price (structured object, canonical format):
+    - fixed: { mode: "fixed", currency: "USD", value: "<amount>" }
+    - dynamic: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" }
+  - Legacy flat format also accepted: { pricingMode: "fixed", price: "<amount>" } or { pricingMode: "dynamic", minPrice: "<min>", maxPrice: "<max>" }
+  - IMPORTANT: for fixed pricing use "price" or "value" (not "amount")
 - responses: { "402": { description: "Payment Required" } }
 
 /.well-known/x402 must be exactly:

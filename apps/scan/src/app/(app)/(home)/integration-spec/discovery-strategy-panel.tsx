@@ -31,7 +31,7 @@ const strategies: Strategy[] = [
     requirements: [
       'Top-level fields: openapi, info.title, info.x-guidance, info.version, paths.',
       'For paid operations: responses.402 and x-payment-info.',
-      'Set x-payment-info.protocols and one pricing mode (fixed, range, quote).',
+      'Set x-payment-info.protocols and one pricing mode (fixed or dynamic).',
       'Use OpenAPI security + components.securitySchemes for auth declaration.',
       'Add high-level guidance in info.x-guidance for user-friendly discovery.',
     ],
@@ -44,8 +44,7 @@ const strategies: Strategy[] = [
         "responses": { "402": { "description": "Payment Required" } },
         "x-payment-info": {
           "protocols": ["x402"],
-          "pricingMode": "fixed",
-          "price": "0.05"
+          "price": { "mode": "fixed", "currency": "USD", "value": "0.05" }
         }
       }
     }
