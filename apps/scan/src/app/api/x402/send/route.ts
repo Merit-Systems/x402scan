@@ -12,10 +12,7 @@ export const POST = withCors(
       (body: { amount: number; address: string }) => body.amount.toString(),
       {
         maxPrice: '1000',
-        payTo: async (req: Request) => {
-          const body = (await req.clone().json()) as { address: string };
-          return body.address;
-        },
+        payTo: (_req, body) => (body as { address: string }).address,
       }
     )
     .method('POST')
