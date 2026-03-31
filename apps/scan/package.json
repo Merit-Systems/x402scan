@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@agentcash/discovery": "1.4.5",
-    "@agentcash/router": "1.1.9",
+    "@agentcash/router": "0.0.0-pr-155-20260331160232",
     "@ai-sdk/openai": "^2.0.52",
     "@ai-sdk/react": "^2.0.68",
     "@auth/prisma-adapter": "^2.7.4",
