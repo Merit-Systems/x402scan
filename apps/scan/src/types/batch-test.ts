@@ -1,23 +1,20 @@
-import type { ParsedX402Response } from '@/lib/x402';
-import type { X402ValidationIssue } from './validation';
+import type {
+  EndpointMethodAdvisory,
+  AuditWarning,
+} from '@agentcash/discovery';
 
 export interface TestedResource {
   success: true;
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   description: string | null;
-  parsed: ParsedX402Response;
+  parsed: EndpointMethodAdvisory;
+  warnings: AuditWarning[];
 }
 
 export interface FailedResource {
   success: false;
   url: string;
   error: string;
-  status?: number;
-  statusText?: string;
-  headers?: Record<string, string>;
-  body?: unknown;
-  parseErrors?: string[];
-  issues?: X402ValidationIssue[];
-  triedMethods?: string[];
+  issues?: AuditWarning[];
 }

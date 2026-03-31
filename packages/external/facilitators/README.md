@@ -123,6 +123,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Primer**           | BASE          | No        | No                           |
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
+| **Cascade**          | BASE, SOLANA  | No        | No                           |
 
 ### Import Individual Facilitators
 
@@ -151,6 +152,7 @@ import {
   primer,
   relai,
   bitrefill,
+  cascade,
 } from 'facilitators';
 
 // Facilitators requiring setup

@@ -350,6 +350,7 @@ const searchResourcesUncached = async (
               {
                 resource: {
                   contains: search,
+                  mode: 'insensitive',
                 },
               },
               {

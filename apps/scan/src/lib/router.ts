@@ -34,6 +34,7 @@ export const router = createRouter({
 ## Data endpoints ($0.01–$0.02 each)
 - GET /api/x402/wallets/{address}/transactions — paginated transfers where wallet is sender
 - GET /api/x402/wallets/{address}/stats — aggregate stats for a wallet
+- GET /api/x402/buyers — top senders by volume
 - GET /api/x402/merchants — top recipients by volume
 - GET /api/x402/merchants/{address}/transactions — paginated transfers where merchant is recipient
 - GET /api/x402/merchants/{address}/stats — aggregate stats for a merchant

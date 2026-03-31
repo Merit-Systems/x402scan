@@ -4,12 +4,10 @@ import { adminRouter } from './admin';
 import { developerRouter } from './developer';
 import { networksRouter } from './networks';
 import { publicRouter } from './public';
-import { resourcesRouter } from './resources';
 import { userRouter } from './user';
 import { onrampRouter } from './onramp';
 
 export const appRouter = createTRPCRouter({
-  resources: resourcesRouter,
   networks: networksRouter,
   user: userRouter,
   public: publicRouter,

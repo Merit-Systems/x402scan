@@ -14,7 +14,7 @@ const resourceSchemaV2 = z3.object({
   mimeType: z3.string().optional(),
 });
 
-export const paymentRequirementsSchemaV2 = z3.object({
+const paymentRequirementsSchemaV2 = z3.object({
   scheme: z3.string(),
   network: ChainIdSchema,
   asset: z3.string(),
@@ -47,6 +47,3 @@ export const x402ResponseSchemaV2 = z3.object({
 });
 
 export type X402ResponseV2 = z3.infer<typeof x402ResponseSchemaV2>;
-export type PaymentRequirementsV2 = z3.infer<
-  typeof paymentRequirementsSchemaV2
->;

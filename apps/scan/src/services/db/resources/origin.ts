@@ -100,6 +100,7 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
         },
       },
     },
+    orderBy: { createdAt: 'desc' },
   });
   return origins;
 };
@@ -194,6 +195,7 @@ export const searchOrigins = async (
     where: {
       origin: {
         contains: search,
+        mode: 'insensitive',
       },
       resources: {
         some: {

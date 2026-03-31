@@ -36,7 +36,7 @@ Schema guidance (important):
 - In OpenAPI, define requestBody.content["application/json"].schema.
 - This is required for reliable agent invocation and robust listing behavior.
 - TypeScript recommendation (optional): Zod v4 is a good source of truth, but any valid schema pipeline is fine.
-- Add high-level guidance in info.guidance for user-friendly discovery. This document should explain to an agent how to use your API at a high level.
+- Add high-level guidance in info.x-guidance for user-friendly discovery. This document should explain to an agent how to use your API at a high level.
 
 OpenAPI payable operation must include ALL:
 - x-payment-info with:

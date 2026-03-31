@@ -16,10 +16,6 @@ const nextConfig: NextConfig = {
         destination: 'https://us.i.posthog.com/:path*',
       },
       {
-        source: '/deposit/:path*',
-        destination: '/mcp/deposit/:path*',
-      },
-      {
         source: '/discovery',
         destination: '/integration-spec',
       },

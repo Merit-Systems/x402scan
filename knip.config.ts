@@ -17,6 +17,10 @@ const config: KnipConfig = {
         'tw-animate-css',
         '@mdx-js/loader',
         '@mdx-js/react',
+        '@stripe/crypto',
+        'lottie-react',
+        'react-circle-flags',
+        'country-data-list',
       ],
       ignore: [
         'src/scripts/**',

@@ -13,7 +13,6 @@ import {
   listResourcesWithPagination,
   searchResources,
   searchResourcesSchema,
-  deprecateStaleResources,
   type ResourceSortId,
 } from '@/services/db/resources/resource';
 
@@ -21,10 +20,10 @@ import { scanDb } from '@x402scan/scan-db';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 
-import { Methods } from '@/types/x402';
-
 import { registerResource } from '@/lib/resources';
-import { extractX402Data } from '@/lib/x402';
+
+import { probeX402Endpoint } from '@/lib/discovery/probe';
+import { registerResourcesFromDiscovery } from '@/lib/discovery/register-origin';
 import { TRPCError } from '@trpc/server';
 import {
   listResourceTags,
@@ -40,167 +39,11 @@ import {
   getResourceVerificationStatus,
   getOriginVerificationStatus,
 } from '@/services/verification/accepts-verification';
-import { getValidationIssueMessages } from '@/types/validation';
 
 import type { Prisma } from '@x402scan/scan-db';
 import type { SupportedChain } from '@/types/chain';
-import type { DiscoveryInfo, DiscoveredResource } from '@/types/discovery';
-
-const BULK_REGISTER_CONCURRENCY = 6;
-const METHOD_FALLBACKS = [Methods.DELETE, Methods.PUT, Methods.PATCH] as const;
-const MAX_429_RETRIES_PER_METHOD = 1;
-const RETRY_429_BASE_DELAY_MS = 300;
-const RETRY_429_MAX_DELAY_MS = 1500;
-
-function uniqueMethods(methods: Methods[]): Methods[] {
-  return Array.from(new Set(methods));
-}
-
-function primaryMethodsToTry(resource: DiscoveredResource): Methods[] {
-  if (resource.method) {
-    return uniqueMethods([
-      resource.method as Methods,
-      Methods.POST,
-      Methods.GET,
-    ]);
-  }
-  return [Methods.POST, Methods.GET];
-}
-
-function probeInitForMethod(method: Methods): {
-  headers: Record<string, string>;
-  body?: string;
-} {
-  if (
-    method === Methods.POST ||
-    method === Methods.PUT ||
-    method === Methods.PATCH
-  ) {
-    return {
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
-      },
-      body: '{}',
-    };
-  }
-
-  return {
-    headers: { 'Cache-Control': 'no-cache' },
-  };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
-}
-
-function isSiwxAuthOnlyChallenge(data: unknown): boolean {
-  if (!isRecord(data)) return false;
-
-  const acceptsValue = data.accepts;
-  if (!Array.isArray(acceptsValue) || acceptsValue.length !== 0) {
-    return false;
-  }
-
-  const extensionsValue = data.extensions;
-  if (!isRecord(extensionsValue)) {
-    return false;
-  }
-
-  return 'sign-in-with-x' in extensionsValue;
-}
-
-function isMissingInputSchemaError(err: unknown): boolean {
-  if (!isRecord(err)) return false;
-  if (err.type !== 'parseResponse') return false;
-
-  const issues = err.issues;
-  if (Array.isArray(issues)) {
-    const hasSchemaIssue = issues.some(issue => {
-      if (!isRecord(issue)) return false;
-      return issue.code === 'SCHEMA_INPUT_MISSING';
-    });
-    if (hasSchemaIssue) return true;
-  }
-
-  const parseErrors = err.parseErrors;
-  if (!Array.isArray(parseErrors)) return false;
-
-  return parseErrors.some(
-    message =>
-      typeof message === 'string' && message.includes('Missing input schema')
-  );
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
-
-function parseRetryAfterMs(retryAfter: string | null): number | null {
-  if (!retryAfter) return null;
-
-  const asSeconds = Number.parseFloat(retryAfter);
-  if (Number.isFinite(asSeconds) && asSeconds >= 0) {
-    return Math.floor(asSeconds * 1000);
-  }
-
-  const asDate = Date.parse(retryAfter);
-  if (Number.isNaN(asDate)) {
-    return null;
-  }
-
-  return Math.max(0, asDate - Date.now());
-}
-
-async function mapSettledWithConcurrency<T, R>(
-  items: T[],
-  mapper: (item: T, index: number) => Promise<R>,
-  concurrency = BULK_REGISTER_CONCURRENCY
-): Promise<PromiseSettledResult<R>[]> {
-  const results: (PromiseSettledResult<R> | undefined)[] = Array.from({
-    length: items.length,
-  });
-  let nextIndex = 0;
-
-  async function worker() {
-    while (true) {
-      const current = nextIndex;
-      nextIndex += 1;
-
-      if (current >= items.length) return;
-      const item = items[current] as T;
-
-      try {
-        const value = await mapper(item, current);
-        results[current] = {
-          status: 'fulfilled',
-          value,
-        };
-      } catch (reason) {
-        results[current] = {
-          status: 'rejected',
-          reason,
-        };
-      }
-    }
-  }
-
-  await Promise.all(
-    Array.from({ length: Math.min(concurrency, items.length) }, () => worker())
-  );
-
-  return results.map((result, index) => {
-    if (!result) {
-      return {
-        status: 'rejected',
-        reason: new Error(`Missing result at index ${index}`),
-      };
-    }
-    return result;
-  });
-}
+import type { DiscoveryInfo } from '@/types/discovery';
+import { verifyAnyOwnershipProof } from '@/lib/ownership-proof';
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
@@ -299,137 +142,77 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      let parseErrorData: {
-        parseErrors: string[];
-        data: unknown;
-        issues?: unknown[];
-      } | null = null;
+      const probeResult = await probeX402Endpoint(
+        input.url.toString().replaceAll('{', '').replaceAll('}', '')
+      );
 
-      for (const method of [Methods.POST, Methods.GET]) {
-        // ping resource
-        const response = await fetch(
-          input.url.replace('{', '').replace('}', ''),
-          {
-            method,
-            headers:
-              method === Methods.POST
-                ? {
-                    ...input.headers,
-                    'Content-Type': 'application/json',
-                    'Cache-Control': 'no-cache',
-                  }
-                : { ...input.headers, 'Cache-Control': 'no-cache' },
-            body: input.body
-              ? JSON.stringify(input.body)
-              : method === Methods.POST
-                ? '{}'
-                : undefined,
-            cache: 'no-store',
-          }
-        );
-
-        // if it doesn't respond with a 402, continue to try next method
-        if (response.status !== 402) {
-          continue;
-        }
-
-        // Extract x402 data (handles v2 header and v1 body, with JSON parse fallback)
-        const x402Data = await extractX402Data(response);
-
-        const result = await registerResource(input.url.toString(), x402Data);
-
-        if (result.success === false) {
-          if (result.error.type === 'parseResponse') {
-            parseErrorData = {
-              data: result.data,
-              parseErrors: result.error.parseErrors,
-              issues: result.error.issues,
-            };
-            continue;
-          } else {
-            // Continue trying other methods instead of returning immediately
-            parseErrorData = {
-              data: result.data ?? null,
-              parseErrors:
-                'parseErrors' in result.error &&
-                Array.isArray(result.error.parseErrors)
-                  ? result.error.parseErrors
-                  : [JSON.stringify(result.error)],
-              issues:
-                'issues' in result.error && Array.isArray(result.error.issues)
-                  ? result.error.issues
-                  : undefined,
-            };
-            continue;
-          }
-        }
-
-        // Check for additional resources via discovery
-        const origin = getOriginFromUrl(input.url);
-        let discovery: DiscoveryInfo = {
-          found: false,
-          otherResourceCount: 0,
-          origin,
-        };
-
-        try {
-          const discoveryResult = await fetchDiscoveryDocument(origin);
-          if (
-            discoveryResult.success &&
-            Array.isArray(discoveryResult.resources)
-          ) {
-            // Filter out the URL that was just registered (normalize URLs for comparison)
-            const inputUrlStr = String(input.url);
-            const normalizedInputUrl = normalizeUrl(inputUrlStr);
-            const otherResources = discoveryResult.resources.filter(r => {
-              if (
-                !r ||
-                typeof r !== 'object' ||
-                !('url' in r) ||
-                typeof r.url !== 'string'
-              ) {
-                return false;
-              }
-              const resourceUrl = String(r.url);
-              return normalizeUrl(resourceUrl) !== normalizedInputUrl;
-            });
-            discovery = {
-              found: true,
-              source: discoveryResult.source,
-              otherResourceCount: otherResources.length,
-              origin,
-              resources: otherResources.map(r => r.url),
-            };
-          }
-        } catch {
-          // Discovery check failed, continue without discovery info
-        }
-
-        return {
-          ...result,
-          methodUsed: method,
-          discovery,
-        };
+      if (!probeResult.success) {
+        return { success: false as const, error: { type: 'no402' as const } };
       }
 
-      if (parseErrorData) {
+      const result = await registerResource(
+        input.url.toString(),
+        probeResult.advisory
+      );
+
+      if (result.success === false) {
         return {
           success: false as const,
-          data: parseErrorData.data,
+          data: result.data,
           error: {
             type: 'parseErrors' as const,
-            parseErrors: parseErrorData.parseErrors,
-            issues: parseErrorData.issues,
+            parseErrors:
+              result.error.type === 'parseResponse'
+                ? result.error.parseErrors
+                : [JSON.stringify(result.error)],
           },
         };
       }
 
+      // Check for additional resources via discovery
+      const origin = getOriginFromUrl(input.url);
+      let discovery: DiscoveryInfo = {
+        found: false,
+        otherResourceCount: 0,
+        origin,
+      };
+
+      try {
+        const discoveryResult = await fetchDiscoveryDocument(origin);
+        if (
+          discoveryResult.success &&
+          Array.isArray(discoveryResult.resources)
+        ) {
+          const inputUrlStr = String(input.url);
+          const normalizedInputUrl = normalizeUrl(inputUrlStr);
+          const otherResources = discoveryResult.resources.filter(r => {
+            if (
+              !r ||
+              typeof r !== 'object' ||
+              !('url' in r) ||
+              typeof r.url !== 'string'
+            ) {
+              return false;
+            }
+            const resourceUrl = String(r.url);
+            return normalizeUrl(resourceUrl) !== normalizedInputUrl;
+          });
+          discovery = {
+            found: true,
+            source: discoveryResult.source,
+            otherResourceCount: otherResources.length,
+            origin,
+            resources: otherResources.map(r => r.url),
+          };
+        }
+      } catch {
+        // Discovery check failed, continue without discovery info
+      }
+
       return {
-        success: false as const,
-        error: {
-          type: 'no402' as const,
-        },
-        type: 'no402' as const,
+        ...result,
+        methodUsed: probeResult.advisory.method,
+        discovery,
       };
     }),
 
@@ -456,246 +239,12 @@ export const resourcesRouter = createTRPCRouter({
         };
       }
 
-      // Helper to extract error message
-      function getErrorMessage(err: unknown): string {
-        if (typeof err === 'string') return err;
-        if (!err || typeof err !== 'object') return 'Unknown error';
-
-        if ('type' in err && typeof err.type === 'string') {
-          const details: string[] = [];
-          if ('parseErrors' in err && Array.isArray(err.parseErrors)) {
-            details.push(...(err.parseErrors as string[]));
-          } else if ('issues' in err && Array.isArray(err.issues)) {
-            details.push(
-              ...getValidationIssueMessages(err.issues as unknown[])
-            );
-          } else if ('upsertErrors' in err && Array.isArray(err.upsertErrors)) {
-            details.push(...(err.upsertErrors as string[]));
-          }
-          return details.length > 0
-            ? `${err.type}: ${details.join(', ')}`
-            : err.type;
-        }
-
-        return 'Unknown error';
-      }
-
-      const results = await mapSettledWithConcurrency(
+      const result = await registerResourcesFromDiscovery(
         discoveryResult.resources,
-        async resource => {
-          const resourceUrl = resource.url;
-          const methodsToTry = primaryMethodsToTry(resource);
-
-          let lastError = 'No 402 response';
-          let lastStatus: number | undefined;
-          const errors: string[] = [];
-          const methodStatuses = new Map<Methods, number>();
-
-          const tryMethod = async (method: Methods) => {
-            try {
-              const probeInit = probeInitForMethod(method);
-              let response: Response;
-              let retryCount = 0;
-
-              while (true) {
-                response = await fetch(resourceUrl, {
-                  method,
-                  headers: probeInit.headers,
-                  body: probeInit.body,
-                  signal: AbortSignal.timeout(15000),
-                  cache: 'no-store',
-                });
-
-                if (
-                  response.status === 429 &&
-                  retryCount < MAX_429_RETRIES_PER_METHOD
-                ) {
-                  retryCount += 1;
-                  const retryAfterMs = parseRetryAfterMs(
-                    response.headers.get('retry-after')
-                  );
-                  const fallbackDelayMs =
-                    RETRY_429_BASE_DELAY_MS + Math.floor(Math.random() * 200);
-                  const delayMs = Math.min(
-                    retryAfterMs ?? fallbackDelayMs,
-                    RETRY_429_MAX_DELAY_MS
-                  );
-                  await sleep(delayMs);
-                  continue;
-                }
-
-                break;
-              }
-
-              lastStatus = response.status;
-              methodStatuses.set(method, response.status);
-
-              if (response.status === 402) {
-                // Extract x402 data (handles v2 header and v1 body, with JSON parse fallback)
-                const x402Data = await extractX402Data(response);
-
-                // Compat path: SIWX auth-only challenges are valid, but don't
-                // include payment requirements and therefore aren't indexable
-                // as payable resources in legacy x402scan.
-                if (isSiwxAuthOnlyChallenge(x402Data)) {
-                  return {
-                    success: false as const,
-                    skipped: true as const,
-                    url: resourceUrl,
-                    error:
-                      'SIWX auth-only endpoint (no payment requirements to index)',
-                    status: response.status,
-                  };
-                }
-
-                const result = await registerResource(resourceUrl, x402Data);
-
-                // If registration succeeded, return it
-                if (result.success) {
-                  return result;
-                }
-
-                if (isMissingInputSchemaError(result.error)) {
-                  return {
-                    success: false as const,
-                    skipped: true as const,
-                    url: resourceUrl,
-                    error:
-                      'Missing input schema (non-invocable endpoint skipped in strict mode)',
-                    status: response.status,
-                  };
-                }
-
-                // Registration failed, capture error but continue trying other methods
-                const errorMsg =
-                  getErrorMessage(result.error) || 'Registration failed';
-                errors.push(`${method}: ${errorMsg}`);
-                lastError = errors.join('; ');
-              } else {
-                const errorMsg = `Expected 402, got ${response.status}`;
-                errors.push(`${method}: ${errorMsg}`);
-                lastError = errors.join('; ');
-              }
-            } catch (err) {
-              const errorMsg =
-                err instanceof Error ? err.message : 'Request failed';
-              errors.push(`${method}: ${errorMsg}`);
-              lastError = errors.join('; ');
-            }
-
-            return null;
-          };
-
-          for (const method of methodsToTry) {
-            const successfulResult = await tryMethod(method);
-            if (successfulResult) {
-              return successfulResult;
-            }
-          }
-
-          // Legacy fallback: if discovery did not specify method and both
-          // default probe methods are method-not-allowed, try uncommon methods.
-          if (
-            !resource.method &&
-            methodStatuses.get(Methods.POST) === 405 &&
-            methodStatuses.get(Methods.GET) === 405
-          ) {
-            for (const fallbackMethod of METHOD_FALLBACKS) {
-              const successfulResult = await tryMethod(fallbackMethod);
-              if (successfulResult) {
-                return successfulResult;
-              }
-            }
-          }
-
-          return {
-            success: false as const,
-            url: resourceUrl,
-            error: lastError,
-            status: lastStatus,
-          };
-        }
+        discoveryResult.source
       );
 
-      // Separate successful and failed results with details
-      const successfulResults: { url: string }[] = [];
-      const failedResults: { url: string; error: string; status?: number }[] =
-        [];
-      const skippedResults: { url: string; error: string; status?: number }[] =
-        [];
-      let originId: string | undefined;
-
-      for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-        const resourceUrl = discoveryResult.resources[i]?.url ?? 'unknown';
-
-        if (!result) continue;
-
-        if (result.status === 'fulfilled' && result.value) {
-          const value = result.value;
-          if ('success' in value && value.success) {
-            successfulResults.push({
-              url: resourceUrl,
-            });
-            // Capture origin ID from the first successful registration
-            if (
-              !originId &&
-              'resource' in value &&
-              value.resource?.origin?.id
-            ) {
-              originId = value.resource.origin.id;
-            }
-          } else if (
-            'success' in value &&
-            !value.success &&
-            'skipped' in value &&
-            value.skipped === true
-          ) {
-            skippedResults.push({
-              url: resourceUrl,
-              error: value.error,
-              status: 'status' in value ? value.status : undefined,
-            });
-          } else if ('success' in value && !value.success) {
-            failedResults.push({
-              url: resourceUrl,
-              error: value.error,
-              status: 'status' in value ? value.status : undefined,
-            });
-          }
-        } else if (result.status === 'rejected') {
-          failedResults.push({
-            url: resourceUrl,
-            error:
-              result.reason instanceof Error
-                ? result.reason.message
-                : 'Promise rejected',
-          });
-        }
-      }
-
-      // Deprecate resources that are no longer in the discovery document
-      let deprecated = 0;
-      if (originId) {
-        const activeResourceUrls = discoveryResult.resources.map(r => r.url);
-        deprecated = await deprecateStaleResources(
-          originId,
-          activeResourceUrls
-        );
-      }
-
-      return {
-        success: true as const,
-        registered: successfulResults.length,
-        failed: failedResults.length,
-        skipped: skippedResults.length,
-        deprecated,
-        total: results.length,
-        source: discoveryResult.source,
-        failedDetails: failedResults,
-        skippedDetails: skippedResults,
-        originId,
-      };
+      return { success: true as const, ...result };
     }),
 
   /**
@@ -728,7 +277,6 @@ export const resourcesRouter = createTRPCRouter({
         source: discoveryResult.source,
         resourceCount: discoveryResult.resources.length,
         resources: discoveryResult.resources,
-        discoveryUrls: discoveryResult.discoveryUrls,
         ownershipProofs: discoveryResult.ownershipProofs,
       };
     }),
@@ -774,8 +322,6 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      const { verifyAnyOwnershipProof } = await import('@/lib/ownership-proof');
-
       const result = await verifyAnyOwnershipProof(
         input.ownershipProofs,
         input.origin,
