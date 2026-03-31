@@ -298,8 +298,8 @@ importers:
         specifier: 1.4.5
         version: 1.4.5
       '@agentcash/router':
-        specifier: 1.1.9
-        version: 1.1.9(6eacb81bb22aa1ce566e8ab228700749)
+        specifier: 1.2.5
+        version: 1.2.5(6eacb81bb22aa1ce566e8ab228700749)
       '@ai-sdk/openai':
         specifier: ^2.0.52
         version: 2.0.56(zod@4.3.6)
@@ -1202,15 +1202,15 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  '@agentcash/router@1.1.9':
-    resolution: {integrity: sha512-dfwdWGY2XwhOr/TqrhuzkFqDiAsrlfgkAnb8sBTtBnf1Hggva1chtA5Ryep5E6s7B+mvvB3kO3Ljou7U7fdZSw==}
+  '@agentcash/router@1.2.5':
+    resolution: {integrity: sha512-XxNtDFG3oGMj7N/3rf4h56qSEfXshccA2PGCDDmUG+3pMPwTCz3Nt7VPBal13VZaAUNABrb5NUNAb3bFaoIl2Q==}
     peerDependencies:
       '@coinbase/x402': ^2.1.0
       '@x402/core': 2.3.0
       '@x402/evm': 2.3.0
       '@x402/extensions': 2.3.0
       '@x402/svm': 2.3.0
-      mppx: ^0.4.2
+      mppx: ^0.4.11
       next: '>=15.0.0'
       zod: ^4.0.0
       zod-openapi: ^5.0.0
@@ -12323,7 +12323,7 @@ snapshots:
       neverthrow: 8.2.0
       zod: 4.3.6
 
-  '@agentcash/router@1.1.9(6eacb81bb22aa1ce566e8ab228700749)':
+  '@agentcash/router@1.2.5(6eacb81bb22aa1ce566e8ab228700749)':
     dependencies:
       '@coinbase/x402': 0.6.6(@azure/identity@4.13.0)(@azure/storage-blob@12.30.0)(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(@tanstack/query-core@5.90.16)(@tanstack/react-query@5.90.16(react@19.2.2))(@types/react@19.2.2)(@vercel/blob@2.0.0)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(ioredis@5.8.2)(react@19.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.19.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@x402/core': 2.3.0
