@@ -38,10 +38,9 @@ For each paid operation:
 - declare `x-payment-info`
 - include a `402` response in `responses`
 - include `x-payment-info.protocols` (for example `"x402"`)
-- include valid pricing metadata:
-  - `pricingMode: "fixed"` + `price`
-  - or `pricingMode: "range"` + `minPrice` + `maxPrice`
-  - or `pricingMode: "quote"`
+- include valid pricing metadata via `x-payment-info.price`:
+  - fixed: `{ mode: "fixed", currency: "USD", amount: "0.05" }`
+  - dynamic: `{ mode: "dynamic", currency: "USD", min: "0.01", max: "1.00" }`
 
 ### Auth requirements
 
