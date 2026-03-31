@@ -44,7 +44,7 @@ const strategies: Strategy[] = [
         "responses": { "402": { "description": "Payment Required" } },
         "x-payment-info": {
           "protocols": ["x402"],
-          "price": { "mode": "fixed", "currency": "USD", "value": "0.05" }
+          "price": { "mode": "fixed", "currency": "USD", "amount": "0.05" }
         }
       }
     }

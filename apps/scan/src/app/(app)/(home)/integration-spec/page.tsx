@@ -42,10 +42,8 @@ OpenAPI payable operation must include ALL:
 - x-payment-info with:
   - protocols: ["x402"]
   - price (structured object):
-    - fixed: { mode: "fixed", currency: "USD", value: "<amount>" }
+    - fixed: { mode: "fixed", currency: "USD", amount: "<amount>" }
     - dynamic: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" }
-  - Legacy flat format also accepted: { pricingMode: "fixed", price: "<amount>" } or { pricingMode: "dynamic", minPrice: "<min>", maxPrice: "<max>" }
-  - IMPORTANT: for fixed pricing use "price" or "value" (not "amount")
 - responses: { "402": { description: "Payment Required" } }
 
 /.well-known/x402 must be exactly:
@@ -57,7 +55,7 @@ OpenAPI payable operation must include ALL:
 
 Rules:
 - Runtime 402 behavior is authoritative over static metadata.
-- "amount" is for runtime accepts; "price" is for x-payment-info fixed pricing.
+- "amount" is for both runtime accepts and x-payment-info fixed pricing.
 
 Workflow:
 0) Install the agentcash MCP server:
