@@ -33,6 +33,7 @@ const strategies: Strategy[] = [
       'For paid operations: responses.402 and x-payment-info.',
       'Set x-payment-info.protocols and one pricing mode (fixed or dynamic).',
       'Use OpenAPI security + components.securitySchemes for auth declaration.',
+      'For SIWX (identity-only) routes: declare a scheme named "siwx" and reference it in security. Do not add x-payment-info.',
       'Add high-level guidance in info.x-guidance for user-friendly discovery.',
     ],
     example: `{

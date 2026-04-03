@@ -46,6 +46,11 @@ OpenAPI payable operation must include ALL:
     - dynamic: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" }
 - responses: { "402": { description: "Payment Required" } }
 
+SIWX (identity-only) routes:
+- Declare a security scheme named "siwx" in components.securitySchemes.
+- Reference it on each identity-gated operation: security: [{ "siwx": [] }].
+- Do NOT add x-payment-info to SIWX-only routes — that classifies them as paid.
+
 /.well-known/x402 must be exactly:
 {
   "version": 1,
@@ -237,6 +242,59 @@ export default function DiscoverySpecPage() {
               </div>
             </CardContent>
           </Card>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold">
+            SIWX (Sign-In with X) Routes
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            SIWX routes are identity-gated — they require a wallet proof but no
+            payment. Agents with an agentcash wallet can call these for free.
+          </p>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            <li>
+              Declare a security scheme named{' '}
+              <code>siwx</code> in{' '}
+              <code>components.securitySchemes</code>.
+            </li>
+            <li>
+              Reference it on each identity-gated operation via{' '}
+              <code>security: [{'{'} &quot;siwx&quot;: [] {'}'}]</code>.
+            </li>
+            <li>
+              Do <strong>not</strong> add <code>x-payment-info</code> to
+              SIWX-only routes — that would classify them as paid.
+            </li>
+          </ul>
+          <CodeBlock
+            code={`{
+  "components": {
+    "securitySchemes": {
+      "siwx": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "SIGN-IN-WITH-X"
+      }
+    }
+  },
+  "paths": {
+    "/api/me": {
+      "get": {
+        "summary": "Get current user profile",
+        "security": [{ "siwx": [] }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    }
+  }
+}`}
+          />
+          <p className="text-sm text-muted-foreground">
+            The scheme <strong>must</strong> be named <code>siwx</code> —
+            discovery resolves it by name. Routes with both{' '}
+            <code>x-payment-info</code> and <code>siwx</code> security are
+            classified as paid, not SIWX.
+          </p>
         </section>
 
         <section className="space-y-3">
