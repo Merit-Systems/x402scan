@@ -31,7 +31,7 @@ const strategies: Strategy[] = [
     requirements: [
       'Top-level fields: openapi, info.title, info.x-guidance, info.version, paths.',
       'For paid operations: responses.402 and x-payment-info.',
-      'Set x-payment-info.protocols and one pricing mode (fixed or dynamic).',
+      'Set x-payment-info.price (fixed or dynamic) and x-payment-info.protocols (array of protocol objects).',
       'Use OpenAPI security + components.securitySchemes for auth declaration.',
       'For SIWX (identity-only) routes: declare a scheme named "siwx" and reference it in security. Do not add x-payment-info.',
       'Add high-level guidance in info.x-guidance for user-friendly discovery.',
@@ -44,8 +44,8 @@ const strategies: Strategy[] = [
       "post": {
         "responses": { "402": { "description": "Payment Required" } },
         "x-payment-info": {
-          "protocols": ["x402"],
-          "price": { "mode": "fixed", "currency": "USD", "amount": "0.05" }
+          "price": { "mode": "fixed", "currency": "USD", "amount": "0.05" },
+          "protocols": [{ "x402": {} }, { "mpp": { "method": "", "intent": "", "currency": "" } }]
         }
       }
     }

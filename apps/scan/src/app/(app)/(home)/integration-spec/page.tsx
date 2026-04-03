@@ -40,10 +40,12 @@ Schema guidance (important):
 
 OpenAPI payable operation must include ALL:
 - x-payment-info with:
-  - protocols: ["x402"]
   - price (structured object):
     - fixed: { mode: "fixed", currency: "USD", amount: "<amount>" }
     - dynamic: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" }
+  - protocols (array of objects):
+    - { "x402": {} }
+    - { "mpp": { "method": "", "intent": "", "currency": "" } }
 - responses: { "402": { description: "Payment Required" } }
 
 SIWX (identity-only) routes:
