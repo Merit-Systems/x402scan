@@ -111,6 +111,9 @@ export function OpenApiUpload() {
           registerMutation.reset();
         }
       };
+      reader.onerror = () => {
+        setParseError('Failed to read the uploaded file. Please try again.');
+      };
       reader.readAsText(file);
     },
     [registerMutation]
@@ -202,8 +205,6 @@ export function OpenApiUpload() {
           <Dropzone
             accept={{
               'application/json': ['.json'],
-              'application/x-yaml': ['.yaml', '.yml'],
-              'text/yaml': ['.yaml', '.yml'],
             }}
             maxFiles={1}
             onDrop={handleFileUpload}
@@ -211,7 +212,7 @@ export function OpenApiUpload() {
           >
             <Upload className="size-5 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              Drop a .json or .yaml file, or click to browse
+              Drop a .json file, or click to browse
             </span>
           </Dropzone>
         </div>

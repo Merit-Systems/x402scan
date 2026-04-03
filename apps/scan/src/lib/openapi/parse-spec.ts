@@ -54,7 +54,8 @@ const HTTP_METHODS = [
 
 function resolveRef(
   spec: Record<string, unknown>,
-  ref: unknown
+  ref: unknown,
+  seen?: Set<string>
 ): unknown {
   if (
     typeof ref !== 'object' ||
@@ -65,16 +66,31 @@ function resolveRef(
     return ref;
   }
 
-  const refPath = ((ref as Record<string, unknown>).$ref as string).replace(
-    /^#\//,
-    ''
-  );
+  const refString = (ref as Record<string, unknown>).$ref as string;
+
+  // Circular reference detection
+  const visited = seen ?? new Set<string>();
+  if (visited.has(refString)) {
+    return ref; // Break circular reference — return unresolved
+  }
+  visited.add(refString);
+
+  const refPath = refString.replace(/^#\//, '');
   const parts = refPath.split('/');
 
   let current: unknown = spec;
   for (const part of parts) {
     if (typeof current !== 'object' || current === null) return ref;
     current = (current as Record<string, unknown>)[part];
+  }
+
+  // Recursively resolve if the resolved value is itself a $ref
+  if (
+    typeof current === 'object' &&
+    current !== null &&
+    '$ref' in (current as Record<string, unknown>)
+  ) {
+    return resolveRef(spec, current, visited);
   }
 
   return current ?? ref;
