@@ -35,6 +35,7 @@ import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
 import { getOriginFromUrl, normalizeUrl } from '@/lib/url';
 import { fetchDiscoveryDocument } from '@/services/discovery';
+import { parseOpenApiSpec, openApiInputSchema } from '@/lib/openapi';
 import {
   getResourceVerificationStatus,
   getOriginVerificationStatus,
@@ -363,6 +364,138 @@ export const resourcesRouter = createTRPCRouter({
         code: 'BAD_REQUEST',
         message: 'Either resourceIds or originId must be provided',
       });
+    }),
+
+  /**
+   * Parse an OpenAPI spec and optionally register all discovered endpoints.
+   * Supports OpenAPI 3.x and Swagger 2.x specs in JSON format.
+   */
+  registerFromOpenApi: publicProcedure
+    .input(
+      openApiInputSchema.extend({
+        dryRun: z.boolean().default(true),
+      })
+    )
+    .mutation(async ({ input }) => {
+      let parsed;
+      try {
+        parsed = parseOpenApiSpec({
+          spec: input.spec,
+          baseUrl: input.baseUrl,
+        });
+      } catch (error) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message:
+            error instanceof Error
+              ? error.message
+              : 'Failed to parse OpenAPI spec',
+        });
+      }
+
+      if (parsed.endpoints.length === 0) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'No endpoints found in the OpenAPI spec',
+        });
+      }
+
+      if (!parsed.baseUrl) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message:
+            'Could not determine base URL from spec. Provide a baseUrl override.',
+        });
+      }
+
+      // In dry-run mode, just return the parsed endpoints
+      if (input.dryRun) {
+        return {
+          dryRun: true as const,
+          title: parsed.title,
+          version: parsed.version,
+          description: parsed.description,
+          baseUrl: parsed.baseUrl,
+          endpoints: parsed.endpoints.map(ep => ({
+            method: ep.method,
+            path: ep.path,
+            url: ep.url,
+            summary: ep.summary,
+            description: ep.description,
+            parameterCount: ep.parameters.length,
+          })),
+          endpointCount: parsed.endpoints.length,
+        };
+      }
+
+      // Register each endpoint sequentially with rate limiting
+      const results: {
+        url: string;
+        method: string;
+        path: string;
+        success: boolean;
+        error?: string;
+      }[] = [];
+
+      for (const endpoint of parsed.endpoints) {
+        try {
+          const probeResult = await probeX402Endpoint(
+            endpoint.url.replaceAll('{', '').replaceAll('}', '')
+          );
+
+          if (!probeResult.success) {
+            results.push({
+              url: endpoint.url,
+              method: endpoint.method,
+              path: endpoint.path,
+              success: false,
+              error: probeResult.error,
+            });
+            continue;
+          }
+
+          const registerResult = await registerResource(
+            endpoint.url,
+            probeResult.advisory
+          );
+
+          results.push({
+            url: endpoint.url,
+            method: endpoint.method,
+            path: endpoint.path,
+            success: registerResult.success,
+            error:
+              registerResult.success === false
+                ? 'Resource registration failed'
+                : undefined,
+          });
+        } catch (error) {
+          results.push({
+            url: endpoint.url,
+            method: endpoint.method,
+            path: endpoint.path,
+            success: false,
+            error:
+              error instanceof Error ? error.message : 'Registration failed',
+          });
+        }
+
+        // Rate-limit between registrations
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+
+      const registered = results.filter(r => r.success).length;
+      const failed = results.filter(r => !r.success).length;
+
+      return {
+        dryRun: false as const,
+        title: parsed.title,
+        baseUrl: parsed.baseUrl,
+        registered,
+        failed,
+        total: results.length,
+        results,
+      };
     }),
 
   tags: {

@@ -2,6 +2,7 @@ import { Body, Heading } from '@/app/_components/layout/page-utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { RegisterResourceForm } from './_components/form';
+import { OpenApiUpload } from './_components/openapi-upload';
 
 import type { Metadata } from 'next';
 
@@ -32,8 +33,9 @@ export default function RegisterResourcePage() {
           </div>
         }
       />
-      <Body>
+      <Body className="space-y-6">
         <RegisterResourceForm />
+        <OpenApiUpload />
       </Body>
     </div>
   );
