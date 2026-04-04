@@ -264,15 +264,15 @@ export function Form({
       )}
 
       {data && (
-        <pre className="max-h-60 overflow-auto rounded-md bg-muted text-xs">
-          {data.type === 'json' ? (
+        data.type === 'json' ? (
+          <div className="max-h-60 overflow-auto rounded-md bg-muted text-xs">
             <JsonViewer data={data.data as JsonValue} />
-          ) : (
-            <pre className="max-h-60 overflow-auto rounded-md bg-muted p-3 text-xs">
-              {JSON.stringify(data.data, null, 2)}
-            </pre>
-          )}
-        </pre>
+          </div>
+        ) : (
+          <pre className="max-h-60 overflow-auto rounded-md bg-muted p-3 text-xs">
+            {JSON.stringify(data.data, null, 2)}
+          </pre>
+        )
       )}
     </CardContent>
   );
