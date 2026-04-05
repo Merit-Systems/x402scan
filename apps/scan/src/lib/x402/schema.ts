@@ -123,8 +123,13 @@ function expandFields(
     const fieldEnum = Array.isArray(field.enum)
       ? (field.enum as string[])
       : undefined;
+    const rawDefault = field.default;
     const fieldDefault =
-      typeof field.default === 'string' ? field.default : undefined;
+      typeof rawDefault === 'string'
+        ? rawDefault
+        : typeof rawDefault === 'number' || typeof rawDefault === 'boolean'
+          ? String(rawDefault)
+          : undefined;
 
     const isFieldRequired =
       typeof field.required === 'boolean'
