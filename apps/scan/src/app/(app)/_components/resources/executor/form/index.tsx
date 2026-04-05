@@ -223,6 +223,7 @@ export function Form({
             values={queryValues}
             onChange={handleQueryChange}
             prefix="query"
+            title="Query Parameters"
           />
           <FieldSection
             fields={bodyFields}

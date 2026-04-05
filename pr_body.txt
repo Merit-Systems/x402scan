@@ -1,0 +1,15 @@
+## 🛠️ Automated Fix for #107
+
+### Summary
+Improves the resource executor form by surfacing required parameters first, grouping optional parameters behind a collapsed section by default, and showing field defaults inline so large x402 resource forms are easier to scan.
+
+### Payout Details
+- **Wallet (EVM):** 0xe744f6791a685b0A0cC316ED44375B69361c837F
+- **Solana:** 8BsByR6rPqxDPku6dYtdoiSk6bdgE9YETbLQF2RGSw1C
+
+
+/claim #107
+/payout EVM: 0xe744f6791a685b0A0cC316ED44375B69361c837F
+/payout SOL: 8BsByR6rPqxDPku6dYtdoiSk6bdgE9YETbLQF2RGSw1C 
+
+PoA-Signature: poa_d252c0370ab50e6c
