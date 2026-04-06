@@ -124,6 +124,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
 | **Cascade**          | BASE, SOLANA  | No        | No                           |
+| **Satoshi**          | BASE          | No        | No                           |
 
 ### Import Individual Facilitators
 
@@ -153,6 +154,7 @@ import {
   relai,
   bitrefill,
   cascade,
+  satoshi,
 } from 'facilitators';
 
 // Facilitators requiring setup
