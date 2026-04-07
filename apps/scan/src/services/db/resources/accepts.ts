@@ -8,10 +8,11 @@ import type { AcceptsNetwork, ResourceOrigin } from '@x402scan/scan-db';
 interface GetAcceptsAddressesInput {
   chain?: Chain;
   tags?: string[];
+  excludeGamed?: boolean;
 }
 
 export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
-  const { chain, tags } = input;
+  const { chain, tags, excludeGamed } = input;
   const accepts = await scanDb.accepts.findMany({
     include: {
       resourceRel: {
@@ -22,17 +23,18 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
     },
     where: {
       network: chain as AcceptsNetwork,
-      ...(tags
-        ? {
-            resourceRel: {
+      resourceRel: {
+        ...(tags
+          ? {
               tags: {
                 some: {
                   tag: { name: { in: tags } },
                 },
               },
-            },
-          }
-        : {}),
+            }
+          : {}),
+        ...(excludeGamed ? { origin: { isGamed: false } } : {}),
+      },
     },
   });
 
