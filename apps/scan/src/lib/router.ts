@@ -49,6 +49,11 @@ export const router = createRouter({
 - POST /api/x402/registry/register — register a single x402 resource by URL
 - POST /api/x402/registry/register-origin — discover and register all resources from an origin via OpenAPI or .well-known/x402
 
+## Public programmatic API (no auth, free)
+- POST /api/v1/resources/register — register a single x402 resource by URL (JSON body: {"url": "..."})
+- POST /api/v1/resources/register-origin — discover and register all x402 resources from an origin (JSON body: {"origin": "..."})
+- POST /api/v1/resources/refresh — re-probe and update an existing resource (JSON body: {"url": "..."})
+
 ## Send endpoint (x402, dynamic price)
 - POST /api/x402/send — send USDC to an address on Base or Solana`,
   },
