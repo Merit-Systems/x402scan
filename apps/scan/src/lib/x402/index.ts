@@ -25,7 +25,7 @@ export type InputSchema = OutputSchema['input'];
  * the database in a common format for v1 and v2.
  */
 export const normalizedAcceptSchema = z3.object({
-  scheme: z3.literal('exact'),
+  scheme: z3.enum(['exact', 'escrow']),
   network: z3.string(),
   maxAmountRequired: z3.string(),
   payTo: z3.string(),

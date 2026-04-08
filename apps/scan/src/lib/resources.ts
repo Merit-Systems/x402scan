@@ -78,7 +78,7 @@ export const registerResource = async (
 
   const mappedAccepts = x402Options
     .map(opt => ({
-      scheme: (opt.scheme ?? 'exact') as 'exact',
+      scheme: (opt.scheme ?? 'exact') as 'exact' | 'escrow',
       network: normalizeChainId(opt.network).replace(
         '-',
         '_'
