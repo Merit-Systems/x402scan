@@ -26,6 +26,9 @@ catalogs:
       specifier: ^0.0.74
       version: 0.0.74
   default:
+    '@signinwithethereum/siwe':
+      specifier: ^4.1.0
+      version: 4.1.0
     '@types/node':
       specifier: ^20.19.27
       version: 20.19.27
@@ -47,9 +50,6 @@ catalogs:
     server-only:
       specifier: ^0.0.1
       version: 0.0.1
-    siwe:
-      specifier: ^3.0.0
-      version: 3.0.0
     superjson:
       specifier: ^2.2.6
       version: 2.2.6
@@ -420,6 +420,9 @@ importers:
       '@radix-ui/react-use-controllable-state':
         specifier: ^1.2.2
         version: 1.2.2(@types/react@19.2.2)(react@19.2.2)
+      '@signinwithethereum/siwe':
+        specifier: 'catalog:'
+        version: 4.1.0(ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
       '@solana-program/token':
         specifier: ^0.7.0
         version: 0.7.0(@solana/kit@5.3.0(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))
@@ -606,9 +609,6 @@ importers:
       shiki:
         specifier: ^3.13.0
         version: 3.14.0
-      siwe:
-        specifier: 'catalog:'
-        version: 3.0.0(ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.2(react@19.2.2))(react@19.2.2)
@@ -4505,6 +4505,20 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
+  '@signinwithethereum/siwe-parser@4.1.0':
+    resolution: {integrity: sha512-aS+bU5QpTQgMpC6HjQHuKJpltUrkyGUVNuhuBLARa39wF1B+m05/4bgnf2qrEcgQONfU36A2Nbn3ibmwhHkc2Q==}
+
+  '@signinwithethereum/siwe@4.1.0':
+    resolution: {integrity: sha512-NT56M82i+A2uBU++F9PSBvEYPcjUV3BdClRVojWt3cbe7WizIVH1wi2qKJJR570RLHZvr8q1gUf0E90WymlMeA==}
+    peerDependencies:
+      ethers: ^5.7.0 || ^6.13.0
+      viem: 2.47.0
+    peerDependenciesMeta:
+      ethers:
+        optional: true
+      viem:
+        optional: true
+
   '@sindresorhus/is@7.1.1':
     resolution: {integrity: sha512-rO92VvpgMc3kfiTjGT52LEtJ8Yc5kCWhZjLQ3LwlA4pSgPpQO7bVpYXParOD8Jwf+cVQECJo3yP/4I8aZtUQTQ==}
     engines: {node: '>=18'}
@@ -5464,9 +5478,6 @@ packages:
 
   '@spruceid/siwe-parser@2.1.2':
     resolution: {integrity: sha512-d/r3S1LwJyMaRAKQ0awmo9whfXeE88Qt00vRj91q5uv5ATtWIQEGJ67Yr5eSZw5zp1/fZCXZYuEckt8lSkereQ==}
-
-  '@spruceid/siwe-parser@3.0.0':
-    resolution: {integrity: sha512-Y92k63ilw/8jH9Ry4G2e7lQd0jZAvb0d/Q7ssSD0D9mp/Zt2aCXIc3g0ny9yhplpAx1QXHsMz/JJptHK/zDGdw==}
 
   '@stablelib/binary@1.0.1':
     resolution: {integrity: sha512-ClJWvmL6UBM/wjkvv/7m5VP3GMr9t0osr4yVgLZsLCOz4hGN9gIAFEqnJ0TsSMAN+n840nf2cHZnA5/KFqHC7Q==}
@@ -10963,11 +10974,6 @@ packages:
 
   siwe@2.3.2:
     resolution: {integrity: sha512-aSf+6+Latyttbj5nMu6GF3doMfv2UYj83hhwZgUF20ky6fTS83uVhkQABdIVnEuS8y1bBdk7p6ltb9SmlhTTlA==}
-    peerDependencies:
-      ethers: ^5.6.8 || ^6.0.8
-
-  siwe@3.0.0:
-    resolution: {integrity: sha512-P2/ry7dHYJA6JJ5+veS//Gn2XDwNb3JMvuD6xiXX8L/PJ1SNVD4a3a8xqEbmANx+7kNQcD8YAh1B9bNKKvRy/g==}
     peerDependencies:
       ethers: ^5.6.8 || ^6.0.8
 
@@ -16961,6 +16967,18 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
+  '@signinwithethereum/siwe-parser@4.1.0':
+    dependencies:
+      '@noble/hashes': 1.8.0
+      apg-js: 4.4.0
+
+  '@signinwithethereum/siwe@4.1.0(ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(viem@2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
+    dependencies:
+      '@signinwithethereum/siwe-parser': 4.1.0
+    optionalDependencies:
+      ethers: 6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      viem: 2.47.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+
   '@sindresorhus/is@7.1.1': {}
 
   '@socket.io/component-emitter@3.1.2': {}
@@ -18475,11 +18493,6 @@ snapshots:
       apg-js: 4.4.0
       uri-js: 4.4.1
       valid-url: 1.0.9
-
-  '@spruceid/siwe-parser@3.0.0':
-    dependencies:
-      '@noble/hashes': 1.8.0
-      apg-js: 4.4.0
 
   '@stablelib/binary@1.0.1':
     dependencies:
@@ -26638,12 +26651,6 @@ snapshots:
       ethers: 6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       uri-js: 4.4.1
       valid-url: 1.0.9
-
-  siwe@3.0.0(ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)):
-    dependencies:
-      '@spruceid/siwe-parser': 3.0.0
-      '@stablelib/random': 1.0.2
-      ethers: 6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
   slash@3.0.0: {}
 
