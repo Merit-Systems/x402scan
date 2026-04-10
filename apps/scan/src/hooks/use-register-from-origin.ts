@@ -5,11 +5,13 @@ import { toast } from 'sonner';
 
 interface RegisterFromOriginSuccessData {
   registered: number;
+  siwx: number;
   failed: number;
   skipped: number;
   deprecated?: number;
   total: number;
   failedDetails?: { url: string; error: string; status?: number }[];
+  siwxDetails?: { url: string }[];
   skippedDetails?: { url: string; error: string; status?: number }[];
   originId?: string;
 }
@@ -49,6 +51,7 @@ export function useRegisterFromOrigin(
       if (showToasts) {
         const parts: string[] = [];
         if (data.registered > 0) parts.push(`${data.registered} registered`);
+        if (data.siwx > 0) parts.push(`${data.siwx} SIWX`);
         if (data.deprecated > 0) parts.push(`${data.deprecated} removed`);
         if (data.skipped > 0) parts.push(`${data.skipped} skipped`);
         if (data.failed > 0) parts.push(`${data.failed} failed`);
@@ -59,11 +62,13 @@ export function useRegisterFromOrigin(
 
       onSuccess?.({
         registered: data.registered,
+        siwx: data.siwx,
         failed: data.failed,
         skipped: data.skipped,
         deprecated: data.deprecated,
         total: data.total,
         failedDetails: data.failedDetails,
+        siwxDetails: data.siwxDetails,
         skippedDetails: data.skippedDetails,
         originId: data.originId,
       });

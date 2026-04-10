@@ -54,6 +54,7 @@ export const TestEndpointForm = () => {
     payToAddresses,
     recoveredAddresses,
     verifiedAddresses,
+    authModeMap,
   } = useDiscovery({
     url,
   });
@@ -232,6 +233,7 @@ export const TestEndpointForm = () => {
             resources={discoveryResources}
             resourceCount={discoveryResourceCount}
             discoveryError={discoveryError}
+            authModeMap={authModeMap}
             isRegisteringAll={false}
             mode="test"
             preview={discoveryPreview}

@@ -66,7 +66,13 @@ export async function fetchDiscoveryDocument(
     endpoint => {
       try {
         const url = new URL(endpoint.path, discovered.origin).toString();
-        return [{ url, method: endpoint.method }];
+        return [
+          {
+            url,
+            method: endpoint.method,
+            ...(endpoint.authMode ? { authMode: endpoint.authMode } : {}),
+          },
+        ];
       } catch {
         return [];
       }

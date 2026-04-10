@@ -32,6 +32,7 @@ export async function handleRegistryRegisterOrigin(
   return jsonResponse({
     success: true,
     registered: result.registered,
+    siwx: result.siwx,
     failed: result.failed,
     skipped: result.skipped,
     deprecated: result.deprecated,
@@ -39,5 +40,6 @@ export async function handleRegistryRegisterOrigin(
     source: result.source,
     failedDetails:
       result.failedDetails.length > 0 ? result.failedDetails : undefined,
+    siwxDetails: result.siwxDetails.length > 0 ? result.siwxDetails : undefined,
   });
 }

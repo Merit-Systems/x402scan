@@ -3,6 +3,8 @@ import { getRegistrationErrorMessage } from './utils';
 import { registerResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 
+import type { AuthMode } from '@agentcash/discovery';
+
 const BULK_REGISTER_CONCURRENCY = 6;
 
 async function mapSettledWithConcurrency<T, R>(
@@ -49,27 +51,41 @@ async function mapSettledWithConcurrency<T, R>(
 
 export interface RegisterOriginResult {
   registered: number;
+  siwx: number;
   failed: number;
   skipped: number;
   deprecated: number;
   total: number;
   source: string | undefined;
   failedDetails: { url: string; error: string; status?: number }[];
+  siwxDetails: { url: string }[];
   skippedDetails: { url: string; error: string; status?: number }[];
   originId: string | undefined;
 }
 
 /**
  * Probe and register all resources from a discovery document.
- * Skips SIWX-only endpoints and endpoints without an input schema.
+ * Paid resources are probed and written to the resources table.
+ * SIWX-identified routes are a first-class positive outcome — they are
+ * reported back in `siwx`/`siwxDetails` but not written to the DB (until
+ * schema support lands). Endpoints missing an input schema are reported
+ * as skipped.
  * Deprecates resources from the same origin that are no longer in the list.
  */
 export async function registerResourcesFromDiscovery(
-  resources: { url: string }[],
+  resources: { url: string; authMode?: AuthMode }[],
   source: string | undefined
 ): Promise<RegisterOriginResult> {
   const results = await mapSettledWithConcurrency(resources, async resource => {
     const resourceUrl = resource.url;
+
+    if (resource.authMode === 'siwx') {
+      return {
+        success: true as const,
+        siwx: true as const,
+        url: resourceUrl,
+      };
+    }
 
     const probeResult = await probeX402Endpoint(resourceUrl);
 
@@ -85,11 +101,9 @@ export async function registerResourcesFromDiscovery(
 
     if (advisory.authMode === 'siwx') {
       return {
-        success: false as const,
-        skipped: true as const,
+        success: true as const,
+        siwx: true as const,
         url: resourceUrl,
-        error: 'SIWX auth-only endpoint (no payment requirements to index)',
-        status: 402,
       };
     }
 
@@ -116,6 +130,7 @@ export async function registerResourcesFromDiscovery(
   });
 
   const successfulResults: { url: string }[] = [];
+  const siwxResults: { url: string }[] = [];
   const failedResults: { url: string; error: string; status?: number }[] = [];
   const skippedResults: { url: string; error: string; status?: number }[] = [];
   let originId: string | undefined;
@@ -129,9 +144,13 @@ export async function registerResourcesFromDiscovery(
     if (result.status === 'fulfilled' && result.value) {
       const value = result.value;
       if ('success' in value && value.success) {
-        successfulResults.push({ url: resourceUrl });
-        if (!originId && 'resource' in value && value.resource?.origin?.id) {
-          originId = value.resource.origin.id;
+        if ('siwx' in value && value.siwx === true) {
+          siwxResults.push({ url: resourceUrl });
+        } else {
+          successfulResults.push({ url: resourceUrl });
+          if (!originId && 'resource' in value && value.resource?.origin?.id) {
+            originId = value.resource.origin.id;
+          }
         }
       } else if (
         'success' in value &&
@@ -170,12 +189,14 @@ export async function registerResourcesFromDiscovery(
 
   return {
     registered: successfulResults.length,
+    siwx: siwxResults.length,
     failed: failedResults.length,
     skipped: skippedResults.length,
     deprecated,
     total: results.length,
     source,
     failedDetails: failedResults,
+    siwxDetails: siwxResults,
     skippedDetails: skippedResults,
     originId,
   };
