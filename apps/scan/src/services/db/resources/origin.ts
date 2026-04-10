@@ -45,32 +45,21 @@ export const upsertOrigin = async (
 
     const originId = upsertedOrigin.id;
 
-    await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
-        tx.ogImage.upsert({
-          where: {
-            originId_url: {
-              originId,
-              url,
-            },
-          },
-          update: {
-            height,
-            width,
-            title,
-            description,
-          },
-          create: {
-            originId,
-            url,
-            height,
-            width,
-            title,
-            description,
-          },
+    // Use sequential upserts with per-record error handling so that
+    // OG image URLs shared across multiple origins do not cause a
+    // unique-constraint failure on the whole transaction.
+    for (const { url, height, width, title, description } of origin.ogImages) {
+      await tx.ogImage
+        .upsert({
+          where: { originId_url: { originId, url } },
+          update: { height, width, title, description },
+          create: { originId, url, height, width, title, description },
         })
-      )
-    );
+        .catch(() => {
+          // Skip silently if this URL already exists for a different origin
+          // (e.g. a CDN image URL referenced by multiple resources).
+        });
+    }
 
     return tx.resourceOrigin.findUnique({
       where: { id: originId },
