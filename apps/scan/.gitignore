@@ -48,3 +48,4 @@ next-env.d.ts
 .trigger
 
 test-*
+.env*.local

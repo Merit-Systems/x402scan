@@ -7,7 +7,11 @@ import { api } from '@/trpc/client';
 import { useRegisterFromOrigin } from '@/hooks/use-register-from-origin';
 
 import type { FailedResource, TestedResource } from '@/types/batch-test';
-import type { DiscoveredResource, DiscoverySource } from '@/types/discovery';
+import type {
+  AuthMode,
+  DiscoveredResource,
+  DiscoverySource,
+} from '@/types/discovery';
 import type { OriginPreview } from './discovery-panel';
 import { useBatchTest } from './use-batch-test';
 import { useOwnership } from './use-ownership';
@@ -66,6 +70,7 @@ export interface UseDiscoveryReturn {
   discoveryResourceCount: number;
   discoveryError?: string;
   invalidResourcesMap: Record<string, { invalid: boolean; reason?: string }>;
+  authModeMap: Record<string, AuthMode>;
 
   // Origin preview
   isPreviewLoading: boolean;
@@ -94,11 +99,13 @@ export interface UseDiscoveryReturn {
   bulkData: {
     success: true;
     registered: number;
+    siwx: number;
     total: number;
     failed: number;
     skipped?: number;
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
+    siwxDetails?: { url: string }[];
     skippedDetails?: { url: string; error: string; status?: number }[];
     originId?: string;
   } | null;
@@ -223,6 +230,17 @@ export function useDiscovery({
     return map;
   }, [effectiveResources]);
 
+  // Create map of URL -> authMode for displaying auth badges (e.g. SIWX).
+  const authModeMap: Record<string, AuthMode> = useMemo(() => {
+    const map: Record<string, AuthMode> = {};
+    for (const resource of effectiveResources) {
+      if (resource.authMode) {
+        map[resource.url] = resource.authMode;
+      }
+    }
+    return map;
+  }, [effectiveResources]);
+
   // Batch test query - uses wrapper hook for proper typing
   const batchTest = useBatchTest(
     effectiveResources,
@@ -292,6 +310,7 @@ export function useDiscovery({
         ? discoveryQuery.data.error
         : undefined,
     invalidResourcesMap,
+    authModeMap,
 
     // Origin preview
     isPreviewLoading: previewQuery.isLoading,
@@ -321,11 +340,13 @@ export function useDiscovery({
       ? {
           success: true as const,
           registered: bulkData.registered,
+          siwx: bulkData.siwx,
           total: bulkData.total,
           failed: bulkData.failed,
           skipped: bulkData.skipped,
           deprecated: bulkData.deprecated,
           failedDetails: bulkData.failedDetails,
+          siwxDetails: bulkData.siwxDetails,
           skippedDetails: bulkData.skippedDetails,
           originId: bulkData.originId,
         }

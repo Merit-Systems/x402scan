@@ -2,6 +2,8 @@
  * x402 Discovery Types
  */
 
+import type { AuthMode } from '@agentcash/discovery';
+
 /**
  * A discovered resource with URL and optional HTTP method.
  * Method is specified in discovery doc like "POST /api/resource"
@@ -17,11 +19,15 @@ export interface DiscoveredResource {
     | 'HEAD'
     | 'OPTIONS'
     | 'TRACE';
+  /** Auth classification from discovery (paid, siwx, apiKey, apiKey+paid, unprotected). */
+  authMode?: AuthMode;
   /** If true, this resource failed validation */
   invalid?: boolean;
   /** Error message if resource is invalid */
   invalidReason?: string;
 }
+
+export type { AuthMode };
 
 export type DiscoverySource =
   | 'openapi'

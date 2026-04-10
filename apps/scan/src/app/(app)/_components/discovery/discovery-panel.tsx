@@ -38,7 +38,7 @@ import type {
   FailedResource as FailedResourceType,
   TestedResource as TestedResourceType,
 } from '@/types/batch-test';
-import type { DiscoverySource } from '@/types/discovery';
+import type { AuthMode, DiscoverySource } from '@/types/discovery';
 import type { Methods } from '@/types/x402';
 import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 
@@ -74,17 +74,21 @@ export interface DiscoveryPanelProps {
   discoveryError?: string;
   /** Map of URL to invalid status for displaying badges */
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
+  /** Map of URL to auth mode from discovery (e.g. 'siwx' for identity-gated). */
+  authModeMap?: Record<string, AuthMode>;
   /** Whether bulk registration is in progress */
   isRegisteringAll: boolean;
   /** Bulk registration result */
   bulkResult?: {
     success: boolean;
     registered: number;
+    siwx?: number;
     total: number;
     failed: number;
     skipped?: number;
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
+    siwxDetails?: { url: string }[];
     skippedDetails?: { url: string; error: string; status?: number }[];
   } | null;
   /** Called when "Register All" is clicked (required in register mode) */
@@ -133,6 +137,7 @@ export function DiscoveryPanel({
   resourceCount,
   discoveryError,
   invalidResourcesMap = {},
+  authModeMap = {},
   isRegisteringAll,
   bulkResult,
   onRegisterAll,
@@ -162,15 +167,16 @@ export function DiscoveryPanel({
   if (!isTestMode && bulkResult?.success) {
     const skippedCount = bulkResult.skipped ?? 0;
     const skippedDetails = bulkResult.skippedDetails ?? [];
-    const siwxSkippedCount = skippedDetails.filter(item =>
-      item.error.includes('SIWX')
-    ).length;
-    const missingSchemaSkippedCount = skippedDetails.filter(item =>
-      item.error.includes('Missing input schema')
-    ).length;
+    const siwxCount = bulkResult.siwx ?? 0;
+    const siwxDetails = bulkResult.siwxDetails ?? [];
 
-    // Show error state if no resources were registered
-    if (bulkResult.registered === 0 && bulkResult.failed > 0) {
+    // Show error state only if nothing landed positively (no paid registers
+    // and no SIWX detections) and there were real failures.
+    if (
+      bulkResult.registered === 0 &&
+      siwxCount === 0 &&
+      bulkResult.failed > 0
+    ) {
       return (
         <div className="space-y-3">
           <div className="flex items-start gap-3 p-4 border rounded-md bg-red-500/10 border-red-500/30">
@@ -261,6 +267,22 @@ export function DiscoveryPanel({
           </div>
         </div>
 
+        {/* SIWX detected notice */}
+        {siwxCount > 0 && (
+          <div className="flex items-start gap-3 p-4 border border-primary bg-primary/5 rounded-md">
+            <ShieldCheck className="size-5 text-primary shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-medium text-primary">
+                {siwxCount} SIWX route{siwxCount === 1 ? '' : 's'} detected
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Identity-gated routes — agents with an agentcash wallet can
+                call these for free.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Skipped resources notice */}
         {skippedCount > 0 && (
           <div className="flex items-start gap-3 p-4 border rounded-md bg-amber-600/10 border-amber-600/30">
@@ -271,24 +293,8 @@ export function DiscoveryPanel({
               </h3>
               <p className="text-sm text-muted-foreground">
                 Some resources were skipped by compatibility rules in strict
-                registration mode.
+                registration mode (e.g. missing input schema).
               </p>
-              <ul className="text-xs text-muted-foreground mt-2 space-y-1">
-                {siwxSkippedCount > 0 && (
-                  <li>
-                    - {siwxSkippedCount} SIWX auth-only endpoint
-                    {siwxSkippedCount === 1 ? '' : 's'} (no payment
-                    requirements)
-                  </li>
-                )}
-                {missingSchemaSkippedCount > 0 && (
-                  <li>
-                    - {missingSchemaSkippedCount} endpoint
-                    {missingSchemaSkippedCount === 1 ? '' : 's'} missing input
-                    schema
-                  </li>
-                )}
-              </ul>
             </div>
           </div>
         )}
@@ -353,6 +359,28 @@ export function DiscoveryPanel({
               </div>
             </details>
           )}
+
+        {siwxCount > 0 && siwxDetails.length > 0 && (
+          <details className="border rounded-md group">
+            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+              SIWX Routes ({siwxDetails.length})
+            </summary>
+            <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
+              {siwxDetails.map((entry, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground shrink-0">URL:</span>
+                    <span className="font-mono break-all">{entry.url}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
 
         {skippedCount > 0 && skippedDetails.length > 0 && (
           <details className="border rounded-md group">
@@ -514,6 +542,7 @@ export function DiscoveryPanel({
                 {paginatedResources.map((resourceUrl, idx) => {
                   const tested = testedResourceMap.get(resourceUrl);
                   const invalidInfo = invalidResourcesMap[resourceUrl];
+                  const authMode = authModeMap[resourceUrl];
 
                   if (tested) {
                     // Check if we have a valid schema for ResourceExecutor
@@ -541,6 +570,7 @@ export function DiscoveryPanel({
                         preview={preview}
                         testedResponse={tested}
                         invalidInfo={invalidInfo}
+                        authMode={authMode}
                         verifiedAddresses={verifiedAddresses}
                         onRetry={onRetryResource}
                       />
@@ -556,6 +586,7 @@ export function DiscoveryPanel({
                       preview={preview}
                       failedDetails={failedDetails}
                       invalidInfo={invalidInfo}
+                      authMode={authMode}
                       verifiedAddresses={verifiedAddresses}
                       onRetry={onRetryResource}
                     />
@@ -571,6 +602,7 @@ export function DiscoveryPanel({
               source={source}
               registeredUrls={registeredUrls}
               invalidResourcesMap={invalidResourcesMap}
+              authModeMap={authModeMap}
             />
           )}
 
@@ -750,6 +782,7 @@ function FailedResourceCard({
   failedDetails,
   testedResponse,
   invalidInfo,
+  authMode,
   verifiedAddresses = {},
   onRetry,
 }: {
@@ -759,6 +792,7 @@ function FailedResourceCard({
   /** If provided, x402 parsed successfully but is missing schema */
   testedResponse?: TestedResource;
   invalidInfo?: { invalid: boolean; reason?: string };
+  authMode?: AuthMode;
   verifiedAddresses?: Record<string, boolean>;
   onRetry?: () => Promise<void>;
 }) {
@@ -795,11 +829,14 @@ function FailedResourceCard({
   // Determine checklist status based on error details or tested response
   const returns402 = x402Parsed;
   const isInvalid = invalidInfo?.invalid ?? false;
-  const errorMessage = isInvalid
-    ? (invalidInfo?.reason ?? 'Invalid format')
-    : x402Parsed
-      ? 'Missing input schema'
-      : (failedDetails?.error ?? 'Unknown error');
+  const isSiwx = authMode === 'siwx';
+  const errorMessage = isSiwx
+    ? 'SIWX (identity-gated, no payment)'
+    : isInvalid
+      ? (invalidInfo?.reason ?? 'Invalid format')
+      : x402Parsed
+        ? 'Missing input schema'
+        : (failedDetails?.error ?? 'Unknown error');
 
   return (
     <div className="pl-4 border-l pt-4 relative">
@@ -807,7 +844,11 @@ function FailedResourceCard({
       <Card
         className={cn(
           'overflow-hidden',
-          isInvalid ? 'border-yellow-500/30' : 'border-red-500/30'
+          isSiwx
+            ? 'border-primary'
+            : isInvalid
+              ? 'border-yellow-500/30'
+              : 'border-red-500/30'
         )}
       >
         <button
@@ -821,12 +862,14 @@ function FailedResourceCard({
                 <div
                   className={cn(
                     'font-mono px-1 rounded-md text-xs shrink-0',
-                    isInvalid
-                      ? 'bg-yellow-600/10 border border-yellow-600 text-yellow-600'
-                      : 'bg-red-600/10 border border-red-600 text-red-600'
+                    isSiwx
+                      ? 'bg-primary/10 border border-primary text-primary'
+                      : isInvalid
+                        ? 'bg-yellow-600/10 border border-yellow-600 text-yellow-600'
+                        : 'bg-red-600/10 border border-red-600 text-red-600'
                   )}
                 >
-                  {isInvalid ? 'INVALID' : 'ERR'}
+                  {isSiwx ? 'SIWX' : isInvalid ? 'INVALID' : 'ERR'}
                 </div>
                 <span className="font-mono text-sm truncate">{pathname}</span>
               </div>
@@ -834,7 +877,11 @@ function FailedResourceCard({
                 <span
                   className={cn(
                     'text-xs truncate max-w-[200px]',
-                    isInvalid ? 'text-yellow-500' : 'text-red-500'
+                    isSiwx
+                      ? 'text-primary'
+                      : isInvalid
+                        ? 'text-yellow-500'
+                        : 'text-red-500'
                   )}
                 >
                   {errorMessage}
@@ -976,12 +1023,14 @@ function RegisterModeResourceList({
   source,
   registeredUrls,
   invalidResourcesMap = {},
+  authModeMap = {},
 }: {
   enteredUrl?: string;
   discoveredResources: string[];
   source?: DiscoverySource;
   registeredUrls: string[];
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
+  authModeMap?: Record<string, AuthMode>;
 }) {
   const registeredSet = new Set(registeredUrls);
 
@@ -1064,6 +1113,22 @@ function RegisterModeResourceList({
                       </span>
                     ) : (
                       <span className="text-xs text-muted-foreground">New</span>
+                    )}
+                    {authModeMap[url] === 'siwx' && (
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 border border-primary text-primary">
+                            <ShieldCheck className="size-3" />
+                            SIWX
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">
+                            Identity-gated route (Sign-In With X). Requires a
+                            wallet proof; no payment.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
                     )}
                     {invalidResourcesMap[url]?.invalid && (
                       <Tooltip>

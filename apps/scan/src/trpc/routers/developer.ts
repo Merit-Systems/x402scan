@@ -96,6 +96,12 @@ export const developerRouter = createTRPCRouter({
                   'TRACE',
                 ])
                 .optional(),
+              /** Auth classification from discovery. SIWX routes are skipped
+               *  because they are identity-gated, not x402-paid — probing them
+               *  would incorrectly mark them as failed. */
+              authMode: z
+                .enum(['paid', 'siwx', 'apiKey', 'apiKey+paid', 'unprotected'])
+                .optional(),
               /** If true, this resource is invalid and should not be tested */
               invalid: z.boolean().optional(),
               /** Reason why resource is invalid */
@@ -115,10 +121,14 @@ export const developerRouter = createTRPCRouter({
           error: r.invalidReason ?? 'Invalid resource format',
         }));
 
-      // Only test valid resources
-      const validResources = input.resources.filter(r => !r.invalid);
+      // SIWX routes are identity-gated, not payment-protected. Skip probing
+      // them — they are surfaced via authModeMap on the client and should not
+      // appear in either the tested or failed buckets.
+      const probeableResources = input.resources.filter(
+        r => !r.invalid && r.authMode !== 'siwx'
+      );
       const testResults = await Promise.all(
-        validResources.map(r => testSingleResource(r.url, r.method))
+        probeableResources.map(r => testSingleResource(r.url, r.method))
       );
 
       // Combine test results with invalid results
