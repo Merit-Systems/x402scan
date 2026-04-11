@@ -3,7 +3,7 @@ import type {
   AuditWarning,
   EndpointMethodAdvisory,
 } from '@agentcash/discovery';
-import { PROBE_TIMEOUT_MS } from './utils';
+import { PROBE_TIMEOUT_MS, PROBE_USER_AGENT } from './utils';
 
 export type ProbeX402Result =
   | {
@@ -28,17 +28,21 @@ export async function probeX402Endpoint(
     url,
     probe: true,
     signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+    headers: { 'User-Agent': PROBE_USER_AGENT },
   });
 
   if (!result.found) {
-    const causeMessages = {
+    const causeMessages: Record<string, string> = {
       not_found: 'Endpoint did not return a 402 payment challenge',
       network: 'Network error reaching endpoint',
       timeout: 'Endpoint timed out',
     };
+    const base =
+      causeMessages[result.cause] ?? `Probe failed (${result.cause})`;
+    const detail = result.message ? `${base}: ${result.message}` : base;
     return {
       success: false,
-      error: result.message ?? causeMessages[result.cause],
+      error: detail,
     };
   }
 
