@@ -27,3 +27,4 @@ export { openfacilitator, openfacilitatorFacilitator } from './openfacilitator';
 export { relai, relaiFacilitator } from './relai';
 export { bitrefill, bitrefillFacilitator } from './bitrefill';
 export { cascade, cascadeFacilitator } from './cascade';
+export { satoshi, satoshiFacilitator } from './satoshi';
