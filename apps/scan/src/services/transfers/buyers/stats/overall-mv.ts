@@ -29,9 +29,7 @@ const getOverallBuyerStatisticsMVUncached = async (
   }
 
   if (input.senders?.include && input.senders.include.length > 0) {
-    conditions.push(
-      Prisma.sql`AND sender = ANY(${input.senders.include})`
-    );
+    conditions.push(Prisma.sql`AND sender = ANY(${input.senders.include})`);
   }
 
   if (input.senders?.exclude && input.senders.exclude.length > 0) {
@@ -84,7 +82,9 @@ const getOverallBuyerStatisticsMVUncached = async (
   } catch (error) {
     // Gracefully handle missing materialized views (e.g. during first deploy)
     if (String(error).includes('does not exist')) {
-      console.warn(`[buyer-stats] MV ${tableName} not yet available, returning empty`);
+      console.warn(
+        `[buyer-stats] MV ${tableName} not yet available, returning empty`
+      );
       return empty;
     }
     throw error;

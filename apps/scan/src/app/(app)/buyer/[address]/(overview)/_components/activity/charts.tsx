@@ -17,26 +17,24 @@ interface Props {
 export const ActivityCharts: React.FC<Props> = ({ address }) => {
   const { timeframe } = useTimeRangeContext();
 
-  const [overallStats] =
-    api.public.buyers.all.stats.overall.useSuspenseQuery({
+  const [overallStats] = api.public.buyers.all.stats.overall.useSuspenseQuery({
+    senders: {
+      include: [address],
+    },
+    timeframe,
+  });
+  const [bucketedStats] = api.public.buyers.all.stats.bucketed.useSuspenseQuery(
+    {
       senders: {
         include: [address],
       },
       timeframe,
-    });
-  const [bucketedStats] =
-    api.public.buyers.all.stats.bucketed.useSuspenseQuery(
-      {
-        senders: {
-          include: [address],
-        },
-        timeframe,
-      },
-      {
-        staleTime: 15000,
-        refetchInterval: 15000,
-      }
-    );
+    },
+    {
+      staleTime: 15000,
+      refetchInterval: 15000,
+    }
+  );
 
   // Transform data for the chart
   const chartData: ChartData<{

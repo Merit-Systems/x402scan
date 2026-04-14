@@ -57,7 +57,9 @@ const getWalletStatsUncached = async (input: WalletStatsInput) => {
     return result[0] ?? empty;
   } catch (error) {
     if (String(error).includes('does not exist')) {
-      console.warn(`[wallet-stats] MV ${tableName} not yet available, returning empty`);
+      console.warn(
+        `[wallet-stats] MV ${tableName} not yet available, returning empty`
+      );
       return empty;
     }
     throw error;

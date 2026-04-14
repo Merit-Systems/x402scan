@@ -51,9 +51,7 @@ const listTopBuyersMVUncached = async (
   }
 
   if (input.senders?.include && input.senders.include.length > 0) {
-    conditions.push(
-      Prisma.sql`AND sender = ANY(${input.senders.include})`
-    );
+    conditions.push(Prisma.sql`AND sender = ANY(${input.senders.include})`);
   }
 
   if (input.senders?.exclude && input.senders.exclude.length > 0) {
@@ -68,10 +66,10 @@ const listTopBuyersMVUncached = async (
   const offset = pagination.page * pagination.page_size;
 
   try {
-  // Group and paginate by sender first, then unnest facilitator_ids
-  // in an outer query to avoid LATERAL UNNEST skewing LIMIT/OFFSET
-  const items = await queryRaw(
-    Prisma.sql`
+    // Group and paginate by sender first, then unnest facilitator_ids
+    // in an outer query to avoid LATERAL UNNEST skewing LIMIT/OFFSET
+    const items = await queryRaw(
+      Prisma.sql`
     WITH paginated AS (
       SELECT
         sender,
@@ -103,54 +101,56 @@ const listTopBuyersMVUncached = async (
       p.chains
     FROM paginated p
     ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.raw('DESC') : Prisma.raw('ASC')}`,
-    z.array(
-      z.object({
-        sender: mixedAddressSchema,
-        facilitator_ids: z.array(z.string()),
-        tx_count: z.number(),
-        total_amount: z.number(),
-        latest_block_timestamp: z.date().nullable(),
-        unique_sellers: z.number(),
-        chains: z.array(chainSchema),
-      })
-    )
-  );
+      z.array(
+        z.object({
+          sender: mixedAddressSchema,
+          facilitator_ids: z.array(z.string()),
+          tx_count: z.number(),
+          total_amount: z.number(),
+          latest_block_timestamp: z.date().nullable(),
+          unique_sellers: z.number(),
+          chains: z.array(chainSchema),
+        })
+      )
+    );
 
-  console.log(
-    `[buyers-mv] main query ${tableName} ${(performance.now() - t0).toFixed(0)}ms (${items.length} rows)`
-  );
+    console.log(
+      `[buyers-mv] main query ${tableName} ${(performance.now() - t0).toFixed(0)}ms (${items.length} rows)`
+    );
 
-  let count: number;
+    let count: number;
 
-  if (items.length < pagination.page_size) {
-    count = offset + items.length;
-  } else {
-    const countResult = await queryRaw(
-      Prisma.sql`
+    if (items.length < pagination.page_size) {
+      count = offset + items.length;
+    } else {
+      const countResult = await queryRaw(
+        Prisma.sql`
         SELECT COUNT(DISTINCT sender)::integer AS count
         FROM ${Prisma.raw(tableName)}
         ${whereClause}
       `,
-      z.array(
-        z.object({
-          count: z.number(),
-        })
-      )
-    );
-    count = countResult[0]?.count ?? 0;
-    console.log(
-      `[buyers-mv] count query ${tableName} ${(performance.now() - t0).toFixed(0)}ms`
-    );
-  }
+        z.array(
+          z.object({
+            count: z.number(),
+          })
+        )
+      );
+      count = countResult[0]?.count ?? 0;
+      console.log(
+        `[buyers-mv] count query ${tableName} ${(performance.now() - t0).toFixed(0)}ms`
+      );
+    }
 
-  return toPaginatedResponse({
-    items,
-    total_count: count,
-    ...pagination,
-  });
+    return toPaginatedResponse({
+      items,
+      total_count: count,
+      ...pagination,
+    });
   } catch (error) {
     if (String(error).includes('does not exist')) {
-      console.warn(`[buyers-mv] MV ${tableName} not yet available, returning empty`);
+      console.warn(
+        `[buyers-mv] MV ${tableName} not yet available, returning empty`
+      );
       return toPaginatedResponse({
         items: [],
         total_count: 0,

@@ -256,13 +256,15 @@ export default function DiscoverySpecPage() {
           </p>
           <ul className="list-disc pl-5 space-y-1 text-sm">
             <li>
-              Declare a security scheme named{' '}
-              <code>siwx</code> in{' '}
+              Declare a security scheme named <code>siwx</code> in{' '}
               <code>components.securitySchemes</code>.
             </li>
             <li>
               Reference it on each identity-gated operation via{' '}
-              <code>security: [{'{'} &quot;siwx&quot;: [] {'}'}]</code>.
+              <code>
+                security: [{'{'} &quot;siwx&quot;: [] {'}'}]
+              </code>
+              .
             </li>
             <li>
               Do <strong>not</strong> add <code>x-payment-info</code> to

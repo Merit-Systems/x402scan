@@ -62,9 +62,7 @@ export default async function DiscoverPage({
                 }
               >
                 <ErrorBoundary
-                  fallback={
-                    <p>There was an error loading the discover data</p>
-                  }
+                  fallback={<p>There was an error loading the discover data</p>}
                 >
                   <Suspense fallback={<LoadingDiscoverSellersTable />}>
                     <DiscoverSellersTable originUrls={originUrls} />

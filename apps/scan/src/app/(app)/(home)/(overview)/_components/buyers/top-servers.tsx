@@ -18,16 +18,15 @@ interface Props {
 }
 
 export const BuyerTopServers: React.FC<Props> = ({ sender }) => {
-  const { data: sellers, isLoading } =
-    api.public.buyers.all.sellers.useQuery({
-      sender,
-      sorting: { id: 'tx_count', desc: true },
-      pagination: {
-        page_size: 3,
-        page: 0,
-      },
-      timeframe: ActivityTimeframe.ThirtyDays,
-    });
+  const { data: sellers, isLoading } = api.public.buyers.all.sellers.useQuery({
+    sender,
+    sorting: { id: 'tx_count', desc: true },
+    pagination: {
+      page_size: 3,
+      page: 0,
+    },
+    timeframe: ActivityTimeframe.ThirtyDays,
+  });
 
   if (isLoading || !sellers) {
     return <LoadingBuyerTopServers />;
@@ -37,7 +36,9 @@ export const BuyerTopServers: React.FC<Props> = ({ sender }) => {
     return <span className="text-xs text-muted-foreground">–</span>;
   }
 
-  return <TopServersFavicons recipients={sellers.items.map(s => s.recipient)} />;
+  return (
+    <TopServersFavicons recipients={sellers.items.map(s => s.recipient)} />
+  );
 };
 
 const TopServersFavicons: React.FC<{ recipients: string[] }> = ({

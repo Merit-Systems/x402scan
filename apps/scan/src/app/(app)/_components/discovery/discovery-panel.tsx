@@ -276,8 +276,8 @@ export function DiscoveryPanel({
                 {siwxCount} SIWX route{siwxCount === 1 ? '' : 's'} detected
               </h3>
               <p className="text-sm text-muted-foreground">
-                Identity-gated routes — agents with an agentcash wallet can
-                call these for free.
+                Identity-gated routes — agents with an agentcash wallet can call
+                these for free.
               </p>
             </div>
           </div>

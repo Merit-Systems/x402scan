@@ -23,7 +23,7 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
     },
     where: {
       network: chain as AcceptsNetwork,
-      ...((tags || originUrls)
+      ...(tags || originUrls
         ? {
             resourceRel: {
               ...(tags

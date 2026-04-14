@@ -12,7 +12,8 @@ export const POST = withCors(
       (body: { amount: number; address: string }) => body.amount.toString(),
       {
         maxPrice: '1000',
-        payTo: (_req, body) => (body as { address: string } | undefined)?.address ?? '',
+        payTo: (_req, body) =>
+          (body as { address: string } | undefined)?.address ?? '',
       }
     )
     .method('POST')

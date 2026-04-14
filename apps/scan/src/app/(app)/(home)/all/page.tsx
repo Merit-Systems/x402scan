@@ -10,7 +10,6 @@ import { AllBuyers } from '../(overview)/_components/buyers';
 import { getChainForPage } from '@/app/(app)/_lib/chain/page';
 import { TopAgents } from '../(overview)/_components/top-agents';
 
-
 export default async function AllPage({
   searchParams,
 }: {

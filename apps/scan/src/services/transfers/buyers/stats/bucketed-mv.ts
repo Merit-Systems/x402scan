@@ -70,7 +70,9 @@ const getBucketedBuyerStatisticsMVUncached = async (
     return await queryRaw(sql, bucketedBuyerResultSchema);
   } catch (error) {
     if (String(error).includes('does not exist')) {
-      console.warn(`[buyer-stats] MV ${tableName} not yet available, returning empty`);
+      console.warn(
+        `[buyer-stats] MV ${tableName} not yet available, returning empty`
+      );
       return [];
     }
     throw error;
