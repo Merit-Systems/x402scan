@@ -5,6 +5,7 @@ import {
   ArrowLeftRight,
   Calendar,
   DollarSign,
+  ExternalLink,
   Globe,
   Server,
   Users,
@@ -170,7 +171,9 @@ export const discoverColumns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'tryIt',
-    header: () => <HeaderCell label="Try It" className="mx-auto" />,
+    header: () => (
+      <HeaderCell Icon={ExternalLink} label="Try It" className="mx-auto" />
+    ),
     cell: ({ row }) => {
       const origin = row.original.origins[0]?.origin;
       if (!origin) return null;
