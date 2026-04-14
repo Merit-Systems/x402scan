@@ -125,7 +125,7 @@
     "resumable-stream": "^2.2.8",
     "server-only": "catalog:",
     "shiki": "^3.13.0",
-    "siwe": "catalog:",
+    "@signinwithethereum/siwe": "catalog:",
     "sonner": "^2.0.7",
     "streamdown": "^1.4.0",
     "stripe": "^20.1.2",

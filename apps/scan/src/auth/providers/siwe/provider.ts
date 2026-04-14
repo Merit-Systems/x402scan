@@ -1,4 +1,4 @@
-import { SiweMessage } from 'siwe';
+import { SiweMessage } from '@signinwithethereum/siwe';
 import Credentials, {
   type CredentialsConfig,
 } from 'next-auth/providers/credentials';
