@@ -1,123 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { outputSchemaV1 } from '@/lib/x402/v1';
-
-// Re-implement locally since the functions are not exported.
-// This mirrors the production code in resources.ts exactly.
-
-function openApiPropertyToFieldDef(
-  name: string,
-  schema: unknown,
-  requiredFields: unknown
-): Record<string, unknown> {
-  const s =
-    typeof schema === 'object' && schema !== null
-      ? (schema as Record<string, unknown>)
-      : {};
-  const isRequired =
-    Array.isArray(requiredFields) && requiredFields.includes(name);
-
-  return {
-    ...(typeof s.type === 'string' ? { type: s.type } : {}),
-    ...(isRequired ? { required: true } : {}),
-    ...(typeof s.description === 'string'
-      ? { description: s.description }
-      : {}),
-    ...(Array.isArray(s.enum) ? { enum: s.enum.map(String) } : {}),
-    ...(s.properties ? { properties: s.properties } : {}),
-    ...(s.items ? { items: s.items } : {}),
-  };
-}
-
-function openApiParamToFieldDef(
-  param: Record<string, unknown>
-): Record<string, unknown> {
-  const schema =
-    typeof param.schema === 'object' && param.schema !== null
-      ? (param.schema as Record<string, unknown>)
-      : {};
-
-  return {
-    ...(typeof schema.type === 'string' ? { type: schema.type } : {}),
-    ...(param.required === true ? { required: true } : {}),
-    ...(typeof param.description === 'string'
-      ? { description: param.description }
-      : {}),
-    ...(Array.isArray(schema.enum) ? { enum: schema.enum.map(String) } : {}),
-  };
-}
-
-function convertOpenApiSchemaToV1(
-  inputSchema: Record<string, unknown>,
-  method: string,
-  outputSchema?: Record<string, unknown>
-) {
-  const input: Record<string, unknown> = {
-    type: 'http',
-    method: method.toUpperCase(),
-  };
-
-  const hasRequestBody = 'requestBody' in inputSchema;
-  const hasParameters =
-    'parameters' in inputSchema && Array.isArray(inputSchema.parameters);
-  const isBareJsonSchema =
-    !hasRequestBody &&
-    !hasParameters &&
-    ('properties' in inputSchema || 'type' in inputSchema);
-
-  const bodySource = hasRequestBody
-    ? (inputSchema.requestBody as Record<string, unknown>)
-    : isBareJsonSchema
-      ? inputSchema
-      : undefined;
-
-  if (bodySource) {
-    const properties = bodySource.properties as
-      | Record<string, unknown>
-      | undefined;
-    if (properties) {
-      const bodyFields: Record<string, Record<string, unknown>> = {};
-      for (const [name, schema] of Object.entries(properties)) {
-        bodyFields[name] = openApiPropertyToFieldDef(
-          name,
-          schema,
-          bodySource.required
-        );
-      }
-      input.bodyFields = bodyFields;
-      if (!('method' in input) || input.method === 'GET') {
-        input.method = 'POST';
-      }
-    }
-  }
-
-  if (hasParameters) {
-    const parameters = inputSchema.parameters as Record<string, unknown>[];
-    const queryParams: Record<string, Record<string, unknown>> = {};
-    const headerFields: Record<string, Record<string, unknown>> = {};
-
-    for (const param of parameters) {
-      if (typeof param.name !== 'string') continue;
-      const fieldDef = openApiParamToFieldDef(param);
-      if (param.in === 'query') {
-        queryParams[param.name] = fieldDef;
-      } else if (param.in === 'header') {
-        headerFields[param.name] = fieldDef;
-      }
-    }
-
-    if (Object.keys(queryParams).length > 0) input.queryParams = queryParams;
-    if (Object.keys(headerFields).length > 0) input.headerFields = headerFields;
-  }
-
-  if (!input.bodyFields && !input.queryParams && !input.headerFields) {
-    return undefined;
-  }
-
-  return outputSchemaV1.safeParse({
-    input,
-    output: outputSchema ?? null,
-  }).data;
-}
+import { convertOpenApiSchemaToV1 } from './openapi-to-v1';
 
 describe('convertOpenApiSchemaToV1', () => {
   it('converts a bare JSON Schema (POST requestBody) to v1 format', () => {
@@ -236,7 +119,6 @@ describe('convertOpenApiSchemaToV1', () => {
       properties: { data: { type: 'string' } },
     };
 
-    // Method is GET but body fields exist — should flip to POST
     const result = convertOpenApiSchemaToV1(schema, 'GET');
     expect(result).toBeDefined();
     expect(result!.input.method).toBe('POST');
@@ -294,7 +176,6 @@ describe('convertOpenApiSchemaToV1', () => {
     const result = convertOpenApiSchemaToV1(schema, 'GET');
     expect(result).toBeDefined();
 
-    // Double-check it passes v1 validation
     const validation = outputSchemaV1.safeParse(result);
     expect(validation.success).toBe(true);
   });
@@ -302,7 +183,7 @@ describe('convertOpenApiSchemaToV1', () => {
   it('skips parameters with no name', () => {
     const schema = {
       parameters: [
-        { in: 'query', schema: { type: 'string' } }, // missing name
+        { in: 'query', schema: { type: 'string' } },
         {
           name: 'valid',
           in: 'query',

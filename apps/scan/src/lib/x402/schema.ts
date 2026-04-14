@@ -40,7 +40,7 @@ function filterProtocolHeaders(
  * Handles both JSON Schema format (with properties) and simple key-value format.
  */
 export function extractFieldsFromSchema(
-  inputSchema: InputSchema | Record<string, unknown>,
+  inputSchema: InputSchema,
   method: Methods,
   fieldType: 'query' | 'body' | 'header'
 ): FieldDefinition[] {
@@ -63,25 +63,24 @@ export function extractFieldsFromSchema(
     return [];
   }
 
-  const queryParams = schema.queryParams as Record<string, unknown> | undefined;
-  const bodyFields = schema.bodyFields as Record<string, unknown> | undefined;
-
   const hasJsonSchemaQuery =
-    queryParams &&
-    typeof queryParams === 'object' &&
-    'properties' in queryParams;
+    inputSchema.queryParams &&
+    typeof inputSchema.queryParams === 'object' &&
+    'properties' in (inputSchema.queryParams as object);
   const hasJsonSchemaBody =
     schemaBody && typeof schemaBody === 'object' && 'properties' in schemaBody;
   const hasJsonSchemaRaw =
-    !queryParams && !bodyFields && 'properties' in schema;
+    !inputSchema.queryParams &&
+    !inputSchema.bodyFields &&
+    'properties' in schema;
 
   if (fieldType === 'query') {
     if (hasJsonSchemaQuery) {
-      const qs = queryParams as JsonSchema;
+      const qs = inputSchema.queryParams as JsonSchema;
       return getFields(qs.properties, qs.required);
     }
-    if (queryParams) {
-      return getFields(queryParams);
+    if (inputSchema.queryParams) {
+      return getFields(inputSchema.queryParams);
     }
     if (hasJsonSchemaRaw && method === Methods.GET) {
       return getFields(
@@ -96,8 +95,8 @@ export function extractFieldsFromSchema(
   if (hasJsonSchemaBody && method !== Methods.GET) {
     return getFields(schemaBody.properties, schemaBody.required);
   }
-  if (bodyFields) {
-    return getFields(bodyFields);
+  if (inputSchema.bodyFields) {
+    return getFields(inputSchema.bodyFields);
   }
   if (hasJsonSchemaRaw && method !== Methods.GET) {
     return getFields(

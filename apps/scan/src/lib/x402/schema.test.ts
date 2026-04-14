@@ -1,10 +1,17 @@
 import { describe, it, expect } from 'vitest';
 import { extractFieldsFromSchema } from './schema';
 import { Methods } from '@/types/x402';
+import type { InputSchema } from '@/lib/x402';
+
+function makeInputSchema(
+  overrides: Partial<InputSchema> & { method: InputSchema['method'] }
+): InputSchema {
+  return { type: 'http', ...overrides };
+}
 
 describe('extractFieldsFromSchema - protocol header filtering', () => {
   it('filters out x402 protocol headers from headerFields', () => {
-    const inputSchema = {
+    const inputSchema = makeInputSchema({
       method: 'GET',
       headerFields: {
         Authorization: { type: 'string', required: true },
@@ -15,7 +22,7 @@ describe('extractFieldsFromSchema - protocol header filtering', () => {
         'PAYMENT-SIGNATURE': { type: 'string' },
         'X-Custom-Header': { type: 'string', required: true },
       },
-    };
+    });
 
     const fields = extractFieldsFromSchema(inputSchema, Methods.GET, 'header');
     const names = fields.map(f => f.name);
@@ -27,7 +34,7 @@ describe('extractFieldsFromSchema - protocol header filtering', () => {
   });
 
   it('filters protocol headers case-insensitively', () => {
-    const inputSchema = {
+    const inputSchema = makeInputSchema({
       method: 'POST',
       headerFields: {
         authorization: { type: 'string' },
@@ -36,7 +43,7 @@ describe('extractFieldsFromSchema - protocol header filtering', () => {
         'sign-in-with-x': { type: 'string' },
         'X-Api-Key': { type: 'string' },
       },
-    };
+    });
 
     const fields = extractFieldsFromSchema(inputSchema, Methods.POST, 'header');
     const names = fields.map(f => f.name);
@@ -45,25 +52,25 @@ describe('extractFieldsFromSchema - protocol header filtering', () => {
   });
 
   it('returns empty array when all headers are protocol headers', () => {
-    const inputSchema = {
+    const inputSchema = makeInputSchema({
       method: 'POST',
       headerFields: {
         Authorization: { type: 'string' },
         'X-Payment': { type: 'string' },
       },
-    };
+    });
 
     const fields = extractFieldsFromSchema(inputSchema, Methods.POST, 'header');
     expect(fields).toEqual([]);
   });
 
   it('does not filter non-header fields', () => {
-    const inputSchema = {
+    const inputSchema = makeInputSchema({
       method: 'GET',
       queryParams: {
         authorization: { type: 'string', description: 'some query param' },
       },
-    };
+    });
 
     const fields = extractFieldsFromSchema(inputSchema, Methods.GET, 'query');
     expect(fields).toHaveLength(1);
