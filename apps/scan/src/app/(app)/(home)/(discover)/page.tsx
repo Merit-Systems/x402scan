@@ -4,9 +4,9 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { Body, Section } from '@/app/_components/layout/page-utils';
 
-import { HomeHeading } from '../(overview)/_components/heading';
 import { OverallStats } from '../(overview)/_components/stats';
 import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
+import { DiscoverHeading } from './_components/heading';
 
 import { api, HydrateClient } from '@/trpc/server';
 
@@ -17,6 +17,8 @@ import {
   DiscoverSellersTable,
   LoadingDiscoverSellersTable,
 } from './_components/discover-origins';
+import { DiscoverSearchProvider } from './_components/discover-search-context';
+import { DiscoverPageContent } from './_components/discover-page-content';
 
 import { defaultSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/default';
 import { SellersSortingProvider } from '@/app/(app)/_contexts/sorting/sellers/provider';
@@ -44,35 +46,41 @@ export default async function DiscoverPage({
   });
 
   return (
-    <div>
-      <HomeHeading />
-      <Body>
-        <AgentCashAnnouncementBanner />
-        <OverallStats chain={chain} />
-        <HydrateClient>
-          <SellersSortingProvider initialSorting={defaultSellersSorting}>
-            <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
-              <Section
-                title="Top Sellers"
-                description="x402Scan curated x402-enabled services."
-                actions={
-                  <div className="flex items-center gap-2">
-                    <RangeSelector />
-                  </div>
-                }
-              >
-                <ErrorBoundary
-                  fallback={<p>There was an error loading the discover data</p>}
-                >
-                  <Suspense fallback={<LoadingDiscoverSellersTable />}>
-                    <DiscoverSellersTable originUrls={originUrls} />
-                  </Suspense>
-                </ErrorBoundary>
-              </Section>
-            </TimeRangeProvider>
-          </SellersSortingProvider>
-        </HydrateClient>
-      </Body>
-    </div>
+    <HydrateClient>
+      <DiscoverSearchProvider>
+        <SellersSortingProvider initialSorting={defaultSellersSorting}>
+          <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
+            <div>
+              <DiscoverHeading />
+              <Body>
+                <DiscoverPageContent>
+                  <AgentCashAnnouncementBanner />
+                  <OverallStats chain={chain} />
+                  <Section
+                    title="Top Sellers"
+                    description="x402Scan curated x402-enabled services."
+                    actions={
+                      <div className="flex items-center gap-2">
+                        <RangeSelector />
+                      </div>
+                    }
+                  >
+                    <ErrorBoundary
+                      fallback={
+                        <p>There was an error loading the discover data</p>
+                      }
+                    >
+                      <Suspense fallback={<LoadingDiscoverSellersTable />}>
+                        <DiscoverSellersTable originUrls={originUrls} />
+                      </Suspense>
+                    </ErrorBoundary>
+                  </Section>
+                </DiscoverPageContent>
+              </Body>
+            </div>
+          </TimeRangeProvider>
+        </SellersSortingProvider>
+      </DiscoverSearchProvider>
+    </HydrateClient>
   );
 }
