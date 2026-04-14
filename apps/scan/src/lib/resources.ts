@@ -79,7 +79,18 @@ function convertOpenApiSchemaToV1(
     }
   }
 
-  // Extract queryParams and headerFields from parameters
+  // Extract queryParams and headerFields from parameters.
+  // Skip headers that are part of the x402/MPP payment protocol — these are
+  // added automatically by the payment flow and should not be user-fillable.
+  const PROTOCOL_HEADERS = new Set([
+    'authorization',
+    'payment-signature',
+    'payment-required',
+    'x-payment',
+    'x-payment-signature',
+    'sign-in-with-x',
+  ]);
+
   if (hasParameters) {
     const parameters = inputSchema.parameters as Record<string, unknown>[];
     const queryParams: Record<string, Record<string, unknown>> = {};
@@ -90,7 +101,10 @@ function convertOpenApiSchemaToV1(
       const fieldDef = openApiParamToFieldDef(param);
       if (param.in === 'query') {
         queryParams[param.name] = fieldDef;
-      } else if (param.in === 'header') {
+      } else if (
+        param.in === 'header' &&
+        !PROTOCOL_HEADERS.has(param.name.toLowerCase())
+      ) {
         headerFields[param.name] = fieldDef;
       }
     }
@@ -125,7 +139,9 @@ function openApiPropertyToFieldDef(
   return {
     ...(typeof s.type === 'string' ? { type: s.type } : {}),
     ...(isRequired ? { required: true } : {}),
-    ...(typeof s.description === 'string' ? { description: s.description } : {}),
+    ...(typeof s.description === 'string'
+      ? { description: s.description }
+      : {}),
     ...(Array.isArray(s.enum) ? { enum: s.enum.map(String) } : {}),
     ...(s.properties ? { properties: s.properties } : {}),
     ...(s.items ? { items: s.items } : {}),

@@ -90,6 +90,15 @@ function convertOpenApiSchemaToV1(
     }
   }
 
+  const PROTOCOL_HEADERS = new Set([
+    'authorization',
+    'payment-signature',
+    'payment-required',
+    'x-payment',
+    'x-payment-signature',
+    'sign-in-with-x',
+  ]);
+
   if (hasParameters) {
     const parameters = inputSchema.parameters as Record<string, unknown>[];
     const queryParams: Record<string, Record<string, unknown>> = {};
@@ -100,7 +109,10 @@ function convertOpenApiSchemaToV1(
       const fieldDef = openApiParamToFieldDef(param);
       if (param.in === 'query') {
         queryParams[param.name] = fieldDef;
-      } else if (param.in === 'header') {
+      } else if (
+        param.in === 'header' &&
+        !PROTOCOL_HEADERS.has(param.name.toLowerCase())
+      ) {
         headerFields[param.name] = fieldDef;
       }
     }
@@ -182,7 +194,7 @@ describe('convertOpenApiSchemaToV1', () => {
     });
   });
 
-  it('converts mixed requestBody + parameters', () => {
+  it('converts mixed requestBody + parameters (filtering protocol headers)', () => {
     const schema = {
       requestBody: {
         type: 'object',
@@ -197,6 +209,12 @@ describe('convertOpenApiSchemaToV1', () => {
           schema: { type: 'string' },
           required: true,
         },
+        {
+          name: 'X-Api-Version',
+          in: 'header',
+          schema: { type: 'string' },
+          required: false,
+        },
       ],
     };
 
@@ -205,11 +223,13 @@ describe('convertOpenApiSchemaToV1', () => {
     expect(result!.input.method).toBe('POST');
     expect(result!.input.bodyFields).toBeDefined();
     expect(result!.input.bodyFields!.name).toEqual({ type: 'string' });
+    // Authorization is a protocol header — should be filtered
+    // X-Api-Version is a custom header — should be kept
     expect(result!.input.headerFields).toBeDefined();
-    expect(result!.input.headerFields!.Authorization).toEqual({
+    expect(result!.input.headerFields!['X-Api-Version']).toEqual({
       type: 'string',
-      required: true,
     });
+    expect(result!.input.headerFields!.Authorization).toBeUndefined();
   });
 
   it('returns undefined for empty schema', () => {
@@ -316,5 +336,83 @@ describe('convertOpenApiSchemaToV1', () => {
     expect(result).toBeDefined();
     expect(result!.input.queryParams).toBeDefined();
     expect(Object.keys(result!.input.queryParams!)).toEqual(['valid']);
+  });
+
+  it('filters out x402 protocol headers (Authorization, PAYMENT-SIGNATURE, etc.)', () => {
+    const schema = {
+      parameters: [
+        {
+          name: 'Authorization',
+          in: 'header',
+          schema: { type: 'string' },
+          required: true,
+        },
+        {
+          name: 'PAYMENT-SIGNATURE',
+          in: 'header',
+          schema: { type: 'string' },
+          required: true,
+        },
+        {
+          name: 'X-Payment',
+          in: 'header',
+          schema: { type: 'string' },
+          required: true,
+        },
+        {
+          name: 'X-Custom-Header',
+          in: 'header',
+          schema: { type: 'string' },
+          required: true,
+        },
+        {
+          name: 'q',
+          in: 'query',
+          schema: { type: 'string' },
+          required: true,
+        },
+      ],
+    };
+
+    const result = convertOpenApiSchemaToV1(schema, 'GET');
+    expect(result).toBeDefined();
+    // Protocol headers should be filtered out
+    expect(result!.input.headerFields).toEqual({
+      'X-Custom-Header': { type: 'string', required: true },
+    });
+    // Query params should still be present
+    expect(result!.input.queryParams).toBeDefined();
+    expect(result!.input.queryParams!.q).toEqual({
+      type: 'string',
+      required: true,
+    });
+  });
+
+  it('returns valid schema when only protocol headers exist (no headerFields)', () => {
+    const schema = {
+      requestBody: {
+        type: 'object',
+        properties: { data: { type: 'string' } },
+      },
+      parameters: [
+        {
+          name: 'Authorization',
+          in: 'header',
+          schema: { type: 'string' },
+        },
+        {
+          name: 'Payment-Signature',
+          in: 'header',
+          schema: { type: 'string' },
+        },
+      ],
+    };
+
+    const result = convertOpenApiSchemaToV1(schema, 'POST');
+    expect(result).toBeDefined();
+    // No headerFields since all headers were protocol headers
+    expect(result!.input.headerFields).toBeUndefined();
+    // Body should still work
+    expect(result!.input.bodyFields).toBeDefined();
   });
 });
