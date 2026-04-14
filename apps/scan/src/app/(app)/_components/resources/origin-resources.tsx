@@ -12,6 +12,7 @@ import {
 import { LoadingResourceExecutor, ResourceExecutor } from './executor';
 
 import { getBazaarMethod } from './executor/utils';
+import { outputSchemaV1 } from '@/lib/x402/v1';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -43,10 +44,14 @@ export const OriginResources: React.FC<Props> = ({
         resources
           .filter(resource => resource.success)
           .map(resource => {
-            const outputSchema = resource.accepts.find(
+            const rawOutputSchema = resource.accepts.find(
               accept => accept.outputSchema
             )?.outputSchema;
-            const bazaarMethod = getBazaarMethod(outputSchema);
+            const parsedFallback = outputSchemaV1.safeParse(rawOutputSchema);
+            const fallbackOutputSchema = parsedFallback.success
+              ? parsedFallback.data
+              : undefined;
+            const bazaarMethod = getBazaarMethod(rawOutputSchema);
 
             return (
               <ResourceExecutor
@@ -56,6 +61,7 @@ export const OriginResources: React.FC<Props> = ({
                 bazaarMethod={bazaarMethod}
                 className="bg-transparent"
                 response={resource.data}
+                fallbackOutputSchema={fallbackOutputSchema}
                 hideOrigin={hideOrigin}
                 defaultOpen={defaultOpen}
                 isFlat={isFlat}

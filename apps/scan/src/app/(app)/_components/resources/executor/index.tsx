@@ -25,6 +25,7 @@ import {
   getOutputSchema,
   getMaxAmount,
   type ParsedX402Response,
+  type OutputSchema,
 } from '@/lib/x402';
 import type { Resources, Tag } from '@x402scan/scan-db';
 
@@ -41,6 +42,8 @@ interface Props {
   warnings?: string[];
   /** Whether ownership is verified for this resource */
   ownershipVerified?: boolean;
+  /** Fallback output schema from Accepts table (used when 402 body lacks bazaar extension) */
+  fallbackOutputSchema?: OutputSchema;
 }
 
 export const ResourceExecutor: React.FC<Props> = ({
@@ -53,8 +56,10 @@ export const ResourceExecutor: React.FC<Props> = ({
   isFlat = false,
   warnings = [],
   ownershipVerified = false,
+  fallbackOutputSchema,
 }) => {
-  const outputSchema = response ? getOutputSchema(response) : undefined;
+  const outputSchema =
+    (response ? getOutputSchema(response) : undefined) ?? fallbackOutputSchema;
   const inputSchema = outputSchema?.input;
 
   if (!response) return null;
