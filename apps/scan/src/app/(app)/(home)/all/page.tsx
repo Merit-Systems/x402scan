@@ -9,7 +9,7 @@ import { AllSellers } from '../(overview)/_components/sellers/all-sellers';
 import { AllBuyers } from '../(overview)/_components/buyers';
 import { getChainForPage } from '@/app/(app)/_lib/chain/page';
 import { TopAgents } from '../(overview)/_components/top-agents';
-import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
+
 
 export default async function AllPage({
   searchParams,
@@ -22,7 +22,6 @@ export default async function AllPage({
     <div>
       <HomeHeading />
       <Body>
-        <AgentCashAnnouncementBanner />
         <OverallStats chain={chain} />
         <TopServers chain={chain} />
         <TopFacilitators chain={chain} />

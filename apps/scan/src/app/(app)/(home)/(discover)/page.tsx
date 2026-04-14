@@ -6,6 +6,7 @@ import { Body, Section } from '@/app/_components/layout/page-utils';
 
 import { HomeHeading } from '../(overview)/_components/heading';
 import { OverallStats } from '../(overview)/_components/stats';
+import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
 
 import { api, HydrateClient } from '@/trpc/server';
 
@@ -46,6 +47,7 @@ export default async function DiscoverPage({
     <div>
       <HomeHeading />
       <Body>
+        <AgentCashAnnouncementBanner />
         <OverallStats chain={chain} />
         <HydrateClient>
           <SellersSortingProvider initialSorting={defaultSellersSorting}>

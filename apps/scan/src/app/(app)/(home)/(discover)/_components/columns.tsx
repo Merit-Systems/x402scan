@@ -170,7 +170,7 @@ export const discoverColumns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'tryIt',
-    header: () => <span />,
+    header: () => <HeaderCell label="Try It" className="mx-auto" />,
     cell: ({ row }) => {
       const origin = row.original.origins[0]?.origin;
       if (!origin) return null;

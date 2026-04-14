@@ -18,7 +18,12 @@ export const getDiscoverOrigins = async (): Promise<string[]> => {
     return [];
   }
 
-  const sql = neon(env.AGENTCASH_DATABASE_URL);
+  // Remove channel_binding param which isn't supported by the HTTP transport
+  const connectionUrl = env.AGENTCASH_DATABASE_URL.replace(
+    /[&?]channel_binding=[^&]*/,
+    ''
+  );
+  const sql = neon(connectionUrl);
 
   const rows = (await sql`
     SELECT origin, protocols
