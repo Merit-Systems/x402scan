@@ -12,6 +12,7 @@ import {
 import { LoadingResourceExecutor, ResourceExecutor } from './executor';
 
 import { getBazaarMethod } from './executor/utils';
+import type { OutputSchema } from '@/lib/x402';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -56,6 +57,7 @@ export const OriginResources: React.FC<Props> = ({
                 bazaarMethod={bazaarMethod}
                 className="bg-transparent"
                 response={resource.data}
+                fallbackOutputSchema={outputSchema as OutputSchema | undefined}
                 hideOrigin={hideOrigin}
                 defaultOpen={defaultOpen}
                 isFlat={isFlat}
