@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@agentcash/discovery": "1.6.0",
+    "@neondatabase/serverless": "catalog:prisma",
     "@agentcash/router": "1.2.5",
     "@ai-sdk/openai": "^2.0.52",
     "@ai-sdk/react": "^2.0.68",

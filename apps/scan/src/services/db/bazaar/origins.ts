@@ -26,6 +26,7 @@ const listBazaarOriginsUncached = async (
     originsByAddress = await getAcceptsAddresses({
       chain: input.chain,
       tags: input.tags,
+      originUrls: input.originUrls,
     });
   } catch (err) {
     console.error(

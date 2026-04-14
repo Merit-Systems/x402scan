@@ -11,8 +11,12 @@ export default function HomeLayout({
       <Nav
         tabs={[
           {
-            label: 'Overview',
+            label: 'Discover',
             href: '/',
+          },
+          {
+            label: 'All',
+            href: '/all',
           },
           {
             label: 'Composer',
