@@ -12,6 +12,11 @@ import {
 } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import {
   KnownSellerChart,
@@ -26,28 +31,51 @@ import { formatTokenAmount } from '@/lib/token';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
-import { SellersSortingContext } from '@/app/(app)/_contexts/sorting/sellers/context';
 import { Chains } from '@/app/(app)/_components/chains';
 
-type ColumnType =
+import type { SearchResultEndpoint } from '@/lib/discover/search';
+
+type BazaarItem =
   RouterOutputs['public']['sellers']['bazaar']['list']['items'][number];
 
-export const discoverColumns: ExtendedColumnDef<ColumnType>[] = [
+export type DiscoverColumnType = BazaarItem & {
+  searchEndpoint?: SearchResultEndpoint;
+};
+
+export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'recipients',
     header: () => (
       <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
     cell: ({ row }) => {
-      return (
-        <div className="flex items-center gap-2">
-          <Origins
-            origins={row.original.origins}
-            addresses={row.original.recipients}
-            disableCopy
-          />
-        </div>
+      const endpoint = row.original.searchEndpoint;
+
+      const originContent = (
+        <Origins
+          origins={row.original.origins}
+          addresses={row.original.recipients}
+          disableCopy
+        />
       );
+
+      const wrapped = endpoint?.summary ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center gap-2">{originContent}</div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="max-w-xs">
+            <p className="font-medium text-xs">
+              {endpoint.method} {endpoint.path}
+            </p>
+            <p className="text-xs text-muted-foreground">{endpoint.summary}</p>
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        <div className="flex items-center gap-2">{originContent}</div>
+      );
+
+      return wrapped;
     },
     size: 225,
     loading: () => <OriginsSkeleton />,
@@ -74,10 +102,6 @@ export const discoverColumns: ExtendedColumnDef<ColumnType>[] = [
         Icon={ArrowLeftRight}
         label="Txns"
         className="mx-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'tx_count',
-        }}
       />
     ),
     cell: ({ row }) => (
@@ -99,10 +123,6 @@ export const discoverColumns: ExtendedColumnDef<ColumnType>[] = [
         Icon={DollarSign}
         label="Volume"
         className="mx-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'total_amount',
-        }}
       />
     ),
     cell: ({ row }) => (
@@ -120,10 +140,6 @@ export const discoverColumns: ExtendedColumnDef<ColumnType>[] = [
         Icon={Users}
         label="Buyers"
         className="mx-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'unique_buyers',
-        }}
       />
     ),
     cell: ({ row }) => (
@@ -144,10 +160,6 @@ export const discoverColumns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell
         Icon={Calendar}
         label="Latest"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'latest_block_timestamp',
-        }}
         className="mx-auto"
       />
     ),

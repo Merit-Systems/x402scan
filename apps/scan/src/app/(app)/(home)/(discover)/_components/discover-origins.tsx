@@ -6,7 +6,7 @@ import { useSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/hook';
 import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
 
-import { discoverColumns as columns } from './columns';
+import { discoverColumns as columns, type DiscoverColumnType } from './columns';
 import { api } from '@/trpc/client';
 
 interface Props {
@@ -28,7 +28,7 @@ export const DiscoverSellersTable: React.FC<Props> = ({ originUrls }) => {
     originUrls,
   });
 
-  return <DataTable columns={columns} data={topSellers.items} pageSize={15} />;
+  return <DataTable columns={columns} data={topSellers.items as DiscoverColumnType[]} pageSize={15} />;
 };
 
 export const LoadingDiscoverSellersTable = () => {

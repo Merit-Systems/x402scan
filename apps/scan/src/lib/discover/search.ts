@@ -1,9 +1,18 @@
+export interface SearchResultEndpoint {
+  method: string;
+  path: string;
+  summary: string;
+  authMode?: string;
+  price?: string;
+}
+
 export interface SearchResult {
   origin: string;
   title: string;
   description: string;
   favicon: string;
   protocols: string[];
+  endpoint?: SearchResultEndpoint;
 }
 
 /**

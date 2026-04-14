@@ -1,6 +1,6 @@
 'use client';
 
-import { CornerDownLeft, Search, X } from 'lucide-react';
+import { CornerDownLeft, Plus, Search, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -133,7 +133,7 @@ export const DiscoverSearchResults = () => {
           <span className="size-2 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
         </div>
         <p className="text-sm text-muted-foreground">
-          Finding the best APIs for &quot;{query}&quot;...
+          Finding the best x402 resources for &quot;{query}&quot;...
         </p>
       </div>
     );
@@ -142,9 +142,17 @@ export const DiscoverSearchResults = () => {
   // No x402 results
   if (x402Results.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground text-center py-8">
-        No x402 results found. Try a different description.
-      </p>
+      <div className="flex flex-col items-center gap-3 py-8">
+        <p className="text-sm text-muted-foreground">
+          No x402 results found. Try a different description.
+        </p>
+        <Button variant="outline" size="lg" asChild>
+          <a href="/resources/register">
+            <Plus className="size-4" />
+            Register Resource
+          </a>
+        </Button>
+      </div>
     );
   }
 
@@ -160,11 +168,23 @@ export const DiscoverSearchResults = () => {
     );
   }
 
+  // Build endpoint lookup from search results
+  const endpointByOrigin = new Map(
+    x402Results
+      .filter(r => r.endpoint)
+      .map(r => [r.origin, r.endpoint!])
+  );
+
   // Build merged table data: bazaar items + stub rows for unbooked origins
   const bazaarItems = sellers?.items ?? [];
   const bazaarOrigins = new Set(
     bazaarItems.flatMap(item => item.origins.map(o => o.origin))
   );
+
+  const enrichedBazaarItems = bazaarItems.map(item => ({
+    ...item,
+    searchEndpoint: endpointByOrigin.get(item.origins[0]?.origin ?? ''),
+  }));
 
   const stubItems = x402Results
     .filter(r => !bazaarOrigins.has(r.origin))
@@ -187,9 +207,18 @@ export const DiscoverSearchResults = () => {
       latest_block_timestamp: null,
       unique_buyers: 0,
       chains: [],
+      searchEndpoint: r.endpoint,
     }));
 
-  const allItems = [...bazaarItems, ...stubItems];
+  const allItemsUnsorted = [...enrichedBazaarItems, ...stubItems];
+
+  // Preserve LLM relevance order by default, let table sorting override
+  const searchOrder = new Map(x402OriginUrls.map((url, i) => [url, i]));
+  const allItems = allItemsUnsorted.sort((a, b) => {
+    const aOrigin = a.origins[0]?.origin ?? '';
+    const bOrigin = b.origins[0]?.origin ?? '';
+    return (searchOrder.get(aOrigin) ?? Infinity) - (searchOrder.get(bOrigin) ?? Infinity);
+  });
 
   return (
     <DataTable columns={discoverColumns} data={allItems} pageSize={10} />
