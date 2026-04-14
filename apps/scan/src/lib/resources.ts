@@ -79,18 +79,7 @@ function convertOpenApiSchemaToV1(
     }
   }
 
-  // Extract queryParams and headerFields from parameters.
-  // Skip headers that are part of the x402/MPP payment protocol — these are
-  // added automatically by the payment flow and should not be user-fillable.
-  const PROTOCOL_HEADERS = new Set([
-    'authorization',
-    'payment-signature',
-    'payment-required',
-    'x-payment',
-    'x-payment-signature',
-    'sign-in-with-x',
-  ]);
-
+  // Extract queryParams and headerFields from parameters
   if (hasParameters) {
     const parameters = inputSchema.parameters as Record<string, unknown>[];
     const queryParams: Record<string, Record<string, unknown>> = {};
@@ -101,10 +90,7 @@ function convertOpenApiSchemaToV1(
       const fieldDef = openApiParamToFieldDef(param);
       if (param.in === 'query') {
         queryParams[param.name] = fieldDef;
-      } else if (
-        param.in === 'header' &&
-        !PROTOCOL_HEADERS.has(param.name.toLowerCase())
-      ) {
+      } else if (param.in === 'header') {
         headerFields[param.name] = fieldDef;
       }
     }

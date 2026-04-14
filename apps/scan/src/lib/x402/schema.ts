@@ -10,6 +10,32 @@ interface JsonSchema {
 }
 
 /**
+ * Headers that are part of the x402/MPP payment protocol and should not
+ * be rendered as user-fillable form fields. These are added automatically
+ * by the payment flow.
+ */
+const PROTOCOL_HEADERS = new Set([
+  'authorization',
+  'payment-signature',
+  'payment-required',
+  'x-payment',
+  'x-payment-signature',
+  'sign-in-with-x',
+]);
+
+function filterProtocolHeaders(
+  headers: Record<string, unknown>
+): Record<string, unknown> {
+  const filtered: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(headers)) {
+    if (!PROTOCOL_HEADERS.has(key.toLowerCase())) {
+      filtered[key] = value;
+    }
+  }
+  return filtered;
+}
+
+/**
  * Extracts field definitions from an x402 input schema.
  * Handles both JSON Schema format (with properties) and simple key-value format.
  */
@@ -26,13 +52,13 @@ export function extractFieldsFromSchema(
       inputSchema as unknown as { headerFields?: Record<string, unknown> }
     ).headerFields;
     if (headerFields && typeof headerFields === 'object') {
-      return getFields(headerFields);
+      return getFields(filterProtocolHeaders(headerFields));
     }
     const headerFieldsRaw = schema.headerFields as
       | Record<string, unknown>
       | undefined;
     if (headerFieldsRaw && typeof headerFieldsRaw === 'object') {
-      return getFields(headerFieldsRaw);
+      return getFields(filterProtocolHeaders(headerFieldsRaw));
     }
     return [];
   }
