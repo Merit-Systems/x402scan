@@ -157,6 +157,11 @@ function expandFields(
         ? field.required
         : (parentRequired?.includes(name) ?? false);
 
+    const hasProperties =
+      field.properties && typeof field.properties === 'object';
+    const isObjectType =
+      fieldType === 'object' || (!fieldType && hasProperties);
+
     // Handle array type with items - preserve items schema
     if (
       fieldType === 'array' &&
@@ -184,11 +189,8 @@ function expandFields(
       } satisfies FieldDefinition);
     }
     // Handle object type with properties - expand recursively
-    else if (
-      fieldType === 'object' &&
-      field.properties &&
-      typeof field.properties === 'object'
-    ) {
+    // Also handles inferred objects (properties present but no explicit type)
+    else if (isObjectType && hasProperties) {
       const objectRequired = Array.isArray(field.required)
         ? field.required
         : [];

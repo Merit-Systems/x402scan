@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractFieldsFromSchema } from './schema';
+import { extractFieldsFromSchema, reconstructNestedObject } from './schema';
 import { Methods } from '@/types/x402';
 import type { InputSchema } from '@/lib/x402';
 
@@ -75,5 +75,141 @@ describe('extractFieldsFromSchema - protocol header filtering', () => {
     const fields = extractFieldsFromSchema(inputSchema, Methods.GET, 'query');
     expect(fields).toHaveLength(1);
     expect(fields[0]!.name).toBe('authorization');
+  });
+});
+
+describe('extractFieldsFromSchema - nested object expansion', () => {
+  it('expands object fields with properties into dot-notation sub-fields', () => {
+    // Runtime schemas may include a `body` key with JSON Schema content
+    const inputSchema = {
+      type: 'http' as const,
+      method: 'POST' as const,
+      body: {
+        type: 'object',
+        properties: {
+          date: {
+            type: 'object',
+            title: 'DateOnlyRange',
+            properties: {
+              from: {
+                type: 'string',
+                description: 'Start date in YYYY-MM-DD format',
+              },
+              to: {
+                type: 'string',
+                description: 'End date in YYYY-MM-DD format',
+              },
+            },
+          },
+        },
+      },
+    } as unknown as InputSchema;
+
+    const fields = extractFieldsFromSchema(inputSchema, Methods.POST, 'body');
+    const names = fields.map(f => f.name);
+
+    expect(names).toContain('date.from');
+    expect(names).toContain('date.to');
+    expect(names).not.toContain('date');
+  });
+
+  it('expands inferred objects (properties present, no explicit type)', () => {
+    const inputSchema = {
+      type: 'http' as const,
+      method: 'POST' as const,
+      body: {
+        type: 'object',
+        properties: {
+          filters: {
+            properties: {
+              min: { type: 'number', description: 'Minimum value' },
+              max: { type: 'number', description: 'Maximum value' },
+            },
+          },
+        },
+      },
+    } as unknown as InputSchema;
+
+    const fields = extractFieldsFromSchema(inputSchema, Methods.POST, 'body');
+    const names = fields.map(f => f.name);
+
+    expect(names).toContain('filters.min');
+    expect(names).toContain('filters.max');
+    expect(names).not.toContain('filters');
+  });
+
+  it('preserves required flags on nested fields', () => {
+    const inputSchema = {
+      type: 'http' as const,
+      method: 'POST' as const,
+      body: {
+        type: 'object',
+        properties: {
+          pagination: {
+            type: 'object',
+            required: ['page'],
+            properties: {
+              page: { type: 'integer', description: 'Page number' },
+              per_page: { type: 'integer', description: 'Results per page' },
+            },
+          },
+        },
+      },
+    } as unknown as InputSchema;
+
+    const fields = extractFieldsFromSchema(inputSchema, Methods.POST, 'body');
+    const pageField = fields.find(f => f.name === 'pagination.page');
+    const perPageField = fields.find(f => f.name === 'pagination.per_page');
+
+    expect(pageField?.required).toBe(true);
+    expect(perPageField?.required).toBe(false);
+  });
+});
+
+describe('reconstructNestedObject', () => {
+  it('reconstructs dot-notation keys into nested objects', () => {
+    const result = reconstructNestedObject({
+      'date.from': '2026-04-10',
+      'date.to': '2026-04-14',
+    });
+
+    expect(result).toEqual({
+      date: {
+        from: '2026-04-10',
+        to: '2026-04-14',
+      },
+    });
+  });
+
+  it('handles mix of flat and nested keys', () => {
+    const result = reconstructNestedObject({
+      query: 'test',
+      'pagination.page': 1,
+      'pagination.per_page': 10,
+    });
+
+    expect(result).toEqual({
+      query: 'test',
+      pagination: {
+        page: 1,
+        per_page: 10,
+      },
+    });
+  });
+
+  it('handles deeply nested keys', () => {
+    const result = reconstructNestedObject({
+      'filters.total_pnl.min': 100,
+      'filters.total_pnl.max': 1000,
+    });
+
+    expect(result).toEqual({
+      filters: {
+        total_pnl: {
+          min: 100,
+          max: 1000,
+        },
+      },
+    });
   });
 });

@@ -9,7 +9,7 @@ import { ResourceFetch } from '../../../resource-fetch';
 import { FieldSection } from './field-section';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
-import type { Methods } from '@/types/x402';
+import { Methods } from '@/types/x402';
 import {
   normalizeChainId,
   type ParsedX402Response,
@@ -181,13 +181,20 @@ export function Form({
     const headers = new Headers();
     for (const [k, v] of headerEntries) headers.set(k, v);
 
+    const needsBody = method !== Methods.GET && method !== Methods.DELETE;
+    const hasBodyFieldsDefined = bodyFields.length > 0;
+
     return {
       method,
       headers: headerEntries.length > 0 ? headers : undefined,
       body:
-        bodyEntries.length > 0 ? JSON.stringify(reconstructedBody) : undefined,
+        bodyEntries.length > 0
+          ? JSON.stringify(reconstructedBody)
+          : needsBody && hasBodyFieldsDefined
+            ? '{}'
+            : undefined,
     };
-  }, [method, headerEntries, bodyEntries]);
+  }, [method, headerEntries, bodyEntries, bodyFields.length]);
 
   const supportedChains = useMemo(() => {
     const networks = x402Response.accepts?.map(a => a.network ?? '') ?? [];
