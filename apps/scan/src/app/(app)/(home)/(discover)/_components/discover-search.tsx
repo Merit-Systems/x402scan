@@ -1,18 +1,18 @@
 'use client';
 
-import { CornerDownLeft, Loader2, Search, X } from 'lucide-react';
+import { CornerDownLeft, Search, X } from 'lucide-react';
 
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-
-import { api } from '@/trpc/client';
-import { useSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/hook';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+import { Input } from '@/components/ui/input';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
+import { useSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/hook';
+import { api } from '@/trpc/client';
 
 import { DataTable } from '@/components/ui/data-table';
 import { discoverColumns } from './columns';
 import { useDiscoverSearch } from './discover-search-context';
+import { ActivityTimeframe } from '@/types/timeframes';
+
 
 /**
  * Inline search input — rendered in the heading.
@@ -36,7 +36,7 @@ export const DiscoverSearchInput = () => {
             clear();
           }
         }}
-        placeholder='Describe what you need — e.g. "send an email", "generate an image"...'
+        placeholder='Search any agent capability. e.g. "send an email", "generate an image", "search the web", "buy a mug"...'
         className="pl-9 pr-9 h-11 bg-transparent"
         autoComplete="off"
         name="discover-search"
@@ -70,9 +70,7 @@ export const DiscoverSearchSubmit = () => {
         className="shrink-0 w-full md:w-fit px-4 h-11 hidden md:flex"
         asChild
       >
-        <a href="/resources/register">
-          Register Resource
-        </a>
+        <a href="/resources/register">Register Resource</a>
       </Button>
     );
   }
@@ -97,7 +95,6 @@ export const DiscoverSearchSubmit = () => {
 export const DiscoverSearchResults = () => {
   const { query } = useDiscoverSearch();
   const { sorting } = useSellersSorting();
-  const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
   const { data: searchResults, isLoading: isSearchLoading } =
@@ -106,26 +103,23 @@ export const DiscoverSearchResults = () => {
       { enabled: query.length > 0 }
     );
 
-  const searchOriginUrls = searchResults?.map(r => r.origin) ?? [];
+  const x402Results =
+    searchResults?.filter(r => r.protocols.includes('x402')) ?? [];
+  const x402OriginUrls = x402Results.map(r => r.origin);
 
   const { data: sellers, isLoading: isSellersLoading } =
     api.public.sellers.bazaar.list.useQuery(
       {
         chain,
         pagination: { page_size: 100 },
-        timeframe,
+        timeframe: ActivityTimeframe.AllTime,
         sorting,
-        originUrls: searchOriginUrls,
+        originUrls: x402OriginUrls,
       },
-      { enabled: searchOriginUrls.length > 0 }
+      { enabled: x402OriginUrls.length > 0 }
     );
 
-  const isLoading = isSearchLoading || isSellersLoading;
   const hasQuery = query.length > 0;
-  const hasResults =
-    hasQuery && !isLoading && (sellers?.items?.length ?? 0) > 0;
-  const noResults =
-    hasQuery && !isLoading && (sellers?.items?.length ?? 0) === 0;
 
   if (!hasQuery) return null;
 
@@ -145,35 +139,59 @@ export const DiscoverSearchResults = () => {
     );
   }
 
-  // Phase 2: Got search results, loading usage data
+  // No x402 results
+  if (x402Results.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground text-center py-8">
+        No x402 results found. Try a different description.
+      </p>
+    );
+  }
+
+  // Phase 2: Loading usage data
   if (isSellersLoading) {
     return (
       <DataTable
         columns={discoverColumns}
         data={[]}
-        loadingRowCount={searchOriginUrls.length || 5}
+        loadingRowCount={x402OriginUrls.length}
         isLoading
       />
     );
   }
 
-  if (hasResults) {
-    return (
-      <DataTable
-        columns={discoverColumns}
-        data={sellers!.items}
-        pageSize={10}
-      />
-    );
-  }
+  // Build merged table data: bazaar items + stub rows for unbooked origins
+  const bazaarItems = sellers?.items ?? [];
+  const bazaarOrigins = new Set(
+    bazaarItems.flatMap(item => item.origins.map(o => o.origin))
+  );
 
-  if (noResults) {
-    return (
-      <p className="text-sm text-muted-foreground text-center py-8">
-        No results found. Try a different description.
-      </p>
-    );
-  }
+  const stubItems = x402Results
+    .filter(r => !bazaarOrigins.has(r.origin))
+    .map(r => ({
+      recipients: [],
+      origins: [
+        {
+          id: r.origin,
+          origin: r.origin,
+          title: r.title,
+          description: r.description,
+          favicon: r.favicon,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+      facilitators: [],
+      tx_count: 0,
+      total_amount: 0,
+      latest_block_timestamp: null,
+      unique_buyers: 0,
+      chains: [],
+    }));
 
-  return null;
+  const allItems = [...bazaarItems, ...stubItems];
+
+  return (
+    <DataTable columns={discoverColumns} data={allItems} pageSize={10} />
+  );
 };

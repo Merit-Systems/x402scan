@@ -58,7 +58,12 @@ export const discoverColumns: ExtendedColumnDef<ColumnType>[] = [
     header: () => (
       <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
     ),
-    cell: ({ row }) => <KnownSellerChart addresses={row.original.recipients} />,
+    cell: ({ row }) =>
+      row.original.recipients.length > 0 ? (
+        <KnownSellerChart addresses={row.original.recipients} />
+      ) : (
+        <div className="h-[32px]" />
+      ),
     size: 100,
     loading: () => <LoadingKnownSellerChart />,
   },

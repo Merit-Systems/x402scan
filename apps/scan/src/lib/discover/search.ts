@@ -12,9 +12,7 @@ export interface SearchResult {
  */
 import { env } from '@/env';
 
-export async function searchDiscover(
-  query: string
-): Promise<SearchResult[]> {
+export async function searchDiscover(query: string): Promise<SearchResult[]> {
   try {
     const baseUrl =
       process.env.NODE_ENV === 'development'
@@ -38,7 +36,9 @@ export async function searchDiscover(
     }
 
     const data = (await res.json()) as { results: SearchResult[] };
-    console.log(`[discover-search] ${data.results?.length ?? 0} results for "${query}"`);
+    console.log(
+      `[discover-search] ${data.results?.length ?? 0} results for "${query}"`
+    );
     return data.results ?? [];
   } catch (e) {
     console.error('[discover-search] failed:', e);

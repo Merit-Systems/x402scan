@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useState,
-} from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface DiscoverSearchContextValue {
