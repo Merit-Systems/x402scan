@@ -137,10 +137,19 @@ export const registerResource = async (
     };
   }
 
-  await upsertResourceResponse(
-    resource.resource.id,
-    (advisory.paymentRequiredBody ?? {}) as ParsedX402Response
-  );
+  // Validate the response before storing — only persist well-formed x402 data.
+  // This mirrors the validation in the ping route (app/api/resources/ping/route.ts).
+  if (advisory.paymentRequiredBody) {
+    const parsedResponse = parseX402Response(advisory.paymentRequiredBody);
+    if (parsedResponse.success) {
+      await upsertResourceResponse(resource.resource.id, parsedResponse.data);
+    } else {
+      console.info('Skipping response storage: invalid x402 response body', {
+        resource: cleanUrl,
+        errors: parsedResponse.errors,
+      });
+    }
+  }
 
   // Attempt ownership verification (non-blocking)
   void (async () => {

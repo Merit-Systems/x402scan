@@ -173,9 +173,19 @@ export const listOriginsWithResources = async (
       ...origin,
       resources: origin.resources.map(resource => {
         const response = parseX402Response(resource.response?.response);
+        if (response.success) {
+          return {
+            ...resource,
+            ...response,
+          };
+        }
+        // When stored response fails to parse (e.g. empty or stale data),
+        // still render the resource using its DB-level accepts so it doesn't
+        // disappear from the UI.
         return {
           ...resource,
-          ...response,
+          success: true as const,
+          data: null,
         };
       }),
     }))
