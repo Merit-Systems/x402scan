@@ -37,9 +37,7 @@ const listBuyerSellersUncached = async (
   const { startDate, endDate } = getTimeRangeFromTimeframe(timeframe);
 
   // Build WHERE conditions
-  const conditions: Prisma.Sql[] = [
-    Prisma.sql`WHERE t.sender = ${sender}`,
-  ];
+  const conditions: Prisma.Sql[] = [Prisma.sql`WHERE t.sender = ${sender}`];
 
   if (startDate) {
     conditions.push(

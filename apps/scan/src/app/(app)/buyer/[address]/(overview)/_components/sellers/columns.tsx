@@ -50,9 +50,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     header: () => (
       <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
     ),
-    cell: ({ row }) => (
-      <SellerChart addresses={[row.original.recipient]} />
-    ),
+    cell: ({ row }) => <SellerChart addresses={[row.original.recipient]} />,
     size: 100,
     loading: () => <LoadingSellerChart />,
   },

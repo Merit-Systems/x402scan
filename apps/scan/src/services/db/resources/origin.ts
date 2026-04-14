@@ -173,6 +173,14 @@ export const listOriginsWithResources = async (
       ...origin,
       resources: origin.resources.map(resource => {
         const response = parseX402Response(resource.response?.response);
+        if (!response.success) {
+          console.error(
+            `[listOriginsWithResources] parseX402Response failed for resource ${resource.id} (${resource.resource}):`,
+            JSON.stringify(response.errors),
+            'raw response:',
+            JSON.stringify(resource.response?.response)
+          );
+        }
         return {
           ...resource,
           ...response,

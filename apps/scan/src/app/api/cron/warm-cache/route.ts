@@ -315,7 +315,12 @@ function getResourcesPageTasks(
 /**
  * Page types that can be warmed
  */
-type WarmablePage = 'home' | 'buyers' | 'networks' | 'facilitators' | 'resources';
+type WarmablePage =
+  | 'home'
+  | 'buyers'
+  | 'networks'
+  | 'facilitators'
+  | 'resources';
 
 const ALL_PAGES: WarmablePage[] = [
   'home',
