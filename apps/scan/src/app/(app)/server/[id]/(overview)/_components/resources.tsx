@@ -38,7 +38,6 @@ export const OriginResources: React.FC<Props> = ({ originId }) => {
     >
       <OriginResourcesComponent
         resources={visibleResources}
-        defaultOpen={false}
         hideOrigin
         isFlat
       />
