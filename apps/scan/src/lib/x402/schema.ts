@@ -1,7 +1,7 @@
 import z from 'zod';
 import { Methods } from '@/types/x402';
 
-import type { FieldDefinition, FieldValue } from '@/types/x402';
+import type { FieldDefinition } from '@/types/x402';
 import type { InputSchema } from '.';
 
 interface JsonSchema {
@@ -212,52 +212,6 @@ function expandFields(
   }
 
   return fields;
-}
-
-/**
- * Checks if a field value is valid (non-empty).
- */
-export function isValidFieldValue(value: FieldValue): boolean {
-  if (Array.isArray(value)) {
-    return value.length > 0;
-  }
-  return typeof value === 'string' && value.trim().length > 0;
-}
-
-/**
- * Reconstructs a nested object from dot-notation keys.
- * e.g., { "a.b": 1 } becomes { a: { b: 1 } }
- */
-export function reconstructNestedObject(
-  flatObject: Record<string, FieldValue | number | boolean>
-): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-
-  for (const [key, value] of Object.entries(flatObject)) {
-    // Arrays are already structured correctly, just assign them
-    if (Array.isArray(value)) {
-      result[key] = value;
-      continue;
-    }
-
-    const parts = key.split('.');
-    let current = result;
-
-    // Navigate/create nested structure
-    for (let i = 0; i < parts.length - 1; i++) {
-      const part = parts[i];
-      if (part && !(part in current)) {
-        current[part] = {};
-      }
-      current = current[part!] as Record<string, unknown>;
-    }
-
-    // Set the final value
-    const finalKey = parts[parts.length - 1];
-    current[finalKey!] = value;
-  }
-
-  return result;
 }
 
 export const paymentResponseHeaderSchema = z.object({

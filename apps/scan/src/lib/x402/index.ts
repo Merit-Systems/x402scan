@@ -276,19 +276,6 @@ export function getDescription(
   return response.accepts?.find(a => a.description)?.description;
 }
 
-/**
- * NOTE(shafu): get the max amount required from a payment requirement (normalized to string).
- * V1: uses maxAmountRequired
- * V2: uses amount
- */
-export function getMaxAmount(response: ParsedX402Response): string | undefined {
-  const firstAccept = response.accepts?.[0];
-  if (!firstAccept) return undefined;
-  return 'amount' in firstAccept
-    ? firstAccept.amount
-    : firstAccept.maxAmountRequired;
-}
-
 export async function extractX402Data(response: Response): Promise<unknown> {
   // v2 - check header first using @x402/core
   const paymentRequiredHeader = response.headers.get('Payment-Required');
