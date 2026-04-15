@@ -48,23 +48,3 @@ export function signozLogInfo(
     attributes: coerceAttributes(attributes),
   });
 }
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function signozLogWarn(message: string, attributes?: Record<string, unknown>) {
-  getApiLogger().emit({
-    body: message,
-    severityNumber: SeverityNumber.WARN,
-    severityText: 'WARN',
-    attributes: coerceAttributes(attributes),
-  });
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function signozLogError(message: string, attributes?: Record<string, unknown>) {
-  getApiLogger().emit({
-    body: message,
-    severityNumber: SeverityNumber.ERROR,
-    severityText: 'ERROR',
-    attributes: coerceAttributes(attributes),
-  });
-}
