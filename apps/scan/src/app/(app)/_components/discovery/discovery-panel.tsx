@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-import { Accordion } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -26,7 +25,7 @@ import {
 import { cn, decodeHtmlEntities } from '@/lib/utils';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
-import { ResourceExecutor } from '@/app/(app)/_components/resources/executor';
+import { ResourceCard } from '@/app/(app)/_components/resources/resource-card';
 import {
   createDummyOgImage,
   createDummyResourceOrigin,
@@ -534,18 +533,14 @@ export function DiscoveryPanel({
                 ))}
               </div>
             ) : (
-              <Accordion
-                type="single"
-                collapsible
-                className="flex flex-col gap-2"
-              >
+              <div className="flex flex-col gap-2">
                 {paginatedResources.map((resourceUrl, idx) => {
                   const tested = testedResourceMap.get(resourceUrl);
                   const invalidInfo = invalidResourcesMap[resourceUrl];
                   const authMode = authModeMap[resourceUrl];
 
                   if (tested) {
-                    // Check if we have a valid schema for ResourceExecutor
+                    // Check if we have a valid schema for the resource card
                     const hasValidSchema = Boolean(tested.parsed.inputSchema);
 
                     if (hasValidSchema) {
@@ -592,7 +587,7 @@ export function DiscoveryPanel({
                     />
                   );
                 })}
-              </Accordion>
+              </div>
             )
           ) : (
             // Unified resource list for register mode
@@ -757,7 +752,7 @@ function DiscoveredResourceExecutor({
   if (!x402Response) return null;
 
   return (
-    <ResourceExecutor
+    <ResourceCard
       resource={createDummyResources({
         id: `discovered-${idx}`,
         resource: resourceUrl,
