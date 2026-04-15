@@ -44,7 +44,7 @@ export const ResourceCard: React.FC<Props> = ({
   warnings = [],
   ownershipVerified = false,
 }) => {
-  const prompt = `Use agentcash.dev to test out this resource's endpoint: ${resource.resource}`;
+  const prompt = `Use agentcash.dev to test out this resource's endpoint: ${bazaarMethod} ${resource.resource}`;
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
     toast.success('Prompt copied to clipboard');
   });
