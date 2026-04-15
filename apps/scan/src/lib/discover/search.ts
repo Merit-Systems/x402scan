@@ -22,35 +22,27 @@ export interface SearchResult {
 import { env } from '@/env';
 
 export async function searchDiscover(query: string): Promise<SearchResult[]> {
-  try {
-    const baseUrl =
-      process.env.NODE_ENV === 'development'
-        ? 'http://localhost:3000'
-        : 'https://agentcash.dev';
-
-    const res = await fetch(`${baseUrl}/api/internal/search`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(env.AGENTCASH_INTERNAL_API_KEY
-          ? { Authorization: `Bearer ${env.AGENTCASH_INTERNAL_API_KEY}` }
-          : {}),
-      },
-      body: JSON.stringify({ query }),
-    });
-
-    if (!res.ok) {
-      console.error(`[discover-search] ${baseUrl} returned ${res.status}`);
-      return [];
-    }
-
-    const data = (await res.json()) as { results: SearchResult[] };
-    console.log(
-      `[discover-search] ${data.results?.length ?? 0} results for "${query}"`
-    );
-    return data.results ?? [];
-  } catch (e) {
-    console.error('[discover-search] failed:', e);
-    return [];
+  if (!env.AGENTCASH_URL) {
+    throw new Error('AGENTCASH_URL is not set');
   }
+
+  const res = await fetch(`${env.AGENTCASH_URL}/api/internal/search`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(env.AGENTCASH_INTERNAL_API_KEY
+        ? { Authorization: `Bearer ${env.AGENTCASH_INTERNAL_API_KEY}` }
+        : {}),
+    },
+    body: JSON.stringify({ query }),
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      `AgentCash search failed: ${res.status} ${res.statusText}`
+    );
+  }
+
+  const data = (await res.json()) as { results: SearchResult[] };
+  return data.results ?? [];
 }

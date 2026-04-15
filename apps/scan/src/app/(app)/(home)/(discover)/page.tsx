@@ -17,7 +17,6 @@ import {
   DiscoverSellersTable,
   LoadingDiscoverSellersTable,
 } from './_components/discover-origins';
-import { DiscoverSearchProvider } from './_components/discover-search-context';
 import { DiscoverPageContent } from './_components/discover-page-content';
 
 import { defaultSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/default';
@@ -47,40 +46,38 @@ export default async function DiscoverPage({
 
   return (
     <HydrateClient>
-      <DiscoverSearchProvider>
-        <SellersSortingProvider initialSorting={defaultSellersSorting}>
-          <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
-            <div>
-              <DiscoverHeading />
-              <Body>
-                <DiscoverPageContent>
-                  <AgentCashAnnouncementBanner />
-                  <OverallStats chain={chain} />
-                  <Section
-                    title="Top Sellers"
-                    description="x402Scan curated x402-enabled services."
-                    actions={
-                      <div className="flex items-center gap-2">
-                        <RangeSelector />
-                      </div>
+      <SellersSortingProvider initialSorting={defaultSellersSorting}>
+        <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
+          <div>
+            <DiscoverHeading />
+            <Body>
+              <DiscoverPageContent>
+                <AgentCashAnnouncementBanner />
+                <OverallStats chain={chain} />
+                <Section
+                  title="Top Sellers"
+                  description="x402Scan curated x402-enabled services."
+                  actions={
+                    <div className="flex items-center gap-2">
+                      <RangeSelector />
+                    </div>
+                  }
+                >
+                  <ErrorBoundary
+                    fallback={
+                      <p>There was an error loading the discover data</p>
                     }
                   >
-                    <ErrorBoundary
-                      fallback={
-                        <p>There was an error loading the discover data</p>
-                      }
-                    >
-                      <Suspense fallback={<LoadingDiscoverSellersTable />}>
-                        <DiscoverSellersTable originUrls={originUrls} />
-                      </Suspense>
-                    </ErrorBoundary>
-                  </Section>
-                </DiscoverPageContent>
-              </Body>
-            </div>
-          </TimeRangeProvider>
-        </SellersSortingProvider>
-      </DiscoverSearchProvider>
+                    <Suspense fallback={<LoadingDiscoverSellersTable />}>
+                      <DiscoverSellersTable originUrls={originUrls} />
+                    </Suspense>
+                  </ErrorBoundary>
+                </Section>
+              </DiscoverPageContent>
+            </Body>
+          </div>
+        </TimeRangeProvider>
+      </SellersSortingProvider>
     </HydrateClient>
   );
 }

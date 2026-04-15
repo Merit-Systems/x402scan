@@ -70,7 +70,10 @@ export const DiscoverSearchSubmit = () => {
         className="shrink-0 w-full md:w-fit px-4 h-11 hidden md:flex"
         asChild
       >
-        <a href="/resources/register">Register Resource</a>
+        <a href="/resources/register">
+          <Plus className="size-4" />
+          Register Resource
+        </a>
       </Button>
     );
   }

@@ -18,12 +18,7 @@ export default function HomeLayout({
             label: 'All',
             href: '/all',
           },
-          {
-            label: 'Composer',
-            href: '/composer' as const,
-            subRoutes: ['/composer/chat', '/composer/agent'],
-          },
-          {
+{
             label: 'Marketplace',
             href: '/resources',
             subRoutes: ['/resources/register'],
