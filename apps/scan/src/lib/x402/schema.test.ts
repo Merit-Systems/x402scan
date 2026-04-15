@@ -212,4 +212,18 @@ describe('reconstructNestedObject', () => {
       },
     });
   });
+
+  it('nests arrays under dot-notation keys', () => {
+    const result = reconstructNestedObject({
+      order_by: [{ field: 'pnl', direction: 'desc' }],
+      'filters.tags': ['alpha', 'beta'],
+    });
+
+    expect(result).toEqual({
+      order_by: [{ field: 'pnl', direction: 'desc' }],
+      filters: {
+        tags: ['alpha', 'beta'],
+      },
+    });
+  });
 });

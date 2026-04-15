@@ -236,12 +236,6 @@ export function reconstructNestedObject(
   const result: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(flatObject)) {
-    // Arrays are already structured correctly, just assign them
-    if (Array.isArray(value)) {
-      result[key] = value;
-      continue;
-    }
-
     const parts = key.split('.');
     let current = result;
 
