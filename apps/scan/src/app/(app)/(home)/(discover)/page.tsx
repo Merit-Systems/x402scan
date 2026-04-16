@@ -32,8 +32,15 @@ export default async function DiscoverPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const chain = await getChainForPage(await searchParams);
-  const originUrls = await getDiscoverOrigins();
+  const tPage = performance.now();
+  const resolvedParams = await searchParams;
+  const [chain, originUrls] = await Promise.all([
+    getChainForPage(resolvedParams),
+    getDiscoverOrigins(),
+  ]);
+  console.log(
+    `[discover-page] parallel chain+origins=${(performance.now() - tPage).toFixed(0)}ms (${originUrls.length} urls)`
+  );
 
   void api.public.sellers.bazaar.list.prefetch({
     pagination: {

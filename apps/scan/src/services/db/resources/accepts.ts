@@ -12,6 +12,7 @@ interface GetAcceptsAddressesInput {
 }
 
 export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
+  const t0 = performance.now();
   const { chain, tags, originUrls } = input;
   const accepts = await scanDb.accepts.findMany({
     include: {
@@ -47,6 +48,11 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
         : {}),
     },
   });
+
+  const tQuery = performance.now();
+  console.log(
+    `[accepts] prisma query=${(tQuery - t0).toFixed(0)}ms (${accepts.length} rows)`
+  );
 
   return accepts
     .filter(accept => mixedAddressSchema.safeParse(accept.payTo).success)

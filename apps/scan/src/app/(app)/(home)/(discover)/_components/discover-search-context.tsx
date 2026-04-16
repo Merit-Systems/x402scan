@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useCallback, useContext, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface DiscoverSearchContextValue {
@@ -37,6 +43,15 @@ export const DiscoverSearchProvider = ({
 
   const [input, setInputRaw] = useState(initialQuery);
   const [query, setQuery] = useState(initialQuery);
+
+  // Sync local state when URL search params change externally (e.g. home button click)
+  useEffect(() => {
+    const urlQuery = searchParams.get('q') ?? '';
+    if (urlQuery !== query) {
+      setQuery(urlQuery);
+      setInputRaw(urlQuery);
+    }
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setInput = useCallback(
     (value: string) => {
