@@ -15,7 +15,7 @@ import {
   createStandardCacheKey,
 } from '@/lib/cache';
 
-const listBazaarOriginsUncached = async (
+export const listBazaarOriginsUncached = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
@@ -26,6 +26,7 @@ const listBazaarOriginsUncached = async (
     originsByAddress = await getAcceptsAddresses({
       chain: input.chain,
       tags: input.tags,
+      originUrls: input.originUrls,
     });
   } catch (err) {
     console.error(

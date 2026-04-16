@@ -21,7 +21,7 @@ interface CacheContext {
  * Redis TTL is 2x the cache duration to provide buffer time.
  * This ensures cache doesn't expire while the next warming cycle is running.
  */
-const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 2;
+export const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 2;
 
 /**
  * Lock timeout in seconds. Acts as a safety net — if the holder crashes
@@ -117,7 +117,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
  *  - Never throws due to lock contention — always falls back to a direct
  *    query execution.
  */
-async function withRedisCache<T>(
+export async function withRedisCache<T>(
   fullCacheKey: string,
   queryFn: () => Promise<T>,
   ttlSeconds: number,

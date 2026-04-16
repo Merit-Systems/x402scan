@@ -347,6 +347,9 @@ importers:
       '@mdx-js/react':
         specifier: catalog:mdx
         version: 3.1.1(@types/react@19.2.2)(react@19.2.2)
+      '@neondatabase/serverless':
+        specifier: catalog:prisma
+        version: 1.0.2
       '@next/mdx':
         specifier: catalog:next
         version: 16.1.5(@mdx-js/loader@3.1.1)(@mdx-js/react@3.1.1(@types/react@19.2.2)(react@19.2.2))
@@ -1012,8 +1015,6 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/internal/databases/scan/generated/client: {}
-
   packages/internal/databases/transfers:
     dependencies:
       '@neondatabase/serverless':
@@ -1059,8 +1060,6 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
-
-  packages/internal/databases/transfers/generated/client: {}
 
   packages/internal/neverthrow:
     dependencies:
