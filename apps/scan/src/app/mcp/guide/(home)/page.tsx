@@ -18,7 +18,7 @@ export default function GuidePage() {
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl font-bold">Resources & Guides</h1>
         <p className="text-muted-foreground text-lg">
-          How to get the most out of the x402scan MCP
+          How to get the most out of the AgentCash
         </p>
       </div>
       <GuideBanner />
