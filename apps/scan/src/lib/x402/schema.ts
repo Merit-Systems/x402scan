@@ -1,12 +1,38 @@
 import z from 'zod';
 import { Methods } from '@/types/x402';
 
-import type { FieldDefinition, FieldValue } from '@/types/x402';
+import type { FieldDefinition } from '@/types/x402';
 import type { InputSchema } from '.';
 
 interface JsonSchema {
   properties?: Record<string, unknown>;
   required?: string[];
+}
+
+/**
+ * Headers that are part of the x402/MPP payment protocol and should not
+ * be rendered as user-fillable form fields. These are added automatically
+ * by the payment flow.
+ */
+const PROTOCOL_HEADERS = new Set([
+  'authorization',
+  'payment-signature',
+  'payment-required',
+  'x-payment',
+  'x-payment-signature',
+  'sign-in-with-x',
+]);
+
+function filterProtocolHeaders(
+  headers: Record<string, unknown>
+): Record<string, unknown> {
+  const filtered: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(headers)) {
+    if (!PROTOCOL_HEADERS.has(key.toLowerCase())) {
+      filtered[key] = value;
+    }
+  }
+  return filtered;
 }
 
 /**
@@ -26,13 +52,13 @@ export function extractFieldsFromSchema(
       inputSchema as unknown as { headerFields?: Record<string, unknown> }
     ).headerFields;
     if (headerFields && typeof headerFields === 'object') {
-      return getFields(headerFields);
+      return getFields(filterProtocolHeaders(headerFields));
     }
     const headerFieldsRaw = schema.headerFields as
       | Record<string, unknown>
       | undefined;
     if (headerFieldsRaw && typeof headerFieldsRaw === 'object') {
-      return getFields(headerFieldsRaw);
+      return getFields(filterProtocolHeaders(headerFieldsRaw));
     }
     return [];
   }
@@ -186,52 +212,6 @@ function expandFields(
   }
 
   return fields;
-}
-
-/**
- * Checks if a field value is valid (non-empty).
- */
-export function isValidFieldValue(value: FieldValue): boolean {
-  if (Array.isArray(value)) {
-    return value.length > 0;
-  }
-  return typeof value === 'string' && value.trim().length > 0;
-}
-
-/**
- * Reconstructs a nested object from dot-notation keys.
- * e.g., { "a.b": 1 } becomes { a: { b: 1 } }
- */
-export function reconstructNestedObject(
-  flatObject: Record<string, FieldValue | number | boolean>
-): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-
-  for (const [key, value] of Object.entries(flatObject)) {
-    // Arrays are already structured correctly, just assign them
-    if (Array.isArray(value)) {
-      result[key] = value;
-      continue;
-    }
-
-    const parts = key.split('.');
-    let current = result;
-
-    // Navigate/create nested structure
-    for (let i = 0; i < parts.length - 1; i++) {
-      const part = parts[i];
-      if (part && !(part in current)) {
-        current[part] = {};
-      }
-      current = current[part!] as Record<string, unknown>;
-    }
-
-    // Set the final value
-    const finalKey = parts[parts.length - 1];
-    current[finalKey!] = value;
-  }
-
-  return result;
 }
 
 export const paymentResponseHeaderSchema = z.object({

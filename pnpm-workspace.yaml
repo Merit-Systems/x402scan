@@ -61,12 +61,10 @@ catalogs:
     '@trpc/server': *TRPC_VERSION
   x402-v1:
     'x402': &X402_VERSION ^0.7.1
-    'x402-fetch': *X402_VERSION
-    'x402-next': *X402_VERSION
     'x402-express': *X402_VERSION
     'x402-hono': *X402_VERSION
   x402:
-    '@x402/core': &X402_CORE_VERSION ^2.3.0
+    '@x402/core': &X402_CORE_VERSION ^2.9.0
     '@x402/evm': *X402_CORE_VERSION
     '@x402/extensions': *X402_CORE_VERSION
     '@x402/fetch': *X402_CORE_VERSION

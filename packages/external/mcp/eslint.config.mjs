@@ -1,5 +1,4 @@
 import { config } from '@x402scan/eslint-config/base';
-import { globalIgnores } from 'eslint/config';
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
@@ -16,5 +15,4 @@ export default [
       ],
     },
   },
-  globalIgnores(['evals/**']),
 ];

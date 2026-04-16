@@ -5,8 +5,8 @@ import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
 
 import type { Facilitator, FacilitatorConfig } from '../types';
 
-export const coinbase: FacilitatorConfig = facilitator;
-export const coinbaseDiscovery: FacilitatorConfig = facilitator;
+export const coinbase = facilitator as unknown as FacilitatorConfig;
+export const coinbaseDiscovery = facilitator as unknown as FacilitatorConfig;
 
 export const coinbaseFacilitator = {
   id: 'coinbase',

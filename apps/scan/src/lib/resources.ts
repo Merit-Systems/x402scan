@@ -22,6 +22,8 @@ import {
 
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
+import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
+
 export const registerResource = async (
   url: string,
   advisory: EndpointMethodAdvisory
@@ -60,6 +62,7 @@ export const registerResource = async (
     input: advisory.inputSchema,
     output: advisory.outputSchema ?? null,
   }).data;
+  let schemaSource = outputSchemaForDb ? 'v1' : undefined;
 
   // Fallback: use v2-aware extraction from raw 402 body
   if (!outputSchemaForDb && advisory.paymentRequiredBody) {
@@ -72,8 +75,40 @@ export const registerResource = async (
           input.method = advisory.method;
         }
         outputSchemaForDb = extracted;
+        schemaSource = 'v2-bazaar';
       }
     }
+  }
+
+  // Fallback: convert raw OpenAPI-format inputSchema to v1 format.
+  // The discovery package returns schemas from the OpenAPI spec as
+  // { requestBody?: JsonSchema, parameters?: OpenApiParam[] } or a
+  // bare JSON Schema when only a requestBody exists. Convert those
+  // into the v1 { method, bodyFields, queryParams, headerFields } shape.
+  if (!outputSchemaForDb && advisory.inputSchema) {
+    const converted = convertOpenApiSchemaToV1(
+      advisory.inputSchema,
+      advisory.method,
+      advisory.outputSchema
+    );
+    if (converted) {
+      outputSchemaForDb = converted;
+      schemaSource = 'openapi-converted';
+    }
+  }
+
+  if (!outputSchemaForDb) {
+    console.warn(
+      `[registerResource] No output schema resolved for ${cleanUrl}`,
+      `method=${advisory.method}`,
+      `hasInputSchema=${!!advisory.inputSchema}`,
+      `hasPaymentBody=${!!advisory.paymentRequiredBody}`,
+      `inputSchemaKeys=${advisory.inputSchema ? Object.keys(advisory.inputSchema).join(',') : 'none'}`
+    );
+  } else {
+    console.log(
+      `[registerResource] Schema resolved via ${schemaSource} for ${cleanUrl}`
+    );
   }
 
   const mappedAccepts = x402Options
