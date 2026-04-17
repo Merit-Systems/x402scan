@@ -22,3 +22,11 @@ export const USDC_POLYGON_TOKEN: Token = {
   decimals: USDC_DECIMALS,
   symbol: 'USDC',
 };
+
+const USDC_STELLAR = 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN';
+
+export const USDC_STELLAR_TOKEN: Token = {
+  address: USDC_STELLAR,
+  decimals: 7,
+  symbol: 'USDC',
+};
