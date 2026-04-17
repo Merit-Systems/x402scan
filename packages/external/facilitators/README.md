@@ -72,6 +72,7 @@ The following facilitators currently support resource discovery:
 - **AurraCloud** - Infrastructure-focused facilitator
 - **thirdweb** - Web3 development platform
 - **PayAI** - AI-payment infrastructure
+- **Satoshi API** - Bitcoin fee intelligence and paid API discovery
 - **Ultravioleta DAO** - Community-driven multichain facilitator
 - **RelAI** - AI infrastructure platform
 
@@ -117,6 +118,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Heurist**          | BASE          | No        | No                           |
 | **Treasure**         | BASE          | No        | No                           |
 | **AnySpend**         | BASE, SOLANA  | ✅ Yes    | No                           |
+| **Satoshi API**      | BASE          | ✅ Yes    | No                           |
 | **Polymer**          | BASE          | No        | Yes - API key                |
 | **Meridian**         | BASE          | No        | No                           |
 | **Openmid**          | BASE          | No        | No                           |
@@ -146,6 +148,7 @@ import {
   heurist,
   treasure,
   anyspend,
+  satoshi,
   polymer,
   meridian,
   openmid,

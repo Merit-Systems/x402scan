@@ -25,6 +25,7 @@ import {
   x402jobsFacilitator,
   openfacilitatorFacilitator,
   relaiFacilitator,
+  satoshiFacilitator,
   bitrefillFacilitator,
   cascadeFacilitator,
 } from '../facilitators';
@@ -60,6 +61,7 @@ const FACILITATORS = validateUniqueFacilitators([
   x402jobsFacilitator,
   openfacilitatorFacilitator,
   relaiFacilitator,
+  satoshiFacilitator,
   bitrefillFacilitator,
   cascadeFacilitator,
 ]);

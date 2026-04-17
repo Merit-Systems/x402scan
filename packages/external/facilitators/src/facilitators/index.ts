@@ -25,5 +25,6 @@ export { primer, primerFacilitator } from './primer';
 export { x402jobs, x402jobsFacilitator } from './x402jobs';
 export { openfacilitator, openfacilitatorFacilitator } from './openfacilitator';
 export { relai, relaiFacilitator } from './relai';
+export { satoshi, satoshiFacilitator } from './satoshi';
 export { bitrefill, bitrefillFacilitator } from './bitrefill';
 export { cascade, cascadeFacilitator } from './cascade';
