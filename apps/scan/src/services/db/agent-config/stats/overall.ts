@@ -6,6 +6,7 @@ import {
   createCachedArrayQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
+import { aggregateCount } from '@/lib/db/numeric';
 
 import { differenceInMilliseconds, getUnixTime } from 'date-fns';
 
@@ -40,10 +41,10 @@ const getOverallActivityUncached = async (
     `,
     z.array(
       z.object({
-        user_count: z.bigint(),
-        agent_count: z.bigint(),
-        message_count: z.bigint(),
-        tool_call_count: z.bigint(),
+        user_count: aggregateCount,
+        agent_count: aggregateCount,
+        message_count: aggregateCount,
+        tool_call_count: aggregateCount,
       })
     )
   );

@@ -89,7 +89,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
-        {Math.cbrt(Number(row.original.score)).toLocaleString(undefined, {
+        {Math.cbrt(row.original.score).toLocaleString(undefined, {
           notation: 'compact',
           maximumFractionDigits: 2,
           minimumFractionDigits: 2,
