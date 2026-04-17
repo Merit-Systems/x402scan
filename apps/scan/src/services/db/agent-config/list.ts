@@ -4,6 +4,7 @@ import { scanDb, Prisma } from '@x402scan/scan-db';
 
 import { queryRaw } from '../query';
 
+import { aggregateCount } from '@/lib/db/numeric';
 import { sortingSchema, timeframeSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { toPaginatedResponse } from '@/lib/pagination';
@@ -137,11 +138,11 @@ const listTopAgentConfigurationsUncached = async (
           image: z.string().nullable(),
           visibility: z.enum(['public', 'private']),
           createdAt: z.date(),
-          user_count: z.bigint(),
-          chat_count: z.bigint(),
-          message_count: z.bigint(),
-          tool_call_count: z.bigint(),
-          score: z.bigint(),
+          user_count: aggregateCount,
+          chat_count: aggregateCount,
+          message_count: aggregateCount,
+          tool_call_count: aggregateCount,
+          score: aggregateCount,
           resources: z.array(
             z.object({
               id: z.string(),

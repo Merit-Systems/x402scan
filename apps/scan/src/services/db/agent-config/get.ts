@@ -3,6 +3,7 @@ import z from 'zod';
 import { scanDb, Prisma } from '@x402scan/scan-db';
 
 import { queryRaw } from '../query';
+import { aggregateCount } from '@/lib/db/numeric';
 
 export const getAgentConfigurationDetails = async (id: string) => {
   const agentConfiguration = await scanDb.agentConfiguration.findUnique({
@@ -133,9 +134,9 @@ export const getAgentConfiguration = async (id: string, userId?: string) => {
         updatedAt: z.date(),
         model: z.string().nullable(),
         starterPrompts: z.array(z.string()),
-        userCount: z.bigint(),
-        messageCount: z.bigint(),
-        toolCallCount: z.bigint(),
+        userCount: aggregateCount,
+        messageCount: aggregateCount,
+        toolCallCount: aggregateCount,
         resources: z.array(
           z.object({
             id: z.string(),

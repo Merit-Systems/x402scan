@@ -2,6 +2,7 @@ import z from 'zod';
 import { scanDb, Prisma } from '@x402scan/scan-db';
 import { queryRaw } from '../query';
 
+import { aggregateCount } from '@/lib/db/numeric';
 import { sortingSchema } from '@/lib/schemas';
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import { toPaginatedResponse } from '@/lib/pagination';
@@ -128,9 +129,9 @@ const listTopToolsUncached = async (
         z.object({
           id: z.string(),
           resource: z.string(),
-          tool_calls: z.bigint(),
-          agent_configurations: z.bigint(),
-          unique_users: z.bigint(),
+          tool_calls: aggregateCount,
+          agent_configurations: aggregateCount,
+          unique_users: aggregateCount,
           latest_call_time: z.date().nullable(),
           origin: z.object({
             id: z.string(),
