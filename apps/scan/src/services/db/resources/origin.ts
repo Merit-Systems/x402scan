@@ -46,30 +46,53 @@ export const upsertOrigin = async (
     const originId = upsertedOrigin.id;
 
     await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
-        tx.ogImage.upsert({
+      origin.ogImages.map(async ({ url, height, width, title, description }) => {
+        // First, try to find an existing OgImage with this URL for this origin
+        const existingOgImage = await tx.ogImage.findFirst({
           where: {
-            originId_url: {
-              originId,
-              url,
-            },
-          },
-          update: {
-            height,
-            width,
-            title,
-            description,
-          },
-          create: {
             originId,
             url,
-            height,
-            width,
-            title,
-            description,
           },
-        })
-      )
+        });
+
+        if (existingOgImage) {
+          // Update the existing OgImage
+          return tx.ogImage.update({
+            where: { id: existingOgImage.id },
+            data: {
+              height,
+              width,
+              title,
+              description,
+            },
+          });
+        }
+
+        // Try to create a new OgImage
+        try {
+          return await tx.ogImage.create({
+            data: {
+              originId,
+              url,
+              height,
+              width,
+              title,
+              description,
+            },
+          });
+        } catch (error: any) {
+          // If we get a unique constraint error on url, it means the URL is already
+          // used by another origin. In this case, we'll skip creating this OgImage
+          // since the URL metadata is the same regardless of which origin uses it.
+          if (error?.code === 'P2002' && error?.meta?.target?.includes('url')) {
+            console.warn(
+              `OgImage with URL ${url} already exists for a different origin. Skipping.`
+            );
+            return null;
+          }
+          throw error;
+        }
+      })
     );
 
     return tx.resourceOrigin.findUnique({
