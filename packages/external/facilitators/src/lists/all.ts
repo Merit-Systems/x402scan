@@ -27,6 +27,7 @@ import {
   relaiFacilitator,
   bitrefillFacilitator,
   cascadeFacilitator,
+  satoshiFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -62,6 +63,7 @@ const FACILITATORS = validateUniqueFacilitators([
   relaiFacilitator,
   bitrefillFacilitator,
   cascadeFacilitator,
+  satoshiFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =
