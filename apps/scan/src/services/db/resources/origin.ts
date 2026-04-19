@@ -46,30 +46,59 @@ export const upsertOrigin = async (
     const originId = upsertedOrigin.id;
 
     await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
-        tx.ogImage.upsert({
-          where: {
-            originId_url: {
+      origin.ogImages.map(async ({ url, height, width, title, description }) => {
+        try {
+          await tx.ogImage.upsert({
+            where: {
+              originId_url: {
+                originId,
+                url,
+              },
+            },
+            update: {
+              height,
+              width,
+              title,
+              description,
+            },
+            create: {
               originId,
               url,
+              height,
+              width,
+              title,
+              description,
             },
-          },
-          update: {
-            height,
-            width,
-            title,
-            description,
-          },
-          create: {
-            originId,
-            url,
-            height,
-            width,
-            title,
-            description,
-          },
-        })
-      )
+          });
+        } catch (error: unknown) {
+          // Handle unique constraint violation when the OG image URL already
+          // exists globally (e.g. shared CDN / redirect across origins).
+          // Fall back to finding the existing image and connecting it to this
+          // origin, or simply update metadata if already linked.
+          const isUniqueViolation =
+            error instanceof Error &&
+            'code' in error &&
+            (error as { code: string }).code === 'P2002';
+          if (isUniqueViolation) {
+            const existing = await tx.ogImage.findFirst({ where: { url } });
+            if (existing && existing.originId !== originId) {
+              // Image belongs to another origin; create a new entry for this
+              // origin using the composite key-safe approach.
+              await tx.ogImage.create({
+                data: { originId, url, height, width, title, description },
+              }).catch(() => {
+                // Already exists for this origin; just update
+                return tx.ogImage.update({
+                  where: { originId_url: { originId, url } },
+                  data: { height, width, title, description },
+                });
+              });
+            }
+          } else {
+            throw error;
+          }
+        }
+      })
     );
 
     return tx.resourceOrigin.findUnique({
