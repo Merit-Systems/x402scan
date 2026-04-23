@@ -24,6 +24,11 @@ export const dexterFacilitator = {
   addresses: {
     [Network.SOLANA]: [
       {
+        address: 'DeXterR2kQm8AvRHnNPatWkE46TfAcMeBDjb6FySoAb8',
+        tokens: [USDC_SOLANA_TOKEN],
+        dateOfFirstTransaction: new Date('2026-04-10'),
+      },
+      {
         address: 'DEXVS3su4dZQWTvvPnLDJLRK1CeeKG6K3QqdzthgAkNV',
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-26'),
@@ -31,7 +36,12 @@ export const dexterFacilitator = {
     ],
     [Network.BASE]: [
       {
-        address: '0x40272E2eAc848Ea70db07Fd657D799bD309329C4',
+        address: '0x402feee072d655b85e08f1751af9ddbd249521f',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2026-04-10'),
+      },
+      {
+        address: '0x40272e2eac848ea70db07fd657d799bd309329c4',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-12-25'),
       },
