@@ -1,0 +1,103 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Example x402 API",
+    "version": "1.0.0",
+    "description": "An example API showing how to use x-402 extensions for paid endpoints"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com"
+    }
+  ],
+  "paths": {
+    "/api/data": {
+      "post": {
+        "summary": "Get premium data",
+        "description": "Returns premium data for a small fee",
+        "x-402": {
+          "enabled": true,
+          "price": {
+            "amount": "1000",
+            "network": "base",
+            "asset": "USDC"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Search query"
+                  }
+                },
+                "required": ["query"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/premium-report": {
+      "get": {
+        "summary": "Get premium report",
+        "x-402": {
+          "enabled": true,
+          "price": {
+            "amount": "5000",
+            "network": "base"
+          }
+        },
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["json", "csv"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report data"
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "summary": "Health check (free)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}
