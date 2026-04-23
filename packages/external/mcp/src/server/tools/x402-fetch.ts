@@ -94,14 +94,19 @@ export const registerFetchX402ResourceTool: RegisterTools = ({
         settlementResult.isOk() || paymentPayload !== undefined
           ? {
               ...(paymentPayload !== undefined
-                ? {
-                    price: tokenStringToNumber(
+                ? (() => {
+                    const amount = tokenStringToNumber(
                       paymentPayload.accepted.amount
-                    ).toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                    }),
-                  }
+                    );
+                    return {
+                      price: amount.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: amount < 0.01 ? 4 : 2,
+                      }),
+                    };
+                  })()
                 : {}),
               ...(settlementResult.isOk()
                 ? {
