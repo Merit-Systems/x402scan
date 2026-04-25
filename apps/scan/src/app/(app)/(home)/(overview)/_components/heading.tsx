@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 import { Plus } from 'lucide-react';
 
@@ -9,7 +10,7 @@ import { Logo } from '@/components/logo';
 
 import { X402V2Badge } from '@/app/(app)/_components/x402/v2-badge';
 
-import { SearchButton } from './search-button';
+import { X402LinkedSearchBox } from '@/app/(app)/_components/search/x402-linked-search-box';
 
 export const HomeHeading = () => {
   return (
@@ -24,8 +25,20 @@ export const HomeHeading = () => {
           The x402 analytics dashboard and block explorer
         </p>
       </div>
-      <div className="flex flex-col md:flex-row items-center gap-2">
-        <SearchButton />
+      <div className="flex w-full flex-col items-center gap-2 md:flex-row">
+        <div className="w-full min-w-0 md:flex-1">
+          <Suspense
+            fallback={
+              <div className="h-12 w-full rounded-xl border bg-background shadow-xs" />
+            }
+          >
+            <X402LinkedSearchBox
+              autoFocus={false}
+              layout="section"
+              surface="x402scan_home"
+            />
+          </Suspense>
+        </div>
         <Link
           href="/resources/register"
           className="w-full md:w-fit hidden md:block"
