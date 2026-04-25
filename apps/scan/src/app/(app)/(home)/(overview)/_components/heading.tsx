@@ -29,7 +29,7 @@ export const HomeHeading = () => {
         <div className="w-full min-w-0 md:flex-1">
           <Suspense
             fallback={
-              <div className="h-12 w-full rounded-xl border bg-background shadow-xs" />
+              <div className="h-12 w-full rounded-md border bg-background shadow-xs" />
             }
           >
             <X402LinkedSearchBox

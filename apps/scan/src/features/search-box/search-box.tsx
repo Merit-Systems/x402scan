@@ -604,8 +604,7 @@ export function SearchBox({
     layout === 'page'
       ? 'flex flex-1 items-center justify-center px-4 py-8 sm:px-6'
       : 'w-full';
-  const innerClassName =
-    layout === 'page' ? 'w-full max-w-3xl' : 'w-full max-w-3xl';
+  const innerClassName = layout === 'page' ? 'w-full max-w-3xl' : 'w-full';
 
   return (
     <div

@@ -1,7 +1,7 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import { useEffect, useId, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
 import {
   CommandEmpty,
@@ -18,16 +18,32 @@ import type { AutocompleteSuggestion, SearchPreviewResult } from './types';
 const listScrollbarClassName =
   '[scrollbar-width:thin] [scrollbar-color:rgba(148,163,184,0.18)_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-foreground/10 hover:[&::-webkit-scrollbar-thumb]:bg-foreground/15';
 
-function useActiveRowId(activeIndex: number | null) {
-  const activeRowId = useId();
+function scrollRowIntoListView(row: HTMLElement) {
+  const list = row.closest<HTMLElement>('[data-search-box-list]');
+  if (!list) return;
 
-  useEffect(() => {
+  const listRect = list.getBoundingClientRect();
+  const rowRect = row.getBoundingClientRect();
+  const padding = 8;
+
+  if (rowRect.top < listRect.top + padding) {
+    list.scrollTop -= listRect.top + padding - rowRect.top;
+  } else if (rowRect.bottom > listRect.bottom - padding) {
+    list.scrollTop += rowRect.bottom - (listRect.bottom - padding);
+  }
+}
+
+function useActiveRowScroll(activeIndex: number | null, scope: string) {
+  useLayoutEffect(() => {
     if (activeIndex === null) return;
 
-    document.getElementById(activeRowId)?.scrollIntoView({ block: 'nearest' });
-  }, [activeIndex, activeRowId]);
+    const row = document.querySelector<HTMLElement>(
+      `[data-search-active-row="${scope}"]`
+    );
+    if (!row) return;
 
-  return activeRowId;
+    scrollRowIntoListView(row);
+  }, [activeIndex, scope]);
 }
 
 function FaviconBadge({ favicon }: { favicon: string }) {
@@ -168,7 +184,7 @@ export function SearchResultsPanel({
   emptyMessage: string;
   onSelectResult: (result: SearchPreviewResult, index: number) => void;
 }) {
-  const activeRowId = useActiveRowId(selectedResultIndex);
+  useActiveRowScroll(selectedResultIndex, 'results');
 
   return (
     <>
@@ -179,6 +195,7 @@ export function SearchResultsPanel({
       </div>
 
       <CommandList
+        data-search-box-list="true"
         className={`max-h-[min(22rem,50dvh)] pb-2 md:max-h-[360px] ${listScrollbarClassName}`}
         gradientClassName="from-card"
       >
@@ -199,10 +216,12 @@ export function SearchResultsPanel({
             {results.map((result, index) => (
               <CommandItem
                 key={`result:${result.resourceId}`}
-                id={selectedResultIndex === index ? activeRowId : undefined}
                 value={`result:${result.resourceId}`}
                 onSelect={() => onSelectResult(result, index)}
                 data-active={selectedResultIndex === index ? 'true' : undefined}
+                data-search-active-row={
+                  selectedResultIndex === index ? 'results' : undefined
+                }
                 className="cursor-pointer rounded-md px-3 py-3 transition-colors hover:bg-accent/70 hover:text-accent-foreground data-[selected=true]:bg-transparent data-[selected=true]:text-foreground data-[active=true]:!bg-accent data-[active=true]:!text-accent-foreground"
               >
                 <ResultSummary result={result} />
@@ -232,7 +251,7 @@ export function SearchSuggestionsPanel({
   selectedSuggestionIndex: number | null;
   onSelectSuggestion: (index: number) => void;
 }) {
-  const activeRowId = useActiveRowId(selectedSuggestionIndex);
+  useActiveRowScroll(selectedSuggestionIndex, 'suggestions');
 
   return (
     <>
@@ -243,6 +262,7 @@ export function SearchSuggestionsPanel({
       </div>
 
       <CommandList
+        data-search-box-list="true"
         className={`max-h-[min(20rem,50dvh)] pb-2 pt-2 md:max-h-[320px] ${listScrollbarClassName}`}
         gradientClassName="from-card"
       >
@@ -251,11 +271,13 @@ export function SearchSuggestionsPanel({
             {suggestions.map((suggestion, index) => (
               <CommandItem
                 key={getSuggestionKey(suggestion)}
-                id={selectedSuggestionIndex === index ? activeRowId : undefined}
                 value={getSuggestionKey(suggestion)}
                 onSelect={() => onSelectSuggestion(index)}
                 data-active={
                   selectedSuggestionIndex === index ? 'true' : undefined
+                }
+                data-search-active-row={
+                  selectedSuggestionIndex === index ? 'suggestions' : undefined
                 }
                 className={cn(
                   'cursor-pointer rounded-md px-3 py-2.5 text-sm leading-tight transition-colors hover:bg-accent/70 hover:text-accent-foreground md:text-[15px] data-[selected=true]:bg-transparent data-[selected=true]:text-foreground data-[active=true]:!bg-accent data-[active=true]:!text-accent-foreground'
