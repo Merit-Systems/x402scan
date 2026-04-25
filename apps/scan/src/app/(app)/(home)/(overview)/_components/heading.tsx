@@ -45,7 +45,7 @@ export const HomeHeading = () => {
         >
           <Button
             variant="outline"
-            className="shrink-0 w-full md:w-fit px-4"
+            className="h-12 w-full shrink-0 px-4 md:w-fit"
             size="lg"
           >
             <Plus className="size-4" />
