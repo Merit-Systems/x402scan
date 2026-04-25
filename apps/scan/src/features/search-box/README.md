@@ -28,7 +28,8 @@ Local dependencies to provide or adjust after copying:
   shadcn primitives used by the input, list, feedback dialog, and telemetry.
 - `@/lib/utils`: `cn` helper; replace with your app's class-name utility.
 - `lucide-react` and `motion/react`: icons and popover transitions.
-- Next App Router: `useSearchBoxNavigation` syncs committed searches to `?q=`.
+- Navigation is intentionally caller-owned. The core search box keeps committed
+  searches local and does not mutate the page URL.
 
 Variable integration points:
 

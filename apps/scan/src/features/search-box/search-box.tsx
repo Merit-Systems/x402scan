@@ -219,7 +219,6 @@ export function SearchBox({
       query,
       inputRef,
       isMobileViewport,
-      setQuery,
       setSelectedSuggestionIndex,
     });
   const { hasUserInteracted, markUserInteracted } = useSearchBoxDemoQueries({
