@@ -21,6 +21,11 @@ const chainMap: Record<FacilitatorsNetwork, Chain> = {
   [FacilitatorsNetwork.SOLANA]: Chain.SOLANA,
 };
 
+function parseFacilitatorAddress(address: string): MixedAddress | null {
+  const parsed = mixedAddressSchema.safeParse(address);
+  return parsed.success ? parsed.data : null;
+}
+
 export const facilitators: Facilitator[] = allFacilitators.map(f => ({
   id: f.id,
   ...f.metadata,
@@ -28,7 +33,10 @@ export const facilitators: Facilitator[] = allFacilitators.map(f => ({
   addresses: Object.entries(f.addresses).reduce(
     (acc, [network, configs]) => {
       const scanChain = chainMap[network as FacilitatorsNetwork];
-      acc[scanChain] = configs.map(c => c.address as MixedAddress);
+      acc[scanChain] = configs.flatMap(c => {
+        const address = parseFacilitatorAddress(c.address);
+        return address ? [address] : [];
+      });
       return acc;
     },
     {} as Partial<Record<Chain, MixedAddress[]>>
@@ -42,7 +50,5 @@ export const facilitatorIdMap = new Map<FacilitatorId, Facilitator>(
 );
 
 export const facilitatorAddresses = facilitators.flatMap(f =>
-  Object.values(f.addresses)
-    .flat()
-    .map(address => mixedAddressSchema.parse(address))
+  Object.values(f.addresses).flat()
 );
