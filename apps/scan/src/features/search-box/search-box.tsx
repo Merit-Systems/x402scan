@@ -1,23 +1,24 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 
 import { Command } from '@/components/ui/command';
 
 import { isEditableTarget, isTextEditingKey } from './helpers';
 import {
+  type SearchBoxBarAction,
   SearchFeedbackDialog,
   SearchBoxInputBar,
   SearchBoxPopover,
   SearchBoxTelemetry,
-  type SearchBoxShortcut,
 } from './search-box-chrome';
 import {
   SearchResultsPanel,
   SearchSuggestionsPanel,
 } from './search-box-panels';
 import { useSearchBoxTelemetryReporter } from './search-box-telemetry';
+import { normalizeAutocompleteText } from './matching';
 import type {
   AutocompleteCacheSnapshot,
   AutocompleteSuggestion,
@@ -31,6 +32,123 @@ import type {
 import { useSearchBoxData } from './use-search-box-data';
 import { useSearchBoxDemoQueries } from './use-search-box-demo-queries';
 import { useSearchBoxNavigation } from './use-search-box-navigation';
+
+type SearchPanelMode = 'suggestions' | 'results';
+
+interface SearchPanelStateInput {
+  activePanelMode: SearchPanelMode;
+  autocompleteLoading: boolean;
+  autocompleteRequestError: boolean;
+  hasCommittedSearch: boolean;
+  hasTypedQuery: boolean;
+  isCurrentSearchResponse: boolean;
+  searchLoading: boolean;
+  searchRequestError: boolean;
+  searchResults: SearchPreviewResult[];
+  selectedResultIndex: number | null;
+  selectedSuggestionIndex: number | null;
+  shouldPromoteLiveResults: boolean;
+  suggestions: AutocompleteSuggestion[];
+}
+
+interface SearchPanelState {
+  kind: 'closed' | SearchPanelMode;
+  activeResultIndex: number | null;
+  activeSuggestionIndex: number | null;
+  hasActiveSelection: boolean;
+  hasSelectableRows: boolean;
+  isLiveResults: boolean;
+  results: SearchPreviewResult[];
+  resultsLoading: boolean;
+}
+
+function validIndex(index: number | null, rowCount: number, disabled = false) {
+  if (disabled || index === null || index < 0 || index >= rowCount) {
+    return null;
+  }
+
+  return index;
+}
+
+function getSearchPanelState({
+  activePanelMode,
+  autocompleteLoading,
+  autocompleteRequestError,
+  hasCommittedSearch,
+  hasTypedQuery,
+  isCurrentSearchResponse,
+  searchLoading,
+  searchRequestError,
+  searchResults,
+  selectedResultIndex,
+  selectedSuggestionIndex,
+  shouldPromoteLiveResults,
+  suggestions,
+}: SearchPanelStateInput): SearchPanelState {
+  const showResults =
+    hasTypedQuery &&
+    (hasCommittedSearch ||
+      activePanelMode === 'results' ||
+      shouldPromoteLiveResults);
+
+  if (showResults) {
+    const results = isCurrentSearchResponse ? searchResults : [];
+    const resultsLoading =
+      searchLoading || (!isCurrentSearchResponse && !searchRequestError);
+    const activeResultIndex = validIndex(
+      selectedResultIndex,
+      results.length,
+      resultsLoading
+    );
+
+    return {
+      kind: 'results',
+      activeResultIndex,
+      activeSuggestionIndex: null,
+      hasActiveSelection: activeResultIndex !== null,
+      hasSelectableRows: !resultsLoading && results.length > 0,
+      isLiveResults: !hasCommittedSearch,
+      results,
+      resultsLoading,
+    };
+  }
+
+  const showSuggestions =
+    hasTypedQuery &&
+    (autocompleteLoading || suggestions.length > 0 || autocompleteRequestError);
+  const activeSuggestionIndex = showSuggestions
+    ? validIndex(selectedSuggestionIndex, suggestions.length)
+    : null;
+
+  return {
+    kind: showSuggestions ? 'suggestions' : 'closed',
+    activeResultIndex: null,
+    activeSuggestionIndex,
+    hasActiveSelection: activeSuggestionIndex !== null,
+    hasSelectableRows: showSuggestions && suggestions.length > 0,
+    isLiveResults: false,
+    results: [],
+    resultsLoading: false,
+  };
+}
+
+function getNextPanelMode({
+  hasResolvedSuggestions,
+  hasCommittedSearch,
+  hasTypedQuery,
+  shouldPromoteLiveResults,
+}: {
+  hasResolvedSuggestions: boolean;
+  hasCommittedSearch: boolean;
+  hasTypedQuery: boolean;
+  shouldPromoteLiveResults: boolean;
+}): SearchPanelMode | null {
+  // Null keeps the current surface while network state is unresolved.
+  if (!hasTypedQuery) return 'suggestions';
+  if (hasCommittedSearch || shouldPromoteLiveResults) return 'results';
+  if (hasResolvedSuggestions) return 'suggestions';
+  return null;
+}
 
 export interface SearchBoxProps {
   apiBaseUrl?: string;
@@ -74,6 +192,12 @@ export function SearchBox({
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [feedbackReportedKey, setFeedbackReportedKey] = useState<string | null>(
+    null
+  );
+  const [focusRequestId, setFocusRequestId] = useState(0);
+  const [activePanelMode, setActivePanelMode] =
+    useState<SearchPanelMode>('suggestions');
+  const [selectedResultIndex, setSelectedResultIndex] = useState<number | null>(
     null
   );
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState<
@@ -124,26 +248,57 @@ export function SearchBox({
   const suggestions = autocompleteData?.suggestions ?? [];
   const searchResults = searchData?.results ?? [];
   const hasTypedQuery = query.trim().length > 0;
-  const isResultsMode = Boolean(committedQuery);
-  const isSuggestionSelectionMode =
+  const hasCommittedSearch = Boolean(committedQuery);
+  const normalizedQuery = normalizeAutocompleteText(query);
+  const isCurrentAutocompleteResponse =
+    autocompleteData?.query === normalizedQuery;
+  const isCurrentSearchResponse = searchData?.query === normalizedQuery;
+  const autocompleteSettledForQuery =
     hasTypedQuery &&
-    !isResultsMode &&
-    selectedSuggestionIndex !== null &&
-    selectedSuggestionIndex >= 0 &&
-    selectedSuggestionIndex < suggestions.length;
-  const isCommittedSearchResponse = searchData?.query === committedQuery;
-  const showDropdown =
-    hasTypedQuery &&
-    (isResultsMode ||
-      autocompleteLoading ||
-      suggestions.length > 0 ||
-      autocompleteRequestError);
-  const activeSuggestionIndex = isSuggestionSelectionMode
-    ? selectedSuggestionIndex
-    : null;
-  const visibleSearchResults = isCommittedSearchResponse ? searchResults : [];
+    !hasCommittedSearch &&
+    !autocompleteLoading &&
+    !autocompleteRequestError &&
+    isCurrentAutocompleteResponse;
+  const hasResolvedSuggestions =
+    autocompleteSettledForQuery && suggestions.length > 0;
+  const hasResolvedEmptySuggestions =
+    autocompleteSettledForQuery && suggestions.length === 0;
+  const shouldPromoteLiveResults =
+    hasResolvedEmptySuggestions &&
+    (searchLoading || searchRequestError || isCurrentSearchResponse);
+  const nextPanelMode = getNextPanelMode({
+    hasResolvedSuggestions,
+    hasCommittedSearch,
+    hasTypedQuery,
+    shouldPromoteLiveResults,
+  });
+  const visiblePanelMode = nextPanelMode ?? activePanelMode;
+  const panel = getSearchPanelState({
+    activePanelMode: visiblePanelMode,
+    autocompleteLoading,
+    autocompleteRequestError,
+    hasCommittedSearch,
+    hasTypedQuery,
+    isCurrentSearchResponse,
+    searchLoading,
+    searchRequestError,
+    searchResults,
+    selectedResultIndex,
+    selectedSuggestionIndex,
+    shouldPromoteLiveResults,
+    suggestions,
+  });
+  const showResultsPanel = panel.kind === 'results';
+  const isLiveResultsPanel = panel.isLiveResults;
+  const showDropdown = panel.kind !== 'closed';
+  const activeSuggestionIndex = panel.activeSuggestionIndex;
+  const visibleSearchResults = panel.results;
+  const resultsPanelLoading = panel.resultsLoading;
+  const activeResultIndex = panel.activeResultIndex;
+  const hasActiveSelection = panel.hasActiveSelection;
+  const hasSelectableRows = panel.hasSelectableRows;
   const feedbackEnabled = showFeedbackControls && Boolean(onReportBadResults);
-  const feedbackKey = `${isResultsMode ? 'search' : 'autocomplete'}:${query.trim()}`;
+  const feedbackKey = `${showResultsPanel ? 'search' : 'autocomplete'}:${query.trim()}`;
   const feedbackReported = feedbackReportedKey === feedbackKey;
   const telemetryReporter = useSearchBoxTelemetryReporter({
     autocompleteLatencyMs: autocompleteData?.latencyMs ?? null,
@@ -152,6 +307,10 @@ export function SearchBox({
     searchResults: visibleSearchResults,
     suggestions,
   });
+  const exitCommittedSearch = useCallback(() => {
+    setActivePanelMode('suggestions');
+    exitResultsMode();
+  }, [exitResultsMode]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 767px)');
@@ -169,10 +328,19 @@ export function SearchBox({
   }, []);
 
   useEffect(() => {
+    if (focusRequestId === 0) return;
+
+    inputRef.current?.focus();
+    if (inputRef.current?.value.trim()) {
+      inputRef.current?.select();
+    }
+  }, [focusRequestId]);
+
+  useEffect(() => {
     if (!enableKeyboardShortcut) return;
 
     function handleGlobalShortcut(event: globalThis.KeyboardEvent) {
-      if (event.key === 'Escape' && isResultsMode) {
+      if (event.key === 'Escape' && hasCommittedSearch) {
         if (
           isEditableTarget(event.target) &&
           event.target !== inputRef.current
@@ -182,7 +350,7 @@ export function SearchBox({
 
         event.preventDefault();
         event.stopPropagation();
-        exitResultsMode();
+        exitCommittedSearch();
         return;
       }
 
@@ -209,13 +377,10 @@ export function SearchBox({
     return () => {
       window.removeEventListener('keydown', handleGlobalShortcut);
     };
-  }, [enableKeyboardShortcut, exitResultsMode, isResultsMode]);
+  }, [enableKeyboardShortcut, exitCommittedSearch, hasCommittedSearch]);
 
-  function focusSearchInput() {
-    inputRef.current?.focus();
-    if (inputRef.current?.value.trim()) {
-      inputRef.current?.select();
-    }
+  function requestSearchInputFocus() {
+    setFocusRequestId(id => id + 1);
   }
 
   function selectSuggestion(index: number) {
@@ -235,6 +400,7 @@ export function SearchBox({
 
   function selectResult(result: SearchPreviewResult, index: number) {
     const context = telemetryReporter.reportSelection('search', index);
+    setSelectedResultIndex(null);
 
     if (onSelectResult && context) {
       onSelectResult(result, context);
@@ -248,44 +414,87 @@ export function SearchBox({
     const submittedQuery = query.trim();
     if (!submittedQuery) return;
 
+    setActivePanelMode('results');
+    setSelectedResultIndex(null);
     onSearchSubmit?.(submittedQuery);
     openCommittedSearch();
   }
 
-  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (isResultsMode) {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        event.stopPropagation();
-        exitResultsMode();
-      }
+  function returnToLiveSearch() {
+    clearActiveSelection();
+    exitCommittedSearch();
+    requestSearchInputFocus();
+  }
+
+  function clearActiveSelection() {
+    setSelectedResultIndex(null);
+    setSelectedSuggestionIndex(null);
+  }
+
+  function selectActiveRow(index: number) {
+    if (showResultsPanel) {
+      const result = visibleSearchResults[index];
+      if (result) selectResult(result, index);
       return;
     }
 
+    selectSuggestion(index);
+  }
+
+  function moveSelection(direction: 1 | -1) {
+    if (!hasSelectableRows) return false;
+
+    if (showResultsPanel) {
+      setSelectedSuggestionIndex(null);
+      setSelectedResultIndex(index => {
+        if (index === null) {
+          return direction > 0 ? 0 : visibleSearchResults.length - 1;
+        }
+        const nextIndex = index + direction;
+        return nextIndex < 0
+          ? null
+          : Math.min(nextIndex, visibleSearchResults.length - 1);
+      });
+      return true;
+    }
+
+    setSelectedResultIndex(null);
+    setSelectedSuggestionIndex(index => {
+      if (index === null) return direction > 0 ? 0 : suggestions.length - 1;
+      const nextIndex = index + direction;
+      return nextIndex < 0 ? null : Math.min(nextIndex, suggestions.length - 1);
+    });
+    return true;
+  }
+
+  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     switch (event.key) {
       case 'ArrowDown':
-        if (suggestions.length === 0) return;
+        if (!moveSelection(1)) return;
         event.preventDefault();
         event.stopPropagation();
-        setSelectedSuggestionIndex(index =>
-          index === null ? 0 : Math.min(index + 1, suggestions.length - 1)
-        );
         return;
 
       case 'ArrowUp':
-        if (selectedSuggestionIndex === null) return;
+        if (!hasActiveSelection) return;
         event.preventDefault();
         event.stopPropagation();
-        setSelectedSuggestionIndex(index =>
-          index === null || index <= 0 ? null : index - 1
-        );
+        moveSelection(-1);
         return;
 
       case 'Escape':
-        if (selectedSuggestionIndex === null) return;
+        if (!hasActiveSelection && !hasCommittedSearch) return;
+
         event.preventDefault();
         event.stopPropagation();
-        setSelectedSuggestionIndex(null);
+        if (hasActiveSelection) {
+          clearActiveSelection();
+          return;
+        }
+
+        if (hasCommittedSearch) {
+          exitCommittedSearch();
+        }
         return;
 
       case 'Enter':
@@ -296,33 +505,21 @@ export function SearchBox({
           return;
         }
 
-        submitSearch();
+        if (activeResultIndex !== null) {
+          selectActiveRow(activeResultIndex);
+          return;
+        }
+
+        if (!hasCommittedSearch && !showResultsPanel) {
+          submitSearch();
+        }
         return;
 
       default:
-        if (selectedSuggestionIndex !== null && isTextEditingKey(event)) {
-          setSelectedSuggestionIndex(null);
+        if (isTextEditingKey(event)) {
+          clearActiveSelection();
         }
     }
-  }
-
-  function runBarAction() {
-    if (!isInputFocused || !hasTypedQuery) {
-      focusSearchInput();
-      return;
-    }
-
-    if (isResultsMode) {
-      exitResultsMode();
-      return;
-    }
-
-    if (activeSuggestionIndex !== null) {
-      selectSuggestion(activeSuggestionIndex);
-      return;
-    }
-
-    submitSearch();
   }
 
   function reportFeedback(pipeline: 'autocomplete' | 'search', note: string) {
@@ -333,28 +530,77 @@ export function SearchBox({
     setFeedbackReportedKey(`${pipeline}:${query.trim()}`);
   }
 
-  const barShortcut: SearchBoxShortcut | null =
-    !enableKeyboardShortcut && (!isInputFocused || !hasTypedQuery)
-      ? null
-      : !isInputFocused || !hasTypedQuery
+  const openActiveSelection = () => {
+    if (activeSuggestionIndex !== null) {
+      selectSuggestion(activeSuggestionIndex);
+      return;
+    }
+
+    if (activeResultIndex !== null) {
+      selectActiveRow(activeResultIndex);
+    }
+  };
+  const selectFirstRow = () => {
+    moveSelection(1);
+  };
+  const barActions: SearchBoxBarAction[] = [];
+
+  if (!isInputFocused) {
+    if (enableKeyboardShortcut) {
+      barActions.push({
+        key: '⌘K',
+        label: 'Focus',
+        onRun: requestSearchInputFocus,
+      });
+    }
+  } else if (hasTypedQuery && hasActiveSelection) {
+    barActions.push({
+      key: 'Enter',
+      label: 'Open',
+      onRun: openActiveSelection,
+    });
+  } else if (hasTypedQuery) {
+    if (hasSelectableRows) {
+      barActions.push({
+        key: '↓',
+        label: 'Select',
+        muted: !hasCommittedSearch && !isLiveResultsPanel,
+        onRun: selectFirstRow,
+      });
+    }
+
+    if (!showResultsPanel) {
+      barActions.push({
+        key: 'Enter',
+        label: 'Search',
+        onRun: submitSearch,
+      });
+    }
+
+    if (hasCommittedSearch) {
+      barActions.push({
+        key: 'Esc',
+        label: 'Back',
+        muted: hasSelectableRows,
+        onRun: returnToLiveSearch,
+      });
+    }
+  }
+
+  const mobileAction: SearchBoxBarAction | null =
+    hasTypedQuery && !hasCommittedSearch
+      ? hasActiveSelection
         ? {
-            key: '⌘K',
-            label: 'Focus',
+            label: 'Open',
+            onRun: openActiveSelection,
           }
-        : isResultsMode
-          ? {
-              key: 'Esc',
-              label: 'Suggestions',
+        : isLiveResultsPanel
+          ? null
+          : {
+              label: 'Search',
+              onRun: submitSearch,
             }
-          : isSuggestionSelectionMode
-            ? {
-                key: 'Enter',
-                label: 'Select',
-              }
-            : {
-                key: 'Enter',
-                label: 'Search',
-              };
+      : null;
   const outerClassName =
     layout === 'page'
       ? 'flex flex-1 items-center justify-center px-4 py-8 sm:px-6'
@@ -380,9 +626,11 @@ export function SearchBox({
           className="relative overflow-visible rounded-none border-0 bg-transparent shadow-none"
         >
           <SearchBoxInputBar
+            actions={barActions}
             inputRef={inputRef}
             autoFocus={shouldAutoFocus}
-            isResultsMode={isResultsMode}
+            isResultsMode={hasCommittedSearch}
+            mobileAction={mobileAction}
             query={query}
             onFocus={() => {
               markUserInteracted();
@@ -394,21 +642,27 @@ export function SearchBox({
                 markUserInteracted();
               }
               setQuery(value);
-              setSelectedSuggestionIndex(null);
-              exitResultsMode();
+              clearActiveSelection();
+              if (!value.trim()) {
+                exitCommittedSearch();
+              }
             }}
             onKeyDown={handleInputKeyDown}
-            onBackToSuggestions={exitResultsMode}
-            onRunAction={runBarAction}
-            shortcut={barShortcut}
+            onBackToSuggestions={returnToLiveSearch}
           />
 
           <SearchBoxPopover open={showDropdown}>
-            {isResultsMode ? (
+            {showResultsPanel ? (
               <SearchResultsPanel
                 results={visibleSearchResults}
-                loading={searchLoading || !isCommittedSearchResponse}
+                loading={resultsPanelLoading}
                 requestError={searchRequestError}
+                selectedResultIndex={activeResultIndex}
+                emptyMessage={
+                  hasCommittedSearch
+                    ? 'No matching results.'
+                    : 'No matching results yet.'
+                }
                 onSelectResult={selectResult}
               />
             ) : (
@@ -430,7 +684,7 @@ export function SearchBox({
               }
               reported={feedbackReported}
               searchLatencyMs={searchData?.latencyMs ?? null}
-              showSearchLatency={liveDataEnabled || isResultsMode}
+              showSearchLatency={liveDataEnabled || hasCommittedSearch}
               usingFallback={usingFallback}
             />
           </SearchBoxPopover>
@@ -438,7 +692,10 @@ export function SearchBox({
             open={feedbackDialogOpen}
             onOpenChange={setFeedbackDialogOpen}
             onSubmit={note => {
-              reportFeedback(isResultsMode ? 'search' : 'autocomplete', note);
+              reportFeedback(
+                showResultsPanel ? 'search' : 'autocomplete',
+                note
+              );
               setFeedbackDialogOpen(false);
             }}
           />

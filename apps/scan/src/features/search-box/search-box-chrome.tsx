@@ -26,36 +26,52 @@ import { cn } from '@/lib/utils';
 
 import { formatLatency } from './helpers';
 
-export interface SearchBoxShortcut {
-  key: string;
+export interface SearchBoxBarAction {
+  key?: string;
   label: string;
+  muted?: boolean;
+  onRun: () => void;
 }
 
 export function SearchBoxInputBar({
+  actions,
   autoFocus,
   inputRef,
   isResultsMode,
+  mobileAction,
   query,
-  shortcut,
   onBackToSuggestions,
   onBlur,
   onFocus,
   onKeyDown,
-  onRunAction,
   onValueChange,
 }: {
+  actions: SearchBoxBarAction[];
   autoFocus: boolean;
   inputRef: RefObject<HTMLInputElement | null>;
   isResultsMode: boolean;
+  mobileAction?: SearchBoxBarAction | null;
   query: string;
-  shortcut: SearchBoxShortcut | null;
   onBackToSuggestions: () => void;
   onBlur: () => void;
   onFocus: () => void;
   onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
-  onRunAction: () => void;
   onValueChange: (value: string) => void;
 }) {
+  const trailing =
+    isResultsMode || mobileAction || actions.length > 0 ? (
+      <>
+        <div className="md:hidden">
+          {isResultsMode ? (
+            <MobileBackButton onBackToSuggestions={onBackToSuggestions} />
+          ) : mobileAction ? (
+            <MobileActionButton action={mobileAction} />
+          ) : null}
+        </div>
+        <DesktopActionButtons actions={actions} />
+      </>
+    ) : null;
+
   return (
     <CommandInput
       ref={inputRef}
@@ -70,23 +86,7 @@ export function SearchBoxInputBar({
       enterKeyHint="search"
       containerClassName="h-12 rounded-xl border bg-background px-3 shadow-xs transition-colors focus-within:border-ring/60 focus-within:ring-1 focus-within:ring-ring/20 dark:bg-card/70"
       className="h-12 text-sm md:text-sm"
-      trailing={
-        <>
-          <div className="md:hidden">
-            {isResultsMode ? (
-              <MobileBackButton onBackToSuggestions={onBackToSuggestions} />
-            ) : null}
-          </div>
-          <div className="hidden md:block">
-            {shortcut ? (
-              <DesktopActionButton
-                shortcut={shortcut}
-                onRunAction={onRunAction}
-              />
-            ) : null}
-          </div>
-        </>
-      }
+      trailing={trailing}
     />
   );
 }
@@ -112,27 +112,57 @@ function MobileBackButton({
   );
 }
 
-function DesktopActionButton({
-  shortcut,
-  onRunAction,
-}: {
-  shortcut: SearchBoxShortcut;
-  onRunAction: () => void;
-}) {
+function MobileActionButton({ action }: { action: SearchBoxBarAction }) {
   return (
     <button
       type="button"
-      aria-label={`${shortcut.label} search`}
+      aria-label={action.label}
       onMouseDown={event => {
         event.preventDefault();
       }}
-      onClick={onRunAction}
-      className="inline-flex items-center gap-1.5 px-1 py-1 text-[11px] text-muted-foreground/75 transition-colors hover:text-foreground"
+      onClick={action.onRun}
+      className="inline-flex items-center px-1 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
     >
-      <kbd className="px-0 font-mono text-[11px] tracking-[0.08em] text-foreground/65">
-        {shortcut.key}
-      </kbd>
-      <span>{shortcut.label}</span>
+      {action.label}
+    </button>
+  );
+}
+
+function DesktopActionButtons({ actions }: { actions: SearchBoxBarAction[] }) {
+  if (actions.length === 0) return null;
+
+  return (
+    <div className="hidden items-center gap-3 md:flex">
+      {actions.map(action => (
+        <DesktopActionButton
+          key={`${action.key ?? 'tap'}:${action.label}`}
+          action={action}
+        />
+      ))}
+    </div>
+  );
+}
+
+function DesktopActionButton({ action }: { action: SearchBoxBarAction }) {
+  return (
+    <button
+      type="button"
+      aria-label={action.label}
+      onMouseDown={event => {
+        event.preventDefault();
+      }}
+      onClick={action.onRun}
+      className={cn(
+        'inline-flex cursor-pointer items-center gap-1.5 px-1 py-1 text-[11px] transition-colors hover:text-foreground',
+        action.muted ? 'text-muted-foreground/55' : 'text-muted-foreground/75'
+      )}
+    >
+      {action.key ? (
+        <kbd className="px-0 font-mono text-[11px] tracking-[0.08em] text-foreground/65">
+          {action.key}
+        </kbd>
+      ) : null}
+      <span>{action.label}</span>
     </button>
   );
 }

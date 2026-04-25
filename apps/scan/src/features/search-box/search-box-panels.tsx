@@ -1,7 +1,7 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 
 import {
   CommandEmpty,
@@ -17,6 +17,18 @@ import type { AutocompleteSuggestion, SearchPreviewResult } from './types';
 
 const listScrollbarClassName =
   '[scrollbar-width:thin] [scrollbar-color:rgba(148,163,184,0.18)_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-foreground/10 hover:[&::-webkit-scrollbar-thumb]:bg-foreground/15';
+
+function useActiveRowId(activeIndex: number | null) {
+  const activeRowId = useId();
+
+  useEffect(() => {
+    if (activeIndex === null) return;
+
+    document.getElementById(activeRowId)?.scrollIntoView({ block: 'nearest' });
+  }, [activeIndex, activeRowId]);
+
+  return activeRowId;
+}
 
 function FaviconBadge({ favicon }: { favicon: string }) {
   const src = favicon.trim();
@@ -145,13 +157,19 @@ export function SearchResultsPanel({
   results,
   loading,
   requestError,
+  selectedResultIndex,
+  emptyMessage,
   onSelectResult,
 }: {
   results: SearchPreviewResult[];
   loading: boolean;
   requestError: boolean;
+  selectedResultIndex: number | null;
+  emptyMessage: string;
   onSelectResult: (result: SearchPreviewResult, index: number) => void;
 }) {
+  const activeRowId = useActiveRowId(selectedResultIndex);
+
   return (
     <>
       <div className="flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3 text-left dark:border-white/10">
@@ -181,16 +199,18 @@ export function SearchResultsPanel({
             {results.map((result, index) => (
               <CommandItem
                 key={`result:${result.resourceId}`}
+                id={selectedResultIndex === index ? activeRowId : undefined}
                 value={`result:${result.resourceId}`}
                 onSelect={() => onSelectResult(result, index)}
-                className="rounded-lg px-3 py-3"
+                data-active={selectedResultIndex === index ? 'true' : undefined}
+                className="cursor-pointer rounded-lg px-3 py-3 transition-colors hover:bg-accent/70 hover:text-accent-foreground data-[selected=true]:bg-transparent data-[selected=true]:text-foreground data-[active=true]:!bg-accent data-[active=true]:!text-accent-foreground"
               >
                 <ResultSummary result={result} />
               </CommandItem>
             ))}
           </CommandGroup>
         ) : (
-          <CommandEmpty>No committed results yet.</CommandEmpty>
+          <CommandEmpty>{emptyMessage}</CommandEmpty>
         )}
       </CommandList>
     </>
@@ -212,6 +232,8 @@ export function SearchSuggestionsPanel({
   selectedSuggestionIndex: number | null;
   onSelectSuggestion: (index: number) => void;
 }) {
+  const activeRowId = useActiveRowId(selectedSuggestionIndex);
+
   return (
     <>
       <div className="flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3 text-left dark:border-white/10">
@@ -229,13 +251,14 @@ export function SearchSuggestionsPanel({
             {suggestions.map((suggestion, index) => (
               <CommandItem
                 key={getSuggestionKey(suggestion)}
+                id={selectedSuggestionIndex === index ? activeRowId : undefined}
                 value={getSuggestionKey(suggestion)}
                 onSelect={() => onSelectSuggestion(index)}
                 data-active={
                   selectedSuggestionIndex === index ? 'true' : undefined
                 }
                 className={cn(
-                  'rounded-lg px-3 py-2.5 text-sm leading-tight md:text-[15px] data-[selected=true]:bg-transparent data-[selected=true]:text-foreground data-[active=true]:!bg-accent data-[active=true]:!text-accent-foreground'
+                  'cursor-pointer rounded-lg px-3 py-2.5 text-sm leading-tight transition-colors hover:bg-accent/70 hover:text-accent-foreground md:text-[15px] data-[selected=true]:bg-transparent data-[selected=true]:text-foreground data-[active=true]:!bg-accent data-[active=true]:!text-accent-foreground'
                 )}
               >
                 <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
