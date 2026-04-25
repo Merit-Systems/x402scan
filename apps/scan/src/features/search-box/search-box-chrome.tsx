@@ -84,7 +84,7 @@ export function SearchBoxInputBar({
       onKeyDown={onKeyDown}
       placeholder="Search x402 servers and resources"
       enterKeyHint="search"
-      containerClassName="h-12 rounded-xl border bg-background px-3 shadow-xs transition-colors focus-within:border-ring/60 focus-within:ring-1 focus-within:ring-ring/20 dark:bg-card/70"
+      containerClassName="h-12 rounded-md border bg-background px-3 shadow-xs transition-colors focus-within:border-ring/60 focus-within:ring-1 focus-within:ring-ring/20 dark:bg-card/70"
       className="h-12 text-sm md:text-sm"
       trailing={trailing}
     />
@@ -183,7 +183,7 @@ export function SearchBoxPopover({
           exit={{ opacity: 0, y: 6 }}
           transition={{ duration: 0.16, ease: 'easeOut' }}
           data-search-box-popover
-          className="absolute top-full right-0 left-0 z-20 mt-2 overflow-hidden rounded-xl border bg-card shadow-lg"
+          className="absolute top-full right-0 left-0 z-20 mt-2 overflow-hidden rounded-md border bg-card shadow-lg"
         >
           {children}
         </motion.div>
