@@ -290,6 +290,7 @@ export function SearchFeedbackDialog({
   return (
     <Dialog open={open} onOpenChange={updateOpen}>
       <DialogContent
+        data-search-feedback-dialog="true"
         showCloseButton={false}
         className="w-[min(calc(100vw-2rem),25rem)] gap-0 overflow-hidden rounded-md p-0 shadow-lg sm:max-w-none"
       >

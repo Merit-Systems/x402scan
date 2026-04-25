@@ -203,6 +203,8 @@ export function SearchBox({
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState<
     number | null
   >(null);
+  const [dropdownDismissed, setDropdownDismissed] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const shouldAutoFocus = autoFocus ?? layout === 'page';
   const protocolKey = protocols?.join(',') ?? '';
@@ -289,7 +291,7 @@ export function SearchBox({
   });
   const showResultsPanel = panel.kind === 'results';
   const isLiveResultsPanel = panel.isLiveResults;
-  const showDropdown = panel.kind !== 'closed';
+  const showDropdown = panel.kind !== 'closed' && !dropdownDismissed;
   const activeSuggestionIndex = panel.activeSuggestionIndex;
   const visibleSearchResults = panel.results;
   const resultsPanelLoading = panel.resultsLoading;
@@ -378,6 +380,36 @@ export function SearchBox({
     };
   }, [enableKeyboardShortcut, exitCommittedSearch, hasCommittedSearch]);
 
+  useEffect(() => {
+    if (!showDropdown) return;
+
+    function handleOutsidePointerDown(event: PointerEvent) {
+      if (!(event.target instanceof Node)) return;
+
+      if (rootRef.current?.contains(event.target)) return;
+
+      if (
+        event.target instanceof Element &&
+        event.target.closest('[data-search-feedback-dialog]')
+      ) {
+        return;
+      }
+
+      setDropdownDismissed(true);
+      setSelectedResultIndex(null);
+      setSelectedSuggestionIndex(null);
+    }
+
+    document.addEventListener('pointerdown', handleOutsidePointerDown, true);
+    return () => {
+      document.removeEventListener(
+        'pointerdown',
+        handleOutsidePointerDown,
+        true
+      );
+    };
+  }, [showDropdown]);
+
   function requestSearchInputFocus() {
     setFocusRequestId(id => id + 1);
   }
@@ -386,6 +418,7 @@ export function SearchBox({
     const suggestion = suggestions[index];
     if (!suggestion) return;
 
+    setDropdownDismissed(false);
     const context = telemetryReporter.reportSelection('autocomplete', index);
     setSelectedSuggestionIndex(null);
 
@@ -398,6 +431,7 @@ export function SearchBox({
   }
 
   function selectResult(result: SearchPreviewResult, index: number) {
+    setDropdownDismissed(false);
     const context = telemetryReporter.reportSelection('search', index);
     setSelectedResultIndex(null);
 
@@ -414,12 +448,14 @@ export function SearchBox({
     if (!submittedQuery) return;
 
     setActivePanelMode('results');
+    setDropdownDismissed(false);
     setSelectedResultIndex(null);
     onSearchSubmit?.(submittedQuery);
     openCommittedSearch();
   }
 
   function returnToLiveSearch() {
+    setDropdownDismissed(false);
     clearActiveSelection();
     exitCommittedSearch();
     requestSearchInputFocus();
@@ -608,6 +644,7 @@ export function SearchBox({
 
   return (
     <div
+      ref={rootRef}
       className={outerClassName}
       onPointerDownCapture={event => {
         const preserveQuery =
@@ -632,6 +669,7 @@ export function SearchBox({
             query={query}
             onFocus={() => {
               markUserInteracted();
+              setDropdownDismissed(false);
               setIsInputFocused(true);
             }}
             onBlur={() => setIsInputFocused(false)}
@@ -639,6 +677,7 @@ export function SearchBox({
               if (isInputFocused) {
                 markUserInteracted();
               }
+              setDropdownDismissed(false);
               setQuery(value);
               clearActiveSelection();
               if (!value.trim()) {
