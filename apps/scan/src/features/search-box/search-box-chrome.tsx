@@ -291,7 +291,7 @@ export function SearchFeedbackDialog({
     <Dialog open={open} onOpenChange={updateOpen}>
       <DialogContent
         showCloseButton={false}
-        className="w-[min(calc(100vw-2rem),25rem)] gap-0 overflow-hidden rounded-xl p-0 shadow-lg sm:max-w-none"
+        className="w-[min(calc(100vw-2rem),25rem)] gap-0 overflow-hidden rounded-md p-0 shadow-lg sm:max-w-none"
       >
         <form
           className="grid gap-4 p-4"
@@ -320,7 +320,7 @@ export function SearchFeedbackDialog({
             onChange={event => setNote(event.target.value)}
             maxLength={1000}
             placeholder="Wrong ranking, unrelated suggestions, missing resource..."
-            className="min-h-20 resize-none rounded-lg bg-muted/30 px-3.5 py-3 text-sm shadow-none placeholder:text-muted-foreground/50 focus-visible:ring-1"
+            className="min-h-20 resize-none rounded-md bg-muted/30 px-3.5 py-3 text-sm shadow-none placeholder:text-muted-foreground/50 focus-visible:ring-1"
           />
           <DialogFooter className="flex-row justify-end gap-2 pt-0">
             <Button
