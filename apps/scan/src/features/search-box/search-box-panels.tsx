@@ -61,7 +61,7 @@ function OriginMeta({
   originTitle: string;
 }) {
   return (
-    <span className="flex min-w-[8.5rem] max-w-[10rem] items-center justify-end gap-1.5 text-[11px] text-muted-foreground/80 md:text-xs">
+    <span className="flex min-w-[5.5rem] max-w-[7rem] items-center justify-end gap-1.5 text-[11px] text-muted-foreground/80 md:min-w-[8.5rem] md:max-w-[10rem] md:text-xs">
       <FaviconBadge favicon={favicon} />
       <span className="truncate">{originTitle || getHostname(originUrl)}</span>
     </span>
@@ -102,7 +102,7 @@ function ResultSummary({ result }: { result: SearchPreviewResult }) {
 
   return (
     <div className="min-w-0 flex-1">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-3 md:gap-4">
         <div className="truncate text-sm font-medium md:text-[15px]">
           {result.title}
         </div>
@@ -179,7 +179,7 @@ export function SearchResultsPanel({
       </div>
 
       <CommandList
-        className={`max-h-[360px] pb-2 ${listScrollbarClassName}`}
+        className={`max-h-[min(22rem,50dvh)] pb-2 md:max-h-[360px] ${listScrollbarClassName}`}
         gradientClassName="from-card"
       >
         {loading ? (
@@ -203,7 +203,7 @@ export function SearchResultsPanel({
                 value={`result:${result.resourceId}`}
                 onSelect={() => onSelectResult(result, index)}
                 data-active={selectedResultIndex === index ? 'true' : undefined}
-                className="cursor-pointer rounded-lg px-3 py-3 transition-colors hover:bg-accent/70 hover:text-accent-foreground data-[selected=true]:bg-transparent data-[selected=true]:text-foreground data-[active=true]:!bg-accent data-[active=true]:!text-accent-foreground"
+                className="cursor-pointer rounded-md px-3 py-3 transition-colors hover:bg-accent/70 hover:text-accent-foreground data-[selected=true]:bg-transparent data-[selected=true]:text-foreground data-[active=true]:!bg-accent data-[active=true]:!text-accent-foreground"
               >
                 <ResultSummary result={result} />
               </CommandItem>
@@ -243,7 +243,7 @@ export function SearchSuggestionsPanel({
       </div>
 
       <CommandList
-        className={`max-h-[320px] pb-2 pt-2 ${listScrollbarClassName}`}
+        className={`max-h-[min(20rem,50dvh)] pb-2 pt-2 md:max-h-[320px] ${listScrollbarClassName}`}
         gradientClassName="from-card"
       >
         {suggestions.length > 0 ? (
@@ -258,10 +258,10 @@ export function SearchSuggestionsPanel({
                   selectedSuggestionIndex === index ? 'true' : undefined
                 }
                 className={cn(
-                  'cursor-pointer rounded-lg px-3 py-2.5 text-sm leading-tight transition-colors hover:bg-accent/70 hover:text-accent-foreground md:text-[15px] data-[selected=true]:bg-transparent data-[selected=true]:text-foreground data-[active=true]:!bg-accent data-[active=true]:!text-accent-foreground'
+                  'cursor-pointer rounded-md px-3 py-2.5 text-sm leading-tight transition-colors hover:bg-accent/70 hover:text-accent-foreground md:text-[15px] data-[selected=true]:bg-transparent data-[selected=true]:text-foreground data-[active=true]:!bg-accent data-[active=true]:!text-accent-foreground'
                 )}
               >
-                <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
+                <div className="flex min-w-0 flex-1 items-center justify-between gap-3 md:gap-4">
                   <SuggestionText suggestion={suggestion.text} query={query} />
                   <OriginMeta
                     favicon={suggestion.favicon}

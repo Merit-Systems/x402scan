@@ -104,7 +104,7 @@ function MobileBackButton({
         event.preventDefault();
       }}
       onClick={onBackToSuggestions}
-      className="inline-flex items-center gap-1.5 px-1 py-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+      className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-[11px] text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
     >
       <ArrowLeft className="size-3.5" />
       <span>Back</span>
@@ -121,7 +121,7 @@ function MobileActionButton({ action }: { action: SearchBoxBarAction }) {
         event.preventDefault();
       }}
       onClick={action.onRun}
-      className="inline-flex items-center px-1 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+      className="inline-flex h-8 items-center rounded-md px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
     >
       {action.label}
     </button>
@@ -210,8 +210,8 @@ export function SearchBoxTelemetry({
   usingFallback: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between border-t px-4 py-2.5 text-left text-[11px] text-muted-foreground/80">
-      <span className="flex min-w-0 items-center gap-2.5">
+    <div className="flex items-center justify-between gap-3 border-t px-4 py-2.5 text-left text-[11px] text-muted-foreground/80">
+      <span className="flex min-w-0 items-center gap-2 md:gap-2.5">
         <Gauge className="size-3.5 shrink-0 text-muted-foreground/60" />
         <LatencyMetric label="auto" latencyMs={autocompleteLatencyMs} />
         {showSearchLatency ? (
@@ -221,7 +221,7 @@ export function SearchBoxTelemetry({
       <span className="flex items-center gap-3">
         <span
           className={cn(
-            'text-[11px] uppercase tracking-[0.12em] transition-opacity',
+            'hidden text-[11px] uppercase tracking-[0.12em] transition-opacity sm:inline',
             autocompleteLoading || usingFallback ? 'opacity-100' : 'opacity-0'
           )}
         >
