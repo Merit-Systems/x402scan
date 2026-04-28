@@ -23,6 +23,11 @@ const originSchema = z.object({
   ogImages: z.array(ogImageSchema),
 });
 
+type OgImageInput = z.infer<typeof ogImageSchema>;
+
+export const dedupeOgImagesByUrl = (ogImages: OgImageInput[]) =>
+  Array.from(new Map(ogImages.map(image => [image.url, image])).values());
+
 export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
 ) => {
@@ -44,9 +49,10 @@ export const upsertOrigin = async (
     });
 
     const originId = upsertedOrigin.id;
+    const ogImages = dedupeOgImagesByUrl(origin.ogImages);
 
     await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
+      ogImages.map(({ url, height, width, title, description }) =>
         tx.ogImage.upsert({
           where: {
             originId_url: {
