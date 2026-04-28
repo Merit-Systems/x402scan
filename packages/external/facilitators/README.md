@@ -124,6 +124,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
 | **Cascade**          | BASE, SOLANA  | No        | No                           |
+| **Built on Stellar** | STELLAR       | No        | No                           |
 
 ### Import Individual Facilitators
 
@@ -153,6 +154,7 @@ import {
   relai,
   bitrefill,
   cascade,
+  builtonstellar,
 } from 'facilitators';
 
 // Facilitators requiring setup
@@ -272,5 +274,6 @@ enum Network {
   BASE = 'base',
   POLYGON = 'polygon',
   SOLANA = 'solana',
+  STELLAR = 'stellar',
 }
 ```
