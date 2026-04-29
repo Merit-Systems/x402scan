@@ -13,7 +13,6 @@ import { discoverColumns } from './columns';
 import { useDiscoverSearch } from './discover-search-context';
 import { ActivityTimeframe } from '@/types/timeframes';
 
-
 /**
  * Inline search input — rendered in the heading.
  */
@@ -173,9 +172,7 @@ export const DiscoverSearchResults = () => {
 
   // Build endpoint lookup from search results
   const endpointByOrigin = new Map(
-    x402Results
-      .filter(r => r.endpoint)
-      .map(r => [r.origin, r.endpoint!])
+    x402Results.filter(r => r.endpoint).map(r => [r.origin, r.endpoint!])
   );
 
   // Build merged table data: bazaar items + stub rows for unbooked origins
@@ -220,10 +217,11 @@ export const DiscoverSearchResults = () => {
   const allItems = allItemsUnsorted.sort((a, b) => {
     const aOrigin = a.origins[0]?.origin ?? '';
     const bOrigin = b.origins[0]?.origin ?? '';
-    return (searchOrder.get(aOrigin) ?? Infinity) - (searchOrder.get(bOrigin) ?? Infinity);
+    return (
+      (searchOrder.get(aOrigin) ?? Infinity) -
+      (searchOrder.get(bOrigin) ?? Infinity)
+    );
   });
 
-  return (
-    <DataTable columns={discoverColumns} data={allItems} pageSize={10} />
-  );
+  return <DataTable columns={discoverColumns} data={allItems} pageSize={10} />;
 };

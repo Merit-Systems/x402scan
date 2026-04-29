@@ -117,7 +117,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
  *  - Never throws due to lock contention — always falls back to a direct
  *    query execution.
  */
-export async function withRedisCache<T>(
+async function withRedisCache<T>(
   fullCacheKey: string,
   queryFn: () => Promise<T>,
   ttlSeconds: number,

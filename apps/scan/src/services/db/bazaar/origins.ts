@@ -10,10 +10,6 @@ import {
 import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
 import type { listBazaarOriginsInputSchema } from './schema';
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from '@/lib/cache';
 
 export const listBazaarOriginsUncached = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
@@ -149,11 +145,3 @@ export const listBazaarOriginsUncached = async (
 
   return response;
 };
-
-export const listBazaarOrigins = createCachedPaginatedQuery({
-  queryFn: listBazaarOriginsUncached,
-  cacheKeyPrefix: 'bazaar:origins',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['latest_block_timestamp'],
-  tags: ['bazaar', 'origins'],
-});

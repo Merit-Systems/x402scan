@@ -18,7 +18,7 @@ export default function HomeLayout({
             label: 'All',
             href: '/all',
           },
-{
+          {
             label: 'Marketplace',
             href: '/resources',
             subRoutes: ['/resources/register'],

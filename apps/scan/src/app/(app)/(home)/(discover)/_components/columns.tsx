@@ -98,11 +98,7 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'tx_count',
     header: () => (
-      <HeaderCell
-        Icon={ArrowLeftRight}
-        label="Txns"
-        className="mx-auto"
-      />
+      <HeaderCell Icon={ArrowLeftRight} label="Txns" className="mx-auto" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -119,11 +115,7 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'total_amount',
     header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Volume"
-        className="mx-auto"
-      />
+      <HeaderCell Icon={DollarSign} label="Volume" className="mx-auto" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -136,11 +128,7 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'unique_buyers',
     header: () => (
-      <HeaderCell
-        Icon={Users}
-        label="Buyers"
-        className="mx-auto"
-      />
+      <HeaderCell Icon={Users} label="Buyers" className="mx-auto" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -157,11 +145,7 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'latest_block_timestamp',
     header: () => (
-      <HeaderCell
-        Icon={Calendar}
-        label="Latest"
-        className="mx-auto"
-      />
+      <HeaderCell Icon={Calendar} label="Latest" className="mx-auto" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">

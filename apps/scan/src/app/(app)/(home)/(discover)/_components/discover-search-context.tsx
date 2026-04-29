@@ -51,7 +51,8 @@ export const DiscoverSearchProvider = ({
       setQuery(urlQuery);
       setInputRaw(urlQuery);
     }
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const setInput = useCallback(
     (value: string) => {

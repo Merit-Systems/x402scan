@@ -56,7 +56,9 @@ export const getDiscoverOrigins = async (): Promise<string[]> => {
   if (redis) {
     await redis
       .setex(CACHE_KEY, CACHE_TTL_SECONDS, JSON.stringify(result))
-      .catch(() => {});
+      .catch(() => {
+        /* cache write is best-effort */
+      });
   }
 
   return result;

@@ -21,7 +21,7 @@ export default async function OriginPage({
   await Promise.all([
     api.public.origins.getMetadata.prefetch(id),
     api.public.origins.list.withResources.prefetch({ originIds: [id] }),
-]);
+  ]);
 
   return (
     <HydrateClient>

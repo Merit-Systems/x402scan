@@ -38,9 +38,7 @@ export async function searchDiscover(query: string): Promise<SearchResult[]> {
   });
 
   if (!res.ok) {
-    throw new Error(
-      `AgentCash search failed: ${res.status} ${res.statusText}`
-    );
+    throw new Error(`AgentCash search failed: ${res.status} ${res.statusText}`);
   }
 
   const data = (await res.json()) as { results: SearchResult[] };

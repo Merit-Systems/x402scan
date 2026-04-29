@@ -9,7 +9,6 @@ import {
 } from '@/services/transfers/sellers/list-mv';
 
 // TODO: restore cached version after profiling
-// import { listBazaarOrigins } from '@/services/db/bazaar/origins';
 import { listBazaarOriginsUncached } from '@/services/db/bazaar/origins';
 import { listBazaarOriginsInputSchema } from '@/services/db/bazaar/schema';
 import { sellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/overall-mv';

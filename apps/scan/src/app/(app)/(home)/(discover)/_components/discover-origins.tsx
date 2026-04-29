@@ -28,7 +28,13 @@ export const DiscoverSellersTable: React.FC<Props> = ({ originUrls }) => {
     originUrls,
   });
 
-  return <DataTable columns={columns} data={topSellers.items as DiscoverColumnType[]} pageSize={15} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={topSellers.items as DiscoverColumnType[]}
+      pageSize={15}
+    />
+  );
 };
 
 export const LoadingDiscoverSellersTable = () => {
