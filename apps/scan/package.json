@@ -21,7 +21,7 @@
     "format:check": "pnpm -w format:check:dir ./apps/scan"
   },
   "dependencies": {
-    "@agentcash/discovery": "1.6.1",
+    "@agentcash/discovery": "1.6.3",
     "@neondatabase/serverless": "catalog:prisma",
     "@agentcash/router": "1.3.3",
     "@ai-sdk/openai": "^2.0.52",
