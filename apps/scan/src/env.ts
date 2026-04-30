@@ -40,6 +40,7 @@ export const env = createEnv({
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
     STRIPE_SECRET_KEY: z.string(),
+    DISCORD_NOTIFICATIONS_WEBHOOK_URL: z.url().optional(),
     DISCORD_TELEMETRY_WEBHOOK_URL: z.string().optional(),
     X402_PAYEE_ADDRESS: z.string().optional(),
   },
