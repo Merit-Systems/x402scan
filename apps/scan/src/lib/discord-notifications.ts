@@ -33,7 +33,7 @@ function scheduleDiscordNotification(options: {
     const config = getDiscordConfig();
     if (!config) return;
 
-    after(async () => {
+    const sendNotification = async () => {
       try {
         await postDiscordWebhook(config.webhookUrl, {
           username: options.username,
@@ -43,7 +43,13 @@ function scheduleDiscordNotification(options: {
       } catch (error) {
         logNotificationError(error, options.username);
       }
-    });
+    };
+
+    try {
+      after(sendNotification);
+    } catch {
+      void sendNotification();
+    }
   } catch (error) {
     logNotificationError(error, options.username);
   }
