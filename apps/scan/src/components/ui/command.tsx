@@ -65,13 +65,16 @@ function CommandDialog({
   );
 }
 
-function CommandInput({
-  className,
-  containerClassName,
-  ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input> & {
-  containerClassName?: string;
-}) {
+const CommandInput = React.forwardRef<
+  React.ElementRef<typeof CommandPrimitive.Input>,
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> & {
+    containerClassName?: string;
+    trailing?: React.ReactNode;
+  }
+>(function CommandInput(
+  { className, containerClassName, trailing, ...props },
+  ref
+) {
   return (
     <div
       data-slot="command-input-wrapper"
@@ -82,16 +85,20 @@ function CommandInput({
     >
       <SearchIcon className="size-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
+        ref={ref}
         data-slot="command-input"
         className={cn(
-          'placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
+          'placeholder:text-muted-foreground flex h-10 min-w-0 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
         {...props}
       />
+      {trailing ? <div className="shrink-0">{trailing}</div> : null}
     </div>
   );
-}
+});
+
+CommandInput.displayName = CommandPrimitive.Input.displayName;
 
 function CommandList({
   className,

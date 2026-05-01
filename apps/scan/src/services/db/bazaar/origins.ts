@@ -136,6 +136,21 @@ const listBazaarOriginsUncached = async (
     chains: Array.from(item.chains),
   }));
 
+  // Editorial sort preserves the curated order of `originUrls` (search-ranked
+  // by AgentCash). The MV doesn't know about this ordering, so we resort here.
+  if (input.sorting.id === 'editorial' && input.originUrls) {
+    const editorialIndex = new Map(
+      input.originUrls.map((url, index) => [url, index])
+    );
+    const fallback = editorialIndex.size;
+    const direction = input.sorting.desc ? -1 : 1;
+    groupedItems.sort((a, b) => {
+      const aRank = editorialIndex.get(a.origins[0]?.origin ?? '') ?? fallback;
+      const bRank = editorialIndex.get(b.origins[0]?.origin ?? '') ?? fallback;
+      return (aRank - bRank) * direction;
+    });
+  }
+
   const response = toPaginatedResponse({
     items: groupedItems,
     total_count: Object.keys(originsByAddress).length,

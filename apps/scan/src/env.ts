@@ -39,6 +39,8 @@ export const env = createEnv({
     PARTNERS_CLICKHOUSE_DATABASE: z.string().optional(),
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
+    AGENTCASH_SEARCH_API_KEY: z.string().optional(),
+    AGENTCASH_SEARCH_API_URL: z.url().default('https://agentcash.dev'),
     STRIPE_SECRET_KEY: z.string(),
     DISCORD_NOTIFICATIONS_WEBHOOK_URL: z.url().optional(),
     DISCORD_TELEMETRY_WEBHOOK_URL: z.string().optional(),

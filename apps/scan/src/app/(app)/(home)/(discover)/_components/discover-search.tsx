@@ -1,12 +1,17 @@
 'use client';
 
-import { CornerDownLeft, Plus, Search, X } from 'lucide-react';
+import { CornerDownLeft, Loader2, Plus, Search, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useDeferredValue, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
 import { useSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/hook';
 import { api } from '@/trpc/client';
+import { Origin } from '@/app/(app)/_components/origins';
+import { Resource } from '@/app/(app)/_components/resource';
+import { Favicon } from '@/app/(app)/_components/favicon';
 
 import { DataTable } from '@/components/ui/data-table';
 import { discoverColumns } from './columns';
@@ -14,14 +19,25 @@ import { useDiscoverSearch } from './discover-search-context';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 /**
- * Inline search input — rendered in the heading.
+ * Inline search input — rendered in the heading. Shows live suggestions:
+ * keyword origin/resource matches before a space is typed, semantic search
+ * once the query becomes a sentence.
  */
 export const DiscoverSearchInput = () => {
   const { input, setInput, isSearching, submit, clear } = useDiscoverSearch();
+  const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <div className="relative w-full md:flex-1">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+    <div
+      className="relative w-full md:flex-1"
+      onBlur={event => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setIsFocused(false);
+        }
+      }}
+      onFocus={() => setIsFocused(true)}
+    >
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none z-10" />
       <Input
         value={input}
         onChange={e => setInput(e.target.value)}
@@ -44,11 +60,161 @@ export const DiscoverSearchInput = () => {
       {isSearching && (
         <button
           type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
           onClick={clear}
         >
           <X className="size-4" />
         </button>
+      )}
+      <DiscoverInlineSuggestions enabled={isFocused} />
+    </div>
+  );
+};
+
+/**
+ * Live dropdown shown beneath the discover search input. Pre-space we hit the
+ * same origin/resource search the navbar uses; once the user types a space
+ * (signaling a phrase) we swap to the semantic search endpoint.
+ */
+const DiscoverInlineSuggestions: React.FC<{ enabled: boolean }> = ({
+  enabled,
+}) => {
+  const router = useRouter();
+  const { input, query, submit } = useDiscoverSearch();
+  const trimmed = input.trim();
+  // Only show while the user is editing — once the query is committed and the
+  // body view takes over, hide the dropdown to avoid double-rendering matches.
+  const isDirty = trimmed !== query;
+  const isVisible = enabled && trimmed.length > 0 && isDirty;
+  // A space anywhere in the live input promotes from keyword → semantic mode.
+  const isSemanticMode = input.includes(' ');
+
+  // Defer the semantic input by a tick so we don't fire an LLM round-trip on
+  // every keystroke. The cheap origin/resource queries can stay live.
+  const deferredSemanticInput = useDeferredValue(isSemanticMode ? trimmed : '');
+
+  const originSearch = api.public.origins.search.useQuery(
+    { search: trimmed, limit: 5 },
+    { enabled: isVisible && !isSemanticMode }
+  );
+  const resourceSearch = api.public.resources.search.useQuery(
+    { search: trimmed, limit: 5 },
+    { enabled: isVisible && !isSemanticMode }
+  );
+  const semanticSearch = api.public.discover.search.useQuery(
+    { query: deferredSemanticInput },
+    { enabled: isVisible && isSemanticMode && deferredSemanticInput.length > 0 }
+  );
+
+  if (!isVisible) return null;
+
+  const origins = originSearch.data ?? [];
+  const resources = resourceSearch.data ?? [];
+  const semanticResults = semanticSearch.data ?? [];
+  const keywordLoading = originSearch.isLoading || resourceSearch.isLoading;
+  const semanticLoading =
+    semanticSearch.isLoading || trimmed !== deferredSemanticInput;
+
+  return (
+    <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-md border bg-popover shadow-lg overflow-hidden">
+      {isSemanticMode ? (
+        semanticLoading ? (
+          <div className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
+            <Loader2 className="size-4 animate-spin" />
+            Searching x402 services for &quot;{trimmed}&quot;…
+          </div>
+        ) : semanticResults.length > 0 ? (
+          <ul className="max-h-80 overflow-y-auto">
+            <li className="px-3 pt-2 pb-1 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+              Best matches
+            </li>
+            {semanticResults.map(result => (
+              <li key={result.origin}>
+                <button
+                  type="button"
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => submit()}
+                  className="w-full px-3 py-2 flex items-center gap-3 hover:bg-accent text-left"
+                >
+                  <Favicon url={result.favicon} className="size-6 shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium">
+                      {result.title || new URL(result.origin).hostname}
+                    </div>
+                    {result.description ? (
+                      <div className="truncate text-xs text-muted-foreground">
+                        {result.description}
+                      </div>
+                    ) : null}
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="px-3 py-3 text-sm text-muted-foreground">
+            No semantic matches. Press Enter to refine.
+          </div>
+        )
+      ) : keywordLoading ? (
+        <div className="flex items-center gap-2 px-3 py-3 text-sm text-muted-foreground">
+          <Loader2 className="size-4 animate-spin" />
+          Searching origins…
+        </div>
+      ) : origins.length === 0 && resources.length === 0 ? (
+        <div className="px-3 py-3 text-sm text-muted-foreground">
+          No matching origins or resources. Add a space to search by phrase.
+        </div>
+      ) : (
+        <ul className="max-h-80 overflow-y-auto">
+          {origins.length > 0 ? (
+            <>
+              <li className="px-3 pt-2 pb-1 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Origins
+              </li>
+              {origins.map(origin => (
+                <li key={`origin-${origin.id}`}>
+                  <button
+                    type="button"
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={() => router.push(`/server/${origin.id}`)}
+                    className="w-full px-3 py-2 hover:bg-accent text-left"
+                  >
+                    <Origin
+                      origin={origin}
+                      addresses={Array.from(
+                        new Set(
+                          origin.resources.flatMap(resource =>
+                            resource.accepts.map(accept => accept.payTo)
+                          )
+                        )
+                      )}
+                    />
+                  </button>
+                </li>
+              ))}
+            </>
+          ) : null}
+          {resources.length > 0 ? (
+            <>
+              <li className="px-3 pt-2 pb-1 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Resources
+              </li>
+              {resources.map(resource => (
+                <li key={`resource-${resource.id}`}>
+                  <button
+                    type="button"
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={() => router.push(`/server/${resource.origin.id}`)}
+                    className="w-full px-3 py-2 hover:bg-accent text-left"
+                  >
+                    <Resource resource={resource} />
+                  </button>
+                </li>
+              ))}
+            </>
+          ) : null}
+        </ul>
       )}
     </div>
   );
