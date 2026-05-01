@@ -15,7 +15,7 @@ import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
 import type { listBazaarOriginsInputSchema } from './schema';
 
-export const listBazaarOriginsUncached = async (
+const listBazaarOriginsUncached = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
