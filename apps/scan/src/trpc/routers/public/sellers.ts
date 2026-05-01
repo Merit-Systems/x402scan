@@ -8,8 +8,7 @@ import {
   listTopSellersMVInputSchema,
 } from '@/services/transfers/sellers/list-mv';
 
-// TODO: restore cached version after profiling
-import { listBazaarOriginsUncached } from '@/services/db/bazaar/origins';
+import { listBazaarOrigins } from '@/services/db/bazaar/origins';
 import { listBazaarOriginsInputSchema } from '@/services/db/bazaar/schema';
 import { sellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/overall-mv';
 import { bucketedSellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/bucketed-mv';
@@ -51,7 +50,7 @@ export const sellersRouter = createTRPCRouter({
     list: paginatedProcedure
       .input(listBazaarOriginsInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
-        return await listBazaarOriginsUncached(input, pagination);
+        return await listBazaarOrigins(input, pagination);
       }),
     stats: {
       // Use origin_stats_aggregated_* views which are pre-joined with payto_origin_map

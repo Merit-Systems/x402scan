@@ -1,6 +1,10 @@
 import { listTopSellersMVUncached } from '@/services/transfers/sellers/list-mv';
 import { getAcceptsAddresses } from '../resources/accepts';
 import { mixedAddressSchema } from '@/lib/schemas';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 import type z from 'zod';
 import {
@@ -145,3 +149,11 @@ export const listBazaarOriginsUncached = async (
 
   return response;
 };
+
+export const listBazaarOrigins = createCachedPaginatedQuery({
+  queryFn: listBazaarOriginsUncached,
+  cacheKeyPrefix: 'bazaar-origins',
+  createCacheKey: createStandardCacheKey,
+  dateFields: ['latest_block_timestamp'],
+  tags: ['transfers'],
+});
