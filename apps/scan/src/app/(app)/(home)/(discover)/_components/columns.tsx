@@ -174,9 +174,7 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   },
   {
     accessorKey: 'tryIt',
-    header: () => (
-      <></>
-    ),
+    header: () => <></>,
     cell: ({ row }) => {
       const origin = row.original.origins[0]?.origin;
       if (!origin) return null;
