@@ -44,7 +44,6 @@ function buildExternalUrl(
     }
   }
 
-  externalUrl.searchParams.set('protocol', 'x402');
   return externalUrl;
 }
 

@@ -4,5 +4,6 @@ export type {
   SearchBoxFeedbackContext,
   SearchBoxSelectionContext,
   SearchPreviewResult,
+  SearchProtocol,
 } from './types';
 export type { SearchBoxProps } from './search-box';
