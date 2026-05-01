@@ -1,6 +1,9 @@
 import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
-import { upsertOrigin } from '@/services/db/resources/origin';
+import {
+  getOriginResourceCount,
+  upsertOrigin,
+} from '@/services/db/resources/origin';
 
 import type { EndpointMethodAdvisory } from '@agentcash/discovery';
 import { isX402PaymentOption } from '@/lib/discovery/utils';
@@ -23,10 +26,12 @@ import {
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
 import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
+import { notifyNewServer } from '@/lib/discord-notifications';
 
 export const registerResource = async (
   url: string,
-  advisory: EndpointMethodAdvisory
+  advisory: EndpointMethodAdvisory,
+  options: { notifyNewServer?: boolean } = {}
 ) => {
   const x402Options = (advisory.paymentOptions ?? []).filter(
     isX402PaymentOption
@@ -34,6 +39,8 @@ export const registerResource = async (
   const urlObj = new URL(url);
   urlObj.search = '';
   const cleanUrl = urlObj.toString();
+  const origin = getOriginFromUrl(cleanUrl);
+  const shouldNotifyNewServer = options.notifyNewServer ?? true;
 
   if (x402Options.length === 0) {
     return {
@@ -56,6 +63,10 @@ export const registerResource = async (
       },
     };
   }
+
+  const existingOriginResourceCount = shouldNotifyNewServer
+    ? await getOriginResourceCount(origin)
+    : null;
 
   // Try v1 parse first (works when inputSchema includes type/method)
   let outputSchemaForDb = outputSchemaV1.safeParse({
@@ -132,7 +143,6 @@ export const registerResource = async (
 
   const x402Version = x402Options[0]?.version ?? 1;
 
-  const origin = getOriginFromUrl(cleanUrl);
   const { og, metadata, favicon } = await scrapeOriginData(origin);
 
   const title = metadata?.title ?? og?.ogTitle ?? null;
@@ -176,6 +186,15 @@ export const registerResource = async (
     resource.resource.id,
     (advisory.paymentRequiredBody ?? {}) as ParsedX402Response
   );
+
+  if (existingOriginResourceCount === 0) {
+    notifyNewServer({
+      originId: resource.origin.id,
+      origin,
+      title: title ?? null,
+      description: description ?? null,
+    });
+  }
 
   // Attempt ownership verification (non-blocking)
   void (async () => {

@@ -15,6 +15,7 @@
         "SCAN_DATABASE_*",
         "CDP_*",
         "CRON_*",
+        "DISCORD_*",
         "FREE_TIER_*",
         "TRANSFERS_*",
         "STRIPE_*"
@@ -33,6 +34,7 @@
         "SCAN_DATABASE_*",
         "CDP_*",
         "CRON_*",
+        "DISCORD_*",
         "FREE_TIER_*",
         "TRANSFERS_*",
         "STRIPE_*"
@@ -51,6 +53,7 @@
         "SCAN_DATABASE_*",
         "CDP_*",
         "CRON_*",
+        "DISCORD_*",
         "FREE_TIER_*",
         "TRANSFERS_*",
         "STRIPE_*"

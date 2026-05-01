@@ -79,6 +79,21 @@ export const upsertOrigin = async (
   });
 };
 
+export const getOriginResourceCount = async (origin: string) => {
+  const existingOrigin = await scanDb.resourceOrigin.findUnique({
+    where: { origin },
+    select: {
+      _count: {
+        select: {
+          resources: true,
+        },
+      },
+    },
+  });
+
+  return existingOrigin?._count.resources ?? 0;
+};
+
 export const listOriginsSchema = z.object({
   chain: optionalChainSchema,
   address: mixedAddressSchema.optional(),
