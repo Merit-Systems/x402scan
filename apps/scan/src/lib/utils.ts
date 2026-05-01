@@ -33,13 +33,16 @@ export const formatCurrency = (
 interface FormatCompactAgoOptions {
   addSuffix?: boolean;
   suffix?: string;
+  allowFuture?: boolean;
 }
 
 export const formatCompactAgo = (
   date: Date,
   options?: FormatCompactAgoOptions
 ) => {
-  const str = formatDistanceToNow(date, {
+  const target =
+    !options?.allowFuture && date.getTime() > Date.now() ? new Date() : date;
+  const str = formatDistanceToNow(target, {
     addSuffix: options?.addSuffix ?? true,
   });
   const formatted = str

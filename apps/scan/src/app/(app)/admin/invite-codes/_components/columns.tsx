@@ -209,7 +209,7 @@ export const createColumns = (
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.expiresAt
-          ? formatCompactAgo(row.original.expiresAt)
+          ? formatCompactAgo(row.original.expiresAt, { allowFuture: true })
           : 'Never'}
       </div>
     ),

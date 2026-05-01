@@ -60,56 +60,6 @@ export const OverallCharts = () => {
         ]}
       />
       <OverallStatsCard
-        title="Agents"
-        value={overallStats.agent_count.toLocaleString(undefined, {
-          notation: 'compact',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        })}
-        items={{
-          type: 'bar',
-          bars: [{ dataKey: 'agents', color: 'var(--color-primary)' }],
-        }}
-        data={chartData}
-        tooltipRows={[
-          {
-            key: 'agents',
-            label: 'Agents',
-            getValue: data =>
-              data.toLocaleString(undefined, {
-                notation: 'compact',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }),
-          },
-        ]}
-      />
-      <OverallStatsCard
-        title="Tool Calls"
-        value={overallStats.tool_call_count.toLocaleString(undefined, {
-          notation: 'compact',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2,
-        })}
-        items={{
-          type: 'bar',
-          bars: [{ dataKey: 'toolCalls', color: 'var(--color-primary)' }],
-        }}
-        data={chartData}
-        tooltipRows={[
-          {
-            key: 'toolCalls',
-            label: 'Tool Calls',
-            getValue: data =>
-              data.toLocaleString(undefined, {
-                notation: 'compact',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }),
-          },
-        ]}
-      />
-      <OverallStatsCard
         title="Users"
         value={overallStats.user_count.toLocaleString(undefined, {
           notation: 'compact',
@@ -142,8 +92,6 @@ export const LoadingOverallCharts = () => {
   return (
     <>
       <LoadingOverallStatsCard type="bar" title="Requests" />
-      <LoadingOverallStatsCard type="area" title="Agents" />
-      <LoadingOverallStatsCard type="bar" title="Tool Calls" />
       <LoadingOverallStatsCard type="bar" title="Users" />
     </>
   );

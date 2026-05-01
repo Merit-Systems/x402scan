@@ -1,6 +1,10 @@
 import { listTopSellersMVUncached } from '@/services/transfers/sellers/list-mv';
 import { getAcceptsAddresses } from '../resources/accepts';
 import { mixedAddressSchema } from '@/lib/schemas';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 import type z from 'zod';
 import {
@@ -10,10 +14,6 @@ import {
 import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
 import type { listBazaarOriginsInputSchema } from './schema';
-import {
-  createCachedPaginatedQuery,
-  createStandardCacheKey,
-} from '@/lib/cache';
 
 const listBazaarOriginsUncached = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
@@ -26,6 +26,7 @@ const listBazaarOriginsUncached = async (
     originsByAddress = await getAcceptsAddresses({
       chain: input.chain,
       tags: input.tags,
+      originUrls: input.originUrls,
     });
   } catch (err) {
     console.error(
@@ -151,8 +152,8 @@ const listBazaarOriginsUncached = async (
 
 export const listBazaarOrigins = createCachedPaginatedQuery({
   queryFn: listBazaarOriginsUncached,
-  cacheKeyPrefix: 'bazaar:origins',
-  createCacheKey: input => createStandardCacheKey(input),
+  cacheKeyPrefix: 'bazaar-origins',
+  createCacheKey: createStandardCacheKey,
   dateFields: ['latest_block_timestamp'],
-  tags: ['bazaar', 'origins'],
+  tags: ['transfers'],
 });

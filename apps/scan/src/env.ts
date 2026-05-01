@@ -43,6 +43,9 @@ export const env = createEnv({
     DISCORD_NOTIFICATIONS_WEBHOOK_URL: z.url().optional(),
     DISCORD_TELEMETRY_WEBHOOK_URL: z.string().optional(),
     X402_PAYEE_ADDRESS: z.string().optional(),
+    AGENTCASH_DATABASE_URL: z.string().optional(),
+    AGENTCASH_URL: z.string().optional(),
+    AGENTCASH_INTERNAL_API_KEY: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z

@@ -2,6 +2,7 @@ import { createTRPCRouter } from '@/trpc/trpc';
 
 import { publicAgentConfigurationsRouter } from './agent-configurations';
 import { publicChatsRouter } from './chats';
+import { discoverRouter } from './discover';
 import { originsRouter } from './origins';
 import { publicToolsRouter } from './tools';
 import { facilitatorsRouter } from './facilitators';
@@ -18,6 +19,7 @@ import { inviteRouter } from './invite';
 export const publicRouter = createTRPCRouter({
   agents: publicAgentConfigurationsRouter,
   chats: publicChatsRouter,
+  discover: discoverRouter,
   origins: originsRouter,
   tools: publicToolsRouter,
   facilitators: facilitatorsRouter,
