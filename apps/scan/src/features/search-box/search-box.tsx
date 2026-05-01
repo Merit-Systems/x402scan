@@ -264,13 +264,9 @@ export function SearchBox({
     autocompleteSettledForQuery && suggestions.length > 0;
   const hasResolvedEmptySuggestions =
     autocompleteSettledForQuery && suggestions.length === 0;
-  // Once the user types a space, switch from keyword suggestions to semantic
-  // results. Pre-space we keep the original autocomplete-first experience.
-  const queryHasSpace = query.includes(' ');
   const shouldPromoteLiveResults =
-    queryHasSpace ||
-    (hasResolvedEmptySuggestions &&
-      (searchLoading || searchRequestError || isCurrentSearchResponse));
+    hasResolvedEmptySuggestions &&
+    (searchLoading || searchRequestError || isCurrentSearchResponse);
   const nextPanelMode = getNextPanelMode({
     hasResolvedSuggestions,
     hasCommittedSearch,
