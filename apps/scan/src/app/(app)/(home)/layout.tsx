@@ -11,13 +11,12 @@ export default function HomeLayout({
       <Nav
         tabs={[
           {
-            label: 'Overview',
+            label: 'Discover',
             href: '/',
           },
           {
-            label: 'Composer',
-            href: '/composer' as const,
-            subRoutes: ['/composer/chat', '/composer/agent'],
+            label: 'All',
+            href: '/all',
           },
           {
             label: 'Marketplace',

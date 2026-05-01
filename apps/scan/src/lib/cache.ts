@@ -21,7 +21,7 @@ interface CacheContext {
  * Redis TTL is 2x the cache duration to provide buffer time.
  * This ensures cache doesn't expire while the next warming cycle is running.
  */
-const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 2;
+export const CACHE_TTL_SECONDS = CACHE_DURATION_MINUTES * 60 * 2;
 
 /**
  * Lock timeout in seconds. Acts as a safety net — if the holder crashes
