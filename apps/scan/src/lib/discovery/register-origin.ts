@@ -2,6 +2,9 @@ import { probeX402Endpoint } from './probe';
 import { getRegistrationErrorMessage } from './utils';
 import { registerResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
+import { getOriginResourceCount } from '@/services/db/resources/origin';
+import { notifyNewServer } from '@/lib/discord-notifications';
+import { getOriginFromUrl } from '@/lib/url';
 
 import type { AuthMode } from '@agentcash/discovery';
 
@@ -76,6 +79,16 @@ export async function registerResourcesFromDiscovery(
   resources: { url: string; authMode?: AuthMode }[],
   source: string | undefined
 ): Promise<RegisterOriginResult> {
+  const originResourceCounts = new Map(
+    await Promise.all(
+      [
+        ...new Set(resources.map(resource => getOriginFromUrl(resource.url))),
+      ].map(
+        async origin => [origin, await getOriginResourceCount(origin)] as const
+      )
+    )
+  );
+
   const results = await mapSettledWithConcurrency(resources, async resource => {
     const resourceUrl = resource.url;
 
@@ -118,7 +131,9 @@ export async function registerResourcesFromDiscovery(
       };
     }
 
-    const result = await registerResource(resourceUrl, advisory);
+    const result = await registerResource(resourceUrl, advisory, {
+      notifyNewServer: false,
+    });
 
     if (result.success) return result;
 
@@ -129,7 +144,12 @@ export async function registerResourcesFromDiscovery(
     };
   });
 
-  const successfulResults: { url: string }[] = [];
+  const successfulResults: {
+    url: string;
+    originId: string;
+    title: string | null;
+    description: string | null;
+  }[] = [];
   const siwxResults: { url: string }[] = [];
   const failedResults: { url: string; error: string; status?: number }[] = [];
   const skippedResults: { url: string; error: string; status?: number }[] = [];
@@ -146,8 +166,14 @@ export async function registerResourcesFromDiscovery(
       if ('success' in value && value.success) {
         if ('siwx' in value && value.siwx === true) {
           siwxResults.push({ url: resourceUrl });
-        } else {
-          successfulResults.push({ url: resourceUrl });
+        } else if ('resource' in value) {
+          successfulResults.push({
+            url: resourceUrl,
+            originId: value.resource.origin.id,
+            title: value.registrationDetails.originMetadata.title ?? null,
+            description:
+              value.registrationDetails.originMetadata.description ?? null,
+          });
           if (!originId && 'resource' in value && value.resource?.origin?.id) {
             originId = value.resource.origin.id;
           }
@@ -185,6 +211,24 @@ export async function registerResourcesFromDiscovery(
   if (originId) {
     const activeResourceUrls = resources.map(r => r.url);
     deprecated = await deprecateStaleResources(originId, activeResourceUrls);
+  }
+
+  const notifiedOrigins = new Set<string>();
+  for (const result of successfulResults) {
+    const origin = getOriginFromUrl(result.url);
+
+    if (
+      originResourceCounts.get(origin) === 0 &&
+      !notifiedOrigins.has(origin)
+    ) {
+      notifyNewServer({
+        originId: result.originId,
+        origin,
+        title: result.title,
+        description: result.description,
+      });
+      notifiedOrigins.add(origin);
+    }
   }
 
   return {
