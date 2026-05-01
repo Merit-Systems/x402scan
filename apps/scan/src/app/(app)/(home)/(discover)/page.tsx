@@ -60,7 +60,7 @@ export default async function DiscoverPage({
                 <OverallStats chain={chain} />
                 <Section
                   title="Top Sellers"
-                  description="x402scan curated services."
+                  description="x402scan curated services"
                   actions={
                     <div className="flex items-center gap-2">
                       <RangeSelector />

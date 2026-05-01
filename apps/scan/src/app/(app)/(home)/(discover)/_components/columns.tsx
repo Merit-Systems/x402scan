@@ -4,12 +4,14 @@ import {
   Activity,
   ArrowLeftRight,
   Calendar,
+  Check,
+  Copy,
   DollarSign,
-  ExternalLink,
   Globe,
   Server,
   Users,
 } from 'lucide-react';
+import { useState } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -173,31 +175,35 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'tryIt',
     header: () => (
-      <HeaderCell Icon={ExternalLink} label="Try It" className="mx-auto" />
+      <></>
     ),
     cell: ({ row }) => {
       const origin = row.original.origins[0]?.origin;
       if (!origin) return null;
-      const stripped = origin.replace(/^https?:\/\//, '');
-      return (
-        <a
-          href={`https://tryponcho.com/p/${stripped}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-          onClick={e => e.stopPropagation()}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://tryponcho.com/favicon.svg"
-            alt="Poncho"
-            className="size-4"
-          />
-          Try in Poncho
-        </a>
-      );
+      return <CopyPromptButton origin={origin} />;
     },
     size: 130,
     loading: () => <Skeleton className="h-4 w-24 mx-auto" />,
   },
 ];
+
+const CopyPromptButton: React.FC<{ origin: string }> = ({ origin }) => {
+  const [copied, setCopied] = useState(false);
+  const prompt = `Use the agentcash \`discover\` command to tell me what I can do with ${origin}. If you do not have agentcash tools or skills installed, go directly to agentcash.dev/skill.md and set it up.`;
+  return (
+    <button
+      type="button"
+      onClick={e => {
+        e.stopPropagation();
+        void navigator.clipboard.writeText(prompt).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        });
+      }}
+      className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+    >
+      {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+      {copied ? 'Copied' : 'Copy Prompt'}
+    </button>
+  );
+};
