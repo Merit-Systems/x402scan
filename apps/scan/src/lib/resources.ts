@@ -135,7 +135,17 @@ export const registerResource = async (
       asset: opt.asset,
       maxTimeoutSeconds: opt.maxTimeoutSeconds ?? 60,
       outputSchema: outputSchemaForDb,
-      extra: undefined,
+      // Preserve provider-supplied `extra` (e.g. Solana fee payer) when
+      // present. Hard-coding `undefined` here was causing every accept
+      // row to be persisted with `extra: null`, which then failed the
+      // v1 read-side validation (`PaymentRequirementsSchema.extra` is
+      // `optional()` not `nullish()`) and the resource was silently
+      // dropped from the agent composer. Falling back to `undefined`
+      // when the source omits `extra` keeps prior behaviour.
+      extra:
+        opt && typeof opt === 'object' && 'extra' in opt
+          ? ((opt as { extra?: unknown }).extra ?? undefined)
+          : undefined,
     }))
     .filter(accept =>
       (SUPPORTED_CHAINS as readonly string[]).includes(accept.network)
