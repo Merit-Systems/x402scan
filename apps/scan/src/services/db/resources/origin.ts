@@ -45,32 +45,55 @@ export const upsertOrigin = async (
 
     const originId = upsertedOrigin.id;
 
-    await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
-        tx.ogImage.upsert({
-          where: {
-            originId_url: {
-              originId,
-              url,
-            },
-          },
-          update: {
-            height,
-            width,
-            title,
-            description,
-          },
-          create: {
-            originId,
-            url,
-            height,
-            width,
-            title,
-            description,
-          },
-        })
-      )
-    );
+ // Deduplicate OG images by URL within this origin
+ // (handles duplicate og:image tags in scraped pages)
+ const uniqueOgImages = [
+ ...new Map(origin.ogImages.map(img => [img.url, img])).values(),
+ ]
+
+ await Promise.all(
+ uniqueOgImages.map(async ({ url, height, width, title, description }) => {
+ try {
+ await tx.ogImage.upsert({
+ where: {
+ originId_url: {
+ originId,
+ url,
+ },
+ },
+ update: {
+ height,
+ width,
+ title,
+ description,
+ },
+ create: {
+ originId,
+ url,
+ height,
+ width,
+ title,
+ description,
+ },
+ })
+ } catch (error: any) {
+ // Handle legacy unique constraint on OgImage.url
+ // If migration 20260115100000 hasn't been applied yet,
+ // a separate unique index on `url` may still exist.
+ // In that case, the ogImage already exists under a different
+ // origin — we can safely skip creating a duplicate.
+ if (
+ error?.code === 'P2002' &&
+ error?.meta?.target?.includes('url')
+ ) {
+ // OgImage with this URL already exists for another origin.
+ // Skip — the image is already stored, no data loss.
+ return
+ }
+ throw error
+ }
+ })
+ );
 
     return tx.resourceOrigin.findUnique({
       where: { id: originId },
