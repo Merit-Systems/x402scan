@@ -122,6 +122,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Openmid**          | BASE          | No        | No                           |
 | **Primer**           | BASE          | No        | No                           |
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
+| **Pyrimid**          | BASE          | No        | No                           |
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
 | **Cascade**          | BASE, SOLANA  | No        | No                           |
 
@@ -151,6 +152,7 @@ import {
   openmid,
   primer,
   relai,
+  pyrimid,
   bitrefill,
   cascade,
 } from 'facilitators';
