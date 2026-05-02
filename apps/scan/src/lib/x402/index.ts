@@ -201,6 +201,13 @@ export function coerceAcceptForV1Schema(params: {
       ? ({ ...(accept as Record<string, unknown>) } as Record<string, unknown>)
       : ({} as Record<string, unknown>);
 
+  // Postgres/Prisma round-trips a JSONB `undefined` as `null`, but the
+  // v1 PaymentRequirementsSchema declares `extra` as `optional()` — i.e.
+  // `T | undefined`, not `T | null` — so a `null` here trips the parse
+  // and the resource is silently dropped from the composer's tool list.
+  // Strip nulls on known-optional fields before validation.
+  if (base.extra === null) delete base.extra;
+
   if ('maxAmountRequired' in base) {
     const v = base.maxAmountRequired;
     if (typeof v === 'bigint') base.maxAmountRequired = v.toString();
