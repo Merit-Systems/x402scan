@@ -14,8 +14,6 @@ import { Globe, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { TELEGRAM_SUPPORT_LINK } from './constants';
 
-import type { SupportedChain } from '@/types/chain';
-
 export const ChainSelector = () => {
   const { chain, setChain } = useChain();
 
@@ -55,13 +53,12 @@ export const ChainSelector = () => {
           <Globe className="size-4" />
           All
         </Button>
-        {Object.values(Chain).map(value => (
+        {SUPPORTED_CHAINS.map(value => (
           <Button
             key={value}
             variant="ghost"
             className="w-full justify-start gap-2 h-8"
             onClick={() => handleSelectChain(value)}
-            disabled={!SUPPORTED_CHAINS.includes(value as SupportedChain)}
           >
             <Image
               src={CHAIN_ICONS[value]}
