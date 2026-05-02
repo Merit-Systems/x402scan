@@ -65,6 +65,17 @@ export async function fetchDiscoveryDocument(
   const resources: DiscoveredResource[] = discovered.endpoints.flatMap(
     endpoint => {
       try {
+        // OpenAPI-style paths like `/api/token-safety/{mint}` come back
+        // with the template literal intact — `@agentcash/discovery`
+        // doesn't substitute parameter examples, and `new URL()` just
+        // URL-encodes the braces, producing uncallable URLs like
+        // `.../%7Bmint%7D`. Skip these so we don't pollute the
+        // resources table with rows that can't be probed or invoked
+        // from the composer. Templated routes can still be registered
+        // via per-resource registration with the substituted URL.
+        if (/\{[^/}]+\}/.test(endpoint.path)) {
+          return [];
+        }
         const url = new URL(endpoint.path, discovered.origin).toString();
         return [
           {
