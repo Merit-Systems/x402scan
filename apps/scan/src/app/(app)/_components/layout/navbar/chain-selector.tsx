@@ -2,8 +2,10 @@
 
 import Image from 'next/image';
 import { useChain } from '../../../_contexts/chain/hook';
-import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
+import { SUPPORTED_CHAINS } from '@/types/chain';
 import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
+
+import type { Chain } from '@/types/chain';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
