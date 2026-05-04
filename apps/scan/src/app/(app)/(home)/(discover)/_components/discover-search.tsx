@@ -83,27 +83,15 @@ const DiscoverInlineSuggestions: React.FC<{ enabled: boolean }> = ({
 };
 
 /**
- * Submit button — rendered next to the search input.
+ * Submit button — only rendered when there's input to submit. Register
+ * Resource lives in the heading instead so this row stays empty until the
+ * user starts typing.
  */
 export const DiscoverSearchSubmit = () => {
   const { input, isDirty, submit } = useDiscoverSearch();
   const hasInput = input.trim().length > 0;
 
-  if (!hasInput) {
-    return (
-      <Button
-        size="lg"
-        variant="outline"
-        className="shrink-0 w-full md:w-fit px-4 h-11 hidden md:flex"
-        asChild
-      >
-        <a href="/resources/register">
-          <Plus className="size-4" />
-          Register Resource
-        </a>
-      </Button>
-    );
-  }
+  if (!hasInput) return null;
 
   return (
     <Button
