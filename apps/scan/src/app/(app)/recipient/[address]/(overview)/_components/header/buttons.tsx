@@ -24,7 +24,7 @@ export const HeaderButtons: React.FC<Props> = ({ hasOrigins, address }) => {
       <Link href="/resources/register">
         <Button variant="outline">
           <Plus className="size-4" />
-          Register Resource
+          Add your API
         </Button>
       </Link>
     </ButtonsContainer>

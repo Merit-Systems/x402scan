@@ -6,10 +6,17 @@ import { useSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/hook';
 import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
 
-import { featuredServiceColumns as columns } from '../featured-columns';
+import {
+  featuredServiceColumns as columns,
+  type FeaturedServiceItem,
+} from '@/app/(app)/(home)/(overview)/_components/sellers/featured-columns';
 import { api } from '@/trpc/client';
 
-export const KnownSellersTable = () => {
+interface Props {
+  originUrls: string[];
+}
+
+export const DiscoverSellersTable: React.FC<Props> = ({ originUrls }) => {
   const { sorting } = useSellersSorting();
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
@@ -21,13 +28,20 @@ export const KnownSellersTable = () => {
     },
     timeframe,
     sorting,
+    originUrls,
   });
 
-  return <DataTable columns={columns} data={topSellers.items} pageSize={10} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={topSellers.items as FeaturedServiceItem[]}
+      pageSize={15}
+    />
+  );
 };
 
-export const LoadingKnownSellersTable = () => {
+export const LoadingDiscoverSellersTable = () => {
   return (
-    <DataTable columns={columns} data={[]} loadingRowCount={10} isLoading />
+    <DataTable columns={columns} data={[]} loadingRowCount={15} isLoading />
   );
 };

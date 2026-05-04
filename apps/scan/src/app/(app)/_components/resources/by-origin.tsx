@@ -70,7 +70,7 @@ export const ResourcesByOrigin: React.FC<Props> = ({
             <Link href="/resources/register">
               <Button variant="turbo">
                 <Plus className="size-4" />
-                Register Resource
+                Add your API
               </Button>
             </Link>
           </EmptyContent>

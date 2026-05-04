@@ -8,7 +8,6 @@ import {
   MessagesSquare,
   Server,
   Users,
-  Wrench,
 } from 'lucide-react';
 
 import Image from 'next/image';
@@ -124,31 +123,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
 
-  {
-    accessorKey: 'tool_calls',
-    header: () => (
-      <HeaderCell
-        Icon={Wrench}
-        label="Tool Calls"
-        className="mx-auto"
-        sorting={{
-          sortContext: AgentsSortingContext,
-          sortKey: 'tool_call_count',
-        }}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {row.original.tool_call_count.toLocaleString(undefined, {
-          notation: 'compact',
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 0,
-        })}
-      </div>
-    ),
-    size: 125, // Fixed width for tool calls column
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
-  },
   {
     accessorKey: 'user_count',
     header: () => (

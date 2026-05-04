@@ -1,6 +1,6 @@
 'use client';
 
-import { Bot, HardDrive, Tag, Wallet } from 'lucide-react';
+import { HardDrive, Tag, Wallet } from 'lucide-react';
 
 import { api } from '@/trpc/client';
 
@@ -23,7 +23,6 @@ interface Stat {
 
 const stats: Stat[] = [
   { title: 'Resources', Icon: HardDrive },
-  { title: 'Agents', Icon: Bot },
   { title: 'Tags', Icon: Tag },
   { title: 'Addresses', Icon: Wallet },
 ];
@@ -36,10 +35,6 @@ export const StatsCards: React.FC<Props> = ({ originId }) => {
 
   const values = [
     metadata.resources.length,
-    metadata.resources.reduce(
-      (acc, resource) => acc + resource._count.agentConfigurationResources,
-      0
-    ),
     <Tags
       key="tags"
       tags={

@@ -10,6 +10,9 @@ import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
 
 import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
 
+import { ChartModeSelector } from '@/app/(app)/_contexts/chart-mode/component';
+import { ChartModeProvider } from '@/app/(app)/_contexts/chart-mode/provider';
+
 import { api, HydrateClient } from '@/trpc/server';
 
 import { ActivityTimeframe } from '@/types/timeframes';
@@ -18,31 +21,37 @@ import type { Chain } from '@/types/chain';
 
 interface Props {
   chain?: Chain;
+  initialTimeframe?: ActivityTimeframe;
 }
 
-export const OverallStats: React.FC<Props> = ({ chain }) => {
+export const OverallStats: React.FC<Props> = ({
+  chain,
+  initialTimeframe = ActivityTimeframe.OneDay,
+}) => {
   void api.public.stats.overall.prefetch({
-    timeframe: ActivityTimeframe.OneDay,
+    timeframe: initialTimeframe,
     chain,
   });
   void api.public.stats.bucketed.prefetch({
-    timeframe: ActivityTimeframe.OneDay,
+    timeframe: initialTimeframe,
     numBuckets: 48,
     chain,
   });
 
   return (
     <HydrateClient>
-      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
-        <ActivityContainer>
-          <ErrorBoundary
-            fallback={<p>There was an error loading the activity data</p>}
-          >
-            <Suspense fallback={<LoadingOverallCharts />}>
-              <OverallCharts />
-            </Suspense>
-          </ErrorBoundary>
-        </ActivityContainer>
+      <TimeRangeProvider initialTimeframe={initialTimeframe}>
+        <ChartModeProvider>
+          <ActivityContainer>
+            <ErrorBoundary
+              fallback={<p>There was an error loading the activity data</p>}
+            >
+              <Suspense fallback={<LoadingOverallCharts />}>
+                <OverallCharts />
+              </Suspense>
+            </ErrorBoundary>
+          </ActivityContainer>
+        </ChartModeProvider>
       </TimeRangeProvider>
     </HydrateClient>
   );
@@ -61,7 +70,12 @@ const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
     <Section
       title="Overall Stats"
       description="Global statistics for the x402 ecosystem"
-      actions={<RangeSelector />}
+      actions={
+        <div className="flex items-center gap-2">
+          <ChartModeSelector />
+          <RangeSelector />
+        </div>
+      }
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {children}

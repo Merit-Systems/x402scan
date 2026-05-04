@@ -16,7 +16,9 @@ const getBazaarExtension = (extensions: PaymentRequired['extensions']) => {
 };
 
 export const getInputSchema = (extensions: PaymentRequired['extensions']) =>
-  getBazaarExtension(extensions)?.schema.properties.input;
+  getBazaarExtension(extensions)?.schema.properties.input as
+    | Record<string, unknown>
+    | undefined;
 
 export const getSiwxExtension = (
   extensions: PaymentRequired['extensions']
