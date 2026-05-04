@@ -11,6 +11,7 @@ import {
   Server,
   Users,
 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -203,7 +204,24 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
     },
     {
       accessorKey: 'tryIt',
-      header: () => <></>,
+      header: () => (
+        <div className="flex items-center justify-center" title="AgentCash">
+          <Image
+            src="/agentcash-light.svg"
+            alt="AgentCash"
+            width={16}
+            height={16}
+            className="size-4 block dark:hidden"
+          />
+          <Image
+            src="/agentcash-dark.svg"
+            alt="AgentCash"
+            width={16}
+            height={16}
+            className="size-4 hidden dark:block"
+          />
+        </div>
+      ),
       cell: ({ row }) => {
         const origin = row.original.origins[0]?.origin;
         if (!origin) return null;
