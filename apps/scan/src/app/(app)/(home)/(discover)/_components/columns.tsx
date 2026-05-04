@@ -34,6 +34,7 @@ import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { Chains } from '@/app/(app)/_components/chains';
+import { SellersSortingContext } from '@/app/(app)/_contexts/sorting/sellers/context';
 
 import type { SearchResultEndpoint } from '@/lib/discover/search';
 
@@ -48,7 +49,15 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'recipients',
     header: () => (
-      <HeaderCell Icon={Server} label="Server" className="mr-auto" />
+      <HeaderCell
+        Icon={Server}
+        label="Server"
+        className="mr-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'editorial',
+        }}
+      />
     ),
     cell: ({ row }) => {
       const endpoint = row.original.searchEndpoint;
@@ -100,7 +109,15 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'tx_count',
     header: () => (
-      <HeaderCell Icon={ArrowLeftRight} label="Txns" className="mx-auto" />
+      <HeaderCell
+        Icon={ArrowLeftRight}
+        label="Txns"
+        className="mx-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'tx_count',
+        }}
+      />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -117,7 +134,15 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'total_amount',
     header: () => (
-      <HeaderCell Icon={DollarSign} label="Volume" className="mx-auto" />
+      <HeaderCell
+        Icon={DollarSign}
+        label="Volume"
+        className="mx-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'total_amount',
+        }}
+      />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -130,7 +155,15 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'unique_buyers',
     header: () => (
-      <HeaderCell Icon={Users} label="Buyers" className="mx-auto" />
+      <HeaderCell
+        Icon={Users}
+        label="Buyers"
+        className="mx-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'unique_buyers',
+        }}
+      />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -147,7 +180,15 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
   {
     accessorKey: 'latest_block_timestamp',
     header: () => (
-      <HeaderCell Icon={Calendar} label="Latest" className="mx-auto" />
+      <HeaderCell
+        Icon={Calendar}
+        label="Latest"
+        className="mx-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'latest_block_timestamp',
+        }}
+      />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">

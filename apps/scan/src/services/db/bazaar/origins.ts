@@ -136,6 +136,21 @@ const listBazaarOriginsUncached = async (
     chains: Array.from(item.chains),
   }));
 
+  // Editorial sort preserves the curated order of `originUrls` (search-ranked
+  // by AgentCash). The MV doesn't know about this ordering, so we resort here.
+  if (input.sorting.id === 'editorial' && input.originUrls) {
+    const editorialIndex = new Map(
+      input.originUrls.map((url, index) => [url, index])
+    );
+    const fallback = editorialIndex.size;
+    const direction = input.sorting.desc ? -1 : 1;
+    groupedItems.sort((a, b) => {
+      const aRank = editorialIndex.get(a.origins[0]?.origin ?? '') ?? fallback;
+      const bRank = editorialIndex.get(b.origins[0]?.origin ?? '') ?? fallback;
+      return (aRank - bRank) * direction;
+    });
+  }
+
   const response = toPaginatedResponse({
     items: groupedItems,
     total_count: Object.keys(originsByAddress).length,
@@ -153,6 +168,14 @@ const listBazaarOriginsUncached = async (
 export const listBazaarOrigins = createCachedPaginatedQuery({
   queryFn: listBazaarOriginsUncached,
   cacheKeyPrefix: 'bazaar-origins',
+  // createStandardCacheKey sorts arrays for normalization, so the cache key
+  // is order-insensitive in `originUrls`. That's safe today because the only
+  // producer (getDiscoverOrigins) returns a deterministic order. When sorting
+  // is 'editorial' the OUTPUT order depends on the input array order — if a
+  // future caller passes a differently-ordered originUrls expecting editorial
+  // honor, they'd silently get the cached output ordered by the first caller.
+  // If that ever becomes a real concern, switch this to a custom key fn that
+  // skips sort-normalization for `originUrls` when sorting.id === 'editorial'.
   createCacheKey: createStandardCacheKey,
   dateFields: ['latest_block_timestamp'],
   tags: ['transfers'],

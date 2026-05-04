@@ -7,7 +7,6 @@ import { LoadingTopFacilitators } from '../(overview)/_components/top-facilitato
 import { LoadingOverallStats } from '../(overview)/_components/stats';
 import { LoadingAllSellers } from '../(overview)/_components/sellers/all-sellers';
 import { LoadingAllBuyers } from '../(overview)/_components/buyers';
-import { LoadingTopAgents } from '../(overview)/_components/top-agents';
 
 export default function LoadingAll() {
   const pageSize = 10;
@@ -18,7 +17,6 @@ export default function LoadingAll() {
         <LoadingOverallStats />
         <LoadingTopServers />
         <LoadingTopFacilitators />
-        <LoadingTopAgents />
         <LoadingLatestTransactions loadingRowCount={pageSize} />
         <LoadingAllSellers />
         <LoadingAllBuyers />

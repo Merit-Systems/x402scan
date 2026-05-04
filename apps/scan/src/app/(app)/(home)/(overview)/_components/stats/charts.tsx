@@ -26,20 +26,34 @@ export const OverallCharts = () => {
     chain,
   });
 
+  // Experimental: render cumulative running totals across the time window
+  // instead of per-bucket. Note buyers/sellers are NOT true uniques across
+  // the cumulative window — they sum per-bucket uniques, so a returning
+  // buyer is double-counted. Acceptable for visual exploration.
+  let txSum = 0;
+  let amountSum = 0;
+  let buyersSum = 0;
+  let sellersSum = 0;
   const chartData: ChartData<{
     transactions: number;
     totalAmount: number;
     buyers: number;
     sellers: number;
-  }>[] = bucketedStats.map(stat => ({
-    transactions: stat.total_transactions,
-    totalAmount: parseFloat(
+  }>[] = bucketedStats.map(stat => {
+    txSum += stat.total_transactions;
+    amountSum += parseFloat(
       convertTokenAmount(BigInt(stat.total_amount)).toString()
-    ),
-    buyers: stat.unique_buyers,
-    sellers: stat.unique_sellers,
-    timestamp: stat.bucket_start.toISOString(),
-  }));
+    );
+    buyersSum += stat.unique_buyers;
+    sellersSum += stat.unique_sellers;
+    return {
+      transactions: txSum,
+      totalAmount: amountSum,
+      buyers: buyersSum,
+      sellers: sellersSum,
+      timestamp: stat.bucket_start.toISOString(),
+    };
+  });
 
   return (
     <>
@@ -51,8 +65,8 @@ export const OverallCharts = () => {
           maximumFractionDigits: 2,
         })}
         items={{
-          type: 'bar',
-          bars: [{ dataKey: 'transactions', color: 'var(--color-primary)' }],
+          type: 'area',
+          areas: [{ dataKey: 'transactions', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
@@ -99,8 +113,8 @@ export const OverallCharts = () => {
           maximumFractionDigits: 2,
         })}
         items={{
-          type: 'bar',
-          bars: [{ dataKey: 'buyers', color: 'var(--color-primary)' }],
+          type: 'area',
+          areas: [{ dataKey: 'buyers', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
@@ -124,8 +138,8 @@ export const OverallCharts = () => {
           maximumFractionDigits: 0,
         })}
         items={{
-          type: 'bar',
-          bars: [{ dataKey: 'sellers', color: 'var(--color-primary)' }],
+          type: 'area',
+          areas: [{ dataKey: 'sellers', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
@@ -148,10 +162,10 @@ export const OverallCharts = () => {
 export const LoadingOverallCharts = () => {
   return (
     <>
-      <LoadingOverallStatsCard type="bar" title="Transactions" />
+      <LoadingOverallStatsCard type="area" title="Transactions" />
       <LoadingOverallStatsCard type="area" title="Volume" />
-      <LoadingOverallStatsCard type="bar" title="Buyers" />
-      <LoadingOverallStatsCard type="bar" title="Sellers" />
+      <LoadingOverallStatsCard type="area" title="Buyers" />
+      <LoadingOverallStatsCard type="area" title="Sellers" />
     </>
   );
 };

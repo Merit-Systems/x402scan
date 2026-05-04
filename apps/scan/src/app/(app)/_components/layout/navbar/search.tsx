@@ -19,7 +19,7 @@ export const NavbarSearchButton = () => {
     >
       <div className="flex items-center gap-0 md:gap-2 text-sm">
         <Search className="size-4" />
-        <span className="hidden md:block">Search</span>
+        <span className="hidden md:block">Navigate</span>
       </div>
       <Shortcut className="hidden md:block px-1 bg-muted rounded-md">
         ⌘K

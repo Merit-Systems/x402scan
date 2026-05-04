@@ -11,7 +11,11 @@ const config: KnipConfig = {
       ],
       project: ['src/**/*.{ts,tsx}', '*.{ts,tsx,js,mjs}'],
       ignoreDependencies: ['postcss', 'redis', 'tailwindcss', 'tw-animate-css'],
-      ignore: ['src/scripts/**', 'src/components/ui/charts/chart/**'],
+      ignore: [
+        'src/scripts/**',
+        'src/components/ui/charts/chart/**',
+        'src/app/(app)/(home)/_components/v2-announcement-banner.tsx',
+      ],
     },
     'apps/proxy': {},
     'apps/rpcs/solana': {},

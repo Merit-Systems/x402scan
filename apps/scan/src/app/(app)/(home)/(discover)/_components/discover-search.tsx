@@ -1,12 +1,14 @@
 'use client';
 
 import { CornerDownLeft, Plus, Search, X } from 'lucide-react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
 import { useSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/hook';
 import { api } from '@/trpc/client';
+import { InlineSearchSuggestions } from '@/app/(app)/_components/search/inline-search-suggestions';
 
 import { DataTable } from '@/components/ui/data-table';
 import { discoverColumns } from './columns';
@@ -14,14 +16,25 @@ import { useDiscoverSearch } from './discover-search-context';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 /**
- * Inline search input — rendered in the heading.
+ * Inline search input — rendered in the heading. Shows live suggestions:
+ * keyword origin/resource matches before a space is typed, semantic search
+ * once the query becomes a sentence.
  */
 export const DiscoverSearchInput = () => {
   const { input, setInput, isSearching, submit, clear } = useDiscoverSearch();
+  const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <div className="relative w-full md:flex-1">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+    <div
+      className="relative w-full md:flex-1"
+      onBlur={event => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setIsFocused(false);
+        }
+      }}
+      onFocus={() => setIsFocused(true)}
+    >
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none z-10" />
       <Input
         value={input}
         onChange={e => setInput(e.target.value)}
@@ -44,13 +57,28 @@ export const DiscoverSearchInput = () => {
       {isSearching && (
         <button
           type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
           onClick={clear}
         >
           <X className="size-4" />
         </button>
       )}
+      <DiscoverInlineSuggestions enabled={isFocused} />
     </div>
+  );
+};
+
+const DiscoverInlineSuggestions: React.FC<{ enabled: boolean }> = ({
+  enabled,
+}) => {
+  const { input, query, submit } = useDiscoverSearch();
+  return (
+    <InlineSearchSuggestions
+      input={input}
+      enabled={enabled}
+      committedQuery={query}
+      onSubmit={submit}
+    />
   );
 };
 
