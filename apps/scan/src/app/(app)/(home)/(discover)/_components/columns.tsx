@@ -28,7 +28,11 @@ import {
 
 import { Favicon } from '@/app/(app)/_components/favicon';
 
-import { formatAddress, formatCompactAgo } from '@/lib/utils';
+import {
+  decodeHtmlEntities,
+  formatAddress,
+  formatCompactAgo,
+} from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
@@ -61,11 +65,14 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
       />
     ),
     cell: ({ row }) => <ServerCell item={row.original} />,
-    size: 220,
+    size: 280,
     loading: () => (
-      <div className="flex items-center gap-2">
-        <Skeleton className="size-6 rounded-full shrink-0" />
-        <Skeleton className="h-4 w-32" />
+      <div className="flex items-start gap-2.5">
+        <Skeleton className="size-6 rounded-full shrink-0 mt-0.5" />
+        <div className="flex-1 space-y-1.5 py-0.5">
+          <Skeleton className="h-3.5 w-32" />
+          <Skeleton className="h-3 w-44" />
+        </div>
       </div>
     ),
   },
@@ -205,14 +212,24 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
 ];
 
 /**
- * Server cell — favicon + hostname only. Address(es) and any search-endpoint
- * summary are demoted into a hover tooltip so the cell stays scannable.
+ * Server cell — title (curated) + description on top, hostname tucked
+ * underneath in mono. Falls back to hostname-as-title when no curated title
+ * exists. Address(es) and search-endpoint summary live in a hover tooltip so
+ * the cell stays scannable.
  */
 const ServerCell: React.FC<{ item: DiscoverColumnType }> = ({ item }) => {
   const origin = item.origins[0];
   if (!origin) return null;
 
   const hostname = new URL(origin.origin).hostname;
+  const rawTitle = origin.title?.trim();
+  const title = rawTitle ? decodeHtmlEntities(rawTitle) : hostname;
+  const rawDescription = origin.description?.trim();
+  const description = rawDescription
+    ? decodeHtmlEntities(rawDescription)
+    : null;
+  const showHostnameLine = title !== hostname;
+
   const recipients = item.recipients;
   const endpoint = item.searchEndpoint;
   const otherOrigins = item.origins.slice(1);
@@ -222,17 +239,31 @@ const ServerCell: React.FC<{ item: DiscoverColumnType }> = ({ item }) => {
   const trigger = (
     <Link
       href={`/server/${origin.id}`}
-      className="flex items-center gap-2 min-w-0 group"
+      className="flex items-start gap-2.5 min-w-0 group py-0.5"
     >
-      <Favicon url={origin.favicon} className="size-6 shrink-0" />
-      <span className="truncate text-sm font-medium group-hover:text-primary transition-colors">
-        {hostname}
-      </span>
-      {otherOrigins.length > 0 ? (
-        <span className="text-[10px] font-mono text-muted-foreground shrink-0">
-          +{otherOrigins.length}
-        </span>
-      ) : null}
+      <Favicon url={origin.favicon} className="size-6 shrink-0 mt-0.5" />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="truncate text-sm font-medium group-hover:text-primary transition-colors">
+            {title}
+          </span>
+          {otherOrigins.length > 0 ? (
+            <span className="text-[10px] font-mono text-muted-foreground shrink-0">
+              +{otherOrigins.length}
+            </span>
+          ) : null}
+        </div>
+        {description ? (
+          <div className="truncate text-xs text-muted-foreground mt-0.5">
+            {description}
+          </div>
+        ) : null}
+        {showHostnameLine ? (
+          <div className="truncate text-[11px] font-mono text-muted-foreground/70 mt-0.5">
+            {hostname}
+          </div>
+        ) : null}
+      </div>
     </Link>
   );
 
@@ -253,7 +284,8 @@ const ServerCell: React.FC<{ item: DiscoverColumnType }> = ({ item }) => {
         {recipients.length > 0 ? (
           <div>
             <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
-              Recipient{recipients.length === 1 ? '' : `s (${recipients.length})`}
+              Recipient
+              {recipients.length === 1 ? '' : `s (${recipients.length})`}
             </p>
             <ul className="font-mono text-[11px] space-y-0.5">
               {recipients.map(addr => (
@@ -328,4 +360,3 @@ const TryItButton: React.FC<{ origin: string }> = ({ origin }) => {
     </Tooltip>
   );
 };
-
