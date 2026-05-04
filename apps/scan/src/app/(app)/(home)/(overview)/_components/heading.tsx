@@ -1,18 +1,35 @@
-import Link from 'next/link';
-import { Suspense } from 'react';
+'use client';
 
-import { Plus } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
+import { Plus, Search, X } from 'lucide-react';
 
 import { HeadingContainer } from '../../../../_components/layout/page-utils';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Logo } from '@/components/logo';
 
 import { X402V2Badge } from '@/app/(app)/_components/x402/v2-badge';
 
-import { X402LinkedSearchBox } from '@/app/(app)/_components/search/x402-linked-search-box';
+import { InlineSearchSuggestions } from '@/app/(app)/_components/search/inline-search-suggestions';
 
 export const HomeHeading = () => {
+  const router = useRouter();
+  const [input, setInput] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+
+  // The /all page has no body slot for full results, so submitting from here
+  // hands off to the discover page (which renders the full search results
+  // table inline).
+  const submit = () => {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    router.push(`/?q=${encodeURIComponent(trimmed)}`);
+  };
+
   return (
     <HeadingContainer className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
@@ -25,19 +42,52 @@ export const HomeHeading = () => {
           The x402 analytics dashboard and block explorer
         </p>
       </div>
-      <div className="flex w-full flex-col items-center gap-2 md:flex-row">
-        <div className="w-full min-w-0 md:flex-1">
-          <Suspense
-            fallback={
-              <div className="h-12 w-full rounded-md border bg-background shadow-xs" />
+      <div className="flex flex-col md:flex-row items-center gap-2">
+        <div
+          className="relative w-full md:flex-1"
+          onBlur={event => {
+            if (
+              !event.currentTarget.contains(event.relatedTarget as Node | null)
+            ) {
+              setIsFocused(false);
             }
-          >
-            <X402LinkedSearchBox
-              autoFocus={false}
-              layout="section"
-              surface="x402scan_home"
-            />
-          </Suspense>
+          }}
+          onFocus={() => setIsFocused(true)}
+        >
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none z-10" />
+          <Input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                submit();
+              }
+              if (e.key === 'Escape' && input) {
+                e.preventDefault();
+                setInput('');
+              }
+            }}
+            placeholder='Search any agent capability. e.g. "send an email", "generate an image", "search the web", "buy a mug"...'
+            className="pl-9 pr-9 h-11 bg-transparent"
+            autoComplete="off"
+            name="home-search"
+            type="text"
+          />
+          {input ? (
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
+              onClick={() => setInput('')}
+            >
+              <X className="size-4" />
+            </button>
+          ) : null}
+          <InlineSearchSuggestions
+            input={input}
+            enabled={isFocused}
+            onSubmit={submit}
+          />
         </div>
         <Link
           href="/resources/register"
@@ -45,7 +95,7 @@ export const HomeHeading = () => {
         >
           <Button
             variant="outline"
-            className="h-12 w-full shrink-0 px-4 md:w-fit"
+            className="h-11 w-full shrink-0 px-4 md:w-fit"
             size="lg"
           >
             <Plus className="size-4" />
