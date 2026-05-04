@@ -10,7 +10,7 @@ import { SUPPORTED_CHAINS } from '@/types/chain';
 import { ChainIdToNetwork } from 'x402/types';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
+import type { AcceptsNetwork, AcceptsScheme, Prisma } from '@x402scan/scan-db';
 import type { OutputSchema } from '@/lib/x402';
 import type { SupportedChain } from '@/types/chain';
 
@@ -28,7 +28,10 @@ export const upsertResourceSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
   accepts: z.array(
     z.object({
-      scheme: z.enum(['exact']),
+      // Accept any scheme string at parse time so that resources advertising
+      // additional schemes (e.g. `upto`) alongside `exact` still register.
+      // Unsupported schemes are filtered out before the DB write below.
+      scheme: z.string(),
       network: z.union([
         z.enum([
           'base_sepolia',
@@ -77,10 +80,17 @@ export const upsertResource = async (
     return;
   }
   const baseResource = parsedResourceInput.data;
-  const supportedAccepts = baseResource.accepts.filter(accept =>
+  // Only `exact` is persisted today (see AcceptsScheme enum in scan-db).
+  // Filter other schemes out instead of rejecting the whole resource so that
+  // resources advertising e.g. `upto` alongside `exact` still register.
+  const SUPPORTED_SCHEMES = ['exact'] as const;
+  const schemeSupportedAccepts = baseResource.accepts.filter(accept =>
+    (SUPPORTED_SCHEMES as readonly string[]).includes(accept.scheme)
+  );
+  const supportedAccepts = schemeSupportedAccepts.filter(accept =>
     SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
-  const unsupportedAccepts = baseResource.accepts.filter(
+  const unsupportedAccepts = schemeSupportedAccepts.filter(
     accept => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
   const originStr = getOriginFromUrl(baseResource.resource);
@@ -130,13 +140,13 @@ export const upsertResource = async (
           where: {
             resourceId_scheme_network: {
               resourceId: resource.id,
-              scheme: baseAccepts.scheme,
+              scheme: baseAccepts.scheme as AcceptsScheme,
               network: baseAccepts.network as AcceptsNetwork,
             },
           },
           create: {
             resourceId: resource.id,
-            scheme: baseAccepts.scheme,
+            scheme: baseAccepts.scheme as AcceptsScheme,
             description: baseAccepts.description,
             network: baseAccepts.network as AcceptsNetwork,
             maxAmountRequired: BigInt(baseAccepts.maxAmountRequired),
