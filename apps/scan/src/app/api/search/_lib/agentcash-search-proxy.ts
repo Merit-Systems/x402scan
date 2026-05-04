@@ -44,6 +44,8 @@ function buildExternalUrl(
     }
   }
 
+  // x402scan is x402-focused; force the upstream filter regardless of caller.
+  externalUrl.searchParams.set('protocol', 'x402');
   return externalUrl;
 }
 

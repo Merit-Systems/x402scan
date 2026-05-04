@@ -9,11 +9,7 @@ import {
   type SearchBoxProps,
   type SearchBoxSelectionContext,
   type SearchPreviewResult,
-  type SearchProtocol,
 } from '@/features/search-box';
-
-import { useProtocol } from '@/app/(app)/_contexts/protocol/hook';
-import { SEARCH_PROTOCOLS } from '@/app/(app)/_contexts/protocol/keys';
 
 const SEARCH_ANONYMOUS_SESSION_KEY = 'x402scan.search.anonymous_session_id';
 
@@ -97,10 +93,6 @@ export function X402LinkedSearchBox({
   surface: string;
 }) {
   const router = useRouter();
-  const { protocol } = useProtocol();
-  // `undefined` means "all protocols" — pass the full set so the search-box's
-  // request layer omits the protocol query param.
-  const protocols: SearchProtocol[] = protocol ? [protocol] : [...SEARCH_PROTOCOLS];
 
   function selectSuggestion(
     suggestion: AutocompleteSuggestion,
@@ -128,7 +120,7 @@ export function X402LinkedSearchBox({
     <SearchBox
       {...searchBoxProps}
       enableKeyboardShortcut={enableKeyboardShortcut}
-      protocols={protocols}
+      protocols={['x402']}
       showFeedbackControls
       onSelectSuggestion={selectSuggestion}
       onSelectResult={selectResult}
