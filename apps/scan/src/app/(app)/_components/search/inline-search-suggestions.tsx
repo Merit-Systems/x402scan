@@ -77,7 +77,11 @@ export const InlineSearchSuggestions: React.FC<Props> = ({
 
   const origins = originSearch.data ?? [];
   const resources = resourceSearch.data ?? [];
-  const semanticResults = semanticSearch.data ?? [];
+  // x402scan only surfaces x402 services — MPP-only results from the upstream
+  // semantic API would lead to "No x402 results found" if clicked through.
+  const semanticResults = (semanticSearch.data ?? []).filter(r =>
+    r.protocols.includes('x402')
+  );
   const keywordLoading = originSearch.isLoading || resourceSearch.isLoading;
   const semanticLoading =
     semanticSearch.isLoading || trimmed !== debouncedSemanticInput;
