@@ -48,7 +48,7 @@ export const DiscoverSearchInput = () => {
             clear();
           }
         }}
-        placeholder='Search any agent capability. e.g. "send an email", "generate an image", "search the web", "buy a mug"...'
+        placeholder="Try: send email, generate image, search the web, buy a mug…"
         className="pl-9 pr-9 h-11 bg-transparent"
         autoComplete="off"
         name="discover-search"
