@@ -3,17 +3,26 @@
 import { api } from '@/trpc/client';
 
 import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+import { useChartMode } from '@/app/(app)/_contexts/chart-mode/hook';
 
 import { LoadingOverallStatsCard, OverallStatsCard } from './card';
 
 import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 
-import type { ChartData } from '@/components/ui/charts/chart/types';
+import type { ChartData, ChartItems } from '@/components/ui/charts/chart/types';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
+
+interface StatRow {
+  transactions: number;
+  totalAmount: number;
+  buyers: number;
+  sellers: number;
+}
 
 export const OverallCharts = () => {
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
+  const { chartMode } = useChartMode();
 
   const [overallStats] = api.public.stats.overall.useSuspenseQuery({
     chain,
@@ -26,34 +35,52 @@ export const OverallCharts = () => {
     chain,
   });
 
-  // Experimental: render cumulative running totals across the time window
-  // instead of per-bucket. Note buyers/sellers are NOT true uniques across
-  // the cumulative window — they sum per-bucket uniques, so a returning
-  // buyer is double-counted. Acceptable for visual exploration.
+  // Cumulative running totals across the time window. Note: buyers/sellers
+  // are NOT true uniques in this mode — they sum per-bucket uniques, so a
+  // returning buyer is double-counted. Acceptable for visual exploration.
   let txSum = 0;
   let amountSum = 0;
   let buyersSum = 0;
   let sellersSum = 0;
-  const chartData: ChartData<{
-    transactions: number;
-    totalAmount: number;
-    buyers: number;
-    sellers: number;
-  }>[] = bucketedStats.map(stat => {
-    txSum += stat.total_transactions;
-    amountSum += parseFloat(
+  const chartData: ChartData<StatRow>[] = bucketedStats.map(stat => {
+    const txValue = stat.total_transactions;
+    const amountValue = parseFloat(
       convertTokenAmount(BigInt(stat.total_amount)).toString()
     );
-    buyersSum += stat.unique_buyers;
-    sellersSum += stat.unique_sellers;
+    const buyersValue = stat.unique_buyers;
+    const sellersValue = stat.unique_sellers;
+
+    txSum += txValue;
+    amountSum += amountValue;
+    buyersSum += buyersValue;
+    sellersSum += sellersValue;
+
     return {
-      transactions: txSum,
-      totalAmount: amountSum,
-      buyers: buyersSum,
-      sellers: sellersSum,
+      transactions: chartMode === 'cumulative' ? txSum : txValue,
+      totalAmount: chartMode === 'cumulative' ? amountSum : amountValue,
+      buyers: chartMode === 'cumulative' ? buyersSum : buyersValue,
+      sellers: chartMode === 'cumulative' ? sellersSum : sellersValue,
       timestamp: stat.bucket_start.toISOString(),
     };
   });
+
+  // Per-bucket uses bars for counts (transactions/buyers/sellers) and an area
+  // for volume. Cumulative uses areas for everything since the line is
+  // monotonically increasing.
+  const isCumulative = chartMode === 'cumulative';
+  const buildItems = (dataKey: keyof StatRow): ChartItems<StatRow> =>
+    isCumulative
+      ? {
+          type: 'area',
+          areas: [{ dataKey, color: 'var(--color-primary)' }],
+        }
+      : {
+          type: 'bar',
+          bars: [{ dataKey, color: 'var(--color-primary)' }],
+        };
+  const txItems = buildItems('transactions');
+  const buyersItems = buildItems('buyers');
+  const sellersItems = buildItems('sellers');
 
   return (
     <>
@@ -64,10 +91,7 @@ export const OverallCharts = () => {
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
-        items={{
-          type: 'area',
-          areas: [{ dataKey: 'transactions', color: 'var(--color-primary)' }],
-        }}
+        items={txItems}
         data={chartData}
         tooltipRows={[
           {
@@ -112,10 +136,7 @@ export const OverallCharts = () => {
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
-        items={{
-          type: 'area',
-          areas: [{ dataKey: 'buyers', color: 'var(--color-primary)' }],
-        }}
+        items={buyersItems}
         data={chartData}
         tooltipRows={[
           {
@@ -137,10 +158,7 @@ export const OverallCharts = () => {
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         })}
-        items={{
-          type: 'area',
-          areas: [{ dataKey: 'sellers', color: 'var(--color-primary)' }],
-        }}
+        items={sellersItems}
         data={chartData}
         tooltipRows={[
           {
@@ -162,10 +180,10 @@ export const OverallCharts = () => {
 export const LoadingOverallCharts = () => {
   return (
     <>
-      <LoadingOverallStatsCard type="area" title="Transactions" />
+      <LoadingOverallStatsCard type="bar" title="Transactions" />
       <LoadingOverallStatsCard type="area" title="Volume" />
-      <LoadingOverallStatsCard type="area" title="Buyers" />
-      <LoadingOverallStatsCard type="area" title="Sellers" />
+      <LoadingOverallStatsCard type="bar" title="Buyers" />
+      <LoadingOverallStatsCard type="bar" title="Sellers" />
     </>
   );
 };
