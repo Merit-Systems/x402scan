@@ -168,6 +168,14 @@ const listBazaarOriginsUncached = async (
 export const listBazaarOrigins = createCachedPaginatedQuery({
   queryFn: listBazaarOriginsUncached,
   cacheKeyPrefix: 'bazaar-origins',
+  // createStandardCacheKey sorts arrays for normalization, so the cache key
+  // is order-insensitive in `originUrls`. That's safe today because the only
+  // producer (getDiscoverOrigins) returns a deterministic order. When sorting
+  // is 'editorial' the OUTPUT order depends on the input array order — if a
+  // future caller passes a differently-ordered originUrls expecting editorial
+  // honor, they'd silently get the cached output ordered by the first caller.
+  // If that ever becomes a real concern, switch this to a custom key fn that
+  // skips sort-normalization for `originUrls` when sorting.id === 'editorial'.
   createCacheKey: createStandardCacheKey,
   dateFields: ['latest_block_timestamp'],
   tags: ['transfers'],

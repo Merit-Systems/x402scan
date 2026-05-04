@@ -2,7 +2,7 @@
 
 import { CornerDownLeft, Loader2, Plus, Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useDeferredValue, useState } from 'react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { api } from '@/trpc/client';
 import { Origin } from '@/app/(app)/_components/origins';
 import { Resource } from '@/app/(app)/_components/resource';
 import { Favicon } from '@/app/(app)/_components/favicon';
+import { useDebounce } from '@/hooks/use-debounce';
 
 import { DataTable } from '@/components/ui/data-table';
 import { discoverColumns } from './columns';
@@ -89,9 +90,14 @@ const DiscoverInlineSuggestions: React.FC<{ enabled: boolean }> = ({
   // A space anywhere in the live input promotes from keyword → semantic mode.
   const isSemanticMode = input.includes(' ');
 
-  // Defer the semantic input by a tick so we don't fire an LLM round-trip on
-  // every keystroke. The cheap origin/resource queries can stay live.
-  const deferredSemanticInput = useDeferredValue(isSemanticMode ? trimmed : '');
+  // Real debounce on the LLM-backed semantic search — useDeferredValue only
+  // batches React state, it doesn't suppress requests, so rapid typing in
+  // semantic mode would still hammer the upstream LLM. Cheap keyword queries
+  // (origins/resources) stay live since they're DB-fast.
+  const debouncedSemanticInput = useDebounce(
+    isSemanticMode ? trimmed : '',
+    250
+  );
 
   const originSearch = api.public.origins.search.useQuery(
     { search: trimmed, limit: 5 },
@@ -102,8 +108,10 @@ const DiscoverInlineSuggestions: React.FC<{ enabled: boolean }> = ({
     { enabled: isVisible && !isSemanticMode }
   );
   const semanticSearch = api.public.discover.search.useQuery(
-    { query: deferredSemanticInput },
-    { enabled: isVisible && isSemanticMode && deferredSemanticInput.length > 0 }
+    { query: debouncedSemanticInput },
+    {
+      enabled: isVisible && isSemanticMode && debouncedSemanticInput.length > 0,
+    }
   );
 
   if (!isVisible) return null;
@@ -113,7 +121,7 @@ const DiscoverInlineSuggestions: React.FC<{ enabled: boolean }> = ({
   const semanticResults = semanticSearch.data ?? [];
   const keywordLoading = originSearch.isLoading || resourceSearch.isLoading;
   const semanticLoading =
-    semanticSearch.isLoading || trimmed !== deferredSemanticInput;
+    semanticSearch.isLoading || trimmed !== debouncedSemanticInput;
 
   return (
     <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-md border bg-popover shadow-lg overflow-hidden">
