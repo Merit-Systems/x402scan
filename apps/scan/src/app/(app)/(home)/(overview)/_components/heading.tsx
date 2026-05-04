@@ -12,8 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Logo } from '@/components/logo';
 
-import { X402V2Badge } from '@/app/(app)/_components/x402/v2-badge';
-
 import { InlineSearchSuggestions } from '@/app/(app)/_components/search/inline-search-suggestions';
 
 export const HomeHeading = () => {
@@ -36,7 +34,6 @@ export const HomeHeading = () => {
         <div className="flex items-center gap-2">
           <Logo className="size-8" />
           <h1 className="text-2xl md:text-4xl font-bold font-mono">x402scan</h1>
-          <X402V2Badge className="mt-1 text-sm" />
         </div>
         <p className="text-muted-foreground text-sm">
           The x402 analytics dashboard and block explorer
