@@ -12,12 +12,12 @@ import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 import type { ChartData, ChartItems } from '@/components/ui/charts/chart/types';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
 
-interface StatRow {
+type StatRow = {
   transactions: number;
   totalAmount: number;
   buyers: number;
   sellers: number;
-}
+};
 
 export const OverallCharts = () => {
   const { timeframe } = useTimeRangeContext();
