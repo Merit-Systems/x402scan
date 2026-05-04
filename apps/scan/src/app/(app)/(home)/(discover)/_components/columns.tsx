@@ -3,14 +3,15 @@
 import {
   Activity,
   ArrowLeftRight,
+  ArrowUpRight,
   Calendar,
   Check,
-  Copy,
   DollarSign,
   Globe,
   Server,
   Users,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,9 +26,9 @@ import {
   LoadingKnownSellerChart,
 } from '../../(overview)/_components/sellers/known-sellers/chart';
 
-import { Origins, OriginsSkeleton } from '@/app/(app)/_components/origins';
+import { Favicon } from '@/app/(app)/_components/favicon';
 
-import { formatCompactAgo } from '@/lib/utils';
+import { formatAddress, formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
@@ -59,39 +60,15 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
         }}
       />
     ),
-    cell: ({ row }) => {
-      const endpoint = row.original.searchEndpoint;
-
-      const originContent = (
-        <Origins
-          origins={row.original.origins}
-          addresses={row.original.recipients}
-          disableCopy
-        />
-      );
-
-      const wrapped = endpoint?.summary ? (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex items-center gap-2">{originContent}</div>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-xs">
-            <p className="font-medium text-xs">
-              {endpoint.method} {endpoint.path}
-            </p>
-            <p className="text-xs text-muted-foreground">{endpoint.summary}</p>
-          </TooltipContent>
-        </Tooltip>
-      ) : (
-        <div className="flex items-center gap-2">{originContent}</div>
-      );
-
-      return wrapped;
-    },
-    size: 225,
-    loading: () => <OriginsSkeleton />,
+    cell: ({ row }) => <ServerCell item={row.original} />,
+    size: 220,
+    loading: () => (
+      <div className="flex items-center gap-2">
+        <Skeleton className="size-6 rounded-full shrink-0" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+    ),
   },
-
   {
     accessorKey: 'chart',
     header: () => (
@@ -103,8 +80,30 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
       ) : (
         <div className="h-[32px]" />
       ),
-    size: 100,
+    size: 200,
     loading: () => <LoadingKnownSellerChart />,
+  },
+  {
+    accessorKey: 'total_amount',
+    header: () => (
+      <HeaderCell
+        Icon={DollarSign}
+        label="Volume"
+        className="mx-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'total_amount',
+        }}
+      />
+    ),
+    // Volume is the primary economic signal — bigger, bolder, foreground color.
+    cell: ({ row }) => (
+      <div className="text-center font-mono text-sm font-semibold tabular-nums">
+        {formatTokenAmount(BigInt(row.original.total_amount))}
+      </div>
+    ),
+    size: 110,
+    loading: () => <Skeleton className="h-5 w-16 mx-auto" />,
   },
   {
     accessorKey: 'tx_count',
@@ -120,7 +119,7 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
         {row.original.tx_count.toLocaleString(undefined, {
           notation: 'compact',
           maximumFractionDigits: 2,
@@ -128,29 +127,8 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
         })}
       </div>
     ),
-    size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
-  },
-  {
-    accessorKey: 'total_amount',
-    header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Volume"
-        className="mx-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'total_amount',
-        }}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {formatTokenAmount(BigInt(row.original.total_amount))}
-      </div>
-    ),
-    size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    size: 90,
+    loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
   },
   {
     accessorKey: 'unique_buyers',
@@ -166,7 +144,7 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
         {row.original.unique_buyers.toLocaleString(undefined, {
           notation: 'compact',
           maximumFractionDigits: 2,
@@ -174,8 +152,8 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
         })}
       </div>
     ),
-    size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    size: 90,
+    loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
   },
   {
     accessorKey: 'latest_block_timestamp',
@@ -191,14 +169,14 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
         {row.original.latest_block_timestamp
           ? formatCompactAgo(row.original.latest_block_timestamp)
           : '–'}
       </div>
     ),
-    size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    size: 90,
+    loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
   },
   {
     accessorKey: 'chains',
@@ -210,7 +188,7 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
         className="mx-auto justify-center"
       />
     ),
-    size: 100,
+    size: 70,
     loading: () => <Skeleton className="size-4 mx-auto" />,
   },
   {
@@ -219,30 +197,135 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
     cell: ({ row }) => {
       const origin = row.original.origins[0]?.origin;
       if (!origin) return null;
-      return <CopyPromptButton origin={origin} />;
+      return <TryItButton origin={origin} />;
     },
-    size: 130,
-    loading: () => <Skeleton className="h-4 w-24 mx-auto" />,
+    size: 90,
+    loading: () => <Skeleton className="h-7 w-16 mx-auto rounded-md" />,
   },
 ];
 
-const CopyPromptButton: React.FC<{ origin: string }> = ({ origin }) => {
-  const [copied, setCopied] = useState(false);
-  const prompt = `Use the agentcash \`discover\` command to tell me what I can do with ${origin}. If you do not have agentcash tools or skills installed, go directly to agentcash.dev/skill.md and set it up.`;
-  return (
-    <button
-      type="button"
-      onClick={e => {
-        e.stopPropagation();
-        void navigator.clipboard.writeText(prompt).then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        });
-      }}
-      className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+/**
+ * Server cell — favicon + hostname only. Address(es) and any search-endpoint
+ * summary are demoted into a hover tooltip so the cell stays scannable.
+ */
+const ServerCell: React.FC<{ item: DiscoverColumnType }> = ({ item }) => {
+  const origin = item.origins[0];
+  if (!origin) return null;
+
+  const hostname = new URL(origin.origin).hostname;
+  const recipients = item.recipients;
+  const endpoint = item.searchEndpoint;
+  const otherOrigins = item.origins.slice(1);
+  const hasTooltipContent =
+    recipients.length > 0 || endpoint !== undefined || otherOrigins.length > 0;
+
+  const trigger = (
+    <Link
+      href={`/server/${origin.id}`}
+      className="flex items-center gap-2 min-w-0 group"
     >
-      {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-      {copied ? 'Copied' : 'Copy Prompt'}
-    </button>
+      <Favicon url={origin.favicon} className="size-6 shrink-0" />
+      <span className="truncate text-sm font-medium group-hover:text-primary transition-colors">
+        {hostname}
+      </span>
+      {otherOrigins.length > 0 ? (
+        <span className="text-[10px] font-mono text-muted-foreground shrink-0">
+          +{otherOrigins.length}
+        </span>
+      ) : null}
+    </Link>
+  );
+
+  if (!hasTooltipContent) return trigger;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+      <TooltipContent side="bottom" className="max-w-xs space-y-2">
+        {endpoint?.summary ? (
+          <div>
+            <p className="font-medium text-xs">
+              {endpoint.method} {endpoint.path}
+            </p>
+            <p className="text-xs text-muted-foreground">{endpoint.summary}</p>
+          </div>
+        ) : null}
+        {recipients.length > 0 ? (
+          <div>
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+              Recipient{recipients.length === 1 ? '' : `s (${recipients.length})`}
+            </p>
+            <ul className="font-mono text-[11px] space-y-0.5">
+              {recipients.map(addr => (
+                <li key={addr}>{formatAddress(addr)}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        {otherOrigins.length > 0 ? (
+          <div>
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
+              Also reachable as
+            </p>
+            <ul className="text-[11px] space-y-0.5">
+              {otherOrigins.map(o => (
+                <li key={o.id}>{new URL(o.origin).hostname}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </TooltipContent>
+    </Tooltip>
   );
 };
+
+/**
+ * Compact action button. Copies an AI agent prompt for the origin so users
+ * can paste it into Claude/Cursor/etc. and discover the service interactively.
+ * Tooltip explains what \"Try it\" actually does, since the affordance is
+ * non-obvious.
+ */
+const TryItButton: React.FC<{ origin: string }> = ({ origin }) => {
+  const [copied, setCopied] = useState(false);
+  const prompt = `Use the agentcash \`discover\` command to tell me what I can do with ${origin}. If you do not have agentcash tools or skills installed, go directly to agentcash.dev/skill.md and set it up.`;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={e => {
+            e.stopPropagation();
+            void navigator.clipboard.writeText(prompt).then(() => {
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            });
+          }}
+          className="mx-auto flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border border-border bg-background hover:bg-accent hover:text-accent-foreground transition-colors whitespace-nowrap"
+        >
+          {copied ? (
+            <Check className="size-3.5" />
+          ) : (
+            <ArrowUpRight className="size-3.5" />
+          )}
+          {copied ? 'Copied' : 'Try it'}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="left" className="max-w-xs">
+        <p className="text-xs">
+          {copied ? (
+            'Prompt copied to clipboard.'
+          ) : (
+            <>
+              Copies an AI prompt to your clipboard. Paste into Claude, Cursor,
+              or any agent that supports{' '}
+              <span className="font-mono">agentcash</span> tools to explore this
+              service.
+            </>
+          )}
+        </p>
+      </TooltipContent>
+    </Tooltip>
+  );
+};
+
