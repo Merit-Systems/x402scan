@@ -12,6 +12,7 @@ import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 import type { ChartData, ChartItems } from '@/components/ui/charts/chart/types';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type StatRow = {
   transactions: number;
   totalAmount: number;
@@ -64,8 +65,7 @@ export const OverallCharts = () => {
     };
   });
 
-  // Per-bucket uses bars for counts (transactions/buyers/sellers) and an area
-  // for volume. Cumulative uses areas for everything since the line is
+  // Per-bucket uses bars; cumulative uses areas since the line is
   // monotonically increasing.
   const isCumulative = chartMode === 'cumulative';
   const buildItems = (dataKey: keyof StatRow): ChartItems<StatRow> =>
@@ -79,6 +79,7 @@ export const OverallCharts = () => {
           bars: [{ dataKey, color: 'var(--color-primary)' }],
         };
   const txItems = buildItems('transactions');
+  const volumeItems = buildItems('totalAmount');
   const buyersItems = buildItems('buyers');
   const sellersItems = buildItems('sellers');
 
@@ -109,10 +110,7 @@ export const OverallCharts = () => {
       <OverallStatsCard
         title="Volume"
         value={formatTokenAmount(BigInt(overallStats.total_amount))}
-        items={{
-          type: 'area',
-          areas: [{ dataKey: 'totalAmount', color: 'var(--color-primary)' }],
-        }}
+        items={volumeItems}
         data={chartData}
         tooltipRows={[
           {
@@ -181,7 +179,7 @@ export const LoadingOverallCharts = () => {
   return (
     <>
       <LoadingOverallStatsCard type="bar" title="Transactions" />
-      <LoadingOverallStatsCard type="area" title="Volume" />
+      <LoadingOverallStatsCard type="bar" title="Volume" />
       <LoadingOverallStatsCard type="bar" title="Buyers" />
       <LoadingOverallStatsCard type="bar" title="Sellers" />
     </>

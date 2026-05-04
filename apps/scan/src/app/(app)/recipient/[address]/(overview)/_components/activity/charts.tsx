@@ -100,8 +100,8 @@ export const ActivityCharts: React.FC<Props> = ({ address }) => {
             amount: formatTokenAmount(BigInt(overallStats.total_amount)),
           },
           items: {
-            type: 'area',
-            areas: [
+            type: 'bar',
+            bars: [
               {
                 dataKey: 'total_amount',
                 color: 'var(--color-primary)',
@@ -169,7 +169,7 @@ export const LoadingActivityCharts = () => {
     <LoadingMultiCharts
       tabs={[
         { type: 'bar', label: 'Transactions' },
-        { type: 'area', label: 'Volume' },
+        { type: 'bar', label: 'Volume' },
         { type: 'bar', label: 'Buyers' },
       ]}
     />
