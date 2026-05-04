@@ -6,7 +6,7 @@ import { useSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/hook';
 import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
 
-import { columns } from './columns';
+import { featuredServiceColumns as columns } from '../featured-columns';
 import { api } from '@/trpc/client';
 
 export const KnownSellersTable = () => {
