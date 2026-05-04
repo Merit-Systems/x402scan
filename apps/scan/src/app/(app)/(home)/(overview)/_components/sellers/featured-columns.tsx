@@ -24,7 +24,7 @@ import {
 import {
   KnownSellerChart,
   LoadingKnownSellerChart,
-} from '../../(overview)/_components/sellers/known-sellers/chart';
+} from './known-sellers/chart';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
 
@@ -46,11 +46,11 @@ import type { SearchResultEndpoint } from '@/lib/discover/search';
 type BazaarItem =
   RouterOutputs['public']['sellers']['bazaar']['list']['items'][number];
 
-export type DiscoverColumnType = BazaarItem & {
+export type FeaturedServiceItem = BazaarItem & {
   searchEndpoint?: SearchResultEndpoint;
 };
 
-export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
+export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] = [
   {
     accessorKey: 'recipients',
     header: () => (
@@ -217,7 +217,7 @@ export const discoverColumns: ExtendedColumnDef<DiscoverColumnType>[] = [
  * exists. Address(es) and search-endpoint summary live in a hover tooltip so
  * the cell stays scannable.
  */
-const ServerCell: React.FC<{ item: DiscoverColumnType }> = ({ item }) => {
+const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
   const origin = item.origins[0];
   if (!origin) return null;
 

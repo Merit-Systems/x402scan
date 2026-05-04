@@ -7,11 +7,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Address, Addresses } from '@/components/ui/address';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
-import { cn, decodeHtmlEntities } from '@/lib/utils';
+import { decodeHtmlEntities } from '@/lib/utils';
 
 import type { ResourceOrigin } from '@x402scan/scan-db/types';
 import type { MixedAddress } from '@/types/address';
@@ -140,18 +139,6 @@ export const Origin: React.FC<OriginProps> = ({
           disableCopy={disableCopy}
         />
       }
-    />
-  );
-};
-
-export const OriginsSkeleton = () => {
-  return (
-    <OriginsContainer
-      Icon={({ className }) => (
-        <Skeleton className={cn('rounded-full', className)} />
-      )}
-      title={<Skeleton className="h-[14px] w-32 my-[3px]" />}
-      address={<Skeleton className="h-3 w-20 my-[2px]" />}
     />
   );
 };

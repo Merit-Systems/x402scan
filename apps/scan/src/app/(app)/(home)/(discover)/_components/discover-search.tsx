@@ -11,7 +11,7 @@ import { api } from '@/trpc/client';
 import { InlineSearchSuggestions } from '@/app/(app)/_components/search/inline-search-suggestions';
 
 import { DataTable } from '@/components/ui/data-table';
-import { discoverColumns } from './columns';
+import { featuredServiceColumns as discoverColumns } from '@/app/(app)/(home)/(overview)/_components/sellers/featured-columns';
 import { useDiscoverSearch } from './discover-search-context';
 import { ActivityTimeframe } from '@/types/timeframes';
 
