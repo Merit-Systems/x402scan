@@ -50,166 +50,169 @@ export type FeaturedServiceItem = BazaarItem & {
   searchEndpoint?: SearchResultEndpoint;
 };
 
-export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] = [
-  {
-    accessorKey: 'recipients',
-    header: () => (
-      <HeaderCell
-        Icon={Server}
-        label="Server"
-        className="mr-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'editorial',
-        }}
-      />
-    ),
-    cell: ({ row }) => <ServerCell item={row.original} />,
-    size: 280,
-    loading: () => (
-      <div className="flex items-start gap-2.5">
-        <Skeleton className="size-6 rounded-full shrink-0 mt-0.5" />
-        <div className="flex-1 space-y-1.5 py-0.5">
-          <Skeleton className="h-3.5 w-32" />
-          <Skeleton className="h-3 w-44" />
-        </div>
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'chart',
-    header: () => (
-      <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
-    ),
-    cell: ({ row }) =>
-      row.original.recipients.length > 0 ? (
-        <KnownSellerChart addresses={row.original.recipients} />
-      ) : (
-        <div className="h-[32px]" />
+export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
+  [
+    {
+      accessorKey: 'recipients',
+      header: () => (
+        <HeaderCell
+          Icon={Server}
+          label="Server"
+          className="mr-auto"
+          sorting={{
+            sortContext: SellersSortingContext,
+            sortKey: 'editorial',
+          }}
+        />
       ),
-    size: 200,
-    loading: () => <LoadingKnownSellerChart />,
-  },
-  {
-    accessorKey: 'total_amount',
-    header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Volume"
-        className="mx-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'total_amount',
-        }}
-      />
-    ),
-    // Volume is the primary economic signal — bigger, bolder, foreground color.
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-sm font-semibold tabular-nums">
-        {formatTokenAmount(BigInt(row.original.total_amount))}
-      </div>
-    ),
-    size: 110,
-    loading: () => <Skeleton className="h-5 w-16 mx-auto" />,
-  },
-  {
-    accessorKey: 'tx_count',
-    header: () => (
-      <HeaderCell
-        Icon={ArrowLeftRight}
-        label="Txns"
-        className="mx-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'tx_count',
-        }}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
-        {row.original.tx_count.toLocaleString(undefined, {
-          notation: 'compact',
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 0,
-        })}
-      </div>
-    ),
-    size: 90,
-    loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
-  },
-  {
-    accessorKey: 'unique_buyers',
-    header: () => (
-      <HeaderCell
-        Icon={Users}
-        label="Buyers"
-        className="mx-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'unique_buyers',
-        }}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
-        {row.original.unique_buyers.toLocaleString(undefined, {
-          notation: 'compact',
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 0,
-        })}
-      </div>
-    ),
-    size: 90,
-    loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
-  },
-  {
-    accessorKey: 'latest_block_timestamp',
-    header: () => (
-      <HeaderCell
-        Icon={Calendar}
-        label="Latest"
-        className="mx-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'latest_block_timestamp',
-        }}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
-        {row.original.latest_block_timestamp
-          ? formatCompactAgo(row.original.latest_block_timestamp)
-          : '–'}
-      </div>
-    ),
-    size: 90,
-    loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
-  },
-  {
-    accessorKey: 'chains',
-    header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
-    cell: ({ row }) => (
-      <Chains
-        chains={row.original.chains}
-        iconClassName="size-4"
-        className="mx-auto justify-center"
-      />
-    ),
-    size: 70,
-    loading: () => <Skeleton className="size-4 mx-auto" />,
-  },
-  {
-    accessorKey: 'tryIt',
-    header: () => <></>,
-    cell: ({ row }) => {
-      const origin = row.original.origins[0]?.origin;
-      if (!origin) return null;
-      return <TryItButton origin={origin} />;
+      cell: ({ row }) => <ServerCell item={row.original} />,
+      size: 280,
+      loading: () => (
+        <div className="flex items-start gap-2.5">
+          <Skeleton className="size-6 rounded-full shrink-0 mt-0.5" />
+          <div className="flex-1 space-y-1.5 py-0.5">
+            <Skeleton className="h-3.5 w-32" />
+            <Skeleton className="h-3 w-44" />
+          </div>
+        </div>
+      ),
     },
-    size: 90,
-    loading: () => <Skeleton className="h-7 w-16 mx-auto rounded-md" />,
-  },
-];
+    {
+      accessorKey: 'chart',
+      header: () => (
+        <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
+      ),
+      cell: ({ row }) =>
+        row.original.recipients.length > 0 ? (
+          <KnownSellerChart addresses={row.original.recipients} />
+        ) : (
+          <div className="h-[32px]" />
+        ),
+      size: 200,
+      loading: () => <LoadingKnownSellerChart />,
+    },
+    {
+      accessorKey: 'total_amount',
+      header: () => (
+        <HeaderCell
+          Icon={DollarSign}
+          label="Volume"
+          className="mx-auto"
+          sorting={{
+            sortContext: SellersSortingContext,
+            sortKey: 'total_amount',
+          }}
+        />
+      ),
+      // Volume is the primary economic signal — bigger, bolder, foreground color.
+      cell: ({ row }) => (
+        <div className="text-center font-mono text-sm font-semibold tabular-nums">
+          {formatTokenAmount(BigInt(row.original.total_amount))}
+        </div>
+      ),
+      size: 110,
+      loading: () => <Skeleton className="h-5 w-16 mx-auto" />,
+    },
+    {
+      accessorKey: 'tx_count',
+      header: () => (
+        <HeaderCell
+          Icon={ArrowLeftRight}
+          label="Txns"
+          className="mx-auto"
+          sorting={{
+            sortContext: SellersSortingContext,
+            sortKey: 'tx_count',
+          }}
+        />
+      ),
+      cell: ({ row }) => (
+        <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
+          {row.original.tx_count.toLocaleString(undefined, {
+            notation: 'compact',
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 0,
+          })}
+        </div>
+      ),
+      size: 90,
+      loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
+    },
+    {
+      accessorKey: 'unique_buyers',
+      header: () => (
+        <HeaderCell
+          Icon={Users}
+          label="Buyers"
+          className="mx-auto"
+          sorting={{
+            sortContext: SellersSortingContext,
+            sortKey: 'unique_buyers',
+          }}
+        />
+      ),
+      cell: ({ row }) => (
+        <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
+          {row.original.unique_buyers.toLocaleString(undefined, {
+            notation: 'compact',
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 0,
+          })}
+        </div>
+      ),
+      size: 90,
+      loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
+    },
+    {
+      accessorKey: 'latest_block_timestamp',
+      header: () => (
+        <HeaderCell
+          Icon={Calendar}
+          label="Latest"
+          className="mx-auto"
+          sorting={{
+            sortContext: SellersSortingContext,
+            sortKey: 'latest_block_timestamp',
+          }}
+        />
+      ),
+      cell: ({ row }) => (
+        <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
+          {row.original.latest_block_timestamp
+            ? formatCompactAgo(row.original.latest_block_timestamp)
+            : '–'}
+        </div>
+      ),
+      size: 90,
+      loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
+    },
+    {
+      accessorKey: 'chains',
+      header: () => (
+        <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />
+      ),
+      cell: ({ row }) => (
+        <Chains
+          chains={row.original.chains}
+          iconClassName="size-4"
+          className="mx-auto justify-center"
+        />
+      ),
+      size: 70,
+      loading: () => <Skeleton className="size-4 mx-auto" />,
+    },
+    {
+      accessorKey: 'tryIt',
+      header: () => <></>,
+      cell: ({ row }) => {
+        const origin = row.original.origins[0]?.origin;
+        if (!origin) return null;
+        return <TryItButton origin={origin} />;
+      },
+      size: 90,
+      loading: () => <Skeleton className="h-7 w-16 mx-auto rounded-md" />,
+    },
+  ];
 
 /**
  * Server cell — title (curated) + description on top, hostname tucked
