@@ -167,7 +167,7 @@ export const DiscoverSearchResults = () => {
         <Button variant="outline" size="lg" asChild>
           <a href="/resources/register">
             <Plus className="size-4" />
-            Register Resource
+            Add your API
           </a>
         </Button>
       </div>

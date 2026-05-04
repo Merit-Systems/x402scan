@@ -23,7 +23,7 @@ export const DiscoverHeading = () => {
           <Link href="/resources/register" className="hidden md:block shrink-0">
             <Button size="sm" className="h-9">
               <Plus className="size-4" />
-              Register Resource
+              Add your API
             </Button>
           </Link>
         </div>
@@ -38,7 +38,7 @@ export const DiscoverHeading = () => {
       <Link href="/resources/register" className="md:hidden">
         <Button size="sm" className="w-full h-9">
           <Plus className="size-4" />
-          Register Resource
+          Add your API
         </Button>
       </Link>
     </HeadingContainer>
