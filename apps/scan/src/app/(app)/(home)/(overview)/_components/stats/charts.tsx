@@ -72,8 +72,8 @@ export const OverallCharts = () => {
         title="Volume"
         value={formatTokenAmount(BigInt(overallStats.total_amount))}
         items={{
-          type: 'area',
-          areas: [{ dataKey: 'totalAmount', color: 'var(--color-primary)' }],
+          type: 'bar',
+          bars: [{ dataKey: 'totalAmount', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
@@ -149,7 +149,7 @@ export const LoadingOverallCharts = () => {
   return (
     <>
       <LoadingOverallStatsCard type="bar" title="Transactions" />
-      <LoadingOverallStatsCard type="area" title="Volume" />
+      <LoadingOverallStatsCard type="bar" title="Volume" />
       <LoadingOverallStatsCard type="bar" title="Buyers" />
       <LoadingOverallStatsCard type="bar" title="Sellers" />
     </>
