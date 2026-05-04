@@ -18,22 +18,26 @@ import type { Chain } from '@/types/chain';
 
 interface Props {
   chain?: Chain;
+  initialTimeframe?: ActivityTimeframe;
 }
 
-export const OverallStats: React.FC<Props> = ({ chain }) => {
+export const OverallStats: React.FC<Props> = ({
+  chain,
+  initialTimeframe = ActivityTimeframe.OneDay,
+}) => {
   void api.public.stats.overall.prefetch({
-    timeframe: ActivityTimeframe.OneDay,
+    timeframe: initialTimeframe,
     chain,
   });
   void api.public.stats.bucketed.prefetch({
-    timeframe: ActivityTimeframe.OneDay,
+    timeframe: initialTimeframe,
     numBuckets: 48,
     chain,
   });
 
   return (
     <HydrateClient>
-      <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
+      <TimeRangeProvider initialTimeframe={initialTimeframe}>
         <ActivityContainer>
           <ErrorBoundary
             fallback={<p>There was an error loading the activity data</p>}

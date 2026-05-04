@@ -5,7 +5,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Body, Section } from '@/app/_components/layout/page-utils';
 
 import { OverallStats } from '../(overview)/_components/stats';
-import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
+// import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
 import { DiscoverHeading } from './_components/heading';
 
 import { api, HydrateClient } from '@/trpc/server';
@@ -43,7 +43,7 @@ export default async function DiscoverPage({
     pagination: {
       page_size: 100,
     },
-    timeframe: ActivityTimeframe.OneDay,
+    timeframe: ActivityTimeframe.ThirtyDays,
     sorting: defaultSellersSorting,
     originUrls,
   });
@@ -51,15 +51,18 @@ export default async function DiscoverPage({
   return (
     <HydrateClient>
       <SellersSortingProvider initialSorting={defaultSellersSorting}>
-        <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
+        <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
           <div>
             <DiscoverHeading />
             <Body>
               <DiscoverPageContent>
-                <AgentCashAnnouncementBanner />
-                <OverallStats chain={chain} />
+                {/* <AgentCashAnnouncementBanner /> */}
+                <OverallStats
+                  chain={chain}
+                  initialTimeframe={ActivityTimeframe.ThirtyDays}
+                />
                 <Section
-                  title="Top Sellers"
+                  title="Featured Services"
                   description="x402scan curated services"
                   actions={
                     <div className="flex items-center gap-2">

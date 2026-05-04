@@ -8,7 +8,6 @@ import { LatestTransactions } from '../(overview)/_components/latest-transaction
 import { AllSellers } from '../(overview)/_components/sellers/all-sellers';
 import { AllBuyers } from '../(overview)/_components/buyers';
 import { getChainForPage } from '@/app/(app)/_lib/chain/page';
-import { TopAgents } from '../(overview)/_components/top-agents';
 
 export default async function AllPage({
   searchParams,
@@ -24,7 +23,6 @@ export default async function AllPage({
         <OverallStats chain={chain} />
         <TopServers chain={chain} />
         <TopFacilitators chain={chain} />
-        <TopAgents />
         <LatestTransactions chain={chain} />
         <AllSellers chain={chain} />
         <AllBuyers chain={chain} />
