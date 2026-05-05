@@ -1,28 +1,8 @@
-import type { Network } from '@x402/core/types';
+import {
+  PaymentRequirementsV2Schema,
+  ResourceInfoSchema,
+} from '@x402/core/schemas';
 import { z as z3 } from 'zod3';
-
-// NOTE(shafu): this was changed in V2, it does not support network names like base
-const ChainIdSchema = z3.custom<Network>(
-  val =>
-    typeof val === 'string' && /^[-a-z0-9]{3,8}:[-_a-zA-Z0-9]{1,64}$/.test(val),
-  { message: 'Invalid CAIP-2 network format' }
-);
-
-const resourceSchemaV2 = z3.object({
-  url: z3.string(),
-  description: z3.string().optional(),
-  mimeType: z3.string().optional(),
-});
-
-const paymentRequirementsSchemaV2 = z3.object({
-  scheme: z3.string(),
-  network: ChainIdSchema,
-  asset: z3.string(),
-  amount: z3.string(),
-  payTo: z3.string(),
-  maxTimeoutSeconds: z3.number(),
-  extra: z3.record(z3.string(), z3.any()).optional().nullable(), // Match @x402/core OptionalAny
-});
 
 const extensionsSchemaV2 = z3.object({
   bazaar: z3
@@ -41,8 +21,8 @@ const extensionsSchemaV2 = z3.object({
 export const x402ResponseSchemaV2 = z3.object({
   x402Version: z3.literal(2),
   error: z3.string().nullish(),
-  accepts: z3.array(paymentRequirementsSchemaV2).optional(),
-  resource: resourceSchemaV2.optional(),
+  accepts: z3.array(PaymentRequirementsV2Schema).optional(),
+  resource: ResourceInfoSchema.optional(),
   extensions: extensionsSchemaV2.nullish(),
 });
 

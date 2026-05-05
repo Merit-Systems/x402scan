@@ -324,21 +324,29 @@ describe('parseV2', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.errors.length).toBeGreaterThan(0);
+      expect(result.errors.some(e => e.startsWith('accepts.0.network'))).toBe(
+        true
+      );
     }
   });
 
   it('should return error for V1 version number', () => {
+    // A valid V1 response: parseX402Response dispatches by x402Version, so this
+    // parses successfully against the V1 schema. The V2-narrowing helper then
+    // rejects it for not being V2.
     const v1Response = {
       x402Version: 1,
       accepts: [
         {
           scheme: 'exact',
           network: 'eip155:8453',
-          amount: '10000',
+          maxAmountRequired: '10000',
+          resource: 'https://api.example.com/v1',
+          description: 'V1 endpoint',
           payTo: '0x1234567890123456789012345678901234567890',
           maxTimeoutSeconds: 60,
           asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          extra: {},
         },
       ],
     };
@@ -347,7 +355,7 @@ describe('parseV2', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.errors.some(e => e.includes('x402Version'))).toBe(true);
+      expect(result.errors).toEqual(['Not a V2 response']);
     }
   });
 
@@ -412,6 +420,32 @@ describe('parseV2', () => {
     if (result.success) {
       expect(result.data.accepts?.[0]?.extra?.name).toBe('USD Coin');
       expect(result.data.accepts?.[0]?.extra?.customField).toBe('custom value');
+    }
+  });
+
+  it('should parse non-exact V2 schemes such as upto', () => {
+    const response = {
+      x402Version: 2,
+      accepts: [
+        {
+          scheme: 'upto',
+          network: 'eip155:8453',
+          amount: '10000',
+          payTo: '0x1234567890123456789012345678901234567890',
+          maxTimeoutSeconds: 60,
+          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        },
+      ],
+      resource: {
+        url: 'https://api.example.com/upto',
+      },
+    };
+
+    const result = parseV2(response);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.accepts?.[0]?.scheme).toBe('upto');
     }
   });
 });

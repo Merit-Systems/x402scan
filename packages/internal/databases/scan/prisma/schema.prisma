@@ -104,10 +104,6 @@ model Resources {
   @@index([deprecatedAt])
 }
 
-enum AcceptsScheme {
-  exact
-}
-
 enum AcceptsNetwork {
   base_sepolia
   avalanche_fuji
@@ -125,7 +121,7 @@ enum AcceptsNetwork {
 model Accepts {
   id                String         @id @default(uuid())
   resourceId        String
-  scheme            AcceptsScheme
+  scheme            String
   description       String
   network           AcceptsNetwork
   maxAmountRequired BigInt
