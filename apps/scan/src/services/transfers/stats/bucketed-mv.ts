@@ -23,6 +23,12 @@ const getBucketedStatisticsMVUncached = async (
 ) => {
   const { timeframe, recipients } = input;
 
+  // An explicitly-empty include list means "include nothing" — short-circuit
+  // before the unfiltered global MV gets queried.
+  if (recipients?.include?.length === 0) {
+    return [];
+  }
+
   const mvTimeframe = getMaterializedViewSuffix(timeframe);
 
   // Use recipient-specific materialized view when filtering by recipients
