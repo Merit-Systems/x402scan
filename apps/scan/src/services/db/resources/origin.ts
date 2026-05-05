@@ -4,8 +4,38 @@ import { scanDb } from '@x402scan/scan-db';
 
 import { parseX402Response } from '@/lib/x402';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
+import { SUPPORTED_CHAINS } from '@/types/chain';
 
-import type { Prisma } from '@x402scan/scan-db';
+import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
+
+const SUPPORTED_ACCEPT_NETWORKS = SUPPORTED_CHAINS.map(
+  chain => chain as AcceptsNetwork
+);
+
+function getDisplayableAcceptsWhere({
+  chain,
+  address,
+}: {
+  chain?: z.infer<typeof optionalChainSchema>;
+  address?: z.infer<typeof mixedAddressSchema>;
+}): Prisma.AcceptsWhereInput {
+  return {
+    ...(address ? { payTo: address } : {}),
+    ...(chain
+      ? { network: chain as AcceptsNetwork }
+      : { network: { in: SUPPORTED_ACCEPT_NETWORKS } }),
+  };
+}
+
+const displayableResourceWhere: Prisma.ResourcesWhereInput = {
+  deprecatedAt: null,
+  response: {
+    isNot: null,
+  },
+  accepts: {
+    some: getDisplayableAcceptsWhere({}),
+  },
+};
 
 const ogImageSchema = z.object({
   url: z.url(),
@@ -101,16 +131,14 @@ export const listOriginsSchema = z.object({
 
 export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
   const { chain, address } = input;
+  const acceptsWhere = getDisplayableAcceptsWhere({ chain, address });
   const origins = await scanDb.resourceOrigin.findMany({
     where: {
       resources: {
         some: {
           deprecatedAt: null,
           accepts: {
-            some: {
-              ...(address ? { payTo: address } : {}),
-              ...(chain ? { network: chain } : {}),
-            },
+            some: acceptsWhere,
           },
         },
       },
@@ -130,10 +158,7 @@ export const listOriginsWithResources = async (
   input: z.infer<typeof listOriginsWithResourcesSchema>
 ) => {
   const { chain, address, originIds } = input;
-  const acceptsWhere: Prisma.AcceptsWhereInput = {
-    ...(address ? { payTo: address } : {}),
-    ...(chain ? { network: chain } : {}),
-  };
+  const acceptsWhere = getDisplayableAcceptsWhere({ chain, address });
   const origins = await scanDb.resourceOrigin.findMany({
     where: {
       ...(originIds ? { id: { in: originIds } } : {}),
@@ -214,6 +239,7 @@ export const searchOrigins = async (
   input: z.input<typeof searchOriginsSchema>
 ) => {
   const { search, limit } = searchOriginsSchema.parse(input);
+  const acceptsWhere = getDisplayableAcceptsWhere({});
   return await scanDb.resourceOrigin.findMany({
     where: {
       origin: {
@@ -224,7 +250,7 @@ export const searchOrigins = async (
         some: {
           deprecatedAt: null,
           accepts: {
-            some: {},
+            some: acceptsWhere,
           },
         },
       },
@@ -233,9 +259,13 @@ export const searchOrigins = async (
       resources: {
         where: {
           deprecatedAt: null,
+          accepts: {
+            some: acceptsWhere,
+          },
         },
         include: {
           accepts: {
+            where: acceptsWhere,
             select: {
               payTo: true,
             },
@@ -275,9 +305,7 @@ export const getOriginMetadata = async (id: string) => {
     where: { id },
     select: {
       resources: {
-        where: {
-          deprecatedAt: null,
-        },
+        where: displayableResourceWhere,
         select: {
           tags: {
             select: {
@@ -285,6 +313,7 @@ export const getOriginMetadata = async (id: string) => {
             },
           },
           accepts: {
+            where: getDisplayableAcceptsWhere({}),
             select: {
               payTo: true,
             },
@@ -299,9 +328,7 @@ export const getOriginMetadata = async (id: string) => {
       _count: {
         select: {
           resources: {
-            where: {
-              deprecatedAt: null,
-            },
+            where: displayableResourceWhere,
           },
         },
       },
