@@ -12,23 +12,18 @@ import {
 } from '@/app/(app)/(home)/(overview)/_components/sellers/featured-columns';
 import { api } from '@/trpc/client';
 
-interface Props {
-  originUrls: string[];
-}
-
-export const DiscoverSellersTable: React.FC<Props> = ({ originUrls }) => {
+export const DiscoverSellersTable: React.FC = () => {
   const { sorting } = useSellersSorting();
   const { timeframe } = useTimeRangeContext();
   const { chain } = useChain();
 
-  const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
+  const [topSellers] = api.public.sellers.bazaar.featured.useSuspenseQuery({
     chain,
     pagination: {
-      page_size: 100,
+      page_size: 400,
     },
     timeframe,
     sorting,
-    originUrls,
   });
 
   return (

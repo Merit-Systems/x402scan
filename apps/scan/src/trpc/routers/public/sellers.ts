@@ -9,7 +9,11 @@ import {
 } from '@/services/transfers/sellers/list-mv';
 
 import { listBazaarOrigins } from '@/services/db/bazaar/origins';
-import { listBazaarOriginsInputSchema } from '@/services/db/bazaar/schema';
+import {
+  listBazaarOriginsInputSchema,
+  listFeaturedBazaarOriginsInputSchema,
+} from '@/services/db/bazaar/schema';
+import { getDiscoverOrigins } from '@/lib/discover/origins';
 import { sellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/overall-mv';
 import { bucketedSellerStatisticsMVInputSchema } from '@/services/transfers/sellers/stats/bucketed-mv';
 import { getOverallSellerStatisticsMV } from '@/services/transfers/sellers/stats/overall-mv';
@@ -51,6 +55,12 @@ export const sellersRouter = createTRPCRouter({
       .input(listBazaarOriginsInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
         return await listBazaarOrigins(input, pagination);
+      }),
+    featured: paginatedProcedure
+      .input(listFeaturedBazaarOriginsInputSchema)
+      .query(async ({ input, ctx: { pagination } }) => {
+        const originUrls = await getDiscoverOrigins();
+        return await listBazaarOrigins({ ...input, originUrls }, pagination);
       }),
     stats: {
       // Use origin_stats_aggregated_* views which are pre-joined with payto_origin_map
