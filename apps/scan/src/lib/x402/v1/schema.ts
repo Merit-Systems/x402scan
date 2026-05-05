@@ -1,12 +1,25 @@
 import {
-  ChainIdToNetwork,
-  HTTPRequestStructureSchema,
-  PaymentRequirementsSchema,
-  x402ResponseSchema,
-} from 'x402/types';
+  PaymentRequiredV1Schema,
+  PaymentRequirementsV1Schema,
+} from '@x402/core/schemas';
 import { z as z3 } from 'zod3';
 
+import { ChainIdToNetwork } from '../chain-mapping';
 import { FieldDefSchema } from '../shared';
+
+// Inlined from the v1 `x402` SDK. v2 dropped the typed HTTP request structure
+// in favor of an opaque `inputSchema: Record<string, unknown>`, so there's no
+// equivalent in `@x402/*` to import.
+const HTTPRequestStructureSchema = z3.object({
+  type: z3.literal('http'),
+  method: z3.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD']),
+  queryParams: z3.record(z3.string(), z3.string()).optional(),
+  bodyType: z3
+    .enum(['json', 'form-data', 'multipart-form-data', 'text', 'binary'])
+    .optional(),
+  bodyFields: z3.record(z3.string(), z3.any()).optional(),
+  headerFields: z3.record(z3.string(), z3.any()).optional(),
+});
 
 export const outputSchemaV1 = z3.object({
   input: HTTPRequestStructureSchema.omit({
@@ -45,21 +58,19 @@ const networkSchemaV1 = z3.union([
     .transform(v => ChainIdToNetwork[Number(v.split(':')[1])]),
 ]);
 
-export const paymentRequirementsSchemaV1 = PaymentRequirementsSchema.extend({
+export const paymentRequirementsSchemaV1 = PaymentRequirementsV1Schema.extend({
   network: networkSchemaV1,
   outputSchema: outputSchemaV1.optional(),
 });
 
-export const x402ResponseSchemaV1 = x402ResponseSchema
-  .omit({
-    error: true,
-    accepts: true,
-  })
-  .extend({
-    x402Version: z3.literal(1).default(1),
-    error: z3.string().nullish(),
-    accepts: z3.array(paymentRequirementsSchemaV1).optional(),
-  });
+export const x402ResponseSchemaV1 = PaymentRequiredV1Schema.omit({
+  error: true,
+  accepts: true,
+}).extend({
+  x402Version: z3.literal(1).default(1),
+  error: z3.string().nullish(),
+  accepts: z3.array(paymentRequirementsSchemaV1).optional(),
+});
 
 export type X402ResponseV1 = z3.infer<typeof x402ResponseSchemaV1>;
 export type OutputSchemaV1 = z3.infer<typeof outputSchemaV1>;

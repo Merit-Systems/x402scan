@@ -7,7 +7,7 @@ import { toPaginatedResponse } from '@/lib/pagination';
 import { mixedAddressSchema, supportedChainSchema } from '@/lib/schemas';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
-import { ChainIdToNetwork } from 'x402/types';
+import { ChainIdToNetwork } from '@/lib/x402/chain-mapping';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';

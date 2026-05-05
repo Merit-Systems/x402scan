@@ -138,7 +138,6 @@
     "vaul": "^1.1.2",
     "viem": "catalog:",
     "wagmi": "^2.17.5",
-    "x402": "catalog:x402-v1",
     "zod": "catalog:",
     "zod3": "npm:zod@^3.24.2"
   },

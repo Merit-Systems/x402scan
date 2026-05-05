@@ -122,24 +122,37 @@ export const registerResource = async (
     );
   }
 
-  const mappedAccepts = x402Options
-    .map(opt => ({
-      scheme: (opt.scheme ?? 'exact') as 'exact',
-      network: normalizeChainId(opt.network).replace(
-        '-',
-        '_'
-      ) as AcceptsNetwork,
-      maxAmountRequired:
-        ('amount' in opt ? opt.amount : opt.maxAmountRequired) ?? '0',
-      payTo: opt.payTo ?? '',
-      asset: opt.asset,
-      maxTimeoutSeconds: opt.maxTimeoutSeconds ?? 60,
-      outputSchema: outputSchemaForDb,
-      extra: undefined,
-    }))
-    .filter(accept =>
-      (SUPPORTED_CHAINS as readonly string[]).includes(accept.network)
+  const allMappedAccepts = x402Options.map(opt => ({
+    scheme: (opt.scheme ?? 'exact') as 'exact',
+    network: normalizeChainId(opt.network).replace('-', '_') as AcceptsNetwork,
+    maxAmountRequired:
+      ('amount' in opt ? opt.amount : opt.maxAmountRequired) ?? '0',
+    payTo: opt.payTo ?? '',
+    asset: opt.asset,
+    maxTimeoutSeconds: opt.maxTimeoutSeconds ?? 60,
+    outputSchema: outputSchemaForDb,
+    extra: undefined,
+  }));
+
+  const mappedAccepts = allMappedAccepts.filter(accept =>
+    (SUPPORTED_CHAINS as readonly string[]).includes(accept.network)
+  );
+
+  if (mappedAccepts.length === 0) {
+    const advertisedNetworks = Array.from(
+      new Set(allMappedAccepts.map(a => a.network))
     );
+    return {
+      success: false as const,
+      data: advisory.paymentRequiredBody,
+      error: {
+        type: 'parseResponse' as const,
+        parseErrors: [
+          `No supported networks advertised. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]. Testnets are not indexed.`,
+        ],
+      },
+    };
+  }
 
   const x402Version = x402Options[0]?.version ?? 1;
 
