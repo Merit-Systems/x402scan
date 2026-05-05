@@ -59,7 +59,10 @@ export async function searchDiscover(query: string): Promise<SearchResult[]> {
   url.searchParams.set('q', query);
   url.searchParams.set('protocol', 'x402');
   url.searchParams.set('limit', '20');
-  url.searchParams.set('broad', 'true');
+  // broad=true would include resources without usage signals; pure embedding
+  // similarity then surfaces low-quality origins. Restricting to hasUsage
+  // resources cuts the noise.
+  url.searchParams.set('broad', 'false');
 
   const res = await fetch(url, {
     method: 'GET',
