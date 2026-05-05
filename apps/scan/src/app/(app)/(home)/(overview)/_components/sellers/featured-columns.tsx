@@ -270,17 +270,20 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
   const hasTooltipContent =
     recipients.length > 0 || endpoint !== undefined || otherOrigins.length > 0;
 
-  const trigger = (
-    <Link
-      href={`/server/${origin.id}`}
-      className="flex items-start gap-2.5 min-w-0 group py-0.5"
-    >
+  // Stub rows from search results have id === origin URL (no x402scan record
+  // exists yet). Linking to /server/<url> 404s, so jump out to the origin.
+  const isExternal = origin.id.startsWith('http');
+  const innerContent = (
+    <>
       <Favicon url={origin.favicon} className="size-6 shrink-0 mt-0.5" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5 min-w-0">
           <span className="truncate text-sm font-medium group-hover:text-primary transition-colors">
             {title}
           </span>
+          {isExternal ? (
+            <ArrowUpRight className="size-3 text-muted-foreground shrink-0" />
+          ) : null}
           {otherOrigins.length > 0 ? (
             <span className="text-[10px] font-mono text-muted-foreground shrink-0">
               +{otherOrigins.length}
@@ -298,6 +301,24 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
           </div>
         ) : null}
       </div>
+    </>
+  );
+
+  const trigger = isExternal ? (
+    <a
+      href={origin.origin}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-start gap-2.5 min-w-0 group py-0.5"
+    >
+      {innerContent}
+    </a>
+  ) : (
+    <Link
+      href={`/server/${origin.id}`}
+      className="flex items-start gap-2.5 min-w-0 group py-0.5"
+    >
+      {innerContent}
     </Link>
   );
 
