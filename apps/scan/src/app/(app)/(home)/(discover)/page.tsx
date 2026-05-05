@@ -41,7 +41,7 @@ export default async function DiscoverPage({
   void api.public.sellers.bazaar.list.prefetch({
     chain,
     pagination: {
-      page_size: 100,
+      page_size: 400,
     },
     timeframe: ActivityTimeframe.ThirtyDays,
     sorting: defaultSellersSorting,

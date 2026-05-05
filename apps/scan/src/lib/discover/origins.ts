@@ -12,7 +12,7 @@ function getAgentCashSql() {
   return neon(connectionUrl);
 }
 
-const CACHE_KEY = 'discover:origins:all';
+const CACHE_KEY = 'discover:origins:catalog:v1';
 
 const getDiscoverOriginsUncached = async (): Promise<string[]> => {
   const sql = getAgentCashSql();
@@ -24,12 +24,20 @@ const getDiscoverOriginsUncached = async (): Promise<string[]> => {
   }
 
   const t0 = performance.now();
+  // Source: AgentCash catalog. We want every origin that supports x402 AND has
+  // observed x402 usage (trusted txns or recent last-seen). Ranked by the same
+  // trust-weighted score AgentCash's catalog search uses as its usage signal.
   const rows = (await sql`
-    SELECT origin, protocols
-    FROM search_index
-    WHERE 'x402' = ANY(protocols)
-    ORDER BY position ASC
-  `) as { origin: string; protocols: string[] }[];
+    SELECT o.origin_url AS origin
+    FROM catalog.indexed_origins o
+    JOIN catalog.origin_usage_signals s ON s.origin_url = o.origin_url
+    WHERE 'x402' = ANY(o.protocols)
+      AND o.dismissed_at IS NULL
+      AND (s.x402_trusted_txn_count > 0 OR s.x402_last_seen_at IS NOT NULL)
+    ORDER BY s.score_weighted_txn_mass DESC NULLS LAST,
+             s.trusted_txn_count DESC,
+             o.origin_url ASC
+  `) as { origin: string }[];
   console.log(
     `[discover] getDiscoverOrigins=${(performance.now() - t0).toFixed(0)}ms (${rows.length} origins)`
   );
@@ -38,8 +46,8 @@ const getDiscoverOriginsUncached = async (): Promise<string[]> => {
 };
 
 /**
- * Fetches tier-1 x402 origin URLs from the agent-cash search index.
- * Cached in Redis for the standard cache duration.
+ * Fetches x402-supporting, x402-active origins from the AgentCash catalog
+ * (catalog.indexed_origins ⨝ catalog.origin_usage_signals). Cached in Redis.
  */
 export const getDiscoverOrigins = async (): Promise<string[]> => {
   const redis = getRedisClient();

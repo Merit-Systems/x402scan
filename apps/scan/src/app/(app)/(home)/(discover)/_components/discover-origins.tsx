@@ -24,7 +24,7 @@ export const DiscoverSellersTable: React.FC<Props> = ({ originUrls }) => {
   const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
     chain,
     pagination: {
-      page_size: 100,
+      page_size: 400,
     },
     timeframe,
     sorting,
