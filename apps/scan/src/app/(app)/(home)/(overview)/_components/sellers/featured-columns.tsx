@@ -211,7 +211,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
               href="https://agentcash.dev"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Call all x402 resources through AgentCash"
+              aria-label="Call all x402 resources with AgentCash"
               className="mx-auto flex size-7 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Image
@@ -231,7 +231,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
             </a>
           </TooltipTrigger>
           <TooltipContent side="left" className="max-w-xs">
-            Call all x402 resources through AgentCash.
+            Call all x402 resources with AgentCash.
           </TooltipContent>
         </Tooltip>
       ),
