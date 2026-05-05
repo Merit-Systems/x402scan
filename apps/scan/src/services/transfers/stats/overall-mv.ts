@@ -15,7 +15,7 @@ const getOverallStatisticsMVUncached = async (
 
   // An explicitly-empty include list means "include nothing" — short-circuit
   // before the unfiltered global MV gets queried.
-  if (recipients?.include !== undefined && recipients.include.length === 0) {
+  if (recipients?.include?.length === 0) {
     return {
       total_transactions: 0,
       total_amount: 0,
