@@ -24,23 +24,15 @@ const getDiscoverOriginsUncached = async (): Promise<string[]> => {
   }
 
   const t0 = performance.now();
-  // Source: AgentCash catalog. We want every origin that supports x402, has at
-  // least one searchable x402 resource, and has observed x402 usage (trusted
-  // txns or recent last-seen). Ranked by the same trust-weighted score
-  // AgentCash's catalog search uses as its usage signal.
+  // Source: AgentCash catalog. We want every origin that supports x402 AND has
+  // observed x402 usage (trusted txns or recent last-seen). Ranked by the same
+  // trust-weighted score AgentCash's catalog search uses as its usage signal.
   const rows = (await sql`
     SELECT o.origin_url AS origin
     FROM catalog.indexed_origins o
     JOIN catalog.origin_usage_signals s ON s.origin_url = o.origin_url
     WHERE 'x402' = ANY(o.protocols)
       AND (s.x402_trusted_txn_count > 0 OR s.x402_last_seen_at IS NOT NULL)
-      AND EXISTS (
-        SELECT 1
-        FROM catalog.indexed_resources r
-        WHERE r.origin_url = o.origin_url
-          AND 'x402' = ANY(r.protocols)
-          AND r.search_excluded_at IS NULL
-      )
     ORDER BY s.score_weighted_txn_mass DESC NULLS LAST,
              s.trusted_txn_count DESC,
              o.origin_url ASC
