@@ -205,22 +205,35 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
     {
       accessorKey: 'tryIt',
       header: () => (
-        <div className="flex items-center justify-center" title="AgentCash">
-          <Image
-            src="/agentcash-light.svg"
-            alt="AgentCash"
-            width={16}
-            height={16}
-            className="size-4 block dark:hidden"
-          />
-          <Image
-            src="/agentcash-dark.svg"
-            alt="AgentCash"
-            width={16}
-            height={16}
-            className="size-4 hidden dark:block"
-          />
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <a
+              href="https://agentcash.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Call all x402 resources through AgentCash"
+              className="mx-auto flex size-7 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Image
+                src="/agentcash-light.svg"
+                alt=""
+                width={16}
+                height={16}
+                className="size-4 block dark:hidden"
+              />
+              <Image
+                src="/agentcash-dark.svg"
+                alt=""
+                width={16}
+                height={16}
+                className="size-4 hidden dark:block"
+              />
+            </a>
+          </TooltipTrigger>
+          <TooltipContent side="left" className="max-w-xs">
+            Call all x402 resources through AgentCash.
+          </TooltipContent>
+        </Tooltip>
       ),
       cell: ({ row }) => {
         const origin = row.original.origins[0]?.origin;
