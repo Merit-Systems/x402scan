@@ -12,6 +12,19 @@ const getOverallStatisticsMVUncached = async (
   input: z.infer<typeof overallStatisticsMVInputSchema>
 ) => {
   const { timeframe, recipients } = input;
+
+  // An explicitly-empty include list means "include nothing" — short-circuit
+  // before the unfiltered global MV gets queried.
+  if (recipients?.include !== undefined && recipients.include.length === 0) {
+    return {
+      total_transactions: 0,
+      total_amount: 0,
+      unique_buyers: 0,
+      unique_sellers: 0,
+      latest_block_timestamp: null,
+    };
+  }
+
   const mvTimeframe = getMaterializedViewSuffix(timeframe);
 
   // Use recipient-specific materialized view when filtering by recipients
