@@ -8,7 +8,6 @@ import { ActivityTimeframe } from '@/types/timeframes';
 import { facilitatorAddresses } from '@/lib/facilitators';
 import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
 import { Chain } from '@/types/chain';
-import { getDiscoverOrigins } from '@/lib/discover/origins';
 
 import type { NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
@@ -117,23 +116,19 @@ function getHomePageTasks(
         chain,
       }),
 
-    // Discover page variant — bazaar.list filtered by curated x402 origins.
-    // The discover page passes originUrls from getDiscoverOrigins(), which
-    // produces a different cache key from the unfiltered /all variant above.
-    // This task warms both getDiscoverOrigins() (its own Redis cache) and
-    // the bazaar.list cache for that input shape.
-    async () => {
-      const originUrls = await getDiscoverOrigins();
-      return api.public.sellers.bazaar.list({
+    // Discover page variant — bazaar.featured resolves the AgentCash catalog
+    // origin set server-side, so the cache key omits the 305-element URL list.
+    // Warms both getDiscoverOrigins() (its own Redis cache) and the
+    // bazaar.list cache for the resulting input shape.
+    () =>
+      api.public.sellers.bazaar.featured({
         pagination: {
-          page_size: 100,
+          page_size: 400,
         },
         timeframe,
         sorting: defaultSellersSorting,
         chain,
-        originUrls,
-      });
-    },
+      }),
 
     // Top Servers (Bazaar) - overall stats
     // Uses origin-based MV (pre-joined), not stats.bazaar.overall which

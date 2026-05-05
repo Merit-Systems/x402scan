@@ -10,7 +10,6 @@ import { DiscoverHeading } from './_components/heading';
 
 import { api, HydrateClient } from '@/trpc/server';
 
-import { getDiscoverOrigins } from '@/lib/discover/origins';
 import { getChainForPage } from '@/app/(app)/_lib/chain/page';
 
 import {
@@ -33,19 +32,15 @@ export default async function DiscoverPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const resolvedParams = await searchParams;
-  const [chain, originUrls] = await Promise.all([
-    getChainForPage(resolvedParams),
-    getDiscoverOrigins(),
-  ]);
+  const chain = await getChainForPage(resolvedParams);
 
-  void api.public.sellers.bazaar.list.prefetch({
+  void api.public.sellers.bazaar.featured.prefetch({
     chain,
     pagination: {
       page_size: 400,
     },
     timeframe: ActivityTimeframe.ThirtyDays,
     sorting: defaultSellersSorting,
-    originUrls,
   });
 
   return (
@@ -76,7 +71,7 @@ export default async function DiscoverPage({
                     }
                   >
                     <Suspense fallback={<LoadingDiscoverSellersTable />}>
-                      <DiscoverSellersTable originUrls={originUrls} />
+                      <DiscoverSellersTable />
                     </Suspense>
                   </ErrorBoundary>
                 </Section>
