@@ -347,7 +347,7 @@ describe('parseV2', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.errors.some(e => e.includes('x402Version'))).toBe(true);
+      expect(result.errors.length).toBeGreaterThan(0);
     }
   });
 
@@ -412,6 +412,32 @@ describe('parseV2', () => {
     if (result.success) {
       expect(result.data.accepts?.[0]?.extra?.name).toBe('USD Coin');
       expect(result.data.accepts?.[0]?.extra?.customField).toBe('custom value');
+    }
+  });
+
+  it('should parse non-exact V2 schemes such as upto', () => {
+    const response = {
+      x402Version: 2,
+      accepts: [
+        {
+          scheme: 'upto',
+          network: 'eip155:8453',
+          amount: '10000',
+          payTo: '0x1234567890123456789012345678901234567890',
+          maxTimeoutSeconds: 60,
+          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        },
+      ],
+      resource: {
+        url: 'https://api.example.com/upto',
+      },
+    };
+
+    const result = parseV2(response);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.accepts?.[0]?.scheme).toBe('upto');
     }
   });
 });

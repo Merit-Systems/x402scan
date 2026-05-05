@@ -35,7 +35,6 @@ export type {
 export {
   Role,
   ResourceType,
-  AcceptsScheme,
   AcceptsNetwork,
   SessionStatus,
   ServerWalletType,

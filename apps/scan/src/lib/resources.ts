@@ -123,7 +123,7 @@ export const registerResource = async (
   }
 
   const allMappedAccepts = x402Options.map(opt => ({
-    scheme: (opt.scheme ?? 'exact') as 'exact',
+    scheme: opt.scheme ?? 'exact',
     network: normalizeChainId(opt.network).replace('-', '_') as AcceptsNetwork,
     maxAmountRequired:
       ('amount' in opt ? opt.amount : opt.maxAmountRequired) ?? '0',

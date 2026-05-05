@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { extractFieldsFromSchema } from './schema';
 import { Methods } from '@/types/x402';
-import type { InputSchema } from '@/lib/x402';
+import { normalizedAcceptSchema, type InputSchema } from '@/lib/x402';
 
 function makeInputSchema(
   overrides: Partial<InputSchema> & { method: InputSchema['method'] }
@@ -75,5 +75,20 @@ describe('extractFieldsFromSchema - protocol header filtering', () => {
     const fields = extractFieldsFromSchema(inputSchema, Methods.GET, 'query');
     expect(fields).toHaveLength(1);
     expect(fields[0]!.name).toBe('authorization');
+  });
+});
+
+describe('normalizedAcceptSchema', () => {
+  it('accepts arbitrary non-empty x402 schemes', () => {
+    const result = normalizedAcceptSchema.safeParse({
+      scheme: 'upto',
+      network: 'base',
+      maxAmountRequired: '10000',
+      payTo: '0x1234567890123456789012345678901234567890',
+      asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      maxTimeoutSeconds: 60,
+    });
+
+    expect(result.success).toBe(true);
   });
 });
