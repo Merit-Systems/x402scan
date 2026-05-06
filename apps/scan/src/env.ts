@@ -100,4 +100,5 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
   emptyStringAsUndefined: true,
+  skipValidation: process.env.VITEST === 'true',
 });

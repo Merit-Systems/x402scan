@@ -33,14 +33,14 @@ describe('parseV1', () => {
     }
   });
 
-  it('should reject object without x402Version', () => {
+  it('should default x402Version to 1 when missing', () => {
     const invalidData = { invalid: 'data' };
     const result = parseV1(invalidData);
 
-    // x402Version is required
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.errors).toBeDefined();
+    // x402Version defaults to 1 via z3.literal(1).default(1)
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.x402Version).toBe(1);
     }
   });
 
@@ -49,12 +49,12 @@ describe('parseV1', () => {
     expect(parseV1(undefined).success).toBe(false);
   });
 
-  it('should reject empty object (x402Version required)', () => {
+  it('should parse empty object with defaulted x402Version', () => {
     const result = parseV1({});
-    // x402Version is required
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.errors).toBeDefined();
+    // x402Version defaults to 1, accepts is optional, error is nullish
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.x402Version).toBe(1);
     }
   });
 });
@@ -137,8 +137,8 @@ describe('parseV1 with normalized schemas', () => {
     }
   });
 
-  it('should return error for missing outputSchema', () => {
-    const invalidResponse = {
+  it('should accept response without outputSchema (optional field)', () => {
+    const response = {
       x402Version: 1,
       accepts: [
         {
@@ -154,11 +154,13 @@ describe('parseV1 with normalized schemas', () => {
         },
       ],
     };
-    const result = parseV1(invalidResponse);
+    const result = parseV1(response);
 
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.errors.length).toBeGreaterThan(0);
+    // outputSchema is optional in the schema
+    expect(result.success).toBe(true);
+    if (result.success) {
+      const outputSchema = getOutputSchema(result.data);
+      expect(outputSchema).toBeUndefined();
     }
   });
 
@@ -171,8 +173,49 @@ describe('parseV1 with normalized schemas', () => {
     }
   });
 
-  it('should handle camelCase and snake_case field names', () => {
-    const mixedResponse = {
+  it('should handle camelCase field names in outputSchema', () => {
+    const response = {
+      x402Version: 1,
+      accepts: [
+        {
+          scheme: 'exact',
+          network: 'base',
+          maxAmountRequired: '1000',
+          resource: 'https://example.com',
+          description: 'test',
+          mimeType: 'application/json',
+          payTo: '0x1234567890123456789012345678901234567890',
+          maxTimeoutSeconds: 60,
+          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          outputSchema: {
+            input: {
+              type: 'http',
+              method: 'POST',
+              queryParams: { test: 'value' },
+              bodyFields: { body: 'test' },
+              bodyType: 'json',
+              headerFields: { auth: 'bearer' },
+            },
+          },
+        },
+      ],
+    };
+
+    const result = parseV1(response);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      const inputSchema = getOutputSchema(result.data)?.input;
+      expect(inputSchema).toBeDefined();
+      expect(inputSchema?.queryParams?.test).toEqual({ type: 'value' });
+      expect(inputSchema?.bodyFields?.body).toEqual({ type: 'test' });
+      expect(inputSchema?.bodyType).toBe('json');
+      expect(inputSchema?.headerFields?.auth).toEqual({ type: 'bearer' });
+    }
+  });
+
+  it('should strip snake_case field names (schema uses camelCase)', () => {
+    const response = {
       x402Version: 1,
       accepts: [
         {
@@ -199,16 +242,17 @@ describe('parseV1 with normalized schemas', () => {
       ],
     };
 
-    const result = parseV1(mixedResponse);
+    const result = parseV1(response);
 
     expect(result.success).toBe(true);
     if (result.success) {
       const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema).toBeDefined();
-      expect(inputSchema?.queryParams?.test).toEqual({ type: 'value' });
-      expect(inputSchema?.bodyFields?.body).toEqual({ type: 'test' });
-      expect(inputSchema?.bodyType).toBe('json');
-      expect(inputSchema?.headerFields?.auth).toEqual({ type: 'bearer' });
+      // snake_case fields are stripped by zod's "strip" mode
+      expect(inputSchema?.queryParams).toBeUndefined();
+      expect(inputSchema?.bodyFields).toBeUndefined();
+      expect(inputSchema?.bodyType).toBeUndefined();
+      expect(inputSchema?.headerFields).toBeUndefined();
     }
   });
 
