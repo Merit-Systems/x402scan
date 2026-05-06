@@ -22,7 +22,7 @@ export function Footer() {
             href="https://merit.systems"
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2.5 group"
+            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 group"
           >
             <span className="text-xs font-medium tracking-wide text-muted-foreground group-hover:text-foreground transition-colors uppercase">
               Built by
