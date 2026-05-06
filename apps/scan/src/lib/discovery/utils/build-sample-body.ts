@@ -13,6 +13,7 @@
  */
 
 const MAX_DEPTH = 8;
+const SAMPLE_EVM_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 type JsonSchema = Record<string, unknown>;
 
@@ -24,7 +25,11 @@ function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
 }
 
-function buildFromSchema(schema: unknown, depth: number): unknown {
+function buildFromSchema(
+  schema: unknown,
+  depth: number,
+  propertyName?: string
+): unknown {
   if (depth > MAX_DEPTH || !isRecord(schema)) return null;
 
   if ('const' in schema) return schema.const;
@@ -47,7 +52,7 @@ function buildFromSchema(schema: unknown, depth: number): unknown {
     const properties = isRecord(schema.properties) ? schema.properties : {};
     const out: Record<string, unknown> = {};
     for (const key of required) {
-      out[key] = buildFromSchema(properties[key], depth + 1);
+      out[key] = buildFromSchema(properties[key], depth + 1, key);
     }
     return out;
   }
@@ -63,11 +68,11 @@ function buildFromSchema(schema: unknown, depth: number): unknown {
         : Number.POSITIVE_INFINITY;
     const length = Math.min(minItems, maxItems);
     return Array.from({ length }, () =>
-      buildFromSchema(schema.items, depth + 1)
+      buildFromSchema(schema.items, depth + 1, propertyName)
     );
   }
 
-  if (types.includes('string')) return pickString(schema);
+  if (types.includes('string')) return pickString(schema, propertyName);
   if (types.includes('integer')) return pickNumber(schema, true);
   if (types.includes('number')) return pickNumber(schema, false);
   if (types.includes('boolean')) return false;
@@ -164,14 +169,14 @@ function pickNumber(schema: JsonSchema, isInteger: boolean): number {
  * is out of scope. If a server requires a `pattern`, the probe will fail and
  * the operator can register manually.
  */
-function pickString(schema: JsonSchema): string {
+function pickString(schema: JsonSchema, propertyName?: string): string {
   const format = typeof schema.format === 'string' ? schema.format : undefined;
   const minLength =
     typeof schema.minLength === 'number' ? schema.minLength : undefined;
   const maxLength =
     typeof schema.maxLength === 'number' ? schema.maxLength : undefined;
 
-  let value = sampleByFormat(format) ?? 'sample';
+  let value = sampleByFormat(format) ?? sampleByName(propertyName) ?? 'sample';
 
   if (minLength !== undefined && value.length < minLength) {
     value = value.padEnd(minLength, 'x');
@@ -180,6 +185,13 @@ function pickString(schema: JsonSchema): string {
     value = value.slice(0, maxLength);
   }
   return value;
+}
+
+function sampleByName(propertyName: string | undefined): string | undefined {
+  if (propertyName?.toLowerCase() === 'address') {
+    return SAMPLE_EVM_ADDRESS;
+  }
+  return undefined;
 }
 
 function sampleByFormat(format: string | undefined): string | undefined {
