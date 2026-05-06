@@ -8,7 +8,7 @@ import type { Address } from 'viem';
 
 export const ethereumAddressSchema = z
   .string()
-  .refine(isAddress, 'Invalid EVM address')
+  .refine(a => isAddress(a, { strict: false }), 'Invalid EVM address')
   .transform(a => a.toLowerCase() as Address);
 
 export const sortingSchema = (sortIds: string[] | readonly string[]) =>

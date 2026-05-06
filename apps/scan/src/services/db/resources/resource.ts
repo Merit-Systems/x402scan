@@ -4,14 +4,14 @@ import { getOriginFromUrl } from '@/lib/url';
 import { z } from 'zod';
 import { toPaginatedResponse } from '@/lib/pagination';
 
-import { mixedAddressSchema, supportedChainSchema } from '@/lib/schemas';
+import { supportedChainSchema } from '@/lib/schemas';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';
-import { ChainIdToNetwork } from '@/lib/x402/chain-mapping';
+
+import { upsertResourceSchema } from './resource-schema';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
-import type { OutputSchema } from '@/lib/x402';
 import type { SupportedChain } from '@/types/chain';
 
 import {
@@ -20,54 +20,7 @@ import {
   createStandardCacheKey,
 } from '@/lib/cache';
 
-export const upsertResourceSchema = z.object({
-  resource: z.string(),
-  type: z.enum(['http']),
-  x402Version: z.number(),
-  lastUpdated: z.coerce.date(),
-  metadata: z.record(z.string(), z.any()).optional(),
-  accepts: z.array(
-    z.object({
-      scheme: z.string().min(1),
-      network: z.union([
-        z.enum([
-          'base_sepolia',
-          'avalanche_fuji',
-          'base',
-          'sei',
-          'sei_testnet',
-          'avalanche',
-          'iotex',
-          'solana_devnet',
-          'solana',
-        ]),
-        z
-          .string()
-          .refine(v => {
-            return (
-              v.startsWith('eip155:') &&
-              !!ChainIdToNetwork[Number(v.split(':')[1])]
-            );
-          })
-          .transform(
-            v =>
-              ChainIdToNetwork[Number(v.split(':')[1])]!.replace(
-                '-',
-                '_'
-              ) as AcceptsNetwork
-          ),
-      ]),
-      payTo: mixedAddressSchema,
-      description: z.string().optional().default(''),
-      maxAmountRequired: z.string(),
-      mimeType: z.string().optional().default(''),
-      maxTimeoutSeconds: z.number(),
-      asset: z.string(),
-      outputSchema: z.custom<OutputSchema>().optional(),
-      extra: z.record(z.string(), z.any()).optional(),
-    })
-  ),
-});
+export { upsertResourceSchema };
 
 export const upsertResource = async (
   resourceInput: z.input<typeof upsertResourceSchema>
