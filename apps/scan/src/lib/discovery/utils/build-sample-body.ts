@@ -20,6 +20,48 @@ function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
 }
 
+function asNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : undefined;
+}
+
+function sampleNumber(schema: JsonSchema, isInteger: boolean): number {
+  // Honor (exclusive)minimum / (exclusive)maximum so the sample lands inside
+  // the schema's accepted range. Without this, `{ type: "number",
+  // exclusiveMinimum: 0 }` was returning 0 and the probe re-request was
+  // being rejected with 400 before it ever reached the paywall.
+  const min = asNumber(schema.minimum);
+  const exMin = asNumber(schema.exclusiveMinimum);
+  const max = asNumber(schema.maximum);
+  const exMax = asNumber(schema.exclusiveMaximum);
+
+  const step = isInteger ? 1 : 0.000001;
+  const lower = exMin !== undefined ? exMin + step : min;
+  const upper = exMax !== undefined ? exMax - step : max;
+
+  let value = 0;
+  if (lower !== undefined && upper !== undefined) {
+    value = lower <= upper ? lower : upper;
+  } else if (lower !== undefined) {
+    value = lower > 0 ? lower : Math.max(lower, 1);
+  } else if (upper !== undefined) {
+    value = upper >= 0 ? 0 : upper;
+  }
+
+  return isInteger ? Math.trunc(value) : value;
+}
+
+function sampleString(schema: JsonSchema): string {
+  const minLength =
+    typeof schema.minLength === 'number' && schema.minLength > 0
+      ? schema.minLength
+      : 0;
+  const base = 'sample';
+  if (minLength <= base.length) return base;
+  return base + 'x'.repeat(minLength - base.length);
+}
+
 function buildFromSchema(schema: unknown, depth: number): unknown {
   if (depth > MAX_DEPTH || !isRecord(schema)) return null;
 
@@ -57,8 +99,9 @@ function buildFromSchema(schema: unknown, depth: number): unknown {
     );
   }
 
-  if (types.includes('string')) return 'sample';
-  if (types.includes('integer') || types.includes('number')) return 0;
+  if (types.includes('string')) return sampleString(schema);
+  if (types.includes('integer')) return sampleNumber(schema, true);
+  if (types.includes('number')) return sampleNumber(schema, false);
   if (types.includes('boolean')) return false;
   if (types.includes('null')) return null;
 
