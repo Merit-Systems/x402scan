@@ -21,7 +21,7 @@ describe('buildSampleBodyFromInputSchema', () => {
     expect(sample).toBeDefined();
     expect(typeof sample!.amount).toBe('number');
     expect(sample!.amount).toBeGreaterThan(0);
-    expect(sample!.address).toBe('sample');
+    expect(sample!.address).toBe('0x0000000000000000000000000000000000000000');
     expect(sample!.network).toBe('base');
   });
 
