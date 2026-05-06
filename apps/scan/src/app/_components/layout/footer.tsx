@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="w-full border-t mt-auto">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
-        <div className="flex items-center justify-between gap-4">
+        <div className="relative flex items-center justify-between gap-4">
           {/* Left side - Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2 group">
@@ -16,6 +16,32 @@ export function Footer() {
               </span>
             </Link>
           </div>
+
+          {/* Center - Built by Merit */}
+          <a
+            href="https://merit.systems"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 group"
+          >
+            <span className="text-xs font-medium tracking-wide text-muted-foreground group-hover:text-foreground transition-colors uppercase">
+              Built by
+            </span>
+            <Image
+              src="/merit-logo-light.svg"
+              alt="Merit"
+              width={72}
+              height={21}
+              className="h-5 w-auto dark:hidden"
+            />
+            <Image
+              src="/merit-logo-dark.svg"
+              alt="Merit"
+              width={72}
+              height={21}
+              className="h-5 w-auto hidden dark:block"
+            />
+          </a>
 
           {/* Right side - Links */}
           <div className="flex items-center gap-4 md:gap-6 text-sm text-muted-foreground">
