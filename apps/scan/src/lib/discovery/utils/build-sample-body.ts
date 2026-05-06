@@ -92,8 +92,10 @@ function buildFromSchema(schema: unknown, depth: number): unknown {
  * from the upper instead.
  */
 function pickNumber(schema: JsonSchema, isInteger: boolean): number {
-  const minimum = typeof schema.minimum === 'number' ? schema.minimum : undefined;
-  const maximum = typeof schema.maximum === 'number' ? schema.maximum : undefined;
+  const minimum =
+    typeof schema.minimum === 'number' ? schema.minimum : undefined;
+  const maximum =
+    typeof schema.maximum === 'number' ? schema.maximum : undefined;
 
   const rawExMin = schema.exclusiveMinimum;
   const rawExMax = schema.exclusiveMaximum;
