@@ -27,6 +27,18 @@ export const upsertResource = async (
 ) => {
   const parsedResourceInput = upsertResourceSchema.safeParse(resourceInput);
   if (!parsedResourceInput.success) {
+    // Previously this returned silently, so callers in lib/resources.ts
+    // surfaced the generic "database: Resource failed to upsert" with no
+    // detail about which field actually rejected. Log the issues so the
+    // failed-resource entry in production logs is debuggable.
+    console.warn(
+      `[upsertResource] safeParse failed for ${
+        typeof resourceInput?.resource === 'string'
+          ? resourceInput.resource
+          : '<unknown resource>'
+      }`,
+      JSON.stringify(parsedResourceInput.error.issues)
+    );
     return;
   }
   const baseResource = parsedResourceInput.data;

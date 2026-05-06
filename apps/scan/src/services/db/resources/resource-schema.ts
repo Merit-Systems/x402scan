@@ -6,6 +6,17 @@ import { ChainIdToNetwork } from '@/lib/x402/chain-mapping';
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 import type { OutputSchema } from '@/lib/x402';
 
+// CAIP-2 genesis-hash identifiers for Solana clusters. agentcash.dev (and any
+// other x402 server using the canonical CAIP-2 form) advertises Solana mainnet
+// as `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` rather than the bare `solana`
+// literal, so the schema needs a branch that recognizes both spellings.
+const SOLANA_CAIP2_TO_NETWORK: Record<string, AcceptsNetwork> = {
+  mainnet: 'solana',
+  '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': 'solana',
+  devnet: 'solana_devnet',
+  EtWTRABZaYq6iMfeYKouRu166VU2xqa1: 'solana_devnet',
+};
+
 export const upsertResourceSchema = z.object({
   resource: z.string(),
   type: z.enum(['http']),
@@ -41,6 +52,16 @@ export const upsertResourceSchema = z.object({
                 '-',
                 '_'
               ) as AcceptsNetwork
+          ),
+        z
+          .string()
+          .refine(v => {
+            if (!v.startsWith('solana:')) return false;
+            const suffix = v.slice('solana:'.length);
+            return suffix in SOLANA_CAIP2_TO_NETWORK;
+          })
+          .transform(
+            v => SOLANA_CAIP2_TO_NETWORK[v.slice('solana:'.length)]!
           ),
       ]),
       payTo: mixedAddressSchema,
