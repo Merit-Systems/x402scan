@@ -17,6 +17,32 @@ export function Footer() {
             </Link>
           </div>
 
+          {/* Center - Built by Merit */}
+          <a
+            href="https://merit.systems"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 group"
+          >
+            <span className="text-xs font-medium tracking-wide text-muted-foreground group-hover:text-foreground transition-colors uppercase">
+              Built by
+            </span>
+            <Image
+              src="/merit-logo-light.svg"
+              alt="Merit"
+              width={72}
+              height={21}
+              className="h-5 w-auto dark:hidden"
+            />
+            <Image
+              src="/merit-logo-dark.svg"
+              alt="Merit"
+              width={72}
+              height={21}
+              className="h-5 w-auto hidden dark:block"
+            />
+          </a>
+
           {/* Right side - Links */}
           <div className="flex items-center gap-4 md:gap-6 text-sm text-muted-foreground">
             <a
