@@ -16,6 +16,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { TransfersSortingContext } from '@/app/(app)/_contexts/sorting/transfers/context';
 import { Chains } from '@/app/(app)/_components/chains';
 import { Facilitator } from '@/app/(app)/_components/facilitator';
+import { Buyer, BuyerSkeleton } from '@/app/(app)/_components/buyer';
 
 type ColumnType = RouterOutputs['public']['transfers']['list']['items'][number];
 
@@ -24,13 +25,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     accessorKey: 'sender',
     header: () => <HeaderCell Icon={User} label="Sender" className="mr-auto" />,
     cell: ({ row }) => (
-      <Address
+      <Buyer
         address={row.original.sender}
-        className="text-xs block text-left"
+        addressClassName="text-xs block text-left"
+        disableCopy
       />
     ),
     size: 150,
-    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
+    loading: () => <BuyerSkeleton className="mr-auto" />,
   },
   {
     accessorKey: 'amount',

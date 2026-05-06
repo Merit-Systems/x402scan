@@ -7,6 +7,7 @@ import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { Address } from '@/components/ui/address';
 
 import { Seller, SellerSkeleton } from '@/app/(app)/_components/seller';
+import { Buyer, BuyerSkeleton } from '@/app/(app)/_components/buyer';
 
 import { TransfersSortingContext } from '@/app/(app)/_contexts/sorting/transfers/context';
 
@@ -37,13 +38,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     accessorKey: 'sender',
     header: () => <HeaderCell Icon={User} label="Sender" className="mx-auto" />,
     cell: ({ row }) => (
-      <Address
+      <Buyer
         address={row.original.sender}
-        className="text-xs block text-center"
+        addressClassName="text-xs block text-center"
+        disableCopy
       />
     ),
     size: 200,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <BuyerSkeleton className="mx-auto" />,
   },
   {
     accessorKey: 'transaction_hash',

@@ -10,6 +10,7 @@ import { Address } from '@/components/ui/address';
 
 import { Seller, SellerSkeleton } from '@/app/(app)/_components/seller';
 import { Facilitator } from '@/app/(app)/_components/facilitator';
+import { Buyer, BuyerSkeleton } from '@/app/(app)/_components/buyer';
 
 import { formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
@@ -62,13 +63,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     accessorKey: 'sender',
     header: () => <HeaderCell Icon={User} label="Sender" className="mx-auto" />,
     cell: ({ row }) => (
-      <Address
+      <Buyer
         address={row.original.sender}
-        className="text-xs mx-auto block text-center"
+        addressClassName="text-xs mx-auto block text-center"
+        disableCopy
       />
     ),
     size: 150, // Fixed width for transaction count
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <BuyerSkeleton className="mx-auto" />,
   },
   {
     accessorKey: 'transaction_hash',

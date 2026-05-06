@@ -1,13 +1,11 @@
 'use client';
 
-import Link from 'next/link';
-
 import { Calendar, DollarSign, Globe, Hash, Server, User } from 'lucide-react';
 
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 
-import { Address } from '@/components/ui/address';
 import { Facilitators } from '@/app/(app)/_components/facilitator';
+import { Buyer, BuyerSkeleton } from '@/app/(app)/_components/buyer';
 import { BuyerTopServers, LoadingBuyerTopServers } from './top-servers';
 
 import { formatTokenAmount } from '@/lib/token';
@@ -30,16 +28,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={User} label="Buyer" className="justify-start" />
     ),
     cell: ({ row }) => (
-      <Link href={`/buyer/${row.original.sender}`}>
-        <Address
-          address={row.original.sender}
-          disableCopy
-          className="font-normal hover:underline"
-        />
-      </Link>
+      <Buyer
+        address={row.original.sender}
+        addressClassName="font-normal"
+        disableCopy
+      />
     ),
     size: 225,
-    loading: () => <Skeleton className="h-4 w-32" />,
+    loading: () => <BuyerSkeleton />,
   },
   {
     accessorKey: 'top_servers',
