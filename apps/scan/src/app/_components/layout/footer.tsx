@@ -2,6 +2,73 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Logo } from '@/components/logo';
 
+function MeritMark({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 226 261"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <polygon
+        points="59.23 99.45 59.23 161.55 113.02 192.61 113.02 130.5"
+        className="fill-red-500/90"
+      />
+      <polygon
+        points="113.02 68.39 59.23 99.45 113.02 130.5 166.8 99.45"
+        className="fill-red-600"
+      />
+      <polygon
+        points="166.8 99.45 113.02 130.5 113.02 192.61 166.8 161.55"
+        className="fill-red-700"
+      />
+      <path
+        d="M113.02,196.41l-57.08-32.95v-65.91l57.08-32.95,57.08,32.95v65.91l-57.08,32.95ZM60.49,160.83l52.53,30.33,52.53-30.33v-60.66l-52.53-30.33-52.53,30.33v60.66Z"
+        fill="currentColor"
+      />
+      <path
+        d="M113.02,261L0,195.75V65.25L113.02,0l113.02,65.25v130.5l-113.02,65.25ZM6.82,191.81l106.2,61.31,106.2-61.31v-122.62L113.02,7.88,6.82,69.19v122.62Z"
+        fill="currentColor"
+      />
+      <rect x="111.88" y="3.94" width="2.27" height="63.28" fill="currentColor" />
+      <rect
+        x="-.83"
+        y="176.82"
+        width="63.28"
+        height="2.27"
+        transform="translate(-84.84 39.24) rotate(-29.99)"
+        fill="currentColor"
+      />
+      <rect
+        x="194.08"
+        y="146.32"
+        width="2.27"
+        height="63.28"
+        transform="translate(-56.51 258.05) rotate(-60)"
+        fill="currentColor"
+      />
+      <rect x="111.88" y="130.5" width="2.27" height="126.56" fill="currentColor" />
+      <rect
+        x="104.54"
+        y="97.72"
+        width="126.56"
+        height="2.27"
+        transform="translate(-26.95 97.14) rotate(-29.99)"
+        fill="currentColor"
+      />
+      <rect
+        x="57.08"
+        y="35.58"
+        width="2.27"
+        height="126.56"
+        transform="translate(-56.51 99.84) rotate(-60)"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 export function Footer() {
   return (
     <footer className="w-full border-t mt-auto">
@@ -17,30 +84,17 @@ export function Footer() {
             </Link>
           </div>
 
-          {/* Center - Built by Merit */}
+          {/* Center - Merit badge */}
           <a
             href="https://merit.systems"
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 group"
+            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-muted-foreground transition-all hover:border-border hover:text-foreground hover:bg-muted/70"
           >
-            <span className="text-xs font-medium tracking-wide text-muted-foreground group-hover:text-foreground transition-colors uppercase">
-              Built by
+            <MeritMark className="size-3.5" />
+            <span className="text-[11px] font-semibold tracking-wide uppercase">
+              Merit
             </span>
-            <Image
-              src="/merit-logo-light.svg"
-              alt="Merit"
-              width={72}
-              height={21}
-              className="h-5 w-auto dark:hidden"
-            />
-            <Image
-              src="/merit-logo-dark.svg"
-              alt="Merit"
-              width={72}
-              height={21}
-              className="h-5 w-auto hidden dark:block"
-            />
           </a>
 
           {/* Right side - Links */}
