@@ -7,6 +7,23 @@ import { z as z3 } from 'zod3';
 import { ChainIdToNetwork } from '../chain-mapping';
 import { FieldDefSchema } from '../shared';
 
+const snakeToCamel: Record<string, string> = {
+  query_params: 'queryParams',
+  body_fields: 'bodyFields',
+  body_type: 'bodyType',
+  header_fields: 'headerFields',
+};
+
+function normalizeInputKeys(val: unknown): unknown {
+  if (typeof val !== 'object' || val === null || Array.isArray(val)) return val;
+  const obj = val as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    out[snakeToCamel[k] ?? k] = v;
+  }
+  return out;
+}
+
 // Inlined from the v1 `x402` SDK. v2 dropped the typed HTTP request structure
 // in favor of an opaque `inputSchema: Record<string, unknown>`, so there's no
 // equivalent in `@x402/*` to import.
@@ -21,16 +38,18 @@ const HTTPRequestStructureSchema = z3.object({
   headerFields: z3.record(z3.string(), z3.any()).optional(),
 });
 
+const inputSchemaV1 = HTTPRequestStructureSchema.omit({
+  queryParams: true,
+  bodyFields: true,
+  headerFields: true,
+}).extend({
+  headerFields: z3.record(FieldDefSchema).optional(),
+  queryParams: z3.record(FieldDefSchema).optional(),
+  bodyFields: z3.record(FieldDefSchema).optional(),
+});
+
 export const outputSchemaV1 = z3.object({
-  input: HTTPRequestStructureSchema.omit({
-    queryParams: true,
-    bodyFields: true,
-    headerFields: true,
-  }).extend({
-    headerFields: z3.record(FieldDefSchema).optional(),
-    queryParams: z3.record(FieldDefSchema).optional(),
-    bodyFields: z3.record(FieldDefSchema).optional(),
-  }),
+  input: z3.preprocess(normalizeInputKeys, inputSchemaV1),
   output: z3.record(z3.string(), z3.any()).optional().nullable(),
 });
 
