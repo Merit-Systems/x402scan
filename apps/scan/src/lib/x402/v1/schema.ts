@@ -61,6 +61,12 @@ const networkSchemaV1 = z3.union([
 export const paymentRequirementsSchemaV1 = PaymentRequirementsV1Schema.extend({
   network: networkSchemaV1,
   outputSchema: outputSchemaV1.optional(),
+  // Override the upstream `extra: optional()` (T | undefined) to also
+  // accept `null`. Prisma persists JSONB `undefined` as `null`, so any
+  // accept row that was written with no extra payload comes back from
+  // the DB as `extra: null` and would otherwise fail validation here,
+  // silently dropping the resource from the composer's tool list.
+  extra: z3.record(z3.any()).nullish(),
 });
 
 export const x402ResponseSchemaV1 = PaymentRequiredV1Schema.omit({
