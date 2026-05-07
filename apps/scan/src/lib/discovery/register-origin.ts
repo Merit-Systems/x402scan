@@ -2,6 +2,7 @@ import { Result, matchErrorPartial } from 'better-result';
 
 import { probeX402Endpoint } from './probe';
 import { type DiscoveryError } from './errors';
+import { serializeError } from './error-message';
 import { registerResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 import { getOriginResourceCount } from '@/services/db/resources/origin';
@@ -188,7 +189,12 @@ export async function registerResourcesFromDiscovery(
     }
 
     const { bucket, status } = classifyFailure(outcome.error);
-    const entry: FailedResourceEntry = { url: resourceUrl, error: outcome.error };
+    // serializeError converts the TaggedError instance to a plain object so
+    // SuperJSON (the tRPC transformer) doesn't strip our custom payload.
+    const entry: FailedResourceEntry = {
+      url: resourceUrl,
+      error: serializeError(outcome.error),
+    };
     if (status !== undefined) entry.status = status;
     if (bucket === 'skipped') skippedResults.push(entry);
     else failedResults.push(entry);

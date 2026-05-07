@@ -8,6 +8,7 @@ import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource, TestedResource } from '@/types/batch-test';
 import { probeX402Endpoint } from '@/lib/discovery/probe';
 import { InvalidUrl, MissingInputSchema } from '@/lib/discovery/errors';
+import { serializeError } from '@/lib/discovery/error-message';
 
 async function testSingleResource(
   url: string,
@@ -19,7 +20,7 @@ async function testSingleResource(
     return {
       success: false as const,
       url,
-      error: result.error,
+      error: serializeError(result.error),
     };
   }
 
@@ -29,11 +30,13 @@ async function testSingleResource(
     return {
       success: false as const,
       url,
-      error: new MissingInputSchema({
-        url,
-        method: advisory.method,
-        message: 'Missing input schema',
-      }),
+      error: serializeError(
+        new MissingInputSchema({
+          url,
+          method: advisory.method,
+          message: 'Missing input schema',
+        })
+      ),
     };
   }
 
@@ -127,10 +130,12 @@ export const developerRouter = createTRPCRouter({
         .map(r => ({
           success: false as const,
           url: r.url,
-          error: new InvalidUrl({
-            url: r.url,
-            message: r.invalidReason ?? 'Invalid resource format',
-          }),
+          error: serializeError(
+            new InvalidUrl({
+              url: r.url,
+              message: r.invalidReason ?? 'Invalid resource format',
+            })
+          ),
         }));
 
       // SIWX routes are identity-gated, not payment-protected. Skip probing

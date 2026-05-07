@@ -54,3 +54,21 @@ export function isDiscoveryError(value: unknown): value is DiscoveryError {
     typeof (value as { _tag: unknown })._tag === 'string'
   );
 }
+
+/**
+ * Convert a TaggedError instance into a plain object for the wire.
+ *
+ * Why: SuperJSON (used as the tRPC transformer) detects `Error` subclasses
+ * and routes them through its Error transformer, which keeps only
+ * `name` + `message` + `stack` and drops every custom property — including
+ * `_tag` and the variant payload. That collapses the typed-error wire
+ * contract.
+ *
+ * `TaggedError.toJSON()` materializes a plain object with all custom fields,
+ * which SuperJSON then treats as a POJO and round-trips intact. The cast back
+ * to `DiscoveryError` is structurally honest — `discoveryErrorMessage` only
+ * reads `_tag` and the typed payload, both of which are preserved.
+ */
+export function serializeError(error: DiscoveryError): DiscoveryError {
+  return error.toJSON() as DiscoveryError;
+}

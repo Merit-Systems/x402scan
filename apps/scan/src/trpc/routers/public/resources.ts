@@ -1,6 +1,8 @@
 import z from 'zod';
 import { Result } from 'better-result';
 
+import { serializeError } from '@/lib/discovery/error-message';
+
 import {
   createTRPCRouter,
   paginatedProcedure,
@@ -150,7 +152,7 @@ export const resourcesRouter = createTRPCRouter({
       if (Result.isError(probeResult)) {
         return {
           success: false as const,
-          error: probeResult.error,
+          error: serializeError(probeResult.error),
         };
       }
 
@@ -162,7 +164,7 @@ export const resourcesRouter = createTRPCRouter({
       if (Result.isError(result)) {
         return {
           success: false as const,
-          error: result.error,
+          error: serializeError(result.error),
         };
       }
 
