@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@agentcash/discovery": "1.6.3",
-    "@neondatabase/serverless": "catalog:prisma",
     "@agentcash/router": "1.3.3",
     "@ai-sdk/openai": "^2.0.52",
     "@ai-sdk/react": "^2.0.68",
@@ -36,6 +35,7 @@
     "@lmnr-ai/lmnr": "^0.7.4",
     "@mdx-js/loader": "catalog:mdx",
     "@mdx-js/react": "catalog:mdx",
+    "@neondatabase/serverless": "catalog:prisma",
     "@next/mdx": "catalog:next",
     "@octokit/rest": "^22.0.0",
     "@openrouter/ai-sdk-provider": "^1.5.4",
@@ -93,6 +93,7 @@
     "@x402scan/transfers-db": "workspace:*",
     "ai": "^5.0.68",
     "autonumeric": "^4.10.9",
+    "better-result": "^2.9.2",
     "bs58": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

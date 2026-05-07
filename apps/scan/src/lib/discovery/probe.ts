@@ -4,15 +4,25 @@ import type {
   CheckEndpointResult,
   EndpointMethodAdvisory,
 } from '@agentcash/discovery';
-import { buildSampleBodyFromInputSchema, PROBE_TIMEOUT_MS } from './utils';
+import { Result } from 'better-result';
 
-export type ProbeX402Result =
-  | {
-      success: true;
-      advisory: EndpointMethodAdvisory;
-      warnings: AuditWarning[];
-    }
-  | { success: false; error: string };
+import { buildSampleBodyFromInputSchema, PROBE_TIMEOUT_MS } from './utils';
+import { isLocalUrl } from '@/lib/url-helpers';
+
+import {
+  InvalidUrl,
+  LocalUrlNotSupported,
+  No402Challenge,
+  ProbeNetworkError,
+  ProbeTimeout,
+  ProbeUnexpectedError,
+  type ProbeError,
+} from './errors';
+
+export interface ProbeX402Ok {
+  advisory: EndpointMethodAdvisory;
+  warnings: AuditWarning[];
+}
 
 const METHOD_PREFERENCE = ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'] as const;
 
@@ -84,66 +94,150 @@ function pickInputSchemaFromSpec(
 export async function probeX402Endpoint(
   url: string,
   preferredMethod?: string
-): Promise<ProbeX402Result> {
-  const noBody = await checkEndpointSchema({
-    url,
-    probe: true,
-    signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+): Promise<Result<ProbeX402Ok, ProbeError>> {
+  // Validate the URL before any network calls so the failure surface stays
+  // typed end-to-end.
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return Result.err(
+      new InvalidUrl({ url, message: `"${url}" is not a valid URL` })
+    );
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    return Result.err(
+      new InvalidUrl({
+        url,
+        message: `Unsupported protocol ${parsed.protocol}; expected http(s)://`,
+      })
+    );
+  }
+  if (isLocalUrl(url)) {
+    return Result.err(
+      new LocalUrlNotSupported({
+        url,
+        message: 'Local and private URLs are not supported',
+      })
+    );
+  }
+
+  const noBody = await Result.tryPromise({
+    try: () =>
+      checkEndpointSchema({
+        url,
+        probe: true,
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+      }),
+    catch: cause =>
+      new ProbeUnexpectedError({
+        url,
+        message:
+          cause instanceof Error
+            ? `Probe threw: ${cause.message}`
+            : `Probe threw: ${String(cause)}`,
+      }),
   });
 
-  const directAdvisory = pickX402Advisory(noBody, preferredMethod);
+  if (Result.isError(noBody)) return Result.err(noBody.error);
+
+  const directAdvisory = pickX402Advisory(noBody.value, preferredMethod);
   if (directAdvisory) {
-    return {
-      success: true,
+    return Result.ok({
       advisory: directAdvisory,
       warnings: getWarningsForL3(directAdvisory),
-    };
+    });
   }
 
   // Fallback: use OpenAPI inputSchema to build a sample body and re-probe.
-  const spec = await checkEndpointSchema({
-    url,
-    signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+  const spec = await Result.tryPromise({
+    try: () =>
+      checkEndpointSchema({
+        url,
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+      }),
+    catch: cause =>
+      new ProbeUnexpectedError({
+        url,
+        message:
+          cause instanceof Error
+            ? `OpenAPI probe threw: ${cause.message}`
+            : `OpenAPI probe threw: ${String(cause)}`,
+      }),
   });
-  const inputSchema = pickInputSchemaFromSpec(spec, preferredMethod);
+
+  if (Result.isError(spec)) {
+    // Spec fetch failed — fall back to the no-body cause if it's informative.
+    return Result.err(noBodyError(noBody.value, url, false));
+  }
+
+  const inputSchema = pickInputSchemaFromSpec(spec.value, preferredMethod);
   const sampleInputBody = buildSampleBodyFromInputSchema(inputSchema);
   if (!sampleInputBody) {
-    return {
-      success: false,
-      error: noBodyError(noBody),
-    };
+    return Result.err(noBodyError(noBody.value, url, false));
   }
 
-  const withBody = await checkEndpointSchema({
-    url,
-    probe: true,
-    sampleInputBody,
-    signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+  const withBody = await Result.tryPromise({
+    try: () =>
+      checkEndpointSchema({
+        url,
+        probe: true,
+        sampleInputBody,
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+      }),
+    catch: cause =>
+      new ProbeUnexpectedError({
+        url,
+        message:
+          cause instanceof Error
+            ? `Sampled probe threw: ${cause.message}`
+            : `Sampled probe threw: ${String(cause)}`,
+      }),
   });
-  const bodiedAdvisory = pickX402Advisory(withBody, preferredMethod);
+
+  if (Result.isError(withBody)) return Result.err(withBody.error);
+
+  const bodiedAdvisory = pickX402Advisory(withBody.value, preferredMethod);
   if (bodiedAdvisory) {
-    return {
-      success: true,
+    return Result.ok({
       advisory: bodiedAdvisory,
       warnings: getWarningsForL3(bodiedAdvisory),
-    };
+    });
   }
 
-  return {
-    success: false,
-    error:
-      'No valid x402 response found (tried empty body and OpenAPI-derived sample body)',
-  };
+  return Result.err(noBodyError(withBody.value, url, true));
 }
 
-function noBodyError(result: CheckEndpointResult): string {
+function noBodyError(
+  result: CheckEndpointResult,
+  url: string,
+  triedSampleBody: boolean
+): ProbeError {
   if (!result.found) {
-    const causeMessages = {
-      not_found: 'Endpoint did not return a 402 payment challenge',
-      network: 'Network error reaching endpoint',
-      timeout: 'Endpoint timed out',
-    } as const;
-    return result.message ?? causeMessages[result.cause];
+    switch (result.cause) {
+      case 'not_found':
+        return new No402Challenge({
+          url,
+          triedSampleBody,
+          message:
+            result.message ?? 'Endpoint did not return a 402 payment challenge',
+        });
+      case 'network':
+        return new ProbeNetworkError({
+          url,
+          message: result.message ?? 'Network error reaching endpoint',
+        });
+      case 'timeout':
+        return new ProbeTimeout({
+          url,
+          timeoutMs: PROBE_TIMEOUT_MS,
+          message: result.message ?? 'Endpoint timed out',
+        });
+    }
   }
-  return 'No valid x402 response found';
+  return new No402Challenge({
+    url,
+    triedSampleBody,
+    message: 'Endpoint responded but advertised no x402 payment options',
+  });
 }

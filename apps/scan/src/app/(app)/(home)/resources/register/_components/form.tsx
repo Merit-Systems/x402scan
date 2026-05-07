@@ -45,6 +45,14 @@ import {
 import { Favicon } from '@/app/(app)/_components/favicon';
 import { cn } from '@/lib/utils';
 import { normalizeUrl } from '@/lib/url';
+import {
+  discoveryErrorMessage,
+  isDiscoveryError,
+} from '@/lib/discovery/error-message';
+import {
+  ProbeUnexpectedError,
+  type DiscoveryError,
+} from '@/lib/discovery/errors';
 import { api } from '@/trpc/client';
 import Link from 'next/link';
 import { z } from 'zod';
@@ -54,27 +62,23 @@ interface ManualRegistrationResult {
   registered: number;
   total: number;
   failed: number;
-  failedDetails: { url: string; error: string; status?: number }[];
+  failedDetails: { url: string; error: DiscoveryError; status?: number }[];
   originId?: string;
   origin: string | null;
 }
 
-function getErrorMessageFromRegisterResult(result: {
-  success: false;
-  error: {
-    type: 'parseErrors' | 'no402';
-    parseErrors?: string[];
-  };
-}): string {
-  if (result.error.type === 'parseErrors') {
-    const parseErrors = result.error.parseErrors ?? [];
-    if (parseErrors.length > 0) {
-      return `parseResponse: ${parseErrors.join(', ')}`;
-    }
-    return 'parseResponse: Invalid x402 response';
-  }
-
-  return 'Expected 402 response';
+function asDiscoveryError(value: unknown, url: string): DiscoveryError {
+  // tRPC sends the serialized TaggedError as a plain `{_tag, ...payload}`
+  // object. If a future server sends something we don't recognise, wrap it as
+  // ProbeUnexpectedError so downstream rendering stays exhaustive.
+  if (isDiscoveryError(value)) return value;
+  const message =
+    value instanceof Error
+      ? value.message
+      : typeof value === 'string'
+        ? value
+        : 'Registration failed';
+  return new ProbeUnexpectedError({ url, message });
 }
 
 const registerSuccessResultSchema = z.object({
@@ -103,16 +107,10 @@ function toPathLabel(resourceUrl: string): string {
 }
 
 function getPrimaryProbeError(
-  failed?: {
-    error: string;
-    parseErrors?: string[];
-  } | null
+  failed?: { error: DiscoveryError } | null
 ): string {
   if (!failed) return 'Endpoint probe failed';
-  if (Array.isArray(failed.parseErrors) && failed.parseErrors.length > 0) {
-    return failed.parseErrors[0] ?? failed.error;
-  }
-  return failed.error || 'Endpoint probe failed';
+  return discoveryErrorMessage(failed.error);
 }
 
 export const RegisterResourceForm = () => {
@@ -298,7 +296,11 @@ export const RegisterResourceForm = () => {
 
     let registered = 0;
     let originId: string | undefined;
-    const failedDetails: { url: string; error: string; status?: number }[] = [];
+    const failedDetails: {
+      url: string;
+      error: DiscoveryError;
+      status?: number;
+    }[] = [];
 
     for (let index = 0; index < targets.length; index += 1) {
       const targetUrl = targets[index] ?? '';
@@ -322,12 +324,12 @@ export const RegisterResourceForm = () => {
 
         failedDetails.push({
           url: targetUrl,
-          error: getErrorMessageFromRegisterResult(result),
+          error: asDiscoveryError(result.error, targetUrl),
         });
       } catch (error) {
         failedDetails.push({
           url: targetUrl,
-          error: error instanceof Error ? error.message : 'Request failed',
+          error: asDiscoveryError(error, targetUrl),
         });
       }
     }

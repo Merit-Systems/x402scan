@@ -6,6 +6,14 @@ import {
 } from '@/services/db/resources/origin';
 
 import type { EndpointMethodAdvisory } from '@agentcash/discovery';
+import { Result } from 'better-result';
+import {
+  NoPaymentOptions,
+  ResourceUpsertFailed,
+  UnsupportedNetwork,
+  MissingInputSchema,
+  type RegisterError,
+} from '@/lib/discovery/errors';
 import { isX402PaymentOption } from '@/lib/discovery/utils';
 
 import { getOriginFromUrl } from '@/lib/url';
@@ -28,11 +36,54 @@ import type { AcceptsNetwork } from '@x402scan/scan-db';
 import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
 import { notifyNewServer } from '@/lib/discord-notifications';
 
+type UpsertedResource = NonNullable<Awaited<ReturnType<typeof upsertResource>>>;
+
+type AcceptOk = Omit<
+  UpsertedResource['accepts'][number],
+  'maxAmountRequired'
+> & {
+  maxAmountRequired: string;
+};
+
+interface ProvidedAccept {
+  scheme: string;
+  network: AcceptsNetwork;
+  maxAmountRequired: string;
+  payTo: string;
+  asset: string;
+  maxTimeoutSeconds: number;
+  outputSchema: unknown;
+  extra: undefined;
+}
+
+interface OgImageOk {
+  url: string;
+  height: number | undefined;
+  width: number | undefined;
+}
+
+export interface RegisterResourceOk {
+  resource: UpsertedResource;
+  accepts: AcceptOk[];
+  response: EndpointMethodAdvisory['paymentRequiredBody'];
+  registrationDetails: {
+    providedAccepts: ProvidedAccept[];
+    supportedAccepts: UpsertedResource['accepts'];
+    unsupportedAccepts: UpsertedResource['unsupportedAccepts'];
+    originMetadata: {
+      title: string | null;
+      description: string | null;
+      favicon: string | null;
+      ogImages: OgImageOk[];
+    };
+  };
+}
+
 export const registerResource = async (
   url: string,
   advisory: EndpointMethodAdvisory,
   options: { notifyNewServer?: boolean } = {}
-) => {
+): Promise<Result<RegisterResourceOk, RegisterError>> => {
   const x402Options = (advisory.paymentOptions ?? []).filter(
     isX402PaymentOption
   );
@@ -43,25 +94,23 @@ export const registerResource = async (
   const shouldNotifyNewServer = options.notifyNewServer ?? true;
 
   if (x402Options.length === 0) {
-    return {
-      success: false as const,
-      data: advisory.paymentRequiredBody,
-      error: {
-        type: 'parseResponse' as const,
-        parseErrors: ['No payment options found'],
-      },
-    };
+    return Result.err(
+      new NoPaymentOptions({
+        url: cleanUrl,
+        message:
+          'Endpoint returned 402 but advertised no x402 payment options',
+      })
+    );
   }
 
   if (!advisory.inputSchema) {
-    return {
-      success: false as const,
-      data: advisory.paymentRequiredBody,
-      error: {
-        type: 'parseResponse' as const,
-        parseErrors: ['Missing input schema'],
-      },
-    };
+    return Result.err(
+      new MissingInputSchema({
+        url: cleanUrl,
+        method: advisory.method,
+        message: `Endpoint is missing an input schema for ${advisory.method}`,
+      })
+    );
   }
 
   const existingOriginResourceCount = shouldNotifyNewServer
@@ -142,16 +191,14 @@ export const registerResource = async (
     const advertisedNetworks = Array.from(
       new Set(allMappedAccepts.map(a => a.network))
     );
-    return {
-      success: false as const,
-      data: advisory.paymentRequiredBody,
-      error: {
-        type: 'parseResponse' as const,
-        parseErrors: [
-          `No supported networks advertised. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]. Testnets are not indexed.`,
-        ],
-      },
-    };
+    return Result.err(
+      new UnsupportedNetwork({
+        url: cleanUrl,
+        advertisedNetworks,
+        supportedNetworks: SUPPORTED_CHAINS,
+        message: `No supported networks advertised. Got: [${advertisedNetworks.join(', ')}]. Supported: [${SUPPORTED_CHAINS.join(', ')}]. Testnets are not indexed.`,
+      })
+    );
   }
 
   const x402Version = x402Options[0]?.version ?? 1;
@@ -185,14 +232,12 @@ export const registerResource = async (
   });
 
   if (!resource) {
-    return {
-      success: false as const,
-      data: advisory.paymentRequiredBody,
-      error: {
-        type: 'database' as const,
-        upsertErrors: ['Resource failed to upsert'],
-      },
-    };
+    return Result.err(
+      new ResourceUpsertFailed({
+        url: cleanUrl,
+        message: 'Resource failed to upsert',
+      })
+    );
   }
 
   await upsertResourceResponse(
@@ -209,9 +254,10 @@ export const registerResource = async (
     });
   }
 
-  // Attempt ownership verification (non-blocking)
-  void (async () => {
-    try {
+  // Attempt ownership verification (non-blocking). Failures are observed
+  // through tapError instead of swallowed silently in a try/catch.
+  void Result.tryPromise({
+    try: async () => {
       const discoveryResult = await fetchDiscoveryDocument(origin);
       if (
         discoveryResult.success &&
@@ -225,16 +271,19 @@ export const registerResource = async (
           origin,
         });
       }
-    } catch (error) {
+    },
+    catch: (cause: unknown) =>
+      cause instanceof Error ? cause : new Error(String(cause)),
+  }).then(r =>
+    r.tapError(error =>
       console.error(
         'Ownership verification failed during registration:',
         error
-      );
-    }
-  })();
+      )
+    )
+  );
 
-  return {
-    success: true as const,
+  return Result.ok({
     resource,
     accepts: resource.accepts.map(accept => ({
       ...accept,
@@ -257,5 +306,5 @@ export const registerResource = async (
           })) ?? [],
       },
     },
-  };
+  });
 };

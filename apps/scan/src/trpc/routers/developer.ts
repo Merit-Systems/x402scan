@@ -1,4 +1,5 @@
 import z from 'zod';
+import { Result } from 'better-result';
 
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
@@ -6,36 +7,44 @@ import { getOriginFromUrl } from '@/lib/url';
 import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource, TestedResource } from '@/types/batch-test';
 import { probeX402Endpoint } from '@/lib/discovery/probe';
+import { InvalidUrl, MissingInputSchema } from '@/lib/discovery/errors';
 
-async function testSingleResource(url: string, method?: string) {
-  try {
-    const result = await probeX402Endpoint(url, method);
+async function testSingleResource(
+  url: string,
+  method?: string
+): Promise<TestedResource | FailedResource> {
+  const result = await probeX402Endpoint(url, method);
 
-    if (!result.success) {
-      return { success: false as const, url, error: result.error };
-    }
-
-    const { advisory } = result;
-
-    if (!advisory.inputSchema) {
-      return { success: false as const, url, error: 'Missing input schema' };
-    }
-
-    return {
-      success: true as const,
-      url,
-      method: advisory.method as TestedResource['method'],
-      description: advisory.summary ?? null,
-      parsed: advisory,
-      warnings: result.warnings,
-    };
-  } catch (err) {
+  if (Result.isError(result)) {
     return {
       success: false as const,
       url,
-      error: err instanceof Error ? err.message : 'Fetch failed',
+      error: result.error,
     };
   }
+
+  const { advisory } = result.value;
+
+  if (!advisory.inputSchema) {
+    return {
+      success: false as const,
+      url,
+      error: new MissingInputSchema({
+        url,
+        method: advisory.method,
+        message: 'Missing input schema',
+      }),
+    };
+  }
+
+  return {
+    success: true as const,
+    url,
+    method: advisory.method as TestedResource['method'],
+    description: advisory.summary ?? null,
+    parsed: advisory,
+    warnings: result.value.warnings,
+  };
 }
 
 export const developerRouter = createTRPCRouter({
@@ -118,7 +127,10 @@ export const developerRouter = createTRPCRouter({
         .map(r => ({
           success: false as const,
           url: r.url,
-          error: r.invalidReason ?? 'Invalid resource format',
+          error: new InvalidUrl({
+            url: r.url,
+            message: r.invalidReason ?? 'Invalid resource format',
+          }),
         }));
 
       // SIWX routes are identity-gated, not payment-protected. Skip probing

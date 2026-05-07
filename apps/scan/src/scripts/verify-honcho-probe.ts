@@ -6,6 +6,8 @@
  * Usage:
  *   pnpm tsx src/scripts/verify-honcho-probe.ts [origin]
  */
+import { Result } from 'better-result';
+
 import { probeX402Endpoint } from '../lib/discovery/probe';
 import { fetchDiscoveryDocument } from '../services/discovery';
 import { isX402PaymentOption } from '../lib/discovery/utils';
@@ -34,13 +36,15 @@ async function main() {
     }
 
     const result = await probeX402Endpoint(resource.url, resource.method);
-    if (!result.success) {
-      console.log(`FAIL  ${resource.url}\n      → ${result.error}`);
+    if (Result.isError(result)) {
+      console.log(
+        `FAIL  ${resource.url}\n      → ${result.error._tag}: ${result.error.message}`
+      );
       failCount++;
       continue;
     }
 
-    const x402Opts = (result.advisory.paymentOptions ?? []).filter(
+    const x402Opts = (result.value.advisory.paymentOptions ?? []).filter(
       isX402PaymentOption
     );
     const o = x402Opts[0];
@@ -52,8 +56,8 @@ async function main() {
           : '?'
       : '?';
     console.log(
-      `OK    ${resource.url}\n      tag=${tag}  source=${result.advisory.source}  ` +
-        `inputSchema=${!!result.advisory.inputSchema}  ` +
+      `OK    ${resource.url}\n      tag=${tag}  source=${result.value.advisory.source}  ` +
+        `inputSchema=${!!result.value.advisory.inputSchema}  ` +
         `x402=${x402Opts.length}  network=${o?.network ?? '?'}  amount=${amount}`
     );
     okCount++;

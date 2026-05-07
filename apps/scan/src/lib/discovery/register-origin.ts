@@ -1,5 +1,7 @@
+import { Result, matchErrorPartial } from 'better-result';
+
 import { probeX402Endpoint } from './probe';
-import { getRegistrationErrorMessage } from './utils';
+import { type DiscoveryError } from './errors';
 import { registerResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 import { getOriginResourceCount } from '@/services/db/resources/origin';
@@ -10,14 +12,33 @@ import type { AuthMode } from '@agentcash/discovery';
 
 const BULK_REGISTER_CONCURRENCY = 6;
 
-async function mapSettledWithConcurrency<T, R>(
+type ResourceOutcome =
+  | { kind: 'siwx'; url: string }
+  | {
+      kind: 'registered';
+      url: string;
+      originId: string;
+      title: string | null;
+      description: string | null;
+    };
+
+/**
+ * Wire entry for a non-success per-resource outcome. `error` carries the full
+ * serialized `DiscoveryError` (`{_tag, message, ...payload}`) so client-side
+ * rendering can dispatch on `_tag` instead of string-matching.
+ */
+export interface FailedResourceEntry {
+  url: string;
+  error: DiscoveryError;
+  status?: number;
+}
+
+async function mapWithConcurrency<T, R>(
   items: T[],
   mapper: (item: T, index: number) => Promise<R>,
   concurrency = BULK_REGISTER_CONCURRENCY
-): Promise<PromiseSettledResult<R>[]> {
-  const results: (PromiseSettledResult<R> | undefined)[] = Array.from({
-    length: items.length,
-  });
+): Promise<R[]> {
+  const results: (R | undefined)[] = Array.from({ length: items.length });
   let nextIndex = 0;
 
   async function worker() {
@@ -27,13 +48,7 @@ async function mapSettledWithConcurrency<T, R>(
 
       if (current >= items.length) return;
       const item = items[current] as T;
-
-      try {
-        const value = await mapper(item, current);
-        results[current] = { status: 'fulfilled', value };
-      } catch (reason) {
-        results[current] = { status: 'rejected', reason };
-      }
+      results[current] = await mapper(item, current);
     }
   }
 
@@ -41,15 +56,7 @@ async function mapSettledWithConcurrency<T, R>(
     Array.from({ length: Math.min(concurrency, items.length) }, () => worker())
   );
 
-  return results.map((result, index) => {
-    if (!result) {
-      return {
-        status: 'rejected',
-        reason: new Error(`Missing result at index ${index}`),
-      };
-    }
-    return result;
-  });
+  return results.filter((r): r is R => r !== undefined);
 }
 
 export interface RegisterOriginResult {
@@ -60,20 +67,86 @@ export interface RegisterOriginResult {
   deprecated: number;
   total: number;
   source: string | undefined;
-  failedDetails: { url: string; error: string; status?: number }[];
+  failedDetails: FailedResourceEntry[];
   siwxDetails: { url: string }[];
-  skippedDetails: { url: string; error: string; status?: number }[];
+  skippedDetails: FailedResourceEntry[];
   originId: string | undefined;
 }
 
 /**
+ * Probe + register a single resource as a Result-returning generator. Errors
+ * from probe and registerResource are auto-collected into the inferred error
+ * union (DiscoveryError = ProbeError | RegisterError). The MissingInputSchema
+ * guard is delegated to `registerResource` to keep one canonical site for it.
+ */
+async function probeAndRegister(resource: {
+  url: string;
+  authMode?: AuthMode;
+}): Promise<Result<ResourceOutcome, DiscoveryError>> {
+  return Result.gen(async function* () {
+    if (resource.authMode === 'siwx') {
+      return Result.ok<ResourceOutcome, never>({
+        kind: 'siwx',
+        url: resource.url,
+      });
+    }
+
+    const probed = yield* Result.await(probeX402Endpoint(resource.url));
+
+    if (probed.advisory.authMode === 'siwx') {
+      return Result.ok<ResourceOutcome, never>({
+        kind: 'siwx',
+        url: resource.url,
+      });
+    }
+
+    const registered = yield* Result.await(
+      registerResource(resource.url, probed.advisory, {
+        notifyNewServer: false,
+      })
+    );
+
+    return Result.ok<ResourceOutcome, never>({
+      kind: 'registered',
+      url: resource.url,
+      originId: registered.resource.origin.id,
+      title: registered.registrationDetails.originMetadata.title ?? null,
+      description:
+        registered.registrationDetails.originMetadata.description ?? null,
+    });
+  });
+}
+
+interface Classification {
+  bucket: 'failed' | 'skipped';
+  status?: number;
+}
+
+/**
+ * Classify a `DiscoveryError` into the bulk aggregator buckets. Uses
+ * `matchErrorPartial` so the only special case (MissingInputSchema → skipped)
+ * is named explicitly; everything else falls through to `failed`.
+ */
+function classifyFailure(error: DiscoveryError): Classification {
+  return matchErrorPartial(
+    error,
+    {
+      MissingInputSchema: (): Classification => ({
+        bucket: 'skipped',
+        status: 402,
+      }),
+    },
+    (): Classification => ({ bucket: 'failed' })
+  );
+}
+
+/**
  * Probe and register all resources from a discovery document.
- * Paid resources are probed and written to the resources table.
- * SIWX-identified routes are a first-class positive outcome — they are
- * reported back in `siwx`/`siwxDetails` but not written to the DB (until
- * schema support lands). Endpoints missing an input schema are reported
- * as skipped.
- * Deprecates resources from the same origin that are no longer in the list.
+ *
+ * Paid resources are probed and written to the resources table. SIWX-identified
+ * routes are surfaced via `siwxDetails` but not written to the DB (until schema
+ * support lands). Endpoints missing an input schema are reported as `skipped`.
+ * Resources from the same origin that are no longer in the list are deprecated.
  */
 export async function registerResourcesFromDiscovery(
   resources: { url: string; authMode?: AuthMode }[],
@@ -89,122 +162,36 @@ export async function registerResourcesFromDiscovery(
     )
   );
 
-  const results = await mapSettledWithConcurrency(resources, async resource => {
-    const resourceUrl = resource.url;
+  const outcomes = await mapWithConcurrency(resources, probeAndRegister);
 
-    if (resource.authMode === 'siwx') {
-      return {
-        success: true as const,
-        siwx: true as const,
-        url: resourceUrl,
-      };
-    }
-
-    const probeResult = await probeX402Endpoint(resourceUrl);
-
-    if (!probeResult.success) {
-      return {
-        success: false as const,
-        url: resourceUrl,
-        error: probeResult.error,
-      };
-    }
-
-    const { advisory } = probeResult;
-
-    if (advisory.authMode === 'siwx') {
-      return {
-        success: true as const,
-        siwx: true as const,
-        url: resourceUrl,
-      };
-    }
-
-    if (!advisory.inputSchema) {
-      return {
-        success: false as const,
-        skipped: true as const,
-        url: resourceUrl,
-        error:
-          'Missing input schema (non-invocable endpoint skipped in strict mode)',
-        status: 402,
-      };
-    }
-
-    const result = await registerResource(resourceUrl, advisory, {
-      notifyNewServer: false,
-    });
-
-    if (result.success) return result;
-
-    return {
-      success: false as const,
-      url: resourceUrl,
-      error: getRegistrationErrorMessage(result.error),
-    };
-  });
-
-  const successfulResults: {
-    url: string;
-    originId: string;
-    title: string | null;
-    description: string | null;
-  }[] = [];
+  const successfulResults: ResourceOutcome[] = [];
   const siwxResults: { url: string }[] = [];
-  const failedResults: { url: string; error: string; status?: number }[] = [];
-  const skippedResults: { url: string; error: string; status?: number }[] = [];
+  const failedResults: FailedResourceEntry[] = [];
+  const skippedResults: FailedResourceEntry[] = [];
   let originId: string | undefined;
 
-  for (let i = 0; i < results.length; i++) {
-    const result = results[i];
+  for (let i = 0; i < outcomes.length; i++) {
+    const outcome = outcomes[i];
     const resourceUrl = resources[i]?.url ?? 'unknown';
 
-    if (!result) continue;
+    if (!outcome) continue;
 
-    if (result.status === 'fulfilled' && result.value) {
-      const value = result.value;
-      if ('success' in value && value.success) {
-        if ('siwx' in value && value.siwx === true) {
-          siwxResults.push({ url: resourceUrl });
-        } else if ('resource' in value) {
-          successfulResults.push({
-            url: resourceUrl,
-            originId: value.resource.origin.id,
-            title: value.registrationDetails.originMetadata.title ?? null,
-            description:
-              value.registrationDetails.originMetadata.description ?? null,
-          });
-          if (!originId && 'resource' in value && value.resource?.origin?.id) {
-            originId = value.resource.origin.id;
-          }
-        }
-      } else if (
-        'success' in value &&
-        !value.success &&
-        'skipped' in value &&
-        value.skipped === true
-      ) {
-        skippedResults.push({
-          url: resourceUrl,
-          error: value.error,
-          status: 'status' in value ? value.status : undefined,
-        });
-      } else if ('success' in value && !value.success) {
-        failedResults.push({
-          url: resourceUrl,
-          error: value.error,
-          status: 'status' in value ? value.status : undefined,
-        });
+    if (Result.isOk(outcome)) {
+      const value = outcome.value;
+      if (value.kind === 'siwx') {
+        siwxResults.push({ url: value.url });
+      } else {
+        successfulResults.push(value);
+        originId ??= value.originId;
       }
-    } else if (result.status === 'rejected') {
-      failedResults.push({
-        url: resourceUrl,
-        error:
-          result.reason instanceof Error
-            ? result.reason.message
-            : 'Promise rejected',
-      });
+      continue;
     }
+
+    const { bucket, status } = classifyFailure(outcome.error);
+    const entry: FailedResourceEntry = { url: resourceUrl, error: outcome.error };
+    if (status !== undefined) entry.status = status;
+    if (bucket === 'skipped') skippedResults.push(entry);
+    else failedResults.push(entry);
   }
 
   let deprecated = 0;
@@ -215,6 +202,7 @@ export async function registerResourcesFromDiscovery(
 
   const notifiedOrigins = new Set<string>();
   for (const result of successfulResults) {
+    if (result.kind !== 'registered') continue;
     const origin = getOriginFromUrl(result.url);
 
     if (
@@ -232,12 +220,12 @@ export async function registerResourcesFromDiscovery(
   }
 
   return {
-    registered: successfulResults.length,
+    registered: successfulResults.filter(r => r.kind === 'registered').length,
     siwx: siwxResults.length,
     failed: failedResults.length,
     skipped: skippedResults.length,
     deprecated,
-    total: results.length,
+    total: outcomes.length,
     source,
     failedDetails: failedResults,
     siwxDetails: siwxResults,

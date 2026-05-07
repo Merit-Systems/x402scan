@@ -1,9 +1,32 @@
+import { Result, matchError } from 'better-result';
+
 import type { registryRegisterBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
 import { registerResource } from '@/lib/resources';
 
 import { probeX402Endpoint } from '@/lib/discovery/probe';
+import type { ProbeError, RegisterError } from '@/lib/discovery/errors';
 import type { z } from 'zod';
+
+function probeStatus(error: ProbeError): number {
+  return matchError(error, {
+    LocalUrlNotSupported: () => 400,
+    InvalidUrl: () => 400,
+    ProbeNetworkError: () => 502,
+    ProbeTimeout: () => 504,
+    No402Challenge: () => 422,
+    ProbeUnexpectedError: () => 502,
+  });
+}
+
+function registerStatus(error: RegisterError): number {
+  return matchError(error, {
+    NoPaymentOptions: () => 422,
+    MissingInputSchema: () => 422,
+    UnsupportedNetwork: () => 422,
+    ResourceUpsertFailed: () => 500,
+  });
+}
 
 export async function handleRegistryRegister(
   body: z.infer<typeof registryRegisterBodySchema>
@@ -14,32 +37,25 @@ export async function handleRegistryRegister(
     url.replaceAll('{', '').replaceAll('}', '')
   );
 
-  if (!probeResult.success) {
+  if (Result.isError(probeResult)) {
     return jsonResponse(
       {
         success: false,
-        error: { type: 'no_402', message: probeResult.error },
+        error: probeResult.error,
       },
-      422
+      probeStatus(probeResult.error)
     );
   }
 
-  const result = await registerResource(url, probeResult.advisory);
+  const result = await registerResource(url, probeResult.value.advisory);
 
-  if (!result.success) {
+  if (Result.isError(result)) {
     return jsonResponse(
       {
         success: false,
-        error: {
-          type: 'parse_error',
-          parseErrors:
-            result.error.type === 'parseResponse'
-              ? result.error.parseErrors
-              : [JSON.stringify(result.error)],
-        },
-        data: result.data,
+        error: result.error,
       },
-      422
+      registerStatus(result.error)
     );
   }
 
@@ -48,9 +64,9 @@ export async function handleRegistryRegister(
       JSON.stringify(
         {
           success: true,
-          resource: result.resource,
-          accepts: result.accepts,
-          registrationDetails: result.registrationDetails,
+          resource: result.value.resource,
+          accepts: result.value.accepts,
+          registrationDetails: result.value.registrationDetails,
         },
         (_k, v: unknown) => (typeof v === 'bigint' ? Number(v) : v)
       )

@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { api } from '@/trpc/client';
 import type { TestedResource, FailedResource } from '@/types/batch-test';
 import type { DiscoveredResource } from '@/types/discovery';
+import { ProbeUnexpectedError } from '@/lib/discovery/errors';
 
 interface BatchTestResult {
   isLoading: boolean;
@@ -74,11 +75,13 @@ export function useBatchTest(
         setFailed(allFailed);
       })
       .catch(err => {
-        const error = err instanceof Error ? err.message : 'Request failed';
+        const message = err instanceof Error ? err.message : 'Request failed';
         setFailed(
-          chunks
-            .flat()
-            .map(r => ({ success: false as const, url: r.url, error }))
+          chunks.flat().map(r => ({
+            success: false as const,
+            url: r.url,
+            error: new ProbeUnexpectedError({ url: r.url, message }),
+          }))
         );
       })
       .finally(() => {

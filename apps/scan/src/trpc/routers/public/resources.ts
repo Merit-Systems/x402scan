@@ -1,4 +1,5 @@
 import z from 'zod';
+import { Result } from 'better-result';
 
 import {
   createTRPCRouter,
@@ -146,26 +147,22 @@ export const resourcesRouter = createTRPCRouter({
         input.url.toString().replaceAll('{', '').replaceAll('}', '')
       );
 
-      if (!probeResult.success) {
-        return { success: false as const, error: { type: 'no402' as const } };
+      if (Result.isError(probeResult)) {
+        return {
+          success: false as const,
+          error: probeResult.error,
+        };
       }
 
       const result = await registerResource(
         input.url.toString(),
-        probeResult.advisory
+        probeResult.value.advisory
       );
 
-      if (result.success === false) {
+      if (Result.isError(result)) {
         return {
           success: false as const,
-          data: result.data,
-          error: {
-            type: 'parseErrors' as const,
-            parseErrors:
-              result.error.type === 'parseResponse'
-                ? result.error.parseErrors
-                : [JSON.stringify(result.error)],
-          },
+          error: result.error,
         };
       }
 
@@ -210,8 +207,9 @@ export const resourcesRouter = createTRPCRouter({
       }
 
       return {
-        ...result,
-        methodUsed: probeResult.advisory.method,
+        success: true as const,
+        ...result.value,
+        methodUsed: probeResult.value.advisory.method,
         discovery,
       };
     }),

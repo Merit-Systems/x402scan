@@ -12,6 +12,7 @@ import type {
   DiscoveredResource,
   DiscoverySource,
 } from '@/types/discovery';
+import type { DiscoveryError } from '@/lib/discovery/errors';
 import type { OriginPreview } from './discovery-panel';
 import { useBatchTest } from './use-batch-test';
 import { useOwnership } from './use-ownership';
@@ -104,9 +105,9 @@ export interface UseDiscoveryReturn {
     failed: number;
     skipped?: number;
     deprecated?: number;
-    failedDetails?: { url: string; error: string; status?: number }[];
+    failedDetails?: { url: string; error: DiscoveryError; status?: number }[];
     siwxDetails?: { url: string }[];
-    skippedDetails?: { url: string; error: string; status?: number }[];
+    skippedDetails?: { url: string; error: DiscoveryError; status?: number }[];
     originId?: string;
   } | null;
   bulkError: string | null;

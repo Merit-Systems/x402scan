@@ -26,6 +26,8 @@ import { cn, decodeHtmlEntities } from '@/lib/utils';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
 import { ResourceCard } from '@/app/(app)/_components/resources/resource-card';
+import { discoveryErrorMessage } from '@/lib/discovery/error-message';
+import type { DiscoveryError } from '@/lib/discovery/errors';
 import {
   createDummyOgImage,
   createDummyResourceOrigin,
@@ -86,9 +88,13 @@ export interface DiscoveryPanelProps {
     failed: number;
     skipped?: number;
     deprecated?: number;
-    failedDetails?: { url: string; error: string; status?: number }[];
+    failedDetails?: { url: string; error: DiscoveryError; status?: number }[];
     siwxDetails?: { url: string }[];
-    skippedDetails?: { url: string; error: string; status?: number }[];
+    skippedDetails?: {
+      url: string;
+      error: DiscoveryError;
+      status?: number;
+    }[];
   } | null;
   /** Called when "Register All" is clicked (required in register mode) */
   onRegisterAll?: () => void;
@@ -215,7 +221,10 @@ export function DiscoveryPanel({
                         Error:
                       </span>
                       <span className="text-red-600 wrap-break-word">
-                        {failed.error}
+                        {discoveryErrorMessage(failed.error)}
+                      </span>
+                      <span className="text-muted-foreground/50 font-mono text-[10px] ml-2">
+                        [{failed.error._tag}]
                       </span>
                     </div>
                     {failed.status && (
@@ -342,7 +351,10 @@ export function DiscoveryPanel({
                         Error:
                       </span>
                       <span className="text-red-600 wrap-break-word">
-                        {failed.error}
+                        {discoveryErrorMessage(failed.error)}
+                      </span>
+                      <span className="text-muted-foreground/50 font-mono text-[10px] ml-2">
+                        [{failed.error._tag}]
                       </span>
                     </div>
                     {failed.status && (

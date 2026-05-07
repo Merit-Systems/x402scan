@@ -3,6 +3,8 @@ import type {
   AuditWarning,
 } from '@agentcash/discovery';
 
+import type { DiscoveryError } from '@/lib/discovery/errors';
+
 export interface TestedResource {
   success: true;
   url: string;
@@ -15,6 +17,7 @@ export interface TestedResource {
 export interface FailedResource {
   success: false;
   url: string;
-  error: string;
+  /** Full serialized DiscoveryError carrying `_tag` and the variant payload. */
+  error: DiscoveryError;
   issues?: AuditWarning[];
 }

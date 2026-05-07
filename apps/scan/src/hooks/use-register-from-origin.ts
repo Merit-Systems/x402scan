@@ -3,6 +3,8 @@
 import { api } from '@/trpc/client';
 import { toast } from 'sonner';
 
+import type { DiscoveryError } from '@/lib/discovery/errors';
+
 interface RegisterFromOriginSuccessData {
   registered: number;
   siwx: number;
@@ -10,9 +12,9 @@ interface RegisterFromOriginSuccessData {
   skipped: number;
   deprecated?: number;
   total: number;
-  failedDetails?: { url: string; error: string; status?: number }[];
+  failedDetails?: { url: string; error: DiscoveryError; status?: number }[];
   siwxDetails?: { url: string }[];
-  skippedDetails?: { url: string; error: string; status?: number }[];
+  skippedDetails?: { url: string; error: DiscoveryError; status?: number }[];
   originId?: string;
 }
 
