@@ -214,7 +214,7 @@ describe('parseV1 with normalized schemas', () => {
     }
   });
 
-  it('should normalize snake_case field names to camelCase', () => {
+  it('should strip snake_case field names (schema uses camelCase)', () => {
     const response = {
       x402Version: 1,
       accepts: [
@@ -248,11 +248,11 @@ describe('parseV1 with normalized schemas', () => {
     if (result.success) {
       const inputSchema = getOutputSchema(result.data)?.input;
       expect(inputSchema).toBeDefined();
-      // FieldDefSchema coerces string values to { type: val }
-      expect(inputSchema?.queryParams).toEqual({ test: { type: 'value' } });
-      expect(inputSchema?.bodyFields).toEqual({ body: { type: 'test' } });
-      expect(inputSchema?.bodyType).toBe('json');
-      expect(inputSchema?.headerFields).toEqual({ auth: { type: 'bearer' } });
+      // snake_case fields are stripped by zod's "strip" mode
+      expect(inputSchema?.queryParams).toBeUndefined();
+      expect(inputSchema?.bodyFields).toBeUndefined();
+      expect(inputSchema?.bodyType).toBeUndefined();
+      expect(inputSchema?.headerFields).toBeUndefined();
     }
   });
 
