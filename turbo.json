@@ -131,7 +131,6 @@
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",
-    "VITEST",
     "VERCEL_ENV",
     "VERCEL_PROJECT_PRODUCTION_URL",
     "VERCEL_BRANCH_URL"

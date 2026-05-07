@@ -11,11 +11,8 @@ import { getChat, updateChat } from '@/services/db/composer/chat';
 import { auth } from '@/auth';
 
 import { messageSchema } from '@/lib/message-schema';
-import {
-  coerceAcceptForV1Schema,
-  fetchWithProxy,
-  normalizedAcceptSchema,
-} from '@/lib/x402';
+import { coerceAcceptForV1Schema, normalizedAcceptSchema } from '@/lib/x402';
+import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
 import { supportedChainSchema } from '@/lib/schemas';
 
 import { SUPPORTED_CHAINS } from '@/types/chain';

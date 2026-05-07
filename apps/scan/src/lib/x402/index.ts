@@ -3,7 +3,6 @@ import { z as z3 } from 'zod3';
 export * from './v1';
 export * from './v2';
 export * from './schema';
-export { fetchWithProxy } from './proxy-fetch';
 
 import {
   x402ResponseSchemaV1,
