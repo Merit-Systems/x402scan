@@ -30,3 +30,6 @@ jobs:
 
       - name: Run all checks (format, types, knip, lint)
         run: pnpm check
+
+      - name: Run tests
+        run: pnpm --filter @x402scan/app test -- --run
