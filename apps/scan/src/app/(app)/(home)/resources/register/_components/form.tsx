@@ -100,6 +100,13 @@ interface OpenApiImportResource {
   label: string;
 }
 
+interface ManualRegistrationTarget {
+  id: string;
+  url: string;
+  method?: OpenApiMethod;
+  label?: string;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -135,7 +142,10 @@ function resolveOpenApiServer(
     .map(server => (isRecord(server) ? server.url : undefined))
     .find((value): value is string => typeof value === 'string');
 
-  const rawBaseUrl = serverUrl ?? fallbackBaseUrl;
+  const rawBaseUrl =
+    serverUrl ??
+    resolveSwaggerServer(document, fallbackBaseUrl) ??
+    fallbackBaseUrl;
   if (!rawBaseUrl) {
     throw new Error('OpenAPI document needs an absolute server URL.');
   }
@@ -147,6 +157,42 @@ function resolveOpenApiServer(
   } catch {
     throw new Error('OpenAPI server URL is invalid.');
   }
+}
+
+function resolveSwaggerServer(
+  document: Record<string, unknown>,
+  fallbackBaseUrl: string | null
+): string | null {
+  if (typeof document.swagger !== 'string') {
+    return null;
+  }
+
+  const host = typeof document.host === 'string' ? document.host : null;
+  if (!host) {
+    return null;
+  }
+
+  const schemes = Array.isArray(document.schemes) ? document.schemes : [];
+  let fallbackScheme = 'https';
+  if (fallbackBaseUrl) {
+    try {
+      fallbackScheme = new URL(fallbackBaseUrl).protocol.replace(/:$/, '');
+    } catch {
+      fallbackScheme = 'https';
+    }
+  }
+  const scheme =
+    schemes.find((value): value is string => typeof value === 'string') ??
+    fallbackScheme;
+  const basePath =
+    typeof document.basePath === 'string' && document.basePath.length > 0
+      ? document.basePath
+      : '';
+  const normalizedBasePath = basePath.startsWith('/')
+    ? basePath
+    : `/${basePath}`;
+
+  return `${scheme}://${host}${normalizedBasePath}`.replace(/\/$/, '');
 }
 
 function operationHasX402Metadata(operation: Record<string, unknown>): boolean {
@@ -205,8 +251,28 @@ function parseOpenApiResources(
   return {
     baseUrl,
     resources: Array.from(
-      new Map(resources.map(resource => [resource.url, resource])).values()
+      new Map(
+        resources.map(resource => [getOpenApiResourceKey(resource), resource])
+      ).values()
     ),
+  };
+}
+
+function getOpenApiResourceKey(resource: OpenApiImportResource): string {
+  return `${resource.method} ${normalizeUrl(resource.url)}`;
+}
+
+function createManualTarget(
+  url: string,
+  method?: OpenApiMethod,
+  label?: string
+): ManualRegistrationTarget {
+  const normalizedUrl = normalizeUrl(url);
+  return {
+    id: method ? `${method} ${normalizedUrl}` : normalizedUrl,
+    url: normalizedUrl,
+    method,
+    label,
   };
 }
 
@@ -243,7 +309,7 @@ function getPrimaryProbeError(
 export const RegisterResourceForm = () => {
   const [url, setUrl] = useState('');
   const [headers, setHeaders] = useState<{ name: string; value: string }[]>([]);
-  const [manualUrls, setManualUrls] = useState<string[]>([]);
+  const [manualUrls, setManualUrls] = useState<ManualRegistrationTarget[]>([]);
   const [manualListError, setManualListError] = useState<string | null>(null);
   const [manualProgress, setManualProgress] = useState<{
     current: number;
@@ -288,7 +354,8 @@ export const RegisterResourceForm = () => {
   const normalizedUrl = useMemo(() => normalizeUrl(url.trim()), [url]);
 
   const queueOrigin = useMemo(
-    () => (manualUrls.length > 0 ? safeGetOrigin(manualUrls[0] ?? '') : null),
+    () =>
+      manualUrls.length > 0 ? safeGetOrigin(manualUrls[0]?.url ?? '') : null,
     [manualUrls]
   );
 
@@ -298,17 +365,19 @@ export const RegisterResourceForm = () => {
     hasDiscoveryResources && manualUrls.length === 0;
 
   const canUseManualMode = isValidUrl && !isOriginOnly;
-  const currentUrlAlreadyInManualList = manualUrls.includes(normalizedUrl);
+  const currentUrlAlreadyInManualList = manualUrls.some(
+    target => target.id === normalizedUrl
+  );
   const canAddCurrentUrl =
     canUseManualMode &&
     !currentUrlAlreadyInManualList &&
     (!queueOrigin || queueOrigin === urlOrigin);
 
-  const manualTargets =
+  const manualTargets: ManualRegistrationTarget[] =
     manualUrls.length > 0
       ? manualUrls
       : canUseManualMode
-        ? [normalizedUrl]
+        ? [createManualTarget(normalizedUrl)]
         : [];
 
   const testedResourceByUrl = useMemo(() => {
@@ -326,14 +395,6 @@ export const RegisterResourceForm = () => {
     }
     return map;
   }, [failedResources]);
-
-  const openApiResourceByUrl = useMemo(() => {
-    const map = new Map<string, OpenApiImportResource>();
-    for (const resource of openApiResources) {
-      map.set(resource.url, resource);
-    }
-    return map;
-  }, [openApiResources]);
 
   const currentManualTested = testedResourceByUrl.get(normalizedUrl);
   const currentManualFailed =
@@ -388,7 +449,7 @@ export const RegisterResourceForm = () => {
     }
 
     if (!currentUrlAlreadyInManualList) {
-      setManualUrls(current => [...current, normalizedUrl]);
+      setManualUrls(current => [...current, createManualTarget(normalizedUrl)]);
     }
 
     setManualListError(null);
@@ -396,8 +457,8 @@ export const RegisterResourceForm = () => {
     setManualProgress(null);
   };
 
-  const handleRemoveManualUrl = (targetUrl: string) => {
-    setManualUrls(current => current.filter(item => item !== targetUrl));
+  const handleRemoveManualUrl = (targetId: string) => {
+    setManualUrls(current => current.filter(item => item.id !== targetId));
     setManualResult(null);
     setManualProgress(null);
     setManualListError(null);
@@ -435,7 +496,9 @@ export const RegisterResourceForm = () => {
 
     try {
       const parsed = parseOpenApiResources(openApiSpec, fallbackBaseUrl);
-      const resources = parsed.resources.map(resource => resource.url);
+      const resources = parsed.resources.map(resource =>
+        createManualTarget(resource.url, resource.method, resource.label)
+      );
       setManualUrls(resources);
       setOpenApiResources(parsed.resources);
       setUrl(parsed.baseUrl);
@@ -467,7 +530,7 @@ export const RegisterResourceForm = () => {
     await runManualRegistration(manualTargets);
   };
 
-  const runManualRegistration = async (targets: string[]) => {
+  const runManualRegistration = async (targets: ManualRegistrationTarget[]) => {
     if (targets.length === 0 || isRegisteringManual) {
       return;
     }
@@ -480,14 +543,15 @@ export const RegisterResourceForm = () => {
     const failedDetails: { url: string; error: string; status?: number }[] = [];
 
     for (let index = 0; index < targets.length; index += 1) {
-      const targetUrl = targets[index] ?? '';
+      const target = targets[index];
+      if (!target) continue;
       setManualProgress({ current: index + 1, total: targets.length });
 
       try {
         const result = await registerMutation.mutateAsync({
-          url: targetUrl,
+          url: target.url,
           headers: requestHeaders,
-          method: openApiResourceByUrl.get(targetUrl)?.method,
+          method: target.method,
         });
 
         if (result.success) {
@@ -501,12 +565,12 @@ export const RegisterResourceForm = () => {
         }
 
         failedDetails.push({
-          url: targetUrl,
+          url: target.url,
           error: getErrorMessageFromRegisterResult(result),
         });
       } catch (error) {
         failedDetails.push({
-          url: targetUrl,
+          url: target.url,
           error: error instanceof Error ? error.message : 'Request failed',
         });
       }
@@ -525,7 +589,7 @@ export const RegisterResourceForm = () => {
       failed: failedDetails.length,
       failedDetails,
       originId,
-      origin: safeGetOrigin(targets[0] ?? ''),
+      origin: safeGetOrigin(targets[0]?.url ?? ''),
     });
 
     setIsRegisteringManual(false);
@@ -536,7 +600,7 @@ export const RegisterResourceForm = () => {
       return;
     }
 
-    await runManualRegistration([normalizedUrl]);
+    await runManualRegistration([createManualTarget(normalizedUrl)]);
   };
 
   const renderProbeCard = () => {
@@ -889,13 +953,12 @@ export const RegisterResourceForm = () => {
               </p>
               <ul className="space-y-1">
                 {manualUrls.map(item => (
-                  <li key={item} className="flex items-center gap-2 text-xs">
+                  <li key={item.id} className="flex items-center gap-2 text-xs">
                     <div className="flex-1 min-w-0">
-                      <code className="font-mono break-all">{item}</code>
-                      {openApiResourceByUrl.get(item) ? (
+                      <code className="font-mono break-all">{item.url}</code>
+                      {item.method ? (
                         <p className="text-[10px] text-muted-foreground mt-0.5">
-                          {openApiResourceByUrl.get(item)?.method}{' '}
-                          {openApiResourceByUrl.get(item)?.label}
+                          {item.method} {item.label}
                         </p>
                       ) : null}
                     </div>
@@ -903,7 +966,7 @@ export const RegisterResourceForm = () => {
                       type="button"
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleRemoveManualUrl(item)}
+                      onClick={() => handleRemoveManualUrl(item.id)}
                     >
                       <Trash2 className="size-4" />
                     </Button>
