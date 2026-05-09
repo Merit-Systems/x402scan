@@ -51,6 +51,7 @@ pnpm dev:sync
 ## Documentation
 
 - **[x402 Discovery Document Guide](./docs/DISCOVERY.md)** - Learn how to implement discovery for your x402 server to enable automatic resource registration
+- **[Programmatic Resource Registration](./docs/PROGRAMMATIC_REGISTRATION.md)** - Add or refresh resources with the public registry API
 
 ## Contributing
 
@@ -59,6 +60,8 @@ We're actively seeking contributors to help build x402scan. We believe an ecosys
 ### Add Resources
 
 If you know of a resource that is not yet listed, you can add it by visiting [https://www.x402scan.com/resources/register](https://www.x402scan.com/resources/register) and submitting the URL. If the URL returns a valid x402 schema, it will be added to the resources list automatically.
+
+Resource providers can also register or refresh listings programmatically with the public registry API. See [Programmatic Resource Registration](./docs/PROGRAMMATIC_REGISTRATION.md) for request examples.
 
 ### Add Facilitators
 
