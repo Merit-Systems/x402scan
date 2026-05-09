@@ -112,6 +112,10 @@ export const registryRegisterBodySchema = z.object({
     .string()
     .url()
     .describe('URL of the x402-protected resource to register'),
+  method: z
+    .enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+    .optional()
+    .describe('Preferred HTTP method from OpenAPI discovery'),
 });
 
 export const registryRegisterOriginBodySchema = z.object({

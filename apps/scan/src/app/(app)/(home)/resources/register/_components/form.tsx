@@ -2,16 +2,20 @@
 
 import { useMemo, useState } from 'react';
 
+import type { ChangeEvent } from 'react';
+
 import {
   ArrowDown,
   CheckCircle2,
   ChevronDown,
+  FileText,
   Loader2,
   Plus,
   Server,
   CircleHelp,
   Trash2,
   TriangleAlert,
+  Upload,
   XCircle,
 } from 'lucide-react';
 
@@ -31,6 +35,7 @@ import {
 } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Tooltip,
   TooltipContent,
@@ -47,6 +52,7 @@ import { cn } from '@/lib/utils';
 import { normalizeUrl } from '@/lib/url';
 import { api } from '@/trpc/client';
 import Link from 'next/link';
+import { parse as parseYaml } from 'yaml';
 import { z } from 'zod';
 
 interface ManualRegistrationResult {
@@ -84,6 +90,125 @@ const registerSuccessResultSchema = z.object({
     }),
   }),
 });
+
+const OPENAPI_METHODS = ['get', 'post', 'put', 'patch', 'delete'] as const;
+type OpenApiMethod = Uppercase<(typeof OPENAPI_METHODS)[number]>;
+
+interface OpenApiImportResource {
+  url: string;
+  method: OpenApiMethod;
+  label: string;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function parseOpenApiDocument(input: string): Record<string, unknown> {
+  const trimmed = input.trim();
+  if (trimmed.length === 0) {
+    throw new Error('Paste an OpenAPI document first.');
+  }
+
+  const parsed: unknown =
+    trimmed.startsWith('{') || trimmed.startsWith('[')
+      ? JSON.parse(trimmed)
+      : parseYaml(trimmed);
+
+  if (!isRecord(parsed)) {
+    throw new Error('OpenAPI document must be an object.');
+  }
+
+  if (!('openapi' in parsed) && !('swagger' in parsed)) {
+    throw new Error('Document is missing an openapi or swagger version field.');
+  }
+
+  return parsed;
+}
+
+function resolveOpenApiServer(
+  document: Record<string, unknown>,
+  fallbackBaseUrl: string | null
+): string {
+  const servers = Array.isArray(document.servers) ? document.servers : [];
+  const serverUrl = servers
+    .map(server => (isRecord(server) ? server.url : undefined))
+    .find((value): value is string => typeof value === 'string');
+
+  const rawBaseUrl = serverUrl ?? fallbackBaseUrl;
+  if (!rawBaseUrl) {
+    throw new Error('OpenAPI document needs an absolute server URL.');
+  }
+
+  try {
+    return new URL(rawBaseUrl, fallbackBaseUrl ?? undefined)
+      .toString()
+      .replace(/\/$/, '');
+  } catch {
+    throw new Error('OpenAPI server URL is invalid.');
+  }
+}
+
+function operationHasX402Metadata(operation: Record<string, unknown>): boolean {
+  if ('x-payment-info' in operation) {
+    return true;
+  }
+
+  const responses = operation.responses;
+  return isRecord(responses) && '402' in responses;
+}
+
+function buildOpenApiResourceUrl(baseUrl: string, path: string): string {
+  const normalizedBase = baseUrl.replace(/\/+$/, '');
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${normalizedBase}${normalizedPath}`;
+}
+
+function parseOpenApiResources(
+  specText: string,
+  fallbackBaseUrl: string | null
+): { baseUrl: string; resources: OpenApiImportResource[] } {
+  const document = parseOpenApiDocument(specText);
+  const baseUrl = resolveOpenApiServer(document, fallbackBaseUrl);
+  const paths = document.paths;
+
+  if (!isRecord(paths)) {
+    throw new Error('OpenAPI document has no paths object.');
+  }
+
+  const resources: OpenApiImportResource[] = [];
+
+  for (const [path, pathItem] of Object.entries(paths)) {
+    if (!isRecord(pathItem)) continue;
+
+    for (const method of OPENAPI_METHODS) {
+      const operation = pathItem[method];
+      if (!isRecord(operation) || !operationHasX402Metadata(operation)) {
+        continue;
+      }
+
+      const url = buildOpenApiResourceUrl(baseUrl, path);
+      const summary =
+        typeof operation.summary === 'string' ? operation.summary : undefined;
+      resources.push({
+        url,
+        method: method.toUpperCase() as OpenApiMethod,
+        label: summary ?? path,
+      });
+    }
+  }
+
+  if (resources.length === 0) {
+    throw new Error('No x402 operations found in this OpenAPI document.');
+  }
+
+  return {
+    baseUrl,
+    resources: Array.from(
+      new Map(resources.map(resource => [resource.url, resource])).values()
+    ),
+  };
+}
 
 function safeGetOrigin(url: string): string | null {
   try {
@@ -127,6 +252,12 @@ export const RegisterResourceForm = () => {
   const [isRegisteringManual, setIsRegisteringManual] = useState(false);
   const [manualResult, setManualResult] =
     useState<ManualRegistrationResult | null>(null);
+  const [openApiSpec, setOpenApiSpec] = useState('');
+  const [openApiBaseUrl, setOpenApiBaseUrl] = useState('');
+  const [openApiError, setOpenApiError] = useState<string | null>(null);
+  const [openApiResources, setOpenApiResources] = useState<
+    OpenApiImportResource[]
+  >([]);
 
   const utils = api.useUtils();
 
@@ -163,6 +294,8 @@ export const RegisterResourceForm = () => {
 
   const hasDiscoveryResources =
     discoveryFound && actualDiscoveredResources.length > 0;
+  const shouldUseDiscoveryRegistration =
+    hasDiscoveryResources && manualUrls.length === 0;
 
   const canUseManualMode = isValidUrl && !isOriginOnly;
   const currentUrlAlreadyInManualList = manualUrls.includes(normalizedUrl);
@@ -193,6 +326,14 @@ export const RegisterResourceForm = () => {
     }
     return map;
   }, [failedResources]);
+
+  const openApiResourceByUrl = useMemo(() => {
+    const map = new Map<string, OpenApiImportResource>();
+    for (const resource of openApiResources) {
+      map.set(resource.url, resource);
+    }
+    return map;
+  }, [openApiResources]);
 
   const currentManualTested = testedResourceByUrl.get(normalizedUrl);
   const currentManualFailed =
@@ -233,6 +374,7 @@ export const RegisterResourceForm = () => {
     setManualResult(null);
     setManualProgress(null);
     setManualListError(null);
+    setOpenApiError(null);
   };
 
   const handleAddCurrentUrl = () => {
@@ -268,9 +410,46 @@ export const RegisterResourceForm = () => {
     setManualListError(null);
     setManualProgress(null);
     setManualResult(null);
+    setOpenApiSpec('');
+    setOpenApiBaseUrl('');
+    setOpenApiError(null);
+    setOpenApiResources([]);
     setIsRegisteringManual(false);
     registerMutation.reset();
     resetBulk();
+  };
+
+  const handleOpenApiFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setOpenApiSpec(await file.text());
+    setOpenApiError(null);
+  };
+
+  const handleImportOpenApiSpec = () => {
+    const explicitBaseUrl = openApiBaseUrl.trim();
+    const fallbackBaseUrl =
+      explicitBaseUrl.length > 0
+        ? explicitBaseUrl
+        : (urlOrigin ?? safeGetOrigin(url));
+
+    try {
+      const parsed = parseOpenApiResources(openApiSpec, fallbackBaseUrl);
+      const resources = parsed.resources.map(resource => resource.url);
+      setManualUrls(resources);
+      setOpenApiResources(parsed.resources);
+      setUrl(parsed.baseUrl);
+      setManualResult(null);
+      setManualProgress(null);
+      setManualListError(null);
+      setOpenApiError(null);
+      resetBulk();
+    } catch (error) {
+      setOpenApiResources([]);
+      setOpenApiError(
+        error instanceof Error ? error.message : 'Unable to parse OpenAPI spec.'
+      );
+    }
   };
 
   const handleRegisterDiscovered = () => {
@@ -308,6 +487,7 @@ export const RegisterResourceForm = () => {
         const result = await registerMutation.mutateAsync({
           url: targetUrl,
           headers: requestHeaders,
+          method: openApiResourceByUrl.get(targetUrl)?.method,
         });
 
         if (result.success) {
@@ -396,7 +576,7 @@ export const RegisterResourceForm = () => {
       );
     }
 
-    if (hasDiscoveryResources) {
+    if (shouldUseDiscoveryRegistration) {
       const previewResources = actualDiscoveredResources.slice(0, 8);
       const hiddenCount =
         actualDiscoveredResources.length - previewResources.length;
@@ -542,7 +722,7 @@ export const RegisterResourceForm = () => {
                 value={url}
                 onChange={event => handleUrlChange(event.target.value)}
               />
-              {!hasDiscoveryResources && (
+              {!shouldUseDiscoveryRegistration && (
                 <Button
                   type="button"
                   variant="outline"
@@ -557,6 +737,69 @@ export const RegisterResourceForm = () => {
             </div>
             {manualListError && (
               <p className="text-xs text-red-600">{manualListError}</p>
+            )}
+          </div>
+
+          <div className="rounded-md border p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <FileText className="size-5 text-muted-foreground mt-0.5 shrink-0" />
+              <div className="space-y-1">
+                <Label>OpenAPI Spec</Label>
+                <p className="text-xs text-muted-foreground">
+                  Paste or upload a JSON/YAML spec to queue x402 operations for
+                  registration.
+                </p>
+              </div>
+            </div>
+            <div className="grid gap-2 md:grid-cols-[1fr_auto]">
+              <Input
+                type="text"
+                placeholder="Base URL if the spec uses relative servers"
+                value={openApiBaseUrl}
+                onChange={event => setOpenApiBaseUrl(event.target.value)}
+              />
+              <Label className="inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted cursor-pointer">
+                <Upload className="size-4" />
+                Upload
+                <Input
+                  type="file"
+                  accept=".json,.yaml,.yml,application/json,application/yaml,text/yaml,text/x-yaml"
+                  onChange={event => {
+                    void handleOpenApiFile(event);
+                  }}
+                  className="sr-only"
+                />
+              </Label>
+            </div>
+            <Textarea
+              value={openApiSpec}
+              onChange={event => {
+                setOpenApiSpec(event.target.value);
+                setOpenApiError(null);
+              }}
+              placeholder={
+                'openapi: 3.1.0\nservers:\n  - url: https://api.example.com\npaths: ...'
+              }
+              className="min-h-36 font-mono text-xs"
+            />
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleImportOpenApiSpec}
+                disabled={openApiSpec.trim().length === 0}
+              >
+                Parse OpenAPI Spec
+              </Button>
+              {openApiResources.length > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Queued {openApiResources.length} x402 operation
+                  {openApiResources.length === 1 ? '' : 's'}.
+                </p>
+              )}
+            </div>
+            {openApiError && (
+              <p className="text-xs text-red-600">{openApiError}</p>
             )}
           </div>
 
@@ -639,7 +882,7 @@ export const RegisterResourceForm = () => {
             </CollapsibleContent>
           </Collapsible>
 
-          {manualUrls.length > 0 && !hasDiscoveryResources && (
+          {manualUrls.length > 0 && !shouldUseDiscoveryRegistration && (
             <div className="border rounded-md p-3 space-y-2">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 Manual URLs ({manualUrls.length})
@@ -647,7 +890,15 @@ export const RegisterResourceForm = () => {
               <ul className="space-y-1">
                 {manualUrls.map(item => (
                   <li key={item} className="flex items-center gap-2 text-xs">
-                    <code className="font-mono break-all flex-1">{item}</code>
+                    <div className="flex-1 min-w-0">
+                      <code className="font-mono break-all">{item}</code>
+                      {openApiResourceByUrl.get(item) ? (
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          {openApiResourceByUrl.get(item)?.method}{' '}
+                          {openApiResourceByUrl.get(item)?.label}
+                        </p>
+                      ) : null}
+                    </div>
                     <Button
                       type="button"
                       variant="ghost"
@@ -663,7 +914,7 @@ export const RegisterResourceForm = () => {
           )}
         </CardContent>
         <CardFooter className="flex-col items-stretch gap-2">
-          {hasDiscoveryResources ? (
+          {shouldUseDiscoveryRegistration ? (
             <>
               <Button
                 variant="turbo"
@@ -790,7 +1041,7 @@ export const RegisterResourceForm = () => {
         <DiscoveryPanel
           origin={activeSummaryOrigin}
           isLoading={false}
-          found={hasDiscoveryResources}
+          found={shouldUseDiscoveryRegistration}
           source={discoverySource}
           resources={[]}
           resourceCount={0}

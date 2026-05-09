@@ -8,10 +8,11 @@ import type { z } from 'zod';
 export async function handleRegistryRegister(
   body: z.infer<typeof registryRegisterBodySchema>
 ) {
-  const { url } = body;
+  const { url, method } = body;
 
   const probeResult = await probeX402Endpoint(
-    url.replaceAll('{', '').replaceAll('}', '')
+    url.replaceAll('{', '').replaceAll('}', ''),
+    method
   );
 
   if (!probeResult.success) {

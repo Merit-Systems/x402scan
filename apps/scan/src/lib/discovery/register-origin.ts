@@ -76,7 +76,7 @@ export interface RegisterOriginResult {
  * Deprecates resources from the same origin that are no longer in the list.
  */
 export async function registerResourcesFromDiscovery(
-  resources: { url: string; authMode?: AuthMode }[],
+  resources: { url: string; method?: string; authMode?: AuthMode }[],
   source: string | undefined
 ): Promise<RegisterOriginResult> {
   const originResourceCounts = new Map(
@@ -100,7 +100,7 @@ export async function registerResourcesFromDiscovery(
       };
     }
 
-    const probeResult = await probeX402Endpoint(resourceUrl);
+    const probeResult = await probeX402Endpoint(resourceUrl, resource.method);
 
     if (!probeResult.success) {
       return {
