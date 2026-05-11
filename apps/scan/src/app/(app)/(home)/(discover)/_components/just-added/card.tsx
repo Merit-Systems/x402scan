@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
 
-import { cn, decodeHtmlEntities } from '@/lib/utils';
+import { decodeHtmlEntities } from '@/lib/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -40,6 +40,7 @@ export const JustAddedCard: React.FC<Props> = ({ origin }) => {
         {/* Image area */}
         <div className="relative aspect-[4/3] bg-muted/50 flex items-center justify-center overflow-hidden">
           {origin.ogImages?.[0]?.url ? (
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={origin.ogImages[0].url}
               alt={origin.title ?? origin.origin}

@@ -10,7 +10,6 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { WheelGesturesPlugin } from 'embla-carousel-wheel-gestures';
 
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Logo } from '@/components/logo';
 
 import { Section } from '@/app/_components/layout/page-utils';
