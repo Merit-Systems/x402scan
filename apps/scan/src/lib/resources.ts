@@ -154,6 +154,20 @@ export const registerResource = async (
     };
   }
 
+  const parsedPaymentRequiredBody = parseX402Response(
+    advisory.paymentRequiredBody
+  );
+  if (!parsedPaymentRequiredBody.success) {
+    return {
+      success: false as const,
+      data: advisory.paymentRequiredBody,
+      error: {
+        type: 'parseResponse' as const,
+        parseErrors: parsedPaymentRequiredBody.errors,
+      },
+    };
+  }
+
   const x402Version = x402Options[0]?.version ?? 1;
 
   const { og, metadata, favicon } = await scrapeOriginData(origin);
