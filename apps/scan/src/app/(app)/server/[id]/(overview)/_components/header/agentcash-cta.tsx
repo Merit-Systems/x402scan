@@ -4,6 +4,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Code } from '@/components/ui/code';
 import { CopyButton } from '@/components/ui/copy-button';
 import { Skeleton } from '@/components/ui/skeleton';
+import Image from 'next/image';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
@@ -14,15 +15,29 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
 
   return (
     <div className="w-fit max-w-full flex flex-col gap-1.5">
-      <p className="text-sm font-semibold">
-        Quickly try {origin.title ?? new URL(origin.origin).hostname} with{' '}
+      <p className="flex flex-wrap items-center gap-x-1 gap-y-1 text-sm font-semibold">
+        <span>Quickly try {origin.title ?? new URL(origin.origin).hostname} with</span>
         <a
           href="https://agentcash.dev"
           target="_blank"
           rel="noopener noreferrer"
-          className="transition-colors hover:text-[oklch(0.5946_0.1624_144.21)]"
+          aria-label="Open AgentCash"
+          className="inline-flex items-center leading-none transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          AgentCash:
+          <Image
+            src="/agentcash-wordmark-light.svg"
+            alt=""
+            width={118}
+            height={12}
+            className="h-[0.65rem] w-auto shrink-0 block dark:hidden"
+          />
+          <Image
+            src="/agentcash-wordmark-dark.svg"
+            alt=""
+            width={118}
+            height={12}
+            className="h-[0.65rem] w-auto shrink-0 hidden dark:block"
+          />
         </a>
       </p>
       <div className="flex items-center w-fit max-w-full border rounded-md overflow-hidden pr-1 bg-muted [&_.shiki]:p-0 [&_.shiki]:px-2 [&_.shiki]:py-1 [&_.shiki]:text-sm">
