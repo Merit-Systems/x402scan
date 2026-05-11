@@ -7,6 +7,8 @@ import {
   listOriginsSchema,
   listOriginsWithResources,
   listOriginsWithResourcesSchema,
+  listRecentOrigins,
+  listRecentOriginsSchema,
   searchOrigins,
   searchOriginsSchema,
 } from '@/services/db/resources/origin';
@@ -35,5 +37,10 @@ export const originsRouter = createTRPCRouter({
     .input(searchOriginsSchema)
     .query(async ({ input }) => {
       return await searchOrigins(input);
+    }),
+  recent: publicProcedure
+    .input(listRecentOriginsSchema)
+    .query(async ({ input }) => {
+      return await listRecentOrigins(input);
     }),
 });

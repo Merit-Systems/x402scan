@@ -7,6 +7,10 @@ import { Body, Section } from '@/app/_components/layout/page-utils';
 import { OverallStats } from '../(overview)/_components/stats';
 // import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
 import { DiscoverHeading } from './_components/heading';
+import {
+  JustAddedCarousel,
+  LoadingJustAddedCarousel,
+} from './_components/just-added';
 
 import { api, HydrateClient } from '@/trpc/server';
 
@@ -43,13 +47,15 @@ export default async function DiscoverPage({
     sorting: defaultSellersSorting,
   });
 
+  void api.public.origins.recent.prefetch({ limit: 15 });
+
   return (
     <HydrateClient>
       <SellersSortingProvider initialSorting={defaultSellersSorting}>
         <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
           <div>
             <DiscoverHeading />
-            <Body>
+            <Body className="pb-0">
               <DiscoverPageContent>
                 {/* <AgentCashAnnouncementBanner /> */}
                 <OverallStats
@@ -57,7 +63,7 @@ export default async function DiscoverPage({
                   initialTimeframe={ActivityTimeframe.ThirtyDays}
                 />
                 <Section
-                  title="Featured Services"
+                  title="Featured"
                   description="x402scan curated services"
                   actions={
                     <div className="flex items-center gap-2">
@@ -75,6 +81,13 @@ export default async function DiscoverPage({
                     </Suspense>
                   </ErrorBoundary>
                 </Section>
+                <ErrorBoundary
+                  fallback={null}
+                >
+                  <Suspense fallback={<LoadingJustAddedCarousel />}>
+                    <JustAddedCarousel />
+                  </Suspense>
+                </ErrorBoundary>
               </DiscoverPageContent>
             </Body>
           </div>
