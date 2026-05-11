@@ -244,6 +244,18 @@ export const resourcesRouter = createTRPCRouter({
         discoveryResult.source
       );
 
+      if (result.registered === 0) {
+        return {
+          success: false as const,
+          error: {
+            type: 'noValidResources' as const,
+            message:
+              'No valid paid x402 resources were registered for this server.',
+          },
+          result,
+        };
+      }
+
       return { success: true as const, ...result };
     }),
 
