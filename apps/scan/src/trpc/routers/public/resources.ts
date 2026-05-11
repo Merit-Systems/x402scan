@@ -250,7 +250,7 @@ export const resourcesRouter = createTRPCRouter({
           error: {
             type: 'noValidResources' as const,
             message:
-              'No valid paid x402 resources were registered for this server.',
+              'No valid paid x402 resources were found for this origin. Add at least one paid x402 resource that passes validation to complete registration.',
           },
           result,
         };
