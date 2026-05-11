@@ -16,7 +16,9 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
   return (
     <div className="w-fit max-w-full flex flex-col gap-1.5">
       <p className="flex flex-wrap items-center gap-x-1 gap-y-1 text-sm font-semibold">
-        <span>Quickly try {origin.title ?? new URL(origin.origin).hostname} with</span>
+        <span>
+          Quickly try {origin.title ?? new URL(origin.origin).hostname} with
+        </span>
         <a
           href="https://agentcash.dev"
           target="_blank"

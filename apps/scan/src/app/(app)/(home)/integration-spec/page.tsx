@@ -11,15 +11,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { CopyForAgentsButton } from './copy-for-agents-button';
-import { DiscoveryStrategyPanel } from './discovery-strategy-panel';
 import { AgentPromptPreview } from './agent-prompt-preview';
+import { TryDiscovery } from './try-discovery';
 
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Discovery Spec',
-  description:
-    'x402scan discovery and registration specification for OpenAPI, .well-known, and endpoint-only compatibility.',
+  description: 'x402scan discovery and registration specification for OpenAPI.',
 };
 
 const endpointExample = `curl -i -X POST https://yourdomain.com/api/route
@@ -28,8 +27,7 @@ curl -i -X GET https://yourdomain.com/api/route`;
 const agentPrompt = `Implement discovery for this server and make it pass.
 
 Discovery strategy:
-1) OpenAPI is canonical and should be used by default.
-2) If OpenAPI is not feasible yet, use /.well-known/x402 v1 as fallback.
+- OpenAPI is the canonical discovery contract. Publish your spec at /openapi.json.
 
 Schema guidance (important):
 - Each invocable route should expose an input schema.
@@ -45,20 +43,12 @@ OpenAPI payable operation must include ALL:
     - dynamic: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" }
   - protocols (array of objects):
     - { "x402": {} }
-    - { "mpp": { "method": "", "intent": "", "currency": "" } }
 - responses: { "402": { description: "Payment Required" } }
 
 SIWX (identity-only) routes:
 - Declare a security scheme named "siwx" in components.securitySchemes.
 - Reference it on each identity-gated operation: security: [{ "siwx": [] }].
 - Do NOT add x-payment-info to SIWX-only routes — that classifies them as paid.
-
-/.well-known/x402 must be exactly:
-{
-  "version": 1,
-  "resources": ["POST /api/route"]
-}
-(Use "METHOD /path" entries, not object entries.)
 
 Rules:
 - Runtime 402 behavior is authoritative over static metadata.
@@ -79,13 +69,13 @@ Workflow:
    If failedDetails has entries, fix those endpoints and re-register.
 
 Validation commands:
-npx -y @agentcash/discovery@latest discover "$TARGET_URL" 
+npx -y @agentcash/discovery@latest discover "$TARGET_URL"
+npx -y @agentcash/discovery@latest check "$ENDPOINT_URL"
 
-This will yield warnings regarding the discovery document and how it can be improved.
+These yield warnings regarding the discovery document and how it can be improved.
 
 Done when:
-- resources are discovered
-- OpenAPI is selected when present (otherwise well-known is acceptable fallback)
+- resources are discovered from OpenAPI
 - no critical parser/probe errors remain
 - server is registered on x402scan with no failed resources`;
 
@@ -106,7 +96,7 @@ export default function DiscoverySpecPage() {
         actions={
           <div className="flex items-center gap-2">
             <Button asChild size="sm">
-              <Link href="/resources/register">Register a Server</Link>
+              <Link href="/resources/register">Add your API</Link>
             </Button>
             <Button asChild variant="outline" size="sm">
               <Link href="/developer">Test an Endpoint</Link>
@@ -132,10 +122,6 @@ export default function DiscoverySpecPage() {
           <ul className="mt-3 list-disc pl-5 space-y-1 text-sm">
             <li>Publish OpenAPI as the canonical machine-readable contract.</li>
             <li>
-              Use <code>/.well-known/x402</code> as a migration compatibility
-              bridge.
-            </li>
-            <li>
               Treat runtime <code>402</code> challenge behavior as the final
               source of truth.
             </li>
@@ -157,91 +143,70 @@ export default function DiscoverySpecPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">
-            Choose Your Discovery Strategy
-          </h2>
+          <h2 className="text-xl font-semibold">Test your API</h2>
           <p className="text-sm text-muted-foreground">
-            Click a strategy to view exact requirements and a copy-paste
-            implementation example.
+            Run discovery against your origin to see what x402scan resolves
+            before you register.
           </p>
-          <DiscoveryStrategyPanel />
+          <TryDiscovery />
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Discovery Precedence</h2>
+          <h2 className="text-xl font-semibold">OpenAPI Requirements</h2>
           <p className="text-sm text-muted-foreground">
-            x402scan resolves in this order and stops at the first valid source.
+            x402scan resolves your OpenAPI document at{' '}
+            <code>/openapi.json</code>. This is the canonical machine-readable
+            contract — it gives agents the cleanest invocation surface and the
+            best tooling compatibility.
           </p>
           <Card>
-            <CardContent className="px-0 pb-0">
-              <div className="hidden lg:block">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-16">Order</TableHead>
-                      <TableHead>Source</TableHead>
-                      <TableHead className="w-[40%] whitespace-normal">
-                        Expected Location
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>1</TableCell>
-                      <TableCell>OpenAPI document</TableCell>
-                      <TableCell className="whitespace-normal break-words">
-                        <code>/openapi.json</code>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>2</TableCell>
-                      <TableCell>Well-known fan-out</TableCell>
-                      <TableCell className="whitespace-normal break-words">
-                        <code>/.well-known/x402</code>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </div>
-
-              <div className="lg:hidden">
-                <div className="flex gap-4 border-b bg-muted/40 px-4 py-2 text-xs font-medium text-muted-foreground">
-                  <span className="w-8">Order</span>
-                  <span className="flex-1">Source</span>
-                  <span className="flex-1">Expected Location</span>
-                </div>
-                <div className="divide-y px-4">
-                  {[
-                    {
-                      order: '1',
-                      source: 'OpenAPI document',
-                      location: (
-                        <>
-                          <code>/openapi.json</code>
-                        </>
-                      ),
-                    },
-                    {
-                      order: '2',
-                      source: 'Well-known fan-out',
-                      location: <code>/.well-known/x402</code>,
-                    },
-                  ].map((row, i, arr) => (
-                    <div
-                      key={i}
-                      className={`flex gap-4 py-3 ${i === arr.length - 1 ? 'pb-0' : ''}`}
-                    >
-                      <span className="w-8 text-sm font-medium">
-                        {row.order}
-                      </span>
-                      <span className="flex-1 text-sm">{row.source}</span>
-                      <span className="flex-1 font-mono text-xs break-words">
-                        {row.location}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <CardContent className="space-y-4 pt-4">
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                <li>
+                  Top-level fields: <code>openapi</code>,{' '}
+                  <code>info.title</code>, <code>info.version</code>,{' '}
+                  <code>paths</code>.
+                </li>
+                <li>
+                  For paid operations: <code>responses.402</code> and{' '}
+                  <code>x-payment-info</code>.
+                </li>
+                <li>
+                  Set <code>x-payment-info.price</code> (fixed or dynamic) and{' '}
+                  <code>x-payment-info.protocols</code> (array of protocol
+                  objects).
+                </li>
+                <li>
+                  Use OpenAPI <code>security</code> +{' '}
+                  <code>components.securitySchemes</code> for auth declaration.
+                </li>
+                <li>
+                  For SIWX (identity-only) routes: declare a scheme named{' '}
+                  <code>siwx</code> and reference it in <code>security</code>.
+                  Do not add <code>x-payment-info</code>.
+                </li>
+                <li>
+                  Add high-level guidance in <code>info.x-guidance</code> for
+                  user-friendly discovery.
+                </li>
+              </ul>
+              <CodeBlock
+                code={`{
+  "openapi": "3.1.0",
+  "info": { "title": "My API", "version": "1.0.0" },
+  "paths": {
+    "/api/quote": {
+      "post": {
+        "responses": { "402": { "description": "Payment Required" } },
+        "x-payment-info": {
+          "price": { "mode": "fixed", "currency": "USD", "amount": "0.05" },
+          "protocols": [{ "x402": {} }]
+        }
+      }
+    }
+  }
+}`}
+              />
             </CardContent>
           </Card>
         </section>
@@ -304,19 +269,30 @@ export default function DiscoverySpecPage() {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Endpoint-Only Fallback</h2>
           <p className="text-sm text-muted-foreground">
-            If no discovery document exists, endpoint registration still works.
+            If no OpenAPI document exists, a single endpoint URL can still be
+            registered. x402scan probes the URL directly via{' '}
+            <code>checkEndpointSchema</code> from{' '}
+            <code>@agentcash/discovery</code>.
           </p>
           <ul className="list-disc pl-5 space-y-1 text-sm">
             <li>
-              Probe method is method-aware with GET/POST fallback where
-              applicable.
+              The probe is method-aware. It tries <code>POST</code> first, then{' '}
+              <code>GET</code>, <code>PUT</code>, <code>PATCH</code>,{' '}
+              <code>DELETE</code>, and picks the first response with a valid
+              x402 payment option.
             </li>
             <li>
-              Endpoint must return a parseable <code>402</code> challenge.
+              The endpoint must return a parseable <code>402</code> challenge
+              with at least one x402 entry in <code>accepts</code>.
             </li>
             <li>
-              Missing schema or auth-only SIWX routes are marked as skipped in
-              strict mode.
+              Endpoints without an input schema are non-invocable and are
+              skipped during registration. Publish an OpenAPI schema (or a 402
+              body that carries one) to make the endpoint registerable.
+            </li>
+            <li>
+              SIWX endpoints are registered as identity-only — no payment
+              required, but agents need a wallet proof to call them.
             </li>
           </ul>
           <CodeBlock code={endpointExample} />
