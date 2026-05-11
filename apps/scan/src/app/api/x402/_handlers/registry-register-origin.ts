@@ -29,6 +29,21 @@ export async function handleRegistryRegisterOrigin(
     discoveryResult.source
   );
 
+  if (result.registered === 0) {
+    return jsonResponse(
+      {
+        success: false,
+        error: {
+          type: 'no_valid_resources',
+          message:
+            'No valid paid x402 resources were found for this origin. Add at least one paid x402 resource that passes validation to complete registration.',
+        },
+        result,
+      },
+      422
+    );
+  }
+
   return jsonResponse({
     success: true,
     registered: result.registered,
