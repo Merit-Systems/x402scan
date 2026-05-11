@@ -18,7 +18,7 @@ catalog:
   tsx: ^4.21.0
   tsup: ^8.5.1
   viem: ^2.47.0
-  siwe: ^3.0.0
+  '@signinwithethereum/siwe': ^4.1.0
   vitest: ^4.0.16
   rimraf: ^5.0.5
 

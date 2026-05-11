@@ -1,4 +1,4 @@
-import { SiweMessage } from 'siwe';
+import { SiweMessage } from '@signinwithethereum/siwe';
 import { SIWE_PROVIDER_ID, SIWE_STATEMENT } from './constants';
 import { getCsrfToken, signIn } from 'next-auth/react';
 

@@ -1,4 +1,4 @@
-import { SiweMessage } from 'siwe';
+import { SiweMessage } from '@signinwithethereum/siwe';
 import Credentials, {
   type CredentialsConfig,
 } from 'next-auth/providers/credentials';
@@ -130,6 +130,7 @@ async function verifySignature({
 }) {
   const result = await siwe.verify({
     signature: credentials.signedMessage,
+    domain: siwe.domain,
     nonce,
   });
   if (!result.success) {
