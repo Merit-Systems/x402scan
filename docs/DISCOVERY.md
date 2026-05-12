@@ -23,6 +23,7 @@ Runtime `402` behavior is authoritative over static metadata.
 ## A) OpenAPI-First Discovery (Recommended)
 
 Supported URLs:
+
 - `https://yourdomain.com/openapi.json`
 
 ### Required top-level fields
@@ -35,6 +36,7 @@ Supported URLs:
 ### Per-paid-operation requirements
 
 For each paid operation:
+
 - declare `x-payment-info`
 - include a `402` response in `responses`
 - include `x-payment-info.protocols` (for example `"x402"`)
@@ -100,14 +102,17 @@ Use this when discovery docs are not available yet.
 A route is registerable when probing returns `402` with a parseable x402 challenge.
 
 Accepted challenge transport:
+
 - `Payment-Required` header (x402 v2), or
 - JSON response body (legacy compatibility)
 
 For payable indexing in `x402scan`, challenge data should include:
+
 - non-empty `accepts`
 - Bazaar-style input schema (`extensions.bazaar.info` + schema-derived input)
 
 Compatibility behavior:
+
 - `402` + `accepts: []` + `extensions["sign-in-with-x"]` => SIWX auth-only, marked `skipped`.
 - Missing input schema => strict non-invocable, marked `skipped`.
 
@@ -116,6 +121,7 @@ Compatibility behavior:
 ## Ownership Proofs
 
 Accepted locations:
+
 - OpenAPI `x-discovery.ownershipProofs` (preferred)
 - `/.well-known/x402` `ownershipProofs` (compatibility)
 
@@ -136,6 +142,59 @@ When a user clicks **Register This URL Only**:
 - Skip fan-out.
 - Register only that endpoint.
 - Useful for partial rollouts and rate-limited providers.
+
+## Programmatic Registration API
+
+Registry write endpoints are free and require SIWX authentication. Use
+`fetch_with_auth` from the x402scan MCP client, or send a signed
+`SIGN-IN-WITH-X` header.
+
+Register or refresh one known endpoint:
+
+```bash
+curl -X POST https://www.x402scan.com/api/x402/registry/register \
+  -H "Content-Type: application/json" \
+  -H "SIGN-IN-WITH-X: <signed-siwx-proof>" \
+  -d '{
+    "url": "https://api.example.com/paid-resource"
+  }'
+```
+
+The endpoint probes the URL for a valid x402 `402 Payment Required` response,
+then upserts the resource. Calling it again refreshes the stored resource.
+
+For endpoints that require a representative request before they return their
+x402 challenge, include probe options:
+
+```json
+{
+  "url": "https://api.example.com/paid-resource",
+  "method": "POST",
+  "headers": {
+    "X-Api-Key": "provider-probe-token"
+  },
+  "body": {
+    "prompt": "hello"
+  }
+}
+```
+
+Register or refresh all discoverable resources for an origin:
+
+```bash
+curl -X POST https://www.x402scan.com/api/x402/registry/register-origin \
+  -H "Content-Type: application/json" \
+  -H "SIGN-IN-WITH-X: <signed-siwx-proof>" \
+  -d '{
+    "origin": "https://api.example.com"
+  }'
+```
+
+Single-resource registration returns `success: true` with the registered
+resource, accepted payment options, the method used, warnings, and registration
+details. Invalid URLs or request shapes return `400` from request validation.
+Resources that do not produce a valid x402 challenge return `422` with a
+parseable error payload.
 
 ---
 

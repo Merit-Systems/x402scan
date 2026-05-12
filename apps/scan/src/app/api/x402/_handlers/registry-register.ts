@@ -8,10 +8,15 @@ import type { z } from 'zod';
 export async function handleRegistryRegister(
   body: z.infer<typeof registryRegisterBodySchema>
 ) {
-  const { url } = body;
+  const { url, method, headers, body: probeBody } = body;
 
   const probeResult = await probeX402Endpoint(
-    url.replaceAll('{', '').replaceAll('}', '')
+    url.replaceAll('{', '').replaceAll('}', ''),
+    {
+      preferredMethod: method,
+      headers,
+      sampleInputBody: probeBody,
+    }
   );
 
   if (!probeResult.success) {
@@ -50,6 +55,8 @@ export async function handleRegistryRegister(
           success: true,
           resource: result.resource,
           accepts: result.accepts,
+          methodUsed: probeResult.advisory.method,
+          warnings: probeResult.warnings,
           registrationDetails: result.registrationDetails,
         },
         (_k, v: unknown) => (typeof v === 'bigint' ? Number(v) : v)

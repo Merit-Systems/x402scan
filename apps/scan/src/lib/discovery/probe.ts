@@ -16,6 +16,19 @@ export type ProbeX402Result =
 
 const METHOD_PREFERENCE = ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'] as const;
 
+export interface ProbeX402EndpointOptions {
+  preferredMethod?: string;
+  headers?: Record<string, string>;
+  sampleInputBody?: Record<string, unknown>;
+}
+
+function normalizeProbeOptions(
+  options?: string | ProbeX402EndpointOptions
+): ProbeX402EndpointOptions {
+  if (typeof options === 'string') return { preferredMethod: options };
+  return options ?? {};
+}
+
 function pickX402Advisory(
   result: CheckEndpointResult,
   preferredMethod?: string
@@ -70,24 +83,32 @@ function pickInputSchemaFromSpec(
  * Probes a URL and returns the first advisory that carries x402 payment options.
  *
  * Strategy:
- *   1. Probe with no body (works for servers whose paywall fires before
- *      request validation).
+ *   1. Probe directly, using a caller-provided sample body when present
+ *      (works for servers whose paywall fires before request validation, and
+ *      for programmatic registration where the caller knows the required body).
  *   2. If that yields no x402 advisory, fetch the OpenAPI advisory, build a
  *      minimum-valid sample body from its inputSchema, and re-probe with
  *      `sampleInputBody`. This handles servers (e.g. honcho) that validate
  *      input before the paywall and would otherwise return 400 to a probe.
  *
- * @param preferredMethod - HTTP method from OpenAPI discovery. When provided
- *   it is preferred over what the probe lands on so probe-method drift
- *   (PATCH/PUT vs declared POST) does not corrupt the registered method.
+ * @param options - Optional preferred method, probe headers, and sample body.
+ *   The legacy string form still supplies just the preferred method. When a
+ *   preferred method is provided, it is preferred over what the probe lands on
+ *   so probe-method drift (PATCH/PUT vs declared POST) does not corrupt the
+ *   registered method.
  */
 export async function probeX402Endpoint(
   url: string,
-  preferredMethod?: string
+  options?: string | ProbeX402EndpointOptions
 ): Promise<ProbeX402Result> {
+  const { preferredMethod, headers, sampleInputBody } =
+    normalizeProbeOptions(options);
+
   const noBody = await checkEndpointSchema({
     url,
+    headers,
     probe: true,
+    ...(sampleInputBody ? { sampleInputBody } : {}),
     signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
   });
 
@@ -103,11 +124,12 @@ export async function probeX402Endpoint(
   // Fallback: use OpenAPI inputSchema to build a sample body and re-probe.
   const spec = await checkEndpointSchema({
     url,
+    headers,
     signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
   });
   const inputSchema = pickInputSchemaFromSpec(spec, preferredMethod);
-  const sampleInputBody = buildSampleBodyFromInputSchema(inputSchema);
-  if (!sampleInputBody) {
+  const fallbackInputBody = buildSampleBodyFromInputSchema(inputSchema);
+  if (!fallbackInputBody) {
     return {
       success: false,
       error: noBodyError(noBody),
@@ -116,8 +138,9 @@ export async function probeX402Endpoint(
 
   const withBody = await checkEndpointSchema({
     url,
+    headers,
     probe: true,
-    sampleInputBody,
+    sampleInputBody: fallbackInputBody,
     signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
   });
   const bodiedAdvisory = pickX402Advisory(withBody, preferredMethod);

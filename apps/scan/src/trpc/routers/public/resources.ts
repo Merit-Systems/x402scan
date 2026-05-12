@@ -137,13 +137,19 @@ export const resourcesRouter = createTRPCRouter({
     .input(
       z.object({
         url: z.url(),
+        method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']).optional(),
         headers: z.record(z.string(), z.string()).optional(),
-        body: z.object().optional(),
+        body: z.record(z.string(), z.unknown()).optional(),
       })
     )
     .mutation(async ({ input }) => {
       const probeResult = await probeX402Endpoint(
-        input.url.toString().replaceAll('{', '').replaceAll('}', '')
+        input.url.toString().replaceAll('{', '').replaceAll('}', ''),
+        {
+          preferredMethod: input.method,
+          headers: input.headers,
+          sampleInputBody: input.body,
+        }
       );
 
       if (!probeResult.success) {
