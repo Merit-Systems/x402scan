@@ -243,12 +243,6 @@ export const listRecentOrigins = async (
       resources: {
         some: {
           deprecatedAt: null,
-          response: {
-            isNot: null,
-          },
-          accepts: {
-            some: acceptsWhere,
-          },
         },
       },
     },
@@ -256,12 +250,6 @@ export const listRecentOrigins = async (
       resources: {
         where: {
           deprecatedAt: null,
-          response: {
-            isNot: null,
-          },
-          accepts: {
-            some: acceptsWhere,
-          },
         },
         select: {
           id: true,
