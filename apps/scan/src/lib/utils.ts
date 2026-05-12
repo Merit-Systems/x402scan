@@ -105,10 +105,17 @@ const HTML_ENTITIES: Record<string, string> = {
   '&apos;': "'",
 };
 
-const ENTITY_PATTERN = /&(?:amp|lt|gt|quot|#39|apos);/g;
+const ENTITY_PATTERN = /&(?:amp|lt|gt|quot|#39|apos|#x[0-9a-fA-F]+|#\d+);/g;
 
 export const decodeHtmlEntities = (str: string): string =>
-  str.replace(ENTITY_PATTERN, match => HTML_ENTITIES[match] ?? match);
+  str.replace(ENTITY_PATTERN, match => {
+    if (match in HTML_ENTITIES) return HTML_ENTITIES[match]!;
+    if (match.startsWith('&#x'))
+      return String.fromCodePoint(parseInt(match.slice(3, -1), 16));
+    if (match.startsWith('&#'))
+      return String.fromCodePoint(parseInt(match.slice(2, -1), 10));
+    return match;
+  });
 
 export const safeParseJson = <T>(
   value: string | null | undefined,
