@@ -46,6 +46,7 @@ export const JustAddedCard: React.FC<Props> = ({ origin }) => {
               alt={origin.title ?? origin.origin}
               fill
               className="object-cover"
+              unoptimized
             />
           ) : origin.favicon ? (
             <Favicon url={origin.favicon} className="size-16" />
