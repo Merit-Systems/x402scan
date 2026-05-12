@@ -1,5 +1,5 @@
 import { router, solanaRouter, withCors, OPTIONS } from '@/lib/router';
-import { sendUsdcBodySchema } from '@/lib/schemas';
+import { chainSchema, sendUsdcBodySchema } from '@/lib/schemas';
 import { handleSend } from '@/app/api/x402/_handlers/send';
 import { Chain } from '@/types/chain';
 
@@ -27,15 +27,21 @@ const createSendHandler = (sendRouter: typeof router) =>
 const baseSendHandler = createSendHandler(router);
 const solanaSendHandler = createSendHandler(solanaRouter);
 
-async function getRequestedChain(req: NextRequest) {
-  const body = await req
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+async function getRequestedChain(req: NextRequest): Promise<Chain | undefined> {
+  const body: unknown = await req
     .clone()
     .json()
     .catch(() => undefined);
 
-  return typeof body === 'object' && body !== null && 'chain' in body
-    ? body.chain
-    : undefined;
+  if (!isRecord(body)) return undefined;
+
+  const chain = chainSchema.safeParse(body.chain);
+
+  return chain.success ? chain.data : undefined;
 }
 
 export const POST = withCors(async req => {
