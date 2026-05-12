@@ -238,18 +238,8 @@ export const listRecentOrigins = async (
 ) => {
   const { limit } = input;
   return await scanDb.resourceOrigin.findMany({
-    where: {
-      resources: {
-        some: {
-          deprecatedAt: null,
-        },
-      },
-    },
     include: {
       resources: {
-        where: {
-          deprecatedAt: null,
-        },
         select: {
           id: true,
           resource: true,
