@@ -54,6 +54,19 @@ export const router = createRouter({
   },
 });
 
+export const solanaRouter = createRouter({
+  baseUrl: env.NEXT_PUBLIC_APP_URL,
+  payeeAddress:
+    env.X402_PAYEE_ADDRESS ?? '0x0000000000000000000000000000000000000001',
+  network: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
+  discovery: {
+    title: 'x402scan',
+    version: '1.0.0',
+    description:
+      'Query indexed x402 payment data and send USDC on Base and Solana.',
+  },
+});
+
 export function withCors(
   handler: (req: NextRequest) => Promise<Response>
 ): (req: NextRequest) => Promise<Response> {

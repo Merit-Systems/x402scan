@@ -1,11 +1,14 @@
-import { router, withCors, OPTIONS } from '@/lib/router';
+import { router, solanaRouter, withCors, OPTIONS } from '@/lib/router';
 import { sendUsdcBodySchema } from '@/lib/schemas';
 import { handleSend } from '@/app/api/x402/_handlers/send';
+import { Chain } from '@/types/chain';
+
+import type { NextRequest } from 'next/server';
 
 export { OPTIONS };
 
-export const POST = withCors(
-  router
+const createSendHandler = (sendRouter: typeof router) =>
+  sendRouter
     .route('x402/send')
     .path('x402/send')
     .paid(
@@ -19,5 +22,24 @@ export const POST = withCors(
     .method('POST')
     .body(sendUsdcBodySchema)
     .description('Send USDC to an address on Base or Solana')
-    .handler(({ body }) => Promise.resolve(handleSend(body)))
-);
+    .handler(({ body }) => Promise.resolve(handleSend(body)));
+
+const baseSendHandler = createSendHandler(router);
+const solanaSendHandler = createSendHandler(solanaRouter);
+
+async function getRequestedChain(req: NextRequest) {
+  const body = await req
+    .clone()
+    .json()
+    .catch(() => undefined);
+
+  return typeof body === 'object' && body !== null && 'chain' in body
+    ? body.chain
+    : undefined;
+}
+
+export const POST = withCors(async req => {
+  const chain = await getRequestedChain(req);
+
+  return chain === Chain.SOLANA ? solanaSendHandler(req) : baseSendHandler(req);
+});
