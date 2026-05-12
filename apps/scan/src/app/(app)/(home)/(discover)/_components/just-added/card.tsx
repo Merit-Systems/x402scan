@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { Clock, Globe } from 'lucide-react';
@@ -40,11 +41,11 @@ export const JustAddedCard: React.FC<Props> = ({ origin }) => {
         {/* Image area */}
         <div className="relative aspect-[4/3] bg-muted/50 flex items-center justify-center overflow-hidden">
           {origin.ogImages?.[0]?.url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={origin.ogImages[0].url}
               alt={origin.title ?? origin.origin}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           ) : origin.favicon ? (
             <Favicon url={origin.favicon} className="size-16" />
