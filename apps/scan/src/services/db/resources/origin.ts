@@ -237,7 +237,6 @@ export const listRecentOrigins = async (
   input: z.infer<typeof listRecentOriginsSchema>
 ) => {
   const { limit } = input;
-  const acceptsWhere = getDisplayableAcceptsWhere({});
   return await scanDb.resourceOrigin.findMany({
     where: {
       resources: {
