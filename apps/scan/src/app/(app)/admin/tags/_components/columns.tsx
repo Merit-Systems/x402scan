@@ -5,7 +5,7 @@ import { Globe, Hash, Calendar, Tag } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { Checkbox } from '@/components/ui/checkbox';
-import { formatCompactAgo } from '@/lib/utils';
+import { cleanExternalText, formatCompactAgo } from '@/lib/utils';
 
 import { ResourcesSortingContext } from '@/app/(app)/_contexts/sorting/resource-tags/context';
 
@@ -65,10 +65,11 @@ export const createColumns = (
       <HeaderCell Icon={Hash} label="Description" className="mx-auto" />
     ),
     cell: ({ row }) => {
-      const description =
+      const description = cleanExternalText(
         row.original.accepts.find(
           (accept: { description?: string }) => accept.description
-        )?.description ?? 'N/A';
+        )?.description ?? 'N/A'
+      );
       return (
         <div className="text-center text-xs text-muted-foreground truncate max-w-[200px]">
           {description}

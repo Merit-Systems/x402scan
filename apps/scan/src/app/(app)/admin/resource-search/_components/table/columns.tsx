@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
 import { Globe, TrendingUp, Zap, CheckCircle, Filter } from 'lucide-react';
 import type { FilteredSearchResult } from '@/services/resource-search/types';
-import { decodeHtmlEntities } from '@/lib/utils';
+import { cleanExternalText, decodeHtmlEntities } from '@/lib/utils';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { ResourceSearchSortingContext } from '@/app/(app)/_contexts/sorting/resource-search/context';
 
@@ -117,9 +117,10 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
     size: 65,
     cell: ({ row }) => {
       const accepts = row.original.accepts;
-      const description =
+      const description = cleanExternalText(
         accepts.find(accept => accept.description)?.description ??
-        'No description available';
+          'No description available'
+      );
 
       return (
         <div className="min-h-[100px] py-2">

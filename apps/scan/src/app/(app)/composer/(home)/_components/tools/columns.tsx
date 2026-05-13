@@ -11,7 +11,7 @@ import {
 
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { formatCompactAgo } from '@/lib/utils';
+import { cleanExternalText, formatCompactAgo } from '@/lib/utils';
 
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 
@@ -40,10 +40,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
             {row.original.resource}
           </p>
           <p className="text-[10px] md:text-xs text-muted-foreground w-full break-words whitespace-normal line-clamp-2">
-            {
+            {cleanExternalText(
               row.original.accepts.find(accept => accept.description)
-                ?.description
-            }
+                ?.description ?? ''
+            )}
           </p>
         </div>
       </div>

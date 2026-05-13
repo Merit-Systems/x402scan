@@ -4,6 +4,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Code } from '@/components/ui/code';
 import { CopyButton } from '@/components/ui/copy-button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { decodeHtmlEntities } from '@/lib/utils';
 import Image from 'next/image';
 
 interface Props {
@@ -17,7 +18,11 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
     <div className="w-fit max-w-full flex flex-col gap-1.5">
       <p className="flex flex-wrap items-center gap-x-1 gap-y-1 text-sm font-semibold">
         <span>
-          Quickly try {origin.title ?? new URL(origin.origin).hostname} with
+          Quickly try{' '}
+          {origin.title
+            ? decodeHtmlEntities(origin.title)
+            : new URL(origin.origin).hostname}{' '}
+          with
         </span>
         <a
           href="https://agentcash.dev"

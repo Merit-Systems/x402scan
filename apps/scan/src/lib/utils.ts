@@ -117,6 +117,37 @@ export const decodeHtmlEntities = (str: string): string =>
     return match;
   });
 
+/**
+ * Repairs UTF-8 mojibake — text where UTF-8 bytes were decoded as Latin-1.
+ * e.g. "Â·" → "·", "â€"" → "—"
+ *
+ * Re-encodes the string as Latin-1 bytes and decodes as UTF-8. Falls back
+ * to the original string when the result isn't valid UTF-8 or the input
+ * contains characters outside the Latin-1 range.
+ */
+export const repairMojibake = (str: string): string => {
+  if (!/[\u0080-\u00ff]/.test(str)) return str;
+  try {
+    const bytes = new Uint8Array(str.length);
+    for (let i = 0; i < str.length; i++) {
+      const code = str.charCodeAt(i);
+      if (code > 0xff) return str;
+      bytes[i] = code;
+    }
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch {
+    return str;
+  }
+};
+
+/**
+ * Cleans a description from an external source by repairing mojibake
+ * and decoding HTML entities. Use for any user-facing description that
+ * originates from scraped HTML or x402 response data.
+ */
+export const cleanExternalText = (str: string): string =>
+  decodeHtmlEntities(repairMojibake(str));
+
 export const safeParseJson = <T>(
   value: string | null | undefined,
   fallback: T
