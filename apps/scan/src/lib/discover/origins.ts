@@ -45,11 +45,11 @@ const getDiscoverOriginsUncached = async (): Promise<string[]> => {
 };
 
 /**
- * Fetches blacklisted origin URLs for x402 from catalog.blacklisted_origins.
- * This is queried fresh on every call (not cached) so changes in manhog take
- * effect immediately without flushing Redis.
+ * Fetches origin URLs excluded from featured visibility (e.g. non-functional
+ * resources). Queried fresh on every call (not cached) so changes take effect
+ * immediately without flushing the origins Redis cache.
  */
-const getBlacklistedOrigins = async (): Promise<Set<string>> => {
+const getFeaturedExclusions = async (): Promise<Set<string>> => {
   try {
     const sql = getAgentCashSql();
     if (!sql) return new Set();
@@ -58,7 +58,7 @@ const getBlacklistedOrigins = async (): Promise<Set<string>> => {
     `) as { origin_url: string }[];
     return new Set(rows.map(r => String(r.origin_url)));
   } catch (error) {
-    console.warn('[discover] Failed to fetch blacklist, skipping filter:', error);
+    console.warn('[discover] Failed to fetch featured exclusions, skipping filter:', error);
     return new Set();
   }
 };
@@ -66,17 +66,17 @@ const getBlacklistedOrigins = async (): Promise<Set<string>> => {
 /**
  * Fetches x402-supporting, x402-active origins from the AgentCash catalog
  * (catalog.indexed_origins ⨝ catalog.origin_usage_signals). Cached in Redis.
- * Blacklisted origins (catalog.blacklisted_origins) are filtered post-cache
- * so changes take effect immediately. If the blacklist query fails, origins
- * are returned unfiltered.
+ * Origins excluded from featured visibility are filtered post-cache so changes
+ * take effect immediately. If the exclusion query fails, all origins are
+ * returned unfiltered.
  */
 export const getDiscoverOrigins = async (): Promise<string[]> => {
-  const [origins, blacklisted] = await Promise.all([
+  const [origins, excluded] = await Promise.all([
     getDiscoverOriginsFromCache(),
-    getBlacklistedOrigins(),
+    getFeaturedExclusions(),
   ]);
-  return blacklisted.size > 0
-    ? origins.filter(o => !blacklisted.has(o))
+  return excluded.size > 0
+    ? origins.filter(o => !excluded.has(o))
     : origins;
 };
 
