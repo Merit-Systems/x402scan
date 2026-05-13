@@ -1,86 +1,90 @@
-import { neon } from '@neondatabase/serverless';
 import { env } from '@/env';
 import { CACHE_TTL_SECONDS } from '@/lib/cache';
 import { getRedisClient } from '@/lib/redis';
 
-function getAgentCashSql() {
-  if (!env.AGENTCASH_DATABASE_URL) return null;
-  const connectionUrl = env.AGENTCASH_DATABASE_URL.replace(
-    /[&?]channel_binding=[^&]*/,
-    ''
-  );
-  return neon(connectionUrl);
-}
-
+const PROTOCOL = 'x402';
 const CACHE_KEY = 'discover:origins:catalog:v1';
 
-const getDiscoverOriginsUncached = async (): Promise<string[]> => {
-  const sql = getAgentCashSql();
-  if (!sql) {
-    console.warn(
-      '[discover] AGENTCASH_DATABASE_URL not set, discover page will be empty'
-    );
-    return [];
-  }
-
-  const t0 = performance.now();
-  // Source: AgentCash catalog. We want every origin that supports x402 AND has
-  // observed x402 usage (trusted txns or recent last-seen). Ranked by the same
-  // trust-weighted score AgentCash's catalog search uses as its usage signal.
-  const rows = (await sql`
-    SELECT o.origin_url AS origin
-    FROM catalog.indexed_origins o
-    JOIN catalog.origin_usage_signals s ON s.origin_url = o.origin_url
-    WHERE 'x402' = ANY(o.protocols)
-      AND (s.x402_trusted_txn_count > 0 OR s.x402_last_seen_at IS NOT NULL)
-    ORDER BY s.score_weighted_txn_mass DESC NULLS LAST,
-             s.trusted_txn_count DESC,
-             o.origin_url ASC
-  `) as { origin: string }[];
-  console.log(
-    `[discover] getDiscoverOrigins=${(performance.now() - t0).toFixed(0)}ms (${rows.length} origins)`
-  );
-
-  return rows.map(row => String(row.origin));
-};
-
 /**
- * Fetches origin URLs excluded from featured visibility (e.g. non-functional
- * resources). Queried fresh on every call (not cached) so changes take effect
- * immediately without flushing the origins Redis cache.
+ * Calls AgentCash's internal used-origins endpoint. Returns the ordered list
+ * of catalog-used origins for this protocol, ranked by the same trust-weighted
+ * score catalog search uses.
+ *
+ * Returns null on any failure (missing env, non-200, fetch error, malformed
+ * payload).
  */
-const getFeaturedExclusions = async (): Promise<Set<string>> => {
-  try {
-    const sql = getAgentCashSql();
-    if (!sql) return new Set();
-    const rows = (await sql`
-      SELECT origin_url FROM catalog.featured_exclusions WHERE scanner = 'x402'
-    `) as { origin_url: string }[];
-    return new Set(rows.map(r => String(r.origin_url)));
-  } catch (error) {
-    console.warn('[discover] Failed to fetch featured exclusions, skipping filter:', error);
-    return new Set();
+export const fetchUsedOriginsFromAgentCash = async (
+  protocol: string
+): Promise<string[] | null> => {
+  if (!env.AGENTCASH_URL || !env.AGENTCASH_INTERNAL_API_KEY) {
+    return null;
   }
+
+  let res: Response;
+  try {
+    const url = new URL(
+      '/api/internal/catalog/used-origins',
+      env.AGENTCASH_URL
+    );
+    url.searchParams.set('protocol', protocol);
+    res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${env.AGENTCASH_INTERNAL_API_KEY}`,
+      },
+    });
+  } catch (error) {
+    console.warn('[discover] AgentCash used-origins fetch failed:', error);
+    return null;
+  }
+
+  if (!res.ok) {
+    console.warn(`[discover] AgentCash used-origins returned ${res.status}`);
+    return null;
+  }
+
+  let payload: unknown;
+  try {
+    payload = await res.json();
+  } catch (error) {
+    console.warn(
+      '[discover] AgentCash used-origins returned invalid JSON:',
+      error
+    );
+    return null;
+  }
+
+  if (
+    !payload ||
+    typeof payload !== 'object' ||
+    !Array.isArray((payload as { origins?: unknown }).origins) ||
+    !(payload as { origins: unknown[] }).origins.every(
+      o => typeof o === 'string'
+    )
+  ) {
+    console.warn('[discover] AgentCash used-origins response malformed');
+    return null;
+  }
+
+  return (payload as { origins: string[] }).origins;
+};
+
+const getDiscoverOriginsUncached = async (): Promise<string[]> => {
+  const t0 = performance.now();
+  const origins = await fetchUsedOriginsFromAgentCash(PROTOCOL);
+  console.log(
+    `[discover] getDiscoverOrigins=${(performance.now() - t0).toFixed(0)}ms (${origins?.length ?? 0} origins)`
+  );
+  return origins ?? [];
 };
 
 /**
- * Fetches x402-supporting, x402-active origins from the AgentCash catalog
- * (catalog.indexed_origins ⨝ catalog.origin_usage_signals). Cached in Redis.
- * Origins excluded from featured visibility are filtered post-cache so changes
- * take effect immediately. If the exclusion query fails, all origins are
- * returned unfiltered.
+ * Fetches the prioritized list of catalog-used x402 origins from AgentCash's
+ * internal `/api/internal/catalog/used-origins` endpoint, ordered by the
+ * trust-weighted usage signal. Returns an empty list if the endpoint is
+ * unavailable or misconfigured. Cached in Redis.
  */
 export const getDiscoverOrigins = async (): Promise<string[]> => {
-  const [origins, excluded] = await Promise.all([
-    getDiscoverOriginsFromCache(),
-    getFeaturedExclusions(),
-  ]);
-  return excluded.size > 0
-    ? origins.filter(o => !excluded.has(o))
-    : origins;
-};
-
-const getDiscoverOriginsFromCache = async (): Promise<string[]> => {
   const redis = getRedisClient();
   if (redis) {
     const cached = await redis.get(CACHE_KEY).catch(() => null);
