@@ -31,10 +31,10 @@
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
     "knip": "^5.80.0",
-    "prettier": "^3.7.4",
+    "prettier": "^3.8.3",
     "rimraf": "catalog:",
     "turbo": "^2.8.0",
-    "typescript": "catalog:"
+    "typescript": "^6.0.3"
   },
   "pnpm": {
     "overrides": {
