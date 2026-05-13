@@ -30,7 +30,7 @@ import {
 import { Favicon } from '@/app/(app)/_components/favicon';
 
 import {
-  decodeHtmlEntities,
+  cleanExternalText,
   formatAddress,
   formatCompactAgo,
 } from '@/lib/utils';
@@ -257,10 +257,10 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
 
   const hostname = new URL(origin.origin).hostname;
   const rawTitle = origin.title?.trim();
-  const title = rawTitle ? decodeHtmlEntities(rawTitle) : hostname;
+  const title = rawTitle ? cleanExternalText(rawTitle) : hostname;
   const rawDescription = origin.description?.trim();
   const description = rawDescription
-    ? decodeHtmlEntities(rawDescription)
+    ? cleanExternalText(rawDescription)
     : null;
   const showHostnameLine = title !== hostname;
 

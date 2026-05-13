@@ -4,7 +4,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Code } from '@/components/ui/code';
 import { CopyButton } from '@/components/ui/copy-button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { decodeHtmlEntities } from '@/lib/utils';
+import { cleanExternalText } from '@/lib/utils';
 import Image from 'next/image';
 
 interface Props {
@@ -20,7 +20,7 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
         <span>
           Quickly try{' '}
           {origin.title
-            ? decodeHtmlEntities(origin.title)
+            ? cleanExternalText(origin.title)
             : new URL(origin.origin).hostname}{' '}
           with
         </span>

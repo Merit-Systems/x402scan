@@ -1,6 +1,6 @@
 import { Nav } from '@/app/(app)/_components/layout/nav';
 import { env } from '@/env';
-import { decodeHtmlEntities } from '@/lib/utils';
+import { cleanExternalText } from '@/lib/utils';
 import { api } from '@/trpc/server';
 import type { Metadata } from 'next';
 
@@ -34,9 +34,9 @@ export async function generateMetadata({
     return { title: 'Server not found' };
   }
 
-  const title = origin.title ? decodeHtmlEntities(origin.title) : origin.origin;
+  const title = origin.title ? cleanExternalText(origin.title) : origin.origin;
   const description = origin.description
-    ? decodeHtmlEntities(origin.description)
+    ? cleanExternalText(origin.description)
     : `Explore ${title} on x402scan`;
 
   const imageUrl = origin.ogImages?.[0]?.url

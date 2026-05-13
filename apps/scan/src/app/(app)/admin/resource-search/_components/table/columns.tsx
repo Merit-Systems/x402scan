@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
 import { Globe, TrendingUp, Zap, CheckCircle, Filter } from 'lucide-react';
 import type { FilteredSearchResult } from '@/services/resource-search/types';
-import { cleanExternalText, decodeHtmlEntities } from '@/lib/utils';
+import { cleanExternalText } from '@/lib/utils';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { ResourceSearchSortingContext } from '@/app/(app)/_contexts/sorting/resource-search/context';
 
@@ -96,7 +96,7 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
       const origin = row.original.origin;
       const favicon = origin.favicon;
       const title = origin.title
-        ? decodeHtmlEntities(origin.title)
+        ? cleanExternalText(origin.title)
         : origin.origin;
 
       return (

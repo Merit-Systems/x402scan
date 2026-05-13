@@ -16,7 +16,7 @@ import { Favicon } from '@/app/(app)/_components/favicon';
 import { FooterStat, LoadingFooterStat } from './stat';
 
 import { convertTokenAmount } from '@/lib/token';
-import { decodeHtmlEntities } from '@/lib/utils';
+import { cleanExternalText } from '@/lib/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -41,7 +41,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
               <div className="flex-1 overflow-hidden">
                 <CardTitle className="font-bold text-sm md:text-base truncate group-hover:text-primary transition-colors">
                   {originWithMetadata.title
-                    ? decodeHtmlEntities(originWithMetadata.title)
+                    ? cleanExternalText(originWithMetadata.title)
                     : 'No Title'}
                 </CardTitle>
                 <p className="text-[10px] md:text-xs text-muted-foreground truncate font-mono">
@@ -51,7 +51,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
             </div>
             <CardDescription className="text-muted-foreground text-[10px] md:text-xs line-clamp-2">
               {originWithMetadata?.description
-                ? decodeHtmlEntities(originWithMetadata.description)
+                ? cleanExternalText(originWithMetadata.description)
                 : 'No description'}
             </CardDescription>
           </CardHeader>
