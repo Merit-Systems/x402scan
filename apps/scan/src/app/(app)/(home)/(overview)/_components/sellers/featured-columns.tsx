@@ -262,8 +262,6 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
   const description = rawDescription
     ? cleanExternalText(rawDescription)
     : null;
-  const showHostnameLine = title !== hostname;
-
   const recipients = item.recipients;
   const endpoint = item.searchEndpoint;
   const otherOrigins = item.origins.slice(1);
@@ -290,16 +288,12 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
             </span>
           ) : null}
         </div>
-        {description ? (
-          <div className="truncate text-xs text-muted-foreground mt-0.5">
-            {description}
-          </div>
-        ) : null}
-        {showHostnameLine ? (
-          <div className="truncate text-[11px] font-mono text-muted-foreground/70 mt-0.5">
-            {hostname}
-          </div>
-        ) : null}
+        <div className="truncate text-xs text-muted-foreground mt-0.5">
+          {description ?? 'No description available.'}
+        </div>
+        <div className="truncate text-[11px] font-mono text-muted-foreground/70 mt-0.5">
+          {hostname}
+        </div>
       </div>
     </>
   );

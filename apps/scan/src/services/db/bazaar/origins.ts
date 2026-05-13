@@ -136,19 +136,40 @@ const listBazaarOriginsUncached = async (
     chains: Array.from(item.chains),
   }));
 
-  // Editorial sort preserves the curated order of `originUrls` (search-ranked
-  // by AgentCash). The MV doesn't know about this ordering, so we resort here.
+  // Re-sort after grouping. The MV sorts per-recipient, but aggregation
+  // changes the totals so we need to re-sort the grouped results.
+  const sortableNumericKeys = [
+    'tx_count',
+    'total_amount',
+    'unique_buyers',
+  ] as const;
+  type SortableNumericKey = (typeof sortableNumericKeys)[number];
+
+  const direction = input.sorting.desc ? -1 : 1;
+
   if (input.sorting.id === 'editorial' && input.originUrls) {
     const editorialIndex = new Map(
       input.originUrls.map((url, index) => [url, index])
     );
     const fallback = editorialIndex.size;
-    const direction = input.sorting.desc ? -1 : 1;
     groupedItems.sort((a, b) => {
       const aRank = editorialIndex.get(a.origins[0]?.origin ?? '') ?? fallback;
       const bRank = editorialIndex.get(b.origins[0]?.origin ?? '') ?? fallback;
       return (aRank - bRank) * direction;
     });
+  } else if (input.sorting.id === 'latest_block_timestamp') {
+    groupedItems.sort((a, b) => {
+      const aTime = a.latest_block_timestamp?.getTime() ?? 0;
+      const bTime = b.latest_block_timestamp?.getTime() ?? 0;
+      return (aTime - bTime) * direction;
+    });
+  } else if (
+    sortableNumericKeys.includes(
+      input.sorting.id as SortableNumericKey
+    )
+  ) {
+    const key = input.sorting.id as SortableNumericKey;
+    groupedItems.sort((a, b) => (a[key] - b[key]) * direction);
   }
 
   const response = toPaginatedResponse({
