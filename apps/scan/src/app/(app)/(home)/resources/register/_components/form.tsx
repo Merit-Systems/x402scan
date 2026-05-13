@@ -62,10 +62,15 @@ interface ManualRegistrationResult {
 function getErrorMessageFromRegisterResult(result: {
   success: false;
   error: {
-    type: 'parseErrors' | 'no402';
+    type: 'parseErrors' | 'no402' | 'unsupportedUrl';
+    message?: string;
     parseErrors?: string[];
   };
 }): string {
+  if (result.error.type === 'unsupportedUrl') {
+    return result.error.message ?? 'Unsupported URL';
+  }
+
   if (result.error.type === 'parseErrors') {
     const parseErrors = result.error.parseErrors ?? [];
     if (parseErrors.length > 0) {

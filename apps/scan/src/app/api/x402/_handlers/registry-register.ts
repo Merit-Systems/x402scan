@@ -1,8 +1,7 @@
 import type { registryRegisterBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
-import { registerResource } from '@/lib/resources';
+import { registerResourceUrl } from '@/lib/registry/register-resource-url';
 
-import { probeX402Endpoint } from '@/lib/discovery/probe';
 import type { z } from 'zod';
 
 export async function handleRegistryRegister(
@@ -10,37 +9,43 @@ export async function handleRegistryRegister(
 ) {
   const { url } = body;
 
-  const probeResult = await probeX402Endpoint(
-    url.replaceAll('{', '').replaceAll('}', '')
-  );
-
-  if (!probeResult.success) {
-    return jsonResponse(
-      {
-        success: false,
-        error: { type: 'no_402', message: probeResult.error },
-      },
-      422
-    );
-  }
-
-  const result = await registerResource(url, probeResult.advisory);
+  const result = await registerResourceUrl(url);
 
   if (!result.success) {
-    return jsonResponse(
-      {
-        success: false,
-        error: {
-          type: 'parse_error',
-          parseErrors:
-            result.error.type === 'parseResponse'
-              ? result.error.parseErrors
-              : [JSON.stringify(result.error)],
-        },
-        data: result.data,
-      },
-      422
-    );
+    switch (result.error.type) {
+      case 'unsupportedUrl':
+        return jsonResponse(
+          {
+            success: false,
+            error: { type: 'unsupported_url', message: result.error.message },
+          },
+          422
+        );
+      case 'no402':
+        return jsonResponse(
+          {
+            success: false,
+            error: { type: 'no_402', message: result.error.message },
+          },
+          422
+        );
+      case 'parseErrors':
+        return jsonResponse(
+          {
+            success: false,
+            error: {
+              type: 'parse_error',
+              parseErrors: result.error.parseErrors,
+            },
+            data: result.data,
+          },
+          422
+        );
+      default: {
+        const _exhaustive: never = result.error;
+        return _exhaustive;
+      }
+    }
   }
 
   return jsonResponse(
@@ -51,6 +56,8 @@ export async function handleRegistryRegister(
           resource: result.resource,
           accepts: result.accepts,
           registrationDetails: result.registrationDetails,
+          methodUsed: result.methodUsed,
+          discovery: result.discovery,
         },
         (_k, v: unknown) => (typeof v === 'bigint' ? Number(v) : v)
       )

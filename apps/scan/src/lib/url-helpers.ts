@@ -5,35 +5,47 @@
 export function isLocalUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
-    const hostname = parsed.hostname.toLowerCase();
+    const hostname = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, '');
 
-    // Check for localhost variants
     if (
       hostname === 'localhost' ||
-      hostname === '127.0.0.1' ||
-      hostname === '0.0.0.0' ||
-      hostname.endsWith('.local')
+      hostname === '::1' ||
+      hostname === '::' ||
+      hostname.endsWith('.local') ||
+      hostname.endsWith('.localhost')
     ) {
       return true;
     }
 
-    // Check for private IP ranges
-    // 192.168.0.0/16
-    if (/^192\.168\.\d+\.\d+$/.exec(hostname)) {
+    if (
+      hostname.startsWith('fc') ||
+      hostname.startsWith('fd') ||
+      hostname.startsWith('fe80:')
+    ) {
       return true;
     }
 
-    // 10.0.0.0/8
-    if (/^10\.\d+\.\d+\.\d+$/.exec(hostname)) {
-      return true;
+    const ipv4Parts = hostname.split('.').map(part => Number(part));
+    if (
+      ipv4Parts.length !== 4 ||
+      ipv4Parts.some(part => !Number.isInteger(part) || part < 0 || part > 255)
+    ) {
+      return false;
     }
 
-    // 172.16.0.0/12
-    if (/^172\.(1[6-9]|2\d|3[01])\.\d+\.\d+$/.exec(hostname)) {
-      return true;
-    }
+    const a = ipv4Parts[0]!;
+    const b = ipv4Parts[1]!;
 
-    return false;
+    return (
+      a === 0 ||
+      a === 10 ||
+      a === 127 ||
+      (a === 100 && b >= 64 && b <= 127) ||
+      (a === 169 && b === 254) ||
+      (a === 172 && b >= 16 && b <= 31) ||
+      (a === 192 && b === 168) ||
+      (a === 198 && (b === 18 || b === 19))
+    );
   } catch {
     return false;
   }

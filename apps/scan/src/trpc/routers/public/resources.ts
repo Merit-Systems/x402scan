@@ -20,9 +20,7 @@ import { scanDb } from '@x402scan/scan-db';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 
-import { registerResource } from '@/lib/resources';
-
-import { probeX402Endpoint } from '@/lib/discovery/probe';
+import { registerResourceUrl } from '@/lib/registry/register-resource-url';
 import { registerResourcesFromDiscovery } from '@/lib/discovery/register-origin';
 import { TRPCError } from '@trpc/server';
 import {
@@ -33,7 +31,6 @@ import {
 
 import { convertTokenAmount } from '@/lib/token';
 import { usdc } from '@/lib/tokens/usdc';
-import { getOriginFromUrl, normalizeUrl } from '@/lib/url';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import {
   getResourceVerificationStatus,
@@ -42,7 +39,6 @@ import {
 
 import type { Prisma } from '@x402scan/scan-db';
 import type { SupportedChain } from '@/types/chain';
-import type { DiscoveryInfo } from '@/types/discovery';
 import { verifyAnyOwnershipProof } from '@/lib/ownership-proof';
 
 export const resourcesRouter = createTRPCRouter({
@@ -142,78 +138,40 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      const probeResult = await probeX402Endpoint(
-        input.url.toString().replaceAll('{', '').replaceAll('}', '')
-      );
-
-      if (!probeResult.success) {
-        return { success: false as const, error: { type: 'no402' as const } };
-      }
-
-      const result = await registerResource(
-        input.url.toString(),
-        probeResult.advisory
-      );
+      const result = await registerResourceUrl(input.url.toString());
 
       if (result.success === false) {
-        return {
-          success: false as const,
-          data: result.data,
-          error: {
-            type: 'parseErrors' as const,
-            parseErrors:
-              result.error.type === 'parseResponse'
-                ? result.error.parseErrors
-                : [JSON.stringify(result.error)],
-          },
-        };
-      }
-
-      // Check for additional resources via discovery
-      const origin = getOriginFromUrl(input.url);
-      let discovery: DiscoveryInfo = {
-        found: false,
-        otherResourceCount: 0,
-        origin,
-      };
-
-      try {
-        const discoveryResult = await fetchDiscoveryDocument(origin);
-        if (
-          discoveryResult.success &&
-          Array.isArray(discoveryResult.resources)
-        ) {
-          const inputUrlStr = String(input.url);
-          const normalizedInputUrl = normalizeUrl(inputUrlStr);
-          const otherResources = discoveryResult.resources.filter(r => {
-            if (
-              !r ||
-              typeof r !== 'object' ||
-              !('url' in r) ||
-              typeof r.url !== 'string'
-            ) {
-              return false;
-            }
-            const resourceUrl = String(r.url);
-            return normalizeUrl(resourceUrl) !== normalizedInputUrl;
-          });
-          discovery = {
-            found: true,
-            source: discoveryResult.source,
-            otherResourceCount: otherResources.length,
-            origin,
-            resources: otherResources.map(r => r.url),
-          };
+        switch (result.error.type) {
+          case 'unsupportedUrl':
+            return {
+              success: false as const,
+              error: {
+                type: 'unsupportedUrl' as const,
+                message: result.error.message,
+              },
+            };
+          case 'no402':
+            return {
+              success: false as const,
+              error: { type: 'no402' as const },
+            };
+          case 'parseErrors':
+            return {
+              success: false as const,
+              data: result.data,
+              error: {
+                type: 'parseErrors' as const,
+                parseErrors: result.error.parseErrors,
+              },
+            };
+          default: {
+            const _exhaustive: never = result.error;
+            return _exhaustive;
+          }
         }
-      } catch {
-        // Discovery check failed, continue without discovery info
       }
 
-      return {
-        ...result,
-        methodUsed: probeResult.advisory.method,
-        discovery,
-      };
+      return result;
     }),
 
   /**
