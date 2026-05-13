@@ -45,10 +45,42 @@ const getDiscoverOriginsUncached = async (): Promise<string[]> => {
 };
 
 /**
+ * Fetches origin URLs excluded from featured visibility (e.g. non-functional
+ * resources). Queried fresh on every call (not cached) so changes take effect
+ * immediately without flushing the origins Redis cache.
+ */
+const getFeaturedExclusions = async (): Promise<Set<string>> => {
+  try {
+    const sql = getAgentCashSql();
+    if (!sql) return new Set();
+    const rows = (await sql`
+      SELECT origin_url FROM catalog.blacklisted_origins WHERE scanner = 'x402'
+    `) as { origin_url: string }[];
+    return new Set(rows.map(r => String(r.origin_url)));
+  } catch (error) {
+    console.warn('[discover] Failed to fetch featured exclusions, skipping filter:', error);
+    return new Set();
+  }
+};
+
+/**
  * Fetches x402-supporting, x402-active origins from the AgentCash catalog
  * (catalog.indexed_origins ⨝ catalog.origin_usage_signals). Cached in Redis.
+ * Origins excluded from featured visibility are filtered post-cache so changes
+ * take effect immediately. If the exclusion query fails, all origins are
+ * returned unfiltered.
  */
 export const getDiscoverOrigins = async (): Promise<string[]> => {
+  const [origins, excluded] = await Promise.all([
+    getDiscoverOriginsFromCache(),
+    getFeaturedExclusions(),
+  ]);
+  return excluded.size > 0
+    ? origins.filter(o => !excluded.has(o))
+    : origins;
+};
+
+const getDiscoverOriginsFromCache = async (): Promise<string[]> => {
   const redis = getRedisClient();
   if (redis) {
     const cached = await redis.get(CACHE_KEY).catch(() => null);
