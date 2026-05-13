@@ -9,7 +9,7 @@ import { Avatar } from '@/components/ui/avatar';
 
 import { OriginStats, LoadingOriginStats } from './stats';
 
-import { cn, decodeHtmlEntities } from '@/lib/utils';
+import { cleanExternalText, cn } from '@/lib/utils';
 
 import { HeaderButtons, LoadingHeaderButtons } from './buttons';
 
@@ -36,7 +36,7 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
             <div className="flex items-center gap-2 min-w-0">
               <h1 className="text-xl md:text-3xl font-bold wrap-break-word line-clamp-2 min-w-0">
                 {origin.title
-                  ? decodeHtmlEntities(origin.title)
+                  ? cleanExternalText(origin.title)
                   : new URL(origin.origin).hostname}
               </h1>
               {origin.hasX402V2Resource && (
@@ -62,7 +62,7 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
               )}
             >
               {origin.description
-                ? decodeHtmlEntities(origin.description)
+                ? cleanExternalText(origin.description)
                 : 'No Description'}
             </p>
           </div>

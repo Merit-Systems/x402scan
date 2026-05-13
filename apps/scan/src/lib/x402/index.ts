@@ -15,6 +15,7 @@ import type { DiscoveryExtension } from '@x402/extensions/bazaar';
 import { decodePaymentRequiredHeader } from '@x402/core/http';
 import { ChainIdToNetwork } from './chain-mapping';
 import type { ParseResult } from './shared';
+import { cleanExternalText } from '@/lib/utils';
 
 export type OutputSchema = OutputSchemaV1;
 export type InputSchema = OutputSchema['input'];
@@ -265,14 +266,19 @@ export function isV2Response(data: unknown): data is X402ResponseV2 {
  * NOTE(shafu): get description from a parsed x402 response.
  * V1: description is in accepts[].description
  * V2: description is in resource.description
+ *
+ * Applies mojibake repair (UTF-8 bytes misread as Latin-1) and HTML entity
+ * decoding since descriptions come from external servers with inconsistent
+ * encoding.
  */
 export function getDescription(
   response: ParsedX402Response
 ): string | undefined {
-  if (isV2Response(response)) {
-    return response.resource?.description;
-  }
-  return response.accepts?.find(a => a.description)?.description;
+  const raw = isV2Response(response)
+    ? response.resource?.description
+    : response.accepts?.find(a => a.description)?.description;
+  if (!raw) return raw;
+  return cleanExternalText(raw);
 }
 
 export async function extractX402Data(response: Response): Promise<unknown> {

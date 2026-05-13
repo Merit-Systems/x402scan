@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/card';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
+import { cleanExternalText } from '@/lib/utils';
 
 import { formatTokenAmount } from '@/lib/token';
 
@@ -47,7 +48,10 @@ export const ToolCard: React.FC<Props> = ({ resource }) => {
           </div>
         </div>
         <CardDescription className="line-clamp-2 text-xs md:text-sm">
-          {resource.accepts.find(accept => accept.description)?.description}
+          {cleanExternalText(
+            resource.accepts.find(accept => accept.description)?.description ??
+              ''
+          )}
         </CardDescription>
       </CardHeader>
     </Card>

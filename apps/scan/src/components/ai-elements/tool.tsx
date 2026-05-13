@@ -12,6 +12,7 @@ import { Loading } from '@/components/ui/loading';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
+import { cleanExternalText } from '@/lib/utils';
 
 import { JsonViewer } from './json-viewer';
 
@@ -94,10 +95,10 @@ const ToolHeader = ({
             isLoading={isResourceLoading ?? state === 'input-streaming'}
             component={resource => (
               <span className="text-[10px] md:text-xs text-muted-foreground text-left">
-                {
+                {cleanExternalText(
                   resource.accepts.find(accept => accept.description)
-                    ?.description
-                }
+                    ?.description ?? ''
+                )}
               </span>
             )}
             loadingComponent={<Skeleton className="h-[12px] my-[2px] w-32" />}

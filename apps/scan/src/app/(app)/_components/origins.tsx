@@ -10,7 +10,7 @@ import {
 import { Address, Addresses } from '@/components/ui/address';
 
 import { Favicon } from '@/app/(app)/_components/favicon';
-import { decodeHtmlEntities } from '@/lib/utils';
+import { cleanExternalText } from '@/lib/utils';
 
 import type { ResourceOrigin } from '@x402scan/scan-db/types';
 import type { MixedAddress } from '@/types/address';
@@ -89,7 +89,7 @@ export const Origins: React.FC<Props> = ({
                 {origins.slice(1).map(origin => (
                   <li key={origin.id}>
                     {origin.title
-                      ? decodeHtmlEntities(origin.title)
+                      ? cleanExternalText(origin.title)
                       : new URL(origin.origin).hostname}
                   </li>
                 ))}
