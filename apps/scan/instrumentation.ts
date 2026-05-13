@@ -47,11 +47,13 @@ export async function register() {
       }
     }
 
-    const { Laminar } = await import('@lmnr-ai/lmnr');
+    if (process.env.LMNR_PROJECT_API_KEY) {
+      const { Laminar } = await import('@lmnr-ai/lmnr');
 
-    Laminar.initialize({
-      projectApiKey: process.env.LMNR_PROJECT_API_KEY,
-    });
+      Laminar.initialize({
+        projectApiKey: process.env.LMNR_PROJECT_API_KEY,
+      });
+    }
   }
 }
 
