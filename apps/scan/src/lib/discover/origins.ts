@@ -54,7 +54,7 @@ const getFeaturedExclusions = async (): Promise<Set<string>> => {
     const sql = getAgentCashSql();
     if (!sql) return new Set();
     const rows = (await sql`
-      SELECT origin_url FROM catalog.blacklisted_origins WHERE scanner = 'x402'
+      SELECT origin_url FROM catalog.featured_exclusions WHERE scanner = 'x402'
     `) as { origin_url: string }[];
     return new Set(rows.map(r => String(r.origin_url)));
   } catch (error) {
