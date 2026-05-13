@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  decodeHtmlEntities,
-  repairMojibake,
-  cleanExternalText,
-} from './utils';
+import { decodeHtmlEntities, repairMojibake, cleanExternalText } from './utils';
 
 describe('decodeHtmlEntities', () => {
   it('decodes named entities', () => {
@@ -118,7 +114,9 @@ describe('cleanExternalText', () => {
       'utf-8'
     ).toString('latin1');
     const input = mojibakeWithEntity + ' &amp; freeze';
-    expect(cleanExternalText(input)).toBe('Token \u00b7 scan \u2014 mint & freeze');
+    expect(cleanExternalText(input)).toBe(
+      'Token \u00b7 scan \u2014 mint & freeze'
+    );
   });
 
   it('handles only HTML entities', () => {

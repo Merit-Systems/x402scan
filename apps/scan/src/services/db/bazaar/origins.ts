@@ -164,9 +164,7 @@ const listBazaarOriginsUncached = async (
       return (aTime - bTime) * direction;
     });
   } else if (
-    sortableNumericKeys.includes(
-      input.sorting.id as SortableNumericKey
-    )
+    sortableNumericKeys.includes(input.sorting.id as SortableNumericKey)
   ) {
     const key = input.sorting.id as SortableNumericKey;
     groupedItems.sort((a, b) => (a[key] - b[key]) * direction);

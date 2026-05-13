@@ -386,7 +386,7 @@ export const RegisterResourceForm = () => {
           <CardHeader className="flex-row items-center gap-3 space-y-0">
             <Loader2 className="size-6 animate-spin text-muted-foreground shrink-0" />
             <div>
-              <CardTitle className="text-base">Fetching Server Info</CardTitle>
+              <CardTitle className="text-base">Fetching API Info</CardTitle>
               <CardDescription>
                 Checking discovery and endpoint data...
               </CardDescription>
@@ -422,14 +422,14 @@ export const RegisterResourceForm = () => {
                     </div>
                   </TooltipTrigger>
                   <TooltipContent side="right">
-                    Add a favicon to help your server stand out
+                    Add a favicon to help your API stand out
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
             <div className="min-w-0">
               <CardTitle className="text-base truncate">
-                {preview?.title ?? urlOrigin ?? 'Discovered Server'}
+                {preview?.title ?? urlOrigin ?? 'Discovered API'}
               </CardTitle>
               <CardDescription className="line-clamp-2">
                 {preview?.description ??
@@ -444,8 +444,8 @@ export const RegisterResourceForm = () => {
                 To configure a favicon, serve{' '}
                 <code className="font-mono">/favicon.ico</code>,{' '}
                 <code className="font-mono">.png</code>, or{' '}
-                <code className="font-mono">.svg</code> at the root of your
-                server, or include a{' '}
+                <code className="font-mono">.svg</code> at the root of your API,
+                or include a{' '}
                 <code className="font-mono">{'<link rel="icon">'}</code> tag.
                 This can be updated later by re-registering.
               </p>
@@ -526,15 +526,15 @@ export const RegisterResourceForm = () => {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Add Server</CardTitle>
+          <CardTitle>Add API</CardTitle>
           <CardDescription>
-            Enter a server URL. If discovery is available, we&apos;ll register
+            Enter an API URL. If discovery is available, we&apos;ll register
             everything. If not, you can add endpoint URLs manually.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-1">
-            <Label>Server or Endpoint URL</Label>
+            <Label>API or Endpoint URL</Label>
             <div className="flex gap-2">
               <Input
                 type="text"
@@ -676,7 +676,7 @@ export const RegisterResourceForm = () => {
                     Registering resources...
                   </>
                 ) : (
-                  `Add Server (${actualDiscoveredResources.length} resources)`
+                  `Add API (${actualDiscoveredResources.length} resources)`
                 )}
               </Button>
               <Button
@@ -806,7 +806,7 @@ export const RegisterResourceForm = () => {
             className="flex-1"
           >
             <Button variant="outline" className="w-full">
-              View Server
+              View API
             </Button>
           </Link>
         </div>

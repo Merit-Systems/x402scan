@@ -259,9 +259,7 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
   const rawTitle = origin.title?.trim();
   const title = rawTitle ? cleanExternalText(rawTitle) : hostname;
   const rawDescription = origin.description?.trim();
-  const description = rawDescription
-    ? cleanExternalText(rawDescription)
-    : null;
+  const description = rawDescription ? cleanExternalText(rawDescription) : null;
   const recipients = item.recipients;
   const endpoint = item.searchEndpoint;
   const otherOrigins = item.origins.slice(1);
