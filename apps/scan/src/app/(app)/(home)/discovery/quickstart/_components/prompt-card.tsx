@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, ChevronDown, Copy, Terminal } from 'lucide-react';
+import { Check, ChevronRight, Copy, Terminal } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -18,16 +18,31 @@ export function QuickstartPromptCard() {
   });
 
   return (
-    <Card className="overflow-hidden">
+    <Card
+      className={cn(
+        'overflow-hidden cursor-pointer transition-colors hover:border-foreground/20',
+        expanded && 'border-foreground/20'
+      )}
+      onClick={() => setExpanded(!expanded)}
+    >
       <div className="flex items-center justify-between gap-4 p-4">
         <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
           <Terminal className="size-4 shrink-0" />
           <span>Paste into Claude Code, Cursor, or Codex.</span>
+          <ChevronRight
+            className={cn(
+              'size-3.5 transition-transform text-muted-foreground/60',
+              expanded && 'rotate-90'
+            )}
+          />
         </div>
         <Button
           size="sm"
           className="shrink-0 gap-1"
-          onClick={() => void copyToClipboard(AGENT_PROMPT)}
+          onClick={e => {
+            e.stopPropagation();
+            void copyToClipboard(AGENT_PROMPT);
+          }}
         >
           {isCopied ? (
             <Check className="size-3.5" />
@@ -37,19 +52,6 @@ export function QuickstartPromptCard() {
           {isCopied ? 'Copied' : 'Copy prompt'}
         </Button>
       </div>
-
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-center gap-1.5 border-t px-4 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-      >
-        <span>{expanded ? 'Hide prompt' : 'Show prompt'}</span>
-        <ChevronDown
-          className={cn(
-            'size-3 transition-transform',
-            expanded && 'rotate-180'
-          )}
-        />
-      </button>
 
       {expanded && (
         <div className="border-t bg-muted/50 px-4 py-3 text-sm text-muted-foreground leading-relaxed">
