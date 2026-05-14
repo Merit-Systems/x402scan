@@ -41,7 +41,7 @@ export default function DiscoveryPage() {
 
         <section className="space-y-6">
           <div className="space-y-1">
-            <h2 className="text-xl font-semibold">Start selling to agents</h2>
+            <h2 className="text-xl font-semibold">How</h2>
             <p className="text-sm text-muted-foreground">
               Add a few lines of code to enable pay-per-call, publish a
               discovery specification, and AI agents can start calling your API.
