@@ -483,6 +483,19 @@ export default function DiscoverySpecPage() {
             </CardContent>
           </Card>
         </section>
+
+        <section className="flex items-center gap-2">
+          <Button asChild size="sm">
+            <Link href="/resources/register">
+              + Add your API
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/discovery/architecture">
+              Suggested architecture →
+            </Link>
+          </Button>
+        </section>
       </Body>
     </div>
   );
