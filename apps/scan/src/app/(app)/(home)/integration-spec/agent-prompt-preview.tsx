@@ -50,7 +50,7 @@ export function AgentPromptPreview({
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 rounded-b-md bg-gradient-to-t from-muted via-muted/95 to-transparent" />
         )}
       </div>
-      <div className="mt-1 flex justify-end">
+      <div className="flex justify-end">
         <button
           type="button"
           onClick={() => setExpanded(prev => !prev)}

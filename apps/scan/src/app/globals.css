@@ -443,6 +443,9 @@
     @apply bg-background text-foreground;
     @apply font-sans;
   }
+  :not(pre) > code {
+    @apply rounded bg-muted px-1 py-0.5 text-foreground font-mono text-[0.875em];
+  }
 }
 
 ::view-transition-old(root),
