@@ -101,9 +101,6 @@ export default function DiscoverySpecPage() {
             <Button asChild size="sm">
               <Link href="/resources/register">+ Add your API</Link>
             </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/developer">Test an Endpoint</Link>
-            </Button>
           </div>
         }
       />
