@@ -99,7 +99,7 @@ export default function DiscoverySpecPage() {
           <div className="flex items-center gap-2">
             <CopyPageButton />
             <Button asChild size="sm">
-              <Link href="/resources/register">Add your API</Link>
+              <Link href="/resources/register">+ Add your API</Link>
             </Button>
             <Button asChild variant="outline" size="sm">
               <Link href="/developer">Test an Endpoint</Link>
@@ -156,10 +156,23 @@ export default function DiscoverySpecPage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Discovery Strategy</h2>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-4 text-sm text-muted-foreground">
             <p>
               OpenAPI is the canonical discovery format. Use it for the cleanest
               machine-readable contract and best agent compatibility.
+            </p>
+            <p>
+              The <code>x-payment-info</code> fields are a superset of the{' '}
+              <a
+                href="https://paymentauth.org/draft-payment-discovery-00.txt"
+                className="underline hover:no-underline font-medium text-foreground"
+                target="_blank"
+                rel="noreferrer"
+              >
+                IETF API payment spec
+              </a>
+              . The fields do not collide, so your service is still compatible
+              if you already follow the IETF standard.
             </p>
             <p>
               Expected location: <code>GET /openapi.json</code>
@@ -496,6 +509,17 @@ export default function DiscoverySpecPage() {
             </Link>
           </Button>
         </section>
+
+        <p className="text-sm text-muted-foreground">
+          For further questions, contact us at{' '}
+          <a
+            href="mailto:merchants@merit.systems"
+            className="underline hover:no-underline font-medium text-foreground"
+          >
+            merchants@merit.systems
+          </a>
+          .
+        </p>
       </Body>
     </div>
   );
