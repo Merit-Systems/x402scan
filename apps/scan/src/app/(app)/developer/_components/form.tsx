@@ -103,7 +103,7 @@ export const TestEndpointForm = () => {
                   </code>{' '}
                   to enable automatic resource discovery.{' '}
                   <a
-                    href="/discovery"
+                    href="/discovery/spec"
                     className="underline hover:no-underline font-medium"
                   >
                     Learn more

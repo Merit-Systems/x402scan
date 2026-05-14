@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
         destination: 'https://us.i.posthog.com/:path*',
       },
       {
-        source: '/discovery',
+        source: '/discovery/spec',
         destination: '/integration-spec',
       },
     ]);
