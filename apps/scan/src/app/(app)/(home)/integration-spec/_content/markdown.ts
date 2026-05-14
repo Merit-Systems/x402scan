@@ -93,7 +93,7 @@ Requirements:
 | Order | Source | Expected Location |
 |---|---|---|
 | 1 | OpenAPI document | \`/openapi.json\` |
-| 2 | 402 API Response | Correct 402 header response |
+| 2 | \`402\` API Response | Correct \`402\` header response |
 
 ## SIWX (Sign-In with X) Routes
 
@@ -109,7 +109,7 @@ The scheme **must** be named \`siwx\`. Discovery resolves it by name. Routes wit
 
 | Error | Likely Cause | Fix |
 |---|---|---|
-| Not Found | OpenAPI not found at {origin}/openapi.json | Add an OpenAPI document at {origin}/openapi.json |
+| Not Found | OpenAPI not found at \`{origin}/openapi.json\` | Add an OpenAPI document at \`{origin}/openapi.json\` |
 | Input/Output Schema Missing | Operation has no input or output schema | Add an input and output schema to the operation |
 | No Payment Modes Detected | No payment modes detected in the response | Add a valid payment mode to the response (x402) |
 `;

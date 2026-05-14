@@ -273,8 +273,8 @@ export default function DiscoverySpecPage() {
           <h2 className="text-xl font-semibold">Discovery Precedence</h2>
           <p className="text-sm text-muted-foreground">
             x402scan uses the OpenAPI document at <code>/openapi.json</code> to
-            discover your API. It will also check the runtime 402 challenge
-            behavior to ensure it is correct.
+            discover your API. It will also check the runtime <code>402</code>{' '}
+            challenge behavior to ensure it is correct.
           </p>
           <Card>
             <CardContent className="px-0 pb-0 pt-0">
@@ -296,8 +296,8 @@ export default function DiscoverySpecPage() {
                   </TableRow>
                   <TableRow>
                     <TableCell>2</TableCell>
-                    <TableCell>402 API Response</TableCell>
-                    <TableCell>Correct 402 header response</TableCell>
+                    <TableCell><code>402</code> API Response</TableCell>
+                    <TableCell>Correct <code>402</code> header response</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -381,8 +381,9 @@ export default function DiscoverySpecPage() {
             </li>
             <li>
               Endpoints without an input schema are non-invocable and are
-              skipped during registration. Publish an OpenAPI schema (or a 402
-              body that carries one) to make the endpoint registerable.
+              skipped during registration. Publish an OpenAPI schema (or a{' '}
+              <code>402</code> body that carries one) to make the endpoint
+              registerable.
             </li>
             <li>
               SIWX endpoints are registered as identity-only. No payment is
@@ -400,11 +401,11 @@ export default function DiscoverySpecPage() {
           <Card>
             <CardContent className="px-0 pb-0">
               {(() => {
-                const rows = [
+                const rows: { error: string; cause: React.ReactNode; fix: React.ReactNode }[] = [
                   {
                     error: 'Not Found',
-                    cause: 'OpenAPI not found at {origin}/openapi.json',
-                    fix: 'Add an OpenAPI document at {origin}/openapi.json',
+                    cause: <><span>OpenAPI not found at </span><code>{'{origin}'}/openapi.json</code></>,
+                    fix: <><span>Add an OpenAPI document at </span><code>{'{origin}'}/openapi.json</code></>,
                   },
                   {
                     error: 'Input/Output Schema Missing',
