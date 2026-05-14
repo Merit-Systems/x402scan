@@ -8,7 +8,7 @@ Restructuring your backend and database to support agentic payments can be a dau
 
 ## Overview
 
-Stand up a thin proxy in front of your existing backend. The proxy handles everything x402-specific — payment verification, wallet identity, per-wallet authorization, rate limiting, and discovery — while your production API stays untouched.
+Stand up a thin proxy in front of your existing backend. The proxy handles everything x402-specific: payment verification, wallet identity, per-wallet authorization, rate limiting, and discovery. Your production API stays untouched.
 
 \`\`\`
 Agent  ──(x402)──▶  Proxy  ──(API key)──▶  Production API
@@ -51,7 +51,7 @@ If you also need free endpoints gated by wallet identity without payment, use SI
 
 ## Wallet-aware authorization
 
-Because every agent call reaches your production API under a single god-key, the proxy must enforce per-wallet authorization itself. The production API will happily return every row the key can see — it's the proxy's job to filter.
+Because every agent call reaches your production API under a single god-key, the proxy must enforce per-wallet authorization itself. The production API will happily return every row the key can see. It's the proxy's job to filter.
 
 Any endpoint that takes a resource ID must verify that the calling wallet owns that resource before proxying through.
 
@@ -76,7 +76,7 @@ If you need to track which wallets own which resources, a lightweight database a
 - \`wallet_address → usage_counters\` for rate limiting and spend caps.
 - \`wallet_address → session_state\` for stateful workflows.
 
-All of this sits outside your production database. From the production API's perspective, nothing changed — it still sees a single API key making calls.
+All of this sits outside your production database. From the production API's perspective, nothing changed. It still sees a single API key making calls.
 
 ## When this pattern fits
 

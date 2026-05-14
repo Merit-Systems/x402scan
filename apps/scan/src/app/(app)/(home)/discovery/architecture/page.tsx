@@ -46,10 +46,10 @@ export default function ArchitecturePage() {
           </div>
         }
       />
-      <Body className="gap-10">
+      <Body className="gap-8">
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Proxy architecture</h2>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-4 text-sm text-muted-foreground">
             <p>
               Restructuring your backend and database to support agentic
               payments can be a daunting, time-consuming task, and in most cases
@@ -64,9 +64,9 @@ export default function ArchitecturePage() {
           <h2 className="text-xl font-semibold">Overview</h2>
           <p className="text-sm text-muted-foreground">
             Stand up a thin proxy in front of your existing backend. The proxy
-            handles everything x402-specific — payment verification, wallet
-            identity, per-wallet authorization, rate limiting, and discovery —
-            while your production API stays untouched.
+            handles everything x402-specific: payment verification, wallet
+            identity, per-wallet authorization, rate limiting, and discovery.
+            Your production API stays untouched.
           </p>
           <CodeBlock
             code={`Agent  ──(x402)──▶  Proxy  ──(API key)──▶  Production API
@@ -83,7 +83,7 @@ export default function ArchitecturePage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">How it works</h2>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-4 text-sm text-muted-foreground">
             <p>
               Stand up a separate server (Next.js route handlers are a common
               choice, but any HTTP framework works). Provision a single API key
@@ -114,17 +114,19 @@ export default function ArchitecturePage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {[
-                    ['Payment verification (x402)', '✅', '—'],
-                    ['Wallet identity', '✅', '—'],
-                    ['Per-wallet authorization', '✅', '—'],
-                    ['Per-wallet rate limiting', '✅', '—'],
-                    ['Discovery document (/openapi.json)', '✅', '—'],
-                    ['Business logic', '—', '✅'],
-                    ['User records, billing, quotas', '—', '✅'],
-                    ['Long-term data storage', '—', '✅'],
-                  ].map(([concern, proxy, prod]) => (
-                    <TableRow key={concern}>
+                  {(
+                    [
+                      [<>Payment verification (x402)</>, '✅', '—'],
+                      [<>Wallet identity</>, '✅', '—'],
+                      [<>Per-wallet authorization</>, '✅', '—'],
+                      [<>Per-wallet rate limiting</>, '✅', '—'],
+                      [<>Discovery document (<code>/openapi.json</code>)</>, '✅', '—'],
+                      [<>Business logic</>, '—', '✅'],
+                      [<>User records, billing, quotas</>, '—', '✅'],
+                      [<>Long-term data storage</>, '—', '✅'],
+                    ] as [React.ReactNode, string, string][]
+                  ).map(([concern, proxy, prod], i) => (
+                    <TableRow key={i}>
                       <TableCell className="text-sm">{concern}</TableCell>
                       <TableCell>{proxy}</TableCell>
                       <TableCell>{prod}</TableCell>
@@ -142,7 +144,7 @@ export default function ArchitecturePage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Wallet identity</h2>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-4 text-sm text-muted-foreground">
             <p>
               Each x402 request carries a signed payment proof. The proxy
               verifies the signature and treats the signing wallet address as
@@ -160,12 +162,12 @@ export default function ArchitecturePage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Wallet-aware authorization</h2>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-4 text-sm text-muted-foreground">
             <p>
               Because every agent call reaches your production API under a
               single god-key, the proxy must enforce per-wallet authorization
               itself. The production API will happily return every row the key
-              can see — it&apos;s the proxy&apos;s job to filter.
+              can see. It&apos;s the proxy&apos;s job to filter.
             </p>
             <p>
               Any endpoint that takes a resource ID must verify that the calling
@@ -187,7 +189,7 @@ export default function ArchitecturePage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Failure semantics</h2>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-4 text-sm text-muted-foreground">
             <p>
               x402 settles payment as part of the request. If the downstream
               call to your production API fails after settlement, you have two
@@ -214,7 +216,7 @@ export default function ArchitecturePage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Wallet mapping database</h2>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-4 text-sm text-muted-foreground">
             <p>
               If you need to track which wallets own which resources, a
               lightweight database alongside the proxy is usually enough.
@@ -236,7 +238,7 @@ export default function ArchitecturePage() {
             </ul>
             <p>
               All of this sits outside your production database. From the
-              production API&apos;s perspective, nothing changed — it still sees
+              production API&apos;s perspective, nothing changed. It still sees
               a single API key making calls.
             </p>
           </div>
