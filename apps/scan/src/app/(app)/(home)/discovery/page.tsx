@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight, BookOpen, Terminal, Layers } from 'lucide-react';
+import { DiscoveryHubActions } from './_components/hub-actions';
 
 import type { Metadata } from 'next';
-import type { Route } from 'next';
 
 export const metadata: Metadata = {
   title: 'Sell to Agents',
@@ -17,16 +18,7 @@ export default function DiscoveryPage() {
       <Heading
         title="Sell to agents"
         description="Start onboarding agents as customers."
-        actions={
-          <div className="flex items-center gap-2">
-            <Button asChild size="sm">
-              <Link href="/resources/register">Register your API</Link>
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/discovery/spec">Read the spec</Link>
-            </Button>
-          </div>
-        }
+        actions={<DiscoveryHubActions />}
       />
       <Body className="gap-10">
         <section className="space-y-3">
@@ -76,13 +68,35 @@ export default function DiscoveryPage() {
               number={2}
               title="Publish a discovery specification"
               description="Add a simple file that tells AI agents what your API does, what it costs, and how to call it."
-              href="/discovery/spec"
-              linkText="See how"
             />
             <Step
               number={3}
               title="Reach agents everywhere"
               description="AI agents discover your API and start calling it. You get immediate distribution to Claude, Cursor, Codex, and every agent on x402."
+            />
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold">Get started</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            <NavCard
+              href="/discovery/quickstart"
+              icon={<Terminal className="size-5" />}
+              title="Quickstart with your agent"
+              description="Copy a prompt into your coding agent and it handles the rest. The fastest path for most providers."
+            />
+            <NavCard
+              href="/discovery/spec"
+              icon={<BookOpen className="size-5" />}
+              title="Discovery spec reference"
+              description="OpenAPI requirements, SIWX routes, endpoint fallback, and common failure reasons."
+            />
+            <NavCard
+              href="/discovery/architecture"
+              icon={<Layers className="size-5" />}
+              title="Architecture patterns"
+              description="Proxy architecture for wrapping existing APIs without touching your production backend."
             />
           </div>
         </section>
@@ -95,14 +109,10 @@ function Step({
   number,
   title,
   description,
-  href,
-  linkText,
 }: {
   number: number;
   title: string;
   description: string;
-  href?: Route;
-  linkText?: string;
 }) {
   return (
     <div className="flex gap-4 items-start">
@@ -111,21 +121,37 @@ function Step({
       </div>
       <div className="space-y-1">
         <h3 className="text-sm font-semibold">{title}</h3>
-        <p className="text-sm text-muted-foreground">
-          {description}
-          {href && linkText && (
-            <>
-              {' '}
-              <Link
-                href={href}
-                className="underline hover:no-underline font-medium text-foreground"
-              >
-                {linkText} →
-              </Link>
-            </>
-          )}
-        </p>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </div>
     </div>
+  );
+}
+
+function NavCard({
+  href,
+  icon,
+  title,
+  description,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Link href={href}>
+      <Card className="h-full transition-colors hover:border-foreground/20">
+        <CardContent className="flex flex-col gap-3 pt-5">
+          <div className="text-primary">{icon}</div>
+          <div className="space-y-1">
+            <h3 className="text-sm font-semibold flex items-center gap-1.5">
+              {title}
+              <ArrowRight className="size-3.5" />
+            </h3>
+            <p className="text-sm text-muted-foreground">{description}</p>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
