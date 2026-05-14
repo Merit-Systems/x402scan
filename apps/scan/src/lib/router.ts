@@ -46,8 +46,8 @@ export const router = createRouter({
 - GET /api/x402/registry/origin?url= — all registered resources for an origin
 
 ## Registry endpoints (SIWX, free)
-- POST /api/x402/registry/register — register a single x402 resource by URL
-- POST /api/x402/registry/register-origin — discover and register all resources from an origin via OpenAPI or .well-known/x402
+- POST /api/x402/registry/register — register or refresh a single x402 resource by URL
+- POST /api/x402/registry/register-origin — discover, register, or refresh all resources from an origin via OpenAPI or .well-known/x402
 
 ## Send endpoint (x402, dynamic price)
 - POST /api/x402/send — send USDC to an address on Base or Solana`,

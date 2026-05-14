@@ -9,6 +9,8 @@ export const POST = withCors(
     .route('x402/registry/register-origin')
     .siwx()
     .body(registryRegisterOriginBodySchema)
-    .description('Discover and register all x402 resources from an origin')
+    .description(
+      'Discover, register, or refresh all x402 resources from an origin'
+    )
     .handler(({ body }) => handleRegistryRegisterOrigin(body))
 );

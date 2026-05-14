@@ -9,6 +9,6 @@ export const POST = withCors(
     .route('x402/registry/register')
     .siwx()
     .body(registryRegisterBodySchema)
-    .description('Register an x402-protected resource')
+    .description('Register or refresh an x402-protected resource')
     .handler(({ body }) => handleRegistryRegister(body))
 );

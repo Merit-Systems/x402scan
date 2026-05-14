@@ -8,6 +8,9 @@ If you want reliable pickup, implement discovery in this order:
 2. `/.well-known/x402` (compatibility)
 
 If you cannot expose discovery yet, endpoint-only manual registration still works.
+For scripts and CI jobs, use the
+[Resource Registry API](./RESOURCE_REGISTRY_API.md) to register or refresh
+resources programmatically.
 
 ## TL;DR
 
@@ -23,6 +26,7 @@ Runtime `402` behavior is authoritative over static metadata.
 ## A) OpenAPI-First Discovery (Recommended)
 
 Supported URLs:
+
 - `https://yourdomain.com/openapi.json`
 
 ### Required top-level fields
@@ -35,6 +39,7 @@ Supported URLs:
 ### Per-paid-operation requirements
 
 For each paid operation:
+
 - declare `x-payment-info`
 - include a `402` response in `responses`
 - include `x-payment-info.protocols` (for example `"x402"`)
@@ -98,16 +103,21 @@ Optional fields:
 Use this when discovery docs are not available yet.
 
 A route is registerable when probing returns `402` with a parseable x402 challenge.
+To register or refresh this URL through the public API, call
+`POST /api/x402/registry/register`.
 
 Accepted challenge transport:
+
 - `Payment-Required` header (x402 v2), or
 - JSON response body (legacy compatibility)
 
 For payable indexing in `x402scan`, challenge data should include:
+
 - non-empty `accepts`
 - Bazaar-style input schema (`extensions.bazaar.info` + schema-derived input)
 
 Compatibility behavior:
+
 - `402` + `accepts: []` + `extensions["sign-in-with-x"]` => SIWX auth-only, marked `skipped`.
 - Missing input schema => strict non-invocable, marked `skipped`.
 
@@ -116,6 +126,7 @@ Compatibility behavior:
 ## Ownership Proofs
 
 Accepted locations:
+
 - OpenAPI `x-discovery.ownershipProofs` (preferred)
 - `/.well-known/x402` `ownershipProofs` (compatibility)
 
@@ -136,6 +147,12 @@ When a user clicks **Register This URL Only**:
 - Skip fan-out.
 - Register only that endpoint.
 - Useful for partial rollouts and rate-limited providers.
+
+Programmatic callers can trigger the same flows through:
+
+- `POST /api/x402/registry/register` for a single endpoint
+- `POST /api/x402/registry/register-origin` for origin discovery and bulk
+  registration
 
 ---
 
