@@ -18,7 +18,7 @@ export default function RegisterResourcePage() {
       <Heading
         title="Add your API"
         description={
-          <div className="space-y-2">
+          <div className="space-y-4">
             <p>
               Register your x402-compatible API to make your resources
               discoverable on x402scan.
