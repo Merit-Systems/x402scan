@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { Check, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -18,26 +17,18 @@ export function DiscoveryActions() {
   });
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <Button
-        size="sm"
-        variant="outline"
-        className="w-56 gap-1"
-        onClick={() => void copyToClipboard(AGENT_PROMPT)}
-      >
-        {isCopied ? (
-          <Check className="size-3.5" />
-        ) : (
-          <Copy className="size-3.5" />
-        )}
-        {isCopied ? 'Copied' : 'Copy Prompt for Agents'}
-      </Button>
-      <Button asChild size="sm" variant="outline" className="w-56 gap-1">
-        <Link href="/discovery">
-          For Humans
-          <span aria-hidden>→</span>
-        </Link>
-      </Button>
-    </div>
+    <Button
+      size="sm"
+      variant="outline"
+      className="w-56 gap-1"
+      onClick={() => void copyToClipboard(AGENT_PROMPT)}
+    >
+      {isCopied ? (
+        <Check className="size-3.5" />
+      ) : (
+        <Copy className="size-3.5" />
+      )}
+      {isCopied ? 'Copied' : 'Copy Prompt for Agents'}
+    </Button>
   );
 }
