@@ -1,6 +1,10 @@
 import z from 'zod';
 
-import { baseListQuerySchema } from '../schemas';
+import {
+  baseListQuerySchema,
+  cdpSqlIntegerSchema,
+  cdpSqlNumberSchema,
+} from '../schemas';
 
 import { queryRaw } from '@/services/transfers/client';
 
@@ -92,11 +96,11 @@ const listTopFacilitatorsUncached = async (
     z.array(
       z.object({
         facilitator_id: z.string(),
-        tx_count: z.number(),
-        total_amount: z.number(),
+        tx_count: cdpSqlIntegerSchema,
+        total_amount: cdpSqlNumberSchema,
         latest_block_timestamp: z.date(),
-        unique_buyers: z.number(),
-        unique_sellers: z.number(),
+        unique_buyers: cdpSqlIntegerSchema,
+        unique_sellers: cdpSqlIntegerSchema,
         chains: z.array(chainSchema),
       })
     )
@@ -114,7 +118,7 @@ const listTopFacilitatorsUncached = async (
         HAVING SUM(total_transactions) > ${Prisma.raw(MIN_FACILITATOR_TRANSACTIONS.toString())}
       ) subquery
     `,
-    z.array(z.object({ count: z.number() }))
+    z.array(z.object({ count: cdpSqlIntegerSchema }))
   );
 
   const count = countResult[0]?.count ?? 0;

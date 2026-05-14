@@ -1,7 +1,11 @@
 import z from 'zod';
 import { Prisma } from '@x402scan/transfers-db';
 
-import { baseBucketedQuerySchema } from '../schemas';
+import {
+  baseBucketedQuerySchema,
+  cdpSqlIntegerSchema,
+  cdpSqlNumberSchema,
+} from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
@@ -11,10 +15,10 @@ export const bucketedStatisticsMVInputSchema = baseBucketedQuerySchema;
 const bucketedResultSchema = z.array(
   z.object({
     bucket_start: z.date(),
-    total_transactions: z.number(),
-    total_amount: z.number(),
-    unique_buyers: z.number(),
-    unique_sellers: z.number(),
+    total_transactions: cdpSqlIntegerSchema,
+    total_amount: cdpSqlNumberSchema,
+    unique_buyers: cdpSqlIntegerSchema,
+    unique_sellers: cdpSqlIntegerSchema,
   })
 );
 
@@ -23,7 +27,7 @@ const getBucketedStatisticsMVUncached = async (
 ) => {
   const { timeframe, recipients } = input;
 
-  // An explicitly-empty include list means "include nothing" — short-circuit
+  // An explicitly-empty include list means "include nothing" ??short-circuit
   // before the unfiltered global MV gets queried.
   if (recipients?.include?.length === 0) {
     return [];
@@ -97,17 +101,7 @@ const getBucketedStatisticsMVUncached = async (
       ORDER BY bucket
     `;
 
-  const rawResult = await queryRaw(sql, bucketedResultSchema);
-
-  const transformedResult = rawResult.map(row => ({
-    ...row,
-    total_amount:
-      typeof row.total_amount === 'number'
-        ? row.total_amount
-        : Number(row.total_amount),
-  }));
-
-  return bucketedResultSchema.parse(transformedResult);
+  return queryRaw(sql, bucketedResultSchema);
 };
 
 export const getBucketedStatisticsMV = createCachedArrayQuery({

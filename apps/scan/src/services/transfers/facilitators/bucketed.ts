@@ -2,7 +2,11 @@ import z from 'zod';
 
 import { Prisma } from '@x402scan/transfers-db';
 
-import { baseBucketedQuerySchema } from '../schemas';
+import {
+  baseBucketedQuerySchema,
+  cdpSqlIntegerSchema,
+  cdpSqlNumberSchema,
+} from '../schemas';
 
 import { queryRaw } from '@/services/transfers/client';
 
@@ -131,18 +135,18 @@ const getBucketedFacilitatorsStatisticsUncached = async (
         facilitators: z.record(
           z.string(),
           z.object({
-            total_transactions: z.number(),
-            total_amount: z.number(),
-            unique_buyers: z.number(),
-            unique_sellers: z.number(),
+            total_transactions: cdpSqlIntegerSchema,
+            total_amount: cdpSqlNumberSchema,
+            unique_buyers: cdpSqlIntegerSchema,
+            unique_sellers: cdpSqlIntegerSchema,
           })
         ),
         totals: z
           .record(
             z.string(),
             z.object({
-              totalTransactions: z.number(),
-              totalAmount: z.number(),
+              totalTransactions: cdpSqlIntegerSchema,
+              totalAmount: cdpSqlNumberSchema,
             })
           )
           .nullable(),

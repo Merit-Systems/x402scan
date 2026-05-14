@@ -5,6 +5,7 @@ import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
 import { chainSchema, timeframeSchema } from '@/lib/schemas';
+import { cdpSqlIntegerSchema, cdpSqlNumberSchema } from '../../schemas';
 
 /**
  * Input schema for origin-based statistics queries.
@@ -63,10 +64,10 @@ const getOverallOriginStatisticsMVUncached = async (
     sql,
     z.array(
       z.object({
-        total_origins: z.number(),
-        total_transactions: z.number(),
-        total_amount: z.number(),
-        unique_buyers: z.number(),
+        total_origins: cdpSqlIntegerSchema,
+        total_transactions: cdpSqlIntegerSchema,
+        total_amount: cdpSqlNumberSchema,
+        unique_buyers: cdpSqlIntegerSchema,
         latest_block_timestamp: z.date().nullable(),
       })
     )

@@ -1,7 +1,11 @@
 import z from 'zod';
 import { Prisma } from '@x402scan/transfers-db';
 
-import { baseBucketedQuerySchema } from '../../schemas';
+import {
+  baseBucketedQuerySchema,
+  cdpSqlIntegerSchema,
+  cdpSqlNumberSchema,
+} from '../../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
@@ -24,11 +28,11 @@ const getBucketInterval = (mvTimeframe: string): string => {
 const bucketedSellerResultSchema = z.array(
   z.object({
     bucket_start: z.date(),
-    total_sellers: z.number(),
-    total_transactions: z.number(),
-    total_amount: z.number(),
-    unique_buyers: z.number(),
-    new_sellers: z.number(),
+    total_sellers: cdpSqlIntegerSchema,
+    total_transactions: cdpSqlIntegerSchema,
+    total_amount: cdpSqlNumberSchema,
+    unique_buyers: cdpSqlIntegerSchema,
+    new_sellers: cdpSqlIntegerSchema,
   })
 );
 

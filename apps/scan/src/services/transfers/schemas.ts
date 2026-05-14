@@ -12,6 +12,17 @@ const addressArray = z
   .array(mixedAddressSchema)
   .transform(addresses => [...addresses].sort((a, b) => a.localeCompare(b)));
 
+export const cdpSqlNumberSchema = z.preprocess(value => {
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed === '' ? Number.NaN : Number(trimmed);
+  }
+
+  return value;
+}, z.number().finite());
+
+export const cdpSqlIntegerSchema = cdpSqlNumberSchema.pipe(z.number().int());
+
 const addressesSchema = z.object({
   include: addressArray.optional(),
   exclude: addressArray.optional(),

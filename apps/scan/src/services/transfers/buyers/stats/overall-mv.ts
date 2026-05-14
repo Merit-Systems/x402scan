@@ -1,7 +1,11 @@
 import z from 'zod';
 import { Prisma } from '@x402scan/transfers-db';
 
-import { baseQuerySchema } from '../../schemas';
+import {
+  baseQuerySchema,
+  cdpSqlIntegerSchema,
+  cdpSqlNumberSchema,
+} from '../../schemas';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
@@ -68,12 +72,12 @@ const getOverallBuyerStatisticsMVUncached = async (
       sql,
       z.array(
         z.object({
-          total_buyers: z.number(),
-          total_transactions: z.number(),
-          total_amount: z.number(),
-          unique_sellers: z.number(),
+          total_buyers: cdpSqlIntegerSchema,
+          total_transactions: cdpSqlIntegerSchema,
+          total_amount: cdpSqlNumberSchema,
+          unique_sellers: cdpSqlIntegerSchema,
           latest_block_timestamp: z.date().nullable(),
-          new_buyers: z.number(),
+          new_buyers: cdpSqlIntegerSchema,
         })
       )
     );

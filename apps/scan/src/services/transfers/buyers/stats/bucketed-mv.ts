@@ -1,7 +1,11 @@
 import z from 'zod';
 import { Prisma } from '@x402scan/transfers-db';
 
-import { baseBucketedQuerySchema } from '../../schemas';
+import {
+  baseBucketedQuerySchema,
+  cdpSqlIntegerSchema,
+  cdpSqlNumberSchema,
+} from '../../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
@@ -11,11 +15,11 @@ export const bucketedBuyerStatisticsMVInputSchema = baseBucketedQuerySchema;
 const bucketedBuyerResultSchema = z.array(
   z.object({
     bucket_start: z.date(),
-    total_buyers: z.number(),
-    total_transactions: z.number(),
-    total_amount: z.number(),
-    unique_sellers: z.number(),
-    new_buyers: z.number(),
+    total_buyers: cdpSqlIntegerSchema,
+    total_transactions: cdpSqlIntegerSchema,
+    total_amount: cdpSqlNumberSchema,
+    unique_sellers: cdpSqlIntegerSchema,
+    new_buyers: cdpSqlIntegerSchema,
   })
 );
 
@@ -51,7 +55,7 @@ const getBucketedBuyerStatisticsMVUncached = async (
     ' '
   );
 
-  // Query bucketed stats — new_buyers omitted for now (requires sender_first_seen MV)
+  // Query bucketed stats ??new_buyers omitted for now (requires sender_first_seen MV)
   const sql = Prisma.sql`
     SELECT
       ssb.bucket AS bucket_start,
