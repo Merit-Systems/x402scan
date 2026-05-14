@@ -10,9 +10,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
+import { env } from '@/env';
 import { PAGE_MARKDOWN } from '../_content/markdown';
 
-const PAGE_URL = 'https://x402scan.com/discovery/architecture';
+const PAGE_PATH = '/discovery/architecture';
 
 export function CopyPageButton() {
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
@@ -76,7 +77,7 @@ export function CopyPageButton() {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <a
-              href={`https://claude.ai/new?q=${encodeURIComponent(`Read ${PAGE_URL} and answer my questions about it.`)}`}
+              href={`https://claude.ai/new?q=${encodeURIComponent(`Read ${env.NEXT_PUBLIC_APP_URL}${PAGE_PATH} and answer my questions about it.`)}`}
               target="_blank"
               rel="noreferrer"
               className="flex flex-col items-start gap-0.5 py-2"
@@ -93,7 +94,7 @@ export function CopyPageButton() {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <a
-              href={`https://chatgpt.com/?q=${encodeURIComponent(`Read ${PAGE_URL} and answer my questions about it.`)}`}
+              href={`https://chatgpt.com/?q=${encodeURIComponent(`Read ${env.NEXT_PUBLIC_APP_URL}${PAGE_PATH} and answer my questions about it.`)}`}
               target="_blank"
               rel="noreferrer"
               className="flex flex-col items-start gap-0.5 py-2"

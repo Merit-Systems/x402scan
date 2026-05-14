@@ -5,9 +5,7 @@ import { Check, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-
-const AGENT_PROMPT =
-  "Read https://agentcash.dev/merchants.md and follow the guide to make my API discoverable and payable by agents. Do everything automatically. Only ask me if you need input you can't determine yourself.";
+import { AGENT_PROMPT } from '../_constants/prompts';
 
 export function DiscoveryHubActions() {
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {

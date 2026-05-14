@@ -5,6 +5,7 @@ import { ArrowRight, BookOpen, Terminal, Layers } from 'lucide-react';
 import { DiscoveryHubActions } from './_components/hub-actions';
 
 import type { Metadata } from 'next';
+import type { Route } from 'next';
 
 export const metadata: Metadata = {
   title: 'Sell to Agents',
@@ -133,7 +134,7 @@ function NavCard({
   title,
   description,
 }: {
-  href: string;
+  href: Route;
   icon: React.ReactNode;
   title: string;
   description: string;
