@@ -3,11 +3,12 @@ import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { Button } from '@/components/ui/button';
 
 import type { Metadata } from 'next';
+import type { Route } from 'next';
 
 export const metadata: Metadata = {
   title: 'Sell to Agents',
   description:
-    'Start onboarding agents as customers with x402 and MPP payments.',
+    'Start onboarding agents as customers with x402 payments.',
 };
 
 export default function DiscoveryPage() {
@@ -52,7 +53,7 @@ export default function DiscoveryPage() {
             <p className="text-sm text-muted-foreground">
               Add a few lines of code to enable pay-per-call, publish a
               discovery specification, and AI agents can start calling your API.
-              We support open payment standards like{' '}
+              We support the open{' '}
               <a
                 href="https://www.x402.org"
                 className="underline hover:no-underline font-medium text-foreground"
@@ -61,16 +62,7 @@ export default function DiscoveryPage() {
               >
                 x402
               </a>{' '}
-              and{' '}
-              <a
-                href="https://docs.stripe.com/payments/machine"
-                className="underline hover:no-underline font-medium text-foreground"
-                target="_blank"
-                rel="noreferrer"
-              >
-                MPP
-              </a>
-              .
+              payment standard.
             </p>
           </div>
 
@@ -90,7 +82,7 @@ export default function DiscoveryPage() {
             <Step
               number={3}
               title="Reach agents everywhere"
-              description="AI agents discover your API and start calling it. You get immediate distribution to Claude, Cursor, Codex, and every agent on x402 or MPP."
+              description="AI agents discover your API and start calling it. You get immediate distribution to Claude, Cursor, Codex, and every agent on x402."
             />
           </div>
         </section>
@@ -109,7 +101,7 @@ function Step({
   number: number;
   title: string;
   description: string;
-  href?: string;
+  href?: Route;
   linkText?: string;
 }) {
   return (
