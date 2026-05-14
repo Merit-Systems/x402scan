@@ -26,15 +26,16 @@ export default function RegisterResourcePage() {
       />
       <Body>
         <p className="text-sm text-muted-foreground">
-          Need help?{' '}
+          Need help? Join this{' '}
           <a
             href="https://t.me/+wj2U7LRDRGs5MTY6"
             target="_blank"
             rel="noreferrer"
             className="underline hover:no-underline text-foreground"
           >
-            Join this Telegram group if you have any questions
-          </a>
+            Telegram group
+          </a>{' '}
+          if you have any questions
           , or email us at{' '}
           <a
             href="mailto:merchants@merit.systems"
