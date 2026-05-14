@@ -25,7 +25,7 @@ export default function RegisterResourcePage() {
         }
       />
       <Body>
-        <p className="text-sm text-muted-foreground text-center">
+        <p className="text-sm text-muted-foreground">
           Need help?{' '}
           <a
             href="https://t.me/+wj2U7LRDRGs5MTY6"
