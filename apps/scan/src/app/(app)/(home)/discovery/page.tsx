@@ -62,7 +62,7 @@ export default function DiscoveryPage() {
             <Step
               number={1}
               title="Add pay-per-call to your API"
-              description="A few lines of code enable per-request pricing. AI agents pay automatically. No subscriptions, no invoices."
+              description="A few lines of code enable per-request pricing. AI agents pay automatically, without subscriptions or invoices."
             />
             <Step
               number={2}
