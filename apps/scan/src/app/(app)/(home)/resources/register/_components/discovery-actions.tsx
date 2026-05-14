@@ -6,7 +6,11 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import { AGENT_PROMPT } from '../../discovery/_constants/prompts';
+
+// Duplicated from discovery/_constants/prompts.ts to avoid cross-directory
+// import issues with Turbopack in dev. Keep in sync.
+const AGENT_PROMPT =
+  "Read https://agentcash.dev/merchants.md and follow the guide to make my API discoverable and payable by agents. Do everything automatically. Only ask me if you need input you can't determine yourself.";
 
 export function DiscoveryActions() {
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
