@@ -1,3 +1,4 @@
+export { algovoi, algovoiFacilitator } from './algovoi';
 export { auto, autoFacilitator } from './auto';
 export { coinbase, coinbaseFacilitator } from './coinbase';
 export { aurracloud, aurracloudFacilitator } from './aurracloud';

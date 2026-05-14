@@ -1,4 +1,5 @@
 import {
+  algovoiFacilitator,
   aurracloudFacilitator,
   coinbaseFacilitator,
   thirdwebFacilitator,
@@ -35,6 +36,7 @@ import { validateUniqueFacilitators } from './validate';
 import type { Facilitator } from '../types';
 
 const FACILITATORS = validateUniqueFacilitators([
+  algovoiFacilitator,
   coinbaseFacilitator,
   aurracloudFacilitator,
   thirdwebFacilitator,

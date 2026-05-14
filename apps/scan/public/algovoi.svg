@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="av-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366F1"/>
+      <stop offset="100%" style="stop-color:#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect width="64" height="64" rx="14" fill="url(#av-grad)"/>
+  <!-- Stylised "A" lettermark -->
+  <path d="M32 10 L50 50 H42 L38 40 H26 L22 50 H14 Z M32 22 L28.5 36 H35.5 Z"
+        fill="white" fill-rule="evenodd"/>
+  <!-- Multi-chain dots -->
+  <circle cx="12" cy="54" r="3" fill="rgba(255,255,255,0.55)"/>
+  <circle cx="22" cy="57" r="3" fill="rgba(255,255,255,0.55)"/>
+  <circle cx="32" cy="58" r="3" fill="rgba(255,255,255,0.55)"/>
+  <circle cx="42" cy="57" r="3" fill="rgba(255,255,255,0.55)"/>
+  <circle cx="52" cy="54" r="3" fill="rgba(255,255,255,0.55)"/>
+</svg>
