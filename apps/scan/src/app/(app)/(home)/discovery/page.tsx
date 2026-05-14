@@ -22,7 +22,7 @@ export default function DiscoveryPage() {
       />
       <Body className="gap-10">
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">Why?</h2>
+          <h2 className="text-xl font-semibold">Why</h2>
           <div className="space-y-2 text-sm text-muted-foreground">
             <p>
               AI agents are becoming the primary way people interact with the
