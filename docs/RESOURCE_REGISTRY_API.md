@@ -23,7 +23,7 @@ Registry write endpoints require Sign-In With X (SIWX) wallet authentication.
 Send SIWX auth headers with the request. If you use the x402 tooling, call
 these endpoints with `fetch_with_auth`.
 
-Required headers:
+Required headers for write endpoints:
 
 ```http
 Content-Type: application/json
@@ -150,6 +150,8 @@ Example:
 ```bash
 curl 'https://www.x402scan.com/api/x402/registry/origin?url=https%3A%2F%2Fapi.example.com'
 ```
+
+This read endpoint does not require SIWX headers.
 
 ## Registration Requirements
 
