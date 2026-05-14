@@ -13,6 +13,7 @@ import {
 import { CopyForAgentsButton } from './copy-for-agents-button';
 import { AgentPromptPreview } from './agent-prompt-preview';
 import { TryDiscovery } from './try-discovery';
+import { CopyPageButton } from './_components/copy-page-button';
 
 import type { Metadata } from 'next';
 
@@ -95,6 +96,7 @@ export default function DiscoverySpecPage() {
         description="Build once, register reliably, and keep your x402 resources discoverable."
         actions={
           <div className="flex items-center gap-2">
+            <CopyPageButton />
             <Button asChild size="sm">
               <Link href="/resources/register">Add your API</Link>
             </Button>
