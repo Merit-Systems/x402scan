@@ -27,7 +27,7 @@ export function DiscoveryHubActions() {
         {isCopied ? 'Copied' : 'Copy Prompt for Agents'}
       </Button>
       <Button asChild variant="outline" size="sm">
-        <Link href="/resources/register">Add your API</Link>
+        <Link href="/resources/register">+ Add your API</Link>
       </Button>
     </div>
   );

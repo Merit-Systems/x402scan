@@ -96,7 +96,7 @@ export default function DiscoveryPage() {
             <NavCard
               href="/discovery/architecture"
               icon={<Layers className="size-5" />}
-              title="Architecture patterns"
+              title="Suggested architecture"
               description="Proxy architecture for wrapping existing APIs without touching your production backend."
             />
           </div>

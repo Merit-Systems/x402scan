@@ -32,16 +32,16 @@ export default function ArchitecturePage() {
   return (
     <div>
       <Heading
-        title="Architecture patterns"
+        title="Suggested architecture"
         description="High-level architectures for building agent-payable services."
         actions={
           <div className="flex items-center gap-2">
             <CopyPageButton />
             <Button asChild size="sm">
-              <Link href="/resources/register">Add your API</Link>
+              <Link href="/resources/register">+ Add your API</Link>
             </Button>
             <Button asChild variant="outline" size="sm">
-              <Link href="/discovery/spec">Read the spec</Link>
+              <Link href="/discovery/spec">Read the discovery spec</Link>
             </Button>
           </div>
         }
@@ -116,14 +116,14 @@ export default function ArchitecturePage() {
                 <TableBody>
                   {(
                     [
-                      [<>Payment verification (x402)</>, '✅', '—'],
-                      [<>Wallet identity</>, '✅', '—'],
-                      [<>Per-wallet authorization</>, '✅', '—'],
-                      [<>Per-wallet rate limiting</>, '✅', '—'],
-                      [<>Discovery document (<code>/openapi.json</code>)</>, '✅', '—'],
-                      [<>Business logic</>, '—', '✅'],
-                      [<>User records, billing, quotas</>, '—', '✅'],
-                      [<>Long-term data storage</>, '—', '✅'],
+                      [<>Payment verification (x402)</>, 'Yes', '—'],
+                      [<>Wallet identity</>, 'Yes', '—'],
+                      [<>Per-wallet authorization</>, 'Yes', '—'],
+                      [<>Per-wallet rate limiting</>, 'Yes', '—'],
+                      [<>Discovery document (<code>/openapi.json</code>)</>, 'Yes', '—'],
+                      [<>Business logic</>, '—', 'Yes'],
+                      [<>User records, billing, quotas</>, '—', 'Yes'],
+                      [<>Long-term data storage</>, '—', 'Yes'],
                     ] as [React.ReactNode, string, string][]
                   ).map(([concern, proxy, prod], i) => (
                     <TableRow key={i}>
@@ -170,8 +170,25 @@ export default function ArchitecturePage() {
               can see. It&apos;s the proxy&apos;s job to filter.
             </p>
             <p>
-              Any endpoint that takes a resource ID must verify that the calling
-              wallet owns that resource before proxying through.
+              For example, if your API exposes <code>list_jobs()</code>:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                <strong>Wrong:</strong> the proxy calls{' '}
+                <code>list_jobs()</code> and returns the full response. This
+                leaks every wallet&apos;s jobs to every caller.
+              </li>
+              <li>
+                <strong>Right:</strong> the proxy looks up which job IDs belong
+                to the calling wallet in its own database, fetches only those
+                from the production API, and returns the filtered set.
+              </li>
+            </ul>
+            <p>
+              The same rule applies to <code>get_job</code>,{' '}
+              <code>update_job</code>, and delete operations. Any endpoint that
+              takes a resource ID must verify that the calling wallet owns that
+              resource before proxying through.
             </p>
           </div>
         </section>
@@ -245,6 +262,29 @@ export default function ArchitecturePage() {
         </section>
 
         <section className="space-y-3">
+          <h2 className="text-xl font-semibold">Exposing discovery</h2>
+          <div className="space-y-4 text-sm text-muted-foreground">
+            <p>
+              The proxy is also where you serve your discovery document. Publish{' '}
+              <code>/openapi.json</code> on the proxy origin with{' '}
+              <code>x-payment-info</code> and <code>402</code> responses on each
+              payable operation. Agents discover and call the proxy and never the
+              production API directly.
+            </p>
+            <p>
+              See{' '}
+              <Link
+                href="/discovery/spec"
+                className="underline hover:no-underline font-medium text-foreground"
+              >
+                Server Discovery
+              </Link>{' '}
+              for the full OpenAPI contract.
+            </p>
+          </div>
+        </section>
+
+        <section className="space-y-3">
           <h2 className="text-xl font-semibold">When this pattern fits</h2>
           <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
             <li>
@@ -263,12 +303,23 @@ export default function ArchitecturePage() {
 
         <section className="flex items-center gap-2">
           <Button asChild size="sm">
-            <Link href="/resources/register">Add your API</Link>
+            <Link href="/resources/register">+ Add your API</Link>
           </Button>
           <Button asChild variant="outline" size="sm">
-            <Link href="/discovery/spec">Read the spec</Link>
+            <Link href="/discovery/spec">Read the discovery spec</Link>
           </Button>
         </section>
+
+        <p className="text-sm text-muted-foreground">
+          For further questions, contact us at{' '}
+          <a
+            href="mailto:merchants@merit.systems"
+            className="underline hover:no-underline font-medium text-foreground"
+          >
+            merchants@merit.systems
+          </a>
+          .
+        </p>
       </Body>
     </div>
   );
