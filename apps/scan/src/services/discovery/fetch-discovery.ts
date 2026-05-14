@@ -1,7 +1,8 @@
-import { discoverOriginSchema } from '@agentcash/discovery';
+import { discoverOriginSchema, GuidanceMode } from '@agentcash/discovery';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { isLocalUrl } from '@/lib/url-helpers';
+import { templatizePath } from '@/lib/discovery/path-template';
 
 import type {
   DiscoveredResource,
@@ -47,10 +48,13 @@ export async function fetchDiscoveryDocument(
     ? { 'Cache-Control': 'no-cache, no-store' }
     : {};
 
+  // Always request the doc-level guidance text — we mine it for canonical
+  // path templates (e.g. war-tracker's `/region/{slug}`, `/country/{iso2}`).
   const discovered = await discoverOriginSchema({
     target: origin,
     headers,
     signal,
+    guidance: GuidanceMode.Always,
   });
 
   if (!discovered.found) {
@@ -62,13 +66,19 @@ export async function fetchDiscoveryDocument(
     };
   }
 
+  const guidance = discovered.guidance;
   const resources: DiscoveredResource[] = discovered.endpoints.flatMap(
     endpoint => {
       try {
         const url = new URL(endpoint.path, discovered.origin).toString();
+        const canonicalUrl = templatizePath(url, {
+          operationSummary: endpoint.summary,
+          ...(guidance ? { guidance } : {}),
+        });
         return [
           {
             url,
+            ...(canonicalUrl !== url ? { canonicalUrl } : {}),
             method: endpoint.method,
             ...(endpoint.authMode ? { authMode: endpoint.authMode } : {}),
           },

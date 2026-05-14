@@ -76,7 +76,7 @@ export interface RegisterOriginResult {
  * Deprecates resources from the same origin that are no longer in the list.
  */
 export async function registerResourcesFromDiscovery(
-  resources: { url: string; authMode?: AuthMode }[],
+  resources: { url: string; canonicalUrl?: string; authMode?: AuthMode }[],
   source: string | undefined
 ): Promise<RegisterOriginResult> {
   const originResourceCounts = new Map(
@@ -91,6 +91,7 @@ export async function registerResourcesFromDiscovery(
 
   const results = await mapSettledWithConcurrency(resources, async resource => {
     const resourceUrl = resource.url;
+    const canonicalUrl = resource.canonicalUrl;
 
     if (resource.authMode === 'siwx') {
       return {
@@ -133,6 +134,7 @@ export async function registerResourcesFromDiscovery(
 
     const result = await registerResource(resourceUrl, advisory, {
       notifyNewServer: false,
+      ...(canonicalUrl ? { canonicalUrl } : {}),
     });
 
     if (result.success) return result;
@@ -209,7 +211,9 @@ export async function registerResourcesFromDiscovery(
 
   let deprecated = 0;
   if (originId) {
-    const activeResourceUrls = resources.map(r => r.url);
+    // Compare against the same form that gets stored — the canonical
+    // (templated) URL when present, falling back to the concrete URL.
+    const activeResourceUrls = resources.map(r => r.canonicalUrl ?? r.url);
     deprecated = await deprecateStaleResources(originId, activeResourceUrls);
   }
 

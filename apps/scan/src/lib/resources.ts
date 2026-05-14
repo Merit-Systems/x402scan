@@ -31,14 +31,16 @@ import { notifyNewServer } from '@/lib/discord-notifications';
 export const registerResource = async (
   url: string,
   advisory: EndpointMethodAdvisory,
-  options: { notifyNewServer?: boolean } = {}
+  options: { notifyNewServer?: boolean; canonicalUrl?: string } = {}
 ) => {
   const x402Options = (advisory.paymentOptions ?? []).filter(
     isX402PaymentOption
   );
   const urlObj = new URL(url);
   urlObj.search = '';
-  const cleanUrl = urlObj.toString();
+  // Store the canonical (templated) URL when the caller provides one
+  // — concrete probe URLs like `/events/397003` become `/events/{event_id}`.
+  const cleanUrl = options.canonicalUrl ?? urlObj.toString();
   const origin = getOriginFromUrl(cleanUrl);
   const shouldNotifyNewServer = options.notifyNewServer ?? true;
 
