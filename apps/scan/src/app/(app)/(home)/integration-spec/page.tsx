@@ -110,7 +110,7 @@ export default function DiscoverySpecPage() {
       <Body className="gap-8">
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Why This Matters</h2>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-4 text-sm text-muted-foreground">
             <p>
               If agents can&apos;t discover your API, they can&apos;t call it.
               Bulletproof discovery turns your endpoint from merely listed to
