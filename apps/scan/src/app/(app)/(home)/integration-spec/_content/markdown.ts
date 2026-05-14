@@ -97,13 +97,13 @@ Requirements:
 
 ## SIWX (Sign-In with X) Routes
 
-SIWX routes are identity-gated — they require a wallet proof but no payment. Agents with a wallet can call these for free.
+SIWX routes are identity-gated, requiring a wallet proof but no payment. Agents with a wallet can call these for free.
 
 - Declare a security scheme named \`siwx\` in \`components.securitySchemes\`.
 - Reference it on each identity-gated operation via \`security: [{ "siwx": [] }]\`.
-- Do **not** add \`x-payment-info\` to SIWX-only routes — that would classify them as paid.
+- Do **not** add \`x-payment-info\` to SIWX-only routes, as that classifies them as paid.
 
-The scheme **must** be named \`siwx\` — discovery resolves it by name. Routes with both \`x-payment-info\` and \`siwx\` security are classified as paid, not SIWX.
+The scheme **must** be named \`siwx\`. Discovery resolves it by name. Routes with both \`x-payment-info\` and \`siwx\` security are classified as paid, not SIWX.
 
 ## Common Failure Reasons
 

@@ -310,7 +310,7 @@ export default function DiscoverySpecPage() {
             SIWX (Sign-In with X) Routes
           </h2>
           <p className="text-sm text-muted-foreground">
-            SIWX routes are identity-gated — they require a wallet proof but no
+            SIWX routes are identity-gated, requiring a wallet proof but no
             payment. Agents with an agentcash wallet can call these for free.
           </p>
           <ul className="list-disc pl-5 space-y-1 text-sm">
@@ -327,7 +327,7 @@ export default function DiscoverySpecPage() {
             </li>
             <li>
               Do <strong>not</strong> add <code>x-payment-info</code> to
-              SIWX-only routes — that would classify them as paid.
+              SIWX-only routes, as that classifies them as paid.
             </li>
           </ul>
           <CodeBlock
@@ -353,8 +353,8 @@ export default function DiscoverySpecPage() {
 }`}
           />
           <p className="text-sm text-muted-foreground">
-            The scheme <strong>must</strong> be named <code>siwx</code> —
-            discovery resolves it by name. Routes with both{' '}
+            The scheme <strong>must</strong> be named <code>siwx</code>.
+            Discovery resolves it by name. Routes with both{' '}
             <code>x-payment-info</code> and <code>siwx</code> security are
             classified as paid, not SIWX.
           </p>
@@ -385,8 +385,8 @@ export default function DiscoverySpecPage() {
               body that carries one) to make the endpoint registerable.
             </li>
             <li>
-              SIWX endpoints are registered as identity-only — no payment
-              required, but agents need a wallet proof to call them.
+              SIWX endpoints are registered as identity-only. No payment is
+              required, but agents still need a wallet proof to call them.
             </li>
           </ul>
           <CodeBlock code={endpointExample} />
