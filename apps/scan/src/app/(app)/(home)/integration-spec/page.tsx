@@ -18,8 +18,9 @@ import { CopyPageButton } from './_components/copy-page-button';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Discovery Spec',
-  description: 'x402scan discovery and registration specification for OpenAPI.',
+  title: 'Become Discoverable',
+  description:
+    'Build once, register reliably, and keep your resources discoverable by agents.',
 };
 
 const endpointExample = `curl -i -X POST https://yourdomain.com/api/route
@@ -92,8 +93,8 @@ export default function DiscoverySpecPage() {
   return (
     <div>
       <Heading
-        title="Discovery Spec"
-        description="Build once, register reliably, and keep your x402 resources discoverable."
+        title="Become discoverable"
+        description="Build once, register reliably, and keep your resources discoverable by agents."
         actions={
           <div className="flex items-center gap-2">
             <CopyPageButton />
@@ -117,8 +118,8 @@ export default function DiscoverySpecPage() {
             </p>
             <p>
               When metadata and runtime <code>402</code> behavior agree, agents
-              succeed on the first pass. You get fewer x402scan failures, less
-              debugging churn, and more real agent traffic.
+              succeed on the first pass. You get fewer failures, less debugging
+              churn, and more real agent traffic.
             </p>
           </div>
           <ul className="mt-3 list-disc pl-5 space-y-1 text-sm">
@@ -154,61 +155,152 @@ export default function DiscoverySpecPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold">OpenAPI Requirements</h2>
-          <p className="text-sm text-muted-foreground">
-            x402scan resolves your OpenAPI document at{' '}
-            <code>/openapi.json</code>. This is the canonical machine-readable
-            contract — it gives agents the cleanest invocation surface and the
-            best tooling compatibility.
-          </p>
+          <h2 className="text-xl font-semibold">Discovery Strategy</h2>
+          <div className="space-y-2 text-sm text-muted-foreground">
+            <p>
+              OpenAPI is the canonical discovery format. Use it for the cleanest
+              machine-readable contract and best agent compatibility.
+            </p>
+            <p>
+              Expected location: <code>GET /openapi.json</code>
+            </p>
+          </div>
           <Card>
             <CardContent className="space-y-4 pt-4">
+              <h3 className="text-sm font-semibold">Requirements</h3>
               <ul className="list-disc pl-5 space-y-1 text-sm">
                 <li>
                   Top-level fields: <code>openapi</code>,{' '}
-                  <code>info.title</code>, <code>info.version</code>,{' '}
-                  <code>paths</code>.
+                  <code>info.title</code>, <code>info.x-guidance</code>,{' '}
+                  <code>info.version</code>, <code>paths</code>.
                 </li>
                 <li>
                   For paid operations: <code>responses.402</code> and{' '}
                   <code>x-payment-info</code>.
                 </li>
                 <li>
-                  Set <code>x-payment-info.price</code> (fixed or dynamic) and{' '}
-                  <code>x-payment-info.protocols</code> (array of protocol
-                  objects).
+                  Set <code>x-payment-info.protocols</code> (array of protocol
+                  objects) and one pricing mode (<code>fixed</code> or{' '}
+                  <code>dynamic</code>) with <code>currency</code>.
                 </li>
                 <li>
                   Use OpenAPI <code>security</code> +{' '}
                   <code>components.securitySchemes</code> for auth declaration.
                 </li>
                 <li>
-                  For SIWX (identity-only) routes: declare a scheme named{' '}
-                  <code>siwx</code> and reference it in <code>security</code>.
-                  Do not add <code>x-payment-info</code>.
-                </li>
-                <li>
                   Add high-level guidance in <code>info.x-guidance</code> for
-                  user-friendly discovery.
+                  agent-friendly discovery.
                 </li>
               </ul>
+              <h3 className="text-sm font-semibold">
+                Pricing modes in <code>x-payment-info</code>
+              </h3>
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                <li>
+                  Fixed:{' '}
+                  <code>
+                    {'{ price: { mode: "fixed", currency: "USD", amount: "<amount>" } }'}
+                  </code>
+                </li>
+                <li>
+                  Dynamic:{' '}
+                  <code>
+                    {'{ price: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" } }'}
+                  </code>
+                </li>
+              </ul>
+              <h3 className="text-sm font-semibold">Minimal valid example</h3>
               <CodeBlock
                 code={`{
   "openapi": "3.1.0",
-  "info": { "title": "My API", "version": "1.0.0" },
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+    "description": "example demo server",
+    "x-guidance": "Use POST /api/search for neural web search. Accepts a JSON body with a 'query' field."
+  },
   "paths": {
-    "/api/quote": {
+    "/api/search": {
       "post": {
-        "responses": { "402": { "description": "Payment Required" } },
+        "operationId": "search",
+        "summary": "Search - Neural search across the web",
+        "tags": ["Search"],
         "x-payment-info": {
-          "price": { "mode": "fixed", "currency": "USD", "amount": "0.05" },
+          "price": { "mode": "fixed", "currency": "USD", "amount": "0.010000" },
           "protocols": [{ "x402": {} }]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": { "type": "string", "minLength": 1, "description": "The query string for the search" }
+                },
+                "required": ["query"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": { "type": "array", "items": { "type": "object" } }
+                  },
+                  "required": ["results"]
+                }
+              }
+            }
+          },
+          "402": { "description": "Payment Required" }
         }
       }
     }
   }
 }`}
               />
+            </CardContent>
+          </Card>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold">Discovery Precedence</h2>
+          <p className="text-sm text-muted-foreground">
+            x402scan uses the OpenAPI document at <code>/openapi.json</code> to
+            discover your API. It will also check the runtime 402 challenge
+            behavior to ensure it is correct.
+          </p>
+          <Card>
+            <CardContent className="px-0 pb-0 pt-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[20%]">Order</TableHead>
+                    <TableHead className="w-[40%]">Source</TableHead>
+                    <TableHead className="w-[40%]">Expected Location</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>1</TableCell>
+                    <TableCell>OpenAPI document</TableCell>
+                    <TableCell>
+                      <code>/openapi.json</code>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>2</TableCell>
+                    <TableCell>402 API Response</TableCell>
+                    <TableCell>Correct 402 header response</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </section>
@@ -307,114 +399,86 @@ export default function DiscoverySpecPage() {
           </p>
           <Card>
             <CardContent className="px-0 pb-0">
-              <div className="hidden lg:block overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[35%] whitespace-normal">
-                        Error
-                      </TableHead>
-                      <TableHead className="w-[30%] whitespace-normal">
-                        Likely Cause
-                      </TableHead>
-                      <TableHead className="w-[35%] whitespace-normal">
-                        Fix
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
-                        Expected 402, got 404/405
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-words align-top">
-                        Wrong method or wrong path
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-words align-top">
-                        Match method/path to your actual handler
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
-                        Accepts must contain at least one valid payment
-                        requirement
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-words align-top">
-                        Malformed or empty payment requirements
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-words align-top">
-                        Return a valid non-empty x402 accepts set
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
-                        Missing input schema
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-words align-top">
-                        Strict parser cannot infer invocable contract
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-words align-top">
-                        Publish Bazaar/OpenAPI input schema metadata
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
-                        Expected 402, got 429
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-words align-top">
-                        Provider-side throttling
-                      </TableCell>
-                      <TableCell className="whitespace-normal break-words align-top">
-                        Retry, reduce probe volume, or register URL-only
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </div>
-
-              <div className="lg:hidden">
-                <div className="flex gap-3 border-b bg-muted/40 px-4 py-2 text-xs font-medium text-muted-foreground">
-                  <span className="w-[35%]">Error</span>
-                  <span className="w-[30%]">Likely Cause</span>
-                  <span className="w-[35%]">Fix</span>
-                </div>
-                <div className="divide-y px-4">
-                  {[
-                    {
-                      error: 'Expected 402, got 404/405',
-                      cause: 'Wrong method or wrong path',
-                      fix: 'Match method/path to your actual handler',
-                    },
-                    {
-                      error:
-                        'Accepts must contain at least one valid payment requirement',
-                      cause: 'Malformed or empty payment requirements',
-                      fix: 'Return a valid non-empty x402 accepts set',
-                    },
-                    {
-                      error: 'Missing input schema',
-                      cause: 'Strict parser cannot infer invocable contract',
-                      fix: 'Publish Bazaar/OpenAPI input schema metadata',
-                    },
-                    {
-                      error: 'Expected 402, got 429',
-                      cause: 'Provider-side throttling',
-                      fix: 'Retry, reduce probe volume, or register URL-only',
-                    },
-                  ].map((row, i, arr) => (
-                    <div
-                      key={i}
-                      className={`flex gap-3 py-3 ${i === arr.length - 1 ? 'pb-0' : ''}`}
-                    >
-                      <p className="w-[35%] font-mono text-xs break-words">
-                        {row.error}
-                      </p>
-                      <p className="w-[30%] text-sm break-words">{row.cause}</p>
-                      <p className="w-[35%] text-sm break-words">{row.fix}</p>
+              {(() => {
+                const rows = [
+                  {
+                    error: 'Not Found',
+                    cause: 'OpenAPI not found at {origin}/openapi.json',
+                    fix: 'Add an OpenAPI document at {origin}/openapi.json',
+                  },
+                  {
+                    error: 'Input/Output Schema Missing',
+                    cause: 'Operation has no input or output schema',
+                    fix: 'Add an input and output schema to the operation',
+                  },
+                  {
+                    error: 'No Payment Modes Detected',
+                    cause: 'No payment modes detected in the response',
+                    fix: 'Add a valid payment mode to the response (x402)',
+                  },
+                ];
+                return (
+                  <>
+                    <div className="hidden lg:block overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[30%] whitespace-normal">
+                              Error
+                            </TableHead>
+                            <TableHead className="w-[35%] whitespace-normal">
+                              Likely Cause
+                            </TableHead>
+                            <TableHead className="w-[35%] whitespace-normal">
+                              Fix
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {rows.map(row => (
+                            <TableRow key={row.error}>
+                              <TableCell className="font-mono text-xs whitespace-normal break-words align-top">
+                                {row.error}
+                              </TableCell>
+                              <TableCell className="whitespace-normal break-words align-top">
+                                {row.cause}
+                              </TableCell>
+                              <TableCell className="whitespace-normal break-words align-top">
+                                {row.fix}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <div className="lg:hidden">
+                      <div className="flex gap-3 border-b bg-muted/40 px-4 py-2 text-xs font-medium text-muted-foreground">
+                        <span className="w-[30%]">Error</span>
+                        <span className="w-[35%]">Likely Cause</span>
+                        <span className="w-[35%]">Fix</span>
+                      </div>
+                      <div className="divide-y px-4">
+                        {rows.map((row, i, arr) => (
+                          <div
+                            key={row.error}
+                            className={`flex gap-3 py-3 ${i === arr.length - 1 ? 'pb-0' : ''}`}
+                          >
+                            <p className="w-[30%] font-mono text-xs break-words">
+                              {row.error}
+                            </p>
+                            <p className="w-[35%] text-sm break-words">
+                              {row.cause}
+                            </p>
+                            <p className="w-[35%] text-sm break-words">
+                              {row.fix}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </CardContent>
           </Card>
         </section>
