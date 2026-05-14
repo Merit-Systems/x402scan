@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { CopyPageButton } from './_components/copy-page-button';
 import {
   Table,
   TableBody,
@@ -35,6 +36,7 @@ export default function ArchitecturePage() {
         description="High-level architectures for building agent-payable services."
         actions={
           <div className="flex items-center gap-2">
+            <CopyPageButton />
             <Button asChild size="sm">
               <Link href="/resources/register">Add your API</Link>
             </Button>
