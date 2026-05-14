@@ -18,11 +18,6 @@ export default function QuickstartPage() {
       <Heading
         title="Quickstart with your agent"
         description="Paste one prompt into your coding agent. It figures out where you are and walks you through everything."
-        actions={
-          <Button asChild variant="outline" size="sm">
-            <Link href="/resources/register">Add your API</Link>
-          </Button>
-        }
       />
       <Body className="gap-10">
         <QuickstartPromptCard />
