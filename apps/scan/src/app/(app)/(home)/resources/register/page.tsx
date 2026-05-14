@@ -33,8 +33,16 @@ export default function RegisterResourcePage() {
             rel="noreferrer"
             className="underline hover:no-underline text-foreground"
           >
-            Join this Telegram group if you have any questions.
+            Join this Telegram group if you have any questions
           </a>
+          , or email us at{' '}
+          <a
+            href="mailto:merchants@merit.systems"
+            className="underline hover:no-underline text-foreground"
+          >
+            merchants@merit.systems
+          </a>
+          .
         </p>
         <RegisterResourceForm />
       </Body>
