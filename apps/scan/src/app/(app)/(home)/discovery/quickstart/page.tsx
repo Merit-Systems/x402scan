@@ -22,6 +22,24 @@ export default function QuickstartPage() {
       <Body className="gap-10">
         <QuickstartPromptCard />
 
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold">When the agent finishes</h2>
+          <ol className="list-decimal pl-5 space-y-2 text-sm text-muted-foreground">
+            <li>
+              Your <code>/openapi.json</code> should describe each payable route
+              with <code>x-payment-info</code> and a <code>402</code> response.
+            </li>
+            <li>
+              The runtime should challenge unpaid requests with a valid{' '}
+              <code>WWW-Authenticate</code> header.
+            </li>
+            <li>
+              Register the origin on x402scan so we can track usage and surface it
+              to agents.
+            </li>
+          </ol>
+        </section>
+
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Test your API</h2>
           <p className="text-sm text-muted-foreground">
@@ -36,7 +54,7 @@ export default function QuickstartPage() {
             <Link href="/resources/register">+ Add your API</Link>
           </Button>
           <Button asChild variant="outline" size="sm">
-            <Link href="/discovery/spec">Read the spec</Link>
+            <Link href="/discovery/spec">Read the discovery spec →</Link>
           </Button>
         </section>
       </Body>
