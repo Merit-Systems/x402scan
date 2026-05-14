@@ -44,8 +44,8 @@ export default function DiscoveryPage() {
             <h2 className="text-xl font-semibold">How</h2>
             <p className="text-sm text-muted-foreground">
               Add a few lines of code to enable pay-per-call, publish a
-              discovery specification, and AI agents can start calling your API.
-              We support the open{' '}
+              discovery specification, and AI agents can start calling your API
+              with{' '}
               <a
                 href="https://www.x402.org"
                 className="underline hover:no-underline font-medium text-foreground"
@@ -54,7 +54,7 @@ export default function DiscoveryPage() {
               >
                 x402
               </a>{' '}
-              payment standard.
+              payments.
             </p>
           </div>
 
