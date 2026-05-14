@@ -1,6 +1,5 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { DiscoveryActions } from './_components/discovery-actions';
 import { RegisterResourceForm } from './_components/form';
 
 import type { Metadata } from 'next';
@@ -21,14 +20,7 @@ export default function RegisterResourcePage() {
               Register your x402-compatible API to make your resources
               discoverable on x402scan.
             </p>
-            <div>
-              <Button asChild size="sm" variant="outline" className="gap-1">
-                <Link href="/discovery">
-                  Read the Discovery Spec
-                  <span aria-hidden>→</span>
-                </Link>
-              </Button>
-            </div>
+            <DiscoveryActions />
           </div>
         }
       />
