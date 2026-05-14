@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Logo } from '@/components/logo';
 
 import { InlineSearchSuggestions } from '@/app/(app)/_components/search/inline-search-suggestions';
+import { AddApiSentinel, AddApiButtonMarker } from '../../_components/sticky-add-api';
 
 export const HomeHeading = () => {
   const router = useRouter();
@@ -38,13 +39,16 @@ export const HomeHeading = () => {
               x402scan
             </h1>
           </div>
-          <Link href="/resources/register" className="hidden md:block shrink-0">
-            <Button size="sm" className="h-9">
-              <Plus className="size-4" />
-              Add your API
-            </Button>
-          </Link>
+          <AddApiButtonMarker>
+            <Link href="/resources/register" className="hidden md:block shrink-0">
+              <Button size="sm" className="h-9">
+                <Plus className="size-4" />
+                Add your API
+              </Button>
+            </Link>
+          </AddApiButtonMarker>
         </div>
+        <AddApiSentinel />
         <p className="text-muted-foreground text-sm">
           The x402 analytics dashboard and block explorer
         </p>
@@ -95,12 +99,14 @@ export const HomeHeading = () => {
           onSubmit={submit}
         />
       </div>
-      <Link href="/resources/register" className="md:hidden">
-        <Button size="sm" className="w-full h-9">
-          <Plus className="size-4" />
-          Add your API
-        </Button>
-      </Link>
+      <AddApiButtonMarker mobile>
+        <Link href="/resources/register" className="md:hidden">
+          <Button size="sm" className="w-full h-9">
+            <Plus className="size-4" />
+            Add your API
+          </Button>
+        </Link>
+      </AddApiButtonMarker>
     </HeadingContainer>
   );
 };

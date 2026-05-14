@@ -1,5 +1,6 @@
 import { Nav } from '../_components/layout/nav';
 import { Footer } from '../../_components/layout/footer';
+import { StickyAddApi } from './_components/sticky-add-api';
 
 export default function HomeLayout({
   children,
@@ -8,6 +9,7 @@ export default function HomeLayout({
 }) {
   return (
     <div className="flex flex-col flex-1">
+      <StickyAddApi />
       <Nav
         tabs={[
           {
