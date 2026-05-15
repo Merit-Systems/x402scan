@@ -76,32 +76,21 @@ export const upsertOrigin = async (
     const originId = upsertedOrigin.id;
 
     await Promise.all(
-      origin.ogImages.map(({ url, height, width, title, description }) =>
-        tx.ogImage.upsert({
-          where: {
-            originId_url: {
-              originId,
-              url,
-            },
-          },
-          update: {
-            height,
-            width,
-            title,
-            description,
-          },
-          create: {
-            originId,
-            url,
-            height,
-            width,
-            title,
-            description,
-          },
-        })
-      )
+      origin.ogImages.map(async ({ url, height, width, title, description }) => {
+        const existing = await tx.ogImage.findFirst({
+          where: { originId, url },
+        });
+        if (existing) {
+          return tx.ogImage.update({
+            where: { id: existing.id },
+            data: { height, width, title, description },
+          });
+        }
+        return tx.ogImage.create({
+          data: { originId, url, height, width, title, description },
+        });
+      })
     );
-
     return tx.resourceOrigin.findUnique({
       where: { id: originId },
       include: { ogImages: true },
