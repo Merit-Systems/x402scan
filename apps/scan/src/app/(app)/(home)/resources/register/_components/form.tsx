@@ -719,7 +719,7 @@ function ProbeResult({
   urlOrigin,
   resources,
 }: {
-  preview: { favicon: string | null; title?: string; description?: string } | null;
+  preview: { favicon: string | null; title?: string | null; description?: string | null } | null;
   urlOrigin: string | null;
   resources: string[];
 }) {
