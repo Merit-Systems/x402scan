@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { ArrowRight, BookOpen } from 'lucide-react';
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { Card, CardContent } from '@/components/ui/card';
-import { DiscoveryActions } from './_components/discovery-actions';
+import { Send, Mail, BookOpen } from 'lucide-react';
+import { Body } from '@/app/_components/layout/page-utils';
 import { RegisterResourceForm } from './_components/form';
+import { DiscoveryActions } from './_components/discovery-actions';
+import { ExpandableLink } from './_components/expandable-link';
 
 import type { Metadata } from 'next';
 
@@ -15,59 +15,43 @@ export const metadata: Metadata = {
 export default function RegisterResourcePage() {
   return (
     <div>
-      <Heading
-        title="Add your API"
-        description={
-          <div className="space-y-4">
-            <p>
-              Register your x402-compatible API to make your resources
-              discoverable on x402scan.
-            </p>
-            <DiscoveryActions />
+      <Body className="max-w-2xl">
+        <div className="space-y-1">
+          <h1 className="text-2xl md:text-4xl font-bold font-mono">Add your API</h1>
+          <p className="text-muted-foreground/80 text-sm md:text-base">
+            List your API so agents can find and pay for it.
+          </p>
+        </div>
+        <div className="space-y-4">
+          <RegisterResourceForm />
+          <div className="flex items-center justify-center gap-x-3 text-sm text-muted-foreground">
+            <DiscoveryActions label="Set up x402 with a prompt" />
+            <span className="text-muted-foreground/40">·</span>
+            <Link
+              href="/discovery"
+              className="hover:text-foreground transition-colors"
+            >
+              Docs
+            </Link>
+            <span className="text-muted-foreground/40">·</span>
+            <ExpandableLink label="Support">
+              <a
+                href="https://t.me/+wj2U7LRDRGs5MTY6"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-foreground transition-colors"
+              >
+                <Send className="size-3.5" />
+              </a>
+              <a
+                href="mailto:merchants@merit.systems"
+                className="hover:text-foreground transition-colors"
+              >
+                <Mail className="size-3.5" />
+              </a>
+            </ExpandableLink>
           </div>
-        }
-      />
-      <Body>
-        <p className="text-sm text-muted-foreground">
-          Need help? Join this{' '}
-          <a
-            href="https://t.me/+wj2U7LRDRGs5MTY6"
-            target="_blank"
-            rel="noreferrer"
-            className="underline hover:no-underline text-foreground"
-          >
-            Telegram group
-          </a>{' '}
-          if you have any questions
-          , or email us at{' '}
-          <a
-            href="mailto:merchants@merit.systems"
-            className="underline hover:no-underline text-foreground"
-          >
-            merchants@merit.systems
-          </a>
-          .
-        </p>
-        <Link href="/discovery">
-          <Card className="transition-colors hover:border-foreground/20">
-            <CardContent className="flex items-center gap-4 py-4">
-              <div className="flex items-center justify-center size-10 rounded-full bg-muted shrink-0">
-                <BookOpen className="size-5 text-muted-foreground" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold">
-                  New to x402? Start here
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Quickstart prompts, the OpenAPI spec, and a proxy pattern for
-                  adding agent payments without restructuring your backend.
-                </p>
-              </div>
-              <ArrowRight className="size-4 text-muted-foreground shrink-0" />
-            </CardContent>
-          </Card>
-        </Link>
-        <RegisterResourceForm />
+        </div>
       </Body>
     </div>
   );
