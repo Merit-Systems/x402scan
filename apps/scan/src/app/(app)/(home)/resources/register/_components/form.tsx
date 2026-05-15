@@ -3,12 +3,10 @@
 import { useMemo, useState } from 'react';
 
 import {
-  ArrowDown,
   CheckCircle2,
   ChevronDown,
   Loader2,
   Plus,
-  Server,
   CircleHelp,
   Trash2,
   TriangleAlert,
@@ -16,14 +14,6 @@ import {
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import {
   Collapsible,
   CollapsibleContent,
@@ -43,11 +33,11 @@ import {
   useDiscovery,
 } from '@/app/(app)/_components/discovery';
 import { Favicon } from '@/app/(app)/_components/favicon';
-import { cn } from '@/lib/utils';
 import { normalizeUrl } from '@/lib/url';
 import { api } from '@/trpc/client';
 import Link from 'next/link';
 import { z } from 'zod';
+import { DiscoveryActions } from './discovery-actions';
 
 interface ManualRegistrationResult {
   success: true;
@@ -117,6 +107,7 @@ function getPrimaryProbeError(
 
 export const RegisterResourceForm = () => {
   const [url, setUrl] = useState('');
+  const [httpWarning, setHttpWarning] = useState(false);
   const [headers, setHeaders] = useState<{ name: string; value: string }[]>([]);
   const [manualUrls, setManualUrls] = useState<string[]>([]);
   const [manualListError, setManualListError] = useState<string | null>(null);
@@ -201,9 +192,6 @@ export const RegisterResourceForm = () => {
 
   const activeBulkResult = manualResult ?? bulkData ?? null;
   const activeSummaryOrigin = manualResult?.origin ?? urlOrigin;
-  const shouldShowReset =
-    activeBulkResult !== null || manualUrls.length > 0 || url.length > 0;
-
   const requestHeaders = useMemo(() => {
     const entries = headers
       .map(header => ({
@@ -259,18 +247,6 @@ export const RegisterResourceForm = () => {
     setManualResult(null);
     setManualProgress(null);
     setManualListError(null);
-  };
-
-  const handleResetAll = () => {
-    setUrl('');
-    setHeaders([]);
-    setManualUrls([]);
-    setManualListError(null);
-    setManualProgress(null);
-    setManualResult(null);
-    setIsRegisteringManual(false);
-    registerMutation.reset();
-    resetBulk();
   };
 
   const handleRegisterDiscovered = () => {
@@ -359,399 +335,321 @@ export const RegisterResourceForm = () => {
     await runManualRegistration([normalizedUrl]);
   };
 
-  const renderProbeCard = () => {
-    if (url.trim().length === 0) {
-      return null;
-    }
+  // Show advanced only after discovery fails or user has manual URLs
+  const showAdvanced =
+    (isValidUrl && !isDiscoveryLoading && !hasDiscoveryResources) ||
+    manualUrls.length > 0 ||
+    headers.length > 0;
 
-    if (!isValidUrl) {
-      return (
-        <Card>
-          <CardHeader className="flex-row items-center gap-3 space-y-0">
-            <XCircle className="size-6 text-red-600 shrink-0" />
-            <div>
-              <CardTitle className="text-base">Invalid URL</CardTitle>
-              <CardDescription>
-                Enter a full URL like <code>https://api.example.com</code>.
-              </CardDescription>
-            </div>
-          </CardHeader>
-        </Card>
-      );
-    }
-
-    if (isDiscoveryLoading) {
-      return (
-        <Card>
-          <CardHeader className="flex-row items-center gap-3 space-y-0">
-            <Loader2 className="size-6 animate-spin text-muted-foreground shrink-0" />
-            <div>
-              <CardTitle className="text-base">Fetching API Info</CardTitle>
-              <CardDescription>
-                Checking discovery and endpoint data...
-              </CardDescription>
-            </div>
-          </CardHeader>
-        </Card>
-      );
-    }
-
-    if (hasDiscoveryResources) {
-      const previewResources = actualDiscoveredResources.slice(0, 8);
-      const hiddenCount =
-        actualDiscoveredResources.length - previewResources.length;
-
-      return (
-        <Card>
-          <CardHeader className="flex-row items-center gap-3 space-y-0">
-            {preview?.favicon ? (
-              <Favicon
-                url={preview.favicon}
-                className="size-10 rounded-md border bg-background shrink-0"
-              />
-            ) : (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="relative shrink-0 cursor-help">
-                      <Favicon
-                        url={null}
-                        className="size-10 rounded-md border bg-background"
-                      />
-                      <CircleHelp className="absolute -right-1.5 -top-1.5 size-3.5 text-muted-foreground" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    Add a favicon to help your API stand out
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-            <div className="min-w-0">
-              <CardTitle className="text-base truncate">
-                {preview?.title ?? urlOrigin ?? 'Discovered API'}
-              </CardTitle>
-              <CardDescription className="line-clamp-2">
-                {preview?.description ??
-                  `Found ${actualDiscoveredResources.length} resource${actualDiscoveredResources.length === 1 ? '' : 's'} via .well-known/x402.`}
-              </CardDescription>
-            </div>
-          </CardHeader>
-          {!preview?.favicon && (
-            <div className="border-t px-6 py-2.5 flex items-center gap-2 text-xs text-yellow-600 dark:text-yellow-500">
-              <TriangleAlert className="size-3.5 shrink-0" />
-              <p>
-                To configure a favicon, serve{' '}
-                <code className="font-mono">/favicon.ico</code>,{' '}
-                <code className="font-mono">.png</code>, or{' '}
-                <code className="font-mono">.svg</code> at the root of your API,
-                or include a{' '}
-                <code className="font-mono">{'<link rel="icon">'}</code> tag.
-                This can be updated later by re-registering.
-              </p>
-            </div>
-          )}
-          <CardContent className="border-t pt-4">
-            <ul className="space-y-1 text-xs text-muted-foreground">
-              {previewResources.map(resource => (
-                <li key={resource} className="font-mono truncate">
-                  {toPathLabel(resource)}
-                </li>
-              ))}
-              {hiddenCount > 0 && (
-                <li className="text-muted-foreground/70">
-                  + {hiddenCount} more
-                </li>
-              )}
-            </ul>
-          </CardContent>
-        </Card>
-      );
-    }
-
-    if (isOriginOnly) {
-      return (
-        <Card>
-          <CardHeader className="flex-row items-center gap-3 space-y-0">
-            <XCircle className="size-6 text-red-600 shrink-0" />
-            <div>
-              <CardTitle className="text-base">
-                No Discovery Document Found
-              </CardTitle>
-              <CardDescription>
-                {discoveryError ??
-                  'This origin has no discoverable resource list yet. Enter a full endpoint URL to register manually.'}
-              </CardDescription>
-            </div>
-          </CardHeader>
-        </Card>
-      );
-    }
-
-    return (
-      <Card>
-        <CardHeader className="flex-row items-center gap-3 space-y-0">
-          <Server className="size-6 text-muted-foreground shrink-0" />
-          <div>
-            <CardTitle className="text-base">Manual URL Mode</CardTitle>
-            <CardDescription>
-              No discovery resources found for this origin. You can still
-              register URLs directly.
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent className="border-t pt-4 text-xs text-muted-foreground space-y-1">
-          {isBatchTestLoading ? (
-            <div className="flex items-center gap-2">
-              <Loader2 className="size-3 animate-spin" />
-              Testing endpoint response...
-            </div>
-          ) : currentManualTested ? (
-            <div className="flex items-center gap-2 text-green-700">
-              <CheckCircle2 className="size-3" />
-              Endpoint responds with a valid 402 challenge.
-            </div>
-          ) : currentManualFailed ? (
-            <div className="flex items-center gap-2 text-red-700">
-              <XCircle className="size-3" />
-              {getPrimaryProbeError(currentManualFailed)}
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
-    );
-  };
+  const isLoading = isRegisteringAll || isRegisteringManual;
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Add API</CardTitle>
-          <CardDescription>
-            Enter an API URL. If discovery is available, we&apos;ll register
-            everything. If not, you can add endpoint URLs manually.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-1">
-            <Label>API or Endpoint URL</Label>
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                placeholder="https://api.example.com"
-                value={url}
-                onChange={event => handleUrlChange(event.target.value)}
-              />
-              {!hasDiscoveryResources && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleAddCurrentUrl}
-                  disabled={!canAddCurrentUrl || isRegisteringManual}
-                  className="shrink-0"
-                >
-                  <Plus className="size-4 mr-1" />
-                  Add URL
-                </Button>
-              )}
-            </div>
-            {manualListError && (
-              <p className="text-xs text-red-600">{manualListError}</p>
-            )}
+    <div className="space-y-6">
+      {/* Input */}
+      <div className="space-y-3">
+        <div className="space-y-1.5">
+          <div className="flex items-center h-12 rounded-md border bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+            <span className="pl-3 text-base text-muted-foreground select-none">https://</span>
+            <input
+              type="text"
+              placeholder="api.example.com"
+              value={url.replace(/^https?:\/\//, '')}
+              onChange={event => {
+                const value = event.target.value;
+                setHttpWarning(value.startsWith('http://'));
+                const raw = value.replace(/^https?:\/\//, '');
+                handleUrlChange(`https://${raw}`);
+              }}
+              className="flex-1 h-full bg-transparent px-1 text-base outline-none placeholder:text-muted-foreground/50"
+            />
           </div>
-
-          <Collapsible>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="ghost"
-                className="size-fit p-0 text-xs text-muted-foreground/70 hover:text-muted-foreground"
-              >
-                Advanced Configuration
-                <ChevronDown className="size-3 ml-1" />
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="border p-4 rounded-md mt-2">
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs">Headers</Label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="xs"
-                    onClick={() =>
-                      setHeaders(current => [
-                        ...current,
-                        { name: '', value: '' },
-                      ])
-                    }
-                    className="size-fit px-1"
-                  >
-                    <Plus className="size-3 mr-1" />
-                    Add Header
-                  </Button>
-                </div>
-                {headers.map((header, index) => (
-                  <div key={index} className="flex gap-1 items-center">
-                    <Input
-                      type="text"
-                      placeholder="Name"
-                      value={header.name}
-                      onChange={event =>
-                        setHeaders(current =>
-                          current.map((item, itemIndex) =>
-                            itemIndex === index
-                              ? { ...item, name: event.target.value }
-                              : item
-                          )
-                        )
-                      }
-                    />
-                    <Input
-                      type="text"
-                      placeholder="Value"
-                      value={header.value}
-                      onChange={event =>
-                        setHeaders(current =>
-                          current.map((item, itemIndex) =>
-                            itemIndex === index
-                              ? { ...item, value: event.target.value }
-                              : item
-                          )
-                        )
-                      }
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() =>
-                        setHeaders(current =>
-                          current.filter((_, itemIndex) => itemIndex !== index)
-                        )
-                      }
-                      className="shrink-0"
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-
-          {manualUrls.length > 0 && !hasDiscoveryResources && (
-            <div className="border rounded-md p-3 space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Manual URLs ({manualUrls.length})
-              </p>
-              <ul className="space-y-1">
-                {manualUrls.map(item => (
-                  <li key={item} className="flex items-center gap-2 text-xs">
-                    <code className="font-mono break-all flex-1">{item}</code>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveManualUrl(item)}
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {httpWarning && (
+            <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1.5">
+              <TriangleAlert className="size-3 shrink-0" />
+              x402 requires HTTPS. We&apos;ve upgraded your URL automatically.
+            </p>
           )}
-        </CardContent>
-        <CardFooter className="flex-col items-stretch gap-2">
-          {hasDiscoveryResources ? (
-            <>
-              <Button
-                variant="turbo"
-                disabled={isRegisteringAll || isRegisteringManual}
-                onClick={handleRegisterDiscovered}
-              >
-                {isRegisteringAll ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin mr-2" />
-                    Registering resources...
-                  </>
-                ) : (
-                  `Add API (${actualDiscoveredResources.length} resources)`
-                )}
-              </Button>
+          {manualListError && (
+            <p className="text-xs text-red-600">{manualListError}</p>
+          )}
+        </div>
+
+        {/* Primary action */}
+        {hasDiscoveryResources ? (
+          <div className="flex gap-2">
+            <Button
+              variant="turbo"
+              disabled={isLoading}
+              onClick={handleRegisterDiscovered}
+              className="flex-1"
+            >
+              {isRegisteringAll ? (
+                <>
+                  <Loader2 className="size-4 animate-spin mr-2" />
+                  Registering resources...
+                </>
+              ) : (
+                `Add API (${actualDiscoveredResources.length} resources)`
+              )}
+            </Button>
+            {canUseManualMode && (
               <Button
                 variant="outline"
-                disabled={
-                  !canUseManualMode || isRegisteringAll || isRegisteringManual
-                }
+                disabled={isLoading}
                 onClick={() => {
                   void handleRegisterCurrentUrlOnly();
                 }}
               >
                 {isRegisteringManual ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin mr-2" />
-                    {manualProgress
-                      ? `Checking ${manualProgress.current}/${manualProgress.total} resources`
-                      : 'Registering...'}
-                  </>
+                  <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  'Register This URL Only'
+                  'This URL only'
                 )}
               </Button>
-            </>
-          ) : (
-            <Button
-              variant="turbo"
-              disabled={manualTargets.length === 0 || isRegisteringManual}
-              onClick={() => {
-                void handleRegisterManual();
-              }}
-            >
-              {isRegisteringManual ? (
-                <>
-                  <Loader2 className="size-4 animate-spin mr-2" />
-                  {manualProgress
-                    ? `Checking ${manualProgress.current}/${manualProgress.total} resources`
-                    : 'Registering...'}
-                </>
-              ) : manualTargets.length > 1 ? (
-                `Register ${manualTargets.length} URLs`
-              ) : (
-                'Register URL'
-              )}
-            </Button>
+            )}
+          </div>
+        ) : (
+          <Button
+            variant="turbo"
+            disabled={
+              manualTargets.length === 0 || isLoading || !isValidUrl
+            }
+            onClick={() => {
+              void handleRegisterManual();
+            }}
+            className="w-full"
+          >
+            {isRegisteringManual ? (
+              <>
+                <Loader2 className="size-4 animate-spin mr-2" />
+                {manualProgress
+                  ? `Checking ${manualProgress.current}/${manualProgress.total}`
+                  : 'Registering...'}
+              </>
+            ) : manualTargets.length > 1 ? (
+              `Register ${manualTargets.length} URLs`
+            ) : (
+              'Add'
+            )}
+          </Button>
+        )}
+
+      </div>
+
+      {/* Probe result — inline, no separate card */}
+      {url.trim().length > 0 && (() => {
+        const strippedDomain = url.replace(/^https?:\/\//, '').trim();
+        const hasTld = strippedDomain.includes('.');
+        const showInvalidDomain = strippedDomain.length > 0 && !hasTld;
+
+        return (
+        <div className="space-y-4">
+          {showInvalidDomain && (
+              <p className="text-sm text-red-600">
+                Enter a valid domain (e.g. example.com).
+              </p>
           )}
 
-          {shouldShowReset && (
-            <Button variant="outline" onClick={handleResetAll}>
-              Reset
-            </Button>
+          {!showInvalidDomain && isValidUrl && isDiscoveryLoading && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+              <Loader2 className="size-4 animate-spin" />
+              Checking for discoverable endpoints...
+            </div>
           )}
-        </CardFooter>
-      </Card>
 
-      {renderProbeCard() ? (
-        <div className="flex flex-col items-center gap-4">
-          <ArrowDown className="size-5 text-muted-foreground" />
-          <div className="w-full">{renderProbeCard()}</div>
+          {!showInvalidDomain && isValidUrl && !isDiscoveryLoading && hasDiscoveryResources && (
+            <ProbeResult
+              preview={preview}
+              urlOrigin={urlOrigin}
+              resources={actualDiscoveredResources}
+            />
+          )}
+
+          {!showInvalidDomain && isValidUrl &&
+            !isDiscoveryLoading &&
+            !hasDiscoveryResources &&
+            isOriginOnly && (
+              <div className="text-sm space-y-1">
+                <p className="text-red-600">
+                  {discoveryError?.includes('TypeError')
+                    ? "Couldn't reach this URL."
+                    : (discoveryError ??
+                      'No discovery document found at this origin.')}
+                </p>
+                {!discoveryError?.includes('TypeError') && (
+                  <DiscoveryActions label="Let your agent figure out the issue" />
+                )}
+              </div>
+            )}
+
+          {!showInvalidDomain && isValidUrl &&
+            !isDiscoveryLoading &&
+            !hasDiscoveryResources &&
+            !isOriginOnly && (
+              <div className="text-xs text-muted-foreground space-y-1">
+                {isBatchTestLoading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="size-3 animate-spin" />
+                    Testing endpoint...
+                  </div>
+                ) : currentManualTested ? (
+                  <div className="flex items-center gap-2 text-green-700">
+                    <CheckCircle2 className="size-3" />
+                    Valid 402 response.
+                  </div>
+                ) : currentManualFailed ? (
+                  <div className="flex items-center gap-2 text-red-700">
+                    <XCircle className="size-3" />
+                    {getPrimaryProbeError(currentManualFailed)}
+                  </div>
+                ) : null}
+              </div>
+            )}
         </div>
-      ) : null}
+        );
+      })()}
 
+      {/* Advanced — only when relevant */}
+      {showAdvanced && (
+        <Collapsible>
+          <CollapsibleTrigger asChild>
+            <button className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors flex items-center gap-1">
+              Advanced
+              <ChevronDown className="size-3" />
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-3 space-y-4">
+            {/* Headers */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs text-muted-foreground">
+                  Custom Headers
+                </Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="xs"
+                  onClick={() =>
+                    setHeaders(current => [
+                      ...current,
+                      { name: '', value: '' },
+                    ])
+                  }
+                  className="size-fit px-1 text-xs"
+                >
+                  <Plus className="size-3 mr-1" />
+                  Add
+                </Button>
+              </div>
+              {headers.map((header, index) => (
+                <div key={index} className="flex gap-1 items-center">
+                  <Input
+                    type="text"
+                    placeholder="Name"
+                    value={header.name}
+                    onChange={event =>
+                      setHeaders(current =>
+                        current.map((item, itemIndex) =>
+                          itemIndex === index
+                            ? { ...item, name: event.target.value }
+                            : item
+                        )
+                      )
+                    }
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Value"
+                    value={header.value}
+                    onChange={event =>
+                      setHeaders(current =>
+                        current.map((item, itemIndex) =>
+                          itemIndex === index
+                            ? { ...item, value: event.target.value }
+                            : item
+                        )
+                      )
+                    }
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() =>
+                      setHeaders(current =>
+                        current.filter((_, itemIndex) => itemIndex !== index)
+                      )
+                    }
+                    className="shrink-0"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+
+            {/* Manual URLs */}
+            {!hasDiscoveryResources && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs text-muted-foreground">
+                    Manual URLs
+                  </Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="xs"
+                    onClick={handleAddCurrentUrl}
+                    disabled={!canAddCurrentUrl || isRegisteringManual}
+                    className="size-fit px-1 text-xs"
+                  >
+                    <Plus className="size-3 mr-1" />
+                    Add Current URL
+                  </Button>
+                </div>
+                {manualUrls.length > 0 && (
+                  <ul className="space-y-1">
+                    {manualUrls.map(item => (
+                      <li
+                        key={item}
+                        className="flex items-center gap-2 text-xs"
+                      >
+                        <code className="font-mono break-all flex-1 text-muted-foreground">
+                          {item}
+                        </code>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveManualUrl(item)}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+
+      {/* Failed resources detail */}
       {!activeBulkResult &&
       !isBatchTestLoading &&
       failedResources.length > 0 ? (
-        <details className="border rounded-md group">
-          <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
-            <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-            More Info ({failedResources.length} failed resource
-            {failedResources.length === 1 ? '' : 's'})
+        <details className="group">
+          <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
+            <ChevronDown className="size-3 transition-transform group-open:rotate-180" />
+            {failedResources.length} failed resource
+            {failedResources.length === 1 ? '' : 's'}
           </summary>
-          <div className="p-4 pt-2 border-t space-y-2 max-h-[360px] overflow-y-auto">
+          <div className="pt-3 space-y-2 max-h-[360px] overflow-y-auto">
             {failedResources.map((failed, idx) => (
               <div
                 key={`${failed.url}-${idx}`}
-                className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                className="p-3 bg-muted/50 rounded text-xs space-y-1"
               >
                 <div className="flex items-start gap-2">
                   <span className="text-muted-foreground shrink-0">URL:</span>
@@ -786,6 +684,7 @@ export const RegisterResourceForm = () => {
         </details>
       ) : null}
 
+      {/* Bulk result */}
       {activeBulkResult && activeSummaryOrigin ? (
         <DiscoveryPanel
           origin={activeSummaryOrigin}
@@ -800,25 +699,90 @@ export const RegisterResourceForm = () => {
       ) : null}
 
       {activeBulkResult?.originId ? (
-        <div className="flex gap-2">
-          <Link
-            href={`/server/${activeBulkResult.originId}`}
-            className="flex-1"
-          >
-            <Button variant="outline" className="w-full">
-              View API
-            </Button>
-          </Link>
-        </div>
+        <Link href={`/server/${activeBulkResult.originId}`}>
+          <Button variant="outline" className="w-full">
+            View API
+          </Button>
+        </Link>
       ) : null}
 
-      {bulkError && <p className={cn('text-sm text-red-600')}>{bulkError}</p>}
+      {bulkError && <p className="text-sm text-red-600">{bulkError}</p>}
 
       {registerMutation.error && (
-        <p className={cn('text-sm text-red-600')}>
+        <p className="text-sm text-red-600">
           {registerMutation.error.message}
         </p>
       )}
     </div>
   );
 };
+
+function ProbeResult({
+  preview,
+  urlOrigin,
+  resources,
+}: {
+  preview: { favicon: string | null; title?: string | null; description?: string | null } | null;
+  urlOrigin: string | null;
+  resources: string[];
+}) {
+  const previewResources = resources.slice(0, 8);
+  const hiddenCount = resources.length - previewResources.length;
+
+  return (
+    <div className="rounded-lg border bg-card p-4 space-y-3">
+      <div className="flex items-center gap-3">
+        {preview?.favicon ? (
+          <Favicon
+            url={preview.favicon}
+            className="size-8 rounded-md border bg-background shrink-0"
+          />
+        ) : (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="relative shrink-0 cursor-help">
+                  <Favicon
+                    url={null}
+                    className="size-8 rounded-md border bg-background"
+                  />
+                  <CircleHelp className="absolute -right-1 -top-1 size-3 text-muted-foreground" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                Add a favicon to help your API stand out
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+        <div className="min-w-0">
+          <p className="text-sm font-medium truncate">
+            {preview?.title ?? urlOrigin ?? 'Discovered API'}
+          </p>
+          {preview?.description && (
+            <p className="text-xs text-muted-foreground line-clamp-1">
+              {preview.description}
+            </p>
+          )}
+        </div>
+      </div>
+      {!preview?.favicon && (
+        <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1.5">
+          <TriangleAlert className="size-3 shrink-0" />
+          Serve a <code className="font-mono">/favicon.ico</code> at your API
+          root to display an icon.
+        </p>
+      )}
+      <ul className="space-y-0.5 text-xs text-muted-foreground">
+        {previewResources.map(resource => (
+          <li key={resource} className="font-mono truncate">
+            {toPathLabel(resource)}
+          </li>
+        ))}
+        {hiddenCount > 0 && (
+          <li className="text-muted-foreground/60">+ {hiddenCount} more</li>
+        )}
+      </ul>
+    </div>
+  );
+}

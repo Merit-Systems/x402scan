@@ -35,38 +35,16 @@ export function Footer() {
             </span>
           </Link>
 
-          {/* Mobile: Merit icon only */}
           <a
             href="https://merit.systems"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-foreground transition-colors md:hidden"
-            aria-label="Merit Systems"
+            className="md:absolute md:left-1/2 md:-translate-x-1/2 flex items-center gap-1.5 hover:text-foreground transition-colors"
           >
             {MERIT_ICON_SVG}
-          </a>
-
-          {/* Desktop: "Built by Merit" badge, centered */}
-          <a
-            href="https://merit.systems"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="absolute left-1/2 -translate-x-1/2 group hidden md:block"
-          >
-            <Image
-              src="/built-by-merit-light.svg"
-              alt="Built by Merit"
-              width={144}
-              height={20}
-              className="h-5 w-auto dark:hidden"
-            />
-            <Image
-              src="/built-by-merit-dark.svg"
-              alt="Built by Merit"
-              width={144}
-              height={20}
-              className="h-5 w-auto hidden dark:block"
-            />
+            <span className="hidden md:inline font-medium font-mono text-xs tracking-widest uppercase">
+              Merit
+            </span>
           </a>
 
           <div className="flex items-center gap-4 md:gap-6">
@@ -82,7 +60,7 @@ export function Footer() {
                 alt="GitHub"
                 width={16}
                 height={16}
-                className="size-4 dark:invert"
+                className="size-4 opacity-50 dark:invert"
               />
             </a>
             <a
