@@ -107,6 +107,7 @@ function getPrimaryProbeError(
 
 export const RegisterResourceForm = () => {
   const [url, setUrl] = useState('');
+  const [httpWarning, setHttpWarning] = useState(false);
   const [headers, setHeaders] = useState<{ name: string; value: string }[]>([]);
   const [manualUrls, setManualUrls] = useState<string[]>([]);
   const [manualListError, setManualListError] = useState<string | null>(null);
@@ -354,12 +355,20 @@ export const RegisterResourceForm = () => {
               placeholder="api.example.com"
               value={url.replace(/^https?:\/\//, '')}
               onChange={event => {
-                const raw = event.target.value.replace(/^https?:\/\//, '');
+                const value = event.target.value;
+                setHttpWarning(value.startsWith('http://'));
+                const raw = value.replace(/^https?:\/\//, '');
                 handleUrlChange(`https://${raw}`);
               }}
               className="flex-1 h-full bg-transparent px-1 text-base outline-none placeholder:text-muted-foreground/50"
             />
           </div>
+          {httpWarning && (
+            <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1.5">
+              <TriangleAlert className="size-3 shrink-0" />
+              x402 requires HTTPS. We've upgraded your URL automatically.
+            </p>
+          )}
           {manualListError && (
             <p className="text-xs text-red-600">{manualListError}</p>
           )}
