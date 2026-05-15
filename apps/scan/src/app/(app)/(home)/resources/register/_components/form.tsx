@@ -439,6 +439,14 @@ export const RegisterResourceForm = () => {
       {/* Probe result — inline, no separate card */}
       {url.trim().length > 0 && (
         <div className="space-y-4">
+          {/* Invalid domain (no TLD) */}
+          {url.replace(/^https?:\/\//, '').trim().length > 0 &&
+            !url.replace(/^https?:\/\//, '').includes('.') && (
+              <p className="text-sm text-red-600">
+                Enter a valid domain (e.g. api.example.com).
+              </p>
+            )}
+
           {isValidUrl && isDiscoveryLoading && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
               <Loader2 className="size-4 animate-spin" />
@@ -458,25 +466,16 @@ export const RegisterResourceForm = () => {
             !isDiscoveryLoading &&
             !hasDiscoveryResources &&
             isOriginOnly && (
-              <div className="text-sm space-y-3">
+              <div className="text-sm space-y-1">
                 <p className="text-red-600">
                   {discoveryError?.includes('TypeError')
                     ? "Couldn't reach this URL."
                     : (discoveryError ??
                       'No discovery document found at this origin.')}
                 </p>
-                <p className="text-muted-foreground">
-                  Set up discovery to get started.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <DiscoveryActions />
-                  <Link
-                    href="/discovery"
-                    className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-sm hover:bg-muted transition-colors"
-                  >
-                    Read the docs
-                  </Link>
-                </div>
+                {!discoveryError?.includes('TypeError') && (
+                  <DiscoveryActions label="Let your agent figure out the issue" />
+                )}
               </div>
             )}
 
