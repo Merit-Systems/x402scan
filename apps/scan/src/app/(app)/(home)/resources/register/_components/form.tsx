@@ -7,7 +7,6 @@ import {
   ChevronDown,
   Loader2,
   Plus,
-  Server,
   CircleHelp,
   Trash2,
   TriangleAlert,
@@ -34,7 +33,6 @@ import {
   useDiscovery,
 } from '@/app/(app)/_components/discovery';
 import { Favicon } from '@/app/(app)/_components/favicon';
-import { cn } from '@/lib/utils';
 import { normalizeUrl } from '@/lib/url';
 import { api } from '@/trpc/client';
 import Link from 'next/link';
@@ -193,9 +191,6 @@ export const RegisterResourceForm = () => {
 
   const activeBulkResult = manualResult ?? bulkData ?? null;
   const activeSummaryOrigin = manualResult?.origin ?? urlOrigin;
-  const shouldShowReset =
-    activeBulkResult !== null || manualUrls.length > 0 || url.length > 0;
-
   const requestHeaders = useMemo(() => {
     const entries = headers
       .map(header => ({
@@ -251,18 +246,6 @@ export const RegisterResourceForm = () => {
     setManualResult(null);
     setManualProgress(null);
     setManualListError(null);
-  };
-
-  const handleResetAll = () => {
-    setUrl('');
-    setHeaders([]);
-    setManualUrls([]);
-    setManualListError(null);
-    setManualProgress(null);
-    setManualResult(null);
-    setIsRegisteringManual(false);
-    registerMutation.reset();
-    resetBulk();
   };
 
   const handleRegisterDiscovered = () => {
@@ -370,7 +353,10 @@ export const RegisterResourceForm = () => {
               type="text"
               placeholder="api.example.com"
               value={url.replace(/^https?:\/\//, '')}
-              onChange={event => handleUrlChange(`https://${event.target.value}`)}
+              onChange={event => {
+                const raw = event.target.value.replace(/^https?:\/\//, '');
+                handleUrlChange(`https://${raw}`);
+              }}
               className="flex-1 h-full bg-transparent px-1 text-base outline-none placeholder:text-muted-foreground/50"
             />
           </div>
@@ -438,8 +424,6 @@ export const RegisterResourceForm = () => {
             )}
           </Button>
         )}
-
-
 
       </div>
 

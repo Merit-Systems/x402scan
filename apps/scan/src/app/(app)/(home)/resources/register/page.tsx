@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Send, Mail, BookOpen } from 'lucide-react';
+import { Send, Mail } from 'lucide-react';
 import { Body } from '@/app/_components/layout/page-utils';
 import { RegisterResourceForm } from './_components/form';
 import { DiscoveryActions } from './_components/discovery-actions';
