@@ -44,6 +44,7 @@ import {
 } from '@/app/(app)/_components/discovery';
 import { Favicon } from '@/app/(app)/_components/favicon';
 import { cn } from '@/lib/utils';
+import { getRegistrationDomainPolicyMatch } from '@/lib/registration-domain-policy';
 import { normalizeUrl } from '@/lib/url';
 import { api } from '@/trpc/client';
 import Link from 'next/link';
@@ -155,6 +156,12 @@ export const RegisterResourceForm = () => {
   const registerMutation = api.public.resources.register.useMutation();
 
   const normalizedUrl = useMemo(() => normalizeUrl(url.trim()), [url]);
+  const currentDomainPolicyMatch = useMemo(
+    () => (isValidUrl ? getRegistrationDomainPolicyMatch(normalizedUrl) : null),
+    [isValidUrl, normalizedUrl]
+  );
+  const currentDomainIsBlocked =
+    currentDomainPolicyMatch?.severity === 'block';
 
   const queueOrigin = useMemo(
     () => (manualUrls.length > 0 ? safeGetOrigin(manualUrls[0] ?? '') : null),
@@ -168,15 +175,27 @@ export const RegisterResourceForm = () => {
   const currentUrlAlreadyInManualList = manualUrls.includes(normalizedUrl);
   const canAddCurrentUrl =
     canUseManualMode &&
+    !currentDomainIsBlocked &&
     !currentUrlAlreadyInManualList &&
     (!queueOrigin || queueOrigin === urlOrigin);
 
-  const manualTargets =
-    manualUrls.length > 0
-      ? manualUrls
-      : canUseManualMode
-        ? [normalizedUrl]
-        : [];
+  const manualTargets = useMemo(
+    () =>
+      manualUrls.length > 0
+        ? manualUrls
+        : canUseManualMode
+          ? [normalizedUrl]
+          : [],
+    [canUseManualMode, manualUrls, normalizedUrl]
+  );
+  const blockedManualTarget = useMemo(
+    () =>
+      manualTargets
+        .map(target => getRegistrationDomainPolicyMatch(target))
+        .find(match => match?.severity === 'block') ?? null,
+    [manualTargets]
+  );
+  const canSubmitRegistration = !blockedManualTarget && !currentDomainIsBlocked;
 
   const testedResourceByUrl = useMemo(() => {
     const map = new Map<string, (typeof testedResources)[number]>();
@@ -240,6 +259,15 @@ export const RegisterResourceForm = () => {
       return;
     }
 
+    if (currentDomainIsBlocked) {
+      setManualListError(
+        currentDomainPolicyMatch
+          ? `${currentDomainPolicyMatch.hostname} cannot be registered. ${currentDomainPolicyMatch.reason}`
+          : 'This domain cannot be registered.'
+      );
+      return;
+    }
+
     if (queueOrigin && queueOrigin !== urlOrigin) {
       setManualListError('All manual URLs must share the same origin.');
       return;
@@ -274,6 +302,10 @@ export const RegisterResourceForm = () => {
   };
 
   const handleRegisterDiscovered = () => {
+    if (currentDomainIsBlocked) {
+      return;
+    }
+
     setManualResult(null);
     setManualProgress(null);
     setManualListError(null);
@@ -281,7 +313,11 @@ export const RegisterResourceForm = () => {
   };
 
   const handleRegisterManual = async () => {
-    if (manualTargets.length === 0 || isRegisteringManual) {
+    if (
+      manualTargets.length === 0 ||
+      isRegisteringManual ||
+      blockedManualTarget
+    ) {
       return;
     }
 
@@ -290,6 +326,17 @@ export const RegisterResourceForm = () => {
 
   const runManualRegistration = async (targets: string[]) => {
     if (targets.length === 0 || isRegisteringManual) {
+      return;
+    }
+
+    const blockedTarget = targets
+      .map(target => getRegistrationDomainPolicyMatch(target))
+      .find(match => match?.severity === 'block');
+
+    if (blockedTarget) {
+      setManualListError(
+        `${blockedTarget.hostname} cannot be registered. ${blockedTarget.reason}`
+      );
       return;
     }
 
@@ -352,7 +399,7 @@ export const RegisterResourceForm = () => {
   };
 
   const handleRegisterCurrentUrlOnly = async () => {
-    if (!canUseManualMode || isRegisteringManual) {
+    if (!canUseManualMode || isRegisteringManual || currentDomainIsBlocked) {
       return;
     }
 
@@ -560,6 +607,40 @@ export const RegisterResourceForm = () => {
             )}
           </div>
 
+          {currentDomainPolicyMatch && (
+            <div
+              className={cn(
+                'flex items-start gap-3 rounded-md border p-3 text-sm',
+                currentDomainPolicyMatch.severity === 'block'
+                  ? 'border-red-500/30 bg-red-500/10'
+                  : 'border-yellow-600/30 bg-yellow-600/10'
+              )}
+            >
+              {currentDomainPolicyMatch.severity === 'block' ? (
+                <XCircle className="mt-0.5 size-4 shrink-0 text-red-600" />
+              ) : (
+                <TriangleAlert className="mt-0.5 size-4 shrink-0 text-yellow-600" />
+              )}
+              <div className="space-y-1">
+                <p
+                  className={cn(
+                    'font-medium',
+                    currentDomainPolicyMatch.severity === 'block'
+                      ? 'text-red-700'
+                      : 'text-yellow-700'
+                  )}
+                >
+                  {currentDomainPolicyMatch.severity === 'block'
+                    ? 'Registration blocked for this domain'
+                    : 'Shared hosting domain'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {currentDomainPolicyMatch.reason}
+                </p>
+              </div>
+            </div>
+          )}
+
           <Collapsible>
             <CollapsibleTrigger asChild>
               <Button
@@ -667,7 +748,11 @@ export const RegisterResourceForm = () => {
             <>
               <Button
                 variant="turbo"
-                disabled={isRegisteringAll || isRegisteringManual}
+                disabled={
+                  isRegisteringAll ||
+                  isRegisteringManual ||
+                  !canSubmitRegistration
+                }
                 onClick={handleRegisterDiscovered}
               >
                 {isRegisteringAll ? (
@@ -682,7 +767,10 @@ export const RegisterResourceForm = () => {
               <Button
                 variant="outline"
                 disabled={
-                  !canUseManualMode || isRegisteringAll || isRegisteringManual
+                  !canUseManualMode ||
+                  isRegisteringAll ||
+                  isRegisteringManual ||
+                  !canSubmitRegistration
                 }
                 onClick={() => {
                   void handleRegisterCurrentUrlOnly();
@@ -703,7 +791,11 @@ export const RegisterResourceForm = () => {
           ) : (
             <Button
               variant="turbo"
-              disabled={manualTargets.length === 0 || isRegisteringManual}
+              disabled={
+                manualTargets.length === 0 ||
+                isRegisteringManual ||
+                !canSubmitRegistration
+              }
               onClick={() => {
                 void handleRegisterManual();
               }}
