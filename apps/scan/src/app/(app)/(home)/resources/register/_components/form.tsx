@@ -446,7 +446,7 @@ export const RegisterResourceForm = () => {
         <div className="space-y-4">
           {showInvalidDomain && (
               <p className="text-sm text-red-600">
-                Enter a valid domain (e.g. api.example.com).
+                Enter a valid domain (e.g. example.com).
               </p>
           )}
 
