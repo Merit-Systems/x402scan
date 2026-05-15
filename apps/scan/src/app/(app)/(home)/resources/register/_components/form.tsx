@@ -366,7 +366,7 @@ export const RegisterResourceForm = () => {
           {httpWarning && (
             <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1.5">
               <TriangleAlert className="size-3 shrink-0" />
-              x402 requires HTTPS. We've upgraded your URL automatically.
+              x402 requires HTTPS. We&apos;ve upgraded your URL automatically.
             </p>
           )}
           {manualListError && (
