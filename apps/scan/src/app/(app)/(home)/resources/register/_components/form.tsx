@@ -437,24 +437,27 @@ export const RegisterResourceForm = () => {
       </div>
 
       {/* Probe result — inline, no separate card */}
-      {url.trim().length > 0 && (
+      {url.trim().length > 0 && (() => {
+        const strippedDomain = url.replace(/^https?:\/\//, '').trim();
+        const hasTld = strippedDomain.includes('.');
+        const showInvalidDomain = strippedDomain.length > 0 && !hasTld;
+
+        return (
         <div className="space-y-4">
-          {/* Invalid domain (no TLD) */}
-          {url.replace(/^https?:\/\//, '').trim().length > 0 &&
-            !url.replace(/^https?:\/\//, '').includes('.') && (
+          {showInvalidDomain && (
               <p className="text-sm text-red-600">
                 Enter a valid domain (e.g. api.example.com).
               </p>
-            )}
+          )}
 
-          {isValidUrl && isDiscoveryLoading && (
+          {!showInvalidDomain && isValidUrl && isDiscoveryLoading && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
               <Loader2 className="size-4 animate-spin" />
               Checking for discoverable endpoints...
             </div>
           )}
 
-          {isValidUrl && !isDiscoveryLoading && hasDiscoveryResources && (
+          {!showInvalidDomain && isValidUrl && !isDiscoveryLoading && hasDiscoveryResources && (
             <ProbeResult
               preview={preview}
               urlOrigin={urlOrigin}
@@ -462,7 +465,7 @@ export const RegisterResourceForm = () => {
             />
           )}
 
-          {isValidUrl &&
+          {!showInvalidDomain && isValidUrl &&
             !isDiscoveryLoading &&
             !hasDiscoveryResources &&
             isOriginOnly && (
@@ -479,7 +482,7 @@ export const RegisterResourceForm = () => {
               </div>
             )}
 
-          {isValidUrl &&
+          {!showInvalidDomain && isValidUrl &&
             !isDiscoveryLoading &&
             !hasDiscoveryResources &&
             !isOriginOnly && (
@@ -503,7 +506,8 @@ export const RegisterResourceForm = () => {
               </div>
             )}
         </div>
-      )}
+        );
+      })()}
 
       {/* Advanced — only when relevant */}
       {showAdvanced && (
