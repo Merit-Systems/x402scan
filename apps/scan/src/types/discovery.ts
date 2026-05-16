@@ -9,7 +9,14 @@ import type { AuthMode } from '@agentcash/discovery';
  * Method is specified in discovery doc like "POST /api/resource"
  */
 export interface DiscoveredResource {
+  /** Concrete URL used for probing (may include real IDs like `/events/397003`). */
   url: string;
+  /**
+   * Canonical templated URL stored in the DB
+   * (e.g. `/events/{event_id}`). Falls back to `url` when no template
+   * could be derived from the OpenAPI document.
+   */
+  canonicalUrl?: string;
   method?:
     | 'GET'
     | 'POST'
