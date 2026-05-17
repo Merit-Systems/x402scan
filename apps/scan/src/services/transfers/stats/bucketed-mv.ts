@@ -1,7 +1,11 @@
 import z from 'zod';
 import { Prisma } from '@x402scan/transfers-db';
 
-import { baseBucketedQuerySchema } from '../schemas';
+import {
+  baseBucketedQuerySchema,
+  cdpSqlIntegerSchema,
+  cdpSqlNumberSchema,
+} from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
@@ -11,10 +15,10 @@ export const bucketedStatisticsMVInputSchema = baseBucketedQuerySchema;
 const bucketedResultSchema = z.array(
   z.object({
     bucket_start: z.date(),
-    total_transactions: z.number(),
-    total_amount: z.number(),
-    unique_buyers: z.number(),
-    unique_sellers: z.number(),
+    total_transactions: cdpSqlIntegerSchema,
+    total_amount: cdpSqlNumberSchema,
+    unique_buyers: cdpSqlIntegerSchema,
+    unique_sellers: cdpSqlIntegerSchema,
   })
 );
 

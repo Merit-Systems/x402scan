@@ -1,4 +1,8 @@
-import { baseQuerySchema } from '../schemas';
+import {
+  baseQuerySchema,
+  cdpSqlIntegerSchema,
+  cdpSqlNumberSchema,
+} from '../schemas';
 import z from 'zod';
 import { chainSchema, sortingSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
@@ -91,12 +95,12 @@ const listTopNetworksUncached = async (
     z.array(
       z.object({
         chain: chainSchema,
-        tx_count: z.number(),
-        total_amount: z.number(),
+        tx_count: cdpSqlIntegerSchema,
+        total_amount: cdpSqlNumberSchema,
         latest_block_timestamp: z.date(),
-        unique_buyers: z.number(),
-        unique_sellers: z.number(),
-        unique_facilitators: z.number(),
+        unique_buyers: cdpSqlIntegerSchema,
+        unique_sellers: cdpSqlIntegerSchema,
+        unique_facilitators: cdpSqlIntegerSchema,
       })
     )
   );

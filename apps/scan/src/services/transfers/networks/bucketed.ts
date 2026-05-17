@@ -1,7 +1,11 @@
 import z from 'zod';
 import { Prisma } from '@x402scan/scan-db';
 
-import { baseBucketedQuerySchema } from '../schemas';
+import {
+  baseBucketedQuerySchema,
+  cdpSqlIntegerSchema,
+  cdpSqlNumberSchema,
+} from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { Chain } from '@/types/chain';
@@ -15,11 +19,11 @@ const bucketedNetworkResultSchema = z.array(
     networks: z.record(
       z.string(),
       z.object({
-        total_transactions: z.number(),
-        total_amount: z.number(),
-        unique_buyers: z.number(),
-        unique_sellers: z.number(),
-        unique_facilitators: z.number(),
+        total_transactions: cdpSqlIntegerSchema,
+        total_amount: cdpSqlNumberSchema,
+        unique_buyers: cdpSqlIntegerSchema,
+        unique_sellers: cdpSqlIntegerSchema,
+        unique_facilitators: cdpSqlIntegerSchema,
       })
     ),
   })

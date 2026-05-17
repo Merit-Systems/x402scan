@@ -5,6 +5,7 @@ import { queryRaw } from '@/services/transfers/client';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { chainSchema } from '@/lib/schemas';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { cdpSqlIntegerSchema, cdpSqlNumberSchema } from '../schemas';
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type WalletStatsInput = {
@@ -46,9 +47,9 @@ const getWalletStatsUncached = async (input: WalletStatsInput) => {
       `,
       z.array(
         z.object({
-          total_transactions: z.number(),
-          total_amount: z.number(),
-          unique_recipients: z.number(),
+          total_transactions: cdpSqlIntegerSchema,
+          total_amount: cdpSqlNumberSchema,
+          unique_recipients: cdpSqlIntegerSchema,
           chains: z.array(chainSchema),
         })
       )

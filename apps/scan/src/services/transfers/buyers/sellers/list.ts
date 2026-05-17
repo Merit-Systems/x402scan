@@ -4,7 +4,11 @@ import { Prisma } from '@x402scan/transfers-db';
 import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
-import { baseListQuerySchema } from '../../schemas';
+import {
+  baseListQuerySchema,
+  cdpSqlIntegerSchema,
+  cdpSqlNumberSchema,
+} from '../../schemas';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
@@ -74,8 +78,8 @@ const listBuyerSellersUncached = async (
     z.array(
       z.object({
         recipient: mixedAddressSchema,
-        tx_count: z.number(),
-        total_amount: z.number(),
+        tx_count: cdpSqlIntegerSchema,
+        total_amount: cdpSqlNumberSchema,
         latest_block_timestamp: z.date().nullable(),
         chains: z.array(chainSchema),
         facilitator_ids: z.array(z.string()),
@@ -96,7 +100,7 @@ const listBuyerSellersUncached = async (
       `,
       z.array(
         z.object({
-          count: z.number(),
+          count: cdpSqlIntegerSchema,
         })
       )
     );
