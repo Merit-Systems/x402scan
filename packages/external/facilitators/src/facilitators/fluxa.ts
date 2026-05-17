@@ -53,6 +53,26 @@ export const fluxaFacilitator = {
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-28'),
       },
+      {
+        address: '0x10aa4205354c3d51bbebe2b3731ec8233e744b7b',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2026-05-15'),
+      },
+      {
+        address: '0x17bc08fac74a151103098f6060382cde2d10269a',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2026-05-15'),
+      },
+      {
+        address: '0x11898322b9da697a62aa1203472ffb3deb76ffce',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2026-05-15'),
+      },
+      {
+        address: '0xfd7fe552064f11b4dfb7a4932b6c363a7b42a081',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2026-05-15'),
+      },
     ],
   },
 } as const satisfies Facilitator;
