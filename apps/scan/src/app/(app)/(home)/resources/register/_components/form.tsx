@@ -730,8 +730,9 @@ function ProbeResult({
   urlOrigin: string | null;
   resources: string[];
 }) {
-  const previewResources = resources.slice(0, 8);
-  const hiddenCount = resources.length - previewResources.length;
+  const [expanded, setExpanded] = useState(false);
+  const previewResources = expanded ? resources : resources.slice(0, 8);
+  const hiddenCount = expanded ? 0 : resources.length - previewResources.length;
 
   return (
     <div className="rounded-lg border bg-card p-4 space-y-3">
@@ -784,7 +785,15 @@ function ProbeResult({
           </li>
         ))}
         {hiddenCount > 0 && (
-          <li className="text-muted-foreground/60">+ {hiddenCount} more</li>
+          <li>
+            <button
+              type="button"
+              onClick={() => setExpanded(true)}
+              className="text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+            >
+              + {hiddenCount} more
+            </button>
+          </li>
         )}
       </ul>
     </div>
