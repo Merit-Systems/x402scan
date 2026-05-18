@@ -511,9 +511,10 @@ export function buildSampleBodyFromInputSchema(
 }
 
 /**
- * Extracts required query parameters from an OpenAPI-style `inputSchema` and
- * builds sample values for each. Used by the probe to append query params to
- * the URL for GET endpoints that validate params before the paywall.
+ * Extracts query parameters from an OpenAPI-style `inputSchema` and builds
+ * sample values. Prefers required params; if none exist, includes all optional
+ * params as a fallback (some servers use custom cross-field validation like
+ * "provide either A or B" without marking either as required).
  *
  * The `parameters` field is an array of OpenAPI parameter objects:
  *   [{ in: "query", name: "hostname", schema: { type: "string", ... }, required: true }]
@@ -525,11 +526,16 @@ export function buildSampleQueryParams(
   const params = inputSchema.parameters;
   if (!Array.isArray(params)) return undefined;
 
-  const queryParams: Record<string, string> = {};
-  for (const param of params) {
-    if (!isRecord(param)) continue;
-    if (param.in !== 'query' || !param.required) continue;
+  const queryEntries = params.filter(
+    (p): p is JsonSchema => isRecord(p) && p.in === 'query'
+  );
+  if (queryEntries.length === 0) return undefined;
 
+  const required = queryEntries.filter(p => p.required);
+  const candidates = required.length > 0 ? required : queryEntries;
+
+  const queryParams: Record<string, string> = {};
+  for (const param of candidates) {
     const name = typeof param.name === 'string' ? param.name : undefined;
     const schema = isRecord(param.schema) ? param.schema : undefined;
     if (!name || !schema) continue;

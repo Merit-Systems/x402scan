@@ -296,18 +296,47 @@ describe('buildSampleQueryParams', () => {
     expect(params!.hostname).toBe('example.com');
   });
 
-  it('ignores optional query parameters', () => {
+  it('falls back to optional query params when none are required (stableenrich regression)', () => {
     const params = buildSampleQueryParams({
       parameters: [
         {
           in: 'query',
-          name: 'page',
-          schema: { type: 'integer' },
+          name: 'address',
+          schema: { type: 'string', minLength: 1 },
+          required: false,
+        },
+        {
+          in: 'query',
+          name: 'videoId',
+          schema: { type: 'string', minLength: 1 },
           required: false,
         },
       ],
     });
-    expect(params).toBeUndefined();
+    expect(params).toBeDefined();
+    expect(Object.keys(params!).length).toBeGreaterThan(0);
+  });
+
+  it('prefers required params over optional when both exist', () => {
+    const params = buildSampleQueryParams({
+      parameters: [
+        {
+          in: 'query',
+          name: 'hostname',
+          schema: { type: 'string' },
+          required: true,
+        },
+        {
+          in: 'query',
+          name: 'debug',
+          schema: { type: 'boolean' },
+          required: false,
+        },
+      ],
+    });
+    expect(params).toBeDefined();
+    expect(params!.hostname).toBeDefined();
+    expect(params!.debug).toBeUndefined();
   });
 
   it('ignores non-query parameters', () => {
