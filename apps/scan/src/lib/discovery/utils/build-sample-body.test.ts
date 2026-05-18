@@ -130,6 +130,71 @@ describe('buildSampleBodyFromInputSchema', () => {
     expect((sample!.tags as unknown[]).length).toBe(2);
   });
 
+  it('returns an image URL for uri-format fields named image', () => {
+    const sample = buildSampleBodyFromInputSchema({
+      type: 'object',
+      properties: {
+        image: { type: 'string', format: 'uri' },
+        prompt: { type: 'string' },
+      },
+      required: ['image', 'prompt'],
+    });
+    expect(sample!.image).toMatch(/\.(png|jpg|jpeg|webp)/);
+    expect(sample!.image).not.toBe('https://example.com');
+  });
+
+  it('returns an image URL for uri-format array items named images', () => {
+    const sample = buildSampleBodyFromInputSchema({
+      type: 'object',
+      properties: {
+        images: {
+          type: 'array',
+          items: { type: 'string', format: 'uri' },
+          minItems: 1,
+        },
+        prompt: { type: 'string' },
+      },
+      required: ['images', 'prompt'],
+    });
+    const images = sample!.images as string[];
+    expect(images).toHaveLength(1);
+    expect(images[0]).toMatch(/\.(png|jpg|jpeg|webp)/);
+  });
+
+  it('returns an image URL for uri-format array items when parent description mentions image (seedance regression)', () => {
+    const sample = buildSampleBodyFromInputSchema({
+      type: 'object',
+      properties: {
+        urls: {
+          type: 'array',
+          items: { type: 'string', format: 'uri' },
+          minItems: 1,
+          maxItems: 12,
+          description: 'Public image/video reference URLs',
+        },
+        prompt: { type: 'string' },
+      },
+      required: ['urls', 'prompt'],
+    });
+    const urls = sample!.urls as string[];
+    expect(urls).toHaveLength(1);
+    expect(urls[0]).toMatch(/\.(png|jpg|jpeg|webp)/);
+    expect(urls[0]).not.toBe('https://example.com');
+  });
+
+  it('returns https://example.com for uri-format fields without media names', () => {
+    const sample = buildSampleBodyFromInputSchema({
+      type: 'object',
+      properties: {
+        homepage: { type: 'string', format: 'uri' },
+        callback: { type: 'string', format: 'url' },
+      },
+      required: ['homepage', 'callback'],
+    });
+    expect(sample!.homepage).toBe('https://example.com');
+    expect(sample!.callback).toBe('https://example.com');
+  });
+
   it('still defaults to 0 when no numeric bounds are given', () => {
     const sample = buildSampleBodyFromInputSchema({
       type: 'object',

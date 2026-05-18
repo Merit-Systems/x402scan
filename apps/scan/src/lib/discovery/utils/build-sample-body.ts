@@ -25,10 +25,17 @@ function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
 }
 
+function descriptionOf(schema: unknown): string | undefined {
+  return isRecord(schema) && typeof schema.description === 'string'
+    ? schema.description
+    : undefined;
+}
+
 function buildFromSchema(
   schema: unknown,
   depth: number,
-  propertyName?: string
+  propertyName?: string,
+  parentDescription?: string
 ): unknown {
   if (depth > MAX_DEPTH || !isRecord(schema)) return null;
 
@@ -68,11 +75,17 @@ function buildFromSchema(
         : Number.POSITIVE_INFINITY;
     const length = Math.min(minItems, maxItems);
     return Array.from({ length }, () =>
-      buildFromSchema(schema.items, depth + 1, propertyName)
+      buildFromSchema(
+        schema.items,
+        depth + 1,
+        propertyName,
+        descriptionOf(schema)
+      )
     );
   }
 
-  if (types.includes('string')) return pickString(schema, propertyName);
+  if (types.includes('string'))
+    return pickString(schema, propertyName, parentDescription);
   if (types.includes('integer')) return pickNumber(schema, true);
   if (types.includes('number')) return pickNumber(schema, false);
   if (types.includes('boolean')) return false;
@@ -80,7 +93,7 @@ function buildFromSchema(
 
   const branches = schema.anyOf ?? schema.oneOf ?? schema.allOf;
   if (Array.isArray(branches) && branches.length > 0) {
-    return buildFromSchema(branches[0], depth + 1);
+    return buildFromSchema(branches[0], depth + 1, propertyName, parentDescription);
   }
 
   return {};
@@ -169,14 +182,22 @@ function pickNumber(schema: JsonSchema, isInteger: boolean): number {
  * is out of scope. If a server requires a `pattern`, the probe will fail and
  * the operator can register manually.
  */
-function pickString(schema: JsonSchema, propertyName?: string): string {
+function pickString(
+  schema: JsonSchema,
+  propertyName?: string,
+  parentDescription?: string
+): string {
   const format = typeof schema.format === 'string' ? schema.format : undefined;
   const minLength =
     typeof schema.minLength === 'number' ? schema.minLength : undefined;
   const maxLength =
     typeof schema.maxLength === 'number' ? schema.maxLength : undefined;
+  const description = descriptionOf(schema) ?? parentDescription;
 
-  let value = sampleByFormat(format) ?? sampleByName(propertyName) ?? 'sample';
+  let value =
+    sampleByFormat(format, propertyName, description) ??
+    sampleByName(propertyName) ??
+    'sample';
 
   if (minLength !== undefined && value.length < minLength) {
     value = value.padEnd(minLength, 'x');
@@ -194,7 +215,24 @@ function sampleByName(propertyName: string | undefined): string | undefined {
   return undefined;
 }
 
-function sampleByFormat(format: string | undefined): string | undefined {
+const SAMPLE_IMAGE_URL = 'https://placehold.co/1x1.png';
+
+const MEDIA_HINT = /image|img|photo|picture|thumbnail|avatar|icon|logo/i;
+
+function sampleUriForProperty(
+  name: string | undefined,
+  description: string | undefined
+): string | undefined {
+  if (name && MEDIA_HINT.test(name)) return SAMPLE_IMAGE_URL;
+  if (description && MEDIA_HINT.test(description)) return SAMPLE_IMAGE_URL;
+  return undefined;
+}
+
+function sampleByFormat(
+  format: string | undefined,
+  propertyName?: string,
+  description?: string
+): string | undefined {
   switch (format) {
     case 'email':
     case 'idn-email':
@@ -204,7 +242,9 @@ function sampleByFormat(format: string | undefined): string | undefined {
     case 'uri-reference':
     case 'iri-reference':
     case 'url':
-      return 'https://example.com';
+      return (
+        sampleUriForProperty(propertyName, description) ?? 'https://example.com'
+      );
     case 'uuid':
       return '00000000-0000-4000-8000-000000000000';
     case 'date':
