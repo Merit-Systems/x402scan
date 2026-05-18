@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { buildSampleBodyFromInputSchema } from './build-sample-body';
+import {
+  buildSampleBodyFromInputSchema,
+  buildSampleQueryParams,
+} from './build-sample-body';
 
 describe('buildSampleBodyFromInputSchema', () => {
   it('respects exclusiveMinimum: 0 (agentcash /api/send regression)', () => {
@@ -202,5 +205,128 @@ describe('buildSampleBodyFromInputSchema', () => {
       required: ['n'],
     });
     expect(sample!.n).toBe(0);
+  });
+
+  it('generates a pattern-valid phone number (stablephone regression)', () => {
+    const sample = buildSampleBodyFromInputSchema({
+      type: 'object',
+      properties: {
+        phone_number: { type: 'string', pattern: '^\\+1\\d{10}$' },
+        task: { type: 'string', minLength: 1, maxLength: 4000 },
+      },
+      required: ['phone_number', 'task'],
+    });
+    expect(sample!.phone_number).toMatch(/^\+1\d{10}$/);
+  });
+
+  it('generates a pattern-valid zip code', () => {
+    const sample = buildSampleBodyFromInputSchema({
+      type: 'object',
+      properties: {
+        zipCode: { type: 'string', pattern: '^\\d{5}$' },
+      },
+      required: ['zipCode'],
+    });
+    expect(sample!.zipCode).toMatch(/^\d{5}$/);
+  });
+
+  it('generates a pattern-valid ISO country code', () => {
+    const sample = buildSampleBodyFromInputSchema({
+      type: 'object',
+      properties: {
+        country: { type: 'string', pattern: '^[A-Z]{2}$' },
+      },
+      required: ['country'],
+    });
+    expect(sample!.country).toMatch(/^[A-Z]{2}$/);
+  });
+
+  it('generates a pattern-valid date string', () => {
+    const sample = buildSampleBodyFromInputSchema({
+      type: 'object',
+      properties: {
+        outbound_date: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+      },
+      required: ['outbound_date'],
+    });
+    expect(sample!.outbound_date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('falls back gracefully for complex patterns it cannot parse', () => {
+    const sample = buildSampleBodyFromInputSchema({
+      type: 'object',
+      properties: {
+        token: { type: 'string', pattern: '(?=.*[A-Z])(?=.*\\d).{8,}' },
+      },
+      required: ['token'],
+    });
+    // Should not throw — returns some string (may not match the pattern)
+    expect(typeof sample!.token).toBe('string');
+  });
+
+  it('returns example.com for hostname-named fields', () => {
+    const sample = buildSampleBodyFromInputSchema({
+      type: 'object',
+      properties: {
+        hostname: {
+          type: 'string',
+          pattern:
+            '^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$',
+        },
+      },
+      required: ['hostname'],
+    });
+    expect(sample!.hostname).toBe('example.com');
+  });
+});
+
+describe('buildSampleQueryParams', () => {
+  it('extracts required query parameters', () => {
+    const params = buildSampleQueryParams({
+      parameters: [
+        {
+          in: 'query',
+          name: 'hostname',
+          schema: { type: 'string', minLength: 1 },
+          required: true,
+        },
+      ],
+    });
+    expect(params).toBeDefined();
+    expect(params!.hostname).toBe('example.com');
+  });
+
+  it('ignores optional query parameters', () => {
+    const params = buildSampleQueryParams({
+      parameters: [
+        {
+          in: 'query',
+          name: 'page',
+          schema: { type: 'integer' },
+          required: false,
+        },
+      ],
+    });
+    expect(params).toBeUndefined();
+  });
+
+  it('ignores non-query parameters', () => {
+    const params = buildSampleQueryParams({
+      parameters: [
+        {
+          in: 'header',
+          name: 'Authorization',
+          schema: { type: 'string' },
+          required: true,
+        },
+      ],
+    });
+    expect(params).toBeUndefined();
+  });
+
+  it('returns undefined when no parameters field exists', () => {
+    expect(buildSampleQueryParams({ requestBody: {} })).toBeUndefined();
+    expect(buildSampleQueryParams({})).toBeUndefined();
+    expect(buildSampleQueryParams(null)).toBeUndefined();
   });
 });

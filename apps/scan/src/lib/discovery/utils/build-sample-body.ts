@@ -93,7 +93,12 @@ function buildFromSchema(
 
   const branches = schema.anyOf ?? schema.oneOf ?? schema.allOf;
   if (Array.isArray(branches) && branches.length > 0) {
-    return buildFromSchema(branches[0], depth + 1, propertyName, parentDescription);
+    return buildFromSchema(
+      branches[0],
+      depth + 1,
+      propertyName,
+      parentDescription
+    );
   }
 
   return {};
@@ -176,11 +181,11 @@ function pickNumber(schema: JsonSchema, isInteger: boolean): number {
 }
 
 /**
- * Picks a string value honoring `const`, `format`, and `min/maxLength`.
+ * Picks a string value honoring `const`, `format`, `pattern`, and `min/maxLength`.
  *
- * `pattern` is intentionally not satisfied here — solving an arbitrary regex
- * is out of scope. If a server requires a `pattern`, the probe will fail and
- * the operator can register manually.
+ * For `pattern` constraints: attempts to generate a minimal matching string
+ * via `sampleFromPattern`. Complex patterns (lookaheads, backrefs) that the
+ * generator can't handle fall through gracefully — same as today.
  */
 function pickString(
   schema: JsonSchema,
@@ -188,6 +193,8 @@ function pickString(
   parentDescription?: string
 ): string {
   const format = typeof schema.format === 'string' ? schema.format : undefined;
+  const pattern =
+    typeof schema.pattern === 'string' ? schema.pattern : undefined;
   const minLength =
     typeof schema.minLength === 'number' ? schema.minLength : undefined;
   const maxLength =
@@ -197,7 +204,12 @@ function pickString(
   let value =
     sampleByFormat(format, propertyName, description) ??
     sampleByName(propertyName) ??
+    sampleFromPattern(pattern) ??
     'sample';
+
+  if (pattern && !safeRegexTest(pattern, value)) {
+    value = sampleFromPattern(pattern) ?? value;
+  }
 
   if (minLength !== undefined && value.length < minLength) {
     value = value.padEnd(minLength, 'x');
@@ -209,10 +221,219 @@ function pickString(
 }
 
 function sampleByName(propertyName: string | undefined): string | undefined {
-  if (propertyName?.toLowerCase() === 'address') {
-    return SAMPLE_EVM_ADDRESS;
-  }
+  if (!propertyName) return undefined;
+  const lower = propertyName.toLowerCase();
+  if (lower === 'address') return SAMPLE_EVM_ADDRESS;
+  if (/^(hostname|domain|host)$/.test(lower)) return 'example.com';
   return undefined;
+}
+
+function safeRegexTest(pattern: string, value: string): boolean {
+  try {
+    return new RegExp(pattern).test(value);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Generates a minimal string that satisfies a regex pattern by walking its
+ * tokens and emitting the simplest matching character for each.
+ *
+ * Handles: literals, \d \w \s, character classes [A-Z], quantifiers {N,M},
+ * +, *, ?, groups (?:...) and (...), anchors ^$, and escaped chars.
+ *
+ * Returns `undefined` for patterns it can't parse (lookaheads, backrefs, etc.)
+ * — the caller falls through to the default `'sample'` value.
+ */
+function sampleFromPattern(pattern: string | undefined): string | undefined {
+  if (!pattern) return undefined;
+  try {
+    const result = emitPattern(pattern, 0);
+    if (!result) return undefined;
+    const candidate = result.value;
+    return safeRegexTest(pattern, candidate) ? candidate : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+type EmitResult = { value: string; pos: number } | undefined;
+
+function emitPattern(pattern: string, start: number): EmitResult {
+  let pos = start;
+  let out = '';
+
+  while (pos < pattern.length) {
+    const ch = pattern[pos]!;
+
+    if (ch === '$') {
+      pos++;
+      continue;
+    }
+    if (ch === '^') {
+      pos++;
+      continue;
+    }
+
+    // End of group
+    if (ch === ')') break;
+
+    // Alternation — stop this branch (we already have left side)
+    if (ch === '|') break;
+
+    // Groups: (?:...) or (...)
+    if (ch === '(') {
+      pos++; // skip (
+      if (pattern[pos] === '?' && pattern[pos + 1] === ':') {
+        pos += 2; // skip ?:
+      } else if (pattern[pos] === '?') {
+        // Lookahead/lookbehind — bail
+        return undefined;
+      }
+      const inner = emitPattern(pattern, pos);
+      if (!inner) return undefined;
+      const groupValue = inner.value;
+      pos = inner.pos;
+      if (pattern[pos] === ')') pos++;
+
+      const quant = parseQuantifier(pattern, pos);
+      out += groupValue.repeat(quant.min);
+      pos = quant.pos;
+      continue;
+    }
+
+    // Character class [...]
+    if (ch === '[') {
+      const cls = parseCharClass(pattern, pos);
+      if (!cls) return undefined;
+      const quant = parseQuantifier(pattern, cls.pos);
+      out += cls.char.repeat(quant.min);
+      pos = quant.pos;
+      continue;
+    }
+
+    // Escape sequences
+    if (ch === '\\') {
+      const next = pattern[pos + 1];
+      if (!next) return undefined;
+      let emitted: string;
+      switch (next) {
+        case 'd':
+          emitted = '0';
+          break;
+        case 'D':
+          emitted = 'a';
+          break;
+        case 'w':
+          emitted = 'a';
+          break;
+        case 'W':
+          emitted = '-';
+          break;
+        case 's':
+          emitted = ' ';
+          break;
+        case 'S':
+          emitted = 'a';
+          break;
+        default:
+          emitted = next;
+          break; // literal escape: \+, \., etc.
+      }
+      pos += 2;
+      const quant = parseQuantifier(pattern, pos);
+      out += emitted.repeat(quant.min);
+      pos = quant.pos;
+      continue;
+    }
+
+    // Dot — match any
+    if (ch === '.') {
+      pos++;
+      const quant = parseQuantifier(pattern, pos);
+      out += 'a'.repeat(quant.min);
+      pos = quant.pos;
+      continue;
+    }
+
+    // Literal character
+    pos++;
+    const quant = parseQuantifier(pattern, pos);
+    out += ch.repeat(quant.min);
+    pos = quant.pos;
+  }
+
+  return { value: out, pos };
+}
+
+function parseQuantifier(
+  pattern: string,
+  pos: number
+): { min: number; pos: number } {
+  if (pos >= pattern.length) return { min: 1, pos };
+  const ch = pattern[pos]!;
+
+  if (ch === '*') return { min: 0, pos: pos + 1 };
+  if (ch === '?') return { min: 0, pos: pos + 1 };
+  if (ch === '+') return { min: 1, pos: pos + 1 };
+
+  if (ch === '{') {
+    const close = pattern.indexOf('}', pos);
+    if (close === -1) return { min: 1, pos };
+    const inner = pattern.slice(pos + 1, close);
+    const parts = inner.split(',');
+    const min = parseInt(parts[0]!, 10);
+    return { min: isNaN(min) ? 1 : min, pos: close + 1 };
+  }
+
+  return { min: 1, pos };
+}
+
+function parseCharClass(
+  pattern: string,
+  start: number
+): { char: string; pos: number } | undefined {
+  let pos = start + 1; // skip [
+  const negated = pattern[pos] === '^';
+  if (negated) pos++;
+
+  let firstChar: string | undefined;
+  while (pos < pattern.length && pattern[pos] !== ']') {
+    const ch = pattern[pos]!;
+    if (ch === '\\' && pos + 1 < pattern.length) {
+      const next = pattern[pos + 1]!;
+      if (!firstChar) {
+        switch (next) {
+          case 'd':
+            firstChar = '0';
+            break;
+          case 'w':
+            firstChar = 'a';
+            break;
+          case 's':
+            firstChar = ' ';
+            break;
+          default:
+            firstChar = next;
+            break;
+        }
+      }
+      pos += 2;
+    } else {
+      firstChar ??= ch;
+      pos++;
+    }
+  }
+  if (pattern[pos] === ']') pos++;
+
+  if (negated) {
+    // For negated classes, find a printable ASCII char not in the set
+    // Simple heuristic: if the class negates digits, use 'a'; otherwise use '0'
+    return { char: firstChar === '0' ? 'a' : '0', pos };
+  }
+
+  return firstChar ? { char: firstChar, pos } : undefined;
 }
 
 const SAMPLE_IMAGE_URL = 'https://placehold.co/1x1.png';
@@ -287,4 +508,41 @@ export function buildSampleBodyFromInputSchema(
 
   const sample = buildFromSchema(target, 0);
   return isRecord(sample) ? sample : undefined;
+}
+
+/**
+ * Extracts required query parameters from an OpenAPI-style `inputSchema` and
+ * builds sample values for each. Used by the probe to append query params to
+ * the URL for GET endpoints that validate params before the paywall.
+ *
+ * The `parameters` field is an array of OpenAPI parameter objects:
+ *   [{ in: "query", name: "hostname", schema: { type: "string", ... }, required: true }]
+ */
+export function buildSampleQueryParams(
+  inputSchema: unknown
+): Record<string, string> | undefined {
+  if (!isRecord(inputSchema)) return undefined;
+  const params = inputSchema.parameters;
+  if (!Array.isArray(params)) return undefined;
+
+  const queryParams: Record<string, string> = {};
+  for (const param of params) {
+    if (!isRecord(param)) continue;
+    if (param.in !== 'query' || !param.required) continue;
+
+    const name = typeof param.name === 'string' ? param.name : undefined;
+    const schema = isRecord(param.schema) ? param.schema : undefined;
+    if (!name || !schema) continue;
+
+    const value = buildFromSchema(schema, 0, name);
+    if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    ) {
+      queryParams[name] = String(value);
+    }
+  }
+
+  return Object.keys(queryParams).length > 0 ? queryParams : undefined;
 }

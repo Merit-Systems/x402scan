@@ -4,7 +4,11 @@ import type {
   CheckEndpointResult,
   EndpointMethodAdvisory,
 } from '@agentcash/discovery';
-import { buildSampleBodyFromInputSchema, PROBE_TIMEOUT_MS } from './utils';
+import {
+  buildSampleBodyFromInputSchema,
+  buildSampleQueryParams,
+  PROBE_TIMEOUT_MS,
+} from './utils';
 
 export type ProbeX402Result =
   | {
@@ -107,17 +111,28 @@ export async function probeX402Endpoint(
   });
   const inputSchema = pickInputSchemaFromSpec(spec, preferredMethod);
   const sampleInputBody = buildSampleBodyFromInputSchema(inputSchema);
-  if (!sampleInputBody) {
+  const sampleQueryParams = buildSampleQueryParams(inputSchema);
+
+  if (!sampleInputBody && !sampleQueryParams) {
     return {
       success: false,
       error: noBodyError(noBody),
     };
   }
 
+  let probeUrl = url;
+  if (sampleQueryParams) {
+    const u = new URL(url);
+    for (const [key, value] of Object.entries(sampleQueryParams)) {
+      u.searchParams.set(key, value);
+    }
+    probeUrl = u.toString();
+  }
+
   const withBody = await checkEndpointSchema({
-    url,
+    url: probeUrl,
     probe: true,
-    sampleInputBody,
+    ...(sampleInputBody ? { sampleInputBody } : {}),
     signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
   });
   const bodiedAdvisory = pickX402Advisory(withBody, preferredMethod);
