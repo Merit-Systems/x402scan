@@ -17,7 +17,9 @@ export default function RegisterResourcePage() {
     <div>
       <Body className="max-w-2xl">
         <div className="space-y-1">
-          <h1 className="text-2xl md:text-4xl font-bold font-mono">Add your API</h1>
+          <h1 className="text-2xl md:text-4xl font-bold font-mono">
+            Add your API
+          </h1>
           <p className="text-muted-foreground/80 text-sm md:text-base">
             List your API so agents can find and pay for it.
           </p>

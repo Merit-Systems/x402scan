@@ -6,6 +6,7 @@ import { getOriginFromUrl } from '@/lib/url';
 import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource, TestedResource } from '@/types/batch-test';
 import { probeX402Endpoint } from '@/lib/discovery/probe';
+import { fetchDiscoveryDocument } from '@/services/discovery';
 
 async function testSingleResource(url: string, method?: string) {
   try {
@@ -48,15 +49,22 @@ export const developerRouter = createTRPCRouter({
       const cleanUrl = urlObj.toString();
 
       const origin = getOriginFromUrl(cleanUrl);
-      const {
-        og,
-        metadata,
-        origin: scrapedOrigin,
-        favicon,
-      } = await scrapeOriginData(origin);
+      const [scraped, discovery] = await Promise.all([
+        scrapeOriginData(origin),
+        // OpenAPI info backstops origin metadata when the homepage isn't HTML.
+        // Cheap to fetch in parallel — discovery's already cached in many flows.
+        fetchDiscoveryDocument(origin).catch(() => null),
+      ]);
+      const { og, metadata, origin: scrapedOrigin, favicon } = scraped;
+      const openApiInfo = discovery?.success ? discovery.info : undefined;
 
-      const title = metadata?.title ?? og?.ogTitle ?? null;
-      const description = metadata?.description ?? og?.ogDescription ?? null;
+      const title =
+        metadata?.title ?? og?.ogTitle ?? openApiInfo?.title ?? null;
+      const description =
+        metadata?.description ??
+        og?.ogDescription ??
+        openApiInfo?.description ??
+        null;
       const ogImages = (og?.ogImage ?? []).map(image => ({
         url: image.url,
         height: image.height,

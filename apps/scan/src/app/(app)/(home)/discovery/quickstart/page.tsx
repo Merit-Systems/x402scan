@@ -34,8 +34,8 @@ export default function QuickstartPage() {
               <code>WWW-Authenticate</code> header.
             </li>
             <li>
-              Register the origin on x402scan so we can track usage and surface it
-              to agents.
+              Register the origin on x402scan so we can track usage and surface
+              it to agents.
             </li>
           </ol>
         </section>

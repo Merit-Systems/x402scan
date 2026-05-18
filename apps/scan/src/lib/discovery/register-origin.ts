@@ -74,10 +74,15 @@ export interface RegisterOriginResult {
  * schema support lands). Endpoints missing an input schema are reported
  * as skipped.
  * Deprecates resources from the same origin that are no longer in the list.
+ *
+ * `originInfo` is the OpenAPI `info` block (title/description/version) when
+ * discovery sourced it from /openapi.json. It backstops origin metadata for
+ * APIs whose homepage isn't HTML, so the scraper has nothing to extract.
  */
 export async function registerResourcesFromDiscovery(
   resources: { url: string; authMode?: AuthMode }[],
-  source: string | undefined
+  source: string | undefined,
+  originInfo?: { title: string; description?: string }
 ): Promise<RegisterOriginResult> {
   const originResourceCounts = new Map(
     await Promise.all(
@@ -133,6 +138,7 @@ export async function registerResourcesFromDiscovery(
 
     const result = await registerResource(resourceUrl, advisory, {
       notifyNewServer: false,
+      originMetadataFallback: originInfo,
     });
 
     if (result.success) return result;
