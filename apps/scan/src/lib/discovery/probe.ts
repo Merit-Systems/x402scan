@@ -16,7 +16,7 @@ export type ProbeX402Result =
       advisory: EndpointMethodAdvisory;
       warnings: AuditWarning[];
     }
-  | { success: false; error: string };
+  | { success: false; error: string; skipped?: boolean };
 
 const METHOD_PREFERENCE = ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'] as const;
 
@@ -117,6 +117,7 @@ export async function probeX402Endpoint(
     return {
       success: false,
       error: noBodyError(noBody),
+      skipped: !noBody.found && noBody.cause === 'not_found',
     };
   }
 
@@ -148,6 +149,7 @@ export async function probeX402Endpoint(
     success: false,
     error:
       'No valid x402 response found (tried empty body and OpenAPI-derived sample body)',
+    skipped: true,
   };
 }
 

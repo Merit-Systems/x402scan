@@ -637,52 +637,104 @@ export const RegisterResourceForm = () => {
         </Collapsible>
       )}
 
-      {/* Failed resources */}
+      {/* Failed / skipped resources */}
       {!activeBulkResult &&
       !isBatchTestLoading &&
       failedResources.length > 0 ? (
         <div className="space-y-3">
-          <p className="text-xs text-muted-foreground">
-            {failedResources.length} failed resource
-            {failedResources.length === 1 ? '' : 's'}
-          </p>
-          <div className="space-y-2 max-h-[360px] overflow-y-auto">
-            {failedResources.map((failed, idx) => (
-              <div
-                key={`${failed.url}-${idx}`}
-                className="p-3 bg-muted/50 rounded text-xs space-y-1"
-              >
-                <div className="flex items-start gap-2">
-                  <span className="text-muted-foreground shrink-0">URL:</span>
-                  <span className="font-mono break-all">{failed.url}</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-muted-foreground shrink-0">Error:</span>
-                  <span className="text-red-600 wrap-break-word">
-                    {getPrimaryProbeError(failed)}
-                  </span>
-                </div>
-                {Array.isArray(failed.issues) && failed.issues.length > 0 && (
-                  <div className="pt-1">
-                    <p className="text-muted-foreground mb-1">
-                      Validation details:
+          {(() => {
+            const errors = failedResources.filter(r => !r.skipped);
+            const skipped = failedResources.filter(r => r.skipped);
+            return (
+              <>
+                {errors.length > 0 && (
+                  <>
+                    <p className="text-xs text-muted-foreground">
+                      {errors.length} failed resource
+                      {errors.length === 1 ? '' : 's'}
                     </p>
-                    <ul className="space-y-1 list-disc list-inside">
-                      {failed.issues.map((issue, i) => (
-                        <li
-                          key={i}
-                          className="text-red-600 font-mono text-[10px]"
+                    <div className="space-y-2 max-h-[360px] overflow-y-auto">
+                      {errors.map((failed, idx) => (
+                        <div
+                          key={`${failed.url}-${idx}`}
+                          className="p-3 bg-muted/50 rounded text-xs space-y-1"
                         >
-                          {issue.code}: {issue.message}
-                        </li>
+                          <div className="flex items-start gap-2">
+                            <span className="text-muted-foreground shrink-0">
+                              URL:
+                            </span>
+                            <span className="font-mono break-all">
+                              {failed.url}
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="text-muted-foreground shrink-0">
+                              Error:
+                            </span>
+                            <span className="text-red-600 wrap-break-word">
+                              {getPrimaryProbeError(failed)}
+                            </span>
+                          </div>
+                          {Array.isArray(failed.issues) &&
+                            failed.issues.length > 0 && (
+                              <div className="pt-1">
+                                <p className="text-muted-foreground mb-1">
+                                  Validation details:
+                                </p>
+                                <ul className="space-y-1 list-disc list-inside">
+                                  {failed.issues.map((issue, i) => (
+                                    <li
+                                      key={i}
+                                      className="text-red-600 font-mono text-[10px]"
+                                    >
+                                      {issue.code}: {issue.message}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                        </div>
                       ))}
-                    </ul>
-                  </div>
+                    </div>
+                    <DiscoveryFixHint />
+                  </>
                 )}
-              </div>
-            ))}
-          </div>
-          <DiscoveryFixHint />
+                {skipped.length > 0 && (
+                  <>
+                    <p className="text-xs text-muted-foreground">
+                      {skipped.length} skipped resource
+                      {skipped.length === 1 ? '' : 's'} (not x402)
+                    </p>
+                    <div className="space-y-2 max-h-[360px] overflow-y-auto">
+                      {skipped.map((item, idx) => (
+                        <div
+                          key={`${item.url}-${idx}`}
+                          className="p-3 bg-muted/50 rounded text-xs space-y-1"
+                        >
+                          <div className="flex items-start gap-2">
+                            <span className="text-muted-foreground shrink-0">
+                              URL:
+                            </span>
+                            <span className="font-mono break-all">
+                              {item.url}
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="text-muted-foreground shrink-0">
+                              Note:
+                            </span>
+                            <span className="text-yellow-600 dark:text-yellow-500 wrap-break-word">
+                              No x402 paywall detected
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            );
+          })()}
         </div>
       ) : null}
 

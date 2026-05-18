@@ -112,6 +112,7 @@ export async function registerResourcesFromDiscovery(
         success: false as const,
         url: resourceUrl,
         error: probeResult.error,
+        ...(probeResult.skipped ? { skipped: true as const } : {}),
       };
     }
 

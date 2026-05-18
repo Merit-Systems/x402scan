@@ -13,7 +13,12 @@ async function testSingleResource(url: string, method?: string) {
     const result = await probeX402Endpoint(url, method);
 
     if (!result.success) {
-      return { success: false as const, url, error: result.error };
+      return {
+        success: false as const,
+        url,
+        error: result.error,
+        ...(result.skipped ? { skipped: true as const } : {}),
+      };
     }
 
     const { advisory } = result;

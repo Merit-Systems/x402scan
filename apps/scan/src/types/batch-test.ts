@@ -17,4 +17,5 @@ export interface FailedResource {
   url: string;
   error: string;
   issues?: AuditWarning[];
+  skipped?: boolean;
 }
