@@ -114,10 +114,13 @@ export async function probeX402Endpoint(
   const sampleQueryParams = buildSampleQueryParams(inputSchema);
 
   if (!sampleInputBody && !sampleQueryParams) {
+    const isUnreachable =
+      !noBody.found &&
+      (noBody.cause === 'network' || noBody.cause === 'timeout');
     return {
       success: false,
       error: noBodyError(noBody),
-      skipped: !noBody.found && noBody.cause === 'not_found',
+      skipped: !isUnreachable,
     };
   }
 
