@@ -209,13 +209,17 @@ export default function DiscoverySpecPage() {
                 <li>
                   Fixed:{' '}
                   <code>
-                    {'{ price: { mode: "fixed", currency: "USD", amount: "<amount>" } }'}
+                    {
+                      '{ price: { mode: "fixed", currency: "USD", amount: "<amount>" } }'
+                    }
                   </code>
                 </li>
                 <li>
                   Dynamic:{' '}
                   <code>
-                    {'{ price: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" } }'}
+                    {
+                      '{ price: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" } }'
+                    }
                   </code>
                 </li>
               </ul>
@@ -306,8 +310,12 @@ export default function DiscoverySpecPage() {
                   </TableRow>
                   <TableRow>
                     <TableCell>2</TableCell>
-                    <TableCell><code>402</code> API Response</TableCell>
-                    <TableCell>Correct <code>402</code> header response</TableCell>
+                    <TableCell>
+                      <code>402</code> API Response
+                    </TableCell>
+                    <TableCell>
+                      Correct <code>402</code> header response
+                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
@@ -411,11 +419,25 @@ export default function DiscoverySpecPage() {
           <Card>
             <CardContent className="px-0 pb-0">
               {(() => {
-                const rows: { error: string; cause: React.ReactNode; fix: React.ReactNode }[] = [
+                const rows: {
+                  error: string;
+                  cause: React.ReactNode;
+                  fix: React.ReactNode;
+                }[] = [
                   {
                     error: 'Not Found',
-                    cause: <><span>OpenAPI not found at </span><code>{'{origin}'}/openapi.json</code></>,
-                    fix: <><span>Add an OpenAPI document at </span><code>{'{origin}'}/openapi.json</code></>,
+                    cause: (
+                      <>
+                        <span>OpenAPI not found at </span>
+                        <code>{'{origin}'}/openapi.json</code>
+                      </>
+                    ),
+                    fix: (
+                      <>
+                        <span>Add an OpenAPI document at </span>
+                        <code>{'{origin}'}/openapi.json</code>
+                      </>
+                    ),
                   },
                   {
                     error: 'Input/Output Schema Missing',
@@ -496,14 +518,10 @@ export default function DiscoverySpecPage() {
 
         <section className="flex items-center gap-2">
           <Button asChild size="sm">
-            <Link href="/resources/register">
-              + Add your API
-            </Link>
+            <Link href="/resources/register">+ Add your API</Link>
           </Button>
           <Button asChild variant="outline" size="sm">
-            <Link href="/discovery/architecture">
-              Suggested architecture →
-            </Link>
+            <Link href="/discovery/architecture">Suggested architecture →</Link>
           </Button>
         </section>
 

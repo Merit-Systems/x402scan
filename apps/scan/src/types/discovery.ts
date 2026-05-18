@@ -43,6 +43,12 @@ export interface X402DiscoveryResult {
   source?: DiscoverySource;
   /** Resources with URLs and optional methods */
   resources: DiscoveredResource[];
+  /**
+   * OpenAPI info.title / info.description / info.version when discovery used
+   * the origin's OpenAPI document. Falls back source for origin metadata when
+   * the origin's homepage isn't HTML (e.g. APIs that serve JSON at /).
+   */
+  info?: { title: string; description?: string; version?: string };
   /** Optional instructions for AI agents consuming this API */
   instructions?: string;
   /**
