@@ -1,2 +1,3 @@
 export { useDiscovery } from './use-discovery';
-export { DiscoveryPanel } from './discovery-panel';
+export { DiscoveryPanel, DiscoveryFixHint } from './discovery-panel';
+export { DiscoveryActions } from './discovery-actions';

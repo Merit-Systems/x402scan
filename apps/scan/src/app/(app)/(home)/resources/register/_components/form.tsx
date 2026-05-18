@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/tooltip';
 
 import {
+  DiscoveryFixHint,
   DiscoveryPanel,
   useDiscovery,
 } from '@/app/(app)/_components/discovery';
@@ -37,7 +38,6 @@ import { normalizeUrl } from '@/lib/url';
 import { api } from '@/trpc/client';
 import Link from 'next/link';
 import { z } from 'zod';
-import { DiscoveryActions } from './discovery-actions';
 
 interface ManualRegistrationResult {
   success: true;
@@ -481,7 +481,7 @@ export const RegisterResourceForm = () => {
                           'No discovery document found at this origin.')}
                     </p>
                     {!discoveryError?.includes('TypeError') && (
-                      <DiscoveryActions label="Let your agent figure out the issue" />
+                      <DiscoveryFixHint />
                     )}
                   </div>
                 )}
@@ -637,17 +637,16 @@ export const RegisterResourceForm = () => {
         </Collapsible>
       )}
 
-      {/* Failed resources detail */}
+      {/* Failed resources */}
       {!activeBulkResult &&
       !isBatchTestLoading &&
       failedResources.length > 0 ? (
-        <details className="group">
-          <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
-            <ChevronDown className="size-3 transition-transform group-open:rotate-180" />
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">
             {failedResources.length} failed resource
             {failedResources.length === 1 ? '' : 's'}
-          </summary>
-          <div className="pt-3 space-y-2 max-h-[360px] overflow-y-auto">
+          </p>
+          <div className="space-y-2 max-h-[360px] overflow-y-auto">
             {failedResources.map((failed, idx) => (
               <div
                 key={`${failed.url}-${idx}`}
@@ -683,7 +682,8 @@ export const RegisterResourceForm = () => {
               </div>
             ))}
           </div>
-        </details>
+          <DiscoveryFixHint />
+        </div>
       ) : null}
 
       {/* Bulk result */}
