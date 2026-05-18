@@ -6,6 +6,7 @@ import { upsertResource } from '@/services/db/resources/resource';
 
 import { checkCronSecret } from '@/lib/cron';
 import { getOriginFromUrl } from '@/lib/url';
+import { normalizeChainId } from '@/lib/x402';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db/types';
 import type z from 'zod';
@@ -55,24 +56,75 @@ export const GET = async (request: NextRequest) => {
       );
     }
 
-    // Step 2: Extract unique origins
-    console.log('Extracting unique origins from resources');
-    const origins = new Set<string>();
-    for (const resource of resources) {
-      try {
-        const origin = getOriginFromUrl(resource.resource);
-        origins.add(origin);
-      } catch (error) {
-        console.warn('Failed to extract origin from resource', {
-          resource: resource.resource,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        });
+    // Step 2: Process resources (upsert to database)
+    console.log('Starting resource processing');
+    const resourceProcessingStart = Date.now();
+
+    const resourceResults = await Promise.allSettled(
+      resources.map(async facilitatorResource => {
+        try {
+          const result = await upsertResource({
+            ...facilitatorResource,
+            accepts: facilitatorResource.accepts.map(accept => ({
+              ...accept,
+              network: normalizeChainId(accept.network).replace(
+                '-',
+                '_'
+              ) as AcceptsNetwork,
+            })) as z.input<typeof upsertResourceSchema>['accepts'],
+          });
+          if (!result) {
+            return {
+              resource: facilitatorResource.resource,
+              success: false,
+              error: 'Schema validation failed',
+            };
+          }
+          return { resource: facilitatorResource.resource, success: true };
+        } catch (error) {
+          return {
+            resource: facilitatorResource.resource,
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+          };
+        }
+      })
+    );
+
+    // Analyze resource processing results
+    const successfulResources = resourceResults.filter(
+      (
+        result
+      ): result is PromiseFulfilledResult<{
+        resource: string;
+        success: true;
+      }> => result.status === 'fulfilled' && result.value.success
+    ).length;
+    const failedResources = resourceResults.length - successfulResources;
+
+    console.log('Completed resource processing', {
+      totalResources: resources.length,
+      successful: successfulResources,
+      failed: failedResources,
+      durationMs: Date.now() - resourceProcessingStart,
+    });
+
+    // Step 3: Extract origins that had at least one successful resource
+    const originsWithResources = new Set<string>();
+    for (const result of resourceResults) {
+      if (result.status === 'fulfilled' && result.value.success) {
+        try {
+          const origin = getOriginFromUrl(result.value.resource);
+          originsWithResources.add(origin);
+        } catch {
+          // Origin extraction failed, skip
+        }
       }
     }
 
-    const uniqueOrigins = Array.from(origins);
+    const uniqueOrigins = Array.from(originsWithResources);
 
-    // Step 3: Process origins (scrape metadata and OG data)
+    // Step 4: Process origins with successful resources (scrape metadata and OG data)
     console.log('Starting origin processing with metadata scraping');
     const originProcessingStart = Date.now();
 
@@ -130,49 +182,6 @@ export const GET = async (request: NextRequest) => {
       successful: successfulOrigins,
       failed: failedOrigins,
       durationMs: Date.now() - originProcessingStart,
-    });
-
-    // Step 4: Process resources (upsert to database)
-    console.log('Starting resource processing');
-    const resourceProcessingStart = Date.now();
-
-    const resourceResults = await Promise.allSettled(
-      resources.map(async facilitatorResource => {
-        try {
-          await upsertResource({
-            ...facilitatorResource,
-            accepts: facilitatorResource.accepts.map(accept => ({
-              ...accept,
-              network: accept.network.replace('-', '_') as AcceptsNetwork,
-            })) as z.input<typeof upsertResourceSchema>['accepts'],
-          });
-          return { resource: facilitatorResource.resource, success: true };
-        } catch (error) {
-          return {
-            resource: facilitatorResource.resource,
-            success: false,
-            error: error instanceof Error ? error.message : 'Unknown error',
-          };
-        }
-      })
-    );
-
-    // Analyze resource processing results
-    const successfulResources = resourceResults.filter(
-      (
-        result
-      ): result is PromiseFulfilledResult<{
-        resource: string;
-        success: true;
-      }> => result.status === 'fulfilled' && result.value.success
-    ).length;
-    const failedResources = resourceResults.length - successfulResources;
-
-    console.log('Completed resource processing', {
-      totalResources: resources.length,
-      successful: successfulResources,
-      failed: failedResources,
-      durationMs: Date.now() - resourceProcessingStart,
     });
 
     // Final summary
