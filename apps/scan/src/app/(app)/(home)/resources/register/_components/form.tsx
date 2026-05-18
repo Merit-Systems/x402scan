@@ -190,6 +190,15 @@ export const RegisterResourceForm = () => {
     failedResourceByUrl.get(normalizedUrl) ??
     (failedResources.length === 1 ? failedResources[0] : undefined);
 
+  const failedErrors = useMemo(
+    () => failedResources.filter(r => !r.skipped),
+    [failedResources]
+  );
+  const skippedResources = useMemo(
+    () => failedResources.filter(r => r.skipped),
+    [failedResources]
+  );
+
   const activeBulkResult = manualResult ?? bulkData ?? null;
   const activeSummaryOrigin = manualResult?.origin ?? urlOrigin;
   const requestHeaders = useMemo(() => {
@@ -221,6 +230,7 @@ export const RegisterResourceForm = () => {
     setManualResult(null);
     setManualProgress(null);
     setManualListError(null);
+    resetBulk();
   };
 
   const handleAddCurrentUrl = () => {
@@ -637,104 +647,81 @@ export const RegisterResourceForm = () => {
         </Collapsible>
       )}
 
-      {/* Failed / skipped resources */}
+      {/* Failed resources */}
+      {!activeBulkResult && !isBatchTestLoading && failedErrors.length > 0 ? (
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">
+            {failedErrors.length} failed resource
+            {failedErrors.length === 1 ? '' : 's'}
+          </p>
+          <div className="space-y-2 max-h-[360px] overflow-y-auto">
+            {failedErrors.map((failed, idx) => (
+              <div
+                key={`${failed.url}-${idx}`}
+                className="p-3 bg-muted/50 rounded text-xs space-y-1"
+              >
+                <div className="flex items-start gap-2">
+                  <span className="text-muted-foreground shrink-0">URL:</span>
+                  <span className="font-mono break-all">{failed.url}</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-muted-foreground shrink-0">Error:</span>
+                  <span className="text-red-600 wrap-break-word">
+                    {getPrimaryProbeError(failed)}
+                  </span>
+                </div>
+                {Array.isArray(failed.issues) && failed.issues.length > 0 && (
+                  <div className="pt-1">
+                    <p className="text-muted-foreground mb-1">
+                      Validation details:
+                    </p>
+                    <ul className="space-y-1 list-disc list-inside">
+                      {failed.issues.map((issue, i) => (
+                        <li
+                          key={i}
+                          className="text-red-600 font-mono text-[10px]"
+                        >
+                          {issue.code}: {issue.message}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <DiscoveryFixHint />
+        </div>
+      ) : null}
+
+      {/* Skipped resources (not x402) */}
       {!activeBulkResult &&
       !isBatchTestLoading &&
-      failedResources.length > 0 ? (
+      skippedResources.length > 0 ? (
         <div className="space-y-3">
-          {(() => {
-            const errors = failedResources.filter(r => !r.skipped);
-            const skipped = failedResources.filter(r => r.skipped);
-            return (
-              <>
-                {errors.length > 0 && (
-                  <>
-                    <p className="text-xs text-muted-foreground">
-                      {errors.length} failed resource
-                      {errors.length === 1 ? '' : 's'}
-                    </p>
-                    <div className="space-y-2 max-h-[360px] overflow-y-auto">
-                      {errors.map((failed, idx) => (
-                        <div
-                          key={`${failed.url}-${idx}`}
-                          className="p-3 bg-muted/50 rounded text-xs space-y-1"
-                        >
-                          <div className="flex items-start gap-2">
-                            <span className="text-muted-foreground shrink-0">
-                              URL:
-                            </span>
-                            <span className="font-mono break-all">
-                              {failed.url}
-                            </span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <span className="text-muted-foreground shrink-0">
-                              Error:
-                            </span>
-                            <span className="text-red-600 wrap-break-word">
-                              {getPrimaryProbeError(failed)}
-                            </span>
-                          </div>
-                          {Array.isArray(failed.issues) &&
-                            failed.issues.length > 0 && (
-                              <div className="pt-1">
-                                <p className="text-muted-foreground mb-1">
-                                  Validation details:
-                                </p>
-                                <ul className="space-y-1 list-disc list-inside">
-                                  {failed.issues.map((issue, i) => (
-                                    <li
-                                      key={i}
-                                      className="text-red-600 font-mono text-[10px]"
-                                    >
-                                      {issue.code}: {issue.message}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                        </div>
-                      ))}
-                    </div>
-                    <DiscoveryFixHint />
-                  </>
-                )}
-                {skipped.length > 0 && (
-                  <>
-                    <p className="text-xs text-muted-foreground">
-                      {skipped.length} skipped resource
-                      {skipped.length === 1 ? '' : 's'} (not x402)
-                    </p>
-                    <div className="space-y-2 max-h-[360px] overflow-y-auto">
-                      {skipped.map((item, idx) => (
-                        <div
-                          key={`${item.url}-${idx}`}
-                          className="p-3 bg-muted/50 rounded text-xs space-y-1"
-                        >
-                          <div className="flex items-start gap-2">
-                            <span className="text-muted-foreground shrink-0">
-                              URL:
-                            </span>
-                            <span className="font-mono break-all">
-                              {item.url}
-                            </span>
-                          </div>
-                          <div className="flex items-start gap-2">
-                            <span className="text-muted-foreground shrink-0">
-                              Note:
-                            </span>
-                            <span className="text-yellow-600 dark:text-yellow-500 wrap-break-word">
-                              No x402 paywall detected
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </>
-            );
-          })()}
+          <p className="text-xs text-muted-foreground">
+            {skippedResources.length} skipped resource
+            {skippedResources.length === 1 ? '' : 's'} (not x402)
+          </p>
+          <div className="space-y-2 max-h-[360px] overflow-y-auto">
+            {skippedResources.map((item, idx) => (
+              <div
+                key={`${item.url}-${idx}`}
+                className="p-3 bg-muted/50 rounded text-xs space-y-1"
+              >
+                <div className="flex items-start gap-2">
+                  <span className="text-muted-foreground shrink-0">URL:</span>
+                  <span className="font-mono break-all">{item.url}</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-muted-foreground shrink-0">Note:</span>
+                  <span className="text-yellow-600 dark:text-yellow-500 wrap-break-word">
+                    No x402 paywall detected
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
 
@@ -844,6 +831,17 @@ function ProbeResult({
               className="text-muted-foreground/60 hover:text-muted-foreground transition-colors"
             >
               + {hiddenCount} more
+            </button>
+          </li>
+        )}
+        {expanded && resources.length > 8 && (
+          <li>
+            <button
+              type="button"
+              onClick={() => setExpanded(false)}
+              className="text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+            >
+              show less
             </button>
           </li>
         )}

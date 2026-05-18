@@ -228,7 +228,10 @@ function sampleByName(propertyName: string | undefined): string | undefined {
   return undefined;
 }
 
+const MAX_PATTERN_LENGTH = 500;
+
 function safeRegexTest(pattern: string, value: string): boolean {
+  if (pattern.length > MAX_PATTERN_LENGTH) return false;
   try {
     return new RegExp(pattern).test(value);
   } catch {
@@ -384,7 +387,8 @@ function parseQuantifier(
     const inner = pattern.slice(pos + 1, close);
     const parts = inner.split(',');
     const min = parseInt(parts[0]!, 10);
-    return { min: isNaN(min) ? 1 : min, pos: close + 1 };
+    const clamped = isNaN(min) ? 1 : Math.min(min, 100);
+    return { min: clamped, pos: close + 1 };
   }
 
   return { min: 1, pos };
