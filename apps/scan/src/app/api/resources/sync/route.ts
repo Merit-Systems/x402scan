@@ -74,6 +74,9 @@ export const GET = async (request: NextRequest) => {
             })) as z.input<typeof upsertResourceSchema>['accepts'],
           });
           if (!result) {
+            console.warn('Resource schema validation failed', {
+              resource: facilitatorResource.resource,
+            });
             return {
               resource: facilitatorResource.resource,
               success: false,
