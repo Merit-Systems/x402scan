@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   XCircle,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ import {
 } from '@/components/ui/tooltip';
 import { cleanExternalText, cn } from '@/lib/utils';
 
+import { DiscoveryActions } from './discovery-actions';
 import { Favicon } from '@/app/(app)/_components/favicon';
 import { ResourceCard } from '@/app/(app)/_components/resources/resource-card';
 import {
@@ -45,6 +47,22 @@ import { api } from '@/trpc/client';
 
 type TestedResource = TestedResourceType;
 type FailedResource = FailedResourceType;
+
+/** Inline hint shown below errors — links to spec + copy-prompt for agent */
+export function DiscoveryFixHint({ className }: { className?: string }) {
+  return (
+    <p className={cn('text-xs text-muted-foreground', className)}>
+      <DiscoveryActions label="Have your agent fix the errors with a prompt" />{' '}
+      or{' '}
+      <Link
+        href="/discovery/spec"
+        className="underline underline-offset-2 hover:text-foreground transition-colors"
+      >
+        read the discovery spec
+      </Link>
+    </p>
+  );
+}
 
 export interface OriginPreview {
   title: string | null;
@@ -187,6 +205,7 @@ export function DiscoveryPanel({
               <p className="text-sm text-muted-foreground">
                 Failed to register all {bulkResult.total} resources
               </p>
+              <DiscoveryFixHint className="mt-1" />
             </div>
           </div>
 
@@ -229,9 +248,11 @@ export function DiscoveryPanel({
                   </div>
                 ))
               ) : (
-                <div className="text-sm text-muted-foreground">
-                  No detailed error information available. Check the console for
-                  more details.
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">
+                    No detailed error information available.
+                  </p>
+                  <DiscoveryFixHint />
                 </div>
               )}
             </div>
@@ -294,6 +315,7 @@ export function DiscoveryPanel({
                 Some resources were skipped by compatibility rules in strict
                 registration mode (e.g. missing input schema).
               </p>
+              <DiscoveryFixHint className="mt-1" />
             </div>
           </div>
         )}
@@ -355,6 +377,7 @@ export function DiscoveryPanel({
                     )}
                   </div>
                 ))}
+                <DiscoveryFixHint className="mt-2 block" />
               </div>
             </details>
           )}
@@ -458,6 +481,7 @@ export function DiscoveryPanel({
               <>No discovery spec found</>
             )}
           </span>
+          <DiscoveryFixHint className="block mt-1" />
         </div>
         {onRefresh && (
           <Button
@@ -905,6 +929,8 @@ function FailedResourceCard({
                 { label: 'Favicon', ok: Boolean(preview?.favicon) },
               ]}
             />
+
+            <DiscoveryFixHint />
 
             {/* Try Again Button */}
             {onRetry && (
