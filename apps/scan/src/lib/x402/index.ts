@@ -303,20 +303,21 @@ export async function extractX402Data(response: Response): Promise<unknown> {
 }
 
 export function normalizeChainId(chainId: string): string {
+  let result = chainId;
   if (chainId.startsWith('eip155:')) {
     const id = Number(chainId.split(':')[1]);
-    const network = ChainIdToNetwork[id];
-    return network ?? chainId;
-  }
-  if (chainId.startsWith('solana:')) {
+    result = ChainIdToNetwork[id] ?? chainId;
+  } else if (chainId.startsWith('solana:')) {
     const suffix = chainId.split(':')[1];
-    if (suffix === 'mainnet') return 'solana';
-    if (suffix === 'devnet') return 'solana_devnet';
-    if (suffix === 'testnet') return 'solana_testnet';
-    if (suffix === '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp') return 'solana';
-    if (suffix === 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1') return 'solana_devnet';
-    if (suffix === '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z') return 'solana_testnet';
-    return `solana_${suffix}`;
+    if (suffix === 'mainnet') result = 'solana';
+    else if (suffix === 'devnet') result = 'solana_devnet';
+    else if (suffix === 'testnet') result = 'solana_testnet';
+    else if (suffix === '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp') result = 'solana';
+    else if (suffix === 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1')
+      result = 'solana_devnet';
+    else if (suffix === '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z')
+      result = 'solana_testnet';
+    else result = `solana_${suffix}`;
   }
-  return chainId;
+  return result.replaceAll('-', '_');
 }

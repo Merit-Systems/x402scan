@@ -6,6 +6,7 @@ import { upsertResource } from '@/services/db/resources/resource';
 
 import { checkCronSecret } from '@/lib/cron';
 import { getOriginFromUrl } from '@/lib/url';
+import { normalizeChainId } from '@/lib/x402';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db/types';
 import type z from 'zod';
@@ -143,7 +144,7 @@ export const GET = async (request: NextRequest) => {
             ...facilitatorResource,
             accepts: facilitatorResource.accepts.map(accept => ({
               ...accept,
-              network: accept.network.replace('-', '_') as AcceptsNetwork,
+              network: normalizeChainId(accept.network) as AcceptsNetwork,
             })) as z.input<typeof upsertResourceSchema>['accepts'],
           });
           return { resource: facilitatorResource.resource, success: true };
