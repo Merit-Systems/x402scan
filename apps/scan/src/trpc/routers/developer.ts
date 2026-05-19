@@ -8,18 +8,74 @@ import type { FailedResource, TestedResource } from '@/types/batch-test';
 import { probeX402Endpoint } from '@/lib/discovery/probe';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 
-async function testSingleResource(url: string, method?: string) {
+async function testSingleResource(
+  url: string,
+  method?: string,
+  sampleBody?: string
+) {
   try {
-    const result = await probeX402Endpoint(url, method);
+    let parsedSampleBody: Record<string, unknown> | undefined;
+    if (sampleBody) {
+      try {
+        const parsed: unknown = JSON.parse(sampleBody);
+        if (
+          typeof parsed !== 'object' ||
+          parsed === null ||
+          Array.isArray(parsed)
+        ) {
+          return {
+            success: false as const,
+            url,
+            error: 'Sample body must be a JSON object (e.g. {"key": "value"})',
+          };
+        }
+        parsedSampleBody = parsed as Record<string, unknown>;
+      } catch (e) {
+        const message = e instanceof SyntaxError ? e.message : 'Invalid JSON';
+        return {
+          success: false as const,
+          url,
+          error: `Invalid JSON in sample body: ${message}`,
+        };
+      }
+    }
+
+    const result = await probeX402Endpoint(url, method, parsedSampleBody);
 
     if (!result.success) {
-      return { success: false as const, url, error: result.error };
+      return {
+        success: false as const,
+        url,
+        error: result.error,
+        ...(result.skipped ? { skipped: true as const } : {}),
+        ...(result.statusCode ? { statusCode: result.statusCode } : {}),
+      };
     }
 
     const { advisory } = result;
 
+    // Check for v1 — all x402 payment options must be v2
+    const x402Options = (advisory.paymentOptions ?? []).filter(
+      o => o.protocol === 'x402'
+    );
+    const hasOnlyV1 =
+      x402Options.length > 0 && x402Options.every(o => o.version === 1);
+    if (hasOnlyV1) {
+      return {
+        success: false as const,
+        url,
+        error: 'x402 v1 response detected — migrate to v2 spec',
+      };
+    }
+
+    const warnings = [...result.warnings];
     if (!advisory.inputSchema) {
-      return { success: false as const, url, error: 'Missing input schema' };
+      warnings.push({
+        code: 'MISSING_INPUT_SCHEMA',
+        severity: 'warn' as const,
+        message:
+          "Missing input schema — agents can find and pay for this endpoint but won't know what request to send",
+      });
     }
 
     return {
@@ -28,7 +84,7 @@ async function testSingleResource(url: string, method?: string) {
       method: advisory.method as TestedResource['method'],
       description: advisory.summary ?? null,
       parsed: advisory,
-      warnings: result.warnings,
+      warnings,
     };
   } catch (err) {
     return {
@@ -114,6 +170,9 @@ export const developerRouter = createTRPCRouter({
               invalid: z.boolean().optional(),
               /** Reason why resource is invalid */
               invalidReason: z.string().optional(),
+              /** Merchant-provided sample request body (JSON string) for endpoints
+               *  that validate input before the x402 paywall fires. */
+              sampleBody: z.string().max(10000).optional(),
             })
           )
           .max(20),
@@ -136,7 +195,9 @@ export const developerRouter = createTRPCRouter({
         r => !r.invalid && r.authMode !== 'siwx'
       );
       const testResults = await Promise.all(
-        probeableResources.map(r => testSingleResource(r.url, r.method))
+        probeableResources.map(r =>
+          testSingleResource(r.url, r.method, r.sampleBody)
+        )
       );
 
       // Combine test results with invalid results

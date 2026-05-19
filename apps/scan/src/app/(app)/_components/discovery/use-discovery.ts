@@ -116,8 +116,11 @@ export interface UseDiscoveryReturn {
   // Refresh
   refreshDiscovery: () => void;
 
-  // Retry single resource
-  retryResource: () => Promise<void>;
+  // Retry single resource with optional merchant-provided sample body or test URL
+  retryResource: (
+    url: string,
+    options?: { sampleBody?: string; testUrl?: string }
+  ) => Promise<void>;
 }
 
 export function useDiscovery({
@@ -377,10 +380,12 @@ export function useDiscovery({
         });
     },
 
-    // Retry a single resource by re-running all batch tests
-    retryResource: () => {
-      batchTest.refetch();
-      return Promise.resolve();
+    // Retry a single resource with optional sample body or test URL
+    retryResource: (
+      url: string,
+      options?: { sampleBody?: string; testUrl?: string }
+    ) => {
+      return batchTest.retryOne(url, options);
     },
   };
 }

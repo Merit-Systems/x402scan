@@ -11,6 +11,10 @@ interface BatchTestResult {
   failed: FailedResource[];
   payToAddresses: string[];
   refetch: () => void;
+  retryOne: (
+    url: string,
+    options?: { sampleBody?: string; testUrl?: string }
+  ) => Promise<void>;
 }
 
 const BATCH_SIZE = 20;
@@ -101,11 +105,50 @@ export function useBatchTest(
     return [...new Set(addresses)];
   }, [active, resources]);
 
+  const retryOne = async (
+    url: string,
+    options?: { sampleBody?: string; testUrl?: string }
+  ) => {
+    const probeUrl = options?.testUrl ?? url;
+    const resource = effectiveResources.find(r => r.url === url);
+    try {
+      const result = await mutateAsyncRef.current({
+        resources: [
+          {
+            url: probeUrl,
+            method: resource?.method,
+            authMode: resource?.authMode,
+            invalid: resource?.invalid,
+            invalidReason: resource?.invalidReason,
+            sampleBody: options?.sampleBody,
+          },
+        ],
+      });
+
+      // Merge result: replace existing entry for the original URL
+      setResources(prev => {
+        const without = prev.filter(r => r.url !== url);
+        return [...without, ...result.resources];
+      });
+      setFailed(prev => {
+        const without = prev.filter(r => r.url !== url);
+        return [...without, ...result.failed];
+      });
+    } catch (err) {
+      const error = err instanceof Error ? err.message : 'Request failed';
+      setFailed(prev => {
+        const without = prev.filter(r => r.url !== url);
+        return [...without, { success: false as const, url, error }];
+      });
+    }
+  };
+
   return {
     isLoading: isLoading && active,
     resources: active ? resources : [],
     failed: active ? failed : [],
     payToAddresses,
     refetch: () => setRunCount(c => c + 1),
+    retryOne,
   };
 }

@@ -4,7 +4,11 @@ import type {
   CheckEndpointResult,
   EndpointMethodAdvisory,
 } from '@agentcash/discovery';
-import { buildSampleBodyFromInputSchema, PROBE_TIMEOUT_MS } from './utils';
+import {
+  buildMinimalSampleFromInputSchema,
+  buildMinimalQueryParamsFromInputSchema,
+  PROBE_TIMEOUT_MS,
+} from './utils';
 
 export type ProbeX402Result =
   | {
@@ -12,7 +16,13 @@ export type ProbeX402Result =
       advisory: EndpointMethodAdvisory;
       warnings: AuditWarning[];
     }
-  | { success: false; error: string };
+  | {
+      success: false;
+      error: string;
+      skipped?: boolean;
+      /** HTTP status code from the probe attempt, when available. */
+      statusCode?: number;
+    };
 
 const METHOD_PREFERENCE = ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'] as const;
 
@@ -72,18 +82,20 @@ function pickInputSchemaFromSpec(
  * Strategy:
  *   1. Probe with no body (works for servers whose paywall fires before
  *      request validation).
- *   2. If that yields no x402 advisory, fetch the OpenAPI advisory, build a
- *      minimum-valid sample body from its inputSchema, and re-probe with
- *      `sampleInputBody`. This handles servers (e.g. honcho) that validate
- *      input before the paywall and would otherwise return 400 to a probe.
+ *   2. If that yields no x402 advisory and a merchant-provided sampleBody is
+ *      available, re-probe with it. This handles servers that validate input
+ *      before the paywall and would otherwise return 400 to a bare probe.
  *
  * @param preferredMethod - HTTP method from OpenAPI discovery. When provided
  *   it is preferred over what the probe lands on so probe-method drift
  *   (PATCH/PUT vs declared POST) does not corrupt the registered method.
+ * @param sampleBody - Merchant-provided sample request body to use if the
+ *   bare probe fails. Passed directly to checkEndpointSchema as sampleInputBody.
  */
 export async function probeX402Endpoint(
   url: string,
-  preferredMethod?: string
+  preferredMethod?: string,
+  sampleBody?: Record<string, unknown>
 ): Promise<ProbeX402Result> {
   const noBody = await checkEndpointSchema({
     url,
@@ -100,24 +112,36 @@ export async function probeX402Endpoint(
     };
   }
 
-  // Fallback: use OpenAPI inputSchema to build a sample body and re-probe.
-  const spec = await checkEndpointSchema({
-    url,
-    signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
-  });
-  const inputSchema = pickInputSchemaFromSpec(spec, preferredMethod);
-  const sampleInputBody = buildSampleBodyFromInputSchema(inputSchema);
-  if (!sampleInputBody) {
-    return {
-      success: false,
-      error: noBodyError(noBody),
-    };
+  // Fallback: re-probe with a body and/or query params from OpenAPI spec.
+  // Priority: merchant-provided sample > schema-derived minimal sample > {}
+  let fallbackBody: Record<string, unknown> = sampleBody ?? {};
+  let probeUrl = url;
+  let inputSchema: unknown;
+
+  if (!sampleBody) {
+    // Fetch the OpenAPI spec to extract inputSchema for minimal sampling.
+    const spec = await checkEndpointSchema({
+      url,
+      signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+    });
+    inputSchema = pickInputSchemaFromSpec(spec, preferredMethod);
+    fallbackBody = buildMinimalSampleFromInputSchema(inputSchema) ?? {};
+
+    // Also sample required query params (for GET endpoints).
+    const queryParams = buildMinimalQueryParamsFromInputSchema(inputSchema);
+    if (queryParams) {
+      const u = new URL(url);
+      for (const [key, value] of Object.entries(queryParams)) {
+        u.searchParams.set(key, value);
+      }
+      probeUrl = u.toString();
+    }
   }
 
   const withBody = await checkEndpointSchema({
-    url,
+    url: probeUrl,
     probe: true,
-    sampleInputBody,
+    sampleInputBody: fallbackBody,
     signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
   });
   const bodiedAdvisory = pickX402Advisory(withBody, preferredMethod);
@@ -129,21 +153,46 @@ export async function probeX402Endpoint(
     };
   }
 
+  const isUnreachable =
+    !noBody.found && (noBody.cause === 'network' || noBody.cause === 'timeout');
+
+  // Capture the actual HTTP status code for error reporting.
+  let statusCode: number | undefined;
+  if (!isUnreachable) {
+    try {
+      const res = await fetch(probeUrl, {
+        method: 'HEAD',
+        signal: AbortSignal.timeout(5000),
+      });
+      statusCode = res.status;
+    } catch {
+      // Ignore — status code is best-effort.
+    }
+  }
+
   return {
     success: false,
-    error:
-      'No valid x402 response found (tried empty body and OpenAPI-derived sample body)',
+    error: probeErrorMessage(noBody, withBody),
+    skipped: !isUnreachable,
+    statusCode,
   };
 }
 
-function noBodyError(result: CheckEndpointResult): string {
+function probeErrorMessage(
+  noBody: CheckEndpointResult,
+  withBody?: CheckEndpointResult
+): string {
+  // Prefer the withBody result message since it's the final probe attempt.
+  const result = withBody ?? noBody;
   if (!result.found) {
     const causeMessages = {
       not_found: 'Endpoint did not return a 402 payment challenge',
       network: 'Network error reaching endpoint',
       timeout: 'Endpoint timed out',
     } as const;
-    return result.message ?? causeMessages[result.cause];
+    const base = causeMessages[result.cause];
+    // The library message often includes the status code (e.g. "got 400")
+    return result.message ?? base;
   }
   return 'No valid x402 response found';
 }

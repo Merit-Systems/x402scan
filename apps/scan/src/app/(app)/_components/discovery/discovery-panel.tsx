@@ -2,7 +2,7 @@
 
 import {
   AlertCircle,
-  CheckCircle,
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -10,6 +10,7 @@ import {
   RefreshCw,
   ShieldAlert,
   ShieldCheck,
+  X,
   XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -48,11 +49,54 @@ import { api } from '@/trpc/client';
 type TestedResource = TestedResourceType;
 type FailedResource = FailedResourceType;
 
+function isValidJson(str: string): boolean {
+  try {
+    const parsed: unknown = JSON.parse(str);
+    return (
+      typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
+    );
+  } catch {
+    return false;
+  }
+}
+
 /** Inline hint shown below errors — links to spec + copy-prompt for agent */
-export function DiscoveryFixHint({ className }: { className?: string }) {
+export function DiscoveryFixHint({
+  className,
+  failedResources,
+  warnings,
+  v1Migration,
+  noDiscovery,
+  missingSchema,
+  missingSchemaResources,
+}: {
+  className?: string;
+  failedResources?: { url: string; error: string }[];
+  warnings?: { url: string; error: string }[];
+  v1Migration?: boolean;
+  noDiscovery?: boolean;
+  missingSchema?: boolean;
+  missingSchemaResources?: string[];
+}) {
+  const label = noDiscovery
+    ? 'Have your agent create an OpenAPI spec for your resource'
+    : v1Migration
+      ? 'Migrate to x402 v2 spec in one prompt'
+      : missingSchema
+        ? 'Add input schemas with a prompt'
+        : 'Have your agent fix the errors with a prompt';
+
   return (
     <p className={cn('text-xs text-muted-foreground', className)}>
-      <DiscoveryActions label="Have your agent fix the errors with a prompt" />{' '}
+      <DiscoveryActions
+        label={label}
+        failedResources={failedResources}
+        warnings={warnings}
+        v1Migration={v1Migration}
+        noDiscovery={noDiscovery}
+        missingSchema={missingSchema}
+        missingSchemaResources={missingSchemaResources}
+      />{' '}
       or{' '}
       <Link
         href="/discovery/spec"
@@ -127,7 +171,10 @@ export interface DiscoveryPanelProps {
   /** Called when refresh is clicked */
   onRefresh?: () => void;
   /** Called when retry is clicked for a single resource */
-  onRetryResource?: () => Promise<void>;
+  onRetryResource?: (
+    url: string,
+    options?: { sampleBody?: string; testUrl?: string }
+  ) => Promise<void>;
   /** URLs that are already registered */
   registeredUrls?: string[];
   /** Ownership proofs from discovery document */
@@ -185,7 +232,6 @@ export function DiscoveryPanel({
     const skippedCount = bulkResult.skipped ?? 0;
     const skippedDetails = bulkResult.skippedDetails ?? [];
     const siwxCount = bulkResult.siwx ?? 0;
-    const siwxDetails = bulkResult.siwxDetails ?? [];
 
     // Show error state only if nothing landed positively (no paid registers
     // and no SIWX detections) and there were real failures.
@@ -197,7 +243,7 @@ export function DiscoveryPanel({
       return (
         <div className="space-y-3">
           <div className="flex items-start gap-3 p-4 border rounded-md bg-red-500/10 border-red-500/30">
-            <XCircle className="size-6 text-red-600 shrink-0 mt-0.5" />
+            <X className="size-6 text-red-600 shrink-0 mt-0.5" />
             <div className="flex-1">
               <h2 className="font-semibold text-red-600">
                 Registration Failed
@@ -205,7 +251,10 @@ export function DiscoveryPanel({
               <p className="text-sm text-muted-foreground">
                 Failed to register all {bulkResult.total} resources
               </p>
-              <DiscoveryFixHint className="mt-1" />
+              <DiscoveryFixHint
+                className="mt-1"
+                failedResources={bulkResult.failedDetails}
+              />
             </div>
           </div>
 
@@ -252,7 +301,9 @@ export function DiscoveryPanel({
                   <p className="text-sm text-muted-foreground">
                     No detailed error information available.
                   </p>
-                  <DiscoveryFixHint />
+                  <DiscoveryFixHint
+                    failedResources={bulkResult.failedDetails}
+                  />
                 </div>
               )}
             </div>
@@ -265,11 +316,10 @@ export function DiscoveryPanel({
     return (
       <div className="space-y-3">
         <div className="flex items-center gap-3 p-4 border rounded-md bg-green-600/10 border-green-600/30">
-          <CheckCircle className="size-6 text-green-600" />
+          <Check className="size-6 text-green-600" />
           <div>
-            <h2 className="font-semibold">Registration Complete</h2>
-            <p className="text-sm text-muted-foreground">
-              Successfully registered {bulkResult.registered} of{' '}
+            <p className="text-sm font-medium">
+              Successfully registered {bulkResult.registered + siwxCount} of{' '}
               {bulkResult.total} resources
               {skippedCount > 0 && (
                 <span className="text-amber-700">
@@ -287,35 +337,21 @@ export function DiscoveryPanel({
           </div>
         </div>
 
-        {/* SIWX detected notice */}
-        {siwxCount > 0 && (
-          <div className="flex items-start gap-3 p-4 border border-primary bg-primary/5 rounded-md">
-            <ShieldCheck className="size-5 text-primary shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-medium text-primary">
-                {siwxCount} SIWX route{siwxCount === 1 ? '' : 's'} detected
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Identity-gated routes — agents with an agentcash wallet can call
-                these for free.
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* Skipped resources notice */}
         {skippedCount > 0 && (
-          <div className="flex items-start gap-3 p-4 border rounded-md bg-amber-600/10 border-amber-600/30">
-            <AlertCircle className="size-5 text-amber-700 shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-medium text-amber-800">
-                {skippedCount} resource{skippedCount === 1 ? '' : 's'} skipped
+          <div className="flex items-start gap-3 p-4 border rounded-md bg-red-600/10 border-red-600/30">
+            <X className="size-5 text-red-600 shrink-0 mt-0.5" />
+            <div className="space-y-2">
+              <h3 className="font-medium text-red-700">
+                {skippedCount} resource
+                {skippedCount === 1 ? '' : 's'} not registered
               </h3>
               <p className="text-sm text-muted-foreground">
-                Some resources were skipped by compatibility rules in strict
-                registration mode (e.g. missing input schema).
+                These endpoints didn&apos;t return a 402 payment challenge.
+                Ensure the x402 paywall runs before request validation, then
+                re-register.
               </p>
-              <DiscoveryFixHint className="mt-1" />
+              <DiscoveryFixHint failedResources={skippedDetails} />
             </div>
           </div>
         )}
@@ -339,13 +375,14 @@ export function DiscoveryPanel({
           </div>
         )}
 
+        {/* Failed resources details */}
         {bulkResult.failed > 0 &&
           bulkResult.failedDetails &&
           bulkResult.failedDetails.length > 0 && (
             <details className="border rounded-md group">
               <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
                 <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-                More Info ({bulkResult.failedDetails.length} failed resources)
+                Failed Resources ({bulkResult.failedDetails.length})
               </summary>
               <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
                 {bulkResult.failedDetails.map((failed, idx) => (
@@ -367,80 +404,15 @@ export function DiscoveryPanel({
                         {failed.error}
                       </span>
                     </div>
-                    {failed.status && (
-                      <div className="flex items-start gap-2">
-                        <span className="text-muted-foreground shrink-0">
-                          Status:
-                        </span>
-                        <span className="font-mono">{failed.status}</span>
-                      </div>
-                    )}
                   </div>
                 ))}
-                <DiscoveryFixHint className="mt-2 block" />
+                <DiscoveryFixHint
+                  className="mt-2 block"
+                  failedResources={bulkResult.failedDetails}
+                />
               </div>
             </details>
           )}
-
-        {siwxCount > 0 && siwxDetails.length > 0 && (
-          <details className="border rounded-md group">
-            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
-              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              SIWX Routes ({siwxDetails.length})
-            </summary>
-            <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
-              {siwxDetails.map((entry, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 bg-muted/50 rounded border text-xs space-y-1"
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-muted-foreground shrink-0">URL:</span>
-                    <span className="font-mono break-all">{entry.url}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </details>
-        )}
-
-        {skippedCount > 0 && skippedDetails.length > 0 && (
-          <details className="border rounded-md group">
-            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
-              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              Skipped Details ({skippedDetails.length} resources)
-            </summary>
-            <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
-              {skippedDetails.map((skipped, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 bg-muted/50 rounded border text-xs space-y-1"
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-muted-foreground shrink-0">URL:</span>
-                    <span className="font-mono break-all">{skipped.url}</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-muted-foreground shrink-0">
-                      Reason:
-                    </span>
-                    <span className="text-amber-700 wrap-break-word">
-                      {skipped.error}
-                    </span>
-                  </div>
-                  {skipped.status && (
-                    <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">
-                        Status:
-                      </span>
-                      <span className="font-mono">{skipped.status}</span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </details>
-        )}
       </div>
     );
   }
@@ -481,7 +453,7 @@ export function DiscoveryPanel({
               <>No discovery spec found</>
             )}
           </span>
-          <DiscoveryFixHint className="block mt-1" />
+          <DiscoveryFixHint className="block mt-1" noDiscovery />
         </div>
         {onRefresh && (
           <Button
@@ -813,11 +785,15 @@ function FailedResourceCard({
   invalidInfo?: { invalid: boolean; reason?: string };
   authMode?: AuthMode;
   verifiedAddresses?: Record<string, boolean>;
-  onRetry?: () => Promise<void>;
+  onRetry?: (
+    url: string,
+    options?: { sampleBody?: string; testUrl?: string }
+  ) => Promise<void>;
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const [showRawResponse, setShowRawResponse] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [sampleBody, setSampleBody] = useState('');
 
   const pathname = (() => {
     try {
@@ -849,6 +825,8 @@ function FailedResourceCard({
   const returns402 = x402Parsed;
   const isInvalid = invalidInfo?.invalid ?? false;
   const isSiwx = authMode === 'siwx';
+  const isV1Error =
+    failedDetails?.error?.includes('v1 response detected') ?? false;
   const errorMessage = isSiwx
     ? 'SIWX (identity-gated, no payment)'
     : isInvalid
@@ -930,7 +908,46 @@ function FailedResourceCard({
               ]}
             />
 
-            <DiscoveryFixHint />
+            {isV1Error ? (
+              <DiscoveryFixHint v1Migration />
+            ) : (
+              <DiscoveryFixHint
+                failedResources={[{ url: resourceUrl, error: errorMessage }]}
+              />
+            )}
+
+            {/* Sample body input — shown for reachable endpoints that didn't return 402 */}
+            {onRetry && !isSiwx && !isV1Error && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">
+                  Sample Request Body (JSON)
+                </label>
+                <p className="text-[10px] text-muted-foreground/70">
+                  If this endpoint validates request bodies before the paywall,
+                  provide a valid sample so we can test it.
+                </p>
+                <textarea
+                  value={sampleBody}
+                  onChange={e => setSampleBody(e.target.value)}
+                  placeholder='{"key": "value"}'
+                  className={cn(
+                    'w-full rounded-md border bg-background px-3 py-2 text-xs font-mono',
+                    'placeholder:text-muted-foreground/40 focus-visible:outline-none',
+                    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                    'min-h-[60px] max-h-[200px] resize-y',
+                    sampleBody.length > 0 &&
+                      !isValidJson(sampleBody) &&
+                      'border-red-500/50 focus-visible:ring-red-500/30'
+                  )}
+                />
+                {sampleBody.length > 0 && !isValidJson(sampleBody) && (
+                  <p className="text-[10px] text-red-500">
+                    Invalid JSON — must be an object like{' '}
+                    <code className="font-mono">{'{"key": "value"}'}</code>
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Try Again Button */}
             {onRetry && (
@@ -939,17 +956,22 @@ function FailedResourceCard({
                 size="sm"
                 onClick={() => {
                   setIsRetrying(true);
-                  void onRetry().finally(() => {
+                  void onRetry(resourceUrl, {
+                    sampleBody: sampleBody.trim() || undefined,
+                  }).finally(() => {
                     setIsRetrying(false);
                   });
                 }}
-                disabled={isRetrying}
+                disabled={
+                  isRetrying ||
+                  (sampleBody.length > 0 && !isValidJson(sampleBody))
+                }
                 className="gap-1 w-full"
               >
                 <RefreshCw
                   className={cn('size-3', isRetrying && 'animate-spin')}
                 />
-                Try Again
+                {sampleBody.trim() ? 'Retry with Sample Body' : 'Try Again'}
               </Button>
             )}
 
@@ -1021,9 +1043,9 @@ function ValidationChecklist({
         {checks.map(({ label, ok }) => (
           <div key={label} className="flex items-center gap-1.5 text-xs">
             {ok ? (
-              <CheckCircle className="size-3 text-green-600" />
+              <Check className="size-3 text-green-600" />
             ) : (
-              <XCircle className="size-3 text-red-500" />
+              <X className="size-3 text-red-500" />
             )}
             <span
               className={cn(ok ? 'text-foreground' : 'text-muted-foreground')}
@@ -1129,7 +1151,7 @@ function RegisterModeResourceList({
                   <div className="flex items-center gap-2">
                     {isRegistered ? (
                       <span className="flex items-center gap-1 text-xs text-green-600">
-                        <CheckCircle className="size-3" />
+                        <Check className="size-3" />
                         Already Registered
                       </span>
                     ) : (
