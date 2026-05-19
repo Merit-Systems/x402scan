@@ -13,13 +13,18 @@ import {
 
 import { Header } from './header/index';
 
-import { cn } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { toast } from 'sonner';
 
 import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402';
 import type { Resources, Tag } from '@x402scan/scan-db';
+
+interface SerializedAccept {
+  maxAmountRequired: number;
+  network: string;
+}
 
 interface Props {
   resource: Resources;
@@ -31,6 +36,7 @@ interface Props {
   isFlat?: boolean;
   warnings?: string[];
   ownershipVerified?: boolean;
+  accepts?: SerializedAccept[];
 }
 
 export const ResourceCard: React.FC<Props> = ({
@@ -43,6 +49,7 @@ export const ResourceCard: React.FC<Props> = ({
   isFlat = false,
   warnings = [],
   ownershipVerified = false,
+  accepts,
 }) => {
   const prompt = `Use agentcash.dev to test out this resource's endpoint: ${bazaarMethod} ${resource.resource}`;
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
@@ -64,6 +71,9 @@ export const ResourceCard: React.FC<Props> = ({
             hideOrigin={hideOrigin}
           />
           <div className="flex items-center gap-2">
+            {accepts && accepts.length > 0 && (
+              <ResourcePricing accepts={accepts} />
+            )}
             {ownershipVerified && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -113,6 +123,17 @@ export const ResourceCard: React.FC<Props> = ({
         </CardHeader>
       </Card>
     </div>
+  );
+};
+
+const ResourcePricing: React.FC<{ accepts: SerializedAccept[] }> = ({
+  accepts,
+}) => {
+  const minAmount = Math.min(...accepts.map(a => a.maxAmountRequired));
+  return (
+    <span className="text-xs font-semibold text-primary font-mono shrink-0">
+      {formatCurrency(minAmount)}
+    </span>
   );
 };
 
