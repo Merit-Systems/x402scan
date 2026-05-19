@@ -26,7 +26,8 @@ export async function handleRegistryRegisterOrigin(
 
   const result = await registerResourcesFromDiscovery(
     discoveryResult.resources,
-    discoveryResult.source
+    discoveryResult.source,
+    discoveryResult.info
   );
 
   if (result.registered === 0) {

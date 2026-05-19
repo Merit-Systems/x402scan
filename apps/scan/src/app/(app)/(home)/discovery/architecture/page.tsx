@@ -89,8 +89,8 @@ export default function ArchitecturePage() {
               choice, but any HTTP framework works). Provision a single API key
               from your production backend with broad permissions. The proxy
               acts as a pure consumer of your production API, wrapping each
-              endpoint you want to expose over x402 with a corresponding
-              payable endpoint on the proxy.
+              endpoint you want to expose over x402 with a corresponding payable
+              endpoint on the proxy.
             </p>
             <p>
               All agentic traffic to your production backend appears under a
@@ -120,7 +120,13 @@ export default function ArchitecturePage() {
                       [<>Wallet identity</>, 'Yes', '—'],
                       [<>Per-wallet authorization</>, 'Yes', '—'],
                       [<>Per-wallet rate limiting</>, 'Yes', '—'],
-                      [<>Discovery document (<code>/openapi.json</code>)</>, 'Yes', '—'],
+                      [
+                        <>
+                          Discovery document (<code>/openapi.json</code>)
+                        </>,
+                        'Yes',
+                        '—',
+                      ],
                       [<>Business logic</>, '—', 'Yes'],
                       [<>User records, billing, quotas</>, '—', 'Yes'],
                       [<>Long-term data storage</>, '—', 'Yes'],
@@ -174,9 +180,9 @@ export default function ArchitecturePage() {
             </p>
             <ul className="list-disc pl-5 space-y-2">
               <li>
-                <strong>Wrong:</strong> the proxy calls{' '}
-                <code>list_jobs()</code> and returns the full response. This
-                leaks every wallet&apos;s jobs to every caller.
+                <strong>Wrong:</strong> the proxy calls <code>list_jobs()</code>{' '}
+                and returns the full response. This leaks every wallet&apos;s
+                jobs to every caller.
               </li>
               <li>
                 <strong>Right:</strong> the proxy looks up which job IDs belong
@@ -198,9 +204,9 @@ export default function ArchitecturePage() {
           <p className="text-sm text-muted-foreground">
             The god-key is intentionally provisioned with loose or absent rate
             limits so that legitimate agent traffic isn&apos;t throttled. The
-            tradeoff is that the proxy is now the only thing standing between
-            an abusive wallet and your production backend. Apply per-wallet
-            rate limits at the proxy by request count, by spend, or both.
+            tradeoff is that the proxy is now the only thing standing between an
+            abusive wallet and your production backend. Apply per-wallet rate
+            limits at the proxy by request count, by spend, or both.
           </p>
         </section>
 
@@ -236,8 +242,8 @@ export default function ArchitecturePage() {
           <div className="space-y-4 text-sm text-muted-foreground">
             <p>
               If you need to track which wallets own which resources, a
-              lightweight database alongside the proxy is usually enough.
-              Common tables:
+              lightweight database alongside the proxy is usually enough. Common
+              tables:
             </p>
             <ul className="list-disc pl-5 space-y-1">
               <li>
@@ -268,8 +274,8 @@ export default function ArchitecturePage() {
               The proxy is also where you serve your discovery document. Publish{' '}
               <code>/openapi.json</code> on the proxy origin with{' '}
               <code>x-payment-info</code> and <code>402</code> responses on each
-              payable operation. Agents discover and call the proxy and never the
-              production API directly.
+              payable operation. Agents discover and call the proxy and never
+              the production API directly.
             </p>
             <p>
               See{' '}

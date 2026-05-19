@@ -9,8 +9,7 @@ import type { Route } from 'next';
 
 export const metadata: Metadata = {
   title: 'Sell to Agents',
-  description:
-    'Start onboarding agents as customers with x402 payments.',
+  description: 'Start onboarding agents as customers with x402 payments.',
 };
 
 export default function DiscoveryPage() {

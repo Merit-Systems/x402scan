@@ -241,7 +241,8 @@ export const resourcesRouter = createTRPCRouter({
 
       const result = await registerResourcesFromDiscovery(
         discoveryResult.resources,
-        discoveryResult.source
+        discoveryResult.source,
+        discoveryResult.info
       );
 
       if (result.registered === 0) {

@@ -67,10 +67,7 @@ export const GET = async (request: NextRequest) => {
             ...facilitatorResource,
             accepts: facilitatorResource.accepts.map(accept => ({
               ...accept,
-              network: normalizeChainId(accept.network).replace(
-                '-',
-                '_'
-              ) as AcceptsNetwork,
+              network: normalizeChainId(accept.network) as AcceptsNetwork,
             })) as z.input<typeof upsertResourceSchema>['accepts'],
           });
           if (!result) {

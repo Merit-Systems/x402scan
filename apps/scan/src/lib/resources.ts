@@ -31,7 +31,15 @@ import { notifyNewServer } from '@/lib/discord-notifications';
 export const registerResource = async (
   url: string,
   advisory: EndpointMethodAdvisory,
-  options: { notifyNewServer?: boolean } = {}
+  options: {
+    notifyNewServer?: boolean;
+    /**
+     * Title/description to fall back to when the origin's homepage isn't HTML
+     * (so the scraper finds no <title>/meta/OG tags). Typically the OpenAPI
+     * `info` block from discovery.
+     */
+    originMetadataFallback?: { title?: string; description?: string };
+  } = {}
 ) => {
   const x402Options = (advisory.paymentOptions ?? []).filter(
     isX402PaymentOption
@@ -124,7 +132,7 @@ export const registerResource = async (
 
   const allMappedAccepts = x402Options.map(opt => ({
     scheme: opt.scheme ?? 'exact',
-    network: normalizeChainId(opt.network).replace('-', '_') as AcceptsNetwork,
+    network: normalizeChainId(opt.network) as AcceptsNetwork,
     maxAmountRequired:
       ('amount' in opt ? opt.amount : opt.maxAmountRequired) ?? '0',
     payTo: opt.payTo ?? '',
@@ -191,8 +199,16 @@ export const registerResource = async (
 
   const { og, metadata, favicon } = await scrapeOriginData(origin);
 
-  const title = metadata?.title ?? og?.ogTitle ?? null;
-  const description = metadata?.description ?? og?.ogDescription ?? null;
+  const title =
+    metadata?.title ??
+    og?.ogTitle ??
+    options.originMetadataFallback?.title ??
+    null;
+  const description =
+    metadata?.description ??
+    og?.ogDescription ??
+    options.originMetadataFallback?.description ??
+    null;
 
   await upsertOrigin({
     origin,

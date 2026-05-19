@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/tooltip';
 
 import {
+  DiscoveryFixHint,
   DiscoveryPanel,
   useDiscovery,
 } from '@/app/(app)/_components/discovery';
@@ -37,7 +38,6 @@ import { normalizeUrl } from '@/lib/url';
 import { api } from '@/trpc/client';
 import Link from 'next/link';
 import { z } from 'zod';
-import { DiscoveryActions } from './discovery-actions';
 
 interface ManualRegistrationResult {
   success: true;
@@ -349,7 +349,9 @@ export const RegisterResourceForm = () => {
       <div className="space-y-3">
         <div className="space-y-1.5">
           <div className="flex items-center h-12 rounded-md border bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-            <span className="pl-3 text-base text-muted-foreground select-none">https://</span>
+            <span className="pl-3 text-base text-muted-foreground select-none">
+              https://
+            </span>
             <input
               type="text"
               placeholder="api.example.com"
@@ -411,9 +413,7 @@ export const RegisterResourceForm = () => {
         ) : (
           <Button
             variant="turbo"
-            disabled={
-              manualTargets.length === 0 || isLoading || !isValidUrl
-            }
+            disabled={manualTargets.length === 0 || isLoading || !isValidUrl}
             onClick={() => {
               void handleRegisterManual();
             }}
@@ -433,81 +433,86 @@ export const RegisterResourceForm = () => {
             )}
           </Button>
         )}
-
       </div>
 
       {/* Probe result — inline, no separate card */}
-      {url.trim().length > 0 && (() => {
-        const strippedDomain = url.replace(/^https?:\/\//, '').trim();
-        const hasTld = strippedDomain.includes('.');
-        const showInvalidDomain = strippedDomain.length > 0 && !hasTld;
+      {url.trim().length > 0 &&
+        (() => {
+          const strippedDomain = url.replace(/^https?:\/\//, '').trim();
+          const hasTld = strippedDomain.includes('.');
+          const showInvalidDomain = strippedDomain.length > 0 && !hasTld;
 
-        return (
-        <div className="space-y-4">
-          {showInvalidDomain && (
-              <p className="text-sm text-red-600">
-                Enter a valid domain (e.g. example.com).
-              </p>
-          )}
-
-          {!showInvalidDomain && isValidUrl && isDiscoveryLoading && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
-              <Loader2 className="size-4 animate-spin" />
-              Checking for discoverable endpoints...
-            </div>
-          )}
-
-          {!showInvalidDomain && isValidUrl && !isDiscoveryLoading && hasDiscoveryResources && (
-            <ProbeResult
-              preview={preview}
-              urlOrigin={urlOrigin}
-              resources={actualDiscoveredResources}
-            />
-          )}
-
-          {!showInvalidDomain && isValidUrl &&
-            !isDiscoveryLoading &&
-            !hasDiscoveryResources &&
-            isOriginOnly && (
-              <div className="text-sm space-y-1">
-                <p className="text-red-600">
-                  {discoveryError?.includes('TypeError')
-                    ? "Couldn't reach this URL."
-                    : (discoveryError ??
-                      'No discovery document found at this origin.')}
+          return (
+            <div className="space-y-4">
+              {showInvalidDomain && (
+                <p className="text-sm text-red-600">
+                  Enter a valid domain (e.g. example.com).
                 </p>
-                {!discoveryError?.includes('TypeError') && (
-                  <DiscoveryActions label="Let your agent figure out the issue" />
-                )}
-              </div>
-            )}
+              )}
 
-          {!showInvalidDomain && isValidUrl &&
-            !isDiscoveryLoading &&
-            !hasDiscoveryResources &&
-            !isOriginOnly && (
-              <div className="text-xs text-muted-foreground space-y-1">
-                {isBatchTestLoading ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="size-3 animate-spin" />
-                    Testing endpoint...
+              {!showInvalidDomain && isValidUrl && isDiscoveryLoading && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                  <Loader2 className="size-4 animate-spin" />
+                  Checking for discoverable endpoints...
+                </div>
+              )}
+
+              {!showInvalidDomain &&
+                isValidUrl &&
+                !isDiscoveryLoading &&
+                hasDiscoveryResources && (
+                  <ProbeResult
+                    preview={preview}
+                    urlOrigin={urlOrigin}
+                    resources={actualDiscoveredResources}
+                  />
+                )}
+
+              {!showInvalidDomain &&
+                isValidUrl &&
+                !isDiscoveryLoading &&
+                !hasDiscoveryResources &&
+                isOriginOnly && (
+                  <div className="text-sm space-y-1">
+                    <p className="text-red-600">
+                      {discoveryError?.includes('TypeError')
+                        ? "Couldn't reach this URL."
+                        : (discoveryError ??
+                          'No discovery document found at this origin.')}
+                    </p>
+                    {!discoveryError?.includes('TypeError') && (
+                      <DiscoveryFixHint />
+                    )}
                   </div>
-                ) : currentManualTested ? (
-                  <div className="flex items-center gap-2 text-green-700">
-                    <CheckCircle2 className="size-3" />
-                    Valid 402 response.
+                )}
+
+              {!showInvalidDomain &&
+                isValidUrl &&
+                !isDiscoveryLoading &&
+                !hasDiscoveryResources &&
+                !isOriginOnly && (
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    {isBatchTestLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="size-3 animate-spin" />
+                        Testing endpoint...
+                      </div>
+                    ) : currentManualTested ? (
+                      <div className="flex items-center gap-2 text-green-700">
+                        <CheckCircle2 className="size-3" />
+                        Valid 402 response.
+                      </div>
+                    ) : currentManualFailed ? (
+                      <div className="flex items-center gap-2 text-red-700">
+                        <XCircle className="size-3" />
+                        {getPrimaryProbeError(currentManualFailed)}
+                      </div>
+                    ) : null}
                   </div>
-                ) : currentManualFailed ? (
-                  <div className="flex items-center gap-2 text-red-700">
-                    <XCircle className="size-3" />
-                    {getPrimaryProbeError(currentManualFailed)}
-                  </div>
-                ) : null}
-              </div>
-            )}
-        </div>
-        );
-      })()}
+                )}
+            </div>
+          );
+        })()}
 
       {/* Advanced — only when relevant */}
       {showAdvanced && (
@@ -530,10 +535,7 @@ export const RegisterResourceForm = () => {
                   variant="ghost"
                   size="xs"
                   onClick={() =>
-                    setHeaders(current => [
-                      ...current,
-                      { name: '', value: '' },
-                    ])
+                    setHeaders(current => [...current, { name: '', value: '' }])
                   }
                   className="size-fit px-1 text-xs"
                 >
@@ -635,17 +637,16 @@ export const RegisterResourceForm = () => {
         </Collapsible>
       )}
 
-      {/* Failed resources detail */}
+      {/* Failed resources */}
       {!activeBulkResult &&
       !isBatchTestLoading &&
       failedResources.length > 0 ? (
-        <details className="group">
-          <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
-            <ChevronDown className="size-3 transition-transform group-open:rotate-180" />
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">
             {failedResources.length} failed resource
             {failedResources.length === 1 ? '' : 's'}
-          </summary>
-          <div className="pt-3 space-y-2 max-h-[360px] overflow-y-auto">
+          </p>
+          <div className="space-y-2 max-h-[360px] overflow-y-auto">
             {failedResources.map((failed, idx) => (
               <div
                 key={`${failed.url}-${idx}`}
@@ -681,7 +682,8 @@ export const RegisterResourceForm = () => {
               </div>
             ))}
           </div>
-        </details>
+          <DiscoveryFixHint />
+        </div>
       ) : null}
 
       {/* Bulk result */}
@@ -709,9 +711,7 @@ export const RegisterResourceForm = () => {
       {bulkError && <p className="text-sm text-red-600">{bulkError}</p>}
 
       {registerMutation.error && (
-        <p className="text-sm text-red-600">
-          {registerMutation.error.message}
-        </p>
+        <p className="text-sm text-red-600">{registerMutation.error.message}</p>
       )}
     </div>
   );
@@ -722,7 +722,11 @@ function ProbeResult({
   urlOrigin,
   resources,
 }: {
-  preview: { favicon: string | null; title?: string | null; description?: string | null } | null;
+  preview: {
+    favicon: string | null;
+    title?: string | null;
+    description?: string | null;
+  } | null;
   urlOrigin: string | null;
   resources: string[];
 }) {
