@@ -3,14 +3,14 @@
 import { useMemo, useState } from 'react';
 
 import {
-  CheckCircle2,
+  Check,
   ChevronDown,
   Loader2,
   Plus,
   CircleHelp,
   Trash2,
   TriangleAlert,
-  XCircle,
+  X,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -139,6 +139,9 @@ export const RegisterResourceForm = () => {
     isBatchTestLoading,
     testedResources,
     failedResources,
+    retryResource,
+    authModeMap,
+    invalidResourcesMap,
   } = useDiscovery({
     url,
   });
@@ -221,6 +224,7 @@ export const RegisterResourceForm = () => {
     setManualResult(null);
     setManualProgress(null);
     setManualListError(null);
+    resetBulk();
   };
 
   const handleAddCurrentUrl = () => {
@@ -381,7 +385,7 @@ export const RegisterResourceForm = () => {
           <div className="flex gap-2">
             <Button
               variant="turbo"
-              disabled={isLoading}
+              disabled={isLoading || isBatchTestLoading}
               onClick={handleRegisterDiscovered}
               className="flex-1"
             >
@@ -389,6 +393,11 @@ export const RegisterResourceForm = () => {
                 <>
                   <Loader2 className="size-4 animate-spin mr-2" />
                   Registering resources...
+                </>
+              ) : isBatchTestLoading ? (
+                <>
+                  <Loader2 className="size-4 animate-spin mr-2" />
+                  Verifying endpoints...
                 </>
               ) : (
                 `Add API (${actualDiscoveredResources.length} resources)`
@@ -465,6 +474,11 @@ export const RegisterResourceForm = () => {
                     preview={preview}
                     urlOrigin={urlOrigin}
                     resources={actualDiscoveredResources}
+                    testedResources={testedResources}
+                    failedResources={failedResources}
+                    isBatchTestLoading={isBatchTestLoading}
+                    authModeMap={authModeMap}
+                    invalidResourcesMap={invalidResourcesMap}
                   />
                 )}
 
@@ -481,7 +495,7 @@ export const RegisterResourceForm = () => {
                           'No discovery document found at this origin.')}
                     </p>
                     {!discoveryError?.includes('TypeError') && (
-                      <DiscoveryFixHint />
+                      <DiscoveryFixHint noDiscovery />
                     )}
                   </div>
                 )}
@@ -499,12 +513,12 @@ export const RegisterResourceForm = () => {
                       </div>
                     ) : currentManualTested ? (
                       <div className="flex items-center gap-2 text-green-700">
-                        <CheckCircle2 className="size-3" />
+                        <Check className="size-3" />
                         Valid 402 response.
                       </div>
                     ) : currentManualFailed ? (
                       <div className="flex items-center gap-2 text-red-700">
-                        <XCircle className="size-3" />
+                        <X className="size-3" />
                         {getPrimaryProbeError(currentManualFailed)}
                       </div>
                     ) : null}
@@ -637,54 +651,88 @@ export const RegisterResourceForm = () => {
         </Collapsible>
       )}
 
-      {/* Failed resources */}
-      {!activeBulkResult &&
-      !isBatchTestLoading &&
-      failedResources.length > 0 ? (
-        <div className="space-y-3">
-          <p className="text-xs text-muted-foreground">
-            {failedResources.length} failed resource
-            {failedResources.length === 1 ? '' : 's'}
-          </p>
-          <div className="space-y-2 max-h-[360px] overflow-y-auto">
-            {failedResources.map((failed, idx) => (
-              <div
-                key={`${failed.url}-${idx}`}
-                className="p-3 bg-muted/50 rounded text-xs space-y-1"
-              >
-                <div className="flex items-start gap-2">
-                  <span className="text-muted-foreground shrink-0">URL:</span>
-                  <span className="font-mono break-all">{failed.url}</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-muted-foreground shrink-0">Error:</span>
-                  <span className="text-red-600 wrap-break-word">
-                    {getPrimaryProbeError(failed)}
-                  </span>
-                </div>
-                {Array.isArray(failed.issues) && failed.issues.length > 0 && (
-                  <div className="pt-1">
-                    <p className="text-muted-foreground mb-1">
-                      Validation details:
-                    </p>
-                    <ul className="space-y-1 list-disc list-inside">
-                      {failed.issues.map((issue, i) => (
-                        <li
-                          key={i}
-                          className="text-red-600 font-mono text-[10px]"
-                        >
-                          {issue.code}: {issue.message}
-                        </li>
-                      ))}
-                    </ul>
+      {/* Errors, warnings, and schema issues — consolidated */}
+      {(() => {
+        const missingSchemaResources = testedResources.filter(r =>
+          r.warnings.some(w => w.code === 'MISSING_INPUT_SCHEMA')
+        );
+        const hasIssues =
+          failedResources.length > 0 || missingSchemaResources.length > 0;
+
+        if (activeBulkResult || isBatchTestLoading || !hasIssues) return null;
+
+        const issueCount =
+          failedResources.length + missingSchemaResources.length;
+        const missingSchemaUrls = missingSchemaResources.map(r => r.url);
+
+        return (
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <button className="text-xs text-red-600 dark:text-red-500 flex items-center gap-1 hover:text-red-700 transition-colors">
+                <ChevronDown className="size-3" />
+                {issueCount} endpoint
+                {issueCount === 1 ? '' : 's'} with issues
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-2 space-y-3">
+              {failedResources.length > 0 && (
+                <>
+                  <p className="text-xs text-muted-foreground">
+                    <strong>
+                      {failedResources.length} endpoint
+                      {failedResources.length === 1 ? '' : 's'} won&apos;t be
+                      registered.
+                    </strong>{' '}
+                    They need to return a 402 payment challenge — ensure the
+                    x402 paywall runs before request validation, or mark the
+                    required parameters in your OpenAPI spec so we can probe
+                    automatically.
+                  </p>
+                  <div className="space-y-2 max-h-[360px] overflow-y-auto">
+                    {failedResources.map((failed, idx) => (
+                      <FailedResourceRow
+                        key={`${failed.url}-${idx}`}
+                        url={failed.url}
+                        error={getPrimaryProbeError(failed)}
+                        statusCode={failed.statusCode}
+                        issues={failed.issues}
+                      />
+                    ))}
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
-          <DiscoveryFixHint />
-        </div>
-      ) : null}
+                </>
+              )}
+              {missingSchemaResources.length > 0 && (
+                <>
+                  <p className="text-xs text-muted-foreground">
+                    <strong>
+                      {missingSchemaResources.length} endpoint
+                      {missingSchemaResources.length === 1 ? '' : 's'} missing
+                      input schema.
+                    </strong>{' '}
+                    Agents can find and pay but won&apos;t know what request to
+                    send.
+                  </p>
+                  <ul className="space-y-0.5 text-xs text-muted-foreground">
+                    {missingSchemaResources.map((r, idx) => (
+                      <li
+                        key={`${r.url}-${idx}`}
+                        className="font-mono truncate flex items-center gap-1.5"
+                      >
+                        <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
+                        {toPathLabel(r.url)}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              <DiscoveryFixHint
+                failedResources={failedResources}
+                missingSchemaResources={missingSchemaUrls}
+              />
+            </CollapsibleContent>
+          </Collapsible>
+        );
+      })()}
 
       {/* Bulk result */}
       {activeBulkResult && activeSummaryOrigin ? (
@@ -697,6 +745,7 @@ export const RegisterResourceForm = () => {
           resourceCount={0}
           isRegisteringAll={false}
           bulkResult={activeBulkResult}
+          onRetryResource={retryResource}
         />
       ) : null}
 
@@ -717,10 +766,64 @@ export const RegisterResourceForm = () => {
   );
 };
 
+function FailedResourceRow({
+  url,
+  error,
+  statusCode,
+  issues,
+}: {
+  url: string;
+  error: string;
+  statusCode?: number;
+  issues?: { code: string; message: string }[];
+}) {
+  const pathname = (() => {
+    try {
+      return decodeURIComponent(new URL(url).pathname);
+    } catch {
+      return url;
+    }
+  })();
+
+  return (
+    <div className="p-3 bg-muted/50 rounded text-xs space-y-1">
+      <div className="flex items-start gap-2">
+        <span className="text-muted-foreground shrink-0">URL:</span>
+        <span className="font-mono break-all">{pathname}</span>
+      </div>
+      <div className="flex items-start gap-2">
+        <span className="text-muted-foreground shrink-0">Error:</span>
+        <span className="text-red-600 wrap-break-word">
+          {statusCode && <span className="font-mono mr-1">[{statusCode}]</span>}
+          {error}
+        </span>
+      </div>
+
+      {Array.isArray(issues) && issues.length > 0 && (
+        <div className="pt-1">
+          <p className="text-muted-foreground mb-1">Validation details:</p>
+          <ul className="space-y-1 list-disc list-inside">
+            {issues.map((issue, i) => (
+              <li key={i} className="text-red-600 font-mono text-[10px]">
+                {issue.code}: {issue.message}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ProbeResult({
   preview,
   urlOrigin,
   resources,
+  testedResources = [],
+  failedResources = [],
+  isBatchTestLoading = false,
+  authModeMap = {},
+  invalidResourcesMap = {},
 }: {
   preview: {
     favicon: string | null;
@@ -729,9 +832,53 @@ function ProbeResult({
   } | null;
   urlOrigin: string | null;
   resources: string[];
+  testedResources?: { url: string }[];
+  failedResources?: { url: string }[];
+  isBatchTestLoading?: boolean;
+  authModeMap?: Record<string, string>;
+  invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
 }) {
-  const previewResources = resources.slice(0, 8);
-  const hiddenCount = resources.length - previewResources.length;
+  const testedUrls = useMemo(
+    () => new Set(testedResources.map(r => r.url)),
+    [testedResources]
+  );
+  const failedUrls = useMemo(
+    () => new Set(failedResources.map(r => r.url)),
+    [failedResources]
+  );
+  const siwxUrls = useMemo(
+    () =>
+      new Set(
+        Object.entries(authModeMap)
+          .filter(([, mode]) => mode === 'siwx')
+          .map(([url]) => url)
+      ),
+    [authModeMap]
+  );
+  const invalidUrls = useMemo(
+    () =>
+      new Set(
+        Object.entries(invalidResourcesMap)
+          .filter(([, info]) => info.invalid)
+          .map(([url]) => url)
+      ),
+    [invalidResourcesMap]
+  );
+  const sortedResources = useMemo(() => {
+    const priority = (url: string) => {
+      if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
+      return 2;
+    };
+    return [...resources].sort((a, b) => priority(a) - priority(b));
+  }, [resources, invalidUrls, failedUrls]);
+
+  const [expanded, setExpanded] = useState(false);
+  const previewResources = expanded
+    ? sortedResources
+    : sortedResources.slice(0, 8);
+  const hiddenCount = expanded
+    ? 0
+    : sortedResources.length - previewResources.length;
 
   return (
     <div className="rounded-lg border bg-card p-4 space-y-3">
@@ -777,16 +924,48 @@ function ProbeResult({
           root to display an icon.
         </p>
       )}
-      <ul className="space-y-0.5 text-xs text-muted-foreground">
-        {previewResources.map(resource => (
-          <li key={resource} className="font-mono truncate">
-            {toPathLabel(resource)}
-          </li>
-        ))}
-        {hiddenCount > 0 && (
-          <li className="text-muted-foreground/60">+ {hiddenCount} more</li>
-        )}
-      </ul>
+      {isBatchTestLoading ? (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground py-1">
+          <Loader2 className="size-3 animate-spin" />
+          Verifying {resources.length} endpoints...
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          className="w-full text-left"
+        >
+          <ul className="space-y-0.5 text-xs text-muted-foreground">
+            {previewResources.map(resource => (
+              <li
+                key={resource}
+                className="font-mono truncate flex items-center gap-1.5"
+              >
+                {invalidUrls.has(resource) ? (
+                  <X className="size-3 text-red-500 shrink-0" />
+                ) : siwxUrls.has(resource) ? (
+                  <Check className="size-3 text-primary shrink-0" />
+                ) : testedUrls.has(resource) ? (
+                  <Check className="size-3 text-green-600 shrink-0" />
+                ) : failedUrls.has(resource) ? (
+                  <X className="size-3 text-red-500 shrink-0" />
+                ) : null}
+                {toPathLabel(resource)}
+              </li>
+            ))}
+            {!expanded && hiddenCount > 0 && (
+              <li className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+                + {hiddenCount} more
+              </li>
+            )}
+            {expanded && sortedResources.length > 8 && (
+              <li className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+                show less
+              </li>
+            )}
+          </ul>
+        </button>
+      )}
     </div>
   );
 }

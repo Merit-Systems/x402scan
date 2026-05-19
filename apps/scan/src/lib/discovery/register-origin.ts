@@ -112,27 +112,34 @@ export async function registerResourcesFromDiscovery(
         success: false as const,
         url: resourceUrl,
         error: probeResult.error,
+        ...(probeResult.skipped ? { skipped: true as const } : {}),
+        ...(probeResult.statusCode !== undefined
+          ? { status: probeResult.statusCode }
+          : {}),
       };
     }
 
     const { advisory } = probeResult;
+
+    // Check for v1 — only v2 resources can be registered
+    const x402Options = (advisory.paymentOptions ?? []).filter(
+      o => o.protocol === 'x402'
+    );
+    const hasOnlyV1 =
+      x402Options.length > 0 && x402Options.every(o => o.version === 1);
+    if (hasOnlyV1) {
+      return {
+        success: false as const,
+        url: resourceUrl,
+        error: 'x402 v1 response detected — migrate to v2 spec',
+      };
+    }
 
     if (advisory.authMode === 'siwx') {
       return {
         success: true as const,
         siwx: true as const,
         url: resourceUrl,
-      };
-    }
-
-    if (!advisory.inputSchema) {
-      return {
-        success: false as const,
-        skipped: true as const,
-        url: resourceUrl,
-        error:
-          'Missing input schema (non-invocable endpoint skipped in strict mode)',
-        status: 402,
       };
     }
 
@@ -193,13 +200,19 @@ export async function registerResourcesFromDiscovery(
         skippedResults.push({
           url: resourceUrl,
           error: value.error,
-          status: 'status' in value ? value.status : undefined,
+          status:
+            'status' in value && typeof value.status === 'number'
+              ? value.status
+              : undefined,
         });
       } else if ('success' in value && !value.success) {
         failedResults.push({
           url: resourceUrl,
           error: value.error,
-          status: 'status' in value ? value.status : undefined,
+          status:
+            'status' in value && typeof value.status === 'number'
+              ? value.status
+              : undefined,
         });
       }
     } else if (result.status === 'rejected') {
