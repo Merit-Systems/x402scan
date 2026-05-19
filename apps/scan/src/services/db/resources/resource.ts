@@ -36,6 +36,9 @@ export const upsertResource = async (
   const unsupportedAccepts = baseResource.accepts.filter(
     accept => !SUPPORTED_CHAINS.includes(accept.network as SupportedChain)
   );
+  if (supportedAccepts.length === 0) {
+    return;
+  }
   const originStr = getOriginFromUrl(baseResource.resource);
   return await scanDb.$transaction(async tx => {
     const { origin, ...resource } = await tx.resources.upsert({
