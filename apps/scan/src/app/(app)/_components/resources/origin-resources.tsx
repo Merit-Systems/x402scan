@@ -11,6 +11,7 @@ import {
 import { ResourceCard, LoadingResourceCard } from './resource-card';
 
 import { getBazaarMethod } from './utils';
+import { serializeAccepts } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -64,6 +65,7 @@ export const OriginResources: React.FC<Props> = ({
               response={resource.data}
               hideOrigin={hideOrigin}
               isFlat={isFlat}
+              accepts={serializeAccepts(resource.accepts)}
             />
           );
         })}
