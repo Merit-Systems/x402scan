@@ -17,10 +17,7 @@ import { cn, formatCurrency } from '@/lib/utils';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { toast } from 'sonner';
 
-import { Chains, Chain as ChainIcon } from '@/app/(app)/_components/chains';
-
 import type { Methods } from '@/types/x402';
-import type { Chain } from '@/types/chain';
 import type { ParsedX402Response } from '@/lib/x402';
 import type { Resources, Tag } from '@x402scan/scan-db';
 
@@ -132,39 +129,11 @@ export const ResourceCard: React.FC<Props> = ({
 const ResourcePricing: React.FC<{ accepts: SerializedAccept[] }> = ({
   accepts,
 }) => {
-  const allSameAmount = accepts.every(
-    accept => accept.maxAmountRequired === accepts[0]!.maxAmountRequired
-  );
-
-  if (allSameAmount) {
-    return (
-      <div className="flex items-center gap-1 shrink-0">
-        <span className="text-xs font-semibold text-primary font-mono">
-          {formatCurrency(accepts[0]!.maxAmountRequired)}
-        </span>
-        <Chains
-          chains={accepts.map(accept => accept.network as Chain).sort()}
-          iconClassName="size-3"
-          className="gap-0.5"
-        />
-      </div>
-    );
-  }
-
+  const minAmount = Math.min(...accepts.map(a => a.maxAmountRequired));
   return (
-    <div className="flex items-center gap-2 shrink-0">
-      {accepts.map(accept => (
-        <div
-          key={accept.network}
-          className="flex items-center gap-0.5 shrink-0"
-        >
-          <span className="text-xs font-semibold text-primary font-mono">
-            {formatCurrency(accept.maxAmountRequired)}
-          </span>
-          <ChainIcon chain={accept.network as Chain} iconClassName="size-3" />
-        </div>
-      ))}
-    </div>
+    <span className="text-xs font-semibold text-primary font-mono shrink-0">
+      {formatCurrency(minAmount)}
+    </span>
   );
 };
 
