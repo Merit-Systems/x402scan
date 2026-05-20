@@ -728,6 +728,7 @@ export const RegisterResourceForm = () => {
                 </>
               )}
               <DiscoveryFixHint
+                needsSetup={testedResources.length === 0}
                 failedResources={failedResources.map(r => ({
                   url: r.url,
                   error: getPrimaryProbeError(r),
