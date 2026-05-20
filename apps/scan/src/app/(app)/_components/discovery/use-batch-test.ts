@@ -17,7 +17,7 @@ interface BatchTestResult {
   ) => Promise<void>;
 }
 
-const BATCH_SIZE = 20;
+const BATCH_SIZE = 5;
 
 /**
  * Split array into chunks of specified size
@@ -32,7 +32,8 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 
 /**
  * Wrapper hook for api.developer.batchTest that handles pagination.
- * Automatically splits resources into chunks of 20 and makes parallel requests.
+ * Splits resources into small chunks and streams results progressively —
+ * each chunk updates the UI as soon as it resolves.
  * Uses a mutation (POST) to avoid URL length limits with large inputs.
  */
 export function useBatchTest(
@@ -58,33 +59,39 @@ export function useBatchTest(
   useEffect(() => {
     if (!enabled || chunks.length === 0) return;
 
-    // Start requests immediately, but defer all setState calls into the async chain
-    // to satisfy react-hooks/set-state-in-effect
-    const request = Promise.all(
-      chunks.map(chunk => mutateAsyncRef.current({ resources: chunk }))
-    );
-
+    // Clear previous results and start loading
     void Promise.resolve()
-      .then(() => setIsLoading(true))
-      .then(() => request)
-      .then(results => {
-        const allResources: TestedResource[] = [];
-        const allFailed: FailedResource[] = [];
-        for (const result of results) {
-          allResources.push(...result.resources);
-          allFailed.push(...result.failed);
-        }
-        setResources(allResources);
-        setFailed(allFailed);
+      .then(() => {
+        setIsLoading(true);
+        setResources([]);
+        setFailed([]);
       })
-      .catch(err => {
-        const error = err instanceof Error ? err.message : 'Request failed';
-        setFailed(
-          chunks
-            .flat()
-            .map(r => ({ success: false as const, url: r.url, error }))
-        );
-      })
+      .then(() =>
+        // Fire all chunks in parallel; update state as each resolves so the
+        // merchant sees results stream in progressively.
+        Promise.all(
+          chunks.map(chunk =>
+            mutateAsyncRef.current({ resources: chunk }).then(
+              result => {
+                setResources(prev => [...prev, ...result.resources]);
+                setFailed(prev => [...prev, ...result.failed]);
+              },
+              err => {
+                const error =
+                  err instanceof Error ? err.message : 'Request failed';
+                setFailed(prev => [
+                  ...prev,
+                  ...chunk.map(r => ({
+                    success: false as const,
+                    url: r.url,
+                    error,
+                  })),
+                ]);
+              }
+            )
+          )
+        )
+      )
       .finally(() => {
         setIsLoading(false);
       });

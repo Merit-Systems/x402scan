@@ -409,7 +409,7 @@ export const RegisterResourceForm = () => {
               ) : isBatchTestLoading ? (
                 <>
                   <Loader2 className="size-4 animate-spin mr-2" />
-                  Verifying endpoints...
+                  {`Verifying ${actualDiscoveredResources.length} endpoints...`}
                 </>
               ) : batchTestComplete && registrableResourceCount === 0 ? (
                 `0 valid resources`
@@ -889,13 +889,16 @@ function ProbeResult({
       ),
     [invalidResourcesMap]
   );
+  // Sort failed/invalid to the top only after the batch test finishes.
+  // During loading, keep the original order to avoid items jumping around.
   const sortedResources = useMemo(() => {
+    if (isBatchTestLoading) return resources;
     const priority = (url: string) => {
       if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
       return 2;
     };
     return [...resources].sort((a, b) => priority(a) - priority(b));
-  }, [resources, invalidUrls, failedUrls]);
+  }, [resources, invalidUrls, failedUrls, isBatchTestLoading]);
 
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded
@@ -949,48 +952,43 @@ function ProbeResult({
           root to display an icon.
         </p>
       )}
-      {isBatchTestLoading ? (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground py-1">
-          <Loader2 className="size-3 animate-spin" />
-          Verifying {resources.length} endpoints...
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setExpanded(!expanded)}
-          className="w-full text-left"
-        >
-          <ul className="space-y-0.5 text-xs text-muted-foreground">
-            {previewResources.map(resource => (
-              <li
-                key={resource}
-                className="font-mono truncate flex items-center gap-1.5"
-              >
-                {invalidUrls.has(resource) ? (
-                  <X className="size-3 text-red-500 shrink-0" />
-                ) : siwxUrls.has(resource) ? (
-                  <Check className="size-3 text-primary shrink-0" />
-                ) : testedUrls.has(resource) ? (
-                  <Check className="size-3 text-green-600 shrink-0" />
-                ) : failedUrls.has(resource) ? (
-                  <X className="size-3 text-red-500 shrink-0" />
-                ) : null}
-                {toPathLabel(resource)}
-              </li>
-            ))}
-            {!expanded && hiddenCount > 0 && (
-              <li className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
-                + {hiddenCount} more
-              </li>
-            )}
-            {expanded && sortedResources.length > 8 && (
-              <li className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
-                show less
-              </li>
-            )}
-          </ul>
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="w-full text-left"
+      >
+        <ul className="space-y-0.5 text-xs text-muted-foreground">
+          {previewResources.map(resource => (
+            <li
+              key={resource}
+              className="font-mono truncate flex items-center gap-1.5"
+            >
+              {invalidUrls.has(resource) ? (
+                <X className="size-3 text-red-500 shrink-0" />
+              ) : siwxUrls.has(resource) ? (
+                <Check className="size-3 text-primary shrink-0" />
+              ) : testedUrls.has(resource) ? (
+                <Check className="size-3 text-green-600 shrink-0" />
+              ) : failedUrls.has(resource) ? (
+                <X className="size-3 text-red-500 shrink-0" />
+              ) : isBatchTestLoading ? (
+                <Loader2 className="size-3 animate-spin text-muted-foreground/50 shrink-0" />
+              ) : null}
+              {toPathLabel(resource)}
+            </li>
+          ))}
+          {!expanded && hiddenCount > 0 && (
+            <li className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+              + {hiddenCount} more
+            </li>
+          )}
+          {expanded && sortedResources.length > 8 && (
+            <li className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+              show less
+            </li>
+          )}
+        </ul>
+      </button>
     </div>
   );
 }
