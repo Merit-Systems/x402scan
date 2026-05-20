@@ -499,11 +499,6 @@ export const RegisterResourceForm = () => {
                     isBatchTestLoading={isBatchTestLoading}
                     authModeMap={authModeMap}
                     invalidResourcesMap={invalidResourcesMap}
-                    warningUrls={testedResources
-                      .filter(r =>
-                        r.warnings.some(w => w.code === 'MISSING_INPUT_SCHEMA')
-                      )
-                      .map(r => r.url)}
                   />
                 )}
 
@@ -735,56 +730,6 @@ export const RegisterResourceForm = () => {
         );
       })()}
 
-      {/* Warnings — registered but with issues */}
-      {(() => {
-        const missingSchemaResources = testedResources.filter(r =>
-          r.warnings.some(w => w.code === 'MISSING_INPUT_SCHEMA')
-        );
-
-        if (
-          activeBulkResult ||
-          isBatchTestLoading ||
-          missingSchemaResources.length === 0
-        )
-          return null;
-
-        return (
-          <Collapsible>
-            <CollapsibleTrigger asChild>
-              <button className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1 hover:text-yellow-700 transition-colors">
-                <ChevronDown className="size-3" />
-                {missingSchemaResources.length} endpoint
-                {missingSchemaResources.length === 1 ? '' : 's'} with warnings
-              </button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="pt-2 space-y-3">
-              <p className="text-xs text-muted-foreground">
-                <strong>
-                  {missingSchemaResources.length} endpoint
-                  {missingSchemaResources.length === 1 ? '' : 's'} missing input
-                  schema.
-                </strong>{' '}
-                These will still be registered, but agents won&apos;t know what
-                request to send. Add request/response schemas to your OpenAPI
-                spec to fix this.
-              </p>
-              <ul className="space-y-0.5 text-xs text-muted-foreground">
-                {missingSchemaResources.map((r, idx) => (
-                  <li
-                    key={`${r.url}-${idx}`}
-                    className="font-mono truncate flex items-center gap-1.5"
-                  >
-                    <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
-                    {toPathLabel(r.url)}
-                  </li>
-                ))}
-              </ul>
-              <DiscoveryFixHint missingSchema />
-            </CollapsibleContent>
-          </Collapsible>
-        );
-      })()}
-
       {/* Bulk result */}
       {activeBulkResult && activeSummaryOrigin ? (
         <DiscoveryPanel
@@ -875,7 +820,6 @@ function ProbeResult({
   isBatchTestLoading = false,
   authModeMap = {},
   invalidResourcesMap = {},
-  warningUrls = [],
 }: {
   preview: {
     favicon: string | null;
@@ -889,7 +833,6 @@ function ProbeResult({
   isBatchTestLoading?: boolean;
   authModeMap?: Record<string, string>;
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
-  warningUrls?: string[];
 }) {
   const testedUrls = useMemo(
     () => new Set(testedResources.map(r => r.url)),
@@ -899,7 +842,6 @@ function ProbeResult({
     () => new Set(failedResources.map(r => r.url)),
     [failedResources]
   );
-  const warningUrlSet = useMemo(() => new Set(warningUrls), [warningUrls]);
   const siwxUrls = useMemo(
     () =>
       new Set(
@@ -921,11 +863,10 @@ function ProbeResult({
   const sortedResources = useMemo(() => {
     const priority = (url: string) => {
       if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
-      if (warningUrlSet.has(url)) return 1;
       return 2;
     };
     return [...resources].sort((a, b) => priority(a) - priority(b));
-  }, [resources, invalidUrls, failedUrls, warningUrlSet]);
+  }, [resources, invalidUrls, failedUrls]);
 
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded
@@ -1000,8 +941,6 @@ function ProbeResult({
                   <X className="size-3 text-red-500 shrink-0" />
                 ) : siwxUrls.has(resource) ? (
                   <Check className="size-3 text-primary shrink-0" />
-                ) : warningUrlSet.has(resource) ? (
-                  <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
                 ) : testedUrls.has(resource) ? (
                   <Check className="size-3 text-green-600 shrink-0" />
                 ) : failedUrls.has(resource) ? (
