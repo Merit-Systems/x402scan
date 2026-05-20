@@ -764,8 +764,9 @@ export const RegisterResourceForm = () => {
                   {missingSchemaResources.length === 1 ? '' : 's'} missing input
                   schema.
                 </strong>{' '}
-                Agents can find and pay but won&apos;t know what request to
-                send.
+                These will still be registered, but agents won&apos;t know what
+                request to send. Add request/response schemas to your OpenAPI
+                spec to fix this.
               </p>
               <ul className="space-y-0.5 text-xs text-muted-foreground">
                 {missingSchemaResources.map((r, idx) => (
