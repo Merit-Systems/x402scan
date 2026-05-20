@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 import { ChainIdToNetwork } from '@/lib/x402/chain-mapping';
+import { normalizeChainId } from '@/lib/x402';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 import type { OutputSchema } from '@/lib/x402';
@@ -42,6 +43,10 @@ export const upsertResourceSchema = z.object({
                 '_'
               ) as AcceptsNetwork
           ),
+        z
+          .string()
+          .refine(v => v.startsWith('solana:'))
+          .transform(v => normalizeChainId(v) as AcceptsNetwork),
       ]),
       payTo: mixedAddressSchema,
       description: z.string().optional().default(''),

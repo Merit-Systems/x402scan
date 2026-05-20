@@ -178,6 +178,25 @@ export const registerResource = async (
 
   const x402Version = x402Options[0]?.version ?? 1;
 
+  const resource = await upsertResource({
+    resource: cleanUrl,
+    type: 'http',
+    x402Version,
+    lastUpdated: new Date(),
+    accepts: mappedAccepts,
+  });
+
+  if (!resource) {
+    return {
+      success: false as const,
+      data: advisory.paymentRequiredBody,
+      error: {
+        type: 'database' as const,
+        upsertErrors: ['Resource failed to upsert'],
+      },
+    };
+  }
+
   const { og, metadata, favicon } = await scrapeOriginData(origin);
 
   const title =
@@ -205,25 +224,6 @@ export const registerResource = async (
         description: og.ogDescription,
       })) ?? [],
   });
-
-  const resource = await upsertResource({
-    resource: cleanUrl,
-    type: 'http',
-    x402Version,
-    lastUpdated: new Date(),
-    accepts: mappedAccepts,
-  });
-
-  if (!resource) {
-    return {
-      success: false as const,
-      data: advisory.paymentRequiredBody,
-      error: {
-        type: 'database' as const,
-        upsertErrors: ['Resource failed to upsert'],
-      },
-    };
-  }
 
   await upsertResourceResponse(
     resource.resource.id,
