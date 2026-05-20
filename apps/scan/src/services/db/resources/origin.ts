@@ -5,7 +5,6 @@ import { scanDb } from '@x402scan/scan-db';
 import { parseX402Response } from '@/lib/x402';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
 import { SUPPORTED_CHAINS } from '@/types/chain';
-
 import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
 
 const SUPPORTED_ACCEPT_NETWORKS = SUPPORTED_CHAINS.map(
@@ -228,6 +227,36 @@ export const listOriginsWithResources = async (
       }),
     }))
     .filter(origin => origin.resources.length > 0);
+};
+
+export const listRecentOriginsSchema = z.object({
+  limit: z.number().optional().default(15),
+});
+
+export const listRecentOrigins = async (
+  input: z.infer<typeof listRecentOriginsSchema>
+) => {
+  const { limit } = input;
+  return await scanDb.resourceOrigin.findMany({
+    include: {
+      resources: {
+        select: {
+          id: true,
+          resource: true,
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
+        },
+      },
+      ogImages: {
+        take: 1,
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+  });
 };
 
 export const searchOriginsSchema = z.object({
