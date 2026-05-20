@@ -92,7 +92,7 @@ export function DiscoveryFixHint({
           : 'Have your agent fix the errors with a prompt';
 
   return (
-    <p className={cn('text-xs text-muted-foreground', className)}>
+    <p className={cn('text-sm text-foreground', className)}>
       <DiscoveryActions
         label={label}
         {...(needsSetup
