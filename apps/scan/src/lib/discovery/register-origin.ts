@@ -121,19 +121,7 @@ export async function registerResourcesFromDiscovery(
 
     const { advisory } = probeResult;
 
-    // Check for v1 — only v2 resources can be registered
-    const x402Options = (advisory.paymentOptions ?? []).filter(
-      o => o.protocol === 'x402'
-    );
-    const hasOnlyV1 =
-      x402Options.length > 0 && x402Options.every(o => o.version === 1);
-    if (hasOnlyV1) {
-      return {
-        success: false as const,
-        url: resourceUrl,
-        error: 'x402 v1 response detected — migrate to v2 spec',
-      };
-    }
+    // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
     if (advisory.authMode === 'siwx') {
       return {
@@ -146,6 +134,7 @@ export async function registerResourcesFromDiscovery(
     const result = await registerResource(resourceUrl, advisory, {
       notifyNewServer: false,
       originMetadataFallback: originInfo,
+      warnings: probeResult.warnings,
     });
 
     if (result.success) return result;

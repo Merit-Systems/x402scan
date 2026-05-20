@@ -5,7 +5,10 @@ import {
   upsertOrigin,
 } from '@/services/db/resources/origin';
 
-import type { EndpointMethodAdvisory } from '@agentcash/discovery';
+import type {
+  EndpointMethodAdvisory,
+  AuditWarning,
+} from '@agentcash/discovery';
 import { isX402PaymentOption } from '@/lib/discovery/utils';
 
 import { getOriginFromUrl } from '@/lib/url';
@@ -39,12 +42,64 @@ export const registerResource = async (
      * `info` block from discovery.
      */
     originMetadataFallback?: { title?: string; description?: string };
+    /** Warnings from probeX402Endpoint — merged into the result. */
+    warnings?: AuditWarning[];
   } = {}
 ) => {
+  const warnings: AuditWarning[] = [...(options.warnings ?? [])];
+
+  // --- Pre-registration validation (all rules in one place) ---
+
+  // HTTPS enforcement (allow localhost / 127.0.0.1 for dev)
+  const urlObj = new URL(url);
+  if (
+    urlObj.protocol === 'http:' &&
+    urlObj.hostname !== 'localhost' &&
+    urlObj.hostname !== '127.0.0.1'
+  ) {
+    return {
+      success: false as const,
+      data: advisory.paymentRequiredBody,
+      error: {
+        type: 'validation' as const,
+        parseErrors: [
+          'HTTPS is required for x402 resource registration. Received http:// URL.',
+        ],
+      },
+      warnings,
+    };
+  }
+
+  // v1 rejection — only v2 resources can be registered
   const x402Options = (advisory.paymentOptions ?? []).filter(
     isX402PaymentOption
   );
-  const urlObj = new URL(url);
+  const hasOnlyV1 =
+    x402Options.length > 0 && x402Options.every(o => o.version === 1);
+  if (hasOnlyV1) {
+    return {
+      success: false as const,
+      data: advisory.paymentRequiredBody,
+      error: {
+        type: 'validation' as const,
+        parseErrors: [
+          'x402 v1 response detected — migrate to v2 spec. See https://x402scan.com/discovery/spec',
+        ],
+      },
+      warnings,
+    };
+  }
+
+  // SIWX warning — identity-gated endpoints are valid but not payment-protected
+  if (advisory.authMode === 'siwx') {
+    warnings.push({
+      code: 'SIWX_ENDPOINT',
+      severity: 'warn',
+      message:
+        'This endpoint uses SIWX authentication (identity-gated, not payment-protected)',
+    });
+  }
+
   urlObj.search = '';
   const cleanUrl = urlObj.toString();
   const origin = getOriginFromUrl(cleanUrl);
@@ -58,6 +113,7 @@ export const registerResource = async (
         type: 'parseResponse' as const,
         parseErrors: ['No payment options found'],
       },
+      warnings,
     };
   }
 
@@ -69,6 +125,7 @@ export const registerResource = async (
         type: 'parseResponse' as const,
         parseErrors: ['Missing input schema'],
       },
+      warnings,
     };
   }
 
@@ -159,6 +216,7 @@ export const registerResource = async (
           `No supported networks advertised. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]. Testnets are not indexed.`,
         ],
       },
+      warnings,
     };
   }
 
@@ -173,6 +231,7 @@ export const registerResource = async (
         type: 'parseResponse' as const,
         parseErrors: parsedPaymentRequiredBody.errors,
       },
+      warnings,
     };
   }
 
@@ -194,6 +253,7 @@ export const registerResource = async (
         type: 'database' as const,
         upsertErrors: ['Resource failed to upsert'],
       },
+      warnings,
     };
   }
 
@@ -271,6 +331,7 @@ export const registerResource = async (
       maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
     })),
     response: advisory.paymentRequiredBody,
+    warnings,
     registrationDetails: {
       providedAccepts: mappedAccepts,
       supportedAccepts: resource.accepts,

@@ -404,7 +404,7 @@ export const RegisterResourceForm = () => {
                   Verifying endpoints...
                 </>
               ) : (
-                `Add API (${testedResources.length} resources)`
+                `Add API (${actualDiscoveredResources.length} resources)`
               )}
             </Button>
             {canUseManualMode && (
@@ -426,7 +426,13 @@ export const RegisterResourceForm = () => {
         ) : (
           <Button
             variant="turbo"
-            disabled={manualTargets.length === 0 || isLoading || !isValidUrl}
+            disabled={
+              manualTargets.length === 0 ||
+              isLoading ||
+              isBatchTestLoading ||
+              !isValidUrl ||
+              (!!currentManualFailed && !currentManualTested)
+            }
             onClick={() => {
               void handleRegisterManual();
             }}
@@ -519,11 +525,6 @@ export const RegisterResourceForm = () => {
                       <div className="flex items-center gap-2 text-green-700">
                         <Check className="size-3" />
                         Valid 402 response.
-                      </div>
-                    ) : currentManualFailed ? (
-                      <div className="flex items-center gap-2 text-red-700">
-                        <X className="size-3" />
-                        {getPrimaryProbeError(currentManualFailed)}
                       </div>
                     ) : null}
                   </div>
@@ -668,9 +669,12 @@ export const RegisterResourceForm = () => {
         const issueCount =
           failedResources.length + missingSchemaResources.length;
         const missingSchemaUrls = missingSchemaResources.map(r => r.url);
+        const isV1Issue =
+          failedResources.length > 0 &&
+          failedResources.every(r => r.error?.includes('v1 response detected'));
 
         return (
-          <Collapsible>
+          <Collapsible defaultOpen>
             <CollapsibleTrigger asChild>
               <button className="text-xs text-red-600 dark:text-red-500 flex items-center gap-1 hover:text-red-700 transition-colors">
                 <ChevronDown className="size-3" />
@@ -687,10 +691,9 @@ export const RegisterResourceForm = () => {
                       {failedResources.length === 1 ? '' : 's'} won&apos;t be
                       registered.
                     </strong>{' '}
-                    They need to return a 402 payment challenge — ensure the
-                    x402 paywall runs before request validation, or mark the
-                    required parameters in your OpenAPI spec so we can probe
-                    automatically.
+                    {isV1Issue
+                      ? 'This endpoint returns an x402 v1 response. x402scan only supports v2 — update your paywall to return the v2 format.'
+                      : 'They need to return a 402 payment challenge — ensure the x402 paywall runs before request validation, or mark the required parameters in your OpenAPI spec so we can probe automatically.'}
                   </p>
                   <div className="space-y-2 max-h-[360px] overflow-y-auto">
                     {failedResources.map((failed, idx) => (
@@ -733,6 +736,7 @@ export const RegisterResourceForm = () => {
                 needsSetup={
                   failedResources.length > 0 && testedResources.length === 0
                 }
+                v1Migration={isV1Issue}
                 failedResources={failedResources.map(r => ({
                   url: r.url,
                   error: getPrimaryProbeError(r),
@@ -763,7 +767,7 @@ export const RegisterResourceForm = () => {
       {activeBulkResult?.originId ? (
         <Link href={`/server/${activeBulkResult.originId}`}>
           <Button variant="outline" className="w-full">
-            View API
+            View your API page &rarr;
           </Button>
         </Link>
       ) : null}
