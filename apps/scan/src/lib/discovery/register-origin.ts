@@ -105,6 +105,25 @@ export async function registerResourcesFromDiscovery(
       };
     }
 
+    // OpenAPI is canonical: when the spec declares an authMode that is
+    // neither `paid` nor `apiKey+paid` (i.e. unprotected/apiKey/unspecified),
+    // skip the endpoint instead of probing. The OpenAPI doc has authoritatively
+    // told us this is not an x402 paid route, so a probe failure here is
+    // not a real registration failure — it's the spec working as intended.
+    // Well-known/x402 v1 omits authMode entirely, so we only gate on source.
+    if (
+      source === 'openapi' &&
+      resource.authMode !== 'paid' &&
+      resource.authMode !== 'apiKey+paid'
+    ) {
+      return {
+        success: false as const,
+        skipped: true as const,
+        url: resourceUrl,
+        error: `OpenAPI does not classify this endpoint as paid (authMode=${resource.authMode ?? 'unspecified'})`,
+      };
+    }
+
     const probeResult = await probeX402Endpoint(resourceUrl);
 
     if (!probeResult.success) {
