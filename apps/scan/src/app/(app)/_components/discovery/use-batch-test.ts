@@ -59,14 +59,19 @@ export function useBatchTest(
   useEffect(() => {
     if (!enabled || chunks.length === 0) return;
 
+    let cancelled = false;
+
     const request = Promise.all(
       chunks.map(chunk => mutateAsyncRef.current({ resources: chunk }))
     );
 
     void Promise.resolve()
-      .then(() => setIsLoading(true))
+      .then(() => {
+        if (!cancelled) setIsLoading(true);
+      })
       .then(() => request)
       .then(results => {
+        if (cancelled) return;
         const allResources: TestedResource[] = [];
         const allFailed: FailedResource[] = [];
         for (const result of results) {
@@ -77,6 +82,7 @@ export function useBatchTest(
         setFailed(allFailed);
       })
       .catch(err => {
+        if (cancelled) return;
         const error = err instanceof Error ? err.message : 'Request failed';
         setFailed(
           chunks
@@ -85,8 +91,12 @@ export function useBatchTest(
         );
       })
       .finally(() => {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, [enabled, chunks, runCount]);
 
   const active = enabled && chunks.length > 0;

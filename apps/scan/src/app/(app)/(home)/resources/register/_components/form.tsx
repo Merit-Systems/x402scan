@@ -678,9 +678,6 @@ export const RegisterResourceForm = () => {
         const isV1Issue =
           failedResources.length > 0 &&
           failedResources.every(r => r.error?.includes('v1 response detected'));
-        const missingSchemaResources = testedResources.filter(r =>
-          r.warnings.some(w => w.code === 'MISSING_INPUT_SCHEMA')
-        );
 
         return (
           <Collapsible defaultOpen>
@@ -723,7 +720,6 @@ export const RegisterResourceForm = () => {
                   error: getPrimaryProbeError(r),
                   status: r.statusCode,
                 }))}
-                missingSchemaResources={missingSchemaResources.map(r => r.url)}
               />
             </CollapsibleContent>
           </Collapsible>
