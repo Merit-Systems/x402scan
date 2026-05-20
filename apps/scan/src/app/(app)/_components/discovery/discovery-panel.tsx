@@ -95,12 +95,16 @@ export function DiscoveryFixHint({
     <p className={cn('text-xs text-muted-foreground', className)}>
       <DiscoveryActions
         label={label}
-        failedResources={needsSetup ? undefined : failedResources}
-        warnings={needsSetup ? undefined : warnings}
+        {...(needsSetup
+          ? {}
+          : {
+              failedResources,
+              warnings,
+              missingSchema,
+              missingSchemaResources,
+            })}
         v1Migration={v1Migration}
         noDiscovery={noDiscovery}
-        missingSchema={needsSetup ? undefined : missingSchema}
-        missingSchemaResources={needsSetup ? undefined : missingSchemaResources}
       />{' '}
       or{' '}
       <Link
