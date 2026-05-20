@@ -163,6 +163,6 @@ describe('upsertOrigin', () => {
         },
       }),
     ]);
-    expect(ogImages).toHaveLength(2);
+    expect(ogImages.size).toBe(2);
   });
 });
