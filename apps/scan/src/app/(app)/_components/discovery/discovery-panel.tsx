@@ -67,6 +67,7 @@ export function DiscoveryFixHint({
   warnings,
   v1Migration,
   noDiscovery,
+  needsSetup,
   missingSchema,
   missingSchemaResources,
 }: {
@@ -75,27 +76,35 @@ export function DiscoveryFixHint({
   warnings?: { url: string; error: string; status?: number }[];
   v1Migration?: boolean;
   noDiscovery?: boolean;
+  /** All endpoints failed — treat as needing x402 setup from scratch. */
+  needsSetup?: boolean;
   missingSchema?: boolean;
   missingSchemaResources?: string[];
 }) {
   const label = noDiscovery
     ? 'Have your agent create an OpenAPI spec for your resource'
-    : v1Migration
-      ? 'Migrate to x402 v2 spec in one prompt'
-      : missingSchema
-        ? 'Add input schemas with a prompt'
-        : 'Have your agent fix the errors with a prompt';
+    : needsSetup
+      ? 'Set up x402 with a prompt'
+      : v1Migration
+        ? 'Migrate to x402 v2 spec in one prompt'
+        : missingSchema
+          ? 'Add input schemas with a prompt'
+          : 'Have your agent fix the errors with a prompt';
 
   return (
     <p className={cn('text-xs text-muted-foreground', className)}>
       <DiscoveryActions
         label={label}
-        failedResources={failedResources}
-        warnings={warnings}
+        {...(needsSetup
+          ? {}
+          : {
+              failedResources,
+              warnings,
+              missingSchema,
+              missingSchemaResources,
+            })}
         v1Migration={v1Migration}
         noDiscovery={noDiscovery}
-        missingSchema={missingSchema}
-        missingSchemaResources={missingSchemaResources}
       />{' '}
       or{' '}
       <Link

@@ -385,7 +385,11 @@ export const RegisterResourceForm = () => {
           <div className="flex gap-2">
             <Button
               variant="turbo"
-              disabled={isLoading || isBatchTestLoading}
+              disabled={
+                isLoading ||
+                isBatchTestLoading ||
+                (failedResources.length > 0 && testedResources.length === 0)
+              }
               onClick={handleRegisterDiscovered}
               className="flex-1"
             >
@@ -400,7 +404,7 @@ export const RegisterResourceForm = () => {
                   Verifying endpoints...
                 </>
               ) : (
-                `Add API (${actualDiscoveredResources.length} resources)`
+                `Add API (${testedResources.length} resources)`
               )}
             </Button>
             {canUseManualMode && (
@@ -726,6 +730,9 @@ export const RegisterResourceForm = () => {
                 </>
               )}
               <DiscoveryFixHint
+                needsSetup={
+                  failedResources.length > 0 && testedResources.length === 0
+                }
                 failedResources={failedResources.map(r => ({
                   url: r.url,
                   error: getPrimaryProbeError(r),
