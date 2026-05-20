@@ -28,7 +28,8 @@ export const DiscoverHeading = () => {
           </Link>
         </div>
         <p className="text-muted-foreground text-sm">
-          The x402 analytics dashboard and block explorer
+          The x402 block explorer, analytics dashboard and marketplace for paid
+          APIs and agentic commerce
         </p>
       </div>
       <div className="flex flex-col md:flex-row items-center gap-2">

@@ -35,13 +35,15 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const siteDescription =
+  'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.';
+
 export const metadata: Metadata = {
   title: {
     default: 'x402scan | x402 Ecosystem Explorer',
     template: '%s | x402scan',
   },
-  description:
-    'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
+  description: siteDescription,
   keywords: [
     'x402',
     'blockchain',
@@ -90,11 +92,43 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: LayoutProps<'/'>) {
   await connection();
+  const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'x402scan',
+      url: appUrl,
+      description: siteDescription,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${appUrl}/?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'x402scan',
+      url: appUrl,
+      sameAs: [
+        'https://github.com/Merit-Systems/x402scan',
+        'https://x.com/x402scan',
+      ],
+    },
+  ];
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
         <Toaster />
         <SpeedInsights />
         <Analytics />
