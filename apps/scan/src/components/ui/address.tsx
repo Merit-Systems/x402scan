@@ -4,7 +4,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
 
 import { Copyable } from './copyable';
 
-import { cn, formatAddress } from '@/lib/utils';
+import { addressTextClassName, cn, formatAddress } from '@/lib/utils';
 
 interface Props {
   address: string;
@@ -23,16 +23,13 @@ export const Address: React.FC<Props> = ({
   disableCopy,
 }) => {
   const formattedAddress = formatAddress(address);
+  const addressClassName = cn(addressTextClassName, 'text-xs', className);
 
   if (disableCopy) {
-    return (
-      <span className={cn('font-mono text-xs', className)}>
-        {formattedAddress}
-      </span>
-    );
+    return <span className={addressClassName}>{formattedAddress}</span>;
   }
   const addressComponent = (
-    <Copyable value={address} className={cn('font-mono text-xs', className)}>
+    <Copyable value={address} className={addressClassName}>
       {formattedAddress}
     </Copyable>
   );

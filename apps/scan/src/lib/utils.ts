@@ -75,6 +75,9 @@ export const formatAddress = (address: string) => {
   return address.slice(0, 6) + '...' + address.slice(-6);
 };
 
+export const addressTextClassName =
+  'font-mono [font-feature-settings:"liga"_0,"calt"_0] [font-variant-ligatures:none]';
+
 export function convertToUIMessages(messages: Message[]): UIMessage[] {
   return messages.map(message => ({
     id: message.id,
