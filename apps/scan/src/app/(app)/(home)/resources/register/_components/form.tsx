@@ -386,7 +386,9 @@ export const RegisterResourceForm = () => {
             <Button
               variant="turbo"
               disabled={
-                isLoading || isBatchTestLoading || testedResources.length === 0
+                isLoading ||
+                isBatchTestLoading ||
+                (failedResources.length > 0 && testedResources.length === 0)
               }
               onClick={handleRegisterDiscovered}
               className="flex-1"
@@ -728,7 +730,9 @@ export const RegisterResourceForm = () => {
                 </>
               )}
               <DiscoveryFixHint
-                needsSetup={testedResources.length === 0}
+                needsSetup={
+                  failedResources.length > 0 && testedResources.length === 0
+                }
                 failedResources={failedResources.map(r => ({
                   url: r.url,
                   error: getPrimaryProbeError(r),
