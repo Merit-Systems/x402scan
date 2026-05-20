@@ -411,6 +411,8 @@ export const RegisterResourceForm = () => {
                   <Loader2 className="size-4 animate-spin mr-2" />
                   Verifying endpoints...
                 </>
+              ) : batchTestComplete && registrableResourceCount === 0 ? (
+                `0 valid resources`
               ) : (
                 `Add API (${registrableResourceCount} resources)`
               )}
