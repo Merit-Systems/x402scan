@@ -921,10 +921,11 @@ function ProbeResult({
   const sortedResources = useMemo(() => {
     const priority = (url: string) => {
       if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
+      if (warningUrlSet.has(url)) return 1;
       return 2;
     };
     return [...resources].sort((a, b) => priority(a) - priority(b));
-  }, [resources, invalidUrls, failedUrls]);
+  }, [resources, invalidUrls, failedUrls, warningUrlSet]);
 
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded
