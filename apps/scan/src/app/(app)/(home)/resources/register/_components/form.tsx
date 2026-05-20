@@ -2,9 +2,12 @@
 
 import { useMemo, useState } from 'react';
 
+import type { ChangeEvent } from 'react';
+
 import {
   Check,
   ChevronDown,
+  FileUp,
   Loader2,
   Plus,
   CircleHelp,
@@ -47,6 +50,122 @@ interface ManualRegistrationResult {
   failedDetails: { url: string; error: string; status?: number }[];
   originId?: string;
   origin: string | null;
+}
+
+const HTTP_METHODS = [
+  'get',
+  'post',
+  'put',
+  'patch',
+  'delete',
+  'head',
+  'options',
+  'trace',
+] as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function getFirstServerUrl(spec: Record<string, unknown>): string | null {
+  const servers = spec.servers;
+  if (!Array.isArray(servers)) return null;
+
+  for (const server of servers) {
+    if (!isRecord(server)) continue;
+    if (typeof server.url === 'string' && server.url.trim().length > 0) {
+      return server.url.trim();
+    }
+  }
+
+  return null;
+}
+
+function operationHasSiwxSecurity(operation: Record<string, unknown>): boolean {
+  const security = operation.security;
+  if (!Array.isArray(security)) return false;
+
+  return security.some(
+    entry => isRecord(entry) && Object.hasOwn(entry, 'siwx')
+  );
+}
+
+function isRegisterableOpenApiOperation(operation: unknown): boolean {
+  if (!isRecord(operation)) return false;
+
+  if (Object.hasOwn(operation, 'x-payment-info')) return true;
+  if (operationHasSiwxSecurity(operation)) return true;
+
+  const responses = operation.responses;
+  return isRecord(responses) && Object.hasOwn(responses, '402');
+}
+
+function extractRegisterableUrlsFromOpenApiSpec(
+  specText: string,
+  fallbackOrigin: string | null
+): { origin: string; urls: string[]; skipped: number } {
+  const parsed: unknown = JSON.parse(specText);
+  if (!isRecord(parsed)) {
+    throw new Error('OpenAPI document must be a JSON object.');
+  }
+
+  const serverUrl = getFirstServerUrl(parsed);
+  const baseUrl = serverUrl ?? fallbackOrigin;
+  if (!baseUrl) {
+    throw new Error('Add a servers[0].url value or enter an origin first.');
+  }
+
+  let resolvedBase: URL;
+  try {
+    resolvedBase = new URL(baseUrl);
+  } catch {
+    if (!fallbackOrigin) {
+      throw new Error('OpenAPI server URL must be absolute.');
+    }
+    resolvedBase = new URL(baseUrl, fallbackOrigin);
+  }
+
+  const paths = parsed.paths;
+  if (!isRecord(paths)) {
+    throw new Error('OpenAPI document must include a paths object.');
+  }
+
+  const urls: string[] = [];
+  let skipped = 0;
+
+  for (const [path, pathItem] of Object.entries(paths)) {
+    if (!path.startsWith('/') || !isRecord(pathItem)) {
+      skipped += 1;
+      continue;
+    }
+
+    if (path.includes('{') || path.includes('}')) {
+      skipped += 1;
+      continue;
+    }
+
+    const hasRegisterableOperation = HTTP_METHODS.some(method =>
+      isRegisterableOpenApiOperation(pathItem[method])
+    );
+
+    if (!hasRegisterableOperation) {
+      skipped += 1;
+      continue;
+    }
+
+    urls.push(new URL(path, resolvedBase).toString());
+  }
+
+  const uniqueUrls = Array.from(new Set(urls.map(normalizeUrl)));
+  if (uniqueUrls.length === 0) {
+    throw new Error('No registerable x402 or SIWX operations found.');
+  }
+
+  return {
+    origin: resolvedBase.origin,
+    urls: uniqueUrls,
+    skipped,
+  };
 }
 
 function getErrorMessageFromRegisterResult(result: {
@@ -115,6 +234,13 @@ export const RegisterResourceForm = () => {
     current: number;
     total: number;
   } | null>(null);
+  const [openApiText, setOpenApiText] = useState('');
+  const [openApiImportError, setOpenApiImportError] = useState<string | null>(
+    null
+  );
+  const [openApiImportSummary, setOpenApiImportSummary] = useState<
+    string | null
+  >(null);
   const [isRegisteringManual, setIsRegisteringManual] = useState(false);
   const [manualResult, setManualResult] =
     useState<ManualRegistrationResult | null>(null);
@@ -216,7 +342,44 @@ export const RegisterResourceForm = () => {
     setManualResult(null);
     setManualProgress(null);
     setManualListError(null);
+    setOpenApiImportError(null);
+    setOpenApiImportSummary(null);
     resetBulk();
+  };
+
+  const handleImportOpenApiSpec = (specText = openApiText) => {
+    try {
+      const result = extractRegisterableUrlsFromOpenApiSpec(
+        specText,
+        urlOrigin
+      );
+
+      handleUrlChange(result.origin);
+      setManualUrls(result.urls);
+      setOpenApiText(specText);
+      setOpenApiImportError(null);
+      setOpenApiImportSummary(
+        `Imported ${result.urls.length} endpoint${
+          result.urls.length === 1 ? '' : 's'
+        }${result.skipped > 0 ? `, skipped ${result.skipped}` : ''}.`
+      );
+    } catch (error) {
+      setOpenApiImportError(
+        error instanceof Error ? error.message : 'Could not parse OpenAPI JSON.'
+      );
+      setOpenApiImportSummary(null);
+    }
+  };
+
+  const handleOpenApiFileSelected = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const text = await file.text();
+    handleImportOpenApiSpec(text);
+    event.target.value = '';
   };
 
   const handleUrlChange = (nextUrl: string) => {
@@ -379,6 +542,58 @@ export const RegisterResourceForm = () => {
             <p className="text-xs text-red-600">{manualListError}</p>
           )}
         </div>
+
+        <Collapsible>
+          <CollapsibleTrigger asChild>
+            <button className="text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors flex items-center gap-1">
+              <ChevronDown className="size-3" />
+              Import OpenAPI JSON
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-3 space-y-3">
+            <textarea
+              value={openApiText}
+              onChange={event => {
+                setOpenApiText(event.target.value);
+                setOpenApiImportError(null);
+                setOpenApiImportSummary(null);
+              }}
+              placeholder='Paste openapi.json with "servers" and "paths"'
+              className="min-h-32 w-full rounded-md border bg-background px-3 py-2 text-xs font-mono outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            />
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => handleImportOpenApiSpec()}
+                disabled={openApiText.trim().length === 0}
+              >
+                Import endpoints
+              </Button>
+              <Button asChild variant="ghost" size="sm">
+                <label>
+                  <FileUp className="size-4 mr-2" />
+                  Upload JSON
+                  <input
+                    type="file"
+                    accept="application/json,.json"
+                    className="hidden"
+                    onChange={event => {
+                      void handleOpenApiFileSelected(event);
+                    }}
+                  />
+                </label>
+              </Button>
+            </div>
+            {openApiImportError && (
+              <p className="text-xs text-red-600">{openApiImportError}</p>
+            )}
+            {openApiImportSummary && (
+              <p className="text-xs text-green-700">{openApiImportSummary}</p>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
 
         {/* Primary action */}
         {hasDiscoveryResources ? (
