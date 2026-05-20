@@ -711,6 +711,7 @@ export const RegisterResourceForm = () => {
                 ))}
               </div>
               <DiscoveryFixHint
+                className="font-medium"
                 needsSetup={
                   failedResources.length > 0 && testedResources.length === 0
                 }

@@ -380,36 +380,40 @@ export function DiscoveryPanel({
               {notRegisteredCount} Resource
               {notRegisteredCount === 1 ? '' : 's'} Not Registered
             </summary>
-            <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
-              {allNotRegistered.map((failed, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 bg-muted/50 rounded border text-xs space-y-1"
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-muted-foreground shrink-0">URL:</span>
-                    <span className="font-mono break-all">
-                      {(() => {
-                        try {
-                          return new URL(failed.url).pathname;
-                        } catch {
-                          return failed.url;
-                        }
-                      })()}
-                    </span>
+            <div className="p-4 pt-2 border-t space-y-2">
+              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                {allNotRegistered.map((failed, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">
+                        URL:
+                      </span>
+                      <span className="font-mono break-all">
+                        {(() => {
+                          try {
+                            return new URL(failed.url).pathname;
+                          } catch {
+                            return failed.url;
+                          }
+                        })()}
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">
+                        Error:
+                      </span>
+                      <span className="text-red-600 wrap-break-word">
+                        {failed.error}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-muted-foreground shrink-0">
-                      Error:
-                    </span>
-                    <span className="text-red-600 wrap-break-word">
-                      {failed.error}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
               <DiscoveryFixHint
-                className="mt-2 block"
+                className="font-medium pt-2"
                 failedResources={allNotRegistered}
               />
             </div>
