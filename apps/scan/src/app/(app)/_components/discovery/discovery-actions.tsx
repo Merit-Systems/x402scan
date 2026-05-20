@@ -12,10 +12,13 @@ const GENERIC_PROMPT =
   "Read https://agentcash.dev/merchants.md and follow the guide to make my API discoverable and payable by agents. Do everything automatically. Only ask me if you need input you can't determine yourself.";
 
 function buildErrorPrompt(
-  resources: { url: string; error: string }[],
+  resources: { url: string; error: string; status?: number }[],
   missingSchemaUrls?: string[]
 ): string {
-  const lines = resources.map(r => `- ${r.url}: ${r.error}`);
+  const lines = resources.map(r => {
+    const status = r.status ? ` (HTTP ${r.status})` : '';
+    return `- ${r.url}: ${r.error}${status}`;
+  });
 
   let schemaSection = '';
   if (missingSchemaUrls && missingSchemaUrls.length > 0) {
@@ -45,9 +48,12 @@ Fix each issue. Only ask me if you need input you can't determine yourself.`;
 }
 
 function buildWarningPrompt(
-  resources: { url: string; error: string }[]
+  resources: { url: string; error: string; status?: number }[]
 ): string {
-  const lines = resources.map(r => `- ${r.url}: ${r.error}`);
+  const lines = resources.map(r => {
+    const status = r.status ? ` (HTTP ${r.status})` : '';
+    return `- ${r.url}: ${r.error}${status}`;
+  });
   return `These endpoints were found in my API spec but triggered warnings during registration on x402scan.com:
 
 ${lines.join('\n')}
@@ -106,8 +112,8 @@ export function DiscoveryActions({
 }: {
   iconOnly?: boolean;
   label?: string;
-  failedResources?: { url: string; error: string }[];
-  warnings?: { url: string; error: string }[];
+  failedResources?: { url: string; error: string; status?: number }[];
+  warnings?: { url: string; error: string; status?: number }[];
   v1Migration?: boolean;
   noDiscovery?: boolean;
   missingSchema?: boolean;

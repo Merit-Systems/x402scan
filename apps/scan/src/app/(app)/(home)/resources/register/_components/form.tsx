@@ -726,7 +726,11 @@ export const RegisterResourceForm = () => {
                 </>
               )}
               <DiscoveryFixHint
-                failedResources={failedResources}
+                failedResources={failedResources.map(r => ({
+                  url: r.url,
+                  error: getPrimaryProbeError(r),
+                  status: r.statusCode,
+                }))}
                 missingSchemaResources={missingSchemaUrls}
               />
             </CollapsibleContent>
