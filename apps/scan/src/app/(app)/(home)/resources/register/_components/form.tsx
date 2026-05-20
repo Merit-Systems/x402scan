@@ -385,7 +385,9 @@ export const RegisterResourceForm = () => {
           <div className="flex gap-2">
             <Button
               variant="turbo"
-              disabled={isLoading || isBatchTestLoading}
+              disabled={
+                isLoading || isBatchTestLoading || testedResources.length === 0
+              }
               onClick={handleRegisterDiscovered}
               className="flex-1"
             >
@@ -400,7 +402,7 @@ export const RegisterResourceForm = () => {
                   Verifying endpoints...
                 </>
               ) : (
-                `Add API (${actualDiscoveredResources.length} resources)`
+                `Add API (${testedResources.length} resources)`
               )}
             </Button>
             {canUseManualMode && (
