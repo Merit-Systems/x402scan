@@ -1,3 +1,3 @@
-export const DefaultBreadcrumbs = () => {
+export default function DefaultBreadcrumbs() {
   return null;
-};
+}

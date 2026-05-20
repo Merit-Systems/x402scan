@@ -46,5 +46,8 @@ export const generateMetadata = async ({
   return {
     title: facilitator.name,
     description: `x402 activity for the ${facilitator.name} facilitator`,
+    alternates: {
+      canonical: `/facilitator/${id}`,
+    },
   };
 };
