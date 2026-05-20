@@ -158,6 +158,14 @@ export const RegisterResourceForm = () => {
   const hasDiscoveryResources =
     discoveryFound && actualDiscoveredResources.length > 0;
 
+  // After batch test completes, count only passing resources.
+  // Before batch test, fall back to total discovered count.
+  const batchTestComplete =
+    testedResources.length > 0 || failedResources.length > 0;
+  const registrableResourceCount = batchTestComplete
+    ? testedResources.length
+    : actualDiscoveredResources.length;
+
   const canUseManualMode = isValidUrl && !isOriginOnly;
   const currentUrlAlreadyInManualList = manualUrls.includes(normalizedUrl);
   const canAddCurrentUrl =
@@ -404,7 +412,7 @@ export const RegisterResourceForm = () => {
                   Verifying endpoints...
                 </>
               ) : (
-                `Add API (${actualDiscoveredResources.length} resources)`
+                `Add API (${registrableResourceCount} resources)`
               )}
             </Button>
             {canUseManualMode && (
