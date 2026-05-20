@@ -71,8 +71,8 @@ export function DiscoveryFixHint({
   missingSchemaResources,
 }: {
   className?: string;
-  failedResources?: { url: string; error: string }[];
-  warnings?: { url: string; error: string }[];
+  failedResources?: { url: string; error: string; status?: number }[];
+  warnings?: { url: string; error: string; status?: number }[];
   v1Migration?: boolean;
   noDiscovery?: boolean;
   missingSchema?: boolean;
@@ -912,7 +912,13 @@ function FailedResourceCard({
               <DiscoveryFixHint v1Migration />
             ) : (
               <DiscoveryFixHint
-                failedResources={[{ url: resourceUrl, error: errorMessage }]}
+                failedResources={[
+                  {
+                    url: resourceUrl,
+                    error: errorMessage,
+                    status: failedDetails?.statusCode,
+                  },
+                ]}
               />
             )}
 
