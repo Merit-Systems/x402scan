@@ -100,6 +100,18 @@ function isRegisterableOpenApiOperation(operation: unknown): boolean {
   return isRecord(responses) && Object.hasOwn(responses, '402');
 }
 
+function resolveOpenApiPathUrl(path: string, resolvedBase: URL): string {
+  const basePath =
+    resolvedBase.pathname === '/'
+      ? ''
+      : resolvedBase.pathname.replace(/\/$/, '');
+  const endpointUrl = new URL(resolvedBase);
+  endpointUrl.pathname = `${basePath}${path}`;
+  endpointUrl.search = '';
+  endpointUrl.hash = '';
+  return endpointUrl.toString();
+}
+
 function extractRegisterableUrlsFromOpenApiSpec(
   specText: string,
   fallbackOrigin: string | null
@@ -153,7 +165,7 @@ function extractRegisterableUrlsFromOpenApiSpec(
       continue;
     }
 
-    urls.push(new URL(path, resolvedBase).toString());
+    urls.push(resolveOpenApiPathUrl(path, resolvedBase));
   }
 
   const uniqueUrls = Array.from(new Set(urls.map(normalizeUrl)));
