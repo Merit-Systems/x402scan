@@ -29,11 +29,7 @@ import {
 
 import { Favicon } from '@/app/(app)/_components/favicon';
 
-import {
-  cleanExternalText,
-  formatAddress,
-  formatCompactAgo,
-} from '@/lib/utils';
+import { cleanExternalText, formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
@@ -248,8 +244,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
 /**
  * Server cell — title (curated) + description on top, hostname tucked
  * underneath in mono. Falls back to hostname-as-title when no curated title
- * exists. Address(es) and search-endpoint summary live in a hover tooltip so
- * the cell stays scannable.
+ * exists.
  */
 const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
   const origin = item.origins[0];
@@ -260,11 +255,7 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
   const title = rawTitle ? cleanExternalText(rawTitle) : hostname;
   const rawDescription = origin.description?.trim();
   const description = rawDescription ? cleanExternalText(rawDescription) : null;
-  const recipients = item.recipients;
-  const endpoint = item.searchEndpoint;
   const otherOrigins = item.origins.slice(1);
-  const hasTooltipContent =
-    recipients.length > 0 || endpoint !== undefined || otherOrigins.length > 0;
 
   // Stub rows from search results have id === origin URL (no x402scan record
   // exists yet). Linking to /server/<url> 404s, so jump out to the origin.
@@ -296,7 +287,7 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
     </>
   );
 
-  const trigger = isExternal ? (
+  return isExternal ? (
     <a
       href={origin.origin}
       target="_blank"
@@ -312,49 +303,6 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
     >
       {innerContent}
     </Link>
-  );
-
-  if (!hasTooltipContent) return trigger;
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-      <TooltipContent side="bottom" className="max-w-xs space-y-2">
-        {endpoint?.summary ? (
-          <div>
-            <p className="font-medium text-xs">
-              {endpoint.method} {endpoint.path}
-            </p>
-            <p className="text-xs text-muted-foreground">{endpoint.summary}</p>
-          </div>
-        ) : null}
-        {recipients.length > 0 ? (
-          <div>
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
-              Recipient
-              {recipients.length === 1 ? '' : `s (${recipients.length})`}
-            </p>
-            <ul className="font-mono text-[11px] space-y-0.5">
-              {recipients.map(addr => (
-                <li key={addr}>{formatAddress(addr)}</li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-        {otherOrigins.length > 0 ? (
-          <div>
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
-              Also reachable as
-            </p>
-            <ul className="text-[11px] space-y-0.5">
-              {otherOrigins.map(o => (
-                <li key={o.id}>{new URL(o.origin).hostname}</li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-      </TooltipContent>
-    </Tooltip>
   );
 };
 
