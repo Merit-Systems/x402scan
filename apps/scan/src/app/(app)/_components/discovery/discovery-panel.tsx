@@ -284,7 +284,15 @@ export function DiscoveryPanel({
                       <span className="text-muted-foreground shrink-0">
                         URL:
                       </span>
-                      <span className="font-mono break-all">{failed.url}</span>
+                      <span className="font-mono break-all">
+                        {(() => {
+                          try {
+                            return new URL(failed.url).pathname;
+                          } catch {
+                            return failed.url;
+                          }
+                        })()}
+                      </span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-muted-foreground shrink-0">
@@ -380,7 +388,15 @@ export function DiscoveryPanel({
                 >
                   <div className="flex items-start gap-2">
                     <span className="text-muted-foreground shrink-0">URL:</span>
-                    <span className="font-mono break-all">{failed.url}</span>
+                    <span className="font-mono break-all">
+                      {(() => {
+                        try {
+                          return new URL(failed.url).pathname;
+                        } catch {
+                          return failed.url;
+                        }
+                      })()}
+                    </span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-muted-foreground shrink-0">
