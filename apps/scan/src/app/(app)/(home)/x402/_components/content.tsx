@@ -127,9 +127,8 @@ export function X402Content() {
         <Section title="How x402 works">
           <ol className="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground">
             <li>
-              <span className="font-medium text-foreground">1. Request:</span>{' '}
-              a client or AI agent sends a normal HTTP request to a paid
-              resource.
+              <span className="font-medium text-foreground">1. Request:</span> a
+              client or AI agent sends a normal HTTP request to a paid resource.
             </li>
             <li>
               <span className="font-medium text-foreground">2. Pay:</span> the
@@ -137,8 +136,8 @@ export function X402Content() {
               client submits payment.
             </li>
             <li>
-              <span className="font-medium text-foreground">3. Retry:</span>{' '}
-              the client retries with payment proof and receives the API result.
+              <span className="font-medium text-foreground">3. Retry:</span> the
+              client retries with payment proof and receives the API result.
             </li>
           </ol>
         </Section>
@@ -160,16 +159,28 @@ export function X402Content() {
           description="x402scan indexes the services, payments, and infrastructure behind the x402 ecosystem."
         >
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <Link className="font-medium underline-offset-4 hover:underline" href="/resources">
+            <Link
+              className="font-medium underline-offset-4 hover:underline"
+              href="/resources"
+            >
               Marketplace
             </Link>
-            <Link className="font-medium underline-offset-4 hover:underline" href="/transactions">
+            <Link
+              className="font-medium underline-offset-4 hover:underline"
+              href="/transactions"
+            >
               Transactions
             </Link>
-            <Link className="font-medium underline-offset-4 hover:underline" href="/facilitators">
+            <Link
+              className="font-medium underline-offset-4 hover:underline"
+              href="/facilitators"
+            >
               Facilitators
             </Link>
-            <Link className="font-medium underline-offset-4 hover:underline" href="/networks">
+            <Link
+              className="font-medium underline-offset-4 hover:underline"
+              href="/networks"
+            >
               Networks
             </Link>
           </div>

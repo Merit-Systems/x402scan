@@ -120,17 +120,23 @@ export function AgenticCommerceContent() {
         >
           <ol className="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground">
             <li>
-              <span className="font-medium text-foreground">1. Add pay-per-call:</span>{' '}
-              enable per-request pricing so agents can pay without
-              subscriptions or invoices.
+              <span className="font-medium text-foreground">
+                1. Add pay-per-call:
+              </span>{' '}
+              enable per-request pricing so agents can pay without subscriptions
+              or invoices.
             </li>
             <li>
-              <span className="font-medium text-foreground">2. Publish discovery:</span>{' '}
+              <span className="font-medium text-foreground">
+                2. Publish discovery:
+              </span>{' '}
               describe what the API does, what it costs, and how an agent should
               call it.
             </li>
             <li>
-              <span className="font-medium text-foreground">3. Reach agents:</span>{' '}
+              <span className="font-medium text-foreground">
+                3. Reach agents:
+              </span>{' '}
               let agents inspect schemas and pricing, pay, and execute the
               request.
             </li>
@@ -143,9 +149,9 @@ export function AgenticCommerceContent() {
         >
           <div className="max-w-3xl space-y-3 text-sm leading-6 text-muted-foreground">
             <p>
-              x402 is the payment standard, AgentCash is the MCP for
-              discovering and paying for premium APIs, and x402scan is where
-              those services become visible.
+              x402 is the payment standard, AgentCash is the MCP for discovering
+              and paying for premium APIs, and x402scan is where those services
+              become visible.
             </p>
             <p>
               The goal is not a new checkout page. The goal is a market where
@@ -160,13 +166,22 @@ export function AgenticCommerceContent() {
           description="Register your API on x402scan and publish discovery metadata so agents can understand and call it."
         >
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-            <Link className="font-medium underline-offset-4 hover:underline" href="/discovery">
+            <Link
+              className="font-medium underline-offset-4 hover:underline"
+              href="/discovery"
+            >
               Sell to agents
             </Link>
-            <Link className="font-medium underline-offset-4 hover:underline" href="/resources/register">
+            <Link
+              className="font-medium underline-offset-4 hover:underline"
+              href="/resources/register"
+            >
               Register API
             </Link>
-            <Link className="font-medium underline-offset-4 hover:underline" href="/x402">
+            <Link
+              className="font-medium underline-offset-4 hover:underline"
+              href="/x402"
+            >
               Explore x402
             </Link>
           </div>
