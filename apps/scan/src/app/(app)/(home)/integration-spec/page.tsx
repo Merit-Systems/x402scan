@@ -26,6 +26,20 @@ export const metadata: Metadata = {
 const endpointExample = `curl -i -X POST https://yourdomain.com/api/route
 curl -i -X GET https://yourdomain.com/api/route`;
 
+const originRegistrationExample = `fetch_with_auth({
+  "url": "https://x402scan.com/api/x402/registry/register-origin",
+  "method": "POST",
+  "headers": { "Content-Type": "application/json" },
+  "body": { "origin": "https://yourdomain.com" }
+})`;
+
+const resourceRegistrationExample = `fetch_with_auth({
+  "url": "https://x402scan.com/api/x402/registry/register",
+  "method": "POST",
+  "headers": { "Content-Type": "application/json" },
+  "body": { "url": "https://yourdomain.com/api/paid-route" }
+})`;
+
 const agentPrompt = `Implement discovery for this server and make it pass.
 
 Discovery strategy:
@@ -149,6 +163,38 @@ export default function DiscoverySpecPage() {
             before you register.
           </p>
           <TryDiscovery />
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold">Register Programmatically</h2>
+          <p className="text-sm text-muted-foreground">
+            Register from scripts, agents, or CI by calling the registry API
+            with SIWX wallet authentication. Use origin registration for the
+            normal OpenAPI flow, or single-resource registration when you only
+            need to probe one endpoint.
+          </p>
+          <Card>
+            <CardContent className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold">
+                  Register every discovered resource for an origin
+                </h3>
+                <CodeBlock code={originRegistrationExample} />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold">
+                  Register one x402-protected endpoint
+                </h3>
+                <CodeBlock code={resourceRegistrationExample} />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Both endpoints are free to call but require a{' '}
+                <code>SIGN-IN-WITH-X</code> proof. The agentcash MCP{' '}
+                <code>fetch_with_auth</code> tool creates that proof and retries
+                the request automatically.
+              </p>
+            </CardContent>
+          </Card>
         </section>
 
         <section className="space-y-3">

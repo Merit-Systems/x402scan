@@ -25,6 +25,34 @@ Requirements:
 - Use OpenAPI \`security\` + \`components.securitySchemes\` for auth declaration.
 - Add high-level guidance in \`info.x-guidance\` for agent-friendly discovery.
 
+## Register Programmatically
+
+Register from scripts, agents, or CI by calling the registry API with SIWX wallet authentication. Use origin registration for the normal OpenAPI flow, or single-resource registration when you only need to probe one endpoint.
+
+### Register every discovered resource for an origin
+
+\`\`\`js
+fetch_with_auth({
+  "url": "https://x402scan.com/api/x402/registry/register-origin",
+  "method": "POST",
+  "headers": { "Content-Type": "application/json" },
+  "body": { "origin": "https://yourdomain.com" }
+})
+\`\`\`
+
+### Register one x402-protected endpoint
+
+\`\`\`js
+fetch_with_auth({
+  "url": "https://x402scan.com/api/x402/registry/register",
+  "method": "POST",
+  "headers": { "Content-Type": "application/json" },
+  "body": { "url": "https://yourdomain.com/api/paid-route" }
+})
+\`\`\`
+
+Both endpoints are free to call but require a \`SIGN-IN-WITH-X\` proof. The agentcash MCP \`fetch_with_auth\` tool creates that proof and retries the request automatically.
+
 ### Pricing modes in x-payment-info
 
 - Fixed: \`{ price: { mode: "fixed", currency: "USD", amount: "<amount>" } }\`
