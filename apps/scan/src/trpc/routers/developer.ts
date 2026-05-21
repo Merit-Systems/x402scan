@@ -180,24 +180,10 @@ export const developerRouter = createTRPCRouter({
           error: r.invalidReason ?? 'Invalid resource format',
         }));
 
-      // Only probe endpoints that are x402-paid. Non-paid endpoints
-      // (unprotected, apiKey-only, no authMode) are returned as failed
-      // with a clear reason. SIWX endpoints are excluded entirely (they
-      // are surfaced via authModeMap on the client).
+      // Only probe endpoints that are x402-paid. Non-paid endpoints are
+      // handled client-side (grey strikethrough in the resource list).
+      // SIWX endpoints are excluded entirely (surfaced via authModeMap).
       const paidModes = new Set(['paid', 'apiKey+paid']);
-      const nonPaidResults: FailedResource[] = input.resources
-        .filter(
-          r =>
-            !r.invalid &&
-            r.authMode !== 'siwx' &&
-            (r.authMode == null || !paidModes.has(r.authMode))
-        )
-        .map(r => ({
-          success: false as const,
-          url: r.url,
-          error: `Not an x402 paid endpoint (authMode: ${r.authMode ?? 'none'})`,
-        }));
-
       const probeableResources = input.resources.filter(
         r => !r.invalid && r.authMode != null && paidModes.has(r.authMode)
       );
@@ -210,8 +196,9 @@ export const developerRouter = createTRPCRouter({
         );
       }
 
-      // Combine test results with invalid and non-paid results
-      const allResults = [...testResults, ...invalidResults, ...nonPaidResults];
+      // Combine test results with invalid results only. Non-paid endpoints
+      // are handled client-side (grey strikethrough) — they're not errors.
+      const allResults = [...testResults, ...invalidResults];
 
       return {
         resources: allResults.filter(
