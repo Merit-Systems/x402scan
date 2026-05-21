@@ -23,7 +23,10 @@ interface BatchTestResult {
   ) => Promise<void>;
 }
 
-const BATCH_SIZE = 20;
+// One endpoint per request for per-endpoint progress updates.
+// The server probes sequentially anyway, so N requests of 1 endpoint
+// has the same total probe time as 1 request of N endpoints.
+const BATCH_SIZE = 1;
 
 /**
  * Split array into chunks of specified size
