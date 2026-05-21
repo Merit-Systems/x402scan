@@ -158,13 +158,12 @@ export const RegisterResourceForm = () => {
   const hasDiscoveryResources =
     discoveryFound && actualDiscoveredResources.length > 0;
 
-  // After batch test completes, count only passing resources.
-  // Before batch test, fall back to total discovered count.
+  // Always show the discovered count. The server re-discovers independently
+  // and will process all resources, so showing only the batch-test-passing
+  // subset is misleading (the success message would show a higher number).
   const batchTestComplete =
     testedResources.length > 0 || failedResources.length > 0;
-  const registrableResourceCount = batchTestComplete
-    ? testedResources.length
-    : actualDiscoveredResources.length;
+  const registrableResourceCount = actualDiscoveredResources.length;
 
   const canUseManualMode = isValidUrl && !isOriginOnly;
   const currentUrlAlreadyInManualList = manualUrls.includes(normalizedUrl);
@@ -411,7 +410,9 @@ export const RegisterResourceForm = () => {
                   <Loader2 className="size-4 animate-spin mr-2" />
                   {`Verifying ${actualDiscoveredResources.length} endpoints...`}
                 </>
-              ) : batchTestComplete && registrableResourceCount === 0 ? (
+              ) : batchTestComplete &&
+                failedResources.length > 0 &&
+                testedResources.length === 0 ? (
                 `0 valid resources`
               ) : (
                 `Add API (${registrableResourceCount} resources)`
