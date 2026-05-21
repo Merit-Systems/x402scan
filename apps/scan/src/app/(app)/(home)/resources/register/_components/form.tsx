@@ -533,6 +533,63 @@ export const RegisterResourceForm = () => {
         );
       })()}
 
+      {/* Warnings — endpoints that will register but have issues */}
+      {(() => {
+        if (activeBulkResult || isBatchTestLoading) return null;
+        const resourcesWithWarnings = testedResources.filter(
+          r => r.warnings && r.warnings.length > 0
+        );
+        if (resourcesWithWarnings.length === 0) return null;
+
+        return (
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <button className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1 hover:text-yellow-700 transition-colors">
+                <ChevronDown className="size-3" />
+                {resourcesWithWarnings.length} endpoint
+                {resourcesWithWarnings.length === 1 ? '' : 's'} with warnings
+                (Not blocking)
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-2 space-y-3">
+              <p className="text-xs text-muted-foreground">
+                These endpoints will still be registered, but have issues that
+                may affect agent compatibility.
+              </p>
+              <div className="space-y-2 max-h-[360px] overflow-y-auto">
+                {resourcesWithWarnings.map((r, idx) => (
+                  <div
+                    key={`${r.url}-${idx}`}
+                    className="p-2 bg-muted/50 rounded border text-xs space-y-1"
+                  >
+                    <div className="font-mono text-muted-foreground truncate">
+                      {toPathLabel(r.url)}
+                    </div>
+                    {r.warnings?.map((w, wi) => (
+                      <div
+                        key={wi}
+                        className="text-yellow-600 dark:text-yellow-500"
+                      >
+                        {w.message}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              <DiscoveryFixHint
+                className="font-medium"
+                warnings={resourcesWithWarnings.flatMap(r =>
+                  (r.warnings ?? []).map(w => ({
+                    url: r.url,
+                    error: w.message,
+                  }))
+                )}
+              />
+            </CollapsibleContent>
+          </Collapsible>
+        );
+      })()}
+
       {/* Bulk result */}
       {activeBulkResult && activeSummaryOrigin ? (
         <DiscoveryPanel
