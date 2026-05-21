@@ -863,10 +863,11 @@ function ProbeResult({
   const sortedResources = useMemo(() => {
     const priority = (url: string) => {
       if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
-      return 2;
+      if (testedUrls.has(url) || siwxUrls.has(url)) return 1;
+      return 2; // non-probed (not paid) — sort to bottom
     };
     return [...resources].sort((a, b) => priority(a) - priority(b));
-  }, [resources, invalidUrls, failedUrls]);
+  }, [resources, invalidUrls, failedUrls, testedUrls, siwxUrls]);
 
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded
@@ -944,6 +945,9 @@ function ProbeResult({
                 ) : testedUrls.has(resource) ? (
                   <Check className="size-3 text-green-600 shrink-0" />
                 ) : failedUrls.has(resource) ? (
+                  <X className="size-3 text-red-500 shrink-0" />
+                ) : !isBatchTestLoading &&
+                  (testedUrls.size > 0 || failedUrls.size > 0) ? (
                   <X className="size-3 text-red-500 shrink-0" />
                 ) : null}
                 {toPathLabel(resource)}
