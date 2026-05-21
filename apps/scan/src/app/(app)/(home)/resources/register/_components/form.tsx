@@ -159,11 +159,13 @@ export const RegisterResourceForm = () => {
     discoveryFound && actualDiscoveredResources.length > 0;
 
   // Always show the discovered count. The server re-discovers independently
-  // and will process all resources, so showing only the batch-test-passing
-  // subset is misleading (the success message would show a higher number).
+  // After batch test completes, count only passing resources.
+  // Before batch test, fall back to total discovered count.
   const batchTestComplete =
     testedResources.length > 0 || failedResources.length > 0;
-  const registrableResourceCount = actualDiscoveredResources.length;
+  const registrableResourceCount = batchTestComplete
+    ? testedResources.length
+    : actualDiscoveredResources.length;
 
   const canUseManualMode = isValidUrl && !isOriginOnly;
   const currentUrlAlreadyInManualList = manualUrls.includes(normalizedUrl);
