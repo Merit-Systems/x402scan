@@ -65,45 +65,26 @@ export function DiscoveryFixHint({
   className,
   failedResources,
   warnings,
-  v1Migration,
   noDiscovery,
-  needsSetup,
-  missingSchema,
   missingSchemaResources,
 }: {
   className?: string;
   failedResources?: { url: string; error: string; status?: number }[];
   warnings?: { url: string; error: string; status?: number }[];
-  v1Migration?: boolean;
   noDiscovery?: boolean;
-  /** All endpoints failed — treat as needing x402 setup from scratch. */
-  needsSetup?: boolean;
-  missingSchema?: boolean;
   missingSchemaResources?: string[];
 }) {
   const label = noDiscovery
     ? 'Have your agent create an OpenAPI spec for your resource'
-    : needsSetup
-      ? 'Set up x402 with a prompt'
-      : v1Migration
-        ? 'Migrate to x402 v2 spec in one prompt'
-        : missingSchema
-          ? 'Add input schemas with a prompt'
-          : 'Have your agent fix the errors with a prompt';
+    : 'Have your agent fix the issues with a prompt';
 
   return (
     <p className={cn('text-sm text-foreground', className)}>
       <DiscoveryActions
         label={label}
-        {...(needsSetup
-          ? {}
-          : {
-              failedResources,
-              warnings,
-              missingSchema,
-              missingSchemaResources,
-            })}
-        v1Migration={v1Migration}
+        failedResources={failedResources}
+        warnings={warnings}
+        missingSchemaResources={missingSchemaResources}
         noDiscovery={noDiscovery}
       />{' '}
       or{' '}
@@ -979,19 +960,15 @@ function FailedResourceCard({
               ]}
             />
 
-            {isV1Error ? (
-              <DiscoveryFixHint v1Migration />
-            ) : (
-              <DiscoveryFixHint
-                failedResources={[
-                  {
-                    url: resourceUrl,
-                    error: errorMessage,
-                    status: failedDetails?.statusCode,
-                  },
-                ]}
-              />
-            )}
+            <DiscoveryFixHint
+              failedResources={[
+                {
+                  url: resourceUrl,
+                  error: errorMessage,
+                  status: failedDetails?.statusCode,
+                },
+              ]}
+            />
 
             {/* Sample body input — shown for reachable endpoints that didn't return 402 */}
             {onRetry && !isSiwx && !isV1Error && (

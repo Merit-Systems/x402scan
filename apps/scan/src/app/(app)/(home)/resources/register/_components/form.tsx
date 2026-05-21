@@ -522,10 +522,6 @@ export const RegisterResourceForm = () => {
               </div>
               <DiscoveryFixHint
                 className="font-medium"
-                needsSetup={
-                  failedResources.length > 0 && testedResources.length === 0
-                }
-                v1Migration={isV1Issue}
                 failedResources={failedResources.map(r => ({
                   url: r.url,
                   error: getPrimaryProbeError(r),

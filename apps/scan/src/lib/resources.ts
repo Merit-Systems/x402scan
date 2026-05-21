@@ -98,7 +98,7 @@ export function validateResource(
       return {
         valid: false,
         error:
-          'Missing input schema — add request/response schemas to your OpenAPI spec',
+          'Missing input schema — add a requestBody or parameter schema to your OpenAPI spec so agents know what to send',
       };
     }
   }
