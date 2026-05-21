@@ -6,6 +6,7 @@ import {
   Check,
   ChevronDown,
   Loader2,
+  Minus,
   Plus,
   CircleHelp,
   Trash2,
@@ -851,6 +852,16 @@ function ProbeResult({
       ),
     [authModeMap]
   );
+  const paidModes = useMemo(() => new Set(['paid', 'apiKey+paid']), []);
+  const nonPaidUrls = useMemo(
+    () =>
+      new Set(
+        resources.filter(
+          url => !siwxUrls.has(url) && !paidModes.has(authModeMap[url] ?? '')
+        )
+      ),
+    [resources, authModeMap, siwxUrls, paidModes]
+  );
   const invalidUrls = useMemo(
     () =>
       new Set(
@@ -862,12 +873,12 @@ function ProbeResult({
   );
   const sortedResources = useMemo(() => {
     const priority = (url: string) => {
+      if (nonPaidUrls.has(url)) return 2;
       if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
-      if (testedUrls.has(url) || siwxUrls.has(url)) return 1;
-      return 2; // non-probed (not paid) — sort to bottom
+      return 1; // passed or siwx
     };
     return [...resources].sort((a, b) => priority(a) - priority(b));
-  }, [resources, invalidUrls, failedUrls, testedUrls, siwxUrls]);
+  }, [resources, invalidUrls, failedUrls, nonPaidUrls]);
 
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded
@@ -938,7 +949,9 @@ function ProbeResult({
                 key={resource}
                 className="font-mono truncate flex items-center gap-1.5"
               >
-                {invalidUrls.has(resource) ? (
+                {nonPaidUrls.has(resource) ? (
+                  <Minus className="size-3 text-muted-foreground/40 shrink-0" />
+                ) : invalidUrls.has(resource) ? (
                   <X className="size-3 text-red-500 shrink-0" />
                 ) : siwxUrls.has(resource) ? (
                   <Check className="size-3 text-primary shrink-0" />
@@ -946,11 +959,16 @@ function ProbeResult({
                   <Check className="size-3 text-green-600 shrink-0" />
                 ) : failedUrls.has(resource) ? (
                   <X className="size-3 text-red-500 shrink-0" />
-                ) : !isBatchTestLoading &&
-                  (testedUrls.size > 0 || failedUrls.size > 0) ? (
-                  <X className="size-3 text-red-500 shrink-0" />
                 ) : null}
-                {toPathLabel(resource)}
+                <span
+                  className={
+                    nonPaidUrls.has(resource)
+                      ? 'line-through text-muted-foreground/40'
+                      : undefined
+                  }
+                >
+                  {toPathLabel(resource)}
+                </span>
               </li>
             ))}
             {!expanded && hiddenCount > 0 && (
