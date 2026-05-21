@@ -163,8 +163,11 @@ export function useDiscovery({
   const discoveryFound = discoveryQuery.data?.found ?? false;
   const discoveryResources: DiscoveredResource[] = useMemo(() => {
     const raw = discoveryQuery.data?.found ? discoveryQuery.data.resources : [];
+    // Only include endpoints that discovery explicitly classified as registrable.
+    // Unclassified endpoints (authMode absent) are excluded — if discovery can't
+    // determine the auth mode, the endpoint is likely not x402-paid or SIWX.
     return raw.filter(
-      r => !r.authMode || REGISTRABLE_AUTH_MODES.has(r.authMode)
+      r => r.authMode != null && REGISTRABLE_AUTH_MODES.has(r.authMode)
     );
   }, [discoveryQuery.data]);
   const discoveryCheckComplete =

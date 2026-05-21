@@ -7,9 +7,7 @@ import {
   ChevronDown,
   Loader2,
   Minus,
-  Plus,
   CircleHelp,
-  Trash2,
   TriangleAlert,
   X,
 } from 'lucide-react';
@@ -20,8 +18,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Tooltip,
   TooltipContent,
@@ -109,9 +105,6 @@ function getPrimaryProbeError(
 export const RegisterResourceForm = () => {
   const [url, setUrl] = useState('');
   const [httpWarning, setHttpWarning] = useState(false);
-  const [headers, setHeaders] = useState<{ name: string; value: string }[]>([]);
-  const [manualUrls, setManualUrls] = useState<string[]>([]);
-  const [manualListError, setManualListError] = useState<string | null>(null);
   const [manualProgress, setManualProgress] = useState<{
     current: number;
     total: number;
@@ -152,11 +145,6 @@ export const RegisterResourceForm = () => {
 
   const normalizedUrl = useMemo(() => normalizeUrl(url.trim()), [url]);
 
-  const queueOrigin = useMemo(
-    () => (manualUrls.length > 0 ? safeGetOrigin(manualUrls[0] ?? '') : null),
-    [manualUrls]
-  );
-
   const hasDiscoveryResources =
     discoveryFound && actualDiscoveredResources.length > 0;
 
@@ -173,18 +161,8 @@ export const RegisterResourceForm = () => {
     : actualDiscoveredResources.length;
 
   const canUseManualMode = isValidUrl && !isOriginOnly;
-  const currentUrlAlreadyInManualList = manualUrls.includes(normalizedUrl);
-  const canAddCurrentUrl =
-    canUseManualMode &&
-    !currentUrlAlreadyInManualList &&
-    (!queueOrigin || queueOrigin === urlOrigin);
 
-  const manualTargets =
-    manualUrls.length > 0
-      ? manualUrls
-      : canUseManualMode
-        ? [normalizedUrl]
-        : [];
+  const manualTargets = canUseManualMode ? [normalizedUrl] : [];
 
   const testedResourceByUrl = useMemo(() => {
     const map = new Map<string, (typeof testedResources)[number]>();
@@ -209,27 +187,10 @@ export const RegisterResourceForm = () => {
 
   const activeBulkResult = manualResult ?? bulkData ?? null;
   const activeSummaryOrigin = manualResult?.origin ?? urlOrigin;
-  const requestHeaders = useMemo(() => {
-    const entries = headers
-      .map(header => ({
-        name: header.name.trim(),
-        value: header.value,
-      }))
-      .filter(header => header.name.length > 0);
-
-    if (entries.length === 0) {
-      return undefined;
-    }
-
-    return Object.fromEntries(
-      entries.map(header => [header.name, header.value])
-    );
-  }, [headers]);
 
   const resetStateForNewRun = () => {
     setManualResult(null);
     setManualProgress(null);
-    setManualListError(null);
     resetBulk();
   };
 
@@ -237,40 +198,12 @@ export const RegisterResourceForm = () => {
     setUrl(nextUrl);
     setManualResult(null);
     setManualProgress(null);
-    setManualListError(null);
     resetBulk();
-  };
-
-  const handleAddCurrentUrl = () => {
-    if (!canUseManualMode) {
-      return;
-    }
-
-    if (queueOrigin && queueOrigin !== urlOrigin) {
-      setManualListError('All manual URLs must share the same origin.');
-      return;
-    }
-
-    if (!currentUrlAlreadyInManualList) {
-      setManualUrls(current => [...current, normalizedUrl]);
-    }
-
-    setManualListError(null);
-    setManualResult(null);
-    setManualProgress(null);
-  };
-
-  const handleRemoveManualUrl = (targetUrl: string) => {
-    setManualUrls(current => current.filter(item => item !== targetUrl));
-    setManualResult(null);
-    setManualProgress(null);
-    setManualListError(null);
   };
 
   const handleRegisterDiscovered = () => {
     setManualResult(null);
     setManualProgress(null);
-    setManualListError(null);
     handleRegisterAll();
   };
 
@@ -301,7 +234,6 @@ export const RegisterResourceForm = () => {
       try {
         const result = await registerMutation.mutateAsync({
           url: targetUrl,
-          headers: requestHeaders,
         });
 
         if (result.success) {
@@ -353,12 +285,6 @@ export const RegisterResourceForm = () => {
     await runManualRegistration([normalizedUrl]);
   };
 
-  // Show advanced only after discovery fails or user has manual URLs
-  const showAdvanced =
-    (isValidUrl && !isDiscoveryLoading && !hasDiscoveryResources) ||
-    manualUrls.length > 0 ||
-    headers.length > 0;
-
   const isLoading = isRegisteringAll || isRegisteringManual;
 
   return (
@@ -388,9 +314,6 @@ export const RegisterResourceForm = () => {
               <TriangleAlert className="size-3 shrink-0" />
               x402 requires HTTPS. We&apos;ve upgraded your URL automatically.
             </p>
-          )}
-          {manualListError && (
-            <p className="text-xs text-red-600">{manualListError}</p>
           )}
         </div>
 
@@ -552,129 +475,6 @@ export const RegisterResourceForm = () => {
             </div>
           );
         })()}
-
-      {/* Advanced — only when relevant */}
-      {showAdvanced && (
-        <Collapsible>
-          <CollapsibleTrigger asChild>
-            <button className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors flex items-center gap-1">
-              Advanced
-              <ChevronDown className="size-3" />
-            </button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="pt-3 space-y-4">
-            {/* Headers */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-muted-foreground">
-                  Custom Headers
-                </Label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="xs"
-                  onClick={() =>
-                    setHeaders(current => [...current, { name: '', value: '' }])
-                  }
-                  className="size-fit px-1 text-xs"
-                >
-                  <Plus className="size-3 mr-1" />
-                  Add
-                </Button>
-              </div>
-              {headers.map((header, index) => (
-                <div key={index} className="flex gap-1 items-center">
-                  <Input
-                    type="text"
-                    placeholder="Name"
-                    value={header.name}
-                    onChange={event =>
-                      setHeaders(current =>
-                        current.map((item, itemIndex) =>
-                          itemIndex === index
-                            ? { ...item, name: event.target.value }
-                            : item
-                        )
-                      )
-                    }
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Value"
-                    value={header.value}
-                    onChange={event =>
-                      setHeaders(current =>
-                        current.map((item, itemIndex) =>
-                          itemIndex === index
-                            ? { ...item, value: event.target.value }
-                            : item
-                        )
-                      )
-                    }
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() =>
-                      setHeaders(current =>
-                        current.filter((_, itemIndex) => itemIndex !== index)
-                      )
-                    }
-                    className="shrink-0"
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-
-            {/* Manual URLs */}
-            {!hasDiscoveryResources && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs text-muted-foreground">
-                    Manual URLs
-                  </Label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="xs"
-                    onClick={handleAddCurrentUrl}
-                    disabled={!canAddCurrentUrl || isRegisteringManual}
-                    className="size-fit px-1 text-xs"
-                  >
-                    <Plus className="size-3 mr-1" />
-                    Add Current URL
-                  </Button>
-                </div>
-                {manualUrls.length > 0 && (
-                  <ul className="space-y-1">
-                    {manualUrls.map(item => (
-                      <li
-                        key={item}
-                        className="flex items-center gap-2 text-xs"
-                      >
-                        <code className="font-mono break-all flex-1 text-muted-foreground">
-                          {item}
-                        </code>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleRemoveManualUrl(item)}
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-          </CollapsibleContent>
-        </Collapsible>
-      )}
 
       {/* Errors — endpoints that won't be registered */}
       {(() => {
