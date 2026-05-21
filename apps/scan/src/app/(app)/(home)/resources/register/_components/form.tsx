@@ -829,7 +829,7 @@ function ProbeResult({
   } | null;
   urlOrigin: string | null;
   resources: string[];
-  testedResources?: { url: string }[];
+  testedResources?: { url: string; warnings?: { code: string }[] }[];
   failedResources?: { url: string }[];
   isBatchTestLoading?: boolean;
   authModeMap?: Record<string, string>;
@@ -837,6 +837,15 @@ function ProbeResult({
 }) {
   const testedUrls = useMemo(
     () => new Set(testedResources.map(r => r.url)),
+    [testedResources]
+  );
+  const warningUrls = useMemo(
+    () =>
+      new Set(
+        testedResources
+          .filter(r => r.warnings && r.warnings.length > 0)
+          .map(r => r.url)
+      ),
     [testedResources]
   );
   const failedUrls = useMemo(
@@ -871,14 +880,16 @@ function ProbeResult({
       ),
     [invalidResourcesMap]
   );
+  // Sort: failed → warnings → verified/siwx → skipped (non-paid)
   const sortedResources = useMemo(() => {
     const priority = (url: string) => {
-      if (nonPaidUrls.has(url)) return 2;
       if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
-      return 1; // passed or siwx
+      if (warningUrls.has(url)) return 1;
+      if (testedUrls.has(url) || siwxUrls.has(url)) return 2;
+      return 3; // non-paid — skipped
     };
     return [...resources].sort((a, b) => priority(a) - priority(b));
-  }, [resources, invalidUrls, failedUrls, nonPaidUrls]);
+  }, [resources, invalidUrls, failedUrls, warningUrls, testedUrls, siwxUrls]);
 
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded
@@ -955,6 +966,8 @@ function ProbeResult({
                   <X className="size-3 text-red-500 shrink-0" />
                 ) : siwxUrls.has(resource) ? (
                   <Check className="size-3 text-primary shrink-0" />
+                ) : warningUrls.has(resource) ? (
+                  <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
                 ) : testedUrls.has(resource) ? (
                   <Check className="size-3 text-green-600 shrink-0" />
                 ) : failedUrls.has(resource) ? (
