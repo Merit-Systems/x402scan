@@ -861,16 +861,17 @@ function ProbeResult({
       ),
     [authModeMap]
   );
-  const paidModes = useMemo(() => new Set(['paid', 'apiKey+paid']), []);
-  const nonPaidUrls = useMemo(
-    () =>
-      new Set(
-        resources.filter(
-          url => !siwxUrls.has(url) && !paidModes.has(authModeMap[url] ?? '')
-        )
-      ),
-    [resources, authModeMap, siwxUrls, paidModes]
-  );
+  const nonPaidUrls = useMemo(() => {
+    const paid = new Set(['paid', 'apiKey+paid']);
+    return new Set(
+      resources.filter(url => {
+        const mode = authModeMap[url];
+        // Only mark as non-paid if discovery explicitly classified it
+        // as non-paid. If authMode is missing, don't pre-judge.
+        return mode !== undefined && mode !== 'siwx' && !paid.has(mode);
+      })
+    );
+  }, [resources, authModeMap]);
   const invalidUrls = useMemo(
     () =>
       new Set(
@@ -880,16 +881,17 @@ function ProbeResult({
       ),
     [invalidResourcesMap]
   );
-  // Sort: failed → warnings → verified/siwx → skipped (non-paid)
+  // Sort: errors → warnings → SIWX (blue) → verified (green) → skipped
   const sortedResources = useMemo(() => {
     const priority = (url: string) => {
       if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
       if (warningUrls.has(url)) return 1;
-      if (testedUrls.has(url) || siwxUrls.has(url)) return 2;
-      return 3; // non-paid — skipped
+      if (siwxUrls.has(url)) return 2;
+      if (testedUrls.has(url)) return 3;
+      return 4; // non-paid — skipped
     };
     return [...resources].sort((a, b) => priority(a) - priority(b));
-  }, [resources, invalidUrls, failedUrls, warningUrls, testedUrls, siwxUrls]);
+  }, [resources, invalidUrls, failedUrls, warningUrls, siwxUrls, testedUrls]);
 
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded

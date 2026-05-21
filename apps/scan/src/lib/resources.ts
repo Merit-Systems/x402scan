@@ -78,11 +78,19 @@ export function validateResource(
   // always extract schemas from bazaar, but the data is often there.
   if (!advisory.inputSchema) {
     let hasBazaarSchema = false;
-    if (advisory.paymentRequiredBody) {
-      const parsed = parseX402Response(advisory.paymentRequiredBody);
-      if (parsed.success) {
-        const extracted = getOutputSchema(parsed.data);
-        hasBazaarSchema = !!extracted;
+    if (
+      advisory.paymentRequiredBody &&
+      typeof advisory.paymentRequiredBody === 'object' &&
+      advisory.paymentRequiredBody !== null
+    ) {
+      try {
+        const parsed = parseX402Response(advisory.paymentRequiredBody);
+        if (parsed.success) {
+          const extracted = getOutputSchema(parsed.data);
+          hasBazaarSchema = !!extracted;
+        }
+      } catch {
+        // Malformed bazaar data — treat as missing schema
       }
     }
     if (!hasBazaarSchema) {
