@@ -207,32 +207,43 @@ export async function registerSiwxResource(
       });
     });
 
-    const { og, metadata, favicon } = await scrapeOriginData(origin);
-    const title =
-      metadata?.title ??
-      og?.ogTitle ??
-      options.originMetadataFallback?.title ??
-      null;
-    const description =
-      metadata?.description ??
-      og?.ogDescription ??
-      options.originMetadataFallback?.description ??
-      null;
+    // Scrape and upsert origin metadata (non-blocking — resource is already
+    // persisted, so a scrape failure shouldn't fail the registration).
+    void (async () => {
+      try {
+        const { og, metadata, favicon } = await scrapeOriginData(origin);
+        const title =
+          metadata?.title ??
+          og?.ogTitle ??
+          options.originMetadataFallback?.title ??
+          null;
+        const description =
+          metadata?.description ??
+          og?.ogDescription ??
+          options.originMetadataFallback?.description ??
+          null;
 
-    await upsertOrigin({
-      origin,
-      title: title ?? undefined,
-      description: description ?? undefined,
-      favicon: favicon ?? undefined,
-      ogImages:
-        og?.ogImage?.map(image => ({
-          url: image.url,
-          height: image.height,
-          width: image.width,
-          title: og.ogTitle,
-          description: og.ogDescription,
-        })) ?? [],
-    });
+        await upsertOrigin({
+          origin,
+          title: title ?? undefined,
+          description: description ?? undefined,
+          favicon: favicon ?? undefined,
+          ogImages:
+            og?.ogImage?.map(image => ({
+              url: image.url,
+              height: image.height,
+              width: image.width,
+              title: og.ogTitle,
+              description: og.ogDescription,
+            })) ?? [],
+        });
+      } catch (err) {
+        console.error(
+          '[registerSiwxResource] Metadata scrape failed (non-blocking):',
+          err
+        );
+      }
+    })();
 
     return {
       success: true as const,

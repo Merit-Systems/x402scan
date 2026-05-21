@@ -154,14 +154,14 @@ export async function registerResourcesFromDiscovery(
           };
     }
 
-    // Drop discovery-level schema warnings that are superseded by OpenAPI data.
-    // The discovery package warns when the raw 402 body lacks bazaar schemas,
-    // but the advisory may already have schemas from the OpenAPI spec.
+    // Drop discovery-level schema warnings superseded by other checks.
+    // SCHEMA_INPUT_MISSING: suppressed when advisory already has inputSchema.
+    // SCHEMA_OUTPUT_MISSING: always suppressed — registerResource()'s
+    //   validateResource() has its own output schema check with bazaar fallback.
     const probeWarnings = probeResult.warnings.filter(w => {
       if (w.code === 'SCHEMA_INPUT_MISSING' && advisory.inputSchema)
         return false;
-      if (w.code === 'SCHEMA_OUTPUT_MISSING' && advisory.outputSchema)
-        return false;
+      if (w.code === 'SCHEMA_OUTPUT_MISSING') return false;
       return true;
     });
 
