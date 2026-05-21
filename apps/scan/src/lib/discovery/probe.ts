@@ -76,8 +76,18 @@ function pickInputSchemaFromSpec(
   return advisory?.inputSchema;
 }
 
+const RATE_LIMIT_STATUSES = new Set([429, 503]);
+const MAX_RETRIES = 2;
+const RETRY_BASE_MS = 1500;
+
+/** Sleep for a given number of milliseconds. */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 /**
  * Probes a URL and returns the first advisory that carries x402 payment options.
+ * Retries up to MAX_RETRIES times on 429/503 with exponential backoff.
  *
  * Strategy:
  *   1. Probe with no body (works for servers whose paywall fires before
@@ -93,6 +103,36 @@ function pickInputSchemaFromSpec(
  *   bare probe fails. Passed directly to checkEndpointSchema as sampleInputBody.
  */
 export async function probeX402Endpoint(
+  url: string,
+  preferredMethod?: string,
+  sampleBody?: Record<string, unknown>
+): Promise<ProbeX402Result> {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const result = await probeX402EndpointOnce(
+      url,
+      preferredMethod,
+      sampleBody
+    );
+
+    // Retry on rate limiting (429/503) with exponential backoff.
+    if (
+      !result.success &&
+      result.statusCode !== undefined &&
+      RATE_LIMIT_STATUSES.has(result.statusCode) &&
+      attempt < MAX_RETRIES
+    ) {
+      await sleep(RETRY_BASE_MS * 2 ** attempt);
+      continue;
+    }
+
+    return result;
+  }
+
+  // Unreachable, but satisfies the type checker.
+  return { success: false, error: 'Max retries exceeded' };
+}
+
+async function probeX402EndpointOnce(
   url: string,
   preferredMethod?: string,
   sampleBody?: Record<string, unknown>
