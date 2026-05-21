@@ -30,6 +30,7 @@ import { scanDb } from '@x402scan/scan-db';
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
 import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
+import { deduplicateWarnings } from '@/lib/discovery/utils';
 import { notifyNewServer } from '@/lib/discord-notifications';
 
 /**
@@ -293,10 +294,10 @@ export const registerResource = async (
   const x402Options = (advisory.paymentOptions ?? []).filter(
     isX402PaymentOption
   );
-  const warnings: AuditWarning[] = [
+  const warnings = deduplicateWarnings([
     ...(options.warnings ?? []),
     ...validation.warnings,
-  ];
+  ]);
 
   const urlObj = new URL(url);
   urlObj.search = '';

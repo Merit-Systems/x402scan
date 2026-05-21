@@ -8,6 +8,7 @@ import type { FailedResource, TestedResource } from '@/types/batch-test';
 import { probeX402Endpoint } from '@/lib/discovery/probe';
 import { validateResource } from '@/lib/resources';
 import { fetchDiscoveryDocument } from '@/services/discovery';
+import { deduplicateWarnings } from '@/lib/discovery/utils';
 
 /**
  * Test a single resource by probing it and running the same validation
@@ -89,7 +90,7 @@ async function testSingleResource(
       method: advisory.method as TestedResource['method'],
       description: advisory.summary ?? null,
       parsed: advisory,
-      warnings: [...probeWarnings, ...validation.warnings],
+      warnings: deduplicateWarnings([...probeWarnings, ...validation.warnings]),
     };
   } catch (err) {
     return {
