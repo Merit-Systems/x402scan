@@ -180,11 +180,13 @@ export const developerRouter = createTRPCRouter({
           error: r.invalidReason ?? 'Invalid resource format',
         }));
 
-      // SIWX routes are identity-gated, not payment-protected. Skip probing
-      // them — they are surfaced via authModeMap on the client and should not
-      // appear in either the tested or failed buckets.
+      // Only probe endpoints that are x402-paid. Skip SIWX (identity-gated),
+      // unprotected, apiKey-only, and endpoints with no authMode — probing
+      // them wastes requests and can trigger rate limits on the merchant's
+      // server (e.g., 41 discovered endpoints but only 5 are paid).
+      const paidModes = new Set(['paid', 'apiKey+paid']);
       const probeableResources = input.resources.filter(
-        r => !r.invalid && r.authMode !== 'siwx'
+        r => !r.invalid && r.authMode != null && paidModes.has(r.authMode)
       );
       const testResults = await Promise.all(
         probeableResources.map(r =>
