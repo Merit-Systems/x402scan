@@ -40,6 +40,15 @@ export const upsertResource = async (
     return;
   }
   const originStr = getOriginFromUrl(baseResource.resource);
+
+  // Ensure the origin exists before the transaction to avoid
+  // concurrent connectOrCreate race conditions (P2002).
+  await scanDb.resourceOrigin.upsert({
+    where: { origin: originStr },
+    create: { origin: originStr },
+    update: {},
+  });
+
   return await scanDb.$transaction(async tx => {
     const { origin, ...resource } = await tx.resources.upsert({
       where: {
@@ -52,13 +61,8 @@ export const upsertResource = async (
         lastUpdated: baseResource.lastUpdated,
         metadata: baseResource.metadata,
         origin: {
-          connectOrCreate: {
-            where: {
-              origin: originStr,
-            },
-            create: {
-              origin: originStr,
-            },
+          connect: {
+            origin: originStr,
           },
         },
       },
