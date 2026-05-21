@@ -1179,6 +1179,17 @@ function RegisterModeResourceList({
 
   if (allResources.length === 0) return null;
 
+  // Sort: invalid → free (SIWX) → new → already registered
+  const sortedResources = [...allResources].sort((a, b) => {
+    const priority = (r: (typeof allResources)[number]) => {
+      if (invalidResourcesMap[r.url]?.invalid) return 0;
+      if (authModeMap[r.url] === 'siwx') return 1;
+      if (!r.isRegistered) return 2;
+      return 3; // already registered
+    };
+    return priority(a) - priority(b);
+  });
+
   return (
     <div className="border rounded-md overflow-hidden mt-3">
       <table className="w-full text-sm">
@@ -1190,87 +1201,91 @@ function RegisterModeResourceList({
           </tr>
         </thead>
         <tbody>
-          {allResources.map(({ url, source: resourceSource, isRegistered }) => {
-            const pathname = (() => {
-              try {
-                return decodeURIComponent(new URL(url).pathname);
-              } catch {
-                return url;
-              }
-            })();
+          {sortedResources.map(
+            ({ url, source: resourceSource, isRegistered }) => {
+              const pathname = (() => {
+                try {
+                  return decodeURIComponent(new URL(url).pathname);
+                } catch {
+                  return url;
+                }
+              })();
 
-            return (
-              <tr key={url} className="border-t">
-                <td className="px-3 py-2">
-                  <span className="font-mono text-sm">{pathname}</span>
-                </td>
-                <td className="px-3 py-2">
-                  <span
-                    className={cn(
-                      'text-xs px-1.5 py-0.5 rounded',
-                      resourceSource === 'entered'
-                        ? 'bg-blue-500/10 text-blue-600'
-                        : 'bg-muted text-muted-foreground'
-                    )}
-                  >
-                    {resourceSource === 'entered'
-                      ? 'Manually Entered'
-                      : resourceSource === 'openapi'
-                        ? 'OpenAPI'
-                        : resourceSource === 'probe'
-                          ? 'Runtime Probe'
-                          : resourceSource === 'interop-mpp'
-                            ? '/.well-known/mpp'
-                            : '/.well-known/x402'}
-                  </span>
-                </td>
-                <td className="px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    {isRegistered ? (
-                      <span className="flex items-center gap-1 text-xs text-green-600">
-                        <Check className="size-3" />
-                        Already Registered
-                      </span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">New</span>
-                    )}
-                    {authModeMap[url] === 'siwx' && (
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-green-600/10 border border-green-600 text-green-600">
-                            <ShieldCheck className="size-3" />
-                            Free
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Free endpoint — requires wallet authentication but
-                            no payment.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                    {invalidResourcesMap[url]?.invalid && (
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-yellow-600/10 border border-yellow-600 text-yellow-600">
-                            <AlertCircle className="size-3" />
-                            INVALID
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            {invalidResourcesMap[url]?.reason ??
-                              'Invalid format'}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+              return (
+                <tr key={url} className="border-t">
+                  <td className="px-3 py-2">
+                    <span className="font-mono text-sm">{pathname}</span>
+                  </td>
+                  <td className="px-3 py-2">
+                    <span
+                      className={cn(
+                        'text-xs px-1.5 py-0.5 rounded',
+                        resourceSource === 'entered'
+                          ? 'bg-blue-500/10 text-blue-600'
+                          : 'bg-muted text-muted-foreground'
+                      )}
+                    >
+                      {resourceSource === 'entered'
+                        ? 'Manually Entered'
+                        : resourceSource === 'openapi'
+                          ? 'OpenAPI'
+                          : resourceSource === 'probe'
+                            ? 'Runtime Probe'
+                            : resourceSource === 'interop-mpp'
+                              ? '/.well-known/mpp'
+                              : '/.well-known/x402'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      {isRegistered ? (
+                        <span className="flex items-center gap-1 text-xs text-green-600">
+                          <Check className="size-3" />
+                          Already Registered
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          New
+                        </span>
+                      )}
+                      {authModeMap[url] === 'siwx' && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-green-600/10 border border-green-600 text-green-600">
+                              <ShieldCheck className="size-3" />
+                              Free
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">
+                              Free endpoint — requires wallet authentication but
+                              no payment.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                      {invalidResourcesMap[url]?.invalid && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-yellow-600/10 border border-yellow-600 text-yellow-600">
+                              <AlertCircle className="size-3" />
+                              INVALID
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">
+                              {invalidResourcesMap[url]?.reason ??
+                                'Invalid format'}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            }
+          )}
         </tbody>
       </table>
     </div>
