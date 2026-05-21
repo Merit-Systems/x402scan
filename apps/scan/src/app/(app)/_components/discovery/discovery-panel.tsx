@@ -899,7 +899,7 @@ function FailedResourceCard({
   const isV1Error =
     failedDetails?.error?.includes('v1 response detected') ?? false;
   const errorMessage = isSiwx
-    ? 'SIWX (identity-gated, no payment)'
+    ? 'Free (wallet auth, no payment)'
     : isInvalid
       ? (invalidInfo?.reason ?? 'Invalid format')
       : x402Parsed
@@ -913,7 +913,7 @@ function FailedResourceCard({
         className={cn(
           'overflow-hidden',
           isSiwx
-            ? 'border-primary'
+            ? 'border-green-600'
             : isInvalid
               ? 'border-yellow-500/30'
               : 'border-red-500/30'
@@ -931,13 +931,13 @@ function FailedResourceCard({
                   className={cn(
                     'font-mono px-1 rounded-md text-xs shrink-0',
                     isSiwx
-                      ? 'bg-primary/10 border border-primary text-primary'
+                      ? 'bg-green-600/10 border border-green-600 text-green-600'
                       : isInvalid
                         ? 'bg-yellow-600/10 border border-yellow-600 text-yellow-600'
                         : 'bg-red-600/10 border border-red-600 text-red-600'
                   )}
                 >
-                  {isSiwx ? 'SIWX' : isInvalid ? 'INVALID' : 'ERR'}
+                  {isSiwx ? 'FREE' : isInvalid ? 'INVALID' : 'ERR'}
                 </div>
                 <span className="font-mono text-sm truncate">{pathname}</span>
               </div>
@@ -1237,15 +1237,15 @@ function RegisterModeResourceList({
                     {authModeMap[url] === 'siwx' && (
                       <Tooltip>
                         <TooltipTrigger>
-                          <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 border border-primary text-primary">
+                          <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-green-600/10 border border-green-600 text-green-600">
                             <ShieldCheck className="size-3" />
-                            SIWX
+                            Free
                           </span>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p className="text-xs">
-                            Identity-gated route (Sign-In With X). Requires a
-                            wallet proof; no payment.
+                            Free endpoint — requires wallet authentication but
+                            no payment.
                           </p>
                         </TooltipContent>
                       </Tooltip>

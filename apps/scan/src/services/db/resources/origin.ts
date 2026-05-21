@@ -29,12 +29,17 @@ function getDisplayableAcceptsWhere({
 
 const displayableResourceWhere: Prisma.ResourcesWhereInput = {
   deprecatedAt: null,
-  response: {
-    isNot: null,
-  },
-  accepts: {
-    some: getDisplayableAcceptsWhere({}),
-  },
+  OR: [
+    // Paid resources: must have a stored 402 response and supported accepts
+    {
+      response: { isNot: null },
+      accepts: { some: getDisplayableAcceptsWhere({}) },
+    },
+    // SIWX (free) resources: identified by metadata.authMode
+    {
+      metadata: { path: ['authMode'], equals: 'siwx' },
+    },
+  ],
 };
 
 const ogImageSchema = z.object({
@@ -132,16 +137,21 @@ export const listOriginsSchema = z.object({
 export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
   const { chain, address } = input;
   const acceptsWhere = getDisplayableAcceptsWhere({ chain, address });
+  // SIWX (free) resources have no chain/address — only include them when
+  // no chain or address filter is applied.
+  const hasPaymentFilter = chain != null || address != null;
+  const resourceFilter: Prisma.ResourcesWhereInput = hasPaymentFilter
+    ? { deprecatedAt: null, accepts: { some: acceptsWhere } }
+    : {
+        deprecatedAt: null,
+        OR: [
+          { accepts: { some: acceptsWhere } },
+          { metadata: { path: ['authMode'], equals: 'siwx' } },
+        ],
+      };
   const origins = await scanDb.resourceOrigin.findMany({
     where: {
-      resources: {
-        some: {
-          deprecatedAt: null,
-          accepts: {
-            some: acceptsWhere,
-          },
-        },
-      },
+      resources: { some: resourceFilter },
     },
     orderBy: { createdAt: 'desc' },
   });
@@ -159,32 +169,30 @@ export const listOriginsWithResources = async (
 ) => {
   const { chain, address, originIds } = input;
   const acceptsWhere = getDisplayableAcceptsWhere({ chain, address });
+  // SIWX (free) resources have no chain/address — only include them when
+  // no chain or address filter is applied.
+  const hasPaymentFilter = chain != null || address != null;
+  const paidOrSiwxResource: Prisma.ResourcesWhereInput = hasPaymentFilter
+    ? {
+        deprecatedAt: null,
+        response: { isNot: null },
+        accepts: { some: acceptsWhere },
+      }
+    : {
+        deprecatedAt: null,
+        OR: [
+          { response: { isNot: null }, accepts: { some: acceptsWhere } },
+          { metadata: { path: ['authMode'], equals: 'siwx' } },
+        ],
+      };
   const origins = await scanDb.resourceOrigin.findMany({
     where: {
       ...(originIds ? { id: { in: originIds } } : {}),
-      resources: {
-        some: {
-          deprecatedAt: null,
-          response: {
-            isNot: null,
-          },
-          accepts: {
-            some: acceptsWhere,
-          },
-        },
-      },
+      resources: { some: paidOrSiwxResource },
     },
     include: {
       resources: {
-        where: {
-          deprecatedAt: null,
-          response: {
-            isNot: null,
-          },
-          accepts: {
-            some: acceptsWhere,
-          },
-        },
+        where: paidOrSiwxResource,
         orderBy: {
           resource: 'asc',
         },

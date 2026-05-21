@@ -5,8 +5,14 @@ import { api } from '@/trpc/client';
 import type { TestedResource, FailedResource } from '@/types/batch-test';
 import type { DiscoveredResource } from '@/types/discovery';
 
+export interface BatchTestProgress {
+  checked: number;
+  total: number;
+}
+
 interface BatchTestResult {
   isLoading: boolean;
+  progress: BatchTestProgress | null;
   resources: TestedResource[];
   failed: FailedResource[];
   payToAddresses: string[];
@@ -43,6 +49,7 @@ export function useBatchTest(
   const [resources, setResources] = useState<TestedResource[]>([]);
   const [failed, setFailed] = useState<FailedResource[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState<BatchTestProgress | null>(null);
   const [runCount, setRunCount] = useState(0);
 
   const mutation = api.developer.batchTest.useMutation();
@@ -61,27 +68,31 @@ export function useBatchTest(
 
     let cancelled = false;
 
-    const request = Promise.all(
-      chunks.map(chunk => mutateAsyncRef.current({ resources: chunk }))
-    );
+    const run = async () => {
+      if (!cancelled) {
+        setIsLoading(true);
+        setProgress({ checked: 0, total: effectiveResources.length });
+      }
 
-    void Promise.resolve()
-      .then(() => {
-        if (!cancelled) setIsLoading(true);
-      })
-      .then(() => request)
-      .then(results => {
-        if (cancelled) return;
-        const allResources: TestedResource[] = [];
-        const allFailed: FailedResource[] = [];
-        for (const result of results) {
+      const allResources: TestedResource[] = [];
+      const allFailed: FailedResource[] = [];
+
+      try {
+        for (const chunk of chunks) {
+          if (cancelled) return;
+          const result = await mutateAsyncRef.current({ resources: chunk });
           allResources.push(...result.resources);
           allFailed.push(...result.failed);
+          if (!cancelled) {
+            setResources([...allResources]);
+            setFailed([...allFailed]);
+            setProgress({
+              checked: allResources.length + allFailed.length,
+              total: effectiveResources.length,
+            });
+          }
         }
-        setResources(allResources);
-        setFailed(allFailed);
-      })
-      .catch(err => {
+      } catch (err) {
         if (cancelled) return;
         const error = err instanceof Error ? err.message : 'Request failed';
         setFailed(
@@ -89,15 +100,20 @@ export function useBatchTest(
             .flat()
             .map(r => ({ success: false as const, url: r.url, error }))
         );
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+          setProgress(null);
+        }
+      }
+    };
+
+    void run();
 
     return () => {
       cancelled = true;
     };
-  }, [enabled, chunks, runCount]);
+  }, [enabled, chunks, runCount, effectiveResources.length]);
 
   const active = enabled && chunks.length > 0;
 
@@ -154,6 +170,7 @@ export function useBatchTest(
 
   return {
     isLoading: isLoading && active,
+    progress: active ? progress : null,
     resources: active ? resources : [],
     failed: active ? failed : [],
     payToAddresses,

@@ -170,13 +170,13 @@ export const resourcesRouter = createTRPCRouter({
         discoveryResult.info
       );
 
-      if (result.registered === 0) {
+      if (result.registered === 0 && result.siwx === 0) {
         return {
           success: false as const,
           error: {
             type: 'noValidResources' as const,
             message:
-              'No valid paid x402 resources were found for this origin. Add at least one paid x402 resource that passes validation to complete registration.',
+              'No valid x402 or free (SIWX) resources were found for this origin. Add at least one resource that passes validation to complete registration.',
           },
           result,
         };

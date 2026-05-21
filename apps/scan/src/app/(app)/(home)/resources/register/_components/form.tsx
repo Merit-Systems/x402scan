@@ -138,6 +138,7 @@ export const RegisterResourceForm = () => {
     resetBulk,
     preview,
     isBatchTestLoading,
+    batchTestProgress,
     testedResources,
     failedResources,
     retryResource,
@@ -159,13 +160,16 @@ export const RegisterResourceForm = () => {
   const hasDiscoveryResources =
     discoveryFound && actualDiscoveredResources.length > 0;
 
-  // Always show the discovered count. The server re-discovers independently
-  // After batch test completes, count only passing resources.
+  // After batch test completes, count passing paid resources + SIWX (free) endpoints.
+  // SIWX endpoints aren't probed, so they aren't in testedResources — add them separately.
   // Before batch test, fall back to total discovered count.
   const batchTestComplete =
     testedResources.length > 0 || failedResources.length > 0;
+  const siwxCount = actualDiscoveredResources.filter(
+    url => authModeMap[url] === 'siwx'
+  ).length;
   const registrableResourceCount = batchTestComplete
-    ? testedResources.length
+    ? testedResources.length + siwxCount
     : actualDiscoveredResources.length;
 
   const canUseManualMode = isValidUrl && !isOriginOnly;
@@ -411,7 +415,9 @@ export const RegisterResourceForm = () => {
               ) : isBatchTestLoading ? (
                 <>
                   <Loader2 className="size-4 animate-spin mr-2" />
-                  {`Verifying ${actualDiscoveredResources.length} endpoints...`}
+                  {batchTestProgress
+                    ? `Checking ${batchTestProgress.checked}/${batchTestProgress.total} endpoints...`
+                    : `Checking ${actualDiscoveredResources.length} endpoints...`}
                 </>
               ) : batchTestComplete &&
                 failedResources.length > 0 &&
@@ -881,7 +887,7 @@ function ProbeResult({
       ),
     [invalidResourcesMap]
   );
-  // Sort: errors → warnings → SIWX (blue) → verified (green) → skipped
+  // Sort: errors → warnings → free (SIWX) → verified → skipped
   const sortedResources = useMemo(() => {
     const priority = (url: string) => {
       if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
@@ -967,7 +973,7 @@ function ProbeResult({
                 ) : invalidUrls.has(resource) ? (
                   <X className="size-3 text-red-500 shrink-0" />
                 ) : siwxUrls.has(resource) ? (
-                  <Check className="size-3 text-primary shrink-0" />
+                  <Check className="size-3 text-green-600 shrink-0" />
                 ) : warningUrls.has(resource) ? (
                   <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
                 ) : testedUrls.has(resource) ? (

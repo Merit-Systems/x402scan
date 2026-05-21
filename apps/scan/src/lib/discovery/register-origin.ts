@@ -1,6 +1,6 @@
 import { probeX402Endpoint } from './probe';
 import { getRegistrationErrorMessage } from './utils';
-import { registerResource } from '@/lib/resources';
+import { registerResource, registerSiwxResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 import { getOriginResourceCount } from '@/services/db/resources/origin';
 import { notifyNewServer } from '@/lib/discord-notifications';
@@ -73,10 +73,9 @@ export interface RegisterOriginResult {
 /**
  * Probe and register all resources from a discovery document.
  * Paid resources are probed and written to the resources table.
- * SIWX-identified routes are a first-class positive outcome — they are
- * reported back in `siwx`/`siwxDetails` but not written to the DB (until
- * schema support lands). Endpoints missing an input schema are reported
- * as skipped.
+ * SIWX (free) resources are written to the resources table without probing
+ * (they have no x402 payment options — just a Resource row, no Accepts).
+ * Endpoints missing an input schema are reported as skipped.
  * Deprecates resources from the same origin that are no longer in the list.
  *
  * `originInfo` is the OpenAPI `info` block (title/description/version) when
@@ -102,11 +101,21 @@ export async function registerResourcesFromDiscovery(
     const resourceUrl = resource.url;
 
     if (resource.authMode === 'siwx') {
-      return {
-        success: true as const,
-        siwx: true as const,
-        url: resourceUrl,
-      };
+      const siwxResult = await registerSiwxResource(resourceUrl, {
+        originMetadataFallback: originInfo,
+      });
+      return siwxResult.success
+        ? {
+            success: true as const,
+            siwx: true as const,
+            url: resourceUrl,
+            resource: siwxResult.resource,
+          }
+        : {
+            success: false as const,
+            url: resourceUrl,
+            error: siwxResult.error,
+          };
     }
 
     const probeResult = await probeX402Endpoint(resourceUrl, resource.method);
@@ -128,11 +137,21 @@ export async function registerResourcesFromDiscovery(
     // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
     if (advisory.authMode === 'siwx') {
-      return {
-        success: true as const,
-        siwx: true as const,
-        url: resourceUrl,
-      };
+      const siwxResult = await registerSiwxResource(resourceUrl, {
+        originMetadataFallback: originInfo,
+      });
+      return siwxResult.success
+        ? {
+            success: true as const,
+            siwx: true as const,
+            url: resourceUrl,
+            resource: siwxResult.resource,
+          }
+        : {
+            success: false as const,
+            url: resourceUrl,
+            error: siwxResult.error,
+          };
     }
 
     const result = await registerResource(resourceUrl, advisory, {
@@ -176,6 +195,10 @@ export async function registerResourcesFromDiscovery(
       if ('success' in value && value.success) {
         if ('siwx' in value && value.siwx === true) {
           siwxResults.push({ url: resourceUrl });
+          // Extract originId from SIWX registration result
+          if (!originId && 'resource' in value && value.resource?.origin?.id) {
+            originId = value.resource.origin.id;
+          }
         } else if ('resource' in value) {
           successfulResults.push({
             url: resourceUrl,

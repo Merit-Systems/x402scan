@@ -78,6 +78,7 @@ export interface UseDiscoveryReturn {
 
   // Test results
   isBatchTestLoading: boolean;
+  batchTestProgress: { checked: number; total: number } | null;
   testedResources: TestedResource[];
   failedResources: FailedResource[];
 
@@ -127,6 +128,9 @@ export interface UseDiscoveryReturn {
   ) => Promise<void>;
 }
 
+/** Auth modes that are relevant to x402scan (paid + free/SIWX). */
+const REGISTRABLE_AUTH_MODES = new Set(['paid', 'apiKey+paid', 'siwx']);
+
 export function useDiscovery({
   url,
   onRegisterAllSuccess,
@@ -157,10 +161,12 @@ export function useDiscovery({
   );
 
   const discoveryFound = discoveryQuery.data?.found ?? false;
-  const discoveryResources: DiscoveredResource[] = useMemo(
-    () => (discoveryQuery.data?.found ? discoveryQuery.data.resources : []),
-    [discoveryQuery.data]
-  );
+  const discoveryResources: DiscoveredResource[] = useMemo(() => {
+    const raw = discoveryQuery.data?.found ? discoveryQuery.data.resources : [];
+    return raw.filter(
+      r => !r.authMode || REGISTRABLE_AUTH_MODES.has(r.authMode)
+    );
+  }, [discoveryQuery.data]);
   const discoveryCheckComplete =
     !discoveryQuery.isLoading && discoveryQuery.isFetched;
 
@@ -325,6 +331,7 @@ export function useDiscovery({
 
     // Test results
     isBatchTestLoading: batchTest.isLoading,
+    batchTestProgress: batchTest.progress,
     testedResources: batchTest.resources,
     failedResources: batchTest.failed,
 

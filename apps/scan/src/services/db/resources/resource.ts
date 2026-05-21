@@ -292,18 +292,21 @@ const searchResourcesUncached = async (
     showDeprecated,
     chains,
   } = input;
+  const acceptsFilter: Prisma.AcceptsWhereInput =
+    chains !== undefined ? { network: { in: chains } } : {};
   return await scanDb.resources.findMany({
     where: {
-      accepts: {
-        some:
-          chains !== undefined
-            ? {
-                network: {
-                  in: chains,
-                },
-              }
-            : {},
-      },
+      // Include paid resources (with accepts) and SIWX (free) resources.
+      // When filtering by chain, SIWX resources are excluded since they
+      // have no chain-specific payment options.
+      ...(chains !== undefined
+        ? { accepts: { some: acceptsFilter } }
+        : {
+            OR: [
+              { accepts: { some: {} } },
+              { metadata: { path: ['authMode'], equals: 'siwx' } },
+            ],
+          }),
       ...(search
         ? {
             OR: [

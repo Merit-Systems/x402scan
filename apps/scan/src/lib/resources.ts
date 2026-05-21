@@ -26,6 +26,7 @@ import {
   type ParsedX402Response,
 } from '@/lib/x402';
 
+import { scanDb } from '@x402scan/scan-db';
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
 import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
@@ -118,17 +119,135 @@ export function validateResource(
     };
   }
 
-  // SIWX warning — identity-gated endpoints are valid but not payment-protected
-  if (advisory.authMode === 'siwx') {
-    warnings.push({
-      code: 'SIWX_ENDPOINT',
-      severity: 'warn',
-      message:
-        'This endpoint uses SIWX authentication (identity-gated, not payment-protected)',
-    });
+  // Missing output schema — endpoint works but agents won't know what it returns
+  if (!advisory.outputSchema) {
+    let hasBazaarOutputSchema = false;
+    if (
+      advisory.paymentRequiredBody &&
+      typeof advisory.paymentRequiredBody === 'object' &&
+      advisory.paymentRequiredBody !== null
+    ) {
+      try {
+        const parsed = parseX402Response(advisory.paymentRequiredBody);
+        if (parsed.success) {
+          const extracted = getOutputSchema(parsed.data);
+          hasBazaarOutputSchema = !!extracted;
+        }
+      } catch {
+        // Malformed bazaar data
+      }
+    }
+    if (!hasBazaarOutputSchema) {
+      warnings.push({
+        code: 'MISSING_OUTPUT_SCHEMA',
+        severity: 'warn',
+        message:
+          'Missing output schema — add a response schema to your OpenAPI spec so agents know what this endpoint returns',
+      });
+    }
   }
 
   return { valid: true, warnings };
+}
+
+/**
+ * Register a SIWX (free, identity-gated) endpoint. These endpoints have no
+ * x402 payment options, no 402 response body, and no Accepts records — just
+ * a Resource row linked to its Origin.
+ */
+export async function registerSiwxResource(
+  url: string,
+  options: {
+    originMetadataFallback?: { title?: string; description?: string };
+  } = {}
+) {
+  const urlObj = new URL(url);
+  if (
+    urlObj.protocol === 'http:' &&
+    urlObj.hostname !== 'localhost' &&
+    urlObj.hostname !== '127.0.0.1'
+  ) {
+    return {
+      success: false as const,
+      error: 'HTTPS is required for resource registration',
+    };
+  }
+
+  urlObj.search = '';
+  const cleanUrl = urlObj.toString();
+  const origin = getOriginFromUrl(cleanUrl);
+
+  try {
+    const resource = await scanDb.$transaction(async tx => {
+      await tx.resourceOrigin.upsert({
+        where: { origin },
+        create: { origin },
+        update: {},
+      });
+
+      return tx.resources.upsert({
+        where: { resource: cleanUrl },
+        create: {
+          resource: cleanUrl,
+          type: 'http',
+          x402Version: 0,
+          lastUpdated: new Date(),
+          metadata: { authMode: 'siwx' },
+          origin: { connect: { origin } },
+        },
+        update: {
+          type: 'http',
+          x402Version: 0,
+          lastUpdated: new Date(),
+          metadata: { authMode: 'siwx' },
+          deprecatedAt: null,
+          origin: { connect: { origin } },
+        },
+        include: { origin: true },
+      });
+    });
+
+    const { og, metadata, favicon } = await scrapeOriginData(origin);
+    const title =
+      metadata?.title ??
+      og?.ogTitle ??
+      options.originMetadataFallback?.title ??
+      null;
+    const description =
+      metadata?.description ??
+      og?.ogDescription ??
+      options.originMetadataFallback?.description ??
+      null;
+
+    await upsertOrigin({
+      origin,
+      title: title ?? undefined,
+      description: description ?? undefined,
+      favicon: favicon ?? undefined,
+      ogImages:
+        og?.ogImage?.map(image => ({
+          url: image.url,
+          height: image.height,
+          width: image.width,
+          title: og.ogTitle,
+          description: og.ogDescription,
+        })) ?? [],
+    });
+
+    return {
+      success: true as const,
+      resource: {
+        id: resource.id,
+        origin: { id: resource.origin.id },
+      },
+    };
+  } catch (error) {
+    console.error('[registerSiwxResource] Failed:', error);
+    return {
+      success: false as const,
+      error: error instanceof Error ? error.message : 'Database error',
+    };
+  }
 }
 
 export const registerResource = async (
