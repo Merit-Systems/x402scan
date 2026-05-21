@@ -61,9 +61,21 @@ export function useBatchTest(
     mutateAsyncRef.current = mutation.mutateAsync;
   });
 
+  // Sort paid endpoints first so they're probed before unclassified ones.
+  // This prevents rate limiting from burning through all probes on non-paid
+  // endpoints before reaching the ones that actually matter.
+  const sortedResources = useMemo(() => {
+    const paidModes = new Set(['paid', 'apiKey+paid']);
+    return [...effectiveResources].sort((a, b) => {
+      const aPaid = a.authMode != null && paidModes.has(a.authMode) ? 0 : 1;
+      const bPaid = b.authMode != null && paidModes.has(b.authMode) ? 0 : 1;
+      return aPaid - bPaid;
+    });
+  }, [effectiveResources]);
+
   const chunks = useMemo(
-    () => chunkArray(effectiveResources, BATCH_SIZE),
-    [effectiveResources]
+    () => chunkArray(sortedResources, BATCH_SIZE),
+    [sortedResources]
   );
 
   useEffect(() => {
