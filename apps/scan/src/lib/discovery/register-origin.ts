@@ -84,7 +84,7 @@ export interface RegisterOriginResult {
  * APIs whose homepage isn't HTML, so the scraper has nothing to extract.
  */
 export async function registerResourcesFromDiscovery(
-  resources: { url: string; authMode?: AuthMode }[],
+  resources: { url: string; method?: string; authMode?: AuthMode }[],
   source: string | undefined,
   originInfo?: { title: string; description?: string }
 ): Promise<RegisterOriginResult> {
@@ -109,7 +109,7 @@ export async function registerResourcesFromDiscovery(
       };
     }
 
-    const probeResult = await probeX402Endpoint(resourceUrl);
+    const probeResult = await probeX402Endpoint(resourceUrl, resource.method);
 
     if (!probeResult.success) {
       return {
