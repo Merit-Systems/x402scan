@@ -384,7 +384,7 @@ export function DiscoveryPanel({
               <AlertCircle className="size-4 text-yellow-600 shrink-0" />
               {bulkResult.warningDetails.length} resource
               {bulkResult.warningDetails.length === 1 ? '' : 's'} registered
-              with warnings
+              with warnings (Not blocking)
             </summary>
             <div className="p-4 pt-2 border-t space-y-2">
               <div className="space-y-2 max-h-[400px] overflow-y-auto">

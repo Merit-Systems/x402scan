@@ -180,12 +180,12 @@ export const developerRouter = createTRPCRouter({
           error: r.invalidReason ?? 'Invalid resource format',
         }));
 
-      // Only probe endpoints that are x402-paid. Non-paid endpoints are
-      // handled client-side (grey strikethrough in the resource list).
-      // SIWX endpoints are excluded entirely (surfaced via authModeMap).
-      const paidModes = new Set(['paid', 'apiKey+paid']);
+      // Probe endpoints that are x402-paid or unclassified (might be paid but
+      // discovery didn't detect it). Skip SIWX (identity-gated, not x402) and
+      // explicitly non-paid (unprotected, apiKey).
+      const skipModes = new Set(['siwx', 'unprotected', 'apiKey']);
       const probeableResources = input.resources.filter(
-        r => !r.invalid && r.authMode != null && paidModes.has(r.authMode)
+        r => !r.invalid && (r.authMode == null || !skipModes.has(r.authMode))
       );
       // Probe sequentially to avoid overwhelming the merchant's server.
       // Concurrent probes to the same origin can trigger rate limiting (503s).
