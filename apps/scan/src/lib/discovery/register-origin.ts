@@ -154,10 +154,21 @@ export async function registerResourcesFromDiscovery(
           };
     }
 
+    // Drop discovery-level schema warnings that are superseded by OpenAPI data.
+    // The discovery package warns when the raw 402 body lacks bazaar schemas,
+    // but the advisory may already have schemas from the OpenAPI spec.
+    const probeWarnings = probeResult.warnings.filter(w => {
+      if (w.code === 'SCHEMA_INPUT_MISSING' && advisory.inputSchema)
+        return false;
+      if (w.code === 'SCHEMA_OUTPUT_MISSING' && advisory.outputSchema)
+        return false;
+      return true;
+    });
+
     const result = await registerResource(resourceUrl, advisory, {
       notifyNewServer: false,
       originMetadataFallback: originInfo,
-      warnings: probeResult.warnings,
+      warnings: probeWarnings,
     });
 
     if (result.success) return result;
