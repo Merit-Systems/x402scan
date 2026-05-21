@@ -298,11 +298,20 @@ export function useDiscovery({
     onError: () => onRegisterAllError?.(),
   });
 
-  // Handle registering all discovered resources
+  // Handle registering all discovered resources.
+  // Pass pre-tested advisories so the server skips re-probing endpoints
+  // that already passed the batch test — avoids rate limiting.
   const handleRegisterAll = () => {
     if (!urlOrigin) return;
     resetBulk();
-    void register(urlOrigin);
+    const preTestedResults =
+      batchTest.resources.length > 0
+        ? batchTest.resources.map(r => ({
+            url: r.url,
+            advisory: r.parsed,
+          }))
+        : undefined;
+    void register(urlOrigin, preTestedResults);
   };
 
   return {

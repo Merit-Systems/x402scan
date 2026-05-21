@@ -1,4 +1,5 @@
 import z from 'zod';
+import type { EndpointMethodAdvisory } from '@agentcash/discovery';
 
 import {
   createTRPCRouter,
@@ -149,6 +150,16 @@ export const resourcesRouter = createTRPCRouter({
     .input(
       z.object({
         origin: z.url(),
+        /** Pre-tested advisory data from the batch test. URLs with a matching
+         *  entry skip re-probing — avoids rate limiting on registration. */
+        preTestedResults: z
+          .array(
+            z.object({
+              url: z.string().url(),
+              advisory: z.unknown(),
+            })
+          )
+          .optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -164,10 +175,22 @@ export const resourcesRouter = createTRPCRouter({
         };
       }
 
+      // Build map of pre-tested advisories keyed by URL.
+      const preTestedAdvisories =
+        input.preTestedResults && input.preTestedResults.length > 0
+          ? new Map(
+              input.preTestedResults.map(r => [
+                r.url,
+                r.advisory as EndpointMethodAdvisory,
+              ])
+            )
+          : undefined;
+
       const result = await registerResourcesFromDiscovery(
         discoveryResult.resources,
         discoveryResult.source,
-        discoveryResult.info
+        discoveryResult.info,
+        preTestedAdvisories
       );
 
       if (result.registered === 0 && result.siwx === 0) {

@@ -6,7 +6,11 @@ import { getOriginResourceCount } from '@/services/db/resources/origin';
 import { notifyNewServer } from '@/lib/discord-notifications';
 import { getOriginFromUrl } from '@/lib/url';
 
-import type { AuthMode } from '@agentcash/discovery';
+import type {
+  AuditWarning,
+  AuthMode,
+  EndpointMethodAdvisory,
+} from '@agentcash/discovery';
 
 const BULK_REGISTER_CONCURRENCY = 6;
 
@@ -85,7 +89,10 @@ export interface RegisterOriginResult {
 export async function registerResourcesFromDiscovery(
   resources: { url: string; method?: string; authMode?: AuthMode }[],
   source: string | undefined,
-  originInfo?: { title: string; description?: string }
+  originInfo?: { title: string; description?: string },
+  /** Pre-tested advisories from the batch test. URLs with a matching advisory
+   *  skip probing — the advisory is used directly for registration. */
+  preTestedAdvisories?: Map<string, EndpointMethodAdvisory>
 ): Promise<RegisterOriginResult> {
   const originResourceCounts = new Map(
     await Promise.all(
@@ -118,21 +125,39 @@ export async function registerResourcesFromDiscovery(
           };
     }
 
-    const probeResult = await probeX402Endpoint(resourceUrl, resource.method);
+    // Use pre-tested advisory if available (from the batch test the user
+    // already ran). This skips re-probing and avoids rate limiting.
+    const preTested = preTestedAdvisories?.get(resourceUrl);
+    let advisory: EndpointMethodAdvisory;
+    let probeWarnings: AuditWarning[] = [];
 
-    if (!probeResult.success) {
-      return {
-        success: false as const,
-        url: resourceUrl,
-        error: probeResult.error,
-        ...(probeResult.skipped ? { skipped: true as const } : {}),
-        ...(probeResult.statusCode !== undefined
-          ? { status: probeResult.statusCode }
-          : {}),
-      };
+    if (preTested) {
+      advisory = preTested;
+    } else {
+      const probeResult = await probeX402Endpoint(resourceUrl, resource.method);
+
+      if (!probeResult.success) {
+        return {
+          success: false as const,
+          url: resourceUrl,
+          error: probeResult.error,
+          ...(probeResult.skipped ? { skipped: true as const } : {}),
+          ...(probeResult.statusCode !== undefined
+            ? { status: probeResult.statusCode }
+            : {}),
+        };
+      }
+
+      advisory = probeResult.advisory;
+
+      // Drop discovery-level schema warnings superseded by other checks.
+      probeWarnings = probeResult.warnings.filter(w => {
+        if (w.code === 'SCHEMA_INPUT_MISSING' && advisory.inputSchema)
+          return false;
+        if (w.code === 'SCHEMA_OUTPUT_MISSING') return false;
+        return true;
+      });
     }
-
-    const { advisory } = probeResult;
 
     // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
@@ -153,17 +178,6 @@ export async function registerResourcesFromDiscovery(
             error: siwxResult.error,
           };
     }
-
-    // Drop discovery-level schema warnings superseded by other checks.
-    // SCHEMA_INPUT_MISSING: suppressed when advisory already has inputSchema.
-    // SCHEMA_OUTPUT_MISSING: always suppressed — registerResource()'s
-    //   validateResource() has its own output schema check with bazaar fallback.
-    const probeWarnings = probeResult.warnings.filter(w => {
-      if (w.code === 'SCHEMA_INPUT_MISSING' && advisory.inputSchema)
-        return false;
-      if (w.code === 'SCHEMA_OUTPUT_MISSING') return false;
-      return true;
-    });
 
     const result = await registerResource(resourceUrl, advisory, {
       notifyNewServer: false,
