@@ -254,6 +254,27 @@ export async function registerSiwxResource(
       },
     };
   } catch (error) {
+    // P2002: unique constraint race — another concurrent call already registered
+    // the same URL (e.g. POST and DELETE on the same path). Treat as success.
+    const isUniqueViolation =
+      error instanceof Error &&
+      'code' in error &&
+      (error as { code: string }).code === 'P2002';
+    if (isUniqueViolation) {
+      const existing = await scanDb.resources.findUnique({
+        where: { resource: cleanUrl },
+        include: { origin: true },
+      });
+      if (existing) {
+        return {
+          success: true as const,
+          resource: {
+            id: existing.id,
+            origin: { id: existing.origin.id },
+          },
+        };
+      }
+    }
     console.error('[registerSiwxResource] Failed:', error);
     return {
       success: false as const,
