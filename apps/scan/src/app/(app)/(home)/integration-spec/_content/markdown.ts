@@ -105,6 +105,33 @@ SIWX routes are identity-gated, requiring a wallet proof but no payment. Agents 
 
 The scheme **must** be named \`siwx\`. Discovery resolves it by name. Routes with both \`x-payment-info\` and \`siwx\` security are classified as paid, not SIWX.
 
+## Free (Unprotected) Endpoints
+
+If your OpenAPI spec includes endpoints that are neither x402-paid nor SIWX (e.g. health checks, public read endpoints, webhooks), mark them with an empty \`security\` array:
+
+\`\`\`json
+{
+  "/v1/health": {
+    "get": {
+      "operationId": "health_check",
+      "security": [],
+      "summary": "Health check"
+    }
+  }
+}
+\`\`\`
+
+\`"security": []\` is the standard OpenAPI way to declare "no authentication required." Without it, the scanner can't distinguish free endpoints from paid ones that are misconfigured, and will probe them unnecessarily — producing errors and slowing registration.
+
+**Summary of endpoint classification:**
+
+| Type | OpenAPI Declaration | Scanner Behavior |
+|---|---|---|
+| Paid (x402) | \`x-payment-info\` + \`responses.402\` | Probed and registered |
+| Identity-gated (SIWX) | \`security: [{ "siwx": [] }]\` | Registered as Free (no probe) |
+| Free / public | \`security: []\` | Skipped entirely |
+| Unclassified (no declaration) | Nothing | Probed (may fail if not x402) |
+
 ## Common Failure Reasons
 
 | Error | Likely Cause | Fix |
@@ -112,4 +139,5 @@ The scheme **must** be named \`siwx\`. Discovery resolves it by name. Routes wit
 | Not Found | OpenAPI not found at \`{origin}/openapi.json\` | Add an OpenAPI document at \`{origin}/openapi.json\` |
 | Input/Output Schema Missing | Operation has no input or output schema | Add an input and output schema to the operation |
 | No Payment Modes Detected | No payment modes detected in the response | Add a valid payment mode to the response (x402) |
+| No valid x402 response / No 402 challenge | Endpoint is free but not marked as such | Add \`"security": []\` to the operation in your OpenAPI spec |
 `;

@@ -507,7 +507,7 @@ export const RegisterResourceForm = () => {
                 </strong>{' '}
                 {isV1Issue
                   ? 'This endpoint returns an x402 v1 response. x402scan only supports v2 — update your paywall to return the v2 format.'
-                  : 'They need to return a 402 payment challenge — ensure the x402 paywall runs before request validation, or mark the required parameters in your OpenAPI spec so we can probe automatically.'}
+                  : 'They need to return a 402 payment challenge — ensure the x402 paywall runs before request validation, or mark the required parameters in your OpenAPI spec so we can probe automatically. If these endpoints are free (not x402-paid), add "security": [] to their OpenAPI definition to exclude them from probing.'}
               </p>
               <div className="space-y-2 max-h-[360px] overflow-y-auto">
                 {failedResources.map((failed, idx) => (
