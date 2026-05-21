@@ -57,10 +57,13 @@ ${lines.join('\n')}`);
 ${lines.join('\n')}`);
   }
 
-  const issueBlock =
-    sections.length > 0
-      ? sections.join('\n\n')
-      : 'Some endpoints have issues during registration on x402scan.com.';
+  // Shouldn't be reachable (prompt only shown when there are issues), but
+  // fall back to the spec link rather than a misleading generic message.
+  if (sections.length === 0) {
+    return 'Read https://x402scan.com/discovery/spec for the full discovery specification. Follow the guide to ensure your endpoints are correctly configured for x402scan.';
+  }
+
+  const issueBlock = sections.join('\n\n');
 
   return `${issueBlock}
 

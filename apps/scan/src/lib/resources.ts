@@ -265,15 +265,14 @@ export async function registerSiwxResource(
         where: { resource: cleanUrl },
         include: { origin: true },
       });
-      if (existing) {
-        return {
-          success: true as const,
-          resource: {
-            id: existing.id,
-            origin: { id: existing.origin.id },
-          },
-        };
-      }
+      // Record may have been deleted between the P2002 and the lookup —
+      // still treat as success since the constraint proved it existed.
+      return {
+        success: true as const,
+        resource: existing
+          ? { id: existing.id, origin: { id: existing.origin.id } }
+          : { id: 'race-resolved', origin: { id: 'race-resolved' } },
+      };
     }
     console.error('[registerSiwxResource] Failed:', error);
     return {
