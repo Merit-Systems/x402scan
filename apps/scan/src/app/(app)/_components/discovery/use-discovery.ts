@@ -107,6 +107,10 @@ export interface UseDiscoveryReturn {
     failedDetails?: { url: string; error: string; status?: number }[];
     siwxDetails?: { url: string }[];
     skippedDetails?: { url: string; error: string; status?: number }[];
+    warningDetails?: {
+      url: string;
+      warnings: { code: string; severity: string; message: string }[];
+    }[];
     originId?: string;
   } | null;
   bulkError: string | null;
@@ -351,6 +355,7 @@ export function useDiscovery({
           failedDetails: bulkData.failedDetails,
           siwxDetails: bulkData.siwxDetails,
           skippedDetails: bulkData.skippedDetails,
+          warningDetails: bulkData.warningDetails,
           originId: bulkData.originId,
         }
       : null,

@@ -63,6 +63,10 @@ export interface RegisterOriginResult {
   failedDetails: { url: string; error: string; status?: number }[];
   siwxDetails: { url: string }[];
   skippedDetails: { url: string; error: string; status?: number }[];
+  warningDetails: {
+    url: string;
+    warnings: { code: string; severity: string; message: string }[];
+  }[];
   originId: string | undefined;
 }
 
@@ -155,6 +159,10 @@ export async function registerResourcesFromDiscovery(
   const siwxResults: { url: string }[] = [];
   const failedResults: { url: string; error: string; status?: number }[] = [];
   const skippedResults: { url: string; error: string; status?: number }[] = [];
+  const warningResults: {
+    url: string;
+    warnings: { code: string; severity: string; message: string }[];
+  }[] = [];
   let originId: string | undefined;
 
   for (let i = 0; i < results.length; i++) {
@@ -178,6 +186,22 @@ export async function registerResourcesFromDiscovery(
           });
           if (!originId && 'resource' in value && value.resource?.origin?.id) {
             originId = value.resource.origin.id;
+          }
+          if (
+            'warnings' in value &&
+            Array.isArray(value.warnings) &&
+            value.warnings.length > 0
+          ) {
+            warningResults.push({
+              url: resourceUrl,
+              warnings: value.warnings.map(
+                (w: { code: string; severity: string; message: string }) => ({
+                  code: w.code,
+                  severity: w.severity,
+                  message: w.message,
+                })
+              ),
+            });
           }
         }
       } else if (
@@ -250,6 +274,7 @@ export async function registerResourcesFromDiscovery(
     failedDetails: failedResults,
     siwxDetails: siwxResults,
     skippedDetails: skippedResults,
+    warningDetails: warningResults,
     originId,
   };
 }

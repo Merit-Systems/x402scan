@@ -13,6 +13,10 @@ interface RegisterFromOriginSuccessData {
   failedDetails?: { url: string; error: string; status?: number }[];
   siwxDetails?: { url: string }[];
   skippedDetails?: { url: string; error: string; status?: number }[];
+  warningDetails?: {
+    url: string;
+    warnings: { code: string; severity: string; message: string }[];
+  }[];
   originId?: string;
 }
 
@@ -70,6 +74,7 @@ export function useRegisterFromOrigin(
         failedDetails: data.failedDetails,
         siwxDetails: data.siwxDetails,
         skippedDetails: data.skippedDetails,
+        warningDetails: data.warningDetails,
         originId: data.originId,
       });
     },

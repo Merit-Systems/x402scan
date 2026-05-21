@@ -160,6 +160,10 @@ export interface DiscoveryPanelProps {
     failedDetails?: { url: string; error: string; status?: number }[];
     siwxDetails?: { url: string }[];
     skippedDetails?: { url: string; error: string; status?: number }[];
+    warningDetails?: {
+      url: string;
+      warnings: { code: string; severity: string; message: string }[];
+    }[];
   } | null;
   /** Called when "Register All" is clicked (required in register mode) */
   onRegisterAll?: () => void;
@@ -370,6 +374,67 @@ export function DiscoveryPanel({
               </p>
             </div>
           </div>
+        )}
+
+        {/* Warnings — registered but with issues */}
+        {bulkResult.warningDetails && bulkResult.warningDetails.length > 0 && (
+          <details className="border rounded-md group">
+            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+              <AlertCircle className="size-4 text-yellow-600 shrink-0" />
+              {bulkResult.warningDetails.length} resource
+              {bulkResult.warningDetails.length === 1 ? '' : 's'} registered
+              with warnings
+            </summary>
+            <div className="p-4 pt-2 border-t space-y-2">
+              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                {bulkResult.warningDetails.map((entry, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="text-muted-foreground shrink-0">
+                        URL:
+                      </span>
+                      <span className="font-mono break-all">
+                        {(() => {
+                          try {
+                            return new URL(entry.url).pathname;
+                          } catch {
+                            return entry.url;
+                          }
+                        })()}
+                      </span>
+                    </div>
+                    {entry.warnings.map((w, wi) => (
+                      <div key={wi} className="flex items-start gap-2">
+                        <span className="text-muted-foreground shrink-0">
+                          {w.severity === 'error'
+                            ? '!'
+                            : w.severity === 'warn'
+                              ? '!'
+                              : 'i'}
+                        </span>
+                        <span className="text-yellow-600 wrap-break-word">
+                          {w.message}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              <DiscoveryFixHint
+                className="font-medium pt-2"
+                warnings={bulkResult.warningDetails.flatMap(entry =>
+                  entry.warnings.map(w => ({
+                    url: entry.url,
+                    error: w.message,
+                  }))
+                )}
+              />
+            </div>
+          </details>
         )}
 
         {/* Not registered — consolidated skipped + failed */}
