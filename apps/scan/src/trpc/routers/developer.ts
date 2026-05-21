@@ -201,11 +201,14 @@ export const developerRouter = createTRPCRouter({
       const probeableResources = input.resources.filter(
         r => !r.invalid && r.authMode != null && paidModes.has(r.authMode)
       );
-      const testResults = await Promise.all(
-        probeableResources.map(r =>
-          testSingleResource(r.url, r.method, r.sampleBody)
-        )
-      );
+      // Probe sequentially to avoid overwhelming the merchant's server.
+      // Concurrent probes to the same origin can trigger rate limiting (503s).
+      const testResults = [];
+      for (const r of probeableResources) {
+        testResults.push(
+          await testSingleResource(r.url, r.method, r.sampleBody)
+        );
+      }
 
       // Combine test results with invalid and non-paid results
       const allResults = [...testResults, ...invalidResults, ...nonPaidResults];
