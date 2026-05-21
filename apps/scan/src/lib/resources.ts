@@ -73,13 +73,25 @@ export function validateResource(
     return { valid: false, error: 'No x402 payment options found' };
   }
 
-  // Missing input schema
+  // Missing input schema — check advisory.inputSchema first, then fall back to
+  // the bazaar extension in the raw 402 body. The discovery package doesn't
+  // always extract schemas from bazaar, but the data is often there.
   if (!advisory.inputSchema) {
-    return {
-      valid: false,
-      error:
-        'Missing input schema — add request/response schemas to your OpenAPI spec',
-    };
+    let hasBazaarSchema = false;
+    if (advisory.paymentRequiredBody) {
+      const parsed = parseX402Response(advisory.paymentRequiredBody);
+      if (parsed.success) {
+        const extracted = getOutputSchema(parsed.data);
+        hasBazaarSchema = !!extracted;
+      }
+    }
+    if (!hasBazaarSchema) {
+      return {
+        valid: false,
+        error:
+          'Missing input schema — add request/response schemas to your OpenAPI spec',
+      };
+    }
   }
 
   // Unsupported networks
