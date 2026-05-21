@@ -92,7 +92,7 @@ export function DiscoveryFixHint({
           : 'Have your agent fix the errors with a prompt';
 
   return (
-    <p className={cn('text-xs text-muted-foreground', className)}>
+    <p className={cn('text-sm text-foreground', className)}>
       <DiscoveryActions
         label={label}
         {...(needsSetup
@@ -238,7 +238,6 @@ export function DiscoveryPanel({
 
   // Show bulk registration result (only in register mode)
   if (!isTestMode && bulkResult?.success) {
-    const skippedCount = bulkResult.skipped ?? 0;
     const skippedDetails = bulkResult.skippedDetails ?? [];
     const siwxCount = bulkResult.siwx ?? 0;
 
@@ -285,7 +284,15 @@ export function DiscoveryPanel({
                       <span className="text-muted-foreground shrink-0">
                         URL:
                       </span>
-                      <span className="font-mono break-all">{failed.url}</span>
+                      <span className="font-mono break-all">
+                        {(() => {
+                          try {
+                            return new URL(failed.url).pathname;
+                          } catch {
+                            return failed.url;
+                          }
+                        })()}
+                      </span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-muted-foreground shrink-0">
@@ -322,6 +329,12 @@ export function DiscoveryPanel({
     }
 
     // Show success state if some/all resources were registered
+    const allNotRegistered = [
+      ...skippedDetails,
+      ...(bulkResult.failedDetails ?? []),
+    ];
+    const notRegisteredCount = allNotRegistered.length;
+
     return (
       <div className="space-y-3">
         <div className="flex items-center gap-3 p-4 border rounded-md bg-green-600/10 border-green-600/30">
@@ -330,40 +343,15 @@ export function DiscoveryPanel({
             <p className="text-sm font-medium">
               Successfully registered {bulkResult.registered + siwxCount} of{' '}
               {bulkResult.total} resources
-              {skippedCount > 0 && (
-                <span className="text-amber-700">
-                  {' '}
-                  ({skippedCount} skipped)
-                </span>
-              )}
-              {bulkResult.failed > 0 && (
+              {notRegisteredCount > 0 && (
                 <span className="text-red-600">
                   {' '}
-                  ({bulkResult.failed} failed)
+                  ({notRegisteredCount} not registered)
                 </span>
               )}
             </p>
           </div>
         </div>
-
-        {/* Skipped resources notice */}
-        {skippedCount > 0 && (
-          <div className="flex items-start gap-3 p-4 border rounded-md bg-red-600/10 border-red-600/30">
-            <X className="size-5 text-red-600 shrink-0 mt-0.5" />
-            <div className="space-y-2">
-              <h3 className="font-medium text-red-700">
-                {skippedCount} resource
-                {skippedCount === 1 ? '' : 's'} not registered
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                These endpoints didn&apos;t return a 402 payment challenge.
-                Ensure the x402 paywall runs before request validation, then
-                re-register.
-              </p>
-              <DiscoveryFixHint failedResources={skippedDetails} />
-            </div>
-          </div>
-        )}
 
         {/* Deprecation notice */}
         {bulkResult.deprecated !== undefined && bulkResult.deprecated > 0 && (
@@ -384,17 +372,17 @@ export function DiscoveryPanel({
           </div>
         )}
 
-        {/* Failed resources details */}
-        {bulkResult.failed > 0 &&
-          bulkResult.failedDetails &&
-          bulkResult.failedDetails.length > 0 && (
-            <details className="border rounded-md group">
-              <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
-                <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-                Failed Resources ({bulkResult.failedDetails.length})
-              </summary>
-              <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
-                {bulkResult.failedDetails.map((failed, idx) => (
+        {/* Not registered — consolidated skipped + failed */}
+        {notRegisteredCount > 0 && (
+          <details className="border rounded-md group" open>
+            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+              {notRegisteredCount} Resource
+              {notRegisteredCount === 1 ? '' : 's'} Not Registered
+            </summary>
+            <div className="p-4 pt-2 border-t space-y-2">
+              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                {allNotRegistered.map((failed, idx) => (
                   <div
                     key={idx}
                     className="p-3 bg-muted/50 rounded border text-xs space-y-1"
@@ -403,7 +391,15 @@ export function DiscoveryPanel({
                       <span className="text-muted-foreground shrink-0">
                         URL:
                       </span>
-                      <span className="font-mono break-all">{failed.url}</span>
+                      <span className="font-mono break-all">
+                        {(() => {
+                          try {
+                            return new URL(failed.url).pathname;
+                          } catch {
+                            return failed.url;
+                          }
+                        })()}
+                      </span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-muted-foreground shrink-0">
@@ -415,13 +411,14 @@ export function DiscoveryPanel({
                     </div>
                   </div>
                 ))}
-                <DiscoveryFixHint
-                  className="mt-2 block"
-                  failedResources={bulkResult.failedDetails}
-                />
               </div>
-            </details>
-          )}
+              <DiscoveryFixHint
+                className="font-medium pt-2"
+                failedResources={allNotRegistered}
+              />
+            </div>
+          </details>
+        )}
       </div>
     );
   }

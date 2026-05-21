@@ -5,7 +5,10 @@ import {
   upsertOrigin,
 } from '@/services/db/resources/origin';
 
-import type { EndpointMethodAdvisory } from '@agentcash/discovery';
+import type {
+  EndpointMethodAdvisory,
+  AuditWarning,
+} from '@agentcash/discovery';
 import { isX402PaymentOption } from '@/lib/discovery/utils';
 
 import { getOriginFromUrl } from '@/lib/url';
@@ -28,6 +31,86 @@ import type { AcceptsNetwork } from '@x402scan/scan-db';
 import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
 import { notifyNewServer } from '@/lib/discord-notifications';
 
+/**
+ * Pure validation — no DB writes, no side effects. Used by both
+ * registerResource() and the batch-test endpoint so the pre-registration
+ * count matches the actual registration outcome.
+ */
+export function validateResource(
+  url: string,
+  advisory: EndpointMethodAdvisory
+): { valid: true; warnings: AuditWarning[] } | { valid: false; error: string } {
+  const warnings: AuditWarning[] = [];
+
+  // HTTPS enforcement (allow localhost / 127.0.0.1 for dev)
+  const urlObj = new URL(url);
+  if (
+    urlObj.protocol === 'http:' &&
+    urlObj.hostname !== 'localhost' &&
+    urlObj.hostname !== '127.0.0.1'
+  ) {
+    return {
+      valid: false,
+      error: 'HTTPS is required for x402 resource registration',
+    };
+  }
+
+  // v1 rejection — only v2 resources can be registered
+  const x402Options = (advisory.paymentOptions ?? []).filter(
+    isX402PaymentOption
+  );
+  const hasOnlyV1 =
+    x402Options.length > 0 && x402Options.every(o => o.version === 1);
+  if (hasOnlyV1) {
+    return {
+      valid: false,
+      error: 'x402 v1 response detected — migrate to v2 spec',
+    };
+  }
+
+  // No x402 payment options
+  if (x402Options.length === 0) {
+    return { valid: false, error: 'No x402 payment options found' };
+  }
+
+  // Missing input schema
+  if (!advisory.inputSchema) {
+    return {
+      valid: false,
+      error:
+        'Missing input schema — add request/response schemas to your OpenAPI spec',
+    };
+  }
+
+  // Unsupported networks
+  const hasSupported = x402Options.some(opt =>
+    (SUPPORTED_CHAINS as readonly string[]).includes(
+      normalizeChainId(opt.network)
+    )
+  );
+  if (!hasSupported) {
+    const advertisedNetworks = Array.from(
+      new Set(x402Options.map(o => normalizeChainId(o.network)))
+    );
+    return {
+      valid: false,
+      error: `No supported networks. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]`,
+    };
+  }
+
+  // SIWX warning — identity-gated endpoints are valid but not payment-protected
+  if (advisory.authMode === 'siwx') {
+    warnings.push({
+      code: 'SIWX_ENDPOINT',
+      severity: 'warn',
+      message:
+        'This endpoint uses SIWX authentication (identity-gated, not payment-protected)',
+    });
+  }
+
+  return { valid: true, warnings };
+}
+
 export const registerResource = async (
   url: string,
   advisory: EndpointMethodAdvisory,
@@ -39,38 +122,37 @@ export const registerResource = async (
      * `info` block from discovery.
      */
     originMetadataFallback?: { title?: string; description?: string };
+    /** Warnings from probeX402Endpoint — merged into the result. */
+    warnings?: AuditWarning[];
   } = {}
 ) => {
+  const validation = validateResource(url, advisory);
+
+  if (!validation.valid) {
+    return {
+      success: false as const,
+      data: advisory.paymentRequiredBody,
+      error: {
+        type: 'validation' as const,
+        parseErrors: [validation.error],
+      },
+      warnings: [...(options.warnings ?? [])],
+    };
+  }
+
   const x402Options = (advisory.paymentOptions ?? []).filter(
     isX402PaymentOption
   );
+  const warnings: AuditWarning[] = [
+    ...(options.warnings ?? []),
+    ...validation.warnings,
+  ];
+
   const urlObj = new URL(url);
   urlObj.search = '';
   const cleanUrl = urlObj.toString();
   const origin = getOriginFromUrl(cleanUrl);
   const shouldNotifyNewServer = options.notifyNewServer ?? true;
-
-  if (x402Options.length === 0) {
-    return {
-      success: false as const,
-      data: advisory.paymentRequiredBody,
-      error: {
-        type: 'parseResponse' as const,
-        parseErrors: ['No payment options found'],
-      },
-    };
-  }
-
-  if (!advisory.inputSchema) {
-    return {
-      success: false as const,
-      data: advisory.paymentRequiredBody,
-      error: {
-        type: 'parseResponse' as const,
-        parseErrors: ['Missing input schema'],
-      },
-    };
-  }
 
   const existingOriginResourceCount = shouldNotifyNewServer
     ? await getOriginResourceCount(origin)
@@ -100,10 +182,6 @@ export const registerResource = async (
   }
 
   // Fallback: convert raw OpenAPI-format inputSchema to v1 format.
-  // The discovery package returns schemas from the OpenAPI spec as
-  // { requestBody?: JsonSchema, parameters?: OpenApiParam[] } or a
-  // bare JSON Schema when only a requestBody exists. Convert those
-  // into the v1 { method, bodyFields, queryParams, headerFields } shape.
   if (!outputSchemaForDb && advisory.inputSchema) {
     const converted = convertOpenApiSchemaToV1(
       advisory.inputSchema,
@@ -146,6 +224,8 @@ export const registerResource = async (
     (SUPPORTED_CHAINS as readonly string[]).includes(accept.network)
   );
 
+  // This should never fire since validateResource already checked, but
+  // guard defensively in case the chain list diverges at runtime.
   if (mappedAccepts.length === 0) {
     const advertisedNetworks = Array.from(
       new Set(allMappedAccepts.map(a => a.network))
@@ -159,6 +239,7 @@ export const registerResource = async (
           `No supported networks advertised. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]. Testnets are not indexed.`,
         ],
       },
+      warnings,
     };
   }
 
@@ -173,6 +254,7 @@ export const registerResource = async (
         type: 'parseResponse' as const,
         parseErrors: parsedPaymentRequiredBody.errors,
       },
+      warnings,
     };
   }
 
@@ -194,6 +276,7 @@ export const registerResource = async (
         type: 'database' as const,
         upsertErrors: ['Resource failed to upsert'],
       },
+      warnings,
     };
   }
 
@@ -271,6 +354,7 @@ export const registerResource = async (
       maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
     })),
     response: advisory.paymentRequiredBody,
+    warnings,
     registrationDetails: {
       providedAccepts: mappedAccepts,
       supportedAccepts: resource.accepts,

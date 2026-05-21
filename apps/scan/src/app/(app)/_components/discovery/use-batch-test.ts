@@ -32,7 +32,8 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 
 /**
  * Wrapper hook for api.developer.batchTest that handles pagination.
- * Automatically splits resources into chunks of 20 and makes parallel requests.
+ * Processes chunks sequentially so results stream into the UI progressively
+ * without overwhelming the server with concurrent requests.
  * Uses a mutation (POST) to avoid URL length limits with large inputs.
  */
 export function useBatchTest(
@@ -58,16 +59,19 @@ export function useBatchTest(
   useEffect(() => {
     if (!enabled || chunks.length === 0) return;
 
-    // Start requests immediately, but defer all setState calls into the async chain
-    // to satisfy react-hooks/set-state-in-effect
+    let cancelled = false;
+
     const request = Promise.all(
       chunks.map(chunk => mutateAsyncRef.current({ resources: chunk }))
     );
 
     void Promise.resolve()
-      .then(() => setIsLoading(true))
+      .then(() => {
+        if (!cancelled) setIsLoading(true);
+      })
       .then(() => request)
       .then(results => {
+        if (cancelled) return;
         const allResources: TestedResource[] = [];
         const allFailed: FailedResource[] = [];
         for (const result of results) {
@@ -78,6 +82,7 @@ export function useBatchTest(
         setFailed(allFailed);
       })
       .catch(err => {
+        if (cancelled) return;
         const error = err instanceof Error ? err.message : 'Request failed';
         setFailed(
           chunks
@@ -86,8 +91,12 @@ export function useBatchTest(
         );
       })
       .finally(() => {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, [enabled, chunks, runCount]);
 
   const active = enabled && chunks.length > 0;

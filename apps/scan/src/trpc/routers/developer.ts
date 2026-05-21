@@ -6,8 +6,14 @@ import { getOriginFromUrl } from '@/lib/url';
 import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource, TestedResource } from '@/types/batch-test';
 import { probeX402Endpoint } from '@/lib/discovery/probe';
+import { validateResource } from '@/lib/resources';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 
+/**
+ * Test a single resource by probing it and running the same validation
+ * that registerResource() uses (via shared validateResource()). This
+ * ensures the batch-test count matches the actual registration outcome.
+ */
 async function testSingleResource(
   url: string,
   method?: string,
@@ -54,28 +60,14 @@ async function testSingleResource(
 
     const { advisory } = result;
 
-    // Check for v1 — all x402 payment options must be v2
-    const x402Options = (advisory.paymentOptions ?? []).filter(
-      o => o.protocol === 'x402'
-    );
-    const hasOnlyV1 =
-      x402Options.length > 0 && x402Options.every(o => o.version === 1);
-    if (hasOnlyV1) {
+    // Run the same validation as registerResource()
+    const validation = validateResource(url, advisory);
+    if (!validation.valid) {
       return {
         success: false as const,
         url,
-        error: 'x402 v1 response detected — migrate to v2 spec',
+        error: validation.error,
       };
-    }
-
-    const warnings = [...result.warnings];
-    if (!advisory.inputSchema) {
-      warnings.push({
-        code: 'MISSING_INPUT_SCHEMA',
-        severity: 'warn' as const,
-        message:
-          "Missing input schema — agents can find and pay for this endpoint but won't know what request to send",
-      });
     }
 
     return {
@@ -84,7 +76,7 @@ async function testSingleResource(
       method: advisory.method as TestedResource['method'],
       description: advisory.summary ?? null,
       parsed: advisory,
-      warnings,
+      warnings: [...result.warnings, ...validation.warnings],
     };
   } catch (err) {
     return {
