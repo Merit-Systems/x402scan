@@ -79,8 +79,9 @@ export const ResourceCard: React.FC<Props> = ({
                 pricingMode={
                   resource.metadata != null &&
                   typeof resource.metadata === 'object' &&
-                  'pricingMode' in resource.metadata
-                    ? (resource.metadata.pricingMode as string)
+                  'pricingMode' in resource.metadata &&
+                  resource.metadata.pricingMode === 'dynamic'
+                    ? 'dynamic'
                     : undefined
                 }
               />
