@@ -229,9 +229,10 @@ export function useDiscovery({
     () => effectiveResources.map(r => r.url),
     [effectiveResources]
   );
-  // Only the actually discovered resources (not the prepended user-entered URL)
+  // Only the actually discovered resources (not the prepended user-entered URL).
+  // Deduplicated — the same URL can appear with different methods (e.g. GET siwx + POST paid).
   const actualDiscoveredUrls = useMemo(
-    () => discoveryResources.map(r => r.url),
+    () => [...new Set(discoveryResources.map(r => r.url))],
     [discoveryResources]
   );
   // Create map of URL -> invalid status for displaying badges

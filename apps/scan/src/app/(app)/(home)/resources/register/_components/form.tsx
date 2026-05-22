@@ -151,11 +151,13 @@ export const RegisterResourceForm = () => {
 
   // After batch test completes, count passing paid resources + SIWX (free) endpoints.
   // SIWX endpoints aren't probed, so they aren't in testedResources — add them separately.
+  // Exclude SIWX URLs that were also probed (same URL, different method) to avoid double-counting.
   // Before batch test, fall back to total discovered count.
   const batchTestComplete =
     testedResources.length > 0 || failedResources.length > 0;
+  const testedUrls = new Set(testedResources.map(r => r.url));
   const siwxCount = actualDiscoveredResources.filter(
-    url => authModeMap[url] === 'siwx'
+    url => authModeMap[url] === 'siwx' && !testedUrls.has(url)
   ).length;
   const registrableResourceCount = batchTestComplete
     ? testedResources.length + siwxCount
@@ -326,6 +328,7 @@ export const RegisterResourceForm = () => {
               disabled={
                 isLoading ||
                 isBatchTestLoading ||
+                !!activeBulkResult ||
                 (failedResources.length > 0 && testedResources.length === 0)
               }
               onClick={handleRegisterDiscovered}
