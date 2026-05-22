@@ -5,11 +5,20 @@ import { api } from '@/trpc/client';
 import type { TestedResource, FailedResource } from '@/types/batch-test';
 import type { DiscoveredResource } from '@/types/discovery';
 
+export interface BatchTestProgress {
+  checked: number;
+  total: number;
+}
+
 interface BatchTestResult {
   isLoading: boolean;
+  progress: BatchTestProgress | null;
   resources: TestedResource[];
   failed: FailedResource[];
   payToAddresses: string[];
+  /** Server-side probe session ID. Pass to registerFromOrigin so the server
+   *  reuses cached probe results instead of re-probing. */
+  probeSessionId: string | null;
   refetch: () => void;
   retryOne: (
     url: string,
@@ -17,7 +26,10 @@ interface BatchTestResult {
   ) => Promise<void>;
 }
 
-const BATCH_SIZE = 20;
+// One endpoint per request for per-endpoint progress updates.
+// The server probes sequentially anyway, so N requests of 1 endpoint
+// has the same total probe time as 1 request of N endpoints.
+const BATCH_SIZE = 1;
 
 /**
  * Split array into chunks of specified size
@@ -43,7 +55,9 @@ export function useBatchTest(
   const [resources, setResources] = useState<TestedResource[]>([]);
   const [failed, setFailed] = useState<FailedResource[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState<BatchTestProgress | null>(null);
   const [runCount, setRunCount] = useState(0);
+  const [probeSessionId, setProbeSessionId] = useState<string | null>(null);
 
   const mutation = api.developer.batchTest.useMutation();
   const mutateAsyncRef = useRef(mutation.mutateAsync);
@@ -51,9 +65,21 @@ export function useBatchTest(
     mutateAsyncRef.current = mutation.mutateAsync;
   });
 
+  // Sort paid endpoints first so they're probed before unclassified ones.
+  // This prevents rate limiting from burning through all probes on non-paid
+  // endpoints before reaching the ones that actually matter.
+  const sortedResources = useMemo(() => {
+    const paidModes = new Set(['paid', 'apiKey+paid']);
+    return [...effectiveResources].sort((a, b) => {
+      const aPaid = a.authMode != null && paidModes.has(a.authMode) ? 0 : 1;
+      const bPaid = b.authMode != null && paidModes.has(b.authMode) ? 0 : 1;
+      return aPaid - bPaid;
+    });
+  }, [effectiveResources]);
+
   const chunks = useMemo(
-    () => chunkArray(effectiveResources, BATCH_SIZE),
-    [effectiveResources]
+    () => chunkArray(sortedResources, BATCH_SIZE),
+    [sortedResources]
   );
 
   useEffect(() => {
@@ -61,27 +87,41 @@ export function useBatchTest(
 
     let cancelled = false;
 
-    const request = Promise.all(
-      chunks.map(chunk => mutateAsyncRef.current({ resources: chunk }))
-    );
+    const run = async () => {
+      if (!cancelled) {
+        setIsLoading(true);
+        setProbeSessionId(null);
+        setProgress({ checked: 0, total: effectiveResources.length });
+      }
 
-    void Promise.resolve()
-      .then(() => {
-        if (!cancelled) setIsLoading(true);
-      })
-      .then(() => request)
-      .then(results => {
-        if (cancelled) return;
-        const allResources: TestedResource[] = [];
-        const allFailed: FailedResource[] = [];
-        for (const result of results) {
+      const allResources: TestedResource[] = [];
+      const allFailed: FailedResource[] = [];
+      let sessionId: string | undefined;
+
+      try {
+        for (const chunk of chunks) {
+          if (cancelled) return;
+          const result = await mutateAsyncRef.current({
+            resources: chunk,
+            // Pass sessionId from first chunk so all results share one cache
+            ...(sessionId ? { probeSessionId: sessionId } : {}),
+          });
+          sessionId ??= result.probeSessionId;
+          if (!cancelled && sessionId) {
+            setProbeSessionId(sessionId);
+          }
           allResources.push(...result.resources);
           allFailed.push(...result.failed);
+          if (!cancelled) {
+            setResources([...allResources]);
+            setFailed([...allFailed]);
+            setProgress({
+              checked: allResources.length + allFailed.length,
+              total: effectiveResources.length,
+            });
+          }
         }
-        setResources(allResources);
-        setFailed(allFailed);
-      })
-      .catch(err => {
+      } catch (err) {
         if (cancelled) return;
         const error = err instanceof Error ? err.message : 'Request failed';
         setFailed(
@@ -89,15 +129,20 @@ export function useBatchTest(
             .flat()
             .map(r => ({ success: false as const, url: r.url, error }))
         );
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+          setProgress(null);
+        }
+      }
+    };
+
+    void run();
 
     return () => {
       cancelled = true;
     };
-  }, [enabled, chunks, runCount]);
+  }, [enabled, chunks, runCount, effectiveResources.length]);
 
   const active = enabled && chunks.length > 0;
 
@@ -132,6 +177,8 @@ export function useBatchTest(
             sampleBody: options?.sampleBody,
           },
         ],
+        // Append to existing session so retried probes land in the same cache
+        ...(probeSessionId ? { probeSessionId } : {}),
       });
 
       // Merge result: replace existing entry for the original URL
@@ -154,9 +201,11 @@ export function useBatchTest(
 
   return {
     isLoading: isLoading && active,
+    progress: active ? progress : null,
     resources: active ? resources : [],
     failed: active ? failed : [],
     payToAddresses,
+    probeSessionId: active ? probeSessionId : null,
     refetch: () => setRunCount(c => c + 1),
     retryOne,
   };

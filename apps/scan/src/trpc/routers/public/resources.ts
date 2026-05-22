@@ -144,11 +144,19 @@ export const resourcesRouter = createTRPCRouter({
   /**
    * Register all x402 resources discovered from an origin.
    * Uses DNS TXT records (_x402.{hostname}) or /.well-known/x402 for discovery.
+   *
+   * SECURITY: Advisory data (payTo addresses, schemas, etc.) is never accepted
+   * from the client. If a probeSessionId is provided, the server reads cached
+   * probe results that it wrote during the batch test. This prevents payment
+   * redirection attacks where a malicious client substitutes payTo addresses.
    */
   registerFromOrigin: publicProcedure
     .input(
       z.object({
         origin: z.url(),
+        /** Server-side probe session from the batch test. URLs with a cached
+         *  probe result skip re-probing — avoids rate limiting on registration. */
+        probeSessionId: z.string().uuid().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -167,16 +175,17 @@ export const resourcesRouter = createTRPCRouter({
       const result = await registerResourcesFromDiscovery(
         discoveryResult.resources,
         discoveryResult.source,
-        discoveryResult.info
+        discoveryResult.info,
+        input.probeSessionId
       );
 
-      if (result.registered === 0) {
+      if (result.registered === 0 && result.siwx === 0) {
         return {
           success: false as const,
           error: {
             type: 'noValidResources' as const,
             message:
-              'No valid paid x402 resources were found for this origin. Add at least one paid x402 resource that passes validation to complete registration.',
+              'No valid x402 or free (SIWX) resources were found for this origin. Add at least one resource that passes validation to complete registration.',
           },
           result,
         };

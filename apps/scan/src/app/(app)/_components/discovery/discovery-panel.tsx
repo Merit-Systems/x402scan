@@ -65,45 +65,26 @@ export function DiscoveryFixHint({
   className,
   failedResources,
   warnings,
-  v1Migration,
   noDiscovery,
-  needsSetup,
-  missingSchema,
   missingSchemaResources,
 }: {
   className?: string;
   failedResources?: { url: string; error: string; status?: number }[];
   warnings?: { url: string; error: string; status?: number }[];
-  v1Migration?: boolean;
   noDiscovery?: boolean;
-  /** All endpoints failed — treat as needing x402 setup from scratch. */
-  needsSetup?: boolean;
-  missingSchema?: boolean;
   missingSchemaResources?: string[];
 }) {
   const label = noDiscovery
     ? 'Have your agent create an OpenAPI spec for your resource'
-    : needsSetup
-      ? 'Set up x402 with a prompt'
-      : v1Migration
-        ? 'Migrate to x402 v2 spec in one prompt'
-        : missingSchema
-          ? 'Add input schemas with a prompt'
-          : 'Have your agent fix the errors with a prompt';
+    : 'Have your agent fix the issues with a prompt';
 
   return (
     <p className={cn('text-sm text-foreground', className)}>
       <DiscoveryActions
         label={label}
-        {...(needsSetup
-          ? {}
-          : {
-              failedResources,
-              warnings,
-              missingSchema,
-              missingSchemaResources,
-            })}
-        v1Migration={v1Migration}
+        failedResources={failedResources}
+        warnings={warnings}
+        missingSchemaResources={missingSchemaResources}
         noDiscovery={noDiscovery}
       />{' '}
       or{' '}
@@ -384,7 +365,7 @@ export function DiscoveryPanel({
               <AlertCircle className="size-4 text-yellow-600 shrink-0" />
               {bulkResult.warningDetails.length} resource
               {bulkResult.warningDetails.length === 1 ? '' : 's'} registered
-              with warnings
+              with warnings (Not blocking)
             </summary>
             <div className="p-4 pt-2 border-t space-y-2">
               <div className="space-y-2 max-h-[400px] overflow-y-auto">
@@ -899,7 +880,7 @@ function FailedResourceCard({
   const isV1Error =
     failedDetails?.error?.includes('v1 response detected') ?? false;
   const errorMessage = isSiwx
-    ? 'SIWX (identity-gated, no payment)'
+    ? 'Free (wallet auth, no payment)'
     : isInvalid
       ? (invalidInfo?.reason ?? 'Invalid format')
       : x402Parsed
@@ -913,7 +894,7 @@ function FailedResourceCard({
         className={cn(
           'overflow-hidden',
           isSiwx
-            ? 'border-primary'
+            ? 'border-green-600'
             : isInvalid
               ? 'border-yellow-500/30'
               : 'border-red-500/30'
@@ -931,13 +912,13 @@ function FailedResourceCard({
                   className={cn(
                     'font-mono px-1 rounded-md text-xs shrink-0',
                     isSiwx
-                      ? 'bg-primary/10 border border-primary text-primary'
+                      ? 'bg-green-600/10 border border-green-600 text-green-600'
                       : isInvalid
                         ? 'bg-yellow-600/10 border border-yellow-600 text-yellow-600'
                         : 'bg-red-600/10 border border-red-600 text-red-600'
                   )}
                 >
-                  {isSiwx ? 'SIWX' : isInvalid ? 'INVALID' : 'ERR'}
+                  {isSiwx ? 'FREE' : isInvalid ? 'INVALID' : 'ERR'}
                 </div>
                 <span className="font-mono text-sm truncate">{pathname}</span>
               </div>
@@ -979,19 +960,15 @@ function FailedResourceCard({
               ]}
             />
 
-            {isV1Error ? (
-              <DiscoveryFixHint v1Migration />
-            ) : (
-              <DiscoveryFixHint
-                failedResources={[
-                  {
-                    url: resourceUrl,
-                    error: errorMessage,
-                    status: failedDetails?.statusCode,
-                  },
-                ]}
-              />
-            )}
+            <DiscoveryFixHint
+              failedResources={[
+                {
+                  url: resourceUrl,
+                  error: errorMessage,
+                  status: failedDetails?.statusCode,
+                },
+              ]}
+            />
 
             {/* Sample body input — shown for reachable endpoints that didn't return 402 */}
             {onRetry && !isSiwx && !isV1Error && (
@@ -1179,6 +1156,17 @@ function RegisterModeResourceList({
 
   if (allResources.length === 0) return null;
 
+  // Sort: invalid → free (SIWX) → new → already registered
+  const sortedResources = [...allResources].sort((a, b) => {
+    const priority = (r: (typeof allResources)[number]) => {
+      if (invalidResourcesMap[r.url]?.invalid) return 0;
+      if (authModeMap[r.url] === 'siwx') return 1;
+      if (!r.isRegistered) return 2;
+      return 3; // already registered
+    };
+    return priority(a) - priority(b);
+  });
+
   return (
     <div className="border rounded-md overflow-hidden mt-3">
       <table className="w-full text-sm">
@@ -1190,87 +1178,91 @@ function RegisterModeResourceList({
           </tr>
         </thead>
         <tbody>
-          {allResources.map(({ url, source: resourceSource, isRegistered }) => {
-            const pathname = (() => {
-              try {
-                return decodeURIComponent(new URL(url).pathname);
-              } catch {
-                return url;
-              }
-            })();
+          {sortedResources.map(
+            ({ url, source: resourceSource, isRegistered }) => {
+              const pathname = (() => {
+                try {
+                  return decodeURIComponent(new URL(url).pathname);
+                } catch {
+                  return url;
+                }
+              })();
 
-            return (
-              <tr key={url} className="border-t">
-                <td className="px-3 py-2">
-                  <span className="font-mono text-sm">{pathname}</span>
-                </td>
-                <td className="px-3 py-2">
-                  <span
-                    className={cn(
-                      'text-xs px-1.5 py-0.5 rounded',
-                      resourceSource === 'entered'
-                        ? 'bg-blue-500/10 text-blue-600'
-                        : 'bg-muted text-muted-foreground'
-                    )}
-                  >
-                    {resourceSource === 'entered'
-                      ? 'Manually Entered'
-                      : resourceSource === 'openapi'
-                        ? 'OpenAPI'
-                        : resourceSource === 'probe'
-                          ? 'Runtime Probe'
-                          : resourceSource === 'interop-mpp'
-                            ? '/.well-known/mpp'
-                            : '/.well-known/x402'}
-                  </span>
-                </td>
-                <td className="px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    {isRegistered ? (
-                      <span className="flex items-center gap-1 text-xs text-green-600">
-                        <Check className="size-3" />
-                        Already Registered
-                      </span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">New</span>
-                    )}
-                    {authModeMap[url] === 'siwx' && (
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-primary/10 border border-primary text-primary">
-                            <ShieldCheck className="size-3" />
-                            SIWX
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Identity-gated route (Sign-In With X). Requires a
-                            wallet proof; no payment.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                    {invalidResourcesMap[url]?.invalid && (
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-yellow-600/10 border border-yellow-600 text-yellow-600">
-                            <AlertCircle className="size-3" />
-                            INVALID
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            {invalidResourcesMap[url]?.reason ??
-                              'Invalid format'}
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
+              return (
+                <tr key={url} className="border-t">
+                  <td className="px-3 py-2">
+                    <span className="font-mono text-sm">{pathname}</span>
+                  </td>
+                  <td className="px-3 py-2">
+                    <span
+                      className={cn(
+                        'text-xs px-1.5 py-0.5 rounded',
+                        resourceSource === 'entered'
+                          ? 'bg-blue-500/10 text-blue-600'
+                          : 'bg-muted text-muted-foreground'
+                      )}
+                    >
+                      {resourceSource === 'entered'
+                        ? 'Manually Entered'
+                        : resourceSource === 'openapi'
+                          ? 'OpenAPI'
+                          : resourceSource === 'probe'
+                            ? 'Runtime Probe'
+                            : resourceSource === 'interop-mpp'
+                              ? '/.well-known/mpp'
+                              : '/.well-known/x402'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      {isRegistered ? (
+                        <span className="flex items-center gap-1 text-xs text-green-600">
+                          <Check className="size-3" />
+                          Already Registered
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          New
+                        </span>
+                      )}
+                      {authModeMap[url] === 'siwx' && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-green-600/10 border border-green-600 text-green-600">
+                              <ShieldCheck className="size-3" />
+                              Free
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">
+                              Free endpoint — requires wallet authentication but
+                              no payment.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                      {invalidResourcesMap[url]?.invalid && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-yellow-600/10 border border-yellow-600 text-yellow-600">
+                              <AlertCircle className="size-3" />
+                              INVALID
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">
+                              {invalidResourcesMap[url]?.reason ??
+                                'Invalid format'}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            }
+          )}
         </tbody>
       </table>
     </div>

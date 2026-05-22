@@ -1,14 +1,64 @@
-import { checkEndpointSchema, getWarningsForL3 } from '@agentcash/discovery';
+import {
+  checkEndpointSchema,
+  getWarningsForL3,
+  validatePaymentRequiredDetailed,
+} from '@agentcash/discovery';
 import type {
   AuditWarning,
   CheckEndpointResult,
   EndpointMethodAdvisory,
 } from '@agentcash/discovery';
+import https from 'node:https';
 import {
   buildMinimalSampleFromInputSchema,
   buildMinimalQueryParamsFromInputSchema,
   PROBE_TIMEOUT_MS,
 } from './utils';
+
+/**
+ * Direct HTTPS probe that tolerates large response headers (128 KB).
+ * Some merchants embed the full 402 payment body in a `payment-required`
+ * header, exceeding Node's default 16 KB limit. The discovery library's
+ * internal `fetch` silently drops these as network errors.
+ */
+function directProbe402(
+  url: string,
+  method: string,
+  timeoutMs: number
+): Promise<{ status: number; body: unknown } | null> {
+  return new Promise(resolve => {
+    const parsed = new URL(url);
+    const req = https.request(
+      {
+        hostname: parsed.hostname,
+        port: parsed.port || 443,
+        path: parsed.pathname + parsed.search,
+        method,
+        headers: { Accept: 'application/json' },
+        timeout: timeoutMs,
+        maxHeaderSize: 128 * 1024,
+      },
+      res => {
+        const chunks: Buffer[] = [];
+        res.on('data', (chunk: Buffer) => chunks.push(chunk));
+        res.on('end', () => {
+          try {
+            const body: unknown = JSON.parse(Buffer.concat(chunks).toString());
+            resolve({ status: res.statusCode ?? 0, body });
+          } catch {
+            resolve(null);
+          }
+        });
+      }
+    );
+    req.on('error', () => resolve(null));
+    req.on('timeout', () => {
+      req.destroy();
+      resolve(null);
+    });
+    req.end();
+  });
+}
 
 export type ProbeX402Result =
   | {
@@ -76,8 +126,18 @@ function pickInputSchemaFromSpec(
   return advisory?.inputSchema;
 }
 
+const RATE_LIMIT_STATUSES = new Set([429, 503]);
+const MAX_RETRIES = 2;
+const RETRY_BASE_MS = 1500;
+
+/** Sleep for a given number of milliseconds. */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 /**
  * Probes a URL and returns the first advisory that carries x402 payment options.
+ * Retries up to MAX_RETRIES times on 429/503 with exponential backoff.
  *
  * Strategy:
  *   1. Probe with no body (works for servers whose paywall fires before
@@ -93,6 +153,36 @@ function pickInputSchemaFromSpec(
  *   bare probe fails. Passed directly to checkEndpointSchema as sampleInputBody.
  */
 export async function probeX402Endpoint(
+  url: string,
+  preferredMethod?: string,
+  sampleBody?: Record<string, unknown>
+): Promise<ProbeX402Result> {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const result = await probeX402EndpointOnce(
+      url,
+      preferredMethod,
+      sampleBody
+    );
+
+    // Retry on rate limiting (429/503) with exponential backoff.
+    if (
+      !result.success &&
+      result.statusCode !== undefined &&
+      RATE_LIMIT_STATUSES.has(result.statusCode) &&
+      attempt < MAX_RETRIES
+    ) {
+      await sleep(RETRY_BASE_MS * 2 ** attempt);
+      continue;
+    }
+
+    return result;
+  }
+
+  // Unreachable, but satisfies the type checker.
+  return { success: false, error: 'Max retries exceeded' };
+}
+
+async function probeX402EndpointOnce(
   url: string,
   preferredMethod?: string,
   sampleBody?: Record<string, unknown>
@@ -151,6 +241,71 @@ export async function probeX402Endpoint(
       advisory: bodiedAdvisory,
       warnings: getWarningsForL3(bodiedAdvisory),
     };
+  }
+
+  // Fallback: direct HTTPS probe with large-header tolerance.
+  // Some merchants embed the full 402 body in a `payment-required` header,
+  // exceeding Node's default 16 KB limit. The discovery library's probes
+  // fail silently on these endpoints.
+  const directMethod = preferredMethod?.toUpperCase() ?? 'GET';
+  const direct = await directProbe402(probeUrl, directMethod, PROBE_TIMEOUT_MS);
+  if (direct?.status === 402 && direct.body) {
+    // Validate the 402 body and extract normalized accepts.
+    const validated = validatePaymentRequiredDetailed(direct.body);
+    if (validated.valid && validated.normalized) {
+      // Build advisory from OpenAPI (schemas) + direct 402 body (payment options).
+      // The library's probe failed due to header overflow, but OpenAPI may
+      // still have schema info we can merge in.
+      const retry = await checkEndpointSchema({
+        url: probeUrl,
+        signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
+      });
+      const openApiAdvisory = pickX402Advisory(retry, preferredMethod);
+
+      // Extract payment options from the validated 402 body's accepts array.
+      // These are already in the x402 wire format — the library normally
+      // parses them from the probe response, but header overflow prevented it.
+      // `validated.normalized` confirms the body parsed as valid x402, so the
+      // accepts array is structurally sound.
+      const rawBody = direct.body as Record<string, unknown>;
+      const rawAccepts = Array.isArray(rawBody.accepts) ? rawBody.accepts : [];
+      const paymentOptions = rawAccepts
+        .filter(
+          (a): a is Record<string, unknown> =>
+            typeof a === 'object' && a !== null && 'payTo' in a
+        )
+        .map(accept => ({
+          protocol: 'x402' as const,
+          ...accept,
+        })) as NonNullable<EndpointMethodAdvisory['paymentOptions']>;
+
+      const advisory: EndpointMethodAdvisory = {
+        source: 'probe',
+        method: directMethod as EndpointMethodAdvisory['method'],
+        paymentOptions,
+        paymentRequiredBody: direct.body,
+        ...(openApiAdvisory?.inputSchema
+          ? { inputSchema: openApiAdvisory.inputSchema }
+          : {}),
+        ...(openApiAdvisory?.outputSchema
+          ? { outputSchema: openApiAdvisory.outputSchema }
+          : {}),
+        ...(openApiAdvisory?.summary
+          ? { summary: openApiAdvisory.summary }
+          : {}),
+      };
+
+      const warnings = getWarningsForL3(advisory);
+      warnings.push({
+        code: 'HEADERS_OVERFLOW',
+        severity: 'warn',
+        message:
+          'Response headers exceed 16 KB — the payment-required header may be too large. ' +
+          'Some clients will fail to parse this response. ' +
+          'Consider moving the full payment body to the 402 JSON response only.',
+      });
+      return { success: true, advisory, warnings };
+    }
   }
 
   const isUnreachable =

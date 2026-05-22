@@ -1,12 +1,17 @@
 import { probeX402Endpoint } from './probe';
+import { getCachedProbeResult } from './probe-cache';
 import { getRegistrationErrorMessage } from './utils';
-import { registerResource } from '@/lib/resources';
+import { registerResource, registerSiwxResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 import { getOriginResourceCount } from '@/services/db/resources/origin';
 import { notifyNewServer } from '@/lib/discord-notifications';
 import { getOriginFromUrl } from '@/lib/url';
 
-import type { AuthMode } from '@agentcash/discovery';
+import type {
+  AuditWarning,
+  AuthMode,
+  EndpointMethodAdvisory,
+} from '@agentcash/discovery';
 
 const BULK_REGISTER_CONCURRENCY = 6;
 
@@ -73,10 +78,9 @@ export interface RegisterOriginResult {
 /**
  * Probe and register all resources from a discovery document.
  * Paid resources are probed and written to the resources table.
- * SIWX-identified routes are a first-class positive outcome — they are
- * reported back in `siwx`/`siwxDetails` but not written to the DB (until
- * schema support lands). Endpoints missing an input schema are reported
- * as skipped.
+ * SIWX (free) resources are written to the resources table without probing
+ * (they have no x402 payment options — just a Resource row, no Accepts).
+ * Endpoints missing an input schema are reported as skipped.
  * Deprecates resources from the same origin that are no longer in the list.
  *
  * `originInfo` is the OpenAPI `info` block (title/description/version) when
@@ -84,9 +88,12 @@ export interface RegisterOriginResult {
  * APIs whose homepage isn't HTML, so the scraper has nothing to extract.
  */
 export async function registerResourcesFromDiscovery(
-  resources: { url: string; authMode?: AuthMode }[],
+  resources: { url: string; method?: string; authMode?: AuthMode }[],
   source: string | undefined,
-  originInfo?: { title: string; description?: string }
+  originInfo?: { title: string; description?: string },
+  /** Server-side probe session ID. URLs with a cached probe result in Redis
+   *  skip re-probing — avoids rate limiting on registration. */
+  probeSessionId?: string
 ): Promise<RegisterOriginResult> {
   const originResourceCounts = new Map(
     await Promise.all(
@@ -98,47 +105,79 @@ export async function registerResourcesFromDiscovery(
     )
   );
 
+  async function registerAsSiwx(resourceUrl: string) {
+    const siwxResult = await registerSiwxResource(resourceUrl, {
+      originMetadataFallback: originInfo,
+    });
+    return siwxResult.success
+      ? {
+          success: true as const,
+          siwx: true as const,
+          url: resourceUrl,
+          resource: siwxResult.resource,
+        }
+      : {
+          success: false as const,
+          url: resourceUrl,
+          error: siwxResult.error,
+        };
+  }
+
   const results = await mapSettledWithConcurrency(resources, async resource => {
     const resourceUrl = resource.url;
 
     if (resource.authMode === 'siwx') {
-      return {
-        success: true as const,
-        siwx: true as const,
-        url: resourceUrl,
-      };
+      return registerAsSiwx(resourceUrl);
     }
 
-    const probeResult = await probeX402Endpoint(resourceUrl);
+    // Check server-side probe cache (from the batch test). This skips
+    // re-probing and avoids rate limiting. The cache is server-authoritative
+    // — advisory data never round-trips through the client.
+    const cached = probeSessionId
+      ? await getCachedProbeResult(probeSessionId, resourceUrl)
+      : null;
+    let advisory: EndpointMethodAdvisory;
+    let probeWarnings: AuditWarning[] = [];
 
-    if (!probeResult.success) {
-      return {
-        success: false as const,
-        url: resourceUrl,
-        error: probeResult.error,
-        ...(probeResult.skipped ? { skipped: true as const } : {}),
-        ...(probeResult.statusCode !== undefined
-          ? { status: probeResult.statusCode }
-          : {}),
-      };
+    if (cached) {
+      advisory = cached.advisory;
+      probeWarnings = cached.warnings;
+    } else {
+      const probeResult = await probeX402Endpoint(resourceUrl, resource.method);
+
+      if (!probeResult.success) {
+        return {
+          success: false as const,
+          url: resourceUrl,
+          error: probeResult.error,
+          ...(probeResult.skipped ? { skipped: true as const } : {}),
+          ...(probeResult.statusCode !== undefined
+            ? { status: probeResult.statusCode }
+            : {}),
+        };
+      }
+
+      advisory = probeResult.advisory;
+
+      // Drop discovery-level schema warnings superseded by other checks.
+      probeWarnings = probeResult.warnings.filter(w => {
+        if (w.code === 'SCHEMA_INPUT_MISSING' && advisory.inputSchema)
+          return false;
+        if (w.code === 'SCHEMA_OUTPUT_MISSING') return false;
+        return true;
+      });
     }
-
-    const { advisory } = probeResult;
 
     // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
     if (advisory.authMode === 'siwx') {
-      return {
-        success: true as const,
-        siwx: true as const,
-        url: resourceUrl,
-      };
+      return registerAsSiwx(resourceUrl);
     }
 
     const result = await registerResource(resourceUrl, advisory, {
       notifyNewServer: false,
       originMetadataFallback: originInfo,
-      warnings: probeResult.warnings,
+      warnings: probeWarnings,
     });
 
     if (result.success) return result;
@@ -176,6 +215,10 @@ export async function registerResourcesFromDiscovery(
       if ('success' in value && value.success) {
         if ('siwx' in value && value.siwx === true) {
           siwxResults.push({ url: resourceUrl });
+          // Extract originId from SIWX registration result
+          if (!originId && 'resource' in value && value.resource?.origin?.id) {
+            originId = value.resource.origin.id;
+          }
         } else if ('resource' in value) {
           successfulResults.push({
             url: resourceUrl,

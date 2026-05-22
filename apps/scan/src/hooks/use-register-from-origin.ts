@@ -88,7 +88,8 @@ export function useRegisterFromOrigin(
     },
   });
 
-  const register = (origin: string) => mutation.mutateAsync({ origin });
+  const register = (origin: string, probeSessionId?: string) =>
+    mutation.mutateAsync({ origin, probeSessionId });
 
   const error =
     mutation.data && !mutation.data.success

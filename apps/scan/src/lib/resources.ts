@@ -26,9 +26,11 @@ import {
   type ParsedX402Response,
 } from '@/lib/x402';
 
+import { scanDb } from '@x402scan/scan-db';
 import type { AcceptsNetwork } from '@x402scan/scan-db';
 
 import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
+import { deduplicateWarnings } from '@/lib/discovery/utils';
 import { notifyNewServer } from '@/lib/discord-notifications';
 
 /**
@@ -73,13 +75,33 @@ export function validateResource(
     return { valid: false, error: 'No x402 payment options found' };
   }
 
-  // Missing input schema
+  // Missing input schema — check advisory.inputSchema first, then fall back to
+  // the bazaar extension in the raw 402 body. The discovery package doesn't
+  // always extract schemas from bazaar, but the data is often there.
   if (!advisory.inputSchema) {
-    return {
-      valid: false,
-      error:
-        'Missing input schema — add request/response schemas to your OpenAPI spec',
-    };
+    let hasBazaarSchema = false;
+    if (
+      advisory.paymentRequiredBody &&
+      typeof advisory.paymentRequiredBody === 'object' &&
+      advisory.paymentRequiredBody !== null
+    ) {
+      try {
+        const parsed = parseX402Response(advisory.paymentRequiredBody);
+        if (parsed.success) {
+          const extracted = getOutputSchema(parsed.data);
+          hasBazaarSchema = !!extracted;
+        }
+      } catch {
+        // Malformed bazaar data — treat as missing schema
+      }
+    }
+    if (!hasBazaarSchema) {
+      return {
+        valid: false,
+        error:
+          'Missing input schema — add a requestBody or parameter schema to your OpenAPI spec so agents know what to send',
+      };
+    }
   }
 
   // Unsupported networks
@@ -98,17 +120,166 @@ export function validateResource(
     };
   }
 
-  // SIWX warning — identity-gated endpoints are valid but not payment-protected
-  if (advisory.authMode === 'siwx') {
-    warnings.push({
-      code: 'SIWX_ENDPOINT',
-      severity: 'warn',
-      message:
-        'This endpoint uses SIWX authentication (identity-gated, not payment-protected)',
-    });
+  // Missing output schema — endpoint works but agents won't know what it returns
+  if (!advisory.outputSchema) {
+    let hasBazaarOutputSchema = false;
+    if (
+      advisory.paymentRequiredBody &&
+      typeof advisory.paymentRequiredBody === 'object' &&
+      advisory.paymentRequiredBody !== null
+    ) {
+      try {
+        const parsed = parseX402Response(advisory.paymentRequiredBody);
+        if (parsed.success) {
+          const extracted = getOutputSchema(parsed.data);
+          hasBazaarOutputSchema = !!extracted;
+        }
+      } catch {
+        // Malformed bazaar data
+      }
+    }
+    if (!hasBazaarOutputSchema) {
+      warnings.push({
+        code: 'MISSING_OUTPUT_SCHEMA',
+        severity: 'warn',
+        message:
+          'Missing output schema — add a response schema to your OpenAPI spec so agents know what this endpoint returns',
+      });
+    }
   }
 
   return { valid: true, warnings };
+}
+
+/**
+ * Register a SIWX (free, identity-gated) endpoint. These endpoints have no
+ * x402 payment options, no 402 response body, and no Accepts records — just
+ * a Resource row linked to its Origin.
+ */
+export async function registerSiwxResource(
+  url: string,
+  options: {
+    originMetadataFallback?: { title?: string; description?: string };
+  } = {}
+) {
+  const urlObj = new URL(url);
+  if (
+    urlObj.protocol === 'http:' &&
+    urlObj.hostname !== 'localhost' &&
+    urlObj.hostname !== '127.0.0.1'
+  ) {
+    return {
+      success: false as const,
+      error: 'HTTPS is required for resource registration',
+    };
+  }
+
+  urlObj.search = '';
+  const cleanUrl = urlObj.toString();
+  const origin = getOriginFromUrl(cleanUrl);
+
+  try {
+    const resource = await scanDb.$transaction(async tx => {
+      await tx.resourceOrigin.upsert({
+        where: { origin },
+        create: { origin },
+        update: {},
+      });
+
+      return tx.resources.upsert({
+        where: { resource: cleanUrl },
+        create: {
+          resource: cleanUrl,
+          type: 'http',
+          x402Version: 0,
+          lastUpdated: new Date(),
+          metadata: { authMode: 'siwx' },
+          origin: { connect: { origin } },
+        },
+        update: {
+          type: 'http',
+          x402Version: 0,
+          lastUpdated: new Date(),
+          metadata: { authMode: 'siwx' },
+          deprecatedAt: null,
+          origin: { connect: { origin } },
+        },
+        include: { origin: true },
+      });
+    });
+
+    // Scrape and upsert origin metadata (non-blocking — resource is already
+    // persisted, so a scrape failure shouldn't fail the registration).
+    void (async () => {
+      try {
+        const { og, metadata, favicon } = await scrapeOriginData(origin);
+        const title =
+          metadata?.title ??
+          og?.ogTitle ??
+          options.originMetadataFallback?.title ??
+          null;
+        const description =
+          metadata?.description ??
+          og?.ogDescription ??
+          options.originMetadataFallback?.description ??
+          null;
+
+        await upsertOrigin({
+          origin,
+          title: title ?? undefined,
+          description: description ?? undefined,
+          favicon: favicon ?? undefined,
+          ogImages:
+            og?.ogImage?.map(image => ({
+              url: image.url,
+              height: image.height,
+              width: image.width,
+              title: og.ogTitle,
+              description: og.ogDescription,
+            })) ?? [],
+        });
+      } catch (err) {
+        console.error(
+          '[registerSiwxResource] Metadata scrape failed (non-blocking):',
+          err
+        );
+      }
+    })();
+
+    return {
+      success: true as const,
+      resource: {
+        id: resource.id,
+        origin: { id: resource.origin.id },
+      },
+    };
+  } catch (error) {
+    // P2002: unique constraint race — another concurrent call already registered
+    // the same URL (e.g. POST and DELETE on the same path). Treat as success.
+    const isUniqueViolation =
+      error instanceof Error &&
+      'code' in error &&
+      (error as { code: string }).code === 'P2002';
+    if (isUniqueViolation) {
+      const existing = await scanDb.resources.findUnique({
+        where: { resource: cleanUrl },
+        include: { origin: true },
+      });
+      // Record may have been deleted between the P2002 and the lookup —
+      // still treat as success since the constraint proved it existed.
+      return {
+        success: true as const,
+        resource: existing
+          ? { id: existing.id, origin: { id: existing.origin.id } }
+          : { id: 'race-resolved', origin: { id: 'race-resolved' } },
+      };
+    }
+    console.error('[registerSiwxResource] Failed:', error);
+    return {
+      success: false as const,
+      error: error instanceof Error ? error.message : 'Database error',
+    };
+  }
 }
 
 export const registerResource = async (
@@ -143,10 +314,10 @@ export const registerResource = async (
   const x402Options = (advisory.paymentOptions ?? []).filter(
     isX402PaymentOption
   );
-  const warnings: AuditWarning[] = [
+  const warnings = deduplicateWarnings([
     ...(options.warnings ?? []),
     ...validation.warnings,
-  ];
+  ]);
 
   const urlObj = new URL(url);
   urlObj.search = '';
@@ -293,7 +464,12 @@ export const registerResource = async (
     options.originMetadataFallback?.description ??
     null;
 
-  await upsertOrigin({
+  // Origin metadata upsert — non-blocking. The origin row itself is already
+  // created inside upsertResource's transaction. This just enriches it with
+  // scraped metadata (title, favicon, OG images). When multiple resources
+  // from the same origin register concurrently, this can race (P2002) —
+  // safe to swallow since another concurrent call will succeed.
+  void upsertOrigin({
     origin,
     title: title ?? undefined,
     description: description ?? undefined,
@@ -306,6 +482,8 @@ export const registerResource = async (
         title: og.ogTitle,
         description: og.ogDescription,
       })) ?? [],
+  }).catch(() => {
+    // P2002 or other race — another call already upserted this origin.
   });
 
   await upsertResourceResponse(

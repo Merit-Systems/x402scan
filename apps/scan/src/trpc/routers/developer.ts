@@ -8,6 +8,11 @@ import type { FailedResource, TestedResource } from '@/types/batch-test';
 import { probeX402Endpoint } from '@/lib/discovery/probe';
 import { validateResource } from '@/lib/resources';
 import { fetchDiscoveryDocument } from '@/services/discovery';
+import { deduplicateWarnings } from '@/lib/discovery/utils';
+import {
+  createProbeSession,
+  cacheProbeResult,
+} from '@/lib/discovery/probe-cache';
 
 /**
  * Test a single resource by probing it and running the same validation
@@ -70,13 +75,26 @@ async function testSingleResource(
       };
     }
 
+    // Drop discovery-level schema warnings superseded by other checks.
+    // SCHEMA_INPUT_MISSING: suppressed when advisory already has inputSchema
+    //   from OpenAPI (the 402 body lacking it is not actionable).
+    // SCHEMA_OUTPUT_MISSING: always suppressed — validateResource() has its
+    //   own MISSING_OUTPUT_SCHEMA check that includes bazaar fallback, so
+    //   the discovery-level warning would be a duplicate or less precise.
+    const probeWarnings = result.warnings.filter(w => {
+      if (w.code === 'SCHEMA_INPUT_MISSING' && advisory.inputSchema)
+        return false;
+      if (w.code === 'SCHEMA_OUTPUT_MISSING') return false;
+      return true;
+    });
+
     return {
       success: true as const,
       url,
       method: advisory.method as TestedResource['method'],
       description: advisory.summary ?? null,
       parsed: advisory,
-      warnings: [...result.warnings, ...validation.warnings],
+      warnings: deduplicateWarnings([...probeWarnings, ...validation.warnings]),
     };
   } catch (err) {
     return {
@@ -132,10 +150,15 @@ export const developerRouter = createTRPCRouter({
       };
     }),
 
-  /** Batch test multiple resources to get their x402 responses */
+  /** Batch test multiple resources to get their x402 responses.
+   *  Successful probe results are cached server-side under `probeSessionId`
+   *  so the registration endpoint can reuse them without trusting client data. */
   batchTest: publicProcedure
     .input(
       z.object({
+        /** Probe session ID. If omitted, a new session is created. Pass the
+         *  sessionId from a previous batch to append to the same cache. */
+        probeSessionId: z.string().uuid().optional(),
         resources: z
           .array(
             z.object({
@@ -171,6 +194,8 @@ export const developerRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
+      const sessionId = input.probeSessionId ?? createProbeSession();
+
       // Separate invalid resources from valid ones
       const invalidResults: FailedResource[] = input.resources
         .filter(r => r.invalid)
@@ -180,22 +205,37 @@ export const developerRouter = createTRPCRouter({
           error: r.invalidReason ?? 'Invalid resource format',
         }));
 
-      // SIWX routes are identity-gated, not payment-protected. Skip probing
-      // them — they are surfaced via authModeMap on the client and should not
-      // appear in either the tested or failed buckets.
+      // Probe endpoints that are x402-paid or unclassified (might be paid but
+      // discovery didn't detect it). Skip SIWX (identity-gated, not x402) and
+      // explicitly non-paid (unprotected, apiKey).
+      const skipModes = new Set(['siwx', 'unprotected', 'apiKey']);
       const probeableResources = input.resources.filter(
-        r => !r.invalid && r.authMode !== 'siwx'
+        r => !r.invalid && (r.authMode == null || !skipModes.has(r.authMode))
       );
-      const testResults = await Promise.all(
-        probeableResources.map(r =>
-          testSingleResource(r.url, r.method, r.sampleBody)
-        )
-      );
+      // Probe sequentially to avoid overwhelming the merchant's server.
+      // Concurrent probes to the same origin can trigger rate limiting (503s).
+      const testResults = [];
+      for (const r of probeableResources) {
+        const result = await testSingleResource(r.url, r.method, r.sampleBody);
+        // Cache successful probes server-side so registration can reuse them
+        // without the advisory data ever round-tripping through the client.
+        if (result.success) {
+          void cacheProbeResult(
+            sessionId,
+            result.url,
+            result.parsed,
+            result.warnings ?? []
+          );
+        }
+        testResults.push(result);
+      }
 
-      // Combine test results with invalid results
+      // Combine test results with invalid results only. Non-paid endpoints
+      // are handled client-side (grey strikethrough) — they're not errors.
       const allResults = [...testResults, ...invalidResults];
 
       return {
+        probeSessionId: sessionId,
         resources: allResults.filter(
           (r): r is Extract<typeof r, { success: true }> => r.success
         ),

@@ -40,7 +40,16 @@ export const upsertResource = async (
     return;
   }
   const originStr = getOriginFromUrl(baseResource.resource);
+
   return await scanDb.$transaction(async tx => {
+    // Ensure the origin exists inside the transaction to avoid
+    // concurrent connectOrCreate race conditions (P2002).
+    await tx.resourceOrigin.upsert({
+      where: { origin: originStr },
+      create: { origin: originStr },
+      update: {},
+    });
+
     const { origin, ...resource } = await tx.resources.upsert({
       where: {
         resource: baseResource.resource,
@@ -52,13 +61,8 @@ export const upsertResource = async (
         lastUpdated: baseResource.lastUpdated,
         metadata: baseResource.metadata,
         origin: {
-          connectOrCreate: {
-            where: {
-              origin: originStr,
-            },
-            create: {
-              origin: originStr,
-            },
+          connect: {
+            origin: originStr,
           },
         },
       },
@@ -288,18 +292,21 @@ const searchResourcesUncached = async (
     showDeprecated,
     chains,
   } = input;
+  const acceptsFilter: Prisma.AcceptsWhereInput =
+    chains !== undefined ? { network: { in: chains } } : {};
   return await scanDb.resources.findMany({
     where: {
-      accepts: {
-        some:
-          chains !== undefined
-            ? {
-                network: {
-                  in: chains,
-                },
-              }
-            : {},
-      },
+      // Include paid resources (with accepts) and SIWX (free) resources.
+      // When filtering by chain, SIWX resources are excluded since they
+      // have no chain-specific payment options.
+      ...(chains !== undefined
+        ? { accepts: { some: acceptsFilter } }
+        : {
+            OR: [
+              { accepts: { some: {} } },
+              { metadata: { path: ['authMode'], equals: 'siwx' } },
+            ],
+          }),
       ...(search
         ? {
             OR: [

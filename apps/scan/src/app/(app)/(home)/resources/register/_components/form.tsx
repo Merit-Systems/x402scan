@@ -6,9 +6,8 @@ import {
   Check,
   ChevronDown,
   Loader2,
-  Plus,
+  Minus,
   CircleHelp,
-  Trash2,
   TriangleAlert,
   X,
 } from 'lucide-react';
@@ -19,8 +18,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Tooltip,
   TooltipContent,
@@ -108,9 +105,6 @@ function getPrimaryProbeError(
 export const RegisterResourceForm = () => {
   const [url, setUrl] = useState('');
   const [httpWarning, setHttpWarning] = useState(false);
-  const [headers, setHeaders] = useState<{ name: string; value: string }[]>([]);
-  const [manualUrls, setManualUrls] = useState<string[]>([]);
-  const [manualListError, setManualListError] = useState<string | null>(null);
   const [manualProgress, setManualProgress] = useState<{
     current: number;
     total: number;
@@ -137,6 +131,7 @@ export const RegisterResourceForm = () => {
     resetBulk,
     preview,
     isBatchTestLoading,
+    batchTestProgress,
     testedResources,
     failedResources,
     retryResource,
@@ -150,34 +145,24 @@ export const RegisterResourceForm = () => {
 
   const normalizedUrl = useMemo(() => normalizeUrl(url.trim()), [url]);
 
-  const queueOrigin = useMemo(
-    () => (manualUrls.length > 0 ? safeGetOrigin(manualUrls[0] ?? '') : null),
-    [manualUrls]
-  );
-
   const hasDiscoveryResources =
     discoveryFound && actualDiscoveredResources.length > 0;
 
-  // Always show the discovered count. The server re-discovers independently
-  // and will process all resources, so showing only the batch-test-passing
-  // subset is misleading (the success message would show a higher number).
+  // After batch test completes, count passing paid resources + SIWX (free) endpoints.
+  // SIWX endpoints aren't probed, so they aren't in testedResources — add them separately.
+  // Before batch test, fall back to total discovered count.
   const batchTestComplete =
     testedResources.length > 0 || failedResources.length > 0;
-  const registrableResourceCount = actualDiscoveredResources.length;
+  const siwxCount = actualDiscoveredResources.filter(
+    url => authModeMap[url] === 'siwx'
+  ).length;
+  const registrableResourceCount = batchTestComplete
+    ? testedResources.length + siwxCount
+    : actualDiscoveredResources.length;
 
   const canUseManualMode = isValidUrl && !isOriginOnly;
-  const currentUrlAlreadyInManualList = manualUrls.includes(normalizedUrl);
-  const canAddCurrentUrl =
-    canUseManualMode &&
-    !currentUrlAlreadyInManualList &&
-    (!queueOrigin || queueOrigin === urlOrigin);
 
-  const manualTargets =
-    manualUrls.length > 0
-      ? manualUrls
-      : canUseManualMode
-        ? [normalizedUrl]
-        : [];
+  const manualTargets = canUseManualMode ? [normalizedUrl] : [];
 
   const testedResourceByUrl = useMemo(() => {
     const map = new Map<string, (typeof testedResources)[number]>();
@@ -202,27 +187,10 @@ export const RegisterResourceForm = () => {
 
   const activeBulkResult = manualResult ?? bulkData ?? null;
   const activeSummaryOrigin = manualResult?.origin ?? urlOrigin;
-  const requestHeaders = useMemo(() => {
-    const entries = headers
-      .map(header => ({
-        name: header.name.trim(),
-        value: header.value,
-      }))
-      .filter(header => header.name.length > 0);
-
-    if (entries.length === 0) {
-      return undefined;
-    }
-
-    return Object.fromEntries(
-      entries.map(header => [header.name, header.value])
-    );
-  }, [headers]);
 
   const resetStateForNewRun = () => {
     setManualResult(null);
     setManualProgress(null);
-    setManualListError(null);
     resetBulk();
   };
 
@@ -230,40 +198,12 @@ export const RegisterResourceForm = () => {
     setUrl(nextUrl);
     setManualResult(null);
     setManualProgress(null);
-    setManualListError(null);
     resetBulk();
-  };
-
-  const handleAddCurrentUrl = () => {
-    if (!canUseManualMode) {
-      return;
-    }
-
-    if (queueOrigin && queueOrigin !== urlOrigin) {
-      setManualListError('All manual URLs must share the same origin.');
-      return;
-    }
-
-    if (!currentUrlAlreadyInManualList) {
-      setManualUrls(current => [...current, normalizedUrl]);
-    }
-
-    setManualListError(null);
-    setManualResult(null);
-    setManualProgress(null);
-  };
-
-  const handleRemoveManualUrl = (targetUrl: string) => {
-    setManualUrls(current => current.filter(item => item !== targetUrl));
-    setManualResult(null);
-    setManualProgress(null);
-    setManualListError(null);
   };
 
   const handleRegisterDiscovered = () => {
     setManualResult(null);
     setManualProgress(null);
-    setManualListError(null);
     handleRegisterAll();
   };
 
@@ -294,7 +234,6 @@ export const RegisterResourceForm = () => {
       try {
         const result = await registerMutation.mutateAsync({
           url: targetUrl,
-          headers: requestHeaders,
         });
 
         if (result.success) {
@@ -346,12 +285,6 @@ export const RegisterResourceForm = () => {
     await runManualRegistration([normalizedUrl]);
   };
 
-  // Show advanced only after discovery fails or user has manual URLs
-  const showAdvanced =
-    (isValidUrl && !isDiscoveryLoading && !hasDiscoveryResources) ||
-    manualUrls.length > 0 ||
-    headers.length > 0;
-
   const isLoading = isRegisteringAll || isRegisteringManual;
 
   return (
@@ -382,9 +315,6 @@ export const RegisterResourceForm = () => {
               x402 requires HTTPS. We&apos;ve upgraded your URL automatically.
             </p>
           )}
-          {manualListError && (
-            <p className="text-xs text-red-600">{manualListError}</p>
-          )}
         </div>
 
         {/* Primary action */}
@@ -408,7 +338,9 @@ export const RegisterResourceForm = () => {
               ) : isBatchTestLoading ? (
                 <>
                   <Loader2 className="size-4 animate-spin mr-2" />
-                  {`Verifying ${actualDiscoveredResources.length} endpoints...`}
+                  {batchTestProgress
+                    ? `Checking ${batchTestProgress.checked}/${batchTestProgress.total} endpoints...`
+                    : `Checking ${actualDiscoveredResources.length} endpoints...`}
                 </>
               ) : batchTestComplete &&
                 failedResources.length > 0 &&
@@ -544,129 +476,6 @@ export const RegisterResourceForm = () => {
           );
         })()}
 
-      {/* Advanced — only when relevant */}
-      {showAdvanced && (
-        <Collapsible>
-          <CollapsibleTrigger asChild>
-            <button className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors flex items-center gap-1">
-              Advanced
-              <ChevronDown className="size-3" />
-            </button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="pt-3 space-y-4">
-            {/* Headers */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-muted-foreground">
-                  Custom Headers
-                </Label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="xs"
-                  onClick={() =>
-                    setHeaders(current => [...current, { name: '', value: '' }])
-                  }
-                  className="size-fit px-1 text-xs"
-                >
-                  <Plus className="size-3 mr-1" />
-                  Add
-                </Button>
-              </div>
-              {headers.map((header, index) => (
-                <div key={index} className="flex gap-1 items-center">
-                  <Input
-                    type="text"
-                    placeholder="Name"
-                    value={header.name}
-                    onChange={event =>
-                      setHeaders(current =>
-                        current.map((item, itemIndex) =>
-                          itemIndex === index
-                            ? { ...item, name: event.target.value }
-                            : item
-                        )
-                      )
-                    }
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Value"
-                    value={header.value}
-                    onChange={event =>
-                      setHeaders(current =>
-                        current.map((item, itemIndex) =>
-                          itemIndex === index
-                            ? { ...item, value: event.target.value }
-                            : item
-                        )
-                      )
-                    }
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() =>
-                      setHeaders(current =>
-                        current.filter((_, itemIndex) => itemIndex !== index)
-                      )
-                    }
-                    className="shrink-0"
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-
-            {/* Manual URLs */}
-            {!hasDiscoveryResources && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs text-muted-foreground">
-                    Manual URLs
-                  </Label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="xs"
-                    onClick={handleAddCurrentUrl}
-                    disabled={!canAddCurrentUrl || isRegisteringManual}
-                    className="size-fit px-1 text-xs"
-                  >
-                    <Plus className="size-3 mr-1" />
-                    Add Current URL
-                  </Button>
-                </div>
-                {manualUrls.length > 0 && (
-                  <ul className="space-y-1">
-                    {manualUrls.map(item => (
-                      <li
-                        key={item}
-                        className="flex items-center gap-2 text-xs"
-                      >
-                        <code className="font-mono break-all flex-1 text-muted-foreground">
-                          {item}
-                        </code>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleRemoveManualUrl(item)}
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-          </CollapsibleContent>
-        </Collapsible>
-      )}
-
       {/* Errors — endpoints that won't be registered */}
       {(() => {
         if (
@@ -698,7 +507,7 @@ export const RegisterResourceForm = () => {
                 </strong>{' '}
                 {isV1Issue
                   ? 'This endpoint returns an x402 v1 response. x402scan only supports v2 — update your paywall to return the v2 format.'
-                  : 'They need to return a 402 payment challenge — ensure the x402 paywall runs before request validation, or mark the required parameters in your OpenAPI spec so we can probe automatically.'}
+                  : 'They need to return a 402 payment challenge — ensure the x402 paywall runs before request validation, or mark the required parameters in your OpenAPI spec so we can probe automatically. If these endpoints are free (not x402-paid), add "security": [] to their OpenAPI definition to exclude them from probing.'}
               </p>
               <div className="space-y-2 max-h-[360px] overflow-y-auto">
                 {failedResources.map((failed, idx) => (
@@ -713,15 +522,68 @@ export const RegisterResourceForm = () => {
               </div>
               <DiscoveryFixHint
                 className="font-medium"
-                needsSetup={
-                  failedResources.length > 0 && testedResources.length === 0
-                }
-                v1Migration={isV1Issue}
                 failedResources={failedResources.map(r => ({
                   url: r.url,
                   error: getPrimaryProbeError(r),
                   status: r.statusCode,
                 }))}
+              />
+            </CollapsibleContent>
+          </Collapsible>
+        );
+      })()}
+
+      {/* Warnings — endpoints that will register but have issues */}
+      {(() => {
+        if (activeBulkResult || isBatchTestLoading) return null;
+        const resourcesWithWarnings = testedResources.filter(
+          r => r.warnings && r.warnings.length > 0
+        );
+        if (resourcesWithWarnings.length === 0) return null;
+
+        return (
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <button className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1 hover:text-yellow-700 transition-colors">
+                <ChevronDown className="size-3" />
+                {resourcesWithWarnings.length} endpoint
+                {resourcesWithWarnings.length === 1 ? '' : 's'} with warnings
+                (Not blocking)
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-2 space-y-3">
+              <p className="text-xs text-muted-foreground">
+                These endpoints will still be registered, but have issues that
+                may affect agent compatibility.
+              </p>
+              <div className="space-y-2 max-h-[360px] overflow-y-auto">
+                {resourcesWithWarnings.map((r, idx) => (
+                  <div
+                    key={`${r.url}-${idx}`}
+                    className="p-2 bg-muted/50 rounded border text-xs space-y-1"
+                  >
+                    <div className="font-mono text-muted-foreground truncate">
+                      {toPathLabel(r.url)}
+                    </div>
+                    {r.warnings?.map((w, wi) => (
+                      <div
+                        key={wi}
+                        className="text-yellow-600 dark:text-yellow-500"
+                      >
+                        {w.message}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+              <DiscoveryFixHint
+                className="font-medium"
+                warnings={resourcesWithWarnings.flatMap(r =>
+                  (r.warnings ?? []).map(w => ({
+                    url: r.url,
+                    error: w.message,
+                  }))
+                )}
               />
             </CollapsibleContent>
           </Collapsible>
@@ -826,7 +688,7 @@ function ProbeResult({
   } | null;
   urlOrigin: string | null;
   resources: string[];
-  testedResources?: { url: string }[];
+  testedResources?: { url: string; warnings?: { code: string }[] }[];
   failedResources?: { url: string }[];
   isBatchTestLoading?: boolean;
   authModeMap?: Record<string, string>;
@@ -834,6 +696,15 @@ function ProbeResult({
 }) {
   const testedUrls = useMemo(
     () => new Set(testedResources.map(r => r.url)),
+    [testedResources]
+  );
+  const warningUrls = useMemo(
+    () =>
+      new Set(
+        testedResources
+          .filter(r => r.warnings && r.warnings.length > 0)
+          .map(r => r.url)
+      ),
     [testedResources]
   );
   const failedUrls = useMemo(
@@ -849,6 +720,17 @@ function ProbeResult({
       ),
     [authModeMap]
   );
+  const nonPaidUrls = useMemo(() => {
+    const paid = new Set(['paid', 'apiKey+paid']);
+    return new Set(
+      resources.filter(url => {
+        const mode = authModeMap[url];
+        // Only mark as non-paid if discovery explicitly classified it
+        // as non-paid. If authMode is missing, don't pre-judge.
+        return mode !== undefined && mode !== 'siwx' && !paid.has(mode);
+      })
+    );
+  }, [resources, authModeMap]);
   const invalidUrls = useMemo(
     () =>
       new Set(
@@ -858,13 +740,17 @@ function ProbeResult({
       ),
     [invalidResourcesMap]
   );
+  // Sort: errors → warnings → free (SIWX) → verified → skipped
   const sortedResources = useMemo(() => {
     const priority = (url: string) => {
       if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
-      return 2;
+      if (warningUrls.has(url)) return 1;
+      if (siwxUrls.has(url)) return 2;
+      if (testedUrls.has(url)) return 3;
+      return 4; // non-paid — skipped
     };
     return [...resources].sort((a, b) => priority(a) - priority(b));
-  }, [resources, invalidUrls, failedUrls]);
+  }, [resources, invalidUrls, failedUrls, warningUrls, siwxUrls, testedUrls]);
 
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded
@@ -935,16 +821,28 @@ function ProbeResult({
                 key={resource}
                 className="font-mono truncate flex items-center gap-1.5"
               >
-                {invalidUrls.has(resource) ? (
+                {nonPaidUrls.has(resource) ? (
+                  <Minus className="size-3 text-muted-foreground/40 shrink-0" />
+                ) : invalidUrls.has(resource) ? (
                   <X className="size-3 text-red-500 shrink-0" />
                 ) : siwxUrls.has(resource) ? (
-                  <Check className="size-3 text-primary shrink-0" />
+                  <Check className="size-3 text-green-600 shrink-0" />
+                ) : warningUrls.has(resource) ? (
+                  <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
                 ) : testedUrls.has(resource) ? (
                   <Check className="size-3 text-green-600 shrink-0" />
                 ) : failedUrls.has(resource) ? (
                   <X className="size-3 text-red-500 shrink-0" />
                 ) : null}
-                {toPathLabel(resource)}
+                <span
+                  className={
+                    nonPaidUrls.has(resource)
+                      ? 'line-through text-muted-foreground/40'
+                      : undefined
+                  }
+                >
+                  {toPathLabel(resource)}
+                </span>
               </li>
             ))}
             {!expanded && hiddenCount > 0 && (

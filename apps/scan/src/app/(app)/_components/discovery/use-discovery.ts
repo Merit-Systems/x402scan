@@ -78,6 +78,7 @@ export interface UseDiscoveryReturn {
 
   // Test results
   isBatchTestLoading: boolean;
+  batchTestProgress: { checked: number; total: number } | null;
   testedResources: TestedResource[];
   failedResources: FailedResource[];
 
@@ -127,6 +128,9 @@ export interface UseDiscoveryReturn {
   ) => Promise<void>;
 }
 
+/** Auth modes that are relevant to x402scan (paid + free/SIWX). */
+const REGISTRABLE_AUTH_MODES = new Set(['paid', 'apiKey+paid', 'siwx']);
+
 export function useDiscovery({
   url,
   onRegisterAllSuccess,
@@ -157,10 +161,16 @@ export function useDiscovery({
   );
 
   const discoveryFound = discoveryQuery.data?.found ?? false;
-  const discoveryResources: DiscoveredResource[] = useMemo(
-    () => (discoveryQuery.data?.found ? discoveryQuery.data.resources : []),
-    [discoveryQuery.data]
-  );
+  const discoveryResources: DiscoveredResource[] = useMemo(() => {
+    const raw = discoveryQuery.data?.found ? discoveryQuery.data.resources : [];
+    // Exclude endpoints explicitly classified as non-registrable (unprotected,
+    // apiKey). Keep registrable (paid, siwx) and unclassified (authMode absent)
+    // — unclassified endpoints may be paid but the discovery package didn't
+    // detect it (e.g. bazaar-only endpoints).
+    return raw.filter(
+      r => r.authMode == null || REGISTRABLE_AUTH_MODES.has(r.authMode)
+    );
+  }, [discoveryQuery.data]);
   const discoveryCheckComplete =
     !discoveryQuery.isLoading && discoveryQuery.isFetched;
 
@@ -288,11 +298,13 @@ export function useDiscovery({
     onError: () => onRegisterAllError?.(),
   });
 
-  // Handle registering all discovered resources
+  // Handle registering all discovered resources.
+  // Pass the probe session ID so the server reuses cached probe results
+  // without advisory data ever round-tripping through the client.
   const handleRegisterAll = () => {
     if (!urlOrigin) return;
     resetBulk();
-    void register(urlOrigin);
+    void register(urlOrigin, batchTest.probeSessionId ?? undefined);
   };
 
   return {
@@ -325,6 +337,7 @@ export function useDiscovery({
 
     // Test results
     isBatchTestLoading: batchTest.isLoading,
+    batchTestProgress: batchTest.progress,
     testedResources: batchTest.resources,
     failedResources: batchTest.failed,
 
