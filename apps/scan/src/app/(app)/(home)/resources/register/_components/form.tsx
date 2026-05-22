@@ -826,7 +826,7 @@ function ProbeResult({
                 ) : invalidUrls.has(resource) ? (
                   <X className="size-3 text-red-500 shrink-0" />
                 ) : siwxUrls.has(resource) ? (
-                  <Check className="size-3 text-green-600 shrink-0" />
+                  <Check className="size-3 text-blue-500 shrink-0" />
                 ) : warningUrls.has(resource) ? (
                   <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
                 ) : testedUrls.has(resource) ? (
