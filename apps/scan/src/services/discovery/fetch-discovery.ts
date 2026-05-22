@@ -66,11 +66,12 @@ export async function fetchDiscoveryDocument(
   const resources: DiscoveredResource[] = discovered.endpoints.flatMap(
     endpoint => {
       try {
-        const url = new URL(endpoint.path, discovered.origin).toString();
+        const resolved = new URL(endpoint.path, discovered.origin);
         // Security: reject endpoints that resolve to a different origin.
         // A malicious OpenAPI spec could contain absolute URLs pointing
         // elsewhere (new URL('https://evil.com/x', base) ignores the base).
-        if (new URL(url).origin !== expectedOrigin) return [];
+        if (resolved.origin !== expectedOrigin) return [];
+        const url = resolved.toString();
         return [
           {
             url,

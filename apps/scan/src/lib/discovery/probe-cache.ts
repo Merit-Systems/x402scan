@@ -61,7 +61,15 @@ export async function getCachedProbeResult(
   try {
     const raw = await redis.get(cacheKey(sessionId, url));
     if (!raw) return null;
-    return JSON.parse(raw) as CachedProbeResult;
+    const parsed: unknown = JSON.parse(raw);
+    if (
+      typeof parsed !== 'object' ||
+      parsed === null ||
+      !('advisory' in parsed)
+    ) {
+      return null;
+    }
+    return parsed as CachedProbeResult;
   } catch (err) {
     console.error('[probe-cache] Failed to read cached probe result:', err);
     return null;

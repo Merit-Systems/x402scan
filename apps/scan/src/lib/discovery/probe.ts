@@ -262,15 +262,22 @@ async function probeX402EndpointOnce(
       });
       const openApiAdvisory = pickX402Advisory(retry, preferredMethod);
 
-      // Extract payment options from the raw 402 body's accepts array.
+      // Extract payment options from the validated 402 body's accepts array.
       // These are already in the x402 wire format — the library normally
       // parses them from the probe response, but header overflow prevented it.
+      // `validated.normalized` confirms the body parsed as valid x402, so the
+      // accepts array is structurally sound.
       const rawBody = direct.body as Record<string, unknown>;
       const rawAccepts = Array.isArray(rawBody.accepts) ? rawBody.accepts : [];
-      const paymentOptions = rawAccepts.map(accept => ({
-        protocol: 'x402' as const,
-        ...(accept as Record<string, unknown>),
-      })) as unknown as EndpointMethodAdvisory['paymentOptions'];
+      const paymentOptions = rawAccepts
+        .filter(
+          (a): a is Record<string, unknown> =>
+            typeof a === 'object' && a !== null && 'payTo' in a
+        )
+        .map(accept => ({
+          protocol: 'x402' as const,
+          ...accept,
+        })) as NonNullable<EndpointMethodAdvisory['paymentOptions']>;
 
       const advisory: EndpointMethodAdvisory = {
         source: 'probe',

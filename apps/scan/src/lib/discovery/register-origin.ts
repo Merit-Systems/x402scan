@@ -105,25 +105,29 @@ export async function registerResourcesFromDiscovery(
     )
   );
 
+  async function registerAsSiwx(resourceUrl: string) {
+    const siwxResult = await registerSiwxResource(resourceUrl, {
+      originMetadataFallback: originInfo,
+    });
+    return siwxResult.success
+      ? {
+          success: true as const,
+          siwx: true as const,
+          url: resourceUrl,
+          resource: siwxResult.resource,
+        }
+      : {
+          success: false as const,
+          url: resourceUrl,
+          error: siwxResult.error,
+        };
+  }
+
   const results = await mapSettledWithConcurrency(resources, async resource => {
     const resourceUrl = resource.url;
 
     if (resource.authMode === 'siwx') {
-      const siwxResult = await registerSiwxResource(resourceUrl, {
-        originMetadataFallback: originInfo,
-      });
-      return siwxResult.success
-        ? {
-            success: true as const,
-            siwx: true as const,
-            url: resourceUrl,
-            resource: siwxResult.resource,
-          }
-        : {
-            success: false as const,
-            url: resourceUrl,
-            error: siwxResult.error,
-          };
+      return registerAsSiwx(resourceUrl);
     }
 
     // Check server-side probe cache (from the batch test). This skips
@@ -167,21 +171,7 @@ export async function registerResourcesFromDiscovery(
     // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
     if (advisory.authMode === 'siwx') {
-      const siwxResult = await registerSiwxResource(resourceUrl, {
-        originMetadataFallback: originInfo,
-      });
-      return siwxResult.success
-        ? {
-            success: true as const,
-            siwx: true as const,
-            url: resourceUrl,
-            resource: siwxResult.resource,
-          }
-        : {
-            success: false as const,
-            url: resourceUrl,
-            error: siwxResult.error,
-          };
+      return registerAsSiwx(resourceUrl);
     }
 
     const result = await registerResource(resourceUrl, advisory, {
