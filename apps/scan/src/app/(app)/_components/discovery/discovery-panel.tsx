@@ -242,7 +242,11 @@ export function DiscoveryPanel({
                 Registration Failed
               </h2>
               <p className="text-sm text-muted-foreground">
-                Failed to register all {bulkResult.total} resources
+                Failed to register all{' '}
+                {bulkResult.registered +
+                  siwxCount +
+                  (bulkResult.failedDetails?.length ?? 0)}{' '}
+                resources
               </p>
               <DiscoveryFixHint
                 className="mt-1"

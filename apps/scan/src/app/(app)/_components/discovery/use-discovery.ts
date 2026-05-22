@@ -67,6 +67,7 @@ export interface UseDiscoveryReturn {
   discoverySource?: DiscoverySource;
   discoveryResources: string[];
   actualDiscoveredResources: string[];
+  skippedResources: { url: string; authMode?: string }[];
   discoveryResourceCount: number;
   discoveryError?: string;
   invalidResourcesMap: Record<string, { invalid: boolean; reason?: string }>;
@@ -169,6 +170,12 @@ export function useDiscovery({
     // detect it (e.g. bazaar-only endpoints).
     return raw.filter(
       r => r.authMode == null || REGISTRABLE_AUTH_MODES.has(r.authMode)
+    );
+  }, [discoveryQuery.data]);
+  const skippedResources: DiscoveredResource[] = useMemo(() => {
+    const raw = discoveryQuery.data?.found ? discoveryQuery.data.resources : [];
+    return raw.filter(
+      r => r.authMode != null && !REGISTRABLE_AUTH_MODES.has(r.authMode)
     );
   }, [discoveryQuery.data]);
   const discoveryCheckComplete =
@@ -323,6 +330,7 @@ export function useDiscovery({
       : undefined,
     discoveryResources: resourceUrls,
     actualDiscoveredResources: actualDiscoveredUrls,
+    skippedResources,
     discoveryResourceCount: effectiveResources.length,
     discoveryError:
       discoveryQuery.data?.found === false
