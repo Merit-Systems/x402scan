@@ -590,6 +590,49 @@ export const RegisterResourceForm = () => {
         );
       })()}
 
+      {/* Unprotected endpoints — skipped, not an error */}
+      {(() => {
+        if (activeBulkResult || isBatchTestLoading || !batchTestComplete)
+          return null;
+        const unprotectedUrls = Object.entries(authModeMap)
+          .filter(([, mode]) => mode === 'unprotected' || mode === 'apiKey')
+          .map(([url]) => url);
+        if (unprotectedUrls.length === 0) return null;
+
+        return (
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <button className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1 hover:text-yellow-700 transition-colors">
+                <ChevronDown className="size-3" />
+                {unprotectedUrls.length} unprotected endpoint
+                {unprotectedUrls.length === 1 ? '' : 's'} skipped
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-2 space-y-2">
+              <p className="text-xs text-muted-foreground">
+                These endpoints have no x402 paywall and won&apos;t be
+                registered. If they should be paid, add x402 payment middleware.
+                If they are intentionally free, add{' '}
+                <code className="font-mono bg-muted px-1 rounded text-[11px]">
+                  &quot;security&quot;: []
+                </code>{' '}
+                to their OpenAPI definition to suppress this notice.
+              </p>
+              <div className="space-y-1 max-h-[200px] overflow-y-auto">
+                {unprotectedUrls.map((url, idx) => (
+                  <div
+                    key={idx}
+                    className="px-2 py-1 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
+                  >
+                    {toPathLabel(url)}
+                  </div>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        );
+      })()}
+
       {/* Bulk result */}
       {activeBulkResult && activeSummaryOrigin ? (
         <DiscoveryPanel
