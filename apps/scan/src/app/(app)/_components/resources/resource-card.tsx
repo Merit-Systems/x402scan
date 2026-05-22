@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/tooltip';
 
 import { Header } from './header/index';
+import { isSiwxResource } from './utils';
 
 import { cn, formatCurrency } from '@/lib/utils';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
@@ -24,6 +25,7 @@ import type { Resources, Tag } from '@x402scan/scan-db';
 interface SerializedAccept {
   maxAmountRequired: number;
   network: string;
+  scheme: string;
 }
 
 interface Props {
@@ -71,9 +73,13 @@ export const ResourceCard: React.FC<Props> = ({
             hideOrigin={hideOrigin}
           />
           <div className="flex items-center gap-2">
-            {accepts && accepts.length > 0 && (
+            {accepts && accepts.length > 0 ? (
               <ResourcePricing accepts={accepts} />
-            )}
+            ) : isSiwxResource(resource) ? (
+              <span className="text-xs font-semibold text-green-600 font-mono shrink-0">
+                Free
+              </span>
+            ) : null}
             {ownershipVerified && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -129,10 +135,13 @@ export const ResourceCard: React.FC<Props> = ({
 const ResourcePricing: React.FC<{ accepts: SerializedAccept[] }> = ({
   accepts,
 }) => {
-  const minAmount = Math.min(...accepts.map(a => a.maxAmountRequired));
+  const isDynamic = accepts.some(a => a.scheme !== 'exact');
+  const maxAmount = Math.max(...accepts.map(a => a.maxAmountRequired));
   return (
     <span className="text-xs font-semibold text-primary font-mono shrink-0">
-      {formatCurrency(minAmount)}
+      {isDynamic
+        ? `Up to ${formatCurrency(maxAmount)}`
+        : formatCurrency(maxAmount)}
     </span>
   );
 };

@@ -137,6 +137,8 @@ export const RegisterResourceForm = () => {
     retryResource,
     authModeMap,
     invalidResourcesMap,
+    skippedResources,
+    siwxResourceCount,
   } = useDiscovery({
     url,
   });
@@ -149,15 +151,12 @@ export const RegisterResourceForm = () => {
     discoveryFound && actualDiscoveredResources.length > 0;
 
   // After batch test completes, count passing paid resources + SIWX (free) endpoints.
-  // SIWX endpoints aren't probed, so they aren't in testedResources — add them separately.
+  // SIWX endpoints aren't probed — they're counted separately from discovery data.
   // Before batch test, fall back to total discovered count.
   const batchTestComplete =
     testedResources.length > 0 || failedResources.length > 0;
-  const siwxCount = actualDiscoveredResources.filter(
-    url => authModeMap[url] === 'siwx'
-  ).length;
   const registrableResourceCount = batchTestComplete
-    ? testedResources.length + siwxCount
+    ? testedResources.length + siwxResourceCount
     : actualDiscoveredResources.length;
 
   const canUseManualMode = isValidUrl && !isOriginOnly;
@@ -325,6 +324,7 @@ export const RegisterResourceForm = () => {
               disabled={
                 isLoading ||
                 isBatchTestLoading ||
+                !!activeBulkResult ||
                 (failedResources.length > 0 && testedResources.length === 0)
               }
               onClick={handleRegisterDiscovered}
@@ -590,6 +590,40 @@ export const RegisterResourceForm = () => {
         );
       })()}
 
+      {/* Unprotected endpoints — skipped, not an error */}
+      {!activeBulkResult && skippedResources.length > 0 && (
+        <Collapsible>
+          <CollapsibleTrigger asChild>
+            <button className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1 hover:text-yellow-700 transition-colors">
+              <ChevronDown className="size-3" />
+              {skippedResources.length} unprotected endpoint
+              {skippedResources.length === 1 ? '' : 's'} skipped
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-2 space-y-2">
+            <p className="text-xs text-muted-foreground">
+              These endpoints have no x402 paywall and won&apos;t be registered.
+              If they should be paid, add x402 payment middleware. If they are
+              intentionally free, add{' '}
+              <code className="font-mono bg-muted px-1 rounded text-[11px]">
+                &quot;security&quot;: []
+              </code>{' '}
+              to their OpenAPI definition to suppress this notice.
+            </p>
+            <div className="space-y-1 max-h-[200px] overflow-y-auto">
+              {skippedResources.map((r, idx) => (
+                <div
+                  key={idx}
+                  className="px-2 py-1 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
+                >
+                  {toPathLabel(r.url)}
+                </div>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+
       {/* Bulk result */}
       {activeBulkResult && activeSummaryOrigin ? (
         <DiscoveryPanel
@@ -826,7 +860,7 @@ function ProbeResult({
                 ) : invalidUrls.has(resource) ? (
                   <X className="size-3 text-red-500 shrink-0" />
                 ) : siwxUrls.has(resource) ? (
-                  <Check className="size-3 text-green-600 shrink-0" />
+                  <Check className="size-3 text-blue-500 shrink-0" />
                 ) : warningUrls.has(resource) ? (
                   <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
                 ) : testedUrls.has(resource) ? (

@@ -123,8 +123,19 @@ export async function registerResourcesFromDiscovery(
         };
   }
 
+  const SKIP_AUTH_MODES = new Set(['unprotected', 'apiKey']);
+
   const results = await mapSettledWithConcurrency(resources, async resource => {
     const resourceUrl = resource.url;
+
+    if (resource.authMode && SKIP_AUTH_MODES.has(resource.authMode)) {
+      return {
+        success: false as const,
+        url: resourceUrl,
+        error: 'Non-registrable endpoint',
+        skipped: true as const,
+      };
+    }
 
     if (resource.authMode === 'siwx') {
       return registerAsSiwx(resourceUrl);
