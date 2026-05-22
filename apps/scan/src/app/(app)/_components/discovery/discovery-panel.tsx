@@ -146,10 +146,6 @@ export interface DiscoveryPanelProps {
       warnings: { code: string; severity: string; message: string }[];
     }[];
   } | null;
-  /** Client-side count of unique registrable endpoints (deduped by URL).
-   *  When provided, used as the denominator in the success banner instead
-   *  of computing from the server response (which counts method variants). */
-  registrableCount?: number;
   /** Called when "Register All" is clicked (required in register mode) */
   onRegisterAll?: () => void;
   /** Whether to show the Register All button */
