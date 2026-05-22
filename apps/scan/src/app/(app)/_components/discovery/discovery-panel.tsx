@@ -314,10 +314,7 @@ export function DiscoveryPanel({
     }
 
     // Show success state if some/all resources were registered
-    const allNotRegistered = [
-      ...skippedDetails,
-      ...(bulkResult.failedDetails ?? []),
-    ];
+    const allNotRegistered = bulkResult.failedDetails ?? [];
     const notRegisteredCount = allNotRegistered.length;
 
     return (
