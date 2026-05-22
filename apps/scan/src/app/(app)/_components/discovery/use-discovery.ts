@@ -299,19 +299,12 @@ export function useDiscovery({
   });
 
   // Handle registering all discovered resources.
-  // Pass pre-tested advisories so the server skips re-probing endpoints
-  // that already passed the batch test — avoids rate limiting.
+  // Pass the probe session ID so the server reuses cached probe results
+  // without advisory data ever round-tripping through the client.
   const handleRegisterAll = () => {
     if (!urlOrigin) return;
     resetBulk();
-    const preTestedResults =
-      batchTest.resources.length > 0
-        ? batchTest.resources.map(r => ({
-            url: r.url,
-            advisory: r.parsed,
-          }))
-        : undefined;
-    void register(urlOrigin, preTestedResults);
+    void register(urlOrigin, batchTest.probeSessionId ?? undefined);
   };
 
   return {

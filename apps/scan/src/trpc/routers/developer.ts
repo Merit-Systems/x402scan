@@ -9,6 +9,10 @@ import { probeX402Endpoint } from '@/lib/discovery/probe';
 import { validateResource } from '@/lib/resources';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { deduplicateWarnings } from '@/lib/discovery/utils';
+import {
+  createProbeSession,
+  cacheProbeResult,
+} from '@/lib/discovery/probe-cache';
 
 /**
  * Test a single resource by probing it and running the same validation
@@ -146,10 +150,15 @@ export const developerRouter = createTRPCRouter({
       };
     }),
 
-  /** Batch test multiple resources to get their x402 responses */
+  /** Batch test multiple resources to get their x402 responses.
+   *  Successful probe results are cached server-side under `probeSessionId`
+   *  so the registration endpoint can reuse them without trusting client data. */
   batchTest: publicProcedure
     .input(
       z.object({
+        /** Probe session ID. If omitted, a new session is created. Pass the
+         *  sessionId from a previous batch to append to the same cache. */
+        probeSessionId: z.string().uuid().optional(),
         resources: z
           .array(
             z.object({
@@ -185,6 +194,8 @@ export const developerRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
+      const sessionId = input.probeSessionId ?? createProbeSession();
+
       // Separate invalid resources from valid ones
       const invalidResults: FailedResource[] = input.resources
         .filter(r => r.invalid)
@@ -205,9 +216,18 @@ export const developerRouter = createTRPCRouter({
       // Concurrent probes to the same origin can trigger rate limiting (503s).
       const testResults = [];
       for (const r of probeableResources) {
-        testResults.push(
-          await testSingleResource(r.url, r.method, r.sampleBody)
-        );
+        const result = await testSingleResource(r.url, r.method, r.sampleBody);
+        // Cache successful probes server-side so registration can reuse them
+        // without the advisory data ever round-tripping through the client.
+        if (result.success) {
+          void cacheProbeResult(
+            sessionId,
+            result.url,
+            result.parsed,
+            result.warnings ?? []
+          );
+        }
+        testResults.push(result);
       }
 
       // Combine test results with invalid results only. Non-paid endpoints
@@ -215,6 +235,7 @@ export const developerRouter = createTRPCRouter({
       const allResults = [...testResults, ...invalidResults];
 
       return {
+        probeSessionId: sessionId,
         resources: allResults.filter(
           (r): r is Extract<typeof r, { success: true }> => r.success
         ),

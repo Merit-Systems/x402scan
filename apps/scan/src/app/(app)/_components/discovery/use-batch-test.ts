@@ -16,6 +16,9 @@ interface BatchTestResult {
   resources: TestedResource[];
   failed: FailedResource[];
   payToAddresses: string[];
+  /** Server-side probe session ID. Pass to registerFromOrigin so the server
+   *  reuses cached probe results instead of re-probing. */
+  probeSessionId: string | null;
   refetch: () => void;
   retryOne: (
     url: string,
@@ -54,6 +57,7 @@ export function useBatchTest(
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState<BatchTestProgress | null>(null);
   const [runCount, setRunCount] = useState(0);
+  const [probeSessionId, setProbeSessionId] = useState<string | null>(null);
 
   const mutation = api.developer.batchTest.useMutation();
   const mutateAsyncRef = useRef(mutation.mutateAsync);
@@ -86,16 +90,26 @@ export function useBatchTest(
     const run = async () => {
       if (!cancelled) {
         setIsLoading(true);
+        setProbeSessionId(null);
         setProgress({ checked: 0, total: effectiveResources.length });
       }
 
       const allResources: TestedResource[] = [];
       const allFailed: FailedResource[] = [];
+      let sessionId: string | undefined;
 
       try {
         for (const chunk of chunks) {
           if (cancelled) return;
-          const result = await mutateAsyncRef.current({ resources: chunk });
+          const result = await mutateAsyncRef.current({
+            resources: chunk,
+            // Pass sessionId from first chunk so all results share one cache
+            ...(sessionId ? { probeSessionId: sessionId } : {}),
+          });
+          sessionId ??= result.probeSessionId;
+          if (!cancelled && sessionId) {
+            setProbeSessionId(sessionId);
+          }
           allResources.push(...result.resources);
           allFailed.push(...result.failed);
           if (!cancelled) {
@@ -163,6 +177,8 @@ export function useBatchTest(
             sampleBody: options?.sampleBody,
           },
         ],
+        // Append to existing session so retried probes land in the same cache
+        ...(probeSessionId ? { probeSessionId } : {}),
       });
 
       // Merge result: replace existing entry for the original URL
@@ -189,6 +205,7 @@ export function useBatchTest(
     resources: active ? resources : [],
     failed: active ? failed : [],
     payToAddresses,
+    probeSessionId: active ? probeSessionId : null,
     refetch: () => setRunCount(c => c + 1),
     retryOne,
   };

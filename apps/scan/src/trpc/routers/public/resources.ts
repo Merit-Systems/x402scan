@@ -1,5 +1,4 @@
 import z from 'zod';
-import type { EndpointMethodAdvisory } from '@agentcash/discovery';
 
 import {
   createTRPCRouter,
@@ -145,21 +144,19 @@ export const resourcesRouter = createTRPCRouter({
   /**
    * Register all x402 resources discovered from an origin.
    * Uses DNS TXT records (_x402.{hostname}) or /.well-known/x402 for discovery.
+   *
+   * SECURITY: Advisory data (payTo addresses, schemas, etc.) is never accepted
+   * from the client. If a probeSessionId is provided, the server reads cached
+   * probe results that it wrote during the batch test. This prevents payment
+   * redirection attacks where a malicious client substitutes payTo addresses.
    */
   registerFromOrigin: publicProcedure
     .input(
       z.object({
         origin: z.url(),
-        /** Pre-tested advisory data from the batch test. URLs with a matching
-         *  entry skip re-probing — avoids rate limiting on registration. */
-        preTestedResults: z
-          .array(
-            z.object({
-              url: z.string().url(),
-              advisory: z.unknown(),
-            })
-          )
-          .optional(),
+        /** Server-side probe session from the batch test. URLs with a cached
+         *  probe result skip re-probing — avoids rate limiting on registration. */
+        probeSessionId: z.string().uuid().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -175,22 +172,11 @@ export const resourcesRouter = createTRPCRouter({
         };
       }
 
-      // Build map of pre-tested advisories keyed by URL.
-      const preTestedAdvisories =
-        input.preTestedResults && input.preTestedResults.length > 0
-          ? new Map(
-              input.preTestedResults.map(r => [
-                r.url,
-                r.advisory as EndpointMethodAdvisory,
-              ])
-            )
-          : undefined;
-
       const result = await registerResourcesFromDiscovery(
         discoveryResult.resources,
         discoveryResult.source,
         discoveryResult.info,
-        preTestedAdvisories
+        input.probeSessionId
       );
 
       if (result.registered === 0 && result.siwx === 0) {

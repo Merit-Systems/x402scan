@@ -1,4 +1,5 @@
 import { probeX402Endpoint } from './probe';
+import { getCachedProbeResult } from './probe-cache';
 import { getRegistrationErrorMessage } from './utils';
 import { registerResource, registerSiwxResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
@@ -90,9 +91,9 @@ export async function registerResourcesFromDiscovery(
   resources: { url: string; method?: string; authMode?: AuthMode }[],
   source: string | undefined,
   originInfo?: { title: string; description?: string },
-  /** Pre-tested advisories from the batch test. URLs with a matching advisory
-   *  skip probing — the advisory is used directly for registration. */
-  preTestedAdvisories?: Map<string, EndpointMethodAdvisory>
+  /** Server-side probe session ID. URLs with a cached probe result in Redis
+   *  skip re-probing — avoids rate limiting on registration. */
+  probeSessionId?: string
 ): Promise<RegisterOriginResult> {
   const originResourceCounts = new Map(
     await Promise.all(
@@ -125,14 +126,18 @@ export async function registerResourcesFromDiscovery(
           };
     }
 
-    // Use pre-tested advisory if available (from the batch test the user
-    // already ran). This skips re-probing and avoids rate limiting.
-    const preTested = preTestedAdvisories?.get(resourceUrl);
+    // Check server-side probe cache (from the batch test). This skips
+    // re-probing and avoids rate limiting. The cache is server-authoritative
+    // — advisory data never round-trips through the client.
+    const cached = probeSessionId
+      ? await getCachedProbeResult(probeSessionId, resourceUrl)
+      : null;
     let advisory: EndpointMethodAdvisory;
     let probeWarnings: AuditWarning[] = [];
 
-    if (preTested) {
-      advisory = preTested;
+    if (cached) {
+      advisory = cached.advisory;
+      probeWarnings = cached.warnings;
     } else {
       const probeResult = await probeX402Endpoint(resourceUrl, resource.method);
 
