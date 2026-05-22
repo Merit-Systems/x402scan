@@ -26,9 +26,16 @@ export const OriginResources: React.FC<Props> = ({
   hideOrigin = false,
   isFlat = false,
 }) => {
+  const isSiwx = (resource: (typeof resources)[number]) =>
+    resource.metadata &&
+    typeof resource.metadata === 'object' &&
+    'authMode' in resource.metadata &&
+    resource.metadata.authMode === 'siwx';
+
   const successfulResources = resources.filter(
     resource =>
-      resource.success && resource.accepts && resource.accepts.length > 0
+      resource.success &&
+      ((resource.accepts && resource.accepts.length > 0) || isSiwx(resource))
   );
 
   if (successfulResources.length === 0) {

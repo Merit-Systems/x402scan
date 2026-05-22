@@ -71,9 +71,16 @@ export const ResourceCard: React.FC<Props> = ({
             hideOrigin={hideOrigin}
           />
           <div className="flex items-center gap-2">
-            {accepts && accepts.length > 0 && (
+            {accepts && accepts.length > 0 ? (
               <ResourcePricing accepts={accepts} />
-            )}
+            ) : resource.metadata &&
+              typeof resource.metadata === 'object' &&
+              'authMode' in resource.metadata &&
+              resource.metadata.authMode === 'siwx' ? (
+              <span className="text-xs font-semibold text-green-600 font-mono shrink-0">
+                Free
+              </span>
+            ) : null}
             {ownershipVerified && (
               <Tooltip>
                 <TooltipTrigger asChild>
