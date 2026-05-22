@@ -1,4 +1,14 @@
 import { Methods } from '@/types/x402';
+import type { Resources } from '@x402scan/scan-db';
+
+export function isSiwxResource(resource: Pick<Resources, 'metadata'>): boolean {
+  return (
+    resource.metadata != null &&
+    typeof resource.metadata === 'object' &&
+    'authMode' in resource.metadata &&
+    resource.metadata.authMode === 'siwx'
+  );
+}
 
 export function getBazaarMethod(outputSchema: unknown): Methods {
   if (

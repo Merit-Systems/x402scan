@@ -10,7 +10,7 @@ import {
 
 import { ResourceCard, LoadingResourceCard } from './resource-card';
 
-import { getBazaarMethod } from './utils';
+import { getBazaarMethod, isSiwxResource } from './utils';
 import { serializeAccepts } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
@@ -28,7 +28,9 @@ export const OriginResources: React.FC<Props> = ({
 }) => {
   const successfulResources = resources.filter(
     resource =>
-      resource.success && resource.accepts && resource.accepts.length > 0
+      resource.success &&
+      ((resource.accepts && resource.accepts.length > 0) ||
+        isSiwxResource(resource))
   );
 
   if (successfulResources.length === 0) {
@@ -47,8 +49,8 @@ export const OriginResources: React.FC<Props> = ({
 
   return (
     <div className="border-b-0 gap-0">
-      {resources
-        .filter(resource => resource.success)
+      {successfulResources
+        .filter(r => r.success)
         .map(resource => {
           const rawOutputSchema = resource.accepts.find(
             accept => accept.outputSchema
