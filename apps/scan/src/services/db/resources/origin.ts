@@ -2,11 +2,20 @@ import { z } from 'zod';
 
 import { scanDb } from '@x402scan/scan-db';
 
-import { parseX402Response } from '@/lib/x402';
+import { parseX402Response, type ParsedX402Response } from '@/lib/x402';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
-import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
+import type { AcceptsNetwork, Prisma, Resources } from '@x402scan/scan-db';
+
+function isSiwxResource(resource: Pick<Resources, 'metadata'>): boolean {
+  return (
+    resource.metadata != null &&
+    typeof resource.metadata === 'object' &&
+    'authMode' in resource.metadata &&
+    resource.metadata.authMode === 'siwx'
+  );
+}
 
 const SUPPORTED_ACCEPT_NETWORKS = SUPPORTED_CHAINS.map(
   chain => chain as AcceptsNetwork
@@ -220,6 +229,15 @@ export const listOriginsWithResources = async (
     .map(origin => ({
       ...origin,
       resources: origin.resources.map(resource => {
+        // SIWX (free) resources have no 402 response — they're identity-gated,
+        // not paid. Treat them as successful with empty payment data.
+        if (isSiwxResource(resource)) {
+          return {
+            ...resource,
+            success: true as const,
+            data: {} as ParsedX402Response,
+          };
+        }
         const response = parseX402Response(resource.response?.response);
         if (!response.success) {
           console.error(
