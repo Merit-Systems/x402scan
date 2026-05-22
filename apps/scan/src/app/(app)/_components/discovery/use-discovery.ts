@@ -68,6 +68,7 @@ export interface UseDiscoveryReturn {
   discoveryResources: string[];
   actualDiscoveredResources: string[];
   skippedResources: { url: string; authMode?: string }[];
+  siwxResourceCount: number;
   discoveryResourceCount: number;
   discoveryError?: string;
   invalidResourcesMap: Record<string, { invalid: boolean; reason?: string }>;
@@ -229,10 +230,9 @@ export function useDiscovery({
     () => effectiveResources.map(r => r.url),
     [effectiveResources]
   );
-  // Only the actually discovered resources (not the prepended user-entered URL).
-  // Deduplicated — the same URL can appear with different methods (e.g. GET siwx + POST paid).
+  // Only the actually discovered resources (not the prepended user-entered URL)
   const actualDiscoveredUrls = useMemo(
-    () => [...new Set(discoveryResources.map(r => r.url))],
+    () => discoveryResources.map(r => r.url),
     [discoveryResources]
   );
   // Create map of URL -> invalid status for displaying badges
@@ -332,6 +332,8 @@ export function useDiscovery({
     discoveryResources: resourceUrls,
     actualDiscoveredResources: actualDiscoveredUrls,
     skippedResources,
+    siwxResourceCount: discoveryResources.filter(r => r.authMode === 'siwx')
+      .length,
     discoveryResourceCount: effectiveResources.length,
     discoveryError:
       discoveryQuery.data?.found === false

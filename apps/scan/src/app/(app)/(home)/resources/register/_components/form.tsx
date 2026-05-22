@@ -138,6 +138,7 @@ export const RegisterResourceForm = () => {
     authModeMap,
     invalidResourcesMap,
     skippedResources,
+    siwxResourceCount,
   } = useDiscovery({
     url,
   });
@@ -150,17 +151,12 @@ export const RegisterResourceForm = () => {
     discoveryFound && actualDiscoveredResources.length > 0;
 
   // After batch test completes, count passing paid resources + SIWX (free) endpoints.
-  // SIWX endpoints aren't probed, so they aren't in testedResources — add them separately.
-  // Exclude SIWX URLs that were also probed (same URL, different method) to avoid double-counting.
+  // SIWX endpoints aren't probed — they're counted separately from discovery data.
   // Before batch test, fall back to total discovered count.
   const batchTestComplete =
     testedResources.length > 0 || failedResources.length > 0;
-  const testedUrls = new Set(testedResources.map(r => r.url));
-  const siwxCount = actualDiscoveredResources.filter(
-    url => authModeMap[url] === 'siwx' && !testedUrls.has(url)
-  ).length;
   const registrableResourceCount = batchTestComplete
-    ? testedResources.length + siwxCount
+    ? testedResources.length + siwxResourceCount
     : actualDiscoveredResources.length;
 
   const canUseManualMode = isValidUrl && !isOriginOnly;
