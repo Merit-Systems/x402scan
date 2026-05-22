@@ -421,8 +421,9 @@ export function DiscoveryPanel({
         {/* Skipped — unprotected/non-registrable endpoints */}
         {skippedDetails.length > 0 && (
           <details className="border rounded-md group">
-            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2 text-muted-foreground">
+            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2 text-yellow-600">
               <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+              <AlertCircle className="size-4 shrink-0" />
               {skippedDetails.length} unprotected endpoint
               {skippedDetails.length === 1 ? '' : 's'} skipped
             </summary>
