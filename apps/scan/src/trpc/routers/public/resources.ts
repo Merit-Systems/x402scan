@@ -1,4 +1,5 @@
 import z from 'zod';
+import { revalidatePath } from 'next/cache';
 
 import {
   createTRPCRouter,
@@ -138,7 +139,15 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      return await registerEndpoint(input.url.toString());
+      const result = await registerEndpoint(input.url.toString());
+      try {
+        if (result.success && result.resource?.origin?.id) {
+          revalidatePath(`/server/${result.resource.origin.id}`);
+        }
+      } catch (e) {
+        console.error('revalidatePath failed:', e);
+      }
+      return result;
     }),
 
   /**
@@ -189,6 +198,14 @@ export const resourcesRouter = createTRPCRouter({
           },
           result,
         };
+      }
+
+      try {
+        if (result.originId) {
+          revalidatePath(`/server/${result.originId}`);
+        }
+      } catch (e) {
+        console.error('revalidatePath failed:', e);
       }
 
       return { success: true as const, ...result };

@@ -2,6 +2,7 @@ import type { registryRegisterOriginBodySchema } from '@/app/api/x402/_lib/schem
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { registerResourcesFromDiscovery } from '@/lib/discovery/register-origin';
+import { revalidatePath } from 'next/cache';
 
 import type { z } from 'zod';
 
@@ -29,6 +30,14 @@ export async function handleRegistryRegisterOrigin(
     discoveryResult.source,
     discoveryResult.info
   );
+
+  try {
+    if (result.originId) {
+      revalidatePath(`/server/${result.originId}`);
+    }
+  } catch (e) {
+    console.error('revalidatePath failed:', e);
+  }
 
   if (result.registered === 0) {
     return jsonResponse(
