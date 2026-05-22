@@ -77,6 +77,9 @@ export async function fetchDiscoveryDocument(
             url,
             method: endpoint.method,
             ...(endpoint.authMode ? { authMode: endpoint.authMode } : {}),
+            ...(endpoint.pricingMode
+              ? { pricingMode: endpoint.pricingMode }
+              : {}),
           },
         ];
       } catch {

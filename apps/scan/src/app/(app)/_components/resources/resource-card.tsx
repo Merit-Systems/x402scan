@@ -74,7 +74,16 @@ export const ResourceCard: React.FC<Props> = ({
           />
           <div className="flex items-center gap-2">
             {accepts && accepts.length > 0 ? (
-              <ResourcePricing accepts={accepts} />
+              <ResourcePricing
+                accepts={accepts}
+                pricingMode={
+                  resource.metadata != null &&
+                  typeof resource.metadata === 'object' &&
+                  'pricingMode' in resource.metadata
+                    ? (resource.metadata.pricingMode as string)
+                    : undefined
+                }
+              />
             ) : isSiwxResource(resource) ? (
               <span className="text-xs font-semibold text-green-600 font-mono shrink-0">
                 Free
@@ -132,10 +141,12 @@ export const ResourceCard: React.FC<Props> = ({
   );
 };
 
-const ResourcePricing: React.FC<{ accepts: SerializedAccept[] }> = ({
-  accepts,
-}) => {
-  const isDynamic = accepts.some(a => a.scheme !== 'exact');
+const ResourcePricing: React.FC<{
+  accepts: SerializedAccept[];
+  pricingMode?: string;
+}> = ({ accepts, pricingMode }) => {
+  const isDynamic =
+    pricingMode === 'dynamic' || accepts.some(a => a.scheme !== 'exact');
   const maxAmount = Math.max(...accepts.map(a => a.maxAmountRequired));
   return (
     <span className="text-xs font-semibold text-primary font-mono shrink-0">

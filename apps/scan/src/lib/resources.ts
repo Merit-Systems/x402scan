@@ -160,6 +160,7 @@ export async function registerSiwxResource(
   url: string,
   options: {
     originMetadataFallback?: { title?: string; description?: string };
+    pricingMode?: string;
   } = {}
 ) {
   const urlObj = new URL(url);
@@ -186,6 +187,11 @@ export async function registerSiwxResource(
         update: {},
       });
 
+      const siwxMetadata = {
+        authMode: 'siwx' as const,
+        ...(options.pricingMode ? { pricingMode: options.pricingMode } : {}),
+      };
+
       return tx.resources.upsert({
         where: { resource: cleanUrl },
         create: {
@@ -193,14 +199,14 @@ export async function registerSiwxResource(
           type: 'http',
           x402Version: 0,
           lastUpdated: new Date(),
-          metadata: { authMode: 'siwx' },
+          metadata: siwxMetadata,
           origin: { connect: { origin } },
         },
         update: {
           type: 'http',
           x402Version: 0,
           lastUpdated: new Date(),
-          metadata: { authMode: 'siwx' },
+          metadata: siwxMetadata,
           deprecatedAt: null,
           origin: { connect: { origin } },
         },
@@ -295,6 +301,8 @@ export const registerResource = async (
     originMetadataFallback?: { title?: string; description?: string };
     /** Warnings from probeX402Endpoint — merged into the result. */
     warnings?: AuditWarning[];
+    /** Pricing mode from discovery document ("fixed" | "dynamic"). */
+    pricingMode?: string;
   } = {}
 ) => {
   const validation = validateResource(url, advisory);
@@ -437,6 +445,9 @@ export const registerResource = async (
     x402Version,
     lastUpdated: new Date(),
     accepts: mappedAccepts,
+    ...(options.pricingMode
+      ? { metadata: { pricingMode: options.pricingMode } }
+      : {}),
   });
 
   if (!resource) {
