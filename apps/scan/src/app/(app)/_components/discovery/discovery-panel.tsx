@@ -418,7 +418,45 @@ export function DiscoveryPanel({
           </details>
         )}
 
-        {/* Not registered — consolidated skipped + failed */}
+        {/* Skipped — unprotected/non-registrable endpoints */}
+        {skippedDetails.length > 0 && (
+          <details className="border rounded-md group">
+            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2 text-muted-foreground">
+              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+              {skippedDetails.length} unprotected endpoint
+              {skippedDetails.length === 1 ? '' : 's'} skipped
+            </summary>
+            <div className="p-4 pt-2 border-t space-y-2">
+              <p className="text-xs text-muted-foreground">
+                These endpoints were identified as unprotected (no x402
+                paywall). They are not registered. If they should be paid, add
+                x402 payment middleware. If they are intentionally free, add{' '}
+                <code className="font-mono bg-muted px-1 rounded">
+                  &quot;security&quot;: []
+                </code>{' '}
+                to their OpenAPI definition to suppress this notice.
+              </p>
+              <div className="space-y-1 max-h-[200px] overflow-y-auto">
+                {skippedDetails.map((skipped, idx) => (
+                  <div
+                    key={idx}
+                    className="px-3 py-1.5 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
+                  >
+                    {(() => {
+                      try {
+                        return new URL(skipped.url).pathname;
+                      } catch {
+                        return skipped.url;
+                      }
+                    })()}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </details>
+        )}
+
+        {/* Not registered — actual probe failures */}
         {notRegisteredCount > 0 && (
           <details className="border rounded-md group" open>
             <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
