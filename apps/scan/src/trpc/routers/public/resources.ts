@@ -144,7 +144,9 @@ export const resourcesRouter = createTRPCRouter({
         if (result.success && result.resource?.origin?.id) {
           revalidatePath(`/server/${result.resource.origin.id}`);
         }
-      } catch {}
+      } catch (e) {
+        console.error('revalidatePath failed:', e);
+      }
       return result;
     }),
 
@@ -202,7 +204,9 @@ export const resourcesRouter = createTRPCRouter({
         if (result.originId) {
           revalidatePath(`/server/${result.originId}`);
         }
-      } catch {}
+      } catch (e) {
+        console.error('revalidatePath failed:', e);
+      }
 
       return { success: true as const, ...result };
     }),

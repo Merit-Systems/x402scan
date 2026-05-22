@@ -13,7 +13,9 @@ export async function handleRegistryRegister(
     if (result.success && result.resource?.origin?.id) {
       revalidatePath(`/server/${result.resource.origin.id}`);
     }
-  } catch {}
+  } catch (e) {
+    console.error('revalidatePath failed:', e);
+  }
 
   if (!result.success) {
     return jsonResponse(result, 422);
