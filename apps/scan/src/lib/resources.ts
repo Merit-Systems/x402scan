@@ -464,7 +464,12 @@ export const registerResource = async (
     options.originMetadataFallback?.description ??
     null;
 
-  await upsertOrigin({
+  // Origin metadata upsert — non-blocking. The origin row itself is already
+  // created inside upsertResource's transaction. This just enriches it with
+  // scraped metadata (title, favicon, OG images). When multiple resources
+  // from the same origin register concurrently, this can race (P2002) —
+  // safe to swallow since another concurrent call will succeed.
+  void upsertOrigin({
     origin,
     title: title ?? undefined,
     description: description ?? undefined,
@@ -477,6 +482,8 @@ export const registerResource = async (
         title: og.ogTitle,
         description: og.ogDescription,
       })) ?? [],
+  }).catch(() => {
+    // P2002 or other race — another call already upserted this origin.
   });
 
   await upsertResourceResponse(
