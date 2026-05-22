@@ -327,7 +327,10 @@ export function DiscoveryPanel({
           <div>
             <p className="text-sm font-medium">
               Successfully registered {bulkResult.registered + siwxCount} of{' '}
-              {bulkResult.total} resources
+              {bulkResult.registered +
+                siwxCount +
+                (bulkResult.failedDetails?.length ?? 0)}{' '}
+              resources
               {notRegisteredCount > 0 && (
                 <span className="text-red-600">
                   {' '}

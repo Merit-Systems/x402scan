@@ -25,6 +25,7 @@ import type { Resources, Tag } from '@x402scan/scan-db';
 interface SerializedAccept {
   maxAmountRequired: number;
   network: string;
+  scheme: string;
 }
 
 interface Props {
@@ -134,10 +135,13 @@ export const ResourceCard: React.FC<Props> = ({
 const ResourcePricing: React.FC<{ accepts: SerializedAccept[] }> = ({
   accepts,
 }) => {
-  const minAmount = Math.min(...accepts.map(a => a.maxAmountRequired));
+  const isDynamic = accepts.some(a => a.scheme !== 'exact');
+  const maxAmount = Math.max(...accepts.map(a => a.maxAmountRequired));
   return (
     <span className="text-xs font-semibold text-primary font-mono shrink-0">
-      {formatCurrency(minAmount)}
+      {isDynamic
+        ? `Up to ${formatCurrency(maxAmount)}`
+        : formatCurrency(maxAmount)}
     </span>
   );
 };
