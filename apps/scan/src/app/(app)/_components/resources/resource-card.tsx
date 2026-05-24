@@ -12,9 +12,9 @@ import {
 } from '@/components/ui/tooltip';
 
 import { Header } from './header/index';
-import { isSiwxResource } from './utils';
+import { formatPricingLabel, isSiwxResource } from './utils';
 
-import { cn, formatCurrency } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { toast } from 'sonner';
 
@@ -74,7 +74,25 @@ export const ResourceCard: React.FC<Props> = ({
           />
           <div className="flex items-center gap-2">
             {accepts && accepts.length > 0 ? (
-              <ResourcePricing accepts={accepts} />
+              <ResourcePricing
+                accepts={accepts}
+                pricingMode={
+                  resource.metadata != null &&
+                  typeof resource.metadata === 'object' &&
+                  'pricingMode' in resource.metadata &&
+                  resource.metadata.pricingMode === 'dynamic'
+                    ? 'dynamic'
+                    : undefined
+                }
+                price={
+                  resource.metadata != null &&
+                  typeof resource.metadata === 'object' &&
+                  'price' in resource.metadata &&
+                  typeof resource.metadata.price === 'string'
+                    ? resource.metadata.price
+                    : undefined
+                }
+              />
             ) : isSiwxResource(resource) ? (
               <span className="text-xs font-semibold text-green-600 font-mono shrink-0">
                 Free
@@ -132,16 +150,19 @@ export const ResourceCard: React.FC<Props> = ({
   );
 };
 
-const ResourcePricing: React.FC<{ accepts: SerializedAccept[] }> = ({
-  accepts,
-}) => {
-  const isDynamic = accepts.some(a => a.scheme !== 'exact');
+const ResourcePricing: React.FC<{
+  accepts: SerializedAccept[];
+  pricingMode?: string;
+  price?: string;
+}> = ({ accepts, pricingMode, price }) => {
+  const isDynamic =
+    pricingMode === 'dynamic' || accepts.some(a => a.scheme !== 'exact');
   const maxAmount = Math.max(...accepts.map(a => a.maxAmountRequired));
+  const label = formatPricingLabel({ maxAmount, isDynamic, price });
+
   return (
     <span className="text-xs font-semibold text-primary font-mono shrink-0">
-      {isDynamic
-        ? `Up to ${formatCurrency(maxAmount)}`
-        : formatCurrency(maxAmount)}
+      {label}
     </span>
   );
 };

@@ -160,6 +160,8 @@ export async function registerSiwxResource(
   url: string,
   options: {
     originMetadataFallback?: { title?: string; description?: string };
+    pricingMode?: string;
+    price?: string;
   } = {}
 ) {
   const urlObj = new URL(url);
@@ -186,6 +188,26 @@ export async function registerSiwxResource(
         update: {},
       });
 
+      const siwxMetadata = {
+        authMode: 'siwx' as const,
+        ...(options.pricingMode ? { pricingMode: options.pricingMode } : {}),
+        ...(options.price ? { price: options.price } : {}),
+      };
+
+      // Merge with existing metadata to avoid clobbering fields set by
+      // a different registration path (e.g. paid sets pricingMode on the
+      // same URL-keyed row).
+      const existing = await tx.resources.findUnique({
+        where: { resource: cleanUrl },
+        select: { metadata: true },
+      });
+      const mergedMetadata =
+        existing?.metadata &&
+        typeof existing.metadata === 'object' &&
+        !Array.isArray(existing.metadata)
+          ? { ...existing.metadata, ...siwxMetadata }
+          : siwxMetadata;
+
       return tx.resources.upsert({
         where: { resource: cleanUrl },
         create: {
@@ -193,14 +215,14 @@ export async function registerSiwxResource(
           type: 'http',
           x402Version: 0,
           lastUpdated: new Date(),
-          metadata: { authMode: 'siwx' },
+          metadata: siwxMetadata,
           origin: { connect: { origin } },
         },
         update: {
           type: 'http',
           x402Version: 0,
           lastUpdated: new Date(),
-          metadata: { authMode: 'siwx' },
+          metadata: mergedMetadata,
           deprecatedAt: null,
           origin: { connect: { origin } },
         },
@@ -295,6 +317,10 @@ export const registerResource = async (
     originMetadataFallback?: { title?: string; description?: string };
     /** Warnings from probeX402Endpoint — merged into the result. */
     warnings?: AuditWarning[];
+    /** Pricing mode from discovery document ("fixed" | "dynamic"). */
+    pricingMode?: string;
+    /** Price string from discovery document (e.g. "50-300.00 USD"). */
+    price?: string;
   } = {}
 ) => {
   const validation = validateResource(url, advisory);
@@ -437,6 +463,16 @@ export const registerResource = async (
     x402Version,
     lastUpdated: new Date(),
     accepts: mappedAccepts,
+    ...(options.pricingMode || options.price
+      ? {
+          metadata: {
+            ...(options.pricingMode
+              ? { pricingMode: options.pricingMode }
+              : {}),
+            ...(options.price ? { price: options.price } : {}),
+          },
+        }
+      : {}),
   });
 
   if (!resource) {

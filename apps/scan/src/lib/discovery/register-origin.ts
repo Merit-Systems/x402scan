@@ -88,7 +88,13 @@ export interface RegisterOriginResult {
  * APIs whose homepage isn't HTML, so the scraper has nothing to extract.
  */
 export async function registerResourcesFromDiscovery(
-  resources: { url: string; method?: string; authMode?: AuthMode }[],
+  resources: {
+    url: string;
+    method?: string;
+    authMode?: AuthMode;
+    pricingMode?: string;
+    price?: string;
+  }[],
   source: string | undefined,
   originInfo?: { title: string; description?: string },
   /** Server-side probe session ID. URLs with a cached probe result in Redis
@@ -105,9 +111,15 @@ export async function registerResourcesFromDiscovery(
     )
   );
 
-  async function registerAsSiwx(resourceUrl: string) {
+  async function registerAsSiwx(
+    resourceUrl: string,
+    pricingMode?: string,
+    price?: string
+  ) {
     const siwxResult = await registerSiwxResource(resourceUrl, {
       originMetadataFallback: originInfo,
+      pricingMode,
+      price,
     });
     return siwxResult.success
       ? {
@@ -138,7 +150,7 @@ export async function registerResourcesFromDiscovery(
     }
 
     if (resource.authMode === 'siwx') {
-      return registerAsSiwx(resourceUrl);
+      return registerAsSiwx(resourceUrl, resource.pricingMode, resource.price);
     }
 
     // Check server-side probe cache (from the batch test). This skips
@@ -182,13 +194,15 @@ export async function registerResourcesFromDiscovery(
     // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
     if (advisory.authMode === 'siwx') {
-      return registerAsSiwx(resourceUrl);
+      return registerAsSiwx(resourceUrl, resource.pricingMode, resource.price);
     }
 
     const result = await registerResource(resourceUrl, advisory, {
       notifyNewServer: false,
       originMetadataFallback: originInfo,
       warnings: probeWarnings,
+      pricingMode: resource.pricingMode,
+      price: resource.price,
     });
 
     if (result.success) return result;
