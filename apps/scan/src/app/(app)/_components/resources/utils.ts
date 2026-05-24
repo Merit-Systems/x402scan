@@ -1,5 +1,34 @@
+import { formatCurrency } from '@/lib/utils';
 import { Methods } from '@/types/x402';
 import type { Resources } from '@x402scan/scan-db';
+
+/**
+ * Parse the min value from a discovery price string like "50-300.00 USD".
+ * Returns the numeric min, or 0 if unparseable.
+ */
+export function parseMinFromPriceString(price: string): number {
+  const match = /^(\d+(?:\.\d+)?)\s*-/.exec(price);
+  return match?.[1] ? parseFloat(match[1]) : 0;
+}
+
+/**
+ * Build the display label for a resource's pricing.
+ * - Fixed pricing → "$300.00"
+ * - Dynamic with range → "$50.00–$300.00"
+ * - Dynamic without range → "Up to $300.00"
+ */
+export function formatPricingLabel(opts: {
+  maxAmount: number;
+  isDynamic: boolean;
+  price?: string;
+}): string {
+  if (!opts.isDynamic) return formatCurrency(opts.maxAmount);
+  const minAmount = opts.price ? parseMinFromPriceString(opts.price) : 0;
+  if (minAmount > 0) {
+    return `${formatCurrency(minAmount)}–${formatCurrency(opts.maxAmount)}`;
+  }
+  return `Up to ${formatCurrency(opts.maxAmount)}`;
+}
 
 export function isSiwxResource(resource: Pick<Resources, 'metadata'>): boolean {
   return (

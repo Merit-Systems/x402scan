@@ -12,9 +12,9 @@ import {
 } from '@/components/ui/tooltip';
 
 import { Header } from './header/index';
-import { isSiwxResource } from './utils';
+import { formatPricingLabel, isSiwxResource } from './utils';
 
-import { cn, formatCurrency } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { toast } from 'sonner';
 
@@ -150,15 +150,6 @@ export const ResourceCard: React.FC<Props> = ({
   );
 };
 
-/**
- * Parse the min value from a discovery price string like "50-300.00 USD".
- * Returns the numeric min, or 0 if unparseable.
- */
-function parseMinFromPriceString(price: string): number {
-  const match = /^(\d+(?:\.\d+)?)\s*-/.exec(price);
-  return match?.[1] ? parseFloat(match[1]) : 0;
-}
-
 const ResourcePricing: React.FC<{
   accepts: SerializedAccept[];
   pricingMode?: string;
@@ -167,16 +158,7 @@ const ResourcePricing: React.FC<{
   const isDynamic =
     pricingMode === 'dynamic' || accepts.some(a => a.scheme !== 'exact');
   const maxAmount = Math.max(...accepts.map(a => a.maxAmountRequired));
-  const minAmount = price ? parseMinFromPriceString(price) : 0;
-
-  let label: string;
-  if (!isDynamic) {
-    label = formatCurrency(maxAmount);
-  } else if (minAmount > 0) {
-    label = `${formatCurrency(minAmount)}–${formatCurrency(maxAmount)}`;
-  } else {
-    label = `Up to ${formatCurrency(maxAmount)}`;
-  }
+  const label = formatPricingLabel({ maxAmount, isDynamic, price });
 
   return (
     <span className="text-xs font-semibold text-primary font-mono shrink-0">
