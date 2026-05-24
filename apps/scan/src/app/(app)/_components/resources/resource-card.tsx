@@ -84,6 +84,14 @@ export const ResourceCard: React.FC<Props> = ({
                     ? 'dynamic'
                     : undefined
                 }
+                price={
+                  resource.metadata != null &&
+                  typeof resource.metadata === 'object' &&
+                  'price' in resource.metadata &&
+                  typeof resource.metadata.price === 'string'
+                    ? resource.metadata.price
+                    : undefined
+                }
               />
             ) : isSiwxResource(resource) ? (
               <span className="text-xs font-semibold text-green-600 font-mono shrink-0">
@@ -142,18 +150,37 @@ export const ResourceCard: React.FC<Props> = ({
   );
 };
 
+/**
+ * Parse the min value from a discovery price string like "50-300.00 USD".
+ * Returns the numeric min, or 0 if unparseable.
+ */
+function parseMinFromPriceString(price: string): number {
+  const match = /^(\d+(?:\.\d+)?)\s*-/.exec(price);
+  return match?.[1] ? parseFloat(match[1]) : 0;
+}
+
 const ResourcePricing: React.FC<{
   accepts: SerializedAccept[];
   pricingMode?: string;
-}> = ({ accepts, pricingMode }) => {
+  price?: string;
+}> = ({ accepts, pricingMode, price }) => {
   const isDynamic =
     pricingMode === 'dynamic' || accepts.some(a => a.scheme !== 'exact');
   const maxAmount = Math.max(...accepts.map(a => a.maxAmountRequired));
+  const minAmount = price ? parseMinFromPriceString(price) : 0;
+
+  let label: string;
+  if (!isDynamic) {
+    label = formatCurrency(maxAmount);
+  } else if (minAmount > 0) {
+    label = `${formatCurrency(minAmount)}–${formatCurrency(maxAmount)}`;
+  } else {
+    label = `Up to ${formatCurrency(maxAmount)}`;
+  }
+
   return (
     <span className="text-xs font-semibold text-primary font-mono shrink-0">
-      {isDynamic
-        ? `Up to ${formatCurrency(maxAmount)}`
-        : formatCurrency(maxAmount)}
+      {label}
     </span>
   );
 };

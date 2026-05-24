@@ -23,6 +23,8 @@ export interface DiscoveredResource {
   authMode?: AuthMode;
   /** Pricing mode from discovery doc ("fixed" | "dynamic"). */
   pricingMode?: string;
+  /** Price string from discovery doc (e.g. "50-300.00 USD"). */
+  price?: string;
   /** If true, this resource failed validation */
   invalid?: boolean;
   /** Error message if resource is invalid */

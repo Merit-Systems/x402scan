@@ -80,6 +80,7 @@ export async function fetchDiscoveryDocument(
             ...(endpoint.pricingMode
               ? { pricingMode: endpoint.pricingMode }
               : {}),
+            ...(endpoint.price ? { price: endpoint.price } : {}),
           },
         ];
       } catch {

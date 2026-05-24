@@ -161,6 +161,7 @@ export async function registerSiwxResource(
   options: {
     originMetadataFallback?: { title?: string; description?: string };
     pricingMode?: string;
+    price?: string;
   } = {}
 ) {
   const urlObj = new URL(url);
@@ -190,6 +191,7 @@ export async function registerSiwxResource(
       const siwxMetadata = {
         authMode: 'siwx' as const,
         ...(options.pricingMode ? { pricingMode: options.pricingMode } : {}),
+        ...(options.price ? { price: options.price } : {}),
       };
 
       // Merge with existing metadata to avoid clobbering fields set by
@@ -317,6 +319,8 @@ export const registerResource = async (
     warnings?: AuditWarning[];
     /** Pricing mode from discovery document ("fixed" | "dynamic"). */
     pricingMode?: string;
+    /** Price string from discovery document (e.g. "50-300.00 USD"). */
+    price?: string;
   } = {}
 ) => {
   const validation = validateResource(url, advisory);
@@ -459,8 +463,15 @@ export const registerResource = async (
     x402Version,
     lastUpdated: new Date(),
     accepts: mappedAccepts,
-    ...(options.pricingMode
-      ? { metadata: { pricingMode: options.pricingMode } }
+    ...(options.pricingMode || options.price
+      ? {
+          metadata: {
+            ...(options.pricingMode
+              ? { pricingMode: options.pricingMode }
+              : {}),
+            ...(options.price ? { price: options.price } : {}),
+          },
+        }
       : {}),
   });
 

@@ -93,6 +93,7 @@ export async function registerResourcesFromDiscovery(
     method?: string;
     authMode?: AuthMode;
     pricingMode?: string;
+    price?: string;
   }[],
   source: string | undefined,
   originInfo?: { title: string; description?: string },
@@ -110,10 +111,15 @@ export async function registerResourcesFromDiscovery(
     )
   );
 
-  async function registerAsSiwx(resourceUrl: string, pricingMode?: string) {
+  async function registerAsSiwx(
+    resourceUrl: string,
+    pricingMode?: string,
+    price?: string
+  ) {
     const siwxResult = await registerSiwxResource(resourceUrl, {
       originMetadataFallback: originInfo,
       pricingMode,
+      price,
     });
     return siwxResult.success
       ? {
@@ -144,7 +150,7 @@ export async function registerResourcesFromDiscovery(
     }
 
     if (resource.authMode === 'siwx') {
-      return registerAsSiwx(resourceUrl, resource.pricingMode);
+      return registerAsSiwx(resourceUrl, resource.pricingMode, resource.price);
     }
 
     // Check server-side probe cache (from the batch test). This skips
@@ -188,7 +194,7 @@ export async function registerResourcesFromDiscovery(
     // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
     if (advisory.authMode === 'siwx') {
-      return registerAsSiwx(resourceUrl, resource.pricingMode);
+      return registerAsSiwx(resourceUrl, resource.pricingMode, resource.price);
     }
 
     const result = await registerResource(resourceUrl, advisory, {
@@ -196,6 +202,7 @@ export async function registerResourcesFromDiscovery(
       originMetadataFallback: originInfo,
       warnings: probeWarnings,
       pricingMode: resource.pricingMode,
+      price: resource.price,
     });
 
     if (result.success) return result;
