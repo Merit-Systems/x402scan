@@ -50,6 +50,24 @@ export const upsertResource = async (
       update: {},
     });
 
+    // Merge new metadata with existing to avoid clobbering fields set by
+    // a different registration path (e.g. paid sets pricingMode, siwx sets
+    // authMode — both target the same URL-keyed row).
+    let mergedMetadata = baseResource.metadata;
+    if (baseResource.metadata) {
+      const existing = await tx.resources.findUnique({
+        where: { resource: baseResource.resource },
+        select: { metadata: true },
+      });
+      if (
+        existing?.metadata &&
+        typeof existing.metadata === 'object' &&
+        !Array.isArray(existing.metadata)
+      ) {
+        mergedMetadata = { ...existing.metadata, ...baseResource.metadata };
+      }
+    }
+
     const { origin, ...resource } = await tx.resources.upsert({
       where: {
         resource: baseResource.resource,
@@ -70,7 +88,7 @@ export const upsertResource = async (
         type: baseResource.type,
         x402Version: baseResource.x402Version,
         lastUpdated: baseResource.lastUpdated,
-        metadata: baseResource.metadata,
+        metadata: mergedMetadata,
         // Clear deprecatedAt when resource is re-registered (un-deprecate)
         deprecatedAt: null,
         origin: {

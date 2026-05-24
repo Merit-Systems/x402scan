@@ -192,6 +192,20 @@ export async function registerSiwxResource(
         ...(options.pricingMode ? { pricingMode: options.pricingMode } : {}),
       };
 
+      // Merge with existing metadata to avoid clobbering fields set by
+      // a different registration path (e.g. paid sets pricingMode on the
+      // same URL-keyed row).
+      const existing = await tx.resources.findUnique({
+        where: { resource: cleanUrl },
+        select: { metadata: true },
+      });
+      const mergedMetadata =
+        existing?.metadata &&
+        typeof existing.metadata === 'object' &&
+        !Array.isArray(existing.metadata)
+          ? { ...existing.metadata, ...siwxMetadata }
+          : siwxMetadata;
+
       return tx.resources.upsert({
         where: { resource: cleanUrl },
         create: {
@@ -206,7 +220,7 @@ export async function registerSiwxResource(
           type: 'http',
           x402Version: 0,
           lastUpdated: new Date(),
-          metadata: siwxMetadata,
+          metadata: mergedMetadata,
           deprecatedAt: null,
           origin: { connect: { origin } },
         },
