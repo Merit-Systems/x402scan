@@ -6,6 +6,7 @@ import { deprecateStaleResources } from '@/services/db/resources/resource';
 import { getOriginResourceCount } from '@/services/db/resources/origin';
 import { notifyNewServer } from '@/lib/discord-notifications';
 import { getOriginFromUrl } from '@/lib/url';
+import { scanDb } from '@x402scan/scan-db';
 
 import type {
   AuditWarning,
@@ -101,13 +102,29 @@ export async function registerResourcesFromDiscovery(
    *  skip re-probing — avoids rate limiting on registration. */
   probeSessionId?: string
 ): Promise<RegisterOriginResult> {
+  const uniqueOrigins = [
+    ...new Set(resources.map(resource => getOriginFromUrl(resource.url))),
+  ];
+
   const originResourceCounts = new Map(
     await Promise.all(
-      [
-        ...new Set(resources.map(resource => getOriginFromUrl(resource.url))),
-      ].map(
+      uniqueOrigins.map(
         async origin => [origin, await getOriginResourceCount(origin)] as const
       )
+    )
+  );
+
+  // Pre-create origin rows outside transactions to prevent P2002 races.
+  // When multiple resources from the same origin register concurrently,
+  // each transaction's resourceOrigin.upsert() can race on INSERT.
+  // Top-level upserts use native INSERT ON CONFLICT, which is safe.
+  await Promise.all(
+    uniqueOrigins.map(origin =>
+      scanDb.resourceOrigin.upsert({
+        where: { origin },
+        create: { origin },
+        update: {},
+      })
     )
   );
 
