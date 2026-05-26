@@ -120,16 +120,21 @@ export function buildMinimalSampleFromInputSchema(
 
   const schema = inputSchema as Record<string, unknown>;
 
-  // The inputSchema from OpenAPI advisories wraps the body schema under
-  // `body.content["application/json"].schema` or may be the schema directly.
+  // The inputSchema from discovery advisories can arrive in several shapes:
+  //   1. `body.content["application/json"].schema` — full OpenAPI wrapper
+  //   2. `requestBody` — flattened wrapper from @agentcash/discovery
+  //   3. Direct schema with `properties` at top level
   const bodyContent = (schema.body as Record<string, unknown>)?.content as
     | Record<string, unknown>
     | undefined;
   const jsonSchema = (
     bodyContent?.['application/json'] as Record<string, unknown>
   )?.schema as Record<string, unknown> | undefined;
+  const requestBodySchema = schema.requestBody as
+    | Record<string, unknown>
+    | undefined;
 
-  const effectiveSchema = jsonSchema ?? schema;
+  const effectiveSchema = jsonSchema ?? requestBodySchema ?? schema;
 
   return buildMinimalSample(effectiveSchema);
 }

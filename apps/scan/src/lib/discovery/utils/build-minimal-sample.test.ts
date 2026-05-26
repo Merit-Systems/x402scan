@@ -121,6 +121,37 @@ describe('buildMinimalSampleFromInputSchema', () => {
     expect(buildMinimalSampleFromInputSchema(schema)).toEqual({ name: 'test' });
   });
 
+  it('extracts schema from requestBody wrapper (discovery library format)', () => {
+    // This is the actual format returned by @agentcash/discovery's
+    // checkEndpointSchema — the schema lives under `requestBody`, not
+    // `body.content["application/json"].schema`.
+    const schema = {
+      requestBody: {
+        type: 'object',
+        required: ['duration'],
+        anyOf: [{ required: ['contentBase64'] }, { required: ['contentText'] }],
+        properties: {
+          duration: { type: 'integer', minimum: 1, maximum: 365 },
+          contentBase64: { type: 'string' },
+          contentText: { type: 'string' },
+        },
+      },
+      parameters: [
+        {
+          name: 'duration',
+          in: 'query',
+          required: false,
+          schema: { type: 'integer', minimum: 1 },
+        },
+      ],
+    };
+    const result = buildMinimalSampleFromInputSchema(schema);
+    expect(result).toEqual({
+      duration: 1,
+      contentBase64: 'test',
+    });
+  });
+
   it('returns undefined for non-object input', () => {
     expect(buildMinimalSampleFromInputSchema(null)).toBeUndefined();
     expect(buildMinimalSampleFromInputSchema('string')).toBeUndefined();
