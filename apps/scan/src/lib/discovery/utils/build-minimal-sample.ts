@@ -44,7 +44,10 @@ function sampleValue(schema: Record<string, unknown>, depth: number): unknown {
     if (schema.format === 'uuid') return '00000000-0000-0000-0000-000000000000';
     return 'test';
   }
-  if (type === 'number' || type === 'integer') return 0;
+  if (type === 'number' || type === 'integer') {
+    if (typeof schema.minimum === 'number') return schema.minimum;
+    return 0;
+  }
   if (type === 'boolean') return true;
 
   return 'test';
@@ -62,6 +65,22 @@ function buildMinimalSample(
   const required = Array.isArray(schema.required)
     ? new Set(schema.required as string[])
     : new Set<string>();
+
+  // Merge required fields from the first anyOf/oneOf branch. Endpoints with
+  // conditional requirements (e.g. "one of contentBase64 or contentText")
+  // express them this way — pick the first branch so the probe body passes
+  // validation and the x402 paywall can fire.
+  const compositeBranches = (schema.anyOf ?? schema.oneOf) as
+    | Record<string, unknown>[]
+    | undefined;
+  if (Array.isArray(compositeBranches) && compositeBranches.length > 0) {
+    const firstBranch = compositeBranches[0];
+    if (firstBranch && Array.isArray(firstBranch.required)) {
+      for (const key of firstBranch.required as string[]) {
+        required.add(key);
+      }
+    }
+  }
 
   // Only fill properties explicitly marked required. If the merchant doesn't
   // mark required fields, that's their spec to fix.
@@ -101,16 +120,21 @@ export function buildMinimalSampleFromInputSchema(
 
   const schema = inputSchema as Record<string, unknown>;
 
-  // The inputSchema from OpenAPI advisories wraps the body schema under
-  // `body.content["application/json"].schema` or may be the schema directly.
+  // The inputSchema from discovery advisories can arrive in several shapes:
+  //   1. `body.content["application/json"].schema` — full OpenAPI wrapper
+  //   2. `requestBody` — flattened wrapper from @agentcash/discovery
+  //   3. Direct schema with `properties` at top level
   const bodyContent = (schema.body as Record<string, unknown>)?.content as
     | Record<string, unknown>
     | undefined;
   const jsonSchema = (
     bodyContent?.['application/json'] as Record<string, unknown>
   )?.schema as Record<string, unknown> | undefined;
+  const requestBodySchema = schema.requestBody as
+    | Record<string, unknown>
+    | undefined;
 
-  const effectiveSchema = jsonSchema ?? schema;
+  const effectiveSchema = jsonSchema ?? requestBodySchema ?? schema;
 
   return buildMinimalSample(effectiveSchema);
 }

@@ -16,10 +16,8 @@ export async function registerEndpoint(
     originMetadataFallback?: { title?: string; description?: string };
   }
 ) {
-  const cleanUrl = url.replaceAll('{', '').replaceAll('}', '');
-
   // 1. Probe the endpoint for a 402 response
-  const probeResult = await probeX402Endpoint(cleanUrl);
+  const probeResult = await probeX402Endpoint(url);
 
   if (!probeResult.success) {
     return {

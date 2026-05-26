@@ -6,3 +6,4 @@ export {
   buildMinimalSampleFromInputSchema,
   buildMinimalQueryParamsFromInputSchema,
 } from './build-minimal-sample';
+export { hasPathParameters } from './path-params';

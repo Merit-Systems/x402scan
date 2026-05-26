@@ -12,6 +12,7 @@ import https from 'node:https';
 import {
   buildMinimalSampleFromInputSchema,
   buildMinimalQueryParamsFromInputSchema,
+  hasPathParameters,
   PROBE_TIMEOUT_MS,
 } from './utils';
 
@@ -327,13 +328,14 @@ async function probeX402EndpointOnce(
 
   return {
     success: false,
-    error: probeErrorMessage(noBody, withBody),
+    error: probeErrorMessage(url, noBody, withBody),
     skipped: !isUnreachable,
     statusCode,
   };
 }
 
 function probeErrorMessage(
+  url: string,
   noBody: CheckEndpointResult,
   withBody?: CheckEndpointResult
 ): string {
@@ -346,8 +348,16 @@ function probeErrorMessage(
       timeout: 'Endpoint timed out',
     } as const;
     const base = causeMessages[result.cause];
-    // The library message often includes the status code (e.g. "got 400")
-    return result.message ?? base;
+    const message = result.message ?? base;
+
+    // Detect path parameters and append actionable guidance for merchants.
+    if (result.cause === 'not_found' && hasPathParameters(url)) {
+      return (
+        message +
+        '. This endpoint contains path parameters — ensure the x402 paywall runs before path parameter validation'
+      );
+    }
+    return message;
   }
   return 'No valid x402 response found';
 }
