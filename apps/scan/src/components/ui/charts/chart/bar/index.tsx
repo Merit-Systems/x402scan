@@ -65,6 +65,7 @@ export const BaseBarChart = <
             fillOpacity={solid ? 0.2 : undefined}
             stroke={color}
             strokeWidth={0.5}
+            activeBar={{ strokeWidth: 1.5 }}
             radius={
               index === bars.length - 1 || !stacked ? [4, 4, 0, 0] : undefined
             }
