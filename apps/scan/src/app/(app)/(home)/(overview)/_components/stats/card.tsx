@@ -81,6 +81,7 @@ export const OverallStatsCard = <T extends Record<string, number>>({
           bars={items.bars}
           height={100}
           tooltipRows={tooltipRows}
+          cursor={false}
         />
       ) : (
         <BaseAreaChart
@@ -88,6 +89,7 @@ export const OverallStatsCard = <T extends Record<string, number>>({
           areas={items.areas}
           height={100}
           tooltipRows={tooltipRows}
+          cursor={false}
         />
       )}
     </OverallStatsCardContainer>
