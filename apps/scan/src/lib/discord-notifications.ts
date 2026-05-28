@@ -20,17 +20,25 @@ interface DiscordConfig {
 
 export function notifyNewServer(notification: NewServerNotification) {
   scheduleDiscordNotification({
+    webhookUrl: env.DISCORD_NOTIFICATIONS_WEBHOOK_URL,
     username: NEW_SERVER_USERNAME,
     embed: config => buildNewServerEmbed(notification, config),
+  });
+
+  scheduleDiscordNotification({
+    webhookUrl: env.DISCORD_MERCHANT_RESEARCH_WEBHOOK_URL,
+    username: NEW_SERVER_USERNAME,
+    embed: config => buildMerchantResearchEmbed(notification, config),
   });
 }
 
 function scheduleDiscordNotification(options: {
+  webhookUrl: string | undefined;
   username: string;
   embed: (config: DiscordConfig) => DiscordEmbed;
 }) {
   try {
-    const config = getDiscordConfig();
+    const config = getDiscordConfig(options.webhookUrl);
     if (!config) return;
 
     const sendNotification = async () => {
@@ -55,9 +63,9 @@ function scheduleDiscordNotification(options: {
   }
 }
 
-function getDiscordConfig(): DiscordConfig | null {
-  const webhookUrl = env.DISCORD_NOTIFICATIONS_WEBHOOK_URL;
-
+function getDiscordConfig(
+  webhookUrl: string | undefined
+): DiscordConfig | null {
   if (process.env.VERCEL_ENV !== 'production' || !webhookUrl) return null;
 
   return {
@@ -104,6 +112,28 @@ function buildNewServerEmbed(
   const description = truncateDescription(notification.description);
   const lines = [
     `[**${escapeMarkdown(name)}**](${serverUrl(config.appUrl, notification.originId)})`,
+  ];
+
+  if (description) {
+    lines.push(escapeMarkdown(description));
+  }
+
+  return {
+    description: lines.join('\n'),
+  };
+}
+
+function buildMerchantResearchEmbed(
+  notification: NewServerNotification,
+  config: DiscordConfig
+) {
+  const domain = domainFromOrigin(notification.origin);
+  const title = notification.title?.trim();
+  const name = title && title.length > 0 ? title : domain;
+  const description = truncateDescription(notification.description);
+  const lines = [
+    `[**${escapeMarkdown(name)}**](${serverUrl(config.appUrl, notification.originId)})`,
+    `\`${notification.origin}\``,
   ];
 
   if (description) {
