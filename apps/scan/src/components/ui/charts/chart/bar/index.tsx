@@ -22,6 +22,7 @@ export const BaseBarChart = <
   solid = false,
   stackOffset,
   xAxis,
+  cursor,
 }: BarChartProps<T>) => {
   return (
     <BaseChart
@@ -32,6 +33,7 @@ export const BaseBarChart = <
       margin={margin}
       stackOffset={stackOffset}
       xAxis={xAxis}
+      cursor={cursor}
     >
       {!solid && (
         <defs>

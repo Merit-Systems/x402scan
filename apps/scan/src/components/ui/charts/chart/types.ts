@@ -36,6 +36,7 @@ export interface ChartProps<T extends Record<string, number>> {
     angle?: number;
     height?: number;
   };
+  cursor?: boolean;
 }
 
 export type Series<T extends Record<string, number>, S> = S & {

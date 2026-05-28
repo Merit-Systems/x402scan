@@ -24,6 +24,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
   dataMax = 'dataMax',
   stackOffset,
   xAxis,
+  cursor = true,
 }: ChartProps<T> & { type: 'bar' | 'area' | 'line' | 'composed' }) => {
   const Container = useMemo(() => {
     switch (type) {
@@ -83,11 +84,15 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
               }
               return null;
             }}
-            cursor={{
-              fill: 'var(--color-primary)',
-              opacity: 0.2,
-              radius: 4,
-            }}
+            cursor={
+              cursor
+                ? {
+                    fill: 'var(--color-primary)',
+                    opacity: 0.2,
+                    radius: 4,
+                  }
+                : false
+            }
           />
         )}
       </Container>

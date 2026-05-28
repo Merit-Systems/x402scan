@@ -20,6 +20,7 @@ export const BaseAreaChart = <
   height = 350,
   margin = { top: 4, right: 0, left: 0, bottom: 4 },
   dataMax,
+  cursor,
 }: AreaChartProps<T>) => {
   return (
     <BaseChart
@@ -29,6 +30,7 @@ export const BaseAreaChart = <
       tooltipRows={tooltipRows}
       margin={margin}
       dataMax={dataMax}
+      cursor={cursor}
     >
       <defs>
         {areas.map(({ dataKey, color }) => (
