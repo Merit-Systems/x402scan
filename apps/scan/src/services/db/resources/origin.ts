@@ -129,7 +129,7 @@ export const getOriginResourceCount = async (origin: string) => {
     select: {
       _count: {
         select: {
-          resources: true,
+          resources: { where: { deprecatedAt: null } },
         },
       },
     },
