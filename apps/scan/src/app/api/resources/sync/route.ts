@@ -178,12 +178,15 @@ export const GET = async (request: NextRequest) => {
           const upsertedOrigin = await upsertOrigin(originData);
 
           if (!preexistingOrigins.has(origin) && upsertedOrigin) {
-            notifyNewServer({
-              originId: upsertedOrigin.id,
-              origin,
-              title: originData.title ?? null,
-              description: originData.description ?? null,
-            });
+            notifyNewServer(
+              {
+                originId: upsertedOrigin.id,
+                origin,
+                title: originData.title ?? null,
+                description: originData.description ?? null,
+              },
+              { merchantResearch: false }
+            );
           }
 
           return { origin, success: true };
