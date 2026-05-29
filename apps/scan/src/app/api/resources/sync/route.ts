@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 
 import { scrapeOriginData } from '@/services/scraper';
-import { upsertOrigin } from '@/services/db/resources/origin';
+import {
+  getOriginResourceCount,
+  upsertOrigin,
+} from '@/services/db/resources/origin';
 import { upsertResource } from '@/services/db/resources/resource';
 
 import { checkCronSecret } from '@/lib/cron';
+import { notifyNewServer } from '@/lib/discord-notifications';
 import { getOriginFromUrl } from '@/lib/url';
 import { normalizeChainId } from '@/lib/x402';
 
@@ -55,6 +59,24 @@ export const GET = async (request: NextRequest) => {
         { status: 200 }
       );
     }
+
+    // Step 1.5: Snapshot current resource counts per origin so we can detect
+    // new origins after upserts (origins that go from 0 → >0 active resources).
+    const preexistingOrigins = new Set<string>();
+    const allOrigins = new Set<string>();
+    for (const resource of resources) {
+      try {
+        allOrigins.add(getOriginFromUrl(resource.resource));
+      } catch {
+        // Origin extraction failed, skip
+      }
+    }
+    await Promise.all(
+      Array.from(allOrigins).map(async origin => {
+        const count = await getOriginResourceCount(origin);
+        if (count > 0) preexistingOrigins.add(origin);
+      })
+    );
 
     // Step 2: Process resources (upsert to database)
     console.log('Starting resource processing');
@@ -153,7 +175,19 @@ export const GET = async (request: NextRequest) => {
           };
 
           // Upsert origin to database
-          await upsertOrigin(originData);
+          const upsertedOrigin = await upsertOrigin(originData);
+
+          if (!preexistingOrigins.has(origin) && upsertedOrigin) {
+            notifyNewServer(
+              {
+                originId: upsertedOrigin.id,
+                origin,
+                title: originData.title ?? null,
+                description: originData.description ?? null,
+              },
+              { merchantResearch: false }
+            );
+          }
 
           return { origin, success: true };
         } catch (error) {

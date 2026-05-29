@@ -18,18 +18,23 @@ interface DiscordConfig {
   appUrl: string;
 }
 
-export function notifyNewServer(notification: NewServerNotification) {
+export function notifyNewServer(
+  notification: NewServerNotification,
+  options?: { merchantResearch?: boolean }
+) {
   scheduleDiscordNotification({
     webhookUrl: env.DISCORD_NOTIFICATIONS_WEBHOOK_URL,
     username: NEW_SERVER_USERNAME,
     embed: config => buildNewServerEmbed(notification, config),
   });
 
-  scheduleDiscordNotification({
-    webhookUrl: env.DISCORD_MERCHANT_RESEARCH_WEBHOOK_URL,
-    username: NEW_SERVER_USERNAME,
-    embed: config => buildMerchantResearchEmbed(notification, config),
-  });
+  if (options?.merchantResearch ?? true) {
+    scheduleDiscordNotification({
+      webhookUrl: env.DISCORD_MERCHANT_RESEARCH_WEBHOOK_URL,
+      username: NEW_SERVER_USERNAME,
+      embed: config => buildMerchantResearchEmbed(notification, config),
+    });
+  }
 }
 
 function scheduleDiscordNotification(options: {
