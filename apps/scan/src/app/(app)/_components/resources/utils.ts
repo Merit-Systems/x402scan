@@ -12,10 +12,24 @@ export function parseMinFromPriceString(price: string): number {
 }
 
 /**
+ * Parse the max value from a discovery price string like "50-300.00 USD".
+ * Returns the numeric max, or null when the string declares no range (e.g. a fixed "300.00 USD").
+ */
+export function parseMaxFromPriceString(price: string): number | null {
+  const match = /^\d+(?:\.\d+)?\s*-\s*(\d+(?:\.\d+)?)/.exec(price);
+  return match?.[1] ? parseFloat(match[1]) : null;
+}
+
+/**
  * Build the display label for a resource's pricing.
  * - Fixed pricing → "$300.00"
  * - Dynamic with range → "$50.00–$300.00"
  * - Dynamic without range → "Up to $300.00"
+ *
+ * For dynamic pricing the upper bound is taken from the declared price string when it states a range,
+ * falling back to `maxAmount` (the observed 402 amount). A per-row / usage-priced endpoint's probe
+ * typically returns only its floor, so the declared max is the accurate ceiling to display — otherwise
+ * the range collapses (e.g. a "0.001-0.126 USD" endpoint would render "< $0.01–< $0.01").
  */
 export function formatPricingLabel(opts: {
   maxAmount: number;
@@ -24,10 +38,12 @@ export function formatPricingLabel(opts: {
 }): string {
   if (!opts.isDynamic) return formatCurrency(opts.maxAmount);
   const minAmount = opts.price ? parseMinFromPriceString(opts.price) : 0;
+  const declaredMax = opts.price ? parseMaxFromPriceString(opts.price) : null;
+  const maxAmount = declaredMax ?? opts.maxAmount;
   if (minAmount > 0) {
-    return `${formatCurrency(minAmount)}–${formatCurrency(opts.maxAmount)}`;
+    return `${formatCurrency(minAmount)}–${formatCurrency(maxAmount)}`;
   }
-  return `Up to ${formatCurrency(opts.maxAmount)}`;
+  return `Up to ${formatCurrency(maxAmount)}`;
 }
 
 export function isSiwxResource(resource: Pick<Resources, 'metadata'>): boolean {

@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { parseMinFromPriceString, formatPricingLabel } from './utils';
+import {
+  parseMinFromPriceString,
+  parseMaxFromPriceString,
+  formatPricingLabel,
+} from './utils';
 
 describe('parseMinFromPriceString', () => {
   it('parses integer min from range', () => {
@@ -36,6 +40,44 @@ describe('parseMinFromPriceString', () => {
 
   it('handles whitespace around dash', () => {
     expect(parseMinFromPriceString('50 -300.00 USD')).toBe(50);
+  });
+});
+
+describe('parseMaxFromPriceString', () => {
+  it('parses integer max from range', () => {
+    expect(parseMaxFromPriceString('50-300.00 USD')).toBe(300);
+  });
+
+  it('parses decimal max from range', () => {
+    expect(parseMaxFromPriceString('0.01-5.00 USD')).toBe(5);
+  });
+
+  it('parses max when min is 0', () => {
+    expect(parseMaxFromPriceString('0-300.00 USD')).toBe(300);
+  });
+
+  it('returns null for fixed price (no range)', () => {
+    expect(parseMaxFromPriceString('300.00 USD')).toBeNull();
+  });
+
+  it('returns null for empty string', () => {
+    expect(parseMaxFromPriceString('')).toBeNull();
+  });
+
+  it('returns null for garbage input', () => {
+    expect(parseMaxFromPriceString('not a price')).toBeNull();
+  });
+
+  it('returns null when string starts with dash (no leading min)', () => {
+    expect(parseMaxFromPriceString('-5.00 USD')).toBeNull();
+  });
+
+  it('handles no currency suffix', () => {
+    expect(parseMaxFromPriceString('10-100')).toBe(100);
+  });
+
+  it('handles whitespace around dash', () => {
+    expect(parseMaxFromPriceString('50 - 300.00 USD')).toBe(300);
   });
 });
 
@@ -100,5 +142,25 @@ describe('formatPricingLabel', () => {
         price: '50-300.00 USD',
       })
     ).toBe('$300.00');
+  });
+
+  it('prefers the declared max over maxAmount in a range (per-row probe returns only the floor)', () => {
+    expect(
+      formatPricingLabel({
+        maxAmount: 50, // observed 402 (e.g. the floor of a usage-priced endpoint)
+        isDynamic: true,
+        price: '50-300.00 USD',
+      })
+    ).toBe('$50.00–$300.00');
+  });
+
+  it('prefers the declared max over maxAmount in "Up to" when min is 0', () => {
+    expect(
+      formatPricingLabel({
+        maxAmount: 1, // observed floor; the declared ceiling is 300
+        isDynamic: true,
+        price: '0-300.00 USD',
+      })
+    ).toBe('Up to $300.00');
   });
 });
