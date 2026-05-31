@@ -12,6 +12,15 @@ export function parseMinFromPriceString(price: string): number {
 }
 
 /**
+ * Parse the max value from a discovery price string like "50-300.00 USD".
+ * Returns the numeric max, or 0 if unparseable.
+ */
+export function parseMaxFromPriceString(price: string): number {
+  const match = /^\d+(?:\.\d+)?\s*-\s*(\d+(?:\.\d+)?)/.exec(price);
+  return match?.[1] ? parseFloat(match[1]) : 0;
+}
+
+/**
  * Build the display label for a resource's pricing.
  * - Fixed pricing → "$300.00"
  * - Dynamic with range → "$50.00–$300.00"
@@ -24,10 +33,15 @@ export function formatPricingLabel(opts: {
 }): string {
   if (!opts.isDynamic) return formatCurrency(opts.maxAmount);
   const minAmount = opts.price ? parseMinFromPriceString(opts.price) : 0;
+  // For dynamic pricing the probed maxAmountRequired may only reflect the
+  // minimum request (empty params). Prefer the max from the discovery price
+  // string when it's larger.
+  const parsedMax = opts.price ? parseMaxFromPriceString(opts.price) : 0;
+  const effectiveMax = Math.max(opts.maxAmount, parsedMax);
   if (minAmount > 0) {
-    return `${formatCurrency(minAmount)}–${formatCurrency(opts.maxAmount)}`;
+    return `${formatCurrency(minAmount)}–${formatCurrency(effectiveMax)}`;
   }
-  return `Up to ${formatCurrency(opts.maxAmount)}`;
+  return `Up to ${formatCurrency(effectiveMax)}`;
 }
 
 export function isSiwxResource(resource: Pick<Resources, 'metadata'>): boolean {
