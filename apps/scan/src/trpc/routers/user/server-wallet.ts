@@ -15,7 +15,7 @@ import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
 import {
   x402Client,
   wrapFetchWithPayment,
-  registerExactEvmScheme,
+  registerEvmSchemes,
   registerSvmX402Client,
 } from '@/lib/x402/wrap-fetch';
 import { env } from '@/env';
@@ -161,7 +161,7 @@ export const serverWalletRouter = createTRPCRouter({
         });
       } else {
         client = new x402Client();
-        registerExactEvmScheme(client, {
+        registerEvmSchemes(client, {
           signer: signer as ClientEvmSigner,
         });
       }

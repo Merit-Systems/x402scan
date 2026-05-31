@@ -5,7 +5,7 @@ import { useX402Fetch } from './use-fetch';
 import {
   x402Client,
   wrapFetchWithPayment,
-  registerExactEvmScheme,
+  registerEvmSchemes,
   toEvmSigner,
 } from '@/lib/x402/wrap-fetch';
 
@@ -26,7 +26,7 @@ export const useEvmPaymentWrapper = (chain: Chain) => {
     const signer = toEvmSigner(
       walletClient as Parameters<typeof toEvmSigner>[0]
     );
-    registerExactEvmScheme(client, { signer });
+    registerEvmSchemes(client, { signer });
 
     return wrapFetchWithPayment(baseFetch, client);
   };
