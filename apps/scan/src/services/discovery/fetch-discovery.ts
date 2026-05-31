@@ -74,7 +74,7 @@ export async function fetchDiscoveryDocument(
         // Build the URL without URL-encoding so OpenAPI path templates
         // like /v1/candles/{coin}/{interval} keep raw braces instead of
         // being encoded to %7Bcoin%7D.
-        const url = endpoint.path.startsWith('http')
+        const url = endpoint.path.includes('://')
           ? endpoint.path
           : `${expectedOrigin}${endpoint.path.startsWith('/') ? '' : '/'}${endpoint.path}`;
         return [
