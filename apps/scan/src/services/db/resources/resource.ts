@@ -407,16 +407,42 @@ export const listResourcesForTools = async (resourceIds: string[]) => {
  * Deprecate resources that are no longer in the discovery document.
  * Sets deprecatedAt to now() for resources not in the provided URLs list.
  *
- * Note: If activeResourceUrls is empty, no deprecation occurs to avoid accidentally
- * deprecating all resources when discovery is empty or fails.
+ * Safety checks:
+ * - If activeResourceUrls is empty, no deprecation occurs (discovery failure).
+ * - If ALL active resources would be deprecated, no deprecation occurs (likely
+ *   a URL normalization mismatch rather than a legitimate removal of every endpoint).
  */
 export const deprecateStaleResources = async (
   originId: string,
   activeResourceUrls: string[]
 ) => {
-  // If no active resources were discovered, don't deprecate anything
-  // (could indicate discovery failure or incomplete data)
   if (activeResourceUrls.length === 0) {
+    return 0;
+  }
+
+  // Count how many active resources exist vs how many would be deprecated.
+  // If we'd wipe everything, it's almost certainly a bug (URL mismatch),
+  // not the origin legitimately removing all endpoints.
+  const activeCount = await scanDb.resources.count({
+    where: { originId, deprecatedAt: null },
+  });
+
+  if (activeCount === 0) {
+    return 0;
+  }
+
+  const wouldDeprecateCount = await scanDb.resources.count({
+    where: {
+      originId,
+      deprecatedAt: null,
+      resource: { notIn: activeResourceUrls },
+    },
+  });
+
+  if (wouldDeprecateCount === activeCount) {
+    console.warn(
+      `[deprecateStaleResources] Skipping: would deprecate all ${activeCount} active resources for origin ${originId}. Likely a URL normalization mismatch.`
+    );
     return 0;
   }
 
@@ -424,13 +450,9 @@ export const deprecateStaleResources = async (
     where: {
       originId,
       deprecatedAt: null,
-      resource: {
-        notIn: activeResourceUrls,
-      },
+      resource: { notIn: activeResourceUrls },
     },
-    data: {
-      deprecatedAt: new Date(),
-    },
+    data: { deprecatedAt: new Date() },
   });
 
   return result.count;

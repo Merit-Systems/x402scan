@@ -11,7 +11,7 @@ import type {
 } from '@agentcash/discovery';
 import { isX402PaymentOption } from '@/lib/discovery/utils';
 
-import { getOriginFromUrl } from '@/lib/url';
+import { getOriginFromUrl, normalizeResourceUrl } from '@/lib/url';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
@@ -176,8 +176,7 @@ export async function registerSiwxResource(
     };
   }
 
-  urlObj.search = '';
-  const cleanUrl = urlObj.toString();
+  const cleanUrl = normalizeResourceUrl(url);
   const origin = getOriginFromUrl(cleanUrl);
 
   try {
@@ -345,9 +344,7 @@ export const registerResource = async (
     ...validation.warnings,
   ]);
 
-  const urlObj = new URL(url);
-  urlObj.search = '';
-  const cleanUrl = urlObj.toString();
+  const cleanUrl = normalizeResourceUrl(url);
   const origin = getOriginFromUrl(cleanUrl);
   const shouldNotifyNewServer = options.notifyNewServer ?? true;
 
