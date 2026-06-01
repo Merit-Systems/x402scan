@@ -3,6 +3,18 @@ export const getOriginFromUrl = (url: string) => {
 };
 
 /**
+ * Normalize a resource URL to the canonical form stored in the DB.
+ * Applies URL-encoding (via the URL constructor) and strips the query string.
+ * Both registerResource and the deprecation allow-list must use this so their
+ * string comparisons agree.
+ */
+export const normalizeResourceUrl = (url: string): string => {
+  const u = new URL(url);
+  u.search = '';
+  return u.toString();
+};
+
+/**
  * Normalize a URL for comparison by removing trailing slashes
  * and normalizing the path.
  *

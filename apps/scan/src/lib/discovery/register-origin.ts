@@ -5,7 +5,7 @@ import { registerResource, registerSiwxResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 import { getOriginResourceCount } from '@/services/db/resources/origin';
 import { notifyNewServer } from '@/lib/discord-notifications';
-import { getOriginFromUrl } from '@/lib/url';
+import { getOriginFromUrl, normalizeResourceUrl } from '@/lib/url';
 import { scanDb } from '@x402scan/scan-db';
 
 import type {
@@ -326,7 +326,7 @@ export async function registerResourcesFromDiscovery(
 
   let deprecated = 0;
   if (originId) {
-    const activeResourceUrls = resources.map(r => r.url);
+    const activeResourceUrls = resources.map(r => normalizeResourceUrl(r.url));
     deprecated = await deprecateStaleResources(originId, activeResourceUrls);
   }
 
