@@ -326,7 +326,17 @@ export async function registerResourcesFromDiscovery(
 
   let deprecated = 0;
   if (originId) {
-    const activeResourceUrls = resources.map(r => r.url);
+    // Match the key registerResource actually stores: cleanUrl =
+    // new URL(url) with the query stripped. Discovery hands us raw template
+    // braces (e.g. /candles/{coin}); new URL() percent-encodes them to
+    // %7Bcoin%7D, which is what lands in the DB. Building the allow-list from
+    // the raw r.url means the stored (encoded) keys never match, so every
+    // templated resource is deprecated on every registration.
+    const activeResourceUrls = resources.map(r => {
+      const u = new URL(r.url);
+      u.search = '';
+      return u.toString();
+    });
     deprecated = await deprecateStaleResources(originId, activeResourceUrls);
   }
 
