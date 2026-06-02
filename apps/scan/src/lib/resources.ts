@@ -197,7 +197,7 @@ export async function registerSiwxResource(
       // Merge with existing metadata to avoid clobbering fields set by
       // a different registration path (e.g. paid sets pricingMode on the
       // same URL-keyed row).
-      const method = options.method ?? 'GET';
+      const method = options.method ?? '';
       const existing = await tx.resources.findUnique({
         where: {
           resource_method: { resource: cleanUrl, method },
@@ -293,7 +293,7 @@ export async function registerSiwxResource(
         where: {
           resource_method: {
             resource: cleanUrl,
-            method: options.method ?? 'GET',
+            method: options.method ?? '',
           },
         },
         include: { origin: true },
@@ -471,7 +471,7 @@ export const registerResource = async (
 
   const resource = await upsertResource({
     resource: cleanUrl,
-    method: options.method ?? 'GET',
+    method: options.method ?? '',
     type: 'http',
     x402Version,
     lastUpdated: new Date(),

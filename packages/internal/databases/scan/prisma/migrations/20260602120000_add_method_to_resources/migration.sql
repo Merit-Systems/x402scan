@@ -1,5 +1,5 @@
--- AlterTable: add method column with default
-ALTER TABLE "Resources" ADD COLUMN "method" TEXT NOT NULL DEFAULT 'GET';
+-- AlterTable: add method column (empty string = legacy, infer from schema)
+ALTER TABLE "Resources" ADD COLUMN "method" TEXT NOT NULL DEFAULT '';
 
 -- DropIndex: remove old single-column unique constraint
 DROP INDEX "Resources_resource_key";

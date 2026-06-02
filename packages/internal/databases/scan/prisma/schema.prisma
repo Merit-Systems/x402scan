@@ -80,7 +80,7 @@ enum ResourceType {
 model Resources {
   id          String       @id @default(uuid())
   resource    String
-  method      String       @default("GET")
+  method      String       @default("")
   type        ResourceType
   x402Version Int
   lastUpdated DateTime

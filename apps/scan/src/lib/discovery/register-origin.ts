@@ -263,7 +263,7 @@ export async function registerResourcesFromDiscovery(
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
     const resourceUrl = resources[i]?.url ?? 'unknown';
-    const resourceMethod = resources[i]?.method ?? 'GET';
+    const resourceMethod = resources[i]?.method ?? '';
 
     if (!result) continue;
 
@@ -356,17 +356,7 @@ export async function registerResourcesFromDiscovery(
         method: r.method,
       })),
     ];
-    console.log(
-      `[registerResourcesFromDiscovery] Deprecation: originId=${originId}, activeResources=${JSON.stringify(activeResources)}, successfulCount=${successfulResults.length}, siwxCount=${siwxResults.length}`
-    );
     deprecated = await deprecateStaleResources(originId, activeResources);
-    console.log(
-      `[registerResourcesFromDiscovery] Deprecated ${deprecated} stale resources`
-    );
-  } else {
-    console.warn(
-      '[registerResourcesFromDiscovery] No originId — skipping deprecation'
-    );
   }
 
   const notifiedOrigins = new Set<string>();
