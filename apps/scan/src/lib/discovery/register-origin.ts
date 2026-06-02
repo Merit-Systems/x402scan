@@ -246,11 +246,12 @@ export async function registerResourcesFromDiscovery(
 
   const successfulResults: {
     url: string;
+    method: string;
     originId: string;
     title: string | null;
     description: string | null;
   }[] = [];
-  const siwxResults: { url: string }[] = [];
+  const siwxResults: { url: string; method: string }[] = [];
   const failedResults: { url: string; error: string; status?: number }[] = [];
   const skippedResults: { url: string; error: string; status?: number }[] = [];
   const warningResults: {
@@ -262,6 +263,7 @@ export async function registerResourcesFromDiscovery(
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
     const resourceUrl = resources[i]?.url ?? 'unknown';
+    const resourceMethod = resources[i]?.method ?? 'GET';
 
     if (!result) continue;
 
@@ -269,7 +271,7 @@ export async function registerResourcesFromDiscovery(
       const value = result.value;
       if ('success' in value && value.success) {
         if ('siwx' in value && value.siwx === true) {
-          siwxResults.push({ url: resourceUrl });
+          siwxResults.push({ url: resourceUrl, method: resourceMethod });
           // Extract originId from SIWX registration result
           if (!originId && 'resource' in value && value.resource?.origin?.id) {
             originId = value.resource.origin.id;
@@ -277,6 +279,7 @@ export async function registerResourcesFromDiscovery(
         } else if ('resource' in value) {
           successfulResults.push({
             url: resourceUrl,
+            method: resourceMethod,
             originId: value.resource.origin.id,
             title: value.registrationDetails.originMetadata.title ?? null,
             description:
@@ -339,18 +342,20 @@ export async function registerResourcesFromDiscovery(
 
   let deprecated = 0;
   if (originId) {
-    // Build active list from resources that were actually registered (paid + siwx),
-    // NOT the full discovery input which includes unprotected/skipped endpoints.
-    const registeredUrls = new Set([
-      ...successfulResults.map(r => r.url),
-      ...siwxResults.map(r => r.url),
-    ]);
-    const activeResources = resources
-      .filter(r => registeredUrls.has(r.url))
-      .map(r => ({
+    // Build active list directly from successful registration results.
+    // Don't re-derive from the discovery input — it includes unprotected
+    // endpoints that share a URL with a registered endpoint (e.g. GET /campaigns
+    // is unprotected but POST /campaigns is paid).
+    const activeResources = [
+      ...successfulResults.map(r => ({
         url: normalizeResourceUrl(r.url),
-        method: r.method ?? 'GET',
-      }));
+        method: r.method,
+      })),
+      ...siwxResults.map(r => ({
+        url: normalizeResourceUrl(r.url),
+        method: r.method,
+      })),
+    ];
     deprecated = await deprecateStaleResources(originId, activeResources);
   }
 
