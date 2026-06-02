@@ -429,47 +429,40 @@ export const deprecateStaleResources = async (
     return 0;
   }
 
-  // Count how many active resources exist vs how many would be deprecated.
-  // If we'd wipe everything, it's almost certainly a bug (URL mismatch),
-  // not the origin legitimately removing all endpoints.
-  const activeCount = await scanDb.resources.count({
+  // Fetch all non-deprecated resources for this origin with a simple indexed query.
+  // Compare in application code to find stale ones — avoids complex Prisma NOT/OR
+  // patterns that may generate unexpected SQL.
+  const allResources = await scanDb.resources.findMany({
     where: { originId, deprecatedAt: null },
+    select: { id: true, resource: true, method: true },
   });
 
-  if (activeCount === 0) {
+  if (allResources.length === 0) {
     return 0;
   }
 
-  // Find resources that don't match any active (url, method) pair.
-  // Use NOT as an array: NOT [{cond1}, {cond2}] means "NOT cond1 AND NOT cond2",
-  // equivalent to "NOT (cond1 OR cond2)" via DeMorgan's law.
-  const staleResources = await scanDb.resources.findMany({
-    where: {
-      originId,
-      deprecatedAt: null,
-      NOT: activeResources.map(r => ({
-        resource: r.url,
-        method: r.method,
-      })),
-    },
-    select: { id: true },
-  });
+  const activeKeys = new Set(
+    activeResources.map(r => `${r.method}::${r.url}`)
+  );
+  const staleIds = allResources
+    .filter(r => !activeKeys.has(`${r.method}::${r.resource}`))
+    .map(r => r.id);
 
-  if (staleResources.length === 0) {
+  if (staleIds.length === 0) {
     return 0;
   }
 
-  if (staleResources.length === activeCount) {
+  // Safety: if we'd deprecate everything, it's almost certainly a bug
+  // (URL normalization mismatch), not the origin removing all endpoints.
+  if (staleIds.length === allResources.length) {
     console.warn(
-      `[deprecateStaleResources] Skipping: would deprecate all ${activeCount} active resources for origin ${originId}. Likely a URL normalization mismatch.`
+      `[deprecateStaleResources] Skipping: would deprecate all ${allResources.length} active resources for origin ${originId}. Likely a URL normalization mismatch.`
     );
     return 0;
   }
 
   const result = await scanDb.resources.updateMany({
-    where: {
-      id: { in: staleResources.map(r => r.id) },
-    },
+    where: { id: { in: staleIds } },
     data: { deprecatedAt: new Date() },
   });
 
