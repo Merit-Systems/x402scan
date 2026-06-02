@@ -339,10 +339,18 @@ export async function registerResourcesFromDiscovery(
 
   let deprecated = 0;
   if (originId) {
-    const activeResources = resources.map(r => ({
-      url: normalizeResourceUrl(r.url),
-      method: r.method ?? 'GET',
-    }));
+    // Build active list from resources that were actually registered (paid + siwx),
+    // NOT the full discovery input which includes unprotected/skipped endpoints.
+    const registeredUrls = new Set([
+      ...successfulResults.map(r => r.url),
+      ...siwxResults.map(r => r.url),
+    ]);
+    const activeResources = resources
+      .filter(r => registeredUrls.has(r.url))
+      .map(r => ({
+        url: normalizeResourceUrl(r.url),
+        method: r.method ?? 'GET',
+      }));
     deprecated = await deprecateStaleResources(originId, activeResources);
   }
 
