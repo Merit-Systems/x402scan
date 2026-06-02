@@ -471,7 +471,7 @@ export const registerResource = async (
 
   const resource = await upsertResource({
     resource: cleanUrl,
-    method: options.method ?? advisory.method ?? 'GET',
+    method: options.method ?? 'GET',
     type: 'http',
     x402Version,
     lastUpdated: new Date(),
