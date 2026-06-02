@@ -232,6 +232,7 @@ export async function registerResourcesFromDiscovery(
       warnings: probeWarnings,
       pricingMode: resource.pricingMode,
       price: resource.price,
+      method: resource.method,
     });
 
     if (result.success) return result;

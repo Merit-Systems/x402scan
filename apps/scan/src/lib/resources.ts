@@ -332,6 +332,9 @@ export const registerResource = async (
     pricingMode?: string;
     /** Price string from discovery document (e.g. "50-300.00 USD"). */
     price?: string;
+    /** HTTP method from discovery — preferred over advisory.method which
+     *  is always POST (x402 payment protocol). */
+    method?: string;
   } = {}
 ) => {
   const validation = validateResource(url, advisory);
@@ -468,7 +471,7 @@ export const registerResource = async (
 
   const resource = await upsertResource({
     resource: cleanUrl,
-    method: advisory.method ?? 'GET',
+    method: options.method ?? advisory.method ?? 'GET',
     type: 'http',
     x402Version,
     lastUpdated: new Date(),
