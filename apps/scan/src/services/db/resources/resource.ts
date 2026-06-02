@@ -441,16 +441,16 @@ export const deprecateStaleResources = async (
   }
 
   // Find resources that don't match any active (url, method) pair.
+  // Use NOT as an array: NOT [{cond1}, {cond2}] means "NOT cond1 AND NOT cond2",
+  // equivalent to "NOT (cond1 OR cond2)" via DeMorgan's law.
   const staleResources = await scanDb.resources.findMany({
     where: {
       originId,
       deprecatedAt: null,
-      NOT: {
-        OR: activeResources.map(r => ({
-          resource: r.url,
-          method: r.method,
-        })),
-      },
+      NOT: activeResources.map(r => ({
+        resource: r.url,
+        method: r.method,
+      })),
     },
     select: { id: true },
   });
