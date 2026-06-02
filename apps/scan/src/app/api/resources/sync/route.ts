@@ -27,6 +27,21 @@ export const GET = async (request: NextRequest) => {
     return cronCheck;
   }
 
+  // Facilitator sync is temporarily paused
+  const FACILITATOR_SYNC_PAUSED = true;
+  if (FACILITATOR_SYNC_PAUSED) {
+    console.log('Facilitator sync route is paused — returning early');
+    return NextResponse.json(
+      {
+        success: true as const,
+        message: 'Facilitator sync is temporarily paused',
+        resourcesProcessed: 0,
+        originsProcessed: 0,
+      },
+      { status: 200 }
+    );
+  }
+
   try {
     // Step 1: Fetch facilitator resources
     console.log('Fetching facilitator resources');
