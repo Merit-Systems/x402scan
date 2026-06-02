@@ -56,7 +56,12 @@ export const upsertResource = async (
     let mergedMetadata = baseResource.metadata;
     if (baseResource.metadata) {
       const existing = await tx.resources.findUnique({
-        where: { resource: baseResource.resource },
+        where: {
+          resource_method: {
+            resource: baseResource.resource,
+            method: baseResource.method,
+          },
+        },
         select: { metadata: true },
       });
       if (
@@ -70,10 +75,14 @@ export const upsertResource = async (
 
     const { origin, ...resource } = await tx.resources.upsert({
       where: {
-        resource: baseResource.resource,
+        resource_method: {
+          resource: baseResource.resource,
+          method: baseResource.method,
+        },
       },
       create: {
         resource: baseResource.resource,
+        method: baseResource.method,
         type: baseResource.type,
         x402Version: baseResource.x402Version,
         lastUpdated: baseResource.lastUpdated,
@@ -414,9 +423,9 @@ export const listResourcesForTools = async (resourceIds: string[]) => {
  */
 export const deprecateStaleResources = async (
   originId: string,
-  activeResourceUrls: string[]
+  activeResources: { url: string; method: string }[]
 ) => {
-  if (activeResourceUrls.length === 0) {
+  if (activeResources.length === 0) {
     return 0;
   }
 
@@ -431,15 +440,26 @@ export const deprecateStaleResources = async (
     return 0;
   }
 
-  const wouldDeprecateCount = await scanDb.resources.count({
+  // Find resources that don't match any active (url, method) pair.
+  const staleResources = await scanDb.resources.findMany({
     where: {
       originId,
       deprecatedAt: null,
-      resource: { notIn: activeResourceUrls },
+      NOT: {
+        OR: activeResources.map(r => ({
+          resource: r.url,
+          method: r.method,
+        })),
+      },
     },
+    select: { id: true },
   });
 
-  if (wouldDeprecateCount === activeCount) {
+  if (staleResources.length === 0) {
+    return 0;
+  }
+
+  if (staleResources.length === activeCount) {
     console.warn(
       `[deprecateStaleResources] Skipping: would deprecate all ${activeCount} active resources for origin ${originId}. Likely a URL normalization mismatch.`
     );
@@ -448,9 +468,7 @@ export const deprecateStaleResources = async (
 
   const result = await scanDb.resources.updateMany({
     where: {
-      originId,
-      deprecatedAt: null,
-      resource: { notIn: activeResourceUrls },
+      id: { in: staleResources.map(r => r.id) },
     },
     data: { deprecatedAt: new Date() },
   });

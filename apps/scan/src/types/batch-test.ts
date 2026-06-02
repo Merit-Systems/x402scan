@@ -15,6 +15,7 @@ export interface TestedResource {
 export interface FailedResource {
   success: false;
   url: string;
+  method?: string;
   error: string;
   issues?: AuditWarning[];
   /** HTTP status code from the probe attempt, when available. */

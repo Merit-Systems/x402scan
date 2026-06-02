@@ -1,6 +1,7 @@
 import z from 'zod';
 import { revalidatePath } from 'next/cache';
 
+import { resourceKey } from '@/lib/resource-key';
 import {
   createTRPCRouter,
   paginatedProcedure,
@@ -246,30 +247,46 @@ export const resourcesRouter = createTRPCRouter({
     }),
 
   /**
-   * Check which URLs are already registered.
+   * Check which resources are already registered.
+   * Accepts resources with optional method for compound-key matching.
    */
   checkRegistered: publicProcedure
     .input(
       z.object({
-        urls: z.array(z.string().url()).max(50),
+        resources: z
+          .array(
+            z.object({
+              url: z.string().url(),
+              method: z.string().optional(),
+            })
+          )
+          .max(50),
       })
     )
     .query(async ({ input }) => {
       const registered = await scanDb.resources.findMany({
         where: {
-          resource: {
-            in: input.urls,
-          },
+          OR: input.resources.map(r => ({
+            resource: r.url,
+            ...(r.method ? { method: r.method } : {}),
+          })),
         },
         select: {
           resource: true,
+          method: true,
         },
       });
 
-      const registeredUrls = new Set(registered.map(r => r.resource));
+      const registeredKeys = new Set(
+        registered.map(r => resourceKey(r.resource, r.method))
+      );
       return {
-        registered: input.urls.filter(url => registeredUrls.has(url)),
-        unregistered: input.urls.filter(url => !registeredUrls.has(url)),
+        registered: input.resources
+          .filter(r => registeredKeys.has(resourceKey(r.url, r.method)))
+          .map(r => r.url),
+        unregistered: input.resources
+          .filter(r => !registeredKeys.has(resourceKey(r.url, r.method)))
+          .map(r => r.url),
       };
     }),
 

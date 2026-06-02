@@ -131,9 +131,11 @@ export async function registerResourcesFromDiscovery(
   async function registerAsSiwx(
     resourceUrl: string,
     pricingMode?: string,
-    price?: string
+    price?: string,
+    method?: string
   ) {
     const siwxResult = await registerSiwxResource(resourceUrl, {
+      method,
       originMetadataFallback: originInfo,
       pricingMode,
       price,
@@ -167,7 +169,12 @@ export async function registerResourcesFromDiscovery(
     }
 
     if (resource.authMode === 'siwx') {
-      return registerAsSiwx(resourceUrl, resource.pricingMode, resource.price);
+      return registerAsSiwx(
+        resourceUrl,
+        resource.pricingMode,
+        resource.price,
+        resource.method
+      );
     }
 
     // Check server-side probe cache (from the batch test). This skips
@@ -211,7 +218,12 @@ export async function registerResourcesFromDiscovery(
     // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
     if (advisory.authMode === 'siwx') {
-      return registerAsSiwx(resourceUrl, resource.pricingMode, resource.price);
+      return registerAsSiwx(
+        resourceUrl,
+        resource.pricingMode,
+        resource.price,
+        resource.method
+      );
     }
 
     const result = await registerResource(resourceUrl, advisory, {
@@ -326,8 +338,11 @@ export async function registerResourcesFromDiscovery(
 
   let deprecated = 0;
   if (originId) {
-    const activeResourceUrls = resources.map(r => normalizeResourceUrl(r.url));
-    deprecated = await deprecateStaleResources(originId, activeResourceUrls);
+    const activeResources = resources.map(r => ({
+      url: normalizeResourceUrl(r.url),
+      method: r.method ?? 'GET',
+    }));
+    deprecated = await deprecateStaleResources(originId, activeResources);
   }
 
   const notifiedOrigins = new Set<string>();

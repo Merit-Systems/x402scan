@@ -79,7 +79,8 @@ enum ResourceType {
 
 model Resources {
   id          String       @id @default(uuid())
-  resource    String       @unique
+  resource    String
+  method      String       @default("GET")
   type        ResourceType
   x402Version Int
   lastUpdated DateTime
@@ -101,6 +102,7 @@ model Resources {
   excluded                    ExcludedResource?
   metrics                     ResourceMetrics[]
 
+  @@unique([resource, method])
   @@index([deprecatedAt])
 }
 

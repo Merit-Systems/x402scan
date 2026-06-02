@@ -159,6 +159,7 @@ export function validateResource(
 export async function registerSiwxResource(
   url: string,
   options: {
+    method?: string;
     originMetadataFallback?: { title?: string; description?: string };
     pricingMode?: string;
     price?: string;
@@ -196,8 +197,11 @@ export async function registerSiwxResource(
       // Merge with existing metadata to avoid clobbering fields set by
       // a different registration path (e.g. paid sets pricingMode on the
       // same URL-keyed row).
+      const method = options.method ?? 'GET';
       const existing = await tx.resources.findUnique({
-        where: { resource: cleanUrl },
+        where: {
+          resource_method: { resource: cleanUrl, method },
+        },
         select: { metadata: true },
       });
       const mergedMetadata =
@@ -208,9 +212,12 @@ export async function registerSiwxResource(
           : siwxMetadata;
 
       return tx.resources.upsert({
-        where: { resource: cleanUrl },
+        where: {
+          resource_method: { resource: cleanUrl, method },
+        },
         create: {
           resource: cleanUrl,
+          method,
           type: 'http',
           x402Version: 0,
           lastUpdated: new Date(),
@@ -283,7 +290,12 @@ export async function registerSiwxResource(
       (error as { code: string }).code === 'P2002';
     if (isUniqueViolation) {
       const existing = await scanDb.resources.findUnique({
-        where: { resource: cleanUrl },
+        where: {
+          resource_method: {
+            resource: cleanUrl,
+            method: options.method ?? 'GET',
+          },
+        },
         include: { origin: true },
       });
       // Record may have been deleted between the P2002 and the lookup —
@@ -456,6 +468,7 @@ export const registerResource = async (
 
   const resource = await upsertResource({
     resource: cleanUrl,
+    method: advisory.method ?? 'GET',
     type: 'http',
     x402Version,
     lastUpdated: new Date(),

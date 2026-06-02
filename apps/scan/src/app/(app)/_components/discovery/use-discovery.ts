@@ -5,6 +5,7 @@ import z from 'zod';
 
 import { api } from '@/trpc/client';
 import { useRegisterFromOrigin } from '@/hooks/use-register-from-origin';
+import { resourceKey } from '@/lib/resource-key';
 
 import type { FailedResource, TestedResource } from '@/types/batch-test';
 import type {
@@ -65,8 +66,8 @@ export interface UseDiscoveryReturn {
   isDiscoveryLoading: boolean;
   discoveryFound: boolean;
   discoverySource?: DiscoverySource;
-  discoveryResources: string[];
-  actualDiscoveredResources: string[];
+  discoveryResources: DiscoveredResource[];
+  actualDiscoveredResources: DiscoveredResource[];
   skippedResources: { url: string; authMode?: string }[];
   siwxResourceCount: number;
   discoveryResourceCount: number;
@@ -225,17 +226,12 @@ export function useDiscovery({
     }
   );
 
-  // Extract URLs for display (string[])
-  const resourceUrls = useMemo(
-    () => effectiveResources.map(r => r.url),
+  // Extract URLs for the checkRegistered query
+  const resourceInputs = useMemo(
+    () => effectiveResources.map(r => ({ url: r.url, method: r.method })),
     [effectiveResources]
   );
-  // Only the actually discovered resources (not the prepended user-entered URL)
-  const actualDiscoveredUrls = useMemo(
-    () => discoveryResources.map(r => r.url),
-    [discoveryResources]
-  );
-  // Create map of URL -> invalid status for displaying badges
+  // Create map of compositeKey -> invalid status for displaying badges
   const invalidResourcesMap: Record<
     string,
     { invalid: boolean; reason?: string }
@@ -249,18 +245,18 @@ export function useDiscovery({
         if (resource.invalidReason) {
           entry.reason = resource.invalidReason;
         }
-        map[resource.url] = entry;
+        map[resourceKey(resource.url, resource.method)] = entry;
       }
     }
     return map;
   }, [effectiveResources]);
 
-  // Create map of URL -> authMode for displaying auth badges (e.g. SIWX).
+  // Create map of compositeKey -> authMode for displaying auth badges (e.g. SIWX).
   const authModeMap: Record<string, AuthMode> = useMemo(() => {
     const map: Record<string, AuthMode> = {};
     for (const resource of effectiveResources) {
       if (resource.authMode) {
-        map[resource.url] = resource.authMode;
+        map[resourceKey(resource.url, resource.method)] = resource.authMode;
       }
     }
     return map;
@@ -281,9 +277,9 @@ export function useDiscovery({
 
   // Check which resources are already registered
   const registeredCheckQuery = api.public.resources.checkRegistered.useQuery(
-    { urls: resourceUrls },
+    { resources: resourceInputs },
     {
-      enabled: discoveryCheckComplete && resourceUrls.length > 0,
+      enabled: discoveryCheckComplete && resourceInputs.length > 0,
       staleTime: 60000, // Cache for 1 min
     }
   );
@@ -329,8 +325,8 @@ export function useDiscovery({
     discoverySource: discoveryQuery.data?.found
       ? discoveryQuery.data.source
       : undefined,
-    discoveryResources: resourceUrls,
-    actualDiscoveredResources: actualDiscoveredUrls,
+    discoveryResources: effectiveResources,
+    actualDiscoveredResources: discoveryResources,
     skippedResources,
     siwxResourceCount: discoveryResources.filter(r => r.authMode === 'siwx')
       .length,
