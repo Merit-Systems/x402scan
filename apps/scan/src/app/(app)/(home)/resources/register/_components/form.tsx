@@ -49,10 +49,15 @@ interface ManualRegistrationResult {
 function getErrorMessageFromRegisterResult(result: {
   success: false;
   error: {
-    type: 'parseErrors' | 'no402';
+    type: 'parseErrors' | 'no402' | 'tunnel';
+    message?: string;
     parseErrors?: string[];
   };
 }): string {
+  if (result.error.type === 'tunnel') {
+    return result.error.message ?? 'Tunnel URLs are not supported';
+  }
+
   if (result.error.type === 'parseErrors') {
     const parseErrors = result.error.parseErrors ?? [];
     if (parseErrors.length > 0) {

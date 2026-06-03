@@ -39,6 +39,33 @@ export function isLocalUrl(url: string): boolean {
   }
 }
 
+const TUNNEL_DOMAIN_SUFFIXES = [
+  'trycloudflare.com',
+  'ngrok.io',
+  'ngrok-free.app',
+  'ngrok.app',
+  'loca.lt',
+  'serveo.net',
+  'localhost.run',
+  'bore.pub',
+  'tunnelmole.com',
+];
+
+/**
+ * Checks if a URL points to a known ephemeral tunnel service whose
+ * addresses are not stable enough for agent discovery.
+ */
+export function isTunnelUrl(url: string): boolean {
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    return TUNNEL_DOMAIN_SUFFIXES.some(
+      suffix => hostname === suffix || hostname.endsWith(`.${suffix}`)
+    );
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Extracts the port number from a URL, with sensible defaults.
  */
