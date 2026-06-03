@@ -131,9 +131,11 @@ export async function registerResourcesFromDiscovery(
   async function registerAsSiwx(
     resourceUrl: string,
     pricingMode?: string,
-    price?: string
+    price?: string,
+    method?: string
   ) {
     const siwxResult = await registerSiwxResource(resourceUrl, {
+      method,
       originMetadataFallback: originInfo,
       pricingMode,
       price,
@@ -167,7 +169,12 @@ export async function registerResourcesFromDiscovery(
     }
 
     if (resource.authMode === 'siwx') {
-      return registerAsSiwx(resourceUrl, resource.pricingMode, resource.price);
+      return registerAsSiwx(
+        resourceUrl,
+        resource.pricingMode,
+        resource.price,
+        resource.method
+      );
     }
 
     // Check server-side probe cache (from the batch test). This skips
@@ -211,7 +218,12 @@ export async function registerResourcesFromDiscovery(
     // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
     if (advisory.authMode === 'siwx') {
-      return registerAsSiwx(resourceUrl, resource.pricingMode, resource.price);
+      return registerAsSiwx(
+        resourceUrl,
+        resource.pricingMode,
+        resource.price,
+        resource.method
+      );
     }
 
     const result = await registerResource(resourceUrl, advisory, {
@@ -220,6 +232,7 @@ export async function registerResourcesFromDiscovery(
       warnings: probeWarnings,
       pricingMode: resource.pricingMode,
       price: resource.price,
+      method: resource.method,
     });
 
     if (result.success) return result;
@@ -233,11 +246,12 @@ export async function registerResourcesFromDiscovery(
 
   const successfulResults: {
     url: string;
+    method: string;
     originId: string;
     title: string | null;
     description: string | null;
   }[] = [];
-  const siwxResults: { url: string }[] = [];
+  const siwxResults: { url: string; method: string }[] = [];
   const failedResults: { url: string; error: string; status?: number }[] = [];
   const skippedResults: { url: string; error: string; status?: number }[] = [];
   const warningResults: {
@@ -249,6 +263,7 @@ export async function registerResourcesFromDiscovery(
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
     const resourceUrl = resources[i]?.url ?? 'unknown';
+    const resourceMethod = resources[i]?.method ?? '';
 
     if (!result) continue;
 
@@ -256,7 +271,7 @@ export async function registerResourcesFromDiscovery(
       const value = result.value;
       if ('success' in value && value.success) {
         if ('siwx' in value && value.siwx === true) {
-          siwxResults.push({ url: resourceUrl });
+          siwxResults.push({ url: resourceUrl, method: resourceMethod });
           // Extract originId from SIWX registration result
           if (!originId && 'resource' in value && value.resource?.origin?.id) {
             originId = value.resource.origin.id;
@@ -264,6 +279,7 @@ export async function registerResourcesFromDiscovery(
         } else if ('resource' in value) {
           successfulResults.push({
             url: resourceUrl,
+            method: resourceMethod,
             originId: value.resource.origin.id,
             title: value.registrationDetails.originMetadata.title ?? null,
             description:
@@ -326,8 +342,21 @@ export async function registerResourcesFromDiscovery(
 
   let deprecated = 0;
   if (originId) {
-    const activeResourceUrls = resources.map(r => normalizeResourceUrl(r.url));
-    deprecated = await deprecateStaleResources(originId, activeResourceUrls);
+    // Build active list directly from successful registration results.
+    // Don't re-derive from the discovery input — it includes unprotected
+    // endpoints that share a URL with a registered endpoint (e.g. GET /campaigns
+    // is unprotected but POST /campaigns is paid).
+    const activeResources = [
+      ...successfulResults.map(r => ({
+        url: normalizeResourceUrl(r.url),
+        method: r.method,
+      })),
+      ...siwxResults.map(r => ({
+        url: normalizeResourceUrl(r.url),
+        method: r.method,
+      })),
+    ];
+    deprecated = await deprecateStaleResources(originId, activeResources);
   }
 
   const notifiedOrigins = new Set<string>();

@@ -56,7 +56,12 @@ export const upsertResource = async (
     let mergedMetadata = baseResource.metadata;
     if (baseResource.metadata) {
       const existing = await tx.resources.findUnique({
-        where: { resource: baseResource.resource },
+        where: {
+          resource_method: {
+            resource: baseResource.resource,
+            method: baseResource.method,
+          },
+        },
         select: { metadata: true },
       });
       if (
@@ -70,10 +75,14 @@ export const upsertResource = async (
 
     const { origin, ...resource } = await tx.resources.upsert({
       where: {
-        resource: baseResource.resource,
+        resource_method: {
+          resource: baseResource.resource,
+          method: baseResource.method,
+        },
       },
       create: {
         resource: baseResource.resource,
+        method: baseResource.method,
         type: baseResource.type,
         x402Version: baseResource.x402Version,
         lastUpdated: baseResource.lastUpdated,
@@ -414,44 +423,46 @@ export const listResourcesForTools = async (resourceIds: string[]) => {
  */
 export const deprecateStaleResources = async (
   originId: string,
-  activeResourceUrls: string[]
+  activeResources: { url: string; method: string }[]
 ) => {
-  if (activeResourceUrls.length === 0) {
+  if (activeResources.length === 0) {
     return 0;
   }
 
-  // Count how many active resources exist vs how many would be deprecated.
-  // If we'd wipe everything, it's almost certainly a bug (URL mismatch),
-  // not the origin legitimately removing all endpoints.
-  const activeCount = await scanDb.resources.count({
+  // Fetch all non-deprecated resources for this origin with a simple indexed query.
+  // Compare in application code to find stale ones — avoids complex Prisma NOT/OR
+  // patterns that may generate unexpected SQL.
+  const allResources = await scanDb.resources.findMany({
     where: { originId, deprecatedAt: null },
+    select: { id: true, resource: true, method: true },
   });
 
-  if (activeCount === 0) {
+  if (allResources.length === 0) {
     return 0;
   }
 
-  const wouldDeprecateCount = await scanDb.resources.count({
-    where: {
-      originId,
-      deprecatedAt: null,
-      resource: { notIn: activeResourceUrls },
-    },
-  });
+  const activeKeys = new Set(
+    activeResources.map(r => `${r.method}::${r.url}`)
+  );
+  const staleIds = allResources
+    .filter(r => !activeKeys.has(`${r.method}::${r.resource}`))
+    .map(r => r.id);
 
-  if (wouldDeprecateCount === activeCount) {
+  if (staleIds.length === 0) {
+    return 0;
+  }
+
+  // Safety: if we'd deprecate everything, it's almost certainly a bug
+  // (URL normalization mismatch), not the origin removing all endpoints.
+  if (staleIds.length === allResources.length) {
     console.warn(
-      `[deprecateStaleResources] Skipping: would deprecate all ${activeCount} active resources for origin ${originId}. Likely a URL normalization mismatch.`
+      `[deprecateStaleResources] Skipping: would deprecate all ${allResources.length} active resources for origin ${originId}. Likely a URL normalization mismatch.`
     );
     return 0;
   }
 
   const result = await scanDb.resources.updateMany({
-    where: {
-      originId,
-      deprecatedAt: null,
-      resource: { notIn: activeResourceUrls },
-    },
+    where: { id: { in: staleIds } },
     data: { deprecatedAt: new Date() },
   });
 

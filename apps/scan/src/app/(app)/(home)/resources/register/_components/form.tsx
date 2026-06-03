@@ -32,7 +32,9 @@ import {
 } from '@/app/(app)/_components/discovery';
 import { Favicon } from '@/app/(app)/_components/favicon';
 import { normalizeUrl } from '@/lib/url';
+import { resourceKey } from '@/lib/resource-key';
 import { api } from '@/trpc/client';
+import type { DiscoveredResource } from '@/types/discovery';
 import Link from 'next/link';
 import { z } from 'zod';
 
@@ -93,6 +95,9 @@ function toPathLabel(resourceUrl: string): string {
     return resourceUrl;
   }
 }
+
+const rk = (r: { url: string; method?: string }) =>
+  resourceKey(r.url, r.method);
 
 function getPrimaryProbeError(
   failed?: {
@@ -726,70 +731,73 @@ function ProbeResult({
     description?: string | null;
   } | null;
   urlOrigin: string | null;
-  resources: string[];
-  testedResources?: { url: string; warnings?: { code: string }[] }[];
-  failedResources?: { url: string }[];
+  resources: DiscoveredResource[];
+  testedResources?: {
+    url: string;
+    method?: string;
+    warnings?: { code: string }[];
+  }[];
+  failedResources?: { url: string; method?: string }[];
   isBatchTestLoading?: boolean;
   authModeMap?: Record<string, string>;
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
 }) {
-  const testedUrls = useMemo(
-    () => new Set(testedResources.map(r => r.url)),
+  const testedKeys = useMemo(
+    () => new Set(testedResources.map(rk)),
     [testedResources]
   );
-  const warningUrls = useMemo(
+  const warningKeys = useMemo(
     () =>
       new Set(
-        testedResources
-          .filter(r => r.warnings && r.warnings.length > 0)
-          .map(r => r.url)
+        testedResources.filter(r => r.warnings && r.warnings.length > 0).map(rk)
       ),
     [testedResources]
   );
-  const failedUrls = useMemo(
-    () => new Set(failedResources.map(r => r.url)),
+  const failedKeys = useMemo(
+    () => new Set(failedResources.map(rk)),
     [failedResources]
   );
-  const siwxUrls = useMemo(
+  const siwxKeys = useMemo(
     () =>
       new Set(
         Object.entries(authModeMap)
           .filter(([, mode]) => mode === 'siwx')
-          .map(([url]) => url)
+          .map(([key]) => key)
       ),
     [authModeMap]
   );
-  const nonPaidUrls = useMemo(() => {
+  const nonPaidKeys = useMemo(() => {
     const paid = new Set(['paid', 'apiKey+paid']);
     return new Set(
-      resources.filter(url => {
-        const mode = authModeMap[url];
-        // Only mark as non-paid if discovery explicitly classified it
-        // as non-paid. If authMode is missing, don't pre-judge.
-        return mode !== undefined && mode !== 'siwx' && !paid.has(mode);
-      })
+      resources
+        .filter(r => {
+          const mode = authModeMap[rk(r)];
+          return mode !== undefined && mode !== 'siwx' && !paid.has(mode);
+        })
+        .map(rk)
     );
   }, [resources, authModeMap]);
-  const invalidUrls = useMemo(
+  const invalidKeys = useMemo(
     () =>
       new Set(
         Object.entries(invalidResourcesMap)
           .filter(([, info]) => info.invalid)
-          .map(([url]) => url)
+          .map(([key]) => key)
       ),
     [invalidResourcesMap]
   );
   // Sort: errors → warnings → free (SIWX) → verified → skipped
   const sortedResources = useMemo(() => {
-    const priority = (url: string) => {
-      if (invalidUrls.has(url) || failedUrls.has(url)) return 0;
-      if (warningUrls.has(url)) return 1;
-      if (siwxUrls.has(url)) return 2;
-      if (testedUrls.has(url)) return 3;
+    const priority = (r: DiscoveredResource) => {
+      const k = rk(r);
+      if (invalidKeys.has(k) || failedKeys.has(k)) return 0;
+      if (warningKeys.has(k)) return 1;
+      if (siwxKeys.has(k)) return 2;
+      if (testedKeys.has(k)) return 3;
       return 4; // non-paid — skipped
     };
     return [...resources].sort((a, b) => priority(a) - priority(b));
-  }, [resources, invalidUrls, failedUrls, warningUrls, siwxUrls, testedUrls]);
+  }, [resources, invalidKeys, failedKeys, warningKeys, siwxKeys, testedKeys]);
 
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded
@@ -798,6 +806,16 @@ function ProbeResult({
   const hiddenCount = expanded
     ? 0
     : sortedResources.length - previewResources.length;
+
+  // Check if any URLs appear with multiple methods — show method badges when needed
+  const showMethodBadges = useMemo(() => {
+    const urls = new Set<string>();
+    for (const r of resources) {
+      if (urls.has(r.url)) return true;
+      urls.add(r.url);
+    }
+    return false;
+  }, [resources]);
 
   return (
     <div className="rounded-lg border bg-card p-4 space-y-3">
@@ -855,35 +873,43 @@ function ProbeResult({
           className="w-full text-left"
         >
           <ul className="space-y-0.5 text-xs text-muted-foreground">
-            {previewResources.map(resource => (
-              <li
-                key={resource}
-                className="font-mono truncate flex items-center gap-1.5"
-              >
-                {nonPaidUrls.has(resource) ? (
-                  <Minus className="size-3 text-muted-foreground/40 shrink-0" />
-                ) : invalidUrls.has(resource) ? (
-                  <X className="size-3 text-red-500 shrink-0" />
-                ) : siwxUrls.has(resource) ? (
-                  <Check className="size-3 text-blue-500 shrink-0" />
-                ) : warningUrls.has(resource) ? (
-                  <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
-                ) : testedUrls.has(resource) ? (
-                  <Check className="size-3 text-green-600 shrink-0" />
-                ) : failedUrls.has(resource) ? (
-                  <X className="size-3 text-red-500 shrink-0" />
-                ) : null}
-                <span
-                  className={
-                    nonPaidUrls.has(resource)
-                      ? 'line-through text-muted-foreground/40'
-                      : undefined
-                  }
+            {previewResources.map(resource => {
+              const k = rk(resource);
+              return (
+                <li
+                  key={k}
+                  className="font-mono truncate flex items-center gap-1.5"
                 >
-                  {toPathLabel(resource)}
-                </span>
-              </li>
-            ))}
+                  {nonPaidKeys.has(k) ? (
+                    <Minus className="size-3 text-muted-foreground/40 shrink-0" />
+                  ) : invalidKeys.has(k) ? (
+                    <X className="size-3 text-red-500 shrink-0" />
+                  ) : siwxKeys.has(k) ? (
+                    <Check className="size-3 text-blue-500 shrink-0" />
+                  ) : warningKeys.has(k) ? (
+                    <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
+                  ) : testedKeys.has(k) ? (
+                    <Check className="size-3 text-green-600 shrink-0" />
+                  ) : failedKeys.has(k) ? (
+                    <X className="size-3 text-red-500 shrink-0" />
+                  ) : null}
+                  <span
+                    className={
+                      nonPaidKeys.has(k)
+                        ? 'line-through text-muted-foreground/40'
+                        : undefined
+                    }
+                  >
+                    {showMethodBadges && resource.method && (
+                      <span className="text-[10px] font-semibold text-muted-foreground/70 mr-1">
+                        {resource.method}
+                      </span>
+                    )}
+                    {toPathLabel(resource.url)}
+                  </span>
+                </li>
+              );
+            })}
             {!expanded && hiddenCount > 0 && (
               <li className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
                 + {hiddenCount} more

@@ -40,7 +40,12 @@ import type {
   FailedResource as FailedResourceType,
   TestedResource as TestedResourceType,
 } from '@/types/batch-test';
-import type { AuthMode, DiscoverySource } from '@/types/discovery';
+import type {
+  AuthMode,
+  DiscoveredResource,
+  DiscoverySource,
+} from '@/types/discovery';
+import { resourceKey } from '@/lib/resource-key';
 import type { Methods } from '@/types/x402';
 import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
 
@@ -117,8 +122,8 @@ export interface DiscoveryPanelProps {
   found: boolean;
   /** Discovery source from discovery runtime */
   source?: DiscoverySource;
-  /** List of discovered resource URLs */
-  resources: string[];
+  /** List of discovered resources */
+  resources: DiscoveredResource[];
   /** Total count of resources */
   resourceCount: number;
   /** Error message when discovery failed */
@@ -570,9 +575,13 @@ export function DiscoveryPanel({
     return null;
   }
 
-  // Create maps for quick lookup
-  const testedResourceMap = new Map(testedResources.map(r => [r.url, r]));
-  const failedResourceMap = new Map(failedResources.map(r => [r.url, r]));
+  // Create maps for quick lookup (keyed by composite key for method awareness)
+  const testedResourceMap = new Map(
+    testedResources.map(r => [resourceKey(r.url, r.method), r])
+  );
+  const failedResourceMap = new Map(
+    failedResources.map(r => [resourceKey(r.url, r.method), r])
+  );
 
   // Pagination
   const totalPages = Math.ceil(resources.length / ITEMS_PER_PAGE);
@@ -625,10 +634,11 @@ export function DiscoveryPanel({
               </div>
             ) : (
               <div className="flex flex-col gap-2">
-                {paginatedResources.map((resourceUrl, idx) => {
-                  const tested = testedResourceMap.get(resourceUrl);
-                  const invalidInfo = invalidResourcesMap[resourceUrl];
-                  const authMode = authModeMap[resourceUrl];
+                {paginatedResources.map((resource, idx) => {
+                  const k = resourceKey(resource.url, resource.method);
+                  const tested = testedResourceMap.get(k);
+                  const invalidInfo = invalidResourcesMap[k];
+                  const authMode = authModeMap[k];
 
                   if (tested) {
                     // Check if we have a valid schema for the resource card
@@ -638,8 +648,8 @@ export function DiscoveryPanel({
                       // Render working resource with ResourceExecutor
                       return (
                         <DiscoveredResourceExecutor
-                          key={resourceUrl}
-                          resourceUrl={resourceUrl}
+                          key={k}
+                          resourceUrl={resource.url}
                           tested={tested}
                           idx={idx}
                           invalidInfo={invalidInfo}
@@ -651,8 +661,8 @@ export function DiscoveryPanel({
                     // x402 parses but no input schema - show as incomplete
                     return (
                       <FailedResourceCard
-                        key={resourceUrl}
-                        resourceUrl={resourceUrl}
+                        key={k}
+                        resourceUrl={resource.url}
                         preview={preview}
                         testedResponse={tested}
                         invalidInfo={invalidInfo}
@@ -664,11 +674,11 @@ export function DiscoveryPanel({
                   }
 
                   // Render failed resource with checklist
-                  const failedDetails = failedResourceMap.get(resourceUrl);
+                  const failedDetails = failedResourceMap.get(k);
                   return (
                     <FailedResourceCard
-                      key={resourceUrl}
-                      resourceUrl={resourceUrl}
+                      key={k}
+                      resourceUrl={resource.url}
                       preview={preview}
                       failedDetails={failedDetails}
                       invalidInfo={invalidInfo}
@@ -1166,7 +1176,7 @@ function RegisterModeResourceList({
   authModeMap = {},
 }: {
   enteredUrl?: string;
-  discoveredResources: string[];
+  discoveredResources: DiscoveredResource[];
   source?: DiscoverySource;
   registeredUrls: string[];
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
@@ -1177,6 +1187,7 @@ function RegisterModeResourceList({
   // Build unified list: entered URL first (if exists), then discovered
   const allResources: {
     url: string;
+    method?: string;
     source: 'entered' | DiscoverySource;
     isRegistered: boolean;
   }[] = [];
@@ -1189,21 +1200,33 @@ function RegisterModeResourceList({
     });
   }
 
-  for (const url of discoveredResources) {
+  for (const r of discoveredResources) {
     allResources.push({
-      url,
+      url: r.url,
+      method: r.method,
       source: source ?? 'well-known',
-      isRegistered: registeredSet.has(url),
+      isRegistered: registeredSet.has(r.url),
     });
   }
 
   if (allResources.length === 0) return null;
 
+  // Check if any URLs appear with multiple methods
+  const showMethodColumn = (() => {
+    const urls = new Set<string>();
+    for (const r of allResources) {
+      if (urls.has(r.url)) return true;
+      urls.add(r.url);
+    }
+    return false;
+  })();
+
   // Sort: invalid → free (SIWX) → new → already registered
   const sortedResources = [...allResources].sort((a, b) => {
     const priority = (r: (typeof allResources)[number]) => {
-      if (invalidResourcesMap[r.url]?.invalid) return 0;
-      if (authModeMap[r.url] === 'siwx') return 1;
+      const k = resourceKey(r.url, r.method);
+      if (invalidResourcesMap[k]?.invalid) return 0;
+      if (authModeMap[k] === 'siwx') return 1;
       if (!r.isRegistered) return 2;
       return 3; // already registered
     };
@@ -1216,13 +1239,17 @@ function RegisterModeResourceList({
         <thead>
           <tr className="bg-muted text-muted-foreground text-xs">
             <th className="text-left px-3 py-2 font-medium">Resource</th>
+            {showMethodColumn && (
+              <th className="text-left px-3 py-2 font-medium">Method</th>
+            )}
             <th className="text-left px-3 py-2 font-medium">Source</th>
             <th className="text-left px-3 py-2 font-medium">Status</th>
           </tr>
         </thead>
         <tbody>
           {sortedResources.map(
-            ({ url, source: resourceSource, isRegistered }) => {
+            ({ url, method, source: resourceSource, isRegistered }) => {
+              const k = resourceKey(url, method);
               const pathname = (() => {
                 try {
                   return decodeURIComponent(new URL(url).pathname);
@@ -1232,10 +1259,19 @@ function RegisterModeResourceList({
               })();
 
               return (
-                <tr key={url} className="border-t">
+                <tr key={k} className="border-t">
                   <td className="px-3 py-2">
                     <span className="font-mono text-sm">{pathname}</span>
                   </td>
+                  {showMethodColumn && (
+                    <td className="px-3 py-2">
+                      {method && (
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {method}
+                        </span>
+                      )}
+                    </td>
+                  )}
                   <td className="px-3 py-2">
                     <span
                       className={cn(
@@ -1268,7 +1304,7 @@ function RegisterModeResourceList({
                           New
                         </span>
                       )}
-                      {authModeMap[url] === 'siwx' && (
+                      {authModeMap[k] === 'siwx' && (
                         <Tooltip>
                           <TooltipTrigger>
                             <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-green-600/10 border border-green-600 text-green-600">
@@ -1284,7 +1320,7 @@ function RegisterModeResourceList({
                           </TooltipContent>
                         </Tooltip>
                       )}
-                      {invalidResourcesMap[url]?.invalid && (
+                      {invalidResourcesMap[k]?.invalid && (
                         <Tooltip>
                           <TooltipTrigger>
                             <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-yellow-600/10 border border-yellow-600 text-yellow-600">
@@ -1294,7 +1330,7 @@ function RegisterModeResourceList({
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="text-xs">
-                              {invalidResourcesMap[url]?.reason ??
+                              {invalidResourcesMap[k]?.reason ??
                                 'Invalid format'}
                             </p>
                           </TooltipContent>

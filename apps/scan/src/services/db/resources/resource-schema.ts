@@ -9,6 +9,7 @@ import type { OutputSchema } from '@/lib/x402';
 
 export const upsertResourceSchema = z.object({
   resource: z.string(),
+  method: z.string().default(''),
   type: z.enum(['http']),
   x402Version: z.number(),
   lastUpdated: z.coerce.date(),
