@@ -1,6 +1,7 @@
 import { probeX402Endpoint } from './probe';
 import { registerResource } from '@/lib/resources';
 import { discoverSiblingResources } from './discover-siblings';
+import { isTunnelUrl } from '@/lib/url-helpers';
 
 /**
  * Single orchestrator for registering a single x402 resource.
@@ -16,6 +17,18 @@ export async function registerEndpoint(
     originMetadataFallback?: { title?: string; description?: string };
   }
 ) {
+  // 0. Reject ephemeral tunnel URLs
+  if (isTunnelUrl(url)) {
+    return {
+      success: false as const,
+      error: {
+        type: 'tunnel' as const,
+        message:
+          "Tunnel URLs are ephemeral and can't be reliably discovered by agents. Deploy your API to a permanent URL to register.",
+      },
+    };
+  }
+
   // 1. Probe the endpoint for a 402 response
   const probeResult = await probeX402Endpoint(url);
 

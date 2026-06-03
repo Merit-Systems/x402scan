@@ -1,7 +1,7 @@
 import { discoverOriginSchema } from '@agentcash/discovery';
 
 import { getOriginFromUrl } from '@/lib/url';
-import { isLocalUrl } from '@/lib/url-helpers';
+import { isLocalUrl, isTunnelUrl } from '@/lib/url-helpers';
 
 import type {
   DiscoveredResource,
@@ -39,6 +39,15 @@ export async function fetchDiscoveryDocument(
       resources: [],
 
       error: 'Local URLs are not supported',
+    };
+  }
+
+  if (isTunnelUrl(origin)) {
+    return {
+      success: false,
+      resources: [],
+      error:
+        "Tunnel URLs are ephemeral and can't be reliably discovered by agents. Deploy your API to a permanent URL to register.",
     };
   }
 
