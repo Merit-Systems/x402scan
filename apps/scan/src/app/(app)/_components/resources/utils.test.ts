@@ -1,9 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
+  getBazaarMethod,
   parseMinFromPriceString,
   parseMaxFromPriceString,
   formatPricingLabel,
 } from './utils';
+import { Methods } from '@/types/x402';
 
 describe('parseMinFromPriceString', () => {
   it('parses integer min from range', () => {
@@ -160,5 +162,35 @@ describe('formatPricingLabel', () => {
         price: '50-300.00 USD',
       })
     ).toBe('$50.00–$500.00');
+  });
+});
+
+describe('getBazaarMethod', () => {
+  it('returns explicit method from input schema', () => {
+    expect(getBazaarMethod({ input: { method: 'GET' } })).toBe(Methods.GET);
+    expect(getBazaarMethod({ input: { method: 'post' } })).toBe(Methods.POST);
+  });
+
+  it('infers POST when body exists', () => {
+    expect(getBazaarMethod({ input: { body: { type: 'object' } } })).toBe(
+      Methods.POST
+    );
+  });
+
+  it('infers POST when bodyFields exists (v1)', () => {
+    expect(
+      getBazaarMethod({ input: { bodyFields: { name: { type: 'string' } } } })
+    ).toBe(Methods.POST);
+  });
+
+  it('infers GET when only queryParams exists', () => {
+    expect(
+      getBazaarMethod({ input: { queryParams: { q: { type: 'string' } } } })
+    ).toBe(Methods.GET);
+  });
+
+  it('defaults to GET for null/undefined schema', () => {
+    expect(getBazaarMethod(null)).toBe(Methods.GET);
+    expect(getBazaarMethod(undefined)).toBe(Methods.GET);
   });
 });
