@@ -137,12 +137,9 @@ async function fetchWithOffset(
       facilitator,
       facilitatorConfig,
       since,
-      now
+      now,
+      onBatchFetched
     );
-
-    if (onBatchFetched && results.length > 0) {
-      await onBatchFetched(results);
-    }
 
     return { totalFetched: results.length };
   }

@@ -5,6 +5,27 @@ import { fetchTransfers } from './fetch/fetch';
 
 import type { Facilitator, SyncConfig } from './types';
 
+function normalizeTransactionFrom(chain: string, address: string): string {
+  return chain === Network.SOLANA.toString() ? address : address.toLowerCase();
+}
+
+function getResumeSince(
+  latestTimestamp: Date | undefined,
+  syncConfig: SyncConfig,
+  syncStartDate: Date
+): Date {
+  if (!latestTimestamp) {
+    return syncStartDate;
+  }
+
+  const resumeTimestamp =
+    syncConfig.resumeOverlapMs !== undefined
+      ? latestTimestamp.getTime() - syncConfig.resumeOverlapMs
+      : latestTimestamp.getTime() + 1000;
+
+  return new Date(Math.max(resumeTimestamp, syncStartDate.getTime()));
+}
+
 async function syncFacilitator(
   syncConfig: SyncConfig,
   facilitator: Facilitator,
@@ -24,27 +45,32 @@ async function syncFacilitator(
       `[${syncConfig.chain}] Getting most recent transfer for ${facilitator.id}:${facilitatorConfig.address}`
     );
 
+    const resumeFromProviders = syncConfig.resumeFromProviders ?? [
+      syncConfig.provider,
+    ];
+
     const mostRecentTransfer = await getTransferEvents({
       orderBy: { block_timestamp: 'desc' },
       take: 1,
       where: {
         chain: syncConfig.chain,
-        transaction_from:
-          syncConfig.chain === Network.SOLANA.toString()
-            ? facilitatorConfig.address
-            : facilitatorConfig.address.toLowerCase(),
-        provider: syncConfig.provider,
+        transaction_from: normalizeTransactionFrom(
+          syncConfig.chain,
+          facilitatorConfig.address
+        ),
+        provider: { in: resumeFromProviders },
       },
     });
 
     logger.log(
-      `[${syncConfig.chain}] Most recent transfer: ${mostRecentTransfer[0]?.block_timestamp?.toISOString()}`
+      `[${syncConfig.chain}] Most recent transfer from ${resumeFromProviders.join(',')}: ${mostRecentTransfer[0]?.block_timestamp?.toISOString()}`
     );
 
-    // Start from 1 second after the most recent transfer to avoid re-fetching it
-    const since = mostRecentTransfer[0]?.block_timestamp
-      ? new Date(mostRecentTransfer[0].block_timestamp.getTime() + 1000)
-      : facilitatorConfig.syncStartDate;
+    const since = getResumeSince(
+      mostRecentTransfer[0]?.block_timestamp,
+      syncConfig,
+      facilitatorConfig.syncStartDate
+    );
 
     logger.log(
       `[${syncConfig.chain}] Syncing ${facilitator.id}:${facilitatorConfig.address} from ${since.toISOString()} to ${now.toISOString()}`
