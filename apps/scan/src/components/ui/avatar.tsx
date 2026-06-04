@@ -15,10 +15,13 @@ interface Props {
 export const Avatar: React.FC<Props> = ({ src, fallback, className }) => {
   return (
     <AvatarPrimitive.Avatar
-      className={cn('rounded-md overflow-hidden bg-card', className)}
+      className={cn('rounded-md overflow-hidden bg-card block', className)}
     >
       {src ? (
-        <AvatarPrimitive.Image src={src} className="size-full" />
+        <AvatarPrimitive.Image
+          src={src}
+          className="w-full h-full object-contain"
+        />
       ) : (
         <AvatarPrimitive.Image />
       )}
