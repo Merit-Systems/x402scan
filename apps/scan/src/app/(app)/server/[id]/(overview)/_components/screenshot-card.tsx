@@ -202,7 +202,7 @@ export const ScreenshotCard: React.FC<Props> = ({
             '"Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
           overflow: 'hidden',
           boxSizing: 'border-box',
-          background: 'linear-gradient(to right, #ffffff 0%, #c5c5c5 100%)',
+          background: 'linear-gradient(to right, #ffffff 0%, #e6e6e6 100%)',
           position: 'relative',
         }}
       >
@@ -306,26 +306,11 @@ export const ScreenshotCard: React.FC<Props> = ({
                 flexDirection: 'column',
               }}
             >
-              <div
-                style={{
-                  fontSize: 40,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                }}
-              >
-                {activeChartValue}
-              </div>
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: '#737373',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginTop: 4,
-                }}
-              >
+              <div style={METRIC_LABEL_STYLE}>
                 {activeChartLabel}
+              </div>
+              <div style={METRIC_VALUE_STYLE}>
+                {activeChartValue}
               </div>
             </div>
             <AreaChart
@@ -348,34 +333,42 @@ export const ScreenshotCard: React.FC<Props> = ({
             paddingTop: 48,
           }}
         >
-          {/* x402scan branding */}
+          {/* x402scan branding — sized to match metric values */}
           <div
             style={{
               display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 16,
+              flexDirection: 'column',
+              alignItems: 'flex-start',
             }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={logoDataUrl}
-              alt=""
-              width={32}
-              height={32}
-              style={{ width: 32, height: 32 }}
-            />
-            <span
+            <div style={METRIC_LABEL_STYLE}>&nbsp;</div>
+            <div
               style={{
-                fontSize: 32,
-                fontWeight: 700,
-                fontFamily:
-                  '"Geist Mono", ui-monospace, SFMono-Regular, monospace',
-                color: '#0a0a0a',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 12,
               }}
             >
-              x402scan
-            </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logoDataUrl}
+                alt=""
+                width={40}
+                height={40}
+                style={{ width: 40, height: 40 }}
+              />
+              <span
+                style={{
+                  ...METRIC_VALUE_STYLE,
+                  fontFamily:
+                    '"Geist Mono", ui-monospace, SFMono-Regular, monospace',
+                  color: '#0a0a0a',
+                }}
+              >
+                x402scan
+              </span>
+            </div>
           </div>
           {/* Stats */}
           <div
@@ -395,6 +388,21 @@ export const ScreenshotCard: React.FC<Props> = ({
   );
 };
 
+const METRIC_LABEL_STYLE: React.CSSProperties = {
+  fontSize: 24,
+  fontWeight: 400,
+  color: '#737373',
+  margin: 0,
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+};
+
+const METRIC_VALUE_STYLE: React.CSSProperties = {
+  fontSize: 48,
+  fontWeight: 700,
+  margin: 0,
+};
+
 const Metric = ({ label, value }: { label: string; value: string }) => (
   <div
     style={{
@@ -403,23 +411,10 @@ const Metric = ({ label, value }: { label: string; value: string }) => (
       alignItems: 'flex-end',
     }}
   >
-    <div
-      style={{
-        fontSize: 24,
-        fontWeight: 400,
-        color: '#737373',
-        margin: 0,
-      }}
-    >
+    <div style={METRIC_LABEL_STYLE}>
       {label}
     </div>
-    <div
-      style={{
-        fontSize: 48,
-        fontWeight: 700,
-        margin: 0,
-      }}
-    >
+    <div style={METRIC_VALUE_STYLE}>
       {value}
     </div>
   </div>

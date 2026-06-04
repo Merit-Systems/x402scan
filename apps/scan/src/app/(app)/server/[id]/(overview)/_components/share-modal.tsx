@@ -199,12 +199,14 @@ export const ShareModal: React.FC<Props> = ({
     setTimeout(() => setLinkCopied(false), 2000);
   };
 
+  const MAX_BOTTOM_METRICS = 3;
+
   const toggleBottomMetric = (metric: BottomMetric) => {
-    setBottomMetrics(prev =>
-      prev.includes(metric)
-        ? prev.filter(m => m !== metric)
-        : [...prev, metric]
-    );
+    setBottomMetrics(prev => {
+      if (prev.includes(metric)) return prev.filter(m => m !== metric);
+      if (prev.length >= MAX_BOTTOM_METRICS) return prev;
+      return [...prev, metric];
+    });
   };
 
   const sensors = useSensors(
