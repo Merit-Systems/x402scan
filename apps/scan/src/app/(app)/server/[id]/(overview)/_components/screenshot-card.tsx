@@ -299,18 +299,18 @@ export const ScreenshotCard: React.FC<Props> = ({
             <div
               style={{
                 position: 'absolute',
-                top: 40,
+                top: 10,
                 left: 0,
                 zIndex: 1,
                 display: 'flex',
                 flexDirection: 'column',
               }}
             >
-              <div style={METRIC_LABEL_STYLE}>
-                {activeChartLabel}
-              </div>
               <div style={METRIC_VALUE_STYLE}>
                 {activeChartValue}
+              </div>
+              <div style={METRIC_LABEL_STYLE}>
+                {activeChartLabel}
               </div>
             </div>
             <AreaChart
@@ -395,12 +395,14 @@ const METRIC_LABEL_STYLE: React.CSSProperties = {
   margin: 0,
   textTransform: 'uppercase',
   letterSpacing: '0.05em',
+  textAlign: 'right',
 };
 
 const METRIC_VALUE_STYLE: React.CSSProperties = {
   fontSize: 48,
   fontWeight: 700,
   margin: 0,
+  textAlign: 'right',
 };
 
 const Metric = ({ label, value }: { label: string; value: string }) => (
