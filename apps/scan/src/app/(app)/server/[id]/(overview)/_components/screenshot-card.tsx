@@ -125,13 +125,12 @@ export const ScreenshotCard: React.FC<Props> = ({
   bottomMetrics = ['volume', 'buyers', 'resources'],
 }) => {
   const [faviconDataUrl, setFaviconDataUrl] = useState<string | null>(null);
-  const [grainDataUrl, setGrainDataUrl] = useState<string | null>(null);
+  const [grainDataUrl] = useState(() => generateGrainDataUrl());
 
   useEffect(() => {
     if (origin.favicon) {
       void fetchImageAsDataUrl(origin.favicon).then(setFaviconDataUrl);
     }
-    setGrainDataUrl(generateGrainDataUrl());
   }, [origin.favicon]);
 
   const rawTitle = origin.title
