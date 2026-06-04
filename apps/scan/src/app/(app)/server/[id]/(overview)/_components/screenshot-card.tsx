@@ -87,15 +87,18 @@ function AreaChart({
   // Smooth the data by averaging neighbors to reduce jaggedness
   const smoothed = points.map((p, i) => {
     if (i === 0 || i === points.length - 1) return p;
+    const prev = points[i - 1]!;
+    const next = points[i + 1]!;
     return {
       x: p.x,
-      y: (points[i - 1].y + p.y + points[i + 1].y) / 3,
+      y: (prev.y + p.y + next.y) / 3,
     };
   });
 
   const linePath = smoothed.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
-  const areaPath = `${linePath} L${smoothed[smoothed.length - 1].x},${height} L${smoothed[0].x},${height} Z`;
-  const lastPoint = smoothed[smoothed.length - 1];
+  const first = smoothed[0]!;
+  const last = smoothed[smoothed.length - 1]!;
+  const areaPath = `${linePath} L${last.x},${height} L${first.x},${height} Z`;
 
   return (
     <svg width={width} height={height} style={{ display: 'block' }}>
@@ -107,8 +110,8 @@ function AreaChart({
       </defs>
       <path d={areaPath} fill="url(#areaGrad)" />
       <path d={linePath} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={lastPoint.x} cy={lastPoint.y} r={2} fill={color} />
-      <circle cx={lastPoint.x} cy={lastPoint.y} r={4} fill={color} opacity={0.12} />
+      <circle cx={last.x} cy={last.y} r={2} fill={color} />
+      <circle cx={last.x} cy={last.y} r={4} fill={color} opacity={0.12} />
     </svg>
   );
 }
@@ -135,7 +138,7 @@ export const ScreenshotCard: React.FC<Props> = ({
     ? cleanExternalText(origin.title)
     : new URL(origin.origin).hostname;
   // Truncate at common delimiters (em dash, en dash, spaced dash, colon, pipe)
-  const title = rawTitle.split(/\s*[—–:|]\s*|\s+-\s+/)[0].trim();
+  const title = (rawTitle.split(/\s*[—–:|]\s*|\s+-\s+/)[0] ?? rawTitle).trim();
   const description = origin.description
     ? cleanExternalText(origin.description)
     : null;
