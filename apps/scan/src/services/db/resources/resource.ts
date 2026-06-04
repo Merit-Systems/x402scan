@@ -441,9 +441,7 @@ export const deprecateStaleResources = async (
     return 0;
   }
 
-  const activeKeys = new Set(
-    activeResources.map(r => `${r.method}::${r.url}`)
-  );
+  const activeKeys = new Set(activeResources.map(r => `${r.method}::${r.url}`));
   const staleIds = allResources
     .filter(r => !activeKeys.has(`${r.method}::${r.resource}`))
     .map(r => r.id);

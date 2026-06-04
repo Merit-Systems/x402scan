@@ -180,13 +180,21 @@ export const GET = async (request: NextRequest) => {
             description: metadata?.description ?? og?.ogDescription,
             favicon: favicon ?? undefined,
             ogImages:
-              og?.ogImage?.map(image => ({
-                url: image.url,
-                height: image.height,
-                width: image.width,
-                title: og.ogTitle,
-                description: og.ogDescription,
-              })) ?? [],
+              og?.ogImage?.flatMap(image => {
+                try {
+                  return [
+                    {
+                      url: new URL(image.url, origin).toString(),
+                      height: image.height,
+                      width: image.width,
+                      title: og.ogTitle,
+                      description: og.ogDescription,
+                    },
+                  ];
+                } catch {
+                  return [];
+                }
+              }) ?? [],
           };
 
           // Upsert origin to database

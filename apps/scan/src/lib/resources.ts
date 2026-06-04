@@ -258,13 +258,21 @@ export async function registerSiwxResource(
           description: description ?? undefined,
           favicon: favicon ?? undefined,
           ogImages:
-            og?.ogImage?.map(image => ({
-              url: image.url,
-              height: image.height,
-              width: image.width,
-              title: og.ogTitle,
-              description: og.ogDescription,
-            })) ?? [],
+            og?.ogImage?.flatMap(image => {
+              try {
+                return [
+                  {
+                    url: new URL(image.url, origin).toString(),
+                    height: image.height,
+                    width: image.width,
+                    title: og.ogTitle,
+                    description: og.ogDescription,
+                  },
+                ];
+              } catch {
+                return [];
+              }
+            }) ?? [],
         });
       } catch (err) {
         console.error(
@@ -524,15 +532,31 @@ export const registerResource = async (
     description: description ?? undefined,
     favicon: favicon ?? undefined,
     ogImages:
-      og?.ogImage?.map(image => ({
-        url: image.url,
-        height: image.height,
-        width: image.width,
-        title: og.ogTitle,
-        description: og.ogDescription,
-      })) ?? [],
-  }).catch(() => {
-    // P2002 or other race — another call already upserted this origin.
+      og?.ogImage?.flatMap(image => {
+        try {
+          return [
+            {
+              url: new URL(image.url, origin).toString(),
+              height: image.height,
+              width: image.width,
+              title: og.ogTitle,
+              description: og.ogDescription,
+            },
+          ];
+        } catch {
+          return [];
+        }
+      }) ?? [],
+  }).catch(err => {
+    // P2002: another concurrent call already upserted this origin — safe to ignore.
+    // Log anything else so metadata failures aren't silent.
+    const isP2002 =
+      err instanceof Error &&
+      'code' in err &&
+      (err as { code: string }).code === 'P2002';
+    if (!isP2002) {
+      console.error('[registerResource] Origin metadata upsert failed:', err);
+    }
   });
 
   await upsertResourceResponse(
