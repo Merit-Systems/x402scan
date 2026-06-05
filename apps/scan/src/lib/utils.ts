@@ -151,6 +151,9 @@ export const repairMojibake = (str: string): string => {
 export const cleanExternalText = (str: string): string =>
   decodeHtmlEntities(repairMojibake(str));
 
+export const truncateAtDelimiter = (text: string): string =>
+  (text.split(/\s*[—–:|]\s*|\s+-\s+/)[0] ?? text).trim();
+
 export const safeParseJson = <T>(
   value: string | null | undefined,
   fallback: T

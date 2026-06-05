@@ -29,7 +29,11 @@ import {
 
 import { Favicon } from '@/app/(app)/_components/favicon';
 
-import { cleanExternalText, formatCompactAgo } from '@/lib/utils';
+import {
+  cleanExternalText,
+  truncateAtDelimiter,
+  formatCompactAgo,
+} from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
@@ -253,7 +257,7 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
   const hostname = new URL(origin.origin).hostname;
   const rawTitle = origin.title?.trim();
   const cleanTitle = rawTitle ? cleanExternalText(rawTitle) : hostname;
-  const title = (cleanTitle.split(/\s*[—–:|]\s*|\s+-\s+/)[0] ?? cleanTitle).trim();
+  const title = truncateAtDelimiter(cleanTitle);
   const rawDescription = origin.description?.trim();
   const description = rawDescription ? cleanExternalText(rawDescription) : null;
   const otherOrigins = item.origins.slice(1);

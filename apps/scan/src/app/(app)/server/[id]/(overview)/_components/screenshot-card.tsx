@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { cleanExternalText } from '@/lib/utils';
+import { cleanExternalText, truncateAtDelimiter } from '@/lib/utils';
 import type { RouterOutputs } from '@/trpc/client';
 
 type Origin = NonNullable<RouterOutputs['public']['origins']['get']>;
@@ -75,7 +75,7 @@ function AreaChart({
   if (data.length < 2) return null;
   const max = Math.max(...data, 1);
   const padX = 4;
-  const padTop = 10;
+  const padTop = 90;
   const padBottom = 4;
   const chartW = width - padX * 2;
   const chartH = height - padTop - padBottom;
@@ -159,8 +159,7 @@ export const ScreenshotCard: React.FC<Props> = ({
   const rawTitle = origin.title
     ? cleanExternalText(origin.title)
     : new URL(origin.origin).hostname;
-  // Truncate at common delimiters (em dash, en dash, spaced dash, colon, pipe)
-  const title = (rawTitle.split(/\s*[—–:|]\s*|\s+-\s+/)[0] ?? rawTitle).trim();
+  const title = truncateAtDelimiter(rawTitle);
   const description = origin.description
     ? cleanExternalText(origin.description)
     : null;
@@ -286,12 +285,18 @@ export const ScreenshotCard: React.FC<Props> = ({
               />
               <div
                 style={{
-                  fontSize: 64,
+                  fontSize: Math.min(
+                    64,
+                    Math.max(36, Math.floor(1400 / title.length))
+                  ),
                   fontWeight: 700,
-                  lineHeight: 1.1,
+                  lineHeight: 1.15,
                   overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  wordBreak: title.includes(' ') ? 'normal' : 'break-all',
+                  textWrap: 'balance',
                   minWidth: 0,
                 }}
               >
@@ -322,19 +327,48 @@ export const ScreenshotCard: React.FC<Props> = ({
               position: 'relative',
             }}
           >
-            <div
-              style={{
-                position: 'absolute',
-                top: 10,
-                left: 0,
-                zIndex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <div style={METRIC_VALUE_STYLE}>{activeChartValue}</div>
-              <div style={METRIC_LABEL_STYLE}>{activeChartLabel}</div>
-            </div>
+            {(() => {
+              // Place label in the zone (left / center / right) with the lowest chart values
+              const data = activeChartData;
+              const len = data.length;
+              const max = Math.max(...data, 1);
+              const third = Math.max(1, Math.ceil(len / 3));
+              const zoneMax = (start: number, end: number) =>
+                Math.max(...data.slice(start, end)) / max;
+              const leftScore = zoneMax(0, third);
+              const centerScore = zoneMax(third, third * 2);
+              const rightScore = zoneMax(third * 2, len);
+              // Default to left; only move if left is busy (>40% of max) and another zone is clearly lower
+              const best =
+                leftScore > 0.4 && rightScore < leftScore - 0.15
+                  ? 'right'
+                  : leftScore > 0.4 && centerScore < leftScore - 0.15
+                    ? 'center'
+                    : 'left';
+
+              const posStyle: React.CSSProperties =
+                best === 'center'
+                  ? { left: 0, right: 0, alignItems: 'center' }
+                  : best === 'right'
+                    ? { right: 0, alignItems: 'flex-end' }
+                    : { left: 0, alignItems: 'flex-start' };
+
+              return (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    zIndex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    ...posStyle,
+                  }}
+                >
+                  <div style={METRIC_VALUE_STYLE}>{activeChartValue}</div>
+                  <div style={METRIC_LABEL_STYLE}>{activeChartLabel}</div>
+                </div>
+              );
+            })()}
             <AreaChart
               data={activeChartData}
               width={400}

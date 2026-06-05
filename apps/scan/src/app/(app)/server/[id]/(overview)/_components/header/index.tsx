@@ -9,7 +9,7 @@ import { Avatar } from '@/components/ui/avatar';
 
 import { OriginStats, LoadingOriginStats } from './stats';
 
-import { cleanExternalText, cn } from '@/lib/utils';
+import { cleanExternalText, truncateAtDelimiter, cn } from '@/lib/utils';
 
 import { HeaderButtons, LoadingHeaderButtons } from './buttons';
 
@@ -25,7 +25,7 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
   const rawTitle = origin.title
     ? cleanExternalText(origin.title)
     : new URL(origin.origin).hostname;
-  const originTitle = (rawTitle.split(/\s*[—–:|]\s*|\s+-\s+/)[0] ?? rawTitle).trim();
+  const originTitle = truncateAtDelimiter(rawTitle);
 
   return (
     <Card className={cn('relative mt-10 md:mt-12')}>

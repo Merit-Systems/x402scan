@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     }
 
     const blockedPatterns =
-      /^(localhost|127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|0\.|169\.254\.|::1|\[::1\])/i;
+      /^(localhost|127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|0\.|169\.254\.|::1|\[::1\]|\[?::ffff:|\[?f[cd][0-9a-f]{2}:)/i;
     if (blockedPatterns.test(parsed.hostname)) {
       return NextResponse.json({ error: 'Blocked host' }, { status: 403 });
     }

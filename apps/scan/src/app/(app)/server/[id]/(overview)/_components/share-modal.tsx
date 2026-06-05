@@ -156,7 +156,10 @@ export const ShareModal: React.FC<Props> = ({
       await new Promise(r => setTimeout(r, 150));
 
       const cardEl = document.getElementById('origin-screenshot-card');
-      if (!cardEl) return;
+      if (!cardEl) {
+        setCaptureError(true);
+        return;
+      }
 
       const wrapper = cardEl.parentElement;
       if (wrapper) {
@@ -334,8 +337,8 @@ export const ShareModal: React.FC<Props> = ({
               </div>
             </div>
             {/* Bottom metrics — drag to reorder, click to toggle */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-muted-foreground w-12 shrink-0">
+            <div className="flex items-start gap-2">
+              <span className="text-xs font-medium text-muted-foreground w-12 shrink-0 py-1">
                 Stats
               </span>
               <div className="flex gap-1.5 flex-wrap">
