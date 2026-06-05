@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { ChevronDown, Check, Copy } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 
 import type { RouterOutputs } from '@/trpc/client';
 import { Button } from '@/components/ui/button';
@@ -13,61 +13,17 @@ import {
 } from '@/components/ui/tooltip';
 import { cleanExternalText } from '@/lib/utils';
 import { ShareModal } from '../share-modal';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
 }
 
-type WalletId = 'agentcash' | 'awal' | 'circle' | 'paysh';
-
-interface WalletOption {
-  id: WalletId;
-  label: string;
-  icon: string;
-  getCommand: (origin: string, hostname: string) => string;
-}
-
-const wallets: WalletOption[] = [
-  {
-    id: 'agentcash',
-    label: 'AgentCash',
-    icon: '/wallet-agentcash.svg',
-    getCommand: (origin) => `npx agentcash try ${origin}`,
-  },
-  {
-    id: 'awal',
-    label: 'awal',
-    icon: '/coinbase.png',
-    getCommand: (_, hostname) => `npx awal x402 bazaar search ${hostname}`,
-  },
-  {
-    id: 'circle',
-    label: 'Agent Wallet',
-    icon: '/wallet-circle.ico',
-    getCommand: (_, hostname) => `circle services search "${hostname}"`,
-  },
-  {
-    id: 'paysh',
-    label: 'pay.sh',
-    icon: '/wallet-paysh.png',
-    getCommand: (origin) => `pay curl ${origin}`,
-  },
-];
-
 export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
-  const [selectedWallet, setSelectedWallet] = useState<WalletId>('agentcash');
   const [showCopied, setShowCopied] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const hostname = new URL(origin.origin).hostname.replace(/^www\./, '');
-  const wallet = wallets.find((w) => w.id === selectedWallet)!;
-  const command = wallet.getCommand(origin.origin, hostname);
+  const command = `npx agentcash try ${origin.origin}`;
 
   const originTitle = origin.title
     ? cleanExternalText(origin.title)
@@ -89,27 +45,11 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
   return (
     <div className="flex items-center gap-2 text-sm font-semibold w-full">
       <span>Try this API with</span>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:opacity-80 cursor-pointer focus:outline-none">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={wallet.icon} alt="" className="size-4 rounded-sm" />
-          {wallet.label}
-          <ChevronDown className="size-3" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          {wallets.map((w) => (
-            <DropdownMenuItem
-              key={w.id}
-              onClick={() => setSelectedWallet(w.id)}
-              className={`gap-2 ${w.id === selectedWallet ? 'font-semibold' : ''}`}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={w.icon} alt="" className="size-4 rounded-sm" />
-              {w.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/wallet-agentcash.svg" alt="" className="size-4 rounded-sm" />
+        AgentCash
+      </span>
       <div className="relative shrink-0">
         <Tooltip>
           <TooltipTrigger asChild>

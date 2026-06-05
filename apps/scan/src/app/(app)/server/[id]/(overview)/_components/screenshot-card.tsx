@@ -127,6 +127,19 @@ export const ScreenshotCard: React.FC<Props> = ({
   const [faviconDataUrl, setFaviconDataUrl] = useState<string | null>(null);
   const [grainDataUrl] = useState(() => generateGrainDataUrl());
 
+  const geistSans = typeof document !== 'undefined'
+    ? getComputedStyle(document.documentElement).getPropertyValue('--font-geist-sans').trim()
+    : '';
+  const geistMono = typeof document !== 'undefined'
+    ? getComputedStyle(document.documentElement).getPropertyValue('--font-geist-mono').trim()
+    : '';
+  const sansFontFamily = geistSans
+    ? `${geistSans}, -apple-system, BlinkMacSystemFont, sans-serif`
+    : '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  const monoFontFamily = geistMono
+    ? `${geistMono}, ui-monospace, SFMono-Regular, monospace`
+    : 'ui-monospace, SFMono-Regular, monospace';
+
   useEffect(() => {
     if (origin.favicon) {
       void fetchImageAsDataUrl(origin.favicon).then(setFaviconDataUrl);
@@ -198,8 +211,7 @@ export const ScreenshotCard: React.FC<Props> = ({
           justifyContent: 'space-between',
           padding: 80,
           color: '#0a0a0a',
-          fontFamily:
-            '"Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+          fontFamily: sansFontFamily,
           overflow: 'hidden',
           boxSizing: 'border-box',
           background: 'linear-gradient(to right, #ffffff 0%, #e6e6e6 100%)',
@@ -274,12 +286,10 @@ export const ScreenshotCard: React.FC<Props> = ({
               <div
                 style={{
                   fontSize: 21,
-                  fontFamily:
-                    '"Geist Mono", ui-monospace, SFMono-Regular, monospace',
+                  fontFamily: sansFontFamily,
                   lineHeight: 1.45,
                   marginTop: 20,
                   color: '#525252',
-                  letterSpacing: '-0.02em',
                   maxWidth: 620,
                 }}
               >
@@ -362,7 +372,7 @@ export const ScreenshotCard: React.FC<Props> = ({
                 style={{
                   ...METRIC_VALUE_STYLE,
                   fontFamily:
-                    '"Geist Mono", ui-monospace, SFMono-Regular, monospace',
+                    monoFontFamily,
                   color: '#0a0a0a',
                 }}
               >
