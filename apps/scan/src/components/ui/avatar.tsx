@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 
 import { User } from 'lucide-react';
-import Image from 'next/image';
 
 import { cn } from '@/lib/utils';
 
@@ -30,14 +29,16 @@ export const Avatar: React.FC<Props> = ({ src, fallback, className }) => {
   }
 
   return (
-    <Image
-      src={src}
-      alt=""
-      width={64}
-      height={64}
-      unoptimized
-      onError={() => setFailed(true)}
-      className={cn('rounded-md', className)}
-    />
+    <div className={cn('rounded-md overflow-hidden shrink-0', className)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt=""
+        width={64}
+        height={64}
+        onError={() => setFailed(true)}
+        className="size-full object-contain"
+      />
+    </div>
   );
 };
