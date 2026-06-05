@@ -37,7 +37,7 @@ export const Avatar: React.FC<Props> = ({ src, fallback, className }) => {
       height={64}
       unoptimized
       onError={() => setFailed(true)}
-      className={cn('rounded-md object-cover', className)}
+      className={cn('rounded-md', className)}
     />
   );
 };
