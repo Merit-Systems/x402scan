@@ -82,7 +82,9 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
 
   return (
     <div className="flex items-center gap-2 w-fit bg-muted/50 rounded-lg px-3 py-2.5 text-sm">
-      <span className="text-sm font-semibold shrink-0 text-muted-foreground">Try with</span>
+      <span className="text-sm font-semibold shrink-0 text-muted-foreground">
+        Try with
+      </span>
       <DropdownMenu>
         <DropdownMenuTrigger className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:opacity-80 cursor-pointer focus:outline-none shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}

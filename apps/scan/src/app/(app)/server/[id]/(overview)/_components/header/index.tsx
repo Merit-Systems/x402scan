@@ -22,9 +22,10 @@ interface Props {
 }
 
 export const HeaderCard: React.FC<Props> = ({ origin }) => {
-  const originTitle = origin.title
+  const rawTitle = origin.title
     ? cleanExternalText(origin.title)
     : new URL(origin.origin).hostname;
+  const originTitle = (rawTitle.split(/\s*[—–:|]\s*|\s+-\s+/)[0] ?? rawTitle).trim();
 
   return (
     <Card className={cn('relative mt-10 md:mt-12')}>
