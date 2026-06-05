@@ -22,6 +22,10 @@ interface Props {
 }
 
 export const HeaderCard: React.FC<Props> = ({ origin }) => {
+  const originTitle = origin.title
+    ? cleanExternalText(origin.title)
+    : new URL(origin.origin).hostname;
+
   return (
     <Card className={cn('relative mt-10 md:mt-12')}>
       <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
@@ -36,20 +40,14 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
           <div className="">
             <div className="flex items-center gap-2 min-w-0">
               <h1 className="text-xl md:text-3xl font-bold wrap-break-word line-clamp-2 min-w-0">
-                {origin.title
-                  ? cleanExternalText(origin.title)
-                  : new URL(origin.origin).hostname}
+                {originTitle}
               </h1>
               {origin.hasX402V2Resource && (
                 <X402V2Badge className="mt-1 shrink-0" />
               )}
               <div className="ml-auto shrink-0">
                 <ShareModal
-                  originTitle={
-                    origin.title
-                      ? cleanExternalText(origin.title)
-                      : new URL(origin.origin).hostname
-                  }
+                  originTitle={originTitle}
                   originId={origin.id}
                   origin={origin}
                 />
