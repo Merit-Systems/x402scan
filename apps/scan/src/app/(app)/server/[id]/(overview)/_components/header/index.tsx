@@ -15,6 +15,7 @@ import { HeaderButtons, LoadingHeaderButtons } from './buttons';
 
 import type { RouterOutputs } from '@/trpc/client';
 import { X402V2Badge } from '@/app/(app)/_components/x402/v2-badge';
+import { ShareModal } from '../share-modal';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
@@ -42,6 +43,17 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
               {origin.hasX402V2Resource && (
                 <X402V2Badge className="mt-1 shrink-0" />
               )}
+              <div className="ml-auto shrink-0">
+                <ShareModal
+                  originTitle={
+                    origin.title
+                      ? cleanExternalText(origin.title)
+                      : new URL(origin.origin).hostname
+                  }
+                  originId={origin.id}
+                  origin={origin}
+                />
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <a

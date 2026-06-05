@@ -11,8 +11,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { cleanExternalText } from '@/lib/utils';
-import { ShareModal } from '../share-modal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,8 +66,6 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
   const hostname = new URL(origin.origin).hostname.replace(/^www\./, '');
   const wallet = wallets.find(w => w.id === selectedWallet)!;
   const command = wallet.getCommand(origin.origin, hostname);
-
-  const originTitle = origin.title ? cleanExternalText(origin.title) : hostname;
 
   useEffect(() => {
     return () => {
@@ -136,13 +132,6 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
             Copied! Paste to your CLI or Agent
           </div>
         )}
-      </div>
-      <div className="ml-auto">
-        <ShareModal
-          originTitle={originTitle}
-          originId={origin.id}
-          origin={origin}
-        />
       </div>
     </div>
   );
