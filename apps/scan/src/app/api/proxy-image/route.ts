@@ -21,14 +21,15 @@ export async function GET(req: NextRequest) {
     const res = await fetch(url, {
       headers: { Accept: 'image/*' },
       signal: AbortSignal.timeout(5000),
-      redirect: 'manual',
+      redirect: 'follow',
     });
 
-    if (res.status >= 300 && res.status < 400) {
-      return NextResponse.json(
-        { error: 'Redirects not allowed' },
-        { status: 403 }
-      );
+    // Validate final URL after redirects against SSRF blocklist
+    if (res.url && res.url !== url) {
+      const finalHost = new URL(res.url).hostname;
+      if (blockedPatterns.test(finalHost)) {
+        return NextResponse.json({ error: 'Blocked redirect target' }, { status: 403 });
+      }
     }
 
     if (!res.ok) {
