@@ -95,7 +95,9 @@ function AreaChart({
     };
   });
 
-  const linePath = smoothed.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
+  const linePath = smoothed
+    .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`)
+    .join(' ');
   const first = smoothed[0]!;
   const last = smoothed[smoothed.length - 1]!;
   const areaPath = `${linePath} L${last.x},${height} L${first.x},${height} Z`;
@@ -109,7 +111,14 @@ function AreaChart({
         </linearGradient>
       </defs>
       <path d={areaPath} fill="url(#areaGrad)" />
-      <path d={linePath} fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+      <path
+        d={linePath}
+        fill="none"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
       <circle cx={last.x} cy={last.y} r={2} fill={color} />
       <circle cx={last.x} cy={last.y} r={4} fill={color} opacity={0.12} />
     </svg>
@@ -127,12 +136,18 @@ export const ScreenshotCard: React.FC<Props> = ({
   const [faviconDataUrl, setFaviconDataUrl] = useState<string | null>(null);
   const [grainDataUrl] = useState(() => generateGrainDataUrl());
 
-  const geistSans = typeof document !== 'undefined'
-    ? getComputedStyle(document.documentElement).getPropertyValue('--font-geist-sans').trim()
-    : '';
-  const geistMono = typeof document !== 'undefined'
-    ? getComputedStyle(document.documentElement).getPropertyValue('--font-geist-mono').trim()
-    : '';
+  const geistSans =
+    typeof document !== 'undefined'
+      ? getComputedStyle(document.documentElement)
+          .getPropertyValue('--font-geist-sans')
+          .trim()
+      : '';
+  const geistMono =
+    typeof document !== 'undefined'
+      ? getComputedStyle(document.documentElement)
+          .getPropertyValue('--font-geist-mono')
+          .trim()
+      : '';
   const sansFontFamily = geistSans
     ? `${geistSans}, -apple-system, BlinkMacSystemFont, sans-serif`
     : '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -185,12 +200,18 @@ export const ScreenshotCard: React.FC<Props> = ({
   const activeChartValue = chartValueMap[chartMetric];
 
   const metricLookup: Record<BottomMetric, { label: string; value: string }> = {
-    transactions: { label: 'Transactions', value: formatCompact(stats.transactions) },
+    transactions: {
+      label: 'Transactions',
+      value: formatCompact(stats.transactions),
+    },
     volume: { label: 'Volume', value: stats.volume },
     buyers: { label: 'Buyers', value: formatCompact(stats.buyers) },
     resources: { label: 'Resources', value: resourceCount.toString() },
   };
-  const visibleBottomMetrics = bottomMetrics.map(id => ({ id, ...metricLookup[id] }));
+  const visibleBottomMetrics = bottomMetrics.map(id => ({
+    id,
+    ...metricLookup[id],
+  }));
 
   return (
     <div
@@ -316,12 +337,8 @@ export const ScreenshotCard: React.FC<Props> = ({
                 flexDirection: 'column',
               }}
             >
-              <div style={METRIC_VALUE_STYLE}>
-                {activeChartValue}
-              </div>
-              <div style={METRIC_LABEL_STYLE}>
-                {activeChartLabel}
-              </div>
+              <div style={METRIC_VALUE_STYLE}>{activeChartValue}</div>
+              <div style={METRIC_LABEL_STYLE}>{activeChartLabel}</div>
             </div>
             <AreaChart
               data={activeChartData}
@@ -371,8 +388,7 @@ export const ScreenshotCard: React.FC<Props> = ({
               <span
                 style={{
                   ...METRIC_VALUE_STYLE,
-                  fontFamily:
-                    monoFontFamily,
+                  fontFamily: monoFontFamily,
                   color: '#0a0a0a',
                 }}
               >
@@ -423,11 +439,7 @@ const Metric = ({ label, value }: { label: string; value: string }) => (
       alignItems: 'flex-end',
     }}
   >
-    <div style={METRIC_LABEL_STYLE}>
-      {label}
-    </div>
-    <div style={METRIC_VALUE_STYLE}>
-      {value}
-    </div>
+    <div style={METRIC_LABEL_STYLE}>{label}</div>
+    <div style={METRIC_VALUE_STYLE}>{value}</div>
   </div>
 );

@@ -12,7 +12,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid protocol' }, { status: 400 });
     }
 
-    const blockedPatterns = /^(localhost|127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|0\.|169\.254\.|::1|\[::1\])/i;
+    const blockedPatterns =
+      /^(localhost|127\.|10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|0\.|169\.254\.|::1|\[::1\])/i;
     if (blockedPatterns.test(parsed.hostname)) {
       return NextResponse.json({ error: 'Blocked host' }, { status: 403 });
     }
@@ -20,7 +21,15 @@ export async function GET(req: NextRequest) {
     const res = await fetch(url, {
       headers: { Accept: 'image/*' },
       signal: AbortSignal.timeout(5000),
+      redirect: 'manual',
     });
+
+    if (res.status >= 300 && res.status < 400) {
+      return NextResponse.json(
+        { error: 'Redirects not allowed' },
+        { status: 403 }
+      );
+    }
 
     if (!res.ok) {
       return NextResponse.json(

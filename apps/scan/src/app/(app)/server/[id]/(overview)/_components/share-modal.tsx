@@ -1,7 +1,14 @@
 'use client';
 
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { Download, Link, Share2, Loader2, Check, GripVertical } from 'lucide-react';
+import {
+  Download,
+  Link,
+  Share2,
+  Loader2,
+  Check,
+  GripVertical,
+} from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -65,7 +72,9 @@ export const ShareModal: React.FC<Props> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
+  const [captureError, setCaptureError] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const linkTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
   const [chartMetric, setChartMetric] = useState<ChartMetric>('transactions');
   const [bottomMetrics, setBottomMetrics] = useState<BottomMetric[]>([
     'volume',
@@ -74,8 +83,9 @@ export const ShareModal: React.FC<Props> = ({
   ]);
 
   // Fetch data for the screenshot card
-  const { data: metadata } =
-    api.public.origins.getMetadata.useQuery(originId, { enabled: isOpen });
+  const { data: metadata } = api.public.origins.getMetadata.useQuery(originId, {
+    enabled: isOpen,
+  });
 
   const addresses = useMemo(
     () =>
@@ -132,6 +142,7 @@ export const ShareModal: React.FC<Props> = ({
 
   const captureScreenshot = useCallback(async () => {
     try {
+      setCaptureError(false);
       // Small delay to let the card render after config change
       await new Promise(r => setTimeout(r, 150));
 
@@ -169,6 +180,7 @@ export const ShareModal: React.FC<Props> = ({
         'Screenshot capture failed:',
         err instanceof Error ? err.message : err
       );
+      setCaptureError(true);
     } finally {
       setIsCapturing(false);
     }
@@ -196,7 +208,8 @@ export const ShareModal: React.FC<Props> = ({
   const handleCopyLink = async () => {
     await navigator.clipboard.writeText(window.location.href);
     setLinkCopied(true);
-    setTimeout(() => setLinkCopied(false), 2000);
+    if (linkTimerRef.current) clearTimeout(linkTimerRef.current);
+    linkTimerRef.current = setTimeout(() => setLinkCopied(false), 2000);
   };
 
   const MAX_BOTTOM_METRICS = 3;
@@ -232,6 +245,8 @@ export const ShareModal: React.FC<Props> = ({
     if (!open) {
       setScreenshotUrl(null);
       setLinkCopied(false);
+      setCaptureError(false);
+      if (linkTimerRef.current) clearTimeout(linkTimerRef.current);
       hasInitialCapture.current = false;
     }
   };
@@ -254,7 +269,17 @@ export const ShareModal: React.FC<Props> = ({
         <div className="flex flex-col gap-4">
           {/* Screenshot preview */}
           <div className="rounded-md border overflow-hidden bg-muted">
-            {isCapturing || !screenshotUrl ? (
+            {captureError ? (
+              <div className="flex flex-col items-center justify-center h-48 gap-2 text-muted-foreground">
+                <p className="text-sm">Failed to generate preview</p>
+                <button
+                  onClick={() => void captureScreenshot()}
+                  className="text-xs underline cursor-pointer hover:text-foreground"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : isCapturing || !screenshotUrl ? (
               <div className="flex items-center justify-center h-48">
                 <Loader2 className="size-6 animate-spin text-muted-foreground" />
               </div>
@@ -310,7 +335,9 @@ export const ShareModal: React.FC<Props> = ({
                       <SortableMetricPill
                         key={metricId}
                         id={metricId}
-                        label={BOTTOM_OPTIONS.find(o => o.id === metricId)!.label}
+                        label={
+                          BOTTOM_OPTIONS.find(o => o.id === metricId)!.label
+                        }
                         onRemove={() => toggleBottomMetric(metricId)}
                       />
                     ))}
