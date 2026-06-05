@@ -39,6 +39,7 @@ import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 import { ActivityTimeframe } from '@/types/timeframes';
 import {
   ScreenshotCard,
+  fetchImageAsDataUrl,
   type ChartMetric,
   type BottomMetric,
 } from './screenshot-card';
@@ -81,6 +82,14 @@ export const ShareModal: React.FC<Props> = ({
     'buyers',
     'resources',
   ]);
+  const [faviconDataUrl, setFaviconDataUrl] = useState<string | null>(null);
+
+  // Fetch favicon when modal opens
+  useEffect(() => {
+    if (isOpen && origin.favicon) {
+      void fetchImageAsDataUrl(origin.favicon).then(setFaviconDataUrl);
+    }
+  }, [isOpen, origin.favicon]);
 
   // Fetch data for the screenshot card
   const { data: metadata } = api.public.origins.getMetadata.useQuery(originId, {
@@ -195,7 +204,14 @@ export const ShareModal: React.FC<Props> = ({
       setIsCapturing(true);
     }
     void captureScreenshot();
-  }, [isOpen, dataReady, chartMetric, bottomMetrics, captureScreenshot]);
+  }, [
+    isOpen,
+    dataReady,
+    chartMetric,
+    bottomMetrics,
+    faviconDataUrl,
+    captureScreenshot,
+  ]);
 
   const handleDownload = () => {
     if (!screenshotUrl) return;
@@ -244,6 +260,7 @@ export const ShareModal: React.FC<Props> = ({
     setIsOpen(open);
     if (!open) {
       setScreenshotUrl(null);
+      setFaviconDataUrl(null);
       setLinkCopied(false);
       setCaptureError(false);
       if (linkTimerRef.current) clearTimeout(linkTimerRef.current);
@@ -390,6 +407,7 @@ export const ShareModal: React.FC<Props> = ({
             chartData={chartData}
             chartMetric={chartMetric}
             bottomMetrics={bottomMetrics}
+            faviconDataUrl={faviconDataUrl}
           />
         )}
       </DialogContent>

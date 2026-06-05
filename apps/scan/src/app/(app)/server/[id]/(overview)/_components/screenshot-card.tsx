@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { cleanExternalText } from '@/lib/utils';
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -20,6 +20,7 @@ interface Props {
   chartData: { transactions: number; totalAmount: number; buyers: number }[];
   chartMetric?: ChartMetric;
   bottomMetrics?: BottomMetric[];
+  faviconDataUrl?: string | null;
 }
 
 const X402_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268.14 304.26"><path fill="#0052ff" d="M124.07,143.76L19.84,39.54c-7.32-7.32-19.84-2.14-19.84,8.22v208.79c0,10.31,12.47,15.48,19.76,8.18l104.31-104.31c4.6-4.6,4.6-12.05,0-16.65Z"/><path fill="#0052ff" d="M143.76,180.19l-104.23,104.23c-7.32,7.32-2.14,19.84,8.22,19.84h208.79c10.31,0,15.48-12.47,8.18-19.76l-104.31-104.31c-4.6-4.6-12.05-4.6-16.65,0Z"/><path fill="#0052ff" d="M160.49,124.07l104.23-104.23c7.32-7.32,2.14-19.84-8.22-19.84H47.71c-10.31,0-15.48,12.47-8.18,19.76l104.31,104.31c4.6,4.6,12.05,4.6,16.65,0Z"/></svg>`;
@@ -43,7 +44,7 @@ function generateGrainDataUrl(): string {
   return canvas.toDataURL('image/png');
 }
 
-async function fetchImageAsDataUrl(url: string): Promise<string | null> {
+export async function fetchImageAsDataUrl(url: string): Promise<string | null> {
   try {
     const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
     const res = await fetch(proxyUrl);
@@ -132,8 +133,8 @@ export const ScreenshotCard: React.FC<Props> = ({
   chartData,
   chartMetric = 'transactions',
   bottomMetrics = ['volume', 'buyers', 'resources'],
+  faviconDataUrl = null,
 }) => {
-  const [faviconDataUrl, setFaviconDataUrl] = useState<string | null>(null);
   const [grainDataUrl] = useState(() => generateGrainDataUrl());
 
   const geistSans =
@@ -154,12 +155,6 @@ export const ScreenshotCard: React.FC<Props> = ({
   const monoFontFamily = geistMono
     ? `${geistMono}, ui-monospace, SFMono-Regular, monospace`
     : 'ui-monospace, SFMono-Regular, monospace';
-
-  useEffect(() => {
-    if (origin.favicon) {
-      void fetchImageAsDataUrl(origin.favicon).then(setFaviconDataUrl);
-    }
-  }, [origin.favicon]);
 
   const rawTitle = origin.title
     ? cleanExternalText(origin.title)
