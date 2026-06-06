@@ -294,6 +294,14 @@ export const ecosystemItems: EcosystemItem[] = [
     category: 'Client-Side Integrations',
   },
   {
+    name: 'TWZRD Agent Intel',
+    description:
+      'Solana-native trust scoring and x402 receipt layer for AI agents. Provides free preflight checks (trust score, activity flags) and paid signed V5 trust receipts — enabling AI agents to verify Solana wallet reputation before transacting. MCP endpoint at intel.twzrd.xyz.',
+    logoUrl: 'https://intel.twzrd.xyz/favicon.ico',
+    websiteUrl: 'https://github.com/twzrd-sol/wzrd-final',
+    category: 'Services/Endpoints',
+  },
+  {
     name: 'x402 Example Gallery',
     description:
       'A collection of x402 examples including Next.js integration, Go Proxy, agent use-cases, authentication flows, and more. Explore practical code samples to accelerate your x402 journey.',
