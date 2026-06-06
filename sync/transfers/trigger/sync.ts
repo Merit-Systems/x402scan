@@ -5,55 +5,6 @@ import { fetchTransfers } from './fetch/fetch';
 
 import type { Facilitator, SyncConfig } from './types';
 
-type ResumeTransfer = Awaited<ReturnType<typeof getTransferEvents>>[number];
-
-function normalizeTransactionFrom(chain: string, address: string): string {
-  return chain === Network.SOLANA.toString() ? address : address.toLowerCase();
-}
-
-function getResumeSince(
-  latestTimestamp: Date | undefined,
-  syncConfig: SyncConfig,
-  syncStartDate: Date
-): Date {
-  if (!latestTimestamp) {
-    return syncStartDate;
-  }
-
-  const resumeTimestamp =
-    syncConfig.resumeOverlapMs !== undefined
-      ? latestTimestamp.getTime() - syncConfig.resumeOverlapMs
-      : latestTimestamp.getTime() + 1000;
-
-  return new Date(Math.max(resumeTimestamp, syncStartDate.getTime()));
-}
-
-async function getMostRecentTransferForResume(
-  syncConfig: SyncConfig,
-  transactionFrom: string,
-  resumeFromProviders: string[]
-): Promise<ResumeTransfer | undefined> {
-  const results = await Promise.all(
-    resumeFromProviders.map(provider =>
-      getTransferEvents({
-        orderBy: { block_timestamp: 'desc' },
-        take: 1,
-        where: {
-          chain: syncConfig.chain,
-          transaction_from: transactionFrom,
-          provider,
-        },
-      })
-    )
-  );
-
-  return results
-    .flat()
-    .sort(
-      (a, b) => b.block_timestamp.getTime() - a.block_timestamp.getTime()
-    )[0];
-}
-
 async function syncFacilitator(
   syncConfig: SyncConfig,
   facilitator: Facilitator,
@@ -73,29 +24,27 @@ async function syncFacilitator(
       `[${syncConfig.chain}] Getting most recent transfer for ${facilitator.id}:${facilitatorConfig.address}`
     );
 
-    const resumeFromProviders = syncConfig.resumeFromProviders ?? [
-      syncConfig.provider,
-    ];
-    const transactionFrom = normalizeTransactionFrom(
-      syncConfig.chain,
-      facilitatorConfig.address
-    );
-
-    const mostRecentTransfer = await getMostRecentTransferForResume(
-      syncConfig,
-      transactionFrom,
-      resumeFromProviders
-    );
+    const mostRecentTransfer = await getTransferEvents({
+      orderBy: { block_timestamp: 'desc' },
+      take: 1,
+      where: {
+        chain: syncConfig.chain,
+        transaction_from:
+          syncConfig.chain === Network.SOLANA.toString()
+            ? facilitatorConfig.address
+            : facilitatorConfig.address.toLowerCase(),
+        provider: syncConfig.provider,
+      },
+    });
 
     logger.log(
-      `[${syncConfig.chain}] Most recent transfer from ${resumeFromProviders.join(',')}: ${mostRecentTransfer?.block_timestamp?.toISOString()}`
+      `[${syncConfig.chain}] Most recent transfer: ${mostRecentTransfer[0]?.block_timestamp?.toISOString()}`
     );
 
-    const since = getResumeSince(
-      mostRecentTransfer?.block_timestamp,
-      syncConfig,
-      facilitatorConfig.syncStartDate
-    );
+    // Start from 1 second after the most recent transfer to avoid re-fetching it
+    const since = mostRecentTransfer[0]?.block_timestamp
+      ? new Date(mostRecentTransfer[0].block_timestamp.getTime() + 1000)
+      : facilitatorConfig.syncStartDate;
 
     logger.log(
       `[${syncConfig.chain}] Syncing ${facilitator.id}:${facilitatorConfig.address} from ${since.toISOString()} to ${now.toISOString()}`
