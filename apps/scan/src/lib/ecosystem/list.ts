@@ -298,7 +298,7 @@ export const ecosystemItems: EcosystemItem[] = [
     description:
       'Solana-native trust scoring and x402 receipt layer for AI agents. Provides free preflight checks (trust score, activity flags) and paid signed V5 trust receipts — enabling AI agents to verify Solana wallet reputation before transacting. MCP endpoint at intel.twzrd.xyz.',
     logoUrl: 'https://intel.twzrd.xyz/favicon.ico',
-    websiteUrl: 'https://github.com/twzrd-sol/wzrd-final',
+    websiteUrl: 'https://intel.twzrd.xyz',
     category: 'Services/Endpoints',
   },
   {
