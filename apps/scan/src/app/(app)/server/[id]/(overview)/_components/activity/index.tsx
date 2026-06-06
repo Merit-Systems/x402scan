@@ -11,7 +11,6 @@ import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
-
 interface Props {
   originId: string;
 }

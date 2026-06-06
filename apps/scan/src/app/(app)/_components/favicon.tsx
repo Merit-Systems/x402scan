@@ -17,13 +17,11 @@ export const Favicon = ({
   className = 'size-6',
   Fallback = Globe,
 }: Props) => {
-  if (!url) return <Fallback className={className} />;
-
   return (
     <Avatar
       src={url}
       className={className}
-      fallback={<Fallback className={className} />}
+      fallback={<Fallback className="size-3/4" />}
     />
   );
 };
