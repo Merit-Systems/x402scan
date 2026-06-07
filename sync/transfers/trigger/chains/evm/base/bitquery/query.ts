@@ -1,13 +1,10 @@
-import { TRANSFER_TOPIC } from '@/trigger/lib/constants';
 import type {
-  EvmBitQueryEventRow,
+  EvmBitQueryTransferRow,
   Facilitator,
   FacilitatorConfig,
   SyncConfig,
   TransferEventData,
 } from '@/trigger/types';
-
-const TRANSFER_TOPIC_WITHOUT_PREFIX = TRANSFER_TOPIC.replace(/^0x/, '');
 
 export function buildQuery(
   config: SyncConfig,
@@ -19,19 +16,14 @@ export function buildQuery(
   return `
     {
       EVM(dataset: combined, network: base) {
-        Events(
+        Transfers(
           limit: { count: ${config.limit}, offset: ${offset} }
           where: {
-            LogHeader: {
-              Address: {
-                is: "${facilitatorConfig.token.address.toLowerCase()}"
-              }
-              Removed: false
-            }
-            Log: {
-              Signature: {
-                SignatureHash: {
-                  is: "${TRANSFER_TOPIC_WITHOUT_PREFIX}"
+            Transfer: {
+              Success: true
+              Currency: {
+                SmartContract: {
+                  is: "${facilitatorConfig.token.address}"
                 }
               }
             }
@@ -51,7 +43,10 @@ export function buildQuery(
             ascending: [
               Block_Number,
               Transaction_Index,
-              Log_EnterIndex
+              Call_Index,
+              Log_Index,
+              Transfer_Index,
+              Transfer_Type
             ]
           }
         ) {
@@ -64,27 +59,25 @@ export function buildQuery(
             From
             Index
           }
-          LogHeader {
-            Address
+          Transfer {
+            Amount
+            Sender
+            Receiver
             Index
-            Removed
+            Type
+            Success
+            Currency {
+              SmartContract
+              Decimals
+              Symbol
+              Name
+            }
           }
           Log {
-            EnterIndex
             Index
-            LogAfterCallIndex
-            SmartContract
           }
-          Arguments {
-            Name
-            Value {
-              ... on EVM_ABI_Address_Value_Arg {
-                address
-              }
-              ... on EVM_ABI_BigInt_Value_Arg {
-                bigInteger
-              }
-            }
+          Call {
+            Index
           }
         }
       }
@@ -98,53 +91,30 @@ export function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  const events = (data as { EVM: { Events: EvmBitQueryEventRow[] } }).EVM
-    .Events;
+  const transfers = (data as { EVM: { Transfers: EvmBitQueryTransferRow[] } })
+    .EVM.Transfers;
+  const multiplier = 10 ** facilitatorConfig.token.decimals;
 
-  return events.map(event => {
-    const sender = getAddressArgument(event, 'from');
-    const recipient = getAddressArgument(event, 'to');
-    const amount = getBigIntArgument(event, 'value');
+  return transfers.map(transfer => {
+    if (transfer.Log?.Index === undefined || transfer.Log.Index === null) {
+      throw new Error(
+        `Bitquery transfer is missing Log.Index for ${transfer.Transaction.Hash}`
+      );
+    }
 
     return {
-      address: event.LogHeader.Address.toLowerCase(),
-      transaction_from: event.Transaction.From.toLowerCase(),
-      sender: sender.toLowerCase(),
-      recipient: recipient.toLowerCase(),
-      amount: Number(amount),
-      block_timestamp: new Date(event.Block.Time),
-      tx_hash: event.Transaction.Hash.toLowerCase(),
-      log_index: event.Log.EnterIndex,
+      address: transfer.Transfer.Currency.SmartContract.toLowerCase(),
+      transaction_from: transfer.Transaction.From.toLowerCase(),
+      sender: transfer.Transfer.Sender.toLowerCase(),
+      recipient: transfer.Transfer.Receiver.toLowerCase(),
+      amount: Math.round(parseFloat(transfer.Transfer.Amount) * multiplier),
+      block_timestamp: new Date(transfer.Block.Time),
+      tx_hash: transfer.Transaction.Hash.toLowerCase(),
+      log_index: transfer.Log.Index,
       chain: config.chain,
       provider: config.provider,
       decimals: facilitatorConfig.token.decimals,
       facilitator_id: facilitator.id,
     };
   });
-}
-
-function getAddressArgument(event: EvmBitQueryEventRow, name: string): string {
-  const value = event.Arguments.find(argument => argument.Name === name)?.Value
-    .address;
-
-  if (!value) {
-    throw new Error(
-      `Bitquery event is missing ${name} address for ${event.Transaction.Hash}`
-    );
-  }
-
-  return value;
-}
-
-function getBigIntArgument(event: EvmBitQueryEventRow, name: string): string {
-  const value = event.Arguments.find(argument => argument.Name === name)?.Value
-    .bigInteger;
-
-  if (!value) {
-    throw new Error(
-      `Bitquery event is missing ${name} amount for ${event.Transaction.Hash}`
-    );
-  }
-
-  return value;
 }
