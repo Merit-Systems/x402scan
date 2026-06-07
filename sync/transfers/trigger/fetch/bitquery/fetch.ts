@@ -14,8 +14,7 @@ export async function fetchWithOffsetPagination(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig,
   since: Date,
-  now: Date,
-  onBatchFetched?: (batch: TransferEventData[]) => Promise<void>
+  now: Date
 ): Promise<TransferEventData[]> {
   const allTransfers = [];
   let offset = 0;
@@ -39,14 +38,6 @@ export async function fetchWithOffsetPagination(
     );
 
     allTransfers.push(...transfers);
-
-    if (
-      config.saveOffsetPagesIncrementally &&
-      onBatchFetched &&
-      transfers.length > 0
-    ) {
-      await onBatchFetched(transfers);
-    }
 
     if (transfers.length < config.limit) {
       hasMore = false;
