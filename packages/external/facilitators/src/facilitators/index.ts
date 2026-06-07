@@ -24,6 +24,7 @@ export { openmid, openmidFacilitator } from './openmid';
 export { primer, primerFacilitator } from './primer';
 export { x402jobs, x402jobsFacilitator } from './x402jobs';
 export { openfacilitator, openfacilitatorFacilitator } from './openfacilitator';
+export { true402, true402Facilitator } from './true402';
 export { relai, relaiFacilitator } from './relai';
 export { bitrefill, bitrefillFacilitator } from './bitrefill';
 export { cascade, cascadeFacilitator } from './cascade';
