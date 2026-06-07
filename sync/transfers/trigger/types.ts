@@ -80,8 +80,6 @@ export type SyncConfig = QueryConfig & {
   enabled: boolean;
   machine: 'small-1x' | 'medium-1x' | 'large-2x';
   splitSyncByFacilitator?: boolean;
-  resumeFromProviders?: QueryProvider[];
-  saveOffsetPagesIncrementally?: boolean;
 };
 
 export interface EvmChainConfig {
@@ -147,61 +145,5 @@ export interface BitQueryTransferRowStream {
   Transaction: {
     Hash: string;
     From: string;
-  };
-}
-
-export interface EvmBitQueryEventRow {
-  Block: {
-    Time: string;
-    Number: string;
-  };
-  Transaction: {
-    Hash: string;
-    From: string;
-    Index: string;
-  };
-  LogHeader: {
-    Address: string;
-    Index: string;
-    Removed: boolean;
-  };
-  Log: {
-    EnterIndex: number;
-    Index: number;
-    LogAfterCallIndex: number;
-    SmartContract: string;
-  };
-  Arguments: {
-    Name: string;
-    Value: {
-      address?: string;
-      bigInteger?: string;
-    };
-  }[];
-}
-
-export interface EvmBitQueryTransferRow {
-  Transfer: {
-    Amount: string;
-    Sender: string;
-    Receiver: string;
-    Index: number;
-    Type: string;
-    Success: boolean;
-    Currency: {
-      Name: string;
-      SmartContract: string;
-      Symbol: string;
-      Decimals: number;
-    };
-  };
-  Block: {
-    Time: string;
-    Number: string;
-  };
-  Transaction: {
-    Hash: string;
-    From: string;
-    Index: number;
   };
 }

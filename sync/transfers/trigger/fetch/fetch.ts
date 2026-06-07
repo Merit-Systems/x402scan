@@ -137,15 +137,10 @@ async function fetchWithOffset(
       facilitator,
       facilitatorConfig,
       since,
-      now,
-      onBatchFetched
+      now
     );
 
-    if (
-      !config.saveOffsetPagesIncrementally &&
-      onBatchFetched &&
-      results.length > 0
-    ) {
+    if (onBatchFetched && results.length > 0) {
       await onBatchFetched(results);
     }
 
