@@ -150,6 +150,36 @@ export interface BitQueryTransferRowStream {
   };
 }
 
+export interface EvmBitQueryEventRow {
+  Block: {
+    Time: string;
+    Number: string;
+  };
+  Transaction: {
+    Hash: string;
+    From: string;
+    Index: string;
+  };
+  LogHeader: {
+    Address: string;
+    Index: string;
+    Removed: boolean;
+  };
+  Log: {
+    EnterIndex: number;
+    Index: number;
+    LogAfterCallIndex: number;
+    SmartContract: string;
+  };
+  Arguments: {
+    Name: string;
+    Value: {
+      address?: string;
+      bigInteger?: string;
+    };
+  }[];
+}
+
 export interface EvmBitQueryTransferRow {
   Transfer: {
     Amount: string;
@@ -173,11 +203,5 @@ export interface EvmBitQueryTransferRow {
     Hash: string;
     From: string;
     Index: number;
-  };
-  Log?: {
-    Index: number | null;
-  };
-  Call?: {
-    Index: number | null;
   };
 }
