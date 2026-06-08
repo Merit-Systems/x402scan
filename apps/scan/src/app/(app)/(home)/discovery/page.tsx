@@ -78,6 +78,58 @@ export default function DiscoveryPage() {
         </section>
 
         <section className="space-y-4">
+          <h2 className="text-xl font-semibold">Your merchant dashboard</h2>
+          <div className="space-y-2 text-sm text-muted-foreground">
+            <p>
+              Add{' '}
+              <code className="font-mono bg-muted px-1 rounded text-xs">
+                info.contact.email
+              </code>{' '}
+              to your{' '}
+              <code className="font-mono bg-muted px-1 rounded text-xs">
+                openapi.json
+              </code>{' '}
+              to unlock your free merchant dashboard on{' '}
+              <a
+                href="https://tryponcho.com"
+                className="underline hover:no-underline font-medium text-foreground"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Poncho
+              </a>
+              . Log in with the same email to access:
+            </p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <strong>Usage analytics</strong> — see how agents are using your
+                endpoints
+              </li>
+              <li>
+                <strong>Endpoint health monitoring</strong> — track uptime and
+                response quality
+              </li>
+              <li>
+                <strong>Shareable onboarding link</strong> — a one-click URL you
+                can send to anyone to try your API instantly through Poncho
+              </li>
+            </ul>
+            <p>
+              This is a standard{' '}
+              <a
+                href="https://spec.openapis.org/oas/v3.1.0#contact-object"
+                className="underline hover:no-underline font-medium text-foreground"
+                target="_blank"
+                rel="noreferrer"
+              >
+                OpenAPI field
+              </a>{' '}
+              — no custom extensions needed.
+            </p>
+          </div>
+        </section>
+
+        <section className="space-y-4">
           <h2 className="text-xl font-semibold">Get started</h2>
           <div className="grid gap-4 md:grid-cols-3">
             <NavCard
