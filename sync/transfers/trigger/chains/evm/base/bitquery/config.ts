@@ -1,22 +1,22 @@
+import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 import { ONE_MINUTE_IN_SECONDS } from '@/trigger/lib/constants';
 import type { SyncConfig } from '@/trigger/types';
-import { PaginationStrategy, QueryProvider } from '@/trigger/types';
+import { Network, PaginationStrategy, QueryProvider } from '@/trigger/types';
 import { buildQuery, transformResponse } from './query';
-import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
-import { Network } from '@/trigger/types';
 
-export const baseCdpConfig: SyncConfig = {
+export const baseBitqueryConfig: SyncConfig = {
   cron: '*/5 * * * *',
   maxDurationInSeconds: ONE_MINUTE_IN_SECONDS * 15,
   chain: 'base',
-  provider: QueryProvider.CDP,
-  apiUrl: 'api.cdp.coinbase.com',
+  provider: QueryProvider.BITQUERY,
+  apiUrl: 'https://streaming.bitquery.io/graphql',
   paginationStrategy: PaginationStrategy.OFFSET,
-  limit: 10_000, // NOTE(shafu): 100k is the CDP limit
+  limit: 25_000,
   facilitators: FACILITATORS_BY_CHAIN(Network.BASE),
   buildQuery,
   transformResponse,
-  enabled: false,
+  enabled: true,
   machine: 'medium-1x',
   splitSyncByFacilitator: true,
+  resumeFromProviders: [QueryProvider.CDP, QueryProvider.BITQUERY],
 };

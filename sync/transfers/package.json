@@ -14,7 +14,9 @@
     "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./sync/transfers",
     "format": "pnpm -w format:dir ./sync/transfers",
-    "format:check": "pnpm -w format:check:dir ./sync/transfers"
+    "format:check": "pnpm -w format:check:dir ./sync/transfers",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@coinbase/cdp-sdk": "^1.38.4",
@@ -34,6 +36,7 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "trigger.dev": "catalog:trigger",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

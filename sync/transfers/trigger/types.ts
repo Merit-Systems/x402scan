@@ -80,6 +80,7 @@ export type SyncConfig = QueryConfig & {
   enabled: boolean;
   machine: 'small-1x' | 'medium-1x' | 'large-2x';
   splitSyncByFacilitator?: boolean;
+  resumeFromProviders?: QueryProvider[];
 };
 
 export interface EvmChainConfig {
@@ -125,6 +126,36 @@ export interface BitQueryTransferRow {
   amount: string;
   currency: { address: string };
   transaction: { feePayer: string; signature: string };
+}
+
+export interface EvmBitQueryEventRow {
+  Block: {
+    Time: string;
+    Number: string;
+  };
+  Transaction: {
+    Hash: string;
+    From: string;
+    Index: number;
+  };
+  LogHeader: {
+    Address: string;
+    Index: number;
+    Removed: boolean;
+  };
+  Log: {
+    EnterIndex: number;
+    Index: number;
+    LogAfterCallIndex: number;
+    SmartContract: string;
+  };
+  Arguments: {
+    Name: string;
+    Value: {
+      address?: string;
+      bigInteger?: string;
+    };
+  }[];
 }
 
 export interface BitQueryTransferRowStream {
