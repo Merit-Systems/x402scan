@@ -19,6 +19,13 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -680,57 +687,17 @@ export const RegisterResourceForm = () => {
       ) : null}
 
       {activeBulkResult?.originId ? (
-        <div className="space-y-2">
+        <>
           <Link href={`/server/${activeBulkResult.originId}`}>
             <Button variant="outline" className="w-full">
               View your API page &rarr;
             </Button>
           </Link>
-          {contactEmail ? (
-            <div className="rounded-md border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/30 p-3 text-xs space-y-1">
-              <p className="font-medium text-green-800 dark:text-green-300">
-                Contact email detected
-              </p>
-              <p className="text-green-700 dark:text-green-400">
-                You&apos;re eligible for a free merchant dashboard on{' '}
-                <Link
-                  href="https://tryponcho.com"
-                  target="_blank"
-                  className="underline"
-                >
-                  Poncho
-                </Link>{' '}
-                with usage analytics, endpoint health, and a shareable link to
-                onboard your users instantly.
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-md border border-yellow-200 dark:border-yellow-900 bg-yellow-50 dark:bg-yellow-950/30 p-3 text-xs space-y-1.5">
-              <p className="font-medium text-yellow-800 dark:text-yellow-300">
-                Want usage analytics and a shareable onboarding link?
-              </p>
-              <p className="text-yellow-700 dark:text-yellow-400">
-                Add{' '}
-                <code className="font-mono bg-yellow-100 dark:bg-yellow-900/50 px-1 rounded">
-                  info.contact.email
-                </code>{' '}
-                to your openapi.json to unlock your free merchant dashboard on{' '}
-                <Link
-                  href="https://tryponcho.com"
-                  target="_blank"
-                  className="underline"
-                >
-                  Poncho
-                </Link>
-                . No extra cost — see how agents use your API and share a
-                one-click link for new users.{' '}
-                <Link href="/discovery" className="underline">
-                  Learn more
-                </Link>
-              </p>
-            </div>
-          )}
-        </div>
+          <PostRegistrationDialog
+            contactEmail={contactEmail}
+            originId={activeBulkResult.originId}
+          />
+        </>
       ) : null}
 
       {bulkError && <p className="text-sm text-red-600">{bulkError}</p>}
@@ -741,6 +708,117 @@ export const RegisterResourceForm = () => {
     </div>
   );
 };
+
+function PostRegistrationDialog({
+  contactEmail,
+  originId,
+}: {
+  contactEmail: string | undefined;
+  originId: string;
+}) {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="sm:max-w-md">
+        {contactEmail ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>You&apos;re all set</DialogTitle>
+              <DialogDescription>
+                We detected your contact email in your openapi.json.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <p>
+                You&apos;re eligible for a free merchant dashboard on{' '}
+                <Link
+                  href="https://tryponcho.com"
+                  target="_blank"
+                  className="underline font-medium text-foreground"
+                >
+                  Poncho
+                </Link>{' '}
+                with:
+              </p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Usage analytics for your endpoints</li>
+                <li>Endpoint health monitoring</li>
+                <li>A shareable link to onboard your users instantly</li>
+              </ul>
+              <p>
+                Log into{' '}
+                <Link
+                  href="https://tryponcho.com"
+                  target="_blank"
+                  className="underline font-medium text-foreground"
+                >
+                  tryponcho.com
+                </Link>{' '}
+                with the same email to access your dashboard.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button asChild className="flex-1">
+                <Link href={`/server/${originId}`}>View your API page</Link>
+              </Button>
+              <Button asChild variant="outline" className="flex-1">
+                <Link href="https://tryponcho.com" target="_blank">
+                  Open Poncho
+                </Link>
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle>
+                Want usage analytics and a shareable onboarding link?
+              </DialogTitle>
+              <DialogDescription>
+                Add your contact email to unlock your free merchant dashboard.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <p>
+                Add{' '}
+                <code className="font-mono bg-muted px-1 rounded text-xs">
+                  info.contact.email
+                </code>{' '}
+                to your openapi.json to unlock your free merchant dashboard on{' '}
+                <Link
+                  href="https://tryponcho.com"
+                  target="_blank"
+                  className="underline font-medium text-foreground"
+                >
+                  Poncho
+                </Link>
+                :
+              </p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>See how agents use your API</li>
+                <li>Monitor endpoint health</li>
+                <li>Share a one-click onboarding link for new users</li>
+              </ul>
+              <p>
+                No extra cost. Log into tryponcho.com with the same email to
+                access your dashboard.
+              </p>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button asChild className="flex-1">
+                <Link href={`/server/${originId}`}>View your API page</Link>
+              </Button>
+              <Button variant="outline" className="flex-1" asChild>
+                <Link href="/discovery">Learn more</Link>
+              </Button>
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 function FailedResourceRow({
   url,
