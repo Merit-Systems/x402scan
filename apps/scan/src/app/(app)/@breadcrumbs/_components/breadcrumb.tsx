@@ -47,7 +47,7 @@ export const Breadcrumb = <T extends string>({
             )}
           >
             {image ? (
-              <AvatarImage src={image} className="size-full object-cover" />
+              <AvatarImage src={image} className="size-full" />
             ) : (
               <AvatarImage />
             )}
