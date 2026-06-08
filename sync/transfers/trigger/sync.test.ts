@@ -94,13 +94,17 @@ describe('getMostRecentTransferForResume', () => {
 
     expect(getTransferEventsMock).toHaveBeenCalledTimes(2);
     expect(getTransferEventsMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({ provider: QueryProvider.CDP }),
+      expect.objectContaining<Record<string, unknown>>({
+        where: expect.objectContaining<Record<string, unknown>>({
+          provider: QueryProvider.CDP,
+        }),
       })
     );
     expect(getTransferEventsMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({ provider: QueryProvider.BITQUERY }),
+      expect.objectContaining<Record<string, unknown>>({
+        where: expect.objectContaining<Record<string, unknown>>({
+          provider: QueryProvider.BITQUERY,
+        }),
       })
     );
   });

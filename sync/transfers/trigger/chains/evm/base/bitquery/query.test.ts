@@ -193,6 +193,7 @@ describe('transformResponse', () => {
     );
 
     expect(result).toHaveLength(0);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining('Skipping event with missing args')
     );
