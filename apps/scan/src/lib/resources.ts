@@ -32,6 +32,7 @@ import type { AcceptsNetwork } from '@x402scan/scan-db';
 import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
 import { deduplicateWarnings } from '@/lib/discovery/utils';
 import { notifyNewServer } from '@/lib/discord-notifications';
+import { after } from 'next/server';
 
 /**
  * Pure validation — no DB writes, no side effects. Used by both
@@ -238,7 +239,8 @@ export async function registerSiwxResource(
 
     // Scrape and upsert origin metadata (non-blocking — resource is already
     // persisted, so a scrape failure shouldn't fail the registration).
-    void (async () => {
+    // Uses after() so the upsert survives Vercel's function lifecycle.
+    after(async () => {
       try {
         const { og, metadata, favicon } = await scrapeOriginData(origin);
         const title =
@@ -280,7 +282,7 @@ export async function registerSiwxResource(
           err
         );
       }
-    })();
+    });
 
     return {
       success: true as const,
@@ -526,36 +528,41 @@ export const registerResource = async (
   // scraped metadata (title, favicon, OG images). When multiple resources
   // from the same origin register concurrently, this can race (P2002) —
   // safe to swallow since another concurrent call will succeed.
-  void upsertOrigin({
-    origin,
-    title: title ?? undefined,
-    description: description ?? undefined,
-    favicon: favicon ?? undefined,
-    ogImages:
-      og?.ogImage?.flatMap(image => {
-        try {
-          return [
-            {
-              url: new URL(image.url, origin).toString(),
-              height: image.height,
-              width: image.width,
-              title: og.ogTitle,
-              description: og.ogDescription,
-            },
-          ];
-        } catch {
-          return [];
-        }
-      }) ?? [],
-  }).catch(err => {
-    // P2002: another concurrent call already upserted this origin — safe to ignore.
-    // Log anything else so metadata failures aren't silent.
-    const isP2002 =
-      err instanceof Error &&
-      'code' in err &&
-      (err as { code: string }).code === 'P2002';
-    if (!isP2002) {
-      console.error('[registerResource] Origin metadata upsert failed:', err);
+  // Uses after() so the upsert survives Vercel's function lifecycle.
+  after(async () => {
+    try {
+      await upsertOrigin({
+        origin,
+        title: title ?? undefined,
+        description: description ?? undefined,
+        favicon: favicon ?? undefined,
+        ogImages:
+          og?.ogImage?.flatMap(image => {
+            try {
+              return [
+                {
+                  url: new URL(image.url, origin).toString(),
+                  height: image.height,
+                  width: image.width,
+                  title: og.ogTitle,
+                  description: og.ogDescription,
+                },
+              ];
+            } catch {
+              return [];
+            }
+          }) ?? [],
+      });
+    } catch (err) {
+      // P2002: another concurrent call already upserted this origin — safe to ignore.
+      // Log anything else so metadata failures aren't silent.
+      const isP2002 =
+        err instanceof Error &&
+        'code' in err &&
+        (err as { code: string }).code === 'P2002';
+      if (!isP2002) {
+        console.error('[registerResource] Origin metadata upsert failed:', err);
+      }
     }
   });
 
@@ -574,7 +581,7 @@ export const registerResource = async (
   }
 
   // Attempt ownership verification (non-blocking)
-  void (async () => {
+  after(async () => {
     try {
       const discoveryResult = await fetchDiscoveryDocument(origin);
       if (
@@ -595,7 +602,7 @@ export const registerResource = async (
         error
       );
     }
-  })();
+  });
 
   return {
     success: true as const,
