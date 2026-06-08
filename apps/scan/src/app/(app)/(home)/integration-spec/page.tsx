@@ -39,9 +39,9 @@ Schema guidance (important):
 - Add high-level guidance in info.x-guidance for user-friendly discovery. This document should explain to an agent how to use your API at a high level.
 
 Contact email (recommended):
-- Add info.contact.email with the merchant's contact email in the openapi.json.
+- Ask the user for their contact email and add it as info.contact.email in the openapi.json.
 - This unlocks a free merchant dashboard on tryponcho.com with usage analytics, endpoint health monitoring, and a shareable onboarding link.
-- The merchant should log into tryponcho.com with the same email to access their dashboard.
+- The user should log into tryponcho.com with the same email to access their dashboard.
 
 OpenAPI payable operation must include ALL:
 - x-payment-info with:
