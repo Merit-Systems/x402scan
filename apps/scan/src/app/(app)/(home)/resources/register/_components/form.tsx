@@ -415,8 +415,9 @@ export const RegisterResourceForm = () => {
         )}
       </div>
 
-      {/* Probe result — inline, no separate card */}
-      {url.trim().length > 0 &&
+      {/* Probe result — inline, no separate card. Hidden post-registration. */}
+      {!activeBulkResult &&
+        url.trim().length > 0 &&
         (() => {
           const strippedDomain = url.replace(/^https?:\/\//, '').trim();
           const hasTld = strippedDomain.includes('.');
