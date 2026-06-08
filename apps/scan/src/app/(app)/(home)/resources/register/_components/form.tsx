@@ -149,6 +149,7 @@ export const RegisterResourceForm = () => {
     invalidResourcesMap,
     skippedResources,
     siwxResourceCount,
+    contactEmail,
   } = useDiscovery({
     url,
   });
@@ -600,6 +601,35 @@ export const RegisterResourceForm = () => {
         );
       })()}
 
+      {/* Contact email warning — shown when discovery found but no info.contact.email */}
+      {discoveryFound &&
+        !isDiscoveryLoading &&
+        !contactEmail &&
+        !activeBulkResult && (
+          <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-start gap-1.5">
+            <TriangleAlert className="size-3 shrink-0 mt-0.5" />
+            <span>
+              Add{' '}
+              <code className="font-mono bg-muted px-1 rounded text-[11px]">
+                info.contact.email
+              </code>{' '}
+              to your openapi.json to unlock your free merchant dashboard on{' '}
+              <Link
+                href="https://tryponcho.com"
+                target="_blank"
+                className="underline"
+              >
+                Poncho
+              </Link>{' '}
+              — usage analytics, endpoint health monitoring, and a shareable
+              onboarding link for your users.{' '}
+              <Link href="/discovery" className="underline">
+                Learn more
+              </Link>
+            </span>
+          </p>
+        )}
+
       {/* Unprotected endpoints — skipped, not an error */}
       {!activeBulkResult && skippedResources.length > 0 && (
         <Collapsible>
@@ -650,11 +680,57 @@ export const RegisterResourceForm = () => {
       ) : null}
 
       {activeBulkResult?.originId ? (
-        <Link href={`/server/${activeBulkResult.originId}`}>
-          <Button variant="outline" className="w-full">
-            View your API page &rarr;
-          </Button>
-        </Link>
+        <div className="space-y-2">
+          <Link href={`/server/${activeBulkResult.originId}`}>
+            <Button variant="outline" className="w-full">
+              View your API page &rarr;
+            </Button>
+          </Link>
+          {contactEmail ? (
+            <div className="rounded-md border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/30 p-3 text-xs space-y-1">
+              <p className="font-medium text-green-800 dark:text-green-300">
+                Contact email detected
+              </p>
+              <p className="text-green-700 dark:text-green-400">
+                You&apos;re eligible for a free merchant dashboard on{' '}
+                <Link
+                  href="https://tryponcho.com"
+                  target="_blank"
+                  className="underline"
+                >
+                  Poncho
+                </Link>{' '}
+                with usage analytics, endpoint health, and a shareable link to
+                onboard your users instantly.
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-md border border-yellow-200 dark:border-yellow-900 bg-yellow-50 dark:bg-yellow-950/30 p-3 text-xs space-y-1.5">
+              <p className="font-medium text-yellow-800 dark:text-yellow-300">
+                Want usage analytics and a shareable onboarding link?
+              </p>
+              <p className="text-yellow-700 dark:text-yellow-400">
+                Add{' '}
+                <code className="font-mono bg-yellow-100 dark:bg-yellow-900/50 px-1 rounded">
+                  info.contact.email
+                </code>{' '}
+                to your openapi.json to unlock your free merchant dashboard on{' '}
+                <Link
+                  href="https://tryponcho.com"
+                  target="_blank"
+                  className="underline"
+                >
+                  Poncho
+                </Link>
+                . No extra cost — see how agents use your API and share a
+                one-click link for new users.{' '}
+                <Link href="/discovery" className="underline">
+                  Learn more
+                </Link>
+              </p>
+            </div>
+          )}
+        </div>
       ) : null}
 
       {bulkError && <p className="text-sm text-red-600">{bulkError}</p>}

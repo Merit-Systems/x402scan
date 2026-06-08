@@ -38,6 +38,11 @@ Schema guidance (important):
 - TypeScript recommendation (optional): Zod v4 is a good source of truth, but any valid schema pipeline is fine.
 - Add high-level guidance in info.x-guidance for user-friendly discovery. This document should explain to an agent how to use your API at a high level.
 
+Contact email (recommended):
+- Add info.contact.email with the merchant's contact email in the openapi.json.
+- This unlocks a free merchant dashboard on tryponcho.com with usage analytics, endpoint health monitoring, and a shareable onboarding link.
+- The merchant should log into tryponcho.com with the same email to access their dashboard.
+
 OpenAPI payable operation must include ALL:
 - x-payment-info with:
   - price (structured object):
@@ -202,6 +207,24 @@ export default function DiscoverySpecPage() {
                   agent-friendly discovery.
                 </li>
               </ul>
+              <h3 className="text-sm font-semibold">Recommended</h3>
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                <li>
+                  <code>info.contact.email</code> — your contact email. Unlocks
+                  your free merchant dashboard on{' '}
+                  <a
+                    href="https://tryponcho.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline hover:no-underline font-medium text-foreground"
+                  >
+                    Poncho
+                  </a>{' '}
+                  with usage analytics, endpoint health monitoring, and a
+                  shareable onboarding link. Log into tryponcho.com with the
+                  same email to access your dashboard.
+                </li>
+              </ul>
               <h3 className="text-sm font-semibold">
                 Pricing modes in <code>x-payment-info</code>
               </h3>
@@ -231,7 +254,8 @@ export default function DiscoverySpecPage() {
     "title": "My API",
     "version": "1.0.0",
     "description": "example demo server",
-    "x-guidance": "Use POST /api/search for neural web search. Accepts a JSON body with a 'query' field."
+    "x-guidance": "Use POST /api/search for neural web search. Accepts a JSON body with a 'query' field.",
+    "contact": { "email": "you@example.com" }
   },
   "paths": {
     "/api/search": {

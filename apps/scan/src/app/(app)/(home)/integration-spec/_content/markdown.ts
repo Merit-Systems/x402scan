@@ -25,6 +25,10 @@ Requirements:
 - Use OpenAPI \`security\` + \`components.securitySchemes\` for auth declaration.
 - Add high-level guidance in \`info.x-guidance\` for agent-friendly discovery.
 
+Recommended:
+
+- \`info.contact.email\` — your contact email. This unlocks your free merchant dashboard on [Poncho](https://tryponcho.com) where you can monitor endpoint health, view usage analytics, and get a shareable onboarding link that lets anyone try your API instantly. Log into tryponcho.com with the same email you include in your openapi.json to access your dashboard.
+
 ### Pricing modes in x-payment-info
 
 - Fixed: \`{ price: { mode: "fixed", currency: "USD", amount: "<amount>" } }\`
@@ -39,7 +43,10 @@ Requirements:
     "title": "My API",
     "version": "1.0.0",
     "description": "example demo server",
-    "x-guidance": "Use POST /api/search for neural web search. Accepts a JSON body with a 'query' field."
+    "x-guidance": "Use POST /api/search for neural web search. Accepts a JSON body with a 'query' field.",
+    "contact": {
+      "email": "you@example.com"
+    }
   },
   "paths": {
     "/api/search": {

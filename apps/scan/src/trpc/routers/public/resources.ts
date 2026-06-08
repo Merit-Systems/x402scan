@@ -243,6 +243,7 @@ export const resourcesRouter = createTRPCRouter({
         resourceCount: discoveryResult.resources.length,
         resources: discoveryResult.resources,
         ownershipProofs: discoveryResult.ownershipProofs,
+        contactEmail: discoveryResult.contactEmail,
       };
     }),
 
