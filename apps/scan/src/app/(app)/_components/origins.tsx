@@ -122,14 +122,9 @@ export const Origin: React.FC<OriginProps> = ({
 }) => {
   return (
     <OriginsContainer
-      Icon={({ className }) =>
-        origin.favicon ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={origin.favicon} alt="Favicon" className={className} />
-        ) : (
-          <Globe className={className} />
-        )
-      }
+      Icon={({ className }) => (
+        <Favicon url={origin.favicon} className={className} />
+      )}
       title={new URL(origin.origin).hostname}
       address={
         <Addresses
