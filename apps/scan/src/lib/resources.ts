@@ -240,7 +240,7 @@ export async function registerSiwxResource(
     // Scrape and upsert origin metadata (non-blocking — resource is already
     // persisted, so a scrape failure shouldn't fail the registration).
     // Uses after() so the upsert survives Vercel's function lifecycle.
-    after(async () => {
+    const siwxMetadataTask = async () => {
       try {
         const { og, metadata, favicon } = await scrapeOriginData(origin);
         const title =
@@ -282,7 +282,12 @@ export async function registerSiwxResource(
           err
         );
       }
-    });
+    };
+    try {
+      after(siwxMetadataTask);
+    } catch {
+      void siwxMetadataTask();
+    }
 
     return {
       success: true as const,
@@ -529,7 +534,7 @@ export const registerResource = async (
   // from the same origin register concurrently, this can race (P2002) —
   // safe to swallow since another concurrent call will succeed.
   // Uses after() so the upsert survives Vercel's function lifecycle.
-  after(async () => {
+  const originMetadataTask = async () => {
     try {
       await upsertOrigin({
         origin,
@@ -564,7 +569,12 @@ export const registerResource = async (
         console.error('[registerResource] Origin metadata upsert failed:', err);
       }
     }
-  });
+  };
+  try {
+    after(originMetadataTask);
+  } catch {
+    void originMetadataTask();
+  }
 
   await upsertResourceResponse(
     resource.resource.id,
@@ -581,7 +591,7 @@ export const registerResource = async (
   }
 
   // Attempt ownership verification (non-blocking)
-  after(async () => {
+  const ownershipTask = async () => {
     try {
       const discoveryResult = await fetchDiscoveryDocument(origin);
       if (
@@ -602,7 +612,12 @@ export const registerResource = async (
         error
       );
     }
-  });
+  };
+  try {
+    after(ownershipTask);
+  } catch {
+    void ownershipTask();
+  }
 
   return {
     success: true as const,
