@@ -161,3 +161,77 @@ export async function deleteManyTransferEvents(
     where,
   });
 }
+
+export interface TransferSyncStateKey {
+  chain: string;
+  provider: string;
+  facilitator_id: string;
+  transaction_from: string;
+  token_address: string;
+}
+
+function syncStateWhere(key: TransferSyncStateKey) {
+  return {
+    chain_provider_facilitator_id_transaction_from_token_address: key,
+  };
+}
+
+export async function getTransferSyncState(key: TransferSyncStateKey) {
+  return await transfersDb.transferSyncState.findUnique({
+    where: syncStateWhere(key),
+  });
+}
+
+export async function createTransferSyncState(
+  key: TransferSyncStateKey,
+  cursorTimestamp: Date
+) {
+  return await transfersDb.transferSyncState.upsert({
+    where: syncStateWhere(key),
+    create: {
+      ...key,
+      cursor_timestamp: cursorTimestamp,
+    },
+    update: {},
+  });
+}
+
+export async function markTransferSyncStateStarted(
+  key: TransferSyncStateKey,
+  startedAt: Date
+) {
+  return await transfersDb.transferSyncState.update({
+    where: syncStateWhere(key),
+    data: {
+      last_started_at: startedAt,
+      last_error: null,
+    },
+  });
+}
+
+export async function advanceTransferSyncState(
+  key: TransferSyncStateKey,
+  cursorTimestamp: Date,
+  completedAt: Date
+) {
+  return await transfersDb.transferSyncState.update({
+    where: syncStateWhere(key),
+    data: {
+      cursor_timestamp: cursorTimestamp,
+      last_completed_at: completedAt,
+      last_error: null,
+    },
+  });
+}
+
+export async function recordTransferSyncStateError(
+  key: TransferSyncStateKey,
+  error: string
+) {
+  return await transfersDb.transferSyncState.update({
+    where: syncStateWhere(key),
+    data: {
+      last_error: error,
+    },
+  });
+}

@@ -16,7 +16,7 @@ export const baseCdpConfig: SyncConfig = {
   facilitators: FACILITATORS_BY_CHAIN(Network.BASE),
   buildQuery,
   transformResponse,
-  enabled: true,
+  enabled: false,
   machine: 'medium-1x',
   splitSyncByFacilitator: true,
 };
