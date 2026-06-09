@@ -113,11 +113,6 @@ export default function DiscoveryPage() {
                 <strong>Shareable onboarding link</strong> — a one-click URL you
                 can send to anyone to try your API instantly through Poncho
               </li>
-              <li>
-                <strong>Custom onboarding prompts</strong> — tailor the prompts
-                agents see when they discover your API so they start using your
-                resources immediately
-              </li>
             </ul>
             <p>
               This is a standard{' '}
