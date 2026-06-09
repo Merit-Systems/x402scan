@@ -16,7 +16,12 @@ export async function fetchTransfers(
   facilitatorConfig: FacilitatorConfig,
   since: Date,
   now: Date,
-  onBatchFetched?: (batch: TransferEventData[]) => Promise<void>
+  onBatchFetched?: (batch: TransferEventData[]) => Promise<void>,
+  onWindowFetched?: (
+    windowStart: Date,
+    windowEnd: Date,
+    resultCount: number
+  ) => Promise<void>
 ): Promise<{ totalFetched: number }> {
   const strategy = config.paginationStrategy;
 
@@ -27,7 +32,8 @@ export async function fetchTransfers(
       facilitatorConfig,
       since,
       now,
-      onBatchFetched
+      onBatchFetched,
+      onWindowFetched
     );
   }
 
@@ -51,7 +57,12 @@ async function fetchWithWindow(
   facilitatorConfig: FacilitatorConfig,
   since: Date,
   now: Date,
-  onBatchFetched?: (batch: TransferEventData[]) => Promise<void>
+  onBatchFetched?: (batch: TransferEventData[]) => Promise<void>,
+  onWindowFetched?: (
+    windowStart: Date,
+    windowEnd: Date,
+    resultCount: number
+  ) => Promise<void>
 ): Promise<{ totalFetched: number }> {
   const provider = config.provider;
   let currentStart = new Date(since);
@@ -109,6 +120,10 @@ async function fetchWithWindow(
 
     if (onBatchFetched && results.length > 0) {
       await onBatchFetched(results);
+    }
+
+    if (onWindowFetched) {
+      await onWindowFetched(currentStart, currentEnd, results.length);
     }
 
     if (results.length >= config.limit) {
