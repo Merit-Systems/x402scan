@@ -1,20 +1,19 @@
+import { scrapeFavicon } from '@agentcash/discovery';
 import type { OgObject } from 'open-graph-scraper/types';
 import { fetchHtml } from './html';
 import { parseMetadataFromHtml } from './metadata';
 import { parseOgFromHtml } from './og';
-import { parseFaviconFromHtml } from './favicon';
 
 /**
- * Parses all data (OG, metadata, favicon) from an HTML string
+ * Parses OG and metadata from an HTML string
  */
-const parseAllFromHtml = async (html: string, origin: string) => {
-  const [og, metadata, favicon] = await Promise.all([
+const parseAllFromHtml = async (html: string) => {
+  const [og, metadata] = await Promise.all([
     parseOgFromHtml(html).catch(() => null),
     Promise.resolve(parseMetadataFromHtml(html)).catch(() => null),
-    parseFaviconFromHtml(html, origin).catch(() => null),
   ]);
 
-  return { og, metadata, favicon };
+  return { og, metadata };
 };
 
 /**
@@ -44,13 +43,16 @@ const hasMetadata = (
 export const scrapeOriginData = async (inputOrigin: string) => {
   let origin = inputOrigin;
 
-  // Fetch HTML once for the input origin
-  const html = await fetchHtml(origin);
+  const [html, initialFavicon] = await Promise.all([
+    fetchHtml(origin),
+    scrapeFavicon(origin).catch(() => null),
+  ]);
 
   // Parse all data from HTML (or return nulls if fetch failed)
-  let { og, metadata, favicon } = html
-    ? await parseAllFromHtml(html, origin)
-    : { og: null, metadata: null, favicon: null };
+  let { og, metadata } = html
+    ? await parseAllFromHtml(html)
+    : { og: null, metadata: null };
+  let favicon = initialFavicon;
 
   // Handle API subdomain fallback
   if (origin.startsWith('https://api.')) {
@@ -61,10 +63,13 @@ export const scrapeOriginData = async (inputOrigin: string) => {
 
     // If any data is missing, fetch the base domain
     if (needsOg || needsMetadata || needsFavicon) {
-      const baseHtml = await fetchHtml(baseOrigin);
+      const [baseHtml, baseFavicon] = await Promise.all([
+        fetchHtml(baseOrigin),
+        needsFavicon ? scrapeFavicon(baseOrigin).catch(() => null) : null,
+      ]);
 
       if (baseHtml) {
-        const baseData = await parseAllFromHtml(baseHtml, baseOrigin);
+        const baseData = await parseAllFromHtml(baseHtml);
 
         // Fill in missing data from base domain
         if (needsOg && hasOgData(baseData.og)) {
@@ -73,9 +78,10 @@ export const scrapeOriginData = async (inputOrigin: string) => {
         if (needsMetadata && hasMetadata(baseData.metadata)) {
           metadata = baseData.metadata;
         }
-        if (needsFavicon && baseData.favicon) {
-          favicon = baseData.favicon;
-        }
+      }
+
+      if (needsFavicon && baseFavicon) {
+        favicon = baseFavicon;
       }
     }
 

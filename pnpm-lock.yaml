@@ -304,8 +304,8 @@ importers:
   apps/scan:
     dependencies:
       '@agentcash/discovery':
-        specifier: 1.7.2
-        version: 1.7.2
+        specifier: 1.7.5
+        version: 1.7.5
       '@agentcash/router':
         specifier: 1.10.1
         version: 1.10.1(@modelcontextprotocol/sdk@1.27.1(@cfworker/json-schema@4.1.1)(zod@4.4.3))(@solana/kit@5.3.0(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))(bufferutil@4.0.9)(ethers@6.15.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(express@5.2.1)(fastestsmallesttextencoderdecoder@1.0.22)(next@16.1.6(@opentelemetry/api@1.9.0)(react-dom@19.2.2(react@19.2.2))(react@19.2.2))(typescript@5.9.3)(utf-8-validate@5.0.10)(ws@8.21.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(zod@4.4.3)
@@ -1016,6 +1016,8 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
+  packages/internal/databases/scan/generated/client: {}
+
   packages/internal/databases/transfers:
     dependencies:
       '@neondatabase/serverless':
@@ -1061,6 +1063,8 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+
+  packages/internal/databases/transfers/generated/client: {}
 
   packages/internal/neverthrow:
     dependencies:
@@ -1212,8 +1216,8 @@ packages:
   '@adraffy/ens-normalize@1.11.1':
     resolution: {integrity: sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ==}
 
-  '@agentcash/discovery@1.7.2':
-    resolution: {integrity: sha512-0ax5i7QEegFq0sSEh5uUGNS1i6p2S6iPx8AZpxjiHd9ncDndKHAzSnEMr/8NW/YsoQThyFg1gmh+drqG0pSKZQ==}
+  '@agentcash/discovery@1.7.5':
+    resolution: {integrity: sha512-L2de/VDCoG7Eg7Xc3sTRL/DXVAGMHQh00kASI6ycUnR26n9L4iVAf7pvrGqIlTjZiHGDv5b9LEGWVGZ+Ut7ayw==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -12371,7 +12375,7 @@ snapshots:
 
   '@adraffy/ens-normalize@1.11.1': {}
 
-  '@agentcash/discovery@1.7.2':
+  '@agentcash/discovery@1.7.5':
     dependencies:
       dereference-json-schema: 0.2.2
       neverthrow: 8.2.0
