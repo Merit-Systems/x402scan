@@ -37,6 +37,7 @@ import {
   DiscoveryPanel,
   useDiscovery,
 } from '@/app/(app)/_components/discovery';
+import { DiscoveryActions } from '@/app/(app)/_components/discovery/discovery-actions';
 import { Favicon } from '@/app/(app)/_components/favicon';
 import { normalizeUrl } from '@/lib/url';
 import { resourceKey } from '@/lib/resource-key';
@@ -44,6 +45,22 @@ import { api } from '@/trpc/client';
 import type { DiscoveredResource } from '@/types/discovery';
 import Link from 'next/link';
 import { z } from 'zod';
+
+const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it so I can claim my free merchant dashboard on Poncho (tryponcho.com).
+
+In my openapi.json, add or update the top-level "info" object to include a "contact" field with my email:
+
+{
+  "info": {
+    "title": "...",
+    "version": "...",
+    "contact": {
+      "email": "me@example.com"
+    }
+  }
+}
+
+Replace me@example.com with my actual email. This is part of the standard OpenAPI 3.x spec (info.contact.email). Do not remove any existing fields — just add the contact object if missing.`;
 
 interface ManualRegistrationResult {
   success: true;
@@ -451,6 +468,7 @@ export const RegisterResourceForm = () => {
                     isBatchTestLoading={isBatchTestLoading}
                     authModeMap={authModeMap}
                     invalidResourcesMap={invalidResourcesMap}
+                    contactEmail={contactEmail}
                   />
                 )}
 
@@ -546,6 +564,7 @@ export const RegisterResourceForm = () => {
                   error: getPrimaryProbeError(r),
                   status: r.statusCode,
                 }))}
+                missingContactEmail={!contactEmail}
               />
             </CollapsibleContent>
           </Collapsible>
@@ -603,40 +622,12 @@ export const RegisterResourceForm = () => {
                     error: w.message,
                   }))
                 )}
+                missingContactEmail={!contactEmail}
               />
             </CollapsibleContent>
           </Collapsible>
         );
       })()}
-
-      {/* Contact email warning — shown when discovery found but no info.contact.email */}
-      {discoveryFound &&
-        !isDiscoveryLoading &&
-        !contactEmail &&
-        !activeBulkResult && (
-          <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-start gap-1.5">
-            <TriangleAlert className="size-3 shrink-0 mt-0.5" />
-            <span>
-              Add{' '}
-              <code className="font-mono bg-muted px-1 rounded text-[11px]">
-                info.contact.email
-              </code>{' '}
-              to your openapi.json to unlock your free merchant dashboard on{' '}
-              <Link
-                href="https://tryponcho.com"
-                target="_blank"
-                className="underline"
-              >
-                Poncho
-              </Link>{' '}
-              — usage analytics, endpoint health monitoring, and a shareable
-              onboarding link for your users.{' '}
-              <Link href="/discovery" className="underline">
-                Learn more
-              </Link>
-            </span>
-          </p>
-        )}
 
       {/* Unprotected endpoints — skipped, not an error */}
       {!activeBulkResult && skippedResources.length > 0 && (
@@ -879,6 +870,7 @@ function ProbeResult({
   isBatchTestLoading = false,
   authModeMap = {},
   invalidResourcesMap = {},
+  contactEmail,
 }: {
   preview: {
     favicon: string | null;
@@ -896,6 +888,7 @@ function ProbeResult({
   isBatchTestLoading?: boolean;
   authModeMap?: Record<string, string>;
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
+  contactEmail?: string | null;
 }) {
   const testedKeys = useMemo(
     () => new Set(testedResources.map(rk)),
@@ -1015,6 +1008,42 @@ function ProbeResult({
           Serve a <code className="font-mono">/favicon.ico</code> at your API
           root to display an icon.
         </p>
+      )}
+      {!contactEmail && (
+        <div className="text-xs text-yellow-600 dark:text-yellow-500 space-y-1.5">
+          <p className="flex items-start gap-1.5">
+            <TriangleAlert className="size-3 shrink-0 mt-0.5" />
+            <span>
+              Add{' '}
+              <code className="font-mono bg-muted px-1 rounded text-[11px]">
+                info.contact.email
+              </code>{' '}
+              to your openapi.json to unlock your free merchant dashboard on{' '}
+              <Link
+                href="https://tryponcho.com"
+                target="_blank"
+                className="underline"
+              >
+                Poncho
+              </Link>{' '}
+              — usage analytics, endpoint health monitoring, and a shareable
+              onboarding link for your users.
+            </span>
+          </p>
+          <p className="pl-[18px] text-foreground">
+            <DiscoveryActions
+              label="Have your agent add it with this prompt"
+              customPrompt={CONTACT_EMAIL_PROMPT}
+            />{' '}
+            or{' '}
+            <Link
+              href="/discovery#merchant-dashboard"
+              className="underline underline-offset-2 hover:text-foreground transition-colors"
+            >
+              learn more
+            </Link>
+          </p>
+        </div>
       )}
       {isBatchTestLoading ? (
         <div className="flex items-center gap-2 text-xs text-muted-foreground py-1">

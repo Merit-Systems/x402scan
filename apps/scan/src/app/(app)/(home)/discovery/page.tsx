@@ -77,7 +77,7 @@ export default function DiscoveryPage() {
           </div>
         </section>
 
-        <section className="space-y-4">
+        <section id="merchant-dashboard" className="space-y-4">
           <h2 className="text-xl font-semibold">Your merchant dashboard</h2>
           <div className="space-y-2 text-sm text-muted-foreground">
             <p>
