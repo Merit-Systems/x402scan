@@ -28,7 +28,10 @@ export async function GET(req: NextRequest) {
     if (res.url && res.url !== url) {
       const finalHost = new URL(res.url).hostname;
       if (blockedPatterns.test(finalHost)) {
-        return NextResponse.json({ error: 'Blocked redirect target' }, { status: 403 });
+        return NextResponse.json(
+          { error: 'Blocked redirect target' },
+          { status: 403 }
+        );
       }
     }
 

@@ -11,7 +11,6 @@ import { notifyNewServer } from '@/lib/discord-notifications';
 import { getOriginFromUrl, normalizeResourceUrl } from '@/lib/url';
 import { scanDb } from '@x402scan/scan-db';
 import { scrapeOriginData } from '@/services/scraper';
-import { after } from 'next/server';
 
 import type {
   AuditWarning,
@@ -388,55 +387,52 @@ export async function registerResourcesFromDiscovery(
   // Individual registerResource/registerSiwxResource calls skip this
   // (skipMetadataScrape: true) so the scrape+upsert happens exactly once
   // per origin, not once per resource.
-  const metadataTask = async () => {
-    await Promise.all(
-      uniqueOrigins.map(async origin => {
-        try {
-          const { og, metadata, favicon } = await scrapeOriginData(origin);
-          const title =
-            metadata?.title ?? og?.ogTitle ?? originInfo?.title ?? null;
-          const description =
-            metadata?.description ??
-            og?.ogDescription ??
-            originInfo?.description ??
-            null;
+  // Awaited directly — favicon URLs are essential for rendering and must
+  // be persisted before the response is sent. The previous after() approach
+  // was unreliable (the deferred scrape+upsert could be killed before
+  // completing, leaving stale ICO URLs in the DB).
+  await Promise.all(
+    uniqueOrigins.map(async origin => {
+      try {
+        const { og, metadata, favicon } = await scrapeOriginData(origin);
+        const title =
+          metadata?.title ?? og?.ogTitle ?? originInfo?.title ?? null;
+        const description =
+          metadata?.description ??
+          og?.ogDescription ??
+          originInfo?.description ??
+          null;
 
-          await upsertOrigin({
-            origin,
-            title: title ?? undefined,
-            description: description ?? undefined,
-            favicon: favicon ?? undefined,
-            ogImages:
-              og?.ogImage?.flatMap(image => {
-                try {
-                  return [
-                    {
-                      url: new URL(image.url, origin).toString(),
-                      height: image.height,
-                      width: image.width,
-                      title: og.ogTitle,
-                      description: og.ogDescription,
-                    },
-                  ];
-                } catch {
-                  return [];
-                }
-              }) ?? [],
-          });
-        } catch (err) {
-          console.error(
-            `[registerResourcesFromDiscovery] Metadata upsert failed for ${origin}:`,
-            err
-          );
-        }
-      })
-    );
-  };
-  try {
-    after(metadataTask);
-  } catch {
-    void metadataTask();
-  }
+        await upsertOrigin({
+          origin,
+          title: title ?? undefined,
+          description: description ?? undefined,
+          favicon: favicon ?? undefined,
+          ogImages:
+            og?.ogImage?.flatMap(image => {
+              try {
+                return [
+                  {
+                    url: new URL(image.url, origin).toString(),
+                    height: image.height,
+                    width: image.width,
+                    title: og.ogTitle,
+                    description: og.ogDescription,
+                  },
+                ];
+              } catch {
+                return [];
+              }
+            }) ?? [],
+        });
+      } catch (err) {
+        console.error(
+          `[registerResourcesFromDiscovery] Metadata upsert failed for ${origin}:`,
+          err
+        );
+      }
+    })
+  );
 
   return {
     registered: successfulResults.length,
