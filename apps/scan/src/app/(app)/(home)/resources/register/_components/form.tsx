@@ -802,7 +802,7 @@ function PostRegistrationDialog({
                 <Link href={`/server/${originId}`}>View your API page</Link>
               </Button>
               <Button variant="outline" className="flex-1" asChild>
-                <Link href="/discovery">Learn more</Link>
+                <Link href="/discovery#merchant-dashboard">Learn more</Link>
               </Button>
             </div>
           </>
