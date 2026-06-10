@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import {
   Check,
   ChevronDown,
+  Copy,
   Loader2,
   Minus,
   CircleHelp,
@@ -740,15 +741,28 @@ function PostRegistrationDialog({
               Test your endpoints &rarr;
             </Link>
           </Button>
-          <p className="text-xs text-muted-foreground text-center pt-1">
-            Start onboarding your users immediately at{' '}
-            <Link
-              href={`https://tryponcho.com/m/${hostname}`}
-              target="_blank"
-              className="underline"
+          <p className="text-xs text-muted-foreground text-center pt-1 flex items-center justify-center gap-1.5">
+            <span>
+              Start onboarding your users immediately at{' '}
+              <Link
+                href={`https://tryponcho.com/m/${hostname}`}
+                target="_blank"
+                className="underline"
+              >
+                tryponcho.com/m/{hostname}
+              </Link>
+            </span>
+            <button
+              type="button"
+              className="inline-flex text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() =>
+                navigator.clipboard.writeText(
+                  `https://tryponcho.com/m/${hostname}`
+                )
+              }
             >
-              tryponcho.com/m/{hostname}
-            </Link>
+              <Copy className="size-3" />
+            </button>
           </p>
         </div>
       </DialogContent>
