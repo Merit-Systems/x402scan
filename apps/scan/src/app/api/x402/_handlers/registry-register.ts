@@ -28,7 +28,13 @@ export async function handleRegistryRegister(
   }
 
   if (!result.success) {
-    return jsonResponse(result, 422);
+    const errorBody: Record<string, unknown> = { ...result };
+    if (contactEmail) {
+      errorBody.contactEmail = contactEmail;
+    } else {
+      errorBody.warning = CONTACT_EMAIL_WARNING;
+    }
+    return jsonResponse(errorBody, 422);
   }
 
   // BigInt serialization — REST-specific (TRPC uses superjson)
