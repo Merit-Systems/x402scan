@@ -61,7 +61,9 @@ const listBazaarOriginsUncached = async (
       ` chain=${input.chain ?? 'all'} timeframe=${typeof input.timeframe === 'number' ? input.timeframe : input.timeframe.period}`
   );
 
-  // Group by origin
+  // Group by origin — each origin gets its own entry. When multiple origins
+  // share a payment address, each origin receives that address's stats
+  // independently so no origin is hidden behind a "+N" badge.
   const originMap = new Map<
     string,
     {
@@ -81,46 +83,47 @@ const listBazaarOriginsUncached = async (
     const origins = originsByAddress[item.recipient];
     if (!origins || origins.length === 0) continue;
 
-    // Use the first origin's ID as the grouping key
-    const originId = origins[0]!.id;
+    for (const origin of origins) {
+      const originId = origin.id;
 
-    const existing = originMap.get(originId);
-    if (existing) {
-      // Aggregate stats
-      existing.recipients.push(item.recipient);
-      existing.tx_count += item.tx_count;
-      existing.total_amount += item.total_amount;
-      existing.unique_buyers += item.unique_buyers;
-      // Keep the latest timestamp
-      if (
-        item.latest_block_timestamp &&
-        (!existing.latest_block_timestamp ||
-          item.latest_block_timestamp > existing.latest_block_timestamp)
-      ) {
-        existing.latest_block_timestamp = item.latest_block_timestamp;
-      }
-      // Merge facilitators (deduplicated)
-      for (const facilitator of item.facilitator_ids) {
-        if (!existing.facilitators.includes(facilitator)) {
-          existing.facilitators.push(facilitator);
+      const existing = originMap.get(originId);
+      if (existing) {
+        // Aggregate stats
+        existing.recipients.push(item.recipient);
+        existing.tx_count += item.tx_count;
+        existing.total_amount += item.total_amount;
+        existing.unique_buyers += item.unique_buyers;
+        // Keep the latest timestamp
+        if (
+          item.latest_block_timestamp &&
+          (!existing.latest_block_timestamp ||
+            item.latest_block_timestamp > existing.latest_block_timestamp)
+        ) {
+          existing.latest_block_timestamp = item.latest_block_timestamp;
         }
+        // Merge facilitators (deduplicated)
+        for (const facilitator of item.facilitator_ids) {
+          if (!existing.facilitators.includes(facilitator)) {
+            existing.facilitators.push(facilitator);
+          }
+        }
+        // Merge chains (deduplicated)
+        for (const chain of item.chains) {
+          existing.chains.add(chain);
+        }
+      } else {
+        originMap.set(originId, {
+          originId,
+          origins: [origin],
+          recipients: [item.recipient as MixedAddress],
+          facilitators: [...item.facilitator_ids],
+          tx_count: item.tx_count,
+          total_amount: item.total_amount,
+          latest_block_timestamp: item.latest_block_timestamp,
+          unique_buyers: item.unique_buyers,
+          chains: new Set(item.chains),
+        });
       }
-      // Merge chains (deduplicated)
-      for (const chain of item.chains) {
-        existing.chains.add(chain);
-      }
-    } else {
-      originMap.set(originId, {
-        originId,
-        origins,
-        recipients: [item.recipient as MixedAddress],
-        facilitators: [...item.facilitator_ids],
-        tx_count: item.tx_count,
-        total_amount: item.total_amount,
-        latest_block_timestamp: item.latest_block_timestamp,
-        unique_buyers: item.unique_buyers,
-        chains: new Set(item.chains),
-      });
     }
   }
 
@@ -170,9 +173,13 @@ const listBazaarOriginsUncached = async (
     groupedItems.sort((a, b) => (a[key] - b[key]) * direction);
   }
 
+  const totalDistinctOrigins = new Set(
+    Object.values(originsByAddress).flatMap(origins => origins.map(o => o.id))
+  ).size;
+
   const response = toPaginatedResponse({
     items: groupedItems,
-    total_count: Object.keys(originsByAddress).length,
+    total_count: totalDistinctOrigins,
     ...pagination,
   });
 
