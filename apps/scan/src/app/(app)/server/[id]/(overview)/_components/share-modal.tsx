@@ -274,7 +274,7 @@ export const ShareModal: React.FC<Props> = ({
   return (
     <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <button className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-[#0052ff] hover:bg-[#0045dd] text-white text-xs font-medium cursor-pointer">
+        <button className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium cursor-pointer">
           <Share2 className="size-3" />
           Share
         </button>
