@@ -110,8 +110,8 @@ export default function DiscoveryPage() {
                 response quality
               </li>
               <li>
-                <strong>Customizeable onboarding link</strong> — a one-click URL you
-                can send to anyone to try your API instantly through Poncho
+                <strong>Customizeable onboarding link</strong> — a one-click URL
+                you can send to anyone to try your API instantly through Poncho
               </li>
             </ul>
             <p>
