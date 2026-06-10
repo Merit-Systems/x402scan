@@ -4,7 +4,7 @@ import { Breadcrumb } from '../../_components/breadcrumb';
 
 import { Separator } from '../../_components/separator';
 import { api } from '@/trpc/server';
-import { cleanExternalText } from '@/lib/utils';
+import { cleanExternalText, truncateAtDelimiter } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 
 export default async function OriginLayout({
@@ -31,7 +31,7 @@ export default async function OriginLayout({
         image={origin.favicon}
         name={
           origin.title
-            ? cleanExternalText(origin.title)
+            ? truncateAtDelimiter(cleanExternalText(origin.title))
             : new URL(origin.origin).hostname
         }
         Fallback={Wallet}
