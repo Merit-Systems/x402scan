@@ -45,6 +45,7 @@ import { resourceKey } from '@/lib/resource-key';
 import { api } from '@/trpc/client';
 import type { DiscoveredResource } from '@/types/discovery';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it so I can verify ownership of my origin, let users contact me, and customize my merchant pages on Poncho.
@@ -741,25 +742,24 @@ function PostRegistrationDialog({
               Test your endpoints &rarr;
             </Link>
           </Button>
-          <p className="text-xs text-muted-foreground text-center pt-1 flex items-center justify-center gap-1.5">
-            <span>
-              Start onboarding your users immediately at{' '}
-              <Link
-                href={`https://tryponcho.com/m/${hostname}`}
-                target="_blank"
-                className="underline"
-              >
-                tryponcho.com/m/{hostname}
-              </Link>
-            </span>
+          <p className="text-xs text-muted-foreground text-center pt-1">
+            Start onboarding your users immediately at{' '}
+            <Link
+              href={`https://tryponcho.com/m/${hostname}`}
+              target="_blank"
+              className="underline"
+            >
+              tryponcho.com/m/{hostname}
+            </Link>
             <button
               type="button"
-              className="inline-flex text-muted-foreground hover:text-foreground transition-colors"
-              onClick={() =>
-                navigator.clipboard.writeText(
+              className="inline-flex align-middle ml-1 text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => {
+                void navigator.clipboard.writeText(
                   `https://tryponcho.com/m/${hostname}`
-                )
-              }
+                );
+                toast.success('Onboarding link copied to clipboard');
+              }}
             >
               <Copy className="size-3" />
             </button>
