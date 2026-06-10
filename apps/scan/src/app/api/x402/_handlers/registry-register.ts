@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import type { z } from 'zod';
 
 export const CONTACT_EMAIL_WARNING =
-  'We recommend adding info.contact.email to your openapi.json. Your origin has merchant pages on tryponcho.com — an API storefront (/m/) and health metrics (/p/).';
+  'Add info.contact.email to your openapi.json to verify ownership, let users contact you, and customize your merchant pages on tryponcho.com.';
 
 export async function handleRegistryRegister(
   body: z.infer<typeof registryRegisterBodySchema>

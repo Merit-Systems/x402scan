@@ -40,7 +40,7 @@ Schema guidance (important):
 
 Contact email (recommended):
 - Ask the user for their contact email and add it as info.contact.email in the openapi.json.
-- Every registered origin gets two pages on Poncho: tryponcho.com/m/their-origin (their API storefront) and tryponcho.com/p/their-origin (health metrics for their endpoints).
+- This lets them verify ownership of their origin, allows users to contact them, and lets them customize their merchant pages on Poncho.
 
 OpenAPI payable operation must include ALL:
 - x-payment-info with:
@@ -209,8 +209,9 @@ export default function DiscoverySpecPage() {
               <h3 className="text-sm font-semibold">Recommended</h3>
               <ul className="list-disc pl-5 space-y-1 text-sm">
                 <li>
-                  <code>info.contact.email</code> — your contact email. Every
-                  registered origin gets two pages on{' '}
+                  <code>info.contact.email</code> — your contact email. Lets you
+                  verify ownership of your origin, allows users to contact you,
+                  and lets you customize your merchant pages on{' '}
                   <a
                     href="https://tryponcho.com"
                     target="_blank"
@@ -219,9 +220,7 @@ export default function DiscoverySpecPage() {
                   >
                     Poncho
                   </a>
-                  : <code>tryponcho.com/m/your-origin</code> (your API
-                  storefront) and <code>tryponcho.com/p/your-origin</code>{' '}
-                  (health metrics for your endpoints).
+                  .
                 </li>
               </ul>
               <h3 className="text-sm font-semibold">

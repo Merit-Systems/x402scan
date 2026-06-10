@@ -46,7 +46,7 @@ import type { DiscoveredResource } from '@/types/discovery';
 import Link from 'next/link';
 import { z } from 'zod';
 
-const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it — it's a recommended standard OpenAPI field.
+const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it so I can verify ownership of my origin, let users contact me, and customize my merchant pages on Poncho.
 
 In my openapi.json, add or update the top-level "info" object to include a "contact" field with my email:
 
@@ -952,11 +952,8 @@ function ProbeResult({
               <code className="font-mono bg-muted px-1 rounded text-[11px]">
                 info.contact.email
               </code>{' '}
-              to your openapi.json — recommended for your{' '}
-              <Link href="/discovery#merchant-dashboard" className="underline">
-                merchant pages
-              </Link>{' '}
-              on Poncho.
+              to your openapi.json to verify ownership and let users contact
+              you.
             </span>
           </p>
           <p className="pl-[18px] text-foreground">
