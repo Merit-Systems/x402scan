@@ -46,7 +46,7 @@ import type { DiscoveredResource } from '@/types/discovery';
 import Link from 'next/link';
 import { z } from 'zod';
 
-const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it so I can claim my free merchant dashboard on Poncho (tryponcho.com).
+const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it — it's a recommended standard OpenAPI field.
 
 In my openapi.json, add or update the top-level "info" object to include a "contact" field with my email:
 
@@ -686,7 +686,6 @@ export const RegisterResourceForm = () => {
             </Button>
           </Link>
           <PostRegistrationDialog
-            contactEmail={contactEmail}
             originId={activeBulkResult.originId}
             origin={activeSummaryOrigin}
           />
@@ -703,11 +702,9 @@ export const RegisterResourceForm = () => {
 };
 
 function PostRegistrationDialog({
-  contactEmail,
   originId,
   origin,
 }: {
-  contactEmail: string | undefined;
   originId: string;
   origin: string;
 }) {
@@ -726,47 +723,23 @@ function PostRegistrationDialog({
         <DialogHeader>
           <DialogTitle>You&apos;re registered!</DialogTitle>
           <DialogDescription>
-            {contactEmail
-              ? 'Your contact email was detected \u2014 your merchant dashboard is ready.'
-              : 'Here\u2019s what you can do next.'}
+            Here&apos;s what you can do next.
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <Button asChild className="w-full">
             <Link href={`/server/${originId}`}>View your API page &rarr;</Link>
           </Button>
-          {contactEmail && (
-            <Button asChild variant="outline" className="w-full">
-              <Link
-                href={`https://tryponcho.com/p/${hostname}`}
-                target="_blank"
-              >
-                Open your merchant dashboard &rarr;
-              </Link>
-            </Button>
-          )}
           <Button asChild variant="outline" className="w-full">
-            <Link href={`https://tryponcho.com/m/${hostname}`} target="_blank">
-              Share with your users &rarr;
+            <Link href={`https://tryponcho.com/p/${hostname}`} target="_blank">
+              View your health metrics &rarr;
             </Link>
           </Button>
-          {!contactEmail && (
-            <p className="text-xs text-muted-foreground text-center pt-1">
-              Add{' '}
-              <code className="font-mono bg-muted px-1 rounded text-[11px]">
-                info.contact.email
-              </code>{' '}
-              to your openapi.json to unlock your free{' '}
-              <Link
-                href="https://tryponcho.com"
-                target="_blank"
-                className="underline"
-              >
-                merchant dashboard
-              </Link>
-              .
-            </p>
-          )}
+          <Button asChild variant="outline" className="w-full">
+            <Link href={`https://tryponcho.com/m/${hostname}`} target="_blank">
+              Share your storefront &rarr;
+            </Link>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -979,15 +952,11 @@ function ProbeResult({
               <code className="font-mono bg-muted px-1 rounded text-[11px]">
                 info.contact.email
               </code>{' '}
-              to your openapi.json to get your merchant pages on{' '}
-              <Link
-                href="https://tryponcho.com"
-                target="_blank"
-                className="underline"
-              >
-                Poncho
+              to your openapi.json — recommended for your{' '}
+              <Link href="/discovery#merchant-dashboard" className="underline">
+                merchant pages
               </Link>{' '}
-              — a storefront for your users and a dashboard for you.
+              on Poncho.
             </span>
           </p>
           <p className="pl-[18px] text-foreground">

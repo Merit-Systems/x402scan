@@ -40,8 +40,7 @@ Schema guidance (important):
 
 Contact email (recommended):
 - Ask the user for their contact email and add it as info.contact.email in the openapi.json.
-- This gives the merchant two pages on Poncho: tryponcho.com/m/their-origin (a storefront anyone can use to try the API in one click) and tryponcho.com/p/their-origin (a dashboard with usage analytics and endpoint health).
-- The merchant should log into tryponcho.com with the same email to access their dashboard.
+- Every registered origin gets two pages on Poncho: tryponcho.com/m/their-origin (their API storefront) and tryponcho.com/p/their-origin (health metrics for their endpoints).
 
 OpenAPI payable operation must include ALL:
 - x-payment-info with:
@@ -210,8 +209,8 @@ export default function DiscoverySpecPage() {
               <h3 className="text-sm font-semibold">Recommended</h3>
               <ul className="list-disc pl-5 space-y-1 text-sm">
                 <li>
-                  <code>info.contact.email</code> — your contact email. Gives
-                  you two pages on{' '}
+                  <code>info.contact.email</code> — your contact email. Every
+                  registered origin gets two pages on{' '}
                   <a
                     href="https://tryponcho.com"
                     target="_blank"
@@ -220,11 +219,9 @@ export default function DiscoverySpecPage() {
                   >
                     Poncho
                   </a>
-                  : <code>tryponcho.com/m/your-origin</code> (a storefront for
-                  users to try your API in one click) and{' '}
-                  <code>tryponcho.com/p/your-origin</code> (a dashboard with
-                  usage analytics and endpoint health). Log into tryponcho.com
-                  with the same email to access your dashboard.
+                  : <code>tryponcho.com/m/your-origin</code> (your API
+                  storefront) and <code>tryponcho.com/p/your-origin</code>{' '}
+                  (health metrics for your endpoints).
                 </li>
               </ul>
               <h3 className="text-sm font-semibold">

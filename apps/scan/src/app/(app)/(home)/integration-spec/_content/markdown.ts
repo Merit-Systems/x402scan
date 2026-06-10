@@ -27,7 +27,7 @@ Requirements:
 
 Recommended:
 
-- \`info.contact.email\` — your contact email. This gives you two pages on [Poncho](https://tryponcho.com): \`tryponcho.com/m/your-origin\` (a storefront anyone can use to try your API in one click) and \`tryponcho.com/p/your-origin\` (a dashboard with usage analytics and endpoint health). Log into tryponcho.com with the same email to access your dashboard.
+- \`info.contact.email\` — your contact email. Every registered origin gets two pages on [Poncho](https://tryponcho.com): \`tryponcho.com/m/your-origin\` (your API storefront) and \`tryponcho.com/p/your-origin\` (health metrics for your endpoints).
 
 ### Pricing modes in x-payment-info
 

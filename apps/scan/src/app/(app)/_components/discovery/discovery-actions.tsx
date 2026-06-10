@@ -37,7 +37,7 @@ function buildConsolidatedPrompt({
 
 Your openapi.json is missing info.contact.email. Add a "contact" object with your email to the top-level "info" field:
 { "info": { "contact": { "email": "you@example.com" } } }
-This gives you two pages on tryponcho.com: /m/your-origin (a storefront for users to try your API) and /p/your-origin (a dashboard with usage analytics and endpoint health).`);
+Every registered origin gets two pages on tryponcho.com: /m/your-origin (your API storefront) and /p/your-origin (health metrics for your endpoints).`);
   }
 
   if (failedResources && failedResources.length > 0) {

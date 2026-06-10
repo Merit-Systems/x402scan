@@ -81,15 +81,7 @@ export default function DiscoveryPage() {
           <h2 className="text-xl font-semibold">Your merchant pages</h2>
           <div className="space-y-3 text-sm text-muted-foreground">
             <p>
-              Add{' '}
-              <code className="font-mono bg-muted px-1 rounded text-xs">
-                info.contact.email
-              </code>{' '}
-              to your{' '}
-              <code className="font-mono bg-muted px-1 rounded text-xs">
-                openapi.json
-              </code>{' '}
-              and you get two pages on{' '}
+              Every registered origin gets two pages on{' '}
               <a
                 href="https://tryponcho.com"
                 className="underline hover:no-underline font-medium text-foreground"
@@ -102,35 +94,16 @@ export default function DiscoveryPage() {
             </p>
             <ul className="list-disc pl-5 space-y-2">
               <li>
-                <strong>tryponcho.com/m/your-origin</strong> — your storefront.
-                Share this link so anyone can try your API in one click.
+                <strong>tryponcho.com/m/your-origin</strong> — your API
+                storefront. Share this link so anyone can try your API in one
+                click.
               </li>
               <li>
-                <strong>tryponcho.com/p/your-origin</strong> — your dashboard.
-                See how agents use your API and monitor endpoint health.
+                <strong>tryponcho.com/p/your-origin</strong> — your health
+                metrics. See how agents use your endpoints and monitor
+                performance.
               </li>
             </ul>
-            <p>
-              Log into{' '}
-              <a
-                href="https://tryponcho.com"
-                className="underline hover:no-underline font-medium text-foreground"
-                target="_blank"
-                rel="noreferrer"
-              >
-                tryponcho.com
-              </a>{' '}
-              with the same email to access your dashboard. This is a standard{' '}
-              <a
-                href="https://spec.openapis.org/oas/v3.1.0#contact-object"
-                className="underline hover:no-underline font-medium text-foreground"
-                target="_blank"
-                rel="noreferrer"
-              >
-                OpenAPI field
-              </a>{' '}
-              — no custom extensions needed.
-            </p>
           </div>
         </section>
 
