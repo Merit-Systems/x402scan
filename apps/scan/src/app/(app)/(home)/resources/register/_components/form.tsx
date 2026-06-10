@@ -732,14 +732,24 @@ function PostRegistrationDialog({
           </Button>
           <Button asChild variant="outline" className="w-full">
             <Link href={`https://tryponcho.com/p/${hostname}`} target="_blank">
-              View your health metrics &rarr;
+              Track your endpoint health &rarr;
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full">
             <Link href={`https://tryponcho.com/m/${hostname}`} target="_blank">
-              Share your storefront &rarr;
+              Test your endpoints &rarr;
             </Link>
           </Button>
+          <p className="text-xs text-muted-foreground text-center pt-1">
+            Start onboarding your users immediately at{' '}
+            <Link
+              href={`https://tryponcho.com/m/${hostname}`}
+              target="_blank"
+              className="underline"
+            >
+              tryponcho.com/m/{hostname}
+            </Link>
+          </p>
         </div>
       </DialogContent>
     </Dialog>
