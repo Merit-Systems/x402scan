@@ -979,7 +979,7 @@ function ProbeResult({
               <code className="font-mono bg-muted px-1 rounded text-[11px]">
                 info.contact.email
               </code>{' '}
-              to your openapi.json to unlock your free merchant dashboard on{' '}
+              to your openapi.json to get your merchant pages on{' '}
               <Link
                 href="https://tryponcho.com"
                 target="_blank"
@@ -987,8 +987,7 @@ function ProbeResult({
               >
                 Poncho
               </Link>{' '}
-              — usage analytics, endpoint health monitoring, and a shareable
-              onboarding link for your users.
+              — a storefront for your users and a dashboard for you.
             </span>
           </p>
           <p className="pl-[18px] text-foreground">

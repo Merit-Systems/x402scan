@@ -40,8 +40,8 @@ Schema guidance (important):
 
 Contact email (recommended):
 - Ask the user for their contact email and add it as info.contact.email in the openapi.json.
-- This unlocks a free merchant dashboard on tryponcho.com with usage analytics, endpoint health monitoring, and a shareable onboarding link.
-- The user should log into tryponcho.com with the same email to access their dashboard.
+- This gives the merchant two pages on Poncho: tryponcho.com/m/their-origin (a storefront anyone can use to try the API in one click) and tryponcho.com/p/their-origin (a dashboard with usage analytics and endpoint health).
+- The merchant should log into tryponcho.com with the same email to access their dashboard.
 
 OpenAPI payable operation must include ALL:
 - x-payment-info with:
@@ -210,8 +210,8 @@ export default function DiscoverySpecPage() {
               <h3 className="text-sm font-semibold">Recommended</h3>
               <ul className="list-disc pl-5 space-y-1 text-sm">
                 <li>
-                  <code>info.contact.email</code> — your contact email. Unlocks
-                  your free merchant dashboard on{' '}
+                  <code>info.contact.email</code> — your contact email. Gives
+                  you two pages on{' '}
                   <a
                     href="https://tryponcho.com"
                     target="_blank"
@@ -219,10 +219,12 @@ export default function DiscoverySpecPage() {
                     className="underline hover:no-underline font-medium text-foreground"
                   >
                     Poncho
-                  </a>{' '}
-                  with usage analytics, endpoint health monitoring, and a
-                  shareable onboarding link. Log into tryponcho.com with the
-                  same email to access your dashboard.
+                  </a>
+                  : <code>tryponcho.com/m/your-origin</code> (a storefront for
+                  users to try your API in one click) and{' '}
+                  <code>tryponcho.com/p/your-origin</code> (a dashboard with
+                  usage analytics and endpoint health). Log into tryponcho.com
+                  with the same email to access your dashboard.
                 </li>
               </ul>
               <h3 className="text-sm font-semibold">

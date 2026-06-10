@@ -27,7 +27,7 @@ Requirements:
 
 Recommended:
 
-- \`info.contact.email\` — your contact email. This unlocks your free merchant dashboard on [Poncho](https://tryponcho.com) where you can monitor endpoint health, view usage analytics, and get a shareable onboarding link that lets anyone try your API instantly. Log into tryponcho.com with the same email you include in your openapi.json to access your dashboard.
+- \`info.contact.email\` — your contact email. This gives you two pages on [Poncho](https://tryponcho.com): \`tryponcho.com/m/your-origin\` (a storefront anyone can use to try your API in one click) and \`tryponcho.com/p/your-origin\` (a dashboard with usage analytics and endpoint health). Log into tryponcho.com with the same email to access your dashboard.
 
 ### Pricing modes in x-payment-info
 
