@@ -165,10 +165,10 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
     where: {
       resources: { some: resourceFilter },
     },
-    omit: { email: true },
     orderBy: { createdAt: 'desc' },
   });
-  return origins;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return origins.map(({ email, ...rest }) => rest);
 };
 
 export const listOriginsWithResourcesSchema = z.object({
@@ -203,7 +203,6 @@ export const listOriginsWithResources = async (
       ...(originIds ? { id: { in: originIds } } : {}),
       resources: { some: paidOrSiwxResource },
     },
-    omit: { email: true },
     include: {
       resources: {
         where: paidOrSiwxResource,
@@ -230,35 +229,38 @@ export const listOriginsWithResources = async (
       },
     },
   });
-  return origins
-    .map(origin => ({
-      ...origin,
-      resources: origin.resources.map(resource => {
-        // SIWX (free) resources have no 402 response — they're identity-gated,
-        // not paid. Treat them as successful with empty payment data.
-        if (isSiwxResource(resource)) {
+  return (
+    origins
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .map(({ email, ...origin }) => ({
+        ...origin,
+        resources: origin.resources.map(resource => {
+          // SIWX (free) resources have no 402 response — they're identity-gated,
+          // not paid. Treat them as successful with empty payment data.
+          if (isSiwxResource(resource)) {
+            return {
+              ...resource,
+              success: true as const,
+              data: {} as ParsedX402Response,
+            };
+          }
+          const response = parseX402Response(resource.response?.response);
+          if (!response.success) {
+            console.error(
+              `[listOriginsWithResources] parseX402Response failed for resource ${resource.id} (${resource.resource}):`,
+              JSON.stringify(response.errors),
+              'raw response:',
+              JSON.stringify(resource.response?.response)
+            );
+          }
           return {
             ...resource,
-            success: true as const,
-            data: {} as ParsedX402Response,
+            ...response,
           };
-        }
-        const response = parseX402Response(resource.response?.response);
-        if (!response.success) {
-          console.error(
-            `[listOriginsWithResources] parseX402Response failed for resource ${resource.id} (${resource.resource}):`,
-            JSON.stringify(response.errors),
-            'raw response:',
-            JSON.stringify(resource.response?.response)
-          );
-        }
-        return {
-          ...resource,
-          ...response,
-        };
-      }),
-    }))
-    .filter(origin => origin.resources.length > 0);
+        }),
+      }))
+      .filter(origin => origin.resources.length > 0)
+  );
 };
 
 export const searchOriginsSchema = z.object({
@@ -271,7 +273,7 @@ export const searchOrigins = async (
 ) => {
   const { search, limit } = searchOriginsSchema.parse(input);
   const acceptsWhere = getDisplayableAcceptsWhere({});
-  return await scanDb.resourceOrigin.findMany({
+  const results = await scanDb.resourceOrigin.findMany({
     where: {
       origin: {
         contains: search,
@@ -286,7 +288,6 @@ export const searchOrigins = async (
         },
       },
     },
-    omit: { email: true },
     include: {
       resources: {
         where: {
@@ -307,12 +308,13 @@ export const searchOrigins = async (
     },
     take: limit,
   });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return results.map(({ email, ...rest }) => rest);
 };
 
 export const getOrigin = async (id: string) => {
   const origin = await scanDb.resourceOrigin.findUnique({
     where: { id },
-    omit: { email: true },
     include: {
       ogImages: true,
       resources: {
@@ -325,7 +327,8 @@ export const getOrigin = async (id: string) => {
 
   if (!origin) return null;
 
-  const { resources, ...originData } = origin;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { resources, email, ...originData } = origin;
 
   return {
     ...originData,
