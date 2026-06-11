@@ -727,6 +727,9 @@ function PostRegistrationDialog({
       setEmailSubmitted(true);
       window.open(CALENDAR_URL, '_blank');
     },
+    onError: () => {
+      toast.error('Failed to save email. Please try again.');
+    },
   });
 
   let hostname: string;
