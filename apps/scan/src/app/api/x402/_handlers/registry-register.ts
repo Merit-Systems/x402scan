@@ -5,8 +5,12 @@ import { fetchDiscoveryDocument } from '@/services/discovery';
 import { revalidatePath } from 'next/cache';
 import type { z } from 'zod';
 
-export const CONTACT_EMAIL_WARNING =
+const CONTACT_EMAIL_WARNING =
   'Add info.contact.email to your openapi.json to verify ownership, let users contact you, and customize your merchant pages on tryponcho.com.';
+
+export function contactEmailFields(contactEmail: string | undefined) {
+  return contactEmail ? { contactEmail } : { warning: CONTACT_EMAIL_WARNING };
+}
 
 export async function handleRegistryRegister(
   body: z.infer<typeof registryRegisterBodySchema>
@@ -28,13 +32,10 @@ export async function handleRegistryRegister(
   }
 
   if (!result.success) {
-    const errorBody: Record<string, unknown> = { ...result };
-    if (contactEmail) {
-      errorBody.contactEmail = contactEmail;
-    } else {
-      errorBody.warning = CONTACT_EMAIL_WARNING;
-    }
-    return jsonResponse(errorBody, 422);
+    return jsonResponse(
+      { ...result, ...contactEmailFields(contactEmail) },
+      422
+    );
   }
 
   // BigInt serialization — REST-specific (TRPC uses superjson)
@@ -44,11 +45,5 @@ export async function handleRegistryRegister(
     )
   ) as Record<string, unknown>;
 
-  if (contactEmail) {
-    serialized.contactEmail = contactEmail;
-  } else {
-    serialized.warning = CONTACT_EMAIL_WARNING;
-  }
-
-  return jsonResponse(serialized);
+  return jsonResponse({ ...serialized, ...contactEmailFields(contactEmail) });
 }
