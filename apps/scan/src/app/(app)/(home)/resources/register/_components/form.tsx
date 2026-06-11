@@ -682,7 +682,7 @@ export const RegisterResourceForm = () => {
 
       {activeBulkResult?.originId && activeSummaryOrigin ? (
         <>
-          <Link href={`/server/${activeBulkResult.originId}`}>
+          <Link href={`/server/${activeBulkResult.originId}`} target="_blank">
             <Button variant="outline" className="w-full">
               View your API page &rarr;
             </Button>
@@ -730,7 +730,9 @@ function PostRegistrationDialog({
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <Button asChild className="w-full">
-            <Link href={`/server/${originId}`}>View your API page &rarr;</Link>
+            <Link href={`/server/${originId}`} target="_blank">
+              View your API page &rarr;
+            </Link>
           </Button>
           <Button asChild variant="outline" className="w-full">
             <Link href={`https://tryponcho.com/p/${hostname}`} target="_blank">
