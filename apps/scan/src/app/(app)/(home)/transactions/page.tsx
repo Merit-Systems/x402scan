@@ -16,6 +16,8 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 import { api, HydrateClient } from '@/trpc/server';
 
+import { TRANSACTIONS_PAGE_SIZE } from './constants';
+
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -28,7 +30,7 @@ export default async function TransactionsPage({
 }: PageProps<'/transactions'>) {
   const chain = await getChainForPage(await searchParams);
 
-  const pageSize = 10;
+  const pageSize = TRANSACTIONS_PAGE_SIZE;
 
   void api.public.transfers.list.prefetch({
     sorting: defaultTransfersSorting,
