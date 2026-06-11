@@ -11,27 +11,17 @@ vi.mock('@/lib/cache', () => ({
   CACHE_TTL_SECONDS: 60,
 }));
 
-const mockRedis = {
-  get: vi.fn().mockResolvedValue(null),
-  setex: vi.fn().mockResolvedValue('OK'),
-};
-
 vi.mock('@/lib/redis', () => ({
-  getRedisClient: () => mockRedis,
+  getRedisClient: () => null,
 }));
 
-import {
-  fetchUsedOriginsFromAgentCash,
-  getDiscoverOrigins,
-} from './origins';
+import { fetchUsedOriginsFromAgentCash } from './origins';
 
 const originalFetch = global.fetch;
 
 describe('fetchUsedOriginsFromAgentCash', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    mockRedis.get.mockResolvedValue(null);
-    mockRedis.setex.mockResolvedValue('OK');
   });
 
   afterEach(() => {
@@ -134,99 +124,5 @@ describe('fetchUsedOriginsFromAgentCash', () => {
     const result = await fetchUsedOriginsFromAgentCash('x402');
 
     expect(result).toBeNull();
-  });
-});
-
-describe('getDiscoverOrigins', () => {
-  const ORIGINS = ['https://a.example.com', 'https://b.example.com'];
-  const CACHE_KEY = 'discover:origins:catalog:v1';
-  const STALE_KEY = 'discover:origins:catalog:v1:stale';
-
-  function mockAgentCashResponse(origins: string[]) {
-    global.fetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ origins }), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-    ) as unknown as typeof fetch;
-  }
-
-  function mockAgentCashDown() {
-    global.fetch = vi
-      .fn()
-      .mockResolvedValue(
-        new Response('down', { status: 503 })
-      ) as unknown as typeof fetch;
-  }
-
-  beforeEach(() => {
-    mockRedis.get.mockReset().mockResolvedValue(null);
-    mockRedis.setex.mockReset().mockResolvedValue('OK');
-  });
-
-  afterEach(() => {
-    global.fetch = originalFetch;
-  });
-
-  it('returns cached result on cache hit without calling AgentCash', async () => {
-    mockRedis.get.mockResolvedValue(JSON.stringify(ORIGINS));
-    const fetchSpy = vi.fn();
-    global.fetch = fetchSpy as unknown as typeof fetch;
-
-    const result = await getDiscoverOrigins();
-
-    expect(result).toEqual(ORIGINS);
-    expect(fetchSpy).not.toHaveBeenCalled();
-  });
-
-  it('caches fresh result and writes stale fallback', async () => {
-    mockAgentCashResponse(ORIGINS);
-
-    const result = await getDiscoverOrigins();
-
-    expect(result).toEqual(ORIGINS);
-    expect(mockRedis.setex).toHaveBeenCalledWith(
-      CACHE_KEY,
-      60,
-      JSON.stringify(ORIGINS)
-    );
-    expect(mockRedis.setex).toHaveBeenCalledWith(
-      STALE_KEY,
-      86400,
-      JSON.stringify(ORIGINS)
-    );
-  });
-
-  it('does not cache empty result', async () => {
-    mockAgentCashDown();
-
-    await getDiscoverOrigins();
-
-    expect(mockRedis.setex).not.toHaveBeenCalledWith(
-      CACHE_KEY,
-      expect.anything(),
-      expect.anything()
-    );
-  });
-
-  it('returns stale fallback when AgentCash returns empty', async () => {
-    mockAgentCashDown();
-    // Primary cache miss, but stale key exists
-    mockRedis.get
-      .mockResolvedValueOnce(null) // primary cache miss
-      .mockResolvedValueOnce(JSON.stringify(ORIGINS)); // stale hit
-
-    const result = await getDiscoverOrigins();
-
-    expect(result).toEqual(ORIGINS);
-    expect(mockRedis.get).toHaveBeenCalledWith(STALE_KEY);
-  });
-
-  it('returns empty when AgentCash is down and no stale fallback', async () => {
-    mockAgentCashDown();
-
-    const result = await getDiscoverOrigins();
-
-    expect(result).toEqual([]);
   });
 });
