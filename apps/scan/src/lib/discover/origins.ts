@@ -4,6 +4,9 @@ import { getRedisClient } from '@/lib/redis';
 
 const PROTOCOL = 'x402';
 const CACHE_KEY = 'discover:origins:catalog:v1';
+/** Long-lived fallback so a transient AgentCash outage doesn't wipe the list */
+const STALE_CACHE_KEY = 'discover:origins:catalog:v1:stale';
+const STALE_TTL_SECONDS = 86400; // 24 hours
 
 /**
  * Calls AgentCash's internal used-origins endpoint. Returns the ordered list
@@ -97,11 +100,23 @@ export const getDiscoverOrigins = async (): Promise<string[]> => {
   const result = await getDiscoverOriginsUncached();
 
   if (redis) {
-    await redis
-      .setex(CACHE_KEY, CACHE_TTL_SECONDS, JSON.stringify(result))
-      .catch(() => {
+    if (result.length > 0) {
+      await Promise.all([
+        redis.setex(CACHE_KEY, CACHE_TTL_SECONDS, JSON.stringify(result)),
+        redis.setex(STALE_CACHE_KEY, STALE_TTL_SECONDS, JSON.stringify(result)),
+      ]).catch(() => {
         /* cache write is best-effort */
       });
+    } else {
+      // AgentCash returned empty — serve stale data rather than nothing
+      const stale = await redis.get(STALE_CACHE_KEY).catch(() => null);
+      if (stale) {
+        console.warn(
+          '[discover] AgentCash returned empty, using stale fallback'
+        );
+        return JSON.parse(stale) as string[];
+      }
+    }
   }
 
   return result;
