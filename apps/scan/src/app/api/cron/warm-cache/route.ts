@@ -7,6 +7,7 @@ import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers
 import { ActivityTimeframe } from '@/types/timeframes';
 import { facilitatorAddresses } from '@/lib/facilitators';
 import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
+import { TRANSACTIONS_PAGE_SIZE } from '@/app/(app)/(home)/transactions/constants';
 import { Chain } from '@/types/chain';
 
 import type { NextRequest } from 'next/server';
@@ -87,7 +88,7 @@ function getHomePageTasks(
   timeframe: ActivityTimeframe,
   chain?: Chain
 ): (() => Promise<unknown>)[] {
-  const transactionsLimit = 15;
+  const transactionsLimit = TRANSACTIONS_PAGE_SIZE;
 
   return [
     // Overall Stats - current period
