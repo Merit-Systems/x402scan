@@ -744,6 +744,14 @@ function PostRegistrationDialog({
               Test your endpoints &rarr;
             </Link>
           </Button>
+          <Button asChild variant="outline" className="w-full">
+            <Link
+              href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1JmDUvMb4QVktX4PscRA66DEAQCLHLJKRKvwFogirtp9JZ0s5l-Vj96Nthl3M16qDPOprzsK6U"
+              target="_blank"
+            >
+              Get help selling to agents &rarr;
+            </Link>
+          </Button>
           <p className="text-xs text-muted-foreground text-center pt-1">
             Start onboarding your users immediately at{' '}
             <Link
