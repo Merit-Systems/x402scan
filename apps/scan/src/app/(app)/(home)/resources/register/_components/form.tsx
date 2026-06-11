@@ -723,7 +723,10 @@ function PostRegistrationDialog({
   const [emailSubmitted, setEmailSubmitted] = useState(!!contactEmail);
 
   const updateEmailMutation = api.public.origins.updateEmail.useMutation({
-    onSuccess: () => setEmailSubmitted(true),
+    onSuccess: () => {
+      setEmailSubmitted(true);
+      window.open(CALENDAR_URL, '_blank');
+    },
   });
 
   let hostname: string;
@@ -830,9 +833,11 @@ function PostRegistrationDialog({
                 </Button>
               </form>
             ) : (
-              <Link href={CALENDAR_URL} target="_blank" className="flex-1">
-                <Button className="w-full">Schedule a call &rarr;</Button>
-              </Link>
+              contactEmail && (
+                <Link href={CALENDAR_URL} target="_blank" className="flex-1">
+                  <Button className="w-full">Schedule a call &rarr;</Button>
+                </Link>
+              )
             )}
           </ChecklistStep>
 
