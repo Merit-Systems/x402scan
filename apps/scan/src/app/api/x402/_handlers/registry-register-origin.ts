@@ -29,7 +29,9 @@ export async function handleRegistryRegisterOrigin(
   const result = await registerResourcesFromDiscovery(
     discoveryResult.resources,
     discoveryResult.source,
-    discoveryResult.info
+    discoveryResult.info,
+    undefined,
+    discoveryResult.contactEmail
   );
 
   try {

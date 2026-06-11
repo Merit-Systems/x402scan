@@ -186,7 +186,8 @@ export const resourcesRouter = createTRPCRouter({
         discoveryResult.resources,
         discoveryResult.source,
         discoveryResult.info,
-        input.probeSessionId
+        input.probeSessionId,
+        discoveryResult.contactEmail
       );
 
       if (result.registered === 0 && result.siwx === 0) {

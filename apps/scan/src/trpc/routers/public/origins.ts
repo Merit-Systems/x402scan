@@ -10,6 +10,7 @@ import {
   searchOrigins,
   searchOriginsSchema,
 } from '@/services/db/resources/origin';
+import { scanDb } from '@x402scan/scan-db';
 
 export const originsRouter = createTRPCRouter({
   get: publicProcedure.input(z.uuid()).query(async ({ input }) => {
@@ -35,5 +36,14 @@ export const originsRouter = createTRPCRouter({
     .input(searchOriginsSchema)
     .query(async ({ input }) => {
       return await searchOrigins(input);
+    }),
+  updateEmail: publicProcedure
+    .input(z.object({ originId: z.string().uuid(), email: z.string().email() }))
+    .mutation(async ({ input }) => {
+      await scanDb.resourceOrigin.update({
+        where: { id: input.originId },
+        data: { email: input.email },
+      });
+      return { success: true };
     }),
 });

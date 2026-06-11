@@ -26,6 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import {
   Tooltip,
   TooltipContent,
@@ -690,6 +691,7 @@ export const RegisterResourceForm = () => {
           <PostRegistrationDialog
             originId={activeBulkResult.originId}
             origin={activeSummaryOrigin}
+            contactEmail={contactEmail}
           />
         </>
       ) : null}
@@ -703,14 +705,26 @@ export const RegisterResourceForm = () => {
   );
 };
 
+const CALENDAR_URL =
+  'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1JmDUvMb4QVktX4PscRA66DEAQCLHLJKRKvwFogirtp9JZ0s5l-Vj96Nthl3M16qDPOprzsK6U';
+
 function PostRegistrationDialog({
   originId,
   origin,
+  contactEmail,
 }: {
   originId: string;
   origin: string;
+  contactEmail?: string;
 }) {
   const [open, setOpen] = useState(true);
+  const [clickedSteps, setClickedSteps] = useState<Set<number>>(new Set());
+  const [email, setEmail] = useState(contactEmail ?? '');
+  const [emailSubmitted, setEmailSubmitted] = useState(!!contactEmail);
+
+  const updateEmailMutation = api.public.origins.updateEmail.useMutation({
+    onSuccess: () => setEmailSubmitted(true),
+  });
 
   let hostname: string;
   try {
@@ -719,59 +733,147 @@ function PostRegistrationDialog({
     hostname = origin;
   }
 
+  const markClicked = (step: number) => {
+    setClickedSteps(prev => new Set(prev).add(step));
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>You&apos;re registered!</DialogTitle>
-          <DialogDescription>
-            Here&apos;s what you can do next.
-          </DialogDescription>
+          <DialogDescription>Complete your setup.</DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-2">
-          <Button asChild className="w-full">
-            <Link href={`/server/${originId}`} target="_blank">
-              View your API page &rarr;
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full">
-            <Link href={`https://tryponcho.com/m/${hostname}`} target="_blank">
-              Test your endpoints &rarr;
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full">
+        <div className="flex flex-col gap-4">
+          {/* Step 1 */}
+          <ChecklistStep number={1} completed={clickedSteps.has(1)}>
             <Link
-              href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1JmDUvMb4QVktX4PscRA66DEAQCLHLJKRKvwFogirtp9JZ0s5l-Vj96Nthl3M16qDPOprzsK6U"
+              href={`/server/${originId}`}
               target="_blank"
+              onClick={() => markClicked(1)}
+              className="flex-1"
             >
-              Get free feedback and support &rarr;
+              <Button variant="outline" size="sm" className="w-full">
+                Review your API page &rarr;
+              </Button>
             </Link>
-          </Button>
-          <p className="text-xs text-muted-foreground text-center pt-1">
-            Start onboarding your users immediately at{' '}
+          </ChecklistStep>
+
+          {/* Step 2 */}
+          <ChecklistStep number={2} completed={clickedSteps.has(2)}>
             <Link
               href={`https://tryponcho.com/m/${hostname}`}
               target="_blank"
-              className="underline"
+              onClick={() => markClicked(2)}
+              className="flex-1"
             >
-              tryponcho.com/m/{hostname}
+              <Button variant="outline" size="sm" className="w-full">
+                Test your endpoints &rarr;
+              </Button>
             </Link>
-            <button
-              type="button"
-              className="inline-flex align-middle ml-1 text-muted-foreground hover:text-foreground transition-colors"
-              onClick={() => {
-                void navigator.clipboard.writeText(
-                  `https://tryponcho.com/m/${hostname}`
-                );
-                toast.success('Onboarding link copied to clipboard');
-              }}
-            >
-              <Copy className="size-3" />
-            </button>
-          </p>
+          </ChecklistStep>
+
+          {/* Step 3 */}
+          <ChecklistStep number={3} completed={emailSubmitted}>
+            {!emailSubmitted ? (
+              <form
+                className="flex gap-2 flex-1"
+                onSubmit={e => {
+                  e.preventDefault();
+                  if (email.trim()) {
+                    updateEmailMutation.mutate({ originId, email });
+                  }
+                }}
+              >
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="flex-1 h-8 text-sm"
+                />
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={!email.trim() || updateEmailMutation.isPending}
+                >
+                  {updateEmailMutation.isPending ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    'Submit'
+                  )}
+                </Button>
+              </form>
+            ) : (
+              <Link href={CALENDAR_URL} target="_blank" className="flex-1">
+                <Button variant="outline" size="sm" className="w-full">
+                  Schedule a call &rarr;
+                </Button>
+              </Link>
+            )}
+          </ChecklistStep>
+
+          <div className="border-t pt-2">
+            <p className="text-xs text-muted-foreground text-center">
+              Share your merchant page:{' '}
+              <Link
+                href={`https://tryponcho.com/m/${hostname}`}
+                target="_blank"
+                className="underline"
+              >
+                tryponcho.com/m/{hostname}
+              </Link>
+              <button
+                type="button"
+                className="inline-flex align-middle ml-1 text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => {
+                  void navigator.clipboard.writeText(
+                    `https://tryponcho.com/m/${hostname}`
+                  );
+                  toast.success('Link copied to clipboard');
+                }}
+              >
+                <Copy className="size-3" />
+              </button>
+            </p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ChecklistStep({
+  number,
+  completed,
+  children,
+}: {
+  number: number;
+  completed: boolean;
+  children: React.ReactNode;
+}) {
+  const labels = [
+    'Review your API page',
+    'Test your endpoints',
+    'Get free feedback from our team',
+  ];
+
+  return (
+    <div className="flex items-start gap-3">
+      <div
+        className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+          completed
+            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+            : 'bg-muted text-muted-foreground'
+        }`}
+      >
+        {completed ? <Check className="size-3.5" /> : number}
+      </div>
+      <div className="flex-1 space-y-1.5">
+        <p className="text-sm font-medium leading-6">{labels[number - 1]}</p>
+        {children}
+      </div>
+    </div>
   );
 }
 
