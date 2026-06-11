@@ -682,18 +682,11 @@ export const RegisterResourceForm = () => {
       ) : null}
 
       {activeBulkResult?.originId && activeSummaryOrigin ? (
-        <>
-          <Link href={`/server/${activeBulkResult.originId}`} target="_blank">
-            <Button variant="outline" className="w-full">
-              View your API page &rarr;
-            </Button>
-          </Link>
-          <PostRegistrationDialog
-            originId={activeBulkResult.originId}
-            origin={activeSummaryOrigin}
-            contactEmail={contactEmail}
-          />
-        </>
+        <PostRegistrationDialog
+          originId={activeBulkResult.originId}
+          origin={activeSummaryOrigin}
+          contactEmail={contactEmail}
+        />
       ) : null}
 
       {bulkError && <p className="text-sm text-red-600">{bulkError}</p>}
@@ -752,12 +745,18 @@ function PostRegistrationDialog({
     completedFlags.indexOf(false) + 1 || completedFlags.length + 1;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>You&apos;re registered!</DialogTitle>
-          <DialogDescription>Complete your setup.</DialogDescription>
-        </DialogHeader>
+    <>
+      {!open && (
+        <Button variant="outline" className="w-full" onClick={() => setOpen(true)}>
+          Complete your setup &rarr;
+        </Button>
+      )}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>You&apos;re registered!</DialogTitle>
+            <DialogDescription>Complete your setup.</DialogDescription>
+          </DialogHeader>
         <div className="flex flex-col gap-4">
           {/* Step 1 */}
           <ChecklistStep
@@ -871,6 +870,7 @@ function PostRegistrationDialog({
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
 
