@@ -104,7 +104,8 @@ export async function registerResourcesFromDiscovery(
   originInfo?: { title: string; description?: string },
   /** Server-side probe session ID. URLs with a cached probe result in Redis
    *  skip re-probing — avoids rate limiting on registration. */
-  probeSessionId?: string
+  probeSessionId?: string,
+  contactEmail?: string
 ): Promise<RegisterOriginResult> {
   const uniqueOrigins = [
     ...new Set(resources.map(resource => getOriginFromUrl(resource.url))),
@@ -408,6 +409,7 @@ export async function registerResourcesFromDiscovery(
           title: title ?? undefined,
           description: description ?? undefined,
           favicon: favicon ?? undefined,
+          email: contactEmail ?? undefined,
           ogImages:
             og?.ogImage?.flatMap(image => {
               try {

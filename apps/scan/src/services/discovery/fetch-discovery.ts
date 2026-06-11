@@ -116,6 +116,9 @@ export async function fetchDiscoveryDocument(
     source: mapSourceToDiscoverySource(discovered.source),
     resources,
     ...(discovered.info ? { info: discovered.info } : {}),
+    ...(discovered.info?.contactEmail
+      ? { contactEmail: discovered.info.contactEmail }
+      : {}),
     ownershipProofs: discovered.ownershipProofs ?? [],
   };
 }

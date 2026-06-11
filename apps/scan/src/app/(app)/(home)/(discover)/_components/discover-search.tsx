@@ -213,6 +213,7 @@ export const DiscoverSearchResults = () => {
           title: r.title,
           description: r.description,
           favicon: r.favicon,
+          email: null,
           createdAt: new Date(),
           updatedAt: new Date(),
         },

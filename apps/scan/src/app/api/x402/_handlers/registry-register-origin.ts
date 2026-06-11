@@ -2,6 +2,7 @@ import type { registryRegisterOriginBodySchema } from '@/app/api/x402/_lib/schem
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { registerResourcesFromDiscovery } from '@/lib/discovery/register-origin';
+import { contactEmailFields } from './registry-register';
 import { revalidatePath } from 'next/cache';
 
 import type { z } from 'zod';
@@ -28,7 +29,9 @@ export async function handleRegistryRegisterOrigin(
   const result = await registerResourcesFromDiscovery(
     discoveryResult.resources,
     discoveryResult.source,
-    discoveryResult.info
+    discoveryResult.info,
+    undefined,
+    discoveryResult.contactEmail
   );
 
   try {
@@ -66,5 +69,6 @@ export async function handleRegistryRegisterOrigin(
     failedDetails:
       result.failedDetails.length > 0 ? result.failedDetails : undefined,
     siwxDetails: result.siwxDetails.length > 0 ? result.siwxDetails : undefined,
+    ...contactEmailFields(discoveryResult.contactEmail),
   });
 }

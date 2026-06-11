@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import {
   Check,
   ChevronDown,
+  Copy,
   Loader2,
   Minus,
   CircleHelp,
@@ -19,6 +20,14 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -30,13 +39,31 @@ import {
   DiscoveryPanel,
   useDiscovery,
 } from '@/app/(app)/_components/discovery';
+import { DiscoveryActions } from '@/app/(app)/_components/discovery/discovery-actions';
 import { Favicon } from '@/app/(app)/_components/favicon';
 import { normalizeUrl } from '@/lib/url';
 import { resourceKey } from '@/lib/resource-key';
 import { api } from '@/trpc/client';
 import type { DiscoveredResource } from '@/types/discovery';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { z } from 'zod';
+
+const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it so I can verify ownership of my origin, let users contact me, and customize my merchant pages on Poncho.
+
+In my openapi.json, add or update the top-level "info" object to include a "contact" field with my email:
+
+{
+  "info": {
+    "title": "...",
+    "version": "...",
+    "contact": {
+      "email": "me@example.com"
+    }
+  }
+}
+
+Replace me@example.com with my actual email. This is part of the standard OpenAPI 3.x spec (info.contact.email). Do not remove any existing fields — just add the contact object if missing.`;
 
 interface ManualRegistrationResult {
   success: true;
@@ -149,6 +176,7 @@ export const RegisterResourceForm = () => {
     invalidResourcesMap,
     skippedResources,
     siwxResourceCount,
+    contactEmail,
   } = useDiscovery({
     url,
   });
@@ -407,8 +435,9 @@ export const RegisterResourceForm = () => {
         )}
       </div>
 
-      {/* Probe result — inline, no separate card */}
-      {url.trim().length > 0 &&
+      {/* Probe result — inline, no separate card. Hidden post-registration. */}
+      {!activeBulkResult &&
+        url.trim().length > 0 &&
         (() => {
           const strippedDomain = url.replace(/^https?:\/\//, '').trim();
           const hasTld = strippedDomain.includes('.');
@@ -442,6 +471,7 @@ export const RegisterResourceForm = () => {
                     isBatchTestLoading={isBatchTestLoading}
                     authModeMap={authModeMap}
                     invalidResourcesMap={invalidResourcesMap}
+                    contactEmail={contactEmail}
                   />
                 )}
 
@@ -537,6 +567,7 @@ export const RegisterResourceForm = () => {
                   error: getPrimaryProbeError(r),
                   status: r.statusCode,
                 }))}
+                missingContactEmail={!contactEmail}
               />
             </CollapsibleContent>
           </Collapsible>
@@ -594,6 +625,7 @@ export const RegisterResourceForm = () => {
                     error: w.message,
                   }))
                 )}
+                missingContactEmail={!contactEmail}
               />
             </CollapsibleContent>
           </Collapsible>
@@ -649,12 +681,19 @@ export const RegisterResourceForm = () => {
         />
       ) : null}
 
-      {activeBulkResult?.originId ? (
-        <Link href={`/server/${activeBulkResult.originId}`}>
-          <Button variant="outline" className="w-full">
-            View your API page &rarr;
-          </Button>
-        </Link>
+      {activeBulkResult?.originId && activeSummaryOrigin ? (
+        <>
+          <Link href={`/server/${activeBulkResult.originId}`} target="_blank">
+            <Button variant="outline" className="w-full">
+              View your API page &rarr;
+            </Button>
+          </Link>
+          <PostRegistrationDialog
+            originId={activeBulkResult.originId}
+            origin={activeSummaryOrigin}
+            contactEmail={contactEmail}
+          />
+        </>
       ) : null}
 
       {bulkError && <p className="text-sm text-red-600">{bulkError}</p>}
@@ -665,6 +704,217 @@ export const RegisterResourceForm = () => {
     </div>
   );
 };
+
+const CALENDAR_URL =
+  'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1JmDUvMb4QVktX4PscRA66DEAQCLHLJKRKvwFogirtp9JZ0s5l-Vj96Nthl3M16qDPOprzsK6U';
+
+function PostRegistrationDialog({
+  originId,
+  origin,
+  contactEmail,
+}: {
+  originId: string;
+  origin: string;
+  contactEmail?: string;
+}) {
+  const [open, setOpen] = useState(true);
+  const [clickedSteps, setClickedSteps] = useState<Set<number>>(new Set());
+  const [email, setEmail] = useState(contactEmail ?? '');
+  const [emailSubmitted, setEmailSubmitted] = useState(!!contactEmail);
+
+  const updateEmailMutation = api.public.origins.updateEmail.useMutation({
+    onSuccess: () => {
+      setEmailSubmitted(true);
+      window.open(CALENDAR_URL, '_blank');
+    },
+    onError: () => {
+      toast.error('Failed to save email. Please try again.');
+    },
+  });
+
+  let hostname: string;
+  try {
+    hostname = new URL(origin).hostname;
+  } catch {
+    hostname = origin;
+  }
+
+  const markClicked = (step: number) => {
+    setClickedSteps(prev => new Set(prev).add(step));
+  };
+
+  const completedFlags = [
+    clickedSteps.has(1),
+    clickedSteps.has(2),
+    emailSubmitted,
+  ];
+  const currentStep =
+    completedFlags.indexOf(false) + 1 || completedFlags.length + 1;
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>You&apos;re registered!</DialogTitle>
+          <DialogDescription>Complete your setup.</DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          {/* Step 1 */}
+          <ChecklistStep
+            number={1}
+            completed={clickedSteps.has(1)}
+            current={currentStep === 1}
+          >
+            <Link
+              href={`/server/${originId}`}
+              target="_blank"
+              onClick={() => markClicked(1)}
+              className="flex-1"
+            >
+              <Button variant="outline" className="w-full">
+                Review your API page &rarr;
+              </Button>
+            </Link>
+          </ChecklistStep>
+
+          {/* Step 2 */}
+          <ChecklistStep
+            number={2}
+            completed={clickedSteps.has(2)}
+            current={currentStep === 2}
+          >
+            <Link
+              href={`https://tryponcho.com/m/${hostname}`}
+              target="_blank"
+              onClick={() => markClicked(2)}
+              className="flex-1"
+            >
+              <Button variant="outline" className="w-full">
+                Test your endpoints &rarr;
+              </Button>
+            </Link>
+          </ChecklistStep>
+
+          {/* Step 3 */}
+          <ChecklistStep
+            number={3}
+            label="Get free feedback from our team"
+            completed={emailSubmitted}
+            current={currentStep === 3}
+          >
+            {!emailSubmitted ? (
+              <form
+                className="flex gap-2 flex-1"
+                onSubmit={e => {
+                  e.preventDefault();
+                  if (email.trim()) {
+                    updateEmailMutation.mutate({ originId, email });
+                  }
+                }}
+              >
+                <Input
+                  type="text"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="flex-1"
+                />
+                <Button
+                  type="submit"
+                  disabled={
+                    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+                    updateEmailMutation.isPending
+                  }
+                >
+                  {updateEmailMutation.isPending ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    'Submit'
+                  )}
+                </Button>
+              </form>
+            ) : (
+              contactEmail && (
+                <Link href={CALENDAR_URL} target="_blank" className="flex-1">
+                  <Button className="w-full">Schedule a call &rarr;</Button>
+                </Link>
+              )
+            )}
+          </ChecklistStep>
+
+          <div className="border-t pt-2">
+            <p className="text-xs text-muted-foreground text-center">
+              Share your merchant page:{' '}
+              <Link
+                href={`https://tryponcho.com/m/${hostname}`}
+                target="_blank"
+                className="underline"
+              >
+                tryponcho.com/m/{hostname}
+              </Link>
+              <button
+                type="button"
+                className="inline-flex align-middle ml-1 text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => {
+                  void navigator.clipboard.writeText(
+                    `https://tryponcho.com/m/${hostname}`
+                  );
+                  toast.success('Link copied to clipboard');
+                }}
+              >
+                <Copy className="size-3" />
+              </button>
+            </p>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ChecklistStep({
+  number,
+  label,
+  completed,
+  current,
+  children,
+}: {
+  number: number;
+  label?: string;
+  completed: boolean;
+  current: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`flex items-start gap-3 rounded-lg px-3 py-2.5 -mx-3 transition-colors ${
+        current
+          ? 'bg-primary/5 dark:bg-primary/10'
+          : completed
+            ? ''
+            : 'opacity-40'
+      }`}
+    >
+      <div
+        className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+          completed
+            ? 'bg-green-500 text-white dark:bg-green-500'
+            : current
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground'
+        }`}
+      >
+        {completed ? <Check className="size-3.5" /> : number}
+      </div>
+      <div className="flex-1 space-y-1.5">
+        {label && <p className="text-sm font-medium leading-6">{label}</p>}
+        {children}
+      </div>
+    </div>
+  );
+}
 
 function FailedResourceRow({
   url,
@@ -724,6 +974,7 @@ function ProbeResult({
   isBatchTestLoading = false,
   authModeMap = {},
   invalidResourcesMap = {},
+  contactEmail,
 }: {
   preview: {
     favicon: string | null;
@@ -741,6 +992,7 @@ function ProbeResult({
   isBatchTestLoading?: boolean;
   authModeMap?: Record<string, string>;
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
+  contactEmail?: string | null;
 }) {
   const testedKeys = useMemo(
     () => new Set(testedResources.map(rk)),
@@ -860,6 +1112,34 @@ function ProbeResult({
           Serve a <code className="font-mono">/favicon.ico</code> at your API
           root to display an icon.
         </p>
+      )}
+      {!contactEmail && (
+        <div className="text-xs text-yellow-600 dark:text-yellow-500 space-y-1.5">
+          <p className="flex items-start gap-1.5">
+            <TriangleAlert className="size-3 shrink-0 mt-0.5" />
+            <span>
+              Add{' '}
+              <code className="font-mono bg-muted px-1 rounded text-[11px]">
+                info.contact.email
+              </code>{' '}
+              to your openapi.json to verify ownership and let users contact
+              you.
+            </span>
+          </p>
+          <p className="pl-[18px] text-foreground">
+            <DiscoveryActions
+              label="Have your agent add it with this prompt"
+              customPrompt={CONTACT_EMAIL_PROMPT}
+            />{' '}
+            or{' '}
+            <Link
+              href="/discovery#merchant-dashboard"
+              className="underline underline-offset-2 hover:text-foreground transition-colors"
+            >
+              learn more
+            </Link>
+          </p>
+        </div>
       )}
       {isBatchTestLoading ? (
         <div className="flex items-center gap-2 text-xs text-muted-foreground py-1">

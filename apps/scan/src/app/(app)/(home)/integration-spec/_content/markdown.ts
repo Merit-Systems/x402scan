@@ -25,6 +25,10 @@ Requirements:
 - Use OpenAPI \`security\` + \`components.securitySchemes\` for auth declaration.
 - Add high-level guidance in \`info.x-guidance\` for agent-friendly discovery.
 
+Recommended:
+
+- \`info.contact.email\` — your contact email. Lets you verify ownership of your origin, allows users to contact you, and lets you customize your merchant pages on [Poncho](https://tryponcho.com).
+
 ### Pricing modes in x-payment-info
 
 - Fixed: \`{ price: { mode: "fixed", currency: "USD", amount: "<amount>" } }\`
@@ -39,7 +43,10 @@ Requirements:
     "title": "My API",
     "version": "1.0.0",
     "description": "example demo server",
-    "x-guidance": "Use POST /api/search for neural web search. Accepts a JSON body with a 'query' field."
+    "x-guidance": "Use POST /api/search for neural web search. Accepts a JSON body with a 'query' field.",
+    "contact": {
+      "email": "you@example.com"
+    }
   },
   "paths": {
     "/api/search": {

@@ -38,6 +38,10 @@ Schema guidance (important):
 - TypeScript recommendation (optional): Zod v4 is a good source of truth, but any valid schema pipeline is fine.
 - Add high-level guidance in info.x-guidance for user-friendly discovery. This document should explain to an agent how to use your API at a high level.
 
+Contact email (recommended):
+- Ask the user for their contact email and add it as info.contact.email in the openapi.json.
+- This lets them verify ownership of their origin, allows users to contact them, and lets them customize their merchant pages on Poncho.
+
 OpenAPI payable operation must include ALL:
 - x-payment-info with:
   - price (structured object):
@@ -202,6 +206,23 @@ export default function DiscoverySpecPage() {
                   agent-friendly discovery.
                 </li>
               </ul>
+              <h3 className="text-sm font-semibold">Recommended</h3>
+              <ul className="list-disc pl-5 space-y-1 text-sm">
+                <li>
+                  <code>info.contact.email</code> — your contact email. Lets you
+                  verify ownership of your origin, allows users to contact you,
+                  and lets you customize your merchant pages on{' '}
+                  <a
+                    href="https://tryponcho.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline hover:no-underline font-medium text-foreground"
+                  >
+                    Poncho
+                  </a>
+                  .
+                </li>
+              </ul>
               <h3 className="text-sm font-semibold">
                 Pricing modes in <code>x-payment-info</code>
               </h3>
@@ -231,7 +252,8 @@ export default function DiscoverySpecPage() {
     "title": "My API",
     "version": "1.0.0",
     "description": "example demo server",
-    "x-guidance": "Use POST /api/search for neural web search. Accepts a JSON body with a 'query' field."
+    "x-guidance": "Use POST /api/search for neural web search. Accepts a JSON body with a 'query' field.",
+    "contact": { "email": "you@example.com" }
   },
   "paths": {
     "/api/search": {

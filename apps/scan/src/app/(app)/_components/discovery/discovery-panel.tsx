@@ -72,12 +72,14 @@ export function DiscoveryFixHint({
   warnings,
   noDiscovery,
   missingSchemaResources,
+  missingContactEmail,
 }: {
   className?: string;
   failedResources?: { url: string; error: string; status?: number }[];
   warnings?: { url: string; error: string; status?: number }[];
   noDiscovery?: boolean;
   missingSchemaResources?: string[];
+  missingContactEmail?: boolean;
 }) {
   const label = noDiscovery
     ? 'Have your agent create an OpenAPI spec for your resource'
@@ -90,6 +92,7 @@ export function DiscoveryFixHint({
         failedResources={failedResources}
         warnings={warnings}
         missingSchemaResources={missingSchemaResources}
+        missingContactEmail={missingContactEmail}
         noDiscovery={noDiscovery}
       />{' '}
       or{' '}
