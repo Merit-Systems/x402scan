@@ -735,11 +735,6 @@ function PostRegistrationDialog({
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full">
-            <Link href={`https://tryponcho.com/p/${hostname}`} target="_blank">
-              Track your endpoint health &rarr;
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full">
             <Link href={`https://tryponcho.com/m/${hostname}`} target="_blank">
               Test your endpoints &rarr;
             </Link>
@@ -749,7 +744,7 @@ function PostRegistrationDialog({
               href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1JmDUvMb4QVktX4PscRA66DEAQCLHLJKRKvwFogirtp9JZ0s5l-Vj96Nthl3M16qDPOprzsK6U"
               target="_blank"
             >
-              Get help selling to agents &rarr;
+              Get free feedback and support &rarr;
             </Link>
           </Button>
           <p className="text-xs text-muted-foreground text-center pt-1">
