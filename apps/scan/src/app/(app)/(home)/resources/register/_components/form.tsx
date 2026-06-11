@@ -737,6 +737,14 @@ function PostRegistrationDialog({
     setClickedSteps(prev => new Set(prev).add(step));
   };
 
+  const completedFlags = [
+    clickedSteps.has(1),
+    clickedSteps.has(2),
+    emailSubmitted,
+  ];
+  const currentStep =
+    completedFlags.indexOf(false) + 1 || completedFlags.length + 1;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-md">
@@ -746,35 +754,48 @@ function PostRegistrationDialog({
         </DialogHeader>
         <div className="flex flex-col gap-4">
           {/* Step 1 */}
-          <ChecklistStep number={1} completed={clickedSteps.has(1)}>
+          <ChecklistStep
+            number={1}
+            completed={clickedSteps.has(1)}
+            current={currentStep === 1}
+          >
             <Link
               href={`/server/${originId}`}
               target="_blank"
               onClick={() => markClicked(1)}
               className="flex-1"
             >
-              <Button variant="outline" size="sm" className="w-full">
+              <Button variant="outline" className="w-full">
                 Review your API page &rarr;
               </Button>
             </Link>
           </ChecklistStep>
 
           {/* Step 2 */}
-          <ChecklistStep number={2} completed={clickedSteps.has(2)}>
+          <ChecklistStep
+            number={2}
+            completed={clickedSteps.has(2)}
+            current={currentStep === 2}
+          >
             <Link
               href={`https://tryponcho.com/m/${hostname}`}
               target="_blank"
               onClick={() => markClicked(2)}
               className="flex-1"
             >
-              <Button variant="outline" size="sm" className="w-full">
+              <Button variant="outline" className="w-full">
                 Test your endpoints &rarr;
               </Button>
             </Link>
           </ChecklistStep>
 
           {/* Step 3 */}
-          <ChecklistStep number={3} completed={emailSubmitted}>
+          <ChecklistStep
+            number={3}
+            label="Get free feedback from our team"
+            completed={emailSubmitted}
+            current={currentStep === 3}
+          >
             {!emailSubmitted ? (
               <form
                 className="flex gap-2 flex-1"
@@ -786,16 +807,20 @@ function PostRegistrationDialog({
                 }}
               >
                 <Input
-                  type="email"
+                  type="text"
+                  inputMode="email"
+                  autoComplete="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="flex-1 h-8 text-sm"
+                  className="flex-1"
                 />
                 <Button
                   type="submit"
-                  size="sm"
-                  disabled={!email.trim() || updateEmailMutation.isPending}
+                  disabled={
+                    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+                    updateEmailMutation.isPending
+                  }
                 >
                   {updateEmailMutation.isPending ? (
                     <Loader2 className="size-3 animate-spin" />
@@ -806,9 +831,7 @@ function PostRegistrationDialog({
               </form>
             ) : (
               <Link href={CALENDAR_URL} target="_blank" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  Schedule a call &rarr;
-                </Button>
+                <Button className="w-full">Schedule a call &rarr;</Button>
               </Link>
             )}
           </ChecklistStep>
@@ -845,32 +868,40 @@ function PostRegistrationDialog({
 
 function ChecklistStep({
   number,
+  label,
   completed,
+  current,
   children,
 }: {
   number: number;
+  label?: string;
   completed: boolean;
+  current: boolean;
   children: React.ReactNode;
 }) {
-  const labels = [
-    'Review your API page',
-    'Test your endpoints',
-    'Get free feedback from our team',
-  ];
-
   return (
-    <div className="flex items-start gap-3">
+    <div
+      className={`flex items-start gap-3 rounded-lg px-3 py-2.5 -mx-3 transition-colors ${
+        current
+          ? 'bg-primary/5 dark:bg-primary/10'
+          : completed
+            ? ''
+            : 'opacity-40'
+      }`}
+    >
       <div
         className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
           completed
-            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-            : 'bg-muted text-muted-foreground'
+            ? 'bg-green-500 text-white dark:bg-green-500'
+            : current
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground'
         }`}
       >
         {completed ? <Check className="size-3.5" /> : number}
       </div>
       <div className="flex-1 space-y-1.5">
-        <p className="text-sm font-medium leading-6">{labels[number - 1]}</p>
+        {label && <p className="text-sm font-medium leading-6">{label}</p>}
         {children}
       </div>
     </div>
