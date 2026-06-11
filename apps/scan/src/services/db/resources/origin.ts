@@ -165,6 +165,7 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
     where: {
       resources: { some: resourceFilter },
     },
+    omit: { email: true },
     orderBy: { createdAt: 'desc' },
   });
   return origins;
@@ -202,6 +203,7 @@ export const listOriginsWithResources = async (
       ...(originIds ? { id: { in: originIds } } : {}),
       resources: { some: paidOrSiwxResource },
     },
+    omit: { email: true },
     include: {
       resources: {
         where: paidOrSiwxResource,
@@ -284,6 +286,7 @@ export const searchOrigins = async (
         },
       },
     },
+    omit: { email: true },
     include: {
       resources: {
         where: {
@@ -309,6 +312,7 @@ export const searchOrigins = async (
 export const getOrigin = async (id: string) => {
   const origin = await scanDb.resourceOrigin.findUnique({
     where: { id },
+    omit: { email: true },
     include: {
       ogImages: true,
       resources: {
