@@ -55,7 +55,7 @@ const IdeGraphic = () => {
       <div className="flex flex-col md:flex-1 md:overflow-hidden w-full md:w-0">
         <div className="flex items-center bg-muted/50 border-b border-border/50">
           <div className="flex items-center gap-2 px-3 py-2 bg-background border-r border-border/50 text-xs">
-            <FileCode2 className="size-3.5 text-blue-400" />
+            <FileCode2 className="size-3.5 text-primary" />
             <span className="text-foreground">enrichment.ts</span>
             <X className="size-3 text-muted-foreground hover:text-foreground cursor-pointer" />
           </div>

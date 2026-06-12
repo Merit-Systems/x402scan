@@ -63,7 +63,13 @@ export const ResourceCard: React.FC<Props> = ({
       {!isFlat && (
         <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border" />
       )}
-      <Card className={cn(className, 'overflow-hidden')}>
+      <Card
+        className={cn(
+          className,
+          'overflow-hidden',
+          !isFlat && 'border-0 shadow-none'
+        )}
+      >
         <CardHeader className="bg-muted w-full flex flex-row items-center justify-between space-y-0 px-4 py-2 gap-4">
           <Header
             resource={resource}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Send, Mail } from 'lucide-react';
+import { Send, Mail, CalendarDays } from 'lucide-react';
 import { Body } from '@/app/_components/layout/page-utils';
 import { RegisterResourceForm } from './_components/form';
 import { DiscoveryActions } from './_components/discovery-actions';
@@ -50,6 +50,14 @@ export default function RegisterResourcePage() {
                 className="hover:text-foreground transition-colors"
               >
                 <Mail className="size-3.5" />
+              </a>
+              <a
+                href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1JmDUvMb4QVktX4PscRA66DEAQCLHLJKRKvwFogirtp9JZ0s5l-Vj96Nthl3M16qDPOprzsK6U"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-foreground transition-colors"
+              >
+                <CalendarDays className="size-3.5" />
               </a>
             </ExpandableLink>
           </div>
