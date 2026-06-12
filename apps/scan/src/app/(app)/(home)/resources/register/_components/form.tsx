@@ -538,7 +538,7 @@ export const RegisterResourceForm = () => {
                 {failedResources.length === 1 ? '' : 's'} with errors
               </button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="pt-2 space-y-3">
+            <CollapsibleContent className="pt-2 space-y-2">
               <p className="text-xs text-muted-foreground">
                 <strong>
                   {failedResources.length} endpoint
@@ -592,7 +592,7 @@ export const RegisterResourceForm = () => {
                 (Not blocking)
               </button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="pt-2 space-y-3">
+            <CollapsibleContent className="pt-2 space-y-2">
               <p className="text-xs text-muted-foreground">
                 These endpoints will still be registered, but have issues that
                 may affect agent compatibility.
@@ -837,6 +837,14 @@ function PostRegistrationDialog({
                       'Submit'
                     )}
                   </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="text-muted-foreground"
+                    onClick={() => setOpen(false)}
+                  >
+                    Skip
+                  </Button>
                 </form>
               ) : (
                 contactEmail && (
@@ -847,7 +855,7 @@ function PostRegistrationDialog({
               )}
             </ChecklistStep>
 
-            <div className="border-t pt-2">
+            <div className="border-t pt-3 -mx-6 px-6">
               <p className="text-xs text-muted-foreground text-center">
                 Share your merchant page:{' '}
                 <Link
@@ -893,7 +901,7 @@ function ChecklistStep({
 }) {
   return (
     <div
-      className={`flex items-start gap-3 rounded-lg px-3 py-2.5 -mx-3 transition-colors ${
+      className={`flex ${label ? 'items-start' : 'items-center'} gap-3 rounded-lg px-3 py-2.5 -mx-3 transition-colors ${
         current
           ? 'bg-primary/5 dark:bg-primary/10'
           : completed
@@ -1169,7 +1177,7 @@ function ProbeResult({
                   ) : invalidKeys.has(k) ? (
                     <X className="size-3 text-red-500 shrink-0" />
                   ) : siwxKeys.has(k) ? (
-                    <Check className="size-3 text-blue-500 shrink-0" />
+                    <Check className="size-3 text-primary shrink-0" />
                   ) : warningKeys.has(k) ? (
                     <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
                   ) : testedKeys.has(k) ? (

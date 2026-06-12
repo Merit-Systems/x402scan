@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { ChevronDown, Check, Copy } from 'lucide-react';
+import { ChevronDown, Check, Copy, ExternalLink } from 'lucide-react';
 
 import type { RouterOutputs } from '@/trpc/client';
 import { Button } from '@/components/ui/button';
@@ -22,13 +22,15 @@ interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
 }
 
-type WalletId = 'agentcash' | 'awal' | 'circle' | 'paysh';
+type WalletId = 'agentcash' | 'poncho' | 'awal' | 'circle' | 'paysh';
 
 interface WalletOption {
   id: WalletId;
   label: string;
   icon: string;
   getCommand: (origin: string, hostname: string) => string;
+  /** When set, the action button navigates to this URL instead of copying */
+  getUrl?: (origin: string, hostname: string) => string;
 }
 
 const wallets: WalletOption[] = [
@@ -37,6 +39,13 @@ const wallets: WalletOption[] = [
     label: 'AgentCash',
     icon: '/wallet-agentcash.svg',
     getCommand: origin => `npx agentcash try ${origin}`,
+  },
+  {
+    id: 'poncho',
+    label: 'Poncho',
+    icon: '/wallet-poncho.svg',
+    getCommand: (_, hostname) => `https://tryponcho.com/m/${hostname}`,
+    getUrl: (_, hostname) => `https://tryponcho.com/m/${hostname}`,
   },
   {
     id: 'awal',
@@ -66,6 +75,7 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
   const hostname = new URL(origin.origin).hostname.replace(/^www\./, '');
   const wallet = wallets.find(w => w.id === selectedWallet)!;
   const command = wallet.getCommand(origin.origin, hostname);
+  const walletUrl = wallet.getUrl?.(origin.origin, hostname);
 
   useEffect(() => {
     return () => {
@@ -80,17 +90,25 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
     timerRef.current = setTimeout(() => setShowCopied(false), 2500);
   }, [command]);
 
+  const handleAction = useCallback(() => {
+    if (walletUrl) {
+      window.open(walletUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      void handleCopy();
+    }
+  }, [walletUrl, handleCopy]);
+
   return (
-    <div className="flex items-center gap-2 w-fit bg-muted/50 rounded-lg px-3 py-2.5 text-sm">
-      <span className="text-sm font-semibold shrink-0 text-muted-foreground">
-        Try with
-      </span>
+    <div className="flex items-center gap-2 w-fit text-sm">
       <DropdownMenu>
-        <DropdownMenuTrigger className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:opacity-80 cursor-pointer focus:outline-none shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={wallet.icon} alt="" className="size-4 rounded-sm" />
-          {wallet.label}
-          <ChevronDown className="size-3" />
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="gap-1.5 text-sm shrink-0">
+            Try with
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={wallet.icon} alt="" className="size-4 rounded-sm" />
+            {wallet.label}
+            <ChevronDown className="size-3" />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           {wallets.map(w => (
@@ -106,35 +124,33 @@ export const AgentCashCTA: React.FC<Props> = ({ origin }) => {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      <div className="relative shrink-0">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              className="shrink-0 size-fit p-2"
-              size="icon"
-              onClick={() => void handleCopy()}
-            >
-              {showCopied ? (
-                <Check className="size-3" />
-              ) : (
-                <Copy className="size-3" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          {!showCopied && (
-            <TooltipContent side="right">
-              <p>Copy and paste to your CLI or Agent</p>
-            </TooltipContent>
-          )}
-        </Tooltip>
-        {showCopied && (
-          <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 whitespace-nowrap rounded-md border bg-background px-3 py-2 text-sm font-medium shadow-md flex items-center gap-2">
-            <Check className="size-4 text-green-600" />
-            Copied! Paste to your CLI or Agent
-          </div>
-        )}
-      </div>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            className="shrink-0 size-fit p-2"
+            size="icon"
+            onClick={handleAction}
+          >
+            {walletUrl ? (
+              <ExternalLink className="size-3" />
+            ) : showCopied ? (
+              <Check className="size-3" />
+            ) : (
+              <Copy className="size-3" />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <p>
+            {walletUrl
+              ? 'Open in Poncho'
+              : showCopied
+                ? 'Copied!'
+                : 'Copy command'}
+          </p>
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 };

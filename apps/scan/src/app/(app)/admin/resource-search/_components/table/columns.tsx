@@ -55,7 +55,7 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
         matchPercentage === 100
           ? 'bg-green-500/10 text-green-500 border-green-500/20'
           : matchPercentage >= 60
-            ? 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+            ? 'bg-primary/10 text-primary border-primary/20'
             : matchPercentage >= 40
               ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
               : 'bg-red-500/10 text-red-500 border-red-500/20';
@@ -191,7 +191,7 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
 
       return (
         <div className="flex items-center gap-2">
-          <TrendingUp className="h-3.5 w-3.5 text-blue-500" />
+          <TrendingUp className="h-3.5 w-3.5 text-primary" />
           <span className="text-sm font-medium">
             {formatNumber(analytics.totalCalls)} calls
           </span>

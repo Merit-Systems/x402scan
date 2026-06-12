@@ -1280,7 +1280,7 @@ function RegisterModeResourceList({
                       className={cn(
                         'text-xs px-1.5 py-0.5 rounded',
                         resourceSource === 'entered'
-                          ? 'bg-blue-500/10 text-blue-600'
+                          ? 'bg-primary/10 text-primary'
                           : 'bg-muted text-muted-foreground'
                       )}
                     >
