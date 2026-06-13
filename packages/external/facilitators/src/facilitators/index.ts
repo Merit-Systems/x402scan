@@ -28,3 +28,4 @@ export { relai, relaiFacilitator } from './relai';
 export { bitrefill, bitrefillFacilitator } from './bitrefill';
 export { cascade, cascadeFacilitator } from './cascade';
 export { fluxa, fluxaFacilitator } from './fluxa';
+export { merktop, merktopFacilitator } from './merktop';
