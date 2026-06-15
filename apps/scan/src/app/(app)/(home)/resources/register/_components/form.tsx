@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { usePostHog } from 'posthog-js/react';
 import {
   Check,
   ChevronDown,
@@ -701,6 +702,8 @@ export const RegisterResourceForm = () => {
 const CALENDAR_URL =
   'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1JmDUvMb4QVktX4PscRA66DEAQCLHLJKRKvwFogirtp9JZ0s5l-Vj96Nthl3M16qDPOprzsK6U';
 
+const STEP_NAMES = ['review_api_page', 'test_endpoints', 'schedule_call'];
+
 function PostRegistrationDialog({
   originId,
   origin,
@@ -714,10 +717,17 @@ function PostRegistrationDialog({
   const [clickedSteps, setClickedSteps] = useState<Set<number>>(new Set());
   const [email, setEmail] = useState(contactEmail ?? '');
   const [emailSubmitted, setEmailSubmitted] = useState(!!contactEmail);
+  const posthog = usePostHog();
+  const dismissMethodRef = useRef<'skip' | 'overlay'>('overlay');
 
   const updateEmailMutation = api.public.origins.updateEmail.useMutation({
     onSuccess: () => {
       setEmailSubmitted(true);
+      posthog.capture('registration:email_submit', {
+        origin_id: originId,
+        hostname,
+        app_surface: 'x402scan',
+      });
       window.open(CALENDAR_URL, '_blank');
     },
     onError: () => {
@@ -732,7 +742,25 @@ function PostRegistrationDialog({
     hostname = origin;
   }
 
+  useEffect(() => {
+    posthog.capture('registration:modal_view', {
+      origin_id: originId,
+      hostname,
+      app_surface: 'x402scan',
+      has_contact_email: !!contactEmail,
+    });
+  }, [posthog, originId, hostname, contactEmail]);
+
   const markClicked = (step: number) => {
+    if (!clickedSteps.has(step)) {
+      posthog.capture('registration:step_click', {
+        origin_id: originId,
+        hostname,
+        app_surface: 'x402scan',
+        step_number: step,
+        step_name: STEP_NAMES[step - 1],
+      });
+    }
     setClickedSteps(prev => new Set(prev).add(step));
   };
 
@@ -755,7 +783,22 @@ function PostRegistrationDialog({
           Complete your setup &rarr;
         </Button>
       )}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={open}
+        onOpenChange={nextOpen => {
+          if (!nextOpen) {
+            posthog.capture('registration:modal_close', {
+              origin_id: originId,
+              hostname,
+              app_surface: 'x402scan',
+              completed_steps: clickedSteps.size,
+              dismiss_method: dismissMethodRef.current,
+            });
+            dismissMethodRef.current = 'overlay';
+          }
+          setOpen(nextOpen);
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>You&apos;re registered!</DialogTitle>
@@ -841,7 +884,10 @@ function PostRegistrationDialog({
                     type="button"
                     variant="ghost"
                     className="text-muted-foreground"
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      dismissMethodRef.current = 'skip';
+                      setOpen(false);
+                    }}
                   >
                     Skip
                   </Button>
@@ -872,6 +918,12 @@ function PostRegistrationDialog({
                     void navigator.clipboard.writeText(
                       `https://tryponcho.com/m/${hostname}`
                     );
+                    posthog.capture('registration:link_click', {
+                      origin_id: originId,
+                      hostname,
+                      app_surface: 'x402scan',
+                      action: 'copy_merchant_link',
+                    });
                     toast.success('Link copied to clipboard');
                   }}
                 >
