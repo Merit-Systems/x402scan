@@ -901,7 +901,7 @@ function PostRegistrationDialog({
               )}
             </ChecklistStep>
 
-            <div className="border-t pt-3 -mx-6 px-6">
+            <div className="border-t py-3 -mx-6 px-6">
               <p className="text-xs text-muted-foreground text-center">
                 Share your merchant page:{' '}
                 <Link
@@ -964,7 +964,7 @@ function ChecklistStep({
       <div
         className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
           completed
-            ? 'bg-green-500 text-white dark:bg-green-500'
+            ? 'bg-muted text-muted-foreground'
             : current
               ? 'bg-primary text-primary-foreground'
               : 'bg-muted text-muted-foreground'
