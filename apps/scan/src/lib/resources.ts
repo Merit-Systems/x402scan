@@ -1,6 +1,7 @@
 import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import {
+  ensureOriginExists,
   getOriginResourceCount,
   upsertOrigin,
 } from '@/services/db/resources/origin';
@@ -185,11 +186,7 @@ export async function registerSiwxResource(
 
   try {
     const resource = await scanDb.$transaction(async tx => {
-      await tx.resourceOrigin.upsert({
-        where: { origin },
-        create: { origin },
-        update: {},
-      });
+      await ensureOriginExists(tx, origin);
 
       const siwxMetadata = {
         authMode: 'siwx' as const,
