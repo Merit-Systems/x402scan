@@ -901,7 +901,7 @@ function PostRegistrationDialog({
               )}
             </ChecklistStep>
 
-            <div className="border-t py-3 -mx-6 px-6">
+            <div className="border-t -mx-6 -mb-6 px-6 py-4">
               <p className="text-xs text-muted-foreground text-center">
                 Share your merchant page:{' '}
                 <Link
