@@ -885,6 +885,12 @@ function PostRegistrationDialog({
                     variant="ghost"
                     className="text-muted-foreground"
                     onClick={() => {
+                      posthog.capture('registration:step_click', {
+                        origin_id: originId,
+                        hostname,
+                        app_surface: 'x402scan',
+                        step_name: 'skip_email',
+                      });
                       dismissMethodRef.current = 'skip';
                       setOpen(false);
                     }}
@@ -894,7 +900,19 @@ function PostRegistrationDialog({
                 </form>
               ) : (
                 contactEmail && (
-                  <Link href={CALENDAR_URL} target="_blank" className="flex-1">
+                  <Link
+                    href={CALENDAR_URL}
+                    target="_blank"
+                    className="flex-1"
+                    onClick={() => {
+                      posthog.capture('registration:step_click', {
+                        origin_id: originId,
+                        hostname,
+                        app_surface: 'x402scan',
+                        step_name: 'schedule_call',
+                      });
+                    }}
+                  >
                     <Button className="w-full">Schedule a call &rarr;</Button>
                   </Link>
                 )
@@ -908,6 +926,14 @@ function PostRegistrationDialog({
                   href={`https://tryponcho.com/m/${hostname}`}
                   target="_blank"
                   className="underline"
+                  onClick={() => {
+                    posthog.capture('registration:link_click', {
+                      origin_id: originId,
+                      hostname,
+                      app_surface: 'x402scan',
+                      action: 'visit_merchant_page',
+                    });
+                  }}
                 >
                   tryponcho.com/m/{hostname}
                 </Link>
