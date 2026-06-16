@@ -58,10 +58,13 @@ export function urlMatchesDiscoveredResource(
 
     if (inputSegments.length !== discoveredSegments.length) return false;
 
-    return discoveredSegments.every(
-      (seg, i) =>
-        (seg.startsWith('{') && seg.endsWith('}')) || seg === inputSegments[i]
-    );
+    return discoveredSegments.every((seg, i) => {
+      const decoded = decodeURIComponent(seg);
+      return (
+        (decoded.startsWith('{') && decoded.endsWith('}')) ||
+        seg === inputSegments[i]
+      );
+    });
   } catch {
     return false;
   }

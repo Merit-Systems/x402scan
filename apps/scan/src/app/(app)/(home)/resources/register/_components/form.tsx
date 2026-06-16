@@ -84,13 +84,17 @@ function getErrorMessageFromRegisterResult(result: {
     parseErrors?: string[];
   };
 }): string {
-  if (
-    result.error.type === 'noDiscovery' ||
-    result.error.type === 'notInSpec'
-  ) {
+  if (result.error.type === 'noDiscovery') {
     return (
       result.error.message ??
       'No discovery document found. Add an openapi.json to your origin to register endpoints.'
+    );
+  }
+
+  if (result.error.type === 'notInSpec') {
+    return (
+      result.error.message ??
+      "This endpoint is not listed in the origin's openapi.json."
     );
   }
 
