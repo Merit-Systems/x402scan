@@ -427,6 +427,7 @@ export const RegisterResourceForm = () => {
               isLoading ||
               isBatchTestLoading ||
               !isValidUrl ||
+              (!discoveryFound && !isDiscoveryLoading) ||
               (!!currentManualFailed && !currentManualTested)
             }
             onClick={() => {
@@ -513,18 +514,16 @@ export const RegisterResourceForm = () => {
                 !isDiscoveryLoading &&
                 !hasDiscoveryResources &&
                 !isOriginOnly && (
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    {isBatchTestLoading ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="size-3 animate-spin" />
-                        Testing endpoint...
-                      </div>
-                    ) : currentManualTested ? (
-                      <div className="flex items-center gap-2 text-green-700">
-                        <Check className="size-3" />
-                        Valid 402 response.
-                      </div>
-                    ) : null}
+                  <div className="text-sm space-y-1">
+                    <p className="text-red-600">
+                      {discoveryError?.includes('TypeError')
+                        ? "Couldn't reach this URL."
+                        : (discoveryError ??
+                          'No discovery document found at this origin.')}
+                    </p>
+                    {!discoveryError?.includes('TypeError') && (
+                      <DiscoveryFixHint noDiscovery />
+                    )}
                   </div>
                 )}
             </div>
