@@ -16,12 +16,28 @@ export async function handleRegistryRegister(
   body: z.infer<typeof registryRegisterBodySchema>
 ) {
   const origin = new URL(body.url).origin;
-  const [result, discoveryResult] = await Promise.all([
-    registerEndpoint(body.url),
-    fetchDiscoveryDocument(origin),
-  ]);
+
+  // Discovery document (openapi.json) is required before we probe the endpoint.
+  const discoveryResult = await fetchDiscoveryDocument(origin);
+
+  if (!discoveryResult.success) {
+    return jsonResponse(
+      {
+        success: false,
+        error: {
+          type: 'no_discovery',
+          message:
+            discoveryResult.error ??
+            'No discovery document found. Add an openapi.json to your origin to register endpoints.',
+        },
+      },
+      404
+    );
+  }
 
   const contactEmail = discoveryResult.contactEmail;
+
+  const result = await registerEndpoint(body.url);
 
   try {
     if (result.success && result.resource?.origin?.id) {

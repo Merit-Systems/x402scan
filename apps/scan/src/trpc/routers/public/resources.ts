@@ -140,6 +140,21 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
+      const origin = new URL(input.url).origin;
+      const discoveryResult = await fetchDiscoveryDocument(origin);
+
+      if (!discoveryResult.success) {
+        return {
+          success: false as const,
+          error: {
+            type: 'noDiscovery' as const,
+            message:
+              discoveryResult.error ??
+              'No discovery document found. Add an openapi.json to your origin to register endpoints.',
+          },
+        };
+      }
+
       const result = await registerEndpoint(input.url.toString());
       try {
         if (result.success && result.resource?.origin?.id) {
