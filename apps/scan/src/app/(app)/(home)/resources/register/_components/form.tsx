@@ -79,12 +79,15 @@ interface ManualRegistrationResult {
 function getErrorMessageFromRegisterResult(result: {
   success: false;
   error: {
-    type: 'parseErrors' | 'no402' | 'tunnel' | 'noDiscovery';
+    type: 'parseErrors' | 'no402' | 'tunnel' | 'noDiscovery' | 'notInSpec';
     message?: string;
     parseErrors?: string[];
   };
 }): string {
-  if (result.error.type === 'noDiscovery') {
+  if (
+    result.error.type === 'noDiscovery' ||
+    result.error.type === 'notInSpec'
+  ) {
     return (
       result.error.message ??
       'No discovery document found. Add an openapi.json to your origin to register endpoints.'

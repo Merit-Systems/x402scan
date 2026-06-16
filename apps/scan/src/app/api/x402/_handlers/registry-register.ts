@@ -1,6 +1,7 @@
 import type { registryRegisterBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
 import { registerEndpoint } from '@/lib/discovery/register-endpoint';
+import { urlMatchesDiscoveredResource } from '@/lib/url';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { revalidatePath } from 'next/cache';
 import type { z } from 'zod';
@@ -32,6 +33,24 @@ export async function handleRegistryRegister(
         },
       },
       404
+    );
+  }
+
+  const urlInSpec = discoveryResult.resources.some(r =>
+    urlMatchesDiscoveredResource(body.url, r.url)
+  );
+
+  if (!urlInSpec) {
+    return jsonResponse(
+      {
+        success: false,
+        error: {
+          type: 'not_in_spec',
+          message:
+            "This endpoint is not listed in the origin's openapi.json. Add it to the spec before registering.",
+        },
+      },
+      422
     );
   }
 

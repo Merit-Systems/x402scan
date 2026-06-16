@@ -24,6 +24,7 @@ import { mixedAddressSchema } from '@/lib/schemas';
 
 import { registerEndpoint } from '@/lib/discovery/register-endpoint';
 import { registerResourcesFromDiscovery } from '@/lib/discovery/register-origin';
+import { urlMatchesDiscoveredResource } from '@/lib/url';
 import { TRPCError } from '@trpc/server';
 import {
   listResourceTags,
@@ -151,6 +152,21 @@ export const resourcesRouter = createTRPCRouter({
             message:
               discoveryResult.error ??
               'No discovery document found. Add an openapi.json to your origin to register endpoints.',
+          },
+        };
+      }
+
+      const urlInSpec = discoveryResult.resources.some(r =>
+        urlMatchesDiscoveredResource(input.url.toString(), r.url)
+      );
+
+      if (!urlInSpec) {
+        return {
+          success: false as const,
+          error: {
+            type: 'notInSpec' as const,
+            message:
+              "This endpoint is not listed in the origin's openapi.json. Add it to the spec before registering.",
           },
         };
       }
