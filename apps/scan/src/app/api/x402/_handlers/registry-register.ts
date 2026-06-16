@@ -1,6 +1,7 @@
 import type { registryRegisterBodySchema } from '@/app/api/x402/_lib/schemas';
 import { jsonResponse } from '@/app/api/x402/_lib/utils';
 import { registerEndpoint } from '@/lib/discovery/register-endpoint';
+import { urlMatchesDiscoveredResource } from '@/lib/url';
 import { fetchDiscoveryDocument } from '@/services/discovery';
 import { revalidatePath } from 'next/cache';
 import type { z } from 'zod';
@@ -16,12 +17,46 @@ export async function handleRegistryRegister(
   body: z.infer<typeof registryRegisterBodySchema>
 ) {
   const origin = new URL(body.url).origin;
-  const [result, discoveryResult] = await Promise.all([
-    registerEndpoint(body.url),
-    fetchDiscoveryDocument(origin),
-  ]);
+
+  // Discovery document (openapi.json) is required before we probe the endpoint.
+  const discoveryResult = await fetchDiscoveryDocument(origin);
+
+  if (!discoveryResult.success) {
+    return jsonResponse(
+      {
+        success: false,
+        error: {
+          type: 'no_discovery',
+          message:
+            discoveryResult.error ??
+            'No discovery document found. Add an openapi.json to your origin to register endpoints.',
+        },
+      },
+      404
+    );
+  }
+
+  const urlInSpec = discoveryResult.resources.some(r =>
+    urlMatchesDiscoveredResource(body.url, r.url)
+  );
+
+  if (!urlInSpec) {
+    return jsonResponse(
+      {
+        success: false,
+        error: {
+          type: 'not_in_spec',
+          message:
+            "This endpoint is not listed in the origin's openapi.json. Add it to the spec before registering.",
+        },
+      },
+      422
+    );
+  }
 
   const contactEmail = discoveryResult.contactEmail;
+
+  const result = await registerEndpoint(body.url);
 
   try {
     if (result.success && result.resource?.origin?.id) {

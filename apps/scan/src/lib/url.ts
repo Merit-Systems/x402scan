@@ -35,3 +35,37 @@ export const normalizeUrl = (url: string): string => {
     return url;
   }
 };
+
+/**
+ * Check whether a concrete URL matches a discovered resource URL that may
+ * contain OpenAPI path templates (e.g. /v1/candles/{coin}/{interval}).
+ * Origins must match exactly; template segments ({...}) match any value.
+ */
+export function urlMatchesDiscoveredResource(
+  inputUrl: string,
+  discoveredUrl: string
+): boolean {
+  try {
+    const input = new URL(inputUrl);
+    const discovered = new URL(discoveredUrl);
+
+    if (input.origin !== discovered.origin) return false;
+
+    const inputSegments = input.pathname.replace(/\/+$/, '').split('/');
+    const discoveredSegments = discovered.pathname
+      .replace(/\/+$/, '')
+      .split('/');
+
+    if (inputSegments.length !== discoveredSegments.length) return false;
+
+    return discoveredSegments.every((seg, i) => {
+      const decoded = decodeURIComponent(seg);
+      return (
+        (decoded.startsWith('{') && decoded.endsWith('}')) ||
+        seg === inputSegments[i]
+      );
+    });
+  } catch {
+    return false;
+  }
+}

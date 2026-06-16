@@ -79,11 +79,25 @@ interface ManualRegistrationResult {
 function getErrorMessageFromRegisterResult(result: {
   success: false;
   error: {
-    type: 'parseErrors' | 'no402' | 'tunnel';
+    type: 'parseErrors' | 'no402' | 'tunnel' | 'noDiscovery' | 'notInSpec';
     message?: string;
     parseErrors?: string[];
   };
 }): string {
+  if (result.error.type === 'noDiscovery') {
+    return (
+      result.error.message ??
+      'No discovery document found. Add an openapi.json to your origin to register endpoints.'
+    );
+  }
+
+  if (result.error.type === 'notInSpec') {
+    return (
+      result.error.message ??
+      "This endpoint is not listed in the origin's openapi.json."
+    );
+  }
+
   if (result.error.type === 'tunnel') {
     return result.error.message ?? 'Tunnel URLs are not supported';
   }
@@ -413,6 +427,7 @@ export const RegisterResourceForm = () => {
               isLoading ||
               isBatchTestLoading ||
               !isValidUrl ||
+              (!discoveryFound && !isDiscoveryLoading) ||
               (!!currentManualFailed && !currentManualTested)
             }
             onClick={() => {
@@ -499,18 +514,16 @@ export const RegisterResourceForm = () => {
                 !isDiscoveryLoading &&
                 !hasDiscoveryResources &&
                 !isOriginOnly && (
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    {isBatchTestLoading ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="size-3 animate-spin" />
-                        Testing endpoint...
-                      </div>
-                    ) : currentManualTested ? (
-                      <div className="flex items-center gap-2 text-green-700">
-                        <Check className="size-3" />
-                        Valid 402 response.
-                      </div>
-                    ) : null}
+                  <div className="text-sm space-y-1">
+                    <p className="text-red-600">
+                      {discoveryError?.includes('TypeError')
+                        ? "Couldn't reach this URL."
+                        : (discoveryError ??
+                          'No discovery document found at this origin.')}
+                    </p>
+                    {!discoveryError?.includes('TypeError') && (
+                      <DiscoveryFixHint noDiscovery />
+                    )}
                   </div>
                 )}
             </div>
