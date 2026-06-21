@@ -81,7 +81,7 @@ export type SyncConfig = QueryConfig & {
   machine: 'small-1x' | 'medium-1x' | 'large-2x';
   splitSyncByFacilitator?: boolean;
   useSyncState?: boolean;
-  syncStateCutoverAt?: Date | (() => Date);
+  syncStateCutoverAt?: Date;
 };
 
 export interface EvmChainConfig {
