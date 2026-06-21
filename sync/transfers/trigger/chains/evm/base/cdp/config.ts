@@ -6,7 +6,10 @@ import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 import { Network } from '@/trigger/types';
 
 const ONE_HOUR_IN_MS = 60 * 60 * 1000;
-const DEFAULT_CUTOVER_AT = '2026-06-21T21:45:00.000Z'; // switch from Bitquery back to CDP
+// Cutover from Bitquery back to CDP. Evaluated the first time each
+// facilitator bootstraps its sync state, so the cutover happens whenever
+// this config is deployed — not at a hardcoded UTC instant.
+const cutoverAt = () => new Date();
 
 export const baseCdpConfig: SyncConfig = {
   cron: '*/5 * * * *',
@@ -24,5 +27,5 @@ export const baseCdpConfig: SyncConfig = {
   machine: 'medium-1x',
   splitSyncByFacilitator: true,
   useSyncState: true,
-  syncStateCutoverAt: new Date(DEFAULT_CUTOVER_AT),
+  syncStateCutoverAt: cutoverAt,
 };

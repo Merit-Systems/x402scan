@@ -52,9 +52,14 @@ async function getBootstrapCursor(
     },
   });
 
+  const cutoverAt =
+    typeof syncConfig.syncStateCutoverAt === 'function'
+      ? syncConfig.syncStateCutoverAt()
+      : syncConfig.syncStateCutoverAt;
+
   const candidates = [
     facilitatorConfig.syncStartDate,
-    syncConfig.syncStateCutoverAt,
+    cutoverAt,
     mostRecentCdpTransfer[0]?.block_timestamp
       ? new Date(mostRecentCdpTransfer[0].block_timestamp.getTime() + 1000)
       : undefined,
