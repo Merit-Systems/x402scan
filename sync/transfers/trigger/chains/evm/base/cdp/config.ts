@@ -6,10 +6,9 @@ import { FACILITATORS_BY_CHAIN } from '@/trigger/lib/facilitators';
 import { Network } from '@/trigger/types';
 
 const ONE_HOUR_IN_MS = 60 * 60 * 1000;
-// Cutover from Bitquery back to CDP. Evaluated the first time each
-// facilitator bootstraps its sync state, so the cutover happens whenever
-// this config is deployed — not at a hardcoded UTC instant.
-const cutoverAt = () => new Date();
+// Cutover from Bitquery back to CDP. Anchored at the moment Bitquery
+// stopped indexing: 2026-06-21 3:20pm ET (EDT, UTC-4) = 19:20 UTC.
+const CUTOVER_AT = '2026-06-21T19:20:00.000Z';
 
 export const baseCdpConfig: SyncConfig = {
   cron: '*/5 * * * *',
@@ -27,5 +26,5 @@ export const baseCdpConfig: SyncConfig = {
   machine: 'medium-1x',
   splitSyncByFacilitator: true,
   useSyncState: true,
-  syncStateCutoverAt: cutoverAt,
+  syncStateCutoverAt: new Date(CUTOVER_AT),
 };
