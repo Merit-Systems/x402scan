@@ -113,7 +113,7 @@ export const ShareModal: React.FC<Props> = ({
   const { data: overallStats } = api.public.stats.overall.useQuery(
     {
       recipients: { include: addresses },
-      timeframe: ActivityTimeframe.ThirtyDays,
+      timeframe: ActivityTimeframe.AllTime,
     },
     { enabled: isOpen && addresses.length > 0 }
   );
@@ -121,7 +121,7 @@ export const ShareModal: React.FC<Props> = ({
   const { data: bucketedStats } = api.public.stats.bucketed.useQuery(
     {
       numBuckets: 48,
-      timeframe: ActivityTimeframe.ThirtyDays,
+      timeframe: ActivityTimeframe.AllTime,
       recipients: { include: addresses },
     },
     { enabled: isOpen && addresses.length > 0 }
