@@ -9,6 +9,9 @@ import { api } from '@/trpc/client';
 import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 
 import { ActivityTimeframe } from '@/types/timeframes';
+import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
+import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
+import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
 interface Props {
@@ -16,6 +19,16 @@ interface Props {
 }
 
 export const OriginActivity: React.FC<Props> = ({ originId }) => {
+  return (
+    <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
+      <OriginActivityContent originId={originId} />
+    </TimeRangeProvider>
+  );
+};
+
+const OriginActivityContent: React.FC<Props> = ({ originId }) => {
+  const { timeframe } = useTimeRangeContext();
+
   const [metadata] = api.public.origins.getMetadata.useSuspenseQuery(originId);
 
   const addresses = Array.from(
@@ -32,7 +45,7 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
         recipients: {
           include: addresses,
         },
-        timeframe: ActivityTimeframe.AllTime,
+        timeframe,
       },
       {
         enabled: !!metadata,
@@ -42,7 +55,7 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
     api.public.stats.bucketed.useQuery(
       {
         numBuckets: 48,
-        timeframe: ActivityTimeframe.AllTime,
+        timeframe,
         recipients: {
           include: addresses,
         },
@@ -58,7 +71,7 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
     isBucketedStatsLoading ||
     isOverallStatsLoading
   ) {
-    return <LoadingOriginActivity />;
+    return <LoadingOriginActivity action={<RangeSelector />} />;
   }
 
   const chartData: ChartData<{
@@ -77,7 +90,7 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
   }));
 
   return (
-    <OriginActivityContainer>
+    <OriginActivityContainer action={<RangeSelector />}>
       <OverallStatsCard
         title="Transactions"
         value={overallStats.total_transactions.toLocaleString(undefined, {
@@ -155,9 +168,13 @@ export const OriginActivity: React.FC<Props> = ({ originId }) => {
   );
 };
 
-export const LoadingOriginActivity = () => {
+export const LoadingOriginActivity = ({
+  action,
+}: {
+  action?: React.ReactNode;
+}) => {
   return (
-    <OriginActivityContainer>
+    <OriginActivityContainer action={action}>
       <LoadingOverallStatsCard type="bar" title="Transactions" />
       <LoadingOverallStatsCard type="bar" title="Volume" />
       <LoadingOverallStatsCard type="bar" title="Buyers" />
@@ -167,11 +184,13 @@ export const LoadingOriginActivity = () => {
 
 const OriginActivityContainer = ({
   children,
+  action,
 }: {
   children: React.ReactNode;
+  action?: React.ReactNode;
 }) => {
   return (
-    <OriginOverviewSection title="Activity">
+    <OriginOverviewSection title="Activity" action={action}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">{children}</div>
     </OriginOverviewSection>
   );
