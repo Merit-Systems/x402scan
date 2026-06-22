@@ -220,7 +220,7 @@ export const coinbaseFacilitator = {
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2026-06-12'),
       },
-    ];
+    ],
     [Network.SOLANA]: [
       {
         address: 'L54zkaPQFeTn1UsEqieEXBqWrPShiaZEPD7mS5WXfQg',
