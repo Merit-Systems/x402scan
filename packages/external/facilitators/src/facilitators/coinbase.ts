@@ -145,6 +145,11 @@ export const coinbaseFacilitator = {
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-12-16'),
       },
+      {
+        address: '0x2a89407a98a0732b7fd578c4e156b7166540eb5a',
+        tokens: [USDC_BASE_TOKEN],
+        dateOfFirstTransaction: new Date('2026-06-15'),
+      },
     ],
     [Network.SOLANA]: [
       {
