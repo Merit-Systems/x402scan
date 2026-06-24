@@ -6,6 +6,8 @@ import {
   optimism,
   arbitrum,
   polygon,
+  xdc,
+  xdcTestnet,
 } from 'viem/chains';
 
 import type { Chain } from 'viem';
@@ -60,6 +62,18 @@ const CHAIN_CONFIGS: Record<string, ChainConfig> = {
     v1Name: 'polygon',
     usdcAddress: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
   },
+  'eip155:50': {
+    chain: xdc,
+    caip2: 'eip155:50',
+    v1Name: 'xdc',
+    usdcAddress: '0xfA2958CB79b0491CC627c1557F441eF849Ca8eb1',
+  },
+  'eip155:51': {
+    chain: xdcTestnet,
+    caip2: 'eip155:51',
+    v1Name: 'xdc-testnet',
+    usdcAddress: '0xb5AB69F7bBada22B28e79C8FFAECe55eF1c771D4',
+  },
 };
 
 const V1_TO_CAIP2: Record<string, string> = {
@@ -70,6 +84,8 @@ const V1_TO_CAIP2: Record<string, string> = {
   optimism: 'eip155:10',
   arbitrum: 'eip155:42161',
   polygon: 'eip155:137',
+  xdc: 'eip155:50',
+  'xdc-testnet': 'eip155:51',
 };
 
 export const DEFAULT_NETWORK = 'eip155:8453';
