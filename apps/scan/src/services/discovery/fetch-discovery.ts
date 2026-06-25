@@ -2,6 +2,10 @@ import { discoverOriginSchema } from '@agentcash/discovery';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { isLocalUrl, isTunnelUrl } from '@/lib/url-helpers';
+import {
+  isVercelPreviewDeployment,
+  VERCEL_PREVIEW_ERROR_MESSAGE,
+} from '@/lib/discovery/vercel-preview';
 
 import type {
   DiscoveredResource,
@@ -48,6 +52,16 @@ export async function fetchDiscoveryDocument(
       resources: [],
       error:
         "Tunnel URLs are ephemeral and can't be reliably discovered by agents. Deploy your API to a permanent URL to register.",
+    };
+  }
+
+  // Reject Vercel preview deployments — they serve `x-robots-tag: noindex`
+  // and get torn down, so agents can't reliably reach them after registration.
+  if (await isVercelPreviewDeployment(origin)) {
+    return {
+      success: false,
+      resources: [],
+      error: VERCEL_PREVIEW_ERROR_MESSAGE,
     };
   }
 
