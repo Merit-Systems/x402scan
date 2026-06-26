@@ -16,9 +16,7 @@ export default async function ClaimVerifyPage({
 }) {
   const { token } = await searchParams;
   const tokenStr = typeof token === 'string' ? token : undefined;
-  const pending = tokenStr
-    ? await getPendingClaimByLinkToken(tokenStr)
-    : null;
+  const pending = tokenStr ? await getPendingClaimByLinkToken(tokenStr) : null;
 
   return (
     <div className="mx-auto w-full max-w-md px-4 py-16">

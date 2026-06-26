@@ -2,13 +2,13 @@ import { scanDb } from '@x402scan/scan-db';
 
 import { hashClaimValue, maskEmail } from './crypto';
 
-export interface ClaimSession {
+interface ClaimSession {
   email: string;
   userId: string | null;
 }
 
 /** Resolve a claim-session cookie token to its identity, or null if invalid/expired. */
-export async function getClaimSessionByToken(
+async function getClaimSessionByToken(
   token: string
 ): Promise<ClaimSession | null> {
   const session = await scanDb.originClaimSession.findUnique({

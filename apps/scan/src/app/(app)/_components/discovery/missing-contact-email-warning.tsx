@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { DiscoveryActions } from './discovery-actions';
 
 /** Agent prompt for adding info.contact.email — shared by registration + claim. */
-export const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it so I can verify ownership of my origin, let users contact me, and customize my merchant pages on Poncho.
+const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it so I can verify ownership of my origin, let users contact me, and customize my merchant pages on Poncho.
 
 In my openapi.json, add or update the top-level "info" object to include a "contact" field with my email:
 

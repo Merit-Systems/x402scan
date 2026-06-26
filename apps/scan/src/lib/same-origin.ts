@@ -9,7 +9,8 @@ import type { NextRequest } from 'next/server';
  * on cross-site POSTs.
  */
 export function isSameOriginRequest(request: NextRequest): boolean {
-  const source = request.headers.get('origin') ?? request.headers.get('referer');
+  const source =
+    request.headers.get('origin') ?? request.headers.get('referer');
   if (!source) {
     return false;
   }
