@@ -68,6 +68,11 @@ describe('getChainId', () => {
   it('returns undefined for invalid format', () => {
     expect(getChainId('invalid')).toBeUndefined();
   });
+
+  it('returns undefined for unsafe or noncanonical CAIP-2 chain IDs', () => {
+    expect(getChainId('eip155:9007199254740993')).toBeUndefined();
+    expect(getChainId('eip155:001')).toBeUndefined();
+  });
 });
 
 describe('getChainName', () => {
