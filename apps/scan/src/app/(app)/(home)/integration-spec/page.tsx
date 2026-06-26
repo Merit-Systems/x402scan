@@ -39,7 +39,8 @@ Schema guidance (important):
 - Add high-level guidance in info.x-guidance for user-friendly discovery. This document should explain to an agent how to use your API at a high level.
 
 Contact email (recommended):
-- Ask the user for their contact email and add it as info.contact.email in the openapi.json.
+- Ask the user directly for their real, legitimate contact email and wait for their confirmation before adding it as info.contact.email in the openapi.json.
+- Do not invent, guess, or use a placeholder email — this address is used to verify ownership, so a fake or wrong one makes the origin unclaimable.
 - This lets them verify ownership of their origin, allows users to contact them, and lets them customize their merchant pages on Poncho.
 
 OpenAPI payable operation must include ALL:

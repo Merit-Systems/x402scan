@@ -24,11 +24,14 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from '@/components/ui/input-otp';
+import { MissingContactEmailWarning } from '@/app/(app)/_components/discovery/missing-contact-email-warning';
 import { CLAIM_CODE_DIGITS } from '@/services/claim/constants';
 
 interface Props {
   originId: string;
+  origin: string;
   originHostname: string;
+  isOwner: boolean;
 }
 
 const VERIFY_ERROR_MESSAGES: Record<string, string> = {
@@ -46,34 +49,42 @@ const TAB_CLASS = cn(
   'pointer-events-auto gap-1 rounded-t-none rounded-b-md border-none px-2.5 py-0.5 text-xs font-medium shadow-md after:hidden'
 );
 
-export const ClaimTab: React.FC<Props> = ({ originId, originHostname }) => {
+export const ClaimTab: React.FC<Props> = ({
+  originId,
+  origin,
+  originHostname,
+  isOwner,
+}) => {
   const router = useRouter();
   const posthog = usePostHog();
-  const utils = api.useUtils();
 
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'intro' | 'code'>('intro');
   const [maskedEmail, setMaskedEmail] = useState('');
   const [code, setCode] = useState('');
-  const [noEmailMessage, setNoEmailMessage] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
 
-  const ownership = api.public.claim.session.useQuery({ originId });
-  const isOwner = ownership.data?.isOwner ?? false;
+  // Check the live openapi.json for a contact email when the dialog opens, so we
+  // can disable "Send code" up-front instead of after a round-trip. Only fetches
+  // on open (not per pageview); cached briefly to absorb reopen/resend.
+  const discovery = api.public.resources.checkDiscovery.useQuery(
+    { origin, bustCache: false },
+    { enabled: open && step === 'intro', retry: false, staleTime: 30_000 }
+  );
+  const checkingEmail = discovery.isLoading || discovery.isFetching;
+  const hasContactEmail = discovery.data?.found
+    ? Boolean(discovery.data.contactEmail)
+    : false;
+  const noContactEmail = discovery.isFetched && !hasContactEmail;
 
   const requestMutation = api.public.claim.request.useMutation({
     onSuccess: ({ maskedEmail }) => {
       setMaskedEmail(maskedEmail);
-      setNoEmailMessage(null);
       setStep('code');
       posthog?.capture('claim:code_sent', { origin_id: originId });
     },
     onError: error => {
-      if (error.data?.code === 'BAD_REQUEST') {
-        setNoEmailMessage(error.message);
-      } else {
-        toast.error(error.message || 'Could not send the code.');
-      }
+      toast.error(error.message || 'Could not send the code.');
     },
   });
 
@@ -82,7 +93,6 @@ export const ClaimTab: React.FC<Props> = ({ originId, originHostname }) => {
     if (!nextOpen) {
       setStep('intro');
       setCode('');
-      setNoEmailMessage(null);
     }
   };
 
@@ -97,8 +107,9 @@ export const ClaimTab: React.FC<Props> = ({ originId, originHostname }) => {
       if (res.ok) {
         posthog?.capture('claim:verify_success', { origin_id: originId });
         toast.success('You now manage this origin.');
-        await utils.public.claim.session.invalidate({ originId });
         resetAndClose(false);
+        // Re-runs the server layout, which re-resolves ownership from the
+        // freshly-set claim cookie and flips this tab to the owner state.
         router.refresh();
         return;
       }
@@ -155,15 +166,15 @@ export const ClaimTab: React.FC<Props> = ({ originId, originHostname }) => {
               <code className="text-foreground">info.contact.email</code> in
               this origin&apos;s live openapi.json.
             </p>
-            {noEmailMessage ? (
-              <p className="text-sm text-destructive">{noEmailMessage}</p>
-            ) : null}
+            {noContactEmail ? <MissingContactEmailWarning /> : null}
             <Button
               className="w-full"
-              disabled={requestMutation.isPending}
+              disabled={
+                requestMutation.isPending || checkingEmail || noContactEmail
+              }
               onClick={() => requestMutation.mutate({ originId })}
             >
-              {requestMutation.isPending ? (
+              {requestMutation.isPending || checkingEmail ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
                 'Send code'

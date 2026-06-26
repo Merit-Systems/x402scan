@@ -12,7 +12,7 @@ export async function getClaimSessionByToken(
   token: string
 ): Promise<ClaimSession | null> {
   const session = await scanDb.originClaimSession.findUnique({
-    where: { token },
+    where: { token: hashClaimValue(token) },
     select: { email: true, userId: true, expiresAt: true },
   });
   if (!session || session.expiresAt.getTime() < Date.now()) {
@@ -76,7 +76,9 @@ export async function getPendingClaimByLinkToken(token: string): Promise<{
 
 /** Revoke a claim session (sign out). Idempotent. */
 export async function revokeClaimSession(token: string): Promise<void> {
-  await scanDb.originClaimSession.deleteMany({ where: { token } });
+  await scanDb.originClaimSession.deleteMany({
+    where: { token: hashClaimValue(token) },
+  });
 }
 
 /** Delete expired/consumed claim codes and expired sessions. Returns counts. */

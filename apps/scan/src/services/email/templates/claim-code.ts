@@ -10,6 +10,16 @@ interface RenderedEmail {
   text: string;
 }
 
+/** Escape values interpolated into the email HTML (defense-in-depth). */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /**
  * Renders the origin-claim verification email. Shows the one-time code (primary)
  * and a "Verify ownership" button (the magic link). The link lands on a confirm
@@ -21,6 +31,7 @@ export function renderClaimCodeEmail({
   magicLink,
   originHostname,
 }: ClaimCodeEmailParams): RenderedEmail {
+  const safeHostname = escapeHtml(originHostname);
   const subject = `Your code to claim ${originHostname}: ${code}`;
 
   const text = [
@@ -39,7 +50,7 @@ export function renderClaimCodeEmail({
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:0 auto;background:#141414;border:1px solid #262626;border-radius:12px;">
       <tr>
         <td style="padding:32px;">
-          <h1 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#fafafa;">Claim ${originHostname}</h1>
+          <h1 style="margin:0 0 8px;font-size:18px;font-weight:600;color:#fafafa;">Claim ${safeHostname}</h1>
           <p style="margin:0 0 24px;font-size:14px;line-height:22px;color:#a3a3a3;">
             Use the code below to verify that you control this origin's contact email.
           </p>

@@ -41,7 +41,14 @@ async function finalizeClaim(
         create: { originId: code.originId, email: code.email, userId },
       });
       await tx.originClaimSession.create({
-        data: { token: sessionToken, email: code.email, userId, expiresAt },
+        // Store only the HMAC, never the raw token — a read-only DB/backup leak
+        // must not expose live session tokens (same posture as codes + links).
+        data: {
+          token: hashClaimValue(sessionToken),
+          email: code.email,
+          userId,
+          expiresAt,
+        },
       });
     });
   } catch (error) {

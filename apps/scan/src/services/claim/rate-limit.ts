@@ -10,6 +10,20 @@ interface RateLimitBudget {
 }
 
 /**
+ * Atomic fixed-window counter: INCR the key and, only on first touch, set its
+ * TTL — in one server-side execution so the key can never be left without an
+ * expiry (the INCR-succeeds-but-PEXPIRE-fails race that would otherwise pin a
+ * counter forever). Returns the post-increment count.
+ */
+const INCR_WITH_TTL = `
+local count = redis.call('INCR', KEYS[1])
+if count == 1 then
+  redis.call('PEXPIRE', KEYS[1], ARGV[1])
+end
+return count
+`;
+
+/**
  * Fixed-window rate limiter. Uses Redis (INCR + PEXPIRE) when available so the
  * limit is shared across serverless instances; falls back to counting recent
  * `OriginClaimCode` rows in Postgres when Redis is disabled/unreachable. The
@@ -26,10 +40,12 @@ export async function isWithinRateLimit(
   if (redis) {
     try {
       const redisKey = `claim:rl:${key}`;
-      const count = await redis.incr(redisKey);
-      if (count === 1) {
-        await redis.pexpire(redisKey, budget.windowMs);
-      }
+      const count = (await redis.eval(
+        INCR_WITH_TTL,
+        1,
+        redisKey,
+        budget.windowMs
+      )) as number;
       return count <= budget.max;
     } catch {
       // Fall through to the DB fallback on any Redis error.

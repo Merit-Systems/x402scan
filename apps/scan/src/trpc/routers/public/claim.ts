@@ -3,9 +3,7 @@ import z from 'zod';
 import { TRPCError } from '@trpc/server';
 
 import { getClientIp } from '@/lib/request-ip';
-import { readClaimToken } from '@/services/claim/cookie';
 import { requestClaim } from '@/services/claim/request-claim';
-import { getOriginOwnership } from '@/services/claim/session';
 
 import { createTRPCRouter, publicProcedure } from '../../trpc';
 
@@ -28,9 +26,15 @@ export const claimRouter = createTRPCRouter({
 
       switch (result.reason) {
         case 'not_found':
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'Origin not found' });
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Origin not found',
+          });
         case 'no_email':
-          throw new TRPCError({ code: 'BAD_REQUEST', message: NO_EMAIL_MESSAGE });
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: NO_EMAIL_MESSAGE,
+          });
         case 'rate_limited':
           throw new TRPCError({
             code: 'TOO_MANY_REQUESTS',
@@ -42,17 +46,5 @@ export const claimRouter = createTRPCRouter({
             message: 'Could not send the code. Please try again.',
           });
       }
-    }),
-
-  // Whether the current viewer already manages this origin (drives the UI).
-  // Short-circuits with zero DB hits when no claim cookie is present.
-  session: publicProcedure
-    .input(z.object({ originId: z.uuid() }))
-    .query(async ({ input, ctx }) => {
-      const token = readClaimToken(ctx.headers);
-      if (!token) {
-        return { isOwner: false as const };
-      }
-      return getOriginOwnership(token, input.originId);
     }),
 });
