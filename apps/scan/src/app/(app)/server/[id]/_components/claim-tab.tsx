@@ -163,10 +163,14 @@ export const ClaimTab: React.FC<Props> = ({
           <div className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
               We&apos;ll email a one-time code to the address listed under{' '}
-              <code className="text-foreground">info.contact.email</code> in
-              this origin&apos;s live openapi.json.
+              <code className="font-mono rounded bg-muted px-1 py-px text-[0.85em] text-foreground">
+                info.contact.email
+              </code>{' '}
+              in this origin&apos;s live openapi.json.
             </p>
-            {noContactEmail ? <MissingContactEmailWarning /> : null}
+            {noContactEmail ? (
+              <MissingContactEmailWarning variant="card" />
+            ) : null}
             <Button
               className="w-full"
               disabled={
