@@ -2,6 +2,7 @@ import { Nav } from '@/app/(app)/_components/layout/nav';
 import { env } from '@/env';
 import { cleanExternalText } from '@/lib/utils';
 import { api } from '@/trpc/server';
+import { getOriginUrl } from '@/services/db/resources/origin';
 import { ClaimTab } from './_components/claim-tab';
 import type { Metadata } from 'next';
 
@@ -19,7 +20,7 @@ export default async function OriginLayout({
 }: LayoutProps<'/server/[id]'>) {
   const { id } = await params;
   const claimEnabled = env.NEXT_PUBLIC_ENABLE_ORIGIN_CLAIM === 'true';
-  const origin = claimEnabled ? await api.public.origins.get(id) : null;
+  const origin = claimEnabled ? await getOriginUrl(id) : null;
 
   return (
     <div className="flex flex-col flex-1">
