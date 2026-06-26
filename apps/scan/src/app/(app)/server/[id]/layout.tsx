@@ -2,13 +2,25 @@ import { Nav } from '@/app/(app)/_components/layout/nav';
 import { env } from '@/env';
 import { cleanExternalText } from '@/lib/utils';
 import { api } from '@/trpc/server';
+import { ClaimTab } from './_components/claim-tab';
 import type { Metadata } from 'next';
+
+function hostnameOf(origin: string): string {
+  try {
+    return new URL(origin).hostname;
+  } catch {
+    return origin;
+  }
+}
 
 export default async function OriginLayout({
   children,
   params,
 }: LayoutProps<'/server/[id]'>) {
   const { id } = await params;
+  const claimEnabled = env.NEXT_PUBLIC_ENABLE_ORIGIN_CLAIM === 'true';
+  const origin = claimEnabled ? await api.public.origins.get(id) : null;
+
   return (
     <div className="flex flex-col flex-1">
       <Nav
@@ -19,7 +31,20 @@ export default async function OriginLayout({
           },
         ]}
       />
-      <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>
+      <div className="relative flex flex-col py-6 md:py-8 flex-1">
+        {origin ? (
+          // Hangs from the Nav's bottom border (top of this region), right edge
+          // aligned to the max-w-6xl content column. pointer-events-none lets the
+          // empty strip pass clicks through; the tab itself re-enables them.
+          <div className="pointer-events-none absolute inset-x-0 -top-px z-0 mx-auto flex w-full max-w-6xl justify-end px-2">
+            <ClaimTab
+              originId={id}
+              originHostname={hostnameOf(origin.origin)}
+            />
+          </div>
+        ) : null}
+        {children}
+      </div>
     </div>
   );
 }

@@ -50,6 +50,16 @@ export const env = createEnv({
     // (/api/external/search/*). Format: "<client_id>.<secret>" — paired
     // server-side with SEARCH_EXTERNAL_API_KEYS=<client_id>:<sha256(secret)>.
     AGENTCASH_SEARCH_API_KEY: z.string().optional(),
+    // Origin-claim magic-link flow. EMAIL_FROM is the sender for claim codes;
+    // RESEND_API_KEY is optional in dev (codes are logged to the server console
+    // when absent). CLAIM_SECRET keys the HMAC used to hash one-time codes and
+    // link tokens — required in production, like CRON_SECRET.
+    EMAIL_FROM: z.string().default('noreply@x402scan.com'),
+    RESEND_API_KEY: z.string().optional(),
+    CLAIM_SECRET:
+      process.env.NEXT_PUBLIC_NODE_ENV === 'development'
+        ? z.string().optional()
+        : z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
@@ -71,6 +81,7 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
     NEXT_PUBLIC_ENABLE_COMPOSER: z.string().optional().default('true'),
+    NEXT_PUBLIC_ENABLE_ORIGIN_CLAIM: z.string().optional().default('true'),
     NEXT_PUBLIC_SOLANA_RPC_URL: z.url(),
     NEXT_PUBLIC_BASE_RPC_URL: z.url().optional(),
     NEXT_PUBLIC_VERCEL_ENV: z
@@ -93,6 +104,8 @@ export const env = createEnv({
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     NEXT_PUBLIC_ENABLE_COMPOSER: process.env.NEXT_PUBLIC_ENABLE_COMPOSER,
+    NEXT_PUBLIC_ENABLE_ORIGIN_CLAIM:
+      process.env.NEXT_PUBLIC_ENABLE_ORIGIN_CLAIM,
     NEXT_PUBLIC_SOLANA_RPC_URL: process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
     NEXT_PUBLIC_BASE_RPC_URL: process.env.NEXT_PUBLIC_BASE_RPC_URL,
     NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV,
