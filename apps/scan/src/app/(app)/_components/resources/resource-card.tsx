@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/tooltip';
 
 import { Header } from './header/index';
-import { formatPricingLabel, isSiwxResource } from './utils';
+import { formatPricingLabel, getMaxUsdcAmount, isSiwxResource } from './utils';
 
 import { cn } from '@/lib/utils';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
@@ -26,6 +26,7 @@ interface SerializedAccept {
   maxAmountRequired: number;
   network: string;
   scheme: string;
+  asset?: string | null;
 }
 
 interface Props {
@@ -163,8 +164,8 @@ const ResourcePricing: React.FC<{
 }> = ({ accepts, pricingMode, price }) => {
   const isDynamic =
     pricingMode === 'dynamic' || accepts.some(a => a.scheme !== 'exact');
-  const maxAmount = Math.max(...accepts.map(a => a.maxAmountRequired));
-  const label = formatPricingLabel({ maxAmount, isDynamic, price });
+  const maxUsdAmount = getMaxUsdcAmount(accepts);
+  const label = formatPricingLabel({ maxUsdAmount, isDynamic, price });
 
   return (
     <span className="text-xs font-semibold text-primary font-mono shrink-0">

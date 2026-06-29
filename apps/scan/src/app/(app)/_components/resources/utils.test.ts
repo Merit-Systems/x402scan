@@ -3,6 +3,7 @@ import {
   getBazaarMethod,
   parseMinFromPriceString,
   parseMaxFromPriceString,
+  getMaxUsdcAmount,
   formatPricingLabel,
 } from './utils';
 import { Methods } from '@/types/x402';
@@ -81,21 +82,33 @@ describe('parseMaxFromPriceString', () => {
 
 describe('formatPricingLabel', () => {
   it('shows exact price for non-dynamic', () => {
-    expect(formatPricingLabel({ maxAmount: 300, isDynamic: false })).toBe(
+    expect(formatPricingLabel({ maxUsdAmount: 300, isDynamic: false })).toBe(
       '$300.00'
     );
   });
 
   it('shows "Up to" for dynamic without price', () => {
-    expect(formatPricingLabel({ maxAmount: 300, isDynamic: true })).toBe(
+    expect(formatPricingLabel({ maxUsdAmount: 300, isDynamic: true })).toBe(
       'Up to $300.00'
+    );
+  });
+
+  it('shows paid for fixed pricing without USD metadata or a USDC accept', () => {
+    expect(formatPricingLabel({ maxUsdAmount: null, isDynamic: false })).toBe(
+      'Paid'
+    );
+  });
+
+  it('shows paid for dynamic pricing without USD metadata or a USDC accept', () => {
+    expect(formatPricingLabel({ maxUsdAmount: null, isDynamic: true })).toBe(
+      'Paid'
     );
   });
 
   it('shows "Up to" for dynamic with zero min', () => {
     expect(
       formatPricingLabel({
-        maxAmount: 300,
+        maxUsdAmount: 300,
         isDynamic: true,
         price: '0-300.00 USD',
       })
@@ -105,7 +118,7 @@ describe('formatPricingLabel', () => {
   it('shows range for dynamic with nonzero min', () => {
     expect(
       formatPricingLabel({
-        maxAmount: 300,
+        maxUsdAmount: 300,
         isDynamic: true,
         price: '50-300.00 USD',
       })
@@ -115,7 +128,7 @@ describe('formatPricingLabel', () => {
   it('shows range with small decimals', () => {
     expect(
       formatPricingLabel({
-        maxAmount: 5,
+        maxUsdAmount: 5,
         isDynamic: true,
         price: '0.01-5.00 USD',
       })
@@ -125,21 +138,71 @@ describe('formatPricingLabel', () => {
   it('shows "Up to" for dynamic with unparseable price', () => {
     expect(
       formatPricingLabel({
-        maxAmount: 300,
+        maxUsdAmount: 300,
         isDynamic: true,
         price: 'garbage',
       })
     ).toBe('Up to $300.00');
   });
 
-  it('ignores price when not dynamic', () => {
+  it('does not treat an ambiguous bare fixed price as USD', () => {
     expect(
       formatPricingLabel({
-        maxAmount: 300,
+        maxUsdAmount: null,
+        isDynamic: false,
+        price: '0.05',
+      })
+    ).toBe('Paid');
+  });
+
+  it('does not treat an ambiguous bare dynamic range as USD', () => {
+    expect(
+      formatPricingLabel({
+        maxUsdAmount: null,
+        isDynamic: true,
+        price: '0.001000-0.126000',
+      })
+    ).toBe('Paid');
+  });
+
+  it('preserves explicit zero-dollar fixed metadata', () => {
+    expect(
+      formatPricingLabel({
+        maxUsdAmount: null,
+        isDynamic: false,
+        price: '$0.00',
+      })
+    ).toBe('$0.00');
+  });
+
+  it('uses fixed USD price metadata instead of heterogeneous accept amounts', () => {
+    expect(
+      formatPricingLabel({
+        maxUsdAmount: null,
+        isDynamic: false,
+        price: '0.05 USD',
+      })
+    ).toBe('$0.05');
+  });
+
+  it('falls back to max amount for fixed pricing with range metadata', () => {
+    expect(
+      formatPricingLabel({
+        maxUsdAmount: 300,
         isDynamic: false,
         price: '50-300.00 USD',
       })
     ).toBe('$300.00');
+  });
+
+  it('uses dynamic USD metadata when no USDC accept exists', () => {
+    expect(
+      formatPricingLabel({
+        maxUsdAmount: null,
+        isDynamic: true,
+        price: '0.001000-0.126000 USD',
+      })
+    ).toBe('< $0.01–$0.13');
   });
 
   it('uses price string max when probed maxAmount is lower (dynamic pricing)', () => {
@@ -147,7 +210,7 @@ describe('formatPricingLabel', () => {
     // discovery price string has the real max ($0.126).
     expect(
       formatPricingLabel({
-        maxAmount: 0.001,
+        maxUsdAmount: 0.001,
         isDynamic: true,
         price: '0.001000-0.126000 USD',
       })
@@ -157,11 +220,59 @@ describe('formatPricingLabel', () => {
   it('uses probed maxAmount when it exceeds price string max', () => {
     expect(
       formatPricingLabel({
-        maxAmount: 500,
+        maxUsdAmount: 500,
         isDynamic: true,
         price: '50-300.00 USD',
       })
     ).toBe('$50.00–$500.00');
+  });
+});
+
+describe('getMaxUsdcAmount', () => {
+  it('prefers known USDC accepts over custom-token accepts', () => {
+    expect(
+      getMaxUsdcAmount([
+        {
+          network: 'base',
+          asset: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+          maxAmountRequired: 0.05,
+        },
+        {
+          network: 'solana',
+          asset: '6GGY8GViCR5v4xR4Lxb4nfiAJsEoJua5Gj6YecxbJ4BQ',
+          maxAmountRequired: 1333.728512,
+        },
+      ])
+    ).toBe(0.05);
+  });
+
+  it('returns null when no known USDC accept exists', () => {
+    expect(
+      getMaxUsdcAmount([
+        {
+          network: 'solana',
+          asset: '6GGY8GViCR5v4xR4Lxb4nfiAJsEoJua5Gj6YecxbJ4BQ',
+          maxAmountRequired: 1,
+        },
+        {
+          network: 'solana',
+          asset: 'AnotherTokenMint111111111111111111111111111111',
+          maxAmountRequired: 2,
+        },
+      ])
+    ).toBeNull();
+  });
+
+  it('ignores non-finite USDC amounts', () => {
+    expect(
+      getMaxUsdcAmount([
+        {
+          network: 'base',
+          asset: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+          maxAmountRequired: Number.POSITIVE_INFINITY,
+        },
+      ])
+    ).toBeNull();
   });
 });
 
