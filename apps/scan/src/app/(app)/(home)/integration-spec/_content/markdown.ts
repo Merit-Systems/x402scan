@@ -33,6 +33,7 @@ Recommended:
 
 - Fixed: \`{ price: { mode: "fixed", currency: "USD", amount: "<amount>" } }\`
 - Dynamic: \`{ price: { mode: "dynamic", currency: "USD", min: "<min>", max: "<max>" } }\`
+- OpenAPI \`x-payment-info.price.amount\` is decimal USD; runtime x402 v2 \`accepts[].amount\` is token atomic units (for USDC, \`0.01\` => \`"10000"\`).
 
 ### Minimal valid example
 
@@ -146,5 +147,7 @@ If your OpenAPI spec includes endpoints that are neither x402-paid nor SIWX (e.g
 | Not Found | OpenAPI not found at \`{origin}/openapi.json\` | Add an OpenAPI document at \`{origin}/openapi.json\` |
 | Input/Output Schema Missing | Operation has no input or output schema | Add an input and output schema to the operation |
 | No Payment Modes Detected | No payment modes detected in the response | Add a valid payment mode to the response (x402) |
+| Expected 402, got 400 | Request validation rejected the unauthenticated probe before payment middleware ran | Let probes reach the \`402\` challenge before body/query validation, or add schemas/examples that let probes send valid input |
+| Malformed Runtime Amount | Runtime x402 v2 \`accepts[].amount\` or legacy \`maxAmountRequired\` used decimal dollars | Encode runtime amounts in token atomic units (for USDC, \`0.01\` => \`"10000"\`) |
 | No valid x402 response / No 402 challenge | Endpoint is free but not marked as such | Add \`"security": []\` to the operation in your OpenAPI spec |
 `;
