@@ -106,9 +106,11 @@ Accepted challenge transport:
 For payable indexing in `x402scan`, challenge data should include:
 - non-empty `accepts`
 - Bazaar-style input schema (`extensions.bazaar.info` + schema-derived input)
+- runtime v2 `accepts[].amount` or legacy `maxAmountRequired` encoded in token atomic units (for USDC, `0.01` => `"10000"`)
 
 Compatibility behavior:
 - `402` + `accepts: []` + `extensions["sign-in-with-x"]` => SIWX auth-only, marked `skipped`.
+- Request validation should let unauthenticated probes reach the `402` challenge before body/query schema checks reject the request.
 - Missing input schema => strict non-invocable, marked `skipped`.
 
 ---
@@ -142,7 +144,9 @@ When a user clicks **Register This URL Only**:
 ## Common Failure Reasons
 
 - `Expected 402, got 404/405/429`
+- `Expected 402, got 400` from request validation running before payment challenge
 - `parseResponse: Accepts must contain at least one valid payment requirement`
+- malformed runtime amount, especially decimal dollars instead of token atomic units in v2 `accepts[].amount` or legacy `maxAmountRequired`
 - `parseResponse: Missing input schema`
 - discovery fetch/parse failures for OpenAPI or `/.well-known/x402`
 
@@ -169,7 +173,8 @@ curl -i -X GET https://yourdomain.com/api/route
 
 ## Recommended Migration Order
 
-1. Ensure routes return valid x402 challenges (`402`, parseable, non-empty `accepts` for payable routes).
+1. Ensure routes return valid x402 challenges (`402`, parseable, non-empty `accepts` for payable routes, runtime amounts in token atomic units).
 2. Add OpenAPI discovery + `x-payment-info` + security declarations.
-3. Keep `/.well-known/x402` compat during migration.
-4. Remove compat paths when your consumers no longer depend on them.
+3. Confirm unauthenticated probes reach `402` before request validation rejects missing body/query data.
+4. Keep `/.well-known/x402` compat during migration.
+5. Remove compat paths when your consumers no longer depend on them.

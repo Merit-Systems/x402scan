@@ -58,7 +58,8 @@ SIWX (identity-only) routes:
 
 Rules:
 - Runtime 402 behavior is authoritative over static metadata.
-- "amount" is for both runtime accepts and x-payment-info fixed pricing.
+- OpenAPI x-payment-info.price.amount is decimal USD; runtime x402 v2 accepts[].amount is token atomic units (for USDC, 0.01 => "10000").
+- Registration probes must reach a 402 challenge before body/query validation rejects the request.
 
 Workflow:
 0) Install the agentcash MCP server:
@@ -243,6 +244,12 @@ export default function DiscoverySpecPage() {
                     }
                   </code>
                 </li>
+                <li>
+                  OpenAPI <code>x-payment-info.price.amount</code> is decimal
+                  USD; runtime x402 v2 <code>accepts[].amount</code> is token
+                  atomic units. For USDC, <code>0.01</code> becomes{' '}
+                  <code>&quot;10000&quot;</code>.
+                </li>
               </ul>
               <h3 className="text-sm font-semibold">Minimal valid example</h3>
               <CodeBlock
@@ -420,6 +427,11 @@ export default function DiscoverySpecPage() {
               with at least one x402 entry in <code>accepts</code>.
             </li>
             <li>
+              Request validation should let unauthenticated probes reach the{' '}
+              <code>402</code> challenge before body/query schema checks reject
+              the request.
+            </li>
+            <li>
               Endpoints without an input schema are non-invocable and are
               skipped during registration. Publish an OpenAPI schema (or a{' '}
               <code>402</code> body that carries one) to make the endpoint
@@ -470,6 +482,33 @@ export default function DiscoverySpecPage() {
                     error: 'No Payment Modes Detected',
                     cause: 'No payment modes detected in the response',
                     fix: 'Add a valid payment mode to the response (x402)',
+                  },
+                  {
+                    error: 'Expected 402, got 400',
+                    cause:
+                      'Request validation rejected the unauthenticated probe before payment middleware ran',
+                    fix: (
+                      <>
+                        <span>
+                          Let probes reach the <code>402</code> challenge before
+                          body/query validation, or add schemas/examples that
+                          let probes send valid input
+                        </span>
+                      </>
+                    ),
+                  },
+                  {
+                    error: 'Malformed Runtime Amount',
+                    cause: (
+                      <>
+                        <span>Runtime x402 </span>
+                        <code>accepts[].amount</code>
+                        <span> or legacy </span>
+                        <code>maxAmountRequired</code>
+                        <span> used decimal dollars</span>
+                      </>
+                    ),
+                    fix: 'Encode runtime amounts in token atomic units (for USDC, 0.01 => "10000")',
                   },
                 ];
                 return (
