@@ -44,7 +44,7 @@ export function parseMaxFromPriceString(price: string): number {
  * Parse a fixed USD discovery price string like "0.05 USD".
  * Returns null for ranges or ambiguous non-USD values.
  */
-export function parseFixedUsdPriceString(price: string): number | null {
+function parseFixedUsdPriceString(price: string): number | null {
   if (!hasUsdPriceMarker(price)) return null;
   const match = /^\s*\$?\s*(\d+(?:\.\d+)?)\s*(?:USD)?\s*$/i.exec(price);
   if (!match?.[1]) return null;
@@ -52,7 +52,7 @@ export function parseFixedUsdPriceString(price: string): number | null {
   return Number.isFinite(value) ? value : null;
 }
 
-export function isKnownUsdcAccept(accept: PricingAccept): boolean {
+function isKnownUsdcAccept(accept: PricingAccept): boolean {
   if (!accept.asset) return false;
   if (accept.network === 'base') {
     return accept.asset.toLowerCase() === USDC_ADDRESS.base;
