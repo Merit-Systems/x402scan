@@ -345,6 +345,15 @@ export const getOrigin = async (id: string) => {
   };
 };
 
+// Lightweight lookup for callers that only need the origin URL (e.g. deriving a
+// hostname) — avoids getOrigin's ogImages/resources joins on hot paths.
+export const getOriginUrl = async (id: string) => {
+  return await scanDb.resourceOrigin.findUnique({
+    where: { id },
+    select: { origin: true },
+  });
+};
+
 export const getOriginMetadata = async (id: string) => {
   return await scanDb.resourceOrigin.findUnique({
     where: { id },

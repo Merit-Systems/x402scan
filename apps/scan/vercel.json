@@ -31,6 +31,10 @@
     {
       "path": "/api/resources/label",
       "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/claim-sweep",
+      "schedule": "0 * * * *"
     }
   ]
 }
