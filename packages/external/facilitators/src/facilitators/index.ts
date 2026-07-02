@@ -3,6 +3,7 @@ export { coinbase, coinbaseFacilitator } from './coinbase';
 export { aurracloud, aurracloudFacilitator } from './aurracloud';
 export { thirdweb, thirdwebFacilitator } from './thirdweb';
 export { x402rs, x402rsFacilitator } from './x402rs';
+export { obol, obolFacilitator } from './obol';
 export { payai, payaiFacilitator } from './payai';
 export { corbits, corbitsFacilitator } from './corbits';
 export { dexter, dexterFacilitator } from './dexter';
