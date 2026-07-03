@@ -5,11 +5,28 @@ import {
   USDC_SOLANA_TOKEN,
 } from '../constants';
 
-import type { Facilitator, FacilitatorConfig } from '../types';
+import type { Facilitator, FacilitatorConfigConstructor } from '../types';
 
-export const solvador: FacilitatorConfig = {
+interface SolvadorProps {
+  apiKey: string;
+}
+
+export const solvador: FacilitatorConfigConstructor<SolvadorProps> = ({
+  apiKey,
+}) => ({
   url: 'https://api.solvador.com',
-};
+  createAuthHeaders: () => {
+    return Promise.resolve({
+      verify: {
+        'x-api-key': apiKey,
+      },
+      settle: {
+        'x-api-key': apiKey,
+      },
+      supported: {},
+    });
+  },
+});
 
 export const solvadorFacilitator = {
   id: 'solvador',
@@ -23,24 +40,24 @@ export const solvadorFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0xC077C1A915A61021b16d1581067C828b7C76F8e7',
+        address: '0xc077c1a915a61021b16d1581067c828b7c76f8e7',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2026-06-23'),
+        dateOfFirstTransaction: new Date('2026-06-25'),
       },
     ],
     [Network.POLYGON]: [
       {
-        address: '0xC077C1A915A61021b16d1581067C828b7C76F8e7',
+        address: '0xc077c1a915a61021b16d1581067c828b7c76f8e7',
         tokens: [USDC_POLYGON_TOKEN],
-        dateOfFirstTransaction: new Date('2026-06-23'),
+        dateOfFirstTransaction: new Date('2026-07-03'),
       },
     ],
     [Network.SOLANA]: [
       {
         address: '3uCK3sWUFZPPBdLBYskYvUnAgJV9HYXvptgHcdti69qo',
         tokens: [USDC_SOLANA_TOKEN],
-        dateOfFirstTransaction: new Date('2026-06-23'),
+        dateOfFirstTransaction: new Date('2026-06-25'),
       },
     ],
   },
-} as const satisfies Facilitator;
+} as const satisfies Facilitator<SolvadorProps>;
