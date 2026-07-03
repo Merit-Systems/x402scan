@@ -1,9 +1,100 @@
-import { createManyTransferEvents, getTransferEvents } from '@/db/services';
+import {
+  advanceTransferSyncState,
+  createManyTransferEvents,
+  createTransferSyncState,
+  getTransferEvents,
+  getTransferSyncState,
+  markTransferSyncStateStarted,
+  recordTransferSyncStateError,
+  type TransferSyncStateKey,
+} from '@/db/services';
 import { logger, schedules } from '@trigger.dev/sdk/v3';
-import { Network } from './types';
+import { Network, QueryProvider } from './types';
 import { fetchTransfers } from './fetch/fetch';
 
-import type { Facilitator, SyncConfig } from './types';
+import type { Facilitator, FacilitatorConfig, SyncConfig } from './types';
+
+function normalizeAddress(chain: string, address: string): string {
+  return chain === Network.SOLANA.toString() ? address : address.toLowerCase();
+}
+
+function getSyncStateKey(
+  syncConfig: SyncConfig,
+  facilitator: Facilitator,
+  transactionFrom: string,
+  tokenAddress: string
+): TransferSyncStateKey {
+  return {
+    chain: syncConfig.chain,
+    provider: syncConfig.provider,
+    facilitator_id: facilitator.id,
+    transaction_from: transactionFrom,
+    token_address: normalizeAddress(syncConfig.chain, tokenAddress),
+  };
+}
+
+async function getBootstrapCursor(
+  syncConfig: SyncConfig,
+  facilitatorConfig: FacilitatorConfig,
+  transactionFrom: string
+) {
+  const mostRecentCdpTransfer = await getTransferEvents({
+    orderBy: { block_timestamp: 'desc' },
+    take: 1,
+    where: {
+      address: normalizeAddress(
+        syncConfig.chain,
+        facilitatorConfig.token.address
+      ),
+      chain: syncConfig.chain,
+      transaction_from: transactionFrom,
+      provider: QueryProvider.CDP,
+    },
+  });
+
+  const candidates = [
+    facilitatorConfig.syncStartDate,
+    syncConfig.syncStateCutoverAt,
+    mostRecentCdpTransfer[0]?.block_timestamp
+      ? new Date(mostRecentCdpTransfer[0].block_timestamp.getTime() + 1000)
+      : undefined,
+  ].filter((date): date is Date => date !== undefined);
+
+  return new Date(Math.max(...candidates.map(date => date.getTime())));
+}
+
+async function getOrCreateTransferSyncState(
+  syncConfig: SyncConfig,
+  facilitator: Facilitator,
+  facilitatorConfig: FacilitatorConfig,
+  transactionFrom: string
+) {
+  const key = getSyncStateKey(
+    syncConfig,
+    facilitator,
+    transactionFrom,
+    facilitatorConfig.token.address
+  );
+  const existing = await getTransferSyncState(key);
+
+  if (existing) {
+    return { key, state: existing };
+  }
+
+  const cursorTimestamp = await getBootstrapCursor(
+    syncConfig,
+    facilitatorConfig,
+    transactionFrom
+  );
+
+  logger.log(
+    `[${syncConfig.chain}] Bootstrapping sync state for ${facilitator.id}:${facilitatorConfig.address} at ${cursorTimestamp.toISOString()}`
+  );
+
+  const state = await createTransferSyncState(key, cursorTimestamp);
+
+  return { key, state };
+}
 
 async function syncFacilitator(
   syncConfig: SyncConfig,
@@ -24,15 +115,75 @@ async function syncFacilitator(
       `[${syncConfig.chain}] Getting most recent transfer for ${facilitator.id}:${facilitatorConfig.address}`
     );
 
+    const transactionFrom = normalizeAddress(
+      syncConfig.chain,
+      facilitatorConfig.address
+    );
+
+    if (syncConfig.useSyncState) {
+      const { key, state } = await getOrCreateTransferSyncState(
+        syncConfig,
+        facilitator,
+        facilitatorConfig,
+        transactionFrom
+      );
+      const since = state.cursor_timestamp;
+
+      logger.log(
+        `[${syncConfig.chain}] Syncing ${facilitator.id}:${facilitatorConfig.address} from sync state ${since.toISOString()} to ${now.toISOString()}`
+      );
+
+      await markTransferSyncStateStarted(key, now);
+
+      if (since >= now) {
+        logger.log(
+          `[${syncConfig.chain}] Sync state is current for ${facilitator.id}:${facilitatorConfig.address}`
+        );
+        await advanceTransferSyncState(key, since, new Date());
+        continue;
+      }
+
+      let totalSaved = 0;
+
+      try {
+        const { totalFetched } = await fetchTransfers(
+          syncConfig,
+          facilitator,
+          facilitatorConfig,
+          since,
+          now,
+          async batch => {
+            const syncResult = await createManyTransferEvents(batch);
+            totalSaved += syncResult.count;
+            logger.log(
+              `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - syncResult.count} duplicates)`
+            );
+          },
+          async (_windowStart, windowEnd, resultCount) => {
+            await advanceTransferSyncState(key, windowEnd, new Date());
+            logger.log(
+              `[${syncConfig.chain}] Advanced sync state to ${windowEnd.toISOString()} after ${resultCount} fetched transfers`
+            );
+          }
+        );
+
+        logger.log(
+          `[${syncConfig.chain}] Completed ${facilitator.id}: ${totalFetched} fetched, ${totalSaved} saved`
+        );
+      } catch (error) {
+        await recordTransferSyncStateError(key, String(error));
+        throw error;
+      }
+
+      continue;
+    }
+
     const mostRecentTransfer = await getTransferEvents({
       orderBy: { block_timestamp: 'desc' },
       take: 1,
       where: {
         chain: syncConfig.chain,
-        transaction_from:
-          syncConfig.chain === Network.SOLANA.toString()
-            ? facilitatorConfig.address
-            : facilitatorConfig.address.toLowerCase(),
+        transaction_from: transactionFrom,
         provider: syncConfig.provider,
       },
     });

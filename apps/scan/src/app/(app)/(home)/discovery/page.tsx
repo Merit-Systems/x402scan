@@ -77,6 +77,36 @@ export default function DiscoveryPage() {
           </div>
         </section>
 
+        <section id="merchant-dashboard" className="space-y-4">
+          <h2 className="text-xl font-semibold">Your merchant pages</h2>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              Every registered origin gets two pages on{' '}
+              <a
+                href="https://tryponcho.com"
+                className="underline hover:no-underline font-medium text-foreground"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Poncho
+              </a>
+              :
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                <strong>tryponcho.com/m/your-origin</strong> — your API
+                storefront. Share this link so anyone can try your API in one
+                click.
+              </li>
+              <li>
+                <strong>tryponcho.com/p/your-origin</strong> — your health
+                metrics. See how agents use your endpoints and monitor
+                performance.
+              </li>
+            </ul>
+          </div>
+        </section>
+
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">Get started</h2>
           <div className="grid gap-4 md:grid-cols-3">

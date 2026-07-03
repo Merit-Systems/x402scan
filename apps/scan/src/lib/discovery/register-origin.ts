@@ -3,10 +3,13 @@ import { getCachedProbeResult } from './probe-cache';
 import { getRegistrationErrorMessage } from './utils';
 import { registerResource, registerSiwxResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
-import { getOriginResourceCount } from '@/services/db/resources/origin';
+import {
+  getOriginResourceCount,
+  upsertOrigin,
+} from '@/services/db/resources/origin';
 import { notifyNewServer } from '@/lib/discord-notifications';
 import { getOriginFromUrl, normalizeResourceUrl } from '@/lib/url';
-import { scanDb } from '@x402scan/scan-db';
+import { scrapeOriginData } from '@/services/scraper';
 
 import type {
   AuditWarning,
@@ -100,7 +103,8 @@ export async function registerResourcesFromDiscovery(
   originInfo?: { title: string; description?: string },
   /** Server-side probe session ID. URLs with a cached probe result in Redis
    *  skip re-probing — avoids rate limiting on registration. */
-  probeSessionId?: string
+  probeSessionId?: string,
+  contactEmail?: string
 ): Promise<RegisterOriginResult> {
   const uniqueOrigins = [
     ...new Set(resources.map(resource => getOriginFromUrl(resource.url))),
@@ -111,20 +115,6 @@ export async function registerResourcesFromDiscovery(
       uniqueOrigins.map(
         async origin => [origin, await getOriginResourceCount(origin)] as const
       )
-    )
-  );
-
-  // Pre-create origin rows outside transactions to prevent P2002 races.
-  // When multiple resources from the same origin register concurrently,
-  // each transaction's resourceOrigin.upsert() can race on INSERT.
-  // Top-level upserts use native INSERT ON CONFLICT, which is safe.
-  await Promise.all(
-    uniqueOrigins.map(origin =>
-      scanDb.resourceOrigin.upsert({
-        where: { origin },
-        create: { origin },
-        update: {},
-      })
     )
   );
 
@@ -139,6 +129,7 @@ export async function registerResourcesFromDiscovery(
       originMetadataFallback: originInfo,
       pricingMode,
       price,
+      skipMetadataScrape: true,
     });
     return siwxResult.success
       ? {
@@ -233,6 +224,7 @@ export async function registerResourcesFromDiscovery(
       pricingMode: resource.pricingMode,
       price: resource.price,
       method: resource.method,
+      skipMetadataScrape: true,
     });
 
     if (result.success) return result;
@@ -376,6 +368,71 @@ export async function registerResourcesFromDiscovery(
       notifiedOrigins.add(origin);
     }
   }
+
+  // Only scrape metadata for origins that have resources (either newly
+  // registered in this batch or pre-existing). Origins where every resource
+  // failed have no origin row — scraping would cause upsertOrigin to create
+  // one, re-introducing the orphan problem.
+  const originsWithResources = new Set(
+    [...successfulResults, ...siwxResults].map(r => getOriginFromUrl(r.url))
+  );
+  const originsToScrape = uniqueOrigins.filter(
+    origin =>
+      originsWithResources.has(origin) ||
+      (originResourceCounts.get(origin) ?? 0) > 0
+  );
+
+  // Scrape and upsert origin metadata once per unique origin (deduped).
+  // Individual registerResource/registerSiwxResource calls skip this
+  // (skipMetadataScrape: true) so the scrape+upsert happens exactly once
+  // per origin, not once per resource.
+  // Awaited directly — favicon URLs are essential for rendering and must
+  // be persisted before the response is sent. The previous after() approach
+  // was unreliable (the deferred scrape+upsert could be killed before
+  // completing, leaving stale ICO URLs in the DB).
+  await Promise.all(
+    originsToScrape.map(async origin => {
+      try {
+        const { og, metadata, favicon } = await scrapeOriginData(origin);
+        const title =
+          metadata?.title ?? og?.ogTitle ?? originInfo?.title ?? null;
+        const description =
+          metadata?.description ??
+          og?.ogDescription ??
+          originInfo?.description ??
+          null;
+
+        await upsertOrigin({
+          origin,
+          title: title ?? undefined,
+          description: description ?? undefined,
+          favicon: favicon ?? undefined,
+          email: contactEmail ?? undefined,
+          ogImages:
+            og?.ogImage?.flatMap(image => {
+              try {
+                return [
+                  {
+                    url: new URL(image.url, origin).toString(),
+                    height: image.height,
+                    width: image.width,
+                    title: og.ogTitle,
+                    description: og.ogDescription,
+                  },
+                ];
+              } catch {
+                return [];
+              }
+            }) ?? [],
+        });
+      } catch (err) {
+        console.error(
+          `[registerResourcesFromDiscovery] Metadata upsert failed for ${origin}:`,
+          err
+        );
+      }
+    })
+  );
 
   return {
     registered: successfulResults.length,

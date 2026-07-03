@@ -24,6 +24,7 @@ import { mixedAddressSchema } from '@/lib/schemas';
 
 import { registerEndpoint } from '@/lib/discovery/register-endpoint';
 import { registerResourcesFromDiscovery } from '@/lib/discovery/register-origin';
+import { urlMatchesDiscoveredResource } from '@/lib/url';
 import { TRPCError } from '@trpc/server';
 import {
   listResourceTags,
@@ -140,6 +141,36 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
+      const origin = new URL(input.url).origin;
+      const discoveryResult = await fetchDiscoveryDocument(origin);
+
+      if (!discoveryResult.success) {
+        return {
+          success: false as const,
+          error: {
+            type: 'noDiscovery' as const,
+            message:
+              discoveryResult.error ??
+              'No discovery document found. Add an openapi.json to your origin to register endpoints.',
+          },
+        };
+      }
+
+      const urlInSpec = discoveryResult.resources.some(r =>
+        urlMatchesDiscoveredResource(input.url.toString(), r.url)
+      );
+
+      if (!urlInSpec) {
+        return {
+          success: false as const,
+          error: {
+            type: 'notInSpec' as const,
+            message:
+              "This endpoint is not listed in the origin's openapi.json. Add it to the spec before registering.",
+          },
+        };
+      }
+
       const result = await registerEndpoint(input.url.toString());
       try {
         if (result.success && result.resource?.origin?.id) {
@@ -186,7 +217,8 @@ export const resourcesRouter = createTRPCRouter({
         discoveryResult.resources,
         discoveryResult.source,
         discoveryResult.info,
-        input.probeSessionId
+        input.probeSessionId,
+        discoveryResult.contactEmail
       );
 
       if (result.registered === 0 && result.siwx === 0) {
@@ -243,6 +275,7 @@ export const resourcesRouter = createTRPCRouter({
         resourceCount: discoveryResult.resources.length,
         resources: discoveryResult.resources,
         ownershipProofs: discoveryResult.ownershipProofs,
+        contactEmail: discoveryResult.contactEmail,
       };
     }),
 

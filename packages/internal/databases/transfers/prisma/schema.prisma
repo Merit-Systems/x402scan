@@ -39,3 +39,22 @@ model TransferEvent {
   @@index([sender, block_timestamp])
   @@index([chain, transaction_from, provider, block_timestamp(sort: Desc)])
 }
+
+model TransferSyncState {
+  id                String    @default(uuid())
+  chain             String
+  provider          String
+  facilitator_id    String
+  transaction_from  String
+  token_address     String
+  cursor_timestamp  DateTime
+  last_started_at   DateTime?
+  last_completed_at DateTime?
+  last_error        String?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  @@id([id])
+  @@unique([chain, provider, facilitator_id, transaction_from, token_address])
+  @@index([chain, provider, cursor_timestamp])
+}

@@ -41,25 +41,3 @@ export const fetchHtml = async (url: string): Promise<string | null> => {
     return null;
   }
 };
-
-/**
- * Checks if a URL is accessible (returns 200)
- * Tries HEAD first, falls back to GET if HEAD fails
- */
-export const checkUrlExists = async (url: string): Promise<boolean> => {
-  try {
-    // Try HEAD first (more efficient)
-    const headRes = await fetchWithTimeout(url, { method: 'HEAD' });
-    if (headRes.status === 200) return true;
-
-    // Some servers return 405 Method Not Allowed for HEAD, try GET
-    if (headRes.status === 405 || headRes.status === 403) {
-      const getRes = await fetchWithTimeout(url, { method: 'GET' });
-      return getRes.status === 200;
-    }
-
-    return false;
-  } catch {
-    return false;
-  }
-};

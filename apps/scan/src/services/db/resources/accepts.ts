@@ -24,28 +24,25 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
     },
     where: {
       network: chain as AcceptsNetwork,
-      ...(tags || originUrls
-        ? {
-            resourceRel: {
-              ...(tags
-                ? {
-                    tags: {
-                      some: {
-                        tag: { name: { in: tags } },
-                      },
-                    },
-                  }
-                : {}),
-              ...(originUrls
-                ? {
-                    origin: {
-                      origin: { in: originUrls },
-                    },
-                  }
-                : {}),
-            },
-          }
-        : {}),
+      resourceRel: {
+        deprecatedAt: null,
+        ...(tags
+          ? {
+              tags: {
+                some: {
+                  tag: { name: { in: tags } },
+                },
+              },
+            }
+          : {}),
+        ...(originUrls
+          ? {
+              origin: {
+                origin: { in: originUrls },
+              },
+            }
+          : {}),
+      },
     },
   });
 

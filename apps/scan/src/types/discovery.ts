@@ -53,6 +53,8 @@ export interface X402DiscoveryResult {
    * the origin's homepage isn't HTML (e.g. APIs that serve JSON at /).
    */
   info?: { title: string; description?: string; version?: string };
+  /** Contact email extracted from info.contact.email in the OpenAPI spec. */
+  contactEmail?: string;
   /** Optional instructions for AI agents consuming this API */
   instructions?: string;
   /**

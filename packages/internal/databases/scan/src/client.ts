@@ -19,6 +19,10 @@ if (process.env.NODE_ENV !== 'production')
   globalForPrisma.scanDbAdapter = scanDbAdapter;
 
 export const scanDb =
-  globalForPrisma.scanDb || new PrismaClient({ adapter: scanDbAdapter });
+  globalForPrisma.scanDb ||
+  new PrismaClient({
+    adapter: scanDbAdapter,
+    omit: { resourceOrigin: { email: true } },
+  });
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.scanDb = scanDb;

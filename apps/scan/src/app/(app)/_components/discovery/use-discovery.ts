@@ -121,6 +121,9 @@ export interface UseDiscoveryReturn {
   handleRegisterAll: () => void;
   resetBulk: () => void;
 
+  // Contact email from OpenAPI info.contact.email
+  contactEmail: string | undefined;
+
   // Refresh
   refreshDiscovery: () => void;
 
@@ -337,6 +340,11 @@ export function useDiscovery({
         : undefined,
     invalidResourcesMap,
     authModeMap,
+
+    // Contact email
+    contactEmail: discoveryQuery.data?.found
+      ? discoveryQuery.data.contactEmail
+      : undefined,
 
     // Origin preview
     isPreviewLoading: previewQuery.isLoading,

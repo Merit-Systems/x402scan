@@ -28,26 +28,10 @@ export const buttonVariants = cva(
         primaryGhost: 'hover:bg-primary/20 text-primary',
         link: 'text-primary underline-offset-4 hover:underline',
         success: 'bg-green-600 text-white shadow-sm hover:bg-green-700',
-        turbo: cn(
-          'bg-gradient-to-br from-primary via-primary/80 to-primary text-white hover:opacity-90',
-          'shadow-[0_2px_6px_color-mix(in_oklab,var(--primary)_70%,transparent)]',
-          'hover:shadow-[0_2px_4px_color-mix(in_oklab,var(--primary)_70%,transparent)]',
-          'active:shadow-none',
-          'inset-ring-2 inset-ring-inset inset-ring-border/50',
-          'relative overflow-hidden',
-          'before:content-[""] before:absolute before:w-full before:h-full before:rounded-md before:pointer-events-none',
-          'before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:animate-shimmer'
-        ),
-        turboSecondary: cn(
-          'bg-gradient-to-br from-gray-400 via-gray-500 to-gray-600 text-white hover:opacity-90',
-          'shadow-[0_2px_6px_color-mix(in_oklab,theme(colors.gray.500)_70%,transparent)]',
-          'hover:shadow-[0_2px_4px_color-mix(in_oklab,theme(colors.gray.500)_70%,transparent)]',
-          'active:shadow-none',
-          'inset-ring-2 inset-ring-inset inset-ring-border/50',
-          'relative overflow-hidden',
-          'before:content-[""] before:absolute before:w-full before:h-full before:rounded-md before:pointer-events-none',
-          'before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:animate-shimmer'
-        ),
+        turbo:
+          'bg-gradient-to-br from-primary via-primary/80 to-primary text-white hover:opacity-90 shadow-sm hover:shadow-xs active:shadow-none',
+        turboSecondary:
+          'bg-gradient-to-br from-gray-400 via-gray-500 to-gray-600 text-white hover:opacity-90 shadow-sm hover:shadow-xs active:shadow-none',
         unstyled: '',
       },
       size: {

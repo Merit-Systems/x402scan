@@ -9,6 +9,7 @@ import { supportedChainSchema } from '@/lib/schemas';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import { upsertResourceSchema } from './resource-schema';
+import { ensureOriginExists } from './origin';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
@@ -42,13 +43,7 @@ export const upsertResource = async (
   const originStr = getOriginFromUrl(baseResource.resource);
 
   return await scanDb.$transaction(async tx => {
-    // Ensure the origin exists inside the transaction to avoid
-    // concurrent connectOrCreate race conditions (P2002).
-    await tx.resourceOrigin.upsert({
-      where: { origin: originStr },
-      create: { origin: originStr },
-      update: {},
-    });
+    await ensureOriginExists(tx, originStr);
 
     // Merge new metadata with existing to avoid clobbering fields set by
     // a different registration path (e.g. paid sets pricingMode, siwx sets

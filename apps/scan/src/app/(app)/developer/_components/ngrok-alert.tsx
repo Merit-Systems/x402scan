@@ -30,29 +30,29 @@ export function NgrokAlert({ port }: NgrokAlertProps) {
   };
 
   return (
-    <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950/20 dark:border-blue-900 p-4 relative">
+    <div className="rounded-lg border border-primary/20 bg-primary/5 dark:bg-primary/10 p-4 relative">
       <button
         onClick={() => setDismissed(true)}
-        className="absolute top-2 right-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
+        className="absolute top-2 right-2 text-primary hover:text-primary/70"
         aria-label="Dismiss"
       >
         <X className="size-4" />
       </button>
 
       <div className="flex gap-3">
-        <Info className="size-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+        <Info className="size-5 text-primary shrink-0 mt-0.5" />
         <div className="flex-1 pr-6">
-          <h3 className="font-semibold text-sm mb-2 text-blue-900 dark:text-blue-100">
+          <h3 className="font-semibold text-sm mb-2">
             Need to test a local endpoint?
           </h3>
-          <div className="text-sm space-y-3 text-blue-800 dark:text-blue-200">
+          <div className="text-sm space-y-3 text-muted-foreground">
             <p>
               x402scan runs in production and can&apos;t reach localhost URLs.
               Use <strong>ngrok</strong> to create a public tunnel to your local
               server.
             </p>
 
-            <div className="bg-blue-100 dark:bg-blue-900/40 rounded-md p-3 font-mono text-xs flex items-center justify-between gap-2">
+            <div className="bg-primary/10 rounded-md p-3 font-mono text-xs flex items-center justify-between gap-2">
               <code className="flex-1">{ngrokCommand}</code>
               <Button
                 variant="ghost"
@@ -70,11 +70,7 @@ export function NgrokAlert({ port }: NgrokAlertProps) {
 
             <Collapsible>
               <CollapsibleTrigger asChild>
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="h-auto p-0 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
-                >
+                <Button variant="link" size="sm" className="h-auto p-0">
                   Show detailed instructions →
                 </Button>
               </CollapsibleTrigger>
@@ -82,7 +78,7 @@ export function NgrokAlert({ port }: NgrokAlertProps) {
                 <ol className="list-decimal list-inside space-y-1.5 text-xs">
                   <li>
                     Install ngrok:{' '}
-                    <code className="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">
+                    <code className="bg-primary/10 px-1 py-0.5 rounded">
                       brew install ngrok
                     </code>{' '}
                     or{' '}
@@ -102,7 +98,7 @@ export function NgrokAlert({ port }: NgrokAlertProps) {
                   </li>
                   <li>
                     Copy the <strong>HTTPS</strong> URL from ngrok output (e.g.,{' '}
-                    <code className="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded">
+                    <code className="bg-primary/10 px-1 py-0.5 rounded">
                       https://abc123.ngrok.io
                     </code>
                     )

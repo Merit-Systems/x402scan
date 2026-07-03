@@ -10,6 +10,7 @@ import { upsertResource } from '@/services/db/resources/resource';
 import { checkCronSecret } from '@/lib/cron';
 import { notifyNewServer } from '@/lib/discord-notifications';
 import { getOriginFromUrl } from '@/lib/url';
+import { isVercelPreviewDeployment } from '@/lib/discovery/vercel-preview';
 import { normalizeChainId } from '@/lib/x402';
 
 import type { AcceptsNetwork } from '@x402scan/scan-db/types';
@@ -93,6 +94,16 @@ export const GET = async (request: NextRequest) => {
       })
     );
 
+    // Reject Vercel preview deployments (serve `x-robots-tag: noindex` and get
+    // torn down). Checked once per origin so a preview origin's resources are
+    // never upserted, even via facilitator sync.
+    const previewOrigins = new Set<string>();
+    await Promise.all(
+      Array.from(allOrigins).map(async origin => {
+        if (await isVercelPreviewDeployment(origin)) previewOrigins.add(origin);
+      })
+    );
+
     // Step 2: Process resources (upsert to database)
     console.log('Starting resource processing');
     const resourceProcessingStart = Date.now();
@@ -100,6 +111,23 @@ export const GET = async (request: NextRequest) => {
     const resourceResults = await Promise.allSettled(
       resources.map(async facilitatorResource => {
         try {
+          let resourceOrigin: string | undefined;
+          try {
+            resourceOrigin = getOriginFromUrl(facilitatorResource.resource);
+          } catch {
+            resourceOrigin = undefined;
+          }
+          if (resourceOrigin && previewOrigins.has(resourceOrigin)) {
+            console.warn('Skipping Vercel preview deployment', {
+              resource: facilitatorResource.resource,
+            });
+            return {
+              resource: facilitatorResource.resource,
+              success: false,
+              error: 'Vercel preview deployment',
+            };
+          }
+
           const result = await upsertResource({
             ...facilitatorResource,
             accepts: facilitatorResource.accepts.map(accept => ({

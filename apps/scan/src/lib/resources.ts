@@ -1,6 +1,7 @@
 import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import {
+  ensureOriginExists,
   getOriginResourceCount,
   upsertOrigin,
 } from '@/services/db/resources/origin';
@@ -32,6 +33,7 @@ import type { AcceptsNetwork } from '@x402scan/scan-db';
 import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
 import { deduplicateWarnings } from '@/lib/discovery/utils';
 import { notifyNewServer } from '@/lib/discord-notifications';
+import { after } from 'next/server';
 
 /**
  * Pure validation — no DB writes, no side effects. Used by both
@@ -163,6 +165,8 @@ export async function registerSiwxResource(
     originMetadataFallback?: { title?: string; description?: string };
     pricingMode?: string;
     price?: string;
+    /** Skip metadata scrape+upsert — caller handles it (e.g. batch registration). */
+    skipMetadataScrape?: boolean;
   } = {}
 ) {
   const urlObj = new URL(url);
@@ -182,11 +186,7 @@ export async function registerSiwxResource(
 
   try {
     const resource = await scanDb.$transaction(async tx => {
-      await tx.resourceOrigin.upsert({
-        where: { origin },
-        create: { origin },
-        update: {},
-      });
+      await ensureOriginExists(tx, origin);
 
       const siwxMetadata = {
         authMode: 'siwx' as const,
@@ -236,9 +236,10 @@ export async function registerSiwxResource(
       });
     });
 
-    // Scrape and upsert origin metadata (non-blocking — resource is already
-    // persisted, so a scrape failure shouldn't fail the registration).
-    void (async () => {
+    // Scrape and upsert origin metadata. Resource is already persisted, so
+    // a scrape failure won't fail the registration.
+    // Skipped in batch registration where the caller deduplicates per origin.
+    if (!options.skipMetadataScrape) {
       try {
         const { og, metadata, favicon } = await scrapeOriginData(origin);
         const title =
@@ -280,7 +281,7 @@ export async function registerSiwxResource(
           err
         );
       }
-    })();
+    }
 
     return {
       success: true as const,
@@ -343,6 +344,8 @@ export const registerResource = async (
     /** HTTP method from discovery — preferred over advisory.method which
      *  is always POST (x402 payment protocol). */
     method?: string;
+    /** Skip metadata scrape+upsert — caller handles it (e.g. batch registration). */
+    skipMetadataScrape?: boolean;
   } = {}
 ) => {
   const validation = validateResource(url, advisory);
@@ -508,56 +511,64 @@ export const registerResource = async (
     };
   }
 
-  const { og, metadata, favicon } = await scrapeOriginData(origin);
+  // Scrape origin metadata (title, favicon, OG images) and upsert.
+  // Skipped in batch registration where the caller deduplicates per origin.
+  let title: string | null = options.originMetadataFallback?.title ?? null;
+  let description: string | null =
+    options.originMetadataFallback?.description ?? null;
+  let favicon: string | null = null;
+  let og: Awaited<ReturnType<typeof scrapeOriginData>>['og'] = null;
 
-  const title =
-    metadata?.title ??
-    og?.ogTitle ??
-    options.originMetadataFallback?.title ??
-    null;
-  const description =
-    metadata?.description ??
-    og?.ogDescription ??
-    options.originMetadataFallback?.description ??
-    null;
+  if (!options.skipMetadataScrape) {
+    const scraped = await scrapeOriginData(origin);
+    og = scraped.og;
+    favicon = scraped.favicon;
 
-  // Origin metadata upsert — non-blocking. The origin row itself is already
-  // created inside upsertResource's transaction. This just enriches it with
-  // scraped metadata (title, favicon, OG images). When multiple resources
-  // from the same origin register concurrently, this can race (P2002) —
-  // safe to swallow since another concurrent call will succeed.
-  void upsertOrigin({
-    origin,
-    title: title ?? undefined,
-    description: description ?? undefined,
-    favicon: favicon ?? undefined,
-    ogImages:
-      og?.ogImage?.flatMap(image => {
-        try {
-          return [
-            {
-              url: new URL(image.url, origin).toString(),
-              height: image.height,
-              width: image.width,
-              title: og.ogTitle,
-              description: og.ogDescription,
-            },
-          ];
-        } catch {
-          return [];
-        }
-      }) ?? [],
-  }).catch(err => {
-    // P2002: another concurrent call already upserted this origin — safe to ignore.
-    // Log anything else so metadata failures aren't silent.
-    const isP2002 =
-      err instanceof Error &&
-      'code' in err &&
-      (err as { code: string }).code === 'P2002';
-    if (!isP2002) {
-      console.error('[registerResource] Origin metadata upsert failed:', err);
+    title = scraped.metadata?.title ?? og?.ogTitle ?? title;
+    description =
+      scraped.metadata?.description ?? og?.ogDescription ?? description;
+
+    // Origin metadata upsert — awaited to ensure favicon URLs are persisted.
+    // The origin row itself is already created inside upsertResource's
+    // transaction. This enriches it with scraped metadata (title, favicon,
+    // OG images). When multiple resources from the same origin register
+    // concurrently, this can race (P2002) — safe to swallow since another
+    // concurrent call will succeed.
+    try {
+      await upsertOrigin({
+        origin,
+        title: title ?? undefined,
+        description: description ?? undefined,
+        favicon: favicon ?? undefined,
+        ogImages:
+          og?.ogImage?.flatMap(image => {
+            try {
+              return [
+                {
+                  url: new URL(image.url, origin).toString(),
+                  height: image.height,
+                  width: image.width,
+                  title: og?.ogTitle,
+                  description: og?.ogDescription,
+                },
+              ];
+            } catch {
+              return [];
+            }
+          }) ?? [],
+      });
+    } catch (err) {
+      // P2002: another concurrent call already upserted this origin — safe to ignore.
+      // Log anything else so metadata failures aren't silent.
+      const isP2002 =
+        err instanceof Error &&
+        'code' in err &&
+        (err as { code: string }).code === 'P2002';
+      if (!isP2002) {
+        console.error('[registerResource] Origin metadata upsert failed:', err);
+      }
     }
-  });
+  }
 
   await upsertResourceResponse(
     resource.resource.id,
@@ -574,7 +585,7 @@ export const registerResource = async (
   }
 
   // Attempt ownership verification (non-blocking)
-  void (async () => {
+  const ownershipTask = async () => {
     try {
       const discoveryResult = await fetchDiscoveryDocument(origin);
       if (
@@ -595,7 +606,12 @@ export const registerResource = async (
         error
       );
     }
-  })();
+  };
+  try {
+    after(ownershipTask);
+  } catch {
+    void ownershipTask();
+  }
 
   return {
     success: true as const,

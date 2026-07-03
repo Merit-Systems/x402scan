@@ -64,8 +64,25 @@ const originSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
   favicon: z.url().optional(),
+  email: z.string().email().optional(),
   ogImages: z.array(ogImageSchema),
 });
+
+/**
+ * Atomic origin ensure-exists. Uses raw INSERT ON CONFLICT so it's immune to
+ * the SELECT→INSERT P2002 race that Prisma's upsert suffers inside concurrent
+ * transactions.
+ */
+export async function ensureOriginExists(
+  tx: Prisma.TransactionClient,
+  origin: string
+) {
+  await tx.$executeRaw`
+    INSERT INTO "ResourceOrigin" ("id", "origin", "createdAt", "updatedAt")
+    VALUES (gen_random_uuid(), ${origin}, now(), now())
+    ON CONFLICT ("origin") DO NOTHING
+  `;
+}
 
 export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
@@ -78,12 +95,14 @@ export const upsertOrigin = async (
         title: origin.title,
         description: origin.description,
         favicon: origin.favicon,
+        ...(origin.email && { email: origin.email }),
       },
       create: {
         origin: origin.origin,
         title: origin.title,
         description: origin.description,
         favicon: origin.favicon,
+        email: origin.email,
       },
     });
 

@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 
-import { Server } from 'lucide-react';
+import { Server, ExternalLink } from 'lucide-react';
 
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -37,12 +37,20 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
         />
       </Card>
       <div className="grid grid-cols-1 md:grid-cols-7">
-        <div className="flex flex-col gap-4 p-4 pt-8 md:pt-10 col-span-5">
-          <div className="">
+        <div className="flex flex-col gap-3 p-4 pt-8 md:pt-10 col-span-5">
+          <div className="space-y-1">
             <div className="flex items-center gap-2 min-w-0">
-              <h1 className="text-xl md:text-3xl font-bold wrap-break-word line-clamp-2 min-w-0">
-                {originTitle}
-              </h1>
+              <a
+                href={origin.origin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 min-w-0 hover:opacity-80 transition-opacity"
+              >
+                <h1 className="text-xl md:text-3xl font-bold wrap-break-word line-clamp-2 min-w-0">
+                  {originTitle}
+                </h1>
+                <ExternalLink className="size-4 md:size-5 text-muted-foreground shrink-0" />
+              </a>
               {origin.hasX402V2Resource && (
                 <X402V2Badge className="mt-1 shrink-0" />
               )}
@@ -53,16 +61,6 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
                   origin={origin}
                 />
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <a
-                href={origin.origin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-bold font-mono text-muted-foreground hover:underline break-all"
-              >
-                {origin.origin}
-              </a>
             </div>
             <p
               className={cn(

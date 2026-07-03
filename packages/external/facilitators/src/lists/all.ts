@@ -28,6 +28,7 @@ import {
   bitrefillFacilitator,
   cascadeFacilitator,
   fluxaFacilitator,
+  figmentFacilitator,
   true402Facilitator,
 } from '../facilitators';
 
@@ -65,6 +66,7 @@ const FACILITATORS = validateUniqueFacilitators([
   bitrefillFacilitator,
   cascadeFacilitator,
   fluxaFacilitator,
+  figmentFacilitator,
   true402Facilitator,
 ]);
 

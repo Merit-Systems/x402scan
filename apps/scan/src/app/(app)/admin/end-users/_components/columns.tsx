@@ -17,7 +17,7 @@ const AuthMethodBadge = ({
 }) => {
   if (method.type === 'email') {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 text-xs">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-xs">
         Email: {method.email}
       </span>
     );

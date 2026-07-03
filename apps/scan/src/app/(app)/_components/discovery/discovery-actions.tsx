@@ -23,12 +23,22 @@ function buildConsolidatedPrompt({
   failedResources,
   warnings,
   missingSchemaResources,
+  missingContactEmail,
 }: {
   failedResources?: { url: string; error: string; status?: number }[];
   warnings?: { url: string; error: string; status?: number }[];
   missingSchemaResources?: string[];
+  missingContactEmail?: boolean;
 }): string {
   const sections: string[] = [];
+
+  if (missingContactEmail) {
+    sections.push(`Missing contact email:
+
+Your openapi.json is missing info.contact.email. Add a "contact" object with your email to the top-level "info" field:
+{ "info": { "contact": { "email": "you@example.com" } } }
+Adding your email lets you verify ownership, allows users to contact you, and lets you customize your merchant pages on tryponcho.com.`);
+  }
 
   if (failedResources && failedResources.length > 0) {
     const lines = failedResources.map(r => {
@@ -86,6 +96,8 @@ export function DiscoveryActions({
   warnings,
   noDiscovery,
   missingSchemaResources,
+  missingContactEmail,
+  customPrompt,
 }: {
   iconOnly?: boolean;
   label?: string;
@@ -94,14 +106,21 @@ export function DiscoveryActions({
   noDiscovery?: boolean;
   /** URLs missing input schemas — merged into the consolidated prompt. */
   missingSchemaResources?: string[];
+  /** Whether the origin is missing info.contact.email. */
+  missingContactEmail?: boolean;
+  /** Override the generated prompt with a custom one. */
+  customPrompt?: string;
 }) {
-  const prompt = noDiscovery
-    ? SETUP_PROMPT
-    : buildConsolidatedPrompt({
-        failedResources,
-        warnings,
-        missingSchemaResources,
-      });
+  const prompt =
+    customPrompt ??
+    (noDiscovery
+      ? SETUP_PROMPT
+      : buildConsolidatedPrompt({
+          failedResources,
+          warnings,
+          missingSchemaResources,
+          missingContactEmail,
+        }));
 
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
     toast.success('Copied prompt for agents');
