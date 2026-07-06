@@ -71,29 +71,53 @@ export const listTopSellersMVUncached = async (
   const t0 = performance.now();
   const offset = pagination.page * pagination.page_size;
 
+  const orderByClause = Prisma.sql`ORDER BY ${Prisma.raw(
+    `"${sorting.id === 'editorial' ? 'recipient' : sorting.id}"`
+  )} ${
+    sorting.id !== 'editorial' && sorting.desc
+      ? Prisma.raw('DESC')
+      : Prisma.raw('ASC')
+  }`;
+
+  // Each MV row is already aggregated per (recipient, chain), so grouping by
+  // recipient (to fold multiple chains into one) and SUM-ing is correct on its
+  // own. facilitator_ids must be flattened in a per-recipient outer subquery —
+  // a `LATERAL unnest(facilitator_ids)` in the FROM clause fans each row out
+  // once per facilitator and multiplies tx_count/total_amount/unique_buyers by
+  // the facilitator count. Mirrors the buyers query in ../buyers/list-mv.ts.
   const items = await queryRaw(
     Prisma.sql`
-    SELECT 
-      recipient,
-      COALESCE(ARRAY_AGG(DISTINCT unnested_facilitator) FILTER (WHERE unnested_facilitator IS NOT NULL), ARRAY[]::text[]) as facilitator_ids,
-      COALESCE(SUM(total_transactions), 0)::integer as tx_count,
-      COALESCE(SUM(total_amount), 0)::float as total_amount,
-      MAX(latest_block_timestamp) as latest_block_timestamp,
-      COALESCE(SUM(unique_buyers), 0)::integer as unique_buyers,
-      COALESCE(ARRAY_AGG(DISTINCT chain) FILTER (WHERE chain IS NOT NULL), ARRAY[]::text[]) as chains
-    FROM ${Prisma.raw(tableName)},
-      LATERAL unnest(facilitator_ids) AS unnested_facilitator
-    ${whereClause}
-    GROUP BY recipient
-    ORDER BY ${Prisma.raw(
-      `"${sorting.id === 'editorial' ? 'recipient' : sorting.id}"`
-    )} ${
-      sorting.id !== 'editorial' && sorting.desc
-        ? Prisma.raw('DESC')
-        : Prisma.raw('ASC')
-    }
-    LIMIT ${pagination.page_size}
-    OFFSET ${offset}`,
+    WITH paginated AS (
+      SELECT
+        recipient,
+        COALESCE(SUM(total_transactions), 0)::integer as tx_count,
+        COALESCE(SUM(total_amount), 0)::float as total_amount,
+        MAX(latest_block_timestamp) as latest_block_timestamp,
+        COALESCE(SUM(unique_buyers), 0)::integer as unique_buyers,
+        COALESCE(ARRAY_AGG(DISTINCT chain) FILTER (WHERE chain IS NOT NULL), ARRAY[]::text[]) as chains
+      FROM ${Prisma.raw(tableName)}
+      ${whereClause}
+      GROUP BY recipient
+      ${orderByClause}
+      LIMIT ${pagination.page_size}
+      OFFSET ${offset}
+    )
+    SELECT
+      p.recipient,
+      COALESCE(
+        (SELECT ARRAY_AGG(DISTINCT f) FILTER (WHERE f IS NOT NULL)
+         FROM ${Prisma.raw(tableName)} mv, LATERAL unnest(mv.facilitator_ids) AS f
+         WHERE mv.recipient = p.recipient
+           ${input.chain ? Prisma.sql`AND mv.chain = ${input.chain}` : Prisma.empty}),
+        ARRAY[]::text[]
+      ) as facilitator_ids,
+      p.tx_count,
+      p.total_amount,
+      p.latest_block_timestamp,
+      p.unique_buyers,
+      p.chains
+    FROM paginated p
+    ${orderByClause}`,
     z.array(
       z.object({
         recipient: mixedAddressSchema,
