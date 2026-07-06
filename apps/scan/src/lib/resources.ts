@@ -324,6 +324,160 @@ export async function registerSiwxResource(
   }
 }
 
+/**
+ * Register a public (free, no-auth) endpoint declared with OpenAPI
+ * `security: []` and no `x-payment-info`. Same persistence shape as SIWX:
+ * Resource row only — no Accepts, no 402 probe.
+ */
+export async function registerPublicResource(
+  url: string,
+  options: {
+    method?: string;
+    originMetadataFallback?: { title?: string; description?: string };
+    /** Skip metadata scrape+upsert — caller handles it (e.g. batch registration). */
+    skipMetadataScrape?: boolean;
+  } = {}
+) {
+  const urlObj = new URL(url);
+  if (
+    urlObj.protocol === 'http:' &&
+    urlObj.hostname !== 'localhost' &&
+    urlObj.hostname !== '127.0.0.1'
+  ) {
+    return {
+      success: false as const,
+      error: 'HTTPS is required for resource registration',
+    };
+  }
+
+  const cleanUrl = normalizeResourceUrl(url);
+  const origin = getOriginFromUrl(cleanUrl);
+
+  try {
+    const resource = await scanDb.$transaction(async tx => {
+      await ensureOriginExists(tx, origin);
+
+      const publicMetadata = { authMode: 'unprotected' as const };
+      const method = options.method ?? '';
+      const existing = await tx.resources.findUnique({
+        where: {
+          resource_method: { resource: cleanUrl, method },
+        },
+        select: { metadata: true },
+      });
+      const mergedMetadata =
+        existing?.metadata &&
+        typeof existing.metadata === 'object' &&
+        !Array.isArray(existing.metadata)
+          ? { ...existing.metadata, ...publicMetadata }
+          : publicMetadata;
+
+      return tx.resources.upsert({
+        where: {
+          resource_method: { resource: cleanUrl, method },
+        },
+        create: {
+          resource: cleanUrl,
+          method,
+          type: 'http',
+          x402Version: 0,
+          lastUpdated: new Date(),
+          metadata: publicMetadata,
+          origin: { connect: { origin } },
+        },
+        update: {
+          type: 'http',
+          x402Version: 0,
+          lastUpdated: new Date(),
+          metadata: mergedMetadata,
+          deprecatedAt: null,
+          origin: { connect: { origin } },
+        },
+        include: { origin: true },
+      });
+    });
+
+    if (!options.skipMetadataScrape) {
+      try {
+        const { og, metadata, favicon } = await scrapeOriginData(origin);
+        const title =
+          metadata?.title ??
+          og?.ogTitle ??
+          options.originMetadataFallback?.title ??
+          null;
+        const description =
+          metadata?.description ??
+          og?.ogDescription ??
+          options.originMetadataFallback?.description ??
+          null;
+
+        await upsertOrigin({
+          origin,
+          title: title ?? undefined,
+          description: description ?? undefined,
+          favicon: favicon ?? undefined,
+          ogImages:
+            og?.ogImage?.flatMap(image => {
+              try {
+                return [
+                  {
+                    url: new URL(image.url, origin).toString(),
+                    height: image.height,
+                    width: image.width,
+                    title: og.ogTitle,
+                    description: og.ogDescription,
+                  },
+                ];
+              } catch {
+                return [];
+              }
+            }) ?? [],
+        });
+      } catch (err) {
+        console.error(
+          '[registerPublicResource] Metadata scrape failed (non-blocking):',
+          err
+        );
+      }
+    }
+
+    return {
+      success: true as const,
+      resource: {
+        id: resource.id,
+        origin: { id: resource.origin.id },
+      },
+    };
+  } catch (error) {
+    const isUniqueViolation =
+      error instanceof Error &&
+      'code' in error &&
+      (error as { code: string }).code === 'P2002';
+    if (isUniqueViolation) {
+      const existing = await scanDb.resources.findUnique({
+        where: {
+          resource_method: {
+            resource: cleanUrl,
+            method: options.method ?? '',
+          },
+        },
+        include: { origin: true },
+      });
+      return {
+        success: true as const,
+        resource: existing
+          ? { id: existing.id, origin: { id: existing.origin.id } }
+          : { id: 'race-resolved', origin: { id: 'race-resolved' } },
+      };
+    }
+    console.error('[registerPublicResource] Failed:', error);
+    return {
+      success: false as const,
+      error: error instanceof Error ? error.message : 'Database error',
+    };
+  }
+}
+
 export const registerResource = async (
   url: string,
   advisory: EndpointMethodAdvisory,

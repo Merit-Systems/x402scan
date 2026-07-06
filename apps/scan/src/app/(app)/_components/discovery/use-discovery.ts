@@ -104,6 +104,7 @@ export interface UseDiscoveryReturn {
     success: true;
     registered: number;
     siwx: number;
+    public: number;
     total: number;
     failed: number;
     skipped?: number;
@@ -135,7 +136,12 @@ export interface UseDiscoveryReturn {
 }
 
 /** Auth modes that are relevant to x402scan (paid + free/SIWX). */
-const REGISTRABLE_AUTH_MODES = new Set(['paid', 'apiKey+paid', 'siwx']);
+const REGISTRABLE_AUTH_MODES = new Set([
+  'paid',
+  'apiKey+paid',
+  'siwx',
+  'unprotected',
+]);
 
 export function useDiscovery({
   url,
@@ -169,8 +175,8 @@ export function useDiscovery({
   const discoveryFound = discoveryQuery.data?.found ?? false;
   const discoveryResources: DiscoveredResource[] = useMemo(() => {
     const raw = discoveryQuery.data?.found ? discoveryQuery.data.resources : [];
-    // Exclude endpoints explicitly classified as non-registrable (unprotected,
-    // apiKey). Keep registrable (paid, siwx) and unclassified (authMode absent)
+    // Exclude endpoints explicitly classified as non-registrable (apiKey).
+    // Keep registrable (paid, siwx, unprotected) and unclassified (authMode absent)
     // — unclassified endpoints may be paid but the discovery package didn't
     // detect it (e.g. bazaar-only endpoints).
     return raw.filter(
@@ -376,12 +382,14 @@ export function useDiscovery({
           success: true as const,
           registered: bulkData.registered,
           siwx: bulkData.siwx,
+          public: bulkData.public,
           total: bulkData.total,
           failed: bulkData.failed,
           skipped: bulkData.skipped,
           deprecated: bulkData.deprecated,
           failedDetails: bulkData.failedDetails,
           siwxDetails: bulkData.siwxDetails,
+          publicDetails: bulkData.publicDetails,
           skippedDetails: bulkData.skippedDetails,
           warningDetails: bulkData.warningDetails,
           originId: bulkData.originId,

@@ -1,7 +1,11 @@
 import { probeX402Endpoint } from './probe';
 import { getCachedProbeResult } from './probe-cache';
 import { getRegistrationErrorMessage } from './utils';
-import { registerResource, registerSiwxResource } from '@/lib/resources';
+import {
+  registerPublicResource,
+  registerResource,
+  registerSiwxResource,
+} from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 import {
   getOriginResourceCount,
@@ -64,6 +68,7 @@ async function mapSettledWithConcurrency<T, R>(
 export interface RegisterOriginResult {
   registered: number;
   siwx: number;
+  public: number;
   failed: number;
   skipped: number;
   deprecated: number;
@@ -71,6 +76,7 @@ export interface RegisterOriginResult {
   source: string | undefined;
   failedDetails: { url: string; error: string; status?: number }[];
   siwxDetails: { url: string }[];
+  publicDetails: { url: string }[];
   skippedDetails: { url: string; error: string; status?: number }[];
   warningDetails: {
     url: string;
@@ -82,8 +88,8 @@ export interface RegisterOriginResult {
 /**
  * Probe and register all resources from a discovery document.
  * Paid resources are probed and written to the resources table.
- * SIWX (free) resources are written to the resources table without probing
- * (they have no x402 payment options — just a Resource row, no Accepts).
+ * SIWX (identity-gated) and public (`security: []`, no x-payment-info) resources
+ * are written without probing — Resource row only, no Accepts.
  * Endpoints missing an input schema are reported as skipped.
  * Deprecates resources from the same origin that are no longer in the list.
  *
@@ -145,7 +151,27 @@ export async function registerResourcesFromDiscovery(
         };
   }
 
-  const SKIP_AUTH_MODES = new Set(['unprotected', 'apiKey']);
+  async function registerAsPublic(resourceUrl: string, method?: string) {
+    const publicResult = await registerPublicResource(resourceUrl, {
+      method,
+      originMetadataFallback: originInfo,
+      skipMetadataScrape: true,
+    });
+    return publicResult.success
+      ? {
+          success: true as const,
+          public: true as const,
+          url: resourceUrl,
+          resource: publicResult.resource,
+        }
+      : {
+          success: false as const,
+          url: resourceUrl,
+          error: publicResult.error,
+        };
+  }
+
+  const SKIP_AUTH_MODES = new Set(['apiKey']);
 
   const results = await mapSettledWithConcurrency(resources, async resource => {
     const resourceUrl = resource.url;
@@ -166,6 +192,10 @@ export async function registerResourcesFromDiscovery(
         resource.price,
         resource.method
       );
+    }
+
+    if (resource.authMode === 'unprotected') {
+      return registerAsPublic(resourceUrl, resource.method);
     }
 
     // Check server-side probe cache (from the batch test). This skips
@@ -244,6 +274,7 @@ export async function registerResourcesFromDiscovery(
     description: string | null;
   }[] = [];
   const siwxResults: { url: string; method: string }[] = [];
+  const publicResults: { url: string; method: string }[] = [];
   const failedResults: { url: string; error: string; status?: number }[] = [];
   const skippedResults: { url: string; error: string; status?: number }[] = [];
   const warningResults: {
@@ -265,6 +296,11 @@ export async function registerResourcesFromDiscovery(
         if ('siwx' in value && value.siwx === true) {
           siwxResults.push({ url: resourceUrl, method: resourceMethod });
           // Extract originId from SIWX registration result
+          if (!originId && 'resource' in value && value.resource?.origin?.id) {
+            originId = value.resource.origin.id;
+          }
+        } else if ('public' in value && value.public === true) {
+          publicResults.push({ url: resourceUrl, method: resourceMethod });
           if (!originId && 'resource' in value && value.resource?.origin?.id) {
             originId = value.resource.origin.id;
           }
@@ -347,6 +383,10 @@ export async function registerResourcesFromDiscovery(
         url: normalizeResourceUrl(r.url),
         method: r.method,
       })),
+      ...publicResults.map(r => ({
+        url: normalizeResourceUrl(r.url),
+        method: r.method,
+      })),
     ];
     deprecated = await deprecateStaleResources(originId, activeResources);
   }
@@ -374,7 +414,9 @@ export async function registerResourcesFromDiscovery(
   // failed have no origin row — scraping would cause upsertOrigin to create
   // one, re-introducing the orphan problem.
   const originsWithResources = new Set(
-    [...successfulResults, ...siwxResults].map(r => getOriginFromUrl(r.url))
+    [...successfulResults, ...siwxResults, ...publicResults].map(r =>
+      getOriginFromUrl(r.url)
+    )
   );
   const originsToScrape = uniqueOrigins.filter(
     origin =>
@@ -437,6 +479,7 @@ export async function registerResourcesFromDiscovery(
   return {
     registered: successfulResults.length,
     siwx: siwxResults.length,
+    public: publicResults.length,
     failed: failedResults.length,
     skipped: skippedResults.length,
     deprecated,
@@ -444,6 +487,7 @@ export async function registerResourcesFromDiscovery(
     source,
     failedDetails: failedResults,
     siwxDetails: siwxResults,
+    publicDetails: publicResults,
     skippedDetails: skippedResults,
     warningDetails: warningResults,
     originId,

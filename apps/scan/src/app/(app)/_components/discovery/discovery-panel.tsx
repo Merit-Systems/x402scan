@@ -142,11 +142,13 @@ export interface DiscoveryPanelProps {
     success: boolean;
     registered: number;
     siwx?: number;
+    public?: number;
     total: number;
     failed: number;
     skipped?: number;
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
+    publicDetails?: { url: string }[];
     siwxDetails?: { url: string }[];
     skippedDetails?: { url: string; error: string; status?: number }[];
     warningDetails?: {
@@ -233,12 +235,15 @@ export function DiscoveryPanel({
   if (!isTestMode && bulkResult?.success) {
     const skippedDetails = bulkResult.skippedDetails ?? [];
     const siwxCount = bulkResult.siwx ?? 0;
+    const publicCount = bulkResult.public ?? 0;
+    const registeredTotal = bulkResult.registered + siwxCount + publicCount;
 
-    // Show error state only if nothing landed positively (no paid registers
-    // and no SIWX detections) and there were real failures.
+    // Show error state only if nothing landed positively (no paid registers,
+    // no SIWX, no public) and there were real failures.
     if (
       bulkResult.registered === 0 &&
       siwxCount === 0 &&
+      publicCount === 0 &&
       bulkResult.failed > 0
     ) {
       return (
@@ -251,8 +256,7 @@ export function DiscoveryPanel({
               </h2>
               <p className="text-sm text-muted-foreground">
                 Failed to register all{' '}
-                {bulkResult.registered +
-                  siwxCount +
+                {registeredTotal +
                   (bulkResult.failedDetails?.length ?? 0)}{' '}
                 resources
               </p>
@@ -335,9 +339,8 @@ export function DiscoveryPanel({
           <Check className="size-6 text-green-600" />
           <div>
             <p className="text-sm font-medium">
-              Successfully registered {bulkResult.registered + siwxCount} of{' '}
-              {bulkResult.registered +
-                siwxCount +
+              Successfully registered {registeredTotal} of{' '}
+              {registeredTotal +
                 (bulkResult.failedDetails?.length ?? 0)}{' '}
               resources
               {notRegisteredCount > 0 && (
@@ -430,24 +433,23 @@ export function DiscoveryPanel({
           </details>
         )}
 
-        {/* Skipped — unprotected/non-registrable endpoints */}
+        {/* Skipped — apiKey-only / non-registrable endpoints */}
         {skippedDetails.length > 0 && (
           <details className="border rounded-md group">
             <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2 text-yellow-600">
               <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
               <AlertCircle className="size-4 shrink-0" />
-              {skippedDetails.length} unprotected endpoint
-              {skippedDetails.length === 1 ? '' : 's'} skipped
+              {skippedDetails.length} endpoint
+              {skippedDetails.length === 1 ? '' : 's'} not registrable
             </summary>
             <div className="p-4 pt-2 border-t space-y-2">
               <p className="text-xs text-muted-foreground">
-                These endpoints were identified as unprotected (no x402
-                paywall). They are not registered. If they should be paid, add
-                x402 payment middleware. If they are intentionally free, add{' '}
+                These endpoints use API-key auth only and are not indexed.
+                Free public routes should declare OpenAPI{' '}
                 <code className="font-mono bg-muted px-1 rounded">
                   &quot;security&quot;: []
                 </code>{' '}
-                to their OpenAPI definition to suppress this notice.
+                (no x-payment-info) so they register as public reads.
               </p>
               <div className="space-y-1 max-h-[200px] overflow-y-auto">
                 {skippedDetails.map((skipped, idx) => (

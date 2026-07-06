@@ -206,8 +206,8 @@ export const developerRouter = createTRPCRouter({
         }));
 
       // Probe endpoints that are x402-paid or unclassified (might be paid but
-      // discovery didn't detect it). Skip SIWX (identity-gated, not x402) and
-      // explicitly non-paid (unprotected, apiKey).
+      // discovery didn't detect it). Skip SIWX (identity-gated), public
+      // (OpenAPI security: []), and apiKey-only routes.
       const skipModes = new Set(['siwx', 'unprotected', 'apiKey']);
       const probeableResources = input.resources.filter(
         r => !r.invalid && (r.authMode == null || !skipModes.has(r.authMode))

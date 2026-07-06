@@ -646,25 +646,25 @@ export const RegisterResourceForm = () => {
         );
       })()}
 
-      {/* Unprotected endpoints — skipped, not an error */}
+      {/* Unprotected endpoints — registered as free public reads */}
       {!activeBulkResult && skippedResources.length > 0 && (
         <Collapsible>
           <CollapsibleTrigger asChild>
             <button className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1 hover:text-yellow-700 transition-colors">
               <ChevronDown className="size-3" />
-              {skippedResources.length} unprotected endpoint
-              {skippedResources.length === 1 ? '' : 's'} skipped
+              {skippedResources.length} endpoint
+              {skippedResources.length === 1 ? '' : 's'} not registrable
             </button>
           </CollapsibleTrigger>
           <CollapsibleContent className="pt-2 space-y-2">
             <p className="text-xs text-muted-foreground">
-              These endpoints have no x402 paywall and won&apos;t be registered.
-              If they should be paid, add x402 payment middleware. If they are
-              intentionally free, add{' '}
+              These endpoints use API-key auth only and are not indexed by
+              x402scan. Paid routes need x-payment-info; free public routes
+              should declare{' '}
               <code className="font-mono bg-muted px-1 rounded text-[11px]">
                 &quot;security&quot;: []
               </code>{' '}
-              to their OpenAPI definition to suppress this notice.
+              (no x-payment-info) so they register as public reads.
             </p>
             <div className="space-y-1 max-h-[200px] overflow-y-auto">
               {skippedResources.map((r, idx) => (

@@ -42,14 +42,14 @@ export async function handleRegistryRegisterOrigin(
     console.error('revalidatePath failed:', e);
   }
 
-  if (result.registered === 0) {
+  if (result.registered === 0 && result.siwx === 0 && result.public === 0) {
     return jsonResponse(
       {
         success: false,
         error: {
           type: 'no_valid_resources',
           message:
-            'No valid paid x402 resources were found for this origin. Add at least one paid x402 resource that passes validation to complete registration.',
+            'No valid paid x402, SIWX, or public resources were found for this origin. Add at least one resource that passes validation to complete registration.',
         },
         result,
       },
@@ -61,6 +61,7 @@ export async function handleRegistryRegisterOrigin(
     success: true,
     registered: result.registered,
     siwx: result.siwx,
+    public: result.public,
     failed: result.failed,
     skipped: result.skipped,
     deprecated: result.deprecated,
@@ -69,6 +70,8 @@ export async function handleRegistryRegisterOrigin(
     failedDetails:
       result.failedDetails.length > 0 ? result.failedDetails : undefined,
     siwxDetails: result.siwxDetails.length > 0 ? result.siwxDetails : undefined,
+    publicDetails:
+      result.publicDetails.length > 0 ? result.publicDetails : undefined,
     ...contactEmailFields(discoveryResult.contactEmail),
   });
 }
