@@ -177,4 +177,21 @@ curl -i -X GET https://yourdomain.com/api/route
 2. Add OpenAPI discovery + `x-payment-info` + security declarations.
 3. Confirm unauthenticated probes reach `402` before request validation rejects missing body/query data.
 4. Keep `/.well-known/x402` compat during migration.
+
+---
+
+## Real-World Examples
+
+### JMT x402 Real-Money Agent Tools
+
+A live production x402 server with 25 pay-per-call endpoints on Base mainnet, using the Dexter facilitator (0% fee, gas-sponsored for buyers).
+
+- **Origin:** `https://jmt-x402-proxy.jmthomasofficial.workers.dev`
+- **Discovery:** Both OpenAPI-first (priority 1) and `/.well-known/x402` (priority 2) implemented
+- **OpenAPI:** `https://jmt-x402-proxy.jmthomasofficial.workers.dev/openapi.json` — includes `x-payment-info` with `protocols: ["x402"]`, `price: { mode: "fixed", currency: "USD", amount: "0.03" }`, and `402` response declared on every paid operation
+- **`.well-known/x402`:** `https://jmt-x402-proxy.jmthomasofficial.workers.dev/.well-known/x402` — includes `version: 1` and `resources` array with all 25 endpoint URLs
+- **Facilitator:** Dexter (`https://x402.dexter.cash`) — non-CDP facilitator with Bazaar extension support
+- **Endpoints:** AI-powered research ($0.03-$0.15), company intelligence ($0.10), SEC filing analysis ($0.08), news briefings ($0.05), social sentiment ($0.05), crypto research ($0.05), competitor analysis ($0.08), regulatory monitoring ($0.06), and utility endpoints ($0.001-$0.03)
+- **MCP Server:** `https://github.com/jmthomasofficial/x402-mcp-server`
+- **Note:** This server uses Dexter facilitator instead of CDP, so it does not appear in CDP Bazaar discovery. It was manually seeded in Agent402's x402-index (PR #248).
 5. Remove compat paths when your consumers no longer depend on them.
