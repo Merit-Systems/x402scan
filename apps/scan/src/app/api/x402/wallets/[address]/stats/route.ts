@@ -15,7 +15,7 @@ export const GET = withCors(
       'Aggregate stats for a wallet (tx count, total amount, unique recipients)'
     )
     .handler(({ query, request }) => {
-      const address = request.nextUrl.pathname.split('/')[4]!;
+      const address = new URL(request.url).pathname.split('/')[4]!;
       return handleWalletStats(address, query);
     })
 );

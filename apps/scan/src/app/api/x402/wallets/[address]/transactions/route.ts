@@ -13,7 +13,7 @@ export const GET = withCors(
     .query(walletTransactionsQuerySchema)
     .description('Paginated transfers where wallet is sender')
     .handler(({ query, request }) => {
-      const address = request.nextUrl.pathname.split('/')[4]!;
+      const address = new URL(request.url).pathname.split('/')[4]!;
       return handleWalletTransactions(address, query);
     })
 );

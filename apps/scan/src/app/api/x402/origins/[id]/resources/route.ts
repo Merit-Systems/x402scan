@@ -13,7 +13,7 @@ export const GET = withCors(
     .query(originResourcesQuerySchema)
     .description('Resources for a specific origin/domain')
     .handler(({ query, request }) => {
-      const id = request.nextUrl.pathname.split('/')[4]!;
+      const id = new URL(request.url).pathname.split('/')[4]!;
       return handleOriginResources(id, query);
     })
 );

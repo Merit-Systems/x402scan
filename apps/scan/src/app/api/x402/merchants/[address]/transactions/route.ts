@@ -13,7 +13,7 @@ export const GET = withCors(
     .query(merchantTransactionsQuerySchema)
     .description('Paginated transfers where merchant is recipient')
     .handler(({ query, request }) => {
-      const address = request.nextUrl.pathname.split('/')[4]!;
+      const address = new URL(request.url).pathname.split('/')[4]!;
       return handleMerchantTransactions(address, query);
     })
 );
