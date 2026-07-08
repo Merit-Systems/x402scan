@@ -1,5 +1,6 @@
 import { router, withCors, OPTIONS } from '@/lib/router';
 import { merchantTransactionsQuerySchema } from '@/app/api/x402/_lib/schemas';
+import { extractPathSegment } from '@/app/api/x402/_lib/utils';
 import { handleMerchantTransactions } from '@/app/api/x402/_handlers/merchant-transactions';
 
 export { OPTIONS };
@@ -13,7 +14,7 @@ export const GET = withCors(
     .query(merchantTransactionsQuerySchema)
     .description('Paginated transfers where merchant is recipient')
     .handler(({ query, request }) => {
-      const address = new URL(request.url).pathname.split('/')[4]!;
+      const address = extractPathSegment(request, 4);
       return handleMerchantTransactions(address, query);
     })
 );

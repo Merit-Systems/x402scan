@@ -1,5 +1,6 @@
 import { router, withCors, OPTIONS } from '@/lib/router';
 import { walletStatsQuerySchema } from '@/app/api/x402/_lib/schemas';
+import { extractPathSegment } from '@/app/api/x402/_lib/utils';
 import { handleWalletStats } from '@/app/api/x402/_handlers/wallet-stats';
 
 export { OPTIONS };
@@ -15,7 +16,7 @@ export const GET = withCors(
       'Aggregate stats for a wallet (tx count, total amount, unique recipients)'
     )
     .handler(({ query, request }) => {
-      const address = new URL(request.url).pathname.split('/')[4]!;
+      const address = extractPathSegment(request, 4);
       return handleWalletStats(address, query);
     })
 );
