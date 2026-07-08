@@ -68,3 +68,13 @@ export function asChain(
 ): Chain | undefined {
   return chain as Chain | undefined;
 }
+
+/**
+ * Extract a dynamic path segment from a router handler's request.
+ * The handler's request is a Web Request (not NextRequest), so the
+ * pathname comes from request.url. Safe because Next only routes
+ * paths that match the route's shape.
+ */
+export function extractPathSegment(request: Request, index: number): string {
+  return new URL(request.url).pathname.split('/')[index]!;
+}
