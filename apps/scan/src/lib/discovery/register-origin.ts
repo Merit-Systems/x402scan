@@ -1,3 +1,4 @@
+import { isExplicitlyPublicSkip } from './explicitly-public';
 import { probeX402Endpoint } from './probe';
 import { getCachedProbeResult } from './probe-cache';
 import { getRegistrationErrorMessage } from './utils';
@@ -158,11 +159,10 @@ export async function registerResourcesFromDiscovery(
     const resourceUrl = resource.url;
 
     if (resource.authMode && SKIP_AUTH_MODES.has(resource.authMode)) {
-      // The openapi source only assigns `unprotected` when the operation
-      // explicitly declares `security: []` — the merchant already opted the
-      // endpoint out, unlike probe-inferred unprotected endpoints.
-      const explicitlyPublic =
-        resource.authMode === 'unprotected' && source === 'openapi';
+      const explicitlyPublic = isExplicitlyPublicSkip(
+        resource.authMode,
+        source
+      );
       return {
         success: false as const,
         url: resourceUrl,

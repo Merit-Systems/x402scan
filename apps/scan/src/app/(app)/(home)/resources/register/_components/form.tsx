@@ -43,6 +43,7 @@ import {
 } from '@/app/(app)/_components/discovery';
 import { DiscoveryActions } from '@/app/(app)/_components/discovery/discovery-actions';
 import { Favicon } from '@/app/(app)/_components/favicon';
+import { isExplicitlyPublicSkip } from '@/lib/discovery/explicitly-public';
 import { normalizeUrl } from '@/lib/url';
 import { resourceKey } from '@/lib/resource-key';
 import { api } from '@/trpc/client';
@@ -652,14 +653,12 @@ export const RegisterResourceForm = () => {
           our guidance, so they get a neutral note instead of a warning. */}
       {!activeBulkResult &&
         (() => {
-          const publicResources =
-            discoverySource === 'openapi'
-              ? skippedResources.filter(r => r.authMode === 'unprotected')
-              : [];
-          const warnResources =
-            discoverySource === 'openapi'
-              ? skippedResources.filter(r => r.authMode !== 'unprotected')
-              : skippedResources;
+          const publicResources = skippedResources.filter(r =>
+            isExplicitlyPublicSkip(r.authMode, discoverySource)
+          );
+          const warnResources = skippedResources.filter(
+            r => !isExplicitlyPublicSkip(r.authMode, discoverySource)
+          );
           return (
             <>
               {warnResources.length > 0 && (

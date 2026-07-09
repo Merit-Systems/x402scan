@@ -93,7 +93,7 @@ describe('registerResourcesFromDiscovery — skipped endpoint provenance', () =>
     ]);
   });
 
-  it('does not mark probe-inferred unprotected endpoints as explicitly public', async () => {
+  it('does not mark unprotected endpoints from non-openapi sources as explicitly public', async () => {
     const result = await registerResourcesFromDiscovery(
       [{ url: `${ORIGIN}/v1/catalog`, method: 'GET', authMode: 'unprotected' }],
       'well-known'
