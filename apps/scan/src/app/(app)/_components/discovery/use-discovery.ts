@@ -110,7 +110,12 @@ export interface UseDiscoveryReturn {
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
     siwxDetails?: { url: string }[];
-    skippedDetails?: { url: string; error: string; status?: number }[];
+    skippedDetails?: {
+      url: string;
+      error: string;
+      status?: number;
+      explicitlyPublic?: boolean;
+    }[];
     warningDetails?: {
       url: string;
       warnings: { code: string; severity: string; message: string }[];

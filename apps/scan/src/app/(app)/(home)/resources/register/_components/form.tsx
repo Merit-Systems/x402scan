@@ -7,6 +7,7 @@ import {
   Check,
   ChevronDown,
   Copy,
+  Info,
   Loader2,
   Minus,
   CircleHelp,
@@ -646,39 +647,89 @@ export const RegisterResourceForm = () => {
         );
       })()}
 
-      {/* Unprotected endpoints — skipped, not an error */}
-      {!activeBulkResult && skippedResources.length > 0 && (
-        <Collapsible>
-          <CollapsibleTrigger asChild>
-            <button className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1 hover:text-yellow-700 transition-colors">
-              <ChevronDown className="size-3" />
-              {skippedResources.length} unprotected endpoint
-              {skippedResources.length === 1 ? '' : 's'} skipped
-            </button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="pt-2 space-y-2">
-            <p className="text-xs text-muted-foreground">
-              These endpoints have no x402 paywall and won&apos;t be registered.
-              If they should be paid, add x402 payment middleware. If they are
-              intentionally free, add{' '}
-              <code className="font-mono bg-muted px-1 rounded text-[11px]">
-                &quot;security&quot;: []
-              </code>{' '}
-              to their OpenAPI definition to suppress this notice.
-            </p>
-            <div className="space-y-1 max-h-[200px] overflow-y-auto">
-              {skippedResources.map((r, idx) => (
-                <div
-                  key={idx}
-                  className="px-2 py-1 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
-                >
-                  {toPathLabel(r.url)}
-                </div>
-              ))}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-      )}
+      {/* Unprotected endpoints — skipped, not an error. Endpoints that
+          explicitly declare security: [] in the OpenAPI spec already followed
+          our guidance, so they get a neutral note instead of a warning. */}
+      {!activeBulkResult &&
+        (() => {
+          const publicResources =
+            discoverySource === 'openapi'
+              ? skippedResources.filter(r => r.authMode === 'unprotected')
+              : [];
+          const warnResources =
+            discoverySource === 'openapi'
+              ? skippedResources.filter(r => r.authMode !== 'unprotected')
+              : skippedResources;
+          return (
+            <>
+              {warnResources.length > 0 && (
+                <Collapsible>
+                  <CollapsibleTrigger asChild>
+                    <button className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1 hover:text-yellow-700 transition-colors">
+                      <ChevronDown className="size-3" />
+                      {warnResources.length} unprotected endpoint
+                      {warnResources.length === 1 ? '' : 's'} skipped
+                    </button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pt-2 space-y-2">
+                    <p className="text-xs text-muted-foreground">
+                      These endpoints have no x402 paywall and won&apos;t be
+                      registered. If they should be paid, add x402 payment
+                      middleware. If they are intentionally free, add{' '}
+                      <code className="font-mono bg-muted px-1 rounded text-[11px]">
+                        &quot;security&quot;: []
+                      </code>{' '}
+                      to their OpenAPI definition to suppress this notice.
+                    </p>
+                    <div className="space-y-1 max-h-[200px] overflow-y-auto">
+                      {warnResources.map((r, idx) => (
+                        <div
+                          key={idx}
+                          className="px-2 py-1 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
+                        >
+                          {toPathLabel(r.url)}
+                        </div>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
+              {publicResources.length > 0 && (
+                <Collapsible>
+                  <CollapsibleTrigger asChild>
+                    <button className="text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors">
+                      <ChevronDown className="size-3" />
+                      <Info className="size-3" />
+                      {publicResources.length} public endpoint
+                      {publicResources.length === 1 ? '' : 's'} not registered
+                    </button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pt-2 space-y-2">
+                    <p className="text-xs text-muted-foreground">
+                      These endpoints declare{' '}
+                      <code className="font-mono bg-muted px-1 rounded text-[11px]">
+                        &quot;security&quot;: []
+                      </code>{' '}
+                      in the OpenAPI spec, marking them as intentionally free.
+                      Free endpoints without x402 payment are not listed on
+                      x402scan. No action is needed.
+                    </p>
+                    <div className="space-y-1 max-h-[200px] overflow-y-auto">
+                      {publicResources.map((r, idx) => (
+                        <div
+                          key={idx}
+                          className="px-2 py-1 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
+                        >
+                          {toPathLabel(r.url)}
+                        </div>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
+            </>
+          );
+        })()}
 
       {/* Bulk result */}
       {activeBulkResult && activeSummaryOrigin ? (

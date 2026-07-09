@@ -71,7 +71,14 @@ export interface RegisterOriginResult {
   source: string | undefined;
   failedDetails: { url: string; error: string; status?: number }[];
   siwxDetails: { url: string }[];
-  skippedDetails: { url: string; error: string; status?: number }[];
+  skippedDetails: {
+    url: string;
+    error: string;
+    status?: number;
+    /** The endpoint declares `security: []` in the OpenAPI spec — intentionally
+     *  free, so the UI must not tell the merchant to fix anything. */
+    explicitlyPublic?: boolean;
+  }[];
   warningDetails: {
     url: string;
     warnings: { code: string; severity: string; message: string }[];
@@ -151,11 +158,19 @@ export async function registerResourcesFromDiscovery(
     const resourceUrl = resource.url;
 
     if (resource.authMode && SKIP_AUTH_MODES.has(resource.authMode)) {
+      // The openapi source only assigns `unprotected` when the operation
+      // explicitly declares `security: []` — the merchant already opted the
+      // endpoint out, unlike probe-inferred unprotected endpoints.
+      const explicitlyPublic =
+        resource.authMode === 'unprotected' && source === 'openapi';
       return {
         success: false as const,
         url: resourceUrl,
-        error: 'Non-registrable endpoint',
+        error: explicitlyPublic
+          ? 'Explicitly public endpoint (security: [])'
+          : 'Non-registrable endpoint',
         skipped: true as const,
+        explicitlyPublic,
       };
     }
 
@@ -245,7 +260,12 @@ export async function registerResourcesFromDiscovery(
   }[] = [];
   const siwxResults: { url: string; method: string }[] = [];
   const failedResults: { url: string; error: string; status?: number }[] = [];
-  const skippedResults: { url: string; error: string; status?: number }[] = [];
+  const skippedResults: {
+    url: string;
+    error: string;
+    status?: number;
+    explicitlyPublic?: boolean;
+  }[] = [];
   const warningResults: {
     url: string;
     warnings: { code: string; severity: string; message: string }[];
@@ -310,6 +330,9 @@ export async function registerResourcesFromDiscovery(
             'status' in value && typeof value.status === 'number'
               ? value.status
               : undefined,
+          ...('explicitlyPublic' in value && value.explicitlyPublic === true
+            ? { explicitlyPublic: true }
+            : {}),
         });
       } else if ('success' in value && !value.success) {
         failedResults.push({

@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Info,
   Loader2,
   RefreshCw,
   ShieldAlert,
@@ -148,7 +149,12 @@ export interface DiscoveryPanelProps {
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
     siwxDetails?: { url: string }[];
-    skippedDetails?: { url: string; error: string; status?: number }[];
+    skippedDetails?: {
+      url: string;
+      error: string;
+      status?: number;
+      explicitlyPublic?: boolean;
+    }[];
     warningDetails?: {
       url: string;
       warnings: { code: string; severity: string; message: string }[];
@@ -231,7 +237,15 @@ export function DiscoveryPanel({
 
   // Show bulk registration result (only in register mode)
   if (!isTestMode && bulkResult?.success) {
-    const skippedDetails = bulkResult.skippedDetails ?? [];
+    // Endpoints that declare `security: []` in the OpenAPI spec are
+    // intentionally free — inform neutrally, don't warn. The yellow warning
+    // is reserved for endpoints inferred unprotected without that declaration.
+    const publicDetails = (bulkResult.skippedDetails ?? []).filter(
+      s => s.explicitlyPublic
+    );
+    const skippedDetails = (bulkResult.skippedDetails ?? []).filter(
+      s => !s.explicitlyPublic
+    );
     const siwxCount = bulkResult.siwx ?? 0;
 
     // Show error state only if nothing landed positively (no paid registers
@@ -451,6 +465,46 @@ export function DiscoveryPanel({
               </p>
               <div className="space-y-1 max-h-[200px] overflow-y-auto">
                 {skippedDetails.map((skipped, idx) => (
+                  <div
+                    key={idx}
+                    className="px-3 py-1.5 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
+                  >
+                    {(() => {
+                      try {
+                        return new URL(skipped.url).pathname;
+                      } catch {
+                        return skipped.url;
+                      }
+                    })()}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </details>
+        )}
+
+        {/* Public — endpoints explicitly opted out via OpenAPI security: [].
+            Informational only: the merchant already declared these free. */}
+        {publicDetails.length > 0 && (
+          <details className="border rounded-md group">
+            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2 text-muted-foreground">
+              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+              <Info className="size-4 shrink-0" />
+              {publicDetails.length} public endpoint
+              {publicDetails.length === 1 ? '' : 's'} not registered
+            </summary>
+            <div className="p-4 pt-2 border-t space-y-2">
+              <p className="text-xs text-muted-foreground">
+                These endpoints declare{' '}
+                <code className="font-mono bg-muted px-1 rounded">
+                  &quot;security&quot;: []
+                </code>{' '}
+                in the OpenAPI spec, marking them as intentionally free. Free
+                endpoints without x402 payment are not listed on x402scan. No
+                action is needed.
+              </p>
+              <div className="space-y-1 max-h-[200px] overflow-y-auto">
+                {publicDetails.map((skipped, idx) => (
                   <div
                     key={idx}
                     className="px-3 py-1.5 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
