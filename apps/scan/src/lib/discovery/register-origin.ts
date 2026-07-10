@@ -280,12 +280,16 @@ export async function registerResourcesFromDiscovery(
     }
   );
 
-  const mainSucceeded = mainResults.some(
-    r =>
-      r.status === 'fulfilled' &&
-      r.value &&
-      'success' in r.value &&
-      r.value.success
+  // Origins that gained a paid/SIWX resource in this batch — the catalog
+  // gate is per origin so a success for one origin can't unlock catalog
+  // rows for another.
+  const succeededOrigins = new Set(
+    mainResults.flatMap((r, i) =>
+      r.status === 'fulfilled' && r.value && 'success' in r.value &&
+      r.value.success && mainResources[i]
+        ? [getOriginFromUrl(mainResources[i].url)]
+        : []
+    )
   );
 
   const catalogResults = await mapSettledWithConcurrency(
@@ -293,7 +297,7 @@ export async function registerResourcesFromDiscovery(
     async resource => {
       const origin = getOriginFromUrl(resource.url);
       const originHasResources = (originResourceCounts.get(origin) ?? 0) > 0;
-      if (!mainSucceeded && !originHasResources) {
+      if (!succeededOrigins.has(origin) && !originHasResources) {
         return {
           success: false as const,
           url: resource.url,

@@ -144,6 +144,47 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
     );
   });
 
+  it('registers catalog rows for a catalog-only batch when the origin already has resources', async () => {
+    // getOriginResourceCount mock defaults to 5 — the origin exists, so the
+    // gate passes even with no paid/siwx endpoints in this batch.
+    const result = await registerResourcesFromDiscovery(
+      [
+        { url: `${ORIGIN}/v1/catalog`, method: 'GET', authMode: 'unprotected' },
+        { url: `${ORIGIN}/v1/admin`, method: 'POST', authMode: 'apiKey' },
+      ],
+      'openapi'
+    );
+
+    expect(result.publicCount).toBe(1);
+    expect(result.apiKeyCount).toBe(1);
+    expect(result.skipped).toBe(0);
+  });
+
+  it('reports a failed free registration in failedDetails', async () => {
+    vi.mocked(registerFreeResource).mockResolvedValueOnce({
+      success: false,
+      error: 'Database error',
+    } as Awaited<ReturnType<typeof registerFreeResource>>);
+
+    const result = await registerResourcesFromDiscovery(
+      [
+        { url: `${ORIGIN}/v1/rooms`, method: 'POST', authMode: 'paid' },
+        { url: `${ORIGIN}/v1/catalog`, method: 'GET', authMode: 'unprotected' },
+      ],
+      'openapi'
+    );
+
+    expect(result.registered).toBe(1);
+    expect(result.publicCount).toBe(0);
+    expect(result.failed).toBe(1);
+    expect(result.failedDetails).toEqual([
+      expect.objectContaining({
+        url: `${ORIGIN}/v1/catalog`,
+        error: 'Database error',
+      }),
+    ]);
+  });
+
   it('skips catalog rows when the origin has no paid/siwx resources at all', async () => {
     vi.mocked(getOriginResourceCount).mockResolvedValueOnce(0);
 
