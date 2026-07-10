@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { probeX402Endpoint } from './probe';
 import { registerResourcesFromDiscovery } from './register-origin';
 import { registerFreeResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
@@ -144,9 +145,11 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
     );
   });
 
-  it('registers catalog rows for a catalog-only batch when the origin already has resources', async () => {
-    // getOriginResourceCount mock defaults to 5 — the origin exists, so the
-    // gate passes even with no paid/siwx endpoints in this batch.
+  it('skips catalog rows for a catalog-only batch even when the origin already has resources', async () => {
+    // getOriginResourceCount mock defaults to 5 — the origin exists, but a
+    // batch with no paid/siwx SUCCESS must not register catalog rows: doing
+    // so would set originId and let deprecation wipe the existing paid rows
+    // whenever probes fail transiently.
     const result = await registerResourcesFromDiscovery(
       [
         { url: `${ORIGIN}/v1/catalog`, method: 'GET', authMode: 'unprotected' },
@@ -155,9 +158,11 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
       'openapi'
     );
 
-    expect(result.publicCount).toBe(1);
-    expect(result.apiKeyCount).toBe(1);
-    expect(result.skipped).toBe(0);
+    expect(result.publicCount).toBe(0);
+    expect(result.apiKeyCount).toBe(0);
+    expect(result.skipped).toBe(2);
+    expect(registerFreeResource).not.toHaveBeenCalled();
+    expect(deprecateStaleResources).not.toHaveBeenCalled();
   });
 
   it('reports a failed free registration in failedDetails', async () => {
@@ -200,6 +205,29 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
     expect(result.apiKeyCount).toBe(0);
     expect(result.skipped).toBe(2);
     expect(registerFreeResource).not.toHaveBeenCalled();
+  });
+
+  it('does not register catalog rows or deprecate when every paid probe fails', async () => {
+    // Regression: transient probe failures (5xx, rate limit) on an existing
+    // origin must not let catalog rows register and then deprecate the
+    // origin's paid rows.
+    vi.mocked(probeX402Endpoint).mockResolvedValueOnce({
+      success: false,
+      error: 'HTTP 503',
+    } as Awaited<ReturnType<typeof probeX402Endpoint>>);
+
+    const result = await registerResourcesFromDiscovery(
+      [
+        { url: `${ORIGIN}/v1/rooms`, method: 'POST' },
+        { url: `${ORIGIN}/v1/catalog`, method: 'GET', authMode: 'unprotected' },
+      ],
+      'openapi'
+    );
+
+    expect(result.failed).toBe(1);
+    expect(result.publicCount).toBe(0);
+    expect(result.skipped).toBe(1);
+    expect(deprecateStaleResources).not.toHaveBeenCalled();
   });
 
   it('includes catalog rows in the deprecation active list', async () => {

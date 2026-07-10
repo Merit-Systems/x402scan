@@ -98,7 +98,7 @@ export interface RegisterOriginResult {
  * just a Resource row, no Accepts, tagged via metadata.authMode):
  * SIWX from any source; explicitly-public (`security: []`) and apiKey
  * endpoints only when declared in openapi.json, and only alongside at
- * least one paid/SIWX resource (or an origin that already has resources).
+ * least one paid/SIWX resource registered in the same batch.
  * Endpoints missing an input schema are reported as skipped.
  * Deprecates resources from the same origin that are no longer in the list.
  *
@@ -166,8 +166,10 @@ export async function registerResourcesFromDiscovery(
   // Openapi-declared public (`security: []`) and apiKey endpoints become free
   // catalog rows — but only alongside payable content: they register in a
   // second pass, gated on the origin gaining at least one paid/SIWX resource
-  // in this batch or already having resources. Catalog rows alone must never
-  // create a server page.
+  // in THIS batch. Deliberately not "or the origin already has resources":
+  // that arm would let a batch whose paid probes all failed transiently
+  // register catalog rows, set originId, and deprecate every existing paid
+  // row. Catalog rows alone must never create or sustain a server page.
   const catalogResources = resources.filter(r =>
     isOpenApiDeclaredFree(r.authMode, source)
   );
@@ -296,13 +298,12 @@ export async function registerResourcesFromDiscovery(
     catalogResources,
     async resource => {
       const origin = getOriginFromUrl(resource.url);
-      const originHasResources = (originResourceCounts.get(origin) ?? 0) > 0;
-      if (!succeededOrigins.has(origin) && !originHasResources) {
+      if (!succeededOrigins.has(origin)) {
         return {
           success: false as const,
           url: resource.url,
           error:
-            'Origin has no paid or SIWX resources — public/API-key endpoints are only listed alongside payable endpoints',
+            'No paid or SIWX resources registered for this origin — public/API-key endpoints are only listed alongside payable endpoints',
           skipped: true as const,
         };
       }

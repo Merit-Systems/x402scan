@@ -471,15 +471,22 @@ export function DiscoveryPanel({
                 {skippedDetails.map((skipped, idx) => (
                   <div
                     key={idx}
-                    className="px-3 py-1.5 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
+                    className="px-3 py-1.5 bg-muted/50 rounded text-xs text-muted-foreground space-y-0.5"
                   >
-                    {(() => {
-                      try {
-                        return new URL(skipped.url).pathname;
-                      } catch {
-                        return skipped.url;
-                      }
-                    })()}
+                    <div className="font-mono">
+                      {(() => {
+                        try {
+                          return new URL(skipped.url).pathname;
+                        } catch {
+                          return skipped.url;
+                        }
+                      })()}
+                    </div>
+                    {/* Skips have distinct reasons (unannotated, non-openapi
+                        source, catalog gate) — show which one applies. */}
+                    <div className="text-muted-foreground/70">
+                      {skipped.error}
+                    </div>
                   </div>
                 ))}
               </div>

@@ -180,16 +180,28 @@ export function useDiscovery({
   const discoverySource = discoveryQuery.data?.found
     ? discoveryQuery.data.source
     : undefined;
-  const discoveryResources: DiscoveredResource[] = useMemo(() => {
+  const { discoveryResources, skippedResources } = useMemo(() => {
     const raw = discoveryQuery.data?.found ? discoveryQuery.data.resources : [];
-    // Keep everything that will register: paid/siwx, unclassified (authMode
-    // absent — may be paid but undetected, e.g. bazaar-only endpoints), and
-    // openapi-declared public/apiKey catalog endpoints.
-    return raw.filter(r => isRegistrableEndpoint(r.authMode, discoverySource));
-  }, [discoveryQuery.data, discoverySource]);
-  const skippedResources: DiscoveredResource[] = useMemo(() => {
-    const raw = discoveryQuery.data?.found ? discoveryQuery.data.resources : [];
-    return raw.filter(r => !isRegistrableEndpoint(r.authMode, discoverySource));
+    // Catalog endpoints (openapi-declared public/apiKey) only register
+    // alongside a payable resource — mirror the server-side gate so a
+    // catalog-only origin shows its endpoints as skipped, not registrable.
+    const hasPayableCandidate = raw.some(
+      r =>
+        !isOpenApiDeclaredFree(r.authMode, discoverySource) &&
+        isRegistrableEndpoint(r.authMode, discoverySource)
+    );
+    const included: DiscoveredResource[] = [];
+    const skipped: DiscoveredResource[] = [];
+    for (const r of raw) {
+      // Keep everything that will register: paid/siwx, unclassified
+      // (authMode absent — may be paid but undetected, e.g. bazaar-only
+      // endpoints), and gated catalog endpoints.
+      const registrable = isOpenApiDeclaredFree(r.authMode, discoverySource)
+        ? hasPayableCandidate
+        : isRegistrableEndpoint(r.authMode, discoverySource);
+      (registrable ? included : skipped).push(r);
+    }
+    return { discoveryResources: included, skippedResources: skipped };
   }, [discoveryQuery.data, discoverySource]);
   const discoveryCheckComplete =
     !discoveryQuery.isLoading && discoveryQuery.isFetched;
