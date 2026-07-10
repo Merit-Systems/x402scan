@@ -1,8 +1,8 @@
-import { isExplicitlyPublicSkip } from './explicitly-public';
+import { isOpenApiDeclaredFree } from './catalog-auth';
 import { probeX402Endpoint } from './probe';
 import { getCachedProbeResult } from './probe-cache';
 import { getRegistrationErrorMessage } from './utils';
-import { registerResource, registerSiwxResource } from '@/lib/resources';
+import { registerResource, registerFreeResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 import {
   getOriginResourceCount,
@@ -12,6 +12,7 @@ import { notifyNewServer } from '@/lib/discord-notifications';
 import { getOriginFromUrl, normalizeResourceUrl } from '@/lib/url';
 import { scrapeOriginData } from '@/services/scraper';
 
+import type { FreeAuthMode } from '@/lib/resource-auth';
 import type {
   AuditWarning,
   AuthMode,
@@ -65,6 +66,10 @@ async function mapSettledWithConcurrency<T, R>(
 export interface RegisterOriginResult {
   registered: number;
   siwx: number;
+  /** Endpoints registered as explicitly public (`security: []` in openapi). */
+  publicCount: number;
+  /** Endpoints registered as apiKey-gated (declared in openapi). */
+  apiKeyCount: number;
   failed: number;
   skipped: number;
   deprecated: number;
@@ -72,13 +77,12 @@ export interface RegisterOriginResult {
   source: string | undefined;
   failedDetails: { url: string; error: string; status?: number }[];
   siwxDetails: { url: string }[];
+  publicDetails: { url: string }[];
+  apiKeyDetails: { url: string }[];
   skippedDetails: {
     url: string;
     error: string;
     status?: number;
-    /** The endpoint declares `security: []` in the OpenAPI spec — intentionally
-     *  free, so the UI must not tell the merchant to fix anything. */
-    explicitlyPublic?: boolean;
   }[];
   warningDetails: {
     url: string;
@@ -90,8 +94,11 @@ export interface RegisterOriginResult {
 /**
  * Probe and register all resources from a discovery document.
  * Paid resources are probed and written to the resources table.
- * SIWX (free) resources are written to the resources table without probing
- * (they have no x402 payment options — just a Resource row, no Accepts).
+ * Free resources are written without probing (no x402 payment options —
+ * just a Resource row, no Accepts, tagged via metadata.authMode):
+ * SIWX from any source; explicitly-public (`security: []`) and apiKey
+ * endpoints only when declared in openapi.json, and only alongside at
+ * least one paid/SIWX resource (or an origin that already has resources).
  * Endpoints missing an input schema are reported as skipped.
  * Deprecates resources from the same origin that are no longer in the list.
  *
@@ -126,57 +133,77 @@ export async function registerResourcesFromDiscovery(
     )
   );
 
-  async function registerAsSiwx(
+  async function registerAsFree(
     resourceUrl: string,
+    authMode: FreeAuthMode,
     pricingMode?: string,
     price?: string,
     method?: string
   ) {
-    const siwxResult = await registerSiwxResource(resourceUrl, {
+    const freeResult = await registerFreeResource(resourceUrl, {
+      authMode,
       method,
       originMetadataFallback: originInfo,
       pricingMode,
       price,
       skipMetadataScrape: true,
     });
-    return siwxResult.success
+    return freeResult.success
       ? {
           success: true as const,
-          siwx: true as const,
+          free: true as const,
+          authMode,
           url: resourceUrl,
-          resource: siwxResult.resource,
+          resource: freeResult.resource,
         }
       : {
           success: false as const,
           url: resourceUrl,
-          error: siwxResult.error,
+          error: freeResult.error,
         };
   }
 
-  const SKIP_AUTH_MODES = new Set(['unprotected', 'apiKey']);
+  // Openapi-declared public (`security: []`) and apiKey endpoints become free
+  // catalog rows — but only alongside payable content: they register in a
+  // second pass, gated on the origin gaining at least one paid/SIWX resource
+  // in this batch or already having resources. Catalog rows alone must never
+  // create a server page.
+  const catalogResources = resources.filter(r =>
+    isOpenApiDeclaredFree(r.authMode, source)
+  );
+  const mainResources = resources.filter(
+    r => !isOpenApiDeclaredFree(r.authMode, source)
+  );
 
-  const results = await mapSettledWithConcurrency(resources, async resource => {
+  const mainResults = await mapSettledWithConcurrency(
+    mainResources,
+    async resource => {
     const resourceUrl = resource.url;
 
-    if (resource.authMode && SKIP_AUTH_MODES.has(resource.authMode)) {
-      const explicitlyPublic = isExplicitlyPublicSkip(
-        resource.authMode,
-        source
-      );
+    // Openapi-declared free endpoints were partitioned out above — anything
+    // still carrying these modes came from a source we don't trust for
+    // catalog listing.
+    if (resource.authMode === 'unprotected') {
       return {
         success: false as const,
         url: resourceUrl,
-        error: explicitlyPublic
-          ? 'Explicitly public endpoint (security: [])'
-          : 'Non-registrable endpoint',
+        error: 'Unprotected endpoint (no x402 paywall)',
         skipped: true as const,
-        explicitlyPublic,
+      };
+    }
+    if (resource.authMode === 'apiKey') {
+      return {
+        success: false as const,
+        url: resourceUrl,
+        error: 'Non-registrable endpoint (declare it in openapi.json)',
+        skipped: true as const,
       };
     }
 
     if (resource.authMode === 'siwx') {
-      return registerAsSiwx(
+      return registerAsFree(
         resourceUrl,
+        'siwx',
         resource.pricingMode,
         resource.price,
         resource.method
@@ -224,8 +251,9 @@ export async function registerResourcesFromDiscovery(
     // v1 rejection is handled inside registerResource() — no duplicate check needed here.
 
     if (advisory.authMode === 'siwx') {
-      return registerAsSiwx(
+      return registerAsFree(
         resourceUrl,
+        'siwx',
         resource.pricingMode,
         resource.price,
         resource.method
@@ -249,7 +277,45 @@ export async function registerResourcesFromDiscovery(
       url: resourceUrl,
       error: getRegistrationErrorMessage(result.error),
     };
-  });
+    }
+  );
+
+  const mainSucceeded = mainResults.some(
+    r =>
+      r.status === 'fulfilled' &&
+      r.value &&
+      'success' in r.value &&
+      r.value.success
+  );
+
+  const catalogResults = await mapSettledWithConcurrency(
+    catalogResources,
+    async resource => {
+      const origin = getOriginFromUrl(resource.url);
+      const originHasResources = (originResourceCounts.get(origin) ?? 0) > 0;
+      if (!mainSucceeded && !originHasResources) {
+        return {
+          success: false as const,
+          url: resource.url,
+          error:
+            'Origin has no paid or SIWX resources — public/API-key endpoints are only listed alongside payable endpoints',
+          skipped: true as const,
+        };
+      }
+      return registerAsFree(
+        resource.url,
+        resource.authMode === 'apiKey' ? 'apiKey' : 'unprotected',
+        resource.pricingMode,
+        resource.price,
+        resource.method
+      );
+    }
+  );
+
+  // Collection below indexes results back to their input resource — keep the
+  // two passes aligned.
+  const orderedResources = [...mainResources, ...catalogResources];
+  const results = [...mainResults, ...catalogResults];
 
   const successfulResults: {
     url: string;
@@ -258,13 +324,16 @@ export async function registerResourcesFromDiscovery(
     title: string | null;
     description: string | null;
   }[] = [];
-  const siwxResults: { url: string; method: string }[] = [];
+  const freeResults: {
+    url: string;
+    method: string;
+    authMode: FreeAuthMode;
+  }[] = [];
   const failedResults: { url: string; error: string; status?: number }[] = [];
   const skippedResults: {
     url: string;
     error: string;
     status?: number;
-    explicitlyPublic?: boolean;
   }[] = [];
   const warningResults: {
     url: string;
@@ -274,17 +343,21 @@ export async function registerResourcesFromDiscovery(
 
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
-    const resourceUrl = resources[i]?.url ?? 'unknown';
-    const resourceMethod = resources[i]?.method ?? '';
+    const resourceUrl = orderedResources[i]?.url ?? 'unknown';
+    const resourceMethod = orderedResources[i]?.method ?? '';
 
     if (!result) continue;
 
     if (result.status === 'fulfilled' && result.value) {
       const value = result.value;
       if ('success' in value && value.success) {
-        if ('siwx' in value && value.siwx === true) {
-          siwxResults.push({ url: resourceUrl, method: resourceMethod });
-          // Extract originId from SIWX registration result
+        if ('free' in value && value.free === true) {
+          freeResults.push({
+            url: resourceUrl,
+            method: resourceMethod,
+            authMode: value.authMode,
+          });
+          // Extract originId from free registration result
           if (!originId && 'resource' in value && value.resource?.origin?.id) {
             originId = value.resource.origin.id;
           }
@@ -330,9 +403,6 @@ export async function registerResourcesFromDiscovery(
             'status' in value && typeof value.status === 'number'
               ? value.status
               : undefined,
-          ...('explicitlyPublic' in value && value.explicitlyPublic === true
-            ? { explicitlyPublic: true }
-            : {}),
         });
       } else if ('success' in value && !value.success) {
         failedResults.push({
@@ -357,16 +427,15 @@ export async function registerResourcesFromDiscovery(
 
   let deprecated = 0;
   if (originId) {
-    // Build active list directly from successful registration results.
-    // Don't re-derive from the discovery input — it includes unprotected
-    // endpoints that share a URL with a registered endpoint (e.g. GET /campaigns
-    // is unprotected but POST /campaigns is paid).
+    // Build active list directly from successful registration results, not
+    // the discovery input — skipped/failed endpoints must not keep stale
+    // rows alive.
     const activeResources = [
       ...successfulResults.map(r => ({
         url: normalizeResourceUrl(r.url),
         method: r.method,
       })),
-      ...siwxResults.map(r => ({
+      ...freeResults.map(r => ({
         url: normalizeResourceUrl(r.url),
         method: r.method,
       })),
@@ -397,7 +466,7 @@ export async function registerResourcesFromDiscovery(
   // failed have no origin row — scraping would cause upsertOrigin to create
   // one, re-introducing the orphan problem.
   const originsWithResources = new Set(
-    [...successfulResults, ...siwxResults].map(r => getOriginFromUrl(r.url))
+    [...successfulResults, ...freeResults].map(r => getOriginFromUrl(r.url))
   );
   const originsToScrape = uniqueOrigins.filter(
     origin =>
@@ -406,7 +475,7 @@ export async function registerResourcesFromDiscovery(
   );
 
   // Scrape and upsert origin metadata once per unique origin (deduped).
-  // Individual registerResource/registerSiwxResource calls skip this
+  // Individual registerResource/registerFreeResource calls skip this
   // (skipMetadataScrape: true) so the scrape+upsert happens exactly once
   // per origin, not once per resource.
   // Awaited directly — favicon URLs are essential for rendering and must
@@ -457,9 +526,15 @@ export async function registerResourcesFromDiscovery(
     })
   );
 
+  const siwxResults = freeResults.filter(r => r.authMode === 'siwx');
+  const publicResults = freeResults.filter(r => r.authMode === 'unprotected');
+  const apiKeyResults = freeResults.filter(r => r.authMode === 'apiKey');
+
   return {
     registered: successfulResults.length,
     siwx: siwxResults.length,
+    publicCount: publicResults.length,
+    apiKeyCount: apiKeyResults.length,
     failed: failedResults.length,
     skipped: skippedResults.length,
     deprecated,
@@ -467,6 +542,8 @@ export async function registerResourcesFromDiscovery(
     source,
     failedDetails: failedResults,
     siwxDetails: siwxResults,
+    publicDetails: publicResults,
+    apiKeyDetails: apiKeyResults,
     skippedDetails: skippedResults,
     warningDetails: warningResults,
     originId,

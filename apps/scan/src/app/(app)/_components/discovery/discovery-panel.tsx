@@ -6,7 +6,8 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Info,
+  Globe,
+  KeyRound,
   Loader2,
   RefreshCw,
   ShieldAlert,
@@ -25,6 +26,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { isOpenApiDeclaredFree } from '@/lib/discovery/catalog-auth';
 import { cleanExternalText, cn } from '@/lib/utils';
 
 import { DiscoveryActions } from './discovery-actions';
@@ -143,17 +145,20 @@ export interface DiscoveryPanelProps {
     success: boolean;
     registered: number;
     siwx?: number;
+    publicCount?: number;
+    apiKeyCount?: number;
     total: number;
     failed: number;
     skipped?: number;
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
     siwxDetails?: { url: string }[];
+    publicDetails?: { url: string }[];
+    apiKeyDetails?: { url: string }[];
     skippedDetails?: {
       url: string;
       error: string;
       status?: number;
-      explicitlyPublic?: boolean;
     }[];
     warningDetails?: {
       url: string;
@@ -237,22 +242,19 @@ export function DiscoveryPanel({
 
   // Show bulk registration result (only in register mode)
   if (!isTestMode && bulkResult?.success) {
-    // Endpoints that declare `security: []` in the OpenAPI spec are
-    // intentionally free — inform neutrally, don't warn. The yellow warning
-    // is reserved for endpoints inferred unprotected without that declaration.
-    const publicDetails = (bulkResult.skippedDetails ?? []).filter(
-      s => s.explicitlyPublic
-    );
-    const skippedDetails = (bulkResult.skippedDetails ?? []).filter(
-      s => !s.explicitlyPublic
-    );
-    const siwxCount = bulkResult.siwx ?? 0;
+    const skippedDetails = bulkResult.skippedDetails ?? [];
+    // Free registrations: SIWX plus openapi-declared public/apiKey catalog
+    // rows — none are probed, all count as registered.
+    const freeCount =
+      (bulkResult.siwx ?? 0) +
+      (bulkResult.publicCount ?? 0) +
+      (bulkResult.apiKeyCount ?? 0);
 
     // Show error state only if nothing landed positively (no paid registers
-    // and no SIWX detections) and there were real failures.
+    // and no free registrations) and there were real failures.
     if (
       bulkResult.registered === 0 &&
-      siwxCount === 0 &&
+      freeCount === 0 &&
       bulkResult.failed > 0
     ) {
       return (
@@ -266,7 +268,7 @@ export function DiscoveryPanel({
               <p className="text-sm text-muted-foreground">
                 Failed to register all{' '}
                 {bulkResult.registered +
-                  siwxCount +
+                  freeCount +
                   (bulkResult.failedDetails?.length ?? 0)}{' '}
                 resources
               </p>
@@ -349,9 +351,9 @@ export function DiscoveryPanel({
           <Check className="size-6 text-green-600" />
           <div>
             <p className="text-sm font-medium">
-              Successfully registered {bulkResult.registered + siwxCount} of{' '}
+              Successfully registered {bulkResult.registered + freeCount} of{' '}
               {bulkResult.registered +
-                siwxCount +
+                freeCount +
                 (bulkResult.failedDetails?.length ?? 0)}{' '}
               resources
               {notRegisteredCount > 0 && (
@@ -457,54 +459,16 @@ export function DiscoveryPanel({
               <p className="text-xs text-muted-foreground">
                 These endpoints were identified as unprotected (no x402
                 paywall). They are not registered. If they should be paid, add
-                x402 payment middleware. If they are intentionally free, add{' '}
+                x402 payment middleware. If they are intentionally free,
+                declare{' '}
                 <code className="font-mono bg-muted px-1 rounded">
                   &quot;security&quot;: []
                 </code>{' '}
-                to their OpenAPI definition to suppress this notice.
+                on them in your OpenAPI spec and they will be registered and
+                shown as public endpoints.
               </p>
               <div className="space-y-1 max-h-[200px] overflow-y-auto">
                 {skippedDetails.map((skipped, idx) => (
-                  <div
-                    key={idx}
-                    className="px-3 py-1.5 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
-                  >
-                    {(() => {
-                      try {
-                        return new URL(skipped.url).pathname;
-                      } catch {
-                        return skipped.url;
-                      }
-                    })()}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </details>
-        )}
-
-        {/* Public — endpoints explicitly opted out via OpenAPI security: [].
-            Informational only: the merchant already declared these free. */}
-        {publicDetails.length > 0 && (
-          <details className="border rounded-md group">
-            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2 text-muted-foreground">
-              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              <Info className="size-4 shrink-0" />
-              {publicDetails.length} public endpoint
-              {publicDetails.length === 1 ? '' : 's'} not registered
-            </summary>
-            <div className="p-4 pt-2 border-t space-y-2">
-              <p className="text-xs text-muted-foreground">
-                These endpoints declare{' '}
-                <code className="font-mono bg-muted px-1 rounded">
-                  &quot;security&quot;: []
-                </code>{' '}
-                in the OpenAPI spec, marking them as intentionally free. Free
-                endpoints without x402 payment are not listed on x402scan. No
-                action is needed.
-              </p>
-              <div className="space-y-1 max-h-[200px] overflow-y-auto">
-                {publicDetails.map((skipped, idx) => (
                   <div
                     key={idx}
                     className="px-3 py-1.5 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
@@ -986,11 +950,38 @@ function FailedResourceCard({
   // Determine checklist status based on error details or tested response
   const returns402 = x402Parsed;
   const isInvalid = invalidInfo?.invalid ?? false;
-  const isSiwx = authMode === 'siwx';
+  // Free endpoints (siwx/public/apiKey) are registered without probing —
+  // render them as informational, not as failures.
+  const free =
+    authMode === 'siwx'
+      ? {
+          tag: 'FREE',
+          message: 'Free (wallet auth, no payment)',
+          border: 'border-green-600',
+          badge: 'bg-green-600/10 border border-green-600 text-green-600',
+          text: 'text-primary',
+        }
+      : authMode === 'unprotected'
+        ? {
+            tag: 'PUBLIC',
+            message: 'Public (no auth, no payment)',
+            border: 'border-sky-600',
+            badge: 'bg-sky-600/10 border border-sky-600 text-sky-600',
+            text: 'text-sky-600',
+          }
+        : authMode === 'apiKey'
+          ? {
+              tag: 'API KEY',
+              message: 'API key required (not payable via x402)',
+              border: 'border-border',
+              badge: 'bg-muted border border-border text-muted-foreground',
+              text: 'text-muted-foreground',
+            }
+          : null;
   const isV1Error =
     failedDetails?.error?.includes('v1 response detected') ?? false;
-  const errorMessage = isSiwx
-    ? 'Free (wallet auth, no payment)'
+  const errorMessage = free
+    ? free.message
     : isInvalid
       ? (invalidInfo?.reason ?? 'Invalid format')
       : x402Parsed
@@ -1003,8 +994,8 @@ function FailedResourceCard({
       <Card
         className={cn(
           'overflow-hidden',
-          isSiwx
-            ? 'border-green-600'
+          free
+            ? free.border
             : isInvalid
               ? 'border-yellow-500/30'
               : 'border-red-500/30'
@@ -1021,14 +1012,14 @@ function FailedResourceCard({
                 <div
                   className={cn(
                     'font-mono px-1 rounded-md text-xs shrink-0',
-                    isSiwx
-                      ? 'bg-green-600/10 border border-green-600 text-green-600'
+                    free
+                      ? free.badge
                       : isInvalid
                         ? 'bg-yellow-600/10 border border-yellow-600 text-yellow-600'
                         : 'bg-red-600/10 border border-red-600 text-red-600'
                   )}
                 >
-                  {isSiwx ? 'FREE' : isInvalid ? 'INVALID' : 'ERR'}
+                  {free ? free.tag : isInvalid ? 'INVALID' : 'ERR'}
                 </div>
                 <span className="font-mono text-sm truncate">{pathname}</span>
               </div>
@@ -1036,8 +1027,8 @@ function FailedResourceCard({
                 <span
                   className={cn(
                     'text-xs truncate max-w-[200px]',
-                    isSiwx
-                      ? 'text-primary'
+                    free
+                      ? free.text
                       : isInvalid
                         ? 'text-yellow-500'
                         : 'text-red-500'
@@ -1081,7 +1072,7 @@ function FailedResourceCard({
             />
 
             {/* Sample body input — shown for reachable endpoints that didn't return 402 */}
-            {onRetry && !isSiwx && !isV1Error && (
+            {onRetry && !free && !isV1Error && (
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">
                   Sample Request Body (JSON)
@@ -1278,12 +1269,13 @@ function RegisterModeResourceList({
     return false;
   })();
 
-  // Sort: invalid → free (SIWX) → new → already registered
+  // Sort: invalid → free (SIWX/public/apiKey) → new → already registered
   const sortedResources = [...allResources].sort((a, b) => {
     const priority = (r: (typeof allResources)[number]) => {
       const k = resourceKey(r.url, r.method);
+      const mode = authModeMap[k];
       if (invalidResourcesMap[k]?.invalid) return 0;
-      if (authModeMap[k] === 'siwx') return 1;
+      if (mode === 'siwx' || isOpenApiDeclaredFree(mode, source)) return 1;
       if (!r.isRegistered) return 2;
       return 3; // already registered
     };
@@ -1377,6 +1369,43 @@ function RegisterModeResourceList({
                           </TooltipContent>
                         </Tooltip>
                       )}
+                      {authModeMap[k] === 'unprotected' &&
+                        isOpenApiDeclaredFree(authModeMap[k], source) && (
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-sky-600/10 border border-sky-600 text-sky-600">
+                                <Globe className="size-3" />
+                                Public
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs">
+                                Explicitly public endpoint (
+                                <code className="font-mono">
+                                  &quot;security&quot;: []
+                                </code>
+                                ) — free, no payment required.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      {authModeMap[k] === 'apiKey' &&
+                        isOpenApiDeclaredFree(authModeMap[k], source) && (
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-muted border border-border text-muted-foreground">
+                                <KeyRound className="size-3" />
+                                API key
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs">
+                                Requires the merchant&apos;s API key — listed
+                                for completeness, not payable via x402.
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
                       {invalidResourcesMap[k]?.invalid && (
                         <Tooltip>
                           <TooltipTrigger>

@@ -1,6 +1,5 @@
 import { formatCurrency, USDC_ADDRESS } from '@/lib/utils';
 import { Methods } from '@/types/x402';
-import type { Resources } from '@x402scan/scan-db';
 
 interface PricingAccept {
   maxAmountRequired: number;
@@ -112,14 +111,7 @@ export function formatPricingLabel(opts: {
   return UNKNOWN_PAID_LABEL;
 }
 
-export function isSiwxResource(resource: Pick<Resources, 'metadata'>): boolean {
-  return (
-    resource.metadata != null &&
-    typeof resource.metadata === 'object' &&
-    'authMode' in resource.metadata &&
-    resource.metadata.authMode === 'siwx'
-  );
-}
+export { getResourceAuthMode, isFreeResource } from '@/lib/resource-auth';
 
 export function getBazaarMethod(outputSchema: unknown): Methods {
   if (

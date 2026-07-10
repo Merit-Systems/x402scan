@@ -13,6 +13,7 @@ import type {
 import { isX402PaymentOption } from '@/lib/discovery/utils';
 
 import { getOriginFromUrl, normalizeResourceUrl } from '@/lib/url';
+import type { FreeAuthMode } from '@/lib/resource-auth';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
@@ -154,13 +155,16 @@ export function validateResource(
 }
 
 /**
- * Register a SIWX (free, identity-gated) endpoint. These endpoints have no
- * x402 payment options, no 402 response body, and no Accepts records — just
- * a Resource row linked to its Origin.
+ * Register a free endpoint (SIWX, explicitly public, or apiKey-gated). These
+ * endpoints have no x402 payment options, no 402 response body, and no
+ * Accepts records — just a Resource row linked to its Origin, tagged via
+ * metadata.authMode.
  */
-export async function registerSiwxResource(
+export async function registerFreeResource(
   url: string,
   options: {
+    /** Which free tag to store in metadata.authMode. */
+    authMode?: FreeAuthMode;
     method?: string;
     originMetadataFallback?: { title?: string; description?: string };
     pricingMode?: string;
@@ -188,8 +192,8 @@ export async function registerSiwxResource(
     const resource = await scanDb.$transaction(async tx => {
       await ensureOriginExists(tx, origin);
 
-      const siwxMetadata = {
-        authMode: 'siwx' as const,
+      const freeMetadata = {
+        authMode: options.authMode ?? 'siwx',
         ...(options.pricingMode ? { pricingMode: options.pricingMode } : {}),
         ...(options.price ? { price: options.price } : {}),
       };
@@ -208,8 +212,8 @@ export async function registerSiwxResource(
         existing?.metadata &&
         typeof existing.metadata === 'object' &&
         !Array.isArray(existing.metadata)
-          ? { ...existing.metadata, ...siwxMetadata }
-          : siwxMetadata;
+          ? { ...existing.metadata, ...freeMetadata }
+          : freeMetadata;
 
       return tx.resources.upsert({
         where: {
@@ -221,7 +225,7 @@ export async function registerSiwxResource(
           type: 'http',
           x402Version: 0,
           lastUpdated: new Date(),
-          metadata: siwxMetadata,
+          metadata: freeMetadata,
           origin: { connect: { origin } },
         },
         update: {
@@ -277,7 +281,7 @@ export async function registerSiwxResource(
         });
       } catch (err) {
         console.error(
-          '[registerSiwxResource] Metadata scrape failed (non-blocking):',
+          '[registerFreeResource] Metadata scrape failed (non-blocking):',
           err
         );
       }
@@ -316,7 +320,7 @@ export async function registerSiwxResource(
           : { id: 'race-resolved', origin: { id: 'race-resolved' } },
       };
     }
-    console.error('[registerSiwxResource] Failed:', error);
+    console.error('[registerFreeResource] Failed:', error);
     return {
       success: false as const,
       error: error instanceof Error ? error.message : 'Database error',

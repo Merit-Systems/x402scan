@@ -10,7 +10,7 @@ import {
 
 import { ResourceCard, LoadingResourceCard } from './resource-card';
 
-import { getBazaarMethod, isSiwxResource } from './utils';
+import { getBazaarMethod, isFreeResource } from './utils';
 import { serializeAccepts } from '@/lib/token';
 import { Methods } from '@/types/x402';
 
@@ -31,7 +31,7 @@ export const OriginResources: React.FC<Props> = ({
     resource =>
       resource.success &&
       ((resource.accepts && resource.accepts.length > 0) ||
-        isSiwxResource(resource))
+        isFreeResource(resource))
   );
 
   if (successfulResources.length === 0) {
