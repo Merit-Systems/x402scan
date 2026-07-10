@@ -42,6 +42,10 @@ import {
 } from '@/app/(app)/_components/discovery';
 import { DiscoveryActions } from '@/app/(app)/_components/discovery/discovery-actions';
 import { Favicon } from '@/app/(app)/_components/favicon';
+import {
+  isOpenApiDeclaredFree,
+  isRegistrableEndpoint,
+} from '@/lib/discovery/catalog-auth';
 import { normalizeUrl } from '@/lib/url';
 import { resourceKey } from '@/lib/resource-key';
 import { api } from '@/trpc/client';
@@ -190,7 +194,7 @@ export const RegisterResourceForm = () => {
     authModeMap,
     invalidResourcesMap,
     skippedResources,
-    siwxResourceCount,
+    freeResourceCount,
     contactEmail,
   } = useDiscovery({
     url,
@@ -209,7 +213,7 @@ export const RegisterResourceForm = () => {
   const batchTestComplete =
     testedResources.length > 0 || failedResources.length > 0;
   const registrableResourceCount = batchTestComplete
-    ? testedResources.length + siwxResourceCount
+    ? testedResources.length + freeResourceCount
     : actualDiscoveredResources.length;
 
   const canUseManualMode = isValidUrl && !isOriginOnly;
@@ -488,6 +492,7 @@ export const RegisterResourceForm = () => {
                     authModeMap={authModeMap}
                     invalidResourcesMap={invalidResourcesMap}
                     contactEmail={contactEmail}
+                    discoverySource={discoverySource}
                   />
                 )}
 
@@ -646,7 +651,9 @@ export const RegisterResourceForm = () => {
         );
       })()}
 
-      {/* Unprotected endpoints — skipped, not an error */}
+      {/* Skipped endpoints — not registrable, not an error. Openapi-declared
+          public (security: []) and apiKey endpoints register as catalog rows,
+          so only true leftovers land here. */}
       {!activeBulkResult && skippedResources.length > 0 && (
         <Collapsible>
           <CollapsibleTrigger asChild>
@@ -660,11 +667,12 @@ export const RegisterResourceForm = () => {
             <p className="text-xs text-muted-foreground">
               These endpoints have no x402 paywall and won&apos;t be registered.
               If they should be paid, add x402 payment middleware. If they are
-              intentionally free, add{' '}
+              intentionally free, declare{' '}
               <code className="font-mono bg-muted px-1 rounded text-[11px]">
                 &quot;security&quot;: []
               </code>{' '}
-              to their OpenAPI definition to suppress this notice.
+              on them in your OpenAPI spec and they will be registered and
+              shown as public endpoints.
             </p>
             <div className="space-y-1 max-h-[200px] overflow-y-auto">
               {skippedResources.map((r, idx) => (
@@ -1052,6 +1060,7 @@ function ProbeResult({
   authModeMap = {},
   invalidResourcesMap = {},
   contactEmail,
+  discoverySource,
 }: {
   preview: {
     favicon: string | null;
@@ -1070,6 +1079,7 @@ function ProbeResult({
   authModeMap?: Record<string, string>;
   invalidResourcesMap?: Record<string, { invalid: boolean; reason?: string }>;
   contactEmail?: string | null;
+  discoverySource?: string;
 }) {
   const testedKeys = useMemo(
     () => new Set(testedResources.map(rk)),
@@ -1095,17 +1105,45 @@ function ProbeResult({
       ),
     [authModeMap]
   );
+  // Openapi-declared free catalog endpoints (public/apiKey) — registered
+  // without probing, like SIWX.
+  const publicKeys = useMemo(
+    () =>
+      new Set(
+        Object.entries(authModeMap)
+          .filter(
+            ([, mode]) =>
+              mode === 'unprotected' &&
+              isOpenApiDeclaredFree(mode, discoverySource)
+          )
+          .map(([key]) => key)
+      ),
+    [authModeMap, discoverySource]
+  );
+  const apiKeyKeys = useMemo(
+    () =>
+      new Set(
+        Object.entries(authModeMap)
+          .filter(
+            ([, mode]) =>
+              mode === 'apiKey' && isOpenApiDeclaredFree(mode, discoverySource)
+          )
+          .map(([key]) => key)
+      ),
+    [authModeMap, discoverySource]
+  );
   const nonPaidKeys = useMemo(() => {
-    const paid = new Set(['paid', 'apiKey+paid']);
     return new Set(
       resources
         .filter(r => {
           const mode = authModeMap[rk(r)];
-          return mode !== undefined && mode !== 'siwx' && !paid.has(mode);
+          return (
+            mode !== undefined && !isRegistrableEndpoint(mode, discoverySource)
+          );
         })
         .map(rk)
     );
-  }, [resources, authModeMap]);
+  }, [resources, authModeMap, discoverySource]);
   const invalidKeys = useMemo(
     () =>
       new Set(
@@ -1115,18 +1153,27 @@ function ProbeResult({
       ),
     [invalidResourcesMap]
   );
-  // Sort: errors → warnings → free (SIWX) → verified → skipped
+  // Sort: errors → warnings → free (SIWX/public/apiKey) → verified → skipped
   const sortedResources = useMemo(() => {
     const priority = (r: DiscoveredResource) => {
       const k = rk(r);
       if (invalidKeys.has(k) || failedKeys.has(k)) return 0;
       if (warningKeys.has(k)) return 1;
-      if (siwxKeys.has(k)) return 2;
+      if (siwxKeys.has(k) || publicKeys.has(k) || apiKeyKeys.has(k)) return 2;
       if (testedKeys.has(k)) return 3;
       return 4; // non-paid — skipped
     };
     return [...resources].sort((a, b) => priority(a) - priority(b));
-  }, [resources, invalidKeys, failedKeys, warningKeys, siwxKeys, testedKeys]);
+  }, [
+    resources,
+    invalidKeys,
+    failedKeys,
+    warningKeys,
+    siwxKeys,
+    publicKeys,
+    apiKeyKeys,
+    testedKeys,
+  ]);
 
   const [expanded, setExpanded] = useState(false);
   const previewResources = expanded
@@ -1243,6 +1290,10 @@ function ProbeResult({
                     <X className="size-3 text-red-500 shrink-0" />
                   ) : siwxKeys.has(k) ? (
                     <Check className="size-3 text-primary shrink-0" />
+                  ) : publicKeys.has(k) ? (
+                    <Check className="size-3 text-sky-600 shrink-0" />
+                  ) : apiKeyKeys.has(k) ? (
+                    <Check className="size-3 text-muted-foreground shrink-0" />
                   ) : warningKeys.has(k) ? (
                     <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
                   ) : testedKeys.has(k) ? (

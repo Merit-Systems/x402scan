@@ -4,18 +4,16 @@ import { scanDb } from '@x402scan/scan-db';
 
 import { parseX402Response, type ParsedX402Response } from '@/lib/x402';
 import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
+import { FREE_AUTH_MODES, isFreeResource } from '@/lib/resource-auth';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
-import type { AcceptsNetwork, Prisma, Resources } from '@x402scan/scan-db';
+import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
 
-function isSiwxResource(resource: Pick<Resources, 'metadata'>): boolean {
-  return (
-    resource.metadata != null &&
-    typeof resource.metadata === 'object' &&
-    'authMode' in resource.metadata &&
-    resource.metadata.authMode === 'siwx'
-  );
-}
+/** OR-able filters matching free resources (siwx/unprotected/apiKey). */
+export const freeAuthModeFilters: Prisma.ResourcesWhereInput[] =
+  FREE_AUTH_MODES.map(mode => ({
+    metadata: { path: ['authMode'], equals: mode },
+  }));
 
 const SUPPORTED_ACCEPT_NETWORKS = SUPPORTED_CHAINS.map(
   chain => chain as AcceptsNetwork
@@ -44,10 +42,8 @@ const displayableResourceWhere: Prisma.ResourcesWhereInput = {
       response: { isNot: null },
       accepts: { some: getDisplayableAcceptsWhere({}) },
     },
-    // SIWX (free) resources: identified by metadata.authMode
-    {
-      metadata: { path: ['authMode'], equals: 'siwx' },
-    },
+    // Free resources (siwx/public/apiKey): identified by metadata.authMode
+    ...freeAuthModeFilters,
   ],
 };
 
@@ -165,17 +161,14 @@ export const listOriginsSchema = z.object({
 export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
   const { chain, address } = input;
   const acceptsWhere = getDisplayableAcceptsWhere({ chain, address });
-  // SIWX (free) resources have no chain/address — only include them when
+  // Free resources have no chain/address — only include them when
   // no chain or address filter is applied.
   const hasPaymentFilter = chain != null || address != null;
   const resourceFilter: Prisma.ResourcesWhereInput = hasPaymentFilter
     ? { deprecatedAt: null, accepts: { some: acceptsWhere } }
     : {
         deprecatedAt: null,
-        OR: [
-          { accepts: { some: acceptsWhere } },
-          { metadata: { path: ['authMode'], equals: 'siwx' } },
-        ],
+        OR: [{ accepts: { some: acceptsWhere } }, ...freeAuthModeFilters],
       };
   const origins = await scanDb.resourceOrigin.findMany({
     where: {
@@ -197,10 +190,10 @@ export const listOriginsWithResources = async (
 ) => {
   const { chain, address, originIds } = input;
   const acceptsWhere = getDisplayableAcceptsWhere({ chain, address });
-  // SIWX (free) resources have no chain/address — only include them when
+  // Free resources have no chain/address — only include them when
   // no chain or address filter is applied.
   const hasPaymentFilter = chain != null || address != null;
-  const paidOrSiwxResource: Prisma.ResourcesWhereInput = hasPaymentFilter
+  const paidOrFreeResource: Prisma.ResourcesWhereInput = hasPaymentFilter
     ? {
         deprecatedAt: null,
         response: { isNot: null },
@@ -210,17 +203,17 @@ export const listOriginsWithResources = async (
         deprecatedAt: null,
         OR: [
           { response: { isNot: null }, accepts: { some: acceptsWhere } },
-          { metadata: { path: ['authMode'], equals: 'siwx' } },
+          ...freeAuthModeFilters,
         ],
       };
   const origins = await scanDb.resourceOrigin.findMany({
     where: {
       ...(originIds ? { id: { in: originIds } } : {}),
-      resources: { some: paidOrSiwxResource },
+      resources: { some: paidOrFreeResource },
     },
     include: {
       resources: {
-        where: paidOrSiwxResource,
+        where: paidOrFreeResource,
         orderBy: {
           resource: 'asc',
         },
@@ -248,9 +241,11 @@ export const listOriginsWithResources = async (
     .map(origin => ({
       ...origin,
       resources: origin.resources.map(resource => {
-        // SIWX (free) resources have no 402 response — they're identity-gated,
-        // not paid. Treat them as successful with empty payment data.
-        if (isSiwxResource(resource)) {
+        // Free resources (siwx/public/apiKey) have no 402 response — treat
+        // them as successful with empty payment data. The !response guard
+        // defends against stale free markers on rows that later stored a
+        // 402 response.
+        if (isFreeResource(resource) && !resource.response) {
           return {
             ...resource,
             success: true as const,

@@ -12,7 +12,11 @@ import {
 } from '@/components/ui/tooltip';
 
 import { Header } from './header/index';
-import { formatPricingLabel, getMaxUsdcAmount, isSiwxResource } from './utils';
+import {
+  formatPricingLabel,
+  getMaxUsdcAmount,
+  getResourceAuthMode,
+} from './utils';
 
 import { cn } from '@/lib/utils';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
@@ -100,11 +104,32 @@ export const ResourceCard: React.FC<Props> = ({
                     : undefined
                 }
               />
-            ) : isSiwxResource(resource) ? (
-              <span className="text-xs font-semibold text-green-600 font-mono shrink-0">
-                Free
-              </span>
-            ) : null}
+            ) : (
+              (() => {
+                switch (getResourceAuthMode(resource.metadata)) {
+                  case 'siwx':
+                    return (
+                      <span className="text-xs font-semibold text-green-600 font-mono shrink-0">
+                        Free
+                      </span>
+                    );
+                  case 'unprotected':
+                    return (
+                      <span className="text-xs font-semibold text-sky-600 font-mono shrink-0">
+                        Public
+                      </span>
+                    );
+                  case 'apiKey':
+                    return (
+                      <span className="text-xs font-semibold text-muted-foreground font-mono shrink-0">
+                        API key
+                      </span>
+                    );
+                  default:
+                    return null;
+                }
+              })()
+            )}
             {ownershipVerified && (
               <Tooltip>
                 <TooltipTrigger asChild>

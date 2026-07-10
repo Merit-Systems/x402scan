@@ -5,6 +5,10 @@ import z from 'zod';
 
 import { api } from '@/trpc/client';
 import { useRegisterFromOrigin } from '@/hooks/use-register-from-origin';
+import {
+  isOpenApiDeclaredFree,
+  isRegistrableEndpoint,
+} from '@/lib/discovery/catalog-auth';
 import { resourceKey } from '@/lib/resource-key';
 
 import type { FailedResource, TestedResource } from '@/types/batch-test';
@@ -69,7 +73,8 @@ export interface UseDiscoveryReturn {
   discoveryResources: DiscoveredResource[];
   actualDiscoveredResources: DiscoveredResource[];
   skippedResources: { url: string; authMode?: string }[];
-  siwxResourceCount: number;
+  /** Registrable resources that won't be probed (siwx/public/apiKey). */
+  freeResourceCount: number;
   discoveryResourceCount: number;
   discoveryError?: string;
   invalidResourcesMap: Record<string, { invalid: boolean; reason?: string }>;
@@ -104,13 +109,21 @@ export interface UseDiscoveryReturn {
     success: true;
     registered: number;
     siwx: number;
+    publicCount: number;
+    apiKeyCount: number;
     total: number;
     failed: number;
     skipped?: number;
     deprecated?: number;
     failedDetails?: { url: string; error: string; status?: number }[];
     siwxDetails?: { url: string }[];
-    skippedDetails?: { url: string; error: string; status?: number }[];
+    publicDetails?: { url: string }[];
+    apiKeyDetails?: { url: string }[];
+    skippedDetails?: {
+      url: string;
+      error: string;
+      status?: number;
+    }[];
     warningDetails?: {
       url: string;
       warnings: { code: string; severity: string; message: string }[];
@@ -133,9 +146,6 @@ export interface UseDiscoveryReturn {
     options?: { sampleBody?: string; testUrl?: string }
   ) => Promise<void>;
 }
-
-/** Auth modes that are relevant to x402scan (paid + free/SIWX). */
-const REGISTRABLE_AUTH_MODES = new Set(['paid', 'apiKey+paid', 'siwx']);
 
 export function useDiscovery({
   url,
@@ -167,22 +177,32 @@ export function useDiscovery({
   );
 
   const discoveryFound = discoveryQuery.data?.found ?? false;
-  const discoveryResources: DiscoveredResource[] = useMemo(() => {
+  const discoverySource = discoveryQuery.data?.found
+    ? discoveryQuery.data.source
+    : undefined;
+  const { discoveryResources, skippedResources } = useMemo(() => {
     const raw = discoveryQuery.data?.found ? discoveryQuery.data.resources : [];
-    // Exclude endpoints explicitly classified as non-registrable (unprotected,
-    // apiKey). Keep registrable (paid, siwx) and unclassified (authMode absent)
-    // — unclassified endpoints may be paid but the discovery package didn't
-    // detect it (e.g. bazaar-only endpoints).
-    return raw.filter(
-      r => r.authMode == null || REGISTRABLE_AUTH_MODES.has(r.authMode)
+    // Catalog endpoints (openapi-declared public/apiKey) only register
+    // alongside a payable resource — mirror the server-side gate so a
+    // catalog-only origin shows its endpoints as skipped, not registrable.
+    const hasPayableCandidate = raw.some(
+      r =>
+        !isOpenApiDeclaredFree(r.authMode, discoverySource) &&
+        isRegistrableEndpoint(r.authMode, discoverySource)
     );
-  }, [discoveryQuery.data]);
-  const skippedResources: DiscoveredResource[] = useMemo(() => {
-    const raw = discoveryQuery.data?.found ? discoveryQuery.data.resources : [];
-    return raw.filter(
-      r => r.authMode != null && !REGISTRABLE_AUTH_MODES.has(r.authMode)
-    );
-  }, [discoveryQuery.data]);
+    const included: DiscoveredResource[] = [];
+    const skipped: DiscoveredResource[] = [];
+    for (const r of raw) {
+      // Keep everything that will register: paid/siwx, unclassified
+      // (authMode absent — may be paid but undetected, e.g. bazaar-only
+      // endpoints), and gated catalog endpoints.
+      const registrable = isOpenApiDeclaredFree(r.authMode, discoverySource)
+        ? hasPayableCandidate
+        : isRegistrableEndpoint(r.authMode, discoverySource);
+      (registrable ? included : skipped).push(r);
+    }
+    return { discoveryResources: included, skippedResources: skipped };
+  }, [discoveryQuery.data, discoverySource]);
   const discoveryCheckComplete =
     !discoveryQuery.isLoading && discoveryQuery.isFetched;
 
@@ -325,14 +345,15 @@ export function useDiscovery({
     discoveryQuery,
     isDiscoveryLoading: discoveryQuery.isLoading || discoveryQuery.isFetching,
     discoveryFound,
-    discoverySource: discoveryQuery.data?.found
-      ? discoveryQuery.data.source
-      : undefined,
+    discoverySource,
     discoveryResources: effectiveResources,
     actualDiscoveredResources: discoveryResources,
     skippedResources,
-    siwxResourceCount: discoveryResources.filter(r => r.authMode === 'siwx')
-      .length,
+    freeResourceCount: discoveryResources.filter(
+      r =>
+        r.authMode === 'siwx' ||
+        isOpenApiDeclaredFree(r.authMode, discoverySource)
+    ).length,
     discoveryResourceCount: effectiveResources.length,
     discoveryError:
       discoveryQuery.data?.found === false
@@ -376,12 +397,16 @@ export function useDiscovery({
           success: true as const,
           registered: bulkData.registered,
           siwx: bulkData.siwx,
+          publicCount: bulkData.publicCount,
+          apiKeyCount: bulkData.apiKeyCount,
           total: bulkData.total,
           failed: bulkData.failed,
           skipped: bulkData.skipped,
           deprecated: bulkData.deprecated,
           failedDetails: bulkData.failedDetails,
           siwxDetails: bulkData.siwxDetails,
+          publicDetails: bulkData.publicDetails,
+          apiKeyDetails: bulkData.apiKeyDetails,
           skippedDetails: bulkData.skippedDetails,
           warningDetails: bulkData.warningDetails,
           originId: bulkData.originId,

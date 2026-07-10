@@ -9,7 +9,7 @@ import { supportedChainSchema } from '@/lib/schemas';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import { upsertResourceSchema } from './resource-schema';
-import { ensureOriginExists } from './origin';
+import { ensureOriginExists, freeAuthModeFilters } from './origin';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
@@ -45,27 +45,29 @@ export const upsertResource = async (
   return await scanDb.$transaction(async tx => {
     await ensureOriginExists(tx, originStr);
 
-    // Merge new metadata with existing to avoid clobbering fields set by
-    // a different registration path (e.g. paid sets pricingMode, siwx sets
-    // authMode — both target the same URL-keyed row).
+    // Merge new metadata with existing to avoid clobbering fields set by a
+    // different registration path (e.g. free registration sets authMode on
+    // the same URL-keyed row) — but always drop a free authMode marker:
+    // this function only runs for paid registrations, and a row with Accepts
+    // must not keep rendering as a free catalog entry.
     let mergedMetadata = baseResource.metadata;
-    if (baseResource.metadata) {
-      const existing = await tx.resources.findUnique({
-        where: {
-          resource_method: {
-            resource: baseResource.resource,
-            method: baseResource.method,
-          },
+    const existing = await tx.resources.findUnique({
+      where: {
+        resource_method: {
+          resource: baseResource.resource,
+          method: baseResource.method,
         },
-        select: { metadata: true },
-      });
-      if (
-        existing?.metadata &&
-        typeof existing.metadata === 'object' &&
-        !Array.isArray(existing.metadata)
-      ) {
-        mergedMetadata = { ...existing.metadata, ...baseResource.metadata };
-      }
+      },
+      select: { metadata: true },
+    });
+    if (
+      existing?.metadata &&
+      typeof existing.metadata === 'object' &&
+      !Array.isArray(existing.metadata)
+    ) {
+      const existingRest = { ...existing.metadata };
+      delete existingRest.authMode;
+      mergedMetadata = { ...existingRest, ...(baseResource.metadata ?? {}) };
     }
 
     const { origin, ...resource } = await tx.resources.upsert({
@@ -318,16 +320,13 @@ const searchResourcesUncached = async (
     chains !== undefined ? { network: { in: chains } } : {};
   return await scanDb.resources.findMany({
     where: {
-      // Include paid resources (with accepts) and SIWX (free) resources.
-      // When filtering by chain, SIWX resources are excluded since they
-      // have no chain-specific payment options.
+      // Include paid resources (with accepts) and free resources
+      // (siwx/public/apiKey). When filtering by chain, free resources are
+      // excluded since they have no chain-specific payment options.
       ...(chains !== undefined
         ? { accepts: { some: acceptsFilter } }
         : {
-            OR: [
-              { accepts: { some: {} } },
-              { metadata: { path: ['authMode'], equals: 'siwx' } },
-            ],
+            OR: [{ accepts: { some: {} } }, ...freeAuthModeFilters],
           }),
       ...(search
         ? {

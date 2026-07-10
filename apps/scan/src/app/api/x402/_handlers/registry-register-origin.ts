@@ -61,6 +61,8 @@ export async function handleRegistryRegisterOrigin(
     success: true,
     registered: result.registered,
     siwx: result.siwx,
+    public: result.publicCount,
+    apiKey: result.apiKeyCount,
     failed: result.failed,
     skipped: result.skipped,
     deprecated: result.deprecated,
@@ -69,6 +71,10 @@ export async function handleRegistryRegisterOrigin(
     failedDetails:
       result.failedDetails.length > 0 ? result.failedDetails : undefined,
     siwxDetails: result.siwxDetails.length > 0 ? result.siwxDetails : undefined,
+    publicDetails:
+      result.publicDetails.length > 0 ? result.publicDetails : undefined,
+    apiKeyDetails:
+      result.apiKeyDetails.length > 0 ? result.apiKeyDetails : undefined,
     ...contactEmailFields(discoveryResult.contactEmail),
   });
 }

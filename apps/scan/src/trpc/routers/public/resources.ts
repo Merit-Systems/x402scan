@@ -221,6 +221,8 @@ export const resourcesRouter = createTRPCRouter({
         discoveryResult.contactEmail
       );
 
+      // Public/apiKey catalog rows only register alongside paid/SIWX
+      // resources, so this gate stays on those two counts.
       if (result.registered === 0 && result.siwx === 0) {
         return {
           success: false as const,

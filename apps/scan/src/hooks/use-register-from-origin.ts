@@ -6,13 +6,21 @@ import { toast } from 'sonner';
 interface RegisterFromOriginSuccessData {
   registered: number;
   siwx: number;
+  publicCount: number;
+  apiKeyCount: number;
   failed: number;
   skipped: number;
   deprecated?: number;
   total: number;
   failedDetails?: { url: string; error: string; status?: number }[];
   siwxDetails?: { url: string }[];
-  skippedDetails?: { url: string; error: string; status?: number }[];
+  publicDetails?: { url: string }[];
+  apiKeyDetails?: { url: string }[];
+  skippedDetails?: {
+    url: string;
+    error: string;
+    status?: number;
+  }[];
   warningDetails?: {
     url: string;
     warnings: { code: string; severity: string; message: string }[];
@@ -56,6 +64,8 @@ export function useRegisterFromOrigin(
         const parts: string[] = [];
         if (data.registered > 0) parts.push(`${data.registered} registered`);
         if (data.siwx > 0) parts.push(`${data.siwx} SIWX`);
+        if (data.publicCount > 0) parts.push(`${data.publicCount} public`);
+        if (data.apiKeyCount > 0) parts.push(`${data.apiKeyCount} API key`);
         if (data.deprecated > 0) parts.push(`${data.deprecated} removed`);
         if (data.skipped > 0) parts.push(`${data.skipped} skipped`);
         if (data.failed > 0) parts.push(`${data.failed} failed`);
@@ -67,12 +77,16 @@ export function useRegisterFromOrigin(
       onSuccess?.({
         registered: data.registered,
         siwx: data.siwx,
+        publicCount: data.publicCount,
+        apiKeyCount: data.apiKeyCount,
         failed: data.failed,
         skipped: data.skipped,
         deprecated: data.deprecated,
         total: data.total,
         failedDetails: data.failedDetails,
         siwxDetails: data.siwxDetails,
+        publicDetails: data.publicDetails,
+        apiKeyDetails: data.apiKeyDetails,
         skippedDetails: data.skippedDetails,
         warningDetails: data.warningDetails,
         originId: data.originId,
