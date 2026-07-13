@@ -11,6 +11,7 @@ import {
 import { logger, schedules } from '@trigger.dev/sdk/v3';
 import { Network, QueryProvider } from './types';
 import { fetchTransfers } from './fetch/fetch';
+import { collapseTransferChains } from './lib/collapse';
 
 import type { Facilitator, FacilitatorConfig, SyncConfig } from './types';
 
@@ -153,10 +154,11 @@ async function syncFacilitator(
           since,
           now,
           async batch => {
-            const syncResult = await createManyTransferEvents(batch);
+            const collapsed = collapseTransferChains(batch);
+            const syncResult = await createManyTransferEvents(collapsed);
             totalSaved += syncResult.count;
             logger.log(
-              `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - syncResult.count} duplicates)`
+              `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - collapsed.length} collapsed, ${collapsed.length - syncResult.count} duplicates)`
             );
           },
           async (_windowStart, windowEnd, resultCount) => {
@@ -210,10 +212,11 @@ async function syncFacilitator(
       since,
       now,
       async batch => {
-        const syncResult = await createManyTransferEvents(batch);
+        const collapsed = collapseTransferChains(batch);
+        const syncResult = await createManyTransferEvents(collapsed);
         totalSaved += syncResult.count;
         logger.log(
-          `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - syncResult.count} duplicates)`
+          `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - collapsed.length} collapsed, ${collapsed.length - syncResult.count} duplicates)`
         );
       }
     );
