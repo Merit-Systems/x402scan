@@ -72,16 +72,23 @@ function AreaChart({
   height: number;
   color: string;
 }) {
-  if (data.length < 2) return null;
-  const max = Math.max(...data, 1);
+  if (data.length === 0) return null;
+  // A brand-new / low-activity origin can have all its activity in a single
+  // materialized bucket, so the query returns one point. Duplicate it so the
+  // path spans the full width and renders a flat line instead of nothing.
+  const series = data.length === 1 ? [data[0]!, data[0]!] : data;
+  // Scale to the data's real peak. Only fall back to 1 when every value is 0,
+  // otherwise fractional metrics like volume (dollars, often < 1) get squished
+  // to the bottom edge and the line looks absent.
+  const max = Math.max(...series) || 1;
   const padX = 4;
   const padTop = 90;
   const padBottom = 4;
   const chartW = width - padX * 2;
   const chartH = height - padTop - padBottom;
 
-  const points = data.map((val, i) => ({
-    x: padX + (i / (data.length - 1)) * chartW,
+  const points = series.map((val, i) => ({
+    x: padX + (i / (series.length - 1)) * chartW,
     y: padTop + chartH - (val / max) * chartH,
   }));
 
@@ -331,7 +338,7 @@ export const ScreenshotCard: React.FC<Props> = ({
               // Place label in the zone (left / center / right) with the lowest chart values
               const data = activeChartData;
               const len = data.length;
-              const max = Math.max(...data, 1);
+              const max = Math.max(...data) || 1;
               const third = Math.max(1, Math.ceil(len / 3));
               const zoneMax = (start: number, end: number) =>
                 Math.max(...data.slice(start, end)) / max;
