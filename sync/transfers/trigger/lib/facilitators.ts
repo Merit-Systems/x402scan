@@ -21,11 +21,15 @@ function convertAddressConfig(
     address: facilitatorAddress.address,
     token,
     syncStartDate: facilitatorAddress.dateOfFirstTransaction,
-    enabled: true,
+    enabled: !facilitatorAddress.deprecated,
   }));
 }
 
 function convertFacilitator(raw: RawFacilitator): Facilitator | null {
+  if (raw.deprecated) {
+    return null;
+  }
+
   const addresses: Partial<Record<Network, FacilitatorConfig[]>> = {};
 
   for (const [chain, facilitatorAddresses] of Object.entries(raw.addresses)) {
@@ -34,13 +38,12 @@ function convertFacilitator(raw: RawFacilitator): Facilitator | null {
       const configs = facilitatorAddresses.flatMap(addr =>
         convertAddressConfig(addr)
       );
-      if (configs.length > 0) {
+      if (configs.some(config => config.enabled)) {
         addresses[mappedChain] = configs;
       }
     }
   }
 
-  // NOTE(shafu): Only include facilitator if it has at least one address configured for sync
   if (Object.keys(addresses).length === 0) {
     return null;
   }
@@ -61,7 +64,7 @@ export function FACILITATORS_BY_CHAIN(network: Network): Facilitator[] {
     addresses: {
       [network]: f.addresses[network] ?? [],
     },
-  })).filter(f => f.addresses[network]?.length);
+  })).filter(f => f.addresses[network]?.some(config => config.enabled));
 }
 
 export const BASE_FACILITATORS = FACILITATORS_BY_CHAIN(Network.BASE);

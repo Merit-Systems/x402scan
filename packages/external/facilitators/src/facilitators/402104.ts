@@ -18,6 +18,7 @@ export const f402104Facilitator = {
   config: {
     url: 'https://x402.load.network',
   },
+  deprecated: true,
   addresses: {
     [Network.BASE]: [
       {

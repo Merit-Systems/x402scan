@@ -42,6 +42,7 @@ export const dexterFacilitator = {
       },
       {
         address: '0x40272E2eAc848Ea70db07Fd657D799bD309329C4',
+        deprecated: true,
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-12-25'),
       },

@@ -32,6 +32,7 @@ export const daydreamsFacilitator = {
     [Network.SOLANA]: [
       {
         address: 'DuQ4jFMmVABWGxabYHFkGzdyeJgS1hp4wrRuCtsJgT9a',
+        deprecated: true,
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-16'),
       },

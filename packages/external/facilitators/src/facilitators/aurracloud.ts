@@ -30,6 +30,7 @@ export const aurracloudFacilitator = {
     color: '#878787',
   },
   config: aurracloud,
+  deprecated: true,
   discoveryConfig: aurracloudDiscovery,
   addresses: {
     [Network.BASE]: [
