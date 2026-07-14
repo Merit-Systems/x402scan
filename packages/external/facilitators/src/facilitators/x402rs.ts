@@ -20,6 +20,7 @@ export const x402rsFacilitator = {
     [Network.POLYGON]: [
       {
         address: '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec',
+        deprecated: true,
         tokens: [USDC_POLYGON_TOKEN],
         dateOfFirstTransaction: new Date('2025-04-01'),
       },
@@ -27,11 +28,13 @@ export const x402rsFacilitator = {
     [Network.BASE]: [
       {
         address: '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec',
+        deprecated: true,
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2024-12-05'),
       },
       {
         address: '0x76eee8f0acabd6b49f1cc4e9656a0c8892f3332e',
+        deprecated: true,
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-26'),
       },

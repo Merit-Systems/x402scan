@@ -60,6 +60,7 @@ export const heuristFacilitator = {
       },
       {
         address: '0x90d5e567017f6c696f1916f4365dd79985fce50f',
+        deprecated: true,
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-10'),
       },

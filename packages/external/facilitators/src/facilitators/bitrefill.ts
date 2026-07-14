@@ -28,6 +28,7 @@ export const bitrefillFacilitator = {
     [Network.SOLANA]: [
       {
         address: 'PcTZWki36z5Y82TAATKK48XUdfsgmS5oLkw2Ta7vWyK',
+        deprecated: true,
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2026-02-19'),
       },

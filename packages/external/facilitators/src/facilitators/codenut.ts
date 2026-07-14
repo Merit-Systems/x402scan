@@ -16,6 +16,7 @@ export const codenutFacilitator = {
     color: '#FF6B35',
   },
   config: codenut,
+  deprecated: true,
   addresses: {
     [Network.BASE]: [
       {

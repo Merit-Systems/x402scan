@@ -25,6 +25,7 @@ export const openx402Facilitator = {
       },
       {
         address: '0x97db9b5291a218fc77198c285cefdc943ef74917',
+        deprecated: true,
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2025-10-16'),
       },

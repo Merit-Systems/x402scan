@@ -15,6 +15,7 @@ export interface Facilitator<Props = void> {
   config: FacilitatorConfigProp<Props>;
   addresses: Partial<Record<Network, FacilitatorAddress[]>>;
   discoveryConfig?: FacilitatorConfig;
+  deprecated?: boolean;
 }
 
 export interface FacilitatorMetadata {
@@ -28,6 +29,7 @@ export interface FacilitatorAddress {
   address: string;
   tokens: Token[];
   dateOfFirstTransaction: Date;
+  deprecated?: boolean;
 }
 
 export interface Token {

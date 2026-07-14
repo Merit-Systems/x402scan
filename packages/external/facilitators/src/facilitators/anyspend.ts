@@ -32,6 +32,7 @@ export const anyspendFacilitator = {
     [Network.SOLANA]: [
       {
         address: '34DmdeSbEnng2bmbSj9ActckY49km2HdhiyAwyXZucqP',
+        deprecated: true,
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2025-11-03'),
       },
