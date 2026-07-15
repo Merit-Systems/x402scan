@@ -459,8 +459,7 @@ export function DiscoveryPanel({
               <p className="text-xs text-muted-foreground">
                 These endpoints were identified as unprotected (no x402
                 paywall). They are not registered. If they should be paid, add
-                x402 payment middleware. If they are intentionally free,
-                declare{' '}
+                x402 payment middleware. If they are intentionally free, declare{' '}
                 <code className="font-mono bg-muted px-1 rounded">
                   &quot;security&quot;: []
                 </code>{' '}

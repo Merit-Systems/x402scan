@@ -25,6 +25,11 @@ export interface DiscoveredResource {
   pricingMode?: string;
   /** Price string from discovery doc (e.g. "50-300.00 USD"). */
   price?: string;
+  /**
+   * Display description from the openapi operation's summary/description
+   * (folded by the discovery package), placeholder-filtered.
+   */
+  description?: string;
   /** If true, this resource failed validation */
   invalid?: boolean;
   /** Error message if resource is invalid */

@@ -169,6 +169,8 @@ export async function registerFreeResource(
     originMetadataFallback?: { title?: string; description?: string };
     pricingMode?: string;
     price?: string;
+    /** Endpoint display description from discovery — stored in metadata. */
+    description?: string;
     /** Skip metadata scrape+upsert — caller handles it (e.g. batch registration). */
     skipMetadataScrape?: boolean;
   } = {}
@@ -196,6 +198,7 @@ export async function registerFreeResource(
         authMode: options.authMode ?? 'siwx',
         ...(options.pricingMode ? { pricingMode: options.pricingMode } : {}),
         ...(options.price ? { price: options.price } : {}),
+        ...(options.description ? { description: options.description } : {}),
       };
 
       // Merge with existing metadata to avoid clobbering fields set by
@@ -345,6 +348,9 @@ export const registerResource = async (
     pricingMode?: string;
     /** Price string from discovery document (e.g. "50-300.00 USD"). */
     price?: string;
+    /** Endpoint display description from discovery — stored in metadata as a
+     *  display fallback when the 402 response's accepts lack one. */
+    description?: string;
     /** HTTP method from discovery — preferred over advisory.method which
      *  is always POST (x402 payment protocol). */
     method?: string;
@@ -491,13 +497,16 @@ export const registerResource = async (
     x402Version,
     lastUpdated: new Date(),
     accepts: mappedAccepts,
-    ...(options.pricingMode || options.price
+    ...(options.pricingMode || options.price || options.description
       ? {
           metadata: {
             ...(options.pricingMode
               ? { pricingMode: options.pricingMode }
               : {}),
             ...(options.price ? { price: options.price } : {}),
+            ...(options.description
+              ? { description: options.description }
+              : {}),
           },
         }
       : {}),

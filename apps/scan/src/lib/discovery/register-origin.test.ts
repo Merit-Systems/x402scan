@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { probeX402Endpoint } from './probe';
 import { registerResourcesFromDiscovery } from './register-origin';
-import { registerFreeResource } from '@/lib/resources';
+import { registerFreeResource, registerResource } from '@/lib/resources';
 import { deprecateStaleResources } from '@/services/db/resources/resource';
 import { getOriginResourceCount } from '@/services/db/resources/origin';
 
@@ -249,6 +249,46 @@ describe('registerResourcesFromDiscovery — catalog registration', () => {
         { url: `${ORIGIN}/v1/admin`, method: 'POST' },
         { url: `${ORIGIN}/v1/me`, method: 'GET' },
       ])
+    );
+  });
+
+  it('passes endpoint descriptions through to free and paid registration', async () => {
+    await registerResourcesFromDiscovery(
+      [
+        {
+          url: `${ORIGIN}/v1/rooms`,
+          method: 'POST',
+          authMode: 'paid',
+          description: 'Create a video room',
+        },
+        {
+          url: `${ORIGIN}/v1/catalog`,
+          method: 'GET',
+          authMode: 'unprotected',
+          description: 'Lists purchasable records',
+        },
+        {
+          url: `${ORIGIN}/v1/me`,
+          method: 'GET',
+          authMode: 'siwx',
+          description: 'Current identity',
+        },
+      ],
+      'openapi'
+    );
+
+    expect(registerFreeResource).toHaveBeenCalledWith(
+      `${ORIGIN}/v1/catalog`,
+      expect.objectContaining({ description: 'Lists purchasable records' })
+    );
+    expect(registerFreeResource).toHaveBeenCalledWith(
+      `${ORIGIN}/v1/me`,
+      expect.objectContaining({ description: 'Current identity' })
+    );
+    expect(registerResource).toHaveBeenCalledWith(
+      `${ORIGIN}/v1/rooms`,
+      expect.anything(),
+      expect.objectContaining({ description: 'Create a video room' })
     );
   });
 
