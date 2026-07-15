@@ -27,9 +27,15 @@ export const Header: React.FC<Props> = ({
   hideOrigin = false,
 }) => {
   // Free resources have no 402 response to describe them; paid ones may
-  // omit accepts descriptions. Fall back to the description captured from
-  // the origin's openapi spec at registration.
+  // omit accepts descriptions (or carry an empty string). Fall back to the
+  // description captured from the origin's openapi spec at registration.
+  const responseDescription = getDescription(response);
   const metadataDescription = getResourceMetadataDescription(resource.metadata);
+  const description = responseDescription?.length
+    ? responseDescription
+    : metadataDescription
+      ? cleanExternalText(metadataDescription)
+      : undefined;
   return (
     <div className="flex-1 flex flex-col gap-2 w-0">
       <div className="flex md:items-center justify-between flex-col md:flex-row gap-4 md:gap-0 flex-1">
@@ -45,12 +51,7 @@ export const Header: React.FC<Props> = ({
         </div>
       </div>
       <p className="text-xs text-muted-foreground line-clamp-2">
-        {/* || not ??: a 402 body carrying an empty-string description
-            should still fall back to the openapi text. */}
-        {getDescription(response) ||
-          (metadataDescription
-            ? cleanExternalText(metadataDescription)
-            : undefined)}
+        {description}
       </p>
     </div>
   );
