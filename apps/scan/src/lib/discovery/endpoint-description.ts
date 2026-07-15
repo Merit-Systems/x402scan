@@ -1,3 +1,6 @@
+/** External origins control this text — cap what we persist per resource. */
+const MAX_DESCRIPTION_LENGTH = 500;
+
 /**
  * Display description for a discovered endpoint. The discovery package folds
  * the openapi operation's `summary ?? description` into `summary`, defaulting
@@ -10,7 +13,8 @@ export function endpointDescription(endpoint: {
   summary?: string;
 }): string | undefined {
   if (!endpoint.summary) return undefined;
-  return endpoint.summary === `${endpoint.method} ${endpoint.path}`
-    ? undefined
-    : endpoint.summary;
+  if (endpoint.summary === `${endpoint.method} ${endpoint.path}`) {
+    return undefined;
+  }
+  return endpoint.summary.slice(0, MAX_DESCRIPTION_LENGTH);
 }

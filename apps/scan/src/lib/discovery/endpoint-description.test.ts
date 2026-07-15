@@ -23,6 +23,15 @@ describe('endpointDescription', () => {
     ).toBeUndefined();
   });
 
+  it('caps oversized descriptions', () => {
+    const result = endpointDescription({
+      method: 'GET',
+      path: '/v1/catalog',
+      summary: 'x'.repeat(10_000),
+    });
+    expect(result).toHaveLength(500);
+  });
+
   it('returns undefined when the summary is missing or empty', () => {
     expect(
       endpointDescription({ method: 'GET', path: '/v1/catalog' })
