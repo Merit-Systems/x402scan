@@ -1,5 +1,6 @@
 import { discoverOriginSchema } from '@agentcash/discovery';
 
+import { endpointDescription } from '@/lib/discovery/endpoint-description';
 import { getOriginFromUrl } from '@/lib/url';
 import { isLocalUrl, isTunnelUrl } from '@/lib/url-helpers';
 import {
@@ -100,6 +101,7 @@ export async function fetchDiscoveryDocument(
         const url = endpoint.path.includes('://')
           ? endpoint.path
           : `${expectedOrigin}${endpoint.path.startsWith('/') ? '' : '/'}${endpoint.path}`;
+        const description = endpointDescription(endpoint);
         return [
           {
             url,
@@ -109,6 +111,7 @@ export async function fetchDiscoveryDocument(
               ? { pricingMode: endpoint.pricingMode }
               : {}),
             ...(endpoint.price ? { price: endpoint.price } : {}),
+            ...(description ? { description } : {}),
           },
         ];
       } catch {

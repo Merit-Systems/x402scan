@@ -113,6 +113,7 @@ export async function registerResourcesFromDiscovery(
     authMode?: AuthMode;
     pricingMode?: string;
     price?: string;
+    description?: string;
   }[],
   source: string | undefined,
   originInfo?: { title: string; description?: string },
@@ -134,18 +135,22 @@ export async function registerResourcesFromDiscovery(
   );
 
   async function registerAsFree(
-    resourceUrl: string,
-    authMode: FreeAuthMode,
-    pricingMode?: string,
-    price?: string,
-    method?: string
+    resource: {
+      url: string;
+      method?: string;
+      pricingMode?: string;
+      price?: string;
+      description?: string;
+    },
+    authMode: FreeAuthMode
   ) {
-    const freeResult = await registerFreeResource(resourceUrl, {
+    const freeResult = await registerFreeResource(resource.url, {
       authMode,
-      method,
+      method: resource.method,
       originMetadataFallback: originInfo,
-      pricingMode,
-      price,
+      pricingMode: resource.pricingMode,
+      price: resource.price,
+      description: resource.description,
       skipMetadataScrape: true,
     });
     return freeResult.success
@@ -153,12 +158,12 @@ export async function registerResourcesFromDiscovery(
           success: true as const,
           free: true as const,
           authMode,
-          url: resourceUrl,
+          url: resource.url,
           resource: freeResult.resource,
         }
       : {
           success: false as const,
-          url: resourceUrl,
+          url: resource.url,
           error: freeResult.error,
         };
   }
@@ -180,105 +185,97 @@ export async function registerResourcesFromDiscovery(
   const mainResults = await mapSettledWithConcurrency(
     mainResources,
     async resource => {
-    const resourceUrl = resource.url;
+      const resourceUrl = resource.url;
 
-    // Openapi-declared free endpoints were partitioned out above — anything
-    // still carrying these modes came from a source we don't trust for
-    // catalog listing.
-    if (resource.authMode === 'unprotected') {
-      return {
-        success: false as const,
-        url: resourceUrl,
-        error: 'Unprotected endpoint (no x402 paywall)',
-        skipped: true as const,
-      };
-    }
-    if (resource.authMode === 'apiKey') {
-      return {
-        success: false as const,
-        url: resourceUrl,
-        error: 'Non-registrable endpoint (declare it in openapi.json)',
-        skipped: true as const,
-      };
-    }
-
-    if (resource.authMode === 'siwx') {
-      return registerAsFree(
-        resourceUrl,
-        'siwx',
-        resource.pricingMode,
-        resource.price,
-        resource.method
-      );
-    }
-
-    // Check server-side probe cache (from the batch test). This skips
-    // re-probing and avoids rate limiting. The cache is server-authoritative
-    // — advisory data never round-trips through the client.
-    const cached = probeSessionId
-      ? await getCachedProbeResult(probeSessionId, resourceUrl)
-      : null;
-    let advisory: EndpointMethodAdvisory;
-    let probeWarnings: AuditWarning[] = [];
-
-    if (cached) {
-      advisory = cached.advisory;
-      probeWarnings = cached.warnings;
-    } else {
-      const probeResult = await probeX402Endpoint(resourceUrl, resource.method);
-
-      if (!probeResult.success) {
+      // Openapi-declared free endpoints were partitioned out above — anything
+      // still carrying these modes came from a source we don't trust for
+      // catalog listing.
+      if (resource.authMode === 'unprotected') {
         return {
           success: false as const,
           url: resourceUrl,
-          error: probeResult.error,
-          ...(probeResult.skipped ? { skipped: true as const } : {}),
-          ...(probeResult.statusCode !== undefined
-            ? { status: probeResult.statusCode }
-            : {}),
+          error: 'Unprotected endpoint (no x402 paywall)',
+          skipped: true as const,
+        };
+      }
+      if (resource.authMode === 'apiKey') {
+        return {
+          success: false as const,
+          url: resourceUrl,
+          error: 'Non-registrable endpoint (declare it in openapi.json)',
+          skipped: true as const,
         };
       }
 
-      advisory = probeResult.advisory;
+      if (resource.authMode === 'siwx') {
+        return registerAsFree(resource, 'siwx');
+      }
 
-      // Drop discovery-level schema warnings superseded by other checks.
-      probeWarnings = probeResult.warnings.filter(w => {
-        if (w.code === 'SCHEMA_INPUT_MISSING' && advisory.inputSchema)
-          return false;
-        if (w.code === 'SCHEMA_OUTPUT_MISSING') return false;
-        return true;
+      // Check server-side probe cache (from the batch test). This skips
+      // re-probing and avoids rate limiting. The cache is server-authoritative
+      // — advisory data never round-trips through the client.
+      const cached = probeSessionId
+        ? await getCachedProbeResult(probeSessionId, resourceUrl)
+        : null;
+      let advisory: EndpointMethodAdvisory;
+      let probeWarnings: AuditWarning[] = [];
+
+      if (cached) {
+        advisory = cached.advisory;
+        probeWarnings = cached.warnings;
+      } else {
+        const probeResult = await probeX402Endpoint(
+          resourceUrl,
+          resource.method
+        );
+
+        if (!probeResult.success) {
+          return {
+            success: false as const,
+            url: resourceUrl,
+            error: probeResult.error,
+            ...(probeResult.skipped ? { skipped: true as const } : {}),
+            ...(probeResult.statusCode !== undefined
+              ? { status: probeResult.statusCode }
+              : {}),
+          };
+        }
+
+        advisory = probeResult.advisory;
+
+        // Drop discovery-level schema warnings superseded by other checks.
+        probeWarnings = probeResult.warnings.filter(w => {
+          if (w.code === 'SCHEMA_INPUT_MISSING' && advisory.inputSchema)
+            return false;
+          if (w.code === 'SCHEMA_OUTPUT_MISSING') return false;
+          return true;
+        });
+      }
+
+      // v1 rejection is handled inside registerResource() — no duplicate check needed here.
+
+      if (advisory.authMode === 'siwx') {
+        return registerAsFree(resource, 'siwx');
+      }
+
+      const result = await registerResource(resourceUrl, advisory, {
+        notifyNewServer: false,
+        originMetadataFallback: originInfo,
+        warnings: probeWarnings,
+        pricingMode: resource.pricingMode,
+        price: resource.price,
+        description: resource.description,
+        method: resource.method,
+        skipMetadataScrape: true,
       });
-    }
 
-    // v1 rejection is handled inside registerResource() — no duplicate check needed here.
+      if (result.success) return result;
 
-    if (advisory.authMode === 'siwx') {
-      return registerAsFree(
-        resourceUrl,
-        'siwx',
-        resource.pricingMode,
-        resource.price,
-        resource.method
-      );
-    }
-
-    const result = await registerResource(resourceUrl, advisory, {
-      notifyNewServer: false,
-      originMetadataFallback: originInfo,
-      warnings: probeWarnings,
-      pricingMode: resource.pricingMode,
-      price: resource.price,
-      method: resource.method,
-      skipMetadataScrape: true,
-    });
-
-    if (result.success) return result;
-
-    return {
-      success: false as const,
-      url: resourceUrl,
-      error: getRegistrationErrorMessage(result.error),
-    };
+      return {
+        success: false as const,
+        url: resourceUrl,
+        error: getRegistrationErrorMessage(result.error),
+      };
     }
   );
 
@@ -287,8 +284,11 @@ export async function registerResourcesFromDiscovery(
   // rows for another.
   const succeededOrigins = new Set(
     mainResults.flatMap((r, i) =>
-      r.status === 'fulfilled' && r.value && 'success' in r.value &&
-      r.value.success && mainResources[i]
+      r.status === 'fulfilled' &&
+      r.value &&
+      'success' in r.value &&
+      r.value.success &&
+      mainResources[i]
         ? [getOriginFromUrl(mainResources[i].url)]
         : []
     )
@@ -308,11 +308,8 @@ export async function registerResourcesFromDiscovery(
         };
       }
       return registerAsFree(
-        resource.url,
-        resource.authMode === 'apiKey' ? 'apiKey' : 'unprotected',
-        resource.pricingMode,
-        resource.price,
-        resource.method
+        resource,
+        resource.authMode === 'apiKey' ? 'apiKey' : 'unprotected'
       );
     }
   );

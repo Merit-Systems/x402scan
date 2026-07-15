@@ -671,8 +671,8 @@ export const RegisterResourceForm = () => {
               <code className="font-mono bg-muted px-1 rounded text-[11px]">
                 &quot;security&quot;: []
               </code>{' '}
-              on them in your OpenAPI spec and they will be registered and
-              shown as public endpoints.
+              on them in your OpenAPI spec and they will be registered and shown
+              as public endpoints.
             </p>
             <div className="space-y-1 max-h-[200px] overflow-y-auto">
               {skippedResources.map((r, idx) => (

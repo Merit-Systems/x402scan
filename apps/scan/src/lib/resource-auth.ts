@@ -31,3 +31,24 @@ export function getResourceAuthMode(metadata: unknown): FreeAuthMode | null {
 export function isFreeResource(resource: { metadata: unknown }): boolean {
   return getResourceAuthMode(resource.metadata) !== null;
 }
+
+/**
+ * Endpoint display description captured from discovery at registration time
+ * (openapi operation summary/description). The only description source for
+ * free resources; a fallback for paid ones whose 402 accepts lack one.
+ */
+export function getResourceMetadataDescription(
+  metadata: unknown
+): string | null {
+  if (
+    metadata != null &&
+    typeof metadata === 'object' &&
+    !Array.isArray(metadata) &&
+    'description' in metadata &&
+    typeof (metadata as { description: unknown }).description === 'string' &&
+    (metadata as { description: string }).description.length > 0
+  ) {
+    return (metadata as { description: string }).description;
+  }
+  return null;
+}
