@@ -45,7 +45,9 @@ export const Header: React.FC<Props> = ({
         </div>
       </div>
       <p className="text-xs text-muted-foreground line-clamp-2">
-        {getDescription(response) ??
+        {/* || not ??: a 402 body carrying an empty-string description
+            should still fall back to the openapi text. */}
+        {getDescription(response) ||
           (metadataDescription
             ? cleanExternalText(metadataDescription)
             : undefined)}
