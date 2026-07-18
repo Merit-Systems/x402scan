@@ -22,3 +22,12 @@ export const USDC_POLYGON_TOKEN: Token = {
   decimals: USDC_DECIMALS,
   symbol: 'USDC',
 };
+
+const EURC_DECIMALS = 6;
+const EURC_BASE = '0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42'; // EURC on Base
+
+export const EURC_BASE_TOKEN: Token = {
+  address: EURC_BASE,
+  decimals: EURC_DECIMALS,
+  symbol: 'EURC',
+};
