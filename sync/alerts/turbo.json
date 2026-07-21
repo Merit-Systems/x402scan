@@ -4,11 +4,22 @@
   "tasks": {
     "trigger:dev": {
       "description": "Start alert sync jobs in development mode",
-      "env": ["DISCORD_WEBHOOK_URL", "BASE_RPC_URL"]
+      "env": [
+        "DISCORD_WEBHOOK_URL",
+        "DISCORD_MERCHANT_HEALTH_WEBHOOK_URL",
+        "BASE_RPC_URL",
+        "BITQUERY_API_KEY"
+      ]
     },
     "trigger:deploy": {
       "description": "Deploy alert sync jobs to Trigger.dev",
-      "env": ["DISCORD_WEBHOOK_URL", "BASE_RPC_URL", "TRIGGER_*"]
+      "env": [
+        "DISCORD_WEBHOOK_URL",
+        "DISCORD_MERCHANT_HEALTH_WEBHOOK_URL",
+        "BASE_RPC_URL",
+        "BITQUERY_API_KEY",
+        "TRIGGER_*"
+      ]
     }
   }
 }
