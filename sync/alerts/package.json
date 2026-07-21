@@ -2,7 +2,7 @@
   "name": "@x402scan/sync-alerts",
   "version": "1.0.0",
   "private": true,
-  "description": "Balance alerts for x402scan",
+  "description": "Balance and usage alerts for x402scan",
   "license": "ISC",
   "author": "",
   "type": "commonjs",
