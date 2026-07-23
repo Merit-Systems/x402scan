@@ -11,7 +11,7 @@ const baseUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
  *   ai-input = yes  → AI systems may use pages as input at query time (e.g. RAG
  *                     / grounding) — x402scan is an agent-facing explorer, so
  *                     this is intentionally allowed
- *   ai-train = no   → do not use this content to train AI models
+ *   ai-train = yes  → this content may be used to train AI models
  *
  * Served as a route handler (rather than the `robots.ts` metadata convention)
  * because that convention can't emit the `Content-Signal` directive.
@@ -19,7 +19,7 @@ const baseUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
 const body = `# Content-Signal declares content-usage preferences for automated agents.
 # https://contentsignals.org/
 User-agent: *
-Content-Signal: search=yes, ai-train=no, ai-input=yes
+Content-Signal: search=yes, ai-train=yes, ai-input=yes
 Allow: /
 
 Sitemap: ${baseUrl}/sitemap.xml
