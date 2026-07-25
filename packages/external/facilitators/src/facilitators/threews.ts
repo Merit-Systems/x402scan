@@ -7,6 +7,10 @@ export const threews: FacilitatorConfig = {
   url: 'https://three.ws/api/x402-facilitator',
 };
 
+export const threewsDiscovery: FacilitatorConfig = {
+  url: 'https://three.ws/api/x402-facilitator',
+};
+
 export const threewsFacilitator = {
   id: 'three-ws',
   metadata: {
@@ -16,6 +20,7 @@ export const threewsFacilitator = {
     color: '#8B5CF6',
   },
   config: threews,
+  discoveryConfig: threewsDiscovery,
   addresses: {
     [Network.SOLANA]: [
       {
