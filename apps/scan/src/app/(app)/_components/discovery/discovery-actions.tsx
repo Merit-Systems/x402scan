@@ -35,9 +35,9 @@ function buildConsolidatedPrompt({
   if (missingContactEmail) {
     sections.push(`Missing contact email:
 
-Your openapi.json is missing info.contact.email. Add a "contact" object with your email to the top-level "info" field:
+Your openapi.json is missing info.contact.email. Add a "contact" object with the email to the top-level "info" field:
 { "info": { "contact": { "email": "you@example.com" } } }
-Adding your email lets you verify ownership, allows users to contact you, and lets you customize your merchant pages on tryponcho.com.`);
+IMPORTANT: Do not invent, guess, or use a placeholder email. Ask the user directly for their real, legitimate contact email and wait for their confirmation before writing it — a fake or wrong address makes the origin unclaimable. This email lets you verify ownership, allows users to contact you, and lets you customize your merchant pages on tryponcho.com.`);
   }
 
   if (failedResources && failedResources.length > 0) {

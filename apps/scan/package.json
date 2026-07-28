@@ -126,6 +126,7 @@
     "react-hook-form": "^7.71.1",
     "recharts": "2.15.4",
     "redis": "^5.8.3",
+    "resend": "^4.6.0",
     "resumable-stream": "^2.2.8",
     "server-only": "catalog:",
     "shiki": "^3.13.0",

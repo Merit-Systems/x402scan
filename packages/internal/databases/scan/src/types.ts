@@ -30,6 +30,9 @@ export type {
   ResourceMetrics,
   InviteCode,
   InviteRedemption,
+  OriginClaimCode,
+  OriginClaimSession,
+  OriginOwnership,
 } from '../generated/prisma/browser';
 
 export {
