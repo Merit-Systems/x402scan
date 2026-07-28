@@ -34,8 +34,9 @@ export default function QuickstartPage() {
               <code>WWW-Authenticate</code> header.
             </li>
             <li>
-              Register the origin on x402scan so we can track usage and surface
-              it to agents.
+              The agent should stop and ask before registering. Review the
+              origin and routes it plans to list, then approve — registering
+              publishes a listing agents will call and pay for.
             </li>
           </ol>
         </section>

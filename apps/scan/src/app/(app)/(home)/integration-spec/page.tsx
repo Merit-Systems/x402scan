@@ -61,14 +61,25 @@ Rules:
 - OpenAPI x-payment-info.price.amount is decimal USD; runtime x402 v2 accepts[].amount is token atomic units (for USDC, 0.01 => "10000").
 - Registration probes must reach a 402 challenge before body/query validation rejects the request.
 
+Registration gate (hard rule):
+- Registration creates a public listing that agents will call and pay for. Do NOT register until BOTH are true:
+  1. The implementation is done and live — deployed at its final public origin, /openapi.json served from that origin, and discovery + probe audits clean against the deployed URL (not localhost, not a preview deployment, not a partial route set).
+  2. The user has explicitly approved registering that specific origin.
+- Implementing and validating automatically is fine. Publishing a listing is not — always stop and ask first.
+
 Workflow:
 0) Install the agentcash MCP server:
    npx agentcash install
    This gives you x402 payment and SIWX wallet authentication tools for API calls.
 1) Audit discovery and probe failures.
 2) Fix discovery metadata and 402 behavior.
-3) Re-run audits until clean.
-4) Register on x402scan using the agentcash MCP fetch_with_auth tool:
+3) Re-run audits until clean against the deployed public origin.
+4) Ask the user to approve registration. Show them the origin, the routes that would be
+   listed with their prices and auth modes, and the audit summary, then ask:
+   "Ready to register this on x402scan?"
+   Do not proceed without an explicit yes. If they decline or don't answer, hand off
+   https://x402scan.com/resources/register and stop.
+5) Only after that approval, register using the agentcash MCP fetch_with_auth tool:
    Use fetch_with_auth to POST to https://x402scan.com/api/x402/registry/register-origin
    with body: { "origin": "$TARGET_URL" }
    This endpoint requires SIWX wallet authentication (provided automatically by fetch_with_auth).
@@ -84,7 +95,9 @@ These yield warnings regarding the discovery document and how it can be improved
 Done when:
 - resources are discovered from OpenAPI
 - no critical parser/probe errors remain
-- server is registered on x402scan with no failed resources`;
+- the implementation is live and the user has been given the registration decision —
+  either registered with their approval and no failed resources, or handed the
+  registration link because they haven't approved yet`;
 
 function CodeBlock({ code }: { code: string }) {
   return (

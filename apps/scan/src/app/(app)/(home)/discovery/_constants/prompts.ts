@@ -1,2 +1,2 @@
 export const AGENT_PROMPT =
-  "Read https://agentcash.dev/merchants.md and follow the guide to make my API discoverable and payable by agents. Do everything automatically. Only ask me if you need input you can't determine yourself.";
+  "Read https://agentcash.dev/merchants.md and follow the guide to make my API discoverable and payable by agents. Do everything automatically. Only ask me if you need input you can't determine yourself. Don't register my API on x402scan or any other registry until the implementation is finished and live — then show me what would be listed and wait for me to approve it.";
