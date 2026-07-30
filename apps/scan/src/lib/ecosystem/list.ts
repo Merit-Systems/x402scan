@@ -85,6 +85,14 @@ export const ecosystemItems: EcosystemItem[] = [
     category: 'Infrastructure & Tooling',
   },
   {
+    name: 'Dhali',
+    description:
+      'Dhali is an x402 compatible high-frequency API payment platform using Web3 payment channels and streaming. Dhali supports RLUSD, USDC, and ETH on Ethereum, XRP on XRPL, and XAH on Xahau.',
+    logoUrl: 'https://dhali.io/images/illustrations/blue-company-logo.png',
+    websiteUrl: 'https://dhali.io/docs/x402-support/',
+    category: 'Facilitators',
+  },
+  {
     name: 'Firecrawl',
     description:
       'Firecrawl is a web scraping API that allows you to turn websites into LLM-ready data.',
