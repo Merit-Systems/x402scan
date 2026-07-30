@@ -48,6 +48,9 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
             return headers;
           },
           maxURLLength: 2048,
+          // Queries whose input exceeds maxURLLength cannot be dispatched as
+          // GET at all — fall back to POST instead of failing client-side.
+          methodOverride: 'POST',
         }),
       ],
     })

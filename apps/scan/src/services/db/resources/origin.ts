@@ -8,6 +8,7 @@ import { FREE_AUTH_MODES, isFreeResource } from '@/lib/resource-auth';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 
 import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
+import type { MixedAddress } from '@/types/address';
 
 /** OR-able filters matching free resources (siwx/unprotected/apiKey). */
 export const freeAuthModeFilters: Prisma.ResourcesWhereInput[] =
@@ -338,6 +339,39 @@ export const getOrigin = async (id: string) => {
     ...originData,
     hasX402V2Resource: resources.length > 0,
   };
+};
+
+// Normalized through mixedAddressSchema (lowercases EVM addresses to match the
+// transfers MVs) and sorted for stable downstream cache keys
+export const getOriginPayToAddresses = async (
+  id: string
+): Promise<MixedAddress[]> => {
+  const origin = await scanDb.resourceOrigin.findUnique({
+    where: { id },
+    select: {
+      resources: {
+        where: displayableResourceWhere,
+        select: {
+          accepts: {
+            where: getDisplayableAcceptsWhere({}),
+            select: {
+              payTo: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!origin) return [];
+
+  const addresses = origin.resources
+    .flatMap(resource => resource.accepts.map(accept => accept.payTo))
+    .map(payTo => mixedAddressSchema.safeParse(payTo))
+    .filter(parsed => parsed.success)
+    .map(parsed => parsed.data);
+
+  return [...new Set(addresses)].sort((a, b) => a.localeCompare(b));
 };
 
 export const getOriginMetadata = async (id: string) => {
