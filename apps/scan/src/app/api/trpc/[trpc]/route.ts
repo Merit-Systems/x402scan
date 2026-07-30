@@ -17,6 +17,7 @@ const handler = (req: NextRequest) =>
     req,
     router: appRouter,
     createContext: () => createContext(req),
+    allowMethodOverride: true,
     onError: ({ path, error }) => {
       // Also log to console in development for immediate feedback
       if (env.NEXT_PUBLIC_NODE_ENV === 'development') {

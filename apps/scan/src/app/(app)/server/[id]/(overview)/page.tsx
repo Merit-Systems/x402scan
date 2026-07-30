@@ -8,6 +8,7 @@ import {
   OriginResources,
 } from './_components/resources';
 import { LoadingOriginActivity, OriginActivity } from './_components/activity';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 export default async function OriginPage({
   params,
@@ -21,6 +22,15 @@ export default async function OriginPage({
   await Promise.all([
     api.public.origins.getMetadata.prefetch(id),
     api.public.origins.list.withResources.prefetch({ originIds: [id] }),
+    api.public.stats.overallByOrigin.prefetch({
+      originId: id,
+      timeframe: ActivityTimeframe.ThirtyDays,
+    }),
+    api.public.stats.bucketedByOrigin.prefetch({
+      originId: id,
+      numBuckets: 48,
+      timeframe: ActivityTimeframe.ThirtyDays,
+    }),
   ]);
 
   return (

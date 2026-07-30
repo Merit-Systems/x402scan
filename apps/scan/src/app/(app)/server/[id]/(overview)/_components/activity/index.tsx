@@ -1,5 +1,9 @@
 'use client';
 
+import { Suspense } from 'react';
+
+import { ErrorBoundary } from 'react-error-boundary';
+
 import { OriginOverviewSection } from '../section';
 
 import { LoadingOverallStatsCard, OverallStatsCard } from './card';
@@ -21,58 +25,35 @@ interface Props {
 export const OriginActivity: React.FC<Props> = ({ originId }) => {
   return (
     <TimeRangeProvider initialTimeframe={ActivityTimeframe.ThirtyDays}>
-      <OriginActivityContent originId={originId} />
+      <OriginActivityContainer action={<RangeSelector />}>
+        <ErrorBoundary
+          fallback={
+            <p className="text-sm text-muted-foreground md:col-span-3">
+              There was an error loading the activity data
+            </p>
+          }
+        >
+          <Suspense fallback={<LoadingOriginActivityCards />}>
+            <OriginActivityCharts originId={originId} />
+          </Suspense>
+        </ErrorBoundary>
+      </OriginActivityContainer>
     </TimeRangeProvider>
   );
 };
 
-const OriginActivityContent: React.FC<Props> = ({ originId }) => {
+const OriginActivityCharts: React.FC<Props> = ({ originId }) => {
   const { timeframe } = useTimeRangeContext();
 
-  const [metadata] = api.public.origins.getMetadata.useSuspenseQuery(originId);
-
-  const addresses = Array.from(
-    new Set(
-      metadata?.resources.flatMap(resource =>
-        resource.accepts.map(accept => accept.payTo)
-      )
-    )
-  );
-
-  const { data: overallStats, isLoading: isOverallStatsLoading } =
-    api.public.stats.overall.useQuery(
-      {
-        recipients: {
-          include: addresses,
-        },
-        timeframe,
-      },
-      {
-        enabled: !!metadata,
-      }
-    );
-  const { data: bucketedStats, isLoading: isBucketedStatsLoading } =
-    api.public.stats.bucketed.useQuery(
-      {
-        numBuckets: 48,
-        timeframe,
-        recipients: {
-          include: addresses,
-        },
-      },
-      {
-        enabled: !!metadata,
-      }
-    );
-
-  if (
-    !bucketedStats ||
-    !overallStats ||
-    isBucketedStatsLoading ||
-    isOverallStatsLoading
-  ) {
-    return <LoadingOriginActivity action={<RangeSelector />} />;
-  }
+  const [overallStats] = api.public.stats.overallByOrigin.useSuspenseQuery({
+    originId,
+    timeframe,
+  });
+  const [bucketedStats] = api.public.stats.bucketedByOrigin.useSuspenseQuery({
+    originId,
+    numBuckets: 48,
+    timeframe,
+  });
 
   const chartData: ChartData<{
     transactions: number;
@@ -90,7 +71,7 @@ const OriginActivityContent: React.FC<Props> = ({ originId }) => {
   }));
 
   return (
-    <OriginActivityContainer action={<RangeSelector />}>
+    <>
       <OverallStatsCard
         title="Transactions"
         value={overallStats.total_transactions.toLocaleString(undefined, {
@@ -164,7 +145,17 @@ const OriginActivityContent: React.FC<Props> = ({ originId }) => {
           },
         ]}
       />
-    </OriginActivityContainer>
+    </>
+  );
+};
+
+const LoadingOriginActivityCards = () => {
+  return (
+    <>
+      <LoadingOverallStatsCard type="bar" title="Transactions" />
+      <LoadingOverallStatsCard type="bar" title="Volume" />
+      <LoadingOverallStatsCard type="bar" title="Buyers" />
+    </>
   );
 };
 
@@ -175,9 +166,7 @@ export const LoadingOriginActivity = ({
 }) => {
   return (
     <OriginActivityContainer action={action}>
-      <LoadingOverallStatsCard type="bar" title="Transactions" />
-      <LoadingOverallStatsCard type="bar" title="Volume" />
-      <LoadingOverallStatsCard type="bar" title="Buyers" />
+      <LoadingOriginActivityCards />
     </OriginActivityContainer>
   );
 };
