@@ -124,6 +124,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
 | **Cascade**          | BASE, SOLANA  | No        | No                           |
+| **Solvador**         | BASE, POLYGON, SOLANA | No | Yes - API key              |
 
 ### Import Individual Facilitators
 
