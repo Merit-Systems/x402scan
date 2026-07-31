@@ -93,8 +93,13 @@ export function getUSDCAddress(network: string): `0x${string}` | undefined {
 /** Extract chain ID from CAIP-2 identifier */
 export function getChainId(network: string): number | undefined {
   const caip2 = toCaip2(network);
-  const match = /^eip155:(\d+)$/.exec(caip2);
-  return match ? parseInt(match[1]!, 10) : undefined;
+  const match = /^eip155:(0|[1-9]\d*)$/.exec(caip2);
+  if (!match) {
+    return undefined;
+  }
+
+  const parsed = Number(match[1]);
+  return Number.isSafeInteger(parsed) ? parsed : undefined;
 }
 
 /** Get human-readable chain name */
