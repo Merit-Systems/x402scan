@@ -18,6 +18,8 @@ const EvmNetworkToChainId: Record<string, number> = {
   story: 1514,
   educhain: 41923,
   'skale-base-sepolia': 324705682,
+  xdc: 50,
+  'xdc-testnet': 51,
 };
 
 const SvmNetworkToChainId: Record<string, number> = {
