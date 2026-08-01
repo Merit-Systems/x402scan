@@ -318,6 +318,46 @@ const searchResourcesUncached = async (
   } = input;
   const acceptsFilter: Prisma.AcceptsWhereInput =
     chains !== undefined ? { network: { in: chains } } : {};
+  // Tokenize the search query on whitespace so each word is independently
+  // matchable (e.g. "cloud world" matches a resource titled "CloudWorld
+  // Models"). Every token must match at least one searchable field, but
+  // different tokens may match different fields. Single-word queries behave
+  // exactly as before (substring/prefix matching).
+  const searchTerms = search?.split(/\s+/).filter(Boolean) ?? [];
+  const searchTermFilter = (term: string): Prisma.ResourcesWhereInput => ({
+    OR: [
+      {
+        resource: {
+          contains: term,
+          mode: 'insensitive',
+        },
+      },
+      {
+        metadata: {
+          path: ['title'],
+          string_contains: term,
+        },
+      },
+      {
+        metadata: {
+          path: ['description'],
+          string_contains: term,
+        },
+      },
+      {
+        tags: {
+          some: {
+            tag: {
+              name: {
+                contains: term,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+      },
+    ],
+  });
   return await scanDb.resources.findMany({
     where: {
       // Include paid resources (with accepts) and free resources
@@ -328,14 +368,11 @@ const searchResourcesUncached = async (
         : {
             OR: [{ accepts: { some: {} } }, ...freeAuthModeFilters],
           }),
-      ...(search
+      ...(search && searchTerms.length > 0
         ? {
             OR: [
               {
-                resource: {
-                  contains: search,
-                  mode: 'insensitive',
-                },
+                AND: searchTerms.map(searchTermFilter),
               },
               {
                 origin: {
@@ -348,12 +385,6 @@ const searchResourcesUncached = async (
                       },
                     },
                   },
-                },
-              },
-              {
-                metadata: {
-                  path: ['title', 'description'],
-                  string_contains: search,
                 },
               },
             ],
