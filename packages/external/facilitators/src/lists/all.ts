@@ -30,6 +30,7 @@ import {
   cascadeFacilitator,
   fluxaFacilitator,
   figmentFacilitator,
+  bridgenodeFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -68,6 +69,7 @@ const FACILITATORS = validateUniqueFacilitators([
   cascadeFacilitator,
   fluxaFacilitator,
   figmentFacilitator,
+  bridgenodeFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =
