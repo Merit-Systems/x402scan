@@ -128,7 +128,9 @@
     "DISCORD_MERCHANT_RESEARCH_WEBHOOK_URL",
     "X402_PAYEE_ADDRESS",
     "SOLANA_RPC_*",
-    "BASE_RPC_*"
+    "BASE_RPC_*",
+    "POSTHOG_*",
+    "VERCEL"
   ],
   "globalPassThroughEnv": [
     "NODE_ENV",
