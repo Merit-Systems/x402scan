@@ -9,6 +9,7 @@ import { registerCheckX402EndpointTool } from './tools/check-endpoint';
 import { registerRedeemInviteTool } from './tools/redeem-invite';
 import { registerTelemetryTools } from './tools/telemetry';
 import { registerDiscoveryTools } from './tools/discover-resources';
+import { registerTaskmarketTools } from './tools/taskmarket';
 
 import { registerOrigins } from './resources/origins';
 import { registerPrompts } from './prompts';
@@ -83,6 +84,7 @@ export const startServer: Command = async flags => {
   registerCheckX402EndpointTool(props);
   registerRedeemInviteTool(props);
   registerDiscoveryTools(server);
+  registerTaskmarketTools(server);
   registerTelemetryTools(props);
 
   registerPrompts(props);
