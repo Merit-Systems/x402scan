@@ -8,6 +8,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import { ThemeProvider } from 'next-themes';
 
+import { JsonLd } from '@/components/json-ld';
 import { Toaster } from '@/components/ui/sonner';
 
 import { CDPHooksProvider } from './_contexts/cdp';
@@ -123,12 +124,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
-          }}
-        />
+        <JsonLd data={jsonLd} />
         <Toaster />
         <SpeedInsights />
         <Analytics />

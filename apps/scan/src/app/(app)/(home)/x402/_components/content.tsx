@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { Body, Heading, Section } from '@/app/_components/layout/page-utils';
-import { JsonLd } from '../../_components/json-ld';
+import { JsonLd } from '@/components/json-ld';
 import { Button } from '@/components/ui/button';
 import { env } from '@/env';
 
