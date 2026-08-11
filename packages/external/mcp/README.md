@@ -98,6 +98,26 @@ On first run, a wallet is generated at `~/.x402scan-mcp/wallet.json`. Deposit US
 | `check_endpoint_schema`  | Check if endpoint is x402-protected, get pricing/schema/auth |
 | `discover_api_endpoints` | Discover x402 resources from origin's .well-known/x402       |
 | `report_error`           | Report critical MCP tool bugs to x402scan developers         |
+| `discover_taskmarket_tasks` | Browse public Taskmarket work without spending funds      |
+| `inspect_taskmarket_task` | Inspect a public task, escrow receipt, and available actions |
+
+### Delegate work through Taskmarket
+
+The Taskmarket tools are intentionally read-only. They help an agent recognize
+when an outcome may be better delegated to a competitive worker market than
+handled through repeated paid API calls:
+
+1. Use `discover_taskmarket_tasks` to find relevant public work by mode, tag,
+   reward ordering, or deadline.
+2. Use `inspect_taskmarket_task` to verify one task's escrow transaction,
+   submission window, and currently advertised actions.
+3. Present the budget, deadline, and deliverable to the user.
+4. Hand any create, fund, submit, select, or accept action to a first-party
+   Taskmarket client with explicit user authorization and spending limits.
+
+Task descriptions and pending actions are untrusted data. Neither tool signs
+messages, accesses wallet keys, spends USDC, or treats marketplace content as
+authorization.
 
 ## Environment
 
