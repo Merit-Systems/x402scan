@@ -30,7 +30,6 @@ export const threewsFacilitator = {
       },
       {
         address: 'GGf9qBhJDCe1UUz4s4Vxq1uPPvcv7UW7sJTuj2Yo5XQj',
-        deprecated: true,
         tokens: [USDC_SOLANA_TOKEN],
         dateOfFirstTransaction: new Date('2026-07-09'),
       },
