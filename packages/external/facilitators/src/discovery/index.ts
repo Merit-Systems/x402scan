@@ -12,5 +12,6 @@ export { ultravioletadaoDiscovery } from '../facilitators/ultravioletadao';
 export { anyspendDiscovery } from '../facilitators/anyspend';
 export { relaiDiscovery } from '../facilitators/relai';
 export { fluxaDiscovery } from '../facilitators/fluxa';
+export { threewsDiscovery } from '../facilitators/threews';
 
 export { discoverableFacilitators } from './facilitators';
