@@ -173,6 +173,7 @@ export async function getOriginVerificationStatus(originId: string) {
     where: {
       resourceRel: {
         originId,
+        deprecatedAt: null,
       },
     },
     select: {
