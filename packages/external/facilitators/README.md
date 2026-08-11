@@ -74,6 +74,7 @@ The following facilitators currently support resource discovery:
 - **PayAI** - AI-payment infrastructure
 - **Ultravioleta DAO** - Community-driven multichain facilitator
 - **RelAI** - AI infrastructure platform
+- **three.ws** - Self-hosted Solana facilitator for the three.ws agent economy
 
 ### Enumerate All Discoverable Facilitators
 
@@ -124,6 +125,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **RelAI**            | BASE, SOLANA  | ✅ Yes    | No                           |
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
 | **Cascade**          | BASE, SOLANA  | No        | No                           |
+| **three.ws**         | SOLANA        | ✅ Yes    | No                           |
 
 ### Import Individual Facilitators
 
