@@ -1,3 +1,5 @@
+import type { JsonObject } from '@/lib/json';
+
 export enum Methods {
   GET = 'GET',
   POST = 'POST',
@@ -15,7 +17,7 @@ export interface FieldDefinition {
   default?: string;
   items?: {
     type?: string;
-    properties?: Record<string, unknown>;
+    properties?: JsonObject;
     required?: string[];
   };
 }

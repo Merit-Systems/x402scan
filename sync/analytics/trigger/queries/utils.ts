@@ -4,7 +4,7 @@ function toNumber(value: number | string | null | undefined): number | null {
   if (value === null || value === undefined) {
     return null;
   }
-  const num = typeof value === 'string' ? Number(value) : value;
+  const num = Number(value);
   return isNaN(num) ? null : num;
 }
 

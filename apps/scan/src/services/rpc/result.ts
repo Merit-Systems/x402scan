@@ -7,5 +7,5 @@ const type = 'rpc';
 export const rpcResultFromPromise = <T>(
   surface: string,
   promise: Promise<T>,
-  error: BaseServerError | ((e: unknown) => BaseServerError)
+  error: BaseServerError | ((cause: unknown) => BaseServerError)
 ) => serverResultFromPromise(type, surface, promise, error);

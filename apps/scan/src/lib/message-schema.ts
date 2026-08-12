@@ -55,9 +55,7 @@ const toolStateSchema = z.union([
 
 const toolPartSchema = z.intersection(
   z.object({
-    type: z.custom<`tool-${string}`>(
-      val => typeof val === 'string' && val.startsWith('tool-')
-    ),
+    type: z.templateLiteral(['tool-', z.string()]),
     toolCallId: z.string(),
   }),
   toolStateSchema
@@ -98,9 +96,7 @@ const filePartSchema = z.object({
 });
 
 const dataPartSchema = z.object({
-  type: z.custom<`data-${string}`>(
-    val => typeof val === 'string' && val.startsWith('data-')
-  ),
+  type: z.templateLiteral(['data-', z.string()]),
   id: z.optional(z.string()),
   data: z.unknown(),
 });

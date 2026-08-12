@@ -21,6 +21,15 @@ import type {
 
 const BULK_REGISTER_CONCURRENCY = 6;
 
+/** Failed outcome of a single resource registration attempt. */
+interface FailedRegistrationOutcome {
+  success: false;
+  url: string;
+  error: string;
+  skipped?: true;
+  status?: number;
+}
+
 async function mapSettledWithConcurrency<T, R>(
   items: T[],
   mapper: (item: T, index: number) => Promise<R>,
@@ -230,15 +239,16 @@ export async function registerResourcesFromDiscovery(
         );
 
         if (!probeResult.success) {
-          return {
-            success: false as const,
+          const failure: FailedRegistrationOutcome = {
+            success: false,
             url: resourceUrl,
             error: probeResult.error,
-            ...(probeResult.skipped ? { skipped: true as const } : {}),
-            ...(probeResult.statusCode !== undefined
-              ? { status: probeResult.statusCode }
-              : {}),
           };
+          if (probeResult.skipped) failure.skipped = true;
+          if (probeResult.statusCode !== undefined) {
+            failure.status = probeResult.statusCode;
+          }
+          return failure;
         }
 
         advisory = probeResult.advisory;
@@ -401,19 +411,13 @@ export async function registerResourcesFromDiscovery(
         skippedResults.push({
           url: resourceUrl,
           error: value.error,
-          status:
-            'status' in value && typeof value.status === 'number'
-              ? value.status
-              : undefined,
+          status: 'status' in value ? value.status : undefined,
         });
       } else if ('success' in value && !value.success) {
         failedResults.push({
           url: resourceUrl,
           error: value.error,
-          status:
-            'status' in value && typeof value.status === 'number'
-              ? value.status
-              : undefined,
+          status: 'status' in value ? value.status : undefined,
         });
       }
     } else if (result.status === 'rejected') {

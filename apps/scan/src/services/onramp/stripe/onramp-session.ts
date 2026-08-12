@@ -46,8 +46,14 @@ export const createOnrampSession = async (
     customer_ip_address: clientIpAddress,
   });
 
-  return (onrampSession as unknown as { client_secret: string }).client_secret;
+  // The custom StripeResource returns an untyped response — parse the field
+  // we need at this boundary.
+  return createOnrampSessionResponseSchema.parse(onrampSession).client_secret;
 };
+
+const createOnrampSessionResponseSchema = z.object({
+  client_secret: z.string(),
+});
 
 export const getStripeOnrampSession = async (id: string) => {
   // eslint-disable-next-line @typescript-eslint/await-thenable

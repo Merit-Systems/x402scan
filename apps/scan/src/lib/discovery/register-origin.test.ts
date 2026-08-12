@@ -26,7 +26,7 @@ vi.mock('./probe-cache', () => ({
 }));
 
 vi.mock('./utils', () => ({
-  getRegistrationErrorMessage: (error: unknown) => String(error),
+  getRegistrationErrorMessage: (error: { type: string }) => error.type,
 }));
 
 vi.mock('@/lib/resources', () => ({

@@ -31,12 +31,12 @@ const bundledLanguages = {
   tsx: () => import('shiki/langs/tsx.mjs'),
   shell: () => import('shiki/langs/shell.mjs'),
   json: () => import('shiki/langs/json.mjs'),
-} as Record<BundledLanguage, DynamicImportLanguageRegistration>;
+} satisfies Record<BundledLanguage, DynamicImportLanguageRegistration>;
 
 const bundledThemes = {
   'github-light': () => import('shiki/themes/github-light.mjs'),
   'github-dark': () => import('shiki/themes/github-dark.mjs'),
-} as Record<BundledTheme, DynamicImportThemeRegistration>;
+} satisfies Record<BundledTheme, DynamicImportThemeRegistration>;
 
 const createHighlighter = createdBundledHighlighter<
   BundledLanguage,

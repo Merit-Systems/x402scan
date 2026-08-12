@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import superjson from 'superjson';
+import { z } from 'zod';
 import type { PaginatedQueryParams } from './pagination';
 import { getRedisClient } from './redis';
 import { CACHE_DURATION_MINUTES } from './cache-constants';
@@ -16,6 +17,15 @@ const MAX_KEY_LENGTH = 1024;
 interface CacheContext {
   isWarmingCache?: boolean;
 }
+
+/**
+ * Detects a trailing CacheContext argument. The producer (tRPC context)
+ * always supplies `isWarmingCache` as a boolean, which distinguishes the
+ * context object from ordinary query arguments.
+ */
+const cacheContextSchema = z.looseObject({
+  isWarmingCache: z.boolean(),
+});
 
 /**
  * Redis TTL is 2x the cache duration to provide buffer time.
@@ -75,31 +85,35 @@ const deserialize = <T>(str: string): T => {
 };
 
 /**
- * Serialize dates in an object to ISO strings for JSON serialization
+ * Serialize dates in an object to ISO strings for JSON serialization.
+ * The wire object intentionally keeps the caller's type: deserializeDates
+ * restores the Date fields before the value is handed back to consumers.
  */
 const serializeDates = <T>(obj: T, dateKeys: (keyof T)[]): T => {
-  const result = { ...obj };
+  const serialized: Partial<Record<keyof T, string>> = {};
   for (const key of dateKeys) {
-    if (result[key] instanceof Date) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-      result[key] = (result[key] as Date).toISOString() as any;
+    const value = obj[key];
+    if (value instanceof Date) {
+      serialized[key] = value.toISOString();
     }
   }
-  return result;
+  return { ...obj, ...serialized };
 };
+
+const dateWireStringSchema = z.string();
 
 /**
  * Deserialize ISO strings back to Date objects
  */
 const deserializeDates = <T>(obj: T, dateKeys: (keyof T)[]): T => {
-  const result = { ...obj };
+  const revived: Partial<Record<keyof T, Date>> = {};
   for (const key of dateKeys) {
-    if (typeof result[key] === 'string') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-      result[key] = new Date(result[key] as string) as any;
+    const parsed = dateWireStringSchema.safeParse(obj[key]);
+    if (parsed.success) {
+      revived[key] = new Date(parsed.data);
     }
   }
-  return result;
+  return { ...obj, ...revived };
 };
 
 /**
@@ -228,14 +242,15 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
 }) => {
   return async (...allArgs: [...TInput, CacheContext?]): Promise<TOutput> => {
     // Extract context from last argument if present
-    const lastArg = allArgs[allArgs.length - 1];
-    const hasContext =
-      lastArg && typeof lastArg === 'object' && 'isWarmingCache' in lastArg;
-
-    const ctx = hasContext ? (lastArg as CacheContext) : {};
-    const args = hasContext
-      ? (allArgs.slice(0, -1) as TInput)
-      : (allArgs as unknown as TInput);
+    const contextParse = cacheContextSchema.safeParse(
+      allArgs[allArgs.length - 1]
+    );
+    const ctx: CacheContext = contextParse.success ? contextParse.data : {};
+    // TS cannot re-derive TInput from the variadic [...TInput, CacheContext?]
+    // tuple after slicing, so this is asserted once here.
+    const args = (
+      contextParse.success ? allArgs.slice(0, -1) : allArgs.slice()
+    ) as TInput;
 
     const cacheKey = config.createCacheKey(...args);
     const rawKey = `${config.cacheKeyPrefix}:${cacheKey}`;
@@ -318,7 +333,7 @@ interface BasePaginatedResponse<TItem> {
  */
 export const createCachedPaginatedQuery = <
   TInput,
-  TItem extends Record<string, unknown>,
+  TItem extends object,
   TResponse extends BasePaginatedResponse<TItem>,
 >(config: {
   queryFn: (
@@ -351,44 +366,87 @@ export const createCachedPaginatedQuery = <
 };
 
 /**
- * Create a standardized cache key from input parameters
- * Handles date rounding and array sorting automatically
+ * Values that can appear in cache-key input params: JSON primitives plus
+ * Dates, undefined (skipped), and nested arrays/objects of the same.
  */
-export const createStandardCacheKey = (
-  params: Record<string, unknown>
-): string => {
-  const normalized: Record<string, unknown> = {};
+type CacheKeyParamValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | Date
+  | readonly CacheKeyParamValue[]
+  | { readonly [key: string]: CacheKeyParamValue };
 
-  for (const [key, value] of Object.entries(params)) {
+/**
+ * Narrow a param value to a nested params object. Only sound after Date and
+ * array values have been handled — the remaining non-primitive member of
+ * CacheKeyParamValue is the nested object.
+ */
+const isNestedParams = (
+  value: CacheKeyParamValue
+): value is Readonly<Record<string, CacheKeyParamValue>> =>
+  value instanceof Object;
+
+/**
+ * Typed Array.isArray: the builtin predicate narrows a readonly-array union
+ * member to `any[]`, discarding the element type.
+ */
+const isParamArray = (
+  value: CacheKeyParamValue
+): value is readonly CacheKeyParamValue[] => Array.isArray(value);
+
+const normalizeCacheKeyValue = (
+  value: CacheKeyParamValue
+): CacheKeyParamValue => {
+  if (value instanceof Date) {
+    // Round dates to nearest cache interval
+    return roundDateToInterval(value);
+  }
+  if (isParamArray(value)) {
+    // Sort arrays for consistent keys
+    return [...value].sort();
+  }
+  if (isNestedParams(value)) {
+    // Recursively normalize nested objects
+    return createStandardCacheKey(value);
+  }
+  return value;
+};
+
+/**
+ * Create a standardized cache key from input parameters
+ * Handles date rounding and array sorting automatically.
+ *
+ * Generic passthrough: callers hand in their own params object (query inputs,
+ * Prisma where clauses, ...) and every entry is normalized through
+ * CacheKeyParamValue before being serialized.
+ */
+// Object.entries on a generic param object yields `any` values; this is the
+// one place caller-owned params enter the cache-key domain, so the entries are
+// asserted into it here rather than at every use site.
+const cacheKeyEntries = <T extends object>(
+  params: T
+): [string, CacheKeyParamValue | undefined][] =>
+  Object.entries(params) as [string, CacheKeyParamValue | undefined][];
+
+export const createStandardCacheKey = <T extends object>(params: T): string => {
+  const normalized: Record<string, CacheKeyParamValue> = {};
+
+  for (const [key, value] of cacheKeyEntries(params)) {
     if (value === undefined) {
       // Skip undefined values
       continue;
-    } else if (value instanceof Date) {
-      // Round dates to nearest cache interval
-      normalized[key] = roundDateToInterval(value);
-    } else if (Array.isArray(value)) {
-      // Sort arrays for consistent keys
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      normalized[key] = [...value].sort();
-    } else if (typeof value === 'object' && value !== null) {
-      // Recursively normalize nested objects
-      normalized[key] = createStandardCacheKey(
-        value as Record<string, unknown>
-      );
-    } else {
-      normalized[key] = value;
     }
+    normalized[key] = normalizeCacheKeyValue(value);
   }
 
   return JSON.stringify(
-    Object.keys(normalized)
-      .sort()
-      .reduce(
-        (obj, key) => {
-          obj[key] = normalized[key];
-          return obj;
-        },
-        {} as Record<string, unknown>
-      )
+    Object.fromEntries(
+      Object.keys(normalized)
+        .sort()
+        .map(key => [key, normalized[key]])
+    )
   );
 };

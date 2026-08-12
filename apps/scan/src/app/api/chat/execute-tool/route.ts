@@ -10,6 +10,7 @@ import { getChat, updateChat } from '@/services/db/composer/chat';
 
 import { auth } from '@/auth';
 
+import { jsonValueSchema } from '@/lib/json';
 import { messageSchema } from '@/lib/message-schema';
 import { coerceAcceptForV1Schema, normalizedAcceptSchema } from '@/lib/x402';
 import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
@@ -24,8 +25,22 @@ const bodySchema = z.object({
   toolCallId: z.string(),
   chatId: z.string(),
   chain: supportedChainSchema,
-  parameters: z.record(z.string(), z.unknown()),
+  parameters: z.record(z.string(), jsonValueSchema),
 });
+
+/** Parameter values that can be appended to a query string directly. */
+const primitiveParameterSchema = z.union([z.string(), z.number(), z.boolean()]);
+
+/**
+ * Extra request headers stored on a resource's request metadata (a JSON
+ * column). Header values are sent as strings, so coerce primitives here.
+ */
+const storedHeadersSchema = z.record(
+  z.string(),
+  z
+    .union([z.string(), z.number(), z.boolean()])
+    .transform(value => String(value))
+);
 
 export const POST = async (request: NextRequest) => {
   const requestBody = bodySchema.safeParse(await request.json());
@@ -183,14 +198,11 @@ export const POST = async (request: NextRequest) => {
     const queryParams = new URLSearchParams();
     for (const [key, value] of Object.entries(parameters)) {
       if (value !== undefined && value !== null) {
-        if (typeof value === 'object') {
-          queryParams.append(key, JSON.stringify(value));
-        } else if (typeof value === 'number') {
-          queryParams.append(key, String(value));
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string
-          queryParams.append(key, String(value));
-        }
+        const primitive = primitiveParameterSchema.safeParse(value);
+        queryParams.append(
+          key,
+          primitive.success ? String(primitive.data) : JSON.stringify(value)
+        );
       }
     }
     url = `${resource.resource}?${queryParams.toString()}`;
@@ -206,20 +218,15 @@ export const POST = async (request: NextRequest) => {
     };
   }
 
-  if (
-    resource.requestMetadata &&
-    typeof resource.requestMetadata.headers === 'object' &&
-    resource.requestMetadata.headers !== null &&
-    !Array.isArray(resource.requestMetadata.headers) &&
-    resource.requestMetadata.headers !== undefined &&
-    Object.keys(resource.requestMetadata.headers).length > 0
-  ) {
-    requestInit.headers = {
-      ...(requestInit.headers instanceof Headers
-        ? Object.fromEntries(requestInit.headers.entries())
-        : requestInit.headers),
-      ...resource.requestMetadata.headers,
-    } as HeadersInit;
+  const storedHeaders = storedHeadersSchema.safeParse(
+    resource.requestMetadata?.headers
+  );
+  if (storedHeaders.success && Object.keys(storedHeaders.data).length > 0) {
+    const mergedHeaders = new Headers(requestInit.headers);
+    for (const [key, value] of Object.entries(storedHeaders.data)) {
+      mergedHeaders.set(key, value);
+    }
+    requestInit.headers = mergedHeaders;
   }
 
   const supportedAccepts = resource.accepts.filter(accept =>

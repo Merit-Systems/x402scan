@@ -1,32 +1,14 @@
+import { openApiInputAdvisorySchema } from '@/lib/discovery/utils/json-schema';
 import { outputSchemaV1 } from '@/lib/x402/v1';
 
+import type {
+  JsonSchemaNode,
+  OpenApiInputAdvisory,
+  OpenApiParameter,
+} from '@/lib/discovery/utils/json-schema';
+import type { JsonValue } from '@/lib/json';
 import type { OutputSchemaV1 } from '@/lib/x402/v1';
-
-// ─── OpenAPI schema types (from @agentcash/discovery L3 output) ──────────────
-
-/** JSON Schema object with properties, as returned by OpenAPI requestBody extraction. */
-interface JsonSchemaObject {
-  type?: string;
-  properties?: Record<string, JsonSchemaProperty>;
-  required?: string[];
-}
-
-interface JsonSchemaProperty {
-  type?: string;
-  description?: string;
-  enum?: string[];
-  properties?: Record<string, JsonSchemaProperty>;
-  items?: JsonSchemaProperty;
-}
-
-/** OpenAPI parameter object (query, header, path, cookie). */
-interface OpenApiParameter {
-  name: string;
-  in: 'query' | 'header' | 'path' | 'cookie';
-  schema?: JsonSchemaProperty;
-  required?: boolean;
-  description?: string;
-}
+import type { EndpointMethodAdvisory } from '@agentcash/discovery';
 
 // ─── Field definition builder (matches x402scan's FieldDef shape) ────────────
 
@@ -34,9 +16,18 @@ interface FieldDef {
   type?: string;
   required?: boolean;
   description?: string;
-  enum?: string[];
-  properties?: Record<string, JsonSchemaProperty>;
-  items?: JsonSchemaProperty;
+  enum?: JsonValue[];
+  properties?: Record<string, JsonSchemaNode>;
+  items?: JsonSchemaNode;
+}
+
+/** Draft of the v1 `input` block, validated by outputSchemaV1 at the end. */
+interface V1InputDraft {
+  type: 'http';
+  method: string;
+  bodyFields?: Record<string, FieldDef>;
+  queryParams?: Record<string, FieldDef>;
+  headerFields?: Record<string, FieldDef>;
 }
 
 /**
@@ -49,16 +40,19 @@ interface FieldDef {
  *   - `{ parameters: OpenApiParam[] }`
  */
 export function convertOpenApiSchemaToV1(
-  inputSchema: Record<string, unknown>,
+  inputSchema: NonNullable<EndpointMethodAdvisory['inputSchema']>,
   method: string,
-  outputSchema?: Record<string, unknown>
+  outputSchema?: EndpointMethodAdvisory['outputSchema']
 ): OutputSchemaV1 | undefined {
-  const input: Record<string, FieldDef | string | Record<string, FieldDef>> = {
+  const parsedInput = openApiInputAdvisorySchema.safeParse(inputSchema);
+  if (!parsedInput.success) return undefined;
+
+  const input: V1InputDraft = {
     type: 'http',
     method: method.toUpperCase(),
   };
 
-  const parsed = classifyOpenApiInput(inputSchema);
+  const parsed = classifyOpenApiInput(parsedInput.data);
 
   if (parsed.body) {
     const bodyFields: Record<string, FieldDef> = {};
@@ -98,50 +92,51 @@ export function convertOpenApiSchemaToV1(
   }).data;
 }
 
-/** Classify raw discovery inputSchema into typed body + parameters. */
-function classifyOpenApiInput(raw: Record<string, unknown>): {
-  body?: JsonSchemaObject;
+interface ClassifiedOpenApiInput {
+  body?: JsonSchemaNode;
   parameters?: OpenApiParameter[];
-} {
-  const hasRequestBody = 'requestBody' in raw;
-  const hasParameters = 'parameters' in raw && Array.isArray(raw.parameters);
+}
+
+/** Classify a parsed discovery inputSchema into body + parameters. */
+function classifyOpenApiInput(
+  advisory: OpenApiInputAdvisory
+): ClassifiedOpenApiInput {
+  const hasRequestBody = 'requestBody' in advisory;
   const isBareJsonSchema =
-    !hasRequestBody && !hasParameters && ('properties' in raw || 'type' in raw);
+    !hasRequestBody &&
+    advisory.parameters === undefined &&
+    ('properties' in advisory || 'type' in advisory);
 
   return {
     body: hasRequestBody
-      ? (raw.requestBody as JsonSchemaObject)
+      ? advisory.requestBody
       : isBareJsonSchema
-        ? (raw as unknown as JsonSchemaObject)
+        ? advisory
         : undefined,
-    parameters: hasParameters
-      ? (raw.parameters as OpenApiParameter[]).filter(
-          p => typeof p.name === 'string' && p.name
-        )
-      : undefined,
+    parameters: advisory.parameters,
   };
 }
 
 function propertyToFieldDef(
   name: string,
-  prop: JsonSchemaProperty,
+  prop: JsonSchemaNode,
   requiredFields?: string[]
 ): FieldDef {
-  return {
-    ...(prop.type ? { type: prop.type } : {}),
-    ...(requiredFields?.includes(name) ? { required: true } : {}),
-    ...(prop.description ? { description: prop.description } : {}),
-    ...(prop.enum ? { enum: prop.enum } : {}),
-    ...(prop.properties ? { properties: prop.properties } : {}),
-    ...(prop.items ? { items: prop.items } : {}),
-  };
+  const field: FieldDef = {};
+  if (prop.type) field.type = prop.type;
+  if (requiredFields?.includes(name)) field.required = true;
+  if (prop.description) field.description = prop.description;
+  if (prop.enum) field.enum = prop.enum;
+  if (prop.properties) field.properties = prop.properties;
+  if (prop.items) field.items = prop.items;
+  return field;
 }
 
 function parameterToFieldDef(param: OpenApiParameter): FieldDef {
-  return {
-    ...(param.schema?.type ? { type: param.schema.type } : {}),
-    ...(param.required ? { required: true } : {}),
-    ...(param.description ? { description: param.description } : {}),
-    ...(param.schema?.enum ? { enum: param.schema.enum } : {}),
-  };
+  const field: FieldDef = {};
+  if (param.schema?.type) field.type = param.schema.type;
+  if (param.required) field.required = true;
+  if (param.description) field.description = param.description;
+  if (param.schema?.enum) field.enum = param.schema.enum;
+  return field;
 }

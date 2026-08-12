@@ -6,8 +6,8 @@ import { Wallet } from './wallet';
 
 import type { MethodComponentProps, Methods } from '../../_types';
 
-export const METHODS: Record<Methods, React.FC<MethodComponentProps>> = {
+export const METHODS = {
   [OnrampProviders.COINBASE]: Coinbase,
   [OnrampProviders.STRIPE]: Stripe,
   [OnrampMethods.WALLET]: Wallet,
-};
+} satisfies Record<Methods, React.FC<MethodComponentProps>>;

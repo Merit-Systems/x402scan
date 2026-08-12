@@ -89,12 +89,11 @@ export const OnrampSessionDialog: React.FC = () => {
             });
           }, i * 1000);
         }
-        // Clear the URL search params when onramp session is completed
-        if (typeof window !== 'undefined') {
-          const url = new URL(window.location.href);
-          url.searchParams.delete('server_wallet_onramp_token');
-          window.history.replaceState({}, document.title, url.toString());
-        }
+        // Clear the URL search params when onramp session is completed.
+        // (Effects only run in the browser, so window is always available.)
+        const url = new URL(window.location.href);
+        url.searchParams.delete('server_wallet_onramp_token');
+        window.history.replaceState({}, document.title, url.toString());
       }
     }
   }, [session, utils, networkParam]);

@@ -23,11 +23,11 @@ import { env } from '@/env';
 import type { ClientEvmSigner } from '@/lib/x402/wrap-fetch';
 import type { ClientSvmSigner } from '@x402/svm';
 
-const serverWalletChainShape = {
+const serverWalletChainFields = {
   chain: supportedChainSchema,
 };
 
-const serverWalletChainSchema = z.object(serverWalletChainShape);
+const serverWalletChainSchema = z.object(serverWalletChainFields);
 
 export const serverWalletRouter = createTRPCRouter({
   address: protectedProcedure
@@ -49,7 +49,7 @@ export const serverWalletRouter = createTRPCRouter({
       getTokenBalanceSchema
         .omit({ token: true })
         .extend({
-          ...serverWalletChainShape,
+          ...serverWalletChainFields,
           token: tokenSchema.optional(),
         })
         .transform(({ token, ...rest }) => {
@@ -101,7 +101,7 @@ export const serverWalletRouter = createTRPCRouter({
 
   sendTokens: protectedProcedure
     .input(
-      sendTokensSchema.extend(serverWalletChainShape).refine(
+      sendTokensSchema.extend(serverWalletChainFields).refine(
         ({ chain, token }) => {
           return token.chain === chain;
         },

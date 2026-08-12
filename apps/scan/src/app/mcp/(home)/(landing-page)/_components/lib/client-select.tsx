@@ -18,7 +18,7 @@ import { ClientIcon } from '@/app/mcp/_components/client-icon';
 
 import { clients, ClientTypes } from '@/app/mcp/_lib/clients';
 
-import type { Clients } from '@/app/mcp/_lib/clients';
+import type { ClientMetadata, Clients } from '@/app/mcp/_lib/clients';
 import type { McpSearchParams } from '@/app/mcp/_lib/params';
 import type { Route } from 'next';
 
@@ -94,7 +94,7 @@ export const ClientSelect: React.FC<Props> = ({
 };
 
 const Item = ({ client, invite }: { client: Clients; invite?: string }) => {
-  const { name, recommended } = clients[client];
+  const { name, recommended }: ClientMetadata = clients[client];
   return (
     <Link
       href={

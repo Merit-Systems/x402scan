@@ -102,18 +102,15 @@ export async function fetchDiscoveryDocument(
           ? endpoint.path
           : `${expectedOrigin}${endpoint.path.startsWith('/') ? '' : '/'}${endpoint.path}`;
         const description = endpointDescription(endpoint);
-        return [
-          {
-            url,
-            method: endpoint.method,
-            ...(endpoint.authMode ? { authMode: endpoint.authMode } : {}),
-            ...(endpoint.pricingMode
-              ? { pricingMode: endpoint.pricingMode }
-              : {}),
-            ...(endpoint.price ? { price: endpoint.price } : {}),
-            ...(description ? { description } : {}),
-          },
-        ];
+        const resource: DiscoveredResource = {
+          url,
+          method: endpoint.method,
+        };
+        if (endpoint.authMode) resource.authMode = endpoint.authMode;
+        if (endpoint.pricingMode) resource.pricingMode = endpoint.pricingMode;
+        if (endpoint.price) resource.price = endpoint.price;
+        if (description) resource.description = description;
+        return [resource];
       } catch {
         return [];
       }
@@ -128,14 +125,15 @@ export async function fetchDiscoveryDocument(
     };
   }
 
-  return {
+  const result: X402DiscoveryResult = {
     success: true,
     source: mapSourceToDiscoverySource(discovered.source),
     resources,
-    ...(discovered.info ? { info: discovered.info } : {}),
-    ...(discovered.info?.contactEmail
-      ? { contactEmail: discovered.info.contactEmail }
-      : {}),
     ownershipProofs: discovered.ownershipProofs ?? [],
   };
+  if (discovered.info) result.info = discovered.info;
+  if (discovered.info?.contactEmail) {
+    result.contactEmail = discovered.info.contactEmail;
+  }
+  return result;
 }

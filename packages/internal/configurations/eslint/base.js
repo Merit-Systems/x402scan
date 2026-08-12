@@ -26,6 +26,12 @@ export const config = [
           fixStyle: 'separate-type-imports',
         },
       ],
+      // JSON-domain object types (x402 output schemas, resource metadata)
+      // must be `type` aliases: aliases get implicit index signatures, which
+      // keeps them assignable to Prisma's structural JSON input types without
+      // widening casts at every DB write. Interfaces do not, so the
+      // stylisticTypeChecked preset's interface preference is disabled.
+      '@typescript-eslint/consistent-type-definitions': 'off',
     },
   },
   eslintConfigPrettier,

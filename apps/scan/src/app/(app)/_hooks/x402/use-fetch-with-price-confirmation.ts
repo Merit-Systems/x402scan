@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { z } from 'zod';
 
 import type { UseMutationOptions } from '@tanstack/react-query';
 import type { X402FetchResponse, FetchWithPaymentWrapper } from './types';
@@ -19,20 +20,30 @@ interface PriceIncreaseInfo {
 }
 
 /**
- * Type definition for x402 payment acceptance options (v1 and v2)
+ * An x402 payment amount, normalized to bigint at the parse boundary.
+ * Amounts arrive as strings or numbers depending on the x402 version.
  */
-interface X402Accept {
-  maxAmountRequired?: string | number;
-  max_amount_required?: string | number;
-  amount?: string | number;
-}
+const x402AmountSchema = z.union([
+  z.string().transform(value => BigInt(value)),
+  z.number().transform(value => BigInt(Math.floor(value))),
+]);
 
 /**
- * Type definition for x402 402 response data
+ * Schema for x402 payment acceptance options (v1 and v2)
  */
-interface X402Response {
-  accepts?: X402Accept[];
-}
+const x402AcceptSchema = z.looseObject({
+  maxAmountRequired: x402AmountSchema.optional(),
+  max_amount_required: x402AmountSchema.optional(),
+  amount: x402AmountSchema.optional(),
+});
+
+/**
+ * Schema for x402 402 response data
+ */
+const x402ResponseSchema = z.looseObject({
+  // Malformed accept entries carry no amount instead of failing the response
+  accepts: z.array(x402AcceptSchema.catch({})).optional(),
+});
 
 /**
  * Hook for handling x402 payments with dynamic price confirmation.
@@ -207,25 +218,18 @@ async function checkPrice(
     const response = await fetchFn(targetUrl, init);
 
     if (response.status === 402) {
-      const data = (await response.json()) as X402Response;
+      const data = x402ResponseSchema.parse(await response.json());
 
-      if (data.accepts && Array.isArray(data.accepts)) {
+      if (data.accepts) {
         const amounts: bigint[] = data.accepts
-          .map((accept: X402Accept): bigint | null => {
-            // Support v1 (maxAmountRequired) and v2 (amount) formats
-            const amountValue =
+          // Support v1 (maxAmountRequired) and v2 (amount) formats
+          .map(
+            accept =>
               accept.amount ??
               accept.maxAmountRequired ??
-              accept.max_amount_required;
-
-            if (typeof amountValue === 'string') {
-              return BigInt(amountValue);
-            } else if (typeof amountValue === 'number') {
-              return BigInt(Math.floor(amountValue));
-            }
-            return null;
-          })
-          .filter((amount): amount is bigint => amount !== null);
+              accept.max_amount_required
+          )
+          .filter((amount): amount is bigint => amount !== undefined);
 
         // Return the maximum price among all payment options
         if (amounts.length > 0) {

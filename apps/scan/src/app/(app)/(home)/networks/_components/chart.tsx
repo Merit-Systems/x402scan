@@ -28,17 +28,28 @@ export const NetworksChart = () => {
   });
 
   const chartData: ChartData<Record<NetworkKey, number>>[] =
-    bucketedNetworkData.map(item => ({
-      timestamp: item.bucket_start.toISOString(),
-      ...Object.entries(item.networks).reduce(
-        (acc, [network_name, network]) => ({
-          ...acc,
-          [`${network_name}-transactions`]: network.total_transactions,
-          [`${network_name}-amount`]: network.total_amount,
-        }),
-        {} as Record<NetworkKey, number>
-      ),
-    }));
+    bucketedNetworkData.map(item => {
+      // Buckets only include networks with data, so start every known
+      // network at zero and overwrite with the returned stats.
+      const metrics = {
+        'base-transactions': 0,
+        'base-amount': 0,
+        'solana-transactions': 0,
+        'solana-amount': 0,
+        'polygon-transactions': 0,
+        'polygon-amount': 0,
+        'optimism-transactions': 0,
+        'optimism-amount': 0,
+      } satisfies Record<NetworkKey, number>;
+      for (const network of networks) {
+        const stats = item.networks[network.chain];
+        if (stats) {
+          metrics[`${network.chain}-transactions`] = stats.total_transactions;
+          metrics[`${network.chain}-amount`] = stats.total_amount;
+        }
+      }
+      return { timestamp: item.bucket_start.toISOString(), ...metrics };
+    });
 
   const getValueHandler = (
     data: number,

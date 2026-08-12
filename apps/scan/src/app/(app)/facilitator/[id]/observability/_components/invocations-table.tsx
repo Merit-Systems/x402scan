@@ -19,6 +19,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { api } from '@/trpc/client';
+import { jsonValueSchema, type JsonValue } from '@/lib/json';
 import { useObservabilityDataParams } from './use-observability-data';
 import { Fragment } from 'react';
 
@@ -62,23 +63,9 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
     });
   };
 
-  const formatJson = (data: unknown): string => {
+  const formatJson = (data: JsonValue): string => {
     if (!data) return 'N/A';
-    try {
-      return JSON.stringify(data, null, 2);
-    } catch {
-      // Handle edge case where data cannot be stringified
-      if (typeof data === 'object' && data !== null) {
-        return '[Object]';
-      }
-      if (typeof data === 'string') {
-        return data;
-      }
-      if (typeof data === 'number' || typeof data === 'boolean') {
-        return String(data);
-      }
-      return '[Unknown]';
-    }
+    return JSON.stringify(data, null, 2);
   };
 
   if (isLoading) {
@@ -132,6 +119,20 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
               data?.data.map((invocation, index) => {
                 const uniqueKey = `${invocation.request_id}-${invocation.created_at}-${index}`;
                 const isExpanded = expandedRows.has(uniqueKey);
+                // Parse the untyped ClickHouse JSON columns once at the
+                // boundary; a failed parse (e.g. undefined) hides the section.
+                const errorMessageJson = jsonValueSchema.safeParse(
+                  invocation.error_message_json
+                );
+                const paymentPayloadJson = jsonValueSchema.safeParse(
+                  invocation.payment_payload_json
+                );
+                const paymentRequirementsJson = jsonValueSchema.safeParse(
+                  invocation.payment_requirements_json
+                );
+                const metadataJson = jsonValueSchema.safeParse(
+                  invocation.metadata
+                );
                 return (
                   <Fragment key={uniqueKey}>
                     <TableRow>
@@ -181,65 +182,56 @@ export const InvocationsTable: React.FC<Props> = ({ facilitatorName }) => {
                       <TableRow>
                         <TableCell colSpan={7} className="bg-muted/50 p-4">
                           <div className="space-y-4">
-                            {invocation.error_message_json !== null &&
-                              invocation.error_message_json !== undefined && (
+                            {errorMessageJson.success &&
+                              errorMessageJson.data !== null && (
                                 <div>
                                   <h4 className="text-sm font-semibold mb-2">
                                     Error Details
                                   </h4>
                                   <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-48 overflow-y-auto border">
                                     <code>
-                                      {formatJson(
-                                        invocation.error_message_json
-                                      )}
+                                      {formatJson(errorMessageJson.data)}
                                     </code>
                                   </pre>
                                 </div>
                               )}
 
-                            {invocation.payment_payload_json !== null &&
-                              invocation.payment_payload_json !== undefined && (
+                            {paymentPayloadJson.success &&
+                              paymentPayloadJson.data !== null && (
                                 <div>
                                   <h4 className="text-sm font-semibold mb-2">
                                     Payment Payload
                                   </h4>
                                   <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-96 overflow-y-auto border">
                                     <code>
-                                      {formatJson(
-                                        invocation.payment_payload_json
-                                      )}
+                                      {formatJson(paymentPayloadJson.data)}
                                     </code>
                                   </pre>
                                 </div>
                               )}
 
-                            {invocation.payment_requirements_json !== null &&
-                              invocation.payment_requirements_json !==
-                                undefined && (
+                            {paymentRequirementsJson.success &&
+                              paymentRequirementsJson.data !== null && (
                                 <div>
                                   <h4 className="text-sm font-semibold mb-2">
                                     Payment Requirements
                                   </h4>
                                   <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-96 overflow-y-auto border">
                                     <code>
-                                      {formatJson(
-                                        invocation.payment_requirements_json
-                                      )}
+                                      {formatJson(paymentRequirementsJson.data)}
                                     </code>
                                   </pre>
                                 </div>
                               )}
 
-                            {invocation.metadata !== null &&
-                              invocation.metadata !== undefined && (
+                            {metadataJson.success &&
+                              metadataJson.data !== null && (
                                 <div>
                                   <h4 className="text-sm font-semibold mb-2">
                                     Metadata
                                   </h4>
                                   <pre className="text-xs bg-background p-3 rounded-md overflow-x-auto max-h-48 overflow-y-auto border">
-                                    <code>
-                                      {formatJson(invocation.metadata)}
-                                    </code>
+                                    <code>{formatJson(metadataJson.data)}</code>
                                   </pre>
                                 </div>
                               )}

@@ -8,11 +8,11 @@ import { Network as FacilitatorsNetwork } from 'facilitators';
 import type { Facilitator, FacilitatorConfig } from '../types';
 import { Network } from '../types';
 
-const chainMap: Record<FacilitatorsNetwork, Network> = {
+const chainMap = {
   [FacilitatorsNetwork.BASE]: Network.BASE,
   [FacilitatorsNetwork.POLYGON]: Network.POLYGON,
   [FacilitatorsNetwork.SOLANA]: Network.SOLANA,
-};
+} satisfies Record<FacilitatorsNetwork, Network>;
 
 function convertAddressConfig(
   facilitatorAddress: FacilitatorAddress
@@ -25,7 +25,7 @@ function convertAddressConfig(
   }));
 }
 
-function convertFacilitator(raw: RawFacilitator): Facilitator | null {
+function convertFacilitator(raw: RawFacilitator<never>): Facilitator | null {
   if (raw.deprecated) {
     return null;
   }

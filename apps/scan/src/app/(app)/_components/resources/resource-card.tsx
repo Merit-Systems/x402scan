@@ -1,5 +1,6 @@
 'use client';
 
+import { z } from 'zod';
 import { AlertTriangle, Copy, Check, Shield } from 'lucide-react';
 
 import { Card, CardHeader } from '@/components/ui/card';
@@ -33,6 +34,12 @@ interface SerializedAccept {
   asset?: string | null;
 }
 
+/** The pricing-display fields of a resource's untyped metadata JSON. */
+const pricingMetadataSchema = z.looseObject({
+  pricingMode: z.string().optional().catch(undefined),
+  price: z.string().optional().catch(undefined),
+});
+
 interface Props {
   resource: Resources;
   tags: Tag[];
@@ -59,6 +66,7 @@ export const ResourceCard: React.FC<Props> = ({
   accepts,
 }) => {
   const prompt = `Use agentcash.dev to test out this resource's endpoint: ${bazaarMethod} ${resource.resource}`;
+  const pricingMetadata = pricingMetadataSchema.safeParse(resource.metadata);
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
     toast.success('Prompt copied to clipboard');
   });
@@ -88,19 +96,14 @@ export const ResourceCard: React.FC<Props> = ({
               <ResourcePricing
                 accepts={accepts}
                 pricingMode={
-                  resource.metadata != null &&
-                  typeof resource.metadata === 'object' &&
-                  'pricingMode' in resource.metadata &&
-                  resource.metadata.pricingMode === 'dynamic'
+                  pricingMetadata.success &&
+                  pricingMetadata.data.pricingMode === 'dynamic'
                     ? 'dynamic'
                     : undefined
                 }
                 price={
-                  resource.metadata != null &&
-                  typeof resource.metadata === 'object' &&
-                  'price' in resource.metadata &&
-                  typeof resource.metadata.price === 'string'
-                    ? resource.metadata.price
+                  pricingMetadata.success
+                    ? pricingMetadata.data.price
                     : undefined
                 }
               />

@@ -15,7 +15,7 @@ export enum ClientTypes {
   DESKTOP = 'desktop',
 }
 
-interface ClientMetadata {
+export interface ClientMetadata {
   name: string;
   description: string;
   type: ClientTypes;
@@ -23,7 +23,7 @@ interface ClientMetadata {
   recommended?: boolean;
 }
 
-export const clients: Record<Clients, ClientMetadata> = {
+export const clients = {
   [Clients.ClaudeCode]: {
     name: 'Claude Code',
     description: 'Claude Code is a code editor that uses the Claude API.',
@@ -62,6 +62,6 @@ export const clients: Record<Clients, ClientMetadata> = {
     type: ClientTypes.IDE,
     className: 'fill-[#0098FF]',
   },
-};
+} satisfies Record<Clients, ClientMetadata>;
 
 export const clientSchema = z.enum(Clients);

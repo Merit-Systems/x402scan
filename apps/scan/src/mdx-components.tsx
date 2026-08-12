@@ -1,8 +1,15 @@
-import { isValidElement, type ReactElement } from 'react';
+import { isValidElement } from 'react';
+import type { ComponentProps } from 'react';
+import { z } from 'zod';
 
 import { PromptTemplate } from '@/components/prompt-template';
 
 import type { MDXComponents } from 'mdx/types';
+
+/** Props of an element that carries a highlighting className (e.g. a code block). */
+const classNamePropsSchema = z.looseObject({ className: z.string() });
+
+const stringSchema = z.string();
 
 const components: MDXComponents = {
   h1: ({ children }) => (
@@ -22,21 +29,11 @@ const components: MDXComponents = {
   ),
   h6: ({ children }) => <h6 className="text-xs font-medium">{children}</h6>,
   p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,
-  pre: ({ children, ...rest }) => {
-    if (
-      typeof children === 'object' &&
-      children !== null &&
-      isValidElement(children as unknown)
-    ) {
-      const childElement = children as ReactElement;
-      if (
-        typeof childElement.props === 'object' &&
-        childElement.props !== null &&
-        'className' in childElement.props &&
-        typeof childElement.props.className === 'string' &&
-        childElement.props.className.includes('prompt')
-      ) {
-        return <div className="my-8">{childElement}</div>;
+  pre: ({ children, ...rest }: ComponentProps<'pre'>) => {
+    if (isValidElement(children)) {
+      const childProps = classNamePropsSchema.safeParse(children.props);
+      if (childProps.success && childProps.data.className.includes('prompt')) {
+        return <div className="my-8">{children}</div>;
       }
     }
     return (
@@ -45,13 +42,10 @@ const components: MDXComponents = {
       </pre>
     );
   },
-  code: ({ children, className, ...rest }) => {
-    if (
-      typeof className === 'string' &&
-      className.includes('prompt') &&
-      typeof children === 'string'
-    ) {
-      return <PromptTemplate templateString={children} />;
+  code: ({ children, className, ...rest }: ComponentProps<'code'>) => {
+    const childText = stringSchema.safeParse(children);
+    if (className?.includes('prompt') && childText.success) {
+      return <PromptTemplate templateString={childText.data} />;
     }
     return (
       <pre>

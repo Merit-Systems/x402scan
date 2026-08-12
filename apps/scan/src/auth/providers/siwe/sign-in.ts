@@ -1,6 +1,6 @@
 import { SiweMessage } from '@signinwithethereum/siwe';
 import { SIWE_PROVIDER_ID, SIWE_STATEMENT } from './constants';
-import { getCsrfToken, signIn } from 'next-auth/react';
+import { getCsrfToken, signIn, type SignInOptions } from 'next-auth/react';
 
 interface SignInWithEthereumOptions {
   address: string;
@@ -27,10 +27,14 @@ export async function signInWithEthereum({
     chainId,
     expirationTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
   });
-  await signIn(SIWE_PROVIDER_ID, {
+  // Build options in statements: the sign-in body is form-encoded, so keys
+  // must be present only when they have a value.
+  const options: SignInOptions = {
     message: JSON.stringify(message),
     signedMessage: await signMessage(message.prepareMessage()),
-    ...(email ? { email } : {}),
-    ...(redirectTo ? { redirectTo } : {}),
-  });
+  };
+  if (email) options.email = email;
+  if (redirectTo) options.redirectTo = redirectTo;
+
+  await signIn(SIWE_PROVIDER_ID, options);
 }

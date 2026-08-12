@@ -1,5 +1,8 @@
 # x402scan-mcp
 
+> [!WARNING]
+> **Deprecated.** This MCP server is no longer maintained. Use [AgentCash](https://agentcash.dev) instead — it provides the same x402 payment capabilities (endpoint discovery, automatic payment handling, and SIWX auth) and is actively maintained.
+
 MCP server for calling [x402](https://x402.org)-protected APIs with automatic payment handling.
 
 ## Install

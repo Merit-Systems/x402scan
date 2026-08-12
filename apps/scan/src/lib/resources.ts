@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import {
@@ -13,6 +15,7 @@ import type {
 import { isX402PaymentOption } from '@/lib/discovery/utils';
 
 import { getOriginFromUrl, normalizeResourceUrl } from '@/lib/url';
+import { jsonObjectSchema } from '@/lib/json';
 import type { FreeAuthMode } from '@/lib/resource-auth';
 
 import { upsertResourceResponse } from '@/services/db/resources/response';
@@ -25,6 +28,7 @@ import {
   normalizeChainId,
   parseX402Response,
   getOutputSchema,
+  type OutputSchema,
   type ParsedX402Response,
 } from '@/lib/x402';
 
@@ -35,6 +39,39 @@ import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
 import { deduplicateWarnings } from '@/lib/discovery/utils';
 import { notifyNewServer } from '@/lib/discord-notifications';
 import { after } from 'next/server';
+
+/**
+ * The HTTP methods the v1 output-schema format accepts. Discovery advisories
+ * carry a wider method union (e.g. TRACE), so methods are parsed through this
+ * schema before being written into a v1 input schema.
+ */
+const v1HttpMethodSchema = z.enum([
+  'GET',
+  'POST',
+  'PUT',
+  'DELETE',
+  'PATCH',
+  'OPTIONS',
+  'HEAD',
+]);
+
+/**
+ * Discovery-sourced display fields stored in Resource.metadata at
+ * registration time.
+ */
+type DiscoveryResourceMetadata = {
+  pricingMode?: string;
+  price?: string;
+  description?: string;
+};
+
+/**
+ * Metadata stored for free (no-Accepts) resources: the discovery display
+ * fields plus the authMode discriminator.
+ */
+type FreeResourceMetadata = DiscoveryResourceMetadata & {
+  authMode: FreeAuthMode;
+};
 
 /**
  * Pure validation — no DB writes, no side effects. Used by both
@@ -83,11 +120,7 @@ export function validateResource(
   // always extract schemas from bazaar, but the data is often there.
   if (!advisory.inputSchema) {
     let hasBazaarSchema = false;
-    if (
-      advisory.paymentRequiredBody &&
-      typeof advisory.paymentRequiredBody === 'object' &&
-      advisory.paymentRequiredBody !== null
-    ) {
+    if (advisory.paymentRequiredBody) {
       try {
         const parsed = parseX402Response(advisory.paymentRequiredBody);
         if (parsed.success) {
@@ -126,11 +159,7 @@ export function validateResource(
   // Missing output schema — endpoint works but agents won't know what it returns
   if (!advisory.outputSchema) {
     let hasBazaarOutputSchema = false;
-    if (
-      advisory.paymentRequiredBody &&
-      typeof advisory.paymentRequiredBody === 'object' &&
-      advisory.paymentRequiredBody !== null
-    ) {
+    if (advisory.paymentRequiredBody) {
       try {
         const parsed = parseX402Response(advisory.paymentRequiredBody);
         if (parsed.success) {
@@ -194,12 +223,12 @@ export async function registerFreeResource(
     const resource = await scanDb.$transaction(async tx => {
       await ensureOriginExists(tx, origin);
 
-      const freeMetadata = {
+      const freeMetadata: FreeResourceMetadata = {
         authMode: options.authMode ?? 'siwx',
-        ...(options.pricingMode ? { pricingMode: options.pricingMode } : {}),
-        ...(options.price ? { price: options.price } : {}),
-        ...(options.description ? { description: options.description } : {}),
       };
+      if (options.pricingMode) freeMetadata.pricingMode = options.pricingMode;
+      if (options.price) freeMetadata.price = options.price;
+      if (options.description) freeMetadata.description = options.description;
 
       // Merge with existing metadata to avoid clobbering fields set by
       // a different registration path (e.g. paid sets pricingMode on the
@@ -211,12 +240,12 @@ export async function registerFreeResource(
         },
         select: { metadata: true },
       });
-      const mergedMetadata =
-        existing?.metadata &&
-        typeof existing.metadata === 'object' &&
-        !Array.isArray(existing.metadata)
-          ? { ...existing.metadata, ...freeMetadata }
-          : freeMetadata;
+      // Stored metadata is raw DB JSON — parse it at this boundary; non-object
+      // values (null, arrays, scalars) are replaced rather than merged.
+      const existingMetadata = jsonObjectSchema.safeParse(existing?.metadata);
+      const mergedMetadata = existingMetadata.success
+        ? { ...existingMetadata.data, ...freeMetadata }
+        : freeMetadata;
 
       return tx.resources.upsert({
         where: {
@@ -389,7 +418,7 @@ export const registerResource = async (
     : null;
 
   // Try v1 parse first (works when inputSchema includes type/method)
-  let outputSchemaForDb = outputSchemaV1.safeParse({
+  let outputSchemaForDb: OutputSchema | undefined = outputSchemaV1.safeParse({
     input: advisory.inputSchema,
     output: advisory.outputSchema ?? null,
   }).data;
@@ -401,9 +430,11 @@ export const registerResource = async (
     if (parsed.success) {
       const extracted = getOutputSchema(parsed.data);
       if (extracted) {
-        const input = extracted.input as Record<string, unknown>;
-        if (!input.method && advisory.method) {
-          input.method = advisory.method;
+        if (!extracted.input.method) {
+          const method = v1HttpMethodSchema.safeParse(advisory.method);
+          if (method.success) {
+            extracted.input.method = method.data;
+          }
         }
         outputSchemaForDb = extracted;
         schemaSource = 'v2-bazaar';
@@ -490,6 +521,11 @@ export const registerResource = async (
 
   const x402Version = x402Options[0]?.version ?? 1;
 
+  const discoveryMetadata: DiscoveryResourceMetadata = {};
+  if (options.pricingMode) discoveryMetadata.pricingMode = options.pricingMode;
+  if (options.price) discoveryMetadata.price = options.price;
+  if (options.description) discoveryMetadata.description = options.description;
+
   const resource = await upsertResource({
     resource: cleanUrl,
     method: options.method ?? '',
@@ -497,19 +533,8 @@ export const registerResource = async (
     x402Version,
     lastUpdated: new Date(),
     accepts: mappedAccepts,
-    ...(options.pricingMode || options.price || options.description
-      ? {
-          metadata: {
-            ...(options.pricingMode
-              ? { pricingMode: options.pricingMode }
-              : {}),
-            ...(options.price ? { price: options.price } : {}),
-            ...(options.description
-              ? { description: options.description }
-              : {}),
-          },
-        }
-      : {}),
+    metadata:
+      Object.keys(discoveryMetadata).length > 0 ? discoveryMetadata : undefined,
   });
 
   if (!resource) {

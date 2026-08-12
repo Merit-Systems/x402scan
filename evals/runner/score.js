@@ -23,7 +23,7 @@
 const FAILURE_BUCKETS = {
   NO_DISCOVERY_DOC: "no-discovery-doc",
   WRONG_DISCOVERY_PATH: "wrong-discovery-path",
-  INVALID_OPENAPI_SHAPE: "invalid-openapi-shape",
+  INVALID_OPENAPI_STRUCTURE: "invalid-openapi-shape",
   MISSING_402_RESPONSE: "missing-402-response",
   INVALID_ACCEPTS: "invalid-accepts",
   METHOD_MISMATCH: "method-mismatch",
@@ -151,7 +151,7 @@ export function scoreTrial(discoveryJson, fixture, trialId, agentId, timeMs) {
       for (const w of stage.warnings) {
         if (w.severity === "error") {
           if (w.code?.includes("OPENAPI")) {
-            failureBuckets.push(FAILURE_BUCKETS.INVALID_OPENAPI_SHAPE);
+            failureBuckets.push(FAILURE_BUCKETS.INVALID_OPENAPI_STRUCTURE);
           } else if (w.code?.includes("402")) {
             failureBuckets.push(FAILURE_BUCKETS.MISSING_402_RESPONSE);
           }
@@ -174,7 +174,7 @@ export function scoreTrial(discoveryJson, fixture, trialId, agentId, timeMs) {
 
       if (fixture === "express-openapi") {
         if (openapiTrace && !openapiTrace.valid) {
-          failureBuckets.push(FAILURE_BUCKETS.INVALID_OPENAPI_SHAPE);
+          failureBuckets.push(FAILURE_BUCKETS.INVALID_OPENAPI_STRUCTURE);
         } else {
           failureBuckets.push(FAILURE_BUCKETS.NO_DISCOVERY_DOC);
         }

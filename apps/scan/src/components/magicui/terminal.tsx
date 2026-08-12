@@ -102,10 +102,6 @@ export const TypingAnimation = ({
   startOnView = true,
   ...props
 }: TypingAnimationProps) => {
-  if (typeof children !== 'string') {
-    throw new Error('TypingAnimation: children must be a string. Received:');
-  }
-
   const MotionComponent = useMemo(
     () =>
       motion.create(Component, {

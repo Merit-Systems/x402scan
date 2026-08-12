@@ -4,7 +4,8 @@ import { createTRPCContext } from '@/trpc/trpc';
 import { defaultBuyersSorting } from '@/app/(app)/_contexts/sorting/buyers/default';
 import { defaultSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/(app)/_contexts/sorting/transfers/default';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ACTIVITY_TIMEFRAMES } from '@/types/timeframes';
+import type { ActivityTimeframe } from '@/types/timeframes';
 import { facilitatorAddresses } from '@/lib/facilitators';
 import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
 import { TRANSACTIONS_PAGE_SIZE } from '@/app/(app)/(home)/transactions/constants';
@@ -367,10 +368,7 @@ export async function GET(request: NextRequest) {
     const pagesParam = searchParams.get('pages'); // e.g., "home,networks"
     const chainParam = searchParams.get('chain'); // e.g., "base", "solana", "all"
 
-    // Filter timeframes if requested
-    const timeframesToWarm = Object.values(ActivityTimeframe).filter(
-      tf => typeof tf === 'number'
-    );
+    const timeframesToWarm = ACTIVITY_TIMEFRAMES;
 
     // Filter pages if requested
     const pagesToWarm: WarmablePage[] = pagesParam

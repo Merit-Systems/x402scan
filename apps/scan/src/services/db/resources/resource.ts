@@ -1,6 +1,7 @@
 import { scanDb } from '@x402scan/scan-db';
 
 import { getOriginFromUrl } from '@/lib/url';
+import { jsonObjectSchema } from '@/lib/json';
 import { z } from 'zod';
 import { toPaginatedResponse } from '@/lib/pagination';
 
@@ -60,12 +61,11 @@ export const upsertResource = async (
       },
       select: { metadata: true },
     });
-    if (
-      existing?.metadata &&
-      typeof existing.metadata === 'object' &&
-      !Array.isArray(existing.metadata)
-    ) {
-      const existingRest = { ...existing.metadata };
+    // Stored metadata is raw DB JSON — parse it at this boundary; non-object
+    // values (null/array/scalar) have nothing to merge.
+    const existingMetadata = jsonObjectSchema.safeParse(existing?.metadata);
+    if (existingMetadata.success) {
+      const existingRest = { ...existingMetadata.data };
       delete existingRest.authMode;
       mergedMetadata = { ...existingRest, ...(baseResource.metadata ?? {}) };
     }
@@ -234,10 +234,10 @@ export const listResourcesWithPaginationUncached = async (
       : { toolCalls: { _count: sortConfig.desc ? 'desc' : 'asc' } };
 
   // Exclude deprecated resources by default
-  const whereWithDeprecation: Prisma.ResourcesWhereInput = {
-    ...where,
-    ...(includeDeprecated ? {} : { deprecatedAt: null }),
-  };
+  const whereWithDeprecation: Prisma.ResourcesWhereInput = { ...where };
+  if (!includeDeprecated) {
+    whereWithDeprecation.deprecatedAt = null;
+  }
 
   const [count, resources] = await Promise.all([
     scanDb.resources.count({
@@ -361,8 +361,8 @@ const searchResourcesUncached = async (
         : undefined),
       ...(tagIds ? { tags: { some: { tagId: { in: tagIds } } } } : undefined),
       ...(resourceIds ? { id: { in: resourceIds } } : undefined),
-      ...(!showExcluded ? { excluded: { is: null } } : {}),
-      ...(!showDeprecated ? { deprecatedAt: null } : {}),
+      excluded: showExcluded ? undefined : { is: null },
+      deprecatedAt: showDeprecated ? undefined : null,
     },
     include: {
       origin: true,

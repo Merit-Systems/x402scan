@@ -6,7 +6,6 @@ import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { chainSchema } from '@/lib/schemas';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type WalletStatsInput = {
   address: string;
   chain?: 'base' | 'solana';

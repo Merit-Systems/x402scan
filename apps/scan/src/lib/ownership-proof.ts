@@ -144,10 +144,10 @@ class SolanaVerifier implements ChainVerifier {
 }
 
 // Verifier registry
-const verifiers: Record<ChainType, ChainVerifier> = {
+const verifiers = {
   evm: new EVMVerifier(),
   solana: new SolanaVerifier(),
-};
+} satisfies Record<ChainType, ChainVerifier>;
 
 /**
  * Get the appropriate verifier for a chain type

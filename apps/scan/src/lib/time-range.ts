@@ -1,15 +1,33 @@
 import { subHours } from 'date-fns';
 
-import type z from 'zod';
+import { z } from 'zod';
 import type { timeframeSchema, timePeriodSchema } from './schemas';
 import { ActivityTimeframe } from '@/types/timeframes';
+
+interface TimeframeParts {
+  period: number;
+  offset?: number;
+}
+
+/**
+ * Normalize the timeframe union (bare period number or {period, offset})
+ * into one parts object so consumers never re-inspect the union.
+ */
+const timeframePartsSchema = z.union([
+  z.number().transform((period): TimeframeParts => ({ period })),
+  z.object({ period: z.number(), offset: z.number().optional() }),
+]);
+
+const toTimeframeParts = (
+  timeframe: number | { period: number; offset?: number | undefined }
+): TimeframeParts => timeframePartsSchema.parse(timeframe);
 
 export function getTimeRangeFromTimeframe(
   timeframe: z.infer<typeof timeframeSchema>
 ) {
   const now = new Date();
 
-  const period = typeof timeframe === 'number' ? timeframe : timeframe.period;
+  const { period, offset } = toTimeframeParts(timeframe);
   if (period === 0) {
     // Use a floor date instead of null so TimescaleDB can still do
     // chunk exclusion and Prisma always emits a block_timestamp filter.
@@ -17,17 +35,11 @@ export function getTimeRangeFromTimeframe(
     return { startDate: new Date('2024-01-01T00:00:00Z'), endDate: now };
   }
 
-  const endDate =
-    typeof timeframe === 'number' || !timeframe.offset
-      ? now
-      : subHours(now, timeframe.offset * 24);
+  const endDate = offset ? subHours(now, offset * 24) : now;
 
   // For all other timeframes, calculate from endDate
   // Using hours instead of days because of daylight savings.
-  const startDate =
-    typeof timeframe === 'number'
-      ? subHours(endDate, timeframe * 24)
-      : subHours(endDate, timeframe.period * 24);
+  const startDate = subHours(endDate, period * 24);
 
   return { startDate, endDate };
 }
@@ -51,9 +63,7 @@ export const getBucketedTimeRangeFromTimeframe = async ({
   ) {
     return {
       startDate:
-        typeof creationDate === 'function'
-          ? await creationDate()
-          : creationDate,
+        creationDate instanceof Date ? creationDate : await creationDate(),
       endDate,
     };
   }
@@ -70,8 +80,5 @@ export function getMaterializedViewSuffix(
         offset?: number | undefined;
       }
 ): string {
-  if (typeof timeframe === 'number') {
-    return `${timeframe}d`;
-  }
-  return `${timeframe.period}d`;
+  return `${toTimeframeParts(timeframe).period}d`;
 }

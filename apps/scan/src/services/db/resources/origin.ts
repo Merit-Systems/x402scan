@@ -28,7 +28,7 @@ function getDisplayableAcceptsWhere({
   address?: z.infer<typeof mixedAddressSchema>;
 }): Prisma.AcceptsWhereInput {
   return {
-    ...(address ? { payTo: address } : {}),
+    payTo: address,
     ...(chain
       ? { network: chain as AcceptsNetwork }
       : { network: { in: SUPPORTED_ACCEPT_NETWORKS } }),
@@ -209,7 +209,7 @@ export const listOriginsWithResources = async (
       };
   const origins = await scanDb.resourceOrigin.findMany({
     where: {
-      ...(originIds ? { id: { in: originIds } } : {}),
+      id: originIds ? { in: originIds } : undefined,
       resources: { some: paidOrFreeResource },
     },
     include: {

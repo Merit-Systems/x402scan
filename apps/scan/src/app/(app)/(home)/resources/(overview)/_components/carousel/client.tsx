@@ -23,7 +23,7 @@ import type { SectionProps } from '@/app/_components/layout/page-utils';
 import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
 
 interface Props<T extends string> {
-  title: React.ReactNode;
+  title: string | React.ReactElement;
   sectionProps: Omit<SectionProps<T>, 'children' | 'actions' | 'title'>;
   input: RouterInputs['public']['sellers']['bazaar']['list'];
   hideCount?: boolean;

@@ -58,7 +58,7 @@ const listBazaarOriginsUncached = async (
 
   console.log(
     `[bazaar.list] mv=${(tMV - tAccepts).toFixed(0)}ms (${result.items.length} items)` +
-      ` chain=${input.chain ?? 'all'} timeframe=${typeof input.timeframe === 'number' ? input.timeframe : input.timeframe.period}`
+      ` chain=${input.chain ?? 'all'} timeframe=${input.timeframe instanceof Object ? input.timeframe.period : input.timeframe}`
   );
 
   // Group by origin

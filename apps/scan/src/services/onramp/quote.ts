@@ -10,10 +10,10 @@ export const getQuoteSchema = z.object({
 
 type GetQuote = (input: z.infer<typeof getQuoteSchema>) => Promise<number>;
 
-const PROVIDER_QUOTES: Record<OnrampProviders, GetQuote> = {
+const PROVIDER_QUOTES = {
   [OnrampProviders.STRIPE]: getStripeOnrampQuote,
   [OnrampProviders.COINBASE]: getCoinbaseOnrampQuote,
-};
+} satisfies Record<OnrampProviders, GetQuote>;
 
 export const getQuotes = async (input: z.infer<typeof getQuoteSchema>) => {
   const quotes = await Promise.all(

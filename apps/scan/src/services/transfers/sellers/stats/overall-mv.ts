@@ -9,15 +9,15 @@ import { getMaterializedViewSuffix } from '@/lib/time-range';
 export const sellerStatisticsMVInputSchema = baseQuerySchema;
 
 // Map timeframe suffix to PostgreSQL interval
-const getTimeframeInterval = (mvTimeframe: string): string | null => {
-  const intervalMap: Record<string, string> = {
-    '1d': '1 day',
-    '7d': '7 days',
-    '14d': '14 days',
-    '30d': '30 days',
-  };
-  return intervalMap[mvTimeframe] ?? null;
-};
+const intervalByTimeframe = new Map<string, string>([
+  ['1d', '1 day'],
+  ['7d', '7 days'],
+  ['14d', '14 days'],
+  ['30d', '30 days'],
+]);
+
+const getTimeframeInterval = (mvTimeframe: string): string | null =>
+  intervalByTimeframe.get(mvTimeframe) ?? null;
 
 // Exported for use when calling from within another cached function
 // to avoid creating huge cache keys with many addresses

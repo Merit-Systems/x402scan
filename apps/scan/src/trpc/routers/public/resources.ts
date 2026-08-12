@@ -301,10 +301,11 @@ export const resourcesRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const registered = await scanDb.resources.findMany({
         where: {
-          OR: input.resources.map(r => ({
-            resource: r.url,
-            ...(r.method ? { method: r.method } : {}),
-          })),
+          OR: input.resources.map(r =>
+            r.method
+              ? { resource: r.url, method: r.method }
+              : { resource: r.url }
+          ),
         },
         select: {
           resource: true,

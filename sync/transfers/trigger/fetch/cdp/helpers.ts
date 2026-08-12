@@ -56,13 +56,13 @@ export async function cdpFetch<T>(
   return response.json() as Promise<T>;
 }
 
-export async function runCdpSqlQuery(sql: string): Promise<unknown[]> {
+export async function runCdpSqlQuery<TRow>(sql: string): Promise<TRow[]> {
   const maxRetries = 5;
   let attempt = 0;
 
   while (attempt < maxRetries) {
     try {
-      const data = await cdpFetch<{ result: unknown[] | null }>(
+      const data = await cdpFetch<{ result: TRow[] | null }>(
         {
           requestMethod: 'POST',
           requestPath: '/platform/v2/data/query/run',

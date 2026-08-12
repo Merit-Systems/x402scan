@@ -44,9 +44,9 @@ export async function GET(
       functionName: 'balanceOf',
       args: [parseResult.data],
     }),
-    (error: unknown) => ({
+    (cause: unknown) => ({
       cause: 'bad_gateway',
-      message: `RPC balanceOf call failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      message: `RPC balanceOf call failed: ${cause instanceof Error ? cause.message : 'Unknown error'}`,
     })
   )
     .andThen(balance => {

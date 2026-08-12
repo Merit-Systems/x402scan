@@ -59,12 +59,12 @@ export function buildQuery(
 }
 
 export function transformResponse(
-  data: unknown,
+  data: BitQueryTransferRowStream[],
   config: SyncConfig,
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  return (data as BitQueryTransferRowStream[]).map(item => ({
+  return data.map(item => ({
     address: item.Transfer.Currency?.SmartContract || DEFAULT_CONTRACT_ADDRESS,
     transaction_from: item.Transaction.From,
     sender: item.Transfer.Sender,

@@ -2,7 +2,7 @@
 // doesn't depend on a v1 package for what is effectively a static lookup.
 // v2 uses CAIP-2 strings natively and ships no equivalent map.
 
-const EvmNetworkToChainId: Record<string, number> = {
+const EvmNetworkToChainId = {
   abstract: 2741,
   'abstract-testnet': 11124,
   'base-sepolia': 84532,
@@ -18,12 +18,12 @@ const EvmNetworkToChainId: Record<string, number> = {
   story: 1514,
   educhain: 41923,
   'skale-base-sepolia': 324705682,
-};
+} satisfies Record<string, number>;
 
-const SvmNetworkToChainId: Record<string, number> = {
+const SvmNetworkToChainId = {
   'solana-devnet': 103,
   solana: 101,
-};
+} satisfies Record<string, number>;
 
 export const ChainIdToNetwork: Record<number, string> = Object.fromEntries(
   [

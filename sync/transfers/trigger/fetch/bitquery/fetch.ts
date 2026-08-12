@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import { logger } from '@trigger.dev/sdk/v3';
 import type {
@@ -7,7 +6,13 @@ import type {
   Facilitator,
   TransferEventData,
   FacilitatorConfig,
+  RawTransferQueryResponse,
 } from '../../types';
+
+interface BitqueryGraphqlResponse {
+  data: RawTransferQueryResponse;
+  errors?: unknown;
+}
 
 export async function fetchWithOffsetPagination(
   config: SyncConfig,
@@ -92,7 +97,7 @@ async function executeBitqueryRequest(
     throw new Error(`Bitquery API returned ${response.status}: ${errorText}`);
   }
 
-  const result = await response.json();
+  const result: BitqueryGraphqlResponse = await response.json();
 
   if (result.errors) {
     logger.error(`[${config.chain}] Bitquery GraphQL errors:`, {

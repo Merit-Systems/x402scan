@@ -84,7 +84,7 @@ export function buildQuery(
  * Great Tech.
  */
 export async function transformResponse(
-  data: unknown,
+  data: BigQueryTransferRow[],
   config: SyncConfig,
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
@@ -102,7 +102,7 @@ export async function transformResponse(
   });
 
   const results = await Promise.all(
-    (data as BigQueryTransferRow[]).map(row =>
+    data.map(row =>
       limiter.schedule(async () => {
         const senderOwner = await getOwner(row.sender, connection, ownerCache);
         const recipientOwner = await getOwner(

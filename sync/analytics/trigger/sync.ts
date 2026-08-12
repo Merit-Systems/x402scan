@@ -2,7 +2,7 @@ import { logger, schedules } from '@trigger.dev/sdk';
 import type { SyncConfig } from './types';
 import { analyticsDb } from '@x402scan/analytics-db';
 
-export function createAnalyticsSyncTask(config: SyncConfig) {
+export function createAnalyticsSyncTask<TRow>(config: SyncConfig<TRow>) {
   return schedules.task({
     id: 'sync-' + config.name,
     cron: config.cron,
@@ -15,7 +15,7 @@ export function createAnalyticsSyncTask(config: SyncConfig) {
           query: config.query,
           format: 'JSONEachRow',
         });
-        const data = await resultSet.json();
+        const data = await resultSet.json<TRow>();
         logger.log('Fetched data: ' + data.length);
         const result = await config.persist(data);
         logger.log('Persisted metrics: ' + result.count);

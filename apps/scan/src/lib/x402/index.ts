@@ -3,6 +3,7 @@ import { z as z3 } from 'zod3';
 export * from './v1';
 export * from './v2';
 export * from './schema';
+export type { FieldDef } from './shared';
 
 import {
   x402ResponseSchemaV1,
@@ -10,14 +11,51 @@ import {
   type X402ResponseV1,
   type OutputSchemaV1,
 } from './v1';
-import { x402ResponseSchemaV2, type X402ResponseV2 } from './v2';
-import type { DiscoveryExtension } from '@x402/extensions/bazaar';
+import {
+  x402ResponseSchemaV2,
+  type X402ResponseV2,
+  type BazaarDiscovery,
+  type BazaarInputStructure,
+  type BazaarJsonSchema,
+} from './v2';
 import { decodePaymentRequiredHeader } from '@x402/core/http';
 import { ChainIdToNetwork } from './chain-mapping';
-import type { ParseResult } from './shared';
+import {
+  jsonObjectSchema3,
+  jsonValueSchema3,
+  type ParseResult,
+} from './shared';
 import { cleanExternalText } from '@/lib/utils';
 
-export type OutputSchema = OutputSchemaV1;
+import type { JsonObject, JsonValue } from '@/lib/json';
+
+/**
+ * The input structure of a bazaar-derived output schema: the raw bazaar
+ * `info.input` structure, optionally enriched with JSON-Schema nodes taken
+ * from the bazaar `schema` document. `type` aliases (not `interface`s) so
+ * they get implicit index signatures, keeping them assignable to Prisma's
+ * structural JSON input types.
+ */
+export type BazaarSchemaInput = {
+  type?: string;
+  method?: string;
+  bodyType?: string;
+  body?: JsonValue | BazaarJsonSchema;
+  queryParams?: JsonValue | BazaarJsonSchema;
+  bodyFields?: JsonValue;
+  headerFields?: JsonValue;
+  headers?: JsonValue;
+  pathParams?: JsonValue;
+  params?: JsonValue;
+};
+
+/** Output schema assembled from a v2 bazaar discovery extension. */
+type BazaarOutputSchema = {
+  input: BazaarSchemaInput;
+  output?: JsonValue;
+};
+
+export type OutputSchema = OutputSchemaV1 | BazaarOutputSchema;
 export type InputSchema = OutputSchema['input'];
 
 /**
@@ -40,21 +78,24 @@ export const normalizedAcceptSchema = z3.object({
 
 export type ParsedX402Response = X402ResponseV1 | X402ResponseV2;
 
-export function parseX402Response(
-  data: unknown
-): ParseResult<ParsedX402Response> {
-  const schema = isV2Response(data)
-    ? x402ResponseSchemaV2
-    : x402ResponseSchemaV1;
-  const result = schema.safeParse(data);
+const v2VersionProbeSchema = z3.object({ x402Version: z3.literal(2) });
 
-  if (!result.success) {
-    return {
-      success: false,
-      errors: result.error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
-    };
+function toParseFailure(error: z3.ZodError): ParseResult<never> {
+  return {
+    success: false,
+    errors: error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
+  };
+}
+
+export function parseX402Response<T>(data: T): ParseResult<ParsedX402Response> {
+  if (v2VersionProbeSchema.safeParse(data).success) {
+    const result = x402ResponseSchemaV2.safeParse(data);
+    if (!result.success) return toParseFailure(result.error);
+    return { success: true, data: result.data };
   }
-  return { success: true, data: result.data as ParsedX402Response };
+  const result = x402ResponseSchemaV1.safeParse(data);
+  if (!result.success) return toParseFailure(result.error);
+  return { success: true, data: result.data };
 }
 
 /**
@@ -63,41 +104,47 @@ export function parseX402Response(
  * V2: outputSchema comes from extensions.bazaar (info + schema)
  */
 export function getOutputSchema(
+  response: X402ResponseV1
+): OutputSchemaV1 | undefined;
+export function getOutputSchema(
+  response: ParsedX402Response
+): OutputSchema | undefined;
+export function getOutputSchema(
   response: ParsedX402Response
 ): OutputSchema | undefined {
   if (!isV2Response(response)) {
     return response.accepts?.[0]?.outputSchema;
   }
 
-  const bazaar = response.extensions?.bazaar as DiscoveryExtension | undefined;
+  const bazaar = response.extensions?.bazaar;
   return bazaar ? getOutputSchemaFromBazaar(bazaar) : undefined;
 }
 
+const jsonContainerSchema3 = z3.union([
+  jsonObjectSchema3,
+  z3.array(jsonValueSchema3),
+]);
+
 // NOTE(shafu): merge example data from info with field definitions from schema.
 function getOutputSchemaFromBazaar(
-  bazaar: DiscoveryExtension
+  bazaar: BazaarDiscovery
 ): OutputSchema | undefined {
-  if (!bazaar.info) {
-    return undefined;
-  }
-
   const info = bazaar.info;
-  if (!info.input || typeof info.input !== 'object') {
+  if (!info?.input) {
     // Missing/invalid bazaar input schema should be handled as a validation
     // issue upstream; never throw here.
     return undefined;
   }
-  const input = info.input as Record<string, unknown>;
-  const body = input.body;
-  const schemaUnknown: unknown = bazaar.schema;
+
+  const input: BazaarInputStructure = info.input;
+  const schema = bazaar.schema;
 
   // If bazaar `info.input` is "flattened" payload fields (no `body` wrapper),
   // and bazaar.schema is a standard JSON Schema `{type, properties, required}`,
   // treat it as a POST JSON body schema so the UI can render fields.
-  if (schemaUnknown && typeof schemaUnknown === 'object') {
-    const schemaObj = schemaUnknown as Record<string, unknown>;
-    const properties = schemaObj.properties;
-    const required = schemaObj.required;
+  if (schema) {
+    const properties = schema.properties;
+    const required = schema.required;
 
     const reservedKeys = new Set([
       'method',
@@ -113,54 +160,43 @@ function getOutputSchemaFromBazaar(
     const hasReservedKey = inputKeys.some(k => reservedKeys.has(k));
     const hasNonReservedKeys = inputKeys.some(k => !reservedKeys.has(k));
 
-    const isJsonSchemaLike =
-      properties && typeof properties === 'object' && properties !== null;
-
-    if (!hasReservedKey && hasNonReservedKeys && isJsonSchemaLike) {
+    if (!hasReservedKey && hasNonReservedKeys && properties) {
       return {
         input: {
           method: 'POST',
           body: {
-            ...schemaObj,
+            ...schema,
             properties,
-            required: Array.isArray(required) ? required : undefined,
+            required,
           },
         },
         output: info.output,
-      } as unknown as OutputSchema;
+      };
     }
   }
 
   // Enrich body with schema if info.body has example data (no properties)
-  if (
-    bazaar.schema &&
-    body &&
-    typeof body === 'object' &&
-    !('properties' in body)
-  ) {
-    const schema = bazaar.schema as {
-      properties?: { input?: { properties?: { body?: unknown } } };
-    };
+  if (schema) {
+    const bodyContainer = jsonContainerSchema3.safeParse(input.body);
     const bodySchema = schema.properties?.input?.properties?.body;
     if (
-      bodySchema &&
-      typeof bodySchema === 'object' &&
-      'properties' in bodySchema
+      input.body &&
+      bodyContainer.success &&
+      !('properties' in bodyContainer.data) &&
+      bodySchema?.properties
     ) {
       return {
         input: { ...input, body: bodySchema },
         output: info.output,
-      } as unknown as OutputSchema;
+      };
     }
   }
 
   // Enrich queryParams with schema if info.queryParams is missing/empty (GET endpoints)
-  if (bazaar.schema) {
+  if (schema) {
     const qpVal = input.queryParams;
-    const qpObj =
-      qpVal && typeof qpVal === 'object' && !Array.isArray(qpVal)
-        ? (qpVal as Record<string, unknown>)
-        : undefined;
+    const qpParsed = jsonObjectSchema3.safeParse(qpVal);
+    const qpObj = qpVal && qpParsed.success ? qpParsed.data : undefined;
     const qpHasProperties = qpObj ? 'properties' in qpObj : false;
     const qpKeys = qpObj ? Object.keys(qpObj) : [];
 
@@ -168,98 +204,80 @@ function getOutputSchemaFromBazaar(
       !qpHasProperties &&
       (qpVal === undefined || qpVal === null || qpKeys.length === 0)
     ) {
-      const schema = bazaar.schema as {
-        properties?: { input?: { properties?: { queryParams?: unknown } } };
-      };
       const querySchema = schema.properties?.input?.properties?.queryParams;
-      const querySchemaObj =
-        querySchema && typeof querySchema === 'object'
-          ? (querySchema as Record<string, unknown>)
-          : undefined;
-      if (querySchemaObj && 'properties' in querySchemaObj) {
+      if (querySchema?.properties) {
         return {
-          input: { ...input, queryParams: querySchemaObj },
+          input: { ...input, queryParams: querySchema },
           output: info.output,
-        } as unknown as OutputSchema;
+        };
       }
     }
   }
 
-  return { input: info.input, output: info.output } as OutputSchema;
+  return { input, output: info.output };
 }
+
+/**
+ * A candidate v2 `outputSchema` value on an accept: an `input` structure plus
+ * optional `output` example/schema data.
+ */
+const v2OutputSchemaCandidateSchema = z3.object({
+  input: jsonObjectSchema3,
+  output: jsonValueSchema3.optional(),
+});
 
 // NOTE(shafu): we need this for the agent tools
-// obviously sloped up, should be fine though because the interface won't change
-export function coerceAcceptForV1Schema(params: {
-  x402Version: number;
-  accept: unknown;
-}): Record<string, unknown> {
+export function coerceAcceptForV1Schema<
+  A extends {
+    maxAmountRequired?: string | number | bigint;
+    outputSchema?: unknown;
+  },
+>(params: { x402Version: number; accept: A }) {
   const { x402Version, accept } = params;
+  const { maxAmountRequired, outputSchema, ...rest } = accept;
 
-  const base =
-    accept && typeof accept === 'object'
-      ? ({ ...(accept as Record<string, unknown>) } as Record<string, unknown>)
-      : ({} as Record<string, unknown>);
+  const coercedOutputSchema = (() => {
+    if (x402Version !== 2) return outputSchema;
 
-  if ('maxAmountRequired' in base) {
-    const v = base.maxAmountRequired;
-    if (typeof v === 'bigint') base.maxAmountRequired = v.toString();
-    else if (typeof v === 'number') base.maxAmountRequired = String(v);
-  }
+    const candidate = v2OutputSchemaCandidateSchema.safeParse(outputSchema);
+    if (!candidate.success) return undefined;
 
-  if (x402Version === 2) {
-    const outputSchema = base.outputSchema;
-    const coerced = (() => {
-      if (!outputSchema || typeof outputSchema !== 'object') return undefined;
-      if (!('input' in outputSchema)) return undefined;
+    const input: JsonObject = { ...candidate.data.input };
 
-      const schemaObj = outputSchema as { input?: unknown; output?: unknown };
-      if (!schemaObj.input || typeof schemaObj.input !== 'object') {
-        return undefined;
-      }
+    // Infer method if missing (bazaar often omits it)
+    if (!('method' in input)) {
+      input.method = input.body ? 'POST' : 'GET';
+    }
 
-      const input = { ...(schemaObj.input as Record<string, unknown>) };
-
-      // Infer method if missing (bazaar often omits it)
-      let inferredMethod: 'GET' | 'POST' = 'GET';
-      if (input.body) inferredMethod = 'POST';
-      else if (input.queryParams) inferredMethod = 'GET';
-      if (!('method' in input)) input.method = inferredMethod;
-
-      // Convert `body.properties` -> `bodyFields` (v1 expects Record<string, FieldDef>)
-      if (
-        input.body &&
-        typeof input.body === 'object' &&
-        input.body !== null &&
-        'properties' in (input.body as Record<string, unknown>)
-      ) {
-        input.bodyFields = (
-          input.body as { properties?: Record<string, unknown> }
-        ).properties;
+    // Convert `body.properties` -> `bodyFields` (v1 expects Record<string, FieldDef>)
+    const body = jsonObjectSchema3.safeParse(input.body);
+    if (body.success) {
+      const bodyProperties = body.data.properties;
+      if (bodyProperties !== undefined) {
+        input.bodyFields = bodyProperties;
         delete input.body;
       }
+    }
 
-      const parsed = outputSchemaV1.safeParse({
-        input,
-        output: schemaObj.output ?? null,
-      });
-      return parsed.success ? parsed.data : undefined;
-    })();
+    const parsed = outputSchemaV1.safeParse({
+      input,
+      output: candidate.data.output ?? null,
+    });
+    return parsed.success ? parsed.data : undefined;
+  })();
 
-    if (coerced) base.outputSchema = coerced;
-    else if ('outputSchema' in base) base.outputSchema = undefined;
-  }
-
-  return base;
+  return {
+    ...rest,
+    maxAmountRequired:
+      maxAmountRequired === undefined ? undefined : String(maxAmountRequired),
+    outputSchema: coercedOutputSchema,
+  };
 }
 
-export function isV2Response(data: unknown): data is X402ResponseV2 {
-  return (
-    typeof data === 'object' &&
-    data !== null &&
-    'x402Version' in data &&
-    data.x402Version === 2
-  );
+export function isV2Response(
+  response: ParsedX402Response
+): response is X402ResponseV2 {
+  return response.x402Version === 2;
 }
 
 /**

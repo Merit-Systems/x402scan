@@ -53,7 +53,7 @@ export const FetchEvm: React.FC<Props> = ({
     targetUrl,
     value: maxAmountRequired,
     chain,
-    init: typeof requestInit === 'function' ? requestInit(chain) : requestInit,
+    init: requestInit instanceof Function ? requestInit(chain) : requestInit,
     options: {
       ...options,
       onError: (...args) => {

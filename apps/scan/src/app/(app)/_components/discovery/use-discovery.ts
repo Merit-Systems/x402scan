@@ -21,6 +21,12 @@ import type { OriginPreview } from './discovery-panel';
 import { useBatchTest } from './use-batch-test';
 import { useOwnership } from './use-ownership';
 
+/** Invalid-resource badge info keyed by composite resource key. */
+export interface InvalidResourceStatus {
+  invalid: boolean;
+  reason?: string;
+}
+
 /**
  * Get the origin from a URL
  */
@@ -255,24 +261,22 @@ export function useDiscovery({
     [effectiveResources]
   );
   // Create map of compositeKey -> invalid status for displaying badges
-  const invalidResourcesMap: Record<
-    string,
-    { invalid: boolean; reason?: string }
-  > = useMemo(() => {
-    const map: Record<string, { invalid: boolean; reason?: string }> = {};
-    for (const resource of effectiveResources) {
-      if (resource.invalid) {
-        const entry: { invalid: boolean; reason?: string } = {
-          invalid: true,
-        };
-        if (resource.invalidReason) {
-          entry.reason = resource.invalidReason;
+  const invalidResourcesMap: Record<string, InvalidResourceStatus> =
+    useMemo(() => {
+      const map: Record<string, InvalidResourceStatus> = {};
+      for (const resource of effectiveResources) {
+        if (resource.invalid) {
+          const entry: InvalidResourceStatus = {
+            invalid: true,
+          };
+          if (resource.invalidReason) {
+            entry.reason = resource.invalidReason;
+          }
+          map[resourceKey(resource.url, resource.method)] = entry;
         }
-        map[resourceKey(resource.url, resource.method)] = entry;
       }
-    }
-    return map;
-  }, [effectiveResources]);
+      return map;
+    }, [effectiveResources]);
 
   // Create map of compositeKey -> authMode for displaying auth badges (e.g. SIWX).
   const authModeMap: Record<string, AuthMode> = useMemo(() => {

@@ -3,12 +3,19 @@ import { Button } from '@/components/ui/button';
 import type { ClientInstallComponent } from '../install';
 import { ClientIcon } from '@/app/mcp/_components/client-icon';
 import { Clients } from '@/app/mcp/_lib/clients';
+import { isBrowser } from '@/lib/runtime-env';
 
-const encodeConfig = (config: Record<string, unknown>) => {
+/** The MCP server launch config embedded in the Cursor deep link. */
+interface McpServerConfig {
+  command: string;
+  args: string[];
+}
+
+const encodeConfig = (config: McpServerConfig) => {
   const payload = JSON.stringify(config);
 
-  if (typeof globalThis.btoa === 'function') {
-    return globalThis.btoa(payload);
+  if (isBrowser) {
+    return window.btoa(payload);
   }
 
   return Buffer.from(payload, 'utf-8').toString('base64');
@@ -21,7 +28,7 @@ const cursorDeepLink = (invite?: string) => {
     args.push(`--invite ${invite}`);
   }
 
-  const config = {
+  const config: McpServerConfig = {
     command: 'npx',
     args,
   };

@@ -45,13 +45,13 @@ const listTopFacilitatorsUncached = async (
   const mvTimeframe = getMaterializedViewSuffix(timeframe);
   const tableName = `stats_aggregated_${mvTimeframe}`;
 
-  const sortColumnMap: Record<FacilitatorsSortId, string> = {
+  const sortColumnMap = {
     tx_count: 'tx_count',
     total_amount: 'total_amount',
     latest_block_timestamp: 'latest_block_timestamp',
     unique_buyers: 'unique_buyers',
     unique_sellers: 'unique_sellers',
-  };
+  } satisfies Record<FacilitatorsSortId, string>;
   const sortColumn = sortColumnMap[sorting.id];
   const sortDirection = Prisma.raw(sorting.desc ? 'DESC' : 'ASC');
 

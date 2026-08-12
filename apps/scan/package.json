@@ -87,7 +87,6 @@
     "@wallet-standard/react": "^1.0.1",
     "@x402/core": "catalog:x402",
     "@x402/evm": "catalog:x402",
-    "@x402/extensions": "catalog:x402",
     "@x402/fetch": "catalog:x402",
     "@x402/svm": "catalog:x402",
     "@x402scan/analytics-db": "workspace:*",

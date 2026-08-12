@@ -50,14 +50,14 @@ const listTopNetworksUncached = async (
   const mvTimeframe = getMaterializedViewSuffix(timeframe);
   const tableName = `stats_aggregated_${mvTimeframe}`;
 
-  const sortColumnMap: Record<NetworksSortId, string> = {
+  const sortColumnMap = {
     tx_count: 'tx_count',
     total_amount: 'total_amount',
     latest_block_timestamp: 'latest_block_timestamp',
     unique_buyers: 'unique_buyers',
     unique_sellers: 'unique_sellers',
     unique_facilitators: 'unique_facilitators',
-  };
+  } satisfies Record<NetworksSortId, string>;
   const sortColumn = sortColumnMap[sorting.id as NetworksSortId];
   const sortDirection = Prisma.raw(sorting.desc ? 'DESC' : 'ASC');
 
