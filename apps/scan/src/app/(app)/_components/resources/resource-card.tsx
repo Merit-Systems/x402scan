@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils';
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { toast } from 'sonner';
 
-import type { Methods } from '@/types/x402';
+import type { BazaarMethod } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402';
 import type { Resources, Tag } from '@x402scan/scan-db';
 
@@ -44,7 +44,7 @@ interface Props {
   resource: Resources;
   tags: Tag[];
   response: ParsedX402Response;
-  bazaarMethod: Methods;
+  bazaarMethod: BazaarMethod;
   className?: string;
   hideOrigin?: boolean;
   isFlat?: boolean;

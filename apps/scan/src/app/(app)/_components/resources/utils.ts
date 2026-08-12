@@ -4,6 +4,7 @@ import { formatCurrency, USDC_ADDRESS } from '@/lib/utils';
 import { jsonValueSchema } from '@/lib/json';
 import { Methods } from '@/types/x402';
 
+import type { BazaarMethod } from '@/types/x402';
 import type { Accepts } from '@x402scan/scan-db/types';
 
 interface PricingAccept {
@@ -119,11 +120,30 @@ export function formatPricingLabel(opts: {
 export { getResourceAuthMode, isFreeResource } from '@/lib/resource-auth';
 
 const methodsSchema = z.enum(Methods);
+const extendedMethodsSchema = z.enum(['OPTIONS', 'HEAD']);
 
-/** The subset of a bazaar output schema that determines the HTTP method. */
+/**
+ * Parse a stored method string into a displayable method, honoring the
+ * OPTIONS/HEAD methods that registration accepts beyond the Methods enum.
+ */
+export function toBazaarMethod(value: string): BazaarMethod | undefined {
+  const upper = value.toUpperCase();
+  const method = methodsSchema.safeParse(upper);
+  if (method.success) {
+    return method.data;
+  }
+  const extended = extendedMethodsSchema.safeParse(upper);
+  return extended.success ? extended.data : undefined;
+}
+
+/**
+ * The subset of a bazaar output schema that determines the HTTP method.
+ * A malformed `method` value (e.g. JSON null) is tolerated rather than
+ * failing the whole parse, so body/queryParams inference still applies.
+ */
 const bazaarMethodSchema = z.looseObject({
   input: z.looseObject({
-    method: z.string().optional(),
+    method: z.string().optional().catch(undefined),
     body: jsonValueSchema.optional(),
     bodyFields: jsonValueSchema.optional(),
     queryParams: jsonValueSchema.optional(),
@@ -132,16 +152,16 @@ const bazaarMethodSchema = z.looseObject({
 
 export function getBazaarMethod(
   outputSchema: Accepts['outputSchema'] | undefined
-): Methods {
+): BazaarMethod {
   const parsed = bazaarMethodSchema.safeParse(outputSchema);
   if (parsed.success) {
     const input = parsed.data.input;
 
     // Check explicit method first
     if (input.method) {
-      const method = methodsSchema.safeParse(input.method.toUpperCase());
-      if (method.success) {
-        return method.data;
+      const method = toBazaarMethod(input.method);
+      if (method) {
+        return method;
       }
     }
 

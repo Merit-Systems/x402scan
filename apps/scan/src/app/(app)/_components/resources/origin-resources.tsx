@@ -10,9 +10,8 @@ import {
 
 import { ResourceCard, LoadingResourceCard } from './resource-card';
 
-import { getBazaarMethod, isFreeResource } from './utils';
+import { getBazaarMethod, isFreeResource, toBazaarMethod } from './utils';
 import { serializeAccepts } from '@/lib/token';
-import { Methods } from '@/types/x402';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -59,9 +58,7 @@ export const OriginResources: React.FC<Props> = ({
           // Prefer the method stored in the DB (from discovery) over the
           // inferred method from the x402 schema (which defaults to POST).
           const bazaarMethod =
-            resource.method in Methods
-              ? (resource.method as Methods)
-              : getBazaarMethod(rawOutputSchema);
+            toBazaarMethod(resource.method) ?? getBazaarMethod(rawOutputSchema);
 
           return (
             <ResourceCard

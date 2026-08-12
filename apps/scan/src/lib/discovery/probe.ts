@@ -136,11 +136,13 @@ function pickInputSchemaFromSpec(
 }
 
 /**
- * Accepts entries from a raw 402 body: any JSON object advertising a `payTo`.
- * Invalid entries are dropped instead of failing the whole parse, matching
- * how leniently the wire format is treated elsewhere.
+ * Accepts entries from a raw 402 body: any JSON object advertising a string
+ * `payTo`. Invalid entries are dropped instead of failing the whole parse,
+ * matching how leniently the wire format is treated elsewhere. Requiring a
+ * string keeps the entries honest against the library's `payTo?: string`
+ * type that downstream consumers (e.g. address verification) rely on.
  */
-const acceptsEntrySchema = z.looseObject({ payTo: jsonValueSchema });
+const acceptsEntrySchema = z.looseObject({ payTo: z.string() });
 
 const paymentRequiredBodySchema = z.looseObject({
   accepts: z

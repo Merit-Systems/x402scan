@@ -8,6 +8,13 @@ export enum Methods {
   PATCH = 'PATCH',
 }
 
+/**
+ * HTTP methods a stored bazaar/v1 output schema can carry. Registration
+ * (v1HttpMethodSchema) also accepts OPTIONS and HEAD, which are displayed
+ * but have no dedicated UI treatment in the Methods enum.
+ */
+export type BazaarMethod = Methods | 'OPTIONS' | 'HEAD';
+
 export interface FieldDefinition {
   name: string;
   type?: string;

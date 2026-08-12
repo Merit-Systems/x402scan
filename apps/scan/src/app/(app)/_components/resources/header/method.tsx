@@ -3,11 +3,16 @@ import React from 'react';
 import { Methods } from '@/types/x402';
 import { cn } from '@/lib/utils';
 
+import type { BazaarMethod } from '@/types/x402';
+
 interface Props {
-  method?: Methods;
+  method?: BazaarMethod;
 }
 
 export const Method: React.FC<Props> = ({ method }) => {
+  const undefinedMethodClassName =
+    'bg-neutral-600/10 border border-neutral-600 text-neutral-600';
+
   const methodClassName = {
     [Methods.GET]: 'bg-green-600/10 border border-green-600 text-green-600',
     [Methods.POST]: 'bg-blue-600/10 border border-blue-600 text-blue-600',
@@ -15,10 +20,9 @@ export const Method: React.FC<Props> = ({ method }) => {
     [Methods.DELETE]: 'bg-red-600/10 border border-red-600 text-red-600',
     [Methods.PATCH]:
       'bg-purple-600/10 border border-purple-600 text-purple-600',
-  } satisfies Record<Methods, string>;
-
-  const undefinedMethodClassName =
-    'bg-neutral-600/10 border border-neutral-600 text-neutral-600';
+    OPTIONS: undefinedMethodClassName,
+    HEAD: undefinedMethodClassName,
+  } satisfies Record<BazaarMethod, string>;
 
   return (
     <div

@@ -5,7 +5,7 @@ import { Method } from './method';
 import { Tags } from '@/app/(app)/_components/tags';
 
 import type { Resources, Tag } from '@x402scan/scan-db/types';
-import type { Methods } from '@/types/x402';
+import type { BazaarMethod } from '@/types/x402';
 import { getDescription, type ParsedX402Response } from '@/lib/x402';
 import { getResourceMetadataDescription } from '@/lib/resource-auth';
 import { cleanExternalText } from '@/lib/utils';
@@ -14,7 +14,7 @@ import { X402V2Badge } from '@/app/(app)/_components/x402/v2-badge';
 interface Props {
   resource: Resources;
   tags: Tag[];
-  method: Methods;
+  method: BazaarMethod;
   response: ParsedX402Response;
   hideOrigin?: boolean;
 }
