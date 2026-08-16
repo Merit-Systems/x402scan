@@ -1,7 +1,6 @@
 import z from 'zod';
 import { revalidatePath } from 'next/cache';
 
-import { resourceKey } from '@/lib/resource-key';
 import {
   createTRPCRouter,
   paginatedProcedure,
@@ -23,6 +22,10 @@ import { scanDb } from '@x402scan/scan-db';
 import { mixedAddressSchema } from '@/lib/schemas';
 
 import { registerEndpoint } from '@/lib/discovery/register-endpoint';
+import {
+  normalizeRegistrationCandidates,
+  partitionRegistrationCandidates,
+} from '@/lib/discovery/registration-dedupe';
 import { registerResourcesFromDiscovery } from '@/lib/discovery/register-origin';
 import { urlMatchesDiscoveredResource } from '@/lib/url';
 import { TRPCError } from '@trpc/server';
@@ -299,11 +302,12 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
+      const candidates = normalizeRegistrationCandidates(input.resources);
       const registered = await scanDb.resources.findMany({
         where: {
-          OR: input.resources.map(r => ({
-            resource: r.url,
-            ...(r.method ? { method: r.method } : {}),
+          OR: candidates.map(candidate => ({
+            resource: candidate.resource,
+            ...(candidate.method ? { method: candidate.method } : {}),
           })),
         },
         select: {
@@ -312,17 +316,7 @@ export const resourcesRouter = createTRPCRouter({
         },
       });
 
-      const registeredKeys = new Set(
-        registered.map(r => resourceKey(r.resource, r.method))
-      );
-      return {
-        registered: input.resources
-          .filter(r => registeredKeys.has(resourceKey(r.url, r.method)))
-          .map(r => r.url),
-        unregistered: input.resources
-          .filter(r => !registeredKeys.has(resourceKey(r.url, r.method)))
-          .map(r => r.url),
-      };
+      return partitionRegistrationCandidates(candidates, registered);
     }),
 
   /**
