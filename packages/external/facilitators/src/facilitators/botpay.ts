@@ -26,7 +26,7 @@ export const botpayFacilitator = {
       {
         address: '0x4af9c96576d17bbd37e17814c040ebc73c12c956',
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2026-08-14'),
+        dateOfFirstTransaction: new Date('2026-08-15'),
       },
     ],
   },
