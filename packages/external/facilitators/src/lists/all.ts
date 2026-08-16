@@ -31,6 +31,7 @@ import {
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
+  botpayFacilitator,
 } from '../facilitators';
 
 import { validateUniqueFacilitators } from './validate';
@@ -70,6 +71,7 @@ const FACILITATORS = validateUniqueFacilitators([
   fluxaFacilitator,
   figmentFacilitator,
   threewsFacilitator,
+  botpayFacilitator,
 ]);
 
 export const allFacilitators: Facilitator[] =
