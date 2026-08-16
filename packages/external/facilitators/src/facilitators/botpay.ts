@@ -1,26 +1,55 @@
+import { createHash, createHmac } from 'node:crypto';
+
 import { Network } from '../types';
 import { USDC_BASE_TOKEN } from '../constants';
 
-import type { Facilitator, FacilitatorConfig } from '../types';
+import type { Facilitator, FacilitatorConfigConstructor } from '../types';
 
-export const botpay: FacilitatorConfig = {
-  url: 'https://facilitator.botpay.network',
-};
+interface BotPayProps {
+  apiKey: string;
+  apiSecret: string;
+}
 
-export const botpayDiscovery: FacilitatorConfig = {
+function createBotPayAuthHeaders(
+  apiKey: string,
+  apiSecret: string,
+  path: '/verify' | '/settle'
+) {
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const message = `${timestamp}\nPOST\n${path}`;
+  const hashedSecret = createHash('sha256').update(apiSecret).digest();
+  const signature = createHmac('sha256', hashedSecret)
+    .update(message)
+    .digest('hex');
+
+  return {
+    'X-API-Key': apiKey,
+    'X-Timestamp': timestamp,
+    'X-Signature': signature,
+  };
+}
+
+export const botpay: FacilitatorConfigConstructor<BotPayProps> = ({
+  apiKey,
+  apiSecret,
+}) => ({
   url: 'https://facilitator.botpay.network',
-};
+  createAuthHeaders: async () => ({
+    verify: createBotPayAuthHeaders(apiKey, apiSecret, '/verify'),
+    settle: createBotPayAuthHeaders(apiKey, apiSecret, '/settle'),
+    supported: {},
+  }),
+});
 
 export const botpayFacilitator = {
   id: 'botpay',
   metadata: {
     name: 'BotPay',
     image: 'https://x402scan.com/botpay.png',
-    docsUrl: 'https://botpay.network',
+    docsUrl: 'https://facilitator.botpay.network/docs',
     color: '#3F96FF',
   },
   config: botpay,
-  discoveryConfig: botpayDiscovery,
   addresses: {
     [Network.BASE]: [
       {
@@ -30,4 +59,4 @@ export const botpayFacilitator = {
       },
     ],
   },
-} as const satisfies Facilitator;
+} as const satisfies Facilitator<BotPayProps>;

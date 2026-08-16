@@ -126,7 +126,7 @@ This package includes pre-configured integrations for the following X402 facilit
 | **Bitrefill**        | BASE, SOLANA  | No        | No                           |
 | **Cascade**          | BASE, SOLANA  | No        | No                           |
 | **three.ws**         | SOLANA        | ✅ Yes    | No                           |
-| **BotPay**           | BASE          | No        | No                           |
+| **BotPay**           | BASE          | No        | Yes - API key & HMAC secret  |
 
 ### Import Individual Facilitators
 
