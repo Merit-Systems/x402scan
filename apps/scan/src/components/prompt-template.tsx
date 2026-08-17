@@ -118,7 +118,6 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
     let result = body;
     templateVars.forEach(v => {
       // Replace with value if filled, otherwise show just the label in template syntax
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally treating empty string as falsy
       const replacement = values[v.raw] || `{{${v.label}}}`;
       result = result.replaceAll(v.raw, replacement);
     });
@@ -147,7 +146,6 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
         const value = values[part];
         result.push(
           <span key={i} className="text-primary font-semibold">
-            {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally treating empty string as falsy */}
             {value || `{{${templateVar.label}}}`}
           </span>
         );

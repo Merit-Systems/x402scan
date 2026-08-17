@@ -25,7 +25,7 @@ export const RefreshButton: React.FC<{ origin: string }> = ({ origin }) => {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => void handleRefresh()}
+          onClick={() => handleRefresh()}
           disabled={isRegistering}
         >
           {isRegistering ? (

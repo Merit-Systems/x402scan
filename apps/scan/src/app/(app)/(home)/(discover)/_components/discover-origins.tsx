@@ -6,10 +6,7 @@ import { useSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/hook';
 import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
 
-import {
-  featuredServiceColumns as columns,
-  type FeaturedServiceItem,
-} from '@/app/(app)/(home)/(overview)/_components/sellers/featured-columns';
+import { featuredServiceColumns as columns } from '@/app/(app)/(home)/(overview)/_components/sellers/featured-columns';
 import { api } from '@/trpc/client';
 
 export const DiscoverSellersTable: React.FC = () => {
@@ -26,13 +23,7 @@ export const DiscoverSellersTable: React.FC = () => {
     sorting,
   });
 
-  return (
-    <DataTable
-      columns={columns}
-      data={topSellers.items as FeaturedServiceItem[]}
-      pageSize={15}
-    />
-  );
+  return <DataTable columns={columns} data={topSellers.items} pageSize={15} />;
 };
 
 export const LoadingDiscoverSellersTable = () => {

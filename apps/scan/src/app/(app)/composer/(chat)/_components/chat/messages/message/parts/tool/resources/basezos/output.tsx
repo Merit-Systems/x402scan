@@ -53,7 +53,6 @@ export const BasezosOutput: OutputComponent = ({ output, errorText }) => {
           className="group flex flex-col border rounded-lg overflow-hidden hover:border-primary transition-colors bg-card"
         >
           <div className="relative aspect-square bg-muted overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={item.image}
               alt={item.name}

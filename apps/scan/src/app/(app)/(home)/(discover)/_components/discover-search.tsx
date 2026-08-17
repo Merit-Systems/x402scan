@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { CornerDownLeft, Plus, Search, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -28,7 +30,7 @@ export const DiscoverSearchInput = () => {
     <div
       className="relative w-full md:flex-1"
       onBlur={event => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
           setIsFocused(false);
         }
       }}
@@ -165,10 +167,10 @@ export const DiscoverSearchResults = () => {
           No x402 results found. Try a different description.
         </p>
         <Button variant="outline" size="lg" asChild>
-          <a href="/resources/register">
+          <Link href="/resources/register">
             <Plus className="size-4" />
             Add your API
-          </a>
+          </Link>
         </Button>
       </div>
     );

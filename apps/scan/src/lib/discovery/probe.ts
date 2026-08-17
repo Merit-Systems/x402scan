@@ -47,14 +47,16 @@ function directProbe402(
         const chunks: Buffer[] = [];
         res.on('data', (chunk: Buffer) => chunks.push(chunk));
         res.on('end', () => {
+          let body: JsonValue;
           try {
-            const body = jsonValueSchema.parse(
+            body = jsonValueSchema.parse(
               JSON.parse(Buffer.concat(chunks).toString())
             );
-            resolve({ status: res.statusCode ?? 0, body });
           } catch {
             resolve(null);
+            return;
           }
+          resolve({ status: res.statusCode ?? 0, body });
         });
       }
     );

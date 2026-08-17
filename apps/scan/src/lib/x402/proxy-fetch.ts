@@ -69,7 +69,7 @@ export const fetchWithProxy = async (
   proxyUrl.searchParams.set('share_data', 'true');
 
   const { method = 'GET', ...restInit } = effectiveInit ?? {};
-  const normalizedMethod = method.toString().toUpperCase();
+  const normalizedMethod = method.toUpperCase();
 
   const headers = new Headers(effectiveInit?.headers);
 

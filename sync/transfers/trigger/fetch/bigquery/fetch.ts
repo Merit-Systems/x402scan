@@ -15,7 +15,6 @@ export async function fetchBigQuery(
   now: Date
 ): Promise<TransferEventData[]> {
   const bq = new BigQuery({
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     credentials: JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS!),
   });
 

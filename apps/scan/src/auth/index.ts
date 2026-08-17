@@ -108,7 +108,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
 
         const createdSession = await scanDb.session.create({
           data: {
-            sessionToken: sessionToken.toString(),
+            sessionToken: sessionToken,
             userId: params.token.sub,
             expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
           },

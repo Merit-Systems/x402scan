@@ -257,7 +257,7 @@ const formatDiffByFormat = (obj: object, format: FileFormat) => {
           const diffLines = [0, 1, numLines - 2, numLines - 1];
           const isDiffLine = !diffLines.includes(index);
           if (isDiffLine) {
-            return `${chalk.bold.green(`+ ${line.slice(2)}`)}`;
+            return chalk.bold.green(`+ ${line.slice(2)}`);
           }
           return line;
         })
@@ -270,7 +270,7 @@ const formatDiffByFormat = (obj: object, format: FileFormat) => {
           const diffLines = [0, 1, str.length - 2, str.length - 1];
           const isDiffLine = !diffLines.includes(index);
           if (isDiffLine) {
-            return `${chalk.bold.green(`+ ${line.slice(2)}`)}`;
+            return chalk.bold.green(`+ ${line.slice(2)}`);
           }
           return line;
         })
@@ -281,7 +281,7 @@ const formatDiffByFormat = (obj: object, format: FileFormat) => {
         .split('\n')
         .filter(line => line.trim() !== '')
         .map(line => {
-          return `${chalk.bold.green(`+ ${line.trim()}`)}`;
+          return chalk.bold.green(`+ ${line.trim()}`);
         })
         .join('\n');
     }

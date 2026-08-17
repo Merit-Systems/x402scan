@@ -1795,7 +1795,6 @@ function OriginPreviewCard({
       </div>
       {origin.ogImages.length > 0 && (
         <div className="border-l hidden md:flex items-center justify-center bg-muted p-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={origin.ogImages[0]!.url}
             alt={origin.title ? cleanExternalText(origin.title) : ''}

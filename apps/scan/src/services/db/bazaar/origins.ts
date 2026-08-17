@@ -113,7 +113,7 @@ const listBazaarOriginsUncached = async (
       originMap.set(originId, {
         originId,
         origins,
-        recipients: [item.recipient as MixedAddress],
+        recipients: [item.recipient],
         facilitators: [...item.facilitator_ids],
         tx_count: item.tx_count,
         total_amount: item.total_amount,

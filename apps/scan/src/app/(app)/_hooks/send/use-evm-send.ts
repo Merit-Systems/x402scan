@@ -17,7 +17,7 @@ import type { X402FetchResponse } from '../x402/types';
 
 interface Props {
   token?: Token;
-  onSuccess?: (data: X402FetchResponse<unknown>) => void;
+  onSuccess?: (data: X402FetchResponse) => void;
   toastMessage?: (amount: number) => string;
   address?: string;
   amount?: number;
@@ -80,7 +80,7 @@ export const useEvmSend = (props?: Props) => {
         );
         for (let i = 0; i < 5; i++) {
           setTimeout(() => {
-            void invalidateBalance();
+            invalidateBalance();
           }, i * 1000);
         }
         onSuccess?.(data);

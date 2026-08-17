@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useMemo, useState } from 'react';
 
 import { ChevronDown, Info, Loader2, Plus, RefreshCw, X } from 'lucide-react';
@@ -102,12 +104,12 @@ export const TestEndpointForm = () => {
                     /openapi.json
                   </code>{' '}
                   to enable automatic resource discovery.{' '}
-                  <a
+                  <Link
                     href="/discovery/spec"
                     className="underline hover:no-underline font-medium"
                   >
                     Learn more
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>

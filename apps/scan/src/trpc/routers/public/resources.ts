@@ -157,7 +157,7 @@ export const resourcesRouter = createTRPCRouter({
       }
 
       const urlInSpec = discoveryResult.resources.some(r =>
-        urlMatchesDiscoveredResource(input.url.toString(), r.url)
+        urlMatchesDiscoveredResource(input.url, r.url)
       );
 
       if (!urlInSpec) {
@@ -171,7 +171,7 @@ export const resourcesRouter = createTRPCRouter({
         };
       }
 
-      const result = await registerEndpoint(input.url.toString());
+      const result = await registerEndpoint(input.url);
       try {
         if (result.success && result.resource?.origin?.id) {
           revalidatePath(`/server/${result.resource.origin.id}`);

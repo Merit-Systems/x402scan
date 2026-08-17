@@ -59,7 +59,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
         <CardFooter className="flex flex-row gap-2 p-3 pt-0">
           <FooterStat
             Icon={Activity}
-            value={Number(origin.tx_count)}
+            value={origin.tx_count}
             className="text-primary font-bold"
           />
           <FooterStat
@@ -69,7 +69,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
           />
           <FooterStat
             Icon={Users}
-            value={Number(origin.unique_buyers)}
+            value={origin.unique_buyers}
             className="justify-end"
           />
         </CardFooter>

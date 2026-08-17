@@ -300,4 +300,4 @@ export const coinbaseFacilitator = {
       },
     ],
   },
-} as const satisfies Facilitator<void>;
+} as const satisfies Facilitator;

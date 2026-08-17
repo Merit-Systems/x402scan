@@ -54,8 +54,8 @@ export const TransferButton: React.FC<Props> = ({
     onSuccess: ({ paymentResponse }) => {
       for (let i = 0; i < 3; i++) {
         setTimeout(() => {
-          void invalidateBalance();
-          void invalidateToBalance();
+          invalidateBalance();
+          invalidateToBalance();
         }, i * 1000);
       }
       if (paymentResponse) {

@@ -40,7 +40,7 @@ export const ToolCallsChart = ({
     });
 
   const isLessThan7Days = useMemo(() => {
-    return Number(timeframe) < 7;
+    return timeframe < 7;
   }, [timeframe]);
 
   const toolCallsChartData = useMemo<ChartData<ToolCallData>[]>(() => {

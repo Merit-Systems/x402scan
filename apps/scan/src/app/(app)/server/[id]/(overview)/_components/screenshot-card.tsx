@@ -53,8 +53,10 @@ export async function fetchImageAsDataUrl(url: string): Promise<string | null> {
     const blob = await res.blob();
     return new Promise(resolve => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = () => resolve(null);
+      reader.addEventListener('loadend', () =>
+        resolve(reader.result as string)
+      );
+      reader.addEventListener('error', () => resolve(null));
       reader.readAsDataURL(blob);
     });
   } catch {
@@ -405,7 +407,6 @@ export const ScreenshotCard: React.FC<Props> = ({
                 gap: 12,
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={logoDataUrl}
                 alt=""

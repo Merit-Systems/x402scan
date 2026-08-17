@@ -60,7 +60,6 @@ export const OnrampSessionDialog: React.FC = () => {
 
   useEffect(() => {
     if (searchParams.get('onramp_token')) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSessionToken(searchParams.get('onramp_token') ?? null);
       setIsSessionDialogOpen(true);
     }
@@ -81,14 +80,12 @@ export const OnrampSessionDialog: React.FC = () => {
 
   useEffect(() => {
     if (isErrorSession) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsError(true);
     }
   }, [isErrorSession]);
 
   useEffect(() => {
     if (session && ['succeeded', 'failed'].includes(session.status)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsCompleted(true);
 
       // Invalidate balance query when session is completed
@@ -96,9 +93,9 @@ export const OnrampSessionDialog: React.FC = () => {
         for (let i = 0; i < 3; i++) {
           setTimeout(() => {
             if (networkParam === Chain.SOLANA) {
-              void invalidateSolanaBalance();
+              invalidateSolanaBalance();
             } else {
-              void invalidateEvmBalance();
+              invalidateEvmBalance();
             }
           }, i * 1000);
         }
@@ -126,7 +123,7 @@ export const OnrampSessionDialog: React.FC = () => {
             <Loading
               value={session}
               isLoading={isLoadingSession}
-              component={session => `${formatCurrency(session.amount)}`}
+              component={session => formatCurrency(session.amount)}
               loadingComponent={<Skeleton className="h-10 w-24" />}
               errorComponent={'No Deposit Found'}
             />

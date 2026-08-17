@@ -33,7 +33,8 @@ export const createOnrampSession = async (
       ? undefined
       : (heads.get('x-forwarded-for') ?? undefined);
 
-  // eslint-disable-next-line @typescript-eslint/await-thenable
+  // Stripe's resource types mislabel this as non-thenable; it is a Promise.
+  // oxlint-disable-next-line typescript/await-thenable
   const onrampSession = await new OnrampSessionResource(stripe).create({
     source_currency: 'usd',
     destination_network: 'base',
@@ -42,7 +43,7 @@ export const createOnrampSession = async (
     destination_networks: ['base'],
     wallet_address: input.address,
     lock_wallet_address: true,
-    destination_amount: input.amount ? `${input.amount.toFixed(6)}` : undefined,
+    destination_amount: input.amount ? input.amount.toFixed(6) : undefined,
     customer_ip_address: clientIpAddress,
   });
 
@@ -56,7 +57,8 @@ const createOnrampSessionResponseSchema = z.object({
 });
 
 export const getStripeOnrampSession = async (id: string) => {
-  // eslint-disable-next-line @typescript-eslint/await-thenable
+  // Stripe's resource types mislabel this as non-thenable; it is a Promise.
+  // oxlint-disable-next-line typescript/await-thenable
   const onrampSession = await new OnrampSessionResource(stripe).get(id);
   return stripeOnrampSessionSchema.parse(onrampSession);
 };

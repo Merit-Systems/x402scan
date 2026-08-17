@@ -26,10 +26,7 @@ export const ConnectInjectedWalletButton: React.FC<Props> = ({
       onClick={onClick}
       disabled={isPending}
     >
-      {icon && !isPending && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={icon} alt={name} className="size-4" />
-      )}
+      {icon && !isPending && <img src={icon} alt={name} className="size-4" />}
       {isPending && <Loader2 className="size-4 animate-spin" />}
       {prefix ? `${prefix} ${name}` : name}
     </Button>

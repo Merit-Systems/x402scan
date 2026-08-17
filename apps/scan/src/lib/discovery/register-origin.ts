@@ -363,7 +363,7 @@ export async function registerResourcesFromDiscovery(
     if (result.status === 'fulfilled' && result.value) {
       const value = result.value;
       if ('success' in value && value.success) {
-        if ('free' in value && value.free === true) {
+        if ('free' in value && value.free) {
           freeResults.push({
             url: resourceUrl,
             method: resourceMethod,

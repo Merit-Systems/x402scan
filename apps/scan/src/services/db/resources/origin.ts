@@ -30,7 +30,7 @@ function getDisplayableAcceptsWhere({
   return {
     payTo: address,
     ...(chain
-      ? { network: chain as AcceptsNetwork }
+      ? { network: chain }
       : { network: { in: SUPPORTED_ACCEPT_NETWORKS } }),
   };
 }

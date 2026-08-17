@@ -13,7 +13,7 @@ import { upsertResourceSchema } from './resource-schema';
 import { ensureOriginExists, freeAuthModeFilters } from './origin';
 
 import type { PaginatedQueryParams } from '@/lib/pagination';
-import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
+import type { Prisma } from '@x402scan/scan-db';
 import type { SupportedChain } from '@/types/chain';
 
 import {
@@ -115,14 +115,14 @@ export const upsertResource = async (
             resourceId_scheme_network: {
               resourceId: resource.id,
               scheme: baseAccepts.scheme,
-              network: baseAccepts.network as AcceptsNetwork,
+              network: baseAccepts.network,
             },
           },
           create: {
             resourceId: resource.id,
             scheme: baseAccepts.scheme,
             description: baseAccepts.description,
-            network: baseAccepts.network as AcceptsNetwork,
+            network: baseAccepts.network,
             maxAmountRequired: BigInt(baseAccepts.maxAmountRequired),
             resource: resource.resource,
             mimeType: baseAccepts.mimeType,

@@ -89,7 +89,6 @@ export const EditMetadataModal = ({
   useEffect(() => {
     if (open) {
       if (existingMetadata) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setHeaders(JSON.stringify(existingMetadata.headers, null, 2));
         setBody(JSON.stringify(existingMetadata.body, null, 2));
         setQueryParams(JSON.stringify(existingMetadata.queryParams, null, 2));
@@ -108,7 +107,8 @@ export const EditMetadataModal = ({
       return jsonObjectSchema.parse(JSON.parse(jsonString));
     } catch (error) {
       throw new Error(
-        `Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       );
     }
   };

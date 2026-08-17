@@ -405,8 +405,15 @@ const normalizeCacheKeyValue = (
     return roundDateToInterval(value);
   }
   if (isParamArray(value)) {
-    // Sort arrays for consistent keys
-    return [...value].sort();
+    // Sort arrays for consistent keys; explicit comparator replicates the
+    // default UTF-16 string ordering without locale sensitivity. Object
+    // elements stringifying to '[object Object]' matches the previous
+    // default-sort behavior, so existing cache keys are preserved.
+    /* oxlint-disable typescript/no-base-to-string */
+    return [...value].sort((a, b) =>
+      String(a) < String(b) ? -1 : String(a) > String(b) ? 1 : 0
+    );
+    /* oxlint-enable typescript/no-base-to-string */
   }
   if (isNestedParams(value)) {
     // Recursively normalize nested objects

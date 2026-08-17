@@ -13,7 +13,6 @@ export const AgentCashAnnouncementBanner = () => {
   useEffect(() => {
     // Check localStorage on mount (effects only run in the browser)
     const dismissed = localStorage.getItem(STORAGE_KEY);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsDismissed(dismissed === 'true');
   }, []);
 

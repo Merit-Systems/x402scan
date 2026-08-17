@@ -21,8 +21,6 @@
     "build": "tsup",
     "prepublishOnly": "pnpm run build",
     "types:check": "tsc --noEmit",
-    "lint": "eslint . --max-warnings 0",
-    "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./packages/external/facilitators",
     "format": "pnpm -w format:dir ./packages/external/facilitators",
     "format:check": "pnpm -w format:check:dir ./packages/external/facilitators"
@@ -43,10 +41,8 @@
     "directory": "facilitators"
   },
   "devDependencies": {
-    "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:"
   },

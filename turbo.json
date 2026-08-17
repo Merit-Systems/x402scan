@@ -12,25 +12,27 @@
       "dependsOn": ["^build", "^db:generate", "^db:deploy"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
-    "lint": {
-      "description": "Run ESLint to check code quality",
+    "//#lint": {
+      "description": "Run oxlint (type-aware) across the whole repo",
       "dependsOn": [
-        "^types:generate",
-        "^build",
-        "^db:generate",
-        "types:generate",
-        "db:generate"
+        "@x402scan/scan-db#db:generate",
+        "@x402scan/transfers-db#db:generate",
+        "@x402scan/app#types:generate",
+        "@x402scan/neverthrow#build",
+        "@x402scan/mcp#build",
+        "facilitators#build",
+        "@x402scan/partners-db#build",
+        "@x402scan/analytics-db#build"
+      ],
+      "inputs": [
+        "**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts}",
+        "**/tsconfig*.json",
+        ".oxlintrc.json"
       ]
     },
-    "lint:fix": {
-      "description": "Run ESLint and automatically fix issues",
-      "dependsOn": [
-        "^types:generate",
-        "^build",
-        "^db:generate",
-        "types:generate",
-        "db:generate"
-      ]
+    "//#lint:fix": {
+      "description": "Run oxlint and automatically fix issues",
+      "cache": false
     },
     "dev": {
       "description": "Start development server with hot reload",

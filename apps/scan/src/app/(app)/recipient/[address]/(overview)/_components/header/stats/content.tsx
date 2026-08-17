@@ -36,12 +36,12 @@ export const StatsCardsContent: React.FC<Props> = ({ address }) => {
   });
 
   const values = [
-    Number(overallStats.total_transactions).toLocaleString(undefined, {
+    overallStats.total_transactions.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
       notation: 'compact',
     }),
-    Number(overallStats.unique_buyers).toLocaleString(undefined, {
+    overallStats.unique_buyers.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
       notation: 'compact',

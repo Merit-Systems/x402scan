@@ -101,7 +101,6 @@ export const POST = async (request: NextRequest) => {
 
   const parsedLastMessage = messageSchema.safeParse({
     ...rawLastMessage,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     parts: JSON.parse(rawLastMessage!.parts as string),
   });
   if (!parsedLastMessage.success) {
@@ -140,9 +139,7 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  const accept = resource.accepts?.find(
-    accept => accept.network.toString() === chain.toString()
-  );
+  const accept = resource.accepts?.find(accept => accept.network === chain);
 
   if (!accept) {
     return NextResponse.json(
@@ -209,11 +206,11 @@ export const POST = async (request: NextRequest) => {
   }
   // For POST/PUT/PATCH/DELETE: send as JSON body
   else {
-    requestInit.body = JSON.stringify({ ...parameters });
+    requestInit.body = JSON.stringify(parameters);
+    // HeadersInit may be a Headers instance or entry array; normalize before
+    // merging — spreading those into an object literal drops/garbles them.
     requestInit.headers = {
-      ...(requestInit.headers instanceof Headers
-        ? Object.fromEntries(requestInit.headers.entries())
-        : requestInit.headers),
+      ...Object.fromEntries(new Headers(requestInit.headers).entries()),
       'Content-Type': 'application/json',
     };
   }
@@ -245,7 +242,6 @@ export const POST = async (request: NextRequest) => {
 
   const response = await fetchWithProxy(url, requestInit);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const data = await response.json();
 
   after(async () => {

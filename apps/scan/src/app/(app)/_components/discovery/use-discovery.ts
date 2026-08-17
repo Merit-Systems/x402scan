@@ -373,7 +373,7 @@ export function useDiscovery({
 
     // Origin preview
     isPreviewLoading: previewQuery.isLoading,
-    preview: (previewQuery.data?.preview ?? null) as OriginPreview | null,
+    preview: previewQuery.data?.preview ?? null,
 
     // Test results
     isBatchTestLoading: batchTest.isLoading,

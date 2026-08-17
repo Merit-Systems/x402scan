@@ -27,7 +27,9 @@ export const cdpFetch = async <T>(
     ...init,
     method: request.requestMethod,
     headers: {
-      ...init?.headers,
+      // HeadersInit may be a Headers instance or entry array; normalize before
+      // merging — spreading those into an object literal drops/garbles them.
+      ...Object.fromEntries(new Headers(init?.headers).entries()),
       'Content-Type': 'application/json',
       Authorization: `Bearer ${jwt}`,
     },

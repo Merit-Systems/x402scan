@@ -54,7 +54,6 @@ const StripeSessionContent: React.FC<{
       session?.status === 'fulfillment_complete' ||
       session?.status === 'error'
     ) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsCompleted(true);
     }
   }, [session]);

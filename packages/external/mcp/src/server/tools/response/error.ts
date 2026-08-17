@@ -29,7 +29,6 @@ export const mcpErrorJson = (error: JsonObject): CallToolResult => {
 };
 
 export const mcpError = async (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   err: Err<any, BaseX402Error | BaseFetchError | BaseError>
 ) => {
   const { error } = err;

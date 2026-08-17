@@ -71,6 +71,9 @@ export function createTab<T extends Record<string, number>, TItem extends Item>(
     },
     items: {
       type: 'bar',
+      // Copy-then-reverse: toReversed() needs lib es2023, above this repo's
+      // es2022 target, and the spread already protects the original array.
+      // oxlint-disable-next-line unicorn/no-array-reverse
       bars: [...options.items].reverse().map(item => ({
         dataKey: `${getKey(item)}-${dataType}` as keyof T,
         name: item.name,

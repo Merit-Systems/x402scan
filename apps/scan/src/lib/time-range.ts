@@ -58,8 +58,8 @@ export const getBucketedTimeRangeFromTimeframe = async ({
 
   // Handle All Time (0) and ThirtyDays - use creation date as start
   if (
-    period === Number(ActivityTimeframe.AllTime) ||
-    period === Number(ActivityTimeframe.ThirtyDays)
+    period === ActivityTimeframe.AllTime ||
+    period === ActivityTimeframe.ThirtyDays
   ) {
     return {
       startDate:

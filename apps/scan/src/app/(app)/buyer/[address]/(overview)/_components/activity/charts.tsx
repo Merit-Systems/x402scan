@@ -55,14 +55,11 @@ export const ActivityCharts: React.FC<Props> = ({ address }) => {
           trigger: {
             value: 'total_transactions',
             label: 'Transactions',
-            amount: Number(overallStats.total_transactions).toLocaleString(
-              undefined,
-              {
-                notation: 'compact',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              }
-            ),
+            amount: overallStats.total_transactions.toLocaleString(undefined, {
+              notation: 'compact',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
+            }),
           },
           items: {
             type: 'bar',
@@ -90,14 +87,11 @@ export const ActivityCharts: React.FC<Props> = ({ address }) => {
           trigger: {
             value: 'unique_sellers',
             label: 'Sellers',
-            amount: Number(overallStats.unique_sellers).toLocaleString(
-              undefined,
-              {
-                notation: 'compact',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              }
-            ),
+            amount: overallStats.unique_sellers.toLocaleString(undefined, {
+              notation: 'compact',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
+            }),
           },
           items: {
             type: 'bar',

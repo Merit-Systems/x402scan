@@ -1,7 +1,6 @@
 import type { FileFormat } from './lib/file-types';
 import type { BaseError } from '@x402scan/neverthrow/types';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ClientConfigObject = Record<string, any>;
 
 export interface ClientConfigFile {

@@ -10,8 +10,6 @@
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
     "types:check": "tsc --noEmit",
-    "lint": "eslint . --max-warnings 0",
-    "lint:fix": "eslint . --fix",
     "knip": "pnpm -w knip --workspace ./sync/analytics",
     "format": "pnpm -w format:dir ./sync/analytics",
     "format:check": "pnpm -w format:check:dir ./sync/analytics"
@@ -22,11 +20,9 @@
     "@trigger.dev/sdk": "catalog:trigger"
   },
   "devDependencies": {
-    "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "@trigger.dev/build": "catalog:trigger",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
     "trigger.dev": "catalog:trigger",
     "typescript": "catalog:"
   }

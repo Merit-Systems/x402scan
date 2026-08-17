@@ -9,10 +9,75 @@
     "**/generated/**",
     "**/*.gen.ts"
   ],
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "react",
+    "nextjs",
+    "promise",
+    "node"
+  ],
+  "options": {
+    "typeAware": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error"
+  },
   "jsPlugins": [
     { "name": "anti-slop", "specifier": "./tools/oxlint/anti-slop/index.ts" }
   ],
   "rules": {
+    // Parity with the previous typescript-eslint config.
+    "typescript/consistent-type-imports": [
+      "error",
+      { "fixStyle": "separate-type-imports" }
+    ],
+    // Curated additions: high-signal bug catchers not on by default.
+    "import/no-cycle": "error",
+    "import/no-self-import": "error",
+    "import/no-empty-named-blocks": "error",
+    "promise/no-multiple-resolved": "error",
+    "unicorn/no-instanceof-builtins": [
+      "error",
+      { "exclude": ["Function"] }
+    ],
+    "unicorn/require-post-message-target-origin": "error",
+
+    // The app uses the automatic JSX runtime; React never needs importing.
+    "react/react-in-jsx-scope": "off",
+    // Plain <img> is intentional for external/user-supplied image URLs
+    // (screenshots, avatars) that next/image cannot optimize.
+    "nextjs/no-img-element": "off",
+    // Next.js App Router route handlers are async by design.
+    "oxc/no-async-endpoint-handlers": "off",
+    // Side-effect imports are load-bearing here (global CSS, instrumentation).
+    "import/no-unassigned-import": "off",
+    // `import * as z` style namespace member access is intentional.
+    "import/no-named-as-default-member": "off",
+    // Sequential awaits in loops are deliberate in sync jobs (rate limits).
+    "no-await-in-loop": "off",
+    // Not enforced by the previous config; too churny to adopt wholesale now.
+    "no-shadow": "off",
+    "no-underscore-dangle": "off",
+    "typescript/no-unsafe-type-assertion": "off",
+    // Flags intentional numeric-enum arithmetic (day-count timeframes) and
+    // cross-enum network checks the previous typescript-eslint setup accepted.
+    "typescript/no-unsafe-enum-comparison": "off",
+    "typescript/no-unnecessary-type-parameters": "off",
+    "typescript/consistent-return": "off",
+    "react/no-array-index-key": "off",
+    "react/no-unstable-nested-components": "off",
+    "react/no-object-type-as-default-prop": "off",
+    "react/jsx-no-constructed-context-values": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "unicorn/no-array-sort": "off",
+    "oxc/no-map-spread": "off",
+    "promise/always-return": "off",
+
     "anti-slop/no-chained-type-assertions": "error",
     "anti-slop/no-conditional-empty-object-spread": "error",
     "anti-slop/no-known-value-widening": "error",

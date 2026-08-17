@@ -97,7 +97,7 @@ export const OriginsCarouselClient = <T extends string>({
         <div className="flex gap-2">
           {items.map(origin => (
             <div
-              key={`${origin.origins.map(o => o.origin).join(',')}`}
+              key={origin.origins.map(o => o.origin).join(',')}
               className={cn(
                 'flex-[0_0_80%]',
                 'sm:flex-[0_0_40%]',
