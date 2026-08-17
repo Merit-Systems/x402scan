@@ -67,7 +67,7 @@ export const upsertResource = async (
     if (existingMetadata.success) {
       const existingRest = { ...existingMetadata.data };
       delete existingRest.authMode;
-      mergedMetadata = { ...existingRest, ...(baseResource.metadata ?? {}) };
+      mergedMetadata = { ...existingRest, ...baseResource.metadata };
     }
 
     const { origin, ...resource } = await tx.resources.upsert({
