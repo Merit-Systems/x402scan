@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* oxlint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import type { MotionProps } from 'motion/react';
@@ -43,7 +43,7 @@ export const AnimatedSpan = ({
   ...props
 }: AnimatedSpanProps) => {
   const elementRef = useRef<HTMLDivElement | null>(null);
-  const isInView = useInView(elementRef as React.RefObject<Element>, {
+  const isInView = useInView(elementRef, {
     amount: 0.3,
     once: true,
   });
@@ -102,10 +102,6 @@ export const TypingAnimation = ({
   startOnView = true,
   ...props
 }: TypingAnimationProps) => {
-  if (typeof children !== 'string') {
-    throw new Error('TypingAnimation: children must be a string. Received:');
-  }
-
   const MotionComponent = useMemo(
     () =>
       motion.create(Component, {
@@ -117,7 +113,7 @@ export const TypingAnimation = ({
   const [displayedText, setDisplayedText] = useState<string>('');
   const [started, setStarted] = useState(false);
   const elementRef = useRef<HTMLElement | null>(null);
-  const isInView = useInView(elementRef as React.RefObject<Element>, {
+  const isInView = useInView(elementRef, {
     amount: 0.3,
     once: true,
   });
@@ -200,7 +196,7 @@ export const Terminal = ({
   startOnView = true,
 }: TerminalProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const isInView = useInView(containerRef as React.RefObject<Element>, {
+  const isInView = useInView(containerRef, {
     amount: 0.3,
     once: true,
   });

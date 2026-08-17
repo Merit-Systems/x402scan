@@ -55,7 +55,6 @@ const FreepikImageDisplay: React.FC<{ task_id: string }> = ({ task_id }) => {
 
   useEffect(() => {
     if (task?.data.status === 'COMPLETED') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsTaskFetched(true);
     }
   }, [task, task_id]);
@@ -71,7 +70,6 @@ const FreepikImageDisplay: React.FC<{ task_id: string }> = ({ task_id }) => {
   return (
     <div className="max-h-48">
       {task?.data.generated.map(image => (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           key={image}
           src={image}

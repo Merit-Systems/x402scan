@@ -14,8 +14,6 @@ import {
 
 import { scanDb } from '@x402scan/scan-db';
 
-import { auth } from '@/auth';
-
 import { SIWS_PROVIDER_ID, SIWS_PROVIDER_NAME } from './constants';
 
 import { solanaAddressSchema } from '@/lib/schemas';
@@ -54,6 +52,9 @@ function SiwsProvider(options?: Partial<CredentialsConfig>) {
         throw new Error('Invalid signature');
       }
 
+      // Imported lazily: '@/auth' statically imports this provider, so a
+      // top-level import would create a module cycle.
+      const { auth } = await import('@/auth');
       const session = await auth();
 
       if (session?.user?.id) {

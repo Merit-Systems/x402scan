@@ -83,19 +83,20 @@ export async function searchDiscover(query: string): Promise<SearchResult[]> {
   const byOrigin = new Map<string, SearchResult>();
   for (const row of data.results ?? []) {
     if (byOrigin.has(row.originUrl)) continue;
+    const endpoint: SearchResultEndpoint = {
+      method: row.method,
+      path: row.path,
+      summary: row.title,
+    };
+    if (row.authMode != null) endpoint.authMode = row.authMode;
+    if (row.price != null) endpoint.price = row.price;
     byOrigin.set(row.originUrl, {
       origin: row.originUrl,
       title: row.originTitle || row.originUrl,
       description: '',
       favicon: row.favicon,
       protocols: row.protocols,
-      endpoint: {
-        method: row.method,
-        path: row.path,
-        summary: row.title,
-        ...(row.authMode != null ? { authMode: row.authMode } : {}),
-        ...(row.price != null ? { price: row.price } : {}),
-      },
+      endpoint,
     });
   }
 

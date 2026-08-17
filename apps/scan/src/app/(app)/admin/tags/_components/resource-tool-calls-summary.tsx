@@ -17,7 +17,6 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { api } from '@/trpc/client';
 import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type ResourceToolCallData = {
   total_tool_calls: number;
 };
@@ -40,7 +39,7 @@ export const ResourceToolCallsSummary = ({
 
   // Calculate if range is less than 7 days
   const isLessThan7Days = useMemo(() => {
-    return Number(timeframe) < 7;
+    return timeframe < 7;
   }, [timeframe]);
 
   // Transform tool calls data for chart

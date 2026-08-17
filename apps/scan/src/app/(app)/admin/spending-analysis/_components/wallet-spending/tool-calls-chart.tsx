@@ -17,7 +17,6 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { api } from '@/trpc/client';
 import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type ToolCallData = {
   total_tool_calls: number;
 };
@@ -41,7 +40,7 @@ export const ToolCallsChart = ({
     });
 
   const isLessThan7Days = useMemo(() => {
-    return Number(timeframe) < 7;
+    return timeframe < 7;
   }, [timeframe]);
 
   const toolCallsChartData = useMemo<ChartData<ToolCallData>[]>(() => {

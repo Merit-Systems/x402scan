@@ -26,8 +26,7 @@ export const BaseLineChart = <
       tooltipRows={tooltipRows}
       margin={margin}
     >
-      {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-      {lines.map(({ dataKey, color, ref, ...lineProps }, index) => {
+      {lines.map(({ dataKey, color, ref: _ref, ...lineProps }, index) => {
         return (
           <Line
             key={dataKey as string}

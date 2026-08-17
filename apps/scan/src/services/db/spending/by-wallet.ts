@@ -46,12 +46,12 @@ const getSpendingByWalletUncached = async (
   const orderByColumn = sorting?.id ?? 'totalMaxAmount';
   const orderDirection = (sorting?.desc ?? true) ? 'DESC' : 'ASC';
 
-  const orderByMap: Record<WalletSpendingSortId, string> = {
+  const orderByMap = {
     walletName: 'sw."walletName"',
     totalToolCalls: 'COUNT(DISTINCT tc.id)',
     uniqueResources: 'COUNT(DISTINCT tc."resourceId")',
     totalMaxAmount: 'COALESCE(SUM(a."maxAmountRequired"), 0)',
-  };
+  } satisfies Record<WalletSpendingSortId, string>;
 
   const orderByClause = Prisma.raw(
     `${orderByMap[orderByColumn]} ${orderDirection}`
@@ -128,12 +128,12 @@ const getToolBreakdownByWalletUncached = async (
   const orderByColumn = sorting?.id ?? 'totalMaxAmount';
   const orderDirection = (sorting?.desc ?? true) ? 'DESC' : 'ASC';
 
-  const orderByMap: Record<ToolBreakdownSortId, string> = {
+  const orderByMap = {
     resourceUrl: 'r.resource',
     toolCalls: 'COUNT(tc.id)',
     maxAmountPerCall: 'MAX(a."maxAmountRequired")',
     totalMaxAmount: 'COALESCE(SUM(a."maxAmountRequired"), 0)',
-  };
+  } satisfies Record<ToolBreakdownSortId, string>;
 
   const orderByClause = Prisma.raw(
     `${orderByMap[orderByColumn]} ${orderDirection}`

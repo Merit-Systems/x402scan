@@ -12,7 +12,6 @@ import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 import type { ChartData, ChartItems } from '@/components/ui/charts/chart/types';
 import { useChain } from '@/app/(app)/_contexts/chain/hook';
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type StatRow = {
   transactions: number;
   totalAmount: number;

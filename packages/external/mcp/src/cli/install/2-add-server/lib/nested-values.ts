@@ -23,7 +23,6 @@ export const setNestedValue = (
   if (!lastKey) return;
   const target = keys.reduce((current, key) => {
     current[key] ??= {};
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return current[key];
   }, obj);
   target[lastKey] = value;

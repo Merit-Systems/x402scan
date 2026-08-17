@@ -41,6 +41,26 @@ export enum QueryProvider {
   CDP = 'cdp',
 }
 
+/**
+ * Raw provider payloads handed to `transformResponse`. Each query module
+ * declares which member it consumes; the fetch layer passes the provider's
+ * response through unchanged.
+ */
+export type RawTransferQueryResponse =
+  | BigQueryTransferRow[]
+  | CdpTransferRow[]
+  | BitQueryTransferRowStream[]
+  | EvmBitqueryEventsResponse
+  | SolanaBitquerySentResponse;
+
+export interface EvmBitqueryEventsResponse {
+  EVM: { Events: EvmBitQueryEventRow[] };
+}
+
+export interface SolanaBitquerySentResponse {
+  solana: { sent: BitQueryTransferRow[] };
+}
+
 interface BaseQueryConfig {
   chain: string;
   provider: QueryProvider;
@@ -52,12 +72,14 @@ interface BaseQueryConfig {
     now: Date,
     offset?: number
   ) => string;
-  transformResponse: (
-    data: unknown,
+  // Method syntax (bivariant parameters) so each query module can declare the
+  // specific RawTransferQueryResponse member its paired buildQuery produces.
+  transformResponse(
+    data: RawTransferQueryResponse,
     config: SyncConfig,
     facilitator: Facilitator,
     facilitatorConfig: FacilitatorConfig
-  ) => TransferEventData[] | Promise<TransferEventData[]>;
+  ): TransferEventData[] | Promise<TransferEventData[]>;
 }
 
 type TimeWindowQueryConfig = BaseQueryConfig & {

@@ -14,5 +14,5 @@ export const dbErr = (surface: string, error: BaseServerError) =>
 export const dbResultFromPromise = <T>(
   surface: string,
   promise: Promise<T>,
-  error: (e: unknown) => BaseServerError
+  error: (cause: unknown) => BaseServerError
 ) => serverResultFromPromise(type, surface, promise, error);

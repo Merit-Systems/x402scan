@@ -38,7 +38,6 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
   }, [tabs.length]);
 
   const navRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line react-hooks/refs
   const navRect = navRef.current?.getBoundingClientRect();
 
   const [hoveredTabIndex, setHoveredTabIndex] = useState<number | null>(null);

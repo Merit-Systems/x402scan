@@ -36,13 +36,13 @@ export const FacilitatorChart: React.FC<Props> = ({ facilitatorId }) => {
     total_transactions: number;
   }>[] = bucketedStats.map(stat => ({
     timestamp: stat.bucket_start.toISOString(),
-    total_transactions: Number(stat.total_transactions),
+    total_transactions: stat.total_transactions,
   }));
 
   return (
     <FacilitatorChartContent
       chartData={chartData}
-      total_transactions={Number(overallStats.total_transactions)}
+      total_transactions={overallStats.total_transactions}
     />
   );
 };

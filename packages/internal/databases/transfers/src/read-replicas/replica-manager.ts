@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* oxlint-disable -- vendored Prisma read-replica extension code */
 import type { PrismaClient } from '../../generated/prisma/client';
 
 type PrismaConstructorOptions = {

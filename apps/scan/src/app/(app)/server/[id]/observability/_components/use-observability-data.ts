@@ -7,10 +7,10 @@ export function useObservabilityDataParams() {
 
   return useMemo(() => {
     const now = new Date();
-    const start = subDays(now, Number(timeframe));
+    const start = subDays(now, timeframe);
 
     let minutes = 10;
-    const days = Number(timeframe);
+    const days = timeframe;
     if (days >= 15) {
       minutes = 60; // 1 hour buckets for 15+ days
     } else if (days >= 7) {

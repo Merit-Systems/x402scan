@@ -15,11 +15,11 @@ export type Facilitator = FacilitatorMetadata & {
   addresses: Partial<Record<Chain, MixedAddress[]>>;
 };
 
-const chainMap: Record<FacilitatorsNetwork, Chain> = {
+const chainMap = {
   [FacilitatorsNetwork.BASE]: Chain.BASE,
   [FacilitatorsNetwork.POLYGON]: Chain.POLYGON,
   [FacilitatorsNetwork.SOLANA]: Chain.SOLANA,
-};
+} satisfies Record<FacilitatorsNetwork, Chain>;
 
 function parseFacilitatorAddress(address: string): MixedAddress | null {
   const parsed = mixedAddressSchema.safeParse(address);
@@ -30,17 +30,16 @@ export const facilitators: Facilitator[] = allFacilitators.map(f => ({
   id: f.id,
   ...f.metadata,
   image: `/${f.metadata.image.split('/').pop()}`,
-  addresses: Object.entries(f.addresses).reduce(
-    (acc, [network, configs]) => {
-      const scanChain = chainMap[network as FacilitatorsNetwork];
-      acc[scanChain] = configs.flatMap(c => {
-        const address = parseFacilitatorAddress(c.address);
-        return address ? [address] : [];
-      });
-      return acc;
-    },
-    {} as Partial<Record<Chain, MixedAddress[]>>
-  ),
+  addresses: Object.entries(f.addresses).reduce<
+    Partial<Record<Chain, MixedAddress[]>>
+  >((acc, [network, configs]) => {
+    const scanChain = chainMap[network as FacilitatorsNetwork];
+    acc[scanChain] = configs.flatMap(c => {
+      const address = parseFacilitatorAddress(c.address);
+      return address ? [address] : [];
+    });
+    return acc;
+  }, {}),
 }));
 
 type FacilitatorId = (typeof facilitators)[number]['id'];

@@ -53,7 +53,7 @@ export function errorResponse(error: CliErrorDetails): CliErrorResponse {
  * Convert a neverthrow error to a CLI error response
  */
 export function fromNeverthrowError(
-  err: Err<unknown, BaseError<string>>,
+  err: Err<unknown, BaseError>,
   codeOverride?: ErrorCode
 ): CliErrorResponse {
   const { error } = err;

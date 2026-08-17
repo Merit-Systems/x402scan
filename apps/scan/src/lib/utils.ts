@@ -99,20 +99,21 @@ export const USDC_ADDRESS = {
   [Chain.OPTIMISM]: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85' as const,
 } satisfies Record<Chain, MixedAddress>;
 
-const HTML_ENTITIES: Record<string, string> = {
-  '&amp;': '&',
-  '&lt;': '<',
-  '&gt;': '>',
-  '&quot;': '"',
-  '&#39;': "'",
-  '&apos;': "'",
-};
+const HTML_ENTITIES = new Map<string, string>([
+  ['&amp;', '&'],
+  ['&lt;', '<'],
+  ['&gt;', '>'],
+  ['&quot;', '"'],
+  ['&#39;', "'"],
+  ['&apos;', "'"],
+]);
 
 const ENTITY_PATTERN = /&(?:amp|lt|gt|quot|#39|apos|#x[0-9a-fA-F]+|#\d+);/g;
 
 export const decodeHtmlEntities = (str: string): string =>
   str.replace(ENTITY_PATTERN, match => {
-    if (match in HTML_ENTITIES) return HTML_ENTITIES[match]!;
+    const named = HTML_ENTITIES.get(match);
+    if (named !== undefined) return named;
     if (match.startsWith('&#x'))
       return String.fromCodePoint(parseInt(match.slice(3, -1), 16));
     if (match.startsWith('&#'))

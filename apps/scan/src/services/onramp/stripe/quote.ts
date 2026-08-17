@@ -15,7 +15,8 @@ const OnrampQuoteResource = Stripe.StripeResource.extend({
 export const getStripeOnrampQuote = async ({
   amount,
 }: z.infer<typeof getQuoteSchema>) => {
-  // eslint-disable-next-line @typescript-eslint/await-thenable
+  // Stripe's resource types mislabel this as non-thenable; it is a Promise.
+  // oxlint-disable-next-line typescript/await-thenable
   const response = await new OnrampQuoteResource(stripe).create({
     source_amount: amount,
     destination_currencies: ['usdc'],

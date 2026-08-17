@@ -24,7 +24,7 @@ const parseContent = (
       if (format === FileFormat.YAML) {
         config = yaml.load(fileContent) as ClientConfigObject;
       } else if (format === FileFormat.TOML) {
-        config = TOML.parse(fileContent) as ClientConfigObject;
+        config = TOML.parse(fileContent);
       } else if (path.endsWith('.jsonc')) {
         config = jsonc.parse(fileContent) as ClientConfigObject;
       } else {

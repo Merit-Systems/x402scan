@@ -5,9 +5,8 @@ import { mapMetric } from '../utils';
 import type { Prisma } from '@x402scan/scan-db';
 
 export async function persistMetrics(
-  data: unknown
+  metrics: MetricsByResource[]
 ): Promise<Prisma.BatchPayload> {
-  const metrics: MetricsByResource[] = data as MetricsByResource[];
   const resources = metrics.map(m => m.resource);
   const resourcesInDb = await scanDb.resources.findMany({
     where: {

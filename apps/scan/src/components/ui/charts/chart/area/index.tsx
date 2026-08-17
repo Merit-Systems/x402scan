@@ -47,8 +47,7 @@ export const BaseAreaChart = <
           </linearGradient>
         ))}
       </defs>
-      {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-      {areas.map(({ dataKey, color, ref, ...areaProps }, index) => {
+      {areas.map(({ dataKey, color, ref: _ref, ...areaProps }, index) => {
         return (
           <Area
             key={dataKey as string}

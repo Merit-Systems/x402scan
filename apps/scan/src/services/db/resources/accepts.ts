@@ -26,22 +26,18 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
       network: chain as AcceptsNetwork,
       resourceRel: {
         deprecatedAt: null,
-        ...(tags
+        tags: tags
           ? {
-              tags: {
-                some: {
-                  tag: { name: { in: tags } },
-                },
+              some: {
+                tag: { name: { in: tags } },
               },
             }
-          : {}),
-        ...(originUrls
+          : undefined,
+        origin: originUrls
           ? {
-              origin: {
-                origin: { in: originUrls },
-              },
+              origin: { in: originUrls },
             }
-          : {}),
+          : undefined,
       },
     },
   });
@@ -53,23 +49,20 @@ export const getAcceptsAddresses = async (input: GetAcceptsAddressesInput) => {
 
   return accepts
     .filter(accept => mixedAddressSchema.safeParse(accept.payTo).success)
-    .reduce(
-      (acc, accept) => {
-        if (!accept.payTo) {
-          return acc;
-        }
-        if (acc[accept.payTo]) {
-          const existingOrigin = acc[accept.payTo]!.find(
-            origin => origin.id === accept.resourceRel.origin.id
-          );
-          if (!existingOrigin) {
-            acc[accept.payTo]!.push(accept.resourceRel.origin);
-          }
-        } else {
-          acc[accept.payTo] = [accept.resourceRel.origin];
-        }
+    .reduce<Record<string, ResourceOrigin[]>>((acc, accept) => {
+      if (!accept.payTo) {
         return acc;
-      },
-      {} as Record<string, ResourceOrigin[]>
-    );
+      }
+      if (acc[accept.payTo]) {
+        const existingOrigin = acc[accept.payTo]!.find(
+          origin => origin.id === accept.resourceRel.origin.id
+        );
+        if (!existingOrigin) {
+          acc[accept.payTo]!.push(accept.resourceRel.origin);
+        }
+      } else {
+        acc[accept.payTo] = [accept.resourceRel.origin];
+      }
+      return acc;
+    }, {});
 };

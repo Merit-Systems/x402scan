@@ -27,6 +27,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { isOpenApiDeclaredFree } from '@/lib/discovery/catalog-auth';
+import { jsonObjectSchema } from '@/lib/json';
 import { cleanExternalText, cn } from '@/lib/utils';
 
 import { DiscoveryActions } from './discovery-actions';
@@ -59,10 +60,7 @@ type FailedResource = FailedResourceType;
 
 function isValidJson(str: string): boolean {
   try {
-    const parsed: unknown = JSON.parse(str);
-    return (
-      typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
-    );
+    return jsonObjectSchema.safeParse(JSON.parse(str)).success;
   } catch {
     return false;
   }
@@ -791,12 +789,12 @@ export function DiscoveryPanel({
 function getResourceVerificationStatus(
   parsed: TestedResource['parsed'],
   verifiedAddresses: Record<string, boolean>
-): { verified: boolean; partial: boolean; addresses: string[] } {
+) {
   const addresses: string[] = [];
 
   // Extract all payTo addresses from payment options
   for (const opt of parsed.paymentOptions ?? []) {
-    if ('payTo' in opt && typeof opt.payTo === 'string') {
+    if (opt.payTo !== undefined) {
       addresses.push(opt.payTo);
     }
   }
@@ -1797,7 +1795,6 @@ function OriginPreviewCard({
       </div>
       {origin.ogImages.length > 0 && (
         <div className="border-l hidden md:flex items-center justify-center bg-muted p-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={origin.ogImages[0]!.url}
             alt={origin.title ? cleanExternalText(origin.title) : ''}

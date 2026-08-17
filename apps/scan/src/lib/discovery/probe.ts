@@ -9,12 +9,16 @@ import type {
   EndpointMethodAdvisory,
 } from '@agentcash/discovery';
 import https from 'node:https';
+import { z } from 'zod';
 import {
   buildMinimalSampleFromInputSchema,
   buildMinimalQueryParamsFromInputSchema,
   hasPathParameters,
   PROBE_TIMEOUT_MS,
 } from './utils';
+import { jsonValueSchema } from '@/lib/json';
+
+import type { JsonObject, JsonValue } from '@/lib/json';
 
 /**
  * Direct HTTPS probe that tolerates large response headers (128 KB).
@@ -26,7 +30,7 @@ function directProbe402(
   url: string,
   method: string,
   timeoutMs: number
-): Promise<{ status: number; body: unknown } | null> {
+): Promise<{ status: number; body: JsonValue } | null> {
   return new Promise(resolve => {
     const parsed = new URL(url);
     const req = https.request(
@@ -43,12 +47,16 @@ function directProbe402(
         const chunks: Buffer[] = [];
         res.on('data', (chunk: Buffer) => chunks.push(chunk));
         res.on('end', () => {
+          let body: JsonValue;
           try {
-            const body: unknown = JSON.parse(Buffer.concat(chunks).toString());
-            resolve({ status: res.statusCode ?? 0, body });
+            body = jsonValueSchema.parse(
+              JSON.parse(Buffer.concat(chunks).toString())
+            );
           } catch {
             resolve(null);
+            return;
           }
+          resolve({ status: res.statusCode ?? 0, body });
         });
       }
     );
@@ -110,7 +118,7 @@ function pickX402Advisory(
 function pickInputSchemaFromSpec(
   result: CheckEndpointResult,
   preferredMethod?: string
-): unknown {
+): JsonValue | undefined {
   if (!result.found) return undefined;
 
   const target = preferredMethod?.toUpperCase();
@@ -124,8 +132,28 @@ function pickInputSchemaFromSpec(
     )[0] ??
     result.advisories[0];
 
-  return advisory?.inputSchema;
+  // The library types inputSchema as an open dictionary; re-establish it as
+  // plain JSON (it came from a fetched spec) before the samplers walk it.
+  return jsonValueSchema.safeParse(advisory?.inputSchema).data;
 }
+
+/**
+ * Accepts entries from a raw 402 body: any JSON object advertising a string
+ * `payTo`. Invalid entries are dropped instead of failing the whole parse,
+ * matching how leniently the wire format is treated elsewhere. Requiring a
+ * string keeps the entries honest against the library's `payTo?: string`
+ * type that downstream consumers (e.g. address verification) rely on.
+ */
+const acceptsEntrySchema = z.looseObject({ payTo: z.string() });
+
+const paymentRequiredBodySchema = z.looseObject({
+  accepts: z
+    .array(acceptsEntrySchema.optional().catch(undefined))
+    .transform(entries =>
+      entries.flatMap(entry => (entry === undefined ? [] : [entry]))
+    )
+    .catch([]),
+});
 
 const RATE_LIMIT_STATUSES = new Set([429, 503]);
 const MAX_RETRIES = 2;
@@ -156,7 +184,7 @@ function sleep(ms: number): Promise<void> {
 export async function probeX402Endpoint(
   url: string,
   preferredMethod?: string,
-  sampleBody?: Record<string, unknown>
+  sampleBody?: JsonObject
 ): Promise<ProbeX402Result> {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     const result = await probeX402EndpointOnce(
@@ -186,7 +214,7 @@ export async function probeX402Endpoint(
 async function probeX402EndpointOnce(
   url: string,
   preferredMethod?: string,
-  sampleBody?: Record<string, unknown>
+  sampleBody?: JsonObject
 ): Promise<ProbeX402Result> {
   const noBody = await checkEndpointSchema({
     url,
@@ -205,9 +233,8 @@ async function probeX402EndpointOnce(
 
   // Fallback: re-probe with a body and/or query params from OpenAPI spec.
   // Priority: merchant-provided sample > schema-derived minimal sample > {}
-  let fallbackBody: Record<string, unknown> = sampleBody ?? {};
+  let fallbackBody: JsonObject = sampleBody ?? {};
   let probeUrl = url;
-  let inputSchema: unknown;
 
   if (!sampleBody) {
     // Fetch the OpenAPI spec to extract inputSchema for minimal sampling.
@@ -215,7 +242,7 @@ async function probeX402EndpointOnce(
       url,
       signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
     });
-    inputSchema = pickInputSchemaFromSpec(spec, preferredMethod);
+    const inputSchema = pickInputSchemaFromSpec(spec, preferredMethod);
     fallbackBody = buildMinimalSampleFromInputSchema(inputSchema) ?? {};
 
     // Also sample required query params (for GET endpoints).
@@ -268,33 +295,30 @@ async function probeX402EndpointOnce(
       // parses them from the probe response, but header overflow prevented it.
       // `validated.normalized` confirms the body parsed as valid x402, so the
       // accepts array is structurally sound.
-      const rawBody = direct.body as Record<string, unknown>;
-      const rawAccepts = Array.isArray(rawBody.accepts) ? rawBody.accepts : [];
-      const paymentOptions = rawAccepts
-        .filter(
-          (a): a is Record<string, unknown> =>
-            typeof a === 'object' && a !== null && 'payTo' in a
-        )
-        .map(accept => ({
-          protocol: 'x402' as const,
-          ...accept,
-        })) as NonNullable<EndpointMethodAdvisory['paymentOptions']>;
+      const acceptsEnvelope = paymentRequiredBodySchema.safeParse(direct.body);
+      const rawAccepts = acceptsEnvelope.success
+        ? acceptsEnvelope.data.accepts
+        : [];
+      const paymentOptions = rawAccepts.map(accept => ({
+        protocol: 'x402' as const,
+        ...accept,
+      })) as NonNullable<EndpointMethodAdvisory['paymentOptions']>;
 
       const advisory: EndpointMethodAdvisory = {
         source: 'probe',
         method: directMethod as EndpointMethodAdvisory['method'],
         paymentOptions,
         paymentRequiredBody: direct.body,
-        ...(openApiAdvisory?.inputSchema
-          ? { inputSchema: openApiAdvisory.inputSchema }
-          : {}),
-        ...(openApiAdvisory?.outputSchema
-          ? { outputSchema: openApiAdvisory.outputSchema }
-          : {}),
-        ...(openApiAdvisory?.summary
-          ? { summary: openApiAdvisory.summary }
-          : {}),
       };
+      if (openApiAdvisory?.inputSchema) {
+        advisory.inputSchema = openApiAdvisory.inputSchema;
+      }
+      if (openApiAdvisory?.outputSchema) {
+        advisory.outputSchema = openApiAdvisory.outputSchema;
+      }
+      if (openApiAdvisory?.summary) {
+        advisory.summary = openApiAdvisory.summary;
+      }
 
       const warnings = getWarningsForL3(advisory);
       warnings.push({

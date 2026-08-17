@@ -1,6 +1,13 @@
+import { z } from 'zod';
+
 import { env } from '@/env';
 import { CACHE_TTL_SECONDS } from '@/lib/cache';
 import { getRedisClient } from '@/lib/redis';
+
+/** Wire shape of AgentCash's internal used-origins endpoint. */
+const usedOriginsResponseSchema = z.looseObject({
+  origins: z.array(z.string()),
+});
 
 const PROTOCOL = 'x402';
 const CACHE_KEY = 'discover:origins:catalog:v1';
@@ -57,19 +64,13 @@ export const fetchUsedOriginsFromAgentCash = async (
     return null;
   }
 
-  if (
-    !payload ||
-    typeof payload !== 'object' ||
-    !Array.isArray((payload as { origins?: unknown }).origins) ||
-    !(payload as { origins: unknown[] }).origins.every(
-      o => typeof o === 'string'
-    )
-  ) {
+  const parsed = usedOriginsResponseSchema.safeParse(payload);
+  if (!parsed.success) {
     console.warn('[discover] AgentCash used-origins response malformed');
     return null;
   }
 
-  return (payload as { origins: string[] }).origins;
+  return parsed.data.origins;
 };
 
 const getDiscoverOriginsUncached = async (): Promise<string[]> => {

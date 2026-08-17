@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 import { describe, it, expect } from 'vitest';
 import { parseX402Response, isV2Response } from '../index';
 
+import type { JsonValue } from '@/lib/json';
+
 // Helper to parse and narrow to V2 type for tests
-function parseV2(data: unknown) {
+function parseV2(data: JsonValue | undefined) {
   const result = parseX402Response(data);
   if (!result.success) {
     return result;
@@ -237,7 +238,7 @@ describe('parseV2', () => {
       );
       expect(result.data.resource?.description).toBe('A test API endpoint');
       // V2: schema comes from extensions.bazaar, not resource.outputSchema
-      expect(result.data.extensions?.bazaar?.info?.input.method).toBe('GET');
+      expect(result.data.extensions?.bazaar?.info?.input?.method).toBe('GET');
       expect(
         result.data.extensions?.bazaar?.schema?.properties?.input?.properties
           ?.queryParams
@@ -251,13 +252,15 @@ describe('parseV2', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       // V2: schema comes from extensions.bazaar, not resource.outputSchema
-      expect(result.data.extensions?.bazaar?.info?.input.method).toBe('POST');
-      expect(result.data.extensions?.bazaar?.info?.input.bodyType).toBe('json');
+      expect(result.data.extensions?.bazaar?.info?.input?.method).toBe('POST');
+      expect(result.data.extensions?.bazaar?.info?.input?.bodyType).toBe(
+        'json'
+      );
       expect(
         result.data.extensions?.bazaar?.schema?.properties?.input?.properties
           ?.body?.properties?.message
       ).toBeDefined();
-      expect(result.data.extensions?.bazaar?.info?.output?.id).toBeDefined();
+      expect(result.data.extensions?.bazaar?.info?.output).toHaveProperty('id');
     }
   });
 

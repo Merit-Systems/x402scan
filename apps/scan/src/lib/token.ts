@@ -19,7 +19,7 @@ export const convertTokenAmount = (amount: bigint, decimals = 6) => {
 };
 
 export const formatTokenAmount = (amount: bigint, decimals = 6) => {
-  return formatCurrency(Number(convertTokenAmount(amount, decimals)));
+  return formatCurrency(convertTokenAmount(amount, decimals));
 };
 
 /** Convert BigInt maxAmountRequired to a JSON-safe number on accepts records. */

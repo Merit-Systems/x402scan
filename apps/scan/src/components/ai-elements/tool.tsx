@@ -11,7 +11,10 @@ import { Code } from '@/components/ui/code';
 import { Loading } from '@/components/ui/loading';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { z } from 'zod';
+
 import { Favicon } from '@/app/(app)/_components/favicon';
+import { jsonObjectSchema } from '@/lib/json';
 import { cleanExternalText } from '@/lib/utils';
 
 import { JsonViewer } from './json-viewer';
@@ -131,7 +134,9 @@ const ToolInput = ({
 }: ComponentProps<'div'> & {
   input: ToolUIPart['input'];
 }) => {
-  if (Object.keys(input as Record<string, unknown>).length === 0) {
+  // Tool inputs are JSON objects; parse the untyped value at the boundary.
+  const parsedInput = jsonObjectSchema.safeParse(input);
+  if (!parsedInput.success || Object.keys(parsedInput.data).length === 0) {
     return (
       <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
         No Parameters
@@ -144,7 +149,7 @@ const ToolInput = ({
         Parameters
       </h4>
       <div className="rounded-md bg-muted">
-        <JsonViewer data={input as JsonValue} />
+        <JsonViewer data={parsedInput.data} />
       </div>
     </div>
   );
@@ -162,11 +167,12 @@ const ToolOutput = ({
   }
 
   const parseOutput = (output: ReactNode) => {
-    if (typeof output !== 'string') {
+    const text = z.string().safeParse(output);
+    if (!text.success) {
       return { raw: output, parsed: null };
     }
 
-    const trimmed = output.trim();
+    const trimmed = text.data.trim();
     if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
       try {
         return { raw: output, parsed: JSON.parse(trimmed) as JsonValue };

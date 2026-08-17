@@ -55,7 +55,6 @@ const CoinbaseSessionContent: React.FC<{
       session?.status === 'ONRAMP_TRANSACTION_STATUS_SUCCESS' ||
       session?.status === 'ONRAMP_TRANSACTION_STATUS_FAILED'
     ) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsCompleted(true);
     }
   }, [session]);

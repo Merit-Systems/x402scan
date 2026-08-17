@@ -87,7 +87,7 @@ export const DepositStatus: React.FC<Props> = ({
       }
       for (let i = 0; i < 3; i++) {
         setTimeout(() => {
-          void invalidateBalance();
+          invalidateBalance();
         }, i * 1000);
       }
     }

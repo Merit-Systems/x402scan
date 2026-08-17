@@ -44,7 +44,6 @@ export const OnrampSessionDialog: React.FC = () => {
 
   useEffect(() => {
     if (searchParams.get('server_wallet_onramp_token')) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSessionToken(searchParams.get('server_wallet_onramp_token') ?? null);
 
       setIsSessionDialogOpen(true);
@@ -66,7 +65,6 @@ export const OnrampSessionDialog: React.FC = () => {
 
   useEffect(() => {
     if (isErrorSession) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsError(true);
     }
   }, [isErrorSession]);
@@ -77,7 +75,6 @@ export const OnrampSessionDialog: React.FC = () => {
       (session.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS ||
         session.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED)
     ) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsCompleted(true);
 
       // Invalidate balance query when session is completed
@@ -89,12 +86,11 @@ export const OnrampSessionDialog: React.FC = () => {
             });
           }, i * 1000);
         }
-        // Clear the URL search params when onramp session is completed
-        if (typeof window !== 'undefined') {
-          const url = new URL(window.location.href);
-          url.searchParams.delete('server_wallet_onramp_token');
-          window.history.replaceState({}, document.title, url.toString());
-        }
+        // Clear the URL search params when onramp session is completed.
+        // (Effects only run in the browser, so window is always available.)
+        const url = new URL(window.location.href);
+        url.searchParams.delete('server_wallet_onramp_token');
+        window.history.replaceState({}, document.title, url.toString());
       }
     }
   }, [session, utils, networkParam]);
@@ -119,7 +115,7 @@ export const OnrampSessionDialog: React.FC = () => {
             <Loading
               value={session}
               isLoading={isLoadingSession}
-              component={session => `${formatCurrency(session.amount)}`}
+              component={session => formatCurrency(session.amount)}
               loadingComponent={<Skeleton className="h-10 w-24" />}
               errorComponent={'No Amount Found'}
             />

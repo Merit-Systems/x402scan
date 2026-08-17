@@ -26,21 +26,18 @@ export const useModelSelect = ({ setModel }: UseModelSelectProps) => {
     const providers = Array.from(
       new Set(languageModels.map(model => model.provider))
     );
-    const modelsByProvider = providers.reduce(
-      (acc, provider) => {
-        acc[provider] = languageModels.filter(
-          model => model.provider === provider
-        );
-        return acc;
-      },
-      {} as Record<string, typeof languageModels>
+    const modelsByProvider = new Map(
+      providers.map(provider => [
+        provider,
+        languageModels.filter(model => model.provider === provider),
+      ])
     );
 
     const result: typeof languageModels = [];
     let index = 0;
     while (result.length < languageModels.length) {
       for (const provider of providers) {
-        const providerModels = modelsByProvider[provider];
+        const providerModels = modelsByProvider.get(provider);
         const model = providerModels?.[index];
         if (model) {
           result.push(model);

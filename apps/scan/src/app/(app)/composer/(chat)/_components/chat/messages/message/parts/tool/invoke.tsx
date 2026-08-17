@@ -62,7 +62,7 @@ export const ToolInvoke: React.FC<Props> = ({
                   chatId,
                   toolCallId,
                   parameters: input,
-                  chain: chain.toString(),
+                  chain: chain,
                 }),
                 method: 'POST',
                 headers: {

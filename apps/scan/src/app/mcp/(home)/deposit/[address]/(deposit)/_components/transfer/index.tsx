@@ -128,7 +128,6 @@ const WalletItem: React.FC<WalletItemProps> = ({ connector }) => {
     <Item
       label={connector.name}
       Icon={({ className }) => (
-        // eslint-disable-next-line @next/next/no-img-element
         <img src={connector.icon} alt={connector.name} className={className} />
       )}
       description={isConnected ? 'Connected' : 'Not Connected'}

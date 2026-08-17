@@ -23,9 +23,7 @@ export const useEvmPaymentWrapper = (chain: Chain) => {
     if (!walletClient?.account) throw new Error('Wallet client not available');
 
     const client = new x402Client();
-    const signer = toEvmSigner(
-      walletClient as Parameters<typeof toEvmSigner>[0]
-    );
+    const signer = toEvmSigner(walletClient);
     registerExactEvmScheme(client, { signer });
 
     return wrapFetchWithPayment(baseFetch, client);

@@ -8,7 +8,6 @@ packages:
 catalog:
   '@types/node': ^20.19.27
   date-fns: 4.1.0
-  eslint: ^9.39.2
   lucide-react: ^0.556.0
   motion: ^12.24.10
   server-only: ^0.0.1
@@ -28,50 +27,49 @@ catalogs:
     dotenv: ^17.2.3
   next:
     next: &NEXT_VERSION ^16.1.5
-    eslint-config-next: *NEXT_VERSION
-    '@next/mdx': *NEXT_VERSION
+    '@next/mdx': ^16.1.5
     next-themes: ^0.4.6
   prisma:
     prisma: &PRISMA_VERSION ^7.3.0
-    '@prisma/client': *PRISMA_VERSION
-    '@prisma/adapter-neon': *PRISMA_VERSION
+    '@prisma/client': ^7.3.0
+    '@prisma/adapter-neon': ^7.3.0
     ws: ^8.18.3
     '@types/ws': ^8.18.1
     '@neondatabase/serverless': ^1.0.2
   react:
     '@types/react': &REACT_VERSION 19.2.2
-    '@types/react-dom': *REACT_VERSION
-    react: *REACT_VERSION
-    react-dom: *REACT_VERSION
+    '@types/react-dom': 19.2.2
+    react: 19.2.2
+    react-dom: 19.2.2
     react-error-boundary: ^6.0.2
   coinbase:
     '@coinbase/cdp-core': &CDP_CORE_VERSION ^0.0.74
-    '@coinbase/cdp-hooks': *CDP_CORE_VERSION
-    '@coinbase/cdp-solana-standard-wallet': *CDP_CORE_VERSION
-    '@coinbase/cdp-wagmi': *CDP_CORE_VERSION
+    '@coinbase/cdp-hooks': ^0.0.74
+    '@coinbase/cdp-solana-standard-wallet': ^0.0.74
+    '@coinbase/cdp-wagmi': ^0.0.74
     '@coinbase/cdp-sdk': ^1.40.1
   solana:
     '@solana/kit': &SOLANA_VERSION ^5.0.0
-    '@solana/react': *SOLANA_VERSION
-    '@solana/transaction-messages': *SOLANA_VERSION
-    '@solana/transactions': *SOLANA_VERSION
+    '@solana/react': ^5.0.0
+    '@solana/transaction-messages': ^5.0.0
+    '@solana/transactions': ^5.0.0
   trpc:
     '@trpc/client': &TRPC_VERSION ^11.8.1
-    '@trpc/react-query': *TRPC_VERSION
-    '@trpc/server': *TRPC_VERSION
+    '@trpc/react-query': ^11.8.1
+    '@trpc/server': ^11.8.1
   x402-v1:
     'x402': &X402_VERSION ^0.7.1
-    'x402-express': *X402_VERSION
-    'x402-hono': *X402_VERSION
+    'x402-express': ^0.7.1
+    'x402-hono': ^0.7.1
   x402:
     '@x402/core': &X402_CORE_VERSION ^2.11.0
-    '@x402/evm': *X402_CORE_VERSION
-    '@x402/extensions': *X402_CORE_VERSION
-    '@x402/fetch': *X402_CORE_VERSION
-    '@x402/svm': *X402_CORE_VERSION
+    '@x402/evm': ^2.11.0
+    '@x402/extensions': ^2.11.0
+    '@x402/fetch': ^2.11.0
+    '@x402/svm': ^2.11.0
   tailwind:
     '@tailwindcss/postcss': &TAILWIND_VERSION ^4
-    tailwindcss: *TAILWIND_VERSION
+    tailwindcss: ^4
   hono:
     '@hono/node-server': ^1.13.8
     hono: ^4.7.1
@@ -85,8 +83,34 @@ catalogs:
     '@tanstack/react-query-devtools': ^5.91.2
   trigger:
     '@trigger.dev/sdk': &TRIGGER_SDK_VERSION ^4.3.2
-    '@trigger.dev/build': *TRIGGER_SDK_VERSION
-    trigger.dev: *TRIGGER_SDK_VERSION
+    '@trigger.dev/build': ^4.3.2
+    trigger.dev: ^4.3.2
   mdx:
     '@mdx-js/loader': &MDX_VERSION ^3.1.1
-    '@mdx-js/react': *MDX_VERSION
+    '@mdx-js/react': ^3.1.1
+
+overrides:
+  '@auth/core': 0.40.0
+  'viem': 2.51.2
+  '@walletconnect/utils': ^2.23.9
+
+# Postinstall/build scripts: only @coinbase/x402 may run them; the rest were
+# silently skipped under pnpm 10 and stay disabled to keep behavior identical.
+allowBuilds:
+  '@coinbase/x402': true
+  '@depot/cli': false
+  '@posthog/cli': false
+  '@prisma/engines': false
+  '@swc/core': false
+  '@vercel/speed-insights': false
+  'better-sqlite3': false
+  'bigint-buffer': false
+  'bufferutil': false
+  'core-js': false
+  'esbuild': false
+  'keccak': false
+  'prisma': false
+  'protobufjs': false
+  'sharp': false
+  'utf-8-validate': false
+  'workerd': false

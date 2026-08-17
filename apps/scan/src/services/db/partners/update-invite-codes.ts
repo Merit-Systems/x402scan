@@ -49,7 +49,8 @@ export const addInviteCodeToPartner = async (
   } catch (error) {
     console.error('Error adding invite code to partner:', error);
     throw new Error(
-      `Failed to add invite code to partner: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to add invite code to partner: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error }
     );
   }
 };

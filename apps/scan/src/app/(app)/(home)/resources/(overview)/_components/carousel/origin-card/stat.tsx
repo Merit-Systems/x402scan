@@ -1,4 +1,5 @@
 import React from 'react';
+import { z } from 'zod';
 
 import { cn } from '@/lib/utils';
 
@@ -12,11 +13,13 @@ interface Props {
 }
 
 export const FooterStat: React.FC<Props> = ({ Icon, value, className }) => {
+  // Numeric stats are compact-formatted; string stats render as given.
+  const numericValue = z.number().safeParse(value);
   return (
     <FooterStatContainer Icon={Icon} className={className}>
       <p className="text-[10px] font-mono">
-        {typeof value === 'number'
-          ? value.toLocaleString(undefined, {
+        {numericValue.success
+          ? numericValue.data.toLocaleString(undefined, {
               minimumFractionDigits: 0,
               maximumFractionDigits: 1,
               notation: 'compact',

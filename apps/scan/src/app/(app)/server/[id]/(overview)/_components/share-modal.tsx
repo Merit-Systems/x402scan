@@ -304,7 +304,6 @@ export const ShareModal: React.FC<Props> = ({
                 <Loader2 className="size-6 animate-spin text-muted-foreground" />
               </div>
             ) : (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={screenshotUrl}
                 alt="Screenshot preview"

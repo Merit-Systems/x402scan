@@ -1,5 +1,10 @@
+import type { JsonValue } from '@/lib/json';
+
+/** A JSON-LD schema object. `undefined` values are dropped by JSON.stringify. */
+type JsonLdObject = Record<string, JsonValue | undefined>;
+
 interface JsonLdProps {
-  data: Record<string, unknown> | Record<string, unknown>[];
+  data: JsonLdObject | JsonLdObject[];
 }
 
 // Emit one <script> per schema object. Some in-app browsers inject JSON-LD

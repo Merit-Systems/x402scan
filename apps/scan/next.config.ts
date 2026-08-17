@@ -70,7 +70,10 @@ export default withPostHogConfig(withMDX(nextConfig), {
   // the ingestion host (us.i.posthog.com) used by the runtime SDK.
   host: 'https://us.posthog.com',
   sourcemaps: {
-    // Uploading ~7k source maps takes minutes; only do it on Vercel builds.
-    enabled: process.env.VERCEL === '1',
+    // Uploading ~7k source maps takes minutes, and POSTHOG_PROJECT_ID /
+    // POSTHOG_API_KEY are only set in the Production environment — preview
+    // builds fail at config load without this guard.
+    enabled:
+      process.env.VERCEL === '1' && process.env.VERCEL_ENV === 'production',
   },
 });

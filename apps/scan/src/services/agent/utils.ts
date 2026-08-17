@@ -1,15 +1,6 @@
 import { z } from 'zod';
 
-import type { OutputSchemaV1 } from '@/lib/x402';
-
-interface FieldDef {
-  type?: string;
-  required?: boolean | string[];
-  description?: string;
-  enum?: string[];
-  properties?: Record<string, FieldDef>;
-  items?: FieldDef;
-}
+import type { FieldDef, OutputSchemaV1 } from '@/lib/x402';
 
 function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
   let zodType: z.ZodTypeAny;
@@ -27,11 +18,11 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
         break;
       case 'object':
         if (fieldDef.properties) {
-          const shape: Record<string, z.ZodTypeAny> = {};
+          const fields: Record<string, z.ZodTypeAny> = {};
           for (const [key, subField] of Object.entries(fieldDef.properties)) {
-            shape[key] = fieldDefToZodType(subField);
+            fields[key] = fieldDefToZodType(subField);
           }
-          zodType = z.object(shape);
+          zodType = z.object(fields);
         } else {
           zodType = z.record(z.string(), z.unknown());
         }
@@ -63,13 +54,13 @@ export const inputSchemaToZodSchema = (
   inputSchema: OutputSchemaV1['input']
 ) => {
   const method = (inputSchema.method ?? 'GET').toUpperCase();
-  const shape: Record<string, z.ZodTypeAny> = {};
+  const fields: Record<string, z.ZodTypeAny> = {};
 
   // For GET/HEAD/OPTIONS: use query params
   if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
     if (inputSchema.queryParams) {
       for (const [key, fieldDef] of Object.entries(inputSchema.queryParams)) {
-        shape[key] = fieldDefToZodType(fieldDef as FieldDef);
+        fields[key] = fieldDefToZodType(fieldDef);
       }
     }
   }
@@ -77,10 +68,10 @@ export const inputSchemaToZodSchema = (
   else {
     if (inputSchema.bodyFields) {
       for (const [key, fieldDef] of Object.entries(inputSchema.bodyFields)) {
-        shape[key] = fieldDefToZodType(fieldDef as FieldDef);
+        fields[key] = fieldDefToZodType(fieldDef);
       }
     }
   }
 
-  return z.object(shape);
+  return z.object(fields);
 };

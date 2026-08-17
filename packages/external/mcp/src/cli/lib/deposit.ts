@@ -28,7 +28,7 @@ export const promptDeposit = async (
       ? 'manual'
       : await select({
           message: chalk.bold('How would you like to deposit?'),
-          initialValue: 'guided' as string | undefined,
+          initialValue: 'guided',
           options: [
             {
               label: 'Guided - Recommended',
@@ -68,7 +68,7 @@ export const promptDeposit = async (
     log.message(`Network: ${getChainName(DEFAULT_NETWORK)}`);
 
     log.step(chalk.bold('Online Portal'));
-    log.message(`${chalk.underline(depositLink)}`);
+    log.message(chalk.underline(depositLink));
   } else if (depositChoice === 'invite') {
     const code = await text({
       message: 'Enter your invite code',

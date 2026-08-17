@@ -42,9 +42,7 @@ export const uploadRouter = createTRPCRouter({
       }
 
       // Detect file type based on magic bytes
-      const detectFileType = (
-        bytes: Uint8Array
-      ): { mimeType: string; extension: string } => {
+      const detectFileType = (bytes: Uint8Array) => {
         // Check for JPEG (FF D8 FF)
         if (
           bytes.length >= 3 &&

@@ -4,8 +4,6 @@
   "type": "module",
   "scripts": {
     "dev": "tsx index.ts",
-    "lint": "eslint . --max-warnings 0",
-    "lint:fix": "eslint . --fix",
     "types:check": "tsc --noEmit",
     "knip": "pnpm -w knip --workspace ./examples/servers/hono",
     "format": "pnpm -w format:dir ./examples/servers/hono",
@@ -19,10 +17,8 @@
     "x402-hono": "catalog:x402-v1"
   },
   "devDependencies": {
-    "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:"
   }

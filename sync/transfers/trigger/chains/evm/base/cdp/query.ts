@@ -37,12 +37,12 @@ export function buildQuery(
 }
 
 export function transformResponse(
-  data: unknown,
+  data: CdpTransferRow[],
   config: SyncConfig,
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  return (data as CdpTransferRow[]).map(row => ({
+  return data.map(row => ({
     address: row.contract_address,
     transaction_from: row.transaction_from,
     sender: row.sender,

@@ -30,13 +30,16 @@ export const FacilitatorsChart = () => {
   const chartData: ChartData<Record<FacilitatorKey, number>>[] =
     bucketedFacilitatorData.map(item => ({
       timestamp: item.bucket_start.toISOString(),
-      ...Object.entries(item.facilitators).reduce(
-        (acc, [facilitator_name, facilitator]) => ({
-          ...acc,
-          [`${facilitator_name}-transactions`]: facilitator.total_transactions,
-          [`${facilitator_name}-amount`]: facilitator.total_amount,
-        }),
-        {} as Record<FacilitatorKey, number>
+      ...Object.fromEntries(
+        Object.entries(item.facilitators).flatMap<[string, number]>(
+          ([facilitator_name, facilitator]) => [
+            [
+              `${facilitator_name}-transactions`,
+              facilitator.total_transactions,
+            ],
+            [`${facilitator_name}-amount`, facilitator.total_amount],
+          ]
+        )
       ),
     }));
 

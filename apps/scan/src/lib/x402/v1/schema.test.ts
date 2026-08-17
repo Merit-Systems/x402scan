@@ -1,8 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { parseX402Response, getOutputSchema } from '../index';
+import { parseX402Response, getOutputSchema, isV2Response } from '../index';
 
-// Alias for v1 tests
-const parseV1 = parseX402Response;
+// Helper for v1 tests: parse and narrow to the V1 branch of the union.
+function parseV1<T>(data: T) {
+  const result = parseX402Response(data);
+  if (!result.success) {
+    return result;
+  }
+  if (isV2Response(result.data)) {
+    return { success: false as const, errors: ['Not a V1 response'] };
+  }
+  return { success: true as const, data: result.data };
+}
 
 // Raw bodies from the test data file
 const rawBodies = [

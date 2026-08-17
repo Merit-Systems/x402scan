@@ -16,7 +16,6 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "lint": "eslint . --max-warnings 0",
     "types:check": "tsc --noEmit",
     "knip": "pnpm -w knip --workspace ./packages/internal/neverthrow",
     "format": "pnpm -w format:dir ./packages/internal/neverthrow",
@@ -27,9 +26,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "eslint": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:"
   }

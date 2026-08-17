@@ -9,7 +9,6 @@
   "type": "module",
   "scripts": {
     "dev": "tsup src/* --watch",
-    "lint": "eslint . --max-warnings 0",
     "types:check": "tsc --noEmit",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -30,9 +29,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@types/ws": "catalog:prisma",
-    "@x402scan/eslint-config": "workspace:*",
     "@x402scan/typescript-config": "workspace:*",
-    "eslint": "catalog:",
     "prisma": "catalog:prisma",
     "rimraf": "catalog:",
     "tsup": "catalog:",

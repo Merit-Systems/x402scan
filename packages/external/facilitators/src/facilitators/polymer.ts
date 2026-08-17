@@ -25,4 +25,4 @@ export const polymerFacilitator = {
       },
     ],
   },
-} as const satisfies Facilitator<void>;
+} as const satisfies Facilitator;

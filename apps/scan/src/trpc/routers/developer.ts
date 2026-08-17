@@ -3,6 +3,7 @@ import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import { getOriginFromUrl } from '@/lib/url';
+import { jsonObjectSchema, type JsonObject } from '@/lib/json';
 import { scrapeOriginData } from '@/services/scraper';
 import type { FailedResource, TestedResource } from '@/types/batch-test';
 import { probeX402Endpoint } from '@/lib/discovery/probe';
@@ -25,22 +26,11 @@ async function testSingleResource(
   sampleBody?: string
 ) {
   try {
-    let parsedSampleBody: Record<string, unknown> | undefined;
+    let parsedSampleBody: JsonObject | undefined;
     if (sampleBody) {
+      let candidate: unknown;
       try {
-        const parsed: unknown = JSON.parse(sampleBody);
-        if (
-          typeof parsed !== 'object' ||
-          parsed === null ||
-          Array.isArray(parsed)
-        ) {
-          return {
-            success: false as const,
-            url,
-            error: 'Sample body must be a JSON object (e.g. {"key": "value"})',
-          };
-        }
-        parsedSampleBody = parsed as Record<string, unknown>;
+        candidate = JSON.parse(sampleBody);
       } catch (e) {
         const message = e instanceof SyntaxError ? e.message : 'Invalid JSON';
         return {
@@ -49,18 +39,28 @@ async function testSingleResource(
           error: `Invalid JSON in sample body: ${message}`,
         };
       }
+      const parsed = jsonObjectSchema.safeParse(candidate);
+      if (!parsed.success) {
+        return {
+          success: false as const,
+          url,
+          error: 'Sample body must be a JSON object (e.g. {"key": "value"})',
+        };
+      }
+      parsedSampleBody = parsed.data;
     }
 
     const result = await probeX402Endpoint(url, method, parsedSampleBody);
 
     if (!result.success) {
-      return {
-        success: false as const,
+      const failure: FailedResource = {
+        success: false,
         url,
         error: result.error,
-        ...(result.skipped ? { skipped: true as const } : {}),
-        ...(result.statusCode ? { statusCode: result.statusCode } : {}),
       };
+      if (result.skipped) failure.skipped = true;
+      if (result.statusCode) failure.statusCode = result.statusCode;
+      return failure;
     }
 
     const { advisory } = result;

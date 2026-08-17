@@ -15,18 +15,10 @@ export async function discoverSiblingResources(
   try {
     const discoveryResult = await fetchDiscoveryDocument(origin);
     if (discoveryResult.success && Array.isArray(discoveryResult.resources)) {
-      const normalizedInputUrl = normalizeUrl(String(registeredUrl));
-      const otherResources = discoveryResult.resources.filter(r => {
-        if (
-          !r ||
-          typeof r !== 'object' ||
-          !('url' in r) ||
-          typeof r.url !== 'string'
-        ) {
-          return false;
-        }
-        return normalizeUrl(String(r.url)) !== normalizedInputUrl;
-      });
+      const normalizedInputUrl = normalizeUrl(registeredUrl);
+      const otherResources = discoveryResult.resources.filter(
+        r => normalizeUrl(r.url) !== normalizedInputUrl
+      );
       return {
         found: true,
         source: discoveryResult.source,

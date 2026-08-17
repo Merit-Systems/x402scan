@@ -21,11 +21,9 @@ export async function handleResources(
   return paginatedResponse(
     {
       ...result,
-      items: result.items.map((item: Record<string, unknown>) => ({
+      items: result.items.map(item => ({
         ...item,
-        accepts: serializeAccepts(
-          item.accepts as { maxAmountRequired: bigint; network: string }[]
-        ),
+        accepts: serializeAccepts(item.accepts),
       })),
     },
     page_size

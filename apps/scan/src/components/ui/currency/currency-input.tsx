@@ -23,7 +23,7 @@ interface Props extends Omit<
   'onChange'
 > {
   onChange: (value: number) => void;
-  label: string | React.ReactNode;
+  label: string | React.ReactElement;
   selectedCountry: Country;
   setSelectedCountry: (country: Country) => void;
   countries?: Country[];
@@ -89,12 +89,12 @@ export const CurrencyInput: React.FC<Props> = ({
         className
       )}
     >
-      {typeof label === 'string' ? (
+      {React.isValidElement(label) ? (
+        label
+      ) : (
         <span className="text-muted-foreground text-sm font-medium">
           {label}
         </span>
-      ) : (
-        label
       )}
 
       <div className="flex items-center gap-3">

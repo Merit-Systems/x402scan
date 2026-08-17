@@ -1,5 +1,5 @@
 import superjson from 'superjson';
-import z, { ZodError } from 'zod';
+import z from 'zod';
 
 import { initTRPC, TRPCError } from '@trpc/server';
 
@@ -43,16 +43,6 @@ export async function createTRPCContext(headers: Headers): Promise<Context> {
  */
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    };
-  },
 });
 
 // ----------------------------

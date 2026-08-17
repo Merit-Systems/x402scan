@@ -1,10 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { extractFieldsFromSchema } from './schema';
 import { Methods } from '@/types/x402';
-import { normalizedAcceptSchema, type InputSchema } from '@/lib/x402';
+import {
+  normalizedAcceptSchema,
+  type BazaarSchemaInput,
+  type InputSchema,
+} from '@/lib/x402';
 
 function makeInputSchema(
-  overrides: Partial<InputSchema> & { method: InputSchema['method'] }
+  overrides: BazaarSchemaInput & { method: string }
 ): InputSchema {
   return { type: 'http', ...overrides };
 }

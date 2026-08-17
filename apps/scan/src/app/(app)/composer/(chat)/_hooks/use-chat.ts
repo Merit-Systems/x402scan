@@ -78,7 +78,6 @@ export const useChat = ({
           void utils.user.chats.list.invalidate();
         }
       },
-      // eslint-disable-next-line react-hooks/refs
       transport: new DefaultChatTransport({
         api: '/api/chat',
         prepareSendMessagesRequest({ messages }) {
@@ -132,7 +131,7 @@ export const useChat = ({
 
   const handleSetModel = (model: LanguageModel) => {
     setModel(model);
-    void clientCookieUtils.setSelectedChatModel(
+    clientCookieUtils.setSelectedChatModel(
       `${model.provider}/${model.modelId}`
     );
   };

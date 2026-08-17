@@ -30,7 +30,8 @@ export const createPartner = async (
   } catch (error) {
     console.error('Error creating partner:', error);
     throw new Error(
-      `Failed to create partner: ${error instanceof Error ? error.message : String(error)}`
+      `Failed to create partner: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error }
     );
   }
 };

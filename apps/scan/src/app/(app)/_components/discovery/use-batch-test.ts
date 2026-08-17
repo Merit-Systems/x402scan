@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { api } from '@/trpc/client';
+import { api, type RouterInputs } from '@/trpc/client';
 import type { TestedResource, FailedResource } from '@/types/batch-test';
 import type { DiscoveredResource } from '@/types/discovery';
 
@@ -101,11 +101,14 @@ export function useBatchTest(
       try {
         for (const chunk of chunks) {
           if (cancelled) return;
-          const result = await mutateAsyncRef.current({
+          const input: RouterInputs['developer']['batchTest'] = {
             resources: chunk,
-            // Pass sessionId from first chunk so all results share one cache
-            ...(sessionId ? { probeSessionId: sessionId } : {}),
-          });
+          };
+          // Pass sessionId from first chunk so all results share one cache
+          if (sessionId) {
+            input.probeSessionId = sessionId;
+          }
+          const result = await mutateAsyncRef.current(input);
           sessionId ??= result.probeSessionId;
           if (!cancelled && sessionId) {
             setProbeSessionId(sessionId);
@@ -151,7 +154,7 @@ export function useBatchTest(
     const addresses: string[] = [];
     for (const resource of resources) {
       for (const opt of resource.parsed.paymentOptions ?? []) {
-        if ('payTo' in opt && typeof opt.payTo === 'string') {
+        if (opt.payTo !== undefined) {
           addresses.push(opt.payTo);
         }
       }
@@ -166,7 +169,7 @@ export function useBatchTest(
     const probeUrl = options?.testUrl ?? url;
     const resource = effectiveResources.find(r => r.url === url);
     try {
-      const result = await mutateAsyncRef.current({
+      const input: RouterInputs['developer']['batchTest'] = {
         resources: [
           {
             url: probeUrl,
@@ -177,9 +180,12 @@ export function useBatchTest(
             sampleBody: options?.sampleBody,
           },
         ],
-        // Append to existing session so retried probes land in the same cache
-        ...(probeSessionId ? { probeSessionId } : {}),
-      });
+      };
+      // Append to existing session so retried probes land in the same cache
+      if (probeSessionId) {
+        input.probeSessionId = probeSessionId;
+      }
+      const result = await mutateAsyncRef.current(input);
 
       // Merge result: replace existing entry for the original URL
       setResources(prev => {

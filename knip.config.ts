@@ -38,10 +38,6 @@ const config: KnipConfig = {
       ignoreDependencies: ['rimraf', '@prisma/client'],
       ignore: ['generated/**'],
     },
-    'packages/internal/configurations/eslint': {
-      entry: ['*.js'],
-      project: ['**/*.{js,mjs}'],
-    },
     'sync/analytics': {
       entry: ['trigger/**/*.ts'],
       project: ['trigger/**/*.ts'],

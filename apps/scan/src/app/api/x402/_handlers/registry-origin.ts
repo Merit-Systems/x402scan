@@ -16,9 +16,9 @@ export async function handleRegistryOrigin(
     {
       where: {
         origin: { origin },
-        ...(chain
-          ? { accepts: { some: { network: chain as SupportedChain } } }
-          : {}),
+        accepts: chain
+          ? { some: { network: chain as SupportedChain } }
+          : undefined,
       },
     },
     { page, page_size }
@@ -26,13 +26,9 @@ export async function handleRegistryOrigin(
   return paginatedResponse(
     {
       ...result,
-      items: result.items.map((item: Record<string, unknown>) => ({
+      items: result.items.map(item => ({
         ...item,
-        accepts: item.accepts
-          ? serializeAccepts(
-              item.accepts as { maxAmountRequired: bigint; network: string }[]
-            )
-          : item.accepts,
+        accepts: serializeAccepts(item.accepts),
       })),
     },
     page_size

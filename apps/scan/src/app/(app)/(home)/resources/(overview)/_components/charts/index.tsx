@@ -1,5 +1,8 @@
 'use client';
 
+/* oxlint-disable typescript/no-unnecessary-type-assertion --
+   tsc 5 requires these ChartData casts; tsgolint (TS 7) infers them away. */
+
 import { api } from '@/trpc/client';
 
 import { LoadingOverallStatsCard, OverallStatsCard } from './card';

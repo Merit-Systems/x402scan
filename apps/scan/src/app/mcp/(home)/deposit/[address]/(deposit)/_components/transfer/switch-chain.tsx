@@ -23,7 +23,7 @@ export const SwitchChain: React.FC<Props> = ({ connector, targetChain }) => {
   });
 
   return (
-    <Button onClick={() => void switchChain()} disabled={isPending}>
+    <Button onClick={() => switchChain()} disabled={isPending}>
       {isPending ? <Loader2 className="size-4 animate-spin" /> : 'Switch Chain'}
     </Button>
   );

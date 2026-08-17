@@ -45,7 +45,6 @@ type FindDuplicateAddressToken<
   : never;
 
 export function validateUniqueFacilitators<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const T extends readonly Facilitator<any>[],
 >(
   facilitators: FindDuplicateId<T> extends never

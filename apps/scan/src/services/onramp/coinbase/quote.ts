@@ -21,10 +21,10 @@ export const getCoinbaseOnrampQuote = async ({
   amount,
   method,
 }: z.infer<typeof getQuoteSchema>) => {
-  const paymentMethod = METHOD_TO_PAYMENT_METHOD[method];
-  if (!paymentMethod) {
+  if (!isCoinbaseSupportedMethod(method)) {
     throw new Error('Invalid method');
   }
+  const paymentMethod = METHOD_TO_PAYMENT_METHOD[method];
   const { payment_total } = await cdpFetch(
     {
       requestHost: 'api.developer.coinbase.com',
@@ -37,7 +37,7 @@ export const getCoinbaseOnrampQuote = async ({
         purchaseCurrency: 'USDC',
         purchaseNetwork: 'base',
         paymentAmount: amount.toFixed(2),
-        paymentMethod: METHOD_TO_PAYMENT_METHOD[method],
+        paymentMethod,
         paymentCurrency: 'USD',
         country: 'US',
         subdivision: 'NY',
@@ -48,7 +48,12 @@ export const getCoinbaseOnrampQuote = async ({
   return Number(payment_total.value);
 };
 
-const METHOD_TO_PAYMENT_METHOD: Partial<Record<OnrampMethods, string>> = {
+const METHOD_TO_PAYMENT_METHOD = {
   [OnrampMethods.DEBIT_CARD]: 'CARD',
   [OnrampMethods.ACH]: 'ACH_BANK_ACCOUNT',
-};
+} satisfies Partial<Record<OnrampMethods, string>>;
+
+const isCoinbaseSupportedMethod = (
+  method: OnrampMethods
+): method is OnrampMethods.DEBIT_CARD | OnrampMethods.ACH =>
+  method === OnrampMethods.DEBIT_CARD || method === OnrampMethods.ACH;

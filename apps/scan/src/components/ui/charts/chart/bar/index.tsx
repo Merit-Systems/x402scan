@@ -53,8 +53,7 @@ export const BaseBarChart = <
         </defs>
       )}
 
-      {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-      {bars.map(({ dataKey, color, ref, ...barProps }, index) => {
+      {bars.map(({ dataKey, color, ref: _ref, ...barProps }, index) => {
         return (
           <Bar
             key={dataKey as string}

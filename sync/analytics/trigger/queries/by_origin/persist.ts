@@ -6,10 +6,8 @@ import type { MetricsByOrigin } from '../types';
 import type { Prisma } from '@x402scan/scan-db';
 
 export async function persistMetrics(
-  data: unknown
+  metrics: MetricsByOrigin[]
 ): Promise<Prisma.BatchPayload> {
-  const metrics: MetricsByOrigin[] = data as MetricsByOrigin[];
-
   const originToId = new Map<string, string>();
 
   for (const metric of metrics) {

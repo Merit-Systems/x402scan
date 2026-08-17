@@ -10,13 +10,14 @@ import SuperJSON from 'superjson';
 
 import { createQueryClient } from './query-client';
 import { env } from '@/env';
+import { isBrowser, isServer } from '@/lib/runtime-env';
 
 import type { AppRouter } from './routers';
 import { QueryClientProvider, type QueryClient } from '@tanstack/react-query';
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {
-  if (typeof window === 'undefined') {
+  if (isServer) {
     // Server: always make a new query client
     return createQueryClient();
   }
@@ -66,7 +67,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 }
 
 function getBaseUrl() {
-  if (typeof window !== 'undefined') return window.location.origin;
+  if (isBrowser) return window.location.origin;
   return env.NEXT_PUBLIC_APP_URL;
 }
 

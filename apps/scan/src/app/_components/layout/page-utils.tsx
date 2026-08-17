@@ -7,13 +7,15 @@ import { Separator } from '@/components/ui/separator';
 
 import { cn } from '@/lib/utils';
 
-import type { ReactNode } from 'react';
+import { isValidElement } from 'react';
+
+import type { ReactElement, ReactNode } from 'react';
 import type { Route } from 'next';
 
 interface HeadingProps {
-  title: string | ReactNode;
+  title: string | ReactElement;
   icon?: ReactNode;
-  description?: string | ReactNode;
+  description?: string | ReactElement;
   actions?: ReactNode;
   className?: string;
 }
@@ -35,20 +37,20 @@ export const Heading: React.FC<HeadingProps> = ({
       <div className="flex items-center gap-4 shrink-0 flex-1">
         {icon}
         <div className="flex flex-col gap-1 md:gap-3 text-left">
-          {typeof title === 'string' ? (
+          {isValidElement(title) ? (
+            title
+          ) : (
             <h1 className="text-2xl md:text-4xl font-bold font-mono">
               {title}
             </h1>
-          ) : (
-            title
           )}
           {description &&
-            (typeof description === 'string' ? (
+            (isValidElement(description) ? (
+              description
+            ) : (
               <p className="text-muted-foreground/80 text-sm md:text-base">
                 {description}
               </p>
-            ) : (
-              description
             ))}
         </div>
       </div>
@@ -98,7 +100,7 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
 };
 
 export interface SectionProps<T extends string> {
-  title: string | ReactNode;
+  title: string | ReactElement;
   description?: string;
   children: React.ReactNode;
   actions?: React.ReactNode;
@@ -110,17 +112,17 @@ const SectionHeader = ({
   title,
   href,
 }: {
-  title: string | ReactNode;
+  title: string | ReactElement;
   href?: string;
 }) => {
   return (
     <div
       className={cn('flex items-center gap-1', href && 'group cursor-pointer')}
     >
-      {typeof title === 'string' ? (
-        <h1 className="font-bold text-xl md:text-2xl">{title}</h1>
-      ) : (
+      {isValidElement(title) ? (
         title
+      ) : (
+        <h1 className="font-bold text-xl md:text-2xl">{title}</h1>
       )}
       {href && (
         <div className="flex items-center gap-2 bg-muted/0 hover:bg-muted rounded-md p-0.5 transition-all hover:scale-105 group-hover:translate-x-1">

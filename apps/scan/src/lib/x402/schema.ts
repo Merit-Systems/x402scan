@@ -1,13 +1,11 @@
 import z from 'zod';
 import { Methods } from '@/types/x402';
 
-import type { FieldDefinition } from '@/types/x402';
-import type { InputSchema } from '.';
+import { jsonObjectSchema } from '@/lib/json';
 
-interface JsonSchema {
-  properties?: Record<string, unknown>;
-  required?: string[];
-}
+import type { FieldDefinition } from '@/types/x402';
+import type { JsonObject, JsonValue } from '@/lib/json';
+import type { InputSchema } from '.';
 
 /**
  * Headers that are part of the x402/MPP payment protocol and should not
@@ -23,16 +21,26 @@ const PROTOCOL_HEADERS = new Set([
   'sign-in-with-x',
 ]);
 
-function filterProtocolHeaders(
-  headers: Record<string, unknown>
-): Record<string, unknown> {
-  const filtered: Record<string, unknown> = {};
+function filterProtocolHeaders(headers: JsonObject): JsonObject {
+  const filtered: JsonObject = {};
   for (const [key, value] of Object.entries(headers)) {
     if (!PROTOCOL_HEADERS.has(key.toLowerCase())) {
       filtered[key] = value;
     }
   }
   return filtered;
+}
+
+const stringArraySchema = z.array(z.string());
+
+function asJsonObject(value: JsonValue | undefined): JsonObject | undefined {
+  const result = jsonObjectSchema.safeParse(value);
+  return result.success ? result.data : undefined;
+}
+
+function asStringArray(value: JsonValue | undefined): string[] | undefined {
+  const result = stringArraySchema.safeParse(value);
+  return result.success ? result.data : undefined;
 }
 
 /**
@@ -44,71 +52,69 @@ export function extractFieldsFromSchema(
   method: Methods,
   fieldType: 'query' | 'body' | 'header'
 ): FieldDefinition[] {
-  const schema = inputSchema as Record<string, unknown>;
-  const schemaBody = schema.body as JsonSchema | undefined;
+  const parsedInput = jsonObjectSchema.safeParse(inputSchema);
+  if (!parsedInput.success) {
+    return [];
+  }
+  const input = parsedInput.data;
 
   if (fieldType === 'header') {
-    const headerFields = (
-      inputSchema as unknown as { headerFields?: Record<string, unknown> }
-    ).headerFields;
-    if (headerFields && typeof headerFields === 'object') {
+    const headerFields = asJsonObject(input.headerFields);
+    if (headerFields) {
       return getFields(filterProtocolHeaders(headerFields));
-    }
-    const headerFieldsRaw = schema.headerFields as
-      | Record<string, unknown>
-      | undefined;
-    if (headerFieldsRaw && typeof headerFieldsRaw === 'object') {
-      return getFields(filterProtocolHeaders(headerFieldsRaw));
     }
     return [];
   }
 
+  const queryParams = asJsonObject(input.queryParams);
+  const body = asJsonObject(input.body);
+
   const hasJsonSchemaQuery =
-    inputSchema.queryParams &&
-    typeof inputSchema.queryParams === 'object' &&
-    'properties' in (inputSchema.queryParams as object);
-  const hasJsonSchemaBody =
-    schemaBody && typeof schemaBody === 'object' && 'properties' in schemaBody;
+    queryParams !== undefined && 'properties' in queryParams;
+  const hasJsonSchemaBody = body !== undefined && 'properties' in body;
   const hasJsonSchemaRaw =
-    !inputSchema.queryParams &&
-    !inputSchema.bodyFields &&
-    'properties' in schema;
+    !input.queryParams && !input.bodyFields && 'properties' in input;
 
   if (fieldType === 'query') {
-    if (hasJsonSchemaQuery) {
-      const qs = inputSchema.queryParams as JsonSchema;
-      return getFields(qs.properties, qs.required);
+    if (hasJsonSchemaQuery && queryParams) {
+      return getFields(
+        asJsonObject(queryParams.properties),
+        asStringArray(queryParams.required)
+      );
     }
-    if (inputSchema.queryParams) {
-      return getFields(inputSchema.queryParams);
+    if (input.queryParams) {
+      return getFields(queryParams);
     }
     if (hasJsonSchemaRaw && method === Methods.GET) {
       return getFields(
-        (schema as JsonSchema).properties,
-        (schema as JsonSchema).required
+        asJsonObject(input.properties),
+        asStringArray(input.required)
       );
     }
     return [];
   }
 
   // fieldType === 'body'
-  if (hasJsonSchemaBody && method !== Methods.GET) {
-    return getFields(schemaBody.properties, schemaBody.required);
+  if (hasJsonSchemaBody && body && method !== Methods.GET) {
+    return getFields(
+      asJsonObject(body.properties),
+      asStringArray(body.required)
+    );
   }
-  if (inputSchema.bodyFields) {
-    return getFields(inputSchema.bodyFields);
+  if (input.bodyFields) {
+    return getFields(asJsonObject(input.bodyFields));
   }
   if (hasJsonSchemaRaw && method !== Methods.GET) {
     return getFields(
-      (schema as JsonSchema).properties,
-      (schema as JsonSchema).required
+      asJsonObject(input.properties),
+      asStringArray(input.required)
     );
   }
   return [];
 }
 
 function getFields(
-  record: Record<string, unknown> | null | undefined,
+  record: JsonObject | null | undefined,
   requiredFields?: string[]
 ): FieldDefinition[] {
   if (!record) {
@@ -117,8 +123,38 @@ function getFields(
   return expandFields(record, '', requiredFields);
 }
 
+const fieldItemsSchema = z
+  .object({
+    type: z.string().optional().catch(undefined),
+    properties: jsonObjectSchema.optional().catch(undefined),
+    required: stringArraySchema.optional().catch(undefined),
+  })
+  .optional()
+  .catch(undefined);
+
+const fieldNodeObjectSchema = z.object({
+  type: z.string().optional().catch(undefined),
+  description: z.string().optional().catch(undefined),
+  enum: stringArraySchema.optional().catch(undefined),
+  default: z.string().optional().catch(undefined),
+  required: z
+    .union([z.boolean(), stringArraySchema])
+    .optional()
+    .catch(undefined),
+  properties: jsonObjectSchema.optional().catch(undefined),
+  items: fieldItemsSchema,
+});
+
+type ParsedFieldNode = z.infer<typeof fieldNodeObjectSchema>;
+
+const fieldNodeSchema = z.union([
+  // Shorthand: a bare string is the field's type, e.g. `"string"`.
+  z.string().transform((type): ParsedFieldNode => ({ type })),
+  fieldNodeObjectSchema,
+]);
+
 function expandFields(
-  record: Record<string, unknown>,
+  record: JsonObject,
   prefix = '',
   parentRequired?: string[]
 ): FieldDefinition[] {
@@ -127,86 +163,53 @@ function expandFields(
   for (const [name, raw] of Object.entries(record)) {
     const fullName = prefix ? `${prefix}.${name}` : name;
 
-    if (typeof raw === 'string') {
-      fields.push({
-        name: fullName,
-        type: raw,
-        required: parentRequired?.includes(name) ?? false,
-        enum: undefined,
-        default: undefined,
-      } satisfies FieldDefinition);
+    const parsedNode = fieldNodeSchema.safeParse(raw);
+    if (!parsedNode.success) {
       continue;
     }
+    const field = parsedNode.data;
 
-    if (typeof raw !== 'object' || !raw) {
-      continue;
-    }
-
-    const field = raw as Record<string, unknown>;
-    const fieldType = typeof field.type === 'string' ? field.type : undefined;
-    const fieldDescription =
-      typeof field.description === 'string' ? field.description : undefined;
-    const fieldEnum = Array.isArray(field.enum)
-      ? (field.enum as string[])
+    const requiredNames = Array.isArray(field.required)
+      ? field.required
       : undefined;
-    const fieldDefault =
-      typeof field.default === 'string' ? field.default : undefined;
-
     const isFieldRequired =
-      typeof field.required === 'boolean'
+      field.required === true || field.required === false
         ? field.required
         : (parentRequired?.includes(name) ?? false);
 
     // Handle array type with items - preserve items schema
-    if (
-      fieldType === 'array' &&
-      field.items &&
-      typeof field.items === 'object'
-    ) {
-      const items = field.items as Record<string, unknown>;
+    if (field.type === 'array' && field.items) {
       fields.push({
         name: fullName,
-        type: fieldType,
-        description: fieldDescription,
+        type: field.type,
+        description: field.description,
         required: isFieldRequired,
-        enum: fieldEnum,
-        default: fieldDefault,
+        enum: field.enum,
+        default: field.default,
         items: {
-          type: typeof items.type === 'string' ? items.type : undefined,
-          properties:
-            typeof items.properties === 'object' && items.properties !== null
-              ? (items.properties as Record<string, unknown>)
-              : undefined,
-          required: Array.isArray(items.required)
-            ? (items.required as string[])
-            : undefined,
+          type: field.items.type,
+          properties: field.items.properties,
+          required: field.items.required,
         },
       } satisfies FieldDefinition);
     }
     // Handle object type with properties - expand recursively
-    else if (
-      fieldType === 'object' &&
-      field.properties &&
-      typeof field.properties === 'object'
-    ) {
-      const objectRequired = Array.isArray(field.required)
-        ? field.required
-        : [];
+    else if (field.type === 'object' && field.properties) {
       const expandedFields = expandFields(
-        field.properties as Record<string, unknown>,
+        field.properties,
         fullName,
-        objectRequired
+        requiredNames ?? []
       );
       fields.push(...expandedFields);
     } else {
       // Regular field or object without properties
       fields.push({
         name: fullName,
-        type: fieldType,
-        description: fieldDescription,
+        type: field.type,
+        description: field.description,
         required: isFieldRequired,
-        enum: fieldEnum,
-        default: fieldDefault,
+        enum: field.enum,
+        default: field.default,
       } satisfies FieldDefinition);
     }
   }

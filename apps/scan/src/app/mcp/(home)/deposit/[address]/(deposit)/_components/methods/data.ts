@@ -8,7 +8,7 @@ interface MethodMetadata {
   description: string;
 }
 
-export const METHOD_METADATA: Record<OnrampMethods, MethodMetadata> = {
+export const METHOD_METADATA = {
   [OnrampMethods.DEBIT_CARD]: {
     label: 'Debit Card',
     icon: CreditCard,
@@ -29,4 +29,4 @@ export const METHOD_METADATA: Record<OnrampMethods, MethodMetadata> = {
     icon: Gift,
     description: 'Redeem an invite code for starter money',
   },
-};
+} satisfies Record<OnrampMethods, MethodMetadata>;

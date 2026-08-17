@@ -72,5 +72,7 @@ const FACILITATORS = validateUniqueFacilitators([
   threewsFacilitator,
 ]);
 
-export const allFacilitators: Facilitator[] =
-  FACILITATORS as unknown as Facilitator[];
+// Some facilitators take facilitator-specific props in their config
+// constructor, so the only honest common element type is `Facilitator<never>`:
+// every entry is assignable to it, and all data fields remain readable.
+export const allFacilitators: Facilitator<never>[] = [...FACILITATORS];

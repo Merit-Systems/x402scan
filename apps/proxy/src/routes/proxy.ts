@@ -27,7 +27,40 @@ const extractRequestBody = async (request: Request) => {
   return null;
 };
 
-const extractResponseBody = async (response: Response) => {
+interface ProxyErrorDetails {
+  method: string;
+  url: string;
+  error: string;
+  errorName: string;
+  errorStack: string | undefined;
+  duration: number;
+  timestamp: string;
+  requestCompressionHeaders?: {
+    'accept-encoding': string | null;
+    'content-encoding': string | null;
+    'content-type': string | null;
+    'content-length': string | null;
+  };
+  hasBody?: boolean;
+  bodySize?: number;
+  errorType?:
+    | 'DNS_ERROR'
+    | 'CONNECTION_ERROR'
+    | 'TIMEOUT_ERROR'
+    | 'SSL_ERROR'
+    | 'FETCH_ERROR';
+  cause?: unknown;
+}
+
+type ExtractedResponseBody =
+  | { kind: 'json'; body: unknown }
+  | { kind: 'text'; body: string }
+  | { kind: 'buffer'; body: { type: 'Buffer'; data: number[] } }
+  | { kind: 'none'; body: null };
+
+const extractResponseBody = async (
+  response: Response
+): Promise<ExtractedResponseBody> => {
   const contentType = response.headers.get('content-type') ?? '';
   const contentEncoding = response.headers.get('content-encoding');
 
@@ -42,13 +75,13 @@ const extractResponseBody = async (response: Response) => {
     try {
       const result = (await response.json()) as unknown;
       console.log('[extractResponseBody] Successfully parsed JSON');
-      return result;
+      return { kind: 'json', body: result };
     } catch (error) {
       console.error('[extractResponseBody] Failed to parse JSON', {
         error: error instanceof Error ? error.message : String(error),
         bodyUsed: response.bodyUsed,
       });
-      return null;
+      return { kind: 'none', body: null };
     }
   } else if (contentType.includes('text/')) {
     try {
@@ -57,33 +90,33 @@ const extractResponseBody = async (response: Response) => {
         length: result.length,
         preview: result.substring(0, 100),
       });
-      return result;
+      return { kind: 'text', body: result };
     } catch (error) {
       console.error('[extractResponseBody] Failed to read text', {
         error: error instanceof Error ? error.message : String(error),
         errorName: error instanceof Error ? error.name : undefined,
         bodyUsed: response.bodyUsed,
       });
-      return null;
+      return { kind: 'none', body: null };
     }
   } else if (contentType.includes('application/octet-stream')) {
     try {
       const arrayBuffer = await response.arrayBuffer();
       // Convert ArrayBuffer to a base64-encoded string
       const result = {
-        type: 'Buffer',
+        type: 'Buffer' as const,
         data: Array.from(new Uint8Array(arrayBuffer)),
       };
       console.log('[extractResponseBody] Successfully read arrayBuffer', {
         size: arrayBuffer.byteLength,
       });
-      return result;
+      return { kind: 'buffer', body: result };
     } catch (error) {
       console.error('[extractResponseBody] Failed to read arrayBuffer', {
         error: error instanceof Error ? error.message : String(error),
         bodyUsed: response.bodyUsed,
       });
-      return null;
+      return { kind: 'none', body: null };
     }
   } else if (contentType) {
     try {
@@ -91,18 +124,18 @@ const extractResponseBody = async (response: Response) => {
       console.log('[extractResponseBody] Successfully read text (fallback)', {
         length: result.length,
       });
-      return result;
+      return { kind: 'text', body: result };
     } catch (error) {
       console.error('[extractResponseBody] Failed to read text (fallback)', {
         error: error instanceof Error ? error.message : String(error),
         bodyUsed: response.bodyUsed,
       });
-      return null;
+      return { kind: 'none', body: null };
     }
   }
 
   console.log('[extractResponseBody] No content type, returning null');
-  return null;
+  return { kind: 'none', body: null };
 };
 
 async function proxyHandler(c: Context) {
@@ -317,10 +350,13 @@ async function proxyHandler(c: Context) {
                 clonedBodyLocked:
                   clonedUpstreamResponse.body?.locked ?? 'unknown',
               });
-              responseBody = await extractResponseBody(clonedUpstreamResponse);
+              const extractedResponseBody = await extractResponseBody(
+                clonedUpstreamResponse
+              );
+              responseBody = extractedResponseBody.body;
               console.log('[Proxy Extract Response Body Success]', {
                 url: targetUrl.toString(),
-                responseBodyType: typeof responseBody,
+                responseBodyKind: extractedResponseBody.kind,
                 responseBodyIsNull: responseBody === null,
               });
             } catch (error) {
@@ -417,11 +453,11 @@ async function proxyHandler(c: Context) {
     const errorDuration = Date.now() - startTime;
 
     // Extract detailed error information
-    const errorDetails: Record<string, unknown> = {
+    const errorDetails: ProxyErrorDetails = {
       method,
       url: targetUrl.toString(),
       error: error instanceof Error ? error.message : String(error),
-      errorName: error instanceof Error ? error.name : typeof error,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
       errorStack: error instanceof Error ? error.stack : undefined,
       duration: errorDuration,
       timestamp: new Date().toISOString(),

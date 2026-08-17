@@ -60,7 +60,6 @@ const SoraVideoDisplay: React.FC<{ id: string }> = ({ id }) => {
       task &&
       ['completed', 'failed', 'cancelled', 'expired'].includes(task.status)
     ) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsTaskFetched(true);
     }
   }, [task, id]);

@@ -38,11 +38,15 @@ export const safeFetch = (surface: string, request: Request) => {
     errorType,
     surface,
     fetch(request),
+    // The BaseFetchError widening below is required by tsc 5 even though
+    // tsgolint (TS 7) infers it away.
+    /* oxlint-disable typescript/no-unnecessary-type-assertion */
     error =>
       ({
         cause: 'network',
         message: error instanceof Error ? error.message : 'Network error',
       }) as BaseFetchError
+    /* oxlint-enable typescript/no-unnecessary-type-assertion */
   );
 };
 

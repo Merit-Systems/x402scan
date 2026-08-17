@@ -23,10 +23,7 @@ interface Frontmatter {
   icon?: string;
 }
 
-function parseFrontmatter(content: string): {
-  frontmatter: Frontmatter | null;
-  body: string;
-} {
+function parseFrontmatter(content: string) {
   const frontmatterRegex = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/;
   const match = frontmatterRegex.exec(content);
 
@@ -35,7 +32,7 @@ function parseFrontmatter(content: string): {
   }
 
   const [, frontmatterStr, body] = match;
-  const frontmatter: Partial<Frontmatter> = {};
+  const fields = new Map<string, string>();
 
   frontmatterStr?.split('\n').forEach(line => {
     const colonIndex = line.indexOf(':');
@@ -43,18 +40,22 @@ function parseFrontmatter(content: string): {
 
     const key = line.slice(0, colonIndex).trim();
     const value = line.slice(colonIndex + 1).trim();
-
-    if (key === 'title' || key === 'description' || key === 'icon') {
-      frontmatter[key] = value;
-    }
+    fields.set(key, value);
   });
 
-  if (!frontmatter.title || !frontmatter.description) {
+  const title = fields.get('title');
+  const description = fields.get('description');
+  if (!title || !description) {
     return { frontmatter: null, body: content };
   }
 
+  const frontmatter: Frontmatter = {
+    title,
+    description,
+    icon: fields.get('icon'),
+  };
   return {
-    frontmatter: frontmatter as Frontmatter,
+    frontmatter,
     body: body?.trim() ?? '',
   };
 }
@@ -117,7 +118,6 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
     let result = body;
     templateVars.forEach(v => {
       // Replace with value if filled, otherwise show just the label in template syntax
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally treating empty string as falsy
       const replacement = values[v.raw] || `{{${v.label}}}`;
       result = result.replaceAll(v.raw, replacement);
     });
@@ -146,7 +146,6 @@ export const PromptTemplate: React.FC<Props> = ({ templateString }) => {
         const value = values[part];
         result.push(
           <span key={i} className="text-primary font-semibold">
-            {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- intentionally treating empty string as falsy */}
             {value || `{{${templateVar.label}}}`}
           </span>
         );
