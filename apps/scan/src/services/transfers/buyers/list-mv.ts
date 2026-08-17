@@ -11,6 +11,7 @@ import {
 } from '@/lib/cache';
 import { queryRaw } from '@/services/transfers/client';
 import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { buildBuyersOrderByColumn } from './order-by';
 
 import type { paginatedQuerySchema } from '@/lib/pagination';
 
@@ -64,6 +65,9 @@ const listTopBuyersMVUncached = async (
 
   const t0 = performance.now();
   const offset = pagination.page * pagination.page_size;
+  const orderByClause = Prisma.sql`ORDER BY ${Prisma.raw(
+    buildBuyersOrderByColumn(sorting)
+  )}`;
 
   try {
     // Group and paginate by sender first, then unnest facilitator_ids
@@ -81,7 +85,7 @@ const listTopBuyersMVUncached = async (
       FROM ${Prisma.raw(tableName)}
       ${whereClause}
       GROUP BY sender
-      ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.raw('DESC') : Prisma.raw('ASC')}
+      ${orderByClause}
       LIMIT ${pagination.page_size}
       OFFSET ${offset}
     )
@@ -100,7 +104,7 @@ const listTopBuyersMVUncached = async (
       p.unique_sellers,
       p.chains
     FROM paginated p
-    ORDER BY ${Prisma.raw(`"${sorting.id}"`)} ${sorting.desc ? Prisma.raw('DESC') : Prisma.raw('ASC')}`,
+    ${orderByClause}`,
       z.array(
         z.object({
           sender: mixedAddressSchema,
