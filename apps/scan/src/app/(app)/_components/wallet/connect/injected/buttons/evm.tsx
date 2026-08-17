@@ -47,10 +47,14 @@ interface ConnectEVMInjectedWalletButtonProps {
 const ConnectEVMInjectedWalletButton: React.FC<
   ConnectEVMInjectedWalletButtonProps
 > = ({ connector, className, prefix }) => {
-  const { connectAsync, isPending } = useConnect();
+  const { connect, isPending } = useConnect();
 
-  const onConnect = useCallback(async () => {
-    await connectAsync(
+  // Use the callback-based mutation (not connectAsync): wallet extensions
+  // reject connect requests routinely (locked wallet, no accounts, user
+  // dismissal), and connectAsync would surface each one as an unhandled
+  // promise rejection on top of the onError toast.
+  const onConnect = useCallback(() => {
+    connect(
       { connector, chainId: base.id },
       {
         onSuccess: () => {
@@ -61,7 +65,7 @@ const ConnectEVMInjectedWalletButton: React.FC<
         },
       }
     );
-  }, [connectAsync, connector]);
+  }, [connect, connector]);
 
   return (
     <ConnectInjectedWalletButton
@@ -70,7 +74,7 @@ const ConnectEVMInjectedWalletButton: React.FC<
       icon={connector.icon}
       name={connector.name}
       isPending={isPending}
-      onClick={() => void onConnect()}
+      onClick={onConnect}
     />
   );
 };
