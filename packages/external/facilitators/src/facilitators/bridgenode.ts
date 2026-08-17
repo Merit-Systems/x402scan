@@ -7,10 +7,6 @@ export const bridgenode: FacilitatorConfig = {
   url: 'https://bridgenode.cc',
 };
 
-export const bridgenodeDiscovery: FacilitatorConfig = {
-  url: 'https://bridgenode.cc',
-};
-
 export const bridgenodeFacilitator = {
   id: 'bridgenode',
   metadata: {
@@ -20,7 +16,9 @@ export const bridgenodeFacilitator = {
     color: '#1A5FB4',
   },
   config: bridgenode,
-  discoveryConfig: bridgenodeDiscovery,
+  discoveryConfig: {
+    url: 'https://bridgenode.cc',
+  },
   addresses: {
     [Network.SOLANA]: [
       {
