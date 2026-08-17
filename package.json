@@ -2,7 +2,7 @@
   "name": "@x402scan/monorepo",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@10.28.0",
+  "packageManager": "pnpm@11.22.0",
   "scripts": {
     "dev": "turbo run dev --filter=@x402scan/app",
     "dev:mcp": "turbo run dev --filter=@x402scan/app --filter=@x402scan/mcp",
@@ -39,15 +39,5 @@
     "rimraf": "catalog:",
     "turbo": "^2.8.0",
     "typescript": "catalog:"
-  },
-  "pnpm": {
-    "overrides": {
-      "@auth/core": "0.40.0",
-      "viem": "2.51.2",
-      "@walletconnect/utils": "^2.23.9"
-    },
-    "onlyBuiltDependencies": [
-      "@coinbase/x402"
-    ]
   }
 }
