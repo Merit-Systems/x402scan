@@ -4,7 +4,7 @@ export const defaultEcosystemItems: EcosystemItem[] = [
   {
     name: 'Agent402.Tools',
     description:
-      'The applied layer of Agentic Finance (AIFI): 500+ deterministic pay-per-call tools for AI agents over x402 and MPP on the same 402 (plus MCP): search, finance, government data, media, an OpenAI-compatible LLM gateway, and a Smart Order Router, settling USDC across twelve chains (and USDG on Robinhood Chain).',
+      '500+ deterministic pay-per-call tools for AI agents over x402 and MPP on the same 402 (plus MCP): search, finance, government data, media, an OpenAI-compatible LLM gateway, and a Smart Order Router, settling USDC across twelve chains (and USDG on Robinhood Chain). The applied layer of agentic finance.',
     logoUrl: 'https://agent402.tools/logo.png',
     websiteUrl: 'https://agent402.tools',
     category: 'Services/Endpoints',
