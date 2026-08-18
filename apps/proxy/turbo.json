@@ -4,12 +4,15 @@
   "tasks": {
     "dev": {
       "description": "Start proxy server in development mode",
-      "env": ["PORT"]
+      "passThroughEnv": ["PORT"]
     },
     "build": {
       "description": "Build proxy server for production",
-      "env": ["PORT"],
       "outputs": ["dist/**"]
+    },
+    "start": {
+      "description": "Start proxy server in production mode",
+      "passThroughEnv": ["PORT"]
     }
   }
 }

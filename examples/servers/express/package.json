@@ -4,10 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx index.ts",
-    "types:check": "tsc --noEmit",
-    "knip": "pnpm -w knip --workspace ./examples/servers/express",
-    "format": "pnpm -w format:dir ./examples/servers/express",
-    "format:check": "pnpm -w format:check:dir ./examples/servers/express"
+    "types:check": "tsc --noEmit"
   },
   "dependencies": {
     "dotenv": "catalog:env",

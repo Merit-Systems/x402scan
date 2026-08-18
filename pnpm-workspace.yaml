@@ -58,7 +58,6 @@ catalogs:
     '@trpc/react-query': ^11.8.1
     '@trpc/server': ^11.8.1
   x402-v1:
-    'x402': &X402_VERSION ^0.7.1
     'x402-express': ^0.7.1
     'x402-hono': ^0.7.1
   x402:

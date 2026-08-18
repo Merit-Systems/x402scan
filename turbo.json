@@ -4,13 +4,11 @@
   "tasks": {
     "build": {
       "description": "Build package for production",
-      "dependsOn": ["^build", "^db:generate"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "dependsOn": ["^build", "^db:generate"]
     },
     "build:deploy": {
       "description": "Build package with database migrations for deployment",
-      "dependsOn": ["^build", "^db:generate", "^db:deploy"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "dependsOn": ["^build", "^db:generate", "^db:deploy"]
     },
     "//#lint": {
       "description": "Run oxlint (type-aware) across the whole repo",
@@ -27,7 +25,12 @@
       "inputs": [
         "**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts}",
         "**/tsconfig*.json",
-        ".oxlintrc.json"
+        ".oxlintrc.json",
+        "!**/node_modules/**",
+        "!**/.turbo/**",
+        "!**/.next/**",
+        "!**/dist/**",
+        "!**/generated/**"
       ]
     },
     "//#lint:fix": {
@@ -37,48 +40,57 @@
     "dev": {
       "description": "Start development server with hot reload",
       "dependsOn": ["^build", "^db:generate"],
+      "cache": false,
       "persistent": true
     },
     "start": {
       "description": "Start production server",
+      "dependsOn": ["build"],
       "cache": false,
       "persistent": true
     },
     "types:generate": {
-      "description": "Generate TypeScript types from sources",
-      "outputs": [".next/**", "!.next/cache/**"]
+      "description": "Generate TypeScript types from sources"
     },
     "types:check": {
       "description": "Type-check code with TypeScript compiler",
-      "dependsOn": [
-        "^types:check",
-        "^types:generate",
-        "^db:generate",
-        "types:generate",
-        "^build",
-        "db:generate"
+      "dependsOn": ["^db:generate", "types:generate", "^build", "db:generate"]
+    },
+    "//#format:check": {
+      "description": "Check code formatting without modifying files",
+      "inputs": [
+        "apps/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,json,jsonc,md,mdx,yml,yaml,css,scss,html}",
+        "packages/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,json,jsonc,md,mdx,yml,yaml,css,scss,html}",
+        "sync/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,json,jsonc,md,mdx,yml,yaml,css,scss,html}",
+        "examples/servers/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,json,jsonc,md,mdx,yml,yaml,css,scss,html}",
+        ".prettierignore",
+        ".prettierrc*",
+        "!**/node_modules/**",
+        "!**/.turbo/**",
+        "!**/.next/**",
+        "!**/dist/**",
+        "!**/generated/**"
       ]
     },
-    "format": {
-      "description": "Format code with Prettier",
-      "dependsOn": ["^format"]
-    },
-    "format:check": {
-      "description": "Check code formatting without modifying files",
-      "dependsOn": ["^format:check"]
-    },
-    "knip": {
-      "description": "Find unused files, dependencies, and exports"
-    },
-    "knip:check": {
-      "description": "Check for unused code without auto-fixing"
+    "//#knip": {
+      "description": "Find unused files, dependencies, and exports",
+      "inputs": [
+        "**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,json}",
+        "knip.config.ts",
+        "pnpm-workspace.yaml",
+        "!**/node_modules/**",
+        "!**/.turbo/**",
+        "!**/.next/**",
+        "!**/dist/**",
+        "!**/generated/**"
+      ]
     },
     "publish:check": {
-      "description": "Verify package is ready for npm publishing"
+      "description": "Verify package is ready for npm publishing",
+      "cache": false
     },
     "db:generate": {
-      "description": "Generate Prisma client from schema",
-      "cache": false
+      "description": "Generate Prisma client from schema"
     },
     "db:migrate": {
       "description": "Create and apply database migrations",
@@ -89,57 +101,36 @@
       "description": "Deploy pending database migrations to production",
       "cache": false
     },
+    "db:format": {
+      "description": "Format Prisma schemas",
+      "cache": false
+    },
+    "studio": {
+      "description": "Start an interactive database studio",
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "description": "Run package tests",
+      "dependsOn": ["^build", "^db:generate", "db:generate"]
+    },
+    "deploy": {
+      "description": "Deploy a package to its hosting provider",
+      "dependsOn": ["^build", "^db:generate"],
+      "cache": false
+    },
+    "trigger:dev": {
+      "description": "Start Trigger.dev background jobs locally",
+      "dependsOn": ["^build", "^db:generate"],
+      "cache": false,
+      "persistent": true
+    },
     "trigger:deploy": {
       "description": "Deploy Trigger.dev background jobs",
       "dependsOn": ["^build", "^db:generate"],
       "cache": false
     }
   },
-  "globalEnv": [
-    "TURBO_*",
-    "NEXT_PUBLIC_*",
-    "NEXT_RUNTIME",
-    "AUTH_SECRET",
-    "LMNR_PROJECT_API_KEY",
-    "OTEL_SERVICE_NAME",
-    "SIGNOZ_INGESTION_KEY",
-    "GITHUB_TOKEN",
-    "SCAN_DATABASE_*",
-    "SCAN_POSTGRES_*",
-    "SCAN_PG*",
-    "SCAN_NEON_*",
-    "POSTGRES_PRISMA_URL",
-    "CDP_*",
-    "CRON_*",
-    "FREE_TIER_*",
-    "INVITE_WALLET_NAME",
-    "TRANSFERS_*",
-    "STRIPE_*",
-    "BLOB_READ_WRITE_TOKEN",
-    "REDIS_*",
-    "ECHO_*",
-    "ANALYTICS_CLICKHOUSE_*",
-    "PARTNERS_CLICKHOUSE_*",
-    "JINA_API_KEY",
-    "RESOURCE_SEARCH_API_KEY",
-    "AGENTCASH_*",
-    "OPENAI_API_KEY",
-    "OPENROUTER_API_KEY",
-    "FREEPIK_API_KEY",
-    "DISCORD_TELEMETRY_WEBHOOK_URL",
-    "DISCORD_MERCHANT_RESEARCH_WEBHOOK_URL",
-    "X402_PAYEE_ADDRESS",
-    "SOLANA_RPC_*",
-    "BASE_RPC_*",
-    "POSTHOG_*",
-    "VERCEL"
-  ],
-  "globalPassThroughEnv": [
-    "NODE_ENV",
-    "VERCEL_ENV",
-    "VERCEL_PROJECT_PRODUCTION_URL",
-    "VERCEL_BRANCH_URL"
-  ],
   "remoteCache": {
     "enabled": true
   }

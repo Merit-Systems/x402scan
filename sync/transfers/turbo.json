@@ -4,17 +4,16 @@
   "tasks": {
     "trigger:dev": {
       "description": "Start transfers sync jobs in development mode",
-      "env": ["CDP_*", "BITQUERY_*", "SOLANA_RPC_*", "GOOGLE_CLOUD_*"]
-    },
-    "trigger:deploy": {
-      "description": "Deploy transfers sync jobs to Trigger.dev",
-      "env": [
+      "passThroughEnv": [
         "CDP_*",
         "BITQUERY_*",
         "SOLANA_RPC_*",
-        "GOOGLE_CLOUD_*",
-        "TRIGGER_*"
+        "GOOGLE_CLOUD_*"
       ]
+    },
+    "trigger:deploy": {
+      "description": "Deploy transfers sync jobs to Trigger.dev",
+      "passThroughEnv": ["TRIGGER_*"]
     }
   }
 }

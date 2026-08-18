@@ -66,4 +66,14 @@ describe('mcpError', () => {
     };
     expect(parsed.details?.cause).toBe('Inner cause');
   });
+
+  it('extracts the message from a nested Error cause', () => {
+    const error = new Error('Outer', { cause: new Error('Inner cause') });
+    const result = mcpError(error);
+
+    const parsed = JSON.parse(result.content[0]?.text ?? '') as {
+      details?: { cause: string };
+    };
+    expect(parsed.details?.cause).toBe('Inner cause');
+  });
 });

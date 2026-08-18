@@ -9,10 +9,7 @@
     "dev": "wrangler dev src/index.ts --local",
     "deploy": "wrangler deploy src/index.ts",
     "test": "vitest",
-    "types:check": "tsc --noEmit",
-    "knip": "pnpm -w knip --workspace ./apps/rpcs/solana",
-    "format": "pnpm -w format:dir ./apps/rpcs/solana",
-    "format:check": "pnpm -w format:check:dir ./apps/rpcs/solana"
+    "types:check": "tsc --noEmit"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240208.0",

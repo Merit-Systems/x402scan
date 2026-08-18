@@ -9,10 +9,7 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "types:check": "tsc --noEmit",
-    "knip": "pnpm -w knip --workspace ./sync/alerts",
-    "format": "pnpm -w format:dir ./sync/alerts",
-    "format:check": "pnpm -w format:check:dir ./sync/alerts"
+    "types:check": "tsc --noEmit"
   },
   "dependencies": {
     "@trigger.dev/sdk": "catalog:trigger",

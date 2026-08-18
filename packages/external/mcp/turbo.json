@@ -4,22 +4,13 @@
   "tasks": {
     "build": {
       "description": "Build MCP server package",
-      "env": ["X402_*", "X402_PRIVATE_KEY"],
-      "outputs": ["dist/**"],
-      "passThroughEnv": [
-        "APPDATA",
-        "CODEX_HOME",
-        "XDG_CONFIG_HOME",
-        "INVITE_CODE",
-        "CLAUDECODE",
-        "CI"
-      ]
+      "outputs": ["dist/**"]
     },
     "dev": {
       "description": "Start MCP server in development mode",
-      "env": ["X402_*", "X402_PRIVATE_KEY"],
       "persistent": true,
       "passThroughEnv": [
+        "X402_*",
         "APPDATA",
         "CODEX_HOME",
         "XDG_CONFIG_HOME",
@@ -30,17 +21,8 @@
     },
     "build:mcpb": {
       "description": "Build MCP server bundle for distribution",
-      "env": ["X402_*", "X402_PRIVATE_KEY"],
       "dependsOn": ["^build"],
-      "outputs": ["bundle/**"],
-      "passThroughEnv": [
-        "APPDATA",
-        "CODEX_HOME",
-        "XDG_CONFIG_HOME",
-        "INVITE_CODE",
-        "CLAUDECODE",
-        "CI"
-      ]
+      "outputs": ["bundle/**"]
     }
   }
 }
