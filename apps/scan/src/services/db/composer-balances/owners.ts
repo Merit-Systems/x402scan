@@ -1,6 +1,6 @@
 import { scanDb } from '@x402scan/scan-db';
 
-export interface WalletOwner {
+interface WalletOwner {
   userId: string;
   email: string | null;
   /**

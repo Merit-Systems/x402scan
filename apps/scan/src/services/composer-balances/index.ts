@@ -19,7 +19,7 @@ import { Chain } from '@/types/chain';
  *   login. These are non-custodial: the user controls the keys and we can only
  *   ask them to withdraw.
  */
-export type WalletSource = 'server' | 'embedded';
+type WalletSource = 'server' | 'embedded';
 
 /**
  * Server wallets are named with the `ServerWallet.walletName` UUID. Anything
@@ -29,7 +29,7 @@ export type WalletSource = 'server' | 'embedded';
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export interface ComposerWalletBalanceRow {
+interface ComposerWalletBalanceRow {
   source: WalletSource;
   /** CDP account name for server wallets, CDP end user id for embedded ones. */
   walletName: string;
@@ -63,7 +63,7 @@ interface SourceTotals {
   withEmail: number;
 }
 
-export interface ComposerBalancesReport {
+interface ComposerBalancesReport {
   rows: ComposerWalletBalanceRow[];
   systemWallets: SystemWalletRow[];
   totals: {
