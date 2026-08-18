@@ -15,7 +15,7 @@ export default async function ComposerBalancesPage() {
     <div>
       <Heading
         title="Composer Wallet Balances"
-        description="Users still holding USDC in a Composer wallet, with whatever identity we hold for them."
+        description="Users still holding USDC in a Composer wallet — both CDP server wallets and the earlier embedded wallets — with whatever identity we hold for them."
       />
       <Body>
         <ComposerBalancesTable />

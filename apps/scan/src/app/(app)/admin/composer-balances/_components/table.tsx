@@ -18,6 +18,7 @@ type Report = RouterOutputs['admin']['composerBalances']['report'];
 const CSV_HEADERS = [
   'usdc',
   'chain',
+  'walletType',
   'email',
   'loginAddresses',
   'composerWalletAddress',
@@ -34,6 +35,7 @@ const toCsv = (rows: Report['rows']): string => {
       [
         row.usdc.toString(),
         CHAIN_LABELS[row.chain],
+        row.source,
         row.email ?? '',
         row.loginAddresses.join('; '),
         row.address,
@@ -83,14 +85,19 @@ export const ComposerBalancesTable = () => {
     });
 
   const totals = data?.totals;
+  const bySource = data?.bySource;
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Stat
-          label="Users with a balance"
-          value={totals ? totals.userCount.toLocaleString() : '—'}
-          hint={totals ? `${totals.walletCount} wallets` : undefined}
+          label="People with a balance"
+          value={totals ? totals.peopleCount.toLocaleString() : '—'}
+          hint={
+            totals
+              ? `${totals.walletCount} wallets · ${totals.userCount} CDP identities`
+              : undefined
+          }
         />
         <Stat
           label="Total outstanding"
@@ -110,6 +117,27 @@ export const ComposerBalancesTable = () => {
           label="Orphaned wallets"
           value={totals ? totals.orphaned.toLocaleString() : '—'}
           hint="No ServerWallet row — user deleted"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Stat
+          label="Server wallets"
+          value={bySource ? formatCurrency(bySource.server.totalUsdc) : '—'}
+          hint={
+            bySource
+              ? `${bySource.server.walletCount} wallets · ${bySource.server.userCount} users · we can sweep these`
+              : undefined
+          }
+        />
+        <Stat
+          label="Embedded wallets"
+          value={bySource ? formatCurrency(bySource.embedded.totalUsdc) : '—'}
+          hint={
+            bySource
+              ? `${bySource.embedded.walletCount} wallets · ${bySource.embedded.userCount} users · non-custodial, user must withdraw`
+              : undefined
+          }
         />
       </div>
 

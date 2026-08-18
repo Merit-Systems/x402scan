@@ -7,10 +7,6 @@ import {
   TOKEN_PROGRAM_ADDRESS,
 } from '@solana-program/token';
 
-import {
-  listAllServerAccounts,
-  listAllSolanaServerAccounts,
-} from '@/services/cdp/server-wallet/list-accounts';
 import { baseRpc } from '@/services/rpc/base';
 import { solanaRpc } from '@/services/rpc/solana';
 
@@ -19,14 +15,6 @@ import { USDC_ADDRESS } from '@/lib/utils';
 import { Chain } from '@/types/chain';
 
 import type { Address } from 'viem';
-
-/**
- * Composer server wallets are named with the `ServerWallet.walletName` UUID.
- * Anything else in the CDP project (`sponsored`, the invite wallets) is app
- * treasury rather than a user balance, so it is reported separately.
- */
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Multicall3 handles far larger batches, but this keeps single payloads sane. */
 const EVM_BATCH_SIZE = 500;
@@ -41,48 +29,36 @@ const chunk = <T>(items: T[], size: number): T[][] => {
   return out;
 };
 
-export interface WalletBalance {
-  /** CDP account name — the `ServerWallet.walletName` for user wallets. */
-  name: string;
-  address: string;
-  chain: Chain.BASE | Chain.SOLANA;
-  usdc: number;
-}
-
 /**
- * USDC balances for every Base composer wallet, read in multicall batches.
- * A per-account CDP `listTokenBalances` sweep would be thousands of rate
- * limited round trips; this is a handful of RPC calls.
+ * USDC balances for Base addresses, read in multicall batches. A per-account
+ * CDP `listTokenBalances` sweep would be thousands of rate limited round
+ * trips; this is a handful of RPC calls.
+ *
+ * Returns only non-zero balances, keyed by lowercased address.
  */
-const scanBaseBalances = async (): Promise<WalletBalance[]> => {
-  const accounts = (await listAllServerAccounts()).filter(a => a.name);
+export const getBaseUsdcBalances = async (
+  addresses: string[]
+): Promise<Map<string, number>> => {
+  const unique = [...new Set(addresses.map(a => a.toLowerCase()))];
   const usdcAddress = USDC_ADDRESS[Chain.BASE] as Address;
+  const balances = new Map<string, number>();
 
-  const balances: WalletBalance[] = [];
-
-  for (const batch of chunk(accounts, EVM_BATCH_SIZE)) {
+  for (const batch of chunk(unique, EVM_BATCH_SIZE)) {
     const results = await baseRpc.multicall({
       allowFailure: true,
-      contracts: batch.map(account => ({
+      contracts: batch.map(owner => ({
         abi: erc20Abi,
         address: usdcAddress,
         functionName: 'balanceOf' as const,
-        args: [account.address as Address],
+        args: [owner as Address],
       })),
     });
 
     results.forEach((result, index) => {
-      const account = batch[index];
-      if (!account?.name || result.status !== 'success') return;
+      const owner = batch[index];
+      if (!owner || result.status !== 'success') return;
       const usdc = convertTokenAmount(result.result);
-      if (usdc > 0) {
-        balances.push({
-          name: account.name,
-          address: account.address,
-          chain: Chain.BASE,
-          usdc,
-        });
-      }
+      if (usdc > 0) balances.set(owner, usdc);
     });
   }
 
@@ -99,26 +75,29 @@ const readSplAmount = (base64Data: string): bigint => {
 };
 
 /**
- * USDC balances for every Solana composer wallet. Reads the associated token
- * accounts directly so wallets that never held USDC (no ATA on chain) simply
- * come back null instead of throwing per-account.
+ * USDC balances for Solana addresses. Reads the associated token accounts
+ * directly, so wallets that never held USDC (no ATA on chain) come back null
+ * rather than throwing per-account.
+ *
+ * Returns only non-zero balances, keyed by address.
  */
-const scanSolanaBalances = async (): Promise<WalletBalance[]> => {
-  const accounts = (await listAllSolanaServerAccounts()).filter(a => a.name);
+export const getSolanaUsdcBalances = async (
+  addresses: string[]
+): Promise<Map<string, number>> => {
+  const unique = [...new Set(addresses)];
   const mint = toSolanaAddress(USDC_ADDRESS[Chain.SOLANA]);
+  const balances = new Map<string, number>();
 
   const withAta = await Promise.all(
-    accounts.map(async account => {
+    unique.map(async owner => {
       const [ata] = await findAssociatedTokenPda({
         mint,
-        owner: toSolanaAddress(account.address),
+        owner: toSolanaAddress(owner),
         tokenProgram: TOKEN_PROGRAM_ADDRESS,
       });
-      return { account, ata };
+      return { owner, ata };
     })
   );
-
-  const balances: WalletBalance[] = [];
 
   for (const batch of chunk(withAta, SVM_BATCH_SIZE)) {
     const { value } = await solanaRpc
@@ -130,32 +109,11 @@ const scanSolanaBalances = async (): Promise<WalletBalance[]> => {
 
     value.forEach((account, index) => {
       const entry = batch[index];
-      if (!entry?.account.name || !account) return;
+      if (!entry || !account) return;
       const usdc = convertTokenAmount(readSplAmount(account.data[0]));
-      if (usdc > 0) {
-        balances.push({
-          name: entry.account.name,
-          address: entry.account.address,
-          chain: Chain.SOLANA,
-          usdc,
-        });
-      }
+      if (usdc > 0) balances.set(entry.owner, usdc);
     });
   }
 
   return balances;
-};
-
-export const scanComposerWalletBalances = async () => {
-  const [base, solana] = await Promise.all([
-    scanBaseBalances(),
-    scanSolanaBalances(),
-  ]);
-
-  const all = [...base, ...solana];
-
-  return {
-    userWallets: all.filter(b => UUID_RE.test(b.name)),
-    systemWallets: all.filter(b => !UUID_RE.test(b.name)),
-  };
 };

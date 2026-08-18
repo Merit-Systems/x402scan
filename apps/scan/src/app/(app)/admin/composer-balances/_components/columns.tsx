@@ -46,6 +46,28 @@ export const columns: ExtendedColumnDef<BalanceRow>[] = [
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
+    accessorKey: 'source',
+    header: () => <span className="text-xs font-medium">Wallet Type</span>,
+    cell: ({ row }) =>
+      row.original.source === 'server' ? (
+        <span
+          className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 text-xs"
+          title="CDP server wallet — we hold the keys and can sweep it"
+        >
+          Server
+        </span>
+      ) : (
+        <span
+          className="inline-flex items-center px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-600 text-xs"
+          title="CDP embedded wallet — non-custodial, only the user can withdraw"
+        >
+          Embedded
+        </span>
+      ),
+    size: 120,
+    loading: () => <Skeleton className="h-4 w-full" />,
+  },
+  {
     accessorKey: 'email',
     header: () => (
       <div className="flex items-center gap-2">
