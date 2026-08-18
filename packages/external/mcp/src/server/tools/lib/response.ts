@@ -14,7 +14,12 @@ export const mcpError = (error: unknown, context?: Record<string, unknown>) => {
 
   const details =
     error instanceof Error && error.cause
-      ? { cause: JSON.stringify(error.cause) }
+      ? {
+          cause:
+            error.cause instanceof Error
+              ? error.cause.message
+              : String(error.cause),
+        }
       : undefined;
 
   return {

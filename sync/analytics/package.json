@@ -9,10 +9,7 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "types:check": "tsc --noEmit",
-    "knip": "pnpm -w knip --workspace ./sync/analytics",
-    "format": "pnpm -w format:dir ./sync/analytics",
-    "format:check": "pnpm -w format:check:dir ./sync/analytics"
+    "types:check": "tsc --noEmit"
   },
   "dependencies": {
     "@x402scan/analytics-db": "workspace:*",

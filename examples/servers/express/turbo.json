@@ -4,11 +4,7 @@
   "tasks": {
     "dev": {
       "description": "Start Express example server in development mode",
-      "env": ["ADDRESS"]
-    },
-    "build": {
-      "description": "Build Express example server",
-      "env": ["ADDRESS"]
+      "passThroughEnv": ["ADDRESS"]
     }
   }
 }

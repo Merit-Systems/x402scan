@@ -11,12 +11,8 @@
     "start": "next start",
     "types:generate": "rm -rf .next/types && next typegen",
     "types:check": "tsc --noEmit",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts",
-    "knip": "pnpm -w knip --workspace ./apps/scan",
-    "format": "pnpm -w format:dir ./apps/scan",
-    "format:check": "pnpm -w format:check:dir ./apps/scan"
+    "test": "vitest run",
+    "sync:ecosystem": "tsx src/scripts/sync-ecosystem.ts"
   },
   "dependencies": {
     "@agentcash/discovery": "1.7.5",

@@ -20,10 +20,7 @@
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "pnpm run build",
-    "types:check": "tsc --noEmit",
-    "knip": "pnpm -w knip --workspace ./packages/external/facilitators",
-    "format": "pnpm -w format:dir ./packages/external/facilitators",
-    "format:check": "pnpm -w format:check:dir ./packages/external/facilitators"
+    "types:check": "tsc --noEmit"
   },
   "keywords": [
     "x402",

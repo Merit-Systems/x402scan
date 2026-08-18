@@ -2,22 +2,17 @@
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
   "tasks": {
-    "build": {
-      "description": "Build transfers database package",
-      "env": ["TRANSFERS_DB_*"],
-      "outputs": ["dist/**"]
+    "db:generate": {
+      "description": "Generate the transfers database Prisma client",
+      "outputs": ["generated/**"]
     },
-    "db:deploy": {
-      "description": "Deploy transfers database migrations",
-      "env": ["TRANSFERS_DB_*"]
+    "db:migrate": {
+      "description": "Create and apply transfers database migrations",
+      "passThroughEnv": ["TRANSFERS_DB_URL"]
     },
-    "types:check": {
-      "description": "Type-check transfers database code",
-      "dependsOn": ["db:generate"]
-    },
-    "lint": {
-      "description": "Lint transfers database code",
-      "dependsOn": ["db:generate"]
+    "studio": {
+      "description": "Start Prisma Studio for the transfers database",
+      "passThroughEnv": ["TRANSFERS_DB_URL"]
     }
   }
 }

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "dev": {
+      "description": "Start the Solana RPC worker locally",
+      "passThroughEnv": ["PORT"]
+    },
+    "deploy": {
+      "description": "Deploy the Solana RPC worker",
+      "passThroughEnv": ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"]
+    }
+  }
+}

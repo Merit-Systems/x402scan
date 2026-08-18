@@ -14,10 +14,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "node scripts/wait-for-db.mjs && prisma migrate deploy",
     "db:format": "prisma format",
-    "studio": "prisma studio",
-    "knip": "pnpm -w knip --workspace ./packages/internal/databases/scan",
-    "format": "pnpm -w format:dir ./packages/internal/databases/scan",
-    "format:check": "pnpm -w format:check:dir ./packages/internal/databases/scan"
+    "studio": "prisma studio"
   },
   "dependencies": {
     "@neondatabase/serverless": "catalog:prisma",

@@ -7,10 +7,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "types:check": "tsc --noEmit",
-    "knip": "pnpm -w knip --workspace ./apps/proxy",
-    "format": "pnpm -w format:dir ./apps/proxy",
-    "format:check": "pnpm -w format:check:dir ./apps/proxy"
+    "types:check": "tsc --noEmit"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",

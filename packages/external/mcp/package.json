@@ -16,10 +16,7 @@
     "build:watch": "tsup --watch",
     "build:mcpb": "tsx scripts/build-mcpb.ts",
     "types:check": "tsc --noEmit",
-    "test": "bun test",
-    "knip": "pnpm -w knip --workspace ./packages/external/mcp",
-    "format": "pnpm -w format:dir ./packages/external/mcp",
-    "format:check": "pnpm -w format:check:dir ./packages/external/mcp",
+    "test": "vitest run",
     "prepublishOnly": "pnpm build",
     "publish:check": "pnpm pack --dry-run"
   },

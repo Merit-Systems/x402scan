@@ -16,10 +16,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "types:check": "tsc --noEmit",
-    "knip": "pnpm -w knip --workspace ./packages/internal/databases/analytics",
-    "format": "pnpm -w format:dir ./packages/internal/databases/analytics",
-    "format:check": "pnpm -w format:check:dir ./packages/internal/databases/analytics"
+    "types:check": "tsc --noEmit"
   },
   "dependencies": {
     "@clickhouse/client": "catalog:clickhouse"
