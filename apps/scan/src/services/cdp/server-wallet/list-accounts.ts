@@ -36,3 +36,32 @@ export const generateAccountsCsv = (accounts: ServerAccount[]): string => {
     .join('\n');
   return header + rows;
 };
+
+interface SolanaServerAccount {
+  address: string;
+  name?: string;
+}
+
+export const listAllSolanaServerAccounts = async (): Promise<
+  SolanaServerAccount[]
+> => {
+  const allAccounts: SolanaServerAccount[] = [];
+  let response = await cdpClient.solana.listAccounts();
+
+  while (true) {
+    for (const account of response.accounts) {
+      allAccounts.push({
+        address: account.address,
+        name: account.name,
+      });
+    }
+
+    if (!response.nextPageToken) break;
+
+    response = await cdpClient.solana.listAccounts({
+      pageToken: response.nextPageToken,
+    });
+  }
+
+  return allAccounts;
+};
