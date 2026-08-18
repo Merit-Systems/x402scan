@@ -10,6 +10,7 @@ import { Network } from '../types';
 
 const chainMap = {
   [FacilitatorsNetwork.BASE]: Network.BASE,
+  [FacilitatorsNetwork.CELO]: Network.CELO,
   [FacilitatorsNetwork.POLYGON]: Network.POLYGON,
   [FacilitatorsNetwork.SOLANA]: Network.SOLANA,
 } satisfies Record<FacilitatorsNetwork, Network>;

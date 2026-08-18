@@ -15,11 +15,13 @@ export type Facilitator = FacilitatorMetadata & {
   addresses: Partial<Record<Chain, MixedAddress[]>>;
 };
 
+// Networks in the facilitators registry that scan does not index yet
+// (e.g. Network.CELO) are skipped until a chain sync source exists.
 const chainMap = {
   [FacilitatorsNetwork.BASE]: Chain.BASE,
   [FacilitatorsNetwork.POLYGON]: Chain.POLYGON,
   [FacilitatorsNetwork.SOLANA]: Chain.SOLANA,
-} satisfies Record<FacilitatorsNetwork, Chain>;
+} satisfies Partial<Record<FacilitatorsNetwork, Chain>>;
 
 function parseFacilitatorAddress(address: string): MixedAddress | null {
   const parsed = mixedAddressSchema.safeParse(address);
@@ -33,11 +35,13 @@ export const facilitators: Facilitator[] = allFacilitators.map(f => ({
   addresses: Object.entries(f.addresses).reduce<
     Partial<Record<Chain, MixedAddress[]>>
   >((acc, [network, configs]) => {
-    const scanChain = chainMap[network as FacilitatorsNetwork];
-    acc[scanChain] = configs.flatMap(c => {
-      const address = parseFacilitatorAddress(c.address);
-      return address ? [address] : [];
-    });
+    const scanChain = chainMap[network as keyof typeof chainMap];
+    if (scanChain) {
+      acc[scanChain] = configs.flatMap(c => {
+        const address = parseFacilitatorAddress(c.address);
+        return address ? [address] : [];
+      });
+    }
     return acc;
   }, {}),
 }));

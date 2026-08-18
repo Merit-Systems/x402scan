@@ -27,6 +27,7 @@ export { x402jobs, x402jobsFacilitator } from './x402jobs';
 export { openfacilitator, openfacilitatorFacilitator } from './openfacilitator';
 export { relai, relaiFacilitator } from './relai';
 export { bitrefill, bitrefillFacilitator } from './bitrefill';
+export { celo, celoFacilitator } from './celo';
 export { cascade, cascadeFacilitator } from './cascade';
 export { fluxa, fluxaFacilitator } from './fluxa';
 export { figment, figmentFacilitator } from './figment';
