@@ -348,9 +348,6 @@ importers:
       '@next/mdx':
         specifier: catalog:next
         version: 16.1.5(@mdx-js/loader@3.1.1(webpack@5.109.2(lightningcss@1.30.2)))(@mdx-js/react@3.1.1(@types/react@19.2.2)(react@19.2.2))
-      '@octokit/rest':
-        specifier: ^22.0.0
-        version: 22.0.0
       '@openrouter/ai-sdk-provider':
         specifier: ^1.5.4
         version: 1.5.4(ai@5.0.81(zod@4.4.3))(zod@4.4.3)
@@ -682,9 +679,6 @@ importers:
       '@x402scan/typescript-config':
         specifier: workspace:*
         version: link:../../packages/internal/configurations/typescript
-      dotenv:
-        specifier: catalog:env
-        version: 17.2.3
       tailwindcss:
         specifier: catalog:tailwind
         version: 4.1.16

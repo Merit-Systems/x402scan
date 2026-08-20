@@ -8,7 +8,6 @@ import { ACTIVITY_TIMEFRAMES } from '@/types/timeframes';
 import type { ActivityTimeframe } from '@/types/timeframes';
 import { facilitatorAddresses } from '@/lib/facilitators';
 import { CACHE_DURATION_MINUTES } from '@/lib/cache-constants';
-import { TRANSACTIONS_PAGE_SIZE } from '@/app/(app)/(home)/transactions/constants';
 import { Chain } from '@/types/chain';
 
 import type { NextRequest } from 'next/server';
@@ -27,6 +26,8 @@ const MAX_CONCURRENT_REQUESTS = 20;
  * Maximum number of retries per task
  */
 const MAX_RETRIES = 3;
+
+const HOME_TRANSACTIONS_PAGE_SIZE = 10;
 
 /**
  * Execute a task with retries
@@ -89,7 +90,7 @@ function getHomePageTasks(
   timeframe: ActivityTimeframe,
   chain?: Chain
 ): (() => Promise<unknown>)[] {
-  const transactionsLimit = TRANSACTIONS_PAGE_SIZE;
+  const transactionsLimit = HOME_TRANSACTIONS_PAGE_SIZE;
 
   return [
     // Overall Stats - current period
