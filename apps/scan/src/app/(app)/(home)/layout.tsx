@@ -24,20 +24,12 @@ export default function HomeLayout({
             subRoutes: ['/resources/register'],
           },
           {
-            label: 'Transactions',
-            href: '/transactions',
-          },
-          {
             label: 'Facilitators',
             href: '/facilitators',
           },
           {
             label: 'Networks',
             href: '/networks',
-          },
-          {
-            label: 'Ecosystem',
-            href: '/ecosystem',
           },
         ]}
       />
