@@ -682,9 +682,6 @@ importers:
       tailwindcss:
         specifier: catalog:tailwind
         version: 4.1.16
-      tsx:
-        specifier: 'catalog:'
-        version: 4.21.0
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
