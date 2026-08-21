@@ -5,7 +5,6 @@ import { developerRouter } from './developer';
 import { networksRouter } from './networks';
 import { publicRouter } from './public';
 import { userRouter } from './user';
-import { onrampRouter } from './onramp';
 
 export const appRouter = createTRPCRouter({
   networks: networksRouter,
@@ -13,7 +12,6 @@ export const appRouter = createTRPCRouter({
   public: publicRouter,
   admin: adminRouter,
   developer: developerRouter,
-  onramp: onrampRouter,
 });
 
 export type AppRouter = typeof appRouter;

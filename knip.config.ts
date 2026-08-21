@@ -18,7 +18,6 @@ const config: KnipConfig = {
     'apps/scan': {
       entry: [
         'src/app/**/{error,layout,loading,not-found,page,template,default,forbidden,global-not-found,global-error}.{js,jsx,ts,tsx}',
-        'src/app/**/_content/**/*.{md,mdx}',
         'src/app/**/route.{js,jsx,ts,tsx}',
       ],
       project: ['src/**/*.{ts,tsx}', '*.{ts,tsx,js,mjs}'],
@@ -68,7 +67,6 @@ const config: KnipConfig = {
     },
     'examples/servers/express': {},
     'examples/servers/hono': {},
-    'packages/external/mcp': {},
   },
   ignore: [
     '**/*.test.{ts,tsx,js,jsx}',

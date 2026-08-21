@@ -65,25 +65,3 @@ export function isTunnelUrl(url: string): boolean {
     return false;
   }
 }
-
-/**
- * Extracts the port number from a URL, with sensible defaults.
- */
-export function extractPort(url: string): string | null {
-  try {
-    const parsed = new URL(url);
-    if (parsed.port) {
-      return parsed.port;
-    }
-    // Return default ports for common protocols
-    if (parsed.protocol === 'https:') {
-      return '443';
-    }
-    if (parsed.protocol === 'http:') {
-      return '80';
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}

@@ -39,10 +39,8 @@ export const env = createEnv({
     PARTNERS_CLICKHOUSE_DATABASE: z.string().optional(),
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
-    STRIPE_SECRET_KEY: z.string(),
     DISCORD_NOTIFICATIONS_WEBHOOK_URL: z.url().optional(),
     DISCORD_MERCHANT_RESEARCH_WEBHOOK_URL: z.url().optional(),
-    DISCORD_TELEMETRY_WEBHOOK_URL: z.string().optional(),
     X402_PAYEE_ADDRESS: z.string().optional(),
     AGENTCASH_URL: z.string().optional(),
     AGENTCASH_INTERNAL_API_KEY: z.string().optional(),
@@ -76,7 +74,6 @@ export const env = createEnv({
     NEXT_PUBLIC_VERCEL_ENV: z
       .enum(['development', 'preview', 'production'])
       .optional(),
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL:
@@ -96,8 +93,6 @@ export const env = createEnv({
     NEXT_PUBLIC_SOLANA_RPC_URL: process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
     NEXT_PUBLIC_BASE_RPC_URL: process.env.NEXT_PUBLIC_BASE_RPC_URL,
     NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV,
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
-      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
   emptyStringAsUndefined: true,
 });
