@@ -1,6 +1,7 @@
 import {
   advanceTransferSyncState,
   createManyTransferEvents,
+  upsertManyTransferEvents,
   createTransferSyncState,
   getTransferEvents,
   getTransferSyncState,
@@ -155,7 +156,9 @@ async function syncFacilitator(
           now,
           async batch => {
             const collapsed = collapseTransferChains(batch);
-            const syncResult = await createManyTransferEvents(collapsed);
+            const syncResult = syncConfig.upsertOnConflict
+              ? await upsertManyTransferEvents(collapsed)
+              : await createManyTransferEvents(collapsed);
             totalSaved += syncResult.count;
             logger.log(
               `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - collapsed.length} collapsed, ${collapsed.length - syncResult.count} duplicates)`
@@ -213,7 +216,9 @@ async function syncFacilitator(
       now,
       async batch => {
         const collapsed = collapseTransferChains(batch);
-        const syncResult = await createManyTransferEvents(collapsed);
+        const syncResult = syncConfig.upsertOnConflict
+          ? await upsertManyTransferEvents(collapsed)
+          : await createManyTransferEvents(collapsed);
         totalSaved += syncResult.count;
         logger.log(
           `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - collapsed.length} collapsed, ${collapsed.length - syncResult.count} duplicates)`

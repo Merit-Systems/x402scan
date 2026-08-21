@@ -22,6 +22,7 @@ model TransferEvent {
   decimals         Int
   facilitator_id   String
   log_index        Int?
+  scheme           String?
 
   @@id([block_timestamp, id], map: "transfer_event_pk")
   @@unique([tx_hash, log_index, chain, block_timestamp])

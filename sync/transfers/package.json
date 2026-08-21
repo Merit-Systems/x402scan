@@ -19,13 +19,14 @@
     "@trigger.dev/sdk": "catalog:trigger",
     "@x402scan/transfers-db": "workspace:*",
     "bottleneck": "^2.19.5",
+    "bs58": "^6.0.0",
     "facilitators": "workspace:*",
     "p-limit": "^7.2.0"
   },
   "devDependencies": {
-    "@x402scan/typescript-config": "workspace:*",
     "@trigger.dev/build": "catalog:trigger",
     "@types/node": "catalog:",
+    "@x402scan/typescript-config": "workspace:*",
     "trigger.dev": "catalog:trigger",
     "typescript": "catalog:"
   }
