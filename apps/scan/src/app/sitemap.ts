@@ -18,7 +18,6 @@ const staticRouteEntries = [
     changeFrequency: 'daily',
     priority: 0.9,
   },
-  { url: url('/resources'), changeFrequency: 'daily', priority: 0.8 },
   { url: url('/resources/register'), changeFrequency: 'weekly', priority: 0.7 },
   { url: url('/discovery'), changeFrequency: 'weekly', priority: 0.75 },
   {

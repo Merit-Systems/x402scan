@@ -25,7 +25,7 @@ x402 lets AI agents and applications pay for API resources on demand over HTTP 4
 - [Overview](${baseUrl}/): live x402 transaction volume, top buyers, merchants, and facilitators
 - [What is x402](${baseUrl}/x402): explainer for the x402 payment standard
 - [Agentic commerce](${baseUrl}/agentic-commerce): how agents transact over x402
-- [Resources](${baseUrl}/resources): indexed x402 API resources you can call
+- [Discover services](${baseUrl}/): indexed x402 API services you can call
 - [Facilitators](${baseUrl}/facilitators): x402 facilitators and their stats
 - [Networks](${baseUrl}/networks): activity broken down by chain (Base, Solana)
 

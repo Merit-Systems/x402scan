@@ -97,7 +97,7 @@ export function X402Content() {
         description="An HTTP-native payment standard for paid APIs and agentic commerce."
         actions={
           <Button asChild size="sm">
-            <Link href="/resources">Explore marketplace</Link>
+            <Link href="/">Discover services</Link>
           </Button>
         }
       />
@@ -156,9 +156,9 @@ export function X402Content() {
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
             <Link
               className="font-medium underline-offset-4 hover:underline"
-              href="/resources"
+              href="/"
             >
-              Marketplace
+              Discover services
             </Link>
             <Link
               className="font-medium underline-offset-4 hover:underline"
