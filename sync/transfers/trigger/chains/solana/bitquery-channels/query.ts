@@ -156,7 +156,7 @@ async function findChannelSenders(
   return channelSenders;
 }
 
-function extractPayouts(
+export function extractPayouts(
   tx: ParsedTransactionWithMeta,
   channelsProgram: PublicKey,
   context: {

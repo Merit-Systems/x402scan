@@ -9,7 +9,9 @@
   "scripts": {
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy",
-    "types:check": "tsc --noEmit"
+    "types:check": "tsc --noEmit",
+    "test": "vitest run",
+    "probe:channels": "tsx scripts/probe-channels.ts"
   },
   "dependencies": {
     "@coinbase/cdp-sdk": "^1.38.4",
@@ -28,6 +30,8 @@
     "@types/node": "catalog:",
     "@x402scan/typescript-config": "workspace:*",
     "trigger.dev": "catalog:trigger",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "tsx": "catalog:"
   }
 }
