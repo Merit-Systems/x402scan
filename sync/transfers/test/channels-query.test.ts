@@ -294,6 +294,76 @@ describe('extractPayouts', () => {
     expect(events.map(e => e.amount)).toEqual([100, 200]);
   });
 
+  it('unwraps batch-wrapped transfers from the sealed distribute path', () => {
+    // Real devnet shape: settle_and_seal + distribute emits one spl-token
+    // `batch` inner instruction nesting the payout and the payer refund.
+    const tx = buildTx(
+      [
+        { discriminator: SETTLE_AND_SEAL, accounts },
+        { discriminator: DISTRIBUTE, accounts },
+      ],
+      [],
+      new Map([[recipientAta, recipientOwner]])
+    );
+    (
+      tx.meta as unknown as {
+        innerInstructions: { index: number; instructions: unknown[] }[];
+      }
+    ).innerInstructions = [
+      {
+        index: 1,
+        instructions: [
+          {
+            program: 'spl-token',
+            programId: TOKEN_PROGRAM,
+            parsed: {
+              type: 'batch',
+              info: {
+                instructions: [
+                  {
+                    type: 'transferChecked',
+                    info: {
+                      source: escrow.toBase58(),
+                      destination: recipientAta.toBase58(),
+                      mint: USDC_SOLANA,
+                      tokenAmount: { amount: '400000', decimals: 6 },
+                    },
+                  },
+                  {
+                    type: 'transferChecked',
+                    info: {
+                      source: escrow.toBase58(),
+                      destination: payerAta.toBase58(),
+                      mint: USDC_SOLANA,
+                      tokenAmount: { amount: '300000', decimals: 6 },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          {
+            program: 'spl-token',
+            programId: TOKEN_PROGRAM,
+            parsed: {
+              type: 'closeAccount',
+              info: { account: escrow.toBase58() },
+            },
+          },
+        ],
+      },
+    ];
+
+    const events = extractPayouts(tx, CHANNELS_PROGRAM, context);
+    expect(events).toHaveLength(1);
+    expect(events[0]).toMatchObject({
+      amount: 400000,
+      recipient: recipientOwner.toBase58(),
+      scheme: 'upto',
+      sender: payer.toBase58(),
+    });
+  });
+
   it('falls back to the destination address when no owner metadata exists', () => {
     const tx = buildTx(
       [{ discriminator: DISTRIBUTE, accounts }],

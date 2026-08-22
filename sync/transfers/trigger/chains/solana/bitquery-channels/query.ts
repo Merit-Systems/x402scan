@@ -209,9 +209,8 @@ export function extractPayouts(
     const inner =
       tx.meta?.innerInstructions?.find(entry => entry.index === index)
         ?.instructions ?? [];
-    for (const innerInstruction of inner) {
-      const leg = parseTokenTransfer(innerInstruction);
-      if (!leg || leg.source !== escrow) continue;
+    for (const leg of inner.flatMap(parseTokenTransfers)) {
+      if (leg.source !== escrow) continue;
       // Refunds to the payer and any payee/treasury remainders are not
       // payments to the merchant; only recipient (payTo) legs are indexed.
       if (nonPayoutDestinations.has(leg.destination)) continue;
@@ -237,24 +236,37 @@ export function extractPayouts(
   return events;
 }
 
-function parseTokenTransfer(
-  instruction: ParsedInstruction | PartiallyDecodedInstruction
-): { source: string; destination: string; amount: string } | null {
-  if (!('parsed' in instruction)) return null;
-  const parsed = instruction.parsed as {
-    type?: string;
-    info?: {
-      source?: string;
-      destination?: string;
-      amount?: string;
-      tokenAmount?: { amount?: string };
-    };
+interface ParsedTokenInstruction {
+  type?: string;
+  info?: {
+    source?: string;
+    destination?: string;
+    amount?: string;
+    tokenAmount?: { amount?: string };
+    instructions?: ParsedTokenInstruction[];
   };
+}
+
+function parseTokenTransfers(
+  instruction: ParsedInstruction | PartiallyDecodedInstruction
+): { source: string; destination: string; amount: string }[] {
+  if (!('parsed' in instruction)) return [];
+  return flattenTokenTransfers(instruction.parsed as ParsedTokenInstruction);
+}
+
+// The sealed distribute path emits SPL Token `batch` instructions that nest
+// the individual transfers; unwrap them alongside plain transfers.
+function flattenTokenTransfers(
+  parsed: ParsedTokenInstruction
+): { source: string; destination: string; amount: string }[] {
+  if (parsed.type === 'batch') {
+    return (parsed.info?.instructions ?? []).flatMap(flattenTokenTransfers);
+  }
   if (parsed.type !== 'transfer' && parsed.type !== 'transferChecked') {
-    return null;
+    return [];
   }
   const info = parsed.info;
   const amount = info?.tokenAmount?.amount ?? info?.amount;
-  if (!info?.source || !info.destination || !amount) return null;
-  return { source: info.source, destination: info.destination, amount };
+  if (!info?.source || !info.destination || !amount) return [];
+  return [{ source: info.source, destination: info.destination, amount }];
 }
