@@ -6,7 +6,6 @@
     "@x402scan/solana-rpc": "0.0.0",
     "@x402scan/app": "0.1.0",
     "facilitators": "0.0.10",
-    "@x402scan/mcp": "0.2.1",
     "@x402scan/siwx": "0.0.1",
     "@x402scan/eslint-config": "0.0.0",
     "@x402scan/typescript-config": "0.0.0",

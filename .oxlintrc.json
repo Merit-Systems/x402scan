@@ -88,22 +88,5 @@
     "anti-slop/no-unknown-type-aliases": "error",
     "anti-slop/no-unsafe-dictionary-type": "error",
     "anti-slop/no-widen-then-assert": "error"
-  },
-  "overrides": [
-    {
-      "files": ["packages/external/mcp/**"],
-      "rules": {
-        "anti-slop/no-chained-type-assertions": "off",
-        "anti-slop/no-conditional-empty-object-spread": "off",
-        "anti-slop/no-known-value-widening": "off",
-        "anti-slop/no-object-parameters": "off",
-        "anti-slop/no-runtime-typeof": "off",
-        "anti-slop/no-shape-in-symbol-names": "off",
-        "anti-slop/no-unknown-parameters": "off",
-        "anti-slop/no-unknown-type-aliases": "off",
-        "anti-slop/no-unsafe-dictionary-type": "off",
-        "anti-slop/no-widen-then-assert": "off"
-      }
-    }
-  ]
+  }
 }
