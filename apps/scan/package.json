@@ -77,7 +77,6 @@
     "@x402/evm": "catalog:x402",
     "@x402/fetch": "catalog:x402",
     "@x402/svm": "catalog:x402",
-    "@x402scan/analytics-db": "workspace:*",
     "@x402scan/neverthrow": "workspace:*",
     "@x402scan/partners-db": "workspace:*",
     "@x402scan/scan-db": "workspace:*",

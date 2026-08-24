@@ -20,7 +20,6 @@
     "knip:check": "turbo run knip",
     "test": "turbo run test --filter=@x402scan/app",
     "check": "turbo run format:check types:check lint knip publish:check && pnpm test",
-    "trigger:deploy:analytics": "turbo run trigger:deploy --filter=@x402scan/sync-analytics",
     "trigger:deploy:transfers": "turbo run trigger:deploy --filter=@x402scan/sync-transfers",
     "trigger:deploy:alerts": "turbo run trigger:deploy --filter=@x402scan/sync-alerts",
     "changeset": "changeset",

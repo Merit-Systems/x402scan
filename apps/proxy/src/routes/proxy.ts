@@ -1,8 +1,5 @@
 import type { Hono } from 'hono';
 
-import { insertResourceInvocation } from '@x402scan/analytics-db';
-import { randomUUID } from 'crypto';
-
 import type { Context } from 'hono';
 
 const RESPONSE_HEADER_BLOCKLIST = new Set([
@@ -398,33 +395,6 @@ async function proxyHandler(c: Context) {
               responseHeaders,
             };
             console.log('[Proxy Data]', { cleanedTargetUrl, data });
-
-            // Insert into ClickHouse (non-blocking, fire-and-forget)
-            // IMPORTANT: Must catch errors to prevent unhandled rejection crashes
-            insertResourceInvocation({
-              id: randomUUID(),
-              resource_id: null, // TODO: lookup resourceId by URL if needed
-              status_code: clonedUpstreamResponse.status,
-              duration: fetchDuration,
-              status_text: clonedUpstreamResponse.statusText,
-              method,
-              url: targetUrl.toString(),
-              request_content_type:
-                clonedRequest.headers.get('content-type') ?? '',
-              response_content_type:
-                clonedUpstreamResponse.headers.get('content-type') ?? '',
-              response_headers: responseHeaders,
-              response_body: responseBody,
-              request_headers: requestHeaders,
-              request_body: requestBody,
-              created_at: new Date(),
-            }).catch(error => {
-              // Silently ignore ClickHouse errors - analytics shouldn't crash the proxy
-              console.warn('[Proxy ClickHouse Error]', {
-                url: targetUrl.toString(),
-                error: error instanceof Error ? error.message : String(error),
-              });
-            });
           }
         } catch (error) {
           console.error('[Proxy After Error]', {
