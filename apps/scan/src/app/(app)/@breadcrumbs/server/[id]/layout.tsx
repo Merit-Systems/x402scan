@@ -19,12 +19,7 @@ export default async function OriginLayout({
   return (
     <>
       <Separator />
-      <Breadcrumb
-        href={`/resources`}
-        image={null}
-        name="Server"
-        Fallback={Server}
-      />
+      <Breadcrumb href="/" image={null} name="Discover" Fallback={Server} />
       <Separator className="hidden md:block" />
       <Breadcrumb
         href={`/server/${id}`}

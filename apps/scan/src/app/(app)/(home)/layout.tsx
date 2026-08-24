@@ -13,15 +13,11 @@ export default function HomeLayout({
           {
             label: 'Discover',
             href: '/',
+            subRoutes: ['/resources/register'],
           },
           {
             label: 'All',
             href: '/all',
-          },
-          {
-            label: 'Marketplace',
-            href: '/resources',
-            subRoutes: ['/resources/register'],
           },
           {
             label: 'Facilitators',

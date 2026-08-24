@@ -90,8 +90,6 @@
     "cmdk": "^1.1.1",
     "cookies-next": "^6.1.0",
     "date-fns": "catalog:",
-    "embla-carousel-react": "^8.6.0",
-    "embla-carousel-wheel-gestures": "^8.1.0",
     "facilitators": "workspace:*",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "html-to-image": "1.11.13",
