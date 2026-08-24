@@ -37,7 +37,7 @@ import {
   createDummyOgImage,
   createDummyResourceOrigin,
   createDummyResources,
-} from '@/app/(app)/developer/_components/dummy';
+} from './dummy';
 
 import { parseX402Response } from '@/lib/x402';
 import type {
@@ -167,7 +167,7 @@ export interface DiscoveryPanelProps {
   onRegisterAll?: () => void;
   /** Whether to show the Register All button */
   showRegisterButton?: boolean;
-  /** Mode: 'register' for registration page, 'test' for developer page */
+  /** Mode: 'register' for registration actions, 'test' for read-only previews */
   mode?: 'register' | 'test';
   /** Origin preview data (favicon, OG, etc.) */
   preview?: OriginPreview | null;
@@ -543,7 +543,7 @@ export function DiscoveryPanel({
   }
 
   // Show "not found" or "invalid" message if discovery was checked but nothing found
-  // Only show in test mode (developer page), not on register page
+  // Only show in read-only test mode, not while registering resources
   if (isTestMode && !isLoading && resourceCount === 0 && !found) {
     // Check if document was found but invalid (vs not found at all)
     const isInvalidDocument = discoveryError?.includes(
