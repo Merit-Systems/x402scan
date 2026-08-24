@@ -1,4 +1,5 @@
 import { router, withCors, OPTIONS } from '@/lib/router';
+import { facilitatorsResponseSchema } from '@/app/api/x402/_lib/output-schemas';
 import { facilitatorsListQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { handleFacilitators } from '@/app/api/x402/_handlers/facilitators';
 
@@ -10,6 +11,7 @@ export const GET = withCors(
     .paid('0.01')
     .method('GET')
     .query(facilitatorsListQuerySchema)
+    .output(facilitatorsResponseSchema)
     .description('Paginated list of facilitators with stats')
     .handler(({ query }) => handleFacilitators(query))
 );

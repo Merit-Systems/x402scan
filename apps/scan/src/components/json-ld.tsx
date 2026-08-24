@@ -1,7 +1,7 @@
 import type { JsonValue } from '@/lib/json';
 
 /** A JSON-LD schema object. `undefined` values are dropped by JSON.stringify. */
-type JsonLdObject = Record<string, JsonValue | undefined>;
+export type JsonLdObject = Record<string, JsonValue | undefined>;
 
 interface JsonLdProps {
   data: JsonLdObject | JsonLdObject[];

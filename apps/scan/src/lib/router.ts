@@ -1,6 +1,13 @@
 import { createRouter } from '@agentcash/router';
 
 import { env } from '@/env';
+import { apiError } from '@/lib/agent/api-errors';
+import {
+  checkRateLimit,
+  clientKey,
+  rateLimitHeaders,
+} from '@/lib/agent/rate-limit';
+import { API_VERSION, API_VERSION_HEADER, SITE_URL } from '@/lib/site';
 
 import type { NextRequest } from 'next/server';
 
@@ -67,6 +74,13 @@ export const solanaRouter = createRouter({
   },
 });
 
+/**
+ * Headers every public API response carries so agents can reason about the
+ * surface they're integrating against:
+ *   - `X-API-Version` (see /docs#versioning-and-deprecation)
+ *   - IETF `RateLimit` / `RateLimit-Policy` (+ `X-RateLimit-*` aliases)
+ *   - `Vary: Accept` is irrelevant here (JSON only) but CORS headers are set.
+ */
 export function withCors(
   handler: (req: NextRequest) => Promise<Response>
 ): (req: NextRequest) => Promise<Response> {
@@ -74,8 +88,29 @@ export function withCors(
     if (req.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
+
+    const rateLimit = await checkRateLimit(clientKey(req));
+    const extraHeaders = {
+      ...corsHeaders,
+      ...rateLimitHeaders(rateLimit),
+      [API_VERSION_HEADER]: API_VERSION,
+    };
+
+    if (rateLimit.limited) {
+      return apiError(
+        429,
+        {
+          type: 'rate_limited',
+          message: `Rate limit exceeded: ${rateLimit.limit} requests per window.`,
+          hint: `Wait ${rateLimit.resetSeconds} seconds (see the Retry-After header) before retrying, and throttle using the RateLimit header.`,
+          links: { docs: `${SITE_URL}/docs#rate-limits` },
+        },
+        extraHeaders
+      );
+    }
+
     const response = await handler(req);
-    for (const [key, value] of Object.entries(corsHeaders)) {
+    for (const [key, value] of Object.entries(extraHeaders)) {
       response.headers.set(key, value);
     }
     return response;

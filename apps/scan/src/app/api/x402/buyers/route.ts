@@ -1,4 +1,5 @@
 import { router, withCors, OPTIONS } from '@/lib/router';
+import { buyersResponseSchema } from '@/app/api/x402/_lib/output-schemas';
 import { buyersListQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { handleBuyers } from '@/app/api/x402/_handlers/buyers';
 
@@ -10,6 +11,7 @@ export const GET = withCors(
     .paid('0.01')
     .method('GET')
     .query(buyersListQuerySchema)
+    .output(buyersResponseSchema)
     .description('Paginated list of buyers (top senders by volume)')
     .handler(({ query }) => handleBuyers(query))
 );

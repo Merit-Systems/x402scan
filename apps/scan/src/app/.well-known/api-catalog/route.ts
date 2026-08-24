@@ -27,9 +27,14 @@ const relations = {
   ],
   'service-doc': [
     {
+      href: `${baseUrl}/docs`,
+      type: 'text/html',
+      title: 'x402scan API documentation',
+    },
+    {
       href: REPO_URL,
       type: 'text/html',
-      title: 'x402scan documentation',
+      title: 'x402scan source code and README',
     },
   ],
   status: [

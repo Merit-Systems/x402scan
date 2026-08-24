@@ -1,4 +1,5 @@
 import { router, withCors, OPTIONS } from '@/lib/router';
+import { resourcesResponseSchema } from '@/app/api/x402/_lib/output-schemas';
 import { originResourcesQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { extractPathSegment } from '@/app/api/x402/_lib/utils';
 import { handleOriginResources } from '@/app/api/x402/_handlers/origin-resources';
@@ -12,6 +13,7 @@ export const GET = withCors(
     .paid('0.01')
     .method('GET')
     .query(originResourcesQuerySchema)
+    .output(resourcesResponseSchema)
     .description('Resources for a specific origin/domain')
     .handler(({ query, request }) => {
       const id = extractPathSegment(request, 4);

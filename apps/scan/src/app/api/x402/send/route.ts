@@ -1,6 +1,7 @@
 import z from 'zod';
 
 import { router, solanaRouter, withCors, OPTIONS } from '@/lib/router';
+import { sendResponseSchema } from '@/app/api/x402/_lib/output-schemas';
 import { chainSchema, sendUsdcBodySchema } from '@/lib/schemas';
 import { handleSend } from '@/app/api/x402/_handlers/send';
 import { Chain } from '@/types/chain';
@@ -23,6 +24,7 @@ const createSendHandler = (sendRouter: typeof router) =>
     )
     .method('POST')
     .body(sendUsdcBodySchema)
+    .output(sendResponseSchema)
     .description('Send USDC to an address on Base or Solana')
     .handler(({ body }) => Promise.resolve(handleSend(body)));
 

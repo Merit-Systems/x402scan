@@ -22,12 +22,24 @@ import type { Chain } from '@/types/chain';
 interface Props {
   chain?: Chain;
   initialTimeframe?: ActivityTimeframe;
+  /**
+   * Wrap in a `HydrateClient` boundary (default). Pass `false` when a parent
+   * already renders one: every `HydrateClient` dehydrates the *whole* shared
+   * RSC query cache, so nested boundaries serialize every prefetched query
+   * into the HTML payload once per boundary.
+   */
+  hydrate?: boolean;
 }
 
-export const OverallStats: React.FC<Props> = ({
+/**
+ * Kick off the queries `OverallStats` suspends on. Exported so a page that
+ * owns the `HydrateClient` boundary can start them *before* the boundary
+ * renders (dehydration snapshots the cache at that point).
+ */
+export const prefetchOverallStats = ({
   chain,
   initialTimeframe = ActivityTimeframe.OneDay,
-}) => {
+}: Pick<Props, 'chain' | 'initialTimeframe'>) => {
   void api.public.stats.overall.prefetch({
     timeframe: initialTimeframe,
     chain,
@@ -37,24 +49,32 @@ export const OverallStats: React.FC<Props> = ({
     numBuckets: 48,
     chain,
   });
+};
 
-  return (
-    <HydrateClient>
-      <TimeRangeProvider initialTimeframe={initialTimeframe}>
-        <ChartModeProvider>
-          <ActivityContainer>
-            <ErrorBoundary
-              fallback={<p>There was an error loading the activity data</p>}
-            >
-              <Suspense fallback={<LoadingOverallCharts />}>
-                <OverallCharts />
-              </Suspense>
-            </ErrorBoundary>
-          </ActivityContainer>
-        </ChartModeProvider>
-      </TimeRangeProvider>
-    </HydrateClient>
+export const OverallStats: React.FC<Props> = ({
+  chain,
+  initialTimeframe = ActivityTimeframe.OneDay,
+  hydrate = true,
+}) => {
+  prefetchOverallStats({ chain, initialTimeframe });
+
+  const content = (
+    <TimeRangeProvider initialTimeframe={initialTimeframe}>
+      <ChartModeProvider>
+        <ActivityContainer>
+          <ErrorBoundary
+            fallback={<p>There was an error loading the activity data</p>}
+          >
+            <Suspense fallback={<LoadingOverallCharts />}>
+              <OverallCharts />
+            </Suspense>
+          </ErrorBoundary>
+        </ActivityContainer>
+      </ChartModeProvider>
+    </TimeRangeProvider>
   );
+
+  return hydrate ? <HydrateClient>{content}</HydrateClient> : content;
 };
 
 export const LoadingOverallStats = () => {

@@ -13,6 +13,8 @@ import type { ErrorComponentProps } from './types';
 import Link from 'next/link';
 import { Streamdown } from 'streamdown';
 
+import { SITE_URL } from '@/lib/site';
+
 export const ErrorCard: React.FC<ErrorComponentProps> = ({
   title = 'An Error Has Occurred!',
   description,
@@ -45,9 +47,18 @@ export const ErrorCard: React.FC<ErrorComponentProps> = ({
   );
 };
 
+/**
+ * Rendered as Markdown by `ErrorCard`, so the 404 body doubles as a short
+ * site map for agents and crawlers landing on a dead URL (the same links are
+ * served as `text/markdown` via content negotiation).
+ */
+const NOT_FOUND_DESCRIPTION = `The page you are looking for does not exist.
+
+Where to look next: [Home](${SITE_URL}/) · [Marketplace](${SITE_URL}/resources) · [API docs](${SITE_URL}/docs) · [OpenAPI](${SITE_URL}/openapi.json) · [llms.txt](${SITE_URL}/llms.txt) · [Sitemap](${SITE_URL}/sitemap.xml)`;
+
 export const NotFoundCard: React.FC<ErrorComponentProps> = ({
   title = 'Not Found',
-  description = 'The page you are looking for does not exist.',
+  description = NOT_FOUND_DESCRIPTION,
   ...rest
 }) => {
   return <ErrorCard title={title} description={description} {...rest} />;

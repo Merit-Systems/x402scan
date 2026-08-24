@@ -1,4 +1,5 @@
 import { router, withCors, OPTIONS } from '@/lib/router';
+import { merchantsResponseSchema } from '@/app/api/x402/_lib/output-schemas';
 import { merchantsListQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { handleMerchants } from '@/app/api/x402/_handlers/merchants';
 
@@ -10,6 +11,7 @@ export const GET = withCors(
     .paid('0.01')
     .method('GET')
     .query(merchantsListQuerySchema)
+    .output(merchantsResponseSchema)
     .description('Paginated list of merchants (top recipients by volume)')
     .handler(({ query }) => handleMerchants(query))
 );

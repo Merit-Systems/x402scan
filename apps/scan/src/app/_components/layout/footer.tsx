@@ -113,6 +113,34 @@ export function Footer() {
               </svg>
             </a>
             <Link
+              href="/docs"
+              prefetch={false}
+              className="hover:text-foreground transition-colors"
+            >
+              API Docs
+            </Link>
+            <Link
+              href="/pricing"
+              prefetch={false}
+              className="hidden sm:inline hover:text-foreground transition-colors"
+            >
+              Pricing
+            </Link>
+            <Link
+              href="/about"
+              prefetch={false}
+              className="hidden sm:inline hover:text-foreground transition-colors"
+            >
+              About
+            </Link>
+            <Link
+              href="/contact"
+              prefetch={false}
+              className="hidden sm:inline hover:text-foreground transition-colors"
+            >
+              Contact
+            </Link>
+            <Link
               href="/privacy"
               prefetch={false}
               className="hover:text-foreground transition-colors"

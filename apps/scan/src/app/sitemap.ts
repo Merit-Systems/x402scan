@@ -6,7 +6,7 @@ import { env } from '@/env';
 import { facilitators } from '@/lib/facilitators';
 
 const baseUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
-const staticLastModified = new Date('2026-05-20T00:00:00.000Z');
+const staticLastModified = new Date('2026-08-21T00:00:00.000Z');
 
 const url = (path: string) => `${baseUrl}${path}`;
 
@@ -19,6 +19,12 @@ const staticRouteEntries = [
     priority: 0.9,
   },
   { url: url('/resources'), changeFrequency: 'daily', priority: 0.8 },
+  { url: url('/docs'), changeFrequency: 'weekly', priority: 0.8 },
+  { url: url('/pricing'), changeFrequency: 'monthly', priority: 0.6 },
+  { url: url('/about'), changeFrequency: 'monthly', priority: 0.5 },
+  { url: url('/contact'), changeFrequency: 'monthly', priority: 0.5 },
+  { url: url('/privacy'), changeFrequency: 'monthly', priority: 0.3 },
+  { url: url('/tos'), changeFrequency: 'monthly', priority: 0.3 },
   { url: url('/resources/register'), changeFrequency: 'weekly', priority: 0.7 },
   { url: url('/discovery'), changeFrequency: 'weekly', priority: 0.75 },
   {

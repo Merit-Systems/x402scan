@@ -1,4 +1,5 @@
 import { router, withCors, OPTIONS } from '@/lib/router';
+import { resourcesResponseSchema } from '@/app/api/x402/_lib/output-schemas';
 import { registryOriginQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { handleRegistryOrigin } from '@/app/api/x402/_handlers/registry-origin';
 
@@ -10,6 +11,7 @@ export const GET = withCors(
     .paid('0.01')
     .method('GET')
     .query(registryOriginQuerySchema)
+    .output(resourcesResponseSchema)
     .description('List all registered x402 resources for an origin')
     .handler(({ query }) => handleRegistryOrigin(query))
 );

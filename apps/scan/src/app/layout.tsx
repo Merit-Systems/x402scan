@@ -18,6 +18,8 @@ import { PostHogProvider } from './_contexts/posthog';
 import { TRPCReactProvider } from '@/trpc/client';
 
 import { env } from '@/env';
+import { buildSiteJsonLd } from '@/lib/agent/json-ld';
+import { SITE_DESCRIPTION } from '@/lib/site';
 
 import type { Metadata, Viewport } from 'next';
 
@@ -36,8 +38,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const siteDescription =
-  'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.';
+const siteDescription = SITE_DESCRIPTION;
 
 export const metadata: Metadata = {
   title: {
@@ -75,6 +76,11 @@ export const metadata: Metadata = {
     title: 'x402scan',
     statusBarStyle: 'black-translucent',
   },
+  openGraph: {
+    type: 'website',
+    siteName: 'x402scan',
+    locale: 'en_US',
+  },
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
 };
 
@@ -93,31 +99,7 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: LayoutProps<'/'>) {
   await connection();
-  const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
-  const jsonLd = [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: 'x402scan',
-      url: appUrl,
-      description: siteDescription,
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: `${appUrl}/?q={search_term_string}`,
-        'query-input': 'required name=search_term_string',
-      },
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Organization',
-      name: 'x402scan',
-      url: appUrl,
-      sameAs: [
-        'https://github.com/Merit-Systems/x402scan',
-        'https://x.com/x402scan',
-      ],
-    },
-  ];
+  const jsonLd = buildSiteJsonLd();
 
   return (
     <html lang="en" suppressHydrationWarning>

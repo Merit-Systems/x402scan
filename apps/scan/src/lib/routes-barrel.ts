@@ -1,3 +1,4 @@
+import '@/app/api/x402/buyers/route';
 import '@/app/api/x402/merchants/route';
 import '@/app/api/x402/merchants/[address]/transactions/route';
 import '@/app/api/x402/merchants/[address]/stats/route';

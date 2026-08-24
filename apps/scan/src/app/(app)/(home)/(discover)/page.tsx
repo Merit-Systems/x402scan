@@ -4,7 +4,10 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { Body, Section } from '@/app/_components/layout/page-utils';
 
-import { OverallStats } from '../(overview)/_components/stats';
+import {
+  OverallStats,
+  prefetchOverallStats,
+} from '../(overview)/_components/stats';
 // import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
 import { DiscoverHeading } from './_components/heading';
 
@@ -34,6 +37,12 @@ export default async function DiscoverPage({
   const resolvedParams = await searchParams;
   const chain = await getChainForPage(resolvedParams);
 
+  // All prefetches must start before the single `HydrateClient` boundary below
+  // renders: it snapshots the shared RSC query cache at render time.
+  prefetchOverallStats({
+    chain,
+    initialTimeframe: ActivityTimeframe.ThirtyDays,
+  });
   void api.public.sellers.bazaar.featured.prefetch({
     chain,
     pagination: {
@@ -55,6 +64,7 @@ export default async function DiscoverPage({
                 <OverallStats
                   chain={chain}
                   initialTimeframe={ActivityTimeframe.ThirtyDays}
+                  hydrate={false}
                 />
                 <Section
                   title="Featured Services"

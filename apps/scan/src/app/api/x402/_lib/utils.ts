@@ -17,7 +17,15 @@ export function parseAddress(
     return {
       success: false,
       response: NextResponse.json(
-        { error: 'Invalid address', details: result.error.issues },
+        {
+          success: false,
+          error: {
+            type: 'invalid_address',
+            message: 'Invalid address',
+            hint: 'Pass a 0x-prefixed EVM address (Base) or a base58 Solana address.',
+            details: result.error.issues,
+          },
+        },
         { status: 400 }
       ),
     };

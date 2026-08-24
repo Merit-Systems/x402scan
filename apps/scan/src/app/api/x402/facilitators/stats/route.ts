@@ -1,4 +1,5 @@
 import { router, withCors, OPTIONS } from '@/lib/router';
+import { overallStatsResponseSchema } from '@/app/api/x402/_lib/output-schemas';
 import { facilitatorStatsQuerySchema } from '@/app/api/x402/_lib/schemas';
 import { handleFacilitatorStats } from '@/app/api/x402/_handlers/facilitators-stats';
 
@@ -10,6 +11,7 @@ export const GET = withCors(
     .paid('0.01')
     .method('GET')
     .query(facilitatorStatsQuerySchema)
+    .output(overallStatsResponseSchema)
     .description('Overall high-level facilitator stats')
     .handler(({ query }) => handleFacilitatorStats(query))
 );

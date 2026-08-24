@@ -18,7 +18,13 @@ const nextConfig: NextConfig = {
     return Promise.resolve([
       {
         source: '/:path*',
-        headers: [{ key: 'Link', value: agentDiscoveryLinkHeader }],
+        headers: [
+          { key: 'Link', value: agentDiscoveryLinkHeader },
+          // Pages negotiate `Accept: text/markdown` (see src/proxy.ts), so
+          // every cached variant must be keyed on Accept. Declared here rather
+          // than in the proxy because the renderer overwrites Vary set there.
+          { key: 'Vary', value: 'Accept' },
+        ],
       },
     ]);
   },
