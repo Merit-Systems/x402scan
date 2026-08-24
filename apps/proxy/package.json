@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
-    "@x402scan/analytics-db": "workspace:*",
     "dotenv": "catalog:env",
     "hono": "^4.6.14"
   },
