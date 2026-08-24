@@ -238,9 +238,6 @@ importers:
       '@hono/node-server':
         specifier: ^1.13.7
         version: 1.19.6(hono@4.10.6)
-      '@x402scan/analytics-db':
-        specifier: workspace:*
-        version: link:../../packages/internal/databases/analytics
       dotenv:
         specifier: catalog:env
         version: 17.2.3
@@ -470,9 +467,6 @@ importers:
       '@x402/svm':
         specifier: catalog:x402
         version: 2.11.0(@solana/kit@5.3.0(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/sysvars@5.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3))
-      '@x402scan/analytics-db':
-        specifier: workspace:*
-        version: link:../../packages/internal/databases/analytics
       '@x402scan/neverthrow':
         specifier: workspace:*
         version: link:../../packages/internal/neverthrow

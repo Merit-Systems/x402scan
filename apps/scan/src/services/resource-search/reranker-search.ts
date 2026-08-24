@@ -1,5 +1,5 @@
 import { env } from '@/env';
-import type { EnrichedSearchResult, RerankedSearchResult } from './types';
+import type { SearchResult, RerankedSearchResult } from './types';
 
 interface JinaRerankerResponse {
   model: string;
@@ -19,15 +19,12 @@ interface JinaRerankerResponse {
 /**
  * Builds a text representation of a resource for reranking
  */
-function buildResourceText(resource: EnrichedSearchResult): string {
+function buildResourceText(resource: SearchResult): string {
   const parts = [
     resource.origin.title ?? resource.origin.origin,
     resource.accepts?.find(accept => accept.description)?.description ?? '',
     resource.origin.description ?? '',
     resource.tags.map(t => t.name).join(', '),
-    resource.analytics?.sampleResponseBody
-      ? `Sample: ${resource.analytics.sampleResponseBody.slice(0, 300)}`
-      : '',
   ].filter(Boolean);
 
   return parts.join(' | ');
@@ -37,7 +34,7 @@ function buildResourceText(resource: EnrichedSearchResult): string {
  * Reranks search results using Jina AI's reranker API
  */
 export async function rerankSearchResults(
-  results: EnrichedSearchResult[],
+  results: SearchResult[],
   naturalLanguageQuery: string,
   options?: {
     topN?: number;
