@@ -726,22 +726,6 @@ importers:
 
   packages/internal/configurations/typescript: {}
 
-  packages/internal/databases/analytics:
-    dependencies:
-      '@clickhouse/client':
-        specifier: catalog:clickhouse
-        version: 1.12.1
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 20.19.27
-      '@x402scan/typescript-config':
-        specifier: workspace:*
-        version: link:../../configurations/typescript
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
   packages/internal/databases/partners:
     dependencies:
       '@clickhouse/client':
@@ -872,34 +856,6 @@ importers:
       viem:
         specifier: 2.51.2
         version: 2.51.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3)
-    devDependencies:
-      '@trigger.dev/build':
-        specifier: catalog:trigger
-        version: 4.3.2(bufferutil@4.0.9)(magicast@0.3.5)(supports-color@10.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      '@types/node':
-        specifier: 'catalog:'
-        version: 20.19.27
-      '@x402scan/typescript-config':
-        specifier: workspace:*
-        version: link:../../packages/internal/configurations/typescript
-      trigger.dev:
-        specifier: catalog:trigger
-        version: 4.3.2(@cfworker/json-schema@4.1.1)(bufferutil@4.0.9)(superstruct@2.0.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(valibot@1.2.0(typescript@5.9.3))
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
-  sync/analytics:
-    dependencies:
-      '@trigger.dev/sdk':
-        specifier: catalog:trigger
-        version: 4.3.2(ai@5.0.81(zod@4.4.3))(bufferutil@4.0.9)(supports-color@10.2.2)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3)
-      '@x402scan/analytics-db':
-        specifier: workspace:*
-        version: link:../../packages/internal/databases/analytics
-      '@x402scan/scan-db':
-        specifier: workspace:*
-        version: link:../../packages/internal/databases/scan
     devDependencies:
       '@trigger.dev/build':
         specifier: catalog:trigger

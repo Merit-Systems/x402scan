@@ -38,9 +38,6 @@ const config: KnipConfig = {
       ignoreDependencies: ['rimraf', '@prisma/client'],
       ignore: ['generated/**'],
     },
-    'packages/internal/databases/analytics': {
-      project: ['src/**/*.ts'],
-    },
     'packages/internal/databases/partners': {
       project: ['src/**/*.ts'],
     },
@@ -48,11 +45,6 @@ const config: KnipConfig = {
       project: ['src/**/*.ts'],
       ignoreDependencies: ['rimraf', '@prisma/client'],
       ignore: ['generated/**'],
-    },
-    'sync/analytics': {
-      entry: ['trigger/**/*.ts'],
-      project: ['trigger/**/*.ts'],
-      ignoreDependencies: ['@trigger.dev/build'],
     },
     'sync/transfers': {
       entry: ['trigger/**/*.ts', 'db/**/*.ts'],
