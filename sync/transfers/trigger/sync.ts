@@ -10,7 +10,7 @@ import {
   type TransferSyncStateKey,
 } from '@/db/services';
 import { logger, schedules } from '@trigger.dev/sdk/v3';
-import { Network, QueryProvider } from './types';
+import { Network, PaginationStrategy, QueryProvider } from './types';
 import { fetchTransfers } from './fetch/fetch';
 import { collapseTransferChains } from './lib/collapse';
 
@@ -171,6 +171,15 @@ async function syncFacilitator(
             );
           }
         );
+
+        // Offset pagination fetches the whole [since, now] range in one pass
+        // and never reports windows, so advance the cursor once it completes.
+        if (syncConfig.paginationStrategy === PaginationStrategy.OFFSET) {
+          await advanceTransferSyncState(key, now, new Date());
+          logger.log(
+            `[${syncConfig.chain}] Advanced sync state to ${now.toISOString()} after ${totalFetched} fetched transfers`
+          );
+        }
 
         logger.log(
           `[${syncConfig.chain}] Completed ${facilitator.id}: ${totalFetched} fetched, ${totalSaved} saved`
