@@ -1,10 +1,3 @@
-export interface ResourceAnalytics {
-  totalCalls: number;
-  avgDuration: number;
-  successRate: number;
-  sampleResponseBody: string | null;
-}
-
 export interface SearchResult {
   id: string;
   resource: string;
@@ -34,10 +27,6 @@ export interface SearchResult {
   toolCallCount: number;
 }
 
-export type EnrichedSearchResult = {
-  analytics: ResourceAnalytics | null;
-} & SearchResult;
-
 export interface FilterQuestion {
   question: string;
   index: number;
@@ -46,12 +35,12 @@ export interface FilterQuestion {
 export type FilteredSearchResult = {
   filterMatches: number;
   filterAnswers: boolean[];
-} & EnrichedSearchResult;
+} & SearchResult;
 
 export type RerankedSearchResult = {
   rerankerScore: number | null;
   rerankerIndex: number | null;
-} & EnrichedSearchResult;
+} & SearchResult;
 
 export type CombinedRefinedResult = {
   rerankerScore: number | null;

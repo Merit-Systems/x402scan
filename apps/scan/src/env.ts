@@ -29,20 +29,14 @@ export const env = createEnv({
     REDIS_DISABLE: z.coerce.boolean().optional().default(false),
     ECHO_APP_ID: z.string().default('7fed205e-3aa5-44af-83a3-f7ae5e49dba4'),
     ECHO_PROXY_URL: z.url().optional(),
-    ANALYTICS_CLICKHOUSE_URL: z.string().url().optional(),
-    ANALYTICS_CLICKHOUSE_USER: z.string().optional(),
-    ANALYTICS_CLICKHOUSE_PASSWORD: z.string().optional(),
-    ANALYTICS_CLICKHOUSE_DATABASE: z.string().optional(),
     PARTNERS_CLICKHOUSE_URL: z.string().url().optional(),
     PARTNERS_CLICKHOUSE_USER: z.string().optional(),
     PARTNERS_CLICKHOUSE_PASSWORD: z.string().optional(),
     PARTNERS_CLICKHOUSE_DATABASE: z.string().optional(),
     JINA_API_KEY: z.string().optional(),
     RESOURCE_SEARCH_API_KEY: z.string().optional(),
-    STRIPE_SECRET_KEY: z.string(),
     DISCORD_NOTIFICATIONS_WEBHOOK_URL: z.url().optional(),
     DISCORD_MERCHANT_RESEARCH_WEBHOOK_URL: z.url().optional(),
-    DISCORD_TELEMETRY_WEBHOOK_URL: z.string().optional(),
     X402_PAYEE_ADDRESS: z.string().optional(),
     AGENTCASH_URL: z.string().optional(),
     AGENTCASH_INTERNAL_API_KEY: z.string().optional(),
@@ -76,7 +70,6 @@ export const env = createEnv({
     NEXT_PUBLIC_VERCEL_ENV: z
       .enum(['development', 'preview', 'production'])
       .optional(),
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL:
@@ -96,8 +89,6 @@ export const env = createEnv({
     NEXT_PUBLIC_SOLANA_RPC_URL: process.env.NEXT_PUBLIC_SOLANA_RPC_URL,
     NEXT_PUBLIC_BASE_RPC_URL: process.env.NEXT_PUBLIC_BASE_RPC_URL,
     NEXT_PUBLIC_VERCEL_ENV: process.env.VERCEL_ENV,
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
-      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },
   emptyStringAsUndefined: true,
 });

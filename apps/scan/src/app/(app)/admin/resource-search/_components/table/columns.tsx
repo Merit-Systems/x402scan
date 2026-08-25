@@ -1,26 +1,11 @@
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Avatar } from '@/components/ui/avatar';
-import { Globe, TrendingUp, Zap, CheckCircle, Filter } from 'lucide-react';
+import { Globe, Filter } from 'lucide-react';
 import type { FilteredSearchResult } from '@/services/resource-search/types';
 import { cleanExternalText } from '@/lib/utils';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { ResourceSearchSortingContext } from '@/app/(app)/_contexts/sorting/resource-search/context';
-
-function formatNumber(num: number): string {
-  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-  return num.toString();
-}
-
-function formatDuration(ms: number): string {
-  if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
-  return `${ms.toFixed(0)}ms`;
-}
-
-function formatPercentage(rate: number): string {
-  return `${(rate * 100).toFixed(1)}%`;
-}
 
 export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
   {
@@ -114,7 +99,7 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
   {
     accessorKey: 'description',
     header: 'Description',
-    size: 65,
+    size: 55,
     cell: ({ row }) => {
       const accepts = row.original.accepts;
       const description = cleanExternalText(
@@ -160,91 +145,6 @@ export const createColumns = (): ExtendedColumnDef<FilteredSearchResult>[] => [
               +{tags.length - 3}
             </Badge>
           )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'usage',
-    header: () => (
-      <HeaderCell
-        Icon={TrendingUp}
-        label="Usage"
-        className="justify-start"
-        sorting={{
-          sortContext: ResourceSearchSortingContext,
-          sortKey: 'usage',
-        }}
-      />
-    ),
-    size: 15,
-    cell: ({ row }) => {
-      const analytics = row.original.analytics;
-
-      if (!analytics) {
-        return (
-          <div className="flex flex-col gap-1">
-            <span className="text-xs text-muted-foreground">No data</span>
-          </div>
-        );
-      }
-
-      return (
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-3.5 w-3.5 text-primary" />
-          <span className="text-sm font-medium">
-            {formatNumber(analytics.totalCalls)} calls
-          </span>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'performance',
-    header: () => (
-      <HeaderCell
-        Icon={Zap}
-        label="Performance"
-        className="justify-start"
-        sorting={{
-          sortContext: ResourceSearchSortingContext,
-          sortKey: 'performance',
-        }}
-      />
-    ),
-    size: 15,
-    cell: ({ row }) => {
-      const analytics = row.original.analytics;
-
-      if (!analytics) {
-        return (
-          <div className="flex flex-col gap-1">
-            <span className="text-xs text-muted-foreground">No data</span>
-          </div>
-        );
-      }
-
-      const successRateColor =
-        analytics.successRate >= 0.95
-          ? 'text-green-500'
-          : analytics.successRate >= 0.8
-            ? 'text-yellow-500'
-            : 'text-red-500';
-
-      return (
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center gap-2">
-            <Zap className="h-3.5 w-3.5 text-yellow-500" />
-            <span className="text-sm font-medium">
-              {formatDuration(analytics.avgDuration)}
-            </span>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <CheckCircle className={`h-3 w-3 ${successRateColor}`} />
-            <span className={successRateColor}>
-              {formatPercentage(analytics.successRate)} success
-            </span>
-          </div>
         </div>
       );
     },

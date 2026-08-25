@@ -17,10 +17,8 @@
         "@x402scan/transfers-db#db:generate",
         "@x402scan/app#types:generate",
         "@x402scan/neverthrow#build",
-        "@x402scan/mcp#build",
         "facilitators#build",
-        "@x402scan/partners-db#build",
-        "@x402scan/analytics-db#build"
+        "@x402scan/partners-db#build"
       ],
       "inputs": [
         "**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts}",

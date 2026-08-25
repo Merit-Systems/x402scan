@@ -257,94 +257,15 @@ function getFacilitatorsPageTasks(
 }
 
 /**
- * Get cache warming tasks for the Resources/Marketplace Page
- */
-function getResourcesPageTasks(
-  api: ReturnType<typeof createCaller>,
-  timeframe: ActivityTimeframe
-): (() => Promise<unknown>)[] {
-  return [
-    // All Sellers stats
-    () =>
-      api.public.sellers.all.stats.overall({
-        timeframe,
-      }),
-
-    () =>
-      api.public.sellers.all.stats.bucketed({
-        timeframe,
-      }),
-
-    // Bazaar Sellers stats (overall)
-    () =>
-      api.public.sellers.bazaar.stats.overall({
-        timeframe,
-      }),
-
-    // Bazaar Sellers stats (bucketed)
-    () =>
-      api.public.sellers.bazaar.stats.bucketed({
-        timeframe,
-      }),
-
-    // Marketplace carousels (5 different tag filters)
-    // Most Used (no tags)
-    () =>
-      api.public.sellers.bazaar.list({
-        pagination: { page_size: 20 },
-        timeframe,
-      }),
-
-    // Search Servers
-    () =>
-      api.public.sellers.bazaar.list({
-        tags: ['Search'],
-        pagination: { page_size: 20 },
-        timeframe,
-      }),
-
-    // Crypto Servers
-    () =>
-      api.public.sellers.bazaar.list({
-        tags: ['Crypto'],
-        pagination: { page_size: 20 },
-        timeframe,
-      }),
-
-    // AI Servers (Utility tag)
-    () =>
-      api.public.sellers.bazaar.list({
-        tags: ['Utility'],
-        pagination: { page_size: 20 },
-        timeframe,
-      }),
-
-    // Trading Servers
-    () =>
-      api.public.sellers.bazaar.list({
-        tags: ['Trading'],
-        pagination: { page_size: 20 },
-        timeframe,
-      }),
-  ];
-}
-
-/**
  * Page types that can be warmed
  */
-type WarmablePage =
-  | 'home'
-  | 'buyers'
-  | 'networks'
-  | 'facilitators'
-  | 'resources';
+type WarmablePage = 'home' | 'buyers' | 'networks' | 'facilitators';
 
 const ALL_PAGES: WarmablePage[] = [
   'home',
   'buyers',
   'networks',
   'facilitators',
-  'resources',
 ];
 
 export async function GET(request: NextRequest) {
@@ -426,10 +347,6 @@ export async function GET(request: NextRequest) {
 
       if (pagesToWarm.includes('facilitators')) {
         allTasks.push(...getFacilitatorsPageTasks(api, timeframe));
-      }
-
-      if (pagesToWarm.includes('resources')) {
-        allTasks.push(...getResourcesPageTasks(api, timeframe));
       }
     }
 

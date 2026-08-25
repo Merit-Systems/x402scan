@@ -18,7 +18,6 @@ const staticRouteEntries = [
     changeFrequency: 'daily',
     priority: 0.9,
   },
-  { url: url('/resources'), changeFrequency: 'daily', priority: 0.8 },
   { url: url('/resources/register'), changeFrequency: 'weekly', priority: 0.7 },
   { url: url('/discovery'), changeFrequency: 'weekly', priority: 0.75 },
   {
@@ -35,10 +34,7 @@ const staticRouteEntries = [
   { url: url('/all'), changeFrequency: 'daily', priority: 0.65 },
   { url: url('/networks'), changeFrequency: 'daily', priority: 0.6 },
   { url: url('/facilitators'), changeFrequency: 'daily', priority: 0.6 },
-  { url: url('/mcp'), changeFrequency: 'weekly', priority: 0.55 },
-  { url: url('/mcp/guide'), changeFrequency: 'weekly', priority: 0.5 },
   { url: url('/composer'), changeFrequency: 'daily', priority: 0.45 },
-  { url: url('/developer'), changeFrequency: 'daily', priority: 0.4 },
 ] satisfies Omit<MetadataRoute.Sitemap[number], 'lastModified'>[];
 
 const staticRoutes: MetadataRoute.Sitemap = staticRouteEntries.map(route => ({

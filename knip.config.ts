@@ -18,7 +18,6 @@ const config: KnipConfig = {
     'apps/scan': {
       entry: [
         'src/app/**/{error,layout,loading,not-found,page,template,default,forbidden,global-not-found,global-error}.{js,jsx,ts,tsx}',
-        'src/app/**/_content/**/*.{md,mdx}',
         'src/app/**/route.{js,jsx,ts,tsx}',
       ],
       project: ['src/**/*.{ts,tsx}', '*.{ts,tsx,js,mjs}'],
@@ -39,9 +38,6 @@ const config: KnipConfig = {
       ignoreDependencies: ['rimraf', '@prisma/client'],
       ignore: ['generated/**'],
     },
-    'packages/internal/databases/analytics': {
-      project: ['src/**/*.ts'],
-    },
     'packages/internal/databases/partners': {
       project: ['src/**/*.ts'],
     },
@@ -49,11 +45,6 @@ const config: KnipConfig = {
       project: ['src/**/*.ts'],
       ignoreDependencies: ['rimraf', '@prisma/client'],
       ignore: ['generated/**'],
-    },
-    'sync/analytics': {
-      entry: ['trigger/**/*.ts'],
-      project: ['trigger/**/*.ts'],
-      ignoreDependencies: ['@trigger.dev/build'],
     },
     'sync/transfers': {
       entry: ['trigger/**/*.ts', 'db/**/*.ts'],
@@ -68,7 +59,6 @@ const config: KnipConfig = {
     },
     'examples/servers/express': {},
     'examples/servers/hono': {},
-    'packages/external/mcp': {},
   },
   ignore: [
     '**/*.test.{ts,tsx,js,jsx}',
