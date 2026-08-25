@@ -28,6 +28,7 @@ export { openfacilitator, openfacilitatorFacilitator } from './openfacilitator';
 export { relai, relaiFacilitator } from './relai';
 export { bitrefill, bitrefillFacilitator } from './bitrefill';
 export { cascade, cascadeFacilitator } from './cascade';
+export { paysh, payshFacilitator } from './paysh';
 export { fluxa, fluxaFacilitator } from './fluxa';
 export { figment, figmentFacilitator } from './figment';
 export { threews, threewsFacilitator } from './threews';
