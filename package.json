@@ -18,7 +18,7 @@
     "format:check": "prettier --check apps packages sync examples/servers",
     "knip": "knip",
     "knip:check": "turbo run knip",
-    "test": "turbo run test --filter=@x402scan/app",
+    "test": "turbo run test --filter=@x402scan/app --filter=@x402scan/sync-transfers",
     "check": "turbo run format:check types:check lint knip publish:check && pnpm test",
     "trigger:deploy:transfers": "turbo run trigger:deploy --filter=@x402scan/sync-transfers",
     "trigger:deploy:alerts": "turbo run trigger:deploy --filter=@x402scan/sync-alerts",

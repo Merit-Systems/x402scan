@@ -28,6 +28,7 @@ export interface TransferEventData {
   facilitator_id: string;
 
   log_index?: number;
+  scheme?: string;
 }
 
 export enum PaginationStrategy {
@@ -37,6 +38,7 @@ export enum PaginationStrategy {
 
 export enum QueryProvider {
   BITQUERY = 'bitquery',
+  BITQUERY_CHANNELS = 'bitquery-channels',
   BIGQUERY = 'bigquery',
   CDP = 'cdp',
 }
@@ -104,6 +106,10 @@ export type SyncConfig = QueryConfig & {
   splitSyncByFacilitator?: boolean;
   useSyncState?: boolean;
   syncStateCutoverAt?: Date;
+  // Upsert rows on the (tx_hash, log_index, chain, block_timestamp) key
+  // instead of createMany+skipDuplicates, so this sync's rows win over rows
+  // another provider already wrote for the same transfer.
+  upsertOnConflict?: boolean;
 };
 
 export interface EvmChainConfig {

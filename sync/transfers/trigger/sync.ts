@@ -1,6 +1,7 @@
 import {
   advanceTransferSyncState,
   createManyTransferEvents,
+  upsertManyTransferEvents,
   createTransferSyncState,
   getTransferEvents,
   getTransferSyncState,
@@ -9,7 +10,7 @@ import {
   type TransferSyncStateKey,
 } from '@/db/services';
 import { logger, schedules } from '@trigger.dev/sdk/v3';
-import { Network, QueryProvider } from './types';
+import { Network, PaginationStrategy, QueryProvider } from './types';
 import { fetchTransfers } from './fetch/fetch';
 import { collapseTransferChains } from './lib/collapse';
 
@@ -155,7 +156,9 @@ async function syncFacilitator(
           now,
           async batch => {
             const collapsed = collapseTransferChains(batch);
-            const syncResult = await createManyTransferEvents(collapsed);
+            const syncResult = syncConfig.upsertOnConflict
+              ? await upsertManyTransferEvents(collapsed)
+              : await createManyTransferEvents(collapsed);
             totalSaved += syncResult.count;
             logger.log(
               `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - collapsed.length} collapsed, ${collapsed.length - syncResult.count} duplicates)`
@@ -168,6 +171,15 @@ async function syncFacilitator(
             );
           }
         );
+
+        // Offset pagination fetches the whole [since, now] range in one pass
+        // and never reports windows, so advance the cursor once it completes.
+        if (syncConfig.paginationStrategy === PaginationStrategy.OFFSET) {
+          await advanceTransferSyncState(key, now, new Date());
+          logger.log(
+            `[${syncConfig.chain}] Advanced sync state to ${now.toISOString()} after ${totalFetched} fetched transfers`
+          );
+        }
 
         logger.log(
           `[${syncConfig.chain}] Completed ${facilitator.id}: ${totalFetched} fetched, ${totalSaved} saved`
@@ -213,7 +225,9 @@ async function syncFacilitator(
       now,
       async batch => {
         const collapsed = collapseTransferChains(batch);
-        const syncResult = await createManyTransferEvents(collapsed);
+        const syncResult = syncConfig.upsertOnConflict
+          ? await upsertManyTransferEvents(collapsed)
+          : await createManyTransferEvents(collapsed);
         totalSaved += syncResult.count;
         logger.log(
           `[${syncConfig.chain}] Saved ${syncResult.count} transfers (${batch.length} fetched, ${batch.length - collapsed.length} collapsed, ${collapsed.length - syncResult.count} duplicates)`
