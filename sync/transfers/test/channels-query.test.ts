@@ -1,9 +1,10 @@
 import bs58 from 'bs58';
 import { Keypair, PublicKey } from '@solana/web3.js';
-import type { ParsedTransactionWithMeta } from '@solana/web3.js';
+import type { ParsedInnerInstruction } from '@solana/web3.js';
 import { describe, expect, it } from 'vitest';
 
 import { extractPayouts } from '../trigger/chains/solana/bitquery-channels/query';
+import type { PayoutTransaction } from '../trigger/chains/solana/bitquery-channels/query';
 import {
   PAYMENT_CHANNELS_PROGRAM_ID,
   USDC_SOLANA,
@@ -102,8 +103,9 @@ function distributeAccounts(parts: {
 function buildTx(
   channelInstructions: ChannelIxSpec[],
   legs: TransferLegSpec[],
-  ownersByAta: Map<PublicKey, PublicKey>
-): ParsedTransactionWithMeta {
+  ownersByAta: Map<PublicKey, PublicKey>,
+  rawInnerInstructions?: ParsedInnerInstruction[]
+): PayoutTransaction {
   const accountKeys = [...ownersByAta.keys()].map(pubkey => ({ pubkey }));
   const postTokenBalances = [...ownersByAta.entries()].map(
     ([ata, owner], accountIndex) => {
@@ -129,30 +131,32 @@ function buildTx(
     list.push(leg);
     innerByIndex.set(leg.atInstructionIndex, list);
   }
-  const innerInstructions = [...innerByIndex.entries()].map(
-    ([index, indexLegs]) => ({
-      index,
-      instructions: indexLegs.map(leg => ({
-        program: 'spl-token',
-        programId: TOKEN_PROGRAM,
-        parsed: {
-          type: 'transferChecked',
-          info: {
-            source: leg.source.toBase58(),
-            destination: leg.destination.toBase58(),
-            mint: USDC_SOLANA,
-            tokenAmount: { amount: leg.amount, decimals: 6 },
-          },
+  const innerInstructions: ParsedInnerInstruction[] = [
+    ...innerByIndex.entries(),
+  ].map(([index, indexLegs]) => ({
+    index,
+    instructions: indexLegs.map(leg => ({
+      program: 'spl-token',
+      programId: TOKEN_PROGRAM,
+      parsed: {
+        type: 'transferChecked',
+        info: {
+          source: leg.source.toBase58(),
+          destination: leg.destination.toBase58(),
+          mint: USDC_SOLANA,
+          tokenAmount: { amount: leg.amount, decimals: 6 },
         },
-      })),
-    })
-  );
+      },
+    })),
+  }));
 
   return {
-    blockTime: 1_755_000_000,
     transaction: { message: { accountKeys, instructions } },
-    meta: { err: null, innerInstructions, postTokenBalances },
-  } as unknown as ParsedTransactionWithMeta;
+    meta: {
+      innerInstructions: rawInnerInstructions ?? innerInstructions,
+      postTokenBalances,
+    },
+  };
 }
 
 describe('extractPayouts', () => {
@@ -178,9 +182,19 @@ describe('extractPayouts', () => {
       [{ discriminator: DISTRIBUTE, accounts }],
       [
         // payout to the merchant recipient
-        { source: escrow, destination: recipientAta, amount: '5000', atInstructionIndex: 0 },
+        {
+          source: escrow,
+          destination: recipientAta,
+          amount: '5000',
+          atInstructionIndex: 0,
+        },
         // refund remainder back to the payer — must be skipped
-        { source: escrow, destination: payerAta, amount: '95000', atInstructionIndex: 0 },
+        {
+          source: escrow,
+          destination: payerAta,
+          amount: '95000',
+          atInstructionIndex: 0,
+        },
       ],
       new Map([[recipientAta, recipientOwner]])
     );
@@ -207,7 +221,14 @@ describe('extractPayouts', () => {
         { discriminator: SETTLE_AND_SEAL, accounts },
         { discriminator: DISTRIBUTE, accounts },
       ],
-      [{ source: escrow, destination: recipientAta, amount: '700', atInstructionIndex: 1 }],
+      [
+        {
+          source: escrow,
+          destination: recipientAta,
+          amount: '700',
+          atInstructionIndex: 1,
+        },
+      ],
       new Map([[recipientAta, recipientOwner]])
     );
 
@@ -222,7 +243,14 @@ describe('extractPayouts', () => {
         { discriminator: SETTLE, accounts },
         { discriminator: DISTRIBUTE, accounts },
       ],
-      [{ source: escrow, destination: recipientAta, amount: '1200', atInstructionIndex: 1 }],
+      [
+        {
+          source: escrow,
+          destination: recipientAta,
+          amount: '1200',
+          atInstructionIndex: 1,
+        },
+      ],
       new Map([[recipientAta, recipientOwner]])
     );
 
@@ -235,9 +263,24 @@ describe('extractPayouts', () => {
     const tx = buildTx(
       [{ discriminator: DISTRIBUTE, accounts }],
       [
-        { source: escrow, destination: payeeAta, amount: '10', atInstructionIndex: 0 },
-        { source: escrow, destination: treasuryAta, amount: '20', atInstructionIndex: 0 },
-        { source: key(), destination: recipientAta, amount: '30', atInstructionIndex: 0 },
+        {
+          source: escrow,
+          destination: payeeAta,
+          amount: '10',
+          atInstructionIndex: 0,
+        },
+        {
+          source: escrow,
+          destination: treasuryAta,
+          amount: '20',
+          atInstructionIndex: 0,
+        },
+        {
+          source: key(),
+          destination: recipientAta,
+          amount: '30',
+          atInstructionIndex: 0,
+        },
       ],
       new Map([[recipientAta, recipientOwner]])
     );
@@ -248,7 +291,14 @@ describe('extractPayouts', () => {
   it('emits nothing for channel transactions without a distribute', () => {
     const tx = buildTx(
       [{ discriminator: OPEN, accounts }],
-      [{ source: escrow, destination: recipientAta, amount: '40', atInstructionIndex: 0 }],
+      [
+        {
+          source: escrow,
+          destination: recipientAta,
+          amount: '40',
+          atInstructionIndex: 0,
+        },
+      ],
       new Map([[recipientAta, recipientOwner]])
     );
 
@@ -275,8 +325,18 @@ describe('extractPayouts', () => {
         { discriminator: DISTRIBUTE, accounts: secondAccounts },
       ],
       [
-        { source: escrow, destination: recipientAta, amount: '100', atInstructionIndex: 0 },
-        { source: secondEscrow, destination: secondRecipientAta, amount: '200', atInstructionIndex: 1 },
+        {
+          source: escrow,
+          destination: recipientAta,
+          amount: '100',
+          atInstructionIndex: 0,
+        },
+        {
+          source: secondEscrow,
+          destination: secondRecipientAta,
+          amount: '200',
+          atInstructionIndex: 1,
+        },
       ],
       new Map([
         [recipientAta, recipientOwner],
@@ -303,56 +363,52 @@ describe('extractPayouts', () => {
         { discriminator: DISTRIBUTE, accounts },
       ],
       [],
-      new Map([[recipientAta, recipientOwner]])
-    );
-    (
-      tx.meta as unknown as {
-        innerInstructions: { index: number; instructions: unknown[] }[];
-      }
-    ).innerInstructions = [
-      {
-        index: 1,
-        instructions: [
-          {
-            program: 'spl-token',
-            programId: TOKEN_PROGRAM,
-            parsed: {
-              type: 'batch',
-              info: {
-                instructions: [
-                  {
-                    type: 'transferChecked',
-                    info: {
-                      source: escrow.toBase58(),
-                      destination: recipientAta.toBase58(),
-                      mint: USDC_SOLANA,
-                      tokenAmount: { amount: '400000', decimals: 6 },
+      new Map([[recipientAta, recipientOwner]]),
+      [
+        {
+          index: 1,
+          instructions: [
+            {
+              program: 'spl-token',
+              programId: TOKEN_PROGRAM,
+              parsed: {
+                type: 'batch',
+                info: {
+                  instructions: [
+                    {
+                      type: 'transferChecked',
+                      info: {
+                        source: escrow.toBase58(),
+                        destination: recipientAta.toBase58(),
+                        mint: USDC_SOLANA,
+                        tokenAmount: { amount: '400000', decimals: 6 },
+                      },
                     },
-                  },
-                  {
-                    type: 'transferChecked',
-                    info: {
-                      source: escrow.toBase58(),
-                      destination: payerAta.toBase58(),
-                      mint: USDC_SOLANA,
-                      tokenAmount: { amount: '300000', decimals: 6 },
+                    {
+                      type: 'transferChecked',
+                      info: {
+                        source: escrow.toBase58(),
+                        destination: payerAta.toBase58(),
+                        mint: USDC_SOLANA,
+                        tokenAmount: { amount: '300000', decimals: 6 },
+                      },
                     },
-                  },
-                ],
+                  ],
+                },
               },
             },
-          },
-          {
-            program: 'spl-token',
-            programId: TOKEN_PROGRAM,
-            parsed: {
-              type: 'closeAccount',
-              info: { account: escrow.toBase58() },
+            {
+              program: 'spl-token',
+              programId: TOKEN_PROGRAM,
+              parsed: {
+                type: 'closeAccount',
+                info: { account: escrow.toBase58() },
+              },
             },
-          },
-        ],
-      },
-    ];
+          ],
+        },
+      ]
+    );
 
     const events = extractPayouts(tx, CHANNELS_PROGRAM, context);
     expect(events).toHaveLength(1);
@@ -367,7 +423,14 @@ describe('extractPayouts', () => {
   it('falls back to the destination address when no owner metadata exists', () => {
     const tx = buildTx(
       [{ discriminator: DISTRIBUTE, accounts }],
-      [{ source: escrow, destination: recipientAta, amount: '50', atInstructionIndex: 0 }],
+      [
+        {
+          source: escrow,
+          destination: recipientAta,
+          amount: '50',
+          atInstructionIndex: 0,
+        },
+      ],
       new Map()
     );
 

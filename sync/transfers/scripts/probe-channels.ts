@@ -46,8 +46,7 @@ async function main() {
   }
 
   const feePayer = tx.transaction.message.accountKeys[0]?.pubkey.toBase58();
-  const mint =
-    tx.meta?.postTokenBalances?.[0]?.mint ?? USDC_SOLANA;
+  const mint = tx.meta?.postTokenBalances?.[0]?.mint ?? USDC_SOLANA;
 
   const facilitatorConfig: FacilitatorConfig = {
     address: facilitatorAddress ?? feePayer ?? '',

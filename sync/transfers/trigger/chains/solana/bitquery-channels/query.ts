@@ -1,9 +1,11 @@
 import bs58 from 'bs58';
 import { Connection, PublicKey } from '@solana/web3.js';
 import type {
+  ParsedInnerInstruction,
   ParsedInstruction,
-  ParsedTransactionWithMeta,
+  ParsedMessageAccount,
   PartiallyDecodedInstruction,
+  TokenBalance,
 } from '@solana/web3.js';
 import { logger } from '@trigger.dev/sdk';
 
@@ -81,11 +83,9 @@ export async function transformResponse(
   // Cheap prefilter: a channel payout's token authority is the channel PDA,
   // which is owned by the payment-channels program. Senders whose account is
   // missing (possibly a reclaimed channel PDA) stay candidates.
-  const channelSenders = await findChannelSenders(
-    connection,
-    channelsProgram,
-    [...new Set(transfers.map(t => t.sender.address))]
-  );
+  const channelSenders = await findChannelSenders(connection, channelsProgram, [
+    ...new Set(transfers.map(t => t.sender.address)),
+  ]);
 
   const candidateSignatures = [...sendersBySignature.entries()]
     .filter(([, senders]) => [...senders].some(s => channelSenders.has(s)))
@@ -156,8 +156,26 @@ async function findChannelSenders(
   return channelSenders;
 }
 
+/**
+ * The subset of a parsed transaction the payout extractor reads. Structural so
+ * `getParsedTransaction(s)` results flow in unchanged and fixtures can be
+ * built without asserting through the full web3.js transaction type.
+ */
+export interface PayoutTransaction {
+  transaction: {
+    message: {
+      accountKeys: Pick<ParsedMessageAccount, 'pubkey'>[];
+      instructions: (ParsedInstruction | PartiallyDecodedInstruction)[];
+    };
+  };
+  meta: {
+    innerInstructions?: ParsedInnerInstruction[] | null;
+    postTokenBalances?: Pick<TokenBalance, 'accountIndex' | 'owner'>[] | null;
+  } | null;
+}
+
 export function extractPayouts(
-  tx: ParsedTransactionWithMeta,
+  tx: PayoutTransaction,
   channelsProgram: PublicKey,
   context: {
     signature: string;
@@ -171,7 +189,9 @@ export function extractPayouts(
   const channelInstructions = instructions
     .map((instruction, index) => ({ instruction, index }))
     .filter(
-      (entry): entry is { instruction: PartiallyDecodedInstruction; index: number } =>
+      (
+        entry
+      ): entry is { instruction: PartiallyDecodedInstruction; index: number } =>
         'data' in entry.instruction &&
         entry.instruction.programId.equals(channelsProgram)
     );
@@ -219,8 +239,7 @@ export function extractPayouts(
         address: context.facilitatorConfig.token.address,
         transaction_from: context.facilitatorConfig.address,
         sender: payer,
-        recipient:
-          ownerByTokenAccount.get(leg.destination) ?? leg.destination,
+        recipient: ownerByTokenAccount.get(leg.destination) ?? leg.destination,
         amount: Number(leg.amount),
         block_timestamp: context.blockTimestamp,
         tx_hash: context.signature,
