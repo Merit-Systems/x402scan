@@ -28,7 +28,13 @@ export const ChainSelector = () => {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="default">
+        <Button
+          variant="outline"
+          size="default"
+          aria-label={
+            chain ? `Network: ${CHAIN_LABELS[chain]}` : "Network: All chains"
+          }
+        >
           {chain ? (
             <Image
               src={CHAIN_ICONS[chain]}
@@ -40,7 +46,7 @@ export const ChainSelector = () => {
           ) : (
             <Globe className="size-4" />
           )}
-          <span className="hidden md:block">
+          <span className="hidden xl:block">
             {chain ? CHAIN_LABELS[chain] : "All Chains"}
           </span>
         </Button>

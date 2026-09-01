@@ -1,4 +1,4 @@
-import { Nav } from "../../_components/layout/nav";
+import { Subnav } from "../../_components/layout/subnav";
 
 export default async function BuyerLayout({
   params,
@@ -7,7 +7,7 @@ export default async function BuyerLayout({
   const { address } = await params;
   return (
     <div className="flex flex-1 flex-col">
-      <Nav
+      <Subnav
         tabs={[
           {
             label: "Overview",

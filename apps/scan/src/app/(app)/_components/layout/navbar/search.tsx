@@ -12,16 +12,17 @@ export const NavbarSearchButton = () => {
 
   return (
     <Button
-      size="default"
+      size="icon"
       variant="outline"
-      className="flex items-center gap-0 text-muted-foreground md:justify-between md:gap-16 md:px-2 md:pr-1"
+      aria-label="Search x402scan"
+      className="text-muted-foreground lg:w-48 lg:justify-between lg:px-2 lg:pr-1"
       onClick={() => setIsOpen(true)}
     >
-      <div className="flex items-center gap-0 text-sm md:gap-2">
+      <div className="flex items-center gap-2">
         <Search className="size-4" />
-        <span className="hidden md:block">Navigate</span>
+        <span className="hidden lg:block">Search...</span>
       </div>
-      <Shortcut className="hidden rounded-md bg-muted px-1 md:block">
+      <Shortcut className="hidden rounded-md bg-muted px-1 lg:block">
         ⌘K
       </Shortcut>
     </Button>
