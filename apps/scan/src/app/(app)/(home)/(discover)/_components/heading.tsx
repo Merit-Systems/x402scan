@@ -5,8 +5,6 @@ import { BookOpen, Plus } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 
-import { DiscoverSearchInput, DiscoverSearchSubmit } from "./discover-search";
-
 export const DiscoverHeading = () => {
   return (
     <section className="flex flex-col gap-8">
@@ -37,10 +35,6 @@ export const DiscoverHeading = () => {
             Read the docs
           </Link>
         </div>
-      </div>
-      <div className="flex max-w-2xl flex-col items-center gap-2 md:flex-row">
-        <DiscoverSearchInput />
-        <DiscoverSearchSubmit />
       </div>
     </section>
   );

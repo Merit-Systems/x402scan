@@ -1,18 +1,16 @@
 import { Suspense } from "react";
 
-import { DataTable } from "@/components/ui/data-table";
+import { DataTableLoading } from "@/components/ui/data-table";
 
 import { Section } from "@/app/_components/layout/page-utils";
 
 import { LatestTransactionsTable } from "../../../_components/transactions/table";
 
-import { TransfersSortingProvider } from "@/app/(app)/_contexts/sorting/transfers/provider";
-
-import { columns } from "../../../_components/transactions/columns";
+import { overviewColumns } from "../../../_components/transactions/columns";
 
 import { api, HydrateClient } from "@/trpc/server";
 
-import { defaultTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/default";
+import { DEFAULT_TRANSFERS_SORTING } from "@/lib/table-sort-options";
 
 import { ActivityTimeframe } from "@/types/timeframes";
 
@@ -29,25 +27,23 @@ export const LatestTransactions: React.FC<Props> = ({ facilitatorId }) => {
     },
     facilitatorIds: [facilitatorId],
     timeframe: ActivityTimeframe.ThirtyDays,
-    sorting: defaultTransfersSorting,
+    sorting: DEFAULT_TRANSFERS_SORTING,
   });
 
   return (
     <HydrateClient>
-      <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
-        <LatestTransactionsTableContainer>
-          <Suspense
-            fallback={
-              <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
-            }
-          >
-            <LatestTransactionsTable
-              facilitatorId={facilitatorId}
-              pageSize={pageSize}
-            />
-          </Suspense>
-        </LatestTransactionsTableContainer>
-      </TransfersSortingProvider>
+      <LatestTransactionsTableContainer>
+        <Suspense
+          fallback={
+            <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
+          }
+        >
+          <LatestTransactionsTable
+            facilitatorId={facilitatorId}
+            pageSize={pageSize}
+          />
+        </Suspense>
+      </LatestTransactionsTableContainer>
     </HydrateClient>
   );
 };
@@ -70,12 +66,7 @@ const LoadingLatestTransactionsTable = ({
   loadingRowCount: number;
 }) => {
   return (
-    <DataTable
-      columns={columns}
-      data={[]}
-      loadingRowCount={loadingRowCount}
-      isLoading
-    />
+    <DataTableLoading columns={overviewColumns} rowCount={loadingRowCount} />
   );
 };
 

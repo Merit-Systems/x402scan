@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DataTable } from "@/components/ui/data-table";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 import { columns } from "./columns";
 import { api } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
@@ -106,7 +106,7 @@ export const EndUsersTable = () => {
         </Button>
       </div>
 
-      <DataTable
+      <LoadableDataTable
         columns={columns}
         data={endUsers ?? []}
         isLoading={isLoading}

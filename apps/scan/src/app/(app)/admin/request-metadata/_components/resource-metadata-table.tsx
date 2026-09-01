@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./columns";
+import { useMemo, useState } from "react";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
+import { createColumns } from "./columns";
 import { api, type RouterOutputs } from "@/trpc/client";
 import { EditMetadataModal } from "./edit-metadata-modal";
 import { Button } from "@/components/ui/button";
@@ -44,6 +44,10 @@ export const ResourceMetadataTable = () => {
     (page + 1) * PAGE_SIZE
   );
   const hasNextPage = resources.length > (page + 1) * PAGE_SIZE;
+  const columns = useMemo(
+    () => createColumns(setSelectedResource),
+    [setSelectedResource]
+  );
 
   return (
     <div className="space-y-4">
@@ -62,17 +66,20 @@ export const ResourceMetadataTable = () => {
         </Button>
       </div>
 
-      <DataTable
+      <LoadableDataTable
         columns={columns}
         data={
           paginatedResources as RouterOutputs["admin"]["resources"]["requestMetadata"]["searchResources"]
         }
         pageSize={PAGE_SIZE}
         isLoading={isSearching || isLoadingMetadata}
-        onRowClick={(row) => setSelectedResource(row.original)}
-        page={page}
-        onPageChange={setPage}
-        hasNextPage={hasNextPage}
+        onRowClick={setSelectedResource}
+        pagination={{
+          pageIndex: page,
+          pageSize: PAGE_SIZE,
+          pageCount: hasNextPage ? page + 2 : page + 1,
+        }}
+        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
       />
 
       {selectedResource && (

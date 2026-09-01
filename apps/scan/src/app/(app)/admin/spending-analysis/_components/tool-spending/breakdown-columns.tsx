@@ -2,9 +2,9 @@ import { Globe, Hash, DollarSign } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
+import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
 
 type ToolBreakdown =
   RouterOutputs["admin"]["spending"]["toolBreakdown"][number];
@@ -15,7 +15,7 @@ const formatAmount = (amount: string) => {
 };
 
 export const createToolBreakdownColumns =
-  (): ExtendedColumnDef<ToolBreakdown>[] => {
+  (): DataTableColumnDef<ToolBreakdown>[] => {
     return [
       {
         accessorKey: "resourceUrl",
@@ -28,7 +28,7 @@ export const createToolBreakdownColumns =
           </div>
         ),
         size: 400,
-        loading: () => <Skeleton className="h-4 w-full" />,
+        meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
       },
       {
         accessorKey: "toolCalls",
@@ -41,7 +41,7 @@ export const createToolBreakdownColumns =
           </div>
         ),
         size: 100,
-        loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+        meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
       },
       {
         accessorKey: "maxAmountPerCall",
@@ -58,7 +58,7 @@ export const createToolBreakdownColumns =
           </div>
         ),
         size: 150,
-        loading: () => <Skeleton className="mx-auto h-4 w-20" />,
+        meta: { loadingCell: <Skeleton className="mx-auto h-4 w-20" /> },
       },
       {
         accessorKey: "totalMaxAmount",
@@ -75,7 +75,7 @@ export const createToolBreakdownColumns =
           </div>
         ),
         size: 150,
-        loading: () => <Skeleton className="mx-auto h-4 w-20" />,
+        meta: { loadingCell: <Skeleton className="mx-auto h-4 w-20" /> },
       },
     ];
   };

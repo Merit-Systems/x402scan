@@ -13,8 +13,6 @@ import {
   LoadingFacilitatorsTable,
 } from "./_components/facilitators";
 
-import { FacilitatorsSortingProvider } from "@/app/(app)/_contexts/sorting/facilitators/provider";
-import { defaultFacilitatorsSorting } from "@/app/(app)/_contexts/sorting/facilitators/default";
 import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
 import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
 
@@ -23,6 +21,11 @@ import { api, HydrateClient } from "@/trpc/server";
 import { getChainForPage } from "@/app/(app)/_lib/chain/page";
 
 import { ActivityTimeframe } from "@/types/timeframes";
+import { parseTableSorting } from "@/lib/table-state";
+import {
+  DEFAULT_FACILITATORS_SORTING,
+  FACILITATORS_SORT_IDS,
+} from "@/lib/table-sort-options";
 
 import type { Metadata } from "next";
 
@@ -36,7 +39,13 @@ const PAGE_SIZE = 10;
 export default async function FacilitatorsPage({
   searchParams,
 }: PageProps<"/facilitators">) {
-  const chain = await getChainForPage(await searchParams);
+  const resolvedSearchParams = await searchParams;
+  const chain = await getChainForPage(resolvedSearchParams);
+  const sorting = parseTableSorting(
+    resolvedSearchParams,
+    FACILITATORS_SORT_IDS,
+    DEFAULT_FACILITATORS_SORTING
+  );
 
   void api.public.facilitators.bucketedStatistics.prefetch({
     numBuckets: 48,
@@ -51,7 +60,7 @@ export default async function FacilitatorsPage({
     pagination: {
       page_size: PAGE_SIZE,
     },
-    sorting: defaultFacilitatorsSorting,
+    sorting,
     timeframe: ActivityTimeframe.OneDay,
     chain,
   });
@@ -59,28 +68,29 @@ export default async function FacilitatorsPage({
   return (
     <HydrateClient>
       <TimeRangeProvider initialTimeframe={ActivityTimeframe.OneDay}>
-        <FacilitatorsSortingProvider
-          initialSorting={defaultFacilitatorsSorting}
-        >
-          <Heading
-            title="Facilitators"
-            description="Top facilitators processing x402 transactions"
-            actions={<RangeSelector />}
-          />
-          <Body>
-            {/* <FacilitatorPackageBanner /> */}
-            <Card className="overflow-hidden">
-              <Suspense fallback={<LoadingFacilitatorsChart />}>
-                <FacilitatorsChart />
-              </Suspense>
-            </Card>
-            <Suspense
-              fallback={<LoadingFacilitatorsTable pageSize={PAGE_SIZE} />}
-            >
-              <FacilitatorsTable pageSize={PAGE_SIZE} />
+        <Heading
+          title="Facilitators"
+          description="Top facilitators processing x402 transactions"
+          actions={<RangeSelector />}
+        />
+        <Body>
+          {/* <FacilitatorPackageBanner /> */}
+          <Card className="overflow-hidden">
+            <Suspense fallback={<LoadingFacilitatorsChart />}>
+              <FacilitatorsChart />
             </Suspense>
-          </Body>
-        </FacilitatorsSortingProvider>
+          </Card>
+          <Suspense
+            fallback={
+              <LoadingFacilitatorsTable
+                pageSize={PAGE_SIZE}
+                sorting={sorting}
+              />
+            }
+          >
+            <FacilitatorsTable pageSize={PAGE_SIZE} sorting={sorting} />
+          </Suspense>
+        </Body>
       </TimeRangeProvider>
     </HydrateClient>
   );

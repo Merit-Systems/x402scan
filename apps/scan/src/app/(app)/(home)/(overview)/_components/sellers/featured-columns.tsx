@@ -1,22 +1,13 @@
 "use client";
 
-import {
-  Activity,
-  ArrowLeftRight,
-  ArrowUpRight,
-  Calendar,
-  Check,
-  DollarSign,
-  Globe,
-  Server,
-  Users,
-} from "lucide-react";
+import { ArrowUpRight, Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { DataTableColumnHeader } from "@/components/ui/data-table";
 import {
   Tooltip,
   TooltipContent,
@@ -37,11 +28,9 @@ import {
 } from "@/lib/utils";
 import { formatTokenAmount } from "@/lib/token";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
 import { Chains } from "@/app/(app)/_components/chains";
-import { SellersSortingContext } from "@/app/(app)/_contexts/sorting/sellers/context";
 
 import type { SearchResultEndpoint } from "@/lib/discover/search";
 
@@ -52,38 +41,34 @@ export type FeaturedServiceItem = BazaarItem & {
   searchEndpoint?: SearchResultEndpoint;
 };
 
-export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
+export const featuredServiceColumns: DataTableColumnDef<FeaturedServiceItem>[] =
   [
     {
+      id: "editorial",
       accessorKey: "recipients",
-      header: () => (
-        <HeaderCell
-          Icon={Server}
-          label="Server"
-          className="mr-auto"
-          sorting={{
-            sortContext: SellersSortingContext,
-            sortKey: "editorial",
-          }}
-        />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Server" />
       ),
       cell: ({ row }) => <FeaturedServiceSummary item={row.original} />,
       size: 280,
-      loading: () => (
-        <div className="flex items-start gap-2.5">
-          <Skeleton className="mt-0.5 size-6 shrink-0 rounded-full" />
-          <div className="flex-1 space-y-1.5 py-0.5">
-            <Skeleton className="h-3.5 w-32" />
-            <Skeleton className="h-3 w-44" />
+      meta: {
+        loadingCell: (
+          <div className="flex items-start gap-2.5">
+            <Skeleton className="mt-0.5 size-6 shrink-0 rounded-full" />
+            <div className="flex-1 space-y-1.5 py-0.5">
+              <Skeleton className="h-3.5 w-32" />
+              <Skeleton className="h-3 w-44" />
+            </div>
           </div>
-        </div>
-      ),
+        ),
+      },
     },
     {
       accessorKey: "chart",
-      header: () => (
-        <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Activity" />
       ),
+      enableSorting: false,
       cell: ({ row }) =>
         row.original.recipients.length > 0 ? (
           <KnownSellerChart addresses={row.original.recipients} />
@@ -91,20 +76,12 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
           <div className="h-[32px]" />
         ),
       size: 200,
-      loading: () => <LoadingKnownSellerChart />,
+      meta: { loadingCell: <LoadingKnownSellerChart /> },
     },
     {
       accessorKey: "total_amount",
-      header: () => (
-        <HeaderCell
-          Icon={DollarSign}
-          label="Volume"
-          className="mx-auto"
-          sorting={{
-            sortContext: SellersSortingContext,
-            sortKey: "total_amount",
-          }}
-        />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Volume" />
       ),
       // Volume is the primary economic signal — bigger, bolder, foreground color.
       cell: ({ row }) => (
@@ -113,20 +90,12 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         </div>
       ),
       size: 110,
-      loading: () => <Skeleton className="mx-auto h-5 w-16" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-5 w-16" /> },
     },
     {
       accessorKey: "tx_count",
-      header: () => (
-        <HeaderCell
-          Icon={ArrowLeftRight}
-          label="Txns"
-          className="mx-auto"
-          sorting={{
-            sortContext: SellersSortingContext,
-            sortKey: "tx_count",
-          }}
-        />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Txns" />
       ),
       cell: ({ row }) => (
         <div className="type-numeric text-center type-caption text-muted-foreground">
@@ -138,20 +107,12 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         </div>
       ),
       size: 90,
-      loading: () => <Skeleton className="mx-auto h-4 w-12" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-12" /> },
     },
     {
       accessorKey: "unique_buyers",
-      header: () => (
-        <HeaderCell
-          Icon={Users}
-          label="Buyers"
-          className="mx-auto"
-          sorting={{
-            sortContext: SellersSortingContext,
-            sortKey: "unique_buyers",
-          }}
-        />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Buyers" />
       ),
       cell: ({ row }) => (
         <div className="type-numeric text-center type-caption text-muted-foreground">
@@ -163,20 +124,12 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         </div>
       ),
       size: 90,
-      loading: () => <Skeleton className="mx-auto h-4 w-12" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-12" /> },
     },
     {
       accessorKey: "latest_block_timestamp",
-      header: () => (
-        <HeaderCell
-          Icon={Calendar}
-          label="Latest"
-          className="mx-auto"
-          sorting={{
-            sortContext: SellersSortingContext,
-            sortKey: "latest_block_timestamp",
-          }}
-        />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Latest" />
       ),
       cell: ({ row }) => (
         <div className="type-numeric text-center type-caption text-muted-foreground">
@@ -186,13 +139,14 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         </div>
       ),
       size: 90,
-      loading: () => <Skeleton className="mx-auto h-4 w-12" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-12" /> },
     },
     {
       accessorKey: "chains",
-      header: () => (
-        <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Chain" />
       ),
+      enableSorting: false,
       cell: ({ row }) => (
         <Chains
           chains={row.original.chains}
@@ -201,7 +155,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         />
       ),
       size: 70,
-      loading: () => <Skeleton className="mx-auto size-4" />,
+      meta: { loadingCell: <Skeleton className="mx-auto size-4" /> },
     },
     {
       accessorKey: "tryIt",
@@ -238,13 +192,16 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
           </TooltipContent>
         </Tooltip>
       ),
+      enableSorting: false,
       cell: ({ row }) => {
         const origin = row.original.origins[0]?.origin;
         if (!origin) return null;
         return <TryItButton origin={origin} />;
       },
       size: 90,
-      loading: () => <Skeleton className="mx-auto h-7 w-16 rounded-md" />,
+      meta: {
+        loadingCell: <Skeleton className="mx-auto h-7 w-16 rounded-md" />,
+      },
     },
   ];
 
