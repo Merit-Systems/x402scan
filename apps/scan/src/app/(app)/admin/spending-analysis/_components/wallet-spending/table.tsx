@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { DataTable } from "@/components/ui/data-table";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
 import { createColumns } from "./columns";
 import { api, type RouterOutputs } from "@/trpc/client";
 import { ToolBreakdownModal } from "../tool-spending/breakdown-modal";
-import { useWalletSpendingSorting } from "@/app/(app)/_contexts/sorting/wallet-spending/hook";
+import { useWalletSpendingSorting } from "@/app/(app)/admin/_contexts/sorting/wallet-spending/hook";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 
@@ -72,17 +72,18 @@ export const WalletSpendingTable = () => {
           {isDownloading ? "Downloading..." : "Download Server Accounts CSV"}
         </Button>
       </div>
-      <DataTable
+      <LoadableDataTable
         columns={columns}
         data={wallets}
         pageSize={PAGE_SIZE}
         isLoading={isLoading}
-        onRowClick={(row) =>
-          setModalState({ type: "breakdown", wallet: row.original })
-        }
-        page={page}
-        onPageChange={setPage}
-        hasNextPage={hasNextPage}
+        onRowClick={(wallet) => setModalState({ type: "breakdown", wallet })}
+        pagination={{
+          pageIndex: page,
+          pageSize: PAGE_SIZE,
+          pageCount: hasNextPage ? page + 2 : page + 1,
+        }}
+        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
         getRowId={(row, index) => row?.walletId ?? `loading-${index}`}
       />
 

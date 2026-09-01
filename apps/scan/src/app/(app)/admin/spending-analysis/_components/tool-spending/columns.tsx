@@ -3,10 +3,10 @@
 import { Globe, Hash, DollarSign, Wallet, Clock } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
-import { ToolSpendingSortingContext } from "@/app/(app)/_contexts/sorting/tool-spending/context";
+import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
+import { ToolSpendingSortingContext } from "@/app/(app)/admin/_contexts/sorting/tool-spending/context";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 
 type ToolSpending =
@@ -29,7 +29,7 @@ const formatDate = (date: Date | null) => {
 };
 
 export const createToolSpendingColumns =
-  (): ExtendedColumnDef<ToolSpending>[] => [
+  (): DataTableColumnDef<ToolSpending>[] => [
     {
       accessorKey: "resourceUrl",
       header: () => (
@@ -49,7 +49,7 @@ export const createToolSpendingColumns =
         </div>
       ),
       size: 300,
-      loading: () => <Skeleton className="h-4 w-full" />,
+      meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
     },
     {
       accessorKey: "totalToolCalls",
@@ -70,7 +70,7 @@ export const createToolSpendingColumns =
         </div>
       ),
       size: 120,
-      loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
     },
     {
       accessorKey: "uniqueWallets",
@@ -91,7 +91,7 @@ export const createToolSpendingColumns =
         </div>
       ),
       size: 100,
-      loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
     },
     {
       accessorKey: "totalMaxAmount",
@@ -112,7 +112,7 @@ export const createToolSpendingColumns =
         </div>
       ),
       size: 150,
-      loading: () => <Skeleton className="mx-auto h-4 w-20" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-20" /> },
     },
     {
       accessorKey: "lastUsedAt",
@@ -133,6 +133,6 @@ export const createToolSpendingColumns =
         </div>
       ),
       size: 150,
-      loading: () => <Skeleton className="mx-auto h-4 w-24" />,
+      meta: { loadingCell: <Skeleton className="mx-auto h-4 w-24" /> },
     },
   ];

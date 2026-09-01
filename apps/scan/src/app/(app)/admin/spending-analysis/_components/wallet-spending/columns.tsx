@@ -4,13 +4,13 @@ import { Wallet, DollarSign, Hash, Eye } from "lucide-react";
 import { useState } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
-import { WalletSpendingSortingContext } from "@/app/(app)/_contexts/sorting/wallet-spending/context";
+import { HeaderCell } from "@/app/(app)/admin/_components/data-table-header-cell";
+import { WalletSpendingSortingContext } from "@/app/(app)/admin/_contexts/sorting/wallet-spending/context";
 import { Copyable } from "@/components/ui/copyable";
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/client";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 
 type WalletSpending =
@@ -70,7 +70,7 @@ const WalletCell = ({
 
 export const createColumns = (
   freeTierWalletAddress?: string
-): ExtendedColumnDef<WalletSpending>[] => [
+): DataTableColumnDef<WalletSpending>[] => [
   {
     accessorKey: "walletName",
     header: () => (
@@ -99,7 +99,7 @@ export const createColumns = (
       );
     },
     size: 200,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "totalToolCalls",
@@ -120,7 +120,7 @@ export const createColumns = (
       </div>
     ),
     size: 120,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "uniqueResources",
@@ -141,7 +141,7 @@ export const createColumns = (
       </div>
     ),
     size: 120,
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
     accessorKey: "totalMaxAmount",
@@ -162,6 +162,6 @@ export const createColumns = (
       </div>
     ),
     size: 150,
-    loading: () => <Skeleton className="mx-auto h-4 w-20" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-20" /> },
   },
 ];

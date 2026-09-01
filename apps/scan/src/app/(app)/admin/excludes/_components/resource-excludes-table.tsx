@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./columns";
+import { useMemo, useState } from "react";
+import { LoadableDataTable } from "@/app/(app)/admin/_components/loadable-data-table";
+import { createColumns } from "./columns";
 import { api, type RouterOutputs } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,6 +80,10 @@ export const ResourceExcludesTable = () => {
   const handleRowClick = (resource: Resource) => {
     setSelectedResource(resource);
   };
+  const columns = useMemo(
+    () => createColumns(setSelectedResource),
+    [setSelectedResource]
+  );
 
   const handleToggleExclude = () => {
     if (!selectedResource) return;
@@ -114,17 +118,20 @@ export const ResourceExcludesTable = () => {
         </Button>
       </div>
 
-      <DataTable
+      <LoadableDataTable
         columns={columns}
         data={
           paginatedResources as RouterOutputs["admin"]["resources"]["excludes"]["searchResources"]
         }
         pageSize={PAGE_SIZE}
         isLoading={isSearching || isLoadingExcludes}
-        onRowClick={(row) => handleRowClick(row.original)}
-        page={page}
-        onPageChange={setPage}
-        hasNextPage={hasNextPage}
+        onRowClick={handleRowClick}
+        pagination={{
+          pageIndex: page,
+          pageSize: PAGE_SIZE,
+          pageCount: hasNextPage ? page + 2 : page + 1,
+        }}
+        onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
       />
 
       {selectedResource && (

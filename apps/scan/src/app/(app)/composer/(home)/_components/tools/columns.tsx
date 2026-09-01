@@ -1,33 +1,27 @@
 "use client";
 
-import {
-  Activity,
-  ArrowLeftRight,
-  Bot,
-  Calendar,
-  Users,
-  Wrench,
-} from "lucide-react";
+import { Wrench } from "lucide-react";
 
+import { DataTableColumnHeader } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { cleanExternalText, formatCompactAgo } from "@/lib/utils";
 
-import { HeaderCell } from "@/components/ui/data-table/header-cell";
-
-import { ToolsSortingContext } from "@/app/(app)/_contexts/sorting/tools/context";
 import { Favicon } from "@/app/(app)/_components/favicon";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 import { KnownSellerChart, LoadingKnownSellerChart } from "./chart";
 
 type ColumnType = RouterOutputs["public"]["tools"]["top"]["items"][number];
 
-export const columns: ExtendedColumnDef<ColumnType>[] = [
+export const columns: DataTableColumnDef<ColumnType>[] = [
   {
     accessorKey: "resource",
-    header: () => <HeaderCell Icon={Wrench} label="Tool" className="mr-auto" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Tool" />
+    ),
+    enableSorting: false,
     cell: ({ row }) => (
       <div className="flex w-full items-center gap-2 overflow-hidden">
         <Favicon
@@ -49,33 +43,36 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 250,
-    loading: () => (
-      <div className="flex w-full items-center gap-2 overflow-hidden">
-        <Skeleton className="size-6 rounded-md" />
-        <div className="flex w-0 flex-1 flex-col overflow-hidden">
-          <Skeleton className="mb-1 h-4 w-full" />
-          <Skeleton className="h-3 w-3/4" />
+    meta: {
+      loadingCell: (
+        <div className="flex w-full items-center gap-2 overflow-hidden">
+          <Skeleton className="size-6 rounded-md" />
+          <div className="flex w-0 flex-1 flex-col overflow-hidden">
+            <Skeleton className="mb-1 h-4 w-full" />
+            <Skeleton className="h-3 w-3/4" />
+          </div>
         </div>
-      </div>
-    ),
+      ),
+    },
   },
   {
     accessorKey: "chart",
-    header: () => (
-      <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Activity" />
     ),
+    enableSorting: false,
     cell: ({ row }) => (
       <KnownSellerChart
         addresses={row.original.accepts.map((accept) => accept.payTo)}
       />
     ),
     size: 100,
-    loading: () => <LoadingKnownSellerChart />,
+    meta: { loadingCell: <LoadingKnownSellerChart /> },
   },
   {
     accessorKey: "toolCalls",
-    header: () => (
-      <HeaderCell Icon={ArrowLeftRight} label="Calls" className="mx-auto" />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Calls" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -87,20 +84,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 125, // Fixed width for transaction count
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
+    id: "agentConfigurations",
     accessorKey: "agent_configs",
-    header: () => (
-      <HeaderCell
-        Icon={Bot}
-        label="Agents"
-        className="mx-auto"
-        sorting={{
-          sortContext: ToolsSortingContext,
-          sortKey: "agentConfigurations",
-        }}
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Agents" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -112,11 +102,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 125, // Fixed width for volume column
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
+    id: "uniqueUsers",
     accessorKey: "unique_users",
-    header: () => <HeaderCell Icon={Users} label="Users" className="mx-auto" />,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Users" />
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.unique_users.toLocaleString(undefined, {
@@ -127,20 +120,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 125, // Fixed width for users count
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
   {
+    id: "latestCallTime",
     accessorKey: "latest_call_time",
-    header: () => (
-      <HeaderCell
-        Icon={Calendar}
-        label="Latest"
-        sorting={{
-          sortContext: ToolsSortingContext,
-          sortKey: "latestCallTime",
-        }}
-        className="mx-auto"
-      />
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Latest" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -148,6 +134,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 125, // Fixed width for timestamp
-    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
+    meta: { loadingCell: <Skeleton className="mx-auto h-4 w-16" /> },
   },
 ];

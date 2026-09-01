@@ -1,16 +1,23 @@
 "use client";
 
-import { DataTable } from "@/components/ui/data-table";
-
-import { useToolsSorting } from "@/app/(app)/_contexts/sorting/tools/hook";
+import { DataTable, DataTableLoading } from "@/components/ui/data-table";
 
 import { columns } from "./columns";
 
 import { api } from "@/trpc/client";
 import { useState } from "react";
+import { useUrlTableSorting } from "@/hooks/use-url-table-sorting";
+import { TOOL_SORT_IDS } from "@/lib/table-sort-options";
 
-export const ToolsTable = () => {
-  const { sorting } = useToolsSorting();
+import type { ToolSortId } from "@/lib/table-sort-options";
+import type { TableSorting } from "@/lib/table-state";
+
+export const ToolsTable = ({
+  sorting,
+}: {
+  sorting: TableSorting<ToolSortId>;
+}) => {
+  const tableSorting = useUrlTableSorting({ sorting, sortIds: TOOL_SORT_IDS });
 
   const [page, setPage] = useState(0);
   const pageSize = 10;
@@ -28,21 +35,30 @@ export const ToolsTable = () => {
       columns={columns}
       data={topTools.items}
       pageSize={pageSize}
-      page={page}
-      onPageChange={setPage}
-      totalPages={topTools.total_pages}
-      hasNextPage={topTools.hasNextPage}
+      manualSorting={true}
+      sorting={tableSorting.tableSorting}
+      onSortingChange={tableSorting.onSortingChange}
+      pagination={{
+        pageIndex: page,
+        pageSize,
+        pageCount: topTools.total_pages,
+      }}
+      onPaginationChange={({ pageIndex }) => setPage(pageIndex)}
     />
   );
 };
 
-export const LoadingToolsTable = () => {
+export const LoadingToolsTable = ({
+  sorting,
+}: {
+  sorting?: TableSorting<ToolSortId>;
+}) => {
   return (
-    <DataTable
+    <DataTableLoading
       columns={columns}
-      data={[]}
-      isLoading={true}
-      loadingRowCount={10}
+      rowCount={10}
+      manualSorting={true}
+      sorting={sorting ? [sorting] : []}
     />
   );
 };

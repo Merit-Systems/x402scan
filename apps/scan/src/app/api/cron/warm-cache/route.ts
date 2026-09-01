@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createCaller } from "@/trpc/routers";
 import { createTRPCContext } from "@/trpc/trpc";
-import { defaultSellersSorting } from "@/app/(app)/_contexts/sorting/sellers/default";
+import { DEFAULT_SELLERS_SORTING } from "@/lib/table-sort-options";
 import { ACTIVITY_TIMEFRAMES } from "@/types/timeframes";
 import type { ActivityTimeframe } from "@/types/timeframes";
 import { facilitatorAddresses } from "@/lib/facilitators";
@@ -112,7 +112,7 @@ function getHomePageTasks(
           page_size: 400,
         },
         timeframe,
-        sorting: defaultSellersSorting,
+        sorting: DEFAULT_SELLERS_SORTING,
         chain,
       }),
   ];

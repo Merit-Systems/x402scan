@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Copyable } from "@/components/ui/copyable";
 import { format } from "date-fns";
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { DataTableColumnDef } from "@/components/ui/data-table";
 import type { RouterOutputs } from "@/trpc/client";
 
 type EndUser = RouterOutputs["admin"]["endUsers"]["list"][number];
@@ -39,7 +39,7 @@ const AuthMethodBadge = ({
   return null;
 };
 
-export const columns: ExtendedColumnDef<EndUser>[] = [
+export const columns: DataTableColumnDef<EndUser>[] = [
   {
     accessorKey: "userId",
     header: () => (
@@ -58,7 +58,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
       </Copyable>
     ),
     size: 250,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "authenticationMethods",
@@ -75,7 +75,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
       </div>
     ),
     size: 300,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "evmAccounts",
@@ -105,7 +105,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
       );
     },
     size: 200,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "evmSmartAccounts",
@@ -135,7 +135,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
       );
     },
     size: 200,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "solanaAccounts",
@@ -165,7 +165,7 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
       );
     },
     size: 200,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
   {
     accessorKey: "createdAt",
@@ -184,6 +184,6 @@ export const columns: ExtendedColumnDef<EndUser>[] = [
       );
     },
     size: 150,
-    loading: () => <Skeleton className="h-4 w-full" />,
+    meta: { loadingCell: <Skeleton className="h-4 w-full" /> },
   },
 ];

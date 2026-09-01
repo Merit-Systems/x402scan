@@ -9,6 +9,7 @@ import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from "@/lib/cache";
+import { DEFAULT_TOOLS_SORTING, TOOL_SORT_IDS } from "@/lib/table-sort-options";
 
 export const createToolCall = async (data: Prisma.ToolCallCreateInput) => {
   return await scanDb.toolCall.create({
@@ -16,20 +17,8 @@ export const createToolCall = async (data: Prisma.ToolCallCreateInput) => {
   });
 };
 
-const TOOL_SORT_IDS = [
-  "toolCalls",
-  "agentConfigurations",
-  "uniqueUsers",
-  "latestCallTime",
-] as const;
-
-export type ToolSortId = (typeof TOOL_SORT_IDS)[number];
-
 export const listTopToolsSchema = z.object({
-  sorting: sortingSchema(TOOL_SORT_IDS).default({
-    id: "toolCalls",
-    desc: true,
-  }),
+  sorting: sortingSchema(TOOL_SORT_IDS).default(DEFAULT_TOOLS_SORTING),
 });
 
 const listTopToolsUncached = async (
