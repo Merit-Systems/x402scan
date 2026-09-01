@@ -5,7 +5,7 @@ import { Server, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/image-avatar";
 
 import { OriginStats, LoadingOriginStats } from "./stats";
 

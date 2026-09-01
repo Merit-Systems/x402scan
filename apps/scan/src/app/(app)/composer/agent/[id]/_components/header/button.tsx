@@ -18,7 +18,7 @@ export const HeaderButtons: React.FC<Props> = ({ agentConfiguration }) => {
   return (
     <ButtonsContainer>
       <Link href={`/composer/agent/${agentConfiguration.id}/chat`}>
-        <Button variant="turbo">
+        <Button variant="default">
           <MessageSquare className="size-4" />
           Use Agent
         </Button>

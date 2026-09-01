@@ -1,28 +1,38 @@
 "use client";
 
-import * as React from "react";
-import * as SeparatorPrimitive from "@radix-ui/react-separator";
+import { Separator as SeparatorPrimitive } from "@base-ui/react/separator";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+
+const separatorVariants = cva(
+  "shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch",
+  {
+    variants: {
+      variant: {
+        default: null,
+        "button-group":
+          "relative self-stretch bg-input data-horizontal:mx-px data-horizontal:w-auto data-vertical:my-px data-vertical:h-auto",
+      },
+    },
+    defaultVariants: { variant: "default" },
+  }
+);
 
 function Separator({
   className,
   orientation = "horizontal",
-  decorative = true,
+  variant,
   ...props
-}: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
+}: SeparatorPrimitive.Props & VariantProps<typeof separatorVariants>) {
   return (
-    <SeparatorPrimitive.Root
+    <SeparatorPrimitive
       data-slot="separator"
-      decorative={decorative}
       orientation={orientation}
-      className={cn(
-        "bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px",
-        className
-      )}
+      className={cn(separatorVariants({ variant, className }))}
       {...props}
     />
   );
 }
 
-export { Separator };
+export { Separator, separatorVariants };

@@ -15,7 +15,7 @@ export const HeaderButtons: React.FC<Props> = ({ hasOrigins, address }) => {
     <ButtonsContainer>
       {hasOrigins && (
         <Link href={`/recipient/${address}/resources`}>
-          <Button variant="turbo">
+          <Button variant="default">
             <TestTubeDiagonal className="size-4" />
             Try Resources
           </Button>

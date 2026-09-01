@@ -30,7 +30,6 @@ import type { SelectedResource } from "../../_types/chat-config";
 interface Props {
   selectedResourceIds: string[];
   onSelectResource: (resource: SelectedResource) => void;
-  gradientClassName?: string;
 }
 
 const toolItemHeight = 48;
@@ -39,7 +38,6 @@ const numToolsToShow = 5;
 export const ResourceList: React.FC<Props> = ({
   selectedResourceIds,
   onSelectResource,
-  gradientClassName,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -100,7 +98,6 @@ export const ResourceList: React.FC<Props> = ({
         style={{
           height: `${toolItemHeight * (numToolsToShow + 0.5)}px`,
         }}
-        gradientClassName={gradientClassName}
       >
         <CommandEmpty
           className="flex flex-col items-center justify-center gap-4 p-8 text-center text-sm text-muted-foreground"

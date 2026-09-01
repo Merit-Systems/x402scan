@@ -36,14 +36,16 @@ export function CopyPageButton() {
         {isCopied ? "Copied" : "Copy page"}
       </Button>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="rounded-l-none border-0 px-2"
-          >
-            <ChevronDown className="size-3.5" />
-          </Button>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-l-none border-0 px-2"
+            />
+          }
+        >
+          <ChevronDown className="size-3.5" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">
           <DropdownMenuItem
@@ -58,56 +60,65 @@ export function CopyPageButton() {
               Copy page as Markdown for LLMs
             </span>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a
-              href="/discovery/architecture.md"
-              target="_blank"
-              rel="noreferrer"
-              className="flex flex-col items-start gap-0.5 py-2"
-            >
-              <div className="flex items-center gap-2 font-medium">
-                <FileText className="size-3.5" />
-                View as Markdown
-                <ExternalLink className="size-3" />
-              </div>
-              <span className="ml-[22px] text-xs text-muted-foreground">
-                View this page as plain text
-              </span>
-            </a>
+          <DropdownMenuItem
+            render={
+              <a
+                href="/discovery/architecture.md"
+                aria-label="View architecture guide as Markdown"
+                target="_blank"
+                rel="noreferrer"
+                className="flex flex-col items-start gap-0.5 py-2"
+              />
+            }
+          >
+            <div className="flex items-center gap-2 font-medium">
+              <FileText className="size-3.5" />
+              View as Markdown
+              <ExternalLink className="size-3" />
+            </div>
+            <span className="ml-[22px] text-xs text-muted-foreground">
+              View this page as plain text
+            </span>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a
-              href={`https://claude.ai/new?q=${encodeURIComponent(`Read ${env.NEXT_PUBLIC_APP_URL}${PAGE_PATH} and answer my questions about it.`)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex flex-col items-start gap-0.5 py-2"
-            >
-              <div className="flex items-center gap-2 font-medium">
-                <span className="size-3.5 text-center text-xs">✦</span>
-                Open in Claude
-                <ExternalLink className="size-3" />
-              </div>
-              <span className="ml-[22px] text-xs text-muted-foreground">
-                Ask questions about this page
-              </span>
-            </a>
+          <DropdownMenuItem
+            render={
+              <a
+                href={`https://claude.ai/new?q=${encodeURIComponent(`Read ${env.NEXT_PUBLIC_APP_URL}${PAGE_PATH} and answer my questions about it.`)}`}
+                aria-label="Open architecture guide in Claude"
+                target="_blank"
+                rel="noreferrer"
+                className="flex flex-col items-start gap-0.5 py-2"
+              />
+            }
+          >
+            <div className="flex items-center gap-2 font-medium">
+              <span className="size-3.5 text-center text-xs">✦</span>
+              Open in Claude
+              <ExternalLink className="size-3" />
+            </div>
+            <span className="ml-[22px] text-xs text-muted-foreground">
+              Ask questions about this page
+            </span>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a
-              href={`https://chatgpt.com/?q=${encodeURIComponent(`Read ${env.NEXT_PUBLIC_APP_URL}${PAGE_PATH} and answer my questions about it.`)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex flex-col items-start gap-0.5 py-2"
-            >
-              <div className="flex items-center gap-2 font-medium">
-                <span className="size-3.5 text-center text-xs">◎</span>
-                Open in ChatGPT
-                <ExternalLink className="size-3" />
-              </div>
-              <span className="ml-[22px] text-xs text-muted-foreground">
-                Ask questions about this page
-              </span>
-            </a>
+          <DropdownMenuItem
+            render={
+              <a
+                href={`https://chatgpt.com/?q=${encodeURIComponent(`Read ${env.NEXT_PUBLIC_APP_URL}${PAGE_PATH} and answer my questions about it.`)}`}
+                aria-label="Open architecture guide in ChatGPT"
+                target="_blank"
+                rel="noreferrer"
+                className="flex flex-col items-start gap-0.5 py-2"
+              />
+            }
+          >
+            <div className="flex items-center gap-2 font-medium">
+              <span className="size-3.5 text-center text-xs">◎</span>
+              Open in ChatGPT
+              <ExternalLink className="size-3" />
+            </div>
+            <span className="ml-[22px] text-xs text-muted-foreground">
+              Ask questions about this page
+            </span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
