@@ -3,7 +3,6 @@ packages:
   - 'sync/*'
   - 'configurations/*'
   - 'packages/**'
-  - 'examples/**'
 
 catalog:
   '@types/node': ^20.19.27
@@ -56,9 +55,6 @@ catalogs:
     '@trpc/client': &TRPC_VERSION ^11.8.1
     '@trpc/react-query': ^11.8.1
     '@trpc/server': ^11.8.1
-  x402-v1:
-    'x402-express': ^0.7.1
-    'x402-hono': ^0.7.1
   x402:
     '@x402/core': &X402_CORE_VERSION ^2.11.0
     '@x402/evm': ^2.11.0
@@ -67,12 +63,6 @@ catalogs:
   tailwind:
     '@tailwindcss/postcss': &TAILWIND_VERSION ^4
     tailwindcss: ^4
-  hono:
-    '@hono/node-server': ^1.13.8
-    hono: ^4.7.1
-  express:
-    express: ^5.2.1
-    '@types/express': ^5.0.1
   clickhouse:
     '@clickhouse/client': ^1.12.1
   react-query:

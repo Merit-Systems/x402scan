@@ -60,7 +60,6 @@
         "apps/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,json,jsonc,md,mdx,yml,yaml,css,scss,html}",
         "packages/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,json,jsonc,md,mdx,yml,yaml,css,scss,html}",
         "sync/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,json,jsonc,md,mdx,yml,yaml,css,scss,html}",
-        "examples/servers/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,json,jsonc,md,mdx,yml,yaml,css,scss,html}",
         ".prettierignore",
         ".prettierrc*",
         "!**/node_modules/**",
