@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { createCaller } from "@/trpc/routers";
 import { createTRPCContext } from "@/trpc/trpc";
-import { defaultBuyersSorting } from "@/app/(app)/_contexts/sorting/buyers/default";
 import { defaultSellersSorting } from "@/app/(app)/_contexts/sorting/sellers/default";
-import { defaultTransfersSorting } from "@/app/(app)/_contexts/sorting/transfers/default";
 import { ACTIVITY_TIMEFRAMES } from "@/types/timeframes";
 import type { ActivityTimeframe } from "@/types/timeframes";
 import { facilitatorAddresses } from "@/lib/facilitators";
@@ -26,8 +24,6 @@ const MAX_CONCURRENT_REQUESTS = 20;
  * Maximum number of retries per task
  */
 const MAX_RETRIES = 3;
-
-const HOME_TRANSACTIONS_PAGE_SIZE = 10;
 
 /**
  * Execute a task with retries
@@ -90,8 +86,6 @@ function getHomePageTasks(
   timeframe: ActivityTimeframe,
   chain?: Chain
 ): (() => Promise<unknown>)[] {
-  const transactionsLimit = HOME_TRANSACTIONS_PAGE_SIZE;
-
   return [
     // Overall Stats - current period
     () =>
@@ -108,17 +102,6 @@ function getHomePageTasks(
         chain,
       }),
 
-    // Top Servers (Bazaar) - list (used by /all)
-    () =>
-      api.public.sellers.bazaar.list({
-        pagination: {
-          page_size: 100,
-        },
-        timeframe,
-        sorting: defaultSellersSorting,
-        chain,
-      }),
-
     // Discover page variant — bazaar.featured resolves the AgentCash catalog
     // origin set server-side, so the cache key omits the 305-element URL list.
     // Warms both getDiscoverOrigins() (its own Redis cache) and the
@@ -130,74 +113,6 @@ function getHomePageTasks(
         },
         timeframe,
         sorting: defaultSellersSorting,
-        chain,
-      }),
-
-    // Top Servers (Bazaar) - overall stats
-    // Uses origin-based MV (pre-joined), not stats.bazaar.overall which
-    // passes 1000+ addresses into the cache key and blows the Redis key limit.
-    () =>
-      api.public.sellers.bazaar.stats.overall({
-        timeframe,
-        chain,
-      }),
-
-    // Latest Transactions
-    () =>
-      api.public.transfers.list({
-        pagination: {
-          page_size: transactionsLimit,
-        },
-        sorting: defaultTransfersSorting,
-        timeframe,
-        chain,
-      }),
-
-    // All Sellers
-    () =>
-      api.public.sellers.all.list({
-        pagination: {
-          page_size: 100,
-        },
-        timeframe,
-        sorting: defaultSellersSorting,
-        chain,
-      }),
-  ];
-}
-
-/**
- * Get cache warming tasks for Buyers
- */
-function getBuyersPageTasks(
-  api: ReturnType<typeof createCaller>,
-  timeframe: ActivityTimeframe,
-  chain?: Chain
-): (() => Promise<unknown>)[] {
-  return [
-    // All Buyers list
-    () =>
-      api.public.buyers.all.list({
-        pagination: {
-          page_size: 100,
-        },
-        timeframe,
-        sorting: defaultBuyersSorting,
-        chain,
-      }),
-
-    // Buyer overall stats
-    () =>
-      api.public.buyers.all.stats.overall({
-        timeframe,
-        chain,
-      }),
-
-    // Buyer bucketed stats
-    () =>
-      api.public.buyers.all.stats.bucketed({
-        timeframe,
-        numBuckets: 48,
         chain,
       }),
   ];
@@ -243,7 +158,7 @@ function getFacilitatorsPageTasks(
         timeframe,
       }),
 
-    // Facilitators list (shared with homepage)
+    // Facilitators list
     () =>
       api.public.facilitators.list({
         pagination: {
@@ -259,14 +174,9 @@ function getFacilitatorsPageTasks(
 /**
  * Page types that can be warmed
  */
-type WarmablePage = "home" | "buyers" | "networks" | "facilitators";
+type WarmablePage = "home" | "networks" | "facilitators";
 
-const ALL_PAGES: WarmablePage[] = [
-  "home",
-  "buyers",
-  "networks",
-  "facilitators",
-];
+const ALL_PAGES: WarmablePage[] = ["home", "networks", "facilitators"];
 
 export async function GET(request: NextRequest) {
   const cronCheck = checkCronSecret(request);
@@ -328,18 +238,6 @@ export async function GET(request: NextRequest) {
         }
         if (!chainFilter || chainFilter === Chain.SOLANA) {
           allTasks.push(...getHomePageTasks(api, timeframe, Chain.SOLANA));
-        }
-      }
-
-      if (pagesToWarm.includes("buyers")) {
-        if (!chainFilter || chainFilter === "all") {
-          allTasks.push(...getBuyersPageTasks(api, timeframe));
-        }
-        if (!chainFilter || chainFilter === Chain.BASE) {
-          allTasks.push(...getBuyersPageTasks(api, timeframe, Chain.BASE));
-        }
-        if (!chainFilter || chainFilter === Chain.SOLANA) {
-          allTasks.push(...getBuyersPageTasks(api, timeframe, Chain.SOLANA));
         }
       }
 

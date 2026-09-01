@@ -20,11 +20,6 @@ const navigationItems = [
     relatedRoutes: ["/server/", "/resources/"],
   },
   {
-    label: "Activity",
-    href: "/all",
-    relatedRoutes: ["/buyer/", "/recipient/"],
-  },
-  {
     label: "Facilitators",
     href: "/facilitators",
     relatedRoutes: ["/facilitator/"],
