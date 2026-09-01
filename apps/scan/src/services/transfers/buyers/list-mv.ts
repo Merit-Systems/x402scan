@@ -22,8 +22,6 @@ const BUYERS_SORT_IDS = [
   "unique_sellers",
 ] as const;
 
-export type BuyerSortId = (typeof BUYERS_SORT_IDS)[number];
-
 export const listTopBuyersMVInputSchema = baseListQuerySchema({
   sortIds: BUYERS_SORT_IDS,
   defaultSortId: "tx_count",
