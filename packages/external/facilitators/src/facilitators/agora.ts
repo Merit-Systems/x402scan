@@ -19,7 +19,7 @@ export const agoraFacilitator = {
   addresses: {
     [Network.BASE]: [
       {
-        address: '0x5383C9675A027d20f695424781f4eEC5eC59A4eF',
+        address: '0x5383c9675a027d20f695424781f4eec5ec59a4ef',
         tokens: [USDC_BASE_TOKEN],
         dateOfFirstTransaction: new Date('2026-03-22'),
       },
