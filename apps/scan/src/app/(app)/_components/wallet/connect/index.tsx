@@ -5,7 +5,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Logo } from "@/components/logo";
+import { Logo } from "@/components/ui/logo";
 import { ConnectWalletForm } from "./form";
 import { WalletChain } from "../../../_contexts/wallet-chain/component";
 

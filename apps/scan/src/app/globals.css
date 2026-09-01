@@ -11,9 +11,10 @@
 }
 
 :root {
-  --primary: oklch(0.5461 0.2152 262.88);
+  /* The shared cube unifies the explorer family; product blue identifies x402scan. */
+  --primary: #0052ff;
   --primary-foreground: oklch(0.9531 0.0136 120.28);
-  --ring: oklch(0.5461 0.2152 262.88);
+  --ring: #0052ff;
 
   /* Existing application accent colors */
   --color-blue-400: oklch(0.73 0.13 243.29);
@@ -25,9 +26,9 @@
 }
 
 .dark {
-  --primary: oklch(0.5461 0.2152 262.88);
+  --primary: #0052ff;
   --primary-foreground: oklch(0.9056 0.0205 118.96);
-  --ring: oklch(0.5461 0.2152 262.88);
+  --ring: #0052ff;
 }
 
 @theme inline {

@@ -10,7 +10,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { Logo } from "@/components/logo";
+import { Logo } from "@/components/ui/logo";
 
 import type { RouterOutputs } from "@/trpc/client";
 import { Verify } from "./verify";
