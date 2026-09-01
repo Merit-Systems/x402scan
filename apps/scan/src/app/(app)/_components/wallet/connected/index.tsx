@@ -8,7 +8,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Logo } from "@/components/logo";
+import { Logo } from "@/components/ui/logo";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { ConnectedWalletTabsContent } from "./content";
