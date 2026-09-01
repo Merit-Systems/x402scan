@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { Globe, Hash, Calendar, Tag } from 'lucide-react';
+import { Globe, Hash, Calendar, Tag } from "lucide-react";
 
-import { Skeleton } from '@/components/ui/skeleton';
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
-import { Checkbox } from '@/components/ui/checkbox';
-import { cleanExternalText, formatCompactAgo } from '@/lib/utils';
+import { Skeleton } from "@/components/ui/skeleton";
+import { HeaderCell } from "@/components/ui/data-table/header-cell";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cleanExternalText, formatCompactAgo } from "@/lib/utils";
 
-import { ResourcesSortingContext } from '@/app/(app)/_contexts/sorting/resource-tags/context';
+import { ResourcesSortingContext } from "@/app/(app)/_contexts/sorting/resource-tags/context";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
 
 type ColumnType =
-  RouterOutputs['public']['resources']['list']['paginated']['items'][number];
+  RouterOutputs["public"]["resources"]["list"]["paginated"]["items"][number];
 
 interface ColumnHandlers {
   onTagsClick?: (resource: ColumnType) => void;
@@ -23,23 +23,23 @@ export const createColumns = (
   handlers?: ColumnHandlers
 ): ExtendedColumnDef<ColumnType>[] => [
   {
-    id: 'select',
+    id: "select",
     header: ({ table }) => (
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          (table.getIsSomePageRowsSelected() && "indeterminate")
         }
-        onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={value => row.toggleSelected(!!value)}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       />
     ),
     size: 40,
@@ -47,12 +47,12 @@ export const createColumns = (
     enableHiding: false,
   },
   {
-    accessorKey: 'resource',
+    accessorKey: "resource",
     header: () => (
       <HeaderCell Icon={Globe} label="Resource" className="justify-start" />
     ),
     cell: ({ row }) => (
-      <div className="text-xs font-medium truncate max-w-[300px]">
+      <div className="max-w-[300px] truncate text-xs font-medium">
         {row.original.resource}
       </div>
     ),
@@ -60,7 +60,7 @@ export const createColumns = (
     loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
-    accessorKey: 'description',
+    accessorKey: "description",
     header: () => (
       <HeaderCell Icon={Hash} label="Description" className="mx-auto" />
     ),
@@ -68,19 +68,19 @@ export const createColumns = (
       const description = cleanExternalText(
         row.original.accepts.find(
           (accept: { description?: string }) => accept.description
-        )?.description ?? 'N/A'
+        )?.description ?? "N/A"
       );
       return (
-        <div className="text-center text-xs text-muted-foreground truncate max-w-[200px]">
+        <div className="max-w-[200px] truncate text-center text-xs text-muted-foreground">
           {description}
         </div>
       );
     },
     size: 200,
-    loading: () => <Skeleton className="h-4 w-32 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-32" />,
   },
   {
-    accessorKey: 'toolCalls',
+    accessorKey: "toolCalls",
     header: () => (
       <HeaderCell
         Icon={Hash}
@@ -88,7 +88,7 @@ export const createColumns = (
         className="mx-auto"
         sorting={{
           sortContext: ResourcesSortingContext,
-          sortKey: 'toolCalls',
+          sortKey: "toolCalls",
         }}
       />
     ),
@@ -98,10 +98,10 @@ export const createColumns = (
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'lastUpdated',
+    accessorKey: "lastUpdated",
     header: () => (
       <HeaderCell
         Icon={Calendar}
@@ -109,7 +109,7 @@ export const createColumns = (
         className="mx-auto"
         sorting={{
           sortContext: ResourcesSortingContext,
-          sortKey: 'lastUpdated',
+          sortKey: "lastUpdated",
         }}
       />
     ),
@@ -119,10 +119,10 @@ export const createColumns = (
       </div>
     ),
     size: 120,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-16" />,
   },
   {
-    accessorKey: 'tags',
+    accessorKey: "tags",
     header: () => <HeaderCell Icon={Tag} label="Tags" className="mx-auto" />,
     cell: ({ row }) => {
       const tags = row.original.tags;
@@ -131,14 +131,14 @@ export const createColumns = (
 
       return (
         <div
-          className="flex flex-wrap gap-1 justify-center cursor-pointer"
-          onClick={e => {
+          className="flex cursor-pointer flex-wrap justify-center gap-1"
+          onClick={(e) => {
             e.stopPropagation();
             handlers?.onTagsClick?.(row.original);
           }}
         >
           {tags.length === 0 ? (
-            <span className="inline-flex items-center px-2 py-0.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+            <span className="inline-flex items-center px-2 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
               Add tags...
             </span>
           ) : (
@@ -150,7 +150,7 @@ export const createColumns = (
                 }) => (
                   <span
                     key={resourceTag.id}
-                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"
+                    className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium"
                     style={{
                       backgroundColor: `${resourceTag.tag.color}20`,
                       borderColor: resourceTag.tag.color,
@@ -172,6 +172,6 @@ export const createColumns = (
       );
     },
     size: 150,
-    loading: () => <Skeleton className="h-4 w-24 mx-auto" />,
+    loading: () => <Skeleton className="mx-auto h-4 w-24" />,
   },
 ];

@@ -1,11 +1,11 @@
-import type { registryOriginQuerySchema } from '@/app/api/x402/_lib/schemas';
-import { paginatedResponse } from '@/app/api/x402/_lib/utils';
-import { listResourcesWithPagination } from '@/services/db/resources/resource';
-import { serializeAccepts } from '@/lib/token';
-import { getOriginFromUrl } from '@/lib/url';
+import type { registryOriginQuerySchema } from "@/app/api/x402/_lib/schemas";
+import { paginatedResponse } from "@/app/api/x402/_lib/utils";
+import { listResourcesWithPagination } from "@/services/db/resources/resource";
+import { serializeAccepts } from "@/lib/token";
+import { getOriginFromUrl } from "@/lib/url";
 
-import type { z } from 'zod';
-import type { SupportedChain } from '@/types/chain';
+import type { z } from "zod";
+import type { SupportedChain } from "@/types/chain";
 
 export async function handleRegistryOrigin(
   query: z.infer<typeof registryOriginQuerySchema>
@@ -26,7 +26,7 @@ export async function handleRegistryOrigin(
   return paginatedResponse(
     {
       ...result,
-      items: result.items.map(item => ({
+      items: result.items.map((item) => ({
         ...item,
         accepts: serializeAccepts(item.accepts),
       })),

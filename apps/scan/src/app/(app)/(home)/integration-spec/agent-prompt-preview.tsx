@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import { motion } from 'motion/react';
+import { useMemo, useState } from "react";
+import { motion } from "motion/react";
 
 interface AgentPromptPreviewProps {
   prompt: string;
@@ -32,15 +32,15 @@ export function AgentPromptPreview({
       <div className="relative">
         <motion.div
           initial={false}
-          animate={{ height: expanded ? 'auto' : collapsedMaxHeight }}
+          animate={{ height: expanded ? "auto" : collapsedMaxHeight }}
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           className="overflow-hidden rounded-md bg-muted"
         >
           <pre
             className={
               expanded
-                ? 'p-3 overflow-x-auto text-xs'
-                : 'p-3 overflow-hidden text-xs'
+                ? "overflow-x-auto p-3 text-xs"
+                : "overflow-hidden p-3 text-xs"
             }
           >
             <code>{prompt}</code>
@@ -53,10 +53,10 @@ export function AgentPromptPreview({
       <div className="flex justify-end">
         <button
           type="button"
-          onClick={() => setExpanded(prev => !prev)}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          onClick={() => setExpanded((prev) => !prev)}
+          className="text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
-          {expanded ? 'Show less' : 'Show full prompt'}
+          {expanded ? "Show less" : "Show full prompt"}
         </button>
       </div>
     </div>

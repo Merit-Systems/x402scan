@@ -1,19 +1,19 @@
-import { listTopSellersMVUncached } from '@/services/transfers/sellers/list-mv';
-import { getAcceptsAddresses } from '../resources/accepts';
-import { mixedAddressSchema } from '@/lib/schemas';
+import { listTopSellersMVUncached } from "@/services/transfers/sellers/list-mv";
+import { getAcceptsAddresses } from "../resources/accepts";
+import { mixedAddressSchema } from "@/lib/schemas";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
+} from "@/lib/cache";
 
-import type z from 'zod';
+import type z from "zod";
 import {
   toPaginatedResponse,
   type paginatedQuerySchema,
-} from '@/lib/pagination';
-import type { MixedAddress } from '@/types/address';
-import type { Chain } from '@/types/chain';
-import type { listBazaarOriginsInputSchema } from './schema';
+} from "@/lib/pagination";
+import type { MixedAddress } from "@/types/address";
+import type { Chain } from "@/types/chain";
+import type { listBazaarOriginsInputSchema } from "./schema";
 
 const listBazaarOriginsUncached = async (
   input: z.infer<typeof listBazaarOriginsInputSchema>,
@@ -46,7 +46,7 @@ const listBazaarOriginsUncached = async (
     {
       ...input,
       recipients: {
-        include: Object.keys(originsByAddress).map(addr =>
+        include: Object.keys(originsByAddress).map((addr) =>
           mixedAddressSchema.parse(addr)
         ),
       },
@@ -58,7 +58,7 @@ const listBazaarOriginsUncached = async (
 
   console.log(
     `[bazaar.list] mv=${(tMV - tAccepts).toFixed(0)}ms (${result.items.length} items)` +
-      ` chain=${input.chain ?? 'all'} timeframe=${input.timeframe instanceof Object ? input.timeframe.period : input.timeframe}`
+      ` chain=${input.chain ?? "all"} timeframe=${input.timeframe instanceof Object ? input.timeframe.period : input.timeframe}`
   );
 
   // Group by origin
@@ -125,7 +125,7 @@ const listBazaarOriginsUncached = async (
   }
 
   // Convert map to array
-  const groupedItems = Array.from(originMap.values()).map(item => ({
+  const groupedItems = Array.from(originMap.values()).map((item) => ({
     recipients: item.recipients,
     origins: item.origins,
     facilitators: item.facilitators,
@@ -139,25 +139,25 @@ const listBazaarOriginsUncached = async (
   // Re-sort after grouping. The MV sorts per-recipient, but aggregation
   // changes the totals so we need to re-sort the grouped results.
   const sortableNumericKeys = [
-    'tx_count',
-    'total_amount',
-    'unique_buyers',
+    "tx_count",
+    "total_amount",
+    "unique_buyers",
   ] as const;
   type SortableNumericKey = (typeof sortableNumericKeys)[number];
 
   const direction = input.sorting.desc ? -1 : 1;
 
-  if (input.sorting.id === 'editorial' && input.originUrls) {
+  if (input.sorting.id === "editorial" && input.originUrls) {
     const editorialIndex = new Map(
       input.originUrls.map((url, index) => [url, index])
     );
     const fallback = editorialIndex.size;
     groupedItems.sort((a, b) => {
-      const aRank = editorialIndex.get(a.origins[0]?.origin ?? '') ?? fallback;
-      const bRank = editorialIndex.get(b.origins[0]?.origin ?? '') ?? fallback;
+      const aRank = editorialIndex.get(a.origins[0]?.origin ?? "") ?? fallback;
+      const bRank = editorialIndex.get(b.origins[0]?.origin ?? "") ?? fallback;
       return (aRank - bRank) * direction;
     });
-  } else if (input.sorting.id === 'latest_block_timestamp') {
+  } else if (input.sorting.id === "latest_block_timestamp") {
     groupedItems.sort((a, b) => {
       const aTime = a.latest_block_timestamp?.getTime() ?? 0;
       const bTime = b.latest_block_timestamp?.getTime() ?? 0;
@@ -186,7 +186,7 @@ const listBazaarOriginsUncached = async (
 
 export const listBazaarOrigins = createCachedPaginatedQuery({
   queryFn: listBazaarOriginsUncached,
-  cacheKeyPrefix: 'bazaar-origins',
+  cacheKeyPrefix: "bazaar-origins",
   // createStandardCacheKey sorts arrays for normalization, so the cache key
   // is order-insensitive in `originUrls`. That's safe today because the only
   // producer (getDiscoverOrigins) returns a deterministic order. When sorting
@@ -196,6 +196,6 @@ export const listBazaarOrigins = createCachedPaginatedQuery({
   // If that ever becomes a real concern, switch this to a custom key fn that
   // skips sort-normalization for `originUrls` when sorting.id === 'editorial'.
   createCacheKey: createStandardCacheKey,
-  dateFields: ['latest_block_timestamp'],
-  tags: ['transfers'],
+  dateFields: ["latest_block_timestamp"],
+  tags: ["transfers"],
 });

@@ -1,22 +1,22 @@
-import z from 'zod';
+import z from "zod";
 
-import { Prisma } from '@x402scan/scan-db';
+import { Prisma } from "@x402scan/scan-db";
 import {
   createCachedQuery,
   createCachedArrayQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
+} from "@/lib/cache";
 
-import { differenceInMilliseconds, getUnixTime } from 'date-fns';
+import { differenceInMilliseconds, getUnixTime } from "date-fns";
 
-import { queryRaw } from '../../query';
+import { queryRaw } from "../../query";
 
 import {
   getTimeRangeFromTimeframe,
   getBucketedTimeRangeFromTimeframe,
-} from '@/lib/time-range';
-import { timeframeSchema, timePeriodSchema } from '@/lib/schemas';
-import { agentsRelease } from '@/lib/agents';
+} from "@/lib/time-range";
+import { timeframeSchema, timePeriodSchema } from "@/lib/schemas";
+import { agentsRelease } from "@/lib/agents";
 
 export const overallActivityInputSchema = z.object({
   timeframe: timeframeSchema,
@@ -53,10 +53,10 @@ const getOverallActivityUncached = async (
 
 export const getOverallActivity = createCachedQuery({
   queryFn: getOverallActivityUncached,
-  cacheKeyPrefix: 'agent-config:overall-activity',
-  createCacheKey: input => createStandardCacheKey(input),
+  cacheKeyPrefix: "agent-config:overall-activity",
+  createCacheKey: (input) => createStandardCacheKey(input),
   dateFields: [],
-  tags: ['agent-configuration', 'activity'],
+  tags: ["agent-configuration", "activity"],
 });
 
 export const overallBucketedActivityInputSchema = z.object({
@@ -158,8 +158,8 @@ const getOverallBucketedActivityUncached = async (
 
 export const getOverallBucketedActivity = createCachedArrayQuery({
   queryFn: getOverallBucketedActivityUncached,
-  cacheKeyPrefix: 'agent-config:overall-bucketed-activity',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['bucket_start'],
-  tags: ['agent-configuration', 'activity'],
+  cacheKeyPrefix: "agent-config:overall-bucketed-activity",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["bucket_start"],
+  tags: ["agent-configuration", "activity"],
 });

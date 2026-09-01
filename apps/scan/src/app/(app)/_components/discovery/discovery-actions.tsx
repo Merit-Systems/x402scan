@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Check, Copy } from 'lucide-react';
-import { toast } from 'sonner';
+import { Check, Copy } from "lucide-react";
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button';
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
+import { Button } from "@/components/ui/button";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 const SETUP_PROMPT = `My API doesn't have a discovery document yet. Create an OpenAPI spec (openapi.json) that describes my endpoints, then serve it so x402scan.com can discover them.
 
@@ -41,39 +41,39 @@ Adding your email lets you verify ownership, allows users to contact you, and le
   }
 
   if (failedResources && failedResources.length > 0) {
-    const lines = failedResources.map(r => {
-      const status = r.status ? ` (HTTP ${r.status})` : '';
+    const lines = failedResources.map((r) => {
+      const status = r.status ? ` (HTTP ${r.status})` : "";
       return `- ${r.url}: ${r.error}${status}`;
     });
     sections.push(`Errors (these endpoints failed and won't be registered):
 
-${lines.join('\n')}`);
+${lines.join("\n")}`);
   }
 
   if (warnings && warnings.length > 0) {
-    const lines = warnings.map(r => {
-      const status = r.status ? ` (HTTP ${r.status})` : '';
+    const lines = warnings.map((r) => {
+      const status = r.status ? ` (HTTP ${r.status})` : "";
       return `- ${r.url}: ${r.error}${status}`;
     });
     sections.push(`Warnings (registered but with issues):
 
-${lines.join('\n')}`);
+${lines.join("\n")}`);
   }
 
   if (missingSchemaResources && missingSchemaResources.length > 0) {
-    const lines = missingSchemaResources.map(u => `- ${u}`);
+    const lines = missingSchemaResources.map((u) => `- ${u}`);
     sections.push(`Missing input schemas (agents won't know what request to send):
 
-${lines.join('\n')}`);
+${lines.join("\n")}`);
   }
 
   // Shouldn't be reachable (prompt only shown when there are issues), but
   // fall back to the spec link rather than a misleading generic message.
   if (sections.length === 0) {
-    return 'Read https://x402scan.com/discovery/spec for the full discovery specification. Follow the guide to ensure your endpoints are correctly configured for x402scan.';
+    return "Read https://x402scan.com/discovery/spec for the full discovery specification. Follow the guide to ensure your endpoints are correctly configured for x402scan.";
   }
 
-  const issueBlock = sections.join('\n\n');
+  const issueBlock = sections.join("\n\n");
 
   return `${issueBlock}
 
@@ -123,14 +123,14 @@ export function DiscoveryActions({
         }));
 
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
-    toast.success('Copied prompt for agents');
+    toast.success("Copied prompt for agents");
   });
 
   if (label) {
     return (
       <button
         onClick={() => void copyToClipboard(prompt)}
-        className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+        className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
       >
         {label}
         {isCopied ? (
@@ -146,14 +146,14 @@ export function DiscoveryActions({
     return (
       <button
         onClick={() => void copyToClipboard(prompt)}
-        className="inline-flex items-center gap-1 underline underline-offset-2 hover:text-foreground transition-colors whitespace-nowrap"
+        className="inline-flex items-center gap-1 whitespace-nowrap underline underline-offset-2 transition-colors hover:text-foreground"
       >
         {isCopied ? (
           <Check className="size-3.5" />
         ) : (
           <Copy className="size-3.5" />
         )}
-        {isCopied ? 'Copied' : 'Copy Prompt'}
+        {isCopied ? "Copied" : "Copy Prompt"}
       </button>
     );
   }
@@ -170,7 +170,7 @@ export function DiscoveryActions({
       ) : (
         <Copy className="size-3.5" />
       )}
-      {isCopied ? 'Copied' : 'Let your agent handle it'}
+      {isCopied ? "Copied" : "Let your agent handle it"}
     </Button>
   );
 }

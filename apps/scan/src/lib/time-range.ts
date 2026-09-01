@@ -1,8 +1,8 @@
-import { subHours } from 'date-fns';
+import { subHours } from "date-fns";
 
-import { z } from 'zod';
-import type { timeframeSchema, timePeriodSchema } from './schemas';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { z } from "zod";
+import type { timeframeSchema, timePeriodSchema } from "./schemas";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 interface TimeframeParts {
   period: number;
@@ -32,7 +32,7 @@ export function getTimeRangeFromTimeframe(
     // Use a floor date instead of null so TimescaleDB can still do
     // chunk exclusion and Prisma always emits a block_timestamp filter.
     // All TransferEvent data starts 2025-05-09; this won't exclude anything.
-    return { startDate: new Date('2024-01-01T00:00:00Z'), endDate: now };
+    return { startDate: new Date("2024-01-01T00:00:00Z"), endDate: now };
   }
 
   const endDate = offset ? subHours(now, offset * 24) : now;

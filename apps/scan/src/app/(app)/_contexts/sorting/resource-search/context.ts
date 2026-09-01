@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { createSortingContext } from '../base/context';
+import { createSortingContext } from "../base/context";
 
-export type ResourceSearchSortId = 'filterMatches' | 'title';
+export type ResourceSearchSortId = "filterMatches" | "title";
 
 export const ResourceSearchSortingContext =
   createSortingContext<ResourceSearchSortId>();

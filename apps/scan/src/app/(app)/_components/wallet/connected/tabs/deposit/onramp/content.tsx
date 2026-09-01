@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { TokenInput } from '@/components/ui/token/token-input';
+import { Button } from "@/components/ui/button";
+import { TokenInput } from "@/components/ui/token/token-input";
 
-import { useWalletChain } from '@/app/(app)/_contexts/wallet-chain/hook';
+import { useWalletChain } from "@/app/(app)/_contexts/wallet-chain/hook";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { usdc } from '@/lib/tokens/usdc';
+import { usdc } from "@/lib/tokens/usdc";
 
 export const OnrampContent = () => {
   const { chain } = useWalletChain();
@@ -21,7 +21,7 @@ export const OnrampContent = () => {
     isPending: isCreatingOnrampSession,
     isSuccess: isCreatedOnrampSession,
   } = api.user.onrampSessions.create.useMutation({
-    onSuccess: url => {
+    onSuccess: (url) => {
       window.location.href = url;
     },
   });
@@ -63,7 +63,7 @@ export const OnrampContent = () => {
             Opening Coinbase...
           </>
         ) : (
-          'Onramp'
+          "Onramp"
         )}
       </Button>
     </div>

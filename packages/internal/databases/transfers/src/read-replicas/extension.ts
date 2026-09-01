@@ -1,13 +1,13 @@
 /* oxlint-disable -- vendored Prisma read-replica extension code */
 
-import { Prisma } from '../../generated/prisma/client';
-import type { PrismaClient } from '../../generated/prisma/client';
+import { Prisma } from "../../generated/prisma/client";
+import type { PrismaClient } from "../../generated/prisma/client";
 
 import {
   type ConfigureReplicaCallback,
   ReplicaManager,
   type ReplicaManagerOptions,
-} from './replica-manager';
+} from "./replica-manager";
 
 type ReplicasOptions =
   | {
@@ -17,34 +17,34 @@ type ReplicasOptions =
   | { url?: undefined; replicas: PrismaClient[] };
 
 const readOperations = [
-  'findFirst',
-  'findFirstOrThrow',
-  'findMany',
-  'findUnique',
-  'findUniqueOrThrow',
-  'groupBy',
-  'aggregate',
-  'count',
-  'findRaw',
-  'aggregateRaw',
+  "findFirst",
+  "findFirstOrThrow",
+  "findMany",
+  "findUnique",
+  "findUniqueOrThrow",
+  "groupBy",
+  "aggregate",
+  "count",
+  "findRaw",
+  "aggregateRaw",
 ];
 
 export const readReplicas = (
   options: ReplicasOptions,
   configureReplicaClient?: ConfigureReplicaCallback
 ) =>
-  Prisma.defineExtension(client => {
+  Prisma.defineExtension((client) => {
     const PrismaClient = Object.getPrototypeOf(
-      Reflect.get(client, '_originalClient')
+      Reflect.get(client, "_originalClient")
     ).constructor;
     const datasourceName = Object.keys(options).find(
-      key => !key.startsWith('$')
+      (key) => !key.startsWith("$")
     );
     if (!datasourceName) {
       throw new Error(`Read replicas options must specify a datasource`);
     }
 
-    if ('url' in options && 'replicas' in options) {
+    if ("url" in options && "replicas" in options) {
       throw new Error(`Only one of 'url' or 'replicas' can be specified`);
     }
 
@@ -53,7 +53,7 @@ export const readReplicas = (
     if (options.url) {
       let replicaUrls = options.url;
 
-      if (typeof replicaUrls === 'string') {
+      if (typeof replicaUrls === "string") {
         replicaUrls = [replicaUrls];
       } else if (replicaUrls && !Array.isArray(replicaUrls)) {
         throw new Error(`Replica URLs must be a string or list of strings`);
@@ -81,30 +81,30 @@ export const readReplicas = (
 
     return client.$extends({
       client: {
-        $primary<T extends object>(this: T): Omit<T, '$primary' | '$replica'> {
+        $primary<T extends object>(this: T): Omit<T, "$primary" | "$replica"> {
           const context = Prisma.getExtensionContext(this);
           // If we're in a transaction, the current client is connected to the
           // primary.
           if (
             !(
-              '$transaction' in context &&
-              typeof context.$transaction === 'function'
+              "$transaction" in context &&
+              typeof context.$transaction === "function"
             )
           ) {
             return context;
           }
 
-          return client as unknown as Omit<T, '$primary' | '$replica'>;
+          return client as unknown as Omit<T, "$primary" | "$replica">;
         },
 
-        $replica<T extends object>(this: T): Omit<T, '$primary' | '$replica'> {
+        $replica<T extends object>(this: T): Omit<T, "$primary" | "$replica"> {
           const context = Prisma.getExtensionContext(this);
           // If we're in a transaction, the current client is connected to the
           // primary.
           if (
             !(
-              '$transaction' in context &&
-              typeof context.$transaction === 'function'
+              "$transaction" in context &&
+              typeof context.$transaction === "function"
             )
           ) {
             throw new Error(`Cannot use $replica inside of a transaction`);
@@ -112,7 +112,7 @@ export const readReplicas = (
 
           return replicaManager.pickReplica() as unknown as Omit<
             T,
-            '$primary' | '$replica'
+            "$primary" | "$replica"
           >;
         },
 

@@ -1,26 +1,26 @@
-import { discoverOriginSchema } from '@agentcash/discovery';
+import { discoverOriginSchema } from "@agentcash/discovery";
 
-import { endpointDescription } from '@/lib/discovery/endpoint-description';
-import { getOriginFromUrl } from '@/lib/url';
-import { isLocalUrl, isTunnelUrl } from '@/lib/url-helpers';
+import { endpointDescription } from "@/lib/discovery/endpoint-description";
+import { getOriginFromUrl } from "@/lib/url";
+import { isLocalUrl, isTunnelUrl } from "@/lib/url-helpers";
 import {
   isVercelPreviewDeployment,
   VERCEL_PREVIEW_ERROR_MESSAGE,
-} from '@/lib/discovery/vercel-preview';
+} from "@/lib/discovery/vercel-preview";
 
 import type {
   DiscoveredResource,
   DiscoverySource,
   X402DiscoveryResult,
-} from '@/types/discovery';
+} from "@/types/discovery";
 
 const FETCH_TIMEOUT_MS = 10000;
 
 function mapSourceToDiscoverySource(
   source: string | undefined
 ): DiscoverySource | undefined {
-  if (source === 'openapi') return 'openapi';
-  if (source === 'well-known/x402') return 'well-known';
+  if (source === "openapi") return "openapi";
+  if (source === "well-known/x402") return "well-known";
   return undefined;
 }
 
@@ -34,7 +34,7 @@ export async function fetchDiscoveryDocument(
   originOrUrl: string,
   bustCache = false
 ): Promise<X402DiscoveryResult> {
-  const origin = originOrUrl.includes('://')
+  const origin = originOrUrl.includes("://")
     ? getOriginFromUrl(originOrUrl)
     : `https://${originOrUrl}`;
 
@@ -43,7 +43,7 @@ export async function fetchDiscoveryDocument(
       success: false,
       resources: [],
 
-      error: 'Local URLs are not supported',
+      error: "Local URLs are not supported",
     };
   }
 
@@ -68,7 +68,7 @@ export async function fetchDiscoveryDocument(
 
   const signal = AbortSignal.timeout(FETCH_TIMEOUT_MS);
   const headers: Record<string, string> = bustCache
-    ? { 'Cache-Control': 'no-cache, no-store' }
+    ? { "Cache-Control": "no-cache, no-store" }
     : {};
 
   const discovered = await discoverOriginSchema({
@@ -82,13 +82,13 @@ export async function fetchDiscoveryDocument(
       success: false,
       resources: [],
 
-      error: discovered.message ?? 'No discovery document found',
+      error: discovered.message ?? "No discovery document found",
     };
   }
 
   const expectedOrigin = new URL(discovered.origin).origin;
   const resources: DiscoveredResource[] = discovered.endpoints.flatMap(
-    endpoint => {
+    (endpoint) => {
       try {
         const resolved = new URL(endpoint.path, discovered.origin);
         // Security: reject endpoints that resolve to a different origin.
@@ -98,9 +98,9 @@ export async function fetchDiscoveryDocument(
         // Build the URL without URL-encoding so OpenAPI path templates
         // like /v1/candles/{coin}/{interval} keep raw braces instead of
         // being encoded to %7Bcoin%7D.
-        const url = endpoint.path.includes('://')
+        const url = endpoint.path.includes("://")
           ? endpoint.path
-          : `${expectedOrigin}${endpoint.path.startsWith('/') ? '' : '/'}${endpoint.path}`;
+          : `${expectedOrigin}${endpoint.path.startsWith("/") ? "" : "/"}${endpoint.path}`;
         const description = endpointDescription(endpoint);
         const resource: DiscoveredResource = {
           url,
@@ -121,7 +121,7 @@ export async function fetchDiscoveryDocument(
     return {
       success: false,
       resources: [],
-      error: 'No x402 endpoints found',
+      error: "No x402 endpoints found",
     };
   }
 

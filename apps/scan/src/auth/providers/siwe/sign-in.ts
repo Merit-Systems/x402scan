@@ -1,6 +1,6 @@
-import { SiweMessage } from '@signinwithethereum/siwe';
-import { SIWE_PROVIDER_ID, SIWE_STATEMENT } from './constants';
-import { getCsrfToken, signIn, type SignInOptions } from 'next-auth/react';
+import { SiweMessage } from "@signinwithethereum/siwe";
+import { SIWE_PROVIDER_ID, SIWE_STATEMENT } from "./constants";
+import { getCsrfToken, signIn, type SignInOptions } from "next-auth/react";
 
 interface SignInWithEthereumOptions {
   address: string;
@@ -40,7 +40,7 @@ export function buildSiweMessage({
   return new SiweMessage({
     domain,
     uri,
-    version: '1',
+    version: "1",
     address,
     statement: SIWE_STATEMENT,
     nonce,

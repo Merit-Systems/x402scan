@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { useRegisterFromOrigin } from '@/hooks/use-register-from-origin';
+} from "@/components/ui/tooltip";
+import { useRegisterFromOrigin } from "@/hooks/use-register-from-origin";
 
 export const RefreshButton: React.FC<{ origin: string }> = ({ origin }) => {
   const { register, isRegistering } = useRegisterFromOrigin({

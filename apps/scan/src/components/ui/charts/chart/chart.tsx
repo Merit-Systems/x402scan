@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 import {
   BarChart,
   LineChart,
@@ -8,12 +8,12 @@ import {
   Tooltip,
   ResponsiveContainer,
   AreaChart,
-} from 'recharts';
+} from "recharts";
 
-import { TooltipContent } from './tooltip';
-import type { ChartData, ChartProps } from './types';
+import { TooltipContent } from "./tooltip";
+import type { ChartData, ChartProps } from "./types";
 
-export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
+export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
   data,
   children,
   type,
@@ -21,20 +21,20 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
   height = 350,
   margin = { top: 0, right: 0, left: 0, bottom: 0 },
   yAxes,
-  dataMax = 'dataMax',
+  dataMax = "dataMax",
   stackOffset,
   xAxis,
   cursor = true,
-}: ChartProps<T> & { type: 'bar' | 'area' | 'line' | 'composed' }) => {
+}: ChartProps<T> & { type: "bar" | "area" | "line" | "composed" }) => {
   const Container = useMemo(() => {
     switch (type) {
-      case 'bar':
+      case "bar":
         return BarChart;
-      case 'area':
+      case "area":
         return AreaChart;
-      case 'line':
+      case "line":
         return LineChart;
-      case 'composed':
+      case "composed":
         return ComposedChart;
       default:
         return BarChart;
@@ -46,29 +46,29 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
       <Container
         data={data}
         margin={margin}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: "pointer" }}
         stackOffset={stackOffset}
       >
         <XAxis
-          dataKey={xAxis?.dataKey ?? 'timestamp'}
+          dataKey={xAxis?.dataKey ?? "timestamp"}
           tickLine={false}
           tick={
             xAxis?.show
-              ? { fontSize: 12, fill: 'hsl(var(--muted-foreground))' }
+              ? { fontSize: 12, fill: "hsl(var(--muted-foreground))" }
               : false
           }
           axisLine={false}
           interval="preserveEnd"
           height={xAxis?.height ?? (xAxis?.show ? 40 : 0)}
           angle={xAxis?.angle ?? 0}
-          textAnchor={xAxis?.angle ? 'end' : 'middle'}
+          textAnchor={xAxis?.angle ? "end" : "middle"}
         />
         {yAxes != undefined ? (
           yAxes.map(({ domain, hide }, index) => (
             <YAxis key={index} domain={domain} hide={hide} yAxisId={index} />
           ))
         ) : (
-          <YAxis domain={['0', dataMax]} hide={true} />
+          <YAxis domain={["0", dataMax]} hide={true} />
         )}
         {children}
         {tooltipRows && (
@@ -87,7 +87,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
             cursor={
               cursor
                 ? {
-                    fill: 'var(--color-primary)',
+                    fill: "var(--color-primary)",
                     opacity: 0.2,
                     radius: 4,
                   }

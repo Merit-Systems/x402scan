@@ -1,22 +1,22 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-import { env } from '@/env';
+import { env } from "@/env";
 
-import type { NextRequest } from 'next/server';
+import type { NextRequest } from "next/server";
 
 export const checkCronSecret = (request: NextRequest) => {
-  if (env.NEXT_PUBLIC_NODE_ENV === 'development') {
+  if (env.NEXT_PUBLIC_NODE_ENV === "development") {
     return;
   }
 
-  const authHeader = request.headers.get('authorization');
+  const authHeader = request.headers.get("authorization");
   const cronSecret = env.CRON_SECRET;
 
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json(
       {
         success: false as const,
-        error: 'Unauthorized',
+        error: "Unauthorized",
       },
       { status: 401 }
     );

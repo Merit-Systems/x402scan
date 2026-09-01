@@ -1,40 +1,40 @@
-import { Activity, Wrench } from 'lucide-react';
+import { Activity, Wrench } from "lucide-react";
 
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 
-import { Favicon } from '@/app/(app)/_components/favicon';
-import { cleanExternalText } from '@/lib/utils';
+import { Favicon } from "@/app/(app)/_components/favicon";
+import { cleanExternalText } from "@/lib/utils";
 
-import { formatTokenAmount } from '@/lib/token';
+import { formatTokenAmount } from "@/lib/token";
 
-import type { RouterOutputs } from '@/trpc/client';
-import { Skeleton } from '@/components/ui/skeleton';
+import type { RouterOutputs } from "@/trpc/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
   resource: NonNullable<
-    RouterOutputs['public']['agents']['get']
-  >['resources'][number];
+    RouterOutputs["public"]["agents"]["get"]
+  >["resources"][number];
 }
 
 export const ToolCard: React.FC<Props> = ({ resource }) => {
   return (
     <Card>
       <CardHeader className="overflow-hidden">
-        <div className="flex items-center justify-between gap-2 w-full overflow-hidden">
-          <div className="flex items-center gap-2 space-y-0 flex-1 overflow-hidden">
+        <div className="flex w-full items-center justify-between gap-2 overflow-hidden">
+          <div className="flex flex-1 items-center gap-2 space-y-0 overflow-hidden">
             <Favicon url={resource.favicon} Fallback={Wrench} />
             <CardTitle className="flex-1 truncate text-sm md:text-base">
               {resource.resource}
             </CardTitle>
-            <span className="text-sm font-mono text-primary font-bold">
+            <span className="font-mono text-sm font-bold text-primary">
               {formatTokenAmount(
                 BigInt(
-                  resource.accepts.find(accept => accept.maxAmountRequired)
+                  resource.accepts.find((accept) => accept.maxAmountRequired)
                     ?.maxAmountRequired ?? 0
                 )
               )}
@@ -49,8 +49,8 @@ export const ToolCard: React.FC<Props> = ({ resource }) => {
         </div>
         <CardDescription className="line-clamp-2 text-xs md:text-sm">
           {cleanExternalText(
-            resource.accepts.find(accept => accept.description)?.description ??
-              ''
+            resource.accepts.find((accept) => accept.description)
+              ?.description ?? ""
           )}
         </CardDescription>
       </CardHeader>
@@ -65,8 +65,8 @@ export const LoadingToolCard = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 space-y-0">
             <Skeleton className="size-4" />
-            <Skeleton className="w-24 h-4" />
-            <Skeleton className="w-8 h-4" />
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-8" />
           </div>
         </div>
         <Skeleton className="h-4 w-full" />

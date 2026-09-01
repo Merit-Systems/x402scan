@@ -1,16 +1,16 @@
-import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { z } from 'zod';
-import { scanDb, Prisma } from '@x402scan/scan-db';
-import type { SearchResult } from './types';
+import { generateObject } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+import { scanDb, Prisma } from "@x402scan/scan-db";
+import type { SearchResult } from "./types";
 
 export const sqlGenerationSchema = z.object({
   sqlQuery: z
     .string()
-    .describe('The PostgreSQL WHERE clause (without the WHERE keyword)'),
+    .describe("The PostgreSQL WHERE clause (without the WHERE keyword)"),
   explanation: z
     .string()
-    .describe('Brief explanation of what the query searches for'),
+    .describe("Brief explanation of what the query searches for"),
 });
 
 const searchResultSchema = z.object({
@@ -147,15 +147,15 @@ export const searchResourcesWithNaturalLanguage = async (
   sqlCondition: string;
 }> => {
   if (!naturalLanguageQuery.trim()) {
-    const allResults = await executeResourceSearch('true');
+    const allResults = await executeResourceSearch("true");
     if (!allResults.success) {
       throw new Error(`Failed to fetch all resources: ${allResults.error}`);
     }
     return {
       results: allResults.results,
-      explanation: 'Showing all resources',
+      explanation: "Showing all resources",
       totalCount: allResults.results.length,
-      sqlCondition: 'true',
+      sqlCondition: "true",
     };
   }
 
@@ -164,20 +164,20 @@ export const searchResourcesWithNaturalLanguage = async (
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     const result = await generateObject({
-      model: openai('gpt-4.1-nano'),
+      model: openai("gpt-4.1-nano"),
       prompt: buildSearchPrompt(naturalLanguageQuery, lastError),
       schema: sqlGenerationSchema,
       temperature: 0.1,
     });
 
     if (attempt === 0) {
-      console.log('Initial SQL generation:', result.object);
+      console.log("Initial SQL generation:", result.object);
     } else {
       console.log(`SQL generation retry attempt ${attempt}:`, result.object);
     }
 
     if (!result.object) {
-      throw new Error('Failed to generate SQL query');
+      throw new Error("Failed to generate SQL query");
     }
 
     const { sqlQuery, explanation } = result.object;
@@ -288,7 +288,7 @@ export async function executeResourceSearch(
         Prisma.raw(whereCondition),
         Prisma.raw(' ORDER BY r."lastUpdated" DESC LIMIT 100'),
       ],
-      ''
+      ""
     );
 
     const rawResults = await scanDb.$queryRaw<unknown[]>(fullSql);

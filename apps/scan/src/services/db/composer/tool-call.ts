@@ -1,14 +1,14 @@
-import z from 'zod';
-import { scanDb, Prisma } from '@x402scan/scan-db';
-import { queryRaw } from '../query';
+import z from "zod";
+import { scanDb, Prisma } from "@x402scan/scan-db";
+import { queryRaw } from "../query";
 
-import { sortingSchema } from '@/lib/schemas';
-import type { PaginatedQueryParams } from '@/lib/pagination';
-import { toPaginatedResponse } from '@/lib/pagination';
+import { sortingSchema } from "@/lib/schemas";
+import type { PaginatedQueryParams } from "@/lib/pagination";
+import { toPaginatedResponse } from "@/lib/pagination";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
+} from "@/lib/cache";
 
 export const createToolCall = async (data: Prisma.ToolCallCreateInput) => {
   return await scanDb.toolCall.create({
@@ -17,17 +17,17 @@ export const createToolCall = async (data: Prisma.ToolCallCreateInput) => {
 };
 
 const TOOL_SORT_IDS = [
-  'toolCalls',
-  'agentConfigurations',
-  'uniqueUsers',
-  'latestCallTime',
+  "toolCalls",
+  "agentConfigurations",
+  "uniqueUsers",
+  "latestCallTime",
 ] as const;
 
 export type ToolSortId = (typeof TOOL_SORT_IDS)[number];
 
 export const listTopToolsSchema = z.object({
   sorting: sortingSchema(TOOL_SORT_IDS).default({
-    id: 'toolCalls',
+    id: "toolCalls",
     desc: true,
   }),
 });
@@ -103,21 +103,21 @@ const listTopToolsUncached = async (
     LEFT JOIN "ResourceOrigin" ro ON r."originId" = ro.id
     LEFT JOIN agent_config_counts acc ON r.id = acc."resourceId"
     WHERE ${
-      sorting.id === 'latestCallTime'
+      sorting.id === "latestCallTime"
         ? Prisma.sql`tcs.latest_call_time IS NOT NULL`
-        : sorting.id === 'toolCalls'
+        : sorting.id === "toolCalls"
           ? Prisma.sql`tcs.tool_calls > 0`
-          : sorting.id === 'agentConfigurations'
+          : sorting.id === "agentConfigurations"
             ? Prisma.sql`COALESCE(acc.agent_configurations, 0) > 0`
             : Prisma.sql`tcs.unique_users > 0`
     }
     ORDER BY 
       ${
-        sorting.id === 'toolCalls'
+        sorting.id === "toolCalls"
           ? Prisma.sql`tcs.tool_calls`
-          : sorting.id === 'agentConfigurations'
+          : sorting.id === "agentConfigurations"
             ? Prisma.sql`acc.agent_configurations`
-            : sorting.id === 'uniqueUsers'
+            : sorting.id === "uniqueUsers"
               ? Prisma.sql`tcs.unique_users`
               : Prisma.sql`tcs.latest_call_time`
       } ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
@@ -160,8 +160,8 @@ const listTopToolsUncached = async (
 
 export const listTopTools = createCachedPaginatedQuery({
   queryFn: listTopToolsUncached,
-  cacheKeyPrefix: 'composer:top-tools',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['latest_call_time'],
-  tags: ['composer', 'tools'],
+  cacheKeyPrefix: "composer:top-tools",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["latest_call_time"],
+  tags: ["composer", "tools"],
 });

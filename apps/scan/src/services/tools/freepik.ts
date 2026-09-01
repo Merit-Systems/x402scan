@@ -1,5 +1,5 @@
-import { env } from '@/env';
-import z from 'zod';
+import { env } from "@/env";
+import z from "zod";
 
 export const fetchFreepikMysticTaskInputSchema = z.object({
   task_id: z.string(),
@@ -8,7 +8,7 @@ export const fetchFreepikMysticTaskInputSchema = z.object({
 const fetchFreepikMysticTaskOutputSchema = z.object({
   data: z.object({
     task_id: z.string(),
-    status: z.enum(['CREATED', 'IN_PROGRESS', 'COMPLETED', 'FAILED']),
+    status: z.enum(["CREATED", "IN_PROGRESS", "COMPLETED", "FAILED"]),
     generated: z.array(z.url()),
   }),
 });
@@ -16,14 +16,14 @@ const fetchFreepikMysticTaskOutputSchema = z.object({
 export async function fetchFreepikMysticTask({
   task_id,
 }: z.infer<typeof fetchFreepikMysticTaskInputSchema>) {
-  if (!env.FREEPIK_API_KEY) throw new Error('FREEPIK_API_KEY is not set');
+  if (!env.FREEPIK_API_KEY) throw new Error("FREEPIK_API_KEY is not set");
 
   const endpoint = `https://api.freepik.com/v1/ai/mystic/${task_id}`;
 
   const response = await fetch(endpoint, {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'x-freepik-api-key': env.FREEPIK_API_KEY,
+      "x-freepik-api-key": env.FREEPIK_API_KEY,
     },
   });
 

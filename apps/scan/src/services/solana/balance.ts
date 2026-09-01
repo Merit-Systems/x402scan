@@ -1,19 +1,19 @@
-import z from 'zod';
+import z from "zod";
 
-import { address } from '@solana/kit';
+import { address } from "@solana/kit";
 
-import { solanaRpc } from '@/services/rpc/solana';
+import { solanaRpc } from "@/services/rpc/solana";
 
-import { solanaAddressSchema } from '@/lib/schemas';
-import { USDC_ADDRESS } from '@/lib/utils';
-import { convertTokenAmount } from '@/lib/token';
+import { solanaAddressSchema } from "@/lib/schemas";
+import { USDC_ADDRESS } from "@/lib/utils";
+import { convertTokenAmount } from "@/lib/token";
 
-import { Chain } from '@/types/chain';
+import { Chain } from "@/types/chain";
 
 import {
   findAssociatedTokenPda,
   TOKEN_PROGRAM_ADDRESS,
-} from '@solana-program/token';
+} from "@solana-program/token";
 
 export const getSolanaTokenBalanceSchema = z.object({
   ownerAddress: solanaAddressSchema,
@@ -41,7 +41,7 @@ export const getSolanaTokenBalance = async (
     // getTokenAccountBalance throws RPC -32602 ("could not find account")
     // which is expected — only log unexpected errors.
     if (!isAccountNotFoundError(error)) {
-      console.error('Error getting Solana token balance', error);
+      console.error("Error getting Solana token balance", error);
     }
     return 0;
   }

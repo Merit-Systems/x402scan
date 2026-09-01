@@ -1,6 +1,6 @@
-import { getOriginFromUrl, normalizeUrl } from '@/lib/url';
-import { fetchDiscoveryDocument } from '@/services/discovery';
-import type { DiscoveryInfo } from '@/types/discovery';
+import { getOriginFromUrl, normalizeUrl } from "@/lib/url";
+import { fetchDiscoveryDocument } from "@/services/discovery";
+import type { DiscoveryInfo } from "@/types/discovery";
 
 /**
  * After registering a single resource, check the origin for a discovery
@@ -17,14 +17,14 @@ export async function discoverSiblingResources(
     if (discoveryResult.success && Array.isArray(discoveryResult.resources)) {
       const normalizedInputUrl = normalizeUrl(registeredUrl);
       const otherResources = discoveryResult.resources.filter(
-        r => normalizeUrl(r.url) !== normalizedInputUrl
+        (r) => normalizeUrl(r.url) !== normalizedInputUrl
       );
       return {
         found: true,
         source: discoveryResult.source,
         otherResourceCount: otherResources.length,
         origin,
-        resources: otherResources.map(r => r.url),
+        resources: otherResources.map((r) => r.url),
       };
     }
   } catch {

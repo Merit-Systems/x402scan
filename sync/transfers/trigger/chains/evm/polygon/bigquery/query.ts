@@ -3,13 +3,13 @@ import {
   USDC_MULTIPLIER,
   USDC_POLYGON,
   TRANSFER_TOPIC,
-} from '@/trigger/lib/constants';
+} from "@/trigger/lib/constants";
 import type {
   SyncConfig,
   TransferEventData,
   BigQueryTransferRow,
   FacilitatorConfig,
-} from '@/trigger/types';
+} from "@/trigger/types";
 
 export function buildQuery(
   config: SyncConfig,
@@ -52,7 +52,7 @@ export function transformResponse(
   data: BigQueryTransferRow[],
   config: SyncConfig
 ): TransferEventData[] {
-  return data.map(row => ({
+  return data.map((row) => ({
     address: row.address,
     transaction_from: row.transaction_from,
     sender: row.sender,

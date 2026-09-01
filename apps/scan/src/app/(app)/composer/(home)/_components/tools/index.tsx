@@ -1,8 +1,8 @@
-import { Section } from '@/app/_components/layout/page-utils';
-import { ToolsSortingProvider } from '@/app/(app)/_contexts/sorting/tools/provider';
-import { defaultToolsSorting } from '@/app/(app)/_contexts/sorting/tools/default';
-import { LoadingToolsTable, ToolsTable } from './table';
-import { Suspense } from 'react';
+import { Section } from "@/app/_components/layout/page-utils";
+import { ToolsSortingProvider } from "@/app/(app)/_contexts/sorting/tools/provider";
+import { defaultToolsSorting } from "@/app/(app)/_contexts/sorting/tools/default";
+import { LoadingToolsTable, ToolsTable } from "./table";
+import { Suspense } from "react";
 
 // Note: No HydrateClient here - parent page.tsx provides it
 // Prefetch is done in page.tsx

@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { CornerDownLeft, Plus, Search, X } from 'lucide-react';
-import { useState } from 'react';
+import { CornerDownLeft, Plus, Search, X } from "lucide-react";
+import { useState } from "react";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useChain } from '@/app/(app)/_contexts/chain/hook';
-import { useSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/hook';
-import { api } from '@/trpc/client';
-import { InlineSearchSuggestions } from '@/app/(app)/_components/search/inline-search-suggestions';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useChain } from "@/app/(app)/_contexts/chain/hook";
+import { useSellersSorting } from "@/app/(app)/_contexts/sorting/sellers/hook";
+import { api } from "@/trpc/client";
+import { InlineSearchSuggestions } from "@/app/(app)/_components/search/inline-search-suggestions";
 
-import { DataTable } from '@/components/ui/data-table';
-import { featuredServiceColumns as discoverColumns } from '@/app/(app)/(home)/(overview)/_components/sellers/featured-columns';
-import { useDiscoverSearch } from './discover-search-context';
-import { ActivityTimeframe } from '@/types/timeframes';
+import { DataTable } from "@/components/ui/data-table";
+import { featuredServiceColumns as discoverColumns } from "@/app/(app)/(home)/(overview)/_components/sellers/featured-columns";
+import { useDiscoverSearch } from "./discover-search-context";
+import { ActivityTimeframe } from "@/types/timeframes";
 
 /**
  * Inline search input — rendered in the heading. Shows live suggestions:
@@ -29,29 +29,29 @@ export const DiscoverSearchInput = () => {
   return (
     <div
       className="relative w-full md:flex-1"
-      onBlur={event => {
+      onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
           setIsFocused(false);
         }
       }}
       onFocus={() => setIsFocused(true)}
     >
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none z-10" />
+      <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         value={input}
-        onChange={e => setInput(e.target.value)}
-        onKeyDown={e => {
-          if (e.key === 'Enter') {
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
             e.preventDefault();
             submit();
           }
-          if (e.key === 'Escape' && isSearching) {
+          if (e.key === "Escape" && isSearching) {
             e.preventDefault();
             clear();
           }
         }}
         placeholder="Try: send email, generate image, search the web, buy a mug…"
-        className="pl-9 pr-9 h-11 bg-transparent"
+        className="h-11 bg-transparent pr-9 pl-9"
         autoComplete="off"
         name="discover-search"
         type="text"
@@ -59,7 +59,7 @@ export const DiscoverSearchInput = () => {
       {isSearching && (
         <button
           type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-10"
+          className="absolute top-1/2 right-3 z-10 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           onClick={clear}
         >
           <X className="size-4" />
@@ -98,13 +98,13 @@ export const DiscoverSearchSubmit = () => {
   return (
     <Button
       size="lg"
-      className="shrink-0 w-full md:w-fit px-4 h-11"
+      className="h-11 w-full shrink-0 px-4 md:w-fit"
       onClick={submit}
       disabled={!isDirty}
     >
       <Search className="size-4" />
       Search
-      <CornerDownLeft className="hidden md:block size-3 ml-1 opacity-50" />
+      <CornerDownLeft className="ml-1 hidden size-3 opacity-50 md:block" />
     </Button>
   );
 };
@@ -124,8 +124,8 @@ export const DiscoverSearchResults = () => {
     );
 
   const x402Results =
-    searchResults?.filter(r => r.protocols.includes('x402')) ?? [];
-  const x402OriginUrls = x402Results.map(r => r.origin);
+    searchResults?.filter((r) => r.protocols.includes("x402")) ?? [];
+  const x402OriginUrls = x402Results.map((r) => r.origin);
 
   const { data: sellers, isLoading: isSellersLoading } =
     api.public.sellers.bazaar.list.useQuery(
@@ -146,11 +146,11 @@ export const DiscoverSearchResults = () => {
   // Phase 1: LLM is thinking
   if (isSearchLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 gap-4">
+      <div className="flex flex-col items-center justify-center gap-4 py-16">
         <div className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-primary animate-bounce [animation-delay:0ms]" />
-          <span className="size-2 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
-          <span className="size-2 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
+          <span className="size-2 animate-bounce rounded-full bg-primary [animation-delay:0ms]" />
+          <span className="size-2 animate-bounce rounded-full bg-primary [animation-delay:150ms]" />
+          <span className="size-2 animate-bounce rounded-full bg-primary [animation-delay:300ms]" />
         </div>
         <p className="text-sm text-muted-foreground">
           Finding the best x402 resources for &quot;{query}&quot;...
@@ -190,23 +190,23 @@ export const DiscoverSearchResults = () => {
 
   // Build endpoint lookup from search results
   const endpointByOrigin = new Map(
-    x402Results.filter(r => r.endpoint).map(r => [r.origin, r.endpoint!])
+    x402Results.filter((r) => r.endpoint).map((r) => [r.origin, r.endpoint!])
   );
 
   // Build merged table data: bazaar items + stub rows for unbooked origins
   const bazaarItems = sellers?.items ?? [];
   const bazaarOrigins = new Set(
-    bazaarItems.flatMap(item => item.origins.map(o => o.origin))
+    bazaarItems.flatMap((item) => item.origins.map((o) => o.origin))
   );
 
-  const enrichedBazaarItems = bazaarItems.map(item => ({
+  const enrichedBazaarItems = bazaarItems.map((item) => ({
     ...item,
-    searchEndpoint: endpointByOrigin.get(item.origins[0]?.origin ?? ''),
+    searchEndpoint: endpointByOrigin.get(item.origins[0]?.origin ?? ""),
   }));
 
   const stubItems = x402Results
-    .filter(r => !bazaarOrigins.has(r.origin))
-    .map(r => ({
+    .filter((r) => !bazaarOrigins.has(r.origin))
+    .map((r) => ({
       recipients: [],
       origins: [
         {
@@ -234,8 +234,8 @@ export const DiscoverSearchResults = () => {
   // Preserve LLM relevance order by default, let table sorting override
   const searchOrder = new Map(x402OriginUrls.map((url, i) => [url, i]));
   const allItems = allItemsUnsorted.sort((a, b) => {
-    const aOrigin = a.origins[0]?.origin ?? '';
-    const bOrigin = b.origins[0]?.origin ?? '';
+    const aOrigin = a.origins[0]?.origin ?? "";
+    const bOrigin = b.origins[0]?.origin ?? "";
     return (
       (searchOrder.get(aOrigin) ?? Infinity) -
       (searchOrder.get(bOrigin) ?? Infinity)

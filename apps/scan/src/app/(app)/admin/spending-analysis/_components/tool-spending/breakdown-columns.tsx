@@ -1,13 +1,13 @@
-import { Globe, Hash, DollarSign } from 'lucide-react';
+import { Globe, Hash, DollarSign } from "lucide-react";
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
+import { HeaderCell } from "@/components/ui/data-table/header-cell";
 
 type ToolBreakdown =
-  RouterOutputs['admin']['spending']['toolBreakdown'][number];
+  RouterOutputs["admin"]["spending"]["toolBreakdown"][number];
 
 const formatAmount = (amount: string) => {
   const numericAmount = BigInt(amount);
@@ -18,12 +18,12 @@ export const createToolBreakdownColumns =
   (): ExtendedColumnDef<ToolBreakdown>[] => {
     return [
       {
-        accessorKey: 'resourceUrl',
+        accessorKey: "resourceUrl",
         header: () => (
           <HeaderCell Icon={Globe} label="Tool" className="justify-start" />
         ),
         cell: ({ row }) => (
-          <div className="text-xs font-medium truncate max-w-[400px]">
+          <div className="max-w-[400px] truncate text-xs font-medium">
             {row.original.resourceUrl}
           </div>
         ),
@@ -31,20 +31,20 @@ export const createToolBreakdownColumns =
         loading: () => <Skeleton className="h-4 w-full" />,
       },
       {
-        accessorKey: 'toolCalls',
+        accessorKey: "toolCalls",
         header: () => (
           <HeaderCell Icon={Hash} label="Calls" className="mx-auto" />
         ),
         cell: ({ row }) => (
-          <div className="text-center text-xs font-mono">
+          <div className="text-center font-mono text-xs">
             {row.original.toolCalls.toLocaleString()}
           </div>
         ),
         size: 100,
-        loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+        loading: () => <Skeleton className="mx-auto h-4 w-16" />,
       },
       {
-        accessorKey: 'maxAmountPerCall',
+        accessorKey: "maxAmountPerCall",
         header: () => (
           <HeaderCell
             Icon={DollarSign}
@@ -53,15 +53,15 @@ export const createToolBreakdownColumns =
           />
         ),
         cell: ({ row }) => (
-          <div className="text-center text-xs font-mono">
+          <div className="text-center font-mono text-xs">
             {formatAmount(row.original.maxAmountPerCall)}
           </div>
         ),
         size: 150,
-        loading: () => <Skeleton className="h-4 w-20 mx-auto" />,
+        loading: () => <Skeleton className="mx-auto h-4 w-20" />,
       },
       {
-        accessorKey: 'totalMaxAmount',
+        accessorKey: "totalMaxAmount",
         header: () => (
           <HeaderCell
             Icon={DollarSign}
@@ -70,12 +70,12 @@ export const createToolBreakdownColumns =
           />
         ),
         cell: ({ row }) => (
-          <div className="text-center text-xs font-mono font-medium">
+          <div className="text-center font-mono text-xs font-medium">
             {formatAmount(row.original.totalMaxAmount)}
           </div>
         ),
         size: 150,
-        loading: () => <Skeleton className="h-4 w-20 mx-auto" />,
+        loading: () => <Skeleton className="mx-auto h-4 w-20" />,
       },
     ];
   };

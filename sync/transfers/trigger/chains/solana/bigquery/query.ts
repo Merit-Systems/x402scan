@@ -4,11 +4,11 @@ import type {
   TransferEventData,
   BigQueryTransferRow,
   FacilitatorConfig,
-} from '@/trigger/types';
-import { USDC_MULTIPLIER, USDC_SOLANA } from '@/trigger/lib/constants';
-import { getAccount } from '@solana/spl-token';
-import { Connection, PublicKey } from '@solana/web3.js';
-import Bottleneck from 'bottleneck';
+} from "@/trigger/types";
+import { USDC_MULTIPLIER, USDC_SOLANA } from "@/trigger/lib/constants";
+import { getAccount } from "@solana/spl-token";
+import { Connection, PublicKey } from "@solana/web3.js";
+import Bottleneck from "bottleneck";
 
 export function buildQuery(
   config: SyncConfig,
@@ -102,7 +102,7 @@ export async function transformResponse(
   });
 
   const results = await Promise.all(
-    data.map(row =>
+    data.map((row) =>
       limiter.schedule(async () => {
         const senderOwner = await getOwner(row.sender, connection, ownerCache);
         const recipientOwner = await getOwner(

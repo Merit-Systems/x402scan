@@ -1,13 +1,13 @@
-import z from 'zod';
-import { queryRaw } from '../query';
-import { Prisma } from '@x402scan/scan-db';
-import type { PaginatedQueryParams } from '@/lib/pagination';
-import { toPaginatedResponse } from '@/lib/pagination';
-import { scanDb } from '@x402scan/scan-db';
+import z from "zod";
+import { queryRaw } from "../query";
+import { Prisma } from "@x402scan/scan-db";
+import type { PaginatedQueryParams } from "@/lib/pagination";
+import { toPaginatedResponse } from "@/lib/pagination";
+import { scanDb } from "@x402scan/scan-db";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
+} from "@/lib/cache";
 
 const agentConfigurationSchema = z
   .object({
@@ -25,20 +25,20 @@ const resourceSchema = z.object({
 
 // Discriminated union for feed events
 const messageEventSchema = z.object({
-  type: z.literal('message'),
+  type: z.literal("message"),
   createdAt: z.date(),
   resource: resourceSchema.nullable(),
   agentConfiguration: agentConfigurationSchema,
 });
 
 const toolCallEventSchema = z.object({
-  type: z.literal('tool_call'),
+  type: z.literal("tool_call"),
   createdAt: z.date(),
   resource: resourceSchema,
   agentConfiguration: agentConfigurationSchema,
 });
 
-const feedEventSchema = z.discriminatedUnion('type', [
+const feedEventSchema = z.discriminatedUnion("type", [
   messageEventSchema,
   toolCallEventSchema,
 ]);
@@ -143,7 +143,7 @@ const getAgentConfigFeedUncached = async (
           },
           userId: userId,
         },
-        role: 'user',
+        role: "user",
       },
     }),
   ]);
@@ -157,8 +157,8 @@ const getAgentConfigFeedUncached = async (
 
 export const getAgentConfigFeed = createCachedPaginatedQuery({
   queryFn: getAgentConfigFeedUncached,
-  cacheKeyPrefix: 'agent-config:feed',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['createdAt'],
-  tags: ['agent-configuration', 'feed'],
+  cacheKeyPrefix: "agent-config:feed",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["createdAt"],
+  tags: ["agent-configuration", "feed"],
 });

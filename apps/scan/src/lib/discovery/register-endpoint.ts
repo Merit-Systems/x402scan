@@ -1,7 +1,7 @@
-import { probeX402Endpoint } from './probe';
-import { registerResource } from '@/lib/resources';
-import { discoverSiblingResources } from './discover-siblings';
-import { isTunnelUrl } from '@/lib/url-helpers';
+import { probeX402Endpoint } from "./probe";
+import { registerResource } from "@/lib/resources";
+import { discoverSiblingResources } from "./discover-siblings";
+import { isTunnelUrl } from "@/lib/url-helpers";
 
 /**
  * Single orchestrator for registering a single x402 resource.
@@ -22,7 +22,7 @@ export async function registerEndpoint(
     return {
       success: false as const,
       error: {
-        type: 'tunnel' as const,
+        type: "tunnel" as const,
         message:
           "Tunnel URLs are ephemeral and can't be reliably discovered by agents. Deploy your API to a permanent URL to register.",
       },
@@ -36,7 +36,7 @@ export async function registerEndpoint(
     return {
       success: false as const,
       error: {
-        type: 'no402' as const,
+        type: "no402" as const,
         message: probeResult.error,
       },
     };
@@ -50,16 +50,16 @@ export async function registerEndpoint(
 
   if (!result.success) {
     const parseErrors: string[] =
-      result.error.type === 'parseResponse' ||
-      result.error.type === 'validation'
+      result.error.type === "parseResponse" ||
+      result.error.type === "validation"
         ? result.error.parseErrors
-        : 'upsertErrors' in result.error
+        : "upsertErrors" in result.error
           ? result.error.upsertErrors
           : [JSON.stringify(result.error)];
 
     return {
       success: false as const,
-      error: { type: 'parseErrors' as const, parseErrors },
+      error: { type: "parseErrors" as const, parseErrors },
       data: result.data,
       warnings: result.warnings,
     };

@@ -1,23 +1,23 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import { parseX402Response, type ParsedX402Response } from '@/lib/x402';
-import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
-import { FREE_AUTH_MODES, isFreeResource } from '@/lib/resource-auth';
-import { SUPPORTED_CHAINS } from '@/types/chain';
+import { parseX402Response, type ParsedX402Response } from "@/lib/x402";
+import { mixedAddressSchema, optionalChainSchema } from "@/lib/schemas";
+import { FREE_AUTH_MODES, isFreeResource } from "@/lib/resource-auth";
+import { SUPPORTED_CHAINS } from "@/types/chain";
 
-import type { AcceptsNetwork, Prisma } from '@x402scan/scan-db';
-import type { MixedAddress } from '@/types/address';
+import type { AcceptsNetwork, Prisma } from "@x402scan/scan-db";
+import type { MixedAddress } from "@/types/address";
 
 /** OR-able filters matching free resources (siwx/unprotected/apiKey). */
 export const freeAuthModeFilters: Prisma.ResourcesWhereInput[] =
-  FREE_AUTH_MODES.map(mode => ({
-    metadata: { path: ['authMode'], equals: mode },
+  FREE_AUTH_MODES.map((mode) => ({
+    metadata: { path: ["authMode"], equals: mode },
   }));
 
 const SUPPORTED_ACCEPT_NETWORKS = SUPPORTED_CHAINS.map(
-  chain => chain as AcceptsNetwork
+  (chain) => chain as AcceptsNetwork
 );
 
 function getDisplayableAcceptsWhere({
@@ -85,7 +85,7 @@ export const upsertOrigin = async (
   originInput: z.input<typeof originSchema>
 ) => {
   const origin = originSchema.parse(originInput);
-  return await scanDb.$transaction(async tx => {
+  return await scanDb.$transaction(async (tx) => {
     const upsertedOrigin = await tx.resourceOrigin.upsert({
       where: { origin: origin.origin },
       update: {
@@ -175,7 +175,7 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
     where: {
       resources: { some: resourceFilter },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
   });
   return origins;
 };
@@ -216,7 +216,7 @@ export const listOriginsWithResources = async (
       resources: {
         where: paidOrFreeResource,
         orderBy: {
-          resource: 'asc',
+          resource: "asc",
         },
         include: {
           accepts: {
@@ -234,14 +234,14 @@ export const listOriginsWithResources = async (
     },
     orderBy: {
       resources: {
-        _count: 'desc',
+        _count: "desc",
       },
     },
   });
   return origins
-    .map(origin => ({
+    .map((origin) => ({
       ...origin,
-      resources: origin.resources.map(resource => {
+      resources: origin.resources.map((resource) => {
         // Free resources (siwx/public/apiKey) have no 402 response — treat
         // them as successful with empty payment data. The !response guard
         // defends against stale free markers on rows that later stored a
@@ -258,7 +258,7 @@ export const listOriginsWithResources = async (
           console.error(
             `[listOriginsWithResources] parseX402Response failed for resource ${resource.id} (${resource.resource}):`,
             JSON.stringify(response.errors),
-            'raw response:',
+            "raw response:",
             JSON.stringify(resource.response?.response)
           );
         }
@@ -268,7 +268,7 @@ export const listOriginsWithResources = async (
         };
       }),
     }))
-    .filter(origin => origin.resources.length > 0);
+    .filter((origin) => origin.resources.length > 0);
 };
 
 export const searchOriginsSchema = z.object({
@@ -285,7 +285,7 @@ export const searchOrigins = async (
     where: {
       origin: {
         contains: search,
-        mode: 'insensitive',
+        mode: "insensitive",
       },
       resources: {
         some: {
@@ -366,10 +366,10 @@ export const getOriginPayToAddresses = async (
   if (!origin) return [];
 
   const addresses = origin.resources
-    .flatMap(resource => resource.accepts.map(accept => accept.payTo))
-    .map(payTo => mixedAddressSchema.safeParse(payTo))
-    .filter(parsed => parsed.success)
-    .map(parsed => parsed.data);
+    .flatMap((resource) => resource.accepts.map((accept) => accept.payTo))
+    .map((payTo) => mixedAddressSchema.safeParse(payTo))
+    .filter((parsed) => parsed.success)
+    .map((parsed) => parsed.data);
 
   return [...new Set(addresses)].sort((a, b) => a.localeCompare(b));
 };

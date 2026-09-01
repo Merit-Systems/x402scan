@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { jsonValueSchema } from '@/lib/json';
+import { jsonValueSchema } from "@/lib/json";
 
-import type { JsonValue } from '@/lib/json';
+import type { JsonValue } from "@/lib/json";
 
 /**
  * Loosely JSON-shaped data: any JSON value, plus objects/arrays with
@@ -101,8 +101,8 @@ const openApiParameterSchema: z.ZodType<OpenApiParameter> = z.looseObject({
 /** Parameter list where invalid entries are dropped instead of failing. */
 const lenientParameterListSchema = z
   .array(openApiParameterSchema.optional().catch(undefined))
-  .transform(parameters =>
-    parameters.flatMap(parameter =>
+  .transform((parameters) =>
+    parameters.flatMap((parameter) =>
       parameter === undefined ? [] : [parameter]
     )
   );
@@ -116,7 +116,7 @@ const lenientParameterListSchema = z
  *   3. Direct JSON Schema with `properties`/`type` at top level
  */
 export interface OpenApiInputAdvisory extends JsonSchemaNode {
-  body?: { content?: { 'application/json'?: { schema?: JsonSchemaNode } } };
+  body?: { content?: { "application/json"?: { schema?: JsonSchemaNode } } };
   requestBody?: JsonSchemaNode;
   parameters?: OpenApiParameter[];
 }
@@ -128,7 +128,7 @@ export const openApiInputAdvisorySchema: z.ZodType<OpenApiInputAdvisory> =
       .looseObject({
         content: z
           .looseObject({
-            'application/json': z
+            "application/json": z
               .looseObject({
                 schema: jsonSchemaNodeSchema.optional().catch(undefined),
               })

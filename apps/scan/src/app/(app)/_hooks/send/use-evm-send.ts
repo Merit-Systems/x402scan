@@ -1,19 +1,19 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from "react";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { usdc } from '@/lib/tokens/usdc';
+import { usdc } from "@/lib/tokens/usdc";
 
-import { useEvmTokenBalance } from '../balance/token/use-evm-token-balance';
+import { useEvmTokenBalance } from "../balance/token/use-evm-token-balance";
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { ethereumAddressSchema } from "@/lib/schemas";
 
-import { useWalletChain } from '@/app/(app)/_contexts/wallet-chain/hook';
-import { useEvmX402Fetch } from '../x402/evm';
+import { useWalletChain } from "@/app/(app)/_contexts/wallet-chain/hook";
+import { useEvmX402Fetch } from "../x402/evm";
 
-import type { Token } from '@/types/token';
-import type { Connection } from 'wagmi';
-import type { X402FetchResponse } from '../x402/types';
+import type { Token } from "@/types/token";
+import type { Connection } from "wagmi";
+import type { X402FetchResponse } from "../x402/types";
 
 interface Props {
   token?: Token;
@@ -69,12 +69,12 @@ export const useEvmSend = (props?: Props) => {
     targetUrl: `${window.location.origin}/api/x402/send`,
     value: amount ? BigInt(amount * 10 ** token.decimals) : BigInt(0),
     init: {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address: toAddress, amount, chain }),
     },
     options: {
-      onSuccess: data => {
+      onSuccess: (data) => {
         toast.success(
           toastMessage ? toastMessage(amountProp!) : `${amountProp} USDC sent`
         );
@@ -88,8 +88,8 @@ export const useEvmSend = (props?: Props) => {
           reset();
         }, 3000);
       },
-      onError: error => {
-        toast.error('Failed to send USDC', {
+      onError: (error) => {
+        toast.error("Failed to send USDC", {
           description: error.message,
         });
       },
@@ -99,24 +99,24 @@ export const useEvmSend = (props?: Props) => {
 
   const handleSubmit = useCallback(() => {
     if (!amount) {
-      toast.error('Amount is required');
+      toast.error("Amount is required");
       return;
     }
     const parseResult = ethereumAddressSchema.safeParse(toAddress);
     if (!parseResult.success) {
-      toast.error('Invalid address');
+      toast.error("Invalid address");
       return;
     }
     sendTransaction();
   }, [toAddress, amount, sendTransaction]);
 
   const statusText = useMemo(() => {
-    if (isBalanceLoading) return 'Loading...';
-    if (!amount) return 'Enter an amount';
-    if (!balance || balance < amount) return 'Insufficient USDC';
-    if (isSending) return 'Sending...';
-    if (isSent) return 'USDC sent';
-    return 'Send USDC';
+    if (isBalanceLoading) return "Loading...";
+    if (!amount) return "Enter an amount";
+    if (!balance || balance < amount) return "Insufficient USDC";
+    if (isSending) return "Sending...";
+    if (isSent) return "USDC sent";
+    return "Send USDC";
   }, [isBalanceLoading, balance, amount, isSending, isSent]);
 
   return {

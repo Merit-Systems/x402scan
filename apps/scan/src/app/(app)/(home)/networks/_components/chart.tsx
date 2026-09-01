@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useChain } from '@/app/(app)/_contexts/chain/hook';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
-import type { ChartData } from '@/components/ui/charts/chart/types';
-import { LoadingMultiCharts, MultiCharts } from '@/components/ui/charts/multi';
-import type { Chain } from '@/types/chain';
+import { useChain } from "@/app/(app)/_contexts/chain/hook";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import type { ChartData } from "@/components/ui/charts/chart/types";
+import { LoadingMultiCharts, MultiCharts } from "@/components/ui/charts/multi";
+import type { Chain } from "@/types/chain";
 
-import { formatTokenAmount } from '@/lib/token';
-import { createTab, networks } from '@/lib/charts';
-import { api } from '@/trpc/client';
+import { formatTokenAmount } from "@/lib/token";
+import { createTab, networks } from "@/lib/charts";
+import { api } from "@/trpc/client";
 
-type NetworkKey = `${Chain}-${'transactions' | 'amount'}`;
+type NetworkKey = `${Chain}-${"transactions" | "amount"}`;
 
 export const NetworksChart = () => {
   const { chain } = useChain();
@@ -28,18 +28,18 @@ export const NetworksChart = () => {
   });
 
   const chartData: ChartData<Record<NetworkKey, number>>[] =
-    bucketedNetworkData.map(item => {
+    bucketedNetworkData.map((item) => {
       // Buckets only include networks with data, so start every known
       // network at zero and overwrite with the returned stats.
       const metrics = {
-        'base-transactions': 0,
-        'base-amount': 0,
-        'solana-transactions': 0,
-        'solana-amount': 0,
-        'polygon-transactions': 0,
-        'polygon-amount': 0,
-        'optimism-transactions': 0,
-        'optimism-amount': 0,
+        "base-transactions": 0,
+        "base-amount": 0,
+        "solana-transactions": 0,
+        "solana-amount": 0,
+        "polygon-transactions": 0,
+        "polygon-amount": 0,
+        "optimism-transactions": 0,
+        "optimism-amount": 0,
       } satisfies Record<NetworkKey, number>;
       for (const network of networks) {
         const stats = item.networks[network.chain];
@@ -71,11 +71,11 @@ export const NetworksChart = () => {
         chartData={chartData}
         tabs={[
           createTab<Record<NetworkKey, number>, (typeof networks)[number]>({
-            label: 'Transactions',
-            stackOffset: 'expand',
+            label: "Transactions",
+            stackOffset: "expand",
             amount: overallData.total_transactions.toLocaleString(),
             items: networks,
-            getKey: n => n.chain,
+            getKey: (n) => n.chain,
             getValue: (
               data: number,
               dataType: string,
@@ -83,11 +83,11 @@ export const NetworksChart = () => {
             ) => getValueHandler(data, dataType, allData),
           }),
           createTab<Record<NetworkKey, number>, (typeof networks)[number]>({
-            label: 'Amount',
-            stackOffset: 'expand',
+            label: "Amount",
+            stackOffset: "expand",
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
             items: networks,
-            getKey: n => n.chain,
+            getKey: (n) => n.chain,
             getValue: (
               data: number,
               dataType: string,
@@ -105,12 +105,12 @@ export const LoadingNetworksChart = () => {
     <LoadingMultiCharts
       tabs={[
         {
-          type: 'bar',
-          label: 'Transactions',
+          type: "bar",
+          label: "Transactions",
         },
         {
-          type: 'bar',
-          label: 'Amount',
+          type: "bar",
+          label: "Amount",
         },
       ]}
     />

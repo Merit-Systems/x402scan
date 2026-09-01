@@ -4,8 +4,8 @@ import type {
   TransferEventData,
   CdpTransferRow,
   FacilitatorConfig,
-} from '@/trigger/types';
-import { TRANSFER_EVENT_SIG } from '@/trigger/lib/constants';
+} from "@/trigger/types";
+import { TRANSFER_EVENT_SIG } from "@/trigger/lib/constants";
 
 export function buildQuery(
   config: SyncConfig,
@@ -42,7 +42,7 @@ export function transformResponse(
   facilitator: Facilitator,
   facilitatorConfig: FacilitatorConfig
 ): TransferEventData[] {
-  return data.map(row => ({
+  return data.map((row) => ({
     address: row.contract_address,
     transaction_from: row.transaction_from,
     sender: row.sender,
@@ -59,5 +59,5 @@ export function transformResponse(
 }
 
 function formatDateForSql(date: Date): string {
-  return date.toISOString().replace('T', ' ').replace('Z', '');
+  return date.toISOString().replace("T", " ").replace("Z", "");
 }

@@ -1,17 +1,17 @@
 export {
   listFacilitatorResources,
   listAllFacilitatorResources,
-} from './list-resources';
+} from "./list-resources";
 
-export { coinbaseDiscovery } from '../facilitators/coinbase';
-export { payaiDiscovery } from '../facilitators/payai';
-export { aurracloudDiscovery } from '../facilitators/aurracloud';
-export { thirdwebDiscovery } from '../facilitators/thirdweb';
-export { questflowDiscovery } from '../facilitators/questflow';
-export { ultravioletadaoDiscovery } from '../facilitators/ultravioletadao';
-export { anyspendDiscovery } from '../facilitators/anyspend';
-export { relaiDiscovery } from '../facilitators/relai';
-export { fluxaDiscovery } from '../facilitators/fluxa';
-export { threewsDiscovery } from '../facilitators/threews';
+export { coinbaseDiscovery } from "../facilitators/coinbase";
+export { payaiDiscovery } from "../facilitators/payai";
+export { aurracloudDiscovery } from "../facilitators/aurracloud";
+export { thirdwebDiscovery } from "../facilitators/thirdweb";
+export { questflowDiscovery } from "../facilitators/questflow";
+export { ultravioletadaoDiscovery } from "../facilitators/ultravioletadao";
+export { anyspendDiscovery } from "../facilitators/anyspend";
+export { relaiDiscovery } from "../facilitators/relai";
+export { fluxaDiscovery } from "../facilitators/fluxa";
+export { threewsDiscovery } from "../facilitators/threews";
 
-export { discoverableFacilitators } from './facilitators';
+export { discoverableFacilitators } from "./facilitators";

@@ -3,12 +3,12 @@ import type {
   FilterQuestion,
   RefinementMode,
   QueryMode,
-} from './types';
-import { searchResourcesWithNaturalLanguage as searchWithKeywords } from './database-tags-search';
-import { searchResourcesWithNaturalLanguage as searchWithSQL } from './database-search';
-import { searchResourcesWithNaturalLanguage as searchWithSQLParallel } from './database-search-parallel-retry';
-import { generateFilterQuestions, applyLLMFilters } from './llm-refined-search';
-import { rerankSearchResults } from './reranker-search';
+} from "./types";
+import { searchResourcesWithNaturalLanguage as searchWithKeywords } from "./database-tags-search";
+import { searchResourcesWithNaturalLanguage as searchWithSQL } from "./database-search";
+import { searchResourcesWithNaturalLanguage as searchWithSQLParallel } from "./database-search-parallel-retry";
+import { generateFilterQuestions, applyLLMFilters } from "./llm-refined-search";
+import { rerankSearchResults } from "./reranker-search";
 
 /**
  * Performs a combined search that:
@@ -29,16 +29,16 @@ export async function searchResourcesCombined(
   filterExplanation: string;
 }> {
   const startTime = Date.now();
-  const refinementMode = options?.refinementMode ?? 'none';
-  const queryMode = options?.queryMode ?? 'keywords';
+  const refinementMode = options?.refinementMode ?? "none";
+  const queryMode = options?.queryMode ?? "keywords";
 
-  const useLlmFilter = refinementMode === 'llm' || refinementMode === 'both';
+  const useLlmFilter = refinementMode === "llm" || refinementMode === "both";
 
   // Select the appropriate search function based on queryMode
   const searchFunction =
-    queryMode === 'sql'
+    queryMode === "sql"
       ? searchWithSQL
-      : queryMode === 'sql-parallel'
+      : queryMode === "sql-parallel"
         ? searchWithSQLParallel
         : searchWithKeywords;
 
@@ -47,8 +47,8 @@ export async function searchResourcesCombined(
   let dbResults;
   let filterQuestions: FilterQuestion[] = [];
   let filterExplanation =
-    refinementMode === 'none'
-      ? 'No refinement applied'
+    refinementMode === "none"
+      ? "No refinement applied"
       : `Refinement mode: ${refinementMode}`;
 
   if (useLlmFilter) {
@@ -65,14 +65,14 @@ export async function searchResourcesCombined(
       );
     } catch (error) {
       console.error(
-        '[Search] Error in parallel DB search + filter generation:',
+        "[Search] Error in parallel DB search + filter generation:",
         error
       );
       // Fallback: try DB search without filter generation
       dbResults = await searchFunction(naturalLanguageQuery);
       filterQuestions = [];
       filterExplanation =
-        'Filter generation failed, continuing without filters';
+        "Filter generation failed, continuing without filters";
       console.log(
         `[Search] Step 1 - DB search (${queryMode}) only (fallback): ${Date.now() - step1Start}ms (${dbResults.results.length} results)`
       );
@@ -88,8 +88,8 @@ export async function searchResourcesCombined(
 
   let finalResults: CombinedRefinedResult[];
 
-  if (refinementMode === 'none') {
-    finalResults = searchResults.map(r => ({
+  if (refinementMode === "none") {
+    finalResults = searchResults.map((r) => ({
       ...r,
       filterMatches: 0,
       filterAnswers: [],
@@ -97,7 +97,7 @@ export async function searchResourcesCombined(
       rerankerIndex: null,
     }));
     console.log(`[Search] Step 2 - Skipped (no refinement)`);
-  } else if (refinementMode === 'llm') {
+  } else if (refinementMode === "llm") {
     const step2Start = Date.now();
     try {
       const results = await applyLLMFilters(searchResults, filterQuestions);
@@ -105,17 +105,17 @@ export async function searchResourcesCombined(
         `[Search] Step 2 - LLM filter: ${Date.now() - step2Start}ms (${results.length} results)`
       );
 
-      finalResults = results.map(r => ({
+      finalResults = results.map((r) => ({
         ...r,
         rerankerScore: null,
         rerankerIndex: null,
       }));
     } catch (error) {
       console.error(
-        '[Search] LLM filter failed, returning unfiltered results:',
+        "[Search] LLM filter failed, returning unfiltered results:",
         error
       );
-      finalResults = searchResults.map(r => ({
+      finalResults = searchResults.map((r) => ({
         ...r,
         filterMatches: 0,
         filterAnswers: [],
@@ -123,7 +123,7 @@ export async function searchResourcesCombined(
         rerankerIndex: null,
       }));
     }
-  } else if (refinementMode === 'reranker') {
+  } else if (refinementMode === "reranker") {
     const step2Start = Date.now();
     try {
       const results = await rerankSearchResults(
@@ -134,17 +134,17 @@ export async function searchResourcesCombined(
         `[Search] Step 2 - Reranker: ${Date.now() - step2Start}ms (${results.length} results)`
       );
 
-      finalResults = results.map(r => ({
+      finalResults = results.map((r) => ({
         ...r,
         filterMatches: 0,
         filterAnswers: [],
       }));
     } catch (error) {
       console.error(
-        '[Search] Reranker failed, returning unranked results:',
+        "[Search] Reranker failed, returning unranked results:",
         error
       );
-      finalResults = searchResults.map(r => ({
+      finalResults = searchResults.map((r) => ({
         ...r,
         filterMatches: 0,
         filterAnswers: [],
@@ -165,8 +165,8 @@ export async function searchResourcesCombined(
       );
 
       // Use reranker order, but include LLM filter data
-      finalResults = rerankedResults.map(rerankedResult => {
-        const llmResult = llmResults.find(r => r.id === rerankedResult.id);
+      finalResults = rerankedResults.map((rerankedResult) => {
+        const llmResult = llmResults.find((r) => r.id === rerankedResult.id);
         return {
           ...rerankedResult,
           filterMatches: llmResult?.filterMatches ?? 0,
@@ -175,10 +175,10 @@ export async function searchResourcesCombined(
       });
     } catch (error) {
       console.error(
-        '[Search] LLM + Reranker failed, returning unrefined results:',
+        "[Search] LLM + Reranker failed, returning unrefined results:",
         error
       );
-      finalResults = searchResults.map(r => ({
+      finalResults = searchResults.map((r) => ({
         ...r,
         filterMatches: 0,
         filterAnswers: [],
@@ -196,7 +196,7 @@ export async function searchResourcesCombined(
     explanation: dbResults.explanation,
     totalCount: dbResults.totalCount,
     sqlCondition: dbResults.sqlCondition,
-    keywords: ('keywords' in dbResults ? dbResults.keywords : []) as string[],
+    keywords: ("keywords" in dbResults ? dbResults.keywords : []) as string[],
     filterQuestions,
     filterExplanation,
   };

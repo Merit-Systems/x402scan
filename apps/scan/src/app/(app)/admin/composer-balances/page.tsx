@@ -1,13 +1,13 @@
-import { forbidden } from 'next/navigation';
+import { forbidden } from "next/navigation";
 
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { auth } from '@/auth';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { auth } from "@/auth";
 
-import { ComposerBalancesTable } from './_components/table';
+import { ComposerBalancesTable } from "./_components/table";
 
 export default async function ComposerBalancesPage() {
   const session = await auth();
-  if (session?.user.role !== 'admin') {
+  if (session?.user.role !== "admin") {
     forbidden();
   }
 

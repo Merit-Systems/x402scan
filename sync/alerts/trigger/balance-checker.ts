@@ -1,8 +1,8 @@
-import { createPublicClient, http, formatUnits, type Address } from 'viem';
-import { base } from 'viem/chains';
-import { USDC_ADDRESS, ERC20_ABI, CURRENCY_CONFIG } from './constants';
-import type { BalanceCheckResult } from './types';
-import { Currency } from './types';
+import { createPublicClient, http, formatUnits, type Address } from "viem";
+import { base } from "viem/chains";
+import { USDC_ADDRESS, ERC20_ABI, CURRENCY_CONFIG } from "./constants";
+import type { BalanceCheckResult } from "./types";
+import { Currency } from "./types";
 
 export async function checkUSDCBalance(
   address: Address,
@@ -16,7 +16,7 @@ export async function checkUSDCBalance(
   const balance = await client.readContract({
     address: USDC_ADDRESS,
     abi: ERC20_ABI,
-    functionName: 'balanceOf',
+    functionName: "balanceOf",
     args: [address],
   });
 

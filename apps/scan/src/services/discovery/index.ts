@@ -1,1 +1,1 @@
-export { fetchDiscoveryDocument } from './fetch-discovery';
+export { fetchDiscoveryDocument } from "./fetch-discovery";

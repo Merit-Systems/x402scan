@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import type { JSONValue } from 'ai';
+import { z } from "zod";
+import type { JSONValue } from "ai";
 
 // SharedV2ProviderMetadata is Record<string, Record<string, JSONValue>>
 const providerMetadataSchema = z.record(
@@ -10,33 +10,33 @@ const providerMetadataSchema = z.record(
 // --- Message "part" types matching AI SDK UIMessagePart structure ---
 
 const textPartSchema = z.object({
-  type: z.literal('text'),
+  type: z.literal("text"),
   text: z.string(),
-  state: z.optional(z.enum(['streaming', 'done'])),
+  state: z.optional(z.enum(["streaming", "done"])),
   providerMetadata: z.optional(providerMetadataSchema),
 });
 
 const reasoningPartSchema = z.object({
-  type: z.literal('reasoning'),
+  type: z.literal("reasoning"),
   text: z.string(),
-  state: z.optional(z.enum(['streaming', 'done'])),
+  state: z.optional(z.enum(["streaming", "done"])),
   providerMetadata: z.optional(providerMetadataSchema),
 });
 
 const toolStateSchema = z.union([
   z.object({
-    state: z.literal('input-streaming'),
+    state: z.literal("input-streaming"),
     input: z.unknown(),
     providerExecuted: z.optional(z.boolean()),
   }),
   z.object({
-    state: z.literal('input-available'),
+    state: z.literal("input-available"),
     input: z.unknown(),
     providerExecuted: z.optional(z.boolean()),
     callProviderMetadata: z.optional(providerMetadataSchema),
   }),
   z.object({
-    state: z.literal('output-available'),
+    state: z.literal("output-available"),
     input: z.unknown(),
     output: z.unknown(),
     providerExecuted: z.optional(z.boolean()),
@@ -44,7 +44,7 @@ const toolStateSchema = z.union([
     preliminary: z.optional(z.boolean()),
   }),
   z.object({
-    state: z.literal('output-error'),
+    state: z.literal("output-error"),
     input: z.unknown(),
     rawInput: z.optional(z.unknown()),
     errorText: z.string(),
@@ -55,7 +55,7 @@ const toolStateSchema = z.union([
 
 const toolPartSchema = z.intersection(
   z.object({
-    type: z.templateLiteral(['tool-', z.string()]),
+    type: z.templateLiteral(["tool-", z.string()]),
     toolCallId: z.string(),
   }),
   toolStateSchema
@@ -63,7 +63,7 @@ const toolPartSchema = z.intersection(
 
 const dynamicToolPartSchema = z.intersection(
   z.object({
-    type: z.literal('dynamic-tool'),
+    type: z.literal("dynamic-tool"),
     toolName: z.string(),
     toolCallId: z.string(),
   }),
@@ -71,7 +71,7 @@ const dynamicToolPartSchema = z.intersection(
 );
 
 const sourceUrlPartSchema = z.object({
-  type: z.literal('source-url'),
+  type: z.literal("source-url"),
   sourceId: z.string(),
   url: z.string(),
   title: z.optional(z.string()),
@@ -79,7 +79,7 @@ const sourceUrlPartSchema = z.object({
 });
 
 const sourceDocumentPartSchema = z.object({
-  type: z.literal('source-document'),
+  type: z.literal("source-document"),
   sourceId: z.string(),
   mediaType: z.string(),
   title: z.string(),
@@ -88,7 +88,7 @@ const sourceDocumentPartSchema = z.object({
 });
 
 const filePartSchema = z.object({
-  type: z.literal('file'),
+  type: z.literal("file"),
   mediaType: z.string(),
   filename: z.optional(z.string()),
   url: z.string(),
@@ -96,13 +96,13 @@ const filePartSchema = z.object({
 });
 
 const dataPartSchema = z.object({
-  type: z.templateLiteral(['data-', z.string()]),
+  type: z.templateLiteral(["data-", z.string()]),
   id: z.optional(z.string()),
   data: z.unknown(),
 });
 
 const stepStartPartSchema = z.object({
-  type: z.literal('step-start'),
+  type: z.literal("step-start"),
 });
 
 const messagePartSchema = z.union([
@@ -119,7 +119,7 @@ const messagePartSchema = z.union([
 
 export const messageSchema = z.object({
   id: z.string(),
-  role: z.enum(['system', 'user', 'assistant']),
+  role: z.enum(["system", "user", "assistant"]),
   metadata: z.optional(z.unknown()),
   parts: z.array(messagePartSchema),
 });

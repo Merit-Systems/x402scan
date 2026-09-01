@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 import {
   BaseAreaChart,
   LoadingAreaChart,
-} from '@/components/ui/charts/chart/area';
-import type { ChartData } from '@/components/ui/charts/chart/types';
-import { api } from '@/trpc/client';
+} from "@/components/ui/charts/chart/area";
+import type { ChartData } from "@/components/ui/charts/chart/types";
+import { api } from "@/trpc/client";
 
 interface Props {
   addresses: string[];
@@ -35,7 +35,7 @@ export const SellerChart = ({ addresses }: Props) => {
 
   const chartData: ChartData<{
     value: number;
-  }>[] = bucketedStats.map(stat => ({
+  }>[] = bucketedStats.map((stat) => ({
     timestamp: stat.bucket_start.toISOString(),
     value: stat.total_transactions,
   }));
@@ -45,8 +45,8 @@ export const SellerChart = ({ addresses }: Props) => {
       data={chartData}
       areas={[
         {
-          dataKey: 'value',
-          color: 'var(--color-primary)',
+          dataKey: "value",
+          color: "var(--color-primary)",
         },
       ]}
       height={32}

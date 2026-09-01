@@ -1,31 +1,31 @@
-import { useIsInitialized } from '@coinbase/cdp-hooks';
+import { useIsInitialized } from "@coinbase/cdp-hooks";
 
-import { ConnectWalletState } from '../1-connect';
-import { LoadingState } from '../2-loading-balance';
-import { AddFundsState } from '../3-add-funds';
-import { FetchState } from '../4-fetch';
-import { PriceConfirmationDialog } from '../price-confirmation-dialog';
+import { ConnectWalletState } from "../1-connect";
+import { LoadingState } from "../2-loading-balance";
+import { AddFundsState } from "../3-add-funds";
+import { FetchState } from "../4-fetch";
+import { PriceConfirmationDialog } from "../price-confirmation-dialog";
 
-import { useSvmX402FetchWithConfirmation } from '@/app/(app)/_hooks/x402/svm-with-confirmation';
-import { useSPLTokenBalance } from '@/app/(app)/_hooks/balance/token/use-svm-token-balance';
+import { useSvmX402FetchWithConfirmation } from "@/app/(app)/_hooks/x402/svm-with-confirmation";
+import { useSPLTokenBalance } from "@/app/(app)/_hooks/balance/token/use-svm-token-balance";
 
-import { useSolanaWallet } from '@/app/_contexts/solana/hook';
+import { useSolanaWallet } from "@/app/_contexts/solana/hook";
 
-import type { SupportedChain } from '@/types/chain';
-import { Chain } from '@/types/chain';
+import type { SupportedChain } from "@/types/chain";
+import { Chain } from "@/types/chain";
 
-import { convertTokenAmount } from '@/lib/token';
+import { convertTokenAmount } from "@/lib/token";
 
-import type { UiWalletAccount } from '@wallet-standard/react';
-import type { UseMutationOptions } from '@tanstack/react-query';
-import type { X402FetchResponse } from '@/app/(app)/_hooks/x402/types';
+import type { UiWalletAccount } from "@wallet-standard/react";
+import type { UseMutationOptions } from "@tanstack/react-query";
+import type { X402FetchResponse } from "@/app/(app)/_hooks/x402/types";
 
 interface Props<TData = unknown> {
   allRequiredFieldsFilled: boolean;
   maxAmountRequired: bigint;
   targetUrl: string;
   requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
+  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
   isTool?: boolean;
   text?: string;
 }
@@ -84,7 +84,7 @@ type FetchContentProps = {
   account: UiWalletAccount;
   isTool?: boolean;
   balance: number;
-} & Omit<Props, 'chain'>;
+} & Omit<Props, "chain">;
 
 const FetchContent: React.FC<FetchContentProps> = ({
   account,
@@ -116,7 +116,7 @@ const FetchContent: React.FC<FetchContentProps> = ({
         // Don't call the original onError for price confirmation required
         if (
           error instanceof Error &&
-          error.message === 'PRICE_CONFIRMATION_REQUIRED'
+          error.message === "PRICE_CONFIRMATION_REQUIRED"
         ) {
           return;
         }
@@ -145,7 +145,7 @@ const FetchContent: React.FC<FetchContentProps> = ({
         />
         <PriceConfirmationDialog
           open={true}
-          onOpenChange={open => {
+          onOpenChange={(open) => {
             if (!open) {
               cancelPriceIncrease();
             }

@@ -1,5 +1,5 @@
-import { scanDb } from '@x402scan/scan-db';
-import { z } from 'zod';
+import { scanDb } from "@x402scan/scan-db";
+import { z } from "zod";
 
 export const createExcludedResourceSchema = z.object({
   resourceId: z.uuid(),
@@ -37,7 +37,7 @@ export const getAllExcludedResources = async () => {
     },
     orderBy: {
       resource: {
-        resource: 'asc',
+        resource: "asc",
       },
     },
   });
@@ -66,20 +66,20 @@ export const searchResourcesForExcludes = async (search?: string) => {
               {
                 resource: {
                   contains: search,
-                  mode: 'insensitive',
+                  mode: "insensitive",
                 },
               },
               {
                 origin: {
                   origin: {
                     contains: search,
-                    mode: 'insensitive',
+                    mode: "insensitive",
                   },
                 },
               },
               {
                 metadata: {
-                  path: ['title'],
+                  path: ["title"],
                   string_contains: search,
                 },
               },
@@ -97,6 +97,6 @@ export const searchResourcesForExcludes = async (search?: string) => {
       },
     },
     take: 50,
-    orderBy: [{ invocations: { _count: 'desc' } }, { resource: 'asc' }],
+    orderBy: [{ invocations: { _count: "desc" } }, { resource: "asc" }],
   });
 };

@@ -1,8 +1,8 @@
-import { useX402FetchWithPriceConfirmation } from './use-fetch-with-price-confirmation';
-import { useEvmPaymentWrapper } from './evm';
-import { fetchWithProxy } from '@/lib/x402/proxy-fetch';
+import { useX402FetchWithPriceConfirmation } from "./use-fetch-with-price-confirmation";
+import { useEvmPaymentWrapper } from "./evm";
+import { fetchWithProxy } from "@/lib/x402/proxy-fetch";
 
-import type { UseEvmX402FetchParams } from './types';
+import type { UseEvmX402FetchParams } from "./types";
 
 /**
  * EVM-specific hook for x402 payments with dynamic price confirmation.

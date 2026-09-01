@@ -1,16 +1,16 @@
 import {
   listTopFacilitators,
   listTopFacilitatorsInputSchema,
-} from '@/services/transfers/facilitators/list';
+} from "@/services/transfers/facilitators/list";
 import {
   createTRPCRouter,
   paginatedProcedure,
   publicProcedure,
-} from '../../trpc';
+} from "../../trpc";
 import {
   bucketedStatisticsInputSchema,
   getBucketedFacilitatorsStatistics,
-} from '@/services/transfers/facilitators/bucketed';
+} from "@/services/transfers/facilitators/bucketed";
 
 export const facilitatorsRouter = createTRPCRouter({
   list: paginatedProcedure

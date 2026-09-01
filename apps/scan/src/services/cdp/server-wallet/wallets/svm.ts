@@ -10,34 +10,34 @@ import {
   setTransactionMessageFeePayerSigner,
   setTransactionMessageLifetimeUsingBlockhash,
   address as solanaAddress,
-} from '@solana/kit';
+} from "@solana/kit";
 import {
   findAssociatedTokenPda,
   TOKEN_PROGRAM_ADDRESS,
   getTransferCheckedInstruction,
   getCreateAssociatedTokenIdempotentInstructionAsync,
-} from '@solana-program/token';
+} from "@solana-program/token";
 import {
   assertIsTransactionWithinSizeLimit,
   compileTransaction,
   getTransactionLifetimeConstraintFromCompiledTransactionMessage,
-} from '@solana/transactions';
-import { getCompiledTransactionMessageDecoder } from '@solana/transaction-messages';
+} from "@solana/transactions";
+import { getCompiledTransactionMessageDecoder } from "@solana/transaction-messages";
 
-import { cdpClient } from '../client';
+import { cdpClient } from "../client";
 
 import {
   getSolanaNativeBalance,
   getSolanaTokenBalance,
-} from '@/services/solana/balance';
-import { solanaRpc } from '@/services/rpc/solana';
+} from "@/services/solana/balance";
+import { solanaRpc } from "@/services/rpc/solana";
 
-import { cdpResultFromPromise } from '../../result';
+import { cdpResultFromPromise } from "../../result";
 
-import type { Chain } from '@/types/chain';
-import type { TransactionModifyingSigner } from '@solana/kit';
-import type { NetworkServerWallet } from './types';
-import type { SolanaAddress } from '@/types/address';
+import type { Chain } from "@/types/chain";
+import type { TransactionModifyingSigner } from "@solana/kit";
+import type { NetworkServerWallet } from "./types";
+import type { SolanaAddress } from "@/types/address";
 
 export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
   name: string
@@ -52,56 +52,56 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
 
   return {
     address: () =>
-      cdpResultFromPromise('getAddress', getAddress(), e => ({
-        cause: 'bad_gateway',
+      cdpResultFromPromise("getAddress", getAddress(), (e) => ({
+        cause: "bad_gateway",
         message:
-          e instanceof Error ? e.message : 'Failed to get wallet address',
+          e instanceof Error ? e.message : "Failed to get wallet address",
       })),
     getNativeTokenBalance: () =>
       cdpResultFromPromise(
-        'getNativeTokenBalance',
-        getAddress().then(address => getSolanaNativeBalance(address)),
-        e => ({
-          cause: 'bad_gateway',
+        "getNativeTokenBalance",
+        getAddress().then((address) => getSolanaNativeBalance(address)),
+        (e) => ({
+          cause: "bad_gateway",
           message:
             e instanceof Error
               ? e.message
-              : 'Failed to get native token balance',
+              : "Failed to get native token balance",
         })
       ),
     getTokenBalance: ({ token }) =>
       cdpResultFromPromise(
-        'getTokenBalance',
-        getAddress().then(address =>
+        "getTokenBalance",
+        getAddress().then((address) =>
           getSolanaTokenBalance({
             ownerAddress: address,
             tokenMint: token.address as SolanaAddress,
           })
         ),
-        e => ({
-          cause: 'bad_gateway',
+        (e) => ({
+          cause: "bad_gateway",
           message:
-            e instanceof Error ? e.message : 'Failed to get token balance',
+            e instanceof Error ? e.message : "Failed to get token balance",
         })
       ),
     export: () =>
       cdpResultFromPromise(
-        'export',
-        getAddress().then(address =>
+        "export",
+        getAddress().then((address) =>
           cdpClient.solana.exportAccount({
             address,
             name,
           })
         ),
-        e => ({
-          cause: 'bad_gateway',
-          message: e instanceof Error ? e.message : 'Failed to export wallet',
+        (e) => ({
+          cause: "bad_gateway",
+          message: e instanceof Error ? e.message : "Failed to export wallet",
         })
       ),
     signer: async () => getModifyingSigner(await getAccount()),
     sendTokens: ({ address, token, amount }) =>
       cdpResultFromPromise(
-        'sendTokens',
+        "sendTokens",
         (async () => {
           const account = await getAccount();
 
@@ -150,13 +150,13 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
 
           const transactionMessage = pipe(
             createTransactionMessage({ version: 0 }),
-            message =>
+            (message) =>
               setTransactionMessageLifetimeUsingBlockhash(
                 latestBlockhash,
                 message
               ),
-            message => setTransactionMessageFeePayerSigner(signer, message),
-            message =>
+            (message) => setTransactionMessageFeePayerSigner(signer, message),
+            (message) =>
               appendTransactionMessageInstructions(instructions, message)
           );
 
@@ -166,7 +166,7 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
             getBase64EncodedWireTransaction(compiledTransaction);
 
           const { transactionSignature } = await account.sendTransaction({
-            network: 'solana',
+            network: "solana",
             transaction: base64Transaction,
           });
 
@@ -180,9 +180,9 @@ export const svmServerWallet: NetworkServerWallet<Chain.SOLANA> = (
 
           return transactionSignatureBase58;
         })(),
-        e => ({
-          cause: 'bad_gateway',
-          message: e instanceof Error ? e.message : 'Failed to send tokens',
+        (e) => ({
+          cause: "bad_gateway",
+          message: e instanceof Error ? e.message : "Failed to send tokens",
         })
       ),
   };
@@ -197,9 +197,9 @@ const getModifyingSigner = (
 
   return {
     address: address(account.address),
-    modifyAndSignTransactions: async transactions => {
+    modifyAndSignTransactions: async (transactions) => {
       const signedTransactions = await Promise.all(
-        transactions.map(async transaction => {
+        transactions.map(async (transaction) => {
           const base64Transaction =
             getBase64EncodedWireTransaction(transaction);
 

@@ -2,11 +2,11 @@ import {
   serverResultFromPromise,
   serverErr,
   serverOk,
-} from '@/lib/server-result';
+} from "@/lib/server-result";
 
-import type { BaseServerError } from '@/lib/server-result';
+import type { BaseServerError } from "@/lib/server-result";
 
-const type = 'database';
+const type = "database";
 
 export const dbOk = <T>(data: T) => serverOk(data);
 export const dbErr = (surface: string, error: BaseServerError) =>

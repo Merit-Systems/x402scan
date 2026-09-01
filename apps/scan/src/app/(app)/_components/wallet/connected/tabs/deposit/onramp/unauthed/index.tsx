@@ -1,7 +1,7 @@
-import { useWalletChain } from '@/app/(app)/_contexts/wallet-chain/hook';
-import { Chain } from '@/types/chain';
-import { NoSVMSessionContent } from './svm';
-import { NoEVMSessionContent } from './evm';
+import { useWalletChain } from "@/app/(app)/_contexts/wallet-chain/hook";
+import { Chain } from "@/types/chain";
+import { NoSVMSessionContent } from "./svm";
+import { NoEVMSessionContent } from "./evm";
 
 export const UnauthedOnramp = () => {
   const { chain } = useWalletChain();

@@ -1,8 +1,8 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import { facilitatorIdMap } from '@/lib/facilitators';
+import { facilitatorIdMap } from "@/lib/facilitators";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface Props {
   id: string;
@@ -17,7 +17,7 @@ export const Facilitator: React.FC<Props> = ({ id, className }) => {
   }
 
   return (
-    <div className={cn('flex items-center gap-1', className)}>
+    <div className={cn("flex items-center gap-1", className)}>
       <Image
         src={facilitator?.image}
         alt={facilitator?.name}
@@ -43,9 +43,9 @@ export const Facilitators: React.FC<FacilitatorsProps> = ({
   }
 
   return (
-    <div className={cn('flex items-center gap-1', className)}>
+    <div className={cn("flex items-center gap-1", className)}>
       <div className="flex items-center gap-0.5">
-        {ids.map(id => {
+        {ids.map((id) => {
           const facilitator = facilitatorIdMap.get(id);
           if (!facilitator) {
             return null;

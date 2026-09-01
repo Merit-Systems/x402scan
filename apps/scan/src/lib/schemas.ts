@@ -1,15 +1,15 @@
-import z from 'zod';
+import z from "zod";
 
-import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
+import { Chain, SUPPORTED_CHAINS } from "@/types/chain";
 
-import { isAddress } from 'viem';
-import type { SolanaAddress } from '@/types/address';
-import type { Address } from 'viem';
+import { isAddress } from "viem";
+import type { SolanaAddress } from "@/types/address";
+import type { Address } from "viem";
 
 export const ethereumAddressSchema = z
   .string()
-  .refine(a => isAddress(a, { strict: false }), 'Invalid EVM address')
-  .transform(a => a.toLowerCase() as Address);
+  .refine((a) => isAddress(a, { strict: false }), "Invalid EVM address")
+  .transform((a) => a.toLowerCase() as Address);
 
 export const sortingSchema = (sortIds: string[] | readonly string[]) =>
   z.object({
@@ -19,13 +19,13 @@ export const sortingSchema = (sortIds: string[] | readonly string[]) =>
 // Add a Solana address schema
 export const solanaAddressSchema = z
   .string()
-  .regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/, 'Invalid Solana address')
-  .transform(address => address as SolanaAddress);
+  .regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/, "Invalid Solana address")
+  .transform((address) => address as SolanaAddress);
 
 // Create a mixed address schema
 export const mixedAddressSchema = z
   .union([ethereumAddressSchema, solanaAddressSchema])
-  .transform(address => address);
+  .transform((address) => address);
 
 export const chainSchema = z.enum(Chain);
 export const optionalChainSchema = chainSchema.optional();

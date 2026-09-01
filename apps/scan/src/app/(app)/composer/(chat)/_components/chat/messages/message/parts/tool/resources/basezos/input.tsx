@@ -1,8 +1,8 @@
-import { Search } from 'lucide-react';
+import { Search } from "lucide-react";
 
-import z from 'zod';
+import z from "zod";
 
-import type { InputComponent } from '../types';
+import type { InputComponent } from "../types";
 
 const schema = z.object({
   searchQuery: z.string().min(1),
@@ -22,13 +22,13 @@ export const BasezosInput: InputComponent = ({ input }) => {
     <div className="flex items-center gap-2">
       <Search className="size-4 shrink-0" />
       <p className="text-sm font-medium">
-        {searchQuery}{' '}
+        {searchQuery}{" "}
         {pages > 1 ? (
-          <span className="text-muted-foreground text-xs">
-            ({pages} page{pages > 1 ? 's' : ''})
+          <span className="text-xs text-muted-foreground">
+            ({pages} page{pages > 1 ? "s" : ""})
           </span>
         ) : (
-          ''
+          ""
         )}
       </p>
     </div>

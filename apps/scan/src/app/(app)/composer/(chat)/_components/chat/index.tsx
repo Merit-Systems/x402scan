@@ -1,18 +1,18 @@
-import { ChatContent } from './content';
-import { ConnectDialog } from './auth';
-import { Onboarding } from './onboarding';
+import { ChatContent } from "./content";
+import { ConnectDialog } from "./auth";
+import { Onboarding } from "./onboarding";
 
-import { serverCookieUtils } from '../../chat/_lib/cookies/server';
+import { serverCookieUtils } from "../../chat/_lib/cookies/server";
 
-import { auth } from '@/auth';
+import { auth } from "@/auth";
 
-import type { Message } from '@x402scan/scan-db/types';
-import type { RouterOutputs } from '@/trpc/client';
+import type { Message } from "@x402scan/scan-db/types";
+import type { RouterOutputs } from "@/trpc/client";
 
 interface Props {
   id: string;
   initialMessages: Message[];
-  agentConfig?: NonNullable<RouterOutputs['public']['agents']['get']>;
+  agentConfig?: NonNullable<RouterOutputs["public"]["agents"]["get"]>;
   isReadOnly?: boolean;
   storeConfig?: boolean;
 }
@@ -40,9 +40,11 @@ export const Chat: React.FC<Props> = async ({
     ? {
         model:
           agentConfig.model ??
-          (await serverCookieUtils.getConfig().then(config => config.model)) ??
+          (await serverCookieUtils
+            .getConfig()
+            .then((config) => config.model)) ??
           undefined,
-        resources: agentConfig.resources.map(resource => ({
+        resources: agentConfig.resources.map((resource) => ({
           id: resource.id,
           favicon: resource.favicon ?? null,
         })),

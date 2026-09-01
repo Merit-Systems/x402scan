@@ -1,5 +1,5 @@
-import { TRANSFER_TOPIC } from '@/trigger/lib/constants';
-import { logger } from '@trigger.dev/sdk/v3';
+import { TRANSFER_TOPIC } from "@/trigger/lib/constants";
+import { logger } from "@trigger.dev/sdk/v3";
 import type {
   EvmBitQueryEventRow,
   EvmBitqueryEventsResponse,
@@ -7,9 +7,9 @@ import type {
   FacilitatorConfig,
   SyncConfig,
   TransferEventData,
-} from '@/trigger/types';
+} from "@/trigger/types";
 
-const TRANSFER_TOPIC_WITHOUT_PREFIX = TRANSFER_TOPIC.replace(/^0x/, '');
+const TRANSFER_TOPIC_WITHOUT_PREFIX = TRANSFER_TOPIC.replace(/^0x/, "");
 
 export function buildQuery(
   config: SyncConfig,
@@ -106,10 +106,10 @@ export function transformResponse(
 ): TransferEventData[] {
   const events = data.EVM.Events;
 
-  return events.flatMap(event => {
-    const sender = getAddressArgument(event, 'from');
-    const recipient = getAddressArgument(event, 'to');
-    const amount = getBigIntArgument(event, 'value');
+  return events.flatMap((event) => {
+    const sender = getAddressArgument(event, "from");
+    const recipient = getAddressArgument(event, "to");
+    const amount = getBigIntArgument(event, "value");
 
     if (!sender || !recipient || !amount) {
       logger.warn(
@@ -139,7 +139,7 @@ function getAddressArgument(
   event: EvmBitQueryEventRow,
   name: string
 ): string | undefined {
-  return event.Arguments.find(argument => argument.Name === name)?.Value
+  return event.Arguments.find((argument) => argument.Name === name)?.Value
     .address;
 }
 
@@ -147,6 +147,6 @@ function getBigIntArgument(
   event: EvmBitQueryEventRow,
   name: string
 ): string | undefined {
-  return event.Arguments.find(argument => argument.Name === name)?.Value
+  return event.Arguments.find((argument) => argument.Name === name)?.Value
     .bigInteger;
 }

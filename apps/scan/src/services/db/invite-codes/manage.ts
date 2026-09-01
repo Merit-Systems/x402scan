@@ -1,10 +1,10 @@
-import z from 'zod';
+import z from "zod";
 
-import { scanDb, InviteCodeStatus } from '@x402scan/scan-db';
+import { scanDb, InviteCodeStatus } from "@x402scan/scan-db";
 
-import { inviteCodeByIdSchema } from './schemas';
+import { inviteCodeByIdSchema } from "./schemas";
 
-import type { InviteCodeById } from './schemas';
+import type { InviteCodeById } from "./schemas";
 
 const updateInviteCodeStatus = async (id: string, status: InviteCodeStatus) => {
   return scanDb.inviteCode.update({
@@ -23,7 +23,7 @@ export const reactivateInviteCode = async ({ id }: InviteCodeById) => {
   });
 
   if (!inviteCode) {
-    throw new Error('Invite code not found');
+    throw new Error("Invite code not found");
   }
 
   // Check if the code can be reactivated
@@ -31,7 +31,7 @@ export const reactivateInviteCode = async ({ id }: InviteCodeById) => {
     inviteCode.maxRedemptions > 0 &&
     inviteCode.redemptionCount >= inviteCode.maxRedemptions
   ) {
-    throw new Error('Cannot reactivate exhausted invite code');
+    throw new Error("Cannot reactivate exhausted invite code");
   }
 
   return updateInviteCodeStatus(id, InviteCodeStatus.ACTIVE);
@@ -50,7 +50,7 @@ export const updateMaxRedemptions = async ({
   });
 
   if (!inviteCode) {
-    throw new Error('Invite code not found');
+    throw new Error("Invite code not found");
   }
 
   const updated = await scanDb.inviteCode.update({
@@ -60,7 +60,7 @@ export const updateMaxRedemptions = async ({
 
   // If code was exhausted but now has room, reactivate it
   if (
-    updated.status === 'EXHAUSTED' &&
+    updated.status === "EXHAUSTED" &&
     (maxRedemptions === 0 || updated.redemptionCount < maxRedemptions)
   ) {
     return scanDb.inviteCode.update({

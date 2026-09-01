@@ -1,19 +1,19 @@
-import { notFound } from 'next/navigation';
+import { notFound } from "next/navigation";
 
-import { Body } from '@/app/_components/layout/page-utils';
+import { Body } from "@/app/_components/layout/page-utils";
 
-import { HeaderCard } from './_components/header';
-import { Activity } from './_components/activity';
-import { LatestTransactions } from './_components/transactions';
+import { HeaderCard } from "./_components/header";
+import { Activity } from "./_components/activity";
+import { LatestTransactions } from "./_components/transactions";
 
-import { facilitatorIdMap } from '@/lib/facilitators';
-import { api } from '@/trpc/server';
-import { ActivityTimeframe } from '@/types/timeframes';
-import type { Metadata } from 'next';
+import { facilitatorIdMap } from "@/lib/facilitators";
+import { api } from "@/trpc/server";
+import { ActivityTimeframe } from "@/types/timeframes";
+import type { Metadata } from "next";
 
 export default async function FacilitatorPage({
   params,
-}: PageProps<'/facilitator/[id]'>) {
+}: PageProps<"/facilitator/[id]">) {
   const { id } = await params;
   const facilitator = facilitatorIdMap.get(id);
   if (!facilitator) {
@@ -37,11 +37,11 @@ export default async function FacilitatorPage({
 
 export const generateMetadata = async ({
   params,
-}: PageProps<'/facilitator/[id]'>): Promise<Metadata> => {
+}: PageProps<"/facilitator/[id]">): Promise<Metadata> => {
   const { id } = await params;
   const facilitator = facilitatorIdMap.get(id);
   if (!facilitator) {
-    return { title: 'Facilitator not found' };
+    return { title: "Facilitator not found" };
   }
   return {
     title: facilitator.name,

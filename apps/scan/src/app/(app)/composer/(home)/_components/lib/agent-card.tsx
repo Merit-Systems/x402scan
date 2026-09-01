@@ -4,27 +4,27 @@ import {
   MessagesSquare,
   Users,
   Wrench,
-} from 'lucide-react';
+} from "lucide-react";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Favicons, LoadingFavicons } from '@/app/(app)/_components/favicon';
+} from "@/components/ui/card";
+import { Favicons, LoadingFavicons } from "@/app/(app)/_components/favicon";
 
-import type { RouterOutputs } from '@/trpc/client';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
+import type { RouterOutputs } from "@/trpc/client";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
-import type { LucideIcon } from 'lucide-react';
-import type { Route } from 'next';
+import type { LucideIcon } from "lucide-react";
+import type { Route } from "next";
 
 interface Props<T extends string> {
-  agentConfiguration: RouterOutputs['public']['agents']['list']['items'][number];
+  agentConfiguration: RouterOutputs["public"]["agents"]["list"]["items"][number];
   href?: Route<T>;
 }
 
@@ -36,39 +36,39 @@ export const AgentCard = <T extends string>({
     <Link
       href={href ?? (`/composer/agent/${agentConfiguration.id}` as Route<T>)}
     >
-      <Card className="hover:border-primary transition-colors overflow-hidden flex flex-col justify-between h-full">
-        <CardHeader className="border-b flex-1">
+      <Card className="flex h-full flex-col justify-between overflow-hidden transition-colors hover:border-primary">
+        <CardHeader className="flex-1 border-b">
           <div className="flex flex-row items-center gap-3">
             {agentConfiguration.image ? (
               <img
                 src={agentConfiguration.image}
                 alt={agentConfiguration.name}
-                className="size-5 rounded-md object-cover bg-muted"
+                className="size-5 rounded-md bg-muted object-cover"
               />
             ) : (
               <BotMessageSquare className="size-5" />
             )}
-            <CardTitle>{agentConfiguration.name || 'Untitled'}</CardTitle>
+            <CardTitle>{agentConfiguration.name || "Untitled"}</CardTitle>
           </div>
-          <CardDescription className="text-xs line-clamp-2">
+          <CardDescription className="line-clamp-2 text-xs">
             {agentConfiguration.description &&
             agentConfiguration.description.length > 0
               ? agentConfiguration.description
-              : 'No description'}
+              : "No description"}
           </CardDescription>
         </CardHeader>
         <div
           className={cn(
-            'grid overflow-hidden relative md:col-span-2',
-            'grid-cols-2',
-            '[&>*:nth-child(odd)]:border-r',
-            '[&>*:nth-child(-n+2)]:border-b'
+            "grid overflow-hidden relative md:col-span-2",
+            "grid-cols-2",
+            "[&>*:nth-child(odd)]:border-r",
+            "[&>*:nth-child(-n+2)]:border-b"
           )}
         >
           <StatCard title="Tools" Icon={Wrench}>
             <Favicons
               favicons={agentConfiguration.resources.map(
-                resource => resource.originFavicon ?? null
+                (resource) => resource.originFavicon ?? null
               )}
               iconContainerClassName="size-4 bg-card mt-1"
             />
@@ -108,9 +108,9 @@ const BaseStatCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex flex-row justify-between items-center flex-1 px-2 py-1">
-      <p className="text-[10px] font-medium leading-none">{title}</p>
-      <div className="gap-1 flex items-center justify-start text-sm font-bold font-mono">
+    <div className="flex flex-1 flex-row items-center justify-between px-2 py-1">
+      <p className="text-[10px] leading-none font-medium">{title}</p>
+      <div className="flex items-center justify-start gap-1 font-mono text-sm font-bold">
         {children}
       </div>
     </div>
@@ -119,20 +119,20 @@ const BaseStatCard = ({
 
 export const LoadingAgentCard = () => {
   return (
-    <Card className="overflow-hidden flex flex-col justify-between h-full">
-      <CardHeader className="border-b flex-1">
+    <Card className="flex h-full flex-col justify-between overflow-hidden">
+      <CardHeader className="flex-1 border-b">
         <div className="flex flex-row items-center gap-3">
           <Skeleton className="size-5" />
-          <Skeleton className="w-16 h-4" />
+          <Skeleton className="h-4 w-16" />
         </div>
-        <Skeleton className="w-full h-4" />
+        <Skeleton className="h-4 w-full" />
       </CardHeader>
       <div
         className={cn(
-          'grid overflow-hidden relative md:col-span-2',
-          'grid-cols-2',
-          '[&>*:nth-child(odd)]:border-r',
-          '[&>*:nth-child(-n+2)]:border-b'
+          "grid overflow-hidden relative md:col-span-2",
+          "grid-cols-2",
+          "[&>*:nth-child(odd)]:border-r",
+          "[&>*:nth-child(-n+2)]:border-b"
         )}
       >
         <StatCard title="Tools" Icon={Wrench}>
@@ -143,13 +143,13 @@ export const LoadingAgentCard = () => {
           />
         </StatCard>
         <StatCard title="Users" Icon={Users}>
-          <Skeleton className="w-8 h-4" />
+          <Skeleton className="h-4 w-8" />
         </StatCard>
         <StatCard title="Requests" Icon={MessagesSquare}>
-          <Skeleton className="w-8 h-4" />
+          <Skeleton className="h-4 w-8" />
         </StatCard>
         <StatCard title="Tool Calls" Icon={DollarSign}>
-          <Skeleton className="w-8 h-4" />
+          <Skeleton className="h-4 w-8" />
         </StatCard>
       </div>
     </Card>

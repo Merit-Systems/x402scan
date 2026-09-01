@@ -1,19 +1,19 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
 
-import { CreateAgentForm } from '../../../_components/new-agent/form';
+import { CreateAgentForm } from "../../../_components/new-agent/form";
 
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function NewAgentPage() {
   const session = await auth();
 
   if (!session) {
-    return redirect('/composer/agents/new');
+    return redirect("/composer/agents/new");
   }
 
   return (
-    <div className="flex w-full flex-1 h-0 flex-col py-8 md:py-12 overflow-y-auto relative">
+    <div className="relative flex h-0 w-full flex-1 flex-col overflow-y-auto py-8 md:py-12">
       <Heading
         title="Create an Agent"
         description="Design an agent with x402 resources and custom behavior."

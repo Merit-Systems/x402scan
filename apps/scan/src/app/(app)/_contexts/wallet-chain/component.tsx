@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from "lucide-react";
 
-import Image from 'next/image';
+import Image from "next/image";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 
-import { Chain } from '@/app/(app)/_components/chains';
+import { Chain } from "@/app/(app)/_components/chains";
 
-import { useWalletChain } from './hook';
+import { useWalletChain } from "./hook";
 
-import { SUPPORTED_CHAINS, CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
+import { SUPPORTED_CHAINS, CHAIN_LABELS, CHAIN_ICONS } from "@/types/chain";
 
-import type { SupportedChain } from '@/types/chain';
+import type { SupportedChain } from "@/types/chain";
 
 interface Props {
   options?: SupportedChain[];
@@ -67,11 +67,11 @@ const WalletChainSelector: React.FC<Props> = ({ options }) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[140px] p-1">
-        {(options ?? SUPPORTED_CHAINS).map(value => (
+        {(options ?? SUPPORTED_CHAINS).map((value) => (
           <Button
             key={value}
             variant="ghost"
-            className="w-full justify-start gap-2 h-8"
+            className="h-8 w-full justify-start gap-2"
             onClick={() => {
               setChain(value);
               setIsOpen(false);

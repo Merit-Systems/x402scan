@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import { usePostHog } from 'posthog-js/react';
+import { usePostHog } from "posthog-js/react";
 import {
   Check,
   ChevronDown,
@@ -12,47 +12,47 @@ import {
   CircleHelp,
   TriangleAlert,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+} from "@/components/ui/collapsible";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from "@/components/ui/tooltip";
 
 import {
   DiscoveryFixHint,
   DiscoveryPanel,
   useDiscovery,
-} from '@/app/(app)/_components/discovery';
-import { DiscoveryActions } from '@/app/(app)/_components/discovery/discovery-actions';
-import { Favicon } from '@/app/(app)/_components/favicon';
+} from "@/app/(app)/_components/discovery";
+import { DiscoveryActions } from "@/app/(app)/_components/discovery/discovery-actions";
+import { Favicon } from "@/app/(app)/_components/favicon";
 import {
   isOpenApiDeclaredFree,
   isRegistrableEndpoint,
-} from '@/lib/discovery/catalog-auth';
-import { normalizeUrl } from '@/lib/url';
-import { resourceKey } from '@/lib/resource-key';
-import { api } from '@/trpc/client';
-import type { DiscoveredResource } from '@/types/discovery';
-import Link from 'next/link';
-import { toast } from 'sonner';
-import { z } from 'zod';
+} from "@/lib/discovery/catalog-auth";
+import { normalizeUrl } from "@/lib/url";
+import { resourceKey } from "@/lib/resource-key";
+import { api } from "@/trpc/client";
+import type { DiscoveredResource } from "@/types/discovery";
+import Link from "next/link";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const CONTACT_EMAIL_PROMPT = `My openapi.json is missing an info.contact.email field. Add it so I can verify ownership of my origin, let users contact me, and customize my merchant pages on Poncho.
 
@@ -83,38 +83,38 @@ interface ManualRegistrationResult {
 function getErrorMessageFromRegisterResult(result: {
   success: false;
   error: {
-    type: 'parseErrors' | 'no402' | 'tunnel' | 'noDiscovery' | 'notInSpec';
+    type: "parseErrors" | "no402" | "tunnel" | "noDiscovery" | "notInSpec";
     message?: string;
     parseErrors?: string[];
   };
 }): string {
-  if (result.error.type === 'noDiscovery') {
+  if (result.error.type === "noDiscovery") {
     return (
       result.error.message ??
-      'No discovery document found. Add an openapi.json to your origin to register endpoints.'
+      "No discovery document found. Add an openapi.json to your origin to register endpoints."
     );
   }
 
-  if (result.error.type === 'notInSpec') {
+  if (result.error.type === "notInSpec") {
     return (
       result.error.message ??
       "This endpoint is not listed in the origin's openapi.json."
     );
   }
 
-  if (result.error.type === 'tunnel') {
-    return result.error.message ?? 'Tunnel URLs are not supported';
+  if (result.error.type === "tunnel") {
+    return result.error.message ?? "Tunnel URLs are not supported";
   }
 
-  if (result.error.type === 'parseErrors') {
+  if (result.error.type === "parseErrors") {
     const parseErrors = result.error.parseErrors ?? [];
     if (parseErrors.length > 0) {
-      return `parseResponse: ${parseErrors.join(', ')}`;
+      return `parseResponse: ${parseErrors.join(", ")}`;
     }
-    return 'parseResponse: Invalid x402 response';
+    return "parseResponse: Invalid x402 response";
   }
 
-  return 'Expected 402 response';
+  return "Expected 402 response";
 }
 
 const registerSuccessResultSchema = z.object({
@@ -151,15 +151,15 @@ function getPrimaryProbeError(
     parseErrors?: string[];
   } | null
 ): string {
-  if (!failed) return 'Endpoint probe failed';
+  if (!failed) return "Endpoint probe failed";
   if (Array.isArray(failed.parseErrors) && failed.parseErrors.length > 0) {
     return failed.parseErrors[0] ?? failed.error;
   }
-  return failed.error || 'Endpoint probe failed';
+  return failed.error || "Endpoint probe failed";
 }
 
 export const RegisterResourceForm = () => {
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
   const [httpWarning, setHttpWarning] = useState(false);
   const [manualProgress, setManualProgress] = useState<{
     current: number;
@@ -284,7 +284,7 @@ export const RegisterResourceForm = () => {
     const failedDetails: { url: string; error: string; status?: number }[] = [];
 
     for (let index = 0; index < targets.length; index += 1) {
-      const targetUrl = targets[index] ?? '';
+      const targetUrl = targets[index] ?? "";
       setManualProgress({ current: index + 1, total: targets.length });
 
       try {
@@ -309,7 +309,7 @@ export const RegisterResourceForm = () => {
       } catch (error) {
         failedDetails.push({
           url: targetUrl,
-          error: error instanceof Error ? error.message : 'Request failed',
+          error: error instanceof Error ? error.message : "Request failed",
         });
       }
     }
@@ -327,7 +327,7 @@ export const RegisterResourceForm = () => {
       failed: failedDetails.length,
       failedDetails,
       originId,
-      origin: safeGetOrigin(targets[0] ?? ''),
+      origin: safeGetOrigin(targets[0] ?? ""),
     });
 
     setIsRegisteringManual(false);
@@ -348,25 +348,25 @@ export const RegisterResourceForm = () => {
       {/* Input */}
       <div className="space-y-3">
         <div className="space-y-1.5">
-          <div className="flex items-center h-12 rounded-md border bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+          <div className="flex h-12 items-center rounded-md border bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
             <span className="pl-3 text-base text-muted-foreground select-none">
               https://
             </span>
             <input
               type="text"
               placeholder="api.example.com"
-              value={url.replace(/^https?:\/\//, '')}
-              onChange={event => {
+              value={url.replace(/^https?:\/\//, "")}
+              onChange={(event) => {
                 const value = event.target.value;
-                setHttpWarning(value.startsWith('http://'));
-                const raw = value.replace(/^https?:\/\//, '');
+                setHttpWarning(value.startsWith("http://"));
+                const raw = value.replace(/^https?:\/\//, "");
                 handleUrlChange(`https://${raw}`);
               }}
-              className="flex-1 h-full bg-transparent px-1 text-base outline-none placeholder:text-muted-foreground/50"
+              className="h-full flex-1 bg-transparent px-1 text-base outline-none placeholder:text-muted-foreground/50"
             />
           </div>
           {httpWarning && (
-            <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1.5">
+            <p className="flex items-center gap-1.5 text-xs text-yellow-600 dark:text-yellow-500">
               <TriangleAlert className="size-3 shrink-0" />
               x402 requires HTTPS. We&apos;ve upgraded your URL automatically.
             </p>
@@ -389,12 +389,12 @@ export const RegisterResourceForm = () => {
             >
               {isRegisteringAll ? (
                 <>
-                  <Loader2 className="size-4 animate-spin mr-2" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   Registering resources...
                 </>
               ) : isBatchTestLoading ? (
                 <>
-                  <Loader2 className="size-4 animate-spin mr-2" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   {batchTestProgress
                     ? `Checking ${batchTestProgress.checked}/${batchTestProgress.total} endpoints...`
                     : `Checking ${actualDiscoveredResources.length} endpoints...`}
@@ -418,7 +418,7 @@ export const RegisterResourceForm = () => {
                 {isRegisteringManual ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  'This URL only'
+                  "This URL only"
                 )}
               </Button>
             )}
@@ -441,15 +441,15 @@ export const RegisterResourceForm = () => {
           >
             {isRegisteringManual ? (
               <>
-                <Loader2 className="size-4 animate-spin mr-2" />
+                <Loader2 className="mr-2 size-4 animate-spin" />
                 {manualProgress
                   ? `Checking ${manualProgress.current}/${manualProgress.total}`
-                  : 'Registering...'}
+                  : "Registering..."}
               </>
             ) : manualTargets.length > 1 ? (
               `Register ${manualTargets.length} URLs`
             ) : (
-              'Add'
+              "Add"
             )}
           </Button>
         )}
@@ -459,8 +459,8 @@ export const RegisterResourceForm = () => {
       {!activeBulkResult &&
         url.trim().length > 0 &&
         (() => {
-          const strippedDomain = url.replace(/^https?:\/\//, '').trim();
-          const hasTld = strippedDomain.includes('.');
+          const strippedDomain = url.replace(/^https?:\/\//, "").trim();
+          const hasTld = strippedDomain.includes(".");
           const showInvalidDomain = strippedDomain.length > 0 && !hasTld;
 
           return (
@@ -472,7 +472,7 @@ export const RegisterResourceForm = () => {
               )}
 
               {!showInvalidDomain && isValidUrl && isDiscoveryLoading && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground py-2">
+                <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
                   <Loader2 className="size-4 animate-spin" />
                   Checking for discoverable endpoints...
                 </div>
@@ -501,14 +501,14 @@ export const RegisterResourceForm = () => {
                 !isDiscoveryLoading &&
                 !hasDiscoveryResources &&
                 isOriginOnly && (
-                  <div className="text-sm space-y-1">
+                  <div className="space-y-1 text-sm">
                     <p className="text-red-600">
-                      {discoveryError?.includes('TypeError')
+                      {discoveryError?.includes("TypeError")
                         ? "Couldn't reach this URL."
                         : (discoveryError ??
-                          'No discovery document found at this origin.')}
+                          "No discovery document found at this origin.")}
                     </p>
-                    {!discoveryError?.includes('TypeError') && (
+                    {!discoveryError?.includes("TypeError") && (
                       <DiscoveryFixHint noDiscovery />
                     )}
                   </div>
@@ -519,14 +519,14 @@ export const RegisterResourceForm = () => {
                 !isDiscoveryLoading &&
                 !hasDiscoveryResources &&
                 !isOriginOnly && (
-                  <div className="text-sm space-y-1">
+                  <div className="space-y-1 text-sm">
                     <p className="text-red-600">
-                      {discoveryError?.includes('TypeError')
+                      {discoveryError?.includes("TypeError")
                         ? "Couldn't reach this URL."
                         : (discoveryError ??
-                          'No discovery document found at this origin.')}
+                          "No discovery document found at this origin.")}
                     </p>
-                    {!discoveryError?.includes('TypeError') && (
+                    {!discoveryError?.includes("TypeError") && (
                       <DiscoveryFixHint noDiscovery />
                     )}
                   </div>
@@ -546,29 +546,31 @@ export const RegisterResourceForm = () => {
 
         const isV1Issue =
           failedResources.length > 0 &&
-          failedResources.every(r => r.error?.includes('v1 response detected'));
+          failedResources.every((r) =>
+            r.error?.includes("v1 response detected")
+          );
 
         return (
           <Collapsible defaultOpen>
             <CollapsibleTrigger asChild>
-              <button className="text-xs text-red-600 dark:text-red-500 flex items-center gap-1 hover:text-red-700 transition-colors">
+              <button className="flex items-center gap-1 text-xs text-red-600 transition-colors hover:text-red-700 dark:text-red-500">
                 <ChevronDown className="size-3" />
                 {failedResources.length} endpoint
-                {failedResources.length === 1 ? '' : 's'} with errors
+                {failedResources.length === 1 ? "" : "s"} with errors
               </button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="pt-2 space-y-2">
+            <CollapsibleContent className="space-y-2 pt-2">
               <p className="text-xs text-muted-foreground">
                 <strong>
                   {failedResources.length} endpoint
-                  {failedResources.length === 1 ? '' : 's'} won&apos;t be
+                  {failedResources.length === 1 ? "" : "s"} won&apos;t be
                   registered.
-                </strong>{' '}
+                </strong>{" "}
                 {isV1Issue
-                  ? 'This endpoint returns an x402 v1 response. x402scan only supports v2 — update your paywall to return the v2 format.'
+                  ? "This endpoint returns an x402 v1 response. x402scan only supports v2 — update your paywall to return the v2 format."
                   : 'They need to return a 402 payment challenge — ensure the x402 paywall runs before request validation, or mark the required parameters in your OpenAPI spec so we can probe automatically. If these endpoints are free (not x402-paid), add "security": [] to their OpenAPI definition to exclude them from probing.'}
               </p>
-              <div className="space-y-2 max-h-[360px] overflow-y-auto">
+              <div className="max-h-[360px] space-y-2 overflow-y-auto">
                 {failedResources.map((failed, idx) => (
                   <FailedResourceRow
                     key={`${failed.url}-${idx}`}
@@ -581,7 +583,7 @@ export const RegisterResourceForm = () => {
               </div>
               <DiscoveryFixHint
                 className="font-medium"
-                failedResources={failedResources.map(r => ({
+                failedResources={failedResources.map((r) => ({
                   url: r.url,
                   error: getPrimaryProbeError(r),
                   status: r.statusCode,
@@ -597,32 +599,32 @@ export const RegisterResourceForm = () => {
       {(() => {
         if (activeBulkResult || isBatchTestLoading) return null;
         const resourcesWithWarnings = testedResources.filter(
-          r => r.warnings && r.warnings.length > 0
+          (r) => r.warnings && r.warnings.length > 0
         );
         if (resourcesWithWarnings.length === 0) return null;
 
         return (
           <Collapsible>
             <CollapsibleTrigger asChild>
-              <button className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1 hover:text-yellow-700 transition-colors">
+              <button className="flex items-center gap-1 text-xs text-yellow-600 transition-colors hover:text-yellow-700 dark:text-yellow-500">
                 <ChevronDown className="size-3" />
                 {resourcesWithWarnings.length} endpoint
-                {resourcesWithWarnings.length === 1 ? '' : 's'} with warnings
+                {resourcesWithWarnings.length === 1 ? "" : "s"} with warnings
                 (Not blocking)
               </button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="pt-2 space-y-2">
+            <CollapsibleContent className="space-y-2 pt-2">
               <p className="text-xs text-muted-foreground">
                 These endpoints will still be registered, but have issues that
                 may affect agent compatibility.
               </p>
-              <div className="space-y-2 max-h-[360px] overflow-y-auto">
+              <div className="max-h-[360px] space-y-2 overflow-y-auto">
                 {resourcesWithWarnings.map((r, idx) => (
                   <div
                     key={`${r.url}-${idx}`}
-                    className="p-2 bg-muted/50 rounded border text-xs space-y-1"
+                    className="space-y-1 rounded border bg-muted/50 p-2 text-xs"
                   >
-                    <div className="font-mono text-muted-foreground truncate">
+                    <div className="truncate font-mono text-muted-foreground">
                       {toPathLabel(r.url)}
                     </div>
                     {r.warnings?.map((w, wi) => (
@@ -638,8 +640,8 @@ export const RegisterResourceForm = () => {
               </div>
               <DiscoveryFixHint
                 className="font-medium"
-                warnings={resourcesWithWarnings.flatMap(r =>
-                  (r.warnings ?? []).map(w => ({
+                warnings={resourcesWithWarnings.flatMap((r) =>
+                  (r.warnings ?? []).map((w) => ({
                     url: r.url,
                     error: w.message,
                   }))
@@ -657,28 +659,28 @@ export const RegisterResourceForm = () => {
       {!activeBulkResult && skippedResources.length > 0 && (
         <Collapsible>
           <CollapsibleTrigger asChild>
-            <button className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1 hover:text-yellow-700 transition-colors">
+            <button className="flex items-center gap-1 text-xs text-yellow-600 transition-colors hover:text-yellow-700 dark:text-yellow-500">
               <ChevronDown className="size-3" />
               {skippedResources.length} unprotected endpoint
-              {skippedResources.length === 1 ? '' : 's'} skipped
+              {skippedResources.length === 1 ? "" : "s"} skipped
             </button>
           </CollapsibleTrigger>
-          <CollapsibleContent className="pt-2 space-y-2">
+          <CollapsibleContent className="space-y-2 pt-2">
             <p className="text-xs text-muted-foreground">
               These endpoints have no x402 paywall and won&apos;t be registered.
               If they should be paid, add x402 payment middleware. If they are
-              intentionally free, declare{' '}
-              <code className="font-mono bg-muted px-1 rounded text-[11px]">
+              intentionally free, declare{" "}
+              <code className="rounded bg-muted px-1 font-mono text-[11px]">
                 &quot;security&quot;: []
-              </code>{' '}
+              </code>{" "}
               on them in your OpenAPI spec and they will be registered and shown
               as public endpoints.
             </p>
-            <div className="space-y-1 max-h-[200px] overflow-y-auto">
+            <div className="max-h-[200px] space-y-1 overflow-y-auto">
               {skippedResources.map((r, idx) => (
                 <div
                   key={idx}
-                  className="px-2 py-1 bg-muted/50 rounded text-xs font-mono text-muted-foreground"
+                  className="rounded bg-muted/50 px-2 py-1 font-mono text-xs text-muted-foreground"
                 >
                   {toPathLabel(r.url)}
                 </div>
@@ -721,9 +723,9 @@ export const RegisterResourceForm = () => {
 };
 
 const CALENDAR_URL =
-  'https://calendar.google.com/calendar/appointments/schedules/AcZssZ1JmDUvMb4QVktX4PscRA66DEAQCLHLJKRKvwFogirtp9JZ0s5l-Vj96Nthl3M16qDPOprzsK6U';
+  "https://calendar.google.com/calendar/appointments/schedules/AcZssZ1JmDUvMb4QVktX4PscRA66DEAQCLHLJKRKvwFogirtp9JZ0s5l-Vj96Nthl3M16qDPOprzsK6U";
 
-const STEP_NAMES = ['review_api_page', 'test_endpoints', 'schedule_call'];
+const STEP_NAMES = ["review_api_page", "test_endpoints", "schedule_call"];
 
 function PostRegistrationDialog({
   originId,
@@ -736,23 +738,23 @@ function PostRegistrationDialog({
 }) {
   const [open, setOpen] = useState(true);
   const [clickedSteps, setClickedSteps] = useState<Set<number>>(new Set());
-  const [email, setEmail] = useState(contactEmail ?? '');
+  const [email, setEmail] = useState(contactEmail ?? "");
   const [emailSubmitted, setEmailSubmitted] = useState(!!contactEmail);
   const posthog = usePostHog();
-  const dismissMethodRef = useRef<'skip' | 'overlay'>('overlay');
+  const dismissMethodRef = useRef<"skip" | "overlay">("overlay");
 
   const updateEmailMutation = api.public.origins.updateEmail.useMutation({
     onSuccess: () => {
       setEmailSubmitted(true);
-      posthog.capture('registration:email_submit', {
+      posthog.capture("registration:email_submit", {
         origin_id: originId,
         hostname,
-        app_surface: 'x402scan',
+        app_surface: "x402scan",
       });
-      window.open(CALENDAR_URL, '_blank');
+      window.open(CALENDAR_URL, "_blank");
     },
     onError: () => {
-      toast.error('Failed to save email. Please try again.');
+      toast.error("Failed to save email. Please try again.");
     },
   });
 
@@ -764,25 +766,25 @@ function PostRegistrationDialog({
   }
 
   useEffect(() => {
-    posthog.capture('registration:modal_view', {
+    posthog.capture("registration:modal_view", {
       origin_id: originId,
       hostname,
-      app_surface: 'x402scan',
+      app_surface: "x402scan",
       has_contact_email: !!contactEmail,
     });
   }, [posthog, originId, hostname, contactEmail]);
 
   const markClicked = (step: number) => {
     if (!clickedSteps.has(step)) {
-      posthog.capture('registration:step_click', {
+      posthog.capture("registration:step_click", {
         origin_id: originId,
         hostname,
-        app_surface: 'x402scan',
+        app_surface: "x402scan",
         step_number: step,
         step_name: STEP_NAMES[step - 1],
       });
     }
-    setClickedSteps(prev => new Set(prev).add(step));
+    setClickedSteps((prev) => new Set(prev).add(step));
   };
 
   const completedFlags = [
@@ -806,16 +808,16 @@ function PostRegistrationDialog({
       )}
       <Dialog
         open={open}
-        onOpenChange={nextOpen => {
+        onOpenChange={(nextOpen) => {
           if (!nextOpen) {
-            posthog.capture('registration:modal_close', {
+            posthog.capture("registration:modal_close", {
               origin_id: originId,
               hostname,
-              app_surface: 'x402scan',
+              app_surface: "x402scan",
               completed_steps: clickedSteps.size,
               dismiss_method: dismissMethodRef.current,
             });
-            dismissMethodRef.current = 'overlay';
+            dismissMethodRef.current = "overlay";
           }
           setOpen(nextOpen);
         }}
@@ -871,8 +873,8 @@ function PostRegistrationDialog({
             >
               {!emailSubmitted ? (
                 <form
-                  className="flex gap-2 flex-1"
-                  onSubmit={e => {
+                  className="flex flex-1 gap-2"
+                  onSubmit={(e) => {
                     e.preventDefault();
                     if (email.trim()) {
                       updateEmailMutation.mutate({ originId, email });
@@ -885,7 +887,7 @@ function PostRegistrationDialog({
                     autoComplete="email"
                     placeholder="you@example.com"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="flex-1"
                   />
                   <Button
@@ -898,7 +900,7 @@ function PostRegistrationDialog({
                     {updateEmailMutation.isPending ? (
                       <Loader2 className="size-3 animate-spin" />
                     ) : (
-                      'Submit'
+                      "Submit"
                     )}
                   </Button>
                   <Button
@@ -906,7 +908,7 @@ function PostRegistrationDialog({
                     variant="ghost"
                     className="text-muted-foreground"
                     onClick={() => {
-                      dismissMethodRef.current = 'skip';
+                      dismissMethodRef.current = "skip";
                       setOpen(false);
                     }}
                   >
@@ -922,9 +924,9 @@ function PostRegistrationDialog({
               )}
             </ChecklistStep>
 
-            <div className="border-t -mx-6 -mb-6 px-6 py-4">
-              <p className="text-xs text-muted-foreground text-center">
-                Share your merchant page:{' '}
+            <div className="-mx-6 -mb-6 border-t px-6 py-4">
+              <p className="text-center text-xs text-muted-foreground">
+                Share your merchant page:{" "}
                 <Link
                   href={`https://tryponcho.com/m/${hostname}`}
                   target="_blank"
@@ -934,18 +936,18 @@ function PostRegistrationDialog({
                 </Link>
                 <button
                   type="button"
-                  className="inline-flex align-middle ml-1 text-muted-foreground hover:text-foreground transition-colors"
+                  className="ml-1 inline-flex align-middle text-muted-foreground transition-colors hover:text-foreground"
                   onClick={() => {
                     void navigator.clipboard.writeText(
                       `https://tryponcho.com/m/${hostname}`
                     );
-                    posthog.capture('registration:link_click', {
+                    posthog.capture("registration:link_click", {
                       origin_id: originId,
                       hostname,
-                      app_surface: 'x402scan',
-                      action: 'copy_merchant_link',
+                      app_surface: "x402scan",
+                      action: "copy_merchant_link",
                     });
-                    toast.success('Link copied to clipboard');
+                    toast.success("Link copied to clipboard");
                   }}
                 >
                   <Copy className="size-3" />
@@ -974,27 +976,27 @@ function ChecklistStep({
 }) {
   return (
     <div
-      className={`flex ${label ? 'items-start' : 'items-center'} gap-3 rounded-lg px-3 py-2.5 -mx-3 transition-colors ${
+      className={`flex ${label ? "items-start" : "items-center"} -mx-3 gap-3 rounded-lg px-3 py-2.5 transition-colors ${
         current
-          ? 'bg-primary/5 dark:bg-primary/10'
+          ? "bg-primary/5 dark:bg-primary/10"
           : completed
-            ? ''
-            : 'opacity-40'
+            ? ""
+            : "opacity-40"
       }`}
     >
       <div
-        className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+        className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-medium transition-colors ${
           completed
-            ? 'bg-muted text-muted-foreground'
+            ? "bg-muted text-muted-foreground"
             : current
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground'
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground"
         }`}
       >
         {completed ? <Check className="size-3.5" /> : number}
       </div>
       <div className="flex-1 space-y-1.5">
-        {label && <p className="text-sm font-medium leading-6">{label}</p>}
+        {label && <p className="text-sm leading-6 font-medium">{label}</p>}
         {children}
       </div>
     </div>
@@ -1021,25 +1023,25 @@ function FailedResourceRow({
   })();
 
   return (
-    <div className="p-3 bg-muted/50 rounded text-xs space-y-1">
+    <div className="space-y-1 rounded bg-muted/50 p-3 text-xs">
       <div className="flex items-start gap-2">
-        <span className="text-muted-foreground shrink-0">URL:</span>
+        <span className="shrink-0 text-muted-foreground">URL:</span>
         <span className="font-mono break-all">{pathname}</span>
       </div>
       <div className="flex items-start gap-2">
-        <span className="text-muted-foreground shrink-0">Error:</span>
-        <span className="text-red-600 wrap-break-word">
-          {statusCode && <span className="font-mono mr-1">[{statusCode}]</span>}
+        <span className="shrink-0 text-muted-foreground">Error:</span>
+        <span className="wrap-break-word text-red-600">
+          {statusCode && <span className="mr-1 font-mono">[{statusCode}]</span>}
           {error}
         </span>
       </div>
 
       {Array.isArray(issues) && issues.length > 0 && (
         <div className="pt-1">
-          <p className="text-muted-foreground mb-1">Validation details:</p>
-          <ul className="space-y-1 list-disc list-inside">
+          <p className="mb-1 text-muted-foreground">Validation details:</p>
+          <ul className="list-inside list-disc space-y-1">
             {issues.map((issue, i) => (
-              <li key={i} className="text-red-600 font-mono text-[10px]">
+              <li key={i} className="font-mono text-[10px] text-red-600">
                 {issue.code}: {issue.message}
               </li>
             ))}
@@ -1088,7 +1090,9 @@ function ProbeResult({
   const warningKeys = useMemo(
     () =>
       new Set(
-        testedResources.filter(r => r.warnings && r.warnings.length > 0).map(rk)
+        testedResources
+          .filter((r) => r.warnings && r.warnings.length > 0)
+          .map(rk)
       ),
     [testedResources]
   );
@@ -1100,7 +1104,7 @@ function ProbeResult({
     () =>
       new Set(
         Object.entries(authModeMap)
-          .filter(([, mode]) => mode === 'siwx')
+          .filter(([, mode]) => mode === "siwx")
           .map(([key]) => key)
       ),
     [authModeMap]
@@ -1113,7 +1117,7 @@ function ProbeResult({
         Object.entries(authModeMap)
           .filter(
             ([, mode]) =>
-              mode === 'unprotected' &&
+              mode === "unprotected" &&
               isOpenApiDeclaredFree(mode, discoverySource)
           )
           .map(([key]) => key)
@@ -1126,7 +1130,7 @@ function ProbeResult({
         Object.entries(authModeMap)
           .filter(
             ([, mode]) =>
-              mode === 'apiKey' && isOpenApiDeclaredFree(mode, discoverySource)
+              mode === "apiKey" && isOpenApiDeclaredFree(mode, discoverySource)
           )
           .map(([key]) => key)
       ),
@@ -1135,7 +1139,7 @@ function ProbeResult({
   const nonPaidKeys = useMemo(() => {
     return new Set(
       resources
-        .filter(r => {
+        .filter((r) => {
           const mode = authModeMap[rk(r)];
           return (
             mode !== undefined && !isRegistrableEndpoint(mode, discoverySource)
@@ -1194,12 +1198,12 @@ function ProbeResult({
   }, [resources]);
 
   return (
-    <div className="rounded-lg border bg-card p-4 space-y-3">
+    <div className="space-y-3 rounded-lg border bg-card p-4">
       <div className="flex items-center gap-3">
         {preview?.favicon ? (
           <Favicon
             url={preview.favicon}
-            className="size-8 rounded-md border bg-background shrink-0"
+            className="size-8 shrink-0 rounded-md border bg-background"
           />
         ) : (
           <TooltipProvider>
@@ -1210,7 +1214,7 @@ function ProbeResult({
                     url={null}
                     className="size-8 rounded-md border bg-background"
                   />
-                  <CircleHelp className="absolute -right-1 -top-1 size-3 text-muted-foreground" />
+                  <CircleHelp className="absolute -top-1 -right-1 size-3 text-muted-foreground" />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right">
@@ -1220,32 +1224,32 @@ function ProbeResult({
           </TooltipProvider>
         )}
         <div className="min-w-0">
-          <p className="text-sm font-medium truncate">
-            {preview?.title ?? urlOrigin ?? 'Discovered API'}
+          <p className="truncate text-sm font-medium">
+            {preview?.title ?? urlOrigin ?? "Discovered API"}
           </p>
           {preview?.description && (
-            <p className="text-xs text-muted-foreground line-clamp-1">
+            <p className="line-clamp-1 text-xs text-muted-foreground">
               {preview.description}
             </p>
           )}
         </div>
       </div>
       {!preview?.favicon && (
-        <p className="text-xs text-yellow-600 dark:text-yellow-500 flex items-center gap-1.5">
+        <p className="flex items-center gap-1.5 text-xs text-yellow-600 dark:text-yellow-500">
           <TriangleAlert className="size-3 shrink-0" />
           Serve a <code className="font-mono">/favicon.ico</code> at your API
           root to display an icon.
         </p>
       )}
       {!contactEmail && (
-        <div className="text-xs text-yellow-600 dark:text-yellow-500 space-y-1.5">
+        <div className="space-y-1.5 text-xs text-yellow-600 dark:text-yellow-500">
           <p className="flex items-start gap-1.5">
-            <TriangleAlert className="size-3 shrink-0 mt-0.5" />
+            <TriangleAlert className="mt-0.5 size-3 shrink-0" />
             <span>
-              Add{' '}
-              <code className="font-mono bg-muted px-1 rounded text-[11px]">
+              Add{" "}
+              <code className="rounded bg-muted px-1 font-mono text-[11px]">
                 info.contact.email
-              </code>{' '}
+              </code>{" "}
               to your openapi.json to verify ownership and let users contact
               you.
             </span>
@@ -1254,11 +1258,11 @@ function ProbeResult({
             <DiscoveryActions
               label="Have your agent add it with this prompt"
               customPrompt={CONTACT_EMAIL_PROMPT}
-            />{' '}
-            or{' '}
+            />{" "}
+            or{" "}
             <Link
               href="/discovery#merchant-dashboard"
-              className="underline underline-offset-2 hover:text-foreground transition-colors"
+              className="underline underline-offset-2 transition-colors hover:text-foreground"
             >
               learn more
             </Link>
@@ -1266,7 +1270,7 @@ function ProbeResult({
         </div>
       )}
       {isBatchTestLoading ? (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground py-1">
+        <div className="flex items-center gap-2 py-1 text-xs text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />
           Verifying {resources.length} endpoints...
         </div>
@@ -1277,39 +1281,39 @@ function ProbeResult({
           className="w-full text-left"
         >
           <ul className="space-y-0.5 text-xs text-muted-foreground">
-            {previewResources.map(resource => {
+            {previewResources.map((resource) => {
               const k = rk(resource);
               return (
                 <li
                   key={k}
-                  className="font-mono truncate flex items-center gap-1.5"
+                  className="flex items-center gap-1.5 truncate font-mono"
                 >
                   {nonPaidKeys.has(k) ? (
-                    <Minus className="size-3 text-muted-foreground/40 shrink-0" />
+                    <Minus className="size-3 shrink-0 text-muted-foreground/40" />
                   ) : invalidKeys.has(k) ? (
-                    <X className="size-3 text-red-500 shrink-0" />
+                    <X className="size-3 shrink-0 text-red-500" />
                   ) : siwxKeys.has(k) ? (
-                    <Check className="size-3 text-primary shrink-0" />
+                    <Check className="size-3 shrink-0 text-primary" />
                   ) : publicKeys.has(k) ? (
-                    <Check className="size-3 text-sky-600 shrink-0" />
+                    <Check className="size-3 shrink-0 text-sky-600" />
                   ) : apiKeyKeys.has(k) ? (
-                    <Check className="size-3 text-muted-foreground shrink-0" />
+                    <Check className="size-3 shrink-0 text-muted-foreground" />
                   ) : warningKeys.has(k) ? (
-                    <TriangleAlert className="size-3 text-yellow-500 shrink-0" />
+                    <TriangleAlert className="size-3 shrink-0 text-yellow-500" />
                   ) : testedKeys.has(k) ? (
-                    <Check className="size-3 text-green-600 shrink-0" />
+                    <Check className="size-3 shrink-0 text-green-600" />
                   ) : failedKeys.has(k) ? (
-                    <X className="size-3 text-red-500 shrink-0" />
+                    <X className="size-3 shrink-0 text-red-500" />
                   ) : null}
                   <span
                     className={
                       nonPaidKeys.has(k)
-                        ? 'line-through text-muted-foreground/40'
+                        ? "text-muted-foreground/40 line-through"
                         : undefined
                     }
                   >
                     {showMethodBadges && resource.method && (
-                      <span className="text-[10px] font-semibold text-muted-foreground/70 mr-1">
+                      <span className="mr-1 text-[10px] font-semibold text-muted-foreground/70">
                         {resource.method}
                       </span>
                     )}
@@ -1319,12 +1323,12 @@ function ProbeResult({
               );
             })}
             {!expanded && hiddenCount > 0 && (
-              <li className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+              <li className="text-muted-foreground/60 transition-colors hover:text-muted-foreground">
                 + {hiddenCount} more
               </li>
             )}
             {expanded && sortedResources.length > 8 && (
-              <li className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+              <li className="text-muted-foreground/60 transition-colors hover:text-muted-foreground">
                 show less
               </li>
             )}

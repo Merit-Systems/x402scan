@@ -1,4 +1,4 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
 export const listUserAgentConfigurations = async (userId: string) => {
   return await scanDb.agentConfigurationUser.findMany({
@@ -8,7 +8,7 @@ export const listUserAgentConfigurations = async (userId: string) => {
     include: {
       agentConfiguration: true,
     },
-    orderBy: { chats: { _count: 'desc' } },
+    orderBy: { chats: { _count: "desc" } },
   });
 };
 
@@ -20,13 +20,13 @@ export const joinAgentConfiguration = async (
     where: { id: agentConfigurationId },
   });
   if (!agentConfiguration) {
-    throw new Error('Agent configuration not found');
+    throw new Error("Agent configuration not found");
   }
   if (
-    agentConfiguration.visibility === 'private' &&
+    agentConfiguration.visibility === "private" &&
     agentConfiguration.ownerId !== userId
   ) {
-    throw new Error('You are not authorized to join this agent configuration');
+    throw new Error("You are not authorized to join this agent configuration");
   }
   return await scanDb.agentConfigurationUser.create({
     data: {

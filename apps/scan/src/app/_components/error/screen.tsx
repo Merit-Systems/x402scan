@@ -1,8 +1,8 @@
-import { ForbiddenCard, NotFoundCard } from './card';
+import { ForbiddenCard, NotFoundCard } from "./card";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { ErrorComponentProps } from './types';
+import type { ErrorComponentProps } from "./types";
 
 type Props = {
   className?: string;
@@ -34,7 +34,7 @@ const ErrorScreenContainer = ({
   return (
     <div
       className={cn(
-        'flex-1 flex flex-col items-center justify-center',
+        "flex-1 flex flex-col items-center justify-center",
         className
       )}
     >

@@ -1,33 +1,33 @@
-import { z as z3 } from 'zod3';
+import { z as z3 } from "zod3";
 
-export * from './v1';
-export * from './v2';
-export * from './schema';
-export type { FieldDef } from './shared';
+export * from "./v1";
+export * from "./v2";
+export * from "./schema";
+export type { FieldDef } from "./shared";
 
 import {
   x402ResponseSchemaV1,
   outputSchemaV1,
   type X402ResponseV1,
   type OutputSchemaV1,
-} from './v1';
+} from "./v1";
 import {
   x402ResponseSchemaV2,
   type X402ResponseV2,
   type BazaarDiscovery,
   type BazaarInputStructure,
   type BazaarJsonSchema,
-} from './v2';
-import { decodePaymentRequiredHeader } from '@x402/core/http';
-import { ChainIdToNetwork } from './chain-mapping';
+} from "./v2";
+import { decodePaymentRequiredHeader } from "@x402/core/http";
+import { ChainIdToNetwork } from "./chain-mapping";
 import {
   jsonObjectSchema3,
   jsonValueSchema3,
   type ParseResult,
-} from './shared';
-import { cleanExternalText } from '@/lib/utils';
+} from "./shared";
+import { cleanExternalText } from "@/lib/utils";
 
-import type { JsonObject, JsonValue } from '@/lib/json';
+import type { JsonObject, JsonValue } from "@/lib/json";
 
 /**
  * The input structure of a bazaar-derived output schema: the raw bazaar
@@ -56,7 +56,7 @@ type BazaarOutputSchema = {
 };
 
 export type OutputSchema = OutputSchemaV1 | BazaarOutputSchema;
-export type InputSchema = OutputSchema['input'];
+export type InputSchema = OutputSchema["input"];
 
 /**
  * NOTE(shafu): we need this because we want to store the accept in
@@ -83,7 +83,7 @@ const v2VersionProbeSchema = z3.object({ x402Version: z3.literal(2) });
 function toParseFailure(error: z3.ZodError): ParseResult<never> {
   return {
     success: false,
-    errors: error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
+    errors: error.issues.map((i) => `${i.path.join(".")}: ${i.message}`),
   };
 }
 
@@ -147,23 +147,23 @@ function getOutputSchemaFromBazaar(
     const required = schema.required;
 
     const reservedKeys = new Set([
-      'method',
-      'body',
-      'bodyFields',
-      'queryParams',
-      'headerFields',
-      'headers',
-      'pathParams',
-      'params',
+      "method",
+      "body",
+      "bodyFields",
+      "queryParams",
+      "headerFields",
+      "headers",
+      "pathParams",
+      "params",
     ]);
     const inputKeys = Object.keys(input);
-    const hasReservedKey = inputKeys.some(k => reservedKeys.has(k));
-    const hasNonReservedKeys = inputKeys.some(k => !reservedKeys.has(k));
+    const hasReservedKey = inputKeys.some((k) => reservedKeys.has(k));
+    const hasNonReservedKeys = inputKeys.some((k) => !reservedKeys.has(k));
 
     if (!hasReservedKey && hasNonReservedKeys && properties) {
       return {
         input: {
-          method: 'POST',
+          method: "POST",
           body: {
             ...schema,
             properties,
@@ -182,7 +182,7 @@ function getOutputSchemaFromBazaar(
     if (
       input.body &&
       bodyContainer.success &&
-      !('properties' in bodyContainer.data) &&
+      !("properties" in bodyContainer.data) &&
       bodySchema?.properties
     ) {
       return {
@@ -197,7 +197,7 @@ function getOutputSchemaFromBazaar(
     const qpVal = input.queryParams;
     const qpParsed = jsonObjectSchema3.safeParse(qpVal);
     const qpObj = qpVal && qpParsed.success ? qpParsed.data : undefined;
-    const qpHasProperties = qpObj ? 'properties' in qpObj : false;
+    const qpHasProperties = qpObj ? "properties" in qpObj : false;
     const qpKeys = qpObj ? Object.keys(qpObj) : [];
 
     if (
@@ -245,8 +245,8 @@ export function coerceAcceptForV1Schema<
     const input: JsonObject = { ...candidate.data.input };
 
     // Infer method if missing (bazaar often omits it)
-    if (!('method' in input)) {
-      input.method = input.body ? 'POST' : 'GET';
+    if (!("method" in input)) {
+      input.method = input.body ? "POST" : "GET";
     }
 
     // Convert `body.properties` -> `bodyFields` (v1 expects Record<string, FieldDef>)
@@ -294,14 +294,14 @@ export function getDescription(
 ): string | undefined {
   const raw = isV2Response(response)
     ? response.resource?.description
-    : response.accepts?.find(a => a.description)?.description;
+    : response.accepts?.find((a) => a.description)?.description;
   if (!raw) return raw;
   return cleanExternalText(raw);
 }
 
 export async function extractX402Data(response: Response): Promise<unknown> {
   // v2 - check header first using @x402/core
-  const paymentRequiredHeader = response.headers.get('Payment-Required');
+  const paymentRequiredHeader = response.headers.get("Payment-Required");
   if (paymentRequiredHeader) {
     try {
       return decodePaymentRequiredHeader(paymentRequiredHeader);
@@ -322,20 +322,20 @@ export async function extractX402Data(response: Response): Promise<unknown> {
 
 export function normalizeChainId(chainId: string): string {
   let result = chainId;
-  if (chainId.startsWith('eip155:')) {
-    const id = Number(chainId.split(':')[1]);
+  if (chainId.startsWith("eip155:")) {
+    const id = Number(chainId.split(":")[1]);
     result = ChainIdToNetwork[id] ?? chainId;
-  } else if (chainId.startsWith('solana:')) {
-    const suffix = chainId.split(':')[1];
-    if (suffix === 'mainnet') result = 'solana';
-    else if (suffix === 'devnet') result = 'solana_devnet';
-    else if (suffix === 'testnet') result = 'solana_testnet';
-    else if (suffix === '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp') result = 'solana';
-    else if (suffix === 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1')
-      result = 'solana_devnet';
-    else if (suffix === '4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z')
-      result = 'solana_testnet';
+  } else if (chainId.startsWith("solana:")) {
+    const suffix = chainId.split(":")[1];
+    if (suffix === "mainnet") result = "solana";
+    else if (suffix === "devnet") result = "solana_devnet";
+    else if (suffix === "testnet") result = "solana_testnet";
+    else if (suffix === "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp") result = "solana";
+    else if (suffix === "EtWTRABZaYq6iMfeYKouRu166VU2xqa1")
+      result = "solana_devnet";
+    else if (suffix === "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z")
+      result = "solana_testnet";
     else result = `solana_${suffix}`;
   }
-  return result.replaceAll('-', '_');
+  return result.replaceAll("-", "_");
 }

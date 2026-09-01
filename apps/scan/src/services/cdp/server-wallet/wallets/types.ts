@@ -1,9 +1,9 @@
-import type { Chain, SupportedChain, SupportedEVMChain } from '@/types/chain';
-import type z from 'zod';
-import type { getTokenBalanceSchema, sendTokensSchema } from './schemas';
-import type { SolanaAddress } from '@/types/address';
-import type { Address } from 'viem';
-import type { CdpResultAsync } from '../../result';
+import type { Chain, SupportedChain, SupportedEVMChain } from "@/types/chain";
+import type z from "zod";
+import type { getTokenBalanceSchema, sendTokensSchema } from "./schemas";
+import type { SolanaAddress } from "@/types/address";
+import type { Address } from "viem";
+import type { CdpResultAsync } from "../../result";
 
 export type NetworkServerWallet<T extends Chain> = (name: string) => {
   address: () => CdpResultAsync<

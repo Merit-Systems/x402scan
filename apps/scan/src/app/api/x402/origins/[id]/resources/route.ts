@@ -1,18 +1,18 @@
-import { router, withCors, OPTIONS } from '@/lib/router';
-import { originResourcesQuerySchema } from '@/app/api/x402/_lib/schemas';
-import { extractPathSegment } from '@/app/api/x402/_lib/utils';
-import { handleOriginResources } from '@/app/api/x402/_handlers/origin-resources';
+import { router, withCors, OPTIONS } from "@/lib/router";
+import { originResourcesQuerySchema } from "@/app/api/x402/_lib/schemas";
+import { extractPathSegment } from "@/app/api/x402/_lib/utils";
+import { handleOriginResources } from "@/app/api/x402/_handlers/origin-resources";
 
 export { OPTIONS };
 
 export const GET = withCors(
   router
-    .route('x402/origins/resources')
-    .path('x402/origins/{id}/resources')
-    .paid('0.01')
-    .method('GET')
+    .route("x402/origins/resources")
+    .path("x402/origins/{id}/resources")
+    .paid("0.01")
+    .method("GET")
     .query(originResourcesQuerySchema)
-    .description('Resources for a specific origin/domain')
+    .description("Resources for a specific origin/domain")
     .handler(({ query, request }) => {
       const id = extractPathSegment(request, 4);
       return handleOriginResources(id, query);

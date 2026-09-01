@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { TimeRangeContext } from './context';
+import { TimeRangeContext } from "./context";
 
-import type { ActivityTimeframe } from '@/types/timeframes';
+import type { ActivityTimeframe } from "@/types/timeframes";
 
 interface Props {
   children: React.ReactNode;

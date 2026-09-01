@@ -1,10 +1,10 @@
-import { ForbiddenScreen } from './screen';
+import { ForbiddenScreen } from "./screen";
 
-import { ErrorPageContainer } from './container';
+import { ErrorPageContainer } from "./container";
 
-import type { ErrorComponentProps } from './types';
+import type { ErrorComponentProps } from "./types";
 
-export const AppGroupForbidden: React.FC<ErrorComponentProps> = props => {
+export const AppGroupForbidden: React.FC<ErrorComponentProps> = (props) => {
   return (
     <ErrorPageContainer>
       <ForbiddenScreen {...props} />

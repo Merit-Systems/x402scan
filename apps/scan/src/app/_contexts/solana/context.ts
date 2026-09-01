@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { createContext } from 'react';
+import { createContext } from "react";
 
-import type { UiWalletAccount, UiWallet } from '@wallet-standard/react';
+import type { UiWalletAccount, UiWallet } from "@wallet-standard/react";
 
 export interface ConnectedSolanaWallet {
   account: UiWalletAccount;

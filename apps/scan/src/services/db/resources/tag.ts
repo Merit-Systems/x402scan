@@ -1,6 +1,6 @@
-import { scanDb } from '@x402scan/scan-db';
-import { z } from 'zod';
-import { MAIN_TAGS } from '@/services/labeling/main-tags';
+import { scanDb } from "@x402scan/scan-db";
+import { z } from "zod";
+import { MAIN_TAGS } from "@/services/labeling/main-tags";
 
 export const createTagSchema = z.object({
   name: z.string().min(1),
@@ -20,7 +20,7 @@ export const listTagsSchema = z.object({
 export const listTags = async (data: z.infer<typeof listTagsSchema>) => {
   return await scanDb.tag.findMany({
     orderBy: {
-      name: 'asc',
+      name: "asc",
     },
     where: {
       name: {
@@ -87,7 +87,7 @@ export const listResourceTags = async (resourceId: string) => {
     },
     orderBy: {
       tag: {
-        name: 'asc',
+        name: "asc",
       },
     },
   });
@@ -127,7 +127,7 @@ export const removeSubTagsFromTag = async (tagId: string) => {
     },
   });
 
-  const resourceIds = resourcesWithTag.map(rt => rt.resourceId);
+  const resourceIds = resourcesWithTag.map((rt) => rt.resourceId);
 
   // Delete all tag associations from these resources EXCEPT for the specified tag
   return await scanDb.resourcesTags.deleteMany({

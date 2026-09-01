@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import Image from 'next/image';
+import Image from "next/image";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -17,19 +17,19 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 
-import { CHAIN_ICONS } from '@/types/chain';
-import { Check, ChevronDown } from 'lucide-react';
+import { CHAIN_ICONS } from "@/types/chain";
+import { Check, ChevronDown } from "lucide-react";
 
-import type { ButtonProps } from '../button';
-import type { Token } from '@/types/token';
+import type { ButtonProps } from "../button";
+import type { Token } from "@/types/token";
 
 type Props = {
   selectedToken: Token;
   onTokenChange?: (token: Token) => void;
   tokens?: Token[];
-} & Omit<ButtonProps, 'children'>;
+} & Omit<ButtonProps, "children">;
 
 export const TokenSelect: React.FC<Props> = ({
   selectedToken,
@@ -54,7 +54,7 @@ export const TokenSelect: React.FC<Props> = ({
           alt={selectedToken.chain}
           height={16}
           width={16}
-          className="size-2.5 absolute bottom-0 right-0"
+          className="absolute right-0 bottom-0 size-2.5"
         />
       </div>
       <span className="text-base font-semibold">{selectedToken.symbol}</span>
@@ -71,12 +71,12 @@ export const TokenSelect: React.FC<Props> = ({
         <Button
           variant="outline"
           role="combobox"
-          className="h-fit gap-2 p-2 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none rounded-full"
+          className="h-fit gap-2 rounded-full p-2 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
           disabled={props.disabled}
           {...props}
         >
           {tokenDisplay}
-          <ChevronDown className="text-muted-foreground size-4" />
+          <ChevronDown className="size-4 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[240px] p-0" align="end">
@@ -85,7 +85,7 @@ export const TokenSelect: React.FC<Props> = ({
           <CommandList>
             <CommandEmpty>No token found.</CommandEmpty>
             <CommandGroup>
-              {tokens.map(token => (
+              {tokens.map((token) => (
                 <CommandItem
                   key={token.symbol}
                   value={token.symbol}
@@ -107,7 +107,7 @@ export const TokenSelect: React.FC<Props> = ({
                       <span className="text-sm font-medium">
                         {token.symbol}
                       </span>
-                      <span className="text-muted-foreground text-xs">
+                      <span className="text-xs text-muted-foreground">
                         {token.name}
                       </span>
                     </div>

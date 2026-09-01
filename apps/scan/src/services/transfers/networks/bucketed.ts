@@ -1,11 +1,11 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/scan-db';
+import z from "zod";
+import { Prisma } from "@x402scan/scan-db";
 
-import { baseBucketedQuerySchema } from '../schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { Chain } from '@/types/chain';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { baseBucketedQuerySchema } from "../schemas";
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { Chain } from "@/types/chain";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 
 export const bucketedNetworksStatisticsInputSchema = baseBucketedQuerySchema;
 
@@ -43,7 +43,7 @@ const getBucketedNetworksStatisticsUncached = async (
     conditions.push(Prisma.sql`AND chain = ${chain}`);
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   const sql = Prisma.sql`
     WITH bucket_stats AS (
@@ -111,9 +111,9 @@ const getBucketedNetworksStatisticsUncached = async (
 
 export const getBucketedNetworksStatistics = createCachedArrayQuery({
   queryFn: getBucketedNetworksStatisticsUncached,
-  cacheKeyPrefix: 'bucketed-networks-statistics',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['bucket_start'],
+  cacheKeyPrefix: "bucketed-networks-statistics",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["bucket_start"],
 
-  tags: ['networks-statistics'],
+  tags: ["networks-statistics"],
 });

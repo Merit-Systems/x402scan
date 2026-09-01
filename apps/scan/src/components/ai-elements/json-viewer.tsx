@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 export type JsonValue =
   | string
@@ -67,12 +67,12 @@ const JsonNode = ({
 
   const renderCollapsedPreview = (value: JsonArray | JsonObject): string => {
     if (Array.isArray(value)) {
-      if (value.length === 0) return '[]';
+      if (value.length === 0) return "[]";
       return `[${value.length}]`;
     }
 
     const keys = Object.keys(value);
-    if (keys.length === 0) return '{}';
+    if (keys.length === 0) return "{}";
     return `{${keys.length}}`;
   };
 
@@ -82,17 +82,17 @@ const JsonNode = ({
     const isEmpty = isArray
       ? data.length === 0
       : Object.keys(data).length === 0;
-    const openBracket = isArray ? '[' : '{';
-    const closeBracket = isArray ? ']' : '}';
+    const openBracket = isArray ? "[" : "{";
+    const closeBracket = isArray ? "]" : "}";
 
     return (
-      <div className={cn('font-mono text-xs', depth > 0 && 'ml-4')}>
+      <div className={cn("font-mono text-xs", depth > 0 && "ml-4")}>
         <div className="flex items-start gap-1">
           {!isEmpty && (
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="mt-0.5 flex-shrink-0 hover:bg-accent rounded p-0.5 transition-colors"
-              aria-label={isCollapsed ? 'Expand' : 'Collapse'}
+              className="mt-0.5 flex-shrink-0 rounded p-0.5 transition-colors hover:bg-accent"
+              aria-label={isCollapsed ? "Expand" : "Collapse"}
             >
               {isCollapsed ? (
                 <ChevronRightIcon className="size-3" />
@@ -107,13 +107,13 @@ const JsonNode = ({
             <span className="flex items-baseline gap-1">
               {keyName && (
                 <>
-                  <span className="text-foreground font-medium">{keyName}</span>
+                  <span className="font-medium text-foreground">{keyName}</span>
                   <span className="text-muted-foreground">:</span>
                 </>
               )}
               <span className="text-muted-foreground">{openBracket}</span>
               {isCollapsed && !isEmpty && (
-                <span className="text-muted-foreground text-[10px]">
+                <span className="text-[10px] text-muted-foreground">
                   {renderCollapsedPreview(data)}
                 </span>
               )}
@@ -155,14 +155,14 @@ const JsonNode = ({
   return (
     <div
       className={cn(
-        'font-mono text-xs flex items-baseline gap-1',
-        depth > 0 && 'ml-4'
+        "font-mono text-xs flex items-baseline gap-1",
+        depth > 0 && "ml-4"
       )}
     >
       <span className="w-4" />
       {keyName && (
         <>
-          <span className="text-foreground font-medium">{keyName}</span>
+          <span className="font-medium text-foreground">{keyName}</span>
           <span className="text-muted-foreground">:</span>
         </>
       )}
@@ -183,7 +183,7 @@ export const JsonViewer = ({
   className,
 }: JsonViewerProps) => {
   return (
-    <div className={cn('p-3 overflow-auto', className)}>
+    <div className={cn("p-3 overflow-auto", className)}>
       <JsonNode data={data} depth={0} defaultCollapsed={defaultCollapsed} />
     </div>
   );

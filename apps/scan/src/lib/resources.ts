@@ -1,44 +1,44 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { scrapeOriginData } from '@/services/scraper';
-import { upsertResource } from '@/services/db/resources/resource';
+import { scrapeOriginData } from "@/services/scraper";
+import { upsertResource } from "@/services/db/resources/resource";
 import {
   ensureOriginExists,
   getOriginResourceCount,
   upsertOrigin,
-} from '@/services/db/resources/origin';
+} from "@/services/db/resources/origin";
 
 import type {
   EndpointMethodAdvisory,
   AuditWarning,
-} from '@agentcash/discovery';
-import { isX402PaymentOption } from '@/lib/discovery/utils';
+} from "@agentcash/discovery";
+import { isX402PaymentOption } from "@/lib/discovery/utils";
 
-import { getOriginFromUrl, normalizeResourceUrl } from '@/lib/url';
-import { jsonObjectSchema } from '@/lib/json';
-import type { FreeAuthMode } from '@/lib/resource-auth';
+import { getOriginFromUrl, normalizeResourceUrl } from "@/lib/url";
+import { jsonObjectSchema } from "@/lib/json";
+import type { FreeAuthMode } from "@/lib/resource-auth";
 
-import { upsertResourceResponse } from '@/services/db/resources/response';
-import { formatTokenAmount } from './token';
-import { SUPPORTED_CHAINS } from '@/types/chain';
-import { fetchDiscoveryDocument } from '@/services/discovery';
-import { verifyAcceptsOwnership } from '@/services/verification/accepts-verification';
-import { outputSchemaV1 } from '@/lib/x402/v1';
+import { upsertResourceResponse } from "@/services/db/resources/response";
+import { formatTokenAmount } from "./token";
+import { SUPPORTED_CHAINS } from "@/types/chain";
+import { fetchDiscoveryDocument } from "@/services/discovery";
+import { verifyAcceptsOwnership } from "@/services/verification/accepts-verification";
+import { outputSchemaV1 } from "@/lib/x402/v1";
 import {
   normalizeChainId,
   parseX402Response,
   getOutputSchema,
   type OutputSchema,
   type ParsedX402Response,
-} from '@/lib/x402';
+} from "@/lib/x402";
 
-import { scanDb } from '@x402scan/scan-db';
-import type { AcceptsNetwork } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
+import type { AcceptsNetwork } from "@x402scan/scan-db";
 
-import { convertOpenApiSchemaToV1 } from '@/lib/openapi-to-v1';
-import { deduplicateWarnings } from '@/lib/discovery/utils';
-import { notifyNewServer } from '@/lib/discord-notifications';
-import { after } from 'next/server';
+import { convertOpenApiSchemaToV1 } from "@/lib/openapi-to-v1";
+import { deduplicateWarnings } from "@/lib/discovery/utils";
+import { notifyNewServer } from "@/lib/discord-notifications";
+import { after } from "next/server";
 
 /**
  * The HTTP methods the v1 output-schema format accepts. Discovery advisories
@@ -46,13 +46,13 @@ import { after } from 'next/server';
  * schema before being written into a v1 input schema.
  */
 const v1HttpMethodSchema = z.enum([
-  'GET',
-  'POST',
-  'PUT',
-  'DELETE',
-  'PATCH',
-  'OPTIONS',
-  'HEAD',
+  "GET",
+  "POST",
+  "PUT",
+  "DELETE",
+  "PATCH",
+  "OPTIONS",
+  "HEAD",
 ]);
 
 /**
@@ -87,13 +87,13 @@ export function validateResource(
   // HTTPS enforcement (allow localhost / 127.0.0.1 for dev)
   const urlObj = new URL(url);
   if (
-    urlObj.protocol === 'http:' &&
-    urlObj.hostname !== 'localhost' &&
-    urlObj.hostname !== '127.0.0.1'
+    urlObj.protocol === "http:" &&
+    urlObj.hostname !== "localhost" &&
+    urlObj.hostname !== "127.0.0.1"
   ) {
     return {
       valid: false,
-      error: 'HTTPS is required for x402 resource registration',
+      error: "HTTPS is required for x402 resource registration",
     };
   }
 
@@ -102,17 +102,17 @@ export function validateResource(
     isX402PaymentOption
   );
   const hasOnlyV1 =
-    x402Options.length > 0 && x402Options.every(o => o.version === 1);
+    x402Options.length > 0 && x402Options.every((o) => o.version === 1);
   if (hasOnlyV1) {
     return {
       valid: false,
-      error: 'x402 v1 response detected — migrate to v2 spec',
+      error: "x402 v1 response detected — migrate to v2 spec",
     };
   }
 
   // No x402 payment options
   if (x402Options.length === 0) {
-    return { valid: false, error: 'No x402 payment options found' };
+    return { valid: false, error: "No x402 payment options found" };
   }
 
   // Missing input schema — check advisory.inputSchema first, then fall back to
@@ -135,24 +135,24 @@ export function validateResource(
       return {
         valid: false,
         error:
-          'Missing input schema — add a requestBody or parameter schema to your OpenAPI spec so agents know what to send',
+          "Missing input schema — add a requestBody or parameter schema to your OpenAPI spec so agents know what to send",
       };
     }
   }
 
   // Unsupported networks
-  const hasSupported = x402Options.some(opt =>
+  const hasSupported = x402Options.some((opt) =>
     (SUPPORTED_CHAINS as readonly string[]).includes(
       normalizeChainId(opt.network)
     )
   );
   if (!hasSupported) {
     const advertisedNetworks = Array.from(
-      new Set(x402Options.map(o => normalizeChainId(o.network)))
+      new Set(x402Options.map((o) => normalizeChainId(o.network)))
     );
     return {
       valid: false,
-      error: `No supported networks. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]`,
+      error: `No supported networks. Got: [${advertisedNetworks.join(", ")}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(", ")}]`,
     };
   }
 
@@ -172,10 +172,10 @@ export function validateResource(
     }
     if (!hasBazaarOutputSchema) {
       warnings.push({
-        code: 'MISSING_OUTPUT_SCHEMA',
-        severity: 'warn',
+        code: "MISSING_OUTPUT_SCHEMA",
+        severity: "warn",
         message:
-          'Missing output schema — add a response schema to your OpenAPI spec so agents know what this endpoint returns',
+          "Missing output schema — add a response schema to your OpenAPI spec so agents know what this endpoint returns",
       });
     }
   }
@@ -206,13 +206,13 @@ export async function registerFreeResource(
 ) {
   const urlObj = new URL(url);
   if (
-    urlObj.protocol === 'http:' &&
-    urlObj.hostname !== 'localhost' &&
-    urlObj.hostname !== '127.0.0.1'
+    urlObj.protocol === "http:" &&
+    urlObj.hostname !== "localhost" &&
+    urlObj.hostname !== "127.0.0.1"
   ) {
     return {
       success: false as const,
-      error: 'HTTPS is required for resource registration',
+      error: "HTTPS is required for resource registration",
     };
   }
 
@@ -220,11 +220,11 @@ export async function registerFreeResource(
   const origin = getOriginFromUrl(cleanUrl);
 
   try {
-    const resource = await scanDb.$transaction(async tx => {
+    const resource = await scanDb.$transaction(async (tx) => {
       await ensureOriginExists(tx, origin);
 
       const freeMetadata: FreeResourceMetadata = {
-        authMode: options.authMode ?? 'siwx',
+        authMode: options.authMode ?? "siwx",
       };
       if (options.pricingMode) freeMetadata.pricingMode = options.pricingMode;
       if (options.price) freeMetadata.price = options.price;
@@ -233,7 +233,7 @@ export async function registerFreeResource(
       // Merge with existing metadata to avoid clobbering fields set by
       // a different registration path (e.g. paid sets pricingMode on the
       // same URL-keyed row).
-      const method = options.method ?? '';
+      const method = options.method ?? "";
       const existing = await tx.resources.findUnique({
         where: {
           resource_method: { resource: cleanUrl, method },
@@ -254,14 +254,14 @@ export async function registerFreeResource(
         create: {
           resource: cleanUrl,
           method,
-          type: 'http',
+          type: "http",
           x402Version: 0,
           lastUpdated: new Date(),
           metadata: freeMetadata,
           origin: { connect: { origin } },
         },
         update: {
-          type: 'http',
+          type: "http",
           x402Version: 0,
           lastUpdated: new Date(),
           metadata: mergedMetadata,
@@ -295,7 +295,7 @@ export async function registerFreeResource(
           description: description ?? undefined,
           favicon: favicon ?? undefined,
           ogImages:
-            og?.ogImage?.flatMap(image => {
+            og?.ogImage?.flatMap((image) => {
               try {
                 return [
                   {
@@ -313,7 +313,7 @@ export async function registerFreeResource(
         });
       } catch (err) {
         console.error(
-          '[registerFreeResource] Metadata scrape failed (non-blocking):',
+          "[registerFreeResource] Metadata scrape failed (non-blocking):",
           err
         );
       }
@@ -331,14 +331,14 @@ export async function registerFreeResource(
     // the same URL (e.g. POST and DELETE on the same path). Treat as success.
     const isUniqueViolation =
       error instanceof Error &&
-      'code' in error &&
-      (error as { code: string }).code === 'P2002';
+      "code" in error &&
+      (error as { code: string }).code === "P2002";
     if (isUniqueViolation) {
       const existing = await scanDb.resources.findUnique({
         where: {
           resource_method: {
             resource: cleanUrl,
-            method: options.method ?? '',
+            method: options.method ?? "",
           },
         },
         include: { origin: true },
@@ -349,13 +349,13 @@ export async function registerFreeResource(
         success: true as const,
         resource: existing
           ? { id: existing.id, origin: { id: existing.origin.id } }
-          : { id: 'race-resolved', origin: { id: 'race-resolved' } },
+          : { id: "race-resolved", origin: { id: "race-resolved" } },
       };
     }
-    console.error('[registerFreeResource] Failed:', error);
+    console.error("[registerFreeResource] Failed:", error);
     return {
       success: false as const,
-      error: error instanceof Error ? error.message : 'Database error',
+      error: error instanceof Error ? error.message : "Database error",
     };
   }
 }
@@ -394,7 +394,7 @@ export const registerResource = async (
       success: false as const,
       data: advisory.paymentRequiredBody,
       error: {
-        type: 'validation' as const,
+        type: "validation" as const,
         parseErrors: [validation.error],
       },
       warnings: [...(options.warnings ?? [])],
@@ -422,7 +422,7 @@ export const registerResource = async (
     input: advisory.inputSchema,
     output: advisory.outputSchema ?? null,
   }).data;
-  let schemaSource = outputSchemaForDb ? 'v1' : undefined;
+  let schemaSource = outputSchemaForDb ? "v1" : undefined;
 
   // Fallback: use v2-aware extraction from raw 402 body
   if (!outputSchemaForDb && advisory.paymentRequiredBody) {
@@ -437,7 +437,7 @@ export const registerResource = async (
           }
         }
         outputSchemaForDb = extracted;
-        schemaSource = 'v2-bazaar';
+        schemaSource = "v2-bazaar";
       }
     }
   }
@@ -451,7 +451,7 @@ export const registerResource = async (
     );
     if (converted) {
       outputSchemaForDb = converted;
-      schemaSource = 'openapi-converted';
+      schemaSource = "openapi-converted";
     }
   }
 
@@ -461,7 +461,7 @@ export const registerResource = async (
       `method=${advisory.method}`,
       `hasInputSchema=${!!advisory.inputSchema}`,
       `hasPaymentBody=${!!advisory.paymentRequiredBody}`,
-      `inputSchemaKeys=${advisory.inputSchema ? Object.keys(advisory.inputSchema).join(',') : 'none'}`
+      `inputSchemaKeys=${advisory.inputSchema ? Object.keys(advisory.inputSchema).join(",") : "none"}`
     );
   } else {
     console.log(
@@ -469,19 +469,19 @@ export const registerResource = async (
     );
   }
 
-  const allMappedAccepts = x402Options.map(opt => ({
-    scheme: opt.scheme ?? 'exact',
+  const allMappedAccepts = x402Options.map((opt) => ({
+    scheme: opt.scheme ?? "exact",
     network: normalizeChainId(opt.network) as AcceptsNetwork,
     maxAmountRequired:
-      ('amount' in opt ? opt.amount : opt.maxAmountRequired) ?? '0',
-    payTo: opt.payTo ?? '',
+      ("amount" in opt ? opt.amount : opt.maxAmountRequired) ?? "0",
+    payTo: opt.payTo ?? "",
     asset: opt.asset,
     maxTimeoutSeconds: opt.maxTimeoutSeconds ?? 60,
     outputSchema: outputSchemaForDb,
     extra: undefined,
   }));
 
-  const mappedAccepts = allMappedAccepts.filter(accept =>
+  const mappedAccepts = allMappedAccepts.filter((accept) =>
     (SUPPORTED_CHAINS as readonly string[]).includes(accept.network)
   );
 
@@ -489,15 +489,15 @@ export const registerResource = async (
   // guard defensively in case the chain list diverges at runtime.
   if (mappedAccepts.length === 0) {
     const advertisedNetworks = Array.from(
-      new Set(allMappedAccepts.map(a => a.network))
+      new Set(allMappedAccepts.map((a) => a.network))
     );
     return {
       success: false as const,
       data: advisory.paymentRequiredBody,
       error: {
-        type: 'parseResponse' as const,
+        type: "parseResponse" as const,
         parseErrors: [
-          `No supported networks advertised. Got: [${advertisedNetworks.join(', ')}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(', ')}]. Testnets are not indexed.`,
+          `No supported networks advertised. Got: [${advertisedNetworks.join(", ")}]. Supported: [${(SUPPORTED_CHAINS as readonly string[]).join(", ")}]. Testnets are not indexed.`,
         ],
       },
       warnings,
@@ -512,7 +512,7 @@ export const registerResource = async (
       success: false as const,
       data: advisory.paymentRequiredBody,
       error: {
-        type: 'parseResponse' as const,
+        type: "parseResponse" as const,
         parseErrors: parsedPaymentRequiredBody.errors,
       },
       warnings,
@@ -528,8 +528,8 @@ export const registerResource = async (
 
   const resource = await upsertResource({
     resource: cleanUrl,
-    method: options.method ?? '',
-    type: 'http',
+    method: options.method ?? "",
+    type: "http",
     x402Version,
     lastUpdated: new Date(),
     accepts: mappedAccepts,
@@ -542,8 +542,8 @@ export const registerResource = async (
       success: false as const,
       data: advisory.paymentRequiredBody,
       error: {
-        type: 'database' as const,
-        upsertErrors: ['Resource failed to upsert'],
+        type: "database" as const,
+        upsertErrors: ["Resource failed to upsert"],
       },
       warnings,
     };
@@ -555,7 +555,7 @@ export const registerResource = async (
   let description: string | null =
     options.originMetadataFallback?.description ?? null;
   let favicon: string | null = null;
-  let og: Awaited<ReturnType<typeof scrapeOriginData>>['og'] = null;
+  let og: Awaited<ReturnType<typeof scrapeOriginData>>["og"] = null;
 
   if (!options.skipMetadataScrape) {
     const scraped = await scrapeOriginData(origin);
@@ -579,7 +579,7 @@ export const registerResource = async (
         description: description ?? undefined,
         favicon: favicon ?? undefined,
         ogImages:
-          og?.ogImage?.flatMap(image => {
+          og?.ogImage?.flatMap((image) => {
             try {
               return [
                 {
@@ -600,10 +600,10 @@ export const registerResource = async (
       // Log anything else so metadata failures aren't silent.
       const isP2002 =
         err instanceof Error &&
-        'code' in err &&
-        (err as { code: string }).code === 'P2002';
+        "code" in err &&
+        (err as { code: string }).code === "P2002";
       if (!isP2002) {
-        console.error('[registerResource] Origin metadata upsert failed:', err);
+        console.error("[registerResource] Origin metadata upsert failed:", err);
       }
     }
   }
@@ -631,7 +631,7 @@ export const registerResource = async (
         discoveryResult.ownershipProofs &&
         discoveryResult.ownershipProofs.length > 0
       ) {
-        const acceptIds = resource.accepts.map(accept => accept.id);
+        const acceptIds = resource.accepts.map((accept) => accept.id);
         await verifyAcceptsOwnership({
           acceptIds,
           ownershipProofs: discoveryResult.ownershipProofs,
@@ -640,7 +640,7 @@ export const registerResource = async (
       }
     } catch (error) {
       console.error(
-        'Ownership verification failed during registration:',
+        "Ownership verification failed during registration:",
         error
       );
     }
@@ -654,7 +654,7 @@ export const registerResource = async (
   return {
     success: true as const,
     resource,
-    accepts: resource.accepts.map(accept => ({
+    accepts: resource.accepts.map((accept) => ({
       ...accept,
       maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
     })),
@@ -669,7 +669,7 @@ export const registerResource = async (
         description,
         favicon: favicon ?? null,
         ogImages:
-          og?.ogImage?.map(image => ({
+          og?.ogImage?.map((image) => ({
             url: image.url,
             height: image.height,
             width: image.width,

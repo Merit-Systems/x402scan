@@ -1,10 +1,10 @@
-import { erc20Abi, formatEther, createPublicClient, http } from 'viem';
-import { getBalance, readContract } from 'viem/actions';
-import { base } from 'viem/chains';
+import { erc20Abi, formatEther, createPublicClient, http } from "viem";
+import { getBalance, readContract } from "viem/actions";
+import { base } from "viem/chains";
 
-import { createTRPCRouter, adminProcedure } from '../../trpc';
+import { createTRPCRouter, adminProcedure } from "../../trpc";
 
-import { inviteCodeByIdSchema } from '@/services/db/invite-codes/schemas';
+import { inviteCodeByIdSchema } from "@/services/db/invite-codes/schemas";
 import {
   createInviteCode,
   listInviteCodes,
@@ -15,15 +15,15 @@ import {
   updateMaxRedemptionsSchema,
   updateMaxRedemptions,
   createInviteCodeSchema,
-} from '@/services/db/invite-codes';
-import { inviteWallets } from '@/services/cdp/server-wallet/invite';
+} from "@/services/db/invite-codes";
+import { inviteWallets } from "@/services/cdp/server-wallet/invite";
 
-import { usdc } from '@/lib/tokens/usdc';
-import { convertTokenAmount } from '@/lib/token';
+import { usdc } from "@/lib/tokens/usdc";
+import { convertTokenAmount } from "@/lib/token";
 
-import { env } from '@/env';
+import { env } from "@/env";
 
-import { Chain } from '@/types/chain';
+import { Chain } from "@/types/chain";
 
 export const adminInviteCodesRouter = createTRPCRouter({
   list: adminProcedure.input(listInviteCodesSchema).query(async ({ input }) => {
@@ -72,7 +72,7 @@ export const adminInviteCodesRouter = createTRPCRouter({
         return {
           configured: false,
           error:
-            'Invite wallet not configured. Check CDP credentials and INVITE_WALLET_NAME env variable.',
+            "Invite wallet not configured. Check CDP credentials and INVITE_WALLET_NAME env variable.",
           chain: Chain.BASE,
         };
       }
@@ -89,7 +89,7 @@ export const adminInviteCodesRouter = createTRPCRouter({
           abi: erc20Abi,
           address: token.address as `0x${string}`,
           args: [address],
-          functionName: 'balanceOf',
+          functionName: "balanceOf",
         }),
         getBalance(client, { address }),
       ]);
@@ -102,10 +102,10 @@ export const adminInviteCodesRouter = createTRPCRouter({
         chain: Chain.BASE,
       };
     } catch (error) {
-      console.error('Failed to get invite wallet info:', error);
+      console.error("Failed to get invite wallet info:", error);
       return {
         configured: false,
-        error: 'Failed to load invite wallet. Check CDP configuration.',
+        error: "Failed to load invite wallet. Check CDP configuration.",
         chain: Chain.BASE,
       };
     }

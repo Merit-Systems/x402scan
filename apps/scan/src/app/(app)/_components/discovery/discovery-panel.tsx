@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   AlertCircle,
@@ -14,46 +14,46 @@ import {
   ShieldCheck,
   X,
   XCircle,
-} from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { isOpenApiDeclaredFree } from '@/lib/discovery/catalog-auth';
-import { jsonObjectSchema } from '@/lib/json';
-import { cleanExternalText, cn } from '@/lib/utils';
+} from "@/components/ui/tooltip";
+import { isOpenApiDeclaredFree } from "@/lib/discovery/catalog-auth";
+import { jsonObjectSchema } from "@/lib/json";
+import { cleanExternalText, cn } from "@/lib/utils";
 
-import { DiscoveryActions } from './discovery-actions';
-import { Favicon } from '@/app/(app)/_components/favicon';
-import { ResourceCard } from '@/app/(app)/_components/resources/resource-card';
+import { DiscoveryActions } from "./discovery-actions";
+import { Favicon } from "@/app/(app)/_components/favicon";
+import { ResourceCard } from "@/app/(app)/_components/resources/resource-card";
 import {
   createDummyOgImage,
   createDummyResourceOrigin,
   createDummyResources,
-} from './dummy';
+} from "./dummy";
 
-import { parseX402Response } from '@/lib/x402';
+import { parseX402Response } from "@/lib/x402";
 import type {
   FailedResource as FailedResourceType,
   TestedResource as TestedResourceType,
-} from '@/types/batch-test';
+} from "@/types/batch-test";
 import type {
   AuthMode,
   DiscoveredResource,
   DiscoverySource,
-} from '@/types/discovery';
-import { resourceKey } from '@/lib/resource-key';
-import type { Methods } from '@/types/x402';
-import type { OgImage, ResourceOrigin } from '@x402scan/scan-db/types';
+} from "@/types/discovery";
+import { resourceKey } from "@/lib/resource-key";
+import type { Methods } from "@/types/x402";
+import type { OgImage, ResourceOrigin } from "@x402scan/scan-db/types";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
 type TestedResource = TestedResourceType;
 type FailedResource = FailedResourceType;
@@ -83,11 +83,11 @@ export function DiscoveryFixHint({
   missingContactEmail?: boolean;
 }) {
   const label = noDiscovery
-    ? 'Have your agent create an OpenAPI spec for your resource'
-    : 'Have your agent fix the issues with a prompt';
+    ? "Have your agent create an OpenAPI spec for your resource"
+    : "Have your agent fix the issues with a prompt";
 
   return (
-    <p className={cn('text-sm text-foreground', className)}>
+    <p className={cn("text-sm text-foreground", className)}>
       <DiscoveryActions
         label={label}
         failedResources={failedResources}
@@ -95,11 +95,11 @@ export function DiscoveryFixHint({
         missingSchemaResources={missingSchemaResources}
         missingContactEmail={missingContactEmail}
         noDiscovery={noDiscovery}
-      />{' '}
-      or{' '}
+      />{" "}
+      or{" "}
       <Link
         href="/discovery/spec"
-        className="underline underline-offset-2 hover:text-foreground transition-colors"
+        className="underline underline-offset-2 transition-colors hover:text-foreground"
       >
         read the discovery spec
       </Link>
@@ -168,7 +168,7 @@ export interface DiscoveryPanelProps {
   /** Whether to show the Register All button */
   showRegisterButton?: boolean;
   /** Mode: 'register' for registration actions, 'test' for read-only previews */
-  mode?: 'register' | 'test';
+  mode?: "register" | "test";
   /** Origin preview data (favicon, OG, etc.) */
   preview?: OriginPreview | null;
   /** Whether preview is loading */
@@ -217,7 +217,7 @@ export function DiscoveryPanel({
   bulkResult,
   onRegisterAll,
   showRegisterButton = true,
-  mode = 'register',
+  mode = "register",
   preview,
   isPreviewLoading = false,
   testedResources = [],
@@ -236,7 +236,7 @@ export function DiscoveryPanel({
   // Don't render anything if no origin
   if (!origin) return null;
 
-  const isTestMode = mode === 'test';
+  const isTestMode = mode === "test";
 
   // Show bulk registration result (only in register mode)
   if (!isTestMode && bulkResult?.success) {
@@ -257,17 +257,17 @@ export function DiscoveryPanel({
     ) {
       return (
         <div className="space-y-3">
-          <div className="flex items-start gap-3 p-4 border rounded-md bg-red-500/10 border-red-500/30">
-            <X className="size-6 text-red-600 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 rounded-md border border-red-500/30 bg-red-500/10 p-4">
+            <X className="mt-0.5 size-6 shrink-0 text-red-600" />
             <div className="flex-1">
               <h2 className="font-semibold text-red-600">
                 Registration Failed
               </h2>
               <p className="text-sm text-muted-foreground">
-                Failed to register all{' '}
+                Failed to register all{" "}
                 {bulkResult.registered +
                   freeCount +
-                  (bulkResult.failedDetails?.length ?? 0)}{' '}
+                  (bulkResult.failedDetails?.length ?? 0)}{" "}
                 resources
               </p>
               <DiscoveryFixHint
@@ -277,22 +277,22 @@ export function DiscoveryPanel({
             </div>
           </div>
 
-          <details className="border rounded-md group">
-            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+          <details className="group rounded-md border">
+            <summary className="flex cursor-pointer items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50">
               <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              More Info ({bulkResult.failedDetails?.length ?? bulkResult.failed}{' '}
+              More Info ({bulkResult.failedDetails?.length ?? bulkResult.failed}{" "}
               failed resources)
             </summary>
-            <div className="p-4 pt-2 border-t space-y-2 max-h-[400px] overflow-y-auto">
+            <div className="max-h-[400px] space-y-2 overflow-y-auto border-t p-4 pt-2">
               {bulkResult.failedDetails &&
               bulkResult.failedDetails.length > 0 ? (
                 bulkResult.failedDetails.map((failed, idx) => (
                   <div
                     key={idx}
-                    className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                    className="space-y-1 rounded border bg-muted/50 p-3 text-xs"
                   >
                     <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">
+                      <span className="shrink-0 text-muted-foreground">
                         URL:
                       </span>
                       <span className="font-mono break-all">
@@ -306,16 +306,16 @@ export function DiscoveryPanel({
                       </span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">
+                      <span className="shrink-0 text-muted-foreground">
                         Error:
                       </span>
-                      <span className="text-red-600 wrap-break-word">
+                      <span className="wrap-break-word text-red-600">
                         {failed.error}
                       </span>
                     </div>
                     {failed.status && (
                       <div className="flex items-start gap-2">
-                        <span className="text-muted-foreground shrink-0">
+                        <span className="shrink-0 text-muted-foreground">
                           Status:
                         </span>
                         <span className="font-mono">{failed.status}</span>
@@ -345,18 +345,18 @@ export function DiscoveryPanel({
 
     return (
       <div className="space-y-3">
-        <div className="flex items-center gap-3 p-4 border rounded-md bg-green-600/10 border-green-600/30">
+        <div className="flex items-center gap-3 rounded-md border border-green-600/30 bg-green-600/10 p-4">
           <Check className="size-6 text-green-600" />
           <div>
             <p className="text-sm font-medium">
-              Successfully registered {bulkResult.registered + freeCount} of{' '}
+              Successfully registered {bulkResult.registered + freeCount} of{" "}
               {bulkResult.registered +
                 freeCount +
-                (bulkResult.failedDetails?.length ?? 0)}{' '}
+                (bulkResult.failedDetails?.length ?? 0)}{" "}
               resources
               {notRegisteredCount > 0 && (
                 <span className="text-red-600">
-                  {' '}
+                  {" "}
                   ({notRegisteredCount} not registered)
                 </span>
               )}
@@ -366,12 +366,12 @@ export function DiscoveryPanel({
 
         {/* Deprecation notice */}
         {bulkResult.deprecated !== undefined && bulkResult.deprecated > 0 && (
-          <div className="flex items-start gap-3 p-4 border rounded-md bg-yellow-600/10 border-yellow-600/30">
-            <AlertCircle className="size-5 text-yellow-600 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 rounded-md border border-yellow-600/30 bg-yellow-600/10 p-4">
+            <AlertCircle className="mt-0.5 size-5 shrink-0 text-yellow-600" />
             <div>
               <h3 className="font-medium text-yellow-700">
                 {bulkResult.deprecated} resource
-                {bulkResult.deprecated === 1 ? '' : 's'} deprecated
+                {bulkResult.deprecated === 1 ? "" : "s"} deprecated
               </h3>
               <p className="text-sm text-muted-foreground">
                 Resources previously registered for this origin that are no
@@ -385,23 +385,23 @@ export function DiscoveryPanel({
 
         {/* Warnings — registered but with issues */}
         {bulkResult.warningDetails && bulkResult.warningDetails.length > 0 && (
-          <details className="border rounded-md group">
-            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+          <details className="group rounded-md border">
+            <summary className="flex cursor-pointer items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50">
               <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              <AlertCircle className="size-4 text-yellow-600 shrink-0" />
+              <AlertCircle className="size-4 shrink-0 text-yellow-600" />
               {bulkResult.warningDetails.length} resource
-              {bulkResult.warningDetails.length === 1 ? '' : 's'} registered
+              {bulkResult.warningDetails.length === 1 ? "" : "s"} registered
               with warnings (Not blocking)
             </summary>
-            <div className="p-4 pt-2 border-t space-y-2">
-              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            <div className="space-y-2 border-t p-4 pt-2">
+              <div className="max-h-[400px] space-y-2 overflow-y-auto">
                 {bulkResult.warningDetails.map((entry, idx) => (
                   <div
                     key={idx}
-                    className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                    className="space-y-1 rounded border bg-muted/50 p-3 text-xs"
                   >
                     <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">
+                      <span className="shrink-0 text-muted-foreground">
                         URL:
                       </span>
                       <span className="font-mono break-all">
@@ -416,14 +416,14 @@ export function DiscoveryPanel({
                     </div>
                     {entry.warnings.map((w, wi) => (
                       <div key={wi} className="flex items-start gap-2">
-                        <span className="text-muted-foreground shrink-0">
-                          {w.severity === 'error'
-                            ? '!'
-                            : w.severity === 'warn'
-                              ? '!'
-                              : 'i'}
+                        <span className="shrink-0 text-muted-foreground">
+                          {w.severity === "error"
+                            ? "!"
+                            : w.severity === "warn"
+                              ? "!"
+                              : "i"}
                         </span>
-                        <span className="text-yellow-600 wrap-break-word">
+                        <span className="wrap-break-word text-yellow-600">
                           {w.message}
                         </span>
                       </div>
@@ -432,9 +432,9 @@ export function DiscoveryPanel({
                 ))}
               </div>
               <DiscoveryFixHint
-                className="font-medium pt-2"
-                warnings={bulkResult.warningDetails.flatMap(entry =>
-                  entry.warnings.map(w => ({
+                className="pt-2 font-medium"
+                warnings={bulkResult.warningDetails.flatMap((entry) =>
+                  entry.warnings.map((w) => ({
                     url: entry.url,
                     error: w.message,
                   }))
@@ -446,29 +446,29 @@ export function DiscoveryPanel({
 
         {/* Skipped — unprotected/non-registrable endpoints */}
         {skippedDetails.length > 0 && (
-          <details className="border rounded-md group">
-            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2 text-yellow-600">
+          <details className="group rounded-md border">
+            <summary className="flex cursor-pointer items-center gap-2 p-3 text-sm font-medium text-yellow-600 hover:bg-muted/50">
               <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
               <AlertCircle className="size-4 shrink-0" />
               {skippedDetails.length} unprotected endpoint
-              {skippedDetails.length === 1 ? '' : 's'} skipped
+              {skippedDetails.length === 1 ? "" : "s"} skipped
             </summary>
-            <div className="p-4 pt-2 border-t space-y-2">
+            <div className="space-y-2 border-t p-4 pt-2">
               <p className="text-xs text-muted-foreground">
                 These endpoints were identified as unprotected (no x402
                 paywall). They are not registered. If they should be paid, add
-                x402 payment middleware. If they are intentionally free, declare{' '}
-                <code className="font-mono bg-muted px-1 rounded">
+                x402 payment middleware. If they are intentionally free, declare{" "}
+                <code className="rounded bg-muted px-1 font-mono">
                   &quot;security&quot;: []
-                </code>{' '}
+                </code>{" "}
                 on them in your OpenAPI spec and they will be registered and
                 shown as public endpoints.
               </p>
-              <div className="space-y-1 max-h-[200px] overflow-y-auto">
+              <div className="max-h-[200px] space-y-1 overflow-y-auto">
                 {skippedDetails.map((skipped, idx) => (
                   <div
                     key={idx}
-                    className="px-3 py-1.5 bg-muted/50 rounded text-xs text-muted-foreground space-y-0.5"
+                    className="space-y-0.5 rounded bg-muted/50 px-3 py-1.5 text-xs text-muted-foreground"
                   >
                     <div className="font-mono">
                       {(() => {
@@ -493,21 +493,21 @@ export function DiscoveryPanel({
 
         {/* Not registered — actual probe failures */}
         {notRegisteredCount > 0 && (
-          <details className="border rounded-md group" open>
-            <summary className="p-3 cursor-pointer hover:bg-muted/50 font-medium text-sm flex items-center gap-2">
+          <details className="group rounded-md border" open>
+            <summary className="flex cursor-pointer items-center gap-2 p-3 text-sm font-medium hover:bg-muted/50">
               <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
               {notRegisteredCount} Resource
-              {notRegisteredCount === 1 ? '' : 's'} Not Registered
+              {notRegisteredCount === 1 ? "" : "s"} Not Registered
             </summary>
-            <div className="p-4 pt-2 border-t space-y-2">
-              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            <div className="space-y-2 border-t p-4 pt-2">
+              <div className="max-h-[400px] space-y-2 overflow-y-auto">
                 {allNotRegistered.map((failed, idx) => (
                   <div
                     key={idx}
-                    className="p-3 bg-muted/50 rounded border text-xs space-y-1"
+                    className="space-y-1 rounded border bg-muted/50 p-3 text-xs"
                   >
                     <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">
+                      <span className="shrink-0 text-muted-foreground">
                         URL:
                       </span>
                       <span className="font-mono break-all">
@@ -521,10 +521,10 @@ export function DiscoveryPanel({
                       </span>
                     </div>
                     <div className="flex items-start gap-2">
-                      <span className="text-muted-foreground shrink-0">
+                      <span className="shrink-0 text-muted-foreground">
                         Error:
                       </span>
-                      <span className="text-red-600 wrap-break-word">
+                      <span className="wrap-break-word text-red-600">
                         {failed.error}
                       </span>
                     </div>
@@ -532,7 +532,7 @@ export function DiscoveryPanel({
                 ))}
               </div>
               <DiscoveryFixHint
-                className="font-medium pt-2"
+                className="pt-2 font-medium"
                 failedResources={allNotRegistered}
               />
             </div>
@@ -547,45 +547,45 @@ export function DiscoveryPanel({
   if (isTestMode && !isLoading && resourceCount === 0 && !found) {
     // Check if document was found but invalid (vs not found at all)
     const isInvalidDocument = discoveryError?.includes(
-      'Invalid discovery document'
+      "Invalid discovery document"
     );
 
     const icon = isInvalidDocument ? (
-      <ShieldAlert className="size-4 text-red-600 shrink-0" />
+      <ShieldAlert className="size-4 shrink-0 text-red-600" />
     ) : (
-      <XCircle className="size-4 text-muted-foreground shrink-0" />
+      <XCircle className="size-4 shrink-0 text-muted-foreground" />
     );
 
     return (
       <div
         className={cn(
-          'flex items-center justify-between gap-3 p-3 border rounded-md',
-          isInvalidDocument ? 'bg-red-600/10 border-red-600/30' : 'bg-muted/30'
+          "flex items-center justify-between gap-3 p-3 border rounded-md",
+          isInvalidDocument ? "bg-red-600/10 border-red-600/30" : "bg-muted/30"
         )}
       >
-        <div className="flex items-center gap-2 flex-1 min-w-0">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           {icon}
           <span className="text-sm text-muted-foreground">
             {isInvalidDocument ? (
               <>
-                Found{' '}
-                <code className="px-1 py-0.5 bg-muted rounded text-xs">
+                Found{" "}
+                <code className="rounded bg-muted px-1 py-0.5 text-xs">
                   /.well-known/x402
-                </code>{' '}
+                </code>{" "}
                 but invalid: {discoveryError}
               </>
             ) : (
               <>No discovery spec found</>
             )}
           </span>
-          <DiscoveryFixHint className="block mt-1" noDiscovery />
+          <DiscoveryFixHint className="mt-1 block" noDiscovery />
         </div>
         {onRefresh && (
           <Button
             variant="outline"
             size="sm"
             onClick={onRefresh}
-            className="gap-1 shrink-0"
+            className="shrink-0 gap-1"
           >
             <RefreshCw className="size-3" />
             Try Again
@@ -602,10 +602,10 @@ export function DiscoveryPanel({
 
   // Create maps for quick lookup (keyed by composite key for method awareness)
   const testedResourceMap = new Map(
-    testedResources.map(r => [resourceKey(r.url, r.method), r])
+    testedResources.map((r) => [resourceKey(r.url, r.method), r])
   );
   const failedResourceMap = new Map(
-    failedResources.map(r => [resourceKey(r.url, r.method), r])
+    failedResources.map((r) => [resourceKey(r.url, r.method), r])
   );
 
   // Pagination
@@ -642,16 +642,16 @@ export function DiscoveryPanel({
           {isTestMode ? (
             isBatchTestLoading ? (
               <div className="flex flex-col gap-2">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="pl-4 border-l pt-4 relative">
-                    <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border" />
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="relative border-l pt-4 pl-4">
+                    <div className="absolute top-[calc(2rem+5px)] left-0 h-px w-4 bg-border" />
                     <Card className="overflow-hidden">
                       <CardHeader className="bg-muted px-4 py-2">
                         <div className="flex items-center gap-2">
-                          <Skeleton className="w-10 h-5" />
-                          <Skeleton className="w-48 h-4" />
+                          <Skeleton className="h-5 w-10" />
+                          <Skeleton className="h-4 w-48" />
                         </div>
-                        <Skeleton className="w-full h-3 mt-2" />
+                        <Skeleton className="mt-2 h-3 w-full" />
                       </CardHeader>
                     </Card>
                   </div>
@@ -732,25 +732,27 @@ export function DiscoveryPanel({
             <div className="flex items-center justify-between pt-2">
               <span className="text-xs text-muted-foreground">
                 Showing {page * ITEMS_PER_PAGE + 1}-
-                {Math.min((page + 1) * ITEMS_PER_PAGE, resources.length)} of{' '}
+                {Math.min((page + 1) * ITEMS_PER_PAGE, resources.length)} of{" "}
                 {resources.length}
               </span>
               <div className="flex items-center gap-1">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage(p => Math.max(0, p - 1))}
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
                   disabled={page === 0}
                 >
                   <ChevronLeft className="size-4" />
                 </Button>
-                <span className="text-xs text-muted-foreground px-2">
+                <span className="px-2 text-xs text-muted-foreground">
                   {page + 1} / {totalPages}
                 </span>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(totalPages - 1, p + 1))
+                  }
                   disabled={page >= totalPages - 1}
                 >
                   <ChevronRight className="size-4" />
@@ -769,7 +771,7 @@ export function DiscoveryPanel({
             >
               {isRegisteringAll ? (
                 <>
-                  <Loader2 className="size-4 animate-spin mr-2" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   Registering...
                 </>
               ) : (
@@ -787,7 +789,7 @@ export function DiscoveryPanel({
  * Compute verification status for a specific resource based on its payTo addresses
  */
 function getResourceVerificationStatus(
-  parsed: TestedResource['parsed'],
+  parsed: TestedResource["parsed"],
   verifiedAddresses: Record<string, boolean>
 ) {
   const addresses: string[] = [];
@@ -804,7 +806,7 @@ function getResourceVerificationStatus(
   }
 
   const verifiedCount = addresses.filter(
-    addr => verifiedAddresses[addr] === true
+    (addr) => verifiedAddresses[addr] === true
   ).length;
 
   return {
@@ -842,26 +844,26 @@ function DiscoveredResourceExecutor({
   const x402Response = x402Result.success ? x402Result.data : null;
 
   // Collect warnings from library and x402scan-specific checks
-  const warnings: string[] = tested.warnings.map(w => w.message);
+  const warnings: string[] = tested.warnings.map((w) => w.message);
   if (invalidInfo?.invalid)
-    warnings.push(`Invalid: ${invalidInfo.reason ?? 'Unknown format error'}`);
+    warnings.push(`Invalid: ${invalidInfo.reason ?? "Unknown format error"}`);
 
   // Add verification warnings only for unverified resources
   if (verificationStatus.addresses.length > 0 && !verificationStatus.verified) {
     const verifiedList = verificationStatus.addresses.filter(
-      addr => verifiedAddresses[addr] === true
+      (addr) => verifiedAddresses[addr] === true
     );
     const unverifiedAddresses = verificationStatus.addresses.filter(
-      addr => verifiedAddresses[addr] !== true
+      (addr) => verifiedAddresses[addr] !== true
     );
 
     if (verificationStatus.partial) {
       const verifiedShort = verifiedList
-        .map(addr => `${addr.slice(0, 6)}...${addr.slice(-4)}`)
-        .join(', ');
+        .map((addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`)
+        .join(", ");
       const unverifiedShort = unverifiedAddresses
-        .map(addr => `${addr.slice(0, 6)}...${addr.slice(-4)}`)
-        .join(', ');
+        .map((addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`)
+        .join(", ");
 
       warnings.push(
         `${verifiedList.length} of ${verificationStatus.addresses.length} addresses verified. ` +
@@ -869,8 +871,8 @@ function DiscoveredResourceExecutor({
       );
     } else {
       const addressList = unverifiedAddresses
-        .map(addr => `${addr.slice(0, 6)}...${addr.slice(-4)}`)
-        .join(', ');
+        .map((addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`)
+        .join(", ");
       warnings.push(`No ownership proof for payTo address: ${addressList}`);
     }
   }
@@ -883,7 +885,7 @@ function DiscoveredResourceExecutor({
         id: `discovered-${idx}`,
         resource: resourceUrl,
         x402Version: 1,
-        originId: 'discovered',
+        originId: "discovered",
       })}
       tags={[]}
       response={x402Response}
@@ -923,7 +925,7 @@ function FailedResourceCard({
   const [showDetails, setShowDetails] = useState(false);
   const [showRawResponse, setShowRawResponse] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
-  const [sampleBody, setSampleBody] = useState('');
+  const [sampleBody, setSampleBody] = useState("");
 
   const pathname = (() => {
     try {
@@ -957,52 +959,52 @@ function FailedResourceCard({
   // Free endpoints (siwx/public/apiKey) are registered without probing —
   // render them as informational, not as failures.
   const free =
-    authMode === 'siwx'
+    authMode === "siwx"
       ? {
-          tag: 'FREE',
-          message: 'Free (wallet auth, no payment)',
-          border: 'border-green-600',
-          badge: 'bg-green-600/10 border border-green-600 text-green-600',
-          text: 'text-primary',
+          tag: "FREE",
+          message: "Free (wallet auth, no payment)",
+          border: "border-green-600",
+          badge: "bg-green-600/10 border border-green-600 text-green-600",
+          text: "text-primary",
         }
-      : authMode === 'unprotected'
+      : authMode === "unprotected"
         ? {
-            tag: 'PUBLIC',
-            message: 'Public (no auth, no payment)',
-            border: 'border-sky-600',
-            badge: 'bg-sky-600/10 border border-sky-600 text-sky-600',
-            text: 'text-sky-600',
+            tag: "PUBLIC",
+            message: "Public (no auth, no payment)",
+            border: "border-sky-600",
+            badge: "bg-sky-600/10 border border-sky-600 text-sky-600",
+            text: "text-sky-600",
           }
-        : authMode === 'apiKey'
+        : authMode === "apiKey"
           ? {
-              tag: 'API KEY',
-              message: 'API key required (not payable via x402)',
-              border: 'border-border',
-              badge: 'bg-muted border border-border text-muted-foreground',
-              text: 'text-muted-foreground',
+              tag: "API KEY",
+              message: "API key required (not payable via x402)",
+              border: "border-border",
+              badge: "bg-muted border border-border text-muted-foreground",
+              text: "text-muted-foreground",
             }
           : null;
   const isV1Error =
-    failedDetails?.error?.includes('v1 response detected') ?? false;
+    failedDetails?.error?.includes("v1 response detected") ?? false;
   const errorMessage = free
     ? free.message
     : isInvalid
-      ? (invalidInfo?.reason ?? 'Invalid format')
+      ? (invalidInfo?.reason ?? "Invalid format")
       : x402Parsed
-        ? 'Missing input schema'
-        : (failedDetails?.error ?? 'Unknown error');
+        ? "Missing input schema"
+        : (failedDetails?.error ?? "Unknown error");
 
   return (
-    <div className="pl-4 border-l pt-4 relative">
-      <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border" />
+    <div className="relative border-l pt-4 pl-4">
+      <div className="absolute top-[calc(2rem+5px)] left-0 h-px w-4 bg-border" />
       <Card
         className={cn(
-          'overflow-hidden',
+          "overflow-hidden",
           free
             ? free.border
             : isInvalid
-              ? 'border-yellow-500/30'
-              : 'border-red-500/30'
+              ? "border-yellow-500/30"
+              : "border-red-500/30"
         )}
       >
         <button
@@ -1012,38 +1014,38 @@ function FailedResourceCard({
         >
           <CardHeader className="bg-muted px-4 py-2">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex min-w-0 items-center gap-2">
                 <div
                   className={cn(
-                    'font-mono px-1 rounded-md text-xs shrink-0',
+                    "font-mono px-1 rounded-md text-xs shrink-0",
                     free
                       ? free.badge
                       : isInvalid
-                        ? 'bg-yellow-600/10 border border-yellow-600 text-yellow-600'
-                        : 'bg-red-600/10 border border-red-600 text-red-600'
+                        ? "bg-yellow-600/10 border border-yellow-600 text-yellow-600"
+                        : "bg-red-600/10 border border-red-600 text-red-600"
                   )}
                 >
-                  {free ? free.tag : isInvalid ? 'INVALID' : 'ERR'}
+                  {free ? free.tag : isInvalid ? "INVALID" : "ERR"}
                 </div>
-                <span className="font-mono text-sm truncate">{pathname}</span>
+                <span className="truncate font-mono text-sm">{pathname}</span>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex shrink-0 items-center gap-2">
                 <span
                   className={cn(
-                    'text-xs truncate max-w-[200px]',
+                    "text-xs truncate max-w-[200px]",
                     free
                       ? free.text
                       : isInvalid
-                        ? 'text-yellow-500'
-                        : 'text-red-500'
+                        ? "text-yellow-500"
+                        : "text-red-500"
                   )}
                 >
                   {errorMessage}
                 </span>
                 <ChevronDown
                   className={cn(
-                    'size-4 transition-transform text-muted-foreground',
-                    showDetails && 'rotate-180'
+                    "size-4 transition-transform text-muted-foreground",
+                    showDetails && "rotate-180"
                   )}
                 />
               </div>
@@ -1051,17 +1053,17 @@ function FailedResourceCard({
           </CardHeader>
         </button>
         {showDetails && (
-          <CardContent className="p-4 flex flex-col gap-3">
+          <CardContent className="flex flex-col gap-3 p-4">
             <ValidationChecklist
               checks={[
-                { label: 'Returns 402', ok: returns402 },
-                { label: 'x402 parses', ok: x402Parsed },
-                { label: 'Has accepts', ok: hasAccepts },
-                { label: 'Input schema', ok: hasInputSchema },
-                { label: 'Output schema', ok: hasOutputSchema },
-                { label: 'Ownership verified', ok: resourceOwnershipVerified },
-                { label: 'OG image', ok: Boolean(preview?.ogImages?.[0]?.url) },
-                { label: 'Favicon', ok: Boolean(preview?.favicon) },
+                { label: "Returns 402", ok: returns402 },
+                { label: "x402 parses", ok: x402Parsed },
+                { label: "Has accepts", ok: hasAccepts },
+                { label: "Input schema", ok: hasInputSchema },
+                { label: "Output schema", ok: hasOutputSchema },
+                { label: "Ownership verified", ok: resourceOwnershipVerified },
+                { label: "OG image", ok: Boolean(preview?.ogImages?.[0]?.url) },
+                { label: "Favicon", ok: Boolean(preview?.favicon) },
               ]}
             />
 
@@ -1087,21 +1089,21 @@ function FailedResourceCard({
                 </p>
                 <textarea
                   value={sampleBody}
-                  onChange={e => setSampleBody(e.target.value)}
+                  onChange={(e) => setSampleBody(e.target.value)}
                   placeholder='{"key": "value"}'
                   className={cn(
-                    'w-full rounded-md border bg-background px-3 py-2 text-xs font-mono',
-                    'placeholder:text-muted-foreground/40 focus-visible:outline-none',
-                    'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                    'min-h-[60px] max-h-[200px] resize-y',
+                    "w-full rounded-md border bg-background px-3 py-2 text-xs font-mono",
+                    "placeholder:text-muted-foreground/40 focus-visible:outline-none",
+                    "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    "min-h-[60px] max-h-[200px] resize-y",
                     sampleBody.length > 0 &&
                       !isValidJson(sampleBody) &&
-                      'border-red-500/50 focus-visible:ring-red-500/30'
+                      "border-red-500/50 focus-visible:ring-red-500/30"
                   )}
                 />
                 {sampleBody.length > 0 && !isValidJson(sampleBody) && (
                   <p className="text-[10px] text-red-500">
-                    Invalid JSON — must be an object like{' '}
+                    Invalid JSON — must be an object like{" "}
                     <code className="font-mono">{'{"key": "value"}'}</code>
                   </p>
                 )}
@@ -1125,12 +1127,12 @@ function FailedResourceCard({
                   isRetrying ||
                   (sampleBody.length > 0 && !isValidJson(sampleBody))
                 }
-                className="gap-1 w-full"
+                className="w-full gap-1"
               >
                 <RefreshCw
-                  className={cn('size-3', isRetrying && 'animate-spin')}
+                  className={cn("size-3", isRetrying && "animate-spin")}
                 />
-                {sampleBody.trim() ? 'Retry with Sample Body' : 'Try Again'}
+                {sampleBody.trim() ? "Retry with Sample Body" : "Try Again"}
               </Button>
             )}
 
@@ -1140,15 +1142,15 @@ function FailedResourceCard({
               return (
                 Array.isArray(issues) &&
                 issues.length > 0 && (
-                  <div className="border rounded-md bg-red-500/5 border-red-500/30 p-3 text-xs space-y-2">
+                  <div className="space-y-2 rounded-md border border-red-500/30 bg-red-500/5 p-3 text-xs">
                     <p className="font-medium text-red-600">
                       Validation Errors
                     </p>
-                    <ul className="space-y-1 list-disc list-inside">
+                    <ul className="list-inside list-disc space-y-1">
                       {issues.map((issue, i) => (
                         <li
                           key={i}
-                          className="text-red-600 font-mono text-[10px]"
+                          className="font-mono text-[10px] text-red-600"
                         >
                           {issue.code}: {issue.message}
                         </li>
@@ -1161,22 +1163,22 @@ function FailedResourceCard({
 
             {/* Raw response - nested collapsible */}
             {testedResponse?.parsed && (
-              <div className="border rounded-md bg-muted/30">
+              <div className="rounded-md border bg-muted/30">
                 <button
                   type="button"
                   onClick={() => setShowRawResponse(!showRawResponse)}
-                  className="w-full flex items-center justify-between p-2 text-left"
+                  className="flex w-full items-center justify-between p-2 text-left"
                 >
                   <span className="text-xs font-medium">Raw Response Body</span>
                   <ChevronDown
                     className={cn(
-                      'size-3 transition-transform text-muted-foreground',
-                      showRawResponse && 'rotate-180'
+                      "size-3 transition-transform text-muted-foreground",
+                      showRawResponse && "rotate-180"
                     )}
                   />
                 </button>
                 {showRawResponse && (
-                  <pre className="text-xs overflow-auto max-h-48 bg-background p-2 mx-2 mb-2 rounded border">
+                  <pre className="mx-2 mb-2 max-h-48 overflow-auto rounded border bg-background p-2 text-xs">
                     {JSON.stringify(testedResponse.parsed, null, 2)}
                   </pre>
                 )}
@@ -1196,9 +1198,9 @@ function ValidationChecklist({
   checks: { label: string; ok: boolean }[];
 }) {
   return (
-    <div className="border rounded-md bg-muted/30 p-3">
-      <p className="text-xs font-medium mb-2">Validation Checklist</p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+    <div className="rounded-md border bg-muted/30 p-3">
+      <p className="mb-2 text-xs font-medium">Validation Checklist</p>
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
         {checks.map(({ label, ok }) => (
           <div key={label} className="flex items-center gap-1.5 text-xs">
             {ok ? (
@@ -1207,7 +1209,7 @@ function ValidationChecklist({
               <X className="size-3 text-red-500" />
             )}
             <span
-              className={cn(ok ? 'text-foreground' : 'text-muted-foreground')}
+              className={cn(ok ? "text-foreground" : "text-muted-foreground")}
             >
               {label}
             </span>
@@ -1240,14 +1242,14 @@ function RegisterModeResourceList({
   const allResources: {
     url: string;
     method?: string;
-    source: 'entered' | DiscoverySource;
+    source: "entered" | DiscoverySource;
     isRegistered: boolean;
   }[] = [];
 
   if (enteredUrl) {
     allResources.push({
       url: enteredUrl,
-      source: 'entered',
+      source: "entered",
       isRegistered: registeredSet.has(enteredUrl),
     });
   }
@@ -1256,7 +1258,7 @@ function RegisterModeResourceList({
     allResources.push({
       url: r.url,
       method: r.method,
-      source: source ?? 'well-known',
+      source: source ?? "well-known",
       isRegistered: registeredSet.has(r.url),
     });
   }
@@ -1279,7 +1281,7 @@ function RegisterModeResourceList({
       const k = resourceKey(r.url, r.method);
       const mode = authModeMap[k];
       if (invalidResourcesMap[k]?.invalid) return 0;
-      if (mode === 'siwx' || isOpenApiDeclaredFree(mode, source)) return 1;
+      if (mode === "siwx" || isOpenApiDeclaredFree(mode, source)) return 1;
       if (!r.isRegistered) return 2;
       return 3; // already registered
     };
@@ -1287,16 +1289,16 @@ function RegisterModeResourceList({
   });
 
   return (
-    <div className="border rounded-md overflow-hidden mt-3">
+    <div className="mt-3 overflow-hidden rounded-md border">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-muted text-muted-foreground text-xs">
-            <th className="text-left px-3 py-2 font-medium">Resource</th>
+          <tr className="bg-muted text-xs text-muted-foreground">
+            <th className="px-3 py-2 text-left font-medium">Resource</th>
             {showMethodColumn && (
-              <th className="text-left px-3 py-2 font-medium">Method</th>
+              <th className="px-3 py-2 text-left font-medium">Method</th>
             )}
-            <th className="text-left px-3 py-2 font-medium">Source</th>
-            <th className="text-left px-3 py-2 font-medium">Status</th>
+            <th className="px-3 py-2 text-left font-medium">Source</th>
+            <th className="px-3 py-2 text-left font-medium">Status</th>
           </tr>
         </thead>
         <tbody>
@@ -1328,21 +1330,21 @@ function RegisterModeResourceList({
                   <td className="px-3 py-2">
                     <span
                       className={cn(
-                        'text-xs px-1.5 py-0.5 rounded',
-                        resourceSource === 'entered'
-                          ? 'bg-primary/10 text-primary'
-                          : 'bg-muted text-muted-foreground'
+                        "text-xs px-1.5 py-0.5 rounded",
+                        resourceSource === "entered"
+                          ? "bg-primary/10 text-primary"
+                          : "bg-muted text-muted-foreground"
                       )}
                     >
-                      {resourceSource === 'entered'
-                        ? 'Manually Entered'
-                        : resourceSource === 'openapi'
-                          ? 'OpenAPI'
-                          : resourceSource === 'probe'
-                            ? 'Runtime Probe'
-                            : resourceSource === 'interop-mpp'
-                              ? '/.well-known/mpp'
-                              : '/.well-known/x402'}
+                      {resourceSource === "entered"
+                        ? "Manually Entered"
+                        : resourceSource === "openapi"
+                          ? "OpenAPI"
+                          : resourceSource === "probe"
+                            ? "Runtime Probe"
+                            : resourceSource === "interop-mpp"
+                              ? "/.well-known/mpp"
+                              : "/.well-known/x402"}
                     </span>
                   </td>
                   <td className="px-3 py-2">
@@ -1357,10 +1359,10 @@ function RegisterModeResourceList({
                           New
                         </span>
                       )}
-                      {authModeMap[k] === 'siwx' && (
+                      {authModeMap[k] === "siwx" && (
                         <Tooltip>
                           <TooltipTrigger>
-                            <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-green-600/10 border border-green-600 text-green-600">
+                            <span className="inline-flex items-center gap-1 rounded border border-green-600 bg-green-600/10 px-1.5 py-0.5 text-xs text-green-600">
                               <ShieldCheck className="size-3" />
                               Free
                             </span>
@@ -1373,11 +1375,11 @@ function RegisterModeResourceList({
                           </TooltipContent>
                         </Tooltip>
                       )}
-                      {authModeMap[k] === 'unprotected' &&
+                      {authModeMap[k] === "unprotected" &&
                         isOpenApiDeclaredFree(authModeMap[k], source) && (
                           <Tooltip>
                             <TooltipTrigger>
-                              <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-sky-600/10 border border-sky-600 text-sky-600">
+                              <span className="inline-flex items-center gap-1 rounded border border-sky-600 bg-sky-600/10 px-1.5 py-0.5 text-xs text-sky-600">
                                 <Globe className="size-3" />
                                 Public
                               </span>
@@ -1393,11 +1395,11 @@ function RegisterModeResourceList({
                             </TooltipContent>
                           </Tooltip>
                         )}
-                      {authModeMap[k] === 'apiKey' &&
+                      {authModeMap[k] === "apiKey" &&
                         isOpenApiDeclaredFree(authModeMap[k], source) && (
                           <Tooltip>
                             <TooltipTrigger>
-                              <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-muted border border-border text-muted-foreground">
+                              <span className="inline-flex items-center gap-1 rounded border border-border bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
                                 <KeyRound className="size-3" />
                                 API key
                               </span>
@@ -1413,7 +1415,7 @@ function RegisterModeResourceList({
                       {invalidResourcesMap[k]?.invalid && (
                         <Tooltip>
                           <TooltipTrigger>
-                            <span className="inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded bg-yellow-600/10 border border-yellow-600 text-yellow-600">
+                            <span className="inline-flex items-center gap-1 rounded border border-yellow-600 bg-yellow-600/10 px-1.5 py-0.5 text-xs text-yellow-600">
                               <AlertCircle className="size-3" />
                               INVALID
                             </span>
@@ -1421,7 +1423,7 @@ function RegisterModeResourceList({
                           <TooltipContent>
                             <p className="text-xs">
                               {invalidResourcesMap[k]?.reason ??
-                                'Invalid format'}
+                                "Invalid format"}
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -1447,7 +1449,7 @@ function createOriginFromPreview(
     .map((img, i) =>
       createDummyOgImage({
         id: `discovered-og-${i}`,
-        originId: 'discovered',
+        originId: "discovered",
         url: img.url,
         title: preview?.title ?? null,
         description: preview?.description ?? null,
@@ -1457,7 +1459,7 @@ function createOriginFromPreview(
     );
 
   return createDummyResourceOrigin({
-    id: 'discovered',
+    id: "discovered",
     origin: preview?.origin ?? origin,
     title: preview?.title ?? null,
     description: preview?.description ?? null,
@@ -1501,7 +1503,7 @@ function OriginPreviewCard({
 
   // Check if this is a real origin (has a valid UUID) vs discovered preview
   const isRealOrigin =
-    origin.id !== 'discovered' &&
+    origin.id !== "discovered" &&
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
       origin.id
     );
@@ -1526,9 +1528,9 @@ function OriginPreviewCard({
 
       if (allVerified) {
         return {
-          status: 'verified' as const,
+          status: "verified" as const,
           badge: (
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-600/10 border border-green-600/30 rounded-full px-2 py-0.5">
+            <span className="inline-flex items-center gap-1 rounded-full border border-green-600/30 bg-green-600/10 px-2 py-0.5 text-xs font-medium text-green-600">
               <ShieldCheck className="size-3" />
               Verified
             </span>
@@ -1538,11 +1540,11 @@ function OriginPreviewCard({
 
       if (partiallyVerified) {
         return {
-          status: 'partial' as const,
+          status: "partial" as const,
           badge: (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="inline-flex items-center gap-1 text-xs font-medium text-yellow-600 bg-yellow-600/10 border border-yellow-600/30 rounded-full px-2 py-0.5 cursor-help">
+                <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-yellow-600/30 bg-yellow-600/10 px-2 py-0.5 text-xs font-medium text-yellow-600">
                   <ShieldAlert className="size-3" />
                   Partially Verified ({verified}/{total})
                 </span>
@@ -1563,11 +1565,11 @@ function OriginPreviewCard({
 
       // Unverified
       return {
-        status: 'unverified' as const,
+        status: "unverified" as const,
         badge: (
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-secondary border border-border rounded-full px-2 py-0.5 cursor-help">
+              <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
                 <ShieldAlert className="size-3" />
                 Unverified
               </span>
@@ -1587,7 +1589,7 @@ function OriginPreviewCard({
     // Fall back to runtime ownership verification for discovered (not yet registered) origins
     // Count verified addresses from the verifiedAddresses map
     const verifiedCount = Object.values(verifiedAddresses).filter(
-      v => v
+      (v) => v
     ).length;
     const totalAddresses = Object.keys(verifiedAddresses).length;
     const allVerified = totalAddresses > 0 && verifiedCount === totalAddresses;
@@ -1597,9 +1599,9 @@ function OriginPreviewCard({
     // Show fully verified if all addresses are verified
     if (allVerified) {
       return {
-        status: 'verified' as const,
+        status: "verified" as const,
         badge: (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-600/10 border border-green-600/30 rounded-full px-2 py-0.5">
+          <span className="inline-flex items-center gap-1 rounded-full border border-green-600/30 bg-green-600/10 px-2 py-0.5 text-xs font-medium text-green-600">
             <ShieldCheck className="size-3" />
             Verified
           </span>
@@ -1611,18 +1613,18 @@ function OriginPreviewCard({
     if (partiallyVerified) {
       // Get verified and unverified addresses for tooltip
       const verifiedList = payToAddresses.filter(
-        addr => verifiedAddresses[addr]
+        (addr) => verifiedAddresses[addr]
       );
       const unverifiedList = payToAddresses.filter(
-        addr => !verifiedAddresses[addr]
+        (addr) => !verifiedAddresses[addr]
       );
 
       return {
-        status: 'partial' as const,
+        status: "partial" as const,
         badge: (
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-secondary border border-border rounded-full px-2 py-0.5 cursor-help">
+              <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
                 <ShieldAlert className="size-3" />
                 Partially Verified ({verifiedCount}/{totalAddresses})
               </span>
@@ -1631,7 +1633,7 @@ function OriginPreviewCard({
               <p className="font-medium">
                 Only some payment addresses are verified
               </p>
-              <p className="text-muted-foreground text-xs mt-1">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {verifiedCount} out of {totalAddresses} payment addresses have
                 verified ownership proofs.
               </p>
@@ -1640,8 +1642,8 @@ function OriginPreviewCard({
                   <p className="text-xs font-medium text-green-600">
                     Verified:
                   </p>
-                  <ul className="text-xs text-muted-foreground list-disc list-inside">
-                    {verifiedList.map(addr => (
+                  <ul className="list-inside list-disc text-xs text-muted-foreground">
+                    {verifiedList.map((addr) => (
                       <li key={addr}>{truncateAddress(addr)}</li>
                     ))}
                   </ul>
@@ -1652,8 +1654,8 @@ function OriginPreviewCard({
                   <p className="text-xs font-medium text-red-600">
                     Unverified:
                   </p>
-                  <ul className="text-xs text-muted-foreground list-disc list-inside">
-                    {unverifiedList.map(addr => (
+                  <ul className="list-inside list-disc text-xs text-muted-foreground">
+                    {unverifiedList.map((addr) => (
                       <li key={addr}>{truncateAddress(addr)}</li>
                     ))}
                   </ul>
@@ -1662,8 +1664,8 @@ function OriginPreviewCard({
               {recoveredAddresses.length > 0 && (
                 <div className="mt-2">
                   <p className="text-xs font-medium">Proven addresses:</p>
-                  <ul className="text-xs text-muted-foreground list-disc list-inside">
-                    {recoveredAddresses.map(addr => (
+                  <ul className="list-inside list-disc text-xs text-muted-foreground">
+                    {recoveredAddresses.map((addr) => (
                       <li key={addr}>{truncateAddress(addr)}</li>
                     ))}
                   </ul>
@@ -1679,26 +1681,26 @@ function OriginPreviewCard({
     const getUnverifiedReason = () => {
       if (!hasProofs) {
         return {
-          title: 'Missing ownership proof',
+          title: "Missing ownership proof",
           description:
-            'Ownership proofs verify you control the payTo address. Sign your origin URL with your payTo private key and add it to the ownershipProofs array in your discovery document.',
+            "Ownership proofs verify you control the payTo address. Sign your origin URL with your payTo private key and add it to the ownershipProofs array in your discovery document.",
         };
       }
       if (!hasPayTo) {
         return {
-          title: 'No payTo addresses found',
+          title: "No payTo addresses found",
           description:
-            'Could not extract payTo addresses from resource accepts to verify against.',
+            "Could not extract payTo addresses from resource accepts to verify against.",
         };
       }
       // Has proofs and payTo but still unverified = mismatch
       const recoveredStr =
         recoveredAddresses.length > 0
-          ? recoveredAddresses.map(truncateAddress).join(', ')
-          : 'unknown';
-      const expectedStr = payToAddresses.map(truncateAddress).join(', ');
+          ? recoveredAddresses.map(truncateAddress).join(", ")
+          : "unknown";
+      const expectedStr = payToAddresses.map(truncateAddress).join(", ");
       return {
-        title: 'Proof mismatch',
+        title: "Proof mismatch",
         description: `Recovered: ${recoveredStr}. Expected: ${expectedStr}`,
       };
     };
@@ -1706,25 +1708,25 @@ function OriginPreviewCard({
     const unverifiedReason = getUnverifiedReason();
 
     return {
-      status: 'unverified' as const,
+      status: "unverified" as const,
       badge: (
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-secondary border border-border rounded-full px-2 py-0.5 cursor-help">
+            <span className="inline-flex cursor-help items-center gap-1 rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
               <ShieldAlert className="size-3" />
               Unverified
             </span>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-96">
             <p className="font-medium">{unverifiedReason.title}</p>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {unverifiedReason.description}
             </p>
             {recoveredAddresses.length > 0 && (
               <div className="mt-2">
                 <p className="text-xs font-medium">Proven addresses:</p>
-                <ul className="text-xs text-muted-foreground list-disc list-inside">
-                  {recoveredAddresses.map(addr => (
+                <ul className="list-inside list-disc text-xs text-muted-foreground">
+                  {recoveredAddresses.map((addr) => (
                     <li key={addr}>{truncateAddress(addr)}</li>
                   ))}
                 </ul>
@@ -1733,8 +1735,8 @@ function OriginPreviewCard({
             {payToAddresses.length > 0 && (
               <div className="mt-2">
                 <p className="text-xs font-medium text-red-600">Unverified:</p>
-                <ul className="text-xs text-muted-foreground list-disc list-inside">
-                  {payToAddresses.map(addr => (
+                <ul className="list-inside list-disc text-xs text-muted-foreground">
+                  {payToAddresses.map((addr) => (
                     <li key={addr}>{truncateAddress(addr)}</li>
                   ))}
                 </ul>
@@ -1749,20 +1751,20 @@ function OriginPreviewCard({
   const verificationState = getVerificationState();
 
   return (
-    <Card className="overflow-hidden flex w-full items-stretch">
+    <Card className="flex w-full items-stretch overflow-hidden">
       <div className="flex-1">
         <CardHeader
           className={cn(
-            'space-y-0 flex flex-row items-center gap-2 bg-muted p-2 md:p-4',
-            hasMetadata && 'border-b'
+            "space-y-0 flex flex-row items-center gap-2 bg-muted p-2 md:p-4",
+            hasMetadata && "border-b"
           )}
         >
           <Favicon url={origin.favicon} className="size-6" />
-          <CardTitle className="font-bold text-base md:text-lg flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-base font-bold md:text-lg">
             {hostname}
             {verificationState.badge}
-            <span className="text-muted-foreground text-xs md:text-sm font-normal">
-              {resourceCount} resource{resourceCount === 1 ? '' : 's'}
+            <span className="text-xs font-normal text-muted-foreground md:text-sm">
+              {resourceCount} resource{resourceCount === 1 ? "" : "s"}
             </span>
           </CardTitle>
         </CardHeader>
@@ -1772,21 +1774,21 @@ function OriginPreviewCard({
               <div>
                 <h3
                   className={cn(
-                    'font-medium text-sm md:text-base',
-                    !origin.title && 'opacity-60'
+                    "font-medium text-sm md:text-base",
+                    !origin.title && "opacity-60"
                   )}
                 >
-                  {origin.title ? cleanExternalText(origin.title) : 'No Title'}
+                  {origin.title ? cleanExternalText(origin.title) : "No Title"}
                 </h3>
                 <p
                   className={cn(
-                    'text-xs md:text-sm text-muted-foreground',
-                    !origin.description && 'text-muted-foreground/60'
+                    "text-xs md:text-sm text-muted-foreground",
+                    !origin.description && "text-muted-foreground/60"
                   )}
                 >
                   {origin.description
                     ? cleanExternalText(origin.description)
-                    : 'No Description'}
+                    : "No Description"}
                 </p>
               </div>
             </div>
@@ -1794,11 +1796,11 @@ function OriginPreviewCard({
         )}
       </div>
       {origin.ogImages.length > 0 && (
-        <div className="border-l hidden md:flex items-center justify-center bg-muted p-4">
+        <div className="hidden items-center justify-center border-l bg-muted p-4 md:flex">
           <img
             src={origin.ogImages[0]!.url}
-            alt={origin.title ? cleanExternalText(origin.title) : ''}
-            className="rounded-md max-h-24"
+            alt={origin.title ? cleanExternalText(origin.title) : ""}
+            className="max-h-24 rounded-md"
           />
         </div>
       )}
@@ -1808,21 +1810,21 @@ function OriginPreviewCard({
 
 function LoadingOriginCard() {
   return (
-    <Card className="overflow-hidden flex w-full items-stretch">
+    <Card className="flex w-full items-stretch overflow-hidden">
       <div className="flex-1">
-        <CardHeader className="space-y-0 flex flex-row items-center gap-2 bg-muted">
+        <CardHeader className="flex flex-row items-center gap-2 space-y-0 bg-muted">
           <Skeleton className="size-6" />
-          <Skeleton className="w-36 h-[16px] md:h-[18px]" />
+          <Skeleton className="h-[16px] w-36 md:h-[18px]" />
         </CardHeader>
         <CardContent className="flex flex-row items-start justify-between gap-2 p-0">
-          <div className="flex flex-col gap-2 p-4 w-full">
-            <Skeleton className="w-48 h-[16px] md:h-[18px]" />
-            <Skeleton className="w-full h-[12px] md:h-[14px]" />
+          <div className="flex w-full flex-col gap-2 p-4">
+            <Skeleton className="h-[16px] w-48 md:h-[18px]" />
+            <Skeleton className="h-[12px] w-full md:h-[14px]" />
           </div>
         </CardContent>
       </div>
-      <div className="hidden md:flex items-center justify-center bg-muted p-4 border-l">
-        <Skeleton className="h-24 aspect-video" />
+      <div className="hidden items-center justify-center border-l bg-muted p-4 md:flex">
+        <Skeleton className="aspect-video h-24" />
       </div>
     </Card>
   );

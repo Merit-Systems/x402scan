@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Activity,
@@ -10,42 +10,42 @@ import {
   Globe,
   Server,
   Users,
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useState } from 'react';
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from "@/components/ui/tooltip";
 
 import {
   KnownSellerChart,
   LoadingKnownSellerChart,
-} from './known-sellers/chart';
+} from "./known-sellers/chart";
 
-import { Favicon } from '@/app/(app)/_components/favicon';
+import { Favicon } from "@/app/(app)/_components/favicon";
 
 import {
   cleanExternalText,
   truncateAtDelimiter,
   formatCompactAgo,
-} from '@/lib/utils';
-import { formatTokenAmount } from '@/lib/token';
+} from "@/lib/utils";
+import { formatTokenAmount } from "@/lib/token";
 
-import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import type { RouterOutputs } from '@/trpc/client';
-import { HeaderCell } from '@/components/ui/data-table/header-cell';
-import { Chains } from '@/app/(app)/_components/chains';
-import { SellersSortingContext } from '@/app/(app)/_contexts/sorting/sellers/context';
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import type { RouterOutputs } from "@/trpc/client";
+import { HeaderCell } from "@/components/ui/data-table/header-cell";
+import { Chains } from "@/app/(app)/_components/chains";
+import { SellersSortingContext } from "@/app/(app)/_contexts/sorting/sellers/context";
 
-import type { SearchResultEndpoint } from '@/lib/discover/search';
+import type { SearchResultEndpoint } from "@/lib/discover/search";
 
 type BazaarItem =
-  RouterOutputs['public']['sellers']['bazaar']['list']['items'][number];
+  RouterOutputs["public"]["sellers"]["bazaar"]["list"]["items"][number];
 
 type FeaturedServiceItem = BazaarItem & {
   searchEndpoint?: SearchResultEndpoint;
@@ -54,7 +54,7 @@ type FeaturedServiceItem = BazaarItem & {
 export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
   [
     {
-      accessorKey: 'recipients',
+      accessorKey: "recipients",
       header: () => (
         <HeaderCell
           Icon={Server}
@@ -62,7 +62,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
           className="mr-auto"
           sorting={{
             sortContext: SellersSortingContext,
-            sortKey: 'editorial',
+            sortKey: "editorial",
           }}
         />
       ),
@@ -70,7 +70,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
       size: 280,
       loading: () => (
         <div className="flex items-start gap-2.5">
-          <Skeleton className="size-6 rounded-full shrink-0 mt-0.5" />
+          <Skeleton className="mt-0.5 size-6 shrink-0 rounded-full" />
           <div className="flex-1 space-y-1.5 py-0.5">
             <Skeleton className="h-3.5 w-32" />
             <Skeleton className="h-3 w-44" />
@@ -79,7 +79,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
       ),
     },
     {
-      accessorKey: 'chart',
+      accessorKey: "chart",
       header: () => (
         <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
       ),
@@ -93,7 +93,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
       loading: () => <LoadingKnownSellerChart />,
     },
     {
-      accessorKey: 'total_amount',
+      accessorKey: "total_amount",
       header: () => (
         <HeaderCell
           Icon={DollarSign}
@@ -101,7 +101,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
           className="mx-auto"
           sorting={{
             sortContext: SellersSortingContext,
-            sortKey: 'total_amount',
+            sortKey: "total_amount",
           }}
         />
       ),
@@ -112,10 +112,10 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         </div>
       ),
       size: 110,
-      loading: () => <Skeleton className="h-5 w-16 mx-auto" />,
+      loading: () => <Skeleton className="mx-auto h-5 w-16" />,
     },
     {
-      accessorKey: 'tx_count',
+      accessorKey: "tx_count",
       header: () => (
         <HeaderCell
           Icon={ArrowLeftRight}
@@ -123,24 +123,24 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
           className="mx-auto"
           sorting={{
             sortContext: SellersSortingContext,
-            sortKey: 'tx_count',
+            sortKey: "tx_count",
           }}
         />
       ),
       cell: ({ row }) => (
         <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
           {row.original.tx_count.toLocaleString(undefined, {
-            notation: 'compact',
+            notation: "compact",
             maximumFractionDigits: 2,
             minimumFractionDigits: 0,
           })}
         </div>
       ),
       size: 90,
-      loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
+      loading: () => <Skeleton className="mx-auto h-4 w-12" />,
     },
     {
-      accessorKey: 'unique_buyers',
+      accessorKey: "unique_buyers",
       header: () => (
         <HeaderCell
           Icon={Users}
@@ -148,24 +148,24 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
           className="mx-auto"
           sorting={{
             sortContext: SellersSortingContext,
-            sortKey: 'unique_buyers',
+            sortKey: "unique_buyers",
           }}
         />
       ),
       cell: ({ row }) => (
         <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
           {row.original.unique_buyers.toLocaleString(undefined, {
-            notation: 'compact',
+            notation: "compact",
             maximumFractionDigits: 2,
             minimumFractionDigits: 0,
           })}
         </div>
       ),
       size: 90,
-      loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
+      loading: () => <Skeleton className="mx-auto h-4 w-12" />,
     },
     {
-      accessorKey: 'latest_block_timestamp',
+      accessorKey: "latest_block_timestamp",
       header: () => (
         <HeaderCell
           Icon={Calendar}
@@ -173,7 +173,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
           className="mx-auto"
           sorting={{
             sortContext: SellersSortingContext,
-            sortKey: 'latest_block_timestamp',
+            sortKey: "latest_block_timestamp",
           }}
         />
       ),
@@ -181,14 +181,14 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         <div className="text-center font-mono text-xs text-muted-foreground tabular-nums">
           {row.original.latest_block_timestamp
             ? formatCompactAgo(row.original.latest_block_timestamp)
-            : '–'}
+            : "–"}
         </div>
       ),
       size: 90,
-      loading: () => <Skeleton className="h-4 w-12 mx-auto" />,
+      loading: () => <Skeleton className="mx-auto h-4 w-12" />,
     },
     {
-      accessorKey: 'chains',
+      accessorKey: "chains",
       header: () => (
         <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />
       ),
@@ -200,10 +200,10 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         />
       ),
       size: 70,
-      loading: () => <Skeleton className="size-4 mx-auto" />,
+      loading: () => <Skeleton className="mx-auto size-4" />,
     },
     {
-      accessorKey: 'tryIt',
+      accessorKey: "tryIt",
       header: () => (
         <Tooltip>
           <TooltipTrigger asChild>
@@ -212,21 +212,21 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Call all x402 resources with AgentCash"
-              className="mx-auto flex size-7 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="mx-auto flex size-7 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
               <Image
                 src="/agentcash-light.svg"
                 alt=""
                 width={16}
                 height={16}
-                className="size-4 block dark:hidden"
+                className="block size-4 dark:hidden"
               />
               <Image
                 src="/agentcash-dark.svg"
                 alt=""
                 width={16}
                 height={16}
-                className="size-4 hidden dark:block"
+                className="hidden size-4 dark:block"
               />
             </a>
           </TooltipTrigger>
@@ -241,7 +241,7 @@ export const featuredServiceColumns: ExtendedColumnDef<FeaturedServiceItem>[] =
         return <TryItButton origin={origin} />;
       },
       size: 90,
-      loading: () => <Skeleton className="h-7 w-16 mx-auto rounded-md" />,
+      loading: () => <Skeleton className="mx-auto h-7 w-16 rounded-md" />,
     },
   ];
 
@@ -264,28 +264,28 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
 
   // Stub rows from search results have id === origin URL (no x402scan record
   // exists yet). Linking to /server/<url> 404s, so jump out to the origin.
-  const isExternal = origin.id.startsWith('http');
+  const isExternal = origin.id.startsWith("http");
   const innerContent = (
     <>
-      <Favicon url={origin.favicon} className="size-6 shrink-0 mt-0.5" />
+      <Favicon url={origin.favicon} className="mt-0.5 size-6 shrink-0" />
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span className="truncate text-sm font-medium group-hover:text-primary transition-colors">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <span className="truncate text-sm font-medium transition-colors group-hover:text-primary">
             {title}
           </span>
           {isExternal ? (
-            <ArrowUpRight className="size-3 text-muted-foreground shrink-0" />
+            <ArrowUpRight className="size-3 shrink-0 text-muted-foreground" />
           ) : null}
           {otherOrigins.length > 0 ? (
-            <span className="text-[10px] font-mono text-muted-foreground shrink-0">
+            <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
               +{otherOrigins.length}
             </span>
           ) : null}
         </div>
-        <div className="truncate text-xs text-muted-foreground mt-0.5">
-          {description ?? 'No description available.'}
+        <div className="mt-0.5 truncate text-xs text-muted-foreground">
+          {description ?? "No description available."}
         </div>
-        <div className="truncate text-[11px] font-mono text-muted-foreground/70 mt-0.5">
+        <div className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground/70">
           {hostname}
         </div>
       </div>
@@ -297,14 +297,14 @@ const ServerCell: React.FC<{ item: FeaturedServiceItem }> = ({ item }) => {
       href={origin.origin}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-start gap-2.5 min-w-0 group py-0.5"
+      className="group flex min-w-0 items-start gap-2.5 py-0.5"
     >
       {innerContent}
     </a>
   ) : (
     <Link
       href={`/server/${origin.id}`}
-      className="flex items-start gap-2.5 min-w-0 group py-0.5"
+      className="group flex min-w-0 items-start gap-2.5 py-0.5"
     >
       {innerContent}
     </Link>
@@ -326,31 +326,31 @@ const TryItButton: React.FC<{ origin: string }> = ({ origin }) => {
       <TooltipTrigger asChild>
         <button
           type="button"
-          onClick={e => {
+          onClick={(e) => {
             e.stopPropagation();
             void navigator.clipboard.writeText(prompt).then(() => {
               setCopied(true);
               setTimeout(() => setCopied(false), 2000);
             });
           }}
-          className="mx-auto flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border border-border bg-background hover:bg-accent hover:text-accent-foreground transition-colors whitespace-nowrap"
+          className="mx-auto flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1 text-xs font-medium whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground"
         >
           {copied ? (
             <Check className="size-3.5" />
           ) : (
             <ArrowUpRight className="size-3.5" />
           )}
-          {copied ? 'Copied' : 'Try it'}
+          {copied ? "Copied" : "Try it"}
         </button>
       </TooltipTrigger>
       <TooltipContent side="left" className="max-w-xs">
         <p className="text-xs">
           {copied ? (
-            'Prompt copied to clipboard.'
+            "Prompt copied to clipboard."
           ) : (
             <>
               Copies an AI prompt to your clipboard. Paste into Claude, Cursor,
-              or any agent that supports{' '}
+              or any agent that supports{" "}
               <span className="font-mono">agentcash</span> tools to explore this
               service.
             </>

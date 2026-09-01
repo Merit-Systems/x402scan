@@ -1,21 +1,21 @@
-import { SiweMessage } from '@signinwithethereum/siwe';
+import { SiweMessage } from "@signinwithethereum/siwe";
 import Credentials, {
   type CredentialsConfig,
-} from 'next-auth/providers/credentials';
-import { z } from 'zod';
-import { scanDb } from '@x402scan/scan-db';
+} from "next-auth/providers/credentials";
+import { z } from "zod";
+import { scanDb } from "@x402scan/scan-db";
 import {
   SIWE_PROVIDER_ID,
   SIWE_PROVIDER_NAME,
   SIWE_STATEMENT,
-} from './constants';
+} from "./constants";
 
 const siweCredentialsSchema = z.object({
   message: z.string().transform((val: string) => {
     try {
       return JSON.parse(val) as SiweMessage;
     } catch {
-      throw new Error('Invalid JSON in message');
+      throw new Error("Invalid JSON in message");
     }
   }),
   signedMessage: z.string(),
@@ -27,14 +27,14 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
     id: SIWE_PROVIDER_ID,
     name: SIWE_PROVIDER_NAME,
     credentials: {
-      message: { label: 'Message', type: 'text' },
-      signedMessage: { label: 'Signed Message', type: 'text' },
-      email: { label: 'Email', type: 'text', optional: true },
+      message: { label: "Message", type: "text" },
+      signedMessage: { label: "Signed Message", type: "text" },
+      email: { label: "Email", type: "text", optional: true },
     },
     async authorize(credentials) {
       const parseResult = siweCredentialsSchema.safeParse(credentials);
       if (!parseResult.success) {
-        throw new Error('Invalid credentials');
+        throw new Error("Invalid credentials");
       }
       const { message } = parseResult.data;
       const siwe = new SiweMessage(message);
@@ -49,7 +49,7 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
 
       // Imported lazily: '@/auth' statically imports this provider, so a
       // top-level import would create a module cycle.
-      const { auth } = await import('@/auth');
+      const { auth } = await import("@/auth");
       const session = await auth();
 
       if (session?.user?.id) {
@@ -65,7 +65,7 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
             userId: session.user.id,
           },
           create: {
-            type: 'siwe',
+            type: "siwe",
             userId: session.user.id,
             provider: SIWE_PROVIDER_ID,
             providerAccountId: address,
@@ -102,7 +102,7 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
               email,
               accounts: {
                 create: {
-                  type: 'siwe',
+                  type: "siwe",
                   provider: SIWE_PROVIDER_ID,
                   providerAccountId: address,
                 },
@@ -136,13 +136,13 @@ async function verifySignature({
     nonce,
   });
   if (!result.success) {
-    throw new Error('Invalid signature');
+    throw new Error("Invalid signature");
   }
   if (SIWE_STATEMENT !== result.data.statement) {
-    throw new Error('Statement mismatch');
+    throw new Error("Statement mismatch");
   }
   if (new Date(result.data.expirationTime!) < new Date()) {
-    throw new Error('Signature expired');
+    throw new Error("Signature expired");
   }
   return result.data;
 }

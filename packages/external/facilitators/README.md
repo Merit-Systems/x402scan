@@ -22,7 +22,7 @@ pnpm add facilitators
 ### Minimal Example
 
 ```typescript
-import { coinbase, thirdweb } from 'facilitators';
+import { coinbase, thirdweb } from "facilitators";
 
 paymentMiddleware(
   address,
@@ -42,7 +42,7 @@ paymentMiddleware(
 The `auto` facilitator is a proxy that load-balances between other facilitators to guarantee uptime. Simply import and use it directly - no configuration required:
 
 ```typescript
-import { auto } from 'facilitators';
+import { auto } from "facilitators";
 
 paymentMiddleware(address, resources, auto);
 ```
@@ -58,7 +58,7 @@ This is useful for building agents that search for tools.
 ### Discovery API
 
 ```typescript
-import { coinbaseDiscovery, listAllFacilitatorResources } from 'facilitators';
+import { coinbaseDiscovery, listAllFacilitatorResources } from "facilitators";
 
 // List all resources from a facilitator
 const resources = await listAllFacilitatorResources(coinbaseDiscovery);
@@ -84,10 +84,10 @@ The package also exports a list of all facilitators that support discovery:
 import {
   discoverableFacilitators,
   listAllFacilitatorResources,
-} from 'facilitators';
+} from "facilitators";
 
 await Promise.all(
-  discoverableFacilitators.map(facilitator =>
+  discoverableFacilitators.map((facilitator) =>
     listAllFacilitatorResources(facilitator)
   )
 );
@@ -155,10 +155,10 @@ import {
   relai,
   bitrefill,
   cascade,
-} from 'facilitators';
+} from "facilitators";
 
 // Facilitators requiring setup
-import { aurracloud, thirdweb, questflow } from 'facilitators';
+import { aurracloud, thirdweb, questflow } from "facilitators";
 
 aurracloud({
   apiKey: process.env.AURRACLOUD_API_KEY,
@@ -176,7 +176,7 @@ thirdweb({
 ### Access Facilitator Metadata
 
 ```typescript
-import { coinbaseFacilitator, payaiFacilitator } from 'facilitators';
+import { coinbaseFacilitator, payaiFacilitator } from "facilitators";
 
 console.log(coinbaseFacilitator);
 // {
@@ -233,7 +233,7 @@ type FacilitatorConfigConstructor<Props = void> = (
 **Example - Simple facilitator (no setup required):**
 
 ```typescript
-import { payai } from 'facilitators';
+import { payai } from "facilitators";
 
 // Use directly - just a URL configuration
 paymentMiddleware(address, resources, payai);
@@ -242,7 +242,7 @@ paymentMiddleware(address, resources, payai);
 **Example - Facilitator with required props:**
 
 ```typescript
-import { aurracloud } from 'facilitators';
+import { aurracloud } from "facilitators";
 
 // Must call with required props first
 paymentMiddleware(
@@ -271,8 +271,8 @@ Supported blockchain networks:
 
 ```typescript
 enum Network {
-  BASE = 'base',
-  POLYGON = 'polygon',
-  SOLANA = 'solana',
+  BASE = "base",
+  POLYGON = "polygon",
+  SOLANA = "solana",
 }
 ```

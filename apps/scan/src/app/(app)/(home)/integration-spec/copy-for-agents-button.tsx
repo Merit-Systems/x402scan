@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { Check, Copy } from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
+import { Check, Copy } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
 export function CopyForAgentsButton({ text }: { text: string }) {
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
-    toast.success('Copied agent integration checklist');
+    toast.success("Copied agent integration checklist");
   });
 
   return (
@@ -22,7 +22,7 @@ export function CopyForAgentsButton({ text }: { text: string }) {
       ) : (
         <Copy className="size-3.5" />
       )}
-      {isCopied ? 'Copied' : 'Copy for Agents'}
+      {isCopied ? "Copied" : "Copy for Agents"}
     </Button>
   );
 }

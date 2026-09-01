@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from "@/components/ui/data-table";
 
-import { columns } from './columns';
-import { useBuyersSorting } from '../../../../_contexts/sorting/buyers/hook';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
-import { useChain } from '@/app/(app)/_contexts/chain/hook';
-import { useState } from 'react';
+import { columns } from "./columns";
+import { useBuyersSorting } from "../../../../_contexts/sorting/buyers/hook";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { useChain } from "@/app/(app)/_contexts/chain/hook";
+import { useState } from "react";
 
 export const AllBuyersTable = () => {
   const { sorting } = useBuyersSorting();

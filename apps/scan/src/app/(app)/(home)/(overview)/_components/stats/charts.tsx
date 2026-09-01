@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
-import { useChartMode } from '@/app/(app)/_contexts/chart-mode/hook';
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
+import { useChartMode } from "@/app/(app)/_contexts/chart-mode/hook";
 
-import { LoadingOverallStatsCard, OverallStatsCard } from './card';
+import { LoadingOverallStatsCard, OverallStatsCard } from "./card";
 
-import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
+import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 
-import type { ChartData, ChartItems } from '@/components/ui/charts/chart/types';
-import { useChain } from '@/app/(app)/_contexts/chain/hook';
+import type { ChartData, ChartItems } from "@/components/ui/charts/chart/types";
+import { useChain } from "@/app/(app)/_contexts/chain/hook";
 
 type StatRow = {
   transactions: number;
@@ -42,7 +42,7 @@ export const OverallCharts = () => {
   let amountSum = 0;
   let buyersSum = 0;
   let sellersSum = 0;
-  const chartData: ChartData<StatRow>[] = bucketedStats.map(stat => {
+  const chartData: ChartData<StatRow>[] = bucketedStats.map((stat) => {
     const txValue = stat.total_transactions;
     const amountValue = parseFloat(
       convertTokenAmount(BigInt(stat.total_amount)).toString()
@@ -56,38 +56,38 @@ export const OverallCharts = () => {
     sellersSum += sellersValue;
 
     return {
-      transactions: chartMode === 'cumulative' ? txSum : txValue,
-      totalAmount: chartMode === 'cumulative' ? amountSum : amountValue,
-      buyers: chartMode === 'cumulative' ? buyersSum : buyersValue,
-      sellers: chartMode === 'cumulative' ? sellersSum : sellersValue,
+      transactions: chartMode === "cumulative" ? txSum : txValue,
+      totalAmount: chartMode === "cumulative" ? amountSum : amountValue,
+      buyers: chartMode === "cumulative" ? buyersSum : buyersValue,
+      sellers: chartMode === "cumulative" ? sellersSum : sellersValue,
       timestamp: stat.bucket_start.toISOString(),
     };
   });
 
   // Per-bucket uses bars; cumulative uses areas since the line is
   // monotonically increasing.
-  const isCumulative = chartMode === 'cumulative';
+  const isCumulative = chartMode === "cumulative";
   const buildItems = (dataKey: keyof StatRow): ChartItems<StatRow> =>
     isCumulative
       ? {
-          type: 'area',
-          areas: [{ dataKey, color: 'var(--color-primary)' }],
+          type: "area",
+          areas: [{ dataKey, color: "var(--color-primary)" }],
         }
       : {
-          type: 'bar',
-          bars: [{ dataKey, color: 'var(--color-primary)' }],
+          type: "bar",
+          bars: [{ dataKey, color: "var(--color-primary)" }],
         };
-  const txItems = buildItems('transactions');
-  const volumeItems = buildItems('totalAmount');
-  const buyersItems = buildItems('buyers');
-  const sellersItems = buildItems('sellers');
+  const txItems = buildItems("transactions");
+  const volumeItems = buildItems("totalAmount");
+  const buyersItems = buildItems("buyers");
+  const sellersItems = buildItems("sellers");
 
   return (
     <>
       <OverallStatsCard
         title="Transactions"
         value={overallStats.total_transactions.toLocaleString(undefined, {
-          notation: 'compact',
+          notation: "compact",
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
@@ -95,11 +95,11 @@ export const OverallCharts = () => {
         data={chartData}
         tooltipRows={[
           {
-            key: 'transactions',
-            label: 'Transactions',
-            getValue: data =>
+            key: "transactions",
+            label: "Transactions",
+            getValue: (data) =>
               data.toLocaleString(undefined, {
-                notation: 'compact',
+                notation: "compact",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
               }),
@@ -113,15 +113,15 @@ export const OverallCharts = () => {
         data={chartData}
         tooltipRows={[
           {
-            key: 'totalAmount',
-            label: 'Volume',
-            getValue: data =>
+            key: "totalAmount",
+            label: "Volume",
+            getValue: (data) =>
               data.toLocaleString(undefined, {
-                notation: 'compact',
+                notation: "compact",
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
-                style: 'currency',
-                currency: 'USD',
+                style: "currency",
+                currency: "USD",
               }),
           },
         ]}
@@ -129,7 +129,7 @@ export const OverallCharts = () => {
       <OverallStatsCard
         title="Buyers"
         value={overallStats.unique_buyers.toLocaleString(undefined, {
-          notation: 'compact',
+          notation: "compact",
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
@@ -137,11 +137,11 @@ export const OverallCharts = () => {
         data={chartData}
         tooltipRows={[
           {
-            key: 'buyers',
-            label: 'Buyers',
-            getValue: data =>
+            key: "buyers",
+            label: "Buyers",
+            getValue: (data) =>
               data.toLocaleString(undefined, {
-                notation: 'compact',
+                notation: "compact",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               }),
@@ -151,7 +151,7 @@ export const OverallCharts = () => {
       <OverallStatsCard
         title="Sellers"
         value={overallStats.unique_sellers.toLocaleString(undefined, {
-          notation: 'compact',
+          notation: "compact",
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         })}
@@ -159,11 +159,11 @@ export const OverallCharts = () => {
         data={chartData}
         tooltipRows={[
           {
-            key: 'sellers',
-            label: 'Sellers',
-            getValue: data =>
+            key: "sellers",
+            label: "Sellers",
+            getValue: (data) =>
               data.toLocaleString(undefined, {
-                notation: 'compact',
+                notation: "compact",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               }),

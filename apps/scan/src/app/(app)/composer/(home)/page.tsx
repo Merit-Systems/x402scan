@@ -1,16 +1,16 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { Body } from '@/app/_components/layout/page-utils';
-import { Agents, LoadingAgents } from './_components/agents';
-import { ComposerHomeHeading } from './_components/heading';
-import { Tools } from './_components/tools';
-import { OverallStats } from './_components/stats';
-import { Feed } from './_components/feed';
-import { YourAgents } from './_components/your-agents';
-import { api, HydrateClient } from '@/trpc/server';
-import { ActivityTimeframe } from '@/types/timeframes';
-import { defaultToolsSorting } from '@/app/(app)/_contexts/sorting/tools/default';
-import { auth } from '@/auth';
+import { Body } from "@/app/_components/layout/page-utils";
+import { Agents, LoadingAgents } from "./_components/agents";
+import { ComposerHomeHeading } from "./_components/heading";
+import { Tools } from "./_components/tools";
+import { OverallStats } from "./_components/stats";
+import { Feed } from "./_components/feed";
+import { YourAgents } from "./_components/your-agents";
+import { api, HydrateClient } from "@/trpc/server";
+import { ActivityTimeframe } from "@/types/timeframes";
+import { defaultToolsSorting } from "@/app/(app)/_contexts/sorting/tools/default";
+import { auth } from "@/auth";
 
 export default async function ComposerPage() {
   const session = await auth();

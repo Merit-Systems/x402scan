@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 
-import { BotMessageSquare, ChevronsUpDown, Plus } from 'lucide-react';
+import { BotMessageSquare, ChevronsUpDown, Plus } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -14,23 +14,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from "@/components/ui/sidebar";
 
-import { usePathname } from 'next/navigation';
+import { usePathname } from "next/navigation";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { cn } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Loading } from '@/components/ui/loading';
-import { useState } from 'react';
+import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Loading } from "@/components/ui/loading";
+import { useState } from "react";
 
 export const AgentSelect = () => {
   const { isMobile, setOpenMobile, openMobile } = useSidebar();
@@ -44,17 +44,17 @@ export const AgentSelect = () => {
     <SidebarGroup className="p-0">
       <SidebarMenu>
         <SidebarMenuItem>
-          <DropdownMenu open={isOpen} onOpenChange={open => setIsOpen(open)}>
+          <DropdownMenu open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
             <DropdownMenuTrigger asChild>
               <AgentSelectButton onClick={() => setIsOpen(true)} />
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
               align="start"
-              side={isMobile ? 'bottom' : 'right'}
+              side={isMobile ? "bottom" : "right"}
               sideOffset={4}
             >
-              <DropdownMenuLabel className="text-muted-foreground text-xs">
+              <DropdownMenuLabel className="text-xs text-muted-foreground">
                 Agents
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -68,7 +68,7 @@ export const AgentSelect = () => {
                   <span className="truncate font-medium">Playground</span>
                 </Link>
               </DropdownMenuItem>
-              {agentConfigurations.map(agent => (
+              {agentConfigurations.map((agent) => (
                 <DropdownMenuItem
                   key={agent.id}
                   className="gap-2 p-2"
@@ -91,7 +91,7 @@ export const AgentSelect = () => {
                       <BotMessageSquare className="size-4 flex-shrink-0" />
                     )}
                     <span className="truncate font-medium">
-                      {agent.agentConfiguration.name || 'Untitled Agent'}
+                      {agent.agentConfiguration.name || "Untitled Agent"}
                     </span>
                   </Link>
                 </DropdownMenuItem>
@@ -100,7 +100,7 @@ export const AgentSelect = () => {
               <Link href="/composer/agent/new">
                 <DropdownMenuItem className="gap-2 p-2">
                   <Plus className="size-4" />
-                  <div className="text-muted-foreground font-medium">
+                  <div className="font-medium text-muted-foreground">
                     New Agent
                   </div>
                 </DropdownMenuItem>
@@ -134,9 +134,9 @@ const AgentSelectButton = React.forwardRef<
   const pathname = usePathname();
 
   const isAgent =
-    pathname.includes('/composer/agent/') &&
-    !pathname.includes('/composer/agent/new');
-  const agentId = pathname.split('/')[3];
+    pathname.includes("/composer/agent/") &&
+    !pathname.includes("/composer/agent/new");
+  const agentId = pathname.split("/")[3];
 
   const { data: agentConfiguration, isLoading: isAgentConfigurationLoading } =
     api.public.agents.get.useQuery(agentId!, {
@@ -148,20 +148,20 @@ const AgentSelectButton = React.forwardRef<
       ref={ref}
       size="lg"
       className={cn(
-        'bg-transparent text-sidebar-accent-foreground cursor-pointer transition-all duration-200 ease-in-out border',
-        open ? 'justify-between px-4' : 'justify-center'
+        "bg-transparent text-sidebar-accent-foreground cursor-pointer transition-all duration-200 ease-in-out border",
+        open ? "justify-between px-4" : "justify-center"
       )}
       onClick={onClick}
     >
       {open ? (
         <>
-          <div className="min-w-0 flex-1 gap-2 flex items-center">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
             {isAgent ? (
               <>
                 <Loading
                   value={agentConfiguration?.image ?? undefined}
                   isLoading={isAgentConfigurationLoading}
-                  component={image => (
+                  component={(image) => (
                     <Image
                       src={image}
                       alt="Agent"
@@ -180,8 +180,8 @@ const AgentSelectButton = React.forwardRef<
                 <Loading
                   value={agentConfiguration?.name}
                   isLoading={isAgentConfigurationLoading}
-                  component={name => (
-                    <span className="truncate">{name || 'Untitled Agent'}</span>
+                  component={(name) => (
+                    <span className="truncate">{name || "Untitled Agent"}</span>
                   )}
                   loadingComponent={<Skeleton className="h-4 w-24" />}
                   errorComponent={<span className="truncate">Agent</span>}
@@ -203,15 +203,15 @@ const AgentSelectButton = React.forwardRef<
   );
 });
 
-AgentSelectButton.displayName = 'AgentSelectButton';
+AgentSelectButton.displayName = "AgentSelectButton";
 
 export const LoadingAgentSelect = () => {
   return (
     <SidebarGroup className="p-0">
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton size="lg" className={cn('bg-transparent border')}>
-            <div className="min-w-0 flex-1 gap-2 flex items-center">
+          <SidebarMenuButton size="lg" className={cn("bg-transparent border")}>
+            <div className="flex min-w-0 flex-1 items-center gap-2">
               <Skeleton className="size-4 flex-shrink-0" />
               <Skeleton className="h-4 w-24" />
             </div>

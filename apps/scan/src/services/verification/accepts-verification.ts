@@ -1,6 +1,6 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import { verifyOwnershipProofMultichain } from '@/lib/ownership-proof';
+import { verifyOwnershipProofMultichain } from "@/lib/ownership-proof";
 
 export interface VerificationResult {
   acceptId: string;
@@ -35,10 +35,10 @@ export async function verifyAcceptsOwnership(
 
   // Skip if no proofs provided
   if (!ownershipProofs || ownershipProofs.length === 0) {
-    return acceptIds.map(id => ({
+    return acceptIds.map((id) => ({
       acceptId: id,
       verified: false,
-      error: 'No ownership proofs provided',
+      error: "No ownership proofs provided",
     }));
   }
 
@@ -69,7 +69,7 @@ export async function verifyAcceptsOwnership(
       results.push({
         acceptId: accept.id,
         verified: false,
-        error: 'No payTo address',
+        error: "No payTo address",
       });
       continue;
     }
@@ -94,7 +94,7 @@ export async function verifyAcceptsOwnership(
         }
       } catch (err) {
         console.error(`Error verifying proof for accept ${accept.id}:`, err);
-        error = err instanceof Error ? err.message : 'Verification error';
+        error = err instanceof Error ? err.message : "Verification error";
       }
     }
 
@@ -127,7 +127,7 @@ export async function verifyAcceptsOwnership(
       verified,
       verifiedAddress,
       verificationProof,
-      error: verified ? undefined : (error ?? 'No matching proof found'),
+      error: verified ? undefined : (error ?? "No matching proof found"),
     });
   }
 
@@ -151,7 +151,7 @@ export async function getResourceVerificationStatus(resourceId: string) {
   });
 
   const total = accepts.length;
-  const verified = accepts.filter(a => a.verified).length;
+  const verified = accepts.filter((a) => a.verified).length;
 
   return {
     verified,
@@ -182,7 +182,7 @@ export async function getOriginVerificationStatus(originId: string) {
   });
 
   const total = accepts.length;
-  const verified = accepts.filter(a => a.verified).length;
+  const verified = accepts.filter((a) => a.verified).length;
 
   return {
     verified,

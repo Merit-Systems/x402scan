@@ -1,5 +1,5 @@
-import { listResourcesWithPaginationUncached } from '@/services/db/resources/resource';
-import type { Prisma } from '@x402scan/scan-db';
+import { listResourcesWithPaginationUncached } from "@/services/db/resources/resource";
+import type { Prisma } from "@x402scan/scan-db";
 
 export async function* iterateResourcesBatched(
   batchSize: number,
@@ -14,7 +14,7 @@ export async function* iterateResourcesBatched(
       { page, page_size: batchSize }
     );
 
-    console.info('Fetched batch', {
+    console.info("Fetched batch", {
       page,
       itemsCount: items.length,
       hasNextPage,

@@ -1,12 +1,12 @@
-import { listResourcesUncached } from '@/services/db/resources/resource';
+import { listResourcesUncached } from "@/services/db/resources/resource";
 
-import { parseX402Response, extractX402Data } from '@/lib/x402';
-import { checkCronSecret } from '@/lib/cron';
-import { NextResponse, type NextRequest } from 'next/server';
+import { parseX402Response, extractX402Data } from "@/lib/x402";
+import { checkCronSecret } from "@/lib/cron";
+import { NextResponse, type NextRequest } from "next/server";
 import {
   deleteResourceResponse,
   upsertResourceResponse,
-} from '@/services/db/resources/response';
+} from "@/services/db/resources/response";
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);
@@ -16,18 +16,18 @@ export const GET = async (request: NextRequest) => {
 
   try {
     // Step 1: Fetch all resources from database
-    console.info('Fetching all resources from database');
+    console.info("Fetching all resources from database");
     const resources = await listResourcesUncached();
-    console.info('Successfully fetched resources', {
+    console.info("Successfully fetched resources", {
       totalResources: resources.length,
     });
 
     if (resources.length === 0) {
-      console.warn('No resources found in database');
+      console.warn("No resources found in database");
       return NextResponse.json(
         {
           success: true as const,
-          message: 'No resources to ping',
+          message: "No resources to ping",
           resourcesPinged: 0,
         },
         { status: 200 }
@@ -36,7 +36,7 @@ export const GET = async (request: NextRequest) => {
 
     type PingResult =
       | {
-          status: 'fulfilled';
+          status: "fulfilled";
           value: {
             resource: string;
             resourceId: string;
@@ -45,7 +45,7 @@ export const GET = async (request: NextRequest) => {
           };
         }
       | {
-          status: 'rejected';
+          status: "rejected";
           reason: unknown;
         };
 
@@ -54,12 +54,12 @@ export const GET = async (request: NextRequest) => {
       resource: (typeof resources)[0]
     ): Promise<PingResult> => {
       let handled = false;
-      for (const method of ['GET', 'POST']) {
+      for (const method of ["GET", "POST"]) {
         try {
           const response = await fetch(resource.resource, {
             method,
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
           });
 
@@ -73,7 +73,7 @@ export const GET = async (request: NextRequest) => {
                 await upsertResourceResponse(resource.id, parsedResponse.data);
                 handled = true;
                 return {
-                  status: 'fulfilled',
+                  status: "fulfilled",
                   value: {
                     resource: resource.resource,
                     resourceId: resource.id,
@@ -82,14 +82,14 @@ export const GET = async (request: NextRequest) => {
                   },
                 };
               } else {
-                console.info('resource responded with invalid x402 response', {
+                console.info("resource responded with invalid x402 response", {
                   resource: resource.resource,
                   status,
                   errors: parsedResponse.errors,
                 });
               }
             } catch (err) {
-              console.error('Failed to upsert resource response', {
+              console.error("Failed to upsert resource response", {
                 resourceId: resource.id,
                 error: err,
               });
@@ -100,7 +100,7 @@ export const GET = async (request: NextRequest) => {
         } catch (err) {
           // Fetch failed - capture as a rejection and stop further attempts for this resource
           return {
-            status: 'rejected',
+            status: "rejected",
             reason: err,
           };
         }
@@ -110,7 +110,7 @@ export const GET = async (request: NextRequest) => {
         try {
           await deleteResourceResponse(resource.id);
         } catch (err) {
-          console.error('Failed to delete resource response', {
+          console.error("Failed to delete resource response", {
             resourceId: resource.id,
             error: err,
           });
@@ -118,7 +118,7 @@ export const GET = async (request: NextRequest) => {
       }
 
       return {
-        status: 'fulfilled',
+        status: "fulfilled",
         value: {
           resource: resource.resource,
           resourceId: resource.id,
@@ -144,39 +144,39 @@ export const GET = async (request: NextRequest) => {
       );
 
       const batchResults = await Promise.all(
-        batch.map(resource => processResource(resource))
+        batch.map((resource) => processResource(resource))
       );
       pingResults.push(...batchResults);
     }
 
     return NextResponse.json({
       success: true as const,
-      message: 'Resource ping task completed',
+      message: "Resource ping task completed",
       validX402Responses: pingResults.filter(
-        result => result.status === 'fulfilled' && result.value?.isValid402
+        (result) => result.status === "fulfilled" && result.value?.isValid402
       ).length,
       invalidX402Responses: pingResults.filter(
-        result => result.status === 'fulfilled' && !result.value?.isValid402
+        (result) => result.status === "fulfilled" && !result.value?.isValid402
       ).length,
       failedResponses: pingResults.filter(
-        result => result.status === 'rejected'
+        (result) => result.status === "rejected"
       ).length,
       totalResponses: pingResults.length,
       resourcesPinged: pingResults.filter(
-        result => result.status === 'fulfilled' && result.value?.success
+        (result) => result.status === "fulfilled" && result.value?.success
       ).length,
       resourcesNotPinged: pingResults.filter(
-        result => result.status === 'fulfilled' && !result.value?.success
+        (result) => result.status === "fulfilled" && !result.value?.success
       ).length,
     });
   } catch (error) {
     const errorResult = {
       success: false as const,
-      message: 'Ping task failed with error',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      message: "Ping task failed with error",
+      error: error instanceof Error ? error.message : "Unknown error",
     };
 
-    console.error('Resource ping task failed', {
+    console.error("Resource ping task failed", {
       ...errorResult,
       stack: error instanceof Error ? error.stack : undefined,
     });

@@ -1,24 +1,24 @@
-import React, { Suspense } from 'react';
+import React, { Suspense } from "react";
 
-import { Server, ExternalLink } from 'lucide-react';
+import { Server, ExternalLink } from "lucide-react";
 
-import { Card } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
-import { Avatar } from '@/components/ui/avatar';
+import { Avatar } from "@/components/ui/avatar";
 
-import { OriginStats, LoadingOriginStats } from './stats';
+import { OriginStats, LoadingOriginStats } from "./stats";
 
-import { cleanExternalText, truncateAtDelimiter, cn } from '@/lib/utils';
+import { cleanExternalText, truncateAtDelimiter, cn } from "@/lib/utils";
 
-import { HeaderButtons, LoadingHeaderButtons } from './buttons';
+import { HeaderButtons, LoadingHeaderButtons } from "./buttons";
 
-import type { RouterOutputs } from '@/trpc/client';
-import { X402V2Badge } from '@/app/(app)/_components/x402/v2-badge';
-import { ShareModal } from '../share-modal';
+import type { RouterOutputs } from "@/trpc/client";
+import { X402V2Badge } from "@/app/(app)/_components/x402/v2-badge";
+import { ShareModal } from "../share-modal";
 
 interface Props {
-  origin: NonNullable<RouterOutputs['public']['origins']['get']>;
+  origin: NonNullable<RouterOutputs["public"]["origins"]["get"]>;
 }
 
 export const HeaderCard: React.FC<Props> = ({ origin }) => {
@@ -28,28 +28,28 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
   const originTitle = truncateAtDelimiter(rawTitle);
 
   return (
-    <Card className={cn('relative mt-10 md:mt-12')}>
-      <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
+    <Card className={cn("relative mt-10 md:mt-12")}>
+      <Card className="absolute top-0 left-4 flex size-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-md border md:size-16">
         <Avatar
           src={origin.favicon}
-          className="size-full border-none rounded-none"
+          className="size-full rounded-none border-none"
           fallback={<Server className="size-8" />}
         />
       </Card>
       <div className="grid grid-cols-1 md:grid-cols-7">
-        <div className="flex flex-col gap-3 p-4 pt-8 md:pt-10 col-span-5">
+        <div className="col-span-5 flex flex-col gap-3 p-4 pt-8 md:pt-10">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex min-w-0 items-center gap-2">
               <a
                 href={origin.origin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 min-w-0 hover:opacity-80 transition-opacity"
+                className="flex min-w-0 items-center gap-2 transition-opacity hover:opacity-80"
               >
-                <h1 className="text-xl md:text-3xl font-bold wrap-break-word line-clamp-2 min-w-0">
+                <h1 className="line-clamp-2 min-w-0 text-xl font-bold wrap-break-word md:text-3xl">
                   {originTitle}
                 </h1>
-                <ExternalLink className="size-4 md:size-5 text-muted-foreground shrink-0" />
+                <ExternalLink className="size-4 shrink-0 text-muted-foreground md:size-5" />
               </a>
               {origin.hasX402V2Resource && (
                 <X402V2Badge className="mt-1 shrink-0" />
@@ -64,15 +64,15 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
             </div>
             <p
               className={cn(
-                'wrap-break-word line-clamp-2 text-sm md:text-base',
+                "wrap-break-word line-clamp-2 text-sm md:text-base",
                 !origin.description
-                  ? 'text-muted-foreground/60'
-                  : 'text-muted-foreground'
+                  ? "text-muted-foreground/60"
+                  : "text-muted-foreground"
               )}
             >
               {origin.description
                 ? cleanExternalText(origin.description)
-                : 'No Description'}
+                : "No Description"}
             </p>
           </div>
           <HeaderButtons origin={origin} />
@@ -89,8 +89,8 @@ export const HeaderCard: React.FC<Props> = ({ origin }) => {
 
 export const LoadingHeaderCard = () => {
   return (
-    <Card className={cn('relative mt-10 md:mt-12')}>
-      <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
+    <Card className={cn("relative mt-10 md:mt-12")}>
+      <Card className="absolute top-0 left-4 flex size-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-md border md:size-16">
         <Avatar
           src={undefined}
           className="size-full"
@@ -99,11 +99,11 @@ export const LoadingHeaderCard = () => {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-7">
-        <div className="flex flex-col gap-4 p-4 pt-8 md:pt-10 col-span-5">
+        <div className="col-span-5 flex flex-col gap-4 p-4 pt-8 md:pt-10">
           <div className="">
-            <Skeleton className="w-36 h-[30px] my-[3px]" />
-            <Skeleton className="w-48 h-[14px] my-[2px]" />
-            <Skeleton className="w-64 h-[16px] my-[4px]" />
+            <Skeleton className="my-[3px] h-[30px] w-36" />
+            <Skeleton className="my-[2px] h-[14px] w-48" />
+            <Skeleton className="my-[4px] h-[16px] w-64" />
           </div>
           <LoadingHeaderButtons />
         </div>

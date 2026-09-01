@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Plus } from 'lucide-react';
-import { api } from '@/trpc/client';
-import type { PartnerData as DbPartnerData } from '@x402scan/partners-db';
+} from "@/components/ui/select";
+import { Plus } from "lucide-react";
+import { api } from "@/trpc/client";
+import type { PartnerData as DbPartnerData } from "@x402scan/partners-db";
 
 export interface PartnerData {
   partnerName: string;
@@ -32,22 +32,22 @@ export const PartnerCollapsible = ({
   onPartnerChange,
 }: PartnerCollapsibleProps) => {
   const [open, setOpen] = useState(false);
-  const [partnerName, setPartnerName] = useState('');
-  const [partnerMeritContact, setPartnerMeritContact] = useState('');
-  const [partnerEmail, setPartnerEmail] = useState('');
-  const [partnerOrganization, setPartnerOrganization] = useState('');
-  const [searchPartner, setSearchPartner] = useState('');
+  const [partnerName, setPartnerName] = useState("");
+  const [partnerMeritContact, setPartnerMeritContact] = useState("");
+  const [partnerEmail, setPartnerEmail] = useState("");
+  const [partnerOrganization, setPartnerOrganization] = useState("");
+  const [searchPartner, setSearchPartner] = useState("");
 
   // Parse merit contacts from env var (comma-separated)
   const meritContacts = [
-    'Sam',
-    'Ryan',
-    'Alvaro',
-    'Jason',
-    'Ben',
-    'Shafu',
-    'Mason',
-    'Mitch',
+    "Sam",
+    "Ryan",
+    "Alvaro",
+    "Jason",
+    "Ben",
+    "Shafu",
+    "Mason",
+    "Mitch",
   ];
 
   // Search partners by name - only when collapsible is closed (searching existing partners)
@@ -76,11 +76,11 @@ export const PartnerCollapsible = ({
   ]);
 
   const clearAllFields = () => {
-    setPartnerName('');
-    setPartnerMeritContact('');
-    setPartnerEmail('');
-    setPartnerOrganization('');
-    setSearchPartner('');
+    setPartnerName("");
+    setPartnerMeritContact("");
+    setPartnerEmail("");
+    setPartnerOrganization("");
+    setSearchPartner("");
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -91,10 +91,10 @@ export const PartnerCollapsible = ({
         clearAllFields();
       } else {
         // Keep search but clear form fields
-        setPartnerName('');
-        setPartnerMeritContact('');
-        setPartnerEmail('');
-        setPartnerOrganization('');
+        setPartnerName("");
+        setPartnerMeritContact("");
+        setPartnerEmail("");
+        setPartnerOrganization("");
       }
     }
     setOpen(newOpen);
@@ -102,9 +102,9 @@ export const PartnerCollapsible = ({
 
   const handleSelectPartner = (partner: DbPartnerData) => {
     setPartnerName(partner.name);
-    setPartnerEmail(partner.email ?? '');
-    setPartnerOrganization(partner.organization ?? '');
-    setPartnerMeritContact(partner.merit_contact ?? '');
+    setPartnerEmail(partner.email ?? "");
+    setPartnerOrganization(partner.organization ?? "");
+    setPartnerMeritContact(partner.merit_contact ?? "");
     setSearchPartner(partner.name);
     // Close the dropdown by clearing search temporarily, then set it back
     // Auto-open collapsible to show the selected partner's data
@@ -113,7 +113,7 @@ export const PartnerCollapsible = ({
 
   const handleNewPartner = () => {
     // Clear search and open collapsible for new partner entry
-    setSearchPartner('');
+    setSearchPartner("");
     setOpen(true);
   };
 
@@ -126,23 +126,23 @@ export const PartnerCollapsible = ({
       <Label>Partner (Optional)</Label>
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
-          <div className="flex-1 relative">
+          <div className="relative flex-1">
             <Input
               placeholder="Search partner..."
               value={searchPartner}
-              onChange={e => setSearchPartner(e.target.value)}
+              onChange={(e) => setSearchPartner(e.target.value)}
               className="w-full"
             />
             {searchPartner &&
               !open &&
               searchResults &&
               searchResults.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-popover border rounded-md shadow-md max-h-60 overflow-auto">
-                  {searchResults.map(partner => (
+                <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover shadow-md">
+                  {searchResults.map((partner) => (
                     <button
                       key={partner.id}
                       type="button"
-                      className="w-full text-left px-3 py-2 hover:bg-accent cursor-pointer"
+                      className="w-full cursor-pointer px-3 py-2 text-left hover:bg-accent"
                       onClick={() => handleSelectPartner(partner)}
                     >
                       <div className="font-medium">{partner.name}</div>
@@ -158,14 +158,14 @@ export const PartnerCollapsible = ({
           </div>
           <Button
             type="button"
-            variant={open ? 'destructive' : 'outline'}
+            variant={open ? "destructive" : "outline"}
             onClick={open ? () => setOpen(false) : handleNewPartner}
           >
             {open ? (
-              'Cancel'
+              "Cancel"
             ) : (
               <>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 New
               </>
             )}
@@ -180,7 +180,7 @@ export const PartnerCollapsible = ({
             id="partnerName"
             placeholder="John Doe"
             value={partnerName}
-            onChange={e => setPartnerName(e.target.value)}
+            onChange={(e) => setPartnerName(e.target.value)}
           />
           <p className="text-xs text-muted-foreground">
             Partner will be created automatically if it doesn&apos;t exist
@@ -198,7 +198,7 @@ export const PartnerCollapsible = ({
                 <SelectValue placeholder="Select a Merit contact" />
               </SelectTrigger>
               <SelectContent>
-                {meritContacts.map(contact => (
+                {meritContacts.map((contact) => (
                   <SelectItem key={contact} value={contact}>
                     {contact}
                   </SelectItem>
@@ -210,7 +210,7 @@ export const PartnerCollapsible = ({
               id="partnerMeritContact"
               placeholder="Contact name at Merit"
               value={partnerMeritContact}
-              onChange={e => setPartnerMeritContact(e.target.value)}
+              onChange={(e) => setPartnerMeritContact(e.target.value)}
             />
           )}
           <p className="text-xs text-muted-foreground">
@@ -225,7 +225,7 @@ export const PartnerCollapsible = ({
             type="email"
             placeholder="partner@example.com"
             value={partnerEmail}
-            onChange={e => setPartnerEmail(e.target.value)}
+            onChange={(e) => setPartnerEmail(e.target.value)}
           />
           <p className="text-xs text-muted-foreground">
             Partner email address. Will use placeholder if not provided.
@@ -240,7 +240,7 @@ export const PartnerCollapsible = ({
             id="partnerOrganization"
             placeholder="Acme Inc"
             value={partnerOrganization}
-            onChange={e => setPartnerOrganization(e.target.value)}
+            onChange={(e) => setPartnerOrganization(e.target.value)}
           />
           <p className="text-xs text-muted-foreground">
             Partner organization name. Will use placeholder if not provided.

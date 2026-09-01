@@ -20,4 +20,4 @@ export const agentSystemPrompt = ({
   systemPrompt,
 }: AgentSystemPromptProps) => `${baseSystemPrompt}
 
-Your name is ${agentName} and your description is ${agentDescription}.${systemPrompt ? `\n\nYour system prompt provided by the agent configuration is: ${systemPrompt}.` : ''}`;
+Your name is ${agentName} and your description is ${agentDescription}.${systemPrompt ? `\n\nYour system prompt provided by the agent configuration is: ${systemPrompt}.` : ""}`;

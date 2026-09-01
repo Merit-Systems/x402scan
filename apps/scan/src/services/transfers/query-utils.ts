@@ -1,9 +1,9 @@
-import { Prisma } from '@x402scan/transfers-db';
+import { Prisma } from "@x402scan/transfers-db";
 
-import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+import { getTimeRangeFromTimeframe } from "@/lib/time-range";
 
-import type z from 'zod';
-import type { baseQuerySchema } from './schemas';
+import type z from "zod";
+import type { baseQuerySchema } from "./schemas";
 
 export const transfersWhereClause = (
   input: z.infer<typeof baseQuerySchema>

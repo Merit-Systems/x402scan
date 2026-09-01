@@ -1,7 +1,7 @@
-import { BookOpen } from 'lucide-react';
+import { BookOpen } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
   link: string;
@@ -23,7 +23,7 @@ export const HeaderButtons: React.FC<Props> = ({ link }) => {
 export const LoadingHeaderButtons = () => {
   return (
     <ButtonsContainer>
-      <Skeleton className="h-8 md:h-9 w-24" />
+      <Skeleton className="h-8 w-24 md:h-9" />
     </ButtonsContainer>
   );
 };

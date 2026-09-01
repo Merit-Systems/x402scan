@@ -1,16 +1,16 @@
-import { Server, Wallet } from 'lucide-react';
+import { Server, Wallet } from "lucide-react";
 
-import { Breadcrumb } from '../../_components/breadcrumb';
+import { Breadcrumb } from "../../_components/breadcrumb";
 
-import { Separator } from '../../_components/separator';
-import { api } from '@/trpc/server';
-import { cleanExternalText, truncateAtDelimiter } from '@/lib/utils';
-import { notFound } from 'next/navigation';
+import { Separator } from "../../_components/separator";
+import { api } from "@/trpc/server";
+import { cleanExternalText, truncateAtDelimiter } from "@/lib/utils";
+import { notFound } from "next/navigation";
 
 export default async function OriginLayout({
   params,
   children,
-}: LayoutProps<'/server/[id]'>) {
+}: LayoutProps<"/server/[id]">) {
   const { id } = await params;
   const origin = await api.public.origins.get(id);
   if (!origin) {
@@ -31,7 +31,7 @@ export default async function OriginLayout({
         }
         Fallback={Wallet}
         mobileHideText
-        className="hidden md:block min-w-0"
+        className="hidden min-w-0 md:block"
       />
       {children}
     </>

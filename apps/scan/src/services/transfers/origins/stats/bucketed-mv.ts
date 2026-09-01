@@ -1,10 +1,10 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
-import { chainSchema, timeframeSchema } from '@/lib/schemas';
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
+import { chainSchema, timeframeSchema } from "@/lib/schemas";
 
 /**
  * Input schema for bucketed origin statistics queries.
@@ -41,7 +41,7 @@ const getBucketedOriginStatisticsMVUncached = async (
     conditions.push(Prisma.sql`AND "originId" = ANY(${input.originIds})`);
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   // Query the origin_stats_bucketed view which is pre-joined with payto_origin_map
   const sql = Prisma.sql`
@@ -73,8 +73,8 @@ const getBucketedOriginStatisticsMVUncached = async (
 
 export const getBucketedOriginStatisticsMV = createCachedArrayQuery({
   queryFn: getBucketedOriginStatisticsMVUncached,
-  cacheKeyPrefix: 'bucketed-origin-statistics-mv',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['bucket_start'],
-  tags: ['statistics', 'origins'],
+  cacheKeyPrefix: "bucketed-origin-statistics-mv",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["bucket_start"],
+  tags: ["statistics", "origins"],
 });

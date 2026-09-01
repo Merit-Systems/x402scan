@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { createContext } from 'react';
+import { createContext } from "react";
 
 interface SearchContext {
   isOpen: boolean;
@@ -14,7 +14,7 @@ export const SearchContext = createContext<SearchContext>({
   setIsOpen: () => {
     // do nothing
   },
-  search: '',
+  search: "",
   setSearch: () => {
     // do nothing
   },

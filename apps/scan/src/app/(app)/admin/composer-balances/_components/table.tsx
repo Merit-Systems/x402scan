@@ -1,63 +1,63 @@
-'use client';
+"use client";
 
-import { Download, RefreshCw } from 'lucide-react';
+import { Download, RefreshCw } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
 
-import { api } from '@/trpc/client';
-import { formatCurrency } from '@/lib/utils';
-import { CHAIN_LABELS } from '@/types/chain';
+import { api } from "@/trpc/client";
+import { formatCurrency } from "@/lib/utils";
+import { CHAIN_LABELS } from "@/types/chain";
 
-import { columns } from './columns';
+import { columns } from "./columns";
 
-import type { RouterOutputs } from '@/trpc/client';
+import type { RouterOutputs } from "@/trpc/client";
 
-type Report = RouterOutputs['admin']['composerBalances']['report'];
+type Report = RouterOutputs["admin"]["composerBalances"]["report"];
 
 const CSV_HEADERS = [
-  'usdc',
-  'chain',
-  'walletType',
-  'email',
-  'loginAddresses',
-  'composerWalletAddress',
-  'walletName',
-  'userId',
+  "usdc",
+  "chain",
+  "walletType",
+  "email",
+  "loginAddresses",
+  "composerWalletAddress",
+  "walletName",
+  "userId",
 ] as const;
 
-const toCsv = (rows: Report['rows']): string => {
+const toCsv = (rows: Report["rows"]): string => {
   const escape = (value: string) => `"${value.replace(/"/g, '""')}"`;
 
   return [
-    CSV_HEADERS.join(','),
-    ...rows.map(row =>
+    CSV_HEADERS.join(","),
+    ...rows.map((row) =>
       [
         row.usdc.toString(),
         CHAIN_LABELS[row.chain],
         row.source,
-        row.email ?? '',
-        row.loginAddresses.join('; '),
+        row.email ?? "",
+        row.loginAddresses.join("; "),
         row.address,
         row.walletName,
-        row.userId ?? '',
+        row.userId ?? "",
       ]
         .map(escape)
-        .join(',')
+        .join(",")
     ),
-  ].join('\n');
+  ].join("\n");
 };
 
 const downloadCsv = (csv: string) => {
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
   link.setAttribute(
-    'download',
-    `composer-balances-${new Date().toISOString().replace(/[:.]/g, '-')}.csv`
+    "download",
+    `composer-balances-${new Date().toISOString().replace(/[:.]/g, "-")}.csv`
   );
-  link.style.visibility = 'hidden';
+  link.style.visibility = "hidden";
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -89,10 +89,10 @@ export const ComposerBalancesTable = () => {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Stat
           label="People with a balance"
-          value={totals ? totals.peopleCount.toLocaleString() : '—'}
+          value={totals ? totals.peopleCount.toLocaleString() : "—"}
           hint={
             totals
               ? `${totals.walletCount} wallets · ${totals.userCount} CDP identities`
@@ -101,12 +101,12 @@ export const ComposerBalancesTable = () => {
         />
         <Stat
           label="Total outstanding"
-          value={totals ? formatCurrency(totals.totalUsdc) : '—'}
+          value={totals ? formatCurrency(totals.totalUsdc) : "—"}
           hint="USDC on Base + Solana"
         />
         <Stat
           label="Reachable by email"
-          value={totals ? totals.withEmail.toLocaleString() : '—'}
+          value={totals ? totals.withEmail.toLocaleString() : "—"}
           hint={
             totals
               ? `${totals.withLoginAddress} have a login address`
@@ -115,15 +115,15 @@ export const ComposerBalancesTable = () => {
         />
         <Stat
           label="Orphaned wallets"
-          value={totals ? totals.orphaned.toLocaleString() : '—'}
+          value={totals ? totals.orphaned.toLocaleString() : "—"}
           hint="No ServerWallet row — user deleted"
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Stat
           label="Server wallets"
-          value={bySource ? formatCurrency(bySource.server.totalUsdc) : '—'}
+          value={bySource ? formatCurrency(bySource.server.totalUsdc) : "—"}
           hint={
             bySource
               ? `${bySource.server.walletCount} wallets · ${bySource.server.userCount} users · we can sweep these`
@@ -132,7 +132,7 @@ export const ComposerBalancesTable = () => {
         />
         <Stat
           label="Embedded wallets"
-          value={bySource ? formatCurrency(bySource.embedded.totalUsdc) : '—'}
+          value={bySource ? formatCurrency(bySource.embedded.totalUsdc) : "—"}
           hint={
             bySource
               ? `${bySource.embedded.walletCount} wallets · ${bySource.embedded.userCount} users · non-custodial, user must withdraw`
@@ -142,19 +142,19 @@ export const ComposerBalancesTable = () => {
       </div>
 
       {data && data.systemWallets.length > 0 ? (
-        <div className="rounded-md border p-4 space-y-2">
+        <div className="space-y-2 rounded-md border p-4">
           <div className="text-xs font-medium text-muted-foreground">
             App wallets (not user funds)
           </div>
           <div className="flex flex-wrap gap-4">
-            {data.systemWallets.map(wallet => (
+            {data.systemWallets.map((wallet) => (
               <div
                 key={`${wallet.name}-${wallet.chain}`}
-                className="text-xs font-mono"
+                className="font-mono text-xs"
               >
                 <span className="text-muted-foreground">
                   {wallet.name} · {CHAIN_LABELS[wallet.chain]}
-                </span>{' '}
+                </span>{" "}
                 <span className="font-medium">
                   {formatCurrency(wallet.usdc)}
                 </span>
@@ -164,11 +164,11 @@ export const ComposerBalancesTable = () => {
         </div>
       ) : null}
 
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
           {data
             ? `${data.rows.length} wallets holding a balance`
-            : 'Scanning wallets…'}
+            : "Scanning wallets…"}
         </div>
         <div className="flex gap-2">
           <Button
@@ -178,7 +178,7 @@ export const ComposerBalancesTable = () => {
             size="sm"
           >
             <RefreshCw
-              className={`size-4 mr-2 ${isFetching ? 'animate-spin' : ''}`}
+              className={`mr-2 size-4 ${isFetching ? "animate-spin" : ""}`}
             />
             Refresh
           </Button>
@@ -188,7 +188,7 @@ export const ComposerBalancesTable = () => {
             variant="outline"
             size="sm"
           >
-            <Download className="size-4 mr-2" />
+            <Download className="mr-2 size-4" />
             Download CSV
           </Button>
         </div>

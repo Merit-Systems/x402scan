@@ -1,14 +1,14 @@
-import { openApiInputAdvisorySchema } from '@/lib/discovery/utils/json-schema';
-import { outputSchemaV1 } from '@/lib/x402/v1';
+import { openApiInputAdvisorySchema } from "@/lib/discovery/utils/json-schema";
+import { outputSchemaV1 } from "@/lib/x402/v1";
 
 import type {
   JsonSchemaNode,
   OpenApiInputAdvisory,
   OpenApiParameter,
-} from '@/lib/discovery/utils/json-schema';
-import type { JsonValue } from '@/lib/json';
-import type { OutputSchemaV1 } from '@/lib/x402/v1';
-import type { EndpointMethodAdvisory } from '@agentcash/discovery';
+} from "@/lib/discovery/utils/json-schema";
+import type { JsonValue } from "@/lib/json";
+import type { OutputSchemaV1 } from "@/lib/x402/v1";
+import type { EndpointMethodAdvisory } from "@agentcash/discovery";
 
 // ─── Field definition builder (matches x402scan's FieldDef shape) ────────────
 
@@ -23,7 +23,7 @@ interface FieldDef {
 
 /** Draft of the v1 `input` block, validated by outputSchemaV1 at the end. */
 interface V1InputDraft {
-  type: 'http';
+  type: "http";
   method: string;
   bodyFields?: Record<string, FieldDef>;
   queryParams?: Record<string, FieldDef>;
@@ -40,15 +40,15 @@ interface V1InputDraft {
  *   - `{ parameters: OpenApiParam[] }`
  */
 export function convertOpenApiSchemaToV1(
-  inputSchema: NonNullable<EndpointMethodAdvisory['inputSchema']>,
+  inputSchema: NonNullable<EndpointMethodAdvisory["inputSchema"]>,
   method: string,
-  outputSchema?: EndpointMethodAdvisory['outputSchema']
+  outputSchema?: EndpointMethodAdvisory["outputSchema"]
 ): OutputSchemaV1 | undefined {
   const parsedInput = openApiInputAdvisorySchema.safeParse(inputSchema);
   if (!parsedInput.success) return undefined;
 
   const input: V1InputDraft = {
-    type: 'http',
+    type: "http",
     method: method.toUpperCase(),
   };
 
@@ -61,7 +61,7 @@ export function convertOpenApiSchemaToV1(
     }
     if (Object.keys(bodyFields).length > 0) {
       input.bodyFields = bodyFields;
-      if (input.method === 'GET') input.method = 'POST';
+      if (input.method === "GET") input.method = "POST";
     }
   }
 
@@ -71,9 +71,9 @@ export function convertOpenApiSchemaToV1(
 
     for (const param of parsed.parameters) {
       const fieldDef = parameterToFieldDef(param);
-      if (param.in === 'query') {
+      if (param.in === "query") {
         queryParams[param.name] = fieldDef;
-      } else if (param.in === 'header') {
+      } else if (param.in === "header") {
         headerFields[param.name] = fieldDef;
       }
     }
@@ -101,11 +101,11 @@ interface ClassifiedOpenApiInput {
 function classifyOpenApiInput(
   advisory: OpenApiInputAdvisory
 ): ClassifiedOpenApiInput {
-  const hasRequestBody = 'requestBody' in advisory;
+  const hasRequestBody = "requestBody" in advisory;
   const isBareJsonSchema =
     !hasRequestBody &&
     advisory.parameters === undefined &&
-    ('properties' in advisory || 'type' in advisory);
+    ("properties" in advisory || "type" in advisory);
 
   return {
     body: hasRequestBody

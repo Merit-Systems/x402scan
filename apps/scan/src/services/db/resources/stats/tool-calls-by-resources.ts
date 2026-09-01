@@ -1,12 +1,12 @@
-import z from 'zod';
+import z from "zod";
 
-import { scanDb, Prisma } from '@x402scan/scan-db';
+import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
-import { agentsRelease } from '@/lib/agents';
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
+import { agentsRelease } from "@/lib/agents";
 
-import type { resourceBucketedQuerySchema } from './schemas';
+import type { resourceBucketedQuerySchema } from "./schemas";
 
 const bucketedToolCallsByResourcesResultSchema = z.array(
   z.object({
@@ -111,8 +111,8 @@ const getBucketedToolCallsByResourcesUncached = async (
 
 export const getBucketedToolCallsByResources = createCachedArrayQuery({
   queryFn: getBucketedToolCallsByResourcesUncached,
-  cacheKeyPrefix: 'bucketed-tool-calls-by-resources',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['bucket_start'],
-  tags: ['resource-statistics', 'resources', 'tool-calls'],
+  cacheKeyPrefix: "bucketed-tool-calls-by-resources",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["bucket_start"],
+  tags: ["resource-statistics", "resources", "tool-calls"],
 });

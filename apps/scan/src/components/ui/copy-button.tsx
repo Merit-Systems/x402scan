@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { Check, Copy, Loader2 } from 'lucide-react';
+import { Check, Copy, Loader2 } from "lucide-react";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { Button } from './button';
+import { Button } from "./button";
 
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { ButtonProps } from './button';
+import type { ButtonProps } from "./button";
 
 type Props = {
   text: string;
@@ -39,7 +39,7 @@ export const CopyButton: React.FC<Props> = ({
     <Button
       onClick={() => void copyToClipboard(text)}
       variant="outline"
-      className={cn('shrink-0 size-fit md:size-fit p-2', className)}
+      className={cn("shrink-0 size-fit md:size-fit p-2", className)}
       size="icon"
       disabled={isLoading}
       {...props}

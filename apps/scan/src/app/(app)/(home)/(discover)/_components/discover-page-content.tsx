@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useDiscoverSearch } from './discover-search-context';
-import { DiscoverSearchResults } from './discover-search';
+import { useDiscoverSearch } from "./discover-search-context";
+import { DiscoverSearchResults } from "./discover-search";
 
 interface Props {
   children: React.ReactNode;
