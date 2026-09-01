@@ -6,15 +6,6 @@ const config: KnipConfig = {
       entry: ['tools/oxlint/anti-slop/index.ts'],
       project: ['tools/oxlint/**/*.ts'],
     },
-    evals: {
-      entry: ['fixtures/validator-errors/server.js', 'runner/{aggregate,score}.js'],
-      project: ['fixtures/validator-errors/**/*.js', 'runner/**/*.js'],
-    },
-    'evals/fixtures/express-openapi': {},
-    'evals/fixtures/next-wellknown': {
-      ignoreDependencies: ['react', 'react-dom'],
-      ignoreBinaries: ['next'],
-    },
     'apps/scan': {
       entry: [
         'src/app/**/{error,layout,loading,not-found,page,template,default,forbidden,global-not-found,global-error}.{js,jsx,ts,tsx}',
@@ -57,8 +48,6 @@ const config: KnipConfig = {
       project: ['trigger/**/*.ts'],
       ignoreDependencies: ['@trigger.dev/build'],
     },
-    'examples/servers/express': {},
-    'examples/servers/hono': {},
   },
   ignore: [
     '**/*.test.{ts,tsx,js,jsx}',

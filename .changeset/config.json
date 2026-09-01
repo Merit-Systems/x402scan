@@ -11,8 +11,6 @@
     "@x402scan/app",
     "@x402scan/proxy",
     "@x402scan/solana-rpc",
-    "@x402scan/express-server-example",
-    "@x402scan/hono-server-example",
     "@x402scan/scan-db",
     "@x402scan/transfers-db",
     "@x402scan/sync-transfers",
