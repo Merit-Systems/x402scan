@@ -1,11 +1,11 @@
-import { ArrowLeftRight } from 'lucide-react';
+import { ArrowLeftRight } from "lucide-react";
 
-import { Breadcrumb } from '../../../_components/breadcrumb';
-import { Separator } from '../../../_components/separator';
+import { Breadcrumb } from "../../../_components/breadcrumb";
+import { Separator } from "../../../_components/separator";
 
 export default async function BuyerTransactionsBreadcrumb({
   params,
-}: PageProps<'/buyer/[address]/transactions'>) {
+}: PageProps<"/buyer/[address]/transactions">) {
   const { address } = await params;
   return (
     <>

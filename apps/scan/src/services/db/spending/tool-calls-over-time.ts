@@ -1,9 +1,9 @@
-import z from 'zod';
+import z from "zod";
 
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { scanDb, Prisma } from '@x402scan/scan-db';
-import { getBucketedTimeRangeFromTimeframe } from '@/lib/time-range';
-import { agentsRelease } from '@/lib/agents';
+import { createCachedArrayQuery, createStandardCacheKey } from "@/lib/cache";
+import { scanDb, Prisma } from "@x402scan/scan-db";
+import { getBucketedTimeRangeFromTimeframe } from "@/lib/time-range";
+import { agentsRelease } from "@/lib/agents";
 
 export const toolCallsOverTimeQuerySchema = z.object({
   resourceId: z.uuid(),
@@ -85,9 +85,9 @@ const getToolCallsOverTimeUncached = async (
 
 export const getToolCallsOverTime = createCachedArrayQuery({
   queryFn: getToolCallsOverTimeUncached,
-  cacheKeyPrefix: 'spending:tool-calls-over-time',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['bucket_start'],
+  cacheKeyPrefix: "spending:tool-calls-over-time",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["bucket_start"],
   revalidate: 60,
-  tags: ['spending', 'tool-calls'],
+  tags: ["spending", "tool-calls"],
 });

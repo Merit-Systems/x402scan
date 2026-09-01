@@ -1,25 +1,25 @@
-import z from 'zod';
+import z from "zod";
 
-import { scanDb, Prisma } from '@x402scan/scan-db';
+import { scanDb, Prisma } from "@x402scan/scan-db";
 
-import { queryRaw } from '../query';
+import { queryRaw } from "../query";
 
-import { sortingSchema, timeframeSchema } from '@/lib/schemas';
-import type { PaginatedQueryParams } from '@/lib/pagination';
-import { toPaginatedResponse } from '@/lib/pagination';
-import { getTimeRangeFromTimeframe } from '@/lib/time-range';
+import { sortingSchema, timeframeSchema } from "@/lib/schemas";
+import type { PaginatedQueryParams } from "@/lib/pagination";
+import { toPaginatedResponse } from "@/lib/pagination";
+import { getTimeRangeFromTimeframe } from "@/lib/time-range";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
+} from "@/lib/cache";
 
 const agentsSortingIds = [
-  'score',
-  'message_count',
-  'tool_call_count',
-  'user_count',
-  'chat_count',
-  'createdAt',
+  "score",
+  "message_count",
+  "tool_call_count",
+  "user_count",
+  "chat_count",
+  "createdAt",
 ] as const;
 
 export type AgentSortId = (typeof agentsSortingIds)[number];
@@ -29,7 +29,7 @@ export const listTopAgentConfigurationsSchema = z.object({
   userId: z.string().optional(),
   originId: z.string().optional(),
   sorting: sortingSchema(agentsSortingIds).default({
-    id: 'score',
+    id: "score",
     desc: true,
   }),
 });
@@ -44,7 +44,7 @@ const listTopAgentConfigurationsUncached = async (
   const [count, items] = await Promise.all([
     scanDb.agentConfiguration.count({
       where: {
-        visibility: 'public',
+        visibility: "public",
         resources: originId ? { some: { resource: { originId } } } : undefined,
       },
     }),
@@ -133,7 +133,7 @@ const listTopAgentConfigurationsUncached = async (
           name: z.string(),
           description: z.string().nullable(),
           image: z.string().nullable(),
-          visibility: z.enum(['public', 'private']),
+          visibility: z.enum(["public", "private"]),
           createdAt: z.date(),
           user_count: z.bigint(),
           chat_count: z.bigint(),
@@ -160,8 +160,8 @@ const listTopAgentConfigurationsUncached = async (
 
 export const listTopAgentConfigurations = createCachedPaginatedQuery({
   queryFn: listTopAgentConfigurationsUncached,
-  cacheKeyPrefix: 'agent-config:list',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['createdAt'],
-  tags: ['agent-configuration'],
+  cacheKeyPrefix: "agent-config:list",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["createdAt"],
+  tags: ["agent-configuration"],
 });

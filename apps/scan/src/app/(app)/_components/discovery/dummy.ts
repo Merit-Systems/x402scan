@@ -2,7 +2,7 @@ import type {
   OgImage,
   ResourceOrigin,
   Resources,
-} from '@x402scan/scan-db/types';
+} from "@x402scan/scan-db/types";
 
 export function createDummyOgImage(params: {
   id: string;
@@ -54,7 +54,7 @@ export function createDummyResources(params: {
   return {
     id: params.id,
     resource: params.resource,
-    type: 'http',
+    type: "http",
     x402Version: params.x402Version,
     lastUpdated: new Date(),
     metadata: null,

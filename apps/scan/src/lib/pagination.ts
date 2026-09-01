@@ -1,4 +1,4 @@
-import z from 'zod';
+import z from "zod";
 
 interface ToPaginatedResponseParams<T> {
   items: T[];

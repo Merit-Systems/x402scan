@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { steps } from './steps';
-import { Stepper } from '@/components/ui/stepper';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { steps } from "./steps";
+import { Stepper } from "@/components/ui/stepper";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { agentConfigurationSchema } from '@/services/db/agent-config/mutate/schema';
-import type z from 'zod';
+} from "@/components/ui/card";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { agentConfigurationSchema } from "@/services/db/agent-config/mutate/schema";
+import type z from "zod";
 
 interface Props {
   initialStep?: number;
@@ -36,16 +36,16 @@ export const CreateAgentForm: React.FC<Props> = ({
   const form = useForm({
     resolver: zodResolver(agentConfigurationSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      systemPrompt: '',
+      name: "",
+      description: "",
+      systemPrompt: "",
       resourceIds: [],
     },
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   useEffect(() => {
-    form.setValue('resourceIds', initialResourceIds, {
+    form.setValue("resourceIds", initialResourceIds, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
@@ -54,11 +54,11 @@ export const CreateAgentForm: React.FC<Props> = ({
 
   const { mutate: createAgent, isPending: isSubmitting } =
     api.user.agentConfigurations.create.useMutation({
-      onSuccess: agentConfiguration => {
-        toast.success('Agent configuration created successfully');
+      onSuccess: (agentConfiguration) => {
+        toast.success("Agent configuration created successfully");
         router.push(`/composer/agent/${agentConfiguration.id}/chat`);
       },
-      onError: error => {
+      onError: (error) => {
         toast.error(error.message);
       },
     });
@@ -68,11 +68,11 @@ export const CreateAgentForm: React.FC<Props> = ({
   };
 
   const onNext = useCallback(() => {
-    setStep(prev => prev + 1);
+    setStep((prev) => prev + 1);
   }, [setStep]);
 
   const onPrevious = useCallback(() => {
-    setStep(prev => prev - 1);
+    setStep((prev) => prev - 1);
   }, [setStep]);
 
   const stepsConfig = useMemo(
@@ -83,12 +83,12 @@ export const CreateAgentForm: React.FC<Props> = ({
 
   return (
     <form
-      onSubmit={event => void form.handleSubmit(handleSubmit)(event)}
+      onSubmit={(event) => void form.handleSubmit(handleSubmit)(event)}
       className="flex flex-col gap-4"
     >
       <Stepper steps={stepsConfig} currentStep={step} />
       <Card className="overflow-hidden">
-        <CardHeader className="bg-muted border-b">
+        <CardHeader className="border-b bg-muted">
           <CardTitle>{stepsConfig[step]!.card.title}</CardTitle>
           <CardDescription>
             {stepsConfig[step]!.card.description}

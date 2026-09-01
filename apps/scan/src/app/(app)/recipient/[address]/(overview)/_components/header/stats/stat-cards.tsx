@@ -1,5 +1,5 @@
-import { Suspense } from 'react';
-import { StatsCardsContent, LoadingStatsCards } from './content';
+import { Suspense } from "react";
+import { StatsCardsContent, LoadingStatsCards } from "./content";
 
 interface Props {
   address: string;

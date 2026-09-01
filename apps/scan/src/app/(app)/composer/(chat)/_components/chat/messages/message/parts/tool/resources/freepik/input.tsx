@@ -1,8 +1,8 @@
-import { Image as ImageIcon } from 'lucide-react';
+import { Image as ImageIcon } from "lucide-react";
 
-import z from 'zod';
+import z from "zod";
 
-import type { InputComponent } from '../types';
+import type { InputComponent } from "../types";
 
 const schema = z.object({
   prompt: z.string(),
@@ -22,11 +22,11 @@ export const FreepikInput: InputComponent = ({ input }) => {
     <div className="flex items-center gap-2">
       <ImageIcon className="size-4 shrink-0" />
       <p className="text-sm font-medium">
-        {prompt}{' '}
+        {prompt}{" "}
         {model ? (
-          <span className="text-muted-foreground text-xs">({model})</span>
+          <span className="text-xs text-muted-foreground">({model})</span>
         ) : (
-          ''
+          ""
         )}
       </p>
     </div>

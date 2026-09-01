@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
-import { Edit, Settings } from 'lucide-react';
+import { Edit, Settings } from "lucide-react";
 
 import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { usePathname, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { api } from '@/trpc/client';
+} from "@/components/ui/sidebar";
+import { usePathname, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { api } from "@/trpc/client";
 
 export const NavMain = () => {
   const router = useRouter();
@@ -20,9 +20,9 @@ export const NavMain = () => {
   const { data: session } = useSession();
 
   const isAgent =
-    pathname.includes('/composer/agent/') &&
-    !pathname.includes('/composer/agent/new');
-  const agentId = pathname.split('/')[3];
+    pathname.includes("/composer/agent/") &&
+    !pathname.includes("/composer/agent/new");
+  const agentId = pathname.split("/")[3];
 
   const { data: agentConfiguration } = api.public.agents.get.useQuery(
     agentId!,
@@ -33,18 +33,18 @@ export const NavMain = () => {
 
   const newChatUrl = isAgent
     ? (`/composer/agent/${agentId}/chat` as const)
-    : ('/composer/chat' as const);
+    : ("/composer/chat" as const);
 
   const items = [
     {
-      title: 'New Chat',
+      title: "New Chat",
       url: newChatUrl,
       icon: Edit,
     },
     ...(isAgent && session?.user.id === agentConfiguration?.ownerId
       ? [
           {
-            title: 'Edit Agent',
+            title: "Edit Agent",
             url: `/composer/agent/${agentId}/edit` as const,
             icon: Settings,
           },
@@ -55,7 +55,7 @@ export const NavMain = () => {
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {items.map(item => (
+        {items.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton
               key={item.title}

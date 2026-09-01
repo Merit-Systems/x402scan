@@ -1,6 +1,6 @@
-import { Separator } from '@/components/ui/separator';
+import { Separator } from "@/components/ui/separator";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 interface Props {
   text: string;
@@ -18,16 +18,16 @@ export const TextSeparator: React.FC<Props> = ({
   separatorProps,
 }) => {
   return (
-    <div className={cn('flex items-center gap-2', containerClassName)}>
+    <div className={cn("flex items-center gap-2", containerClassName)}>
       <Separator
-        className={cn('flex-1', separatorClassName)}
+        className={cn("flex-1", separatorClassName)}
         {...separatorProps}
       />
-      <p className={cn('text-muted-foreground text-xs', textClassName)}>
+      <p className={cn("text-muted-foreground text-xs", textClassName)}>
         {text}
       </p>
       <Separator
-        className={cn('flex-1', separatorClassName)}
+        className={cn("flex-1", separatorClassName)}
         {...separatorProps}
       />
     </div>

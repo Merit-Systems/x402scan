@@ -1,10 +1,10 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import { CHAIN_ICONS, CHAIN_LABELS } from '@/types/chain';
+import { CHAIN_ICONS, CHAIN_LABELS } from "@/types/chain";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { Chain as ChainType } from '@/types/chain';
+import type { Chain as ChainType } from "@/types/chain";
 
 interface Props {
   chains: ChainType[];
@@ -17,8 +17,8 @@ export const Chains: React.FC<Props> = ({
   iconClassName,
 }) => {
   return (
-    <div className={cn('flex items-center gap-1', className)}>
-      {chains.map(chain => (
+    <div className={cn("flex items-center gap-1", className)}>
+      {chains.map((chain) => (
         <Chain key={chain} chain={chain} iconClassName={iconClassName} />
       ))}
     </div>
@@ -36,7 +36,7 @@ export const Chain: React.FC<{ chain: ChainType; iconClassName?: string }> = ({
       alt={CHAIN_LABELS[chain]}
       width={64}
       height={64}
-      className={cn('rounded-md size-4', iconClassName)}
+      className={cn("rounded-md size-4", iconClassName)}
     />
   );
 };

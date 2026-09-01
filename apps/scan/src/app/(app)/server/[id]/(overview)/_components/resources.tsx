@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 import {
   OriginResources as OriginResourcesComponent,
   LoadingOriginResources as LoadingOriginResourcesComponent,
-} from '@/app/(app)/_components/resources/origin-resources';
+} from "@/app/(app)/_components/resources/origin-resources";
 
-import { Button } from '@/components/ui/button';
-import { api } from '@/trpc/client';
-import { OriginOverviewSection } from './section';
-import { RefreshButton } from './refresh-button';
+import { Button } from "@/components/ui/button";
+import { api } from "@/trpc/client";
+import { OriginOverviewSection } from "./section";
+import { RefreshButton } from "./refresh-button";
 
 const INITIAL_LIMIT = 10;
 

@@ -1,30 +1,30 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary } from "react-error-boundary";
 
-import { Body, Section } from '@/app/_components/layout/page-utils';
+import { Body, Section } from "@/app/_components/layout/page-utils";
 
-import { OverallStats } from '../(overview)/_components/stats';
+import { OverallStats } from "../(overview)/_components/stats";
 // import { AgentCashAnnouncementBanner } from '../_components/v2-announcement-banner';
-import { DiscoverHeading } from './_components/heading';
+import { DiscoverHeading } from "./_components/heading";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
-import { getChainForPage } from '@/app/(app)/_lib/chain/page';
+import { getChainForPage } from "@/app/(app)/_lib/chain/page";
 
 import {
   DiscoverSellersTable,
   LoadingDiscoverSellersTable,
-} from './_components/discover-origins';
-import { DiscoverPageContent } from './_components/discover-page-content';
+} from "./_components/discover-origins";
+import { DiscoverPageContent } from "./_components/discover-page-content";
 
-import { defaultSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/default';
-import { SellersSortingProvider } from '@/app/(app)/_contexts/sorting/sellers/provider';
+import { defaultSellersSorting } from "@/app/(app)/_contexts/sorting/sellers/default";
+import { SellersSortingProvider } from "@/app/(app)/_contexts/sorting/sellers/provider";
 
-import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
-import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
 export default async function DiscoverPage({
   searchParams,

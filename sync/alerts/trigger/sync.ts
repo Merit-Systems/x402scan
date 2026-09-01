@@ -1,10 +1,10 @@
-import { logger, schedules } from '@trigger.dev/sdk/v3';
-import { sendDiscordAlert } from './discord';
-import { BALANCE_MONITORS, CURRENCY_TO_BALANCE_CHECKER } from './config';
+import { logger, schedules } from "@trigger.dev/sdk/v3";
+import { sendDiscordAlert } from "./discord";
+import { BALANCE_MONITORS, CURRENCY_TO_BALANCE_CHECKER } from "./config";
 
 export const balanceMonitor = schedules.task({
-  id: 'balance-monitor',
-  cron: '0 * * * *',
+  id: "balance-monitor",
+  cron: "0 * * * *",
   run: async () => {
     for (const monitor of BALANCE_MONITORS) {
       if (!monitor.enabled) {
@@ -13,7 +13,7 @@ export const balanceMonitor = schedules.task({
         );
         continue;
       }
-      const monitorId = monitor.address + ':' + monitor.chain.id;
+      const monitorId = monitor.address + ":" + monitor.chain.id;
       logger.log(`[Checking] ${monitorId}`);
       const result = await CURRENCY_TO_BALANCE_CHECKER[monitor.currency](
         monitor.address,

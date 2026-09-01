@@ -1,8 +1,8 @@
-import { SortingProvider } from '../base/provider';
-import { SellersSortingContext } from './context';
+import { SortingProvider } from "../base/provider";
+import { SellersSortingContext } from "./context";
 
-import type { SellerSortId } from '@/services/transfers/sellers/list-mv';
-import type { SortType } from '../base/types';
+import type { SellerSortId } from "@/services/transfers/sellers/list-mv";
+import type { SortType } from "../base/types";
 
 export const SellersSortingProvider = ({
   children,

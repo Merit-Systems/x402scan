@@ -1,4 +1,4 @@
-import { Separator } from '@/components/ui/separator';
+import { Separator } from "@/components/ui/separator";
 
 interface Props {
   children: React.ReactNode;
@@ -10,9 +10,9 @@ export const ConnectInjectedWalletButtonsWrapper: React.FC<Props> = ({
   return (
     <>
       {children}
-      <div className="flex items-center gap-2 w-full">
+      <div className="flex w-full items-center gap-2">
         <Separator className="flex-1" />
-        <p className="text-muted-foreground text-xs">or</p>
+        <p className="text-xs text-muted-foreground">or</p>
         <Separator className="flex-1" />
       </div>
     </>

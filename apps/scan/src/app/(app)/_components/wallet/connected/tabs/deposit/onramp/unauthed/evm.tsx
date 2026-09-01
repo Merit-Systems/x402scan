@@ -1,8 +1,8 @@
-import { NoSessionContent } from './component';
+import { NoSessionContent } from "./component";
 
-import { useSiwe } from '@/app/(app)/_hooks/sign-in/use-siwe';
+import { useSiwe } from "@/app/(app)/_hooks/sign-in/use-siwe";
 
-import type { Chain } from '@/types/chain';
+import type { Chain } from "@/types/chain";
 
 interface Props {
   chain: Chain;
@@ -11,7 +11,7 @@ interface Props {
 export const NoEVMSessionContent: React.FC<Props> = ({ chain }) => {
   const { signIn, isPending } = useSiwe({
     redirectParams: {
-      onramp: 'true',
+      onramp: "true",
       chain: chain,
     },
   });

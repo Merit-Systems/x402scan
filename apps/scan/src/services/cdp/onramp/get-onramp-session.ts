@@ -1,7 +1,7 @@
-import { mixedAddressSchema } from '@/lib/schemas';
-import { cdpFetch } from '../lib/fetch';
+import { mixedAddressSchema } from "@/lib/schemas";
+import { cdpFetch } from "../lib/fetch";
 
-import { z } from 'zod';
+import { z } from "zod";
 
 const amountSchema = z.object({
   value: z.string(),
@@ -10,9 +10,9 @@ const amountSchema = z.object({
 
 const onrampTransactionSchema = z.object({
   status: z.enum([
-    'ONRAMP_TRANSACTION_STATUS_IN_PROGRESS',
-    'ONRAMP_TRANSACTION_STATUS_SUCCESS',
-    'ONRAMP_TRANSACTION_STATUS_FAILED',
+    "ONRAMP_TRANSACTION_STATUS_IN_PROGRESS",
+    "ONRAMP_TRANSACTION_STATUS_SUCCESS",
+    "ONRAMP_TRANSACTION_STATUS_FAILED",
   ]),
   purchase_currency: z.string(),
   purchase_network: z.string(),
@@ -27,20 +27,20 @@ const onrampTransactionSchema = z.object({
   user_id: z.string(),
   user_type: z.string(),
   payment_method: z.enum([
-    'CARD',
-    'ACH_BANK_ACCOUNT',
-    'APPLE_PAY',
-    'FIAT_WALLET',
-    'CRYPTO_WALLET',
-    'UNSPECIFIED',
+    "CARD",
+    "ACH_BANK_ACCOUNT",
+    "APPLE_PAY",
+    "FIAT_WALLET",
+    "CRYPTO_WALLET",
+    "UNSPECIFIED",
   ]),
   tx_hash: z.string().nullable().optional(),
   transaction_id: z.string().nullable().optional(),
   wallet_address: mixedAddressSchema,
   contract_address: z.string().nullable().optional(),
   type: z.enum([
-    'ONRAMP_TRANSACTION_TYPE_BUY_AND_SEND',
-    'ONRAMP_TRANSACTION_TYPE_SEND',
+    "ONRAMP_TRANSACTION_TYPE_BUY_AND_SEND",
+    "ONRAMP_TRANSACTION_TYPE_SEND",
   ]),
   created_at: z.coerce.date(),
   completed_at: z.coerce.date(),
@@ -53,8 +53,8 @@ export const getOnrampTransactions = async (partnerUserRef: string) => {
   return cdpFetch(
     {
       requestPath: `/onramp/v1/buy/user/${partnerUserRef}/transactions`,
-      requestMethod: 'GET',
-      requestHost: 'api.developer.coinbase.com',
+      requestMethod: "GET",
+      requestHost: "api.developer.coinbase.com",
     },
     z.object({
       transactions: z.array(onrampTransactionSchema),

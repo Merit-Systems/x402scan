@@ -1,12 +1,12 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { ResourceMetadataTable } from './_components/resource-metadata-table';
-import { auth } from '@/auth';
-import { forbidden } from 'next/navigation';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { ResourceMetadataTable } from "./_components/resource-metadata-table";
+import { auth } from "@/auth";
+import { forbidden } from "next/navigation";
 
 export default async function RequestMetadataPage() {
   const session = await auth();
 
-  if (session?.user.role !== 'admin') {
+  if (session?.user.role !== "admin") {
     forbidden();
   }
 

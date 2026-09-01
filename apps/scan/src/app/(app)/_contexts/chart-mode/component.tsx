@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { ChartColumn, ChartSpline } from 'lucide-react';
+import { ChartColumn, ChartSpline } from "lucide-react";
 
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
-import { useChartMode } from './hook';
-import type { ChartMode } from './context';
+import { useChartMode } from "./hook";
+import type { ChartMode } from "./context";
 
 const modeNames = {
-  bucketed: 'Per Bucket',
-  cumulative: 'Cumulative',
+  bucketed: "Per Bucket",
+  cumulative: "Cumulative",
 } satisfies Record<ChartMode, string>;
 
 export const ChartModeSelector = () => {
@@ -23,10 +23,10 @@ export const ChartModeSelector = () => {
   return (
     <Select
       value={chartMode}
-      onValueChange={value => selectChartMode(value as ChartMode)}
+      onValueChange={(value) => selectChartMode(value as ChartMode)}
     >
       <SelectTrigger className="border shadow-xs dark:border-input">
-        {chartMode === 'cumulative' ? <ChartSpline /> : <ChartColumn />}
+        {chartMode === "cumulative" ? <ChartSpline /> : <ChartColumn />}
         <span>{modeNames[chartMode]}</span>
       </SelectTrigger>
       <SelectContent align="end">

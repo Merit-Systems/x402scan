@@ -1,8 +1,8 @@
-import { setCookie } from 'cookies-next/client';
+import { setCookie } from "cookies-next/client";
 
-import { COOKIE_KEYS } from './keys';
+import { COOKIE_KEYS } from "./keys";
 
-import type { SelectedResource } from '../../../_types/chat-config';
+import type { SelectedResource } from "../../../_types/chat-config";
 
 export const clientCookieUtils = {
   setSelectedChatModel(model: string | undefined): void {

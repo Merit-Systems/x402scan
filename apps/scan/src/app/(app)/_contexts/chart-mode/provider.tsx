@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-import { ChartModeContext, type ChartMode } from './context';
+import { ChartModeContext, type ChartMode } from "./context";
 
 interface Props {
   children: React.ReactNode;
@@ -11,7 +11,7 @@ interface Props {
 
 export const ChartModeProvider: React.FC<Props> = ({
   children,
-  initialMode = 'bucketed',
+  initialMode = "bucketed",
 }) => {
   const [chartMode, setChartMode] = useState<ChartMode>(initialMode);
 

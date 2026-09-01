@@ -1,10 +1,10 @@
-import { DiscoverSearchProvider } from './_components/discover-search-context';
+import { DiscoverSearchProvider } from "./_components/discover-search-context";
 
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   alternates: {
-    canonical: '/',
+    canonical: "/",
   },
 };
 

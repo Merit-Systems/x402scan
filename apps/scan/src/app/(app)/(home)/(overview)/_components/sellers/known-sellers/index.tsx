@@ -1,22 +1,22 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary } from "react-error-boundary";
 
-import { Section } from '@/app/_components/layout/page-utils';
+import { Section } from "@/app/_components/layout/page-utils";
 
-import { KnownSellersTable, LoadingKnownSellersTable } from './table';
+import { KnownSellersTable, LoadingKnownSellersTable } from "./table";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
-import { defaultSellersSorting } from '@/app/(app)/_contexts/sorting/sellers/default';
-import { SellersSortingProvider } from '@/app/(app)/_contexts/sorting/sellers/provider';
+import { defaultSellersSorting } from "@/app/(app)/_contexts/sorting/sellers/default";
+import { SellersSortingProvider } from "@/app/(app)/_contexts/sorting/sellers/provider";
 
-import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
-import { RangeSelector } from '@/app/(app)/_contexts/time-range/component';
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
+import { RangeSelector } from "@/app/(app)/_contexts/time-range/component";
 
-import { ActivityTimeframe } from '@/types/timeframes';
+import { ActivityTimeframe } from "@/types/timeframes";
 
-import type { Chain } from '@/types/chain';
+import type { Chain } from "@/types/chain";
 
 interface Props {
   chain?: Chain;

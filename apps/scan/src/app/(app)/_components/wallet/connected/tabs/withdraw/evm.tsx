@@ -1,8 +1,8 @@
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { useEvmSend } from '@/app/(app)/_hooks/send/use-evm-send';
+import { useEvmSend } from "@/app/(app)/_hooks/send/use-evm-send";
 
 interface Props {
   amount: number;

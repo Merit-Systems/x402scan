@@ -1,8 +1,8 @@
-import z from 'zod';
+import z from "zod";
 
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import type { OnrampSession } from '@x402scan/scan-db/types';
+import type { OnrampSession } from "@x402scan/scan-db/types";
 
 export const getOnrampSessionByToken = async (
   token: string,
@@ -32,7 +32,7 @@ export const createOnrampSession = async (
       amount,
       userId,
       // An empty-string id must also become undefined, not just a missing one.
-      serverWalletId: serverWalletId === '' ? undefined : serverWalletId,
+      serverWalletId: serverWalletId === "" ? undefined : serverWalletId,
     },
   });
 };

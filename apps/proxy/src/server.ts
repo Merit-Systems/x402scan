@@ -1,43 +1,43 @@
-import 'dotenv/config';
-import { Hono } from 'hono';
-import { serve } from '@hono/node-server';
-import { cors } from 'hono/cors';
-import { registerProxyRouter } from './routes/proxy.js';
+import "dotenv/config";
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
+import { cors } from "hono/cors";
+import { registerProxyRouter } from "./routes/proxy.js";
 
 const app = new Hono();
 
 // Enable CORS for all origins
 app.use(
-  '*',
+  "*",
   cors({
-    origin: '*',
-    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['*'],
-    exposeHeaders: ['*'],
+    origin: "*",
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowHeaders: ["*"],
+    exposeHeaders: ["*"],
     credentials: true,
   })
 );
 
-app.get('/', c => {
+app.get("/", (c) => {
   return c.json({
-    service: 'x402 Proxy Server',
-    description: 'CORS-enabled proxy service for x402 resource invocations',
-    version: '1.0.0',
+    service: "x402 Proxy Server",
+    description: "CORS-enabled proxy service for x402 resource invocations",
+    version: "1.0.0",
     endpoints: {
-      proxy: '/api/proxy?url=<encoded-url>&share_data=<boolean>',
+      proxy: "/api/proxy?url=<encoded-url>&share_data=<boolean>",
     },
     usage: {
-      description: 'Proxy requests to external URLs with CORS support',
-      example: '/api/proxy?url=https%3A%2F%2Fexample.com%2Fapi',
+      description: "Proxy requests to external URLs with CORS support",
+      example: "/api/proxy?url=https%3A%2F%2Fexample.com%2Fapi",
       parameters: {
-        url: 'Required. The URL to proxy the request to (URL-encoded)',
+        url: "Required. The URL to proxy the request to (URL-encoded)",
         share_data:
           'Optional. Set to "true" to include request/response headers and body in logs',
       },
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     },
     links: {
-      website: 'https://x402scan.com',
+      website: "https://x402scan.com",
     },
   });
 });

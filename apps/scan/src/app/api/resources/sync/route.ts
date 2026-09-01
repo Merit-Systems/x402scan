@@ -1,26 +1,26 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-import { scrapeOriginData } from '@/services/scraper';
+import { scrapeOriginData } from "@/services/scraper";
 import {
   getOriginResourceCount,
   upsertOrigin,
-} from '@/services/db/resources/origin';
-import { upsertResource } from '@/services/db/resources/resource';
+} from "@/services/db/resources/origin";
+import { upsertResource } from "@/services/db/resources/resource";
 
-import { checkCronSecret } from '@/lib/cron';
-import { notifyNewServer } from '@/lib/discord-notifications';
-import { getOriginFromUrl } from '@/lib/url';
-import { isVercelPreviewDeployment } from '@/lib/discovery/vercel-preview';
-import { normalizeChainId } from '@/lib/x402';
+import { checkCronSecret } from "@/lib/cron";
+import { notifyNewServer } from "@/lib/discord-notifications";
+import { getOriginFromUrl } from "@/lib/url";
+import { isVercelPreviewDeployment } from "@/lib/discovery/vercel-preview";
+import { normalizeChainId } from "@/lib/x402";
 
-import type { AcceptsNetwork } from '@x402scan/scan-db/types';
-import type z from 'zod';
-import type { upsertResourceSchema } from '@/services/db/resources/resource';
-import type { NextRequest } from 'next/server';
+import type { AcceptsNetwork } from "@x402scan/scan-db/types";
+import type z from "zod";
+import type { upsertResourceSchema } from "@/services/db/resources/resource";
+import type { NextRequest } from "next/server";
 import {
   discoverableFacilitators,
   listAllFacilitatorResources,
-} from 'facilitators';
+} from "facilitators";
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);
@@ -31,11 +31,11 @@ export const GET = async (request: NextRequest) => {
   // Facilitator sync is temporarily paused
   const FACILITATOR_SYNC_PAUSED = true;
   if (FACILITATOR_SYNC_PAUSED) {
-    console.log('Facilitator sync route is paused — returning early');
+    console.log("Facilitator sync route is paused — returning early");
     return NextResponse.json(
       {
         success: true as const,
-        message: 'Facilitator sync is temporarily paused',
+        message: "Facilitator sync is temporarily paused",
         resourcesProcessed: 0,
         originsProcessed: 0,
       },
@@ -45,30 +45,30 @@ export const GET = async (request: NextRequest) => {
 
   try {
     // Step 1: Fetch facilitator resources
-    console.log('Fetching facilitator resources');
+    console.log("Fetching facilitator resources");
     const resources = (
       await Promise.all(
-        discoverableFacilitators.map(facilitator =>
-          listAllFacilitatorResources(facilitator).catch(error => {
-            console.error('Failed to fetch facilitator resources', {
+        discoverableFacilitators.map((facilitator) =>
+          listAllFacilitatorResources(facilitator).catch((error) => {
+            console.error("Failed to fetch facilitator resources", {
               facilitator: facilitator.url,
-              error: error instanceof Error ? error.message : 'Unknown error',
+              error: error instanceof Error ? error.message : "Unknown error",
             });
             return [];
           })
         )
       )
     ).flat();
-    console.log('Successfully fetched facilitator resources', {
+    console.log("Successfully fetched facilitator resources", {
       totalResources: resources.length,
     });
 
     if (resources.length === 0) {
-      console.warn('No resources found from facilitator');
+      console.warn("No resources found from facilitator");
       return NextResponse.json(
         {
           success: true as const,
-          message: 'No resources to sync',
+          message: "No resources to sync",
           resourcesProcessed: 0,
           originsProcessed: 0,
         },
@@ -88,7 +88,7 @@ export const GET = async (request: NextRequest) => {
       }
     }
     await Promise.all(
-      Array.from(allOrigins).map(async origin => {
+      Array.from(allOrigins).map(async (origin) => {
         const count = await getOriginResourceCount(origin);
         if (count > 0) preexistingOrigins.add(origin);
       })
@@ -99,17 +99,17 @@ export const GET = async (request: NextRequest) => {
     // never upserted, even via facilitator sync.
     const previewOrigins = new Set<string>();
     await Promise.all(
-      Array.from(allOrigins).map(async origin => {
+      Array.from(allOrigins).map(async (origin) => {
         if (await isVercelPreviewDeployment(origin)) previewOrigins.add(origin);
       })
     );
 
     // Step 2: Process resources (upsert to database)
-    console.log('Starting resource processing');
+    console.log("Starting resource processing");
     const resourceProcessingStart = Date.now();
 
     const resourceResults = await Promise.allSettled(
-      resources.map(async facilitatorResource => {
+      resources.map(async (facilitatorResource) => {
         try {
           let resourceOrigin: string | undefined;
           try {
@@ -118,31 +118,31 @@ export const GET = async (request: NextRequest) => {
             resourceOrigin = undefined;
           }
           if (resourceOrigin && previewOrigins.has(resourceOrigin)) {
-            console.warn('Skipping Vercel preview deployment', {
+            console.warn("Skipping Vercel preview deployment", {
               resource: facilitatorResource.resource,
             });
             return {
               resource: facilitatorResource.resource,
               success: false,
-              error: 'Vercel preview deployment',
+              error: "Vercel preview deployment",
             };
           }
 
           const result = await upsertResource({
             ...facilitatorResource,
-            accepts: facilitatorResource.accepts.map(accept => ({
+            accepts: facilitatorResource.accepts.map((accept) => ({
               ...accept,
               network: normalizeChainId(accept.network) as AcceptsNetwork,
-            })) as z.input<typeof upsertResourceSchema>['accepts'],
+            })) as z.input<typeof upsertResourceSchema>["accepts"],
           });
           if (!result) {
-            console.warn('Resource schema validation failed', {
+            console.warn("Resource schema validation failed", {
               resource: facilitatorResource.resource,
             });
             return {
               resource: facilitatorResource.resource,
               success: false,
-              error: 'Schema validation failed',
+              error: "Schema validation failed",
             };
           }
           return { resource: facilitatorResource.resource, success: true };
@@ -150,7 +150,7 @@ export const GET = async (request: NextRequest) => {
           return {
             resource: facilitatorResource.resource,
             success: false,
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: error instanceof Error ? error.message : "Unknown error",
           };
         }
       })
@@ -163,11 +163,11 @@ export const GET = async (request: NextRequest) => {
       ): result is PromiseFulfilledResult<{
         resource: string;
         success: true;
-      }> => result.status === 'fulfilled' && result.value.success
+      }> => result.status === "fulfilled" && result.value.success
     ).length;
     const failedResources = resourceResults.length - successfulResources;
 
-    console.log('Completed resource processing', {
+    console.log("Completed resource processing", {
       totalResources: resources.length,
       successful: successfulResources,
       failed: failedResources,
@@ -177,7 +177,7 @@ export const GET = async (request: NextRequest) => {
     // Step 3: Extract origins that had at least one successful resource
     const originsWithResources = new Set<string>();
     for (const result of resourceResults) {
-      if (result.status === 'fulfilled' && result.value.success) {
+      if (result.status === "fulfilled" && result.value.success) {
         try {
           const origin = getOriginFromUrl(result.value.resource);
           originsWithResources.add(origin);
@@ -190,11 +190,11 @@ export const GET = async (request: NextRequest) => {
     const uniqueOrigins = Array.from(originsWithResources);
 
     // Step 4: Process origins with successful resources (scrape metadata and OG data)
-    console.log('Starting origin processing with metadata scraping');
+    console.log("Starting origin processing with metadata scraping");
     const originProcessingStart = Date.now();
 
     const originResults = await Promise.allSettled(
-      uniqueOrigins.map(async origin => {
+      uniqueOrigins.map(async (origin) => {
         const originStart = Date.now();
 
         try {
@@ -208,7 +208,7 @@ export const GET = async (request: NextRequest) => {
             description: metadata?.description ?? og?.ogDescription,
             favicon: favicon ?? undefined,
             ogImages:
-              og?.ogImage?.flatMap(image => {
+              og?.ogImage?.flatMap((image) => {
                 try {
                   return [
                     {
@@ -242,7 +242,7 @@ export const GET = async (request: NextRequest) => {
 
           return { origin, success: true };
         } catch (error) {
-          console.error('Failed to process origin', {
+          console.error("Failed to process origin", {
             origin,
             durationMs: Date.now() - originStart,
           });
@@ -258,11 +258,11 @@ export const GET = async (request: NextRequest) => {
       ): result is PromiseFulfilledResult<{
         origin: string;
         success: true;
-      }> => result.status === 'fulfilled' && result.value.success
+      }> => result.status === "fulfilled" && result.value.success
     ).length;
     const failedOrigins = originResults.length - successfulOrigins;
 
-    console.log('Completed origin processing', {
+    console.log("Completed origin processing", {
       totalOrigins: uniqueOrigins.length,
       successful: successfulOrigins,
       failed: failedOrigins,
@@ -285,8 +285,8 @@ export const GET = async (request: NextRequest) => {
     return NextResponse.json(
       {
         success: false as const,
-        message: 'Sync task failed with error',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        message: "Sync task failed with error",
+        error: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
     );

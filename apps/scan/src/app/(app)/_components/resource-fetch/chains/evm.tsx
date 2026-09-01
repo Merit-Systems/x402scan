@@ -1,22 +1,22 @@
-import { useWalletClient } from 'wagmi';
+import { useWalletClient } from "wagmi";
 
-import { useIsInitialized } from '@coinbase/cdp-hooks';
+import { useIsInitialized } from "@coinbase/cdp-hooks";
 
-import { ConnectWalletState } from '../1-connect';
-import { LoadingState } from '../2-loading-balance';
-import { AddFundsState } from '../3-add-funds';
-import { FetchState } from '../4-fetch';
-import { PriceConfirmationDialog } from '../price-confirmation-dialog';
+import { ConnectWalletState } from "../1-connect";
+import { LoadingState } from "../2-loading-balance";
+import { AddFundsState } from "../3-add-funds";
+import { FetchState } from "../4-fetch";
+import { PriceConfirmationDialog } from "../price-confirmation-dialog";
 
-import { useEvmTokenBalance } from '@/app/(app)/_hooks/balance/token/use-evm-token-balance';
-import { useEvmX402FetchWithConfirmation } from '@/app/(app)/_hooks/x402/evm-with-confirmation';
+import { useEvmTokenBalance } from "@/app/(app)/_hooks/balance/token/use-evm-token-balance";
+import { useEvmX402FetchWithConfirmation } from "@/app/(app)/_hooks/x402/evm-with-confirmation";
 
-import { convertTokenAmount } from '@/lib/token';
-import { usdc } from '@/lib/tokens/usdc';
+import { convertTokenAmount } from "@/lib/token";
+import { usdc } from "@/lib/tokens/usdc";
 
-import type { SupportedChain } from '@/types/chain';
-import type { UseMutationOptions } from '@tanstack/react-query';
-import type { X402FetchResponse } from '@/app/(app)/_hooks/x402/types';
+import type { SupportedChain } from "@/types/chain";
+import type { UseMutationOptions } from "@tanstack/react-query";
+import type { X402FetchResponse } from "@/app/(app)/_hooks/x402/types";
 
 interface Props<TData = unknown> {
   chain: SupportedChain;
@@ -24,7 +24,7 @@ interface Props<TData = unknown> {
   maxAmountRequired: bigint;
   targetUrl: string;
   requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
+  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
   isTool?: boolean;
   text?: string;
 }
@@ -61,7 +61,7 @@ export const FetchEvm: React.FC<Props> = ({
         // Don't call the original onError for price confirmation required
         if (
           error instanceof Error &&
-          error.message === 'PRICE_CONFIRMATION_REQUIRED'
+          error.message === "PRICE_CONFIRMATION_REQUIRED"
         ) {
           return;
         }
@@ -101,7 +101,7 @@ export const FetchEvm: React.FC<Props> = ({
         />
         <PriceConfirmationDialog
           open={true}
-          onOpenChange={open => {
+          onOpenChange={(open) => {
             if (!open) {
               cancelPriceIncrease();
             }

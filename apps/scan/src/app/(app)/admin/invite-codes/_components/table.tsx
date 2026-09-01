@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import { useState, useMemo, useCallback } from 'react';
-import { Search } from 'lucide-react';
-import { DataTable } from '@/components/ui/data-table';
-import { Input } from '@/components/ui/input';
+import { useState, useMemo, useCallback } from "react";
+import { Search } from "lucide-react";
+import { DataTable } from "@/components/ui/data-table";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { createColumns } from './columns';
-import { api } from '@/trpc/client';
-import { useDebounce } from '@/hooks/use-debounce';
+} from "@/components/ui/select";
+import { createColumns } from "./columns";
+import { api } from "@/trpc/client";
+import { useDebounce } from "@/hooks/use-debounce";
 
 const PAGE_SIZE = 25;
 
-type StatusFilter = 'ALL' | 'ACTIVE' | 'EXHAUSTED' | 'EXPIRED' | 'DISABLED';
-type OrderBy = 'createdAt' | 'status';
+type StatusFilter = "ALL" | "ACTIVE" | "EXHAUSTED" | "EXPIRED" | "DISABLED";
+type OrderBy = "createdAt" | "status";
 
 export const InviteCodesTable = () => {
   const [page, setPage] = useState(0);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
-  const [orderBy, setOrderBy] = useState<OrderBy>('createdAt');
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
+  const [orderBy, setOrderBy] = useState<OrderBy>("createdAt");
   const debouncedSearch = useDebounce(search, 300);
   const utils = api.useUtils();
 
@@ -32,7 +32,7 @@ export const InviteCodesTable = () => {
     limit: PAGE_SIZE,
     offset: page * PAGE_SIZE,
     search: debouncedSearch || undefined,
-    status: statusFilter === 'ALL' ? undefined : statusFilter,
+    status: statusFilter === "ALL" ? undefined : statusFilter,
     orderBy,
   });
 
@@ -64,7 +64,7 @@ export const InviteCodesTable = () => {
       if (input === null) return;
       const newMax = parseInt(input, 10);
       if (isNaN(newMax) || newMax < 0) {
-        alert('Please enter a valid non-negative number');
+        alert("Please enter a valid non-negative number");
         return;
       }
       updateMaxRedemptionsMutation.mutate({ id, maxRedemptions: newMax });
@@ -78,8 +78,8 @@ export const InviteCodesTable = () => {
   const columns = useMemo(
     () =>
       createColumns({
-        onDisable: id => disableMutation.mutate({ id }),
-        onReactivate: id => reactivateMutation.mutate({ id }),
+        onDisable: (id) => disableMutation.mutate({ id }),
+        onReactivate: (id) => reactivateMutation.mutate({ id }),
         onEditMaxRedemptions: handleEditMaxRedemptions,
       }),
     [disableMutation, reactivateMutation, handleEditMaxRedemptions]
@@ -104,12 +104,12 @@ export const InviteCodesTable = () => {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-4">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <div className="relative max-w-sm min-w-[200px] flex-1">
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by code or note..."
             value={search}
-            onChange={e => handleSearchChange(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-9"
           />
         </div>

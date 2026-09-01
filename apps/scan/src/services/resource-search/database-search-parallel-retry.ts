@@ -1,11 +1,11 @@
-import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import type { SearchResult } from './types';
+import { generateObject } from "ai";
+import { openai } from "@ai-sdk/openai";
+import type { SearchResult } from "./types";
 import {
   sqlGenerationSchema,
   buildSearchPrompt,
   executeResourceSearch,
-} from './database-search';
+} from "./database-search";
 
 async function generateAndExecuteSingleQuery(
   naturalLanguageQuery: string,
@@ -20,7 +20,7 @@ async function generateAndExecuteSingleQuery(
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     const result = await generateObject({
-      model: openai('gpt-4.1-nano'),
+      model: openai("gpt-4.1-nano"),
       prompt: buildSearchPrompt(naturalLanguageQuery, lastError),
       schema: sqlGenerationSchema,
       temperature: 0.3, // Slightly higher temperature for variation
@@ -67,19 +67,19 @@ export const searchResourcesWithNaturalLanguage = async (
   sqlCondition: string;
 }> => {
   if (!naturalLanguageQuery.trim()) {
-    const allResults = await executeResourceSearch('true');
+    const allResults = await executeResourceSearch("true");
     if (!allResults.success) {
       throw new Error(`Failed to fetch all resources: ${allResults.error}`);
     }
     return {
       results: allResults.results,
-      explanation: 'Showing all resources',
+      explanation: "Showing all resources",
       totalCount: allResults.results.length,
-      sqlCondition: 'true',
+      sqlCondition: "true",
     };
   }
 
-  console.log('Starting 3 parallel SQL generations...');
+  console.log("Starting 3 parallel SQL generations...");
 
   // Run 3 generations in parallel
   const parallelQueries = await Promise.all([
@@ -94,7 +94,7 @@ export const searchResourcesWithNaturalLanguage = async (
   );
 
   if (successfulQueries.length === 0) {
-    throw new Error('All 3 parallel query generations failed');
+    throw new Error("All 3 parallel query generations failed");
   }
 
   console.log(`Successfully executed ${successfulQueries.length}/3 queries`);
@@ -120,12 +120,12 @@ export const searchResourcesWithNaturalLanguage = async (
   // Combine explanations
   const combinedExplanation = successfulQueries
     .map((q, idx) => `Query ${idx + 1}: ${q.explanation}`)
-    .join(' | ');
+    .join(" | ");
 
   // Combine SQL conditions
   const combinedSqlCondition = successfulQueries
-    .map(q => `(${q.sqlCondition})`)
-    .join(' OR ');
+    .map((q) => `(${q.sqlCondition})`)
+    .join(" OR ");
 
   return {
     results: combinedResults,

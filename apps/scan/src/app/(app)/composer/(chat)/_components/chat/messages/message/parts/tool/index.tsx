@@ -4,29 +4,29 @@ import {
   ToolContent,
   ToolInput,
   ToolOutput,
-} from '@/components/ai-elements/tool';
+} from "@/components/ai-elements/tool";
 
-import { resourceComponents } from './resources';
-import { ToolInvoke } from './invoke';
+import { resourceComponents } from "./resources";
+import { ToolInvoke } from "./invoke";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import type { ToolUIPart, UIMessage } from 'ai';
-import type { UseChatHelpers } from '@ai-sdk/react';
+import type { ToolUIPart, UIMessage } from "ai";
+import type { UseChatHelpers } from "@ai-sdk/react";
 
 interface Props {
   part: ToolUIPart;
   chatId: string;
-  addToolResult: UseChatHelpers<UIMessage>['addToolResult'];
+  addToolResult: UseChatHelpers<UIMessage>["addToolResult"];
 }
 export const ToolPart: React.FC<Props> = ({ part, chatId, addToolResult }) => {
   const resourceId = part.type.slice(5);
   const { data: resource, isLoading: isResourceLoading } =
     api.public.resources.get.useQuery(resourceId, {
-      enabled: part.state !== 'input-streaming',
+      enabled: part.state !== "input-streaming",
     });
 
-  if (part.state === 'input-streaming' || isResourceLoading) {
+  if (part.state === "input-streaming" || isResourceLoading) {
     return (
       <Tool defaultOpen={false} key="streaming">
         <ToolHeader
@@ -44,8 +44,8 @@ export const ToolPart: React.FC<Props> = ({ part, chatId, addToolResult }) => {
 
   return (
     <Tool
-      defaultOpen={part.state === 'input-available' ? true : undefined}
-      key={'available'}
+      defaultOpen={part.state === "input-available" ? true : undefined}
+      key={"available"}
     >
       <ToolHeader
         state={part.state}
@@ -58,13 +58,13 @@ export const ToolPart: React.FC<Props> = ({ part, chatId, addToolResult }) => {
         ) : (
           <ToolInput input={part.input} />
         )}
-        {part.state === 'output-error' ? (
+        {part.state === "output-error" ? (
           <div className="flex flex-col gap-4">
-            <div className="overflow-x-auto rounded-md text-xs [&_table]:w-full font-mono bg-destructive/10 text-destructive">
+            <div className="overflow-x-auto rounded-md bg-destructive/10 font-mono text-xs text-destructive [&_table]:w-full">
               <div className="p-3">{part.errorText}</div>
             </div>
           </div>
-        ) : part.state === 'output-available' ? (
+        ) : part.state === "output-available" ? (
           components ? (
             <components.output
               output={part.output}

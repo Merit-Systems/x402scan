@@ -1,27 +1,27 @@
-import { TRPCError } from '@trpc/server';
+import { TRPCError } from "@trpc/server";
 
-import { createTRPCRouter, protectedProcedure } from '@/trpc/trpc';
+import { createTRPCRouter, protectedProcedure } from "@/trpc/trpc";
 
-import { getUserWallets } from '@/services/cdp/server-wallet/user';
-import { mixedAddressSchema, supportedChainSchema } from '@/lib/schemas';
-import z from 'zod';
+import { getUserWallets } from "@/services/cdp/server-wallet/user";
+import { mixedAddressSchema, supportedChainSchema } from "@/lib/schemas";
+import z from "zod";
 import {
   getTokenBalanceSchema,
   sendTokensSchema,
-} from '@/services/cdp/server-wallet/wallets/schemas';
-import { tokenSchema } from '@/types/token';
-import { usdc } from '@/lib/tokens/usdc';
-import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
+} from "@/services/cdp/server-wallet/wallets/schemas";
+import { tokenSchema } from "@/types/token";
+import { usdc } from "@/lib/tokens/usdc";
+import { Chain, SUPPORTED_CHAINS } from "@/types/chain";
 import {
   x402Client,
   wrapFetchWithPayment,
   registerExactEvmScheme,
   registerSvmX402Client,
-} from '@/lib/x402/wrap-fetch';
-import { env } from '@/env';
+} from "@/lib/x402/wrap-fetch";
+import { env } from "@/env";
 
-import type { ClientEvmSigner } from '@/lib/x402/wrap-fetch';
-import type { ClientSvmSigner } from '@x402/svm';
+import type { ClientEvmSigner } from "@/lib/x402/wrap-fetch";
+import type { ClientSvmSigner } from "@x402/svm";
 
 const serverWalletChainFields = {
   chain: supportedChainSchema,
@@ -37,7 +37,7 @@ export const serverWalletRouter = createTRPCRouter({
       const result = await wallets[chain].address();
       if (result.isErr()) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
+          code: "INTERNAL_SERVER_ERROR",
           message: result.error.message,
         });
       }
@@ -64,7 +64,7 @@ export const serverWalletRouter = createTRPCRouter({
       const result = await wallets[chain].getTokenBalance(rest);
       if (result.isErr()) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
+          code: "INTERNAL_SERVER_ERROR",
           message: result.error.message,
         });
       }
@@ -78,7 +78,7 @@ export const serverWalletRouter = createTRPCRouter({
       const result = await wallets[chain].export();
       if (result.isErr()) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
+          code: "INTERNAL_SERVER_ERROR",
           message: result.error.message,
         });
       }
@@ -92,7 +92,7 @@ export const serverWalletRouter = createTRPCRouter({
       const result = await wallets[chain].getNativeTokenBalance();
       if (result.isErr()) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
+          code: "INTERNAL_SERVER_ERROR",
           message: result.error.message,
         });
       }
@@ -107,7 +107,7 @@ export const serverWalletRouter = createTRPCRouter({
         },
         {
           error:
-            'The token you are sending does not match the chain you are sending on',
+            "The token you are sending does not match the chain you are sending on",
         }
       )
     )
@@ -116,7 +116,7 @@ export const serverWalletRouter = createTRPCRouter({
       const result = await wallets[chain].sendTokens(rest);
       if (result.isErr()) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
+          code: "INTERNAL_SERVER_ERROR",
           message: result.error.message,
         });
       }
@@ -126,7 +126,7 @@ export const serverWalletRouter = createTRPCRouter({
   chainsWithBalances: protectedProcedure.query(async ({ ctx }) => {
     const { wallets } = await getUserWallets(ctx.session.user.id);
     const balanceResults = await Promise.all(
-      SUPPORTED_CHAINS.map(async chain => {
+      SUPPORTED_CHAINS.map(async (chain) => {
         const result = await wallets[chain].getTokenBalance({
           token: usdc(chain),
         });
@@ -137,8 +137,8 @@ export const serverWalletRouter = createTRPCRouter({
       })
     );
     return balanceResults
-      .filter(balance => balance.balance > 0)
-      .map(balance => balance.chain);
+      .filter((balance) => balance.balance > 0)
+      .map((balance) => balance.chain);
   }),
 
   sendUsdc: protectedProcedure
@@ -168,11 +168,11 @@ export const serverWalletRouter = createTRPCRouter({
 
       const fetchWithPayment = wrapFetchWithPayment(fetch, client);
       const url = new URL(`/api/x402/send`, env.NEXT_PUBLIC_APP_URL);
-      url.searchParams.set('amount', amount.toString());
-      url.searchParams.set('address', address);
-      url.searchParams.set('chain', chain);
+      url.searchParams.set("amount", amount.toString());
+      url.searchParams.set("address", address);
+      url.searchParams.set("chain", chain);
       const response = await fetchWithPayment(url.toString(), {
-        method: 'POST',
+        method: "POST",
       });
       return (await response.json()) as { success: boolean; message: string };
     }),

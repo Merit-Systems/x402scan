@@ -1,13 +1,13 @@
-import { FetchEvm } from './chains/evm';
-import { FetchSvm } from './chains/svm';
+import { FetchEvm } from "./chains/evm";
+import { FetchSvm } from "./chains/svm";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import { Chain } from '@/types/chain';
+import { Chain } from "@/types/chain";
 
-import type { SupportedChain } from '@/types/chain';
-import type { UseMutationOptions } from '@tanstack/react-query';
-import type { X402FetchResponse } from '@/app/(app)/_hooks/x402/types';
+import type { SupportedChain } from "@/types/chain";
+import type { UseMutationOptions } from "@tanstack/react-query";
+import type { X402FetchResponse } from "@/app/(app)/_hooks/x402/types";
 
 interface Props<TData = unknown> {
   chains: SupportedChain[];
@@ -15,7 +15,7 @@ interface Props<TData = unknown> {
   maxAmountRequired: bigint;
   targetUrl: string;
   requestInit?: RequestInit | ((chain: SupportedChain) => RequestInit);
-  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, 'mutationFn'>;
+  options?: Omit<UseMutationOptions<X402FetchResponse<TData>>, "mutationFn">;
   isTool?: boolean;
   text?: string;
 }
@@ -33,11 +33,11 @@ export const ResourceFetch: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        'grid grid-cols-1 md:grid-cols-2 gap-2',
-        chains.length % 2 === 1 ? 'md:[&>*:last-child]:col-span-2' : ''
+        "grid grid-cols-1 md:grid-cols-2 gap-2",
+        chains.length % 2 === 1 ? "md:[&>*:last-child]:col-span-2" : ""
       )}
     >
-      {chains.map(chain =>
+      {chains.map((chain) =>
         chain === Chain.SOLANA ? (
           <FetchSvm
             key={chain}

@@ -1,25 +1,25 @@
-import type z from 'zod';
+import type z from "zod";
 
 import {
   toPeekAheadResponse,
   type paginatedQuerySchema,
-} from '@/lib/pagination';
-import { baseListQuerySchema } from '../schemas';
+} from "@/lib/pagination";
+import { baseListQuerySchema } from "../schemas";
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
-} from '@/lib/cache';
-import { transfersDb } from '@x402scan/transfers-db';
-import type { MixedAddress } from '@/types/address';
-import type { Chain } from '@/types/chain';
-import { transfersWhereObject } from '../query-utils';
+} from "@/lib/cache";
+import { transfersDb } from "@x402scan/transfers-db";
+import type { MixedAddress } from "@/types/address";
+import type { Chain } from "@/types/chain";
+import { transfersWhereObject } from "../query-utils";
 
-const TRANSFERS_SORT_IDS = ['block_timestamp', 'amount'] as const;
+const TRANSFERS_SORT_IDS = ["block_timestamp", "amount"] as const;
 export type TransfersSortId = (typeof TRANSFERS_SORT_IDS)[number];
 
 export const listFacilitatorTransfersInputSchema = baseListQuerySchema({
   sortIds: TRANSFERS_SORT_IDS,
-  defaultSortId: 'block_timestamp',
+  defaultSortId: "block_timestamp",
 });
 
 const listFacilitatorTransfersUncached = async (
@@ -33,14 +33,14 @@ const listFacilitatorTransfersUncached = async (
   const transfers = await transfersDb.transferEvent.findMany({
     where,
     orderBy: {
-      [sorting.id]: sorting.desc ? 'desc' : 'asc',
+      [sorting.id]: sorting.desc ? "desc" : "asc",
     },
     take: page_size + 1,
     skip: page * page_size,
   });
 
   // Map to expected output format
-  const items = transfers.map(transfer => ({
+  const items = transfers.map((transfer) => ({
     ...transfer,
     sender: transfer.sender as MixedAddress,
     recipient: transfer.recipient as MixedAddress,
@@ -57,8 +57,8 @@ const listFacilitatorTransfersUncached = async (
 
 export const listFacilitatorTransfers = createCachedPaginatedQuery({
   queryFn: listFacilitatorTransfersUncached,
-  cacheKeyPrefix: 'transfers-list',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['block_timestamp'],
-  tags: ['transfers'],
+  cacheKeyPrefix: "transfers-list",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["block_timestamp"],
+  tags: ["transfers"],
 });

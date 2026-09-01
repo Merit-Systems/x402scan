@@ -1,13 +1,13 @@
-import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { defaultAgentsSorting } from '@/app/(app)/_contexts/sorting/agents/default';
-import { AgentsSortingProvider } from '@/app/(app)/_contexts/sorting/agents/provider';
-import { TimeRangeProvider } from '@/app/(app)/_contexts/time-range/provider';
-import { AgentsTable } from '@/app/(app)/_components/agents/table';
-import { ALL_TIME_TIMEFRAME } from '@/types/timeframes';
+import { Body, Heading } from "@/app/_components/layout/page-utils";
+import { defaultAgentsSorting } from "@/app/(app)/_contexts/sorting/agents/default";
+import { AgentsSortingProvider } from "@/app/(app)/_contexts/sorting/agents/provider";
+import { TimeRangeProvider } from "@/app/(app)/_contexts/time-range/provider";
+import { AgentsTable } from "@/app/(app)/_components/agents/table";
+import { ALL_TIME_TIMEFRAME } from "@/types/timeframes";
 
 export default async function OriginAgentsPage({
   params,
-}: PageProps<'/server/[id]/agents'>) {
+}: PageProps<"/server/[id]/agents">) {
   const { id } = await params;
   return (
     <TimeRangeProvider initialTimeframe={ALL_TIME_TIMEFRAME}>

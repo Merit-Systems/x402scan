@@ -1,11 +1,11 @@
-import { PrismaClient } from '../generated/prisma/client';
-import { PrismaNeon } from '@prisma/adapter-neon';
+import { PrismaClient } from "../generated/prisma/client";
+import { PrismaNeon } from "@prisma/adapter-neon";
 
-import { neon, neonConfig } from '@neondatabase/serverless';
+import { neon, neonConfig } from "@neondatabase/serverless";
 
-import { readReplicas } from './read-replicas/extension';
+import { readReplicas } from "./read-replicas/extension";
 
-import ws from 'ws';
+import ws from "ws";
 
 neonConfig.webSocketConstructor = ws;
 
@@ -19,7 +19,7 @@ const globalForPrisma = global as typeof globalThis & {
 const transfersDbAdapter =
   globalForPrisma.transfersDbAdapter ??
   new PrismaNeon({ connectionString: process.env.TRANSFERS_DB_URL! });
-if (process.env.NODE_ENV !== 'production')
+if (process.env.NODE_ENV !== "production")
   globalForPrisma.transfersDbAdapter = transfersDbAdapter;
 
 export const transfersHttpPrimary = neon(process.env.TRANSFERS_DB_URL!);
@@ -32,7 +32,7 @@ const replicaUrls = [
   process.env.TRANSFERS_DB_URL_REPLICA_5,
 ].filter((url): url is string => !!url);
 
-export const transfersHttpReplicas = replicaUrls.map(url => neon(url));
+export const transfersHttpReplicas = replicaUrls.map((url) => neon(url));
 
 export const transfersDb =
   globalForPrisma.transfersDb ??

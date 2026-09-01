@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
-import { LoadingOverallStatsCard, OverallStatsCard } from './card';
+import { LoadingOverallStatsCard, OverallStatsCard } from "./card";
 
-import type { ChartData } from '@/components/ui/charts/chart/types';
+import type { ChartData } from "@/components/ui/charts/chart/types";
 
 export const OverallCharts = () => {
   const { timeframe } = useTimeRangeContext();
@@ -24,7 +24,7 @@ export const OverallCharts = () => {
     agents: number;
     toolCalls: number;
     users: number;
-  }>[] = bucketedStats.map(stat => ({
+  }>[] = bucketedStats.map((stat) => ({
     requests: stat.total_messages,
     agents: stat.active_agents,
     toolCalls: stat.total_tool_calls,
@@ -37,22 +37,22 @@ export const OverallCharts = () => {
       <OverallStatsCard
         title="Requests"
         value={overallStats.message_count.toLocaleString(undefined, {
-          notation: 'compact',
+          notation: "compact",
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
         items={{
-          type: 'bar',
-          bars: [{ dataKey: 'requests', color: 'var(--color-primary)' }],
+          type: "bar",
+          bars: [{ dataKey: "requests", color: "var(--color-primary)" }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: 'requests',
-            label: 'Requests',
-            getValue: data =>
+            key: "requests",
+            label: "Requests",
+            getValue: (data) =>
               data.toLocaleString(undefined, {
-                notation: 'compact',
+                notation: "compact",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
               }),
@@ -62,22 +62,22 @@ export const OverallCharts = () => {
       <OverallStatsCard
         title="Users"
         value={overallStats.user_count.toLocaleString(undefined, {
-          notation: 'compact',
+          notation: "compact",
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         })}
         items={{
-          type: 'bar',
-          bars: [{ dataKey: 'users', color: 'var(--color-primary)' }],
+          type: "bar",
+          bars: [{ dataKey: "users", color: "var(--color-primary)" }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: 'users',
-            label: 'Users',
-            getValue: data =>
+            key: "users",
+            label: "Users",
+            getValue: (data) =>
               data.toLocaleString(undefined, {
-                notation: 'compact',
+                notation: "compact",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               }),

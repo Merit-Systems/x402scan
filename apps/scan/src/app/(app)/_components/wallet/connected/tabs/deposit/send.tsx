@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
-import Image from 'next/image';
+import Image from "next/image";
 
-import { CopyCode } from '@/components/ui/copy-code';
-import { useWalletChain } from '../../../../../_contexts/wallet-chain/hook';
-import { CHAIN_ICONS, CHAIN_LABELS } from '@/types/chain';
+import { CopyCode } from "@/components/ui/copy-code";
+import { useWalletChain } from "../../../../../_contexts/wallet-chain/hook";
+import { CHAIN_ICONS, CHAIN_LABELS } from "@/types/chain";
 
 interface Props {
   address: string;
@@ -15,15 +15,15 @@ export const Send: React.FC<Props> = ({ address }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="gap-2 flex items-center">
+      <div className="flex items-center gap-2">
         <Image
           src={CHAIN_ICONS[chain]}
           alt={CHAIN_LABELS[chain]}
           height={16}
           width={16}
-          className="size-4 inline-block rounded-full"
+          className="inline-block size-4 rounded-full"
         />
-        <span className="font-bold text-sm">
+        <span className="text-sm font-bold">
           Send USDC on {CHAIN_LABELS[chain]}
         </span>
       </div>

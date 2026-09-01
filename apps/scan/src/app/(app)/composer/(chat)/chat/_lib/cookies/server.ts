@@ -1,9 +1,9 @@
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
 
-import { COOKIE_KEYS } from './keys';
+import { COOKIE_KEYS } from "./keys";
 
-import type { ChatConfig } from '../../../_types/chat-config';
-import { safeParseJson } from '@/lib/utils';
+import type { ChatConfig } from "../../../_types/chat-config";
+import { safeParseJson } from "@/lib/utils";
 
 export const serverCookieUtils = {
   async getConfig(): Promise<ChatConfig> {
@@ -18,7 +18,7 @@ export const serverCookieUtils = {
         ),
       };
     } catch (error) {
-      console.warn('Failed to read cookies:', error);
+      console.warn("Failed to read cookies:", error);
       return {};
     }
   },

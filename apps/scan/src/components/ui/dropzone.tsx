@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import { createContext } from 'react';
+import { createContext } from "react";
 
-import { useDropzone } from 'react-dropzone';
+import { useDropzone } from "react-dropzone";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { DropEvent, DropzoneOptions, FileRejection } from 'react-dropzone';
-import type { ReactNode } from 'react';
+import type { DropEvent, DropzoneOptions, FileRejection } from "react-dropzone";
+import type { ReactNode } from "react";
 
 interface DropzoneContextType {
   src?: File[];
-  accept?: DropzoneOptions['accept'];
-  maxSize?: DropzoneOptions['maxSize'];
-  minSize?: DropzoneOptions['minSize'];
-  maxFiles?: DropzoneOptions['maxFiles'];
+  accept?: DropzoneOptions["accept"];
+  maxSize?: DropzoneOptions["maxSize"];
+  minSize?: DropzoneOptions["minSize"];
+  maxFiles?: DropzoneOptions["maxFiles"];
 }
 
 const DropzoneContext = createContext<DropzoneContextType | undefined>(
   undefined
 );
-type DropzoneProps = Omit<DropzoneOptions, 'onDrop'> & {
+type DropzoneProps = Omit<DropzoneOptions, "onDrop"> & {
   src?: File[];
   className?: string;
   onDrop?: (
@@ -69,8 +69,8 @@ export const Dropzone = ({
     >
       <Button
         className={cn(
-          'overflow-hidden',
-          isDragActive && 'outline-none ring-1 ring-ring',
+          "overflow-hidden",
+          isDragActive && "outline-none ring-1 ring-ring",
           className
         )}
         disabled={disabled}

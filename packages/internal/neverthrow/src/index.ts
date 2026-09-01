@@ -5,9 +5,9 @@ import {
   err as neverthrowErr,
   okAsync as neverthrowOkAsync,
   errAsync as neverthrowErrAsync,
-} from 'neverthrow';
+} from "neverthrow";
 
-import type { ResultAsync, BaseError, Error, Result } from './types';
+import type { ResultAsync, BaseError, Error, Result } from "./types";
 
 export function resultFromPromise<E extends BaseError, T = unknown>(
   type: string,
@@ -15,7 +15,7 @@ export function resultFromPromise<E extends BaseError, T = unknown>(
   promise: Promise<T>,
   error: (cause: unknown) => E
 ): ResultAsync<T, E> {
-  return NeverthrowResultAsync.fromPromise(promise, e => ({
+  return NeverthrowResultAsync.fromPromise(promise, (e) => ({
     ...error(e),
     type,
     surface,
@@ -28,7 +28,7 @@ export function resultFromThrowable<E extends BaseError, T = unknown>(
   fn: () => T,
   error: (cause: unknown) => E
 ): Result<T, E> {
-  return NeverthrowResult.fromThrowable(fn, e => ({
+  return NeverthrowResult.fromThrowable(fn, (e) => ({
     ...error(e),
     type,
     surface,

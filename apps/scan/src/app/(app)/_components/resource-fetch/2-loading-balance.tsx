@@ -1,12 +1,12 @@
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { Chain } from '@/app/(app)/_components/chains';
+import { Chain } from "@/app/(app)/_components/chains";
 
-import { formatTokenAmount } from '@/lib/token';
+import { formatTokenAmount } from "@/lib/token";
 
-import type { Chain as ChainType } from '@/types/chain';
+import type { Chain as ChainType } from "@/types/chain";
 
 interface Props {
   chain: ChainType;
@@ -17,7 +17,7 @@ export const LoadingState: React.FC<Props> = ({ chain, maxAmountRequired }) => {
   return (
     <Button variant="primaryOutline" size="lg" className="w-full" disabled>
       <Chain chain={chain} />
-      <Loader2 className="w-4 h-4 animate-spin" />
+      <Loader2 className="h-4 w-4 animate-spin" />
       <span>{formatTokenAmount(maxAmountRequired)}</span>
     </Button>
   );

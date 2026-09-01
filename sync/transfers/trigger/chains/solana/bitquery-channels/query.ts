@@ -1,27 +1,27 @@
-import bs58 from 'bs58';
-import { Connection, PublicKey } from '@solana/web3.js';
+import bs58 from "bs58";
+import { Connection, PublicKey } from "@solana/web3.js";
 import type {
   ParsedInnerInstruction,
   ParsedInstruction,
   ParsedMessageAccount,
   PartiallyDecodedInstruction,
   TokenBalance,
-} from '@solana/web3.js';
-import { logger } from '@trigger.dev/sdk';
+} from "@solana/web3.js";
+import { logger } from "@trigger.dev/sdk";
 
-import { PAYMENT_CHANNELS_PROGRAM_ID } from '@/trigger/lib/constants';
+import { PAYMENT_CHANNELS_PROGRAM_ID } from "@/trigger/lib/constants";
 import type {
   Facilitator,
   FacilitatorConfig,
   SolanaBitquerySentResponse,
   SyncConfig,
   TransferEventData,
-} from '@/trigger/types';
+} from "@/trigger/types";
 
 // Reuse the exact-scheme Bitquery transfers query: channel payouts are USDC
 // transfers CPI'd by the payment-channels program inside facilitator-signed
 // transactions, so the same discovery query surfaces them.
-export { buildQuery } from '../bitquery/query';
+export { buildQuery } from "../bitquery/query";
 
 // Payment-channels single-byte instruction discriminators.
 const SETTLE_AND_SEAL_DISCRIMINATOR = 4;
@@ -60,9 +60,9 @@ export async function transformResponse(
 
   const rpcUrl = process.env.SOLANA_RPC_URL;
   if (!rpcUrl) {
-    throw new Error('SOLANA_RPC_URL is required for solana channel sync');
+    throw new Error("SOLANA_RPC_URL is required for solana channel sync");
   }
-  const connection = new Connection(rpcUrl, 'confirmed');
+  const connection = new Connection(rpcUrl, "confirmed");
   const channelsProgram = new PublicKey(PAYMENT_CHANNELS_PROGRAM_ID);
 
   // Bitquery timestamps per transaction signature.
@@ -84,11 +84,11 @@ export async function transformResponse(
   // which is owned by the payment-channels program. Senders whose account is
   // missing (possibly a reclaimed channel PDA) stay candidates.
   const channelSenders = await findChannelSenders(connection, channelsProgram, [
-    ...new Set(transfers.map(t => t.sender.address)),
+    ...new Set(transfers.map((t) => t.sender.address)),
   ]);
 
   const candidateSignatures = [...sendersBySignature.entries()]
-    .filter(([, senders]) => [...senders].some(s => channelSenders.has(s)))
+    .filter(([, senders]) => [...senders].some((s) => channelSenders.has(s)))
     .map(([signature]) => signature);
 
   if (candidateSignatures.length === 0) return [];
@@ -143,7 +143,7 @@ async function findChannelSenders(
   for (let i = 0; i < keys.length; i += ACCOUNTS_CHUNK) {
     const chunk = keys.slice(i, i + ACCOUNTS_CHUNK);
     const infos = await connection.getMultipleAccountsInfo(
-      chunk.map(k => k.pubkey)
+      chunk.map((k) => k.pubkey)
     );
     infos.forEach((info, index) => {
       // Missing accounts stay candidates: a fully distributed channel PDA can
@@ -164,13 +164,13 @@ async function findChannelSenders(
 export interface PayoutTransaction {
   transaction: {
     message: {
-      accountKeys: Pick<ParsedMessageAccount, 'pubkey'>[];
+      accountKeys: Pick<ParsedMessageAccount, "pubkey">[];
       instructions: (ParsedInstruction | PartiallyDecodedInstruction)[];
     };
   };
   meta: {
     innerInstructions?: ParsedInnerInstruction[] | null;
-    postTokenBalances?: Pick<TokenBalance, 'accountIndex' | 'owner'>[] | null;
+    postTokenBalances?: Pick<TokenBalance, "accountIndex" | "owner">[] | null;
   } | null;
 }
 
@@ -192,7 +192,7 @@ export function extractPayouts(
       (
         entry
       ): entry is { instruction: PartiallyDecodedInstruction; index: number } =>
-        'data' in entry.instruction &&
+        "data" in entry.instruction &&
         entry.instruction.programId.equals(channelsProgram)
     );
   if (channelInstructions.length === 0) return [];
@@ -201,8 +201,8 @@ export function extractPayouts(
     ({ instruction }) => bs58.decode(instruction.data)[0]
   );
   const scheme = discriminators.includes(SETTLE_AND_SEAL_DISCRIMINATOR)
-    ? 'upto'
-    : 'batch-settlement';
+    ? "upto"
+    : "batch-settlement";
 
   // Map token accounts to their owner wallets using the balance metadata.
   const accountKeys = tx.transaction.message.accountKeys;
@@ -221,13 +221,13 @@ export function extractPayouts(
     const payer = instruction.accounts[DISTRIBUTE_PAYER_INDEX]!.toBase58();
     const escrow = instruction.accounts[DISTRIBUTE_ESCROW_INDEX]!.toBase58();
     const nonPayoutDestinations = new Set(
-      DISTRIBUTE_NON_PAYOUT_DESTINATIONS.map(i =>
+      DISTRIBUTE_NON_PAYOUT_DESTINATIONS.map((i) =>
         instruction.accounts[i]!.toBase58()
       )
     );
 
     const inner =
-      tx.meta?.innerInstructions?.find(entry => entry.index === index)
+      tx.meta?.innerInstructions?.find((entry) => entry.index === index)
         ?.instructions ?? [];
     for (const leg of inner.flatMap(parseTokenTransfers)) {
       if (leg.source !== escrow) continue;
@@ -269,7 +269,7 @@ interface ParsedTokenInstruction {
 function parseTokenTransfers(
   instruction: ParsedInstruction | PartiallyDecodedInstruction
 ): { source: string; destination: string; amount: string }[] {
-  if (!('parsed' in instruction)) return [];
+  if (!("parsed" in instruction)) return [];
   return flattenTokenTransfers(instruction.parsed as ParsedTokenInstruction);
 }
 
@@ -278,10 +278,10 @@ function parseTokenTransfers(
 function flattenTokenTransfers(
   parsed: ParsedTokenInstruction
 ): { source: string; destination: string; amount: string }[] {
-  if (parsed.type === 'batch') {
+  if (parsed.type === "batch") {
     return (parsed.info?.instructions ?? []).flatMap(flattenTokenTransfers);
   }
-  if (parsed.type !== 'transfer' && parsed.type !== 'transferChecked') {
+  if (parsed.type !== "transfer" && parsed.type !== "transferChecked") {
     return [];
   }
   const info = parsed.info;

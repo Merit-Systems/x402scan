@@ -1,10 +1,10 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { baseQuerySchema } from '../schemas';
-import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { baseQuerySchema } from "../schemas";
+import { createCachedQuery, createStandardCacheKey } from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 
 export const overallStatisticsMVInputSchema = baseQuerySchema;
 
@@ -66,7 +66,7 @@ const getOverallStatisticsMVUncached = async (
     );
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   // Query the appropriate materialized view
   // Note: recipient_stats_aggregated tables don't have unique_sellers column,
@@ -119,8 +119,8 @@ const getOverallStatisticsMVUncached = async (
 
 export const getOverallStatisticsMV = createCachedQuery({
   queryFn: getOverallStatisticsMVUncached,
-  cacheKeyPrefix: 'overall-statistics-mv',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['latest_block_timestamp'],
-  tags: ['statistics'],
+  cacheKeyPrefix: "overall-statistics-mv",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["latest_block_timestamp"],
+  tags: ["statistics"],
 });

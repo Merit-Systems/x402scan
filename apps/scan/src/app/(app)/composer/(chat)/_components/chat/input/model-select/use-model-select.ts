@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import type { LanguageModel, LanguageModelCapability } from './types';
-import { languageModels } from './models';
+import { useMemo, useState } from "react";
+import type { LanguageModel, LanguageModelCapability } from "./types";
+import { languageModels } from "./models";
 
 interface UseModelSelectProps {
   model: LanguageModel | undefined;
@@ -11,7 +11,7 @@ interface UseModelSelectProps {
 
 export const useModelSelect = ({ setModel }: UseModelSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCapabilities, setSelectedCapabilities] = useState<
     LanguageModelCapability[]
   >([]);
@@ -24,12 +24,12 @@ export const useModelSelect = ({ setModel }: UseModelSelectProps) => {
 
   const sortedModels = useMemo(() => {
     const providers = Array.from(
-      new Set(languageModels.map(model => model.provider))
+      new Set(languageModels.map((model) => model.provider))
     );
     const modelsByProvider = new Map(
-      providers.map(provider => [
+      providers.map((provider) => [
         provider,
-        languageModels.filter(model => model.provider === provider),
+        languageModels.filter((model) => model.provider === provider),
       ])
     );
 
@@ -49,10 +49,10 @@ export const useModelSelect = ({ setModel }: UseModelSelectProps) => {
   }, []);
 
   const filteredModels = useMemo(() => {
-    return sortedModels.filter(model => {
+    return sortedModels.filter((model) => {
       const matchesCapabilities =
         selectedCapabilities.length === 0 ||
-        selectedCapabilities.some(capability =>
+        selectedCapabilities.some((capability) =>
           model.capabilities?.includes(capability)
         );
 
@@ -65,17 +65,17 @@ export const useModelSelect = ({ setModel }: UseModelSelectProps) => {
   }, [sortedModels, selectedCapabilities, selectedProviders]);
 
   const toggleCapability = (capability: LanguageModelCapability) => {
-    setSelectedCapabilities(prev =>
+    setSelectedCapabilities((prev) =>
       prev.includes(capability)
-        ? prev.filter(c => c !== capability)
+        ? prev.filter((c) => c !== capability)
         : [...prev, capability]
     );
   };
 
   const toggleProvider = (provider: string) => {
-    setSelectedProviders(prev =>
+    setSelectedProviders((prev) =>
       prev.includes(provider)
-        ? prev.filter(p => p !== provider)
+        ? prev.filter((p) => p !== provider)
         : [...prev, provider]
     );
   };

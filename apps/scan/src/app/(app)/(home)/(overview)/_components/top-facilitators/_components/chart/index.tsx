@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
 import {
   FacilitatorChartContent,
   LoadingFacilitatorChartContent,
-} from './chart';
+} from "./chart";
 
-import type { ChartData } from '@/components/ui/charts/chart/types';
-import { useChain } from '@/app/(app)/_contexts/chain/hook';
+import type { ChartData } from "@/components/ui/charts/chart/types";
+import { useChain } from "@/app/(app)/_contexts/chain/hook";
 
-import { api } from '@/trpc/client';
-import { useTimeRangeContext } from '@/app/(app)/_contexts/time-range/hook';
+import { api } from "@/trpc/client";
+import { useTimeRangeContext } from "@/app/(app)/_contexts/time-range/hook";
 
 interface Props {
   facilitatorId: string;
@@ -34,7 +34,7 @@ export const FacilitatorChart: React.FC<Props> = ({ facilitatorId }) => {
 
   const chartData: ChartData<{
     total_transactions: number;
-  }>[] = bucketedStats.map(stat => ({
+  }>[] = bucketedStats.map((stat) => ({
     timestamp: stat.bucket_start.toISOString(),
     total_transactions: stat.total_transactions,
   }));

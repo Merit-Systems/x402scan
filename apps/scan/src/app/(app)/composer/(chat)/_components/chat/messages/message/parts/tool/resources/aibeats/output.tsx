@@ -1,15 +1,15 @@
-import type { OutputComponent } from '../types';
+import type { OutputComponent } from "../types";
 
-import z from 'zod';
+import z from "zod";
 
-const aiBeatsOrigin = 'https://www.aibeats.fun';
+const aiBeatsOrigin = "https://www.aibeats.fun";
 
 const aibeatsOutputSchema = z.object({
   success: z.literal(true),
   result: z.object({
     audioUrl: z
       .string()
-      .transform(url => new URL(url, aiBeatsOrigin).toString()),
+      .transform((url) => new URL(url, aiBeatsOrigin).toString()),
     fileName: z.string(),
     finalLyrics: z.string(),
     aiTitle: z.string(),
@@ -18,7 +18,7 @@ const aibeatsOutputSchema = z.object({
         fileName: z.string(),
         imageUrl: z
           .string()
-          .transform(url => new URL(url, aiBeatsOrigin).toString()),
+          .transform((url) => new URL(url, aiBeatsOrigin).toString()),
         prompt: z.string(),
       })
       .nullable(),
@@ -41,7 +41,7 @@ const aibeatsOutputSchema = z.object({
 
 export const AibeatsOutput: OutputComponent = ({ output, errorText }) => {
   if (errorText) {
-    return <div className="text-destructive text-sm">{errorText}</div>;
+    return <div className="text-sm text-destructive">{errorText}</div>;
   }
 
   const parseResult = aibeatsOutputSchema.safeParse(output);

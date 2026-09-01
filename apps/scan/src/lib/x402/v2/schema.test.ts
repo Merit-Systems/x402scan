@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { parseX402Response, isV2Response } from '../index';
+import { describe, it, expect } from "vitest";
+import { parseX402Response, isV2Response } from "../index";
 
-import type { JsonValue } from '@/lib/json';
+import type { JsonValue } from "@/lib/json";
 
 // Helper to parse and narrow to V2 type for tests
 function parseV2(data: JsonValue | undefined) {
@@ -10,7 +10,7 @@ function parseV2(data: JsonValue | undefined) {
     return result;
   }
   if (!isV2Response(result.data)) {
-    return { success: false as const, errors: ['Not a V2 response'] };
+    return { success: false as const, errors: ["Not a V2 response"] };
   }
   return { success: true as const, data: result.data };
 }
@@ -21,28 +21,28 @@ const v2Responses = {
     x402Version: 2,
     accepts: [
       {
-        scheme: 'exact' as const,
-        network: 'eip155:8453', // Base chain ID
-        amount: '10000',
-        payTo: '0x1234567890123456789012345678901234567890',
+        scheme: "exact" as const,
+        network: "eip155:8453", // Base chain ID
+        amount: "10000",
+        payTo: "0x1234567890123456789012345678901234567890",
         maxTimeoutSeconds: 60,
-        asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         extra: {},
       },
     ],
     resource: {
-      url: 'https://api.example.com/endpoint',
-      description: 'A test API endpoint',
-      mimeType: 'application/json',
+      url: "https://api.example.com/endpoint",
+      description: "A test API endpoint",
+      mimeType: "application/json",
     },
     extensions: {
       bazaar: {
         info: {
           input: {
-            type: 'http',
-            method: 'GET',
+            type: "http",
+            method: "GET",
             queryParams: {
-              query: 'example search',
+              query: "example search",
             },
           },
           output: {
@@ -50,21 +50,21 @@ const v2Responses = {
           },
         },
         schema: {
-          $schema: 'https://json-schema.org/draft/2020-12/schema',
-          type: 'object',
+          $schema: "https://json-schema.org/draft/2020-12/schema",
+          type: "object",
           properties: {
             input: {
-              type: 'object',
+              type: "object",
               properties: {
                 queryParams: {
-                  type: 'object',
+                  type: "object",
                   properties: {
                     query: {
-                      type: 'string',
-                      description: 'Search query',
+                      type: "string",
+                      description: "Search query",
                     },
                   },
-                  required: ['query'],
+                  required: ["query"],
                 },
               },
             },
@@ -77,56 +77,56 @@ const v2Responses = {
     x402Version: 2,
     accepts: [
       {
-        scheme: 'exact' as const,
-        network: 'eip155:8453',
-        amount: '50000',
-        payTo: '0xabcdef1234567890abcdef1234567890abcdef12',
+        scheme: "exact" as const,
+        network: "eip155:8453",
+        amount: "50000",
+        payTo: "0xabcdef1234567890abcdef1234567890abcdef12",
         maxTimeoutSeconds: 300,
-        asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         extra: {},
       },
     ],
     resource: {
-      url: 'https://api.example.com/submit',
-      description: 'Submit data endpoint',
-      mimeType: 'application/json',
+      url: "https://api.example.com/submit",
+      description: "Submit data endpoint",
+      mimeType: "application/json",
     },
     extensions: {
       bazaar: {
         info: {
           input: {
-            type: 'http',
-            method: 'POST',
-            bodyType: 'json',
+            type: "http",
+            method: "POST",
+            bodyType: "json",
             body: {
-              message: 'Hello world',
+              message: "Hello world",
             },
           },
           output: {
-            id: 'abc123',
-            status: 'success',
+            id: "abc123",
+            status: "success",
           },
         },
         schema: {
-          $schema: 'https://json-schema.org/draft/2020-12/schema',
-          type: 'object',
+          $schema: "https://json-schema.org/draft/2020-12/schema",
+          type: "object",
           properties: {
             input: {
-              type: 'object',
+              type: "object",
               properties: {
                 body: {
-                  type: 'object',
+                  type: "object",
                   properties: {
                     message: {
-                      type: 'string',
-                      description: 'User message',
+                      type: "string",
+                      description: "User message",
                     },
                     context: {
-                      type: 'object',
-                      description: 'Optional context',
+                      type: "object",
+                      description: "Optional context",
                     },
                   },
-                  required: ['message'],
+                  required: ["message"],
                 },
               },
             },
@@ -139,106 +139,106 @@ const v2Responses = {
     x402Version: 2,
     accepts: [
       {
-        scheme: 'exact' as const,
-        network: 'solana:mainnet',
-        amount: '1000000',
-        payTo: '7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV',
+        scheme: "exact" as const,
+        network: "solana:mainnet",
+        amount: "1000000",
+        payTo: "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV",
         maxTimeoutSeconds: 120,
-        asset: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC on Solana
+        asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // USDC on Solana
         extra: {},
       },
     ],
     resource: {
-      url: 'https://api.solana-example.com/data',
-      description: 'Solana data endpoint',
-      mimeType: 'application/json',
+      url: "https://api.solana-example.com/data",
+      description: "Solana data endpoint",
+      mimeType: "application/json",
     },
   },
   withMultipleAccepts: {
     x402Version: 2,
     accepts: [
       {
-        scheme: 'exact' as const,
-        network: 'eip155:8453',
-        amount: '10000',
-        payTo: '0x1234567890123456789012345678901234567890',
+        scheme: "exact" as const,
+        network: "eip155:8453",
+        amount: "10000",
+        payTo: "0x1234567890123456789012345678901234567890",
         maxTimeoutSeconds: 60,
-        asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         extra: {},
       },
       {
-        scheme: 'exact' as const,
-        network: 'solana:mainnet',
-        amount: '10000',
-        payTo: '7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV',
+        scheme: "exact" as const,
+        network: "solana:mainnet",
+        amount: "10000",
+        payTo: "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV",
         maxTimeoutSeconds: 60,
-        asset: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+        asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
         extra: {},
       },
     ],
     resource: {
-      url: 'https://api.multi-chain.com/endpoint',
-      description: 'Multi-chain endpoint',
-      mimeType: 'application/json',
+      url: "https://api.multi-chain.com/endpoint",
+      description: "Multi-chain endpoint",
+      mimeType: "application/json",
     },
   },
   withError: {
     x402Version: 2,
-    error: 'X-PAYMENT header is required',
+    error: "X-PAYMENT header is required",
     accepts: [
       {
-        scheme: 'exact' as const,
-        network: 'eip155:8453',
-        amount: '10000',
-        payTo: '0x1234567890123456789012345678901234567890',
+        scheme: "exact" as const,
+        network: "eip155:8453",
+        amount: "10000",
+        payTo: "0x1234567890123456789012345678901234567890",
         maxTimeoutSeconds: 60,
-        asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         extra: {},
       },
     ],
     resource: {
-      url: 'https://api.example.com/error',
-      description: 'Error endpoint',
-      mimeType: 'application/json',
+      url: "https://api.example.com/error",
+      description: "Error endpoint",
+      mimeType: "application/json",
     },
   },
   minimal: {
     x402Version: 2,
     accepts: [
       {
-        scheme: 'exact' as const,
-        network: 'eip155:1', // Ethereum mainnet
-        amount: '100',
-        payTo: '0x1234567890123456789012345678901234567890',
+        scheme: "exact" as const,
+        network: "eip155:1", // Ethereum mainnet
+        amount: "100",
+        payTo: "0x1234567890123456789012345678901234567890",
         maxTimeoutSeconds: 30,
-        asset: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC on mainnet
+        asset: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC on mainnet
         extra: {},
       },
     ],
     resource: {
-      url: 'https://api.minimal.com/endpoint',
-      description: 'Minimal endpoint',
-      mimeType: 'application/json',
+      url: "https://api.minimal.com/endpoint",
+      description: "Minimal endpoint",
+      mimeType: "application/json",
     },
   },
 };
 
-describe('parseV2', () => {
-  it('should parse basic V2 response with GET endpoint', () => {
+describe("parseV2", () => {
+  it("should parse basic V2 response with GET endpoint", () => {
     const result = parseV2(v2Responses.basic);
 
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.x402Version).toBe(2);
       expect(result.data.accepts).toHaveLength(1);
-      expect(result.data.accepts?.[0]?.amount).toBe('10000');
-      expect(result.data.accepts?.[0]?.network).toBe('eip155:8453');
+      expect(result.data.accepts?.[0]?.amount).toBe("10000");
+      expect(result.data.accepts?.[0]?.network).toBe("eip155:8453");
       expect(result.data.resource?.url).toBe(
-        'https://api.example.com/endpoint'
+        "https://api.example.com/endpoint"
       );
-      expect(result.data.resource?.description).toBe('A test API endpoint');
+      expect(result.data.resource?.description).toBe("A test API endpoint");
       // V2: schema comes from extensions.bazaar, not resource.outputSchema
-      expect(result.data.extensions?.bazaar?.info?.input?.method).toBe('GET');
+      expect(result.data.extensions?.bazaar?.info?.input?.method).toBe("GET");
       expect(
         result.data.extensions?.bazaar?.schema?.properties?.input?.properties
           ?.queryParams
@@ -246,79 +246,79 @@ describe('parseV2', () => {
     }
   });
 
-  it('should parse V2 response with POST body fields', () => {
+  it("should parse V2 response with POST body fields", () => {
     const result = parseV2(v2Responses.withPostBody);
 
     expect(result.success).toBe(true);
     if (result.success) {
       // V2: schema comes from extensions.bazaar, not resource.outputSchema
-      expect(result.data.extensions?.bazaar?.info?.input?.method).toBe('POST');
+      expect(result.data.extensions?.bazaar?.info?.input?.method).toBe("POST");
       expect(result.data.extensions?.bazaar?.info?.input?.bodyType).toBe(
-        'json'
+        "json"
       );
       expect(
         result.data.extensions?.bazaar?.schema?.properties?.input?.properties
           ?.body?.properties?.message
       ).toBeDefined();
-      expect(result.data.extensions?.bazaar?.info?.output).toHaveProperty('id');
+      expect(result.data.extensions?.bazaar?.info?.output).toHaveProperty("id");
     }
   });
 
-  it('should parse V2 response with Solana network', () => {
+  it("should parse V2 response with Solana network", () => {
     const result = parseV2(v2Responses.withSolana);
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.accepts?.[0]?.network).toBe('solana:mainnet');
-      expect(result.data.accepts?.[0]?.amount).toBe('1000000');
+      expect(result.data.accepts?.[0]?.network).toBe("solana:mainnet");
+      expect(result.data.accepts?.[0]?.amount).toBe("1000000");
     }
   });
 
-  it('should parse V2 response with multiple accepts (multi-chain)', () => {
+  it("should parse V2 response with multiple accepts (multi-chain)", () => {
     const result = parseV2(v2Responses.withMultipleAccepts);
 
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.accepts).toHaveLength(2);
-      expect(result.data.accepts?.[0]?.network).toBe('eip155:8453');
-      expect(result.data.accepts?.[1]?.network).toBe('solana:mainnet');
+      expect(result.data.accepts?.[0]?.network).toBe("eip155:8453");
+      expect(result.data.accepts?.[1]?.network).toBe("solana:mainnet");
     }
   });
 
-  it('should parse V2 response with error field', () => {
+  it("should parse V2 response with error field", () => {
     const result = parseV2(v2Responses.withError);
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.error).toBe('X-PAYMENT header is required');
+      expect(result.data.error).toBe("X-PAYMENT header is required");
       expect(result.data.accepts).toHaveLength(1);
     }
   });
 
-  it('should parse minimal V2 response without resource', () => {
+  it("should parse minimal V2 response without resource", () => {
     const result = parseV2(v2Responses.minimal);
 
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.x402Version).toBe(2);
       expect(result.data.resource?.url).toBe(
-        'https://api.minimal.com/endpoint'
+        "https://api.minimal.com/endpoint"
       );
       expect(result.data.accepts).toHaveLength(1);
     }
   });
 
-  it('should return error for invalid network format', () => {
+  it("should return error for invalid network format", () => {
     const invalidResponse = {
       x402Version: 2,
       accepts: [
         {
-          scheme: 'exact',
-          network: 'base', // Invalid - V2 requires chain ID format
-          amount: '10000',
-          payTo: '0x1234567890123456789012345678901234567890',
+          scheme: "exact",
+          network: "base", // Invalid - V2 requires chain ID format
+          amount: "10000",
+          payTo: "0x1234567890123456789012345678901234567890",
           maxTimeoutSeconds: 60,
-          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         },
       ],
     };
@@ -327,13 +327,13 @@ describe('parseV2', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.errors.some(e => e.startsWith('accepts.0.network'))).toBe(
+      expect(result.errors.some((e) => e.startsWith("accepts.0.network"))).toBe(
         true
       );
     }
   });
 
-  it('should return error for V1 version number', () => {
+  it("should return error for V1 version number", () => {
     // A valid V1 response: parseX402Response dispatches by x402Version, so this
     // parses successfully against the V1 schema. The V2-narrowing helper then
     // rejects it for not being V2.
@@ -341,14 +341,14 @@ describe('parseV2', () => {
       x402Version: 1,
       accepts: [
         {
-          scheme: 'exact',
-          network: 'eip155:8453',
-          maxAmountRequired: '10000',
-          resource: 'https://api.example.com/v1',
-          description: 'V1 endpoint',
-          payTo: '0x1234567890123456789012345678901234567890',
+          scheme: "exact",
+          network: "eip155:8453",
+          maxAmountRequired: "10000",
+          resource: "https://api.example.com/v1",
+          description: "V1 endpoint",
+          payTo: "0x1234567890123456789012345678901234567890",
           maxTimeoutSeconds: 60,
-          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
           extra: {},
         },
       ],
@@ -358,12 +358,12 @@ describe('parseV2', () => {
 
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.errors).toEqual(['Not a V2 response']);
+      expect(result.errors).toEqual(["Not a V2 response"]);
     }
   });
 
-  it('should return error for invalid data', () => {
-    const result = parseV2({ invalid: 'data' });
+  it("should return error for invalid data", () => {
+    const result = parseV2({ invalid: "data" });
 
     expect(result.success).toBe(false);
     if (!result.success) {
@@ -371,19 +371,19 @@ describe('parseV2', () => {
     }
   });
 
-  it('should return error for null input', () => {
+  it("should return error for null input", () => {
     const result = parseV2(null);
 
     expect(result.success).toBe(false);
   });
 
-  it('should return error for undefined input', () => {
+  it("should return error for undefined input", () => {
     const result = parseV2(undefined);
 
     expect(result.success).toBe(false);
   });
 
-  it('should handle empty accepts array', () => {
+  it("should handle empty accepts array", () => {
     const response = {
       x402Version: 2,
       accepts: [],
@@ -397,21 +397,21 @@ describe('parseV2', () => {
     }
   });
 
-  it('should preserve extra fields in accepts', () => {
+  it("should preserve extra fields in accepts", () => {
     const response = {
       x402Version: 2,
       accepts: [
         {
-          scheme: 'exact' as const,
-          network: 'eip155:8453',
-          amount: '10000',
-          payTo: '0x1234567890123456789012345678901234567890',
+          scheme: "exact" as const,
+          network: "eip155:8453",
+          amount: "10000",
+          payTo: "0x1234567890123456789012345678901234567890",
           maxTimeoutSeconds: 60,
-          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
           extra: {
-            name: 'USD Coin',
-            version: '2',
-            customField: 'custom value',
+            name: "USD Coin",
+            version: "2",
+            customField: "custom value",
           },
         },
       ],
@@ -421,26 +421,26 @@ describe('parseV2', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.accepts?.[0]?.extra?.name).toBe('USD Coin');
-      expect(result.data.accepts?.[0]?.extra?.customField).toBe('custom value');
+      expect(result.data.accepts?.[0]?.extra?.name).toBe("USD Coin");
+      expect(result.data.accepts?.[0]?.extra?.customField).toBe("custom value");
     }
   });
 
-  it('should parse non-exact V2 schemes such as upto', () => {
+  it("should parse non-exact V2 schemes such as upto", () => {
     const response = {
       x402Version: 2,
       accepts: [
         {
-          scheme: 'upto',
-          network: 'eip155:8453',
-          amount: '10000',
-          payTo: '0x1234567890123456789012345678901234567890',
+          scheme: "upto",
+          network: "eip155:8453",
+          amount: "10000",
+          payTo: "0x1234567890123456789012345678901234567890",
           maxTimeoutSeconds: 60,
-          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
         },
       ],
       resource: {
-        url: 'https://api.example.com/upto',
+        url: "https://api.example.com/upto",
       },
     };
 
@@ -448,57 +448,57 @@ describe('parseV2', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.accepts?.[0]?.scheme).toBe('upto');
+      expect(result.data.accepts?.[0]?.scheme).toBe("upto");
     }
   });
 });
 
-describe('V2 schema validation edge cases', () => {
-  it('should handle nested object fields in bazaar schema', () => {
+describe("V2 schema validation edge cases", () => {
+  it("should handle nested object fields in bazaar schema", () => {
     const response = {
       x402Version: 2,
       accepts: [
         {
-          scheme: 'exact' as const,
-          network: 'eip155:8453',
-          amount: '10000',
-          payTo: '0x1234567890123456789012345678901234567890',
+          scheme: "exact" as const,
+          network: "eip155:8453",
+          amount: "10000",
+          payTo: "0x1234567890123456789012345678901234567890",
           maxTimeoutSeconds: 60,
-          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
           extra: {},
         },
       ],
       resource: {
-        url: 'https://api.example.com/endpoint',
-        description: 'Test endpoint',
-        mimeType: 'application/json',
+        url: "https://api.example.com/endpoint",
+        description: "Test endpoint",
+        mimeType: "application/json",
       },
       extensions: {
         bazaar: {
           info: {
             input: {
-              type: 'http',
-              method: 'POST',
-              bodyType: 'json',
-              body: { data: { name: 'test', value: 42 } },
+              type: "http",
+              method: "POST",
+              bodyType: "json",
+              body: { data: { name: "test", value: 42 } },
             },
           },
           schema: {
-            type: 'object',
+            type: "object",
             properties: {
               input: {
-                type: 'object',
+                type: "object",
                 properties: {
                   body: {
-                    type: 'object',
+                    type: "object",
                     properties: {
                       data: {
-                        type: 'object',
+                        type: "object",
                         properties: {
-                          name: { type: 'string' },
-                          value: { type: 'number' },
+                          name: { type: "string" },
+                          value: { type: "number" },
                         },
-                        required: ['name'],
+                        required: ["name"],
                       },
                     },
                   },
@@ -521,56 +521,56 @@ describe('V2 schema validation edge cases', () => {
     }
   });
 
-  it('should handle array fields with items schema', () => {
+  it("should handle array fields with items schema", () => {
     const response = {
       x402Version: 2,
       accepts: [
         {
-          scheme: 'exact' as const,
-          network: 'eip155:8453',
-          amount: '10000',
-          payTo: '0x1234567890123456789012345678901234567890',
+          scheme: "exact" as const,
+          network: "eip155:8453",
+          amount: "10000",
+          payTo: "0x1234567890123456789012345678901234567890",
           maxTimeoutSeconds: 60,
-          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
           extra: {},
         },
       ],
       resource: {
-        url: 'https://api.example.com/endpoint',
-        description: 'Test endpoint',
-        mimeType: 'application/json',
+        url: "https://api.example.com/endpoint",
+        description: "Test endpoint",
+        mimeType: "application/json",
       },
       extensions: {
         bazaar: {
           info: {
             input: {
-              type: 'http',
-              method: 'POST',
-              bodyType: 'json',
+              type: "http",
+              method: "POST",
+              bodyType: "json",
               body: {
-                messages: [{ role: 'user', content: 'Hello' }],
+                messages: [{ role: "user", content: "Hello" }],
               },
             },
           },
           schema: {
-            type: 'object',
+            type: "object",
             properties: {
               input: {
-                type: 'object',
+                type: "object",
                 properties: {
                   body: {
-                    type: 'object',
+                    type: "object",
                     properties: {
                       messages: {
-                        type: 'array',
+                        type: "array",
                         items: {
-                          type: 'object',
+                          type: "object",
                           properties: {
                             role: {
-                              type: 'string',
-                              enum: ['user', 'assistant'],
+                              type: "string",
+                              enum: ["user", "assistant"],
                             },
-                            content: { type: 'string' },
+                            content: { type: "string" },
                           },
                         },
                       },
@@ -595,23 +595,23 @@ describe('V2 schema validation edge cases', () => {
     }
   });
 
-  it('should accept resource without mimeType', () => {
+  it("should accept resource without mimeType", () => {
     const response = {
       x402Version: 2,
       accepts: [
         {
-          scheme: 'exact' as const,
-          network: 'eip155:8453',
-          amount: '10000',
-          payTo: '0x1234567890123456789012345678901234567890',
+          scheme: "exact" as const,
+          network: "eip155:8453",
+          amount: "10000",
+          payTo: "0x1234567890123456789012345678901234567890",
           maxTimeoutSeconds: 60,
-          asset: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+          asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
           extra: {},
         },
       ],
       resource: {
-        url: 'https://api.example.com/endpoint',
-        description: 'Endpoint without mimeType',
+        url: "https://api.example.com/endpoint",
+        description: "Endpoint without mimeType",
       },
     };
 
@@ -623,24 +623,24 @@ describe('V2 schema validation edge cases', () => {
     }
   });
 
-  it('should validate solana-devnet network', () => {
+  it("should validate solana-devnet network", () => {
     const response = {
       x402Version: 2,
       accepts: [
         {
-          scheme: 'exact' as const,
-          network: 'solana:devnet',
-          amount: '10000',
-          payTo: '7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV',
+          scheme: "exact" as const,
+          network: "solana:devnet",
+          amount: "10000",
+          payTo: "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV",
           maxTimeoutSeconds: 60,
-          asset: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+          asset: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
           extra: {},
         },
       ],
       resource: {
-        url: 'https://api.solana-devnet.com/endpoint',
-        description: 'Solana devnet endpoint',
-        mimeType: 'application/json',
+        url: "https://api.solana-devnet.com/endpoint",
+        description: "Solana devnet endpoint",
+        mimeType: "application/json",
       },
     };
 
@@ -648,7 +648,7 @@ describe('V2 schema validation edge cases', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.accepts?.[0]?.network).toBe('solana:devnet');
+      expect(result.data.accepts?.[0]?.network).toBe("solana:devnet");
     }
   });
 });

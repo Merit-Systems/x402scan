@@ -7,9 +7,9 @@
  * Supports both EVM (Ethereum) and Solana addresses.
  */
 
-import { recoverMessageAddress } from 'viem';
+import { recoverMessageAddress } from "viem";
 
-type ChainType = 'evm' | 'solana';
+type ChainType = "evm" | "solana";
 
 interface VerificationConfig {
   signature: string;
@@ -32,16 +32,16 @@ interface ChainVerifier {
 function detectChainType(address: string): ChainType {
   // EVM: 0x + 40 hex chars
   if (/^0x[a-fA-F0-9]{40}$/i.test(address)) {
-    return 'evm';
+    return "evm";
   }
 
   // Solana: 32-44 base58 chars (no 0, O, I, l)
   if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
-    return 'solana';
+    return "solana";
   }
 
   // Default to EVM for backward compatibility
-  return 'evm';
+  return "evm";
 }
 
 /**
@@ -49,7 +49,7 @@ function detectChainType(address: string): ChainType {
  * Ensures 0x prefix is present.
  */
 function normalizeEvmSignature(signature: string): `0x${string}` {
-  if (signature.startsWith('0x')) {
+  if (signature.startsWith("0x")) {
     return signature as `0x${string}`;
   }
   return `0x${signature}`;
@@ -103,8 +103,8 @@ class SolanaVerifier implements ChainVerifier {
   async verify(config: VerificationConfig): Promise<boolean> {
     try {
       // Import dependencies dynamically to avoid errors if not installed
-      const nacl = await import('tweetnacl');
-      const bs58 = await import('bs58');
+      const nacl = await import("tweetnacl");
+      const bs58 = await import("bs58");
 
       // Decode signature from base58 or hex
       let signatureBytes: Uint8Array;
@@ -112,8 +112,8 @@ class SolanaVerifier implements ChainVerifier {
         signatureBytes = bs58.default.decode(config.signature);
       } catch {
         // Try hex decoding as fallback
-        const hex = config.signature.replace(/^0x/, '');
-        signatureBytes = Uint8Array.from(Buffer.from(hex, 'hex'));
+        const hex = config.signature.replace(/^0x/, "");
+        signatureBytes = Uint8Array.from(Buffer.from(hex, "hex"));
       }
 
       // Convert message to bytes
@@ -131,7 +131,7 @@ class SolanaVerifier implements ChainVerifier {
 
       return verified;
     } catch (error) {
-      console.error('Solana verification error:', error);
+      console.error("Solana verification error:", error);
       return false;
     }
   }
@@ -197,7 +197,7 @@ async function recoverProofSigner(
   signature: `0x${string}`,
   origin: string
 ): Promise<string | null> {
-  const verifier = getVerifier('evm');
+  const verifier = getVerifier("evm");
   return verifier.recoverAddress(signature, origin);
 }
 
@@ -246,7 +246,7 @@ export async function verifyAnyOwnershipProof(
           verifiedAddresses[payTo] = true;
 
           // For EVM, try to recover the address from signature
-          if (chainType === 'evm' && proof.startsWith('0x')) {
+          if (chainType === "evm" && proof.startsWith("0x")) {
             const recovered = await recoverProofSigner(
               proof as `0x${string}`,
               origin
@@ -257,7 +257,7 @@ export async function verifyAnyOwnershipProof(
           }
 
           // For Solana, add the verified payTo address (can't recover from signature)
-          if (chainType === 'solana' && !recoveredAddresses.includes(payTo)) {
+          if (chainType === "solana" && !recoveredAddresses.includes(payTo)) {
             recoveredAddresses.push(payTo);
           }
         }
@@ -270,7 +270,7 @@ export async function verifyAnyOwnershipProof(
     }
 
     // For EVM signatures that didn't match, still try to recover for debugging
-    if (proof.startsWith('0x')) {
+    if (proof.startsWith("0x")) {
       const recovered = await recoverProofSigner(
         proof as `0x${string}`,
         origin
@@ -282,7 +282,7 @@ export async function verifyAnyOwnershipProof(
   }
 
   // Overall verification is true if ANY address was verified
-  const verified = Object.values(verifiedAddresses).some(v => v);
+  const verified = Object.values(verifiedAddresses).some((v) => v);
 
   return { verified, recoveredAddresses, verifiedAddresses };
 }

@@ -6,6 +6,6 @@ export const buildSellersOrderByColumn = (sorting: {
   id: string;
   desc: boolean;
 }): string =>
-  `"${sorting.id === 'editorial' ? 'recipient' : sorting.id}" ${
-    sorting.id !== 'editorial' && sorting.desc ? 'DESC' : 'ASC'
-  }${sorting.id === 'editorial' ? '' : ', recipient ASC'}`;
+  `"${sorting.id === "editorial" ? "recipient" : sorting.id}" ${
+    sorting.id !== "editorial" && sorting.desc ? "DESC" : "ASC"
+  }${sorting.id === "editorial" ? "" : ", recipient ASC"}`;

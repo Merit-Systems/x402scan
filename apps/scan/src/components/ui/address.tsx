@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { Tooltip, TooltipContent, TooltipTrigger } from './tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
-import { Copyable } from './copyable';
+import { Copyable } from "./copyable";
 
-import { addressTextClassName, cn, formatAddress } from '@/lib/utils';
+import { addressTextClassName, cn, formatAddress } from "@/lib/utils";
 
 interface Props {
   address: string;
   className?: string;
   hideTooltip?: boolean;
-  side?: 'top' | 'bottom' | 'left' | 'right';
+  side?: "top" | "bottom" | "left" | "right";
   disableCopy?: boolean;
   showLink?: boolean;
 }
@@ -23,7 +23,7 @@ export const Address: React.FC<Props> = ({
   disableCopy,
 }) => {
   const formattedAddress = formatAddress(address);
-  const addressClassName = cn(addressTextClassName, 'text-xs', className);
+  const addressClassName = cn(addressTextClassName, "text-xs", className);
 
   if (disableCopy) {
     return <span className={addressClassName}>{formattedAddress}</span>;
@@ -50,7 +50,7 @@ export const Address: React.FC<Props> = ({
 
 type AddressesProps = {
   addresses: string[];
-} & Omit<Props, 'address'>;
+} & Omit<Props, "address">;
 
 export const Addresses = ({
   addresses,
@@ -63,7 +63,7 @@ export const Addresses = ({
     return (
       <Address
         address={addresses[0]!}
-        className={cn('border-none p-0', className)}
+        className={cn("border-none p-0", className)}
         hideTooltip={hideTooltip}
         side={side}
         disableCopy={disableCopy}
@@ -75,20 +75,20 @@ export const Addresses = ({
     <Tooltip>
       <TooltipTrigger
         className={cn(
-          'cursor-pointer hover:bg-muted hover:text-muted-foreground rounded-md transition-colors text-xs font-mono',
+          "cursor-pointer hover:bg-muted hover:text-muted-foreground rounded-md transition-colors text-xs font-mono",
           className
         )}
       >
-        {addresses.length} address{addresses.length === 1 ? '' : 'es'}
+        {addresses.length} address{addresses.length === 1 ? "" : "es"}
       </TooltipTrigger>
-      <TooltipContent className="max-w-sm flex flex-col gap-1" side={side}>
+      <TooltipContent className="flex max-w-sm flex-col gap-1" side={side}>
         <p>
           An origin can be associated with multiple addresses.
           <br />
           This origin is associated with the following addresses:
         </p>
-        <ul className="list-disc list-inside max-h-40 overflow-y-auto">
-          {addresses.map(address => (
+        <ul className="max-h-40 list-inside list-disc overflow-y-auto">
+          {addresses.map((address) => (
             <li key={address}>
               <Address
                 address={address}

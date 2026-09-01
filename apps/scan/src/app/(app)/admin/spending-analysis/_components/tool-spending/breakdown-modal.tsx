@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
+import { useMemo } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { DataTable } from '@/components/ui/data-table';
-import { Copyable } from '@/components/ui/copyable';
-import { createToolBreakdownColumns } from './breakdown-columns';
-import { api } from '@/trpc/client';
+} from "@/components/ui/dialog";
+import { DataTable } from "@/components/ui/data-table";
+import { Copyable } from "@/components/ui/copyable";
+import { createToolBreakdownColumns } from "./breakdown-columns";
+import { api } from "@/trpc/client";
 
 interface ToolBreakdownModalProps {
   open: boolean;
@@ -41,10 +41,10 @@ export const ToolBreakdownModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-7xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-7xl">
         <DialogHeader>
-          <DialogTitle className="text-sm font-mono break-all">
-            Tool Breakdown -{' '}
+          <DialogTitle className="font-mono text-sm break-all">
+            Tool Breakdown -{" "}
             <Copyable value={walletName} toastMessage="Wallet address copied">
               {displayName}
             </Copyable>

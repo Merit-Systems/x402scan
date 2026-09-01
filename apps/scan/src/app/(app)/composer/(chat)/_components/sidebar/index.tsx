@@ -1,23 +1,23 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
 import {
   Sidebar as BaseSidebar,
   SidebarContent,
   SidebarHeader,
   SidebarRail,
-} from '@/components/ui/sidebar';
+} from "@/components/ui/sidebar";
 
-import { NavMain } from './main';
-import { NavChats, UnauthedNavChats } from './chats';
+import { NavMain } from "./main";
+import { NavChats, UnauthedNavChats } from "./chats";
 import {
   AgentSelect,
   LoadingAgentSelect,
   UnauthedAgentSelect,
-} from './agent-select';
+} from "./agent-select";
 
-import { auth } from '@/auth';
+import { auth } from "@/auth";
 
-import { api, HydrateClient } from '@/trpc/server';
+import { api, HydrateClient } from "@/trpc/server";
 
 export async function Sidebar({
   ...props
@@ -32,10 +32,10 @@ export async function Sidebar({
     <HydrateClient>
       <BaseSidebar
         collapsible="icon"
-        className="relative h-full min-h-full max-h-full bg-card"
+        className="relative h-full max-h-full min-h-full bg-card"
         {...props}
       >
-        <SidebarHeader className="border-sidebar-border border-b p-3 group-data-[collapsible=icon]:p-2">
+        <SidebarHeader className="border-b border-sidebar-border p-3 group-data-[collapsible=icon]:p-2">
           <div className="group-data-[collapsible=icon]:mt-1">
             {session ? (
               <Suspense fallback={<LoadingAgentSelect />}>

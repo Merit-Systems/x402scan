@@ -1,7 +1,7 @@
-import { echoSoraComponents } from './sora';
+import { echoSoraComponents } from "./sora";
 
-import type { ResourceComponentMap } from '../types';
+import type { ResourceComponentMap } from "../types";
 
 export const echoComponents: ResourceComponentMap = {
-  ['https://echo.router.merit.systems/v1/videos']: echoSoraComponents,
+  ["https://echo.router.merit.systems/v1/videos"]: echoSoraComponents,
 };

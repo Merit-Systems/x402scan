@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { WagmiProvider as WagmiProviderBase } from 'wagmi';
+import { WagmiProvider as WagmiProviderBase } from "wagmi";
 
-import { createWagmiConfig } from './config';
+import { createWagmiConfig } from "./config";
 
-import type { State } from 'wagmi';
+import type { State } from "wagmi";
 
 interface Props {
   children: React.ReactNode;

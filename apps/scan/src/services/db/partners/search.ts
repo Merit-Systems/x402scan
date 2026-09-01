@@ -1,5 +1,5 @@
-import { partnersDb, Tables } from '@x402scan/partners-db';
-import type { PartnerData } from '@x402scan/partners-db';
+import { partnersDb, Tables } from "@x402scan/partners-db";
+import type { PartnerData } from "@x402scan/partners-db";
 
 export const searchPartners = async (
   searchTerm: string
@@ -20,7 +20,7 @@ export const searchPartners = async (
 
   const resultSet = await partnersDb.query({
     query,
-    format: 'JSONEachRow',
+    format: "JSONEachRow",
     query_params: { searchTerm: `%${lowerSearchTerm}%` },
   });
 

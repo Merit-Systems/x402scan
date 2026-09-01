@@ -1,14 +1,14 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from "react";
 
-import { skipToken } from '@tanstack/react-query';
+import { skipToken } from "@tanstack/react-query";
 
-import { api } from '@/trpc/client';
+import { api } from "@/trpc/client";
 
-import { useConnectedWallets } from '../../use-connected-wallets';
+import { useConnectedWallets } from "../../use-connected-wallets";
 
-import type { SolanaAddress } from '@/types/address';
-import type { UseBalanceReturnType } from '../types';
-import { solanaAddressSchema } from '@/lib/schemas';
+import type { SolanaAddress } from "@/types/address";
+import type { UseBalanceReturnType } from "../types";
+import { solanaAddressSchema } from "@/lib/schemas";
 
 interface Props {
   tokenMint?: string;
@@ -49,7 +49,7 @@ export const useSPLTokenBalance = (props?: Props): UseBalanceReturnType => {
         }
       : skipToken,
     {
-      refetchOnMount: 'always',
+      refetchOnMount: "always",
     }
   );
 

@@ -1,11 +1,11 @@
-import z from 'zod';
+import z from "zod";
 
-import { env } from '@/env';
-import { jsonObjectSchema, jsonValueSchema } from '@/lib/json';
+import { env } from "@/env";
+import { jsonObjectSchema, jsonValueSchema } from "@/lib/json";
 
-import type { JsonValue } from '@/lib/json';
+import type { JsonValue } from "@/lib/json";
 
-const PROXY_ENDPOINT = '/api/proxy' as const;
+const PROXY_ENDPOINT = "/api/proxy" as const;
 
 /**
  * JSON "containers": the values `JSON.parse` can produce that are not
@@ -40,7 +40,7 @@ export const fetchWithProxy = async (
       const clonedRequest = input.clone();
 
       let body: string | undefined;
-      if (input.method !== 'GET' && input.method !== 'HEAD') {
+      if (input.method !== "GET" && input.method !== "HEAD") {
         try {
           body = await clonedRequest.text();
           if (!body) body = undefined;
@@ -65,21 +65,21 @@ export const fetchWithProxy = async (
   }
 
   const proxyUrl = new URL(PROXY_ENDPOINT, env.NEXT_PUBLIC_PROXY_URL);
-  proxyUrl.searchParams.set('url', encodeURIComponent(url));
-  proxyUrl.searchParams.set('share_data', 'true');
+  proxyUrl.searchParams.set("url", encodeURIComponent(url));
+  proxyUrl.searchParams.set("share_data", "true");
 
-  const { method = 'GET', ...restInit } = effectiveInit ?? {};
+  const { method = "GET", ...restInit } = effectiveInit ?? {};
   const normalizedMethod = method.toUpperCase();
 
   const headers = new Headers(effectiveInit?.headers);
 
   if (
-    normalizedMethod !== 'GET' &&
-    normalizedMethod !== 'HEAD' &&
+    normalizedMethod !== "GET" &&
+    normalizedMethod !== "HEAD" &&
     restInit.body
   ) {
-    if (!headers.has('Content-Type')) {
-      headers.set('Content-Type', 'application/json');
+    if (!headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
     }
   }
 
@@ -90,17 +90,17 @@ export const fetchWithProxy = async (
     headers,
   };
 
-  if (normalizedMethod === 'GET' || normalizedMethod === 'HEAD') {
+  if (normalizedMethod === "GET" || normalizedMethod === "HEAD") {
     finalInit.body = undefined;
   }
 
   const bodyText = z.string().safeParse(finalInit.body);
   if (
-    normalizedMethod !== 'GET' &&
-    normalizedMethod !== 'HEAD' &&
+    normalizedMethod !== "GET" &&
+    normalizedMethod !== "HEAD" &&
     bodyText.success
   ) {
-    const ct = headers.get('content-type') ?? '';
+    const ct = headers.get("content-type") ?? "";
 
     const parsedOnce = tryParseJson(bodyText.data);
     if (parsedOnce.ok) {
@@ -113,13 +113,13 @@ export const fetchWithProxy = async (
           jsonContainerSchema.safeParse(parsedTwice.value).success
         ) {
           finalInit.body = innerJsonString.data;
-          headers.set('Content-Type', 'application/json');
+          headers.set("Content-Type", "application/json");
         }
       } else if (
         jsonContainerSchema.safeParse(parsedOnce.value).success &&
-        (ct.toLowerCase().startsWith('text/plain') || ct === '')
+        (ct.toLowerCase().startsWith("text/plain") || ct === "")
       ) {
-        headers.set('Content-Type', 'application/json');
+        headers.set("Content-Type", "application/json");
       }
     }
   }

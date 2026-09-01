@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import { z } from 'zod';
-import { AlertTriangle, Copy, Check, Shield } from 'lucide-react';
+import { z } from "zod";
+import { AlertTriangle, Copy, Check, Shield } from "lucide-react";
 
-import { Card, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from "@/components/ui/tooltip";
 
-import { Header } from './header/index';
+import { Header } from "./header/index";
 import {
   formatPricingLabel,
   getMaxUsdcAmount,
   getResourceAuthMode,
-} from './utils';
+} from "./utils";
 
-import { cn } from '@/lib/utils';
-import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
-import { toast } from 'sonner';
+import { cn } from "@/lib/utils";
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { toast } from "sonner";
 
-import type { BazaarMethod } from '@/types/x402';
-import type { ParsedX402Response } from '@/lib/x402';
-import type { Resources, Tag } from '@x402scan/scan-db';
+import type { BazaarMethod } from "@/types/x402";
+import type { ParsedX402Response } from "@/lib/x402";
+import type { Resources, Tag } from "@x402scan/scan-db";
 
 interface SerializedAccept {
   maxAmountRequired: number;
@@ -68,22 +68,22 @@ export const ResourceCard: React.FC<Props> = ({
   const prompt = `Use agentcash.dev to test out this resource's endpoint: ${bazaarMethod} ${resource.resource}`;
   const pricingMetadata = pricingMetadataSchema.safeParse(resource.metadata);
   const { isCopied, copyToClipboard } = useCopyToClipboard(() => {
-    toast.success('Prompt copied to clipboard');
+    toast.success("Prompt copied to clipboard");
   });
 
   return (
-    <div className={cn('pt-4 relative', !isFlat && 'pl-4 border-l')}>
+    <div className={cn("pt-4 relative", !isFlat && "pl-4 border-l")}>
       {!isFlat && (
-        <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-px bg-border" />
+        <div className="absolute top-[calc(2rem+5px)] left-0 h-px w-4 bg-border" />
       )}
       <Card
         className={cn(
           className,
-          'overflow-hidden',
-          !isFlat && 'border-0 shadow-none'
+          "overflow-hidden",
+          !isFlat && "border-0 shadow-none"
         )}
       >
-        <CardHeader className="bg-muted w-full flex flex-row items-center justify-between space-y-0 px-4 py-2 gap-4">
+        <CardHeader className="flex w-full flex-row items-center justify-between gap-4 space-y-0 bg-muted px-4 py-2">
           <Header
             resource={resource}
             tags={tags}
@@ -97,8 +97,8 @@ export const ResourceCard: React.FC<Props> = ({
                 accepts={accepts}
                 pricingMode={
                   pricingMetadata.success &&
-                  pricingMetadata.data.pricingMode === 'dynamic'
-                    ? 'dynamic'
+                  pricingMetadata.data.pricingMode === "dynamic"
+                    ? "dynamic"
                     : undefined
                 }
                 price={
@@ -110,21 +110,21 @@ export const ResourceCard: React.FC<Props> = ({
             ) : (
               (() => {
                 switch (getResourceAuthMode(resource.metadata)) {
-                  case 'siwx':
+                  case "siwx":
                     return (
-                      <span className="text-xs font-semibold text-green-600 font-mono shrink-0">
+                      <span className="shrink-0 font-mono text-xs font-semibold text-green-600">
                         Free
                       </span>
                     );
-                  case 'unprotected':
+                  case "unprotected":
                     return (
-                      <span className="text-xs font-semibold text-sky-600 font-mono shrink-0">
+                      <span className="shrink-0 font-mono text-xs font-semibold text-sky-600">
                         Public
                       </span>
                     );
-                  case 'apiKey':
+                  case "apiKey":
                     return (
-                      <span className="text-xs font-semibold text-muted-foreground font-mono shrink-0">
+                      <span className="shrink-0 font-mono text-xs font-semibold text-muted-foreground">
                         API key
                       </span>
                     );
@@ -149,9 +149,9 @@ export const ResourceCard: React.FC<Props> = ({
                   <AlertTriangle className="size-4 text-yellow-500" />
                 </TooltipTrigger>
                 <TooltipContent side="left" className="max-w-md">
-                  <div className="text-xs space-y-1">
+                  <div className="space-y-1 text-xs">
                     {warnings.map((warning, i) => (
-                      <div key={i} className="text-muted-foreground break-all">
+                      <div key={i} className="break-all text-muted-foreground">
                         {warning}
                       </div>
                     ))}
@@ -164,7 +164,7 @@ export const ResourceCard: React.FC<Props> = ({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="shrink-0 size-fit md:size-fit p-2"
+                  className="size-fit shrink-0 p-2 md:size-fit"
                   onClick={() => void copyToClipboard(prompt)}
                 >
                   {isCopied ? (
@@ -191,12 +191,12 @@ const ResourcePricing: React.FC<{
   price?: string;
 }> = ({ accepts, pricingMode, price }) => {
   const isDynamic =
-    pricingMode === 'dynamic' || accepts.some(a => a.scheme !== 'exact');
+    pricingMode === "dynamic" || accepts.some((a) => a.scheme !== "exact");
   const maxUsdAmount = getMaxUsdcAmount(accepts);
   const label = formatPricingLabel({ maxUsdAmount, isDynamic, price });
 
   return (
-    <span className="text-xs font-semibold text-primary font-mono shrink-0">
+    <span className="shrink-0 font-mono text-xs font-semibold text-primary">
       {label}
     </span>
   );
@@ -204,17 +204,17 @@ const ResourcePricing: React.FC<{
 
 export const LoadingResourceCard = () => {
   return (
-    <Card className="overflow-hidden flex w-full hover:border-primary transition-colors cursor-pointer items-stretch">
+    <Card className="flex w-full cursor-pointer items-stretch overflow-hidden transition-colors hover:border-primary">
       <div className="flex-1">
-        <CardHeader className="bg-muted w-full flex flex-row items-center justify-between space-y-0 p-0 hover:border-primary transition-colors px-4 py-2 gap-4">
-          <div className="flex-1 flex flex-col gap-2 w-0">
-            <div className="flex md:items-center justify-between flex-col md:flex-row gap-4 md:gap-0 flex-1">
-              <div className="flex items-center gap-2 flex-1 w-full md:w-auto">
-                <Skeleton className="w-8 h-4" />
-                <Skeleton className="w-36 h-[16px] md:h-[18px]" />
+        <CardHeader className="flex w-full flex-row items-center justify-between gap-4 space-y-0 bg-muted p-0 px-4 py-2 transition-colors hover:border-primary">
+          <div className="flex w-0 flex-1 flex-col gap-2">
+            <div className="flex flex-1 flex-col justify-between gap-4 md:flex-row md:items-center md:gap-0">
+              <div className="flex w-full flex-1 items-center gap-2 md:w-auto">
+                <Skeleton className="h-4 w-8" />
+                <Skeleton className="h-[16px] w-36 md:h-[18px]" />
               </div>
             </div>
-            <Skeleton className="w-full h-[12px] md:h-[14px]" />
+            <Skeleton className="h-[12px] w-full md:h-[14px]" />
           </div>
         </CardHeader>
       </div>

@@ -1,13 +1,13 @@
-import { Suspense } from 'react';
-import { Section } from '@/app/_components/layout/page-utils';
-import type { RouterOutputs } from '@/trpc/client';
-import { LoadingActivityCharts } from './charts';
-import { Card } from '@/components/ui/card';
-import { HydrateClient } from '@/trpc/server';
-import { ActivityContent } from './content';
+import { Suspense } from "react";
+import { Section } from "@/app/_components/layout/page-utils";
+import type { RouterOutputs } from "@/trpc/client";
+import { LoadingActivityCharts } from "./charts";
+import { Card } from "@/components/ui/card";
+import { HydrateClient } from "@/trpc/server";
+import { ActivityContent } from "./content";
 
 interface Props {
-  agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
+  agentConfiguration: NonNullable<RouterOutputs["public"]["agents"]["get"]>;
 }
 
 export const Activity: React.FC<Props> = ({ agentConfiguration }) => {

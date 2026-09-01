@@ -1,10 +1,10 @@
-import z from 'zod';
-import { Prisma } from '@x402scan/transfers-db';
+import z from "zod";
+import { Prisma } from "@x402scan/transfers-db";
 
-import { baseQuerySchema } from '../../schemas';
-import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/transfers/client';
-import { getMaterializedViewSuffix } from '@/lib/time-range';
+import { baseQuerySchema } from "../../schemas";
+import { createCachedQuery, createStandardCacheKey } from "@/lib/cache";
+import { queryRaw } from "@/services/transfers/client";
+import { getMaterializedViewSuffix } from "@/lib/time-range";
 
 export const buyerStatisticsMVInputSchema = baseQuerySchema;
 
@@ -38,7 +38,7 @@ const getOverallBuyerStatisticsMVUncached = async (
     );
   }
 
-  const whereClause = Prisma.join(conditions, ' ');
+  const whereClause = Prisma.join(conditions, " ");
 
   // Query the appropriate materialized view
   // new_buyers is omitted for now (requires sender_first_seen MV)
@@ -81,7 +81,7 @@ const getOverallBuyerStatisticsMVUncached = async (
     return result[0] ?? empty;
   } catch (error) {
     // Gracefully handle missing materialized views (e.g. during first deploy)
-    if (String(error).includes('does not exist')) {
+    if (String(error).includes("does not exist")) {
       console.warn(
         `[buyer-stats] MV ${tableName} not yet available, returning empty`
       );
@@ -93,8 +93,8 @@ const getOverallBuyerStatisticsMVUncached = async (
 
 export const getOverallBuyerStatisticsMV = createCachedQuery({
   queryFn: getOverallBuyerStatisticsMVUncached,
-  cacheKeyPrefix: 'overall-buyer-statistics-mv',
-  createCacheKey: input => createStandardCacheKey(input),
-  dateFields: ['latest_block_timestamp'],
-  tags: ['statistics', 'buyers'],
+  cacheKeyPrefix: "overall-buyer-statistics-mv",
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ["latest_block_timestamp"],
+  tags: ["statistics", "buyers"],
 });

@@ -1,12 +1,12 @@
-import z from 'zod';
-import { revalidatePath } from 'next/cache';
+import z from "zod";
+import { revalidatePath } from "next/cache";
 
-import { resourceKey } from '@/lib/resource-key';
+import { resourceKey } from "@/lib/resource-key";
 import {
   createTRPCRouter,
   paginatedProcedure,
   publicProcedure,
-} from '../../trpc';
+} from "../../trpc";
 
 import {
   getResource,
@@ -16,46 +16,46 @@ import {
   searchResources,
   searchResourcesSchema,
   type ResourceSortId,
-} from '@/services/db/resources/resource';
+} from "@/services/db/resources/resource";
 
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 
-import { mixedAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from "@/lib/schemas";
 
-import { registerEndpoint } from '@/lib/discovery/register-endpoint';
-import { registerResourcesFromDiscovery } from '@/lib/discovery/register-origin';
-import { urlMatchesDiscoveredResource } from '@/lib/url';
-import { TRPCError } from '@trpc/server';
+import { registerEndpoint } from "@/lib/discovery/register-endpoint";
+import { registerResourcesFromDiscovery } from "@/lib/discovery/register-origin";
+import { urlMatchesDiscoveredResource } from "@/lib/url";
+import { TRPCError } from "@trpc/server";
 import {
   listResourceTags,
   listTags,
   listTagsSchema,
-} from '@/services/db/resources/tag';
+} from "@/services/db/resources/tag";
 
-import { convertTokenAmount } from '@/lib/token';
-import { usdc } from '@/lib/tokens/usdc';
-import { fetchDiscoveryDocument } from '@/services/discovery';
+import { convertTokenAmount } from "@/lib/token";
+import { usdc } from "@/lib/tokens/usdc";
+import { fetchDiscoveryDocument } from "@/services/discovery";
 import {
   getResourceVerificationStatus,
   getOriginVerificationStatus,
-} from '@/services/verification/accepts-verification';
+} from "@/services/verification/accepts-verification";
 
-import type { Prisma } from '@x402scan/scan-db';
-import type { SupportedChain } from '@/types/chain';
-import { verifyAnyOwnershipProof } from '@/lib/ownership-proof';
+import type { Prisma } from "@x402scan/scan-db";
+import type { SupportedChain } from "@/types/chain";
+import { verifyAnyOwnershipProof } from "@/lib/ownership-proof";
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
     const resource = await getResource(input);
     if (!resource) {
       throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: 'Resource not found',
+        code: "NOT_FOUND",
+        message: "Resource not found",
       });
     }
     return {
       ...resource,
-      accepts: resource.accepts.map(accept => ({
+      accepts: resource.accepts.map((accept) => ({
         ...accept,
         maxAmountRequired: convertTokenAmount(
           accept.maxAmountRequired,
@@ -75,8 +75,8 @@ export const resourcesRouter = createTRPCRouter({
           sorting: z
             .object({
               id: z.enum([
-                'lastUpdated',
-                'toolCalls',
+                "lastUpdated",
+                "toolCalls",
               ] satisfies ResourceSortId[]),
               desc: z.boolean(),
             })
@@ -148,15 +148,15 @@ export const resourcesRouter = createTRPCRouter({
         return {
           success: false as const,
           error: {
-            type: 'noDiscovery' as const,
+            type: "noDiscovery" as const,
             message:
               discoveryResult.error ??
-              'No discovery document found. Add an openapi.json to your origin to register endpoints.',
+              "No discovery document found. Add an openapi.json to your origin to register endpoints.",
           },
         };
       }
 
-      const urlInSpec = discoveryResult.resources.some(r =>
+      const urlInSpec = discoveryResult.resources.some((r) =>
         urlMatchesDiscoveredResource(input.url, r.url)
       );
 
@@ -164,7 +164,7 @@ export const resourcesRouter = createTRPCRouter({
         return {
           success: false as const,
           error: {
-            type: 'notInSpec' as const,
+            type: "notInSpec" as const,
             message:
               "This endpoint is not listed in the origin's openapi.json. Add it to the spec before registering.",
           },
@@ -177,7 +177,7 @@ export const resourcesRouter = createTRPCRouter({
           revalidatePath(`/server/${result.resource.origin.id}`);
         }
       } catch (e) {
-        console.error('revalidatePath failed:', e);
+        console.error("revalidatePath failed:", e);
       }
       return result;
     }),
@@ -207,8 +207,8 @@ export const resourcesRouter = createTRPCRouter({
         return {
           success: false as const,
           error: {
-            type: 'noDiscovery' as const,
-            message: discoveryResult.error ?? 'No discovery document found',
+            type: "noDiscovery" as const,
+            message: discoveryResult.error ?? "No discovery document found",
           },
         };
       }
@@ -227,9 +227,9 @@ export const resourcesRouter = createTRPCRouter({
         return {
           success: false as const,
           error: {
-            type: 'noValidResources' as const,
+            type: "noValidResources" as const,
             message:
-              'No valid x402 or free (SIWX) resources were found for this origin. Add at least one resource that passes validation to complete registration.',
+              "No valid x402 or free (SIWX) resources were found for this origin. Add at least one resource that passes validation to complete registration.",
           },
           result,
         };
@@ -240,7 +240,7 @@ export const resourcesRouter = createTRPCRouter({
           revalidatePath(`/server/${result.originId}`);
         }
       } catch (e) {
-        console.error('revalidatePath failed:', e);
+        console.error("revalidatePath failed:", e);
       }
 
       return { success: true as const, ...result };
@@ -301,7 +301,7 @@ export const resourcesRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const registered = await scanDb.resources.findMany({
         where: {
-          OR: input.resources.map(r =>
+          OR: input.resources.map((r) =>
             r.method
               ? { resource: r.url, method: r.method }
               : { resource: r.url }
@@ -314,15 +314,15 @@ export const resourcesRouter = createTRPCRouter({
       });
 
       const registeredKeys = new Set(
-        registered.map(r => resourceKey(r.resource, r.method))
+        registered.map((r) => resourceKey(r.resource, r.method))
       );
       return {
         registered: input.resources
-          .filter(r => registeredKeys.has(resourceKey(r.url, r.method)))
-          .map(r => r.url),
+          .filter((r) => registeredKeys.has(resourceKey(r.url, r.method)))
+          .map((r) => r.url),
         unregistered: input.resources
-          .filter(r => !registeredKeys.has(resourceKey(r.url, r.method)))
-          .map(r => r.url),
+          .filter((r) => !registeredKeys.has(resourceKey(r.url, r.method)))
+          .map((r) => r.url),
       };
     }),
 
@@ -368,7 +368,7 @@ export const resourcesRouter = createTRPCRouter({
       // Return resource-level verification if resourceIds provided
       if (input.resourceIds && input.resourceIds.length > 0) {
         const results = await Promise.all(
-          input.resourceIds.map(async id => ({
+          input.resourceIds.map(async (id) => ({
             resourceId: id,
             ...(await getResourceVerificationStatus(id)),
           }))
@@ -377,8 +377,8 @@ export const resourcesRouter = createTRPCRouter({
       }
 
       throw new TRPCError({
-        code: 'BAD_REQUEST',
-        message: 'Either resourceIds or originId must be provided',
+        code: "BAD_REQUEST",
+        message: "Either resourceIds or originId must be provided",
       });
     }),
 

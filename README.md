@@ -5,11 +5,11 @@
 </div>
 
 <div align="center">
-    
-  [![Discord](https://img.shields.io/discord/1382120201713352836?style=flat&logo=discord&logoColor=white&label=Discord)](https://discord.gg/JuKt7tPnNc) 
-  ![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/merit_systems) 
-  [![GitHub Repo stars](https://img.shields.io/github/stars/Merit-Systems/x402scan?style=social)](https://github.com/Merit-Systems/x402scan) 
-  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+[![Discord](https://img.shields.io/discord/1382120201713352836?style=flat&logo=discord&logoColor=white&label=Discord)](https://discord.gg/JuKt7tPnNc)
+![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/merit_systems)
+[![GitHub Repo stars](https://img.shields.io/github/stars/Merit-Systems/x402scan?style=social)](https://github.com/Merit-Systems/x402scan)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 </div>
 

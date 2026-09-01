@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { useState } from "react";
+import { Plus } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,27 +12,27 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { api } from '@/trpc/client';
-import { PartnerCollapsible, type PartnerData } from './partner-collapsible';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { api } from "@/trpc/client";
+import { PartnerCollapsible, type PartnerData } from "./partner-collapsible";
 
 export const CreateInviteCodeButton = () => {
   const [open, setOpen] = useState(false);
-  const [code, setCode] = useState('');
-  const [amount, setAmount] = useState('5');
-  const [maxRedemptions, setMaxRedemptions] = useState('1');
+  const [code, setCode] = useState("");
+  const [amount, setAmount] = useState("5");
+  const [maxRedemptions, setMaxRedemptions] = useState("1");
   const [uniqueRecipients, setUniqueRecipients] = useState(true);
-  const [expiresAt, setExpiresAt] = useState('');
-  const [note, setNote] = useState('');
+  const [expiresAt, setExpiresAt] = useState("");
+  const [note, setNote] = useState("");
   const [partnerData, setPartnerData] = useState<PartnerData>({
-    partnerName: '',
-    partnerMeritContact: '',
-    partnerEmail: '',
-    partnerOrganization: '',
+    partnerName: "",
+    partnerMeritContact: "",
+    partnerEmail: "",
+    partnerOrganization: "",
   });
 
   const utils = api.useUtils();
@@ -47,17 +47,17 @@ export const CreateInviteCodeButton = () => {
   });
 
   const resetForm = () => {
-    setCode('');
-    setAmount('5');
-    setMaxRedemptions('1');
+    setCode("");
+    setAmount("5");
+    setMaxRedemptions("1");
     setUniqueRecipients(true);
-    setExpiresAt('');
-    setNote('');
+    setExpiresAt("");
+    setNote("");
     setPartnerData({
-      partnerName: '',
-      partnerMeritContact: '',
-      partnerEmail: '',
-      partnerOrganization: '',
+      partnerName: "",
+      partnerMeritContact: "",
+      partnerEmail: "",
+      partnerOrganization: "",
     });
   };
 
@@ -89,19 +89,19 @@ export const CreateInviteCodeButton = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           Create Invite Code
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col">
+      <DialogContent className="flex max-h-[90vh] flex-col sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Create Invite Code</DialogTitle>
           <DialogDescription>
             Create a new invite code that rewards users with USDC when redeemed.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-          <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <div className="flex-1 space-y-4 overflow-y-auto pr-2">
             <PartnerCollapsible onPartnerChange={setPartnerData} />
 
             <div className="space-y-2">
@@ -110,9 +110,9 @@ export const CreateInviteCodeButton = () => {
                 id="code"
                 placeholder="WELCOME10 (auto-generated if empty)"
                 value={code}
-                onChange={e =>
+                onChange={(e) =>
                   setCode(
-                    e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+                    e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "")
                   )
                 }
               />
@@ -129,7 +129,7 @@ export const CreateInviteCodeButton = () => {
                 step="0.01"
                 placeholder="10"
                 value={amount}
-                onChange={e => setAmount(e.target.value)}
+                onChange={(e) => setAmount(e.target.value)}
                 required
               />
               <p className="text-xs text-muted-foreground">
@@ -145,7 +145,7 @@ export const CreateInviteCodeButton = () => {
                 min="0"
                 placeholder="1"
                 value={maxRedemptions}
-                onChange={e => setMaxRedemptions(e.target.value)}
+                onChange={(e) => setMaxRedemptions(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
                 0 = unlimited redemptions
@@ -161,7 +161,7 @@ export const CreateInviteCodeButton = () => {
               </div>
               <Checkbox
                 checked={uniqueRecipients}
-                onCheckedChange={checked =>
+                onCheckedChange={(checked) =>
                   setUniqueRecipients(checked === true)
                 }
               />
@@ -173,7 +173,7 @@ export const CreateInviteCodeButton = () => {
                 id="expiresAt"
                 type="datetime-local"
                 value={expiresAt}
-                onChange={e => setExpiresAt(e.target.value)}
+                onChange={(e) => setExpiresAt(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
                 Leave empty for no expiration
@@ -186,7 +186,7 @@ export const CreateInviteCodeButton = () => {
                 id="note"
                 placeholder="Internal note about this invite code..."
                 value={note}
-                onChange={e => setNote(e.target.value)}
+                onChange={(e) => setNote(e.target.value)}
               />
             </div>
           </div>
@@ -203,7 +203,7 @@ export const CreateInviteCodeButton = () => {
               type="submit"
               disabled={createMutation.isPending || !amount}
             >
-              {createMutation.isPending ? 'Creating...' : 'Create'}
+              {createMutation.isPending ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>
         </form>

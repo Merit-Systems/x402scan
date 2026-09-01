@@ -1,8 +1,8 @@
-import { env } from '@/env';
+import { env } from "@/env";
 
-const baseUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+const baseUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
 
-const REPO_URL = 'https://github.com/Merit-Systems/x402scan';
+const REPO_URL = "https://github.com/Merit-Systems/x402scan";
 
 /**
  * /llms.txt — a curated, Markdown map of the site for LLMs and agents.
@@ -51,8 +51,8 @@ The public API mixes paid and free endpoints: most read endpoints require a smal
 export function GET() {
   return new Response(body, {
     headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
     },
   });
 }

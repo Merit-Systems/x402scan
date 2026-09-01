@@ -1,12 +1,12 @@
-import { Controller } from 'react-hook-form';
+import { Controller } from "react-hook-form";
 
-import { Field, FieldGroup } from '@/components/ui/field';
+import { Field, FieldGroup } from "@/components/ui/field";
 
-import { ResourceList } from '@/app/(app)/composer/(chat)/_components/resource-list';
+import { ResourceList } from "@/app/(app)/composer/(chat)/_components/resource-list";
 
-import type { NewAgentForm } from './types';
-import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import type { NewAgentForm } from "./types";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 interface Props {
   form: NewAgentForm;
@@ -16,7 +16,7 @@ interface Props {
 export const ToolsStep: React.FC<Props> = ({ form, onNext }) => {
   return (
     <div className="flex flex-col">
-      <FieldGroup className="w-full items-start gap-6 flex flex-col">
+      <FieldGroup className="flex w-full flex-col items-start gap-6">
         <Controller
           control={form.control}
           name="resourceIds"
@@ -25,10 +25,10 @@ export const ToolsStep: React.FC<Props> = ({ form, onNext }) => {
               <Field>
                 <ResourceList
                   selectedResourceIds={field.value}
-                  onSelectResource={resource => {
+                  onSelectResource={(resource) => {
                     field.onChange(
                       field.value.includes(resource.id)
-                        ? field.value.filter(id => id !== resource.id)
+                        ? field.value.filter((id) => id !== resource.id)
                         : [...field.value, resource.id]
                     );
                   }}
@@ -38,7 +38,7 @@ export const ToolsStep: React.FC<Props> = ({ form, onNext }) => {
           }}
         />
       </FieldGroup>
-      <div className="flex justify-end p-4 border-t bg-muted">
+      <div className="flex justify-end border-t bg-muted p-4">
         <Button
           onClick={onNext}
           disabled={

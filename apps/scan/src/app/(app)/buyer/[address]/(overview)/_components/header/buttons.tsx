@@ -1,5 +1,5 @@
-import { Skeleton } from '@/components/ui/skeleton';
-import { Address } from '@/components/ui/address';
+import { Skeleton } from "@/components/ui/skeleton";
+import { Address } from "@/components/ui/address";
 
 interface Props {
   address: string;
@@ -16,7 +16,7 @@ export const HeaderButtons: React.FC<Props> = ({ address }) => {
 export const LoadingHeaderButtons = () => {
   return (
     <ButtonsContainer>
-      <Skeleton className="h-8 md:h-9 w-24" />
+      <Skeleton className="h-8 w-24 md:h-9" />
     </ButtonsContainer>
   );
 };

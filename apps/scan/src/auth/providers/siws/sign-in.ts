@@ -1,9 +1,9 @@
-import { signIn, type SignInOptions } from 'next-auth/react';
-import { getBase58Decoder, getUtf8Encoder } from '@solana/kit';
+import { signIn, type SignInOptions } from "next-auth/react";
+import { getBase58Decoder, getUtf8Encoder } from "@solana/kit";
 
-import { SIWS_PROVIDER_ID, SIWS_STATEMENT } from './constants';
+import { SIWS_PROVIDER_ID, SIWS_STATEMENT } from "./constants";
 
-import type { useSignMessage } from '@solana/react';
+import type { useSignMessage } from "@solana/react";
 
 interface SignInWithSolanaOptions {
   address: string;

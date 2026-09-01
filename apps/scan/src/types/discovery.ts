@@ -2,7 +2,7 @@
  * x402 Discovery Types
  */
 
-import type { AuthMode } from '@agentcash/discovery';
+import type { AuthMode } from "@agentcash/discovery";
 
 /**
  * A discovered resource with URL and optional HTTP method.
@@ -11,14 +11,14 @@ import type { AuthMode } from '@agentcash/discovery';
 export interface DiscoveredResource {
   url: string;
   method?:
-    | 'GET'
-    | 'POST'
-    | 'PUT'
-    | 'PATCH'
-    | 'DELETE'
-    | 'HEAD'
-    | 'OPTIONS'
-    | 'TRACE';
+    | "GET"
+    | "POST"
+    | "PUT"
+    | "PATCH"
+    | "DELETE"
+    | "HEAD"
+    | "OPTIONS"
+    | "TRACE";
   /** Auth classification from discovery (paid, siwx, apiKey, apiKey+paid, unprotected). */
   authMode?: AuthMode;
   /** Pricing mode from discovery doc ("fixed" | "dynamic"). */
@@ -39,10 +39,10 @@ export interface DiscoveredResource {
 export type { AuthMode };
 
 export type DiscoverySource =
-  | 'openapi'
-  | 'well-known'
-  | 'probe'
-  | 'interop-mpp';
+  | "openapi"
+  | "well-known"
+  | "probe"
+  | "interop-mpp";
 
 /**
  * Result from fetching and parsing discovery documents.

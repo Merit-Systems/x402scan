@@ -1,24 +1,24 @@
-import { scanDb } from '@x402scan/scan-db';
+import { scanDb } from "@x402scan/scan-db";
 import {
   listTags,
   createTag,
   assignTagToResource,
-} from '@/services/db/resources/tag';
-import type { listResourcesWithPagination } from '@/services/db/resources/resource';
-import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { z } from 'zod';
-import { getTracer } from '@lmnr-ai/lmnr';
-import { MAIN_TAGS } from './main-tags';
+} from "@/services/db/resources/tag";
+import type { listResourcesWithPagination } from "@/services/db/resources/resource";
+import { generateObject } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+import { getTracer } from "@lmnr-ai/lmnr";
+import { MAIN_TAGS } from "./main-tags";
 
 const randomColor = () => {
-  return '#' + Math.floor(Math.random() * 16777215).toString(16);
+  return "#" + Math.floor(Math.random() * 16777215).toString(16);
 };
 
 // Extract the resource type from listResourcesWithPagination return value
 type ResourceWithRelations = Awaited<
   ReturnType<typeof listResourcesWithPagination>
->['items'][number];
+>["items"][number];
 
 const labelingSchema = z.object({
   tag: z.string(),
@@ -27,7 +27,7 @@ const labelingSchema = z.object({
 const buildLabelingPrompt = () => {
   const tagCategories = Object.entries(MAIN_TAGS)
     .map(([name, description]) => `- ${name}: ${description}`)
-    .join('\n');
+    .join("\n");
 
   return `Your task is to assign reasonable tags to each resource you are given.
 
@@ -67,22 +67,22 @@ export const labelingPass = async (
   const tags = await listTags({ filterTags: [] });
   const resourceDescription = `
     RESOURCE DESCRIPTIONS:
-    ${resource.accepts.map(accept => `- ${accept.description}`).join('\n')}
+    ${resource.accepts.map((accept) => `- ${accept.description}`).join("\n")}
 
     RESOURCE INPUT PARAMETERS   (if applicable):
-    ${JSON.stringify(resource.accepts.map(accept => JSON.stringify(accept.outputSchema, null, 2)))}
+    ${JSON.stringify(resource.accepts.map((accept) => JSON.stringify(accept.outputSchema, null, 2)))}
     `;
 
   const prompt = buildLabelingPrompt()
-    .replace('{_RESOURCE_URL_}', resource.resource)
-    .replace('{_RESOURCE_DESCRIPTIONS_}', resourceDescription)
+    .replace("{_RESOURCE_URL_}", resource.resource)
+    .replace("{_RESOURCE_DESCRIPTIONS_}", resourceDescription)
     .replace(
-      '{_CURRENT_AVAILABLE_TAGS_}',
-      tags.map(tag => `- ${tag.name}`).join('\n')
+      "{_CURRENT_AVAILABLE_TAGS_}",
+      tags.map((tag) => `- ${tag.name}`).join("\n")
     );
 
   const result = await generateObject({
-    model: openai('gpt-4o-mini'),
+    model: openai("gpt-4o-mini"),
     prompt,
     schema: labelingSchema,
     temperature: 0.1,
@@ -97,7 +97,7 @@ export const labelingPass = async (
   });
 
   if (!result.object) {
-    throw new Error('No tag found');
+    throw new Error("No tag found");
   }
 
   const tag = result.object.tag;

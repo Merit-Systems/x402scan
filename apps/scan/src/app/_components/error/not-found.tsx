@@ -1,10 +1,10 @@
-import { NotFoundScreen } from './screen';
+import { NotFoundScreen } from "./screen";
 
-import { ErrorPageContainer } from './container';
+import { ErrorPageContainer } from "./container";
 
-import type { ErrorComponentProps } from './types';
+import type { ErrorComponentProps } from "./types";
 
-export const AppGroupNotFound: React.FC<ErrorComponentProps> = props => {
+export const AppGroupNotFound: React.FC<ErrorComponentProps> = (props) => {
   return (
     <ErrorPageContainer>
       <NotFoundScreen {...props} />

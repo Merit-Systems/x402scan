@@ -1,32 +1,32 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 import {
   createTRPCRouter,
   paginatedProcedure,
   publicProcedure,
-} from '@/trpc/trpc';
+} from "@/trpc/trpc";
 
-import { getAgentConfiguration } from '@/services/db/agent-config/get';
+import { getAgentConfiguration } from "@/services/db/agent-config/get";
 import {
   listTopAgentConfigurations,
   listTopAgentConfigurationsSchema,
-} from '@/services/db/agent-config/list';
+} from "@/services/db/agent-config/list";
 import {
   agentConfigBucketedActivityInputSchema,
   getAgentConfigBucketedActivity,
-} from '@/services/db/agent-config/stats/agent';
+} from "@/services/db/agent-config/stats/agent";
 import {
   getOverallActivity,
   getOverallBucketedActivity,
   overallActivityInputSchema,
   overallBucketedActivityInputSchema,
-} from '@/services/db/agent-config/stats/overall';
+} from "@/services/db/agent-config/stats/overall";
 import {
   getAgentConfigFeed,
   getAgentConfigFeedSchema,
-} from '@/services/db/agent-config/feed';
+} from "@/services/db/agent-config/feed";
 
-import { auth } from '@/auth';
+import { auth } from "@/auth";
 
 export const publicAgentConfigurationsRouter = createTRPCRouter({
   get: publicProcedure.input(z.uuid()).query(async ({ input }) => {

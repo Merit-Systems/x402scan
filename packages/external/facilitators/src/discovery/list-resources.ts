@@ -1,13 +1,13 @@
-import { useFacilitator as facilitatorUtils } from 'x402/verify';
+import { useFacilitator as facilitatorUtils } from "x402/verify";
 
 import type {
   FacilitatorConfig,
   ListDiscoveryResourcesRequest,
-} from 'x402/types';
+} from "x402/types";
 
 type FacilitatorResource = Awaited<
   ReturnType<typeof listFacilitatorResources>
->['items'][number];
+>["items"][number];
 
 export const listFacilitatorResources = async (
   facilitator: FacilitatorConfig,
@@ -44,11 +44,11 @@ export const listAllFacilitatorResources = async (
       backoff = 1000;
     } catch (err) {
       const isRateLimit =
-        err instanceof Error && err.message.toLowerCase().includes('429');
+        err instanceof Error && err.message.toLowerCase().includes("429");
 
       if (isRateLimit) {
-        console.log('Rate limit hit, retrying in', backoff, 'ms');
-        await new Promise(res => setTimeout(res, backoff));
+        console.log("Rate limit hit, retrying in", backoff, "ms");
+        await new Promise((res) => setTimeout(res, backoff));
         backoff = Math.min(backoff * 2, maxBackoff);
         continue;
       } else {

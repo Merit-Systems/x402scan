@@ -1,6 +1,6 @@
-import { api, HydrateClient } from '@/trpc/server';
-import { FeedTableContent, LoadingFeedTableContent } from './table';
-import { Suspense } from 'react';
+import { api, HydrateClient } from "@/trpc/server";
+import { FeedTableContent, LoadingFeedTableContent } from "./table";
+import { Suspense } from "react";
 
 interface Props {
   limit?: number;

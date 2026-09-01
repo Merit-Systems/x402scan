@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { DataTable } from '@/components/ui/data-table';
-import { columns } from './columns';
-import { api, type RouterOutputs } from '@/trpc/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Ban, CheckCircle, Loader2 } from 'lucide-react';
+import { useState } from "react";
+import { DataTable } from "@/components/ui/data-table";
+import { columns } from "./columns";
+import { api, type RouterOutputs } from "@/trpc/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Ban, CheckCircle, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,13 +14,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Favicon } from '@/app/(app)/_components/favicon';
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Favicon } from "@/app/(app)/_components/favicon";
 
 type Resource =
-  RouterOutputs['admin']['resources']['excludes']['searchResources'][number];
+  RouterOutputs["admin"]["resources"]["excludes"]["searchResources"][number];
 
 const PAGE_SIZE = 25;
 
@@ -28,7 +28,7 @@ export const ResourceExcludesTable = () => {
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
     null
   );
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
 
   const utils = api.useUtils();
@@ -43,12 +43,12 @@ export const ResourceExcludesTable = () => {
 
   const createMutation = api.admin.resources.excludes.create.useMutation({
     onSuccess: () => {
-      toast.success('Resource excluded successfully');
+      toast.success("Resource excluded successfully");
       void utils.admin.resources.excludes.list.invalidate();
       void utils.admin.resources.excludes.searchResources.invalidate();
       setSelectedResource(null);
     },
-    onError: error => {
+    onError: (error) => {
       toast.error(`Failed to exclude resource: ${error.message}`);
     },
   });
@@ -56,12 +56,12 @@ export const ResourceExcludesTable = () => {
   const deleteMutation =
     api.admin.resources.excludes.deleteByResourceId.useMutation({
       onSuccess: () => {
-        toast.success('Resource included successfully');
+        toast.success("Resource included successfully");
         void utils.admin.resources.excludes.list.invalidate();
         void utils.admin.resources.excludes.searchResources.invalidate();
         setSelectedResource(null);
       },
-      onError: error => {
+      onError: (error) => {
         toast.error(`Failed to include resource: ${error.message}`);
       },
     });
@@ -69,7 +69,7 @@ export const ResourceExcludesTable = () => {
   // Filter resources to show only those with existing excludes or search results
   const resources = searchQuery
     ? (searchResults ?? [])
-    : (existingExcludes?.map(exclude => exclude.resource) ?? []);
+    : (existingExcludes?.map((exclude) => exclude.resource) ?? []);
 
   const paginatedResources = resources.slice(
     page * PAGE_SIZE,
@@ -99,17 +99,17 @@ export const ResourceExcludesTable = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-4 items-center">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+      <div className="flex items-center gap-4">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
           <Input
             placeholder="Search resources..."
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
           />
         </div>
-        <Button onClick={() => setSearchQuery('')} variant="outline" size="sm">
+        <Button onClick={() => setSearchQuery("")} variant="outline" size="sm">
           Clear
         </Button>
       </div>
@@ -117,11 +117,11 @@ export const ResourceExcludesTable = () => {
       <DataTable
         columns={columns}
         data={
-          paginatedResources as RouterOutputs['admin']['resources']['excludes']['searchResources']
+          paginatedResources as RouterOutputs["admin"]["resources"]["excludes"]["searchResources"]
         }
         pageSize={PAGE_SIZE}
         isLoading={isSearching || isLoadingExcludes}
-        onRowClick={row => handleRowClick(row.original)}
+        onRowClick={(row) => handleRowClick(row.original)}
         page={page}
         onPageChange={setPage}
         hasNextPage={hasNextPage}
@@ -130,24 +130,24 @@ export const ResourceExcludesTable = () => {
       {selectedResource && (
         <Dialog
           open={!!selectedResource}
-          onOpenChange={open => !open && setSelectedResource(null)}
+          onOpenChange={(open) => !open && setSelectedResource(null)}
         >
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {selectedResource.excluded ? 'Include' : 'Exclude'} Resource
+                {selectedResource.excluded ? "Include" : "Exclude"} Resource
               </DialogTitle>
               <DialogDescription>
                 {selectedResource.excluded
-                  ? 'Remove this resource from the exclusion list to allow agents to use it.'
-                  : 'Add this resource to the exclusion list to prevent agents from using it.'}
+                  ? "Remove this resource from the exclusion list to allow agents to use it."
+                  : "Add this resource to the exclusion list to prevent agents from using it."}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <div className="text-sm font-medium">Resource</div>
-                <div className="text-sm text-muted-foreground break-all">
+                <div className="text-sm break-all text-muted-foreground">
                   {selectedResource.resource}
                 </div>
               </div>
@@ -187,9 +187,9 @@ export const ResourceExcludesTable = () => {
                 <div className="text-sm font-medium">Current Status</div>
                 <Badge
                   variant={
-                    selectedResource.excluded ? 'destructive' : 'default'
+                    selectedResource.excluded ? "destructive" : "default"
                   }
-                  className="flex gap-1 w-fit items-center"
+                  className="flex w-fit items-center gap-1"
                 >
                   {selectedResource.excluded ? (
                     <>
@@ -215,7 +215,7 @@ export const ResourceExcludesTable = () => {
                 Cancel
               </Button>
               <Button
-                variant={selectedResource.excluded ? 'default' : 'destructive'}
+                variant={selectedResource.excluded ? "default" : "destructive"}
                 onClick={handleToggleExclude}
                 disabled={isLoading}
               >

@@ -1,4 +1,4 @@
-import { partnersDb, Tables } from '@x402scan/partners-db';
+import { partnersDb, Tables } from "@x402scan/partners-db";
 
 /**
  * Adds an invite code ID to a partner's invite_codes array
@@ -13,7 +13,7 @@ export const addInviteCodeToPartner = async (
 
     const resultSet = await partnersDb.query({
       query,
-      format: 'JSONEachRow',
+      format: "JSONEachRow",
       query_params: { partnerId },
     });
 
@@ -47,7 +47,7 @@ export const addInviteCodeToPartner = async (
       });
     }
   } catch (error) {
-    console.error('Error adding invite code to partner:', error);
+    console.error("Error adding invite code to partner:", error);
     throw new Error(
       `Failed to add invite code to partner: ${error instanceof Error ? error.message : String(error)}`,
       { cause: error }

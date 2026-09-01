@@ -9,15 +9,15 @@ const KEEPALIVE_INTERVAL_MS = 20000;
 const MAX_BUFFER_SIZE = 10;
 
 const KEEPALIVE_MESSAGE = JSON.stringify({
-  jsonrpc: '2.0',
-  method: 'helius_keepalive',
+  jsonrpc: "2.0",
+  method: "helius_keepalive",
 });
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     // Validate required environment
     if (!env.HELIUS_API_KEY) {
-      return new Response('Missing HELIUS_API_KEY', { status: 500 });
+      return new Response("Missing HELIUS_API_KEY", { status: 500 });
     }
 
     // CORS setup
@@ -29,30 +29,30 @@ export default {
     // header to `https://example.com`. Multiple domains are supported by verifying that the request
     // originated from one of the domains in the `CORS_ALLOW_ORIGIN` environment variable.
     const supportedDomains = env.CORS_ALLOW_ORIGIN?.trim()
-      ? env.CORS_ALLOW_ORIGIN.split(',').map(d => d.trim())
+      ? env.CORS_ALLOW_ORIGIN.split(",").map((d) => d.trim())
       : undefined;
     const corsHeaders = new Headers({
-      'Access-Control-Allow-Methods': 'GET, HEAD, POST, PUT, OPTIONS',
-      'Access-Control-Allow-Headers': '*',
+      "Access-Control-Allow-Methods": "GET, HEAD, POST, PUT, OPTIONS",
+      "Access-Control-Allow-Headers": "*",
     });
 
     if (supportedDomains) {
-      const origin = request.headers.get('Origin');
+      const origin = request.headers.get("Origin");
       if (origin && supportedDomains.includes(origin)) {
-        corsHeaders.set('Access-Control-Allow-Origin', origin);
+        corsHeaders.set("Access-Control-Allow-Origin", origin);
       }
     } else {
-      corsHeaders.set('Access-Control-Allow-Origin', '*');
+      corsHeaders.set("Access-Control-Allow-Origin", "*");
     }
 
     // Handle preflight
-    if (request.method === 'OPTIONS') {
+    if (request.method === "OPTIONS") {
       return new Response(null, { status: 200, headers: corsHeaders });
     }
 
     // WebSocket handling
-    const upgrade = request.headers.get('Upgrade')?.toLowerCase();
-    if (upgrade === 'websocket') {
+    const upgrade = request.headers.get("Upgrade")?.toLowerCase();
+    if (upgrade === "websocket") {
       return handleWebSocket(request, env, corsHeaders);
     }
 
@@ -67,19 +67,19 @@ function handleWebSocket(
   corsHeaders: Headers
 ): Response {
   const { search } = new URL(request.url);
-  const upstreamUrl = `wss://mainnet.helius-rpc.com${search ? `${search}&` : '?'}api-key=${
+  const upstreamUrl = `wss://mainnet.helius-rpc.com${search ? `${search}&` : "?"}api-key=${
     env.HELIUS_API_KEY
   }`;
 
   // Extract subprotocol
-  const clientProtocols = request.headers.get('Sec-WebSocket-Protocol');
-  const selectedProtocol = clientProtocols?.split(',')[0]?.trim();
+  const clientProtocols = request.headers.get("Sec-WebSocket-Protocol");
+  const selectedProtocol = clientProtocols?.split(",")[0]?.trim();
 
   // Create WebSocket pair
   const webSocketPair = new WebSocketPair();
   const [client, server] = Object.values(webSocketPair);
   if (!server) {
-    return new Response('Internal Server Error', { status: 500 });
+    return new Response("Internal Server Error", { status: 500 });
   }
   server.accept();
 
@@ -130,7 +130,7 @@ function handleWebSocket(
       if (bufferedData.length > 0 && !isUpstreamConnected) {
         bufferedData = [];
         try {
-          server.close(1011, 'upstream_connection_timeout');
+          server.close(1011, "upstream_connection_timeout");
         } catch {
           // ignore
         }
@@ -145,7 +145,7 @@ function handleWebSocket(
   };
 
   // Upstream connection open
-  upstream.addEventListener('open', () => {
+  upstream.addEventListener("open", () => {
     isUpstreamConnected = true;
     clearBufferTimeout();
 
@@ -159,7 +159,7 @@ function handleWebSocket(
       } catch {
         cleanup();
         try {
-          server.close(1011, 'upstream_ws_error');
+          server.close(1011, "upstream_ws_error");
         } catch {
           // ignore
         }
@@ -170,14 +170,14 @@ function handleWebSocket(
   });
 
   // Client to upstream forwarding
-  server.addEventListener('message', event => {
+  server.addEventListener("message", (event) => {
     if (isUpstreamConnected && upstream.readyState === WebSocket.OPEN) {
       try {
         upstream.send(event.data as string | ArrayBuffer);
       } catch {
         cleanup();
         try {
-          server.close(1011, 'upstream_ws_error');
+          server.close(1011, "upstream_ws_error");
         } catch {
           // ignore
         }
@@ -187,7 +187,7 @@ function handleWebSocket(
       if (bufferedData.length >= MAX_BUFFER_SIZE) {
         cleanup();
         try {
-          server.close(1011, 'buffer_overflow');
+          server.close(1011, "buffer_overflow");
         } catch {
           // ignore
         }
@@ -202,14 +202,14 @@ function handleWebSocket(
   });
 
   // Upstream to client forwarding
-  upstream.addEventListener('message', event => {
+  upstream.addEventListener("message", (event) => {
     if (server.readyState === WebSocket.OPEN) {
       try {
         server.send(event.data as string | ArrayBuffer);
       } catch {
         cleanup();
         try {
-          upstream.close(1011, 'client_ws_error');
+          upstream.close(1011, "client_ws_error");
         } catch {
           // ignore
         }
@@ -218,7 +218,7 @@ function handleWebSocket(
   });
 
   // Connection close handling
-  server.addEventListener('close', () => {
+  server.addEventListener("close", () => {
     cleanup();
     try {
       upstream.close();
@@ -227,7 +227,7 @@ function handleWebSocket(
     }
   });
 
-  upstream.addEventListener('close', () => {
+  upstream.addEventListener("close", () => {
     isUpstreamConnected = false;
     cleanup();
     try {
@@ -238,20 +238,20 @@ function handleWebSocket(
   });
 
   // Error handling
-  server.addEventListener('error', () => {
+  server.addEventListener("error", () => {
     cleanup();
     try {
-      upstream.close(1011, 'client_ws_error');
+      upstream.close(1011, "client_ws_error");
     } catch {
       // ignore
     }
   });
 
-  upstream.addEventListener('error', () => {
+  upstream.addEventListener("error", () => {
     isUpstreamConnected = false;
     cleanup();
     try {
-      server.close(1011, 'upstream_ws_error');
+      server.close(1011, "upstream_ws_error");
     } catch {
       // ignore
     }
@@ -260,7 +260,7 @@ function handleWebSocket(
   // Response
   const responseHeaders = new Headers(corsHeaders);
   if (selectedProtocol) {
-    responseHeaders.set('Sec-WebSocket-Protocol', selectedProtocol);
+    responseHeaders.set("Sec-WebSocket-Protocol", selectedProtocol);
   }
 
   return new Response(null, {
@@ -281,17 +281,17 @@ async function handleRPC(
 
     // Determine target endpoint
     const targetHost =
-      pathname === '/' ? 'mainnet.helius-rpc.com' : 'api.helius.xyz';
+      pathname === "/" ? "mainnet.helius-rpc.com" : "api.helius.xyz";
     const targetUrl = `https://${targetHost}${pathname}?api-key=${env.HELIUS_API_KEY}${
-      search ? `&${search.slice(1)}` : ''
+      search ? `&${search.slice(1)}` : ""
     }`;
 
     const proxyRequest = new Request(targetUrl, {
       method: request.method,
       body: payload || null,
       headers: {
-        'Content-Type': 'application/json',
-        'X-Helius-Cloudflare-Proxy': 'true',
+        "Content-Type": "application/json",
+        "X-Helius-Cloudflare-Proxy": "true",
       },
     });
 
@@ -302,7 +302,7 @@ async function handleRPC(
       headers: corsHeaders,
     });
   } catch {
-    return new Response('Proxy Error', {
+    return new Response("Proxy Error", {
       status: 502,
       headers: corsHeaders,
     });

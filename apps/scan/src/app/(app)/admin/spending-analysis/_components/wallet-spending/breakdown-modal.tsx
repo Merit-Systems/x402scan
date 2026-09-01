@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
+import { useMemo } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { DataTable } from '@/components/ui/data-table';
-import { createWalletBreakdownColumns } from './breakdown-columns';
-import { ToolCallsChart } from './tool-calls-chart';
-import { api } from '@/trpc/client';
+} from "@/components/ui/dialog";
+import { DataTable } from "@/components/ui/data-table";
+import { createWalletBreakdownColumns } from "./breakdown-columns";
+import { ToolCallsChart } from "./tool-calls-chart";
+import { api } from "@/trpc/client";
 
 interface WalletBreakdownModalProps {
   open: boolean;
@@ -40,9 +40,9 @@ export const WalletBreakdownModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-7xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-7xl">
         <DialogHeader>
-          <DialogTitle className="text-sm font-mono break-all">
+          <DialogTitle className="font-mono text-sm break-all">
             Wallet Breakdown - {resourceUrl}
           </DialogTitle>
           <DialogDescription>

@@ -1,19 +1,19 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from '@/trpc/trpc';
+import { createTRPCRouter, protectedProcedure } from "@/trpc/trpc";
 
 import {
   joinAgentConfiguration,
   leaveAgentConfiguration,
   listUserAgentConfigurations,
-} from '@/services/db/agent-config/user';
+} from "@/services/db/agent-config/user";
 import {
   createAgentConfiguration,
   createAgentConfigurationSchema,
   deleteAgentConfiguration,
   updateAgentConfiguration,
   updateAgentConfigurationSchema,
-} from '@/services/db/agent-config/mutate';
+} from "@/services/db/agent-config/mutate";
 
 export const userAgentConfigurationsRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {

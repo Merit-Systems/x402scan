@@ -1,23 +1,23 @@
-import { err, ok, resultFromPromise } from '@x402scan/neverthrow';
+import { err, ok, resultFromPromise } from "@x402scan/neverthrow";
 
 import type {
   BaseError,
   Result,
   ResultAsync,
-} from '@x402scan/neverthrow/types';
+} from "@x402scan/neverthrow/types";
 
 export type ServerErrorType =
-  | 'invalid_request'
-  | 'unauthorized'
-  | 'payment_required'
-  | 'forbidden'
-  | 'not_found'
-  | 'conflict'
-  | 'rate_limit'
-  | 'internal'
-  | 'bad_gateway'
-  | 'service_unavailable'
-  | 'offline';
+  | "invalid_request"
+  | "unauthorized"
+  | "payment_required"
+  | "forbidden"
+  | "not_found"
+  | "conflict"
+  | "rate_limit"
+  | "internal"
+  | "bad_gateway"
+  | "service_unavailable"
+  | "offline";
 
 export type BaseServerError = BaseError<ServerErrorType>;
 

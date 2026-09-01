@@ -1,12 +1,12 @@
-import { Music } from 'lucide-react';
+import { Music } from "lucide-react";
 
-import z from 'zod';
+import z from "zod";
 
-import type { InputComponent } from '../types';
+import type { InputComponent } from "../types";
 
 const schema = z.object({
   prompt: z.string({
-    error: 'Prompt is required',
+    error: "Prompt is required",
   }),
   lyrics: z.string().optional(),
   enhancePrompt: z.boolean().optional(),

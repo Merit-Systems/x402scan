@@ -1,40 +1,40 @@
-import { Network } from '../types';
-import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from '../constants';
+import { Network } from "../types";
+import { USDC_BASE_TOKEN, USDC_SOLANA_TOKEN } from "../constants";
 
-import type { Facilitator, FacilitatorConfig } from '../types';
+import type { Facilitator, FacilitatorConfig } from "../types";
 
 export const daydreams: FacilitatorConfig = {
-  url: 'https://facilitator.daydreams.systems',
+  url: "https://facilitator.daydreams.systems",
 };
 
 export const daydreamsFacilitator = {
-  id: 'daydreams',
+  id: "daydreams",
   metadata: {
-    name: 'Daydreams',
-    image: 'https://x402scan.com/router-logo-small.png',
-    docsUrl: 'https://facilitator.daydreams.systems',
-    color: '#D4A62A',
+    name: "Daydreams",
+    image: "https://x402scan.com/router-logo-small.png",
+    docsUrl: "https://facilitator.daydreams.systems",
+    color: "#D4A62A",
   },
   config: daydreams,
   addresses: {
     [Network.BASE]: [
       {
-        address: '0x279e08f711182c79Ba6d09669127a426228a4653',
+        address: "0x279e08f711182c79Ba6d09669127a426228a4653",
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2025-10-16'),
+        dateOfFirstTransaction: new Date("2025-10-16"),
       },
       {
-        address: '0x1363C7Ff51CcCE10258A7F7bddd63bAaB6aAf678',
+        address: "0x1363C7Ff51CcCE10258A7F7bddd63bAaB6aAf678",
         tokens: [USDC_BASE_TOKEN],
-        dateOfFirstTransaction: new Date('2026-01-16'),
+        dateOfFirstTransaction: new Date("2026-01-16"),
       },
     ],
     [Network.SOLANA]: [
       {
-        address: 'DuQ4jFMmVABWGxabYHFkGzdyeJgS1hp4wrRuCtsJgT9a',
+        address: "DuQ4jFMmVABWGxabYHFkGzdyeJgS1hp4wrRuCtsJgT9a",
         deprecated: true,
         tokens: [USDC_SOLANA_TOKEN],
-        dateOfFirstTransaction: new Date('2025-10-16'),
+        dateOfFirstTransaction: new Date("2025-10-16"),
       },
     ],
   },

@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";
 
-import { BaseBarChart, LoadingBarChart } from '../chart/bar';
-import { BaseAreaChart, LoadingAreaChart } from '../chart/area';
+import { BaseBarChart, LoadingBarChart } from "../chart/bar";
+import { BaseAreaChart, LoadingAreaChart } from "../chart/area";
 
-import type { ChartData, ChartProps } from '../chart/types';
-import type { BarChartProps, StackOffset } from '../chart/bar/types';
-import type { AreaChartProps } from '../chart/area/types';
+import type { ChartData, ChartProps } from "../chart/types";
+import type { BarChartProps, StackOffset } from "../chart/bar/types";
+import type { AreaChartProps } from "../chart/area/types";
 
-import type { TabsTriggerProps } from './tabs';
+import type { TabsTriggerProps } from "./tabs";
 
 interface TabProps<T extends Record<string, number>> {
   trigger: TabsTriggerProps;
   items:
     | {
-        type: 'bar';
-        bars: BarChartProps<T>['bars'];
+        type: "bar";
+        bars: BarChartProps<T>["bars"];
         solid?: boolean;
         stackOffset?: StackOffset;
       }
     | {
-        type: 'area';
-        areas: AreaChartProps<T>['areas'];
+        type: "area";
+        areas: AreaChartProps<T>["areas"];
       };
-  tooltipRows?: ChartProps<T>['tooltipRows'];
+  tooltipRows?: ChartProps<T>["tooltipRows"];
 }
 
 interface Props<T extends Record<string, number>> {
@@ -41,7 +41,7 @@ export const MultiCharts = <T extends Record<string, number>>({
   return (
     <Tabs defaultValue={tabs[0]?.trigger.value} className="h-full">
       <TabsList>
-        {tabs.map(tab => (
+        {tabs.map((tab) => (
           <TabsTrigger key={tab.trigger.label} {...tab.trigger} />
         ))}
       </TabsList>
@@ -49,9 +49,9 @@ export const MultiCharts = <T extends Record<string, number>>({
         <TabsContent
           key={trigger.label}
           value={trigger.value}
-          className="flex-1 h-0"
+          className="h-0 flex-1"
         >
-          {items.type === 'bar' ? (
+          {items.type === "bar" ? (
             <BaseBarChart
               data={chartData}
               bars={items.bars}
@@ -76,7 +76,7 @@ export const MultiCharts = <T extends Record<string, number>>({
 
 interface LoadingMultiChartsProps {
   tabs: {
-    type: 'bar' | 'area';
+    type: "bar" | "area";
     label: string;
   }[];
   height?: number | string;
@@ -90,7 +90,7 @@ export const LoadingMultiCharts: React.FC<LoadingMultiChartsProps> = ({
     <div className="animate-pulse">
       <Tabs defaultValue={tabs[0]!.label}>
         <TabsList>
-          {tabs.map(tab => (
+          {tabs.map((tab) => (
             <TabsTrigger
               key={tab.label}
               value={tab.label}
@@ -99,9 +99,9 @@ export const LoadingMultiCharts: React.FC<LoadingMultiChartsProps> = ({
             />
           ))}
         </TabsList>
-        {tabs.map(tab => (
+        {tabs.map((tab) => (
           <TabsContent key={tab.label} value={tab.label}>
-            {tab.type === 'bar' ? (
+            {tab.type === "bar" ? (
               <LoadingBarChart height={height} />
             ) : (
               <LoadingAreaChart height={height} />

@@ -1,4 +1,4 @@
-import { partnersDb, Tables } from '@x402scan/partners-db';
+import { partnersDb, Tables } from "@x402scan/partners-db";
 
 /**
  * Finds partners with the given invite code ID and upserts the recipient address
@@ -18,7 +18,7 @@ export const upsertWalletAddressForInviteCode = async (
 
     const resultSet = await partnersDb.query({
       query,
-      format: 'JSONEachRow',
+      format: "JSONEachRow",
       query_params: { inviteCodeId },
     });
 
@@ -51,6 +51,6 @@ export const upsertWalletAddressForInviteCode = async (
     }
   } catch (error) {
     // Log error but don't throw - this shouldn't fail the redemption
-    console.error('Error upserting wallet address for invite code:', error);
+    console.error("Error upserting wallet address for invite code:", error);
   }
 };

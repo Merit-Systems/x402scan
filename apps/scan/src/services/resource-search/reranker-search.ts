@@ -1,5 +1,5 @@
-import { env } from '@/env';
-import type { SearchResult, RerankedSearchResult } from './types';
+import { env } from "@/env";
+import type { SearchResult, RerankedSearchResult } from "./types";
 
 interface JinaRerankerResponse {
   model: string;
@@ -22,12 +22,12 @@ interface JinaRerankerResponse {
 function buildResourceText(resource: SearchResult): string {
   const parts = [
     resource.origin.title ?? resource.origin.origin,
-    resource.accepts?.find(accept => accept.description)?.description ?? '',
-    resource.origin.description ?? '',
-    resource.tags.map(t => t.name).join(', '),
+    resource.accepts?.find((accept) => accept.description)?.description ?? "",
+    resource.origin.description ?? "",
+    resource.tags.map((t) => t.name).join(", "),
   ].filter(Boolean);
 
-  return parts.join(' | ');
+  return parts.join(" | ");
 }
 
 /**
@@ -42,8 +42,8 @@ export async function rerankSearchResults(
   }
 ): Promise<RerankedSearchResult[]> {
   if (!env.JINA_API_KEY) {
-    console.warn('[Reranker] JINA_API_KEY not configured, skipping reranking');
-    return results.map(r => ({
+    console.warn("[Reranker] JINA_API_KEY not configured, skipping reranking");
+    return results.map((r) => ({
       ...r,
       rerankerScore: null,
       rerankerIndex: null,
@@ -61,7 +61,7 @@ export async function rerankSearchResults(
   const documents = results.map(buildResourceText);
 
   const requestBody = {
-    model: 'jina-reranker-v2-base-multilingual',
+    model: "jina-reranker-v2-base-multilingual",
     query: naturalLanguageQuery,
     top_n: Math.min(topN, results.length),
     documents,
@@ -70,10 +70,10 @@ export async function rerankSearchResults(
 
   const startTime = Date.now();
 
-  const response = await fetch('https://api.jina.ai/v1/rerank', {
-    method: 'POST',
+  const response = await fetch("https://api.jina.ai/v1/rerank", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${env.JINA_API_KEY}`,
     },
     body: JSON.stringify(requestBody),
@@ -81,7 +81,7 @@ export async function rerankSearchResults(
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('[Reranker] API error:', response.status, errorText);
+    console.error("[Reranker] API error:", response.status, errorText);
     throw new Error(`Jina reranker API error: ${response.status} ${errorText}`);
   }
 

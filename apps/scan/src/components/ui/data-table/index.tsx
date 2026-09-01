@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 import {
   flexRender,
@@ -11,9 +11,9 @@ import {
   getPaginationRowModel,
   type RowSelectionState,
   type OnChangeFn,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -21,14 +21,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/table";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
-import type { ColumnDef, Row } from '@tanstack/react-table';
-import type { Route } from 'next';
+import type { ColumnDef, Row } from "@tanstack/react-table";
+import type { Route } from "next";
 
 export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
   TData,
@@ -104,9 +104,9 @@ export function DataTable<TData, TValue, AppRoute extends string>({
       <Card className="overflow-hidden bg-card dark:bg-muted/80">
         <Table>
           <TableHeader className="bg-muted dark:bg-card">
-            {table.getHeaderGroups().map(headerGroup => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
+                {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
@@ -145,10 +145,10 @@ export function DataTable<TData, TValue, AppRoute extends string>({
                 </TableRow>
               ))
             ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
+              table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={row.getIsSelected() && "selected"}
                   onClick={
                     href
                       ? () => {
@@ -158,9 +158,9 @@ export function DataTable<TData, TValue, AppRoute extends string>({
                         ? () => onRowClick(row)
                         : undefined
                   }
-                  className={cn((href ?? onRowClick) && 'cursor-pointer')}
+                  className={cn((href ?? onRowClick) && "cursor-pointer")}
                 >
-                  {row.getVisibleCells().map(cell => (
+                  {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
                       style={{ width: cell.column.getSize() }}
@@ -200,7 +200,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
           disabled={
             isServerSidePagination ? page === 0 : !table.getCanPreviousPage()
           }
-          className="size-fit md:size-fit p-1"
+          className="size-fit p-1 md:size-fit"
         >
           <ChevronLeft className="size-4" />
         </Button>
@@ -209,7 +209,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
         ) : (
           <p className="text-xs text-muted-foreground">
             {isServerSidePagination
-              ? `Page ${page + 1}${totalPages ? ` of ${totalPages.toLocaleString()}` : ''}`
+              ? `Page ${page + 1}${totalPages ? ` of ${totalPages.toLocaleString()}` : ""}`
               : `Page ${table.getState().pagination.pageIndex + 1} of ${table.getPageCount()}`}
           </p>
         )}
@@ -228,7 +228,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
               ? hasNextPage === false
               : !table.getCanNextPage()
           }
-          className="size-fit md:size-fit p-1"
+          className="size-fit p-1 md:size-fit"
         >
           <ChevronRight className="size-4" />
         </Button>

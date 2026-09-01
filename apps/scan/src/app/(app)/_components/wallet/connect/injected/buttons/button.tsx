@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   className?: string;
@@ -13,7 +13,7 @@ interface Props {
 
 export const ConnectInjectedWalletButton: React.FC<Props> = ({
   className,
-  prefix = 'Connect',
+  prefix = "Connect",
   icon,
   name,
   isPending,
@@ -22,7 +22,7 @@ export const ConnectInjectedWalletButton: React.FC<Props> = ({
   return (
     <Button
       variant="outline"
-      className={cn('user-message w-full h-12 md:h-12', className)}
+      className={cn("user-message w-full h-12 md:h-12", className)}
       onClick={onClick}
       disabled={isPending}
     >

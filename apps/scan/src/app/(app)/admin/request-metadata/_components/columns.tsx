@@ -1,16 +1,16 @@
-import type { ColumnDef } from '@tanstack/react-table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Edit, Plus } from 'lucide-react';
-import type { RouterOutputs } from '@/trpc/client';
-import { Favicon } from '@/app/(app)/_components/favicon';
+import type { ColumnDef } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Edit, Plus } from "lucide-react";
+import type { RouterOutputs } from "@/trpc/client";
+import { Favicon } from "@/app/(app)/_components/favicon";
 
 export const columns: ColumnDef<
-  RouterOutputs['admin']['resources']['requestMetadata']['searchResources'][number]
+  RouterOutputs["admin"]["resources"]["requestMetadata"]["searchResources"][number]
 >[] = [
   {
-    accessorKey: 'resource',
-    header: 'Resource URL',
+    accessorKey: "resource",
+    header: "Resource URL",
     cell: ({ row }) => {
       const resource = row.original.resource;
       return (
@@ -21,8 +21,8 @@ export const columns: ColumnDef<
     },
   },
   {
-    accessorKey: 'origin',
-    header: 'Origin',
+    accessorKey: "origin",
+    header: "Origin",
     cell: ({ row }) => {
       const origin = row.original.origin;
       return (
@@ -36,44 +36,44 @@ export const columns: ColumnDef<
     },
   },
   {
-    accessorKey: 'type',
-    header: 'Type',
+    accessorKey: "type",
+    header: "Type",
     cell: ({ row }) => {
       const type = row.original.type;
       return <Badge variant="secondary">{type}</Badge>;
     },
   },
   {
-    accessorKey: 'x402Version',
-    header: 'X402 Version',
+    accessorKey: "x402Version",
+    header: "X402 Version",
     cell: ({ row }) => {
       const version = row.original.x402Version;
       return <Badge variant="outline">v{version}</Badge>;
     },
   },
   {
-    accessorKey: 'requestMetadata',
-    header: 'Has Metadata',
+    accessorKey: "requestMetadata",
+    header: "Has Metadata",
     cell: ({ row }) => {
       const hasMetadata = !!row.original.requestMetadata;
       return (
-        <Badge variant={hasMetadata ? 'default' : 'secondary'}>
-          {hasMetadata ? 'Configured' : 'Not Configured'}
+        <Badge variant={hasMetadata ? "default" : "secondary"}>
+          {hasMetadata ? "Configured" : "Not Configured"}
         </Badge>
       );
     },
   },
   {
-    accessorKey: '_count',
-    header: 'Invocations',
+    accessorKey: "_count",
+    header: "Invocations",
     cell: ({ row }) => {
       const count = row.original._count?.invocations ?? 0;
       return <span className="text-sm text-muted-foreground">{count}</span>;
     },
   },
   {
-    id: 'actions',
-    header: 'Actions',
+    id: "actions",
+    header: "Actions",
     cell: ({ row }) => {
       const hasMetadata = !!row.original.requestMetadata;
       return (
